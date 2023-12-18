@@ -6,34 +6,29 @@
 #include "dsp/marker_track.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
+#include "gui/widgets/arranger_minimap.h"
+#include "gui/widgets/arranger_minimap_bg.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  TimelineMinimapBgWidget,
-  timeline_minimap_bg_widget,
+  ArrangerMinimapBgWidget,
+  arranger_minimap_bg_widget,
   GTK_TYPE_WIDGET)
 
 static void
-timeline_minimap_bg_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
+draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  /*TimelineMinimapBgWidget * self =*/
-  /*Z_TIMELINE_MINIMAP_BG_WIDGET (widget);*/
-
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
-
-  if (!PROJECT->loaded)
-    return;
 
   Marker *         start = marker_track_get_start_marker (P_MARKER_TRACK);
   ArrangerObject * start_obj = (ArrangerObject *) start;
@@ -98,8 +93,26 @@ timeline_minimap_bg_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 }
 
+static void
+arranger_minimap_bg_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
+{
+  if (!PROJECT->loaded)
+    return;
+
+  ArrangerMinimapBgWidget * self = Z_ARRANGER_MINIMAP_BG_WIDGET (widget);
+
+  if (self->owner->type == ARRANGER_MINIMAP_TYPE_TIMELINE)
+    {
+      draw_timeline (widget, snapshot);
+    }
+  else
+    {
+      /* TODO */
+    }
+}
+
 static gboolean
-timeline_minimap_bg_tick_cb (
+arranger_minimap_bg_tick_cb (
   GtkWidget *     widget,
   GdkFrameClock * frame_clock,
   gpointer        user_data)
@@ -109,26 +122,28 @@ timeline_minimap_bg_tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
-TimelineMinimapBgWidget *
-timeline_minimap_bg_widget_new (void)
+ArrangerMinimapBgWidget *
+arranger_minimap_bg_widget_new (ArrangerMinimapWidget * owner)
 {
-  TimelineMinimapBgWidget * self =
-    g_object_new (TIMELINE_MINIMAP_BG_WIDGET_TYPE, NULL);
+  ArrangerMinimapBgWidget * self =
+    g_object_new (ARRANGER_MINIMAP_BG_WIDGET_TYPE, NULL);
+
+  self->owner = owner;
 
   return self;
 }
 
 static void
-timeline_minimap_bg_widget_class_init (TimelineMinimapBgWidgetClass * klass)
+arranger_minimap_bg_widget_class_init (ArrangerMinimapBgWidgetClass * klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
-  wklass->snapshot = timeline_minimap_bg_snapshot;
-  gtk_widget_class_set_css_name (wklass, "timeline-minimap-bg");
+  wklass->snapshot = arranger_minimap_bg_snapshot;
+  gtk_widget_class_set_css_name (wklass, "arranger-minimap-bg");
 }
 
 static void
-timeline_minimap_bg_widget_init (TimelineMinimapBgWidget * self)
+arranger_minimap_bg_widget_init (ArrangerMinimapBgWidget * self)
 {
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), timeline_minimap_bg_tick_cb, self, NULL);
+    GTK_WIDGET (self), arranger_minimap_bg_tick_cb, self, NULL);
 }

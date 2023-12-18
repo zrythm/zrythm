@@ -41,18 +41,13 @@
                   </object>
                 </child>
                 <child>
-                  <object class="ArrangerWidget" id="timeline">
+                  <object class="ArrangerWrapperWidget" id="timeline_wrapper">
                   </object>
                 </child>
               </object>
             </child>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="TimelineBotBoxWidget" id="bot_box">
-        <property name="vexpand_set">1</property>
       </object>
     </child>
   </template>

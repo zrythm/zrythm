@@ -59,7 +59,6 @@ resource_files += files ([
   'snap_grid_popover.ui',
   'splash.ui',
   'string_entry_dialog.ui',
-  'timeline_bot_box.ui',
   'timeline_panel.ui',
   'timeline_toolbar.ui',
   'toolbox.ui',

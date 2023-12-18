@@ -10,6 +10,8 @@
 #ifndef __GUI_WIDGETS_TIMELINE_PANEL_H__
 #define __GUI_WIDGETS_TIMELINE_PANEL_H__
 
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define TIMELINE_PANEL_WIDGET_TYPE (timeline_panel_widget_get_type ())
@@ -20,12 +22,12 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_PANEL_WIDGET,
   GtkBox)
 
-typedef struct _RulerWidget               RulerWidget;
-typedef struct _TracklistWidget           TracklistWidget;
-typedef struct _TimelinePanelBotBoxWidget TimelinePanelBotBoxWidget;
-typedef struct _TracklistHeaderWidget     TracklistHeaderWidget;
-typedef struct _TimelineToolbarWidget     TimelineToolbarWidget;
-typedef struct _TimelineBotBoxWidget      TimelineBotBoxWidget;
+TYPEDEF_STRUCT_UNDERSCORED (RulerWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TracklistWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TracklistHeaderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TimelineToolbarWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TimelineBotBoxWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWrapperWidget);
 
 /**
  * @addtogroup widgets
@@ -56,6 +58,8 @@ typedef struct _TimelinePanelWidget
    * timelines. */
   GtkBox * timeline_divider_box;
 
+  ArrangerWrapperWidget * timeline_wrapper;
+
   /** The main timeline. */
   ArrangerWidget * timeline;
 
@@ -63,8 +67,6 @@ typedef struct _TimelinePanelWidget
 
   /** The pinned timeline above the main one. */
   ArrangerWidget * pinned_timeline;
-
-  TimelineBotBoxWidget * bot_box;
 
   /** Size group for keeping the whole ruler and
    * each timeline the same width. */

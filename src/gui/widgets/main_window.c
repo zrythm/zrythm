@@ -41,7 +41,6 @@
 #include "gui/widgets/text_expander.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
-#include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/top_bar.h"

@@ -4,6 +4,7 @@
 #include "dsp/region.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"

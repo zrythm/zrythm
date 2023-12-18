@@ -42,7 +42,7 @@
                 <property name="vexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="ArrangerWidget" id="arranger">
+                  <object class="ArrangerWrapperWidget" id="arranger_wrapper">
                   </object>
                 </child>
               </object>

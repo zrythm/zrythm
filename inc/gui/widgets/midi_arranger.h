@@ -10,7 +10,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _ArrangerWidget ArrangerWidget;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWrapperWidget);
 typedef struct MidiNote        MidiNote;
 typedef struct SnapGrid        SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
@@ -22,13 +22,7 @@ typedef struct Channel         Channel;
  * @{
  */
 
-#define MW_MIDI_ARRANGER (MW_MIDI_EDITOR_SPACE->arranger)
-
-/**
- * Returns the note value (0-127) at y.
- */
-// int
-// midi_arranger_widget_get_note_at_y (double y);
+#define MW_MIDI_ARRANGER (MW_MIDI_EDITOR_SPACE->arranger_wrapper->child)
 
 /**
  * Called on drag begin in parent when background is double

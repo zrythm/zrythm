@@ -9,6 +9,7 @@
 #include "dsp/track.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -134,11 +135,10 @@ on_piano_keys_scroll_hadj_changed (
 void
 midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 {
-  if (self->arranger)
+  if (self->arranger_wrapper)
     {
-      arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger), ARRANGER_WIDGET_TYPE_MIDI,
-        SNAP_GRID_EDITOR);
+      arranger_wrapper_widget_setup (
+        self->arranger_wrapper, ARRANGER_WIDGET_TYPE_MIDI, SNAP_GRID_EDITOR);
     }
   if (self->modifier_arranger)
     {
@@ -188,6 +188,7 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 {
   g_type_ensure (PIANO_ROLL_KEYS_WIDGET_TYPE);
   g_type_ensure (VELOCITY_SETTINGS_WIDGET_TYPE);
+  g_type_ensure (ARRANGER_WRAPPER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -196,20 +197,21 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   gtk_paned_set_shrink_start_child (self->midi_arranger_velocity_paned, false);
   gtk_paned_set_shrink_end_child (self->midi_arranger_velocity_paned, false);
 
-  self->arranger->type = ARRANGER_WIDGET_TYPE_MIDI;
+  self->arranger_wrapper->child->type = ARRANGER_WIDGET_TYPE_MIDI;
   self->modifier_arranger->type = ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
   /* doesn't work */
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
-    self->arranger_and_keys_vsize_group, GTK_WIDGET (self->arranger));
+    self->arranger_and_keys_vsize_group,
+    GTK_WIDGET (self->arranger_wrapper->child));
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
     GTK_WIDGET (self->piano_roll_keys_scroll));
 
   /* above doesn't work so set vexpand instead */
-  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger_wrapper->child), true);
 
   /* also hexpand the modifier arranger TODO use a size
    * group */
@@ -248,7 +250,7 @@ midi_editor_space_widget_class_init (MidiEditorSpaceWidgetClass * _klass)
   BIND_CHILD (piano_roll_keys_scroll);
   BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
-  BIND_CHILD (arranger);
+  BIND_CHILD (arranger_wrapper);
   BIND_CHILD (velocity_settings);
   BIND_CHILD (modifier_arranger);
   BIND_CHILD (midi_notes_box);

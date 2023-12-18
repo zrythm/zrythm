@@ -18,6 +18,7 @@
 #include "dsp/router.h"
 #include "dsp/stretcher.h"
 #include "dsp/track.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"

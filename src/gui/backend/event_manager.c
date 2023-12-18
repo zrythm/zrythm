@@ -20,7 +20,9 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/arranger_minimap.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
@@ -63,8 +65,6 @@
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_bot_box.h"
-#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_toolbar.h"
@@ -693,7 +693,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case ET_TRANSPORT_TOTAL_BARS_CHANGED:
       ruler_widget_refresh ((RulerWidget *) MW_RULER);
       ruler_widget_refresh ((RulerWidget *) EDITOR_RULER);
-      timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+      arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
       break;
     case ET_AUTOMATION_VALUE_CHANGED:
       on_automation_value_changed ((Port *) ev->arg);
@@ -774,7 +774,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case ET_REFRESH_ARRANGER:
       break;
     case ET_RULER_VIEWPORT_CHANGED:
-      timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+      arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
       ruler_widget_refresh (Z_RULER_WIDGET (ev->arg));
       break;
     case ET_TRACK_STATE_CHANGED:

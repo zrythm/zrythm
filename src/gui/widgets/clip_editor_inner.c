@@ -6,6 +6,7 @@
 #include "dsp/track.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
@@ -226,7 +227,7 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
     self->ruler_arranger_hsize_group, GTK_WIDGET (self->ruler));
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
-    GTK_WIDGET (self->midi_editor_space->arranger));
+    GTK_WIDGET (self->midi_editor_space->arranger_wrapper->child));
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
     GTK_WIDGET (self->midi_editor_space->modifier_arranger));

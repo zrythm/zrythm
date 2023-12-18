@@ -11,7 +11,9 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_minimap.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -24,8 +26,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_bot_box.h"
-#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
@@ -1827,7 +1827,7 @@ on_scroll (
           /* refresh relevant widgets */
           if (self->type == TYPE (TIMELINE))
             {
-              timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+              arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
             }
 
           /* also update hover x since we're using it here */

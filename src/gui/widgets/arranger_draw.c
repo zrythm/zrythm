@@ -8,6 +8,7 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_draw.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"

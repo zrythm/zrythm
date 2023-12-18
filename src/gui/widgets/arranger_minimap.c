@@ -4,7 +4,11 @@
 #include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/timeline.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_minimap.h"
+#include "gui/widgets/arranger_minimap_bg.h"
+#include "gui/widgets/arranger_minimap_selection.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -15,10 +19,6 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_minimap.h"
-#include "gui/widgets/timeline_minimap_bg.h"
-#include "gui/widgets/timeline_minimap_selection.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
@@ -28,14 +28,14 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineMinimapWidget, timeline_minimap_widget, GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (ArrangerMinimapWidget, arranger_minimap_widget, GTK_TYPE_WIDGET)
 
 /**
  * Taken from arranger.c
  */
 void
-timeline_minimap_widget_px_to_pos (
-  TimelineMinimapWidget * self,
+arranger_minimap_widget_px_to_pos (
+  ArrangerMinimapWidget * self,
   Position *              pos,
   int                     px)
 {
@@ -46,7 +46,7 @@ timeline_minimap_widget_px_to_pos (
 }
 
 static void
-move_selection_x (TimelineMinimapWidget * self, double offset_x)
+move_selection_x (ArrangerMinimapWidget * self, double offset_x)
 {
   double width = gtk_widget_get_width (GTK_WIDGET (self));
 
@@ -60,7 +60,7 @@ move_selection_x (TimelineMinimapWidget * self, double offset_x)
 }
 
 static void
-resize_selection_l (TimelineMinimapWidget * self, double offset_x)
+resize_selection_l (ArrangerMinimapWidget * self, double offset_x)
 {
   double width = gtk_widget_get_width (GTK_WIDGET (self));
 
@@ -91,7 +91,7 @@ resize_selection_l (TimelineMinimapWidget * self, double offset_x)
 }
 
 static void
-resize_selection_r (TimelineMinimapWidget * self, double offset_x)
+resize_selection_r (ArrangerMinimapWidget * self, double offset_x)
 {
   double width = gtk_widget_get_width (GTK_WIDGET (self));
 
@@ -122,7 +122,7 @@ resize_selection_r (TimelineMinimapWidget * self, double offset_x)
 }
 
 static void
-move_y (TimelineMinimapWidget * self, int offset_y)
+move_y (ArrangerMinimapWidget * self, int offset_y)
 {
 }
 
@@ -137,9 +137,9 @@ get_child_position (
   GdkRectangle * allocation,
   gpointer       user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
-  if (Z_IS_TIMELINE_MINIMAP_SELECTION_WIDGET (widget))
+  if (Z_IS_ARRANGER_MINIMAP_SELECTION_WIDGET (widget))
     {
       if (
         MAIN_WINDOW && MW_CENTER_DOCK && MW_TIMELINE_PANEL
@@ -169,7 +169,7 @@ get_child_position (
 }
 
 static void
-show_context_menu (TimelineMinimapWidget * self)
+show_context_menu (ArrangerMinimapWidget * self)
 {
   /* TODO */
 }
@@ -182,7 +182,7 @@ on_right_click (
   gdouble           y,
   gpointer          user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
   if (n_press == 1)
     {
@@ -204,7 +204,7 @@ on_click (
   gdouble           y,
   gpointer          user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
   self->n_press = n_press;
 }
@@ -216,7 +216,7 @@ drag_begin (
   gdouble          start_y,
   gpointer         user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
   self->start_x = start_x;
   self->start_y = start_y;
@@ -233,12 +233,12 @@ drag_begin (
     {
       /* update arranger action */
       if (self->selection->cursor == UI_CURSOR_STATE_RESIZE_L)
-        self->action = TIMELINE_MINIMAP_ACTION_RESIZING_L;
+        self->action = ARRANGER_MINIMAP_ACTION_RESIZING_L;
       else if (self->selection->cursor == UI_CURSOR_STATE_RESIZE_R)
-        self->action = TIMELINE_MINIMAP_ACTION_RESIZING_R;
+        self->action = ARRANGER_MINIMAP_ACTION_RESIZING_R;
       else
         {
-          self->action = TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
+          self->action = ARRANGER_MINIMAP_ACTION_STARTING_MOVING;
         }
 
       graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
@@ -254,16 +254,16 @@ drag_begin (
        * to not get called */
       /*g_signal_handlers_disconnect_by_func (*/
       /*G_OBJECT (self->selection->drawing_area),*/
-      /*timeline_minimap_selection_widget_on_motion,*/
+      /*arranger_minimap_selection_widget_on_motion,*/
       /*self->selection);*/
     }
   else /* nothing hit */
     {
-      self->action = TIMELINE_MINIMAP_ACTION_NONE;
+      self->action = ARRANGER_MINIMAP_ACTION_NONE;
 
       if (self->n_press == 1)
         {
-          self->action = TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
+          self->action = ARRANGER_MINIMAP_ACTION_STARTING_MOVING;
 
           double selection_width =
             self->selection_end_pos - self->selection_start_pos;
@@ -278,7 +278,7 @@ drag_begin (
         }
     }
 
-  if (self->action == TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
+  if (self->action == ARRANGER_MINIMAP_ACTION_STARTING_MOVING)
     {
       ui_set_cursor_from_name (GTK_WIDGET (self->selection), "grabbing");
     }
@@ -294,25 +294,25 @@ drag_update (
   gdouble          offset_y,
   gpointer         user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
-  if (self->action == TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
+  if (self->action == ARRANGER_MINIMAP_ACTION_STARTING_MOVING)
     {
-      self->action = TIMELINE_MINIMAP_ACTION_MOVING;
+      self->action = ARRANGER_MINIMAP_ACTION_MOVING;
     }
 
   /* handle x */
-  if (self->action == TIMELINE_MINIMAP_ACTION_RESIZING_L)
+  if (self->action == ARRANGER_MINIMAP_ACTION_RESIZING_L)
     {
       resize_selection_l (self, offset_x);
     }
-  else if (self->action == TIMELINE_MINIMAP_ACTION_RESIZING_R)
+  else if (self->action == ARRANGER_MINIMAP_ACTION_RESIZING_R)
     {
       resize_selection_r (self, offset_x);
     }
 
   /* if moving the selection */
-  else if (self->action == TIMELINE_MINIMAP_ACTION_MOVING)
+  else if (self->action == ARRANGER_MINIMAP_ACTION_MOVING)
     {
       move_selection_x (self, offset_x);
 
@@ -337,32 +337,32 @@ drag_end (
   gdouble          offset_y,
   gpointer         user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (user_data);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (user_data);
 
   self->start_x = 0;
   self->start_y = 0;
   self->last_offset_x = 0;
   self->last_offset_y = 0;
 
-  self->action = TIMELINE_MINIMAP_ACTION_NONE;
+  self->action = ARRANGER_MINIMAP_ACTION_NONE;
 }
 
 /**
  * Causes reallocation.
  */
 void
-timeline_minimap_widget_refresh (TimelineMinimapWidget * self)
+arranger_minimap_widget_refresh (ArrangerMinimapWidget * self)
 {
   /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
 }
 
 static gboolean
-timeline_minimap_tick_cb (
+arranger_minimap_tick_cb (
   GtkWidget *     widget,
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  TimelineMinimapWidget * self = Z_TIMELINE_MINIMAP_WIDGET (widget);
+  ArrangerMinimapWidget * self = Z_ARRANGER_MINIMAP_WIDGET (widget);
 
   gtk_widget_queue_allocate (GTK_WIDGET (self->overlay));
 
@@ -370,19 +370,19 @@ timeline_minimap_tick_cb (
 }
 
 static void
-dispose (TimelineMinimapWidget * self)
+dispose (ArrangerMinimapWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->overlay));
 
-  G_OBJECT_CLASS (timeline_minimap_widget_parent_class)
+  G_OBJECT_CLASS (arranger_minimap_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-timeline_minimap_widget_class_init (TimelineMinimapWidgetClass * _klass)
+arranger_minimap_widget_class_init (ArrangerMinimapWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass, "timeline-minimap");
+  gtk_widget_class_set_css_name (klass, "arranger-minimap");
   gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
@@ -390,15 +390,17 @@ timeline_minimap_widget_class_init (TimelineMinimapWidgetClass * _klass)
 }
 
 static void
-timeline_minimap_widget_init (TimelineMinimapWidget * self)
+arranger_minimap_widget_init (ArrangerMinimapWidget * self)
 {
   self->overlay = GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (GTK_WIDGET (self->overlay), GTK_WIDGET (self));
-  gtk_widget_set_name (GTK_WIDGET (self->overlay), "timeline-minimap-overlay");
+  gtk_widget_set_name (GTK_WIDGET (self->overlay), "arranger-minimap-overlay");
 
-  self->bg = timeline_minimap_bg_widget_new ();
+  gtk_widget_set_size_request (GTK_WIDGET (self), -1, 32);
+
+  self->bg = arranger_minimap_bg_widget_new (self);
   gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->bg));
-  self->selection = timeline_minimap_selection_widget_new (self);
+  self->selection = arranger_minimap_selection_widget_new (self);
   gtk_overlay_add_overlay (self->overlay, GTK_WIDGET (self->selection));
 
   GtkGestureDrag * drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
@@ -428,5 +430,5 @@ timeline_minimap_widget_init (TimelineMinimapWidget * self)
     G_CALLBACK (get_child_position), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), timeline_minimap_tick_cb, self, NULL);
+    GTK_WIDGET (self), arranger_minimap_tick_cb, self, NULL);
 }

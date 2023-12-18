@@ -4,6 +4,7 @@
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -14,8 +15,6 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_bot_box.h"
-#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_toolbar.h"
@@ -33,9 +32,6 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   g_return_if_fail (Z_IS_TIMELINE_PANEL_WIDGET (self));
 
   tracklist_widget_setup (self->tracklist, TRACKLIST);
-  /*pinned_tracklist_widget_setup (*/
-  /*self->pinned_tracklist,*/
-  /*TRACKLIST);*/
 
   /* set tracklist header size */
   gtk_widget_set_size_request (
@@ -47,9 +43,9 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   ruler_widget_refresh (Z_RULER_WIDGET (EDITOR_RULER));
 
   /* setup unpinned timeline */
-  arranger_widget_setup (
-    Z_ARRANGER_WIDGET (self->timeline), ARRANGER_WIDGET_TYPE_TIMELINE,
-    SNAP_GRID_TIMELINE);
+  arranger_wrapper_widget_setup (
+    Z_ARRANGER_WRAPPER_WIDGET (self->timeline_wrapper),
+    ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
 
   /* for some reason the size group in TracklistWidget
    * doesn't work, so just vexpand here */
@@ -89,14 +85,16 @@ timeline_panel_widget_new (void)
 static void
 timeline_panel_widget_init (TimelinePanelWidget * self)
 {
-  g_type_ensure (TIMELINE_BOT_BOX_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
   g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (RULER_WIDGET_TYPE);
   g_type_ensure (ARRANGER_WIDGET_TYPE);
+  g_type_ensure (ARRANGER_WRAPPER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->timeline = self->timeline_wrapper->child;
 
   self->ruler->type = RULER_WIDGET_TYPE_TIMELINE;
   self->timeline->type = ARRANGER_WIDGET_TYPE_TIMELINE;
@@ -138,13 +136,12 @@ timeline_panel_widget_class_init (TimelinePanelWidgetClass * _klass)
   BIND_CHILD (tracklist_top);
   BIND_CHILD (tracklist_header);
   BIND_CHILD (tracklist);
-  BIND_CHILD (timeline);
+  BIND_CHILD (timeline_wrapper);
   BIND_CHILD (ruler);
   BIND_CHILD (timeline_divider_box);
   BIND_CHILD (pinned_timeline);
   BIND_CHILD (timeline_toolbar);
   BIND_CHILD (timelines_plus_ruler);
-  BIND_CHILD (bot_box);
 
 #undef BIND_CHILD
 }

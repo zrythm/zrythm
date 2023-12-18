@@ -18,6 +18,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/widgets/arranger_wrapper.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_point.h"

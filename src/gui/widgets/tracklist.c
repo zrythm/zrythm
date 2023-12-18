@@ -458,8 +458,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
   double y = self->hover_y;
   double delta_y = dy;
 
-  /* get current adjustment so we can get the
-   * difference from the cursor */
+  /* get current adjustment so we can get the difference from the cursor */
   GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (scroll);
   double          adj_val = gtk_adjustment_get_value (adj);
   double          size_before = gtk_adjustment_get_upper (adj);

@@ -20,10 +20,10 @@ G_DECLARE_FINAL_TYPE (
   midi_editor_space_widget,
   Z,
   MIDI_EDITOR_SPACE_WIDGET,
-  GtkWidget)
+  GtkWidget);
 
-typedef struct _ArrangerWidget      ArrangerWidget;
-typedef struct _PianoRollKeysWidget PianoRollKeysWidget;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWrapperWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PianoRollKeysWidget);
 TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
 
 /**
@@ -52,9 +52,9 @@ typedef struct _MidiEditorSpaceWidget
   PianoRollKeysWidget * piano_roll_keys;
 
   /** Piano roll. */
-  GtkBox *         midi_arranger_box;
-  ArrangerWidget * arranger;
-  ArrangerWidget * modifier_arranger;
+  GtkBox *                midi_arranger_box;
+  ArrangerWrapperWidget * arranger_wrapper;
+  ArrangerWidget *        modifier_arranger;
 
   VelocitySettingsWidget * velocity_settings;
   GtkBox *                 midi_vel_chooser_box;
