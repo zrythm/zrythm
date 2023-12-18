@@ -1091,6 +1091,14 @@ transport_move_backward (Transport * self, bool with_wait)
   bool     ret = snap_grid_get_nearby_snap_point (
     &pos, SNAP_GRID_TIMELINE, &self->playhead_pos, true);
   g_return_if_fail (ret);
+  if (position_is_equal (&pos, &self->playhead_pos) && pos.frames > 0)
+    {
+      Position tmp = pos;
+      position_add_ticks (&tmp, -1);
+      ret =
+        snap_grid_get_nearby_snap_point (&pos, SNAP_GRID_TIMELINE, &tmp, true);
+      g_return_if_fail (ret);
+    }
   transport_move_playhead (
     self, &pos, F_PANIC, F_SET_CUE_POINT, F_PUBLISH_EVENTS);
 
