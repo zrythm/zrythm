@@ -1561,10 +1561,6 @@ z_gtk_icon_theme_get_default (void)
   return icon_theme;
 }
 
-/**
- * Returns the text on the clipboard, or NULL if
- * there is nothing or the content is not text.
- */
 char *
 z_gdk_clipboard_get_text (GdkClipboard * clipboard)
 {
@@ -1572,20 +1568,18 @@ z_gdk_clipboard_get_text (GdkClipboard * clipboard)
   GValue value = G_VALUE_INIT;
   g_value_init (&value, G_TYPE_STRING);
 
-  /* Get the content provider for the clipboard,
-   * and ask it for text */
+  /* Get the content provider for the clipboard, and ask it for text */
   GdkContentProvider * provider = gdk_clipboard_get_content (clipboard);
 
-  /* if the clipboard data was not set by this
-   * process or clipboard is empty, return NULL */
+  /* if the clipboard data was not set by this process or clipboard is empty,
+   * return NULL */
   if (!provider)
     {
       g_debug ("clipboard content provider is NULL");
       return NULL;
     }
 
-  /* if the content provider does not contain text,
-   * we are not interested */
+  /* if the content provider does not contain text, we are not interested */
   if (!gdk_content_provider_get_value (provider, &value, NULL))
     {
       g_debug (

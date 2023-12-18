@@ -1136,7 +1136,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
             }
           GError * err = NULL;
           char *   serialized =
-            clipboard_serialize_to_json_str (clipboard, false, &err);
+            clipboard_serialize_to_json_str (clipboard, true, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
@@ -1155,7 +1155,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
             clipboard_new_for_mixer_selections (MIXER_SELECTIONS, F_CLONE);
           GError * err = NULL;
           char *   serialized =
-            clipboard_serialize_to_json_str (clipboard, false, &err);
+            clipboard_serialize_to_json_str (clipboard, true, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
@@ -1164,14 +1164,11 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
       break;
     case SELECTION_TYPE_TRACKLIST:
       {
-        /* TODO doesn't work - GDK freezes on large text */
-        break;
-
         Clipboard * clipboard = clipboard_new_for_tracklist_selections (
           TRACKLIST_SELECTIONS, F_CLONE);
         GError * err = NULL;
         char *   serialized =
-          clipboard_serialize_to_json_str (clipboard, false, &err);
+          clipboard_serialize_to_json_str (clipboard, true, &err);
         g_return_if_fail (serialized);
         gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
         clipboard_free (clipboard);
@@ -1184,21 +1181,28 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
     }
 }
 
-void
-activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
+static void
+paste_cb (GObject * source_object, GAsyncResult * res, gpointer data)
 {
-  g_message ("paste");
+  GError * err = NULL;
+  char *   txt = gdk_clipboard_read_text_finish (DEFAULT_CLIPBOARD, res, &err);
+  if (!txt)
+    {
+      ui_show_notification_idle_printf (
+        _ ("Failed to paste data: %s"), err ? err->message : "no text found");
+      if (err)
+        {
+          g_error_free (err);
+        }
+      return;
+    }
 
-  char * text = z_gdk_clipboard_get_text (DEFAULT_CLIPBOARD);
-  if (!text)
-    return;
-
-  GError *    err = NULL;
-  Clipboard * clipboard =
-    clipboard_deserialize_from_json_str (text, false, &err);
+  err = NULL;
+  Clipboard * clipboard = clipboard_deserialize_from_json_str (txt, true, &err);
   if (!clipboard)
     {
-      g_message ("invalid clipboard data received:\n%s\n%s", err->message, text);
+      ui_show_notification_idle_printf (
+        _ ("invalid clipboard data received: %s"), err->message);
       g_error_free (err);
       return;
     }
@@ -1235,7 +1239,7 @@ activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
         }
       else
         {
-          g_message ("can't paste arranger selections:\n%s", text);
+          g_message ("can't paste arranger selections");
           incompatible = true;
         }
     }
@@ -1251,7 +1255,7 @@ activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
         }
       else
         {
-          g_message ("can't paste mixer selections:\n%s", text);
+          g_message ("can't paste mixer selections");
           incompatible = true;
         }
     }
@@ -1267,6 +1271,14 @@ activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
     }
 
   clipboard_free (clipboard);
+}
+
+void
+activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
+{
+  g_message ("paste");
+
+  gdk_clipboard_read_text_async (DEFAULT_CLIPBOARD, NULL, paste_cb, NULL);
 }
 
 void

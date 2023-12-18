@@ -290,6 +290,7 @@ arranger_object_deserialize_from_json (
   yyjson_val * region_id_obj = yyjson_obj_iter_get (&it, "regionId");
   region_identifier_deserialize_from_json (
     doc, region_id_obj, &ao->region_id, error);
+  ao->magic = ARRANGER_OBJECT_MAGIC;
   return true;
 }
 
@@ -342,6 +343,7 @@ midi_note_deserialize_from_json (
   mn->val = yyjson_get_uint (yyjson_obj_iter_get (&it, "value"));
   mn->muted = yyjson_get_bool (yyjson_obj_iter_get (&it, "muted"));
   mn->pos = yyjson_get_int (yyjson_obj_iter_get (&it, "pos"));
+  mn->magic = MIDI_NOTE_MAGIC;
   return true;
 }
 
@@ -376,6 +378,7 @@ chord_object_deserialize_from_json (
   yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
   arranger_object_deserialize_from_json (doc, base_obj, &co->base, error);
   co->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
+  co->magic = CHORD_OBJECT_MAGIC;
   return true;
 }
 
@@ -462,6 +465,7 @@ region_deserialize_from_json (
       }
       break;
     }
+  r->magic = REGION_MAGIC;
   return true;
 }
 

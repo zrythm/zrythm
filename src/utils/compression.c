@@ -16,7 +16,7 @@ z_utils_compression_error_quark (void);
 G_DEFINE_QUARK (z - utils - compression - error - quark, z_utils_compression_error)
 
 char *
-compression_compress_str (const char * src, GError ** error)
+compression_compress_to_base64_str (const char * src, GError ** error)
 {
   size_t src_size = strlen (src);
   size_t compress_bound = ZSTD_compressBound (src_size);
@@ -32,19 +32,25 @@ compression_compress_str (const char * src, GError ** error)
       return NULL;
     }
 
-  return dest;
+  char * b64 = g_base64_encode (dest, dest_size);
+
+  free (dest);
+
+  return b64;
 }
 
 char *
-compression_decompress_str (const char * src, GError ** error)
+compression_decompress_from_base64_str (const char * b64, GError ** error)
 {
+  size_t src_size;
+  char * src = g_base64_decode (b64, &src_size);
 #if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
   unsigned long long const frame_content_size =
-    ZSTD_getDecompressedSize (src, strlen (src));
+    ZSTD_getDecompressedSize (src, src_size);
   if (frame_content_size == 0)
 #else
   unsigned long long const frame_content_size =
-    ZSTD_getFrameContentSize (src, strlen (src));
+    ZSTD_getFrameContentSize (src, src_size);
   if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
 #endif
     {
@@ -54,8 +60,7 @@ compression_decompress_str (const char * src, GError ** error)
       return NULL;
     }
   char * dest = malloc ((size_t) frame_content_size);
-  size_t dest_size =
-    ZSTD_decompress (dest, frame_content_size, src, strlen (src));
+  size_t dest_size = ZSTD_decompress (dest, frame_content_size, src, src_size);
   if (ZSTD_isError (dest_size))
     {
       free (dest);

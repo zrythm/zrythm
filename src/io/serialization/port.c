@@ -254,6 +254,7 @@ port_deserialize_from_json (
     {
       port->base_value = (float) yyjson_get_real (base_val_obj);
     }
+  port->magic = PORT_MAGIC;
   return true;
 }
 

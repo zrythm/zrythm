@@ -18,12 +18,12 @@
  * Compresses a NULL-terminated string.
  */
 char *
-compression_compress_str (const char * src, GError ** error);
+compression_compress_to_base64_str (const char * src, GError ** error);
 
 /**
  * Decompresses a NULL-terminated string.
  */
 char *
-compression_decompress_str (const char * src, GError ** error);
+compression_decompress_from_base64_str (const char * b64, GError ** error);
 
 #endif // __UTILS_COMPRESSION_H__

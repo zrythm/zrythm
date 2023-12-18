@@ -101,7 +101,7 @@ clipboard_serialize_to_json_str (
     {
       char *   tmp = json;
       GError * err = NULL;
-      json = compression_compress_str (json, &err);
+      json = compression_compress_to_base64_str (json, &err);
       if (!json)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -124,7 +124,7 @@ clipboard_deserialize_from_json_str (
   if (decompress)
     {
       GError * err = NULL;
-      tmp = compression_decompress_str (json, &err);
+      tmp = compression_decompress_from_base64_str (json, &err);
       json = tmp;
       if (!json)
         {

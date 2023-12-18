@@ -215,8 +215,7 @@ typedef struct UiCaches
 /**
  * Shows the notification when idle.
  *
- * This should be called from threads other than
- * GTK main thread.
+ * This should be called from threads other than GTK main thread.
  */
 #define ui_show_notification_idle_printf(fmt, ...) \
   char * text = g_strdup_printf (fmt, __VA_ARGS__); \

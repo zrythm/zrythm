@@ -575,8 +575,10 @@ GtkIconTheme *
 z_gtk_icon_theme_get_default (void);
 
 /**
- * Returns the text on the clipboard, or NULL if
- * there is nothing or the content is not text.
+ * Returns the text on the clipboard, or NULL if there is nothing or the content
+ * is not text.
+ *
+ * @warning Only works for clipboard entries from the current process.
  */
 char *
 z_gdk_clipboard_get_text (GdkClipboard * clipboard);
