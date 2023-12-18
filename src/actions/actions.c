@@ -1141,6 +1141,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
           g_free (serialized);
+
+          ui_show_notification (_ ("Selections copied to clipboard"));
         }
       else
         {
@@ -1160,6 +1162,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
           g_free (serialized);
+
+          ui_show_notification (_ ("Plugins copied to clipboard"));
         }
       break;
     case SELECTION_TYPE_TRACKLIST:
@@ -1173,6 +1177,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
         gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
         clipboard_free (clipboard);
         g_free (serialized);
+
+        ui_show_notification (_ ("Tracks copied to clipboard"));
       }
       break;
     default:
