@@ -1166,6 +1166,9 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
       break;
     case SELECTION_TYPE_TRACKLIST:
       {
+        /* TODO fix crashes eg when copy pasting master */
+        return;
+
         Clipboard * clipboard = clipboard_new_for_tracklist_selections (
           TRACKLIST_SELECTIONS, F_CLONE);
         GError * err = NULL;
