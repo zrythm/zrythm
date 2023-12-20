@@ -481,6 +481,12 @@ plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
 bool
 plugin_descriptor_is_whitelisted (const PluginDescriptor * self)
 {
+  /* on wayland nothing is whitelisted */
+  if (z_gtk_is_wayland ())
+    {
+      return false;
+    }
+
   static const char * authors[] = {
     "Alexandros Theodotou",
     "Andrew Deryabin",
