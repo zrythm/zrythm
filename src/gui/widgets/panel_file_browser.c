@@ -49,119 +49,34 @@ enum
   NUM_COLUMNS
 };
 
-static GtkTreeModel *
+static GtkSelectionModel *
 create_model_for_locations (PanelFileBrowserWidget * self)
 {
-  GtkListStore * list_store;
-  /*GtkTreePath *path;*/
-  GtkTreeIter iter;
-
-  /* icon, file name, index */
-  list_store =
-    gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+  GListStore * list_store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
     {
       FileBrowserLocation * loc = g_ptr_array_index (FILE_MANAGER->locations, i);
 
-      char icon_name[600];
-      switch (loc->special_location)
-        {
-        case FILE_MANAGER_NONE:
-          strcpy (icon_name, "folder");
-          break;
-        case FILE_MANAGER_HOME:
-          strcpy (icon_name, "user-home");
-          break;
-        case FILE_MANAGER_DESKTOP:
-          strcpy (icon_name, "desktop");
-          break;
-        case FILE_MANAGER_DRIVE:
-          strcpy (icon_name, "drive-harddisk-symbolic");
-          break;
-        }
-
-      /* Add a new row to the model */
-      gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (
-        list_store, &iter, 0, icon_name, 1, loc->label, 2, loc, -1);
+      /* add row to model */
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new (
+          loc, WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION);
+      g_list_store_append (list_store, wobj);
     }
 
-  return GTK_TREE_MODEL (list_store);
-}
+  GtkSingleSelection * sel =
+    gtk_single_selection_new (G_LIST_MODEL (list_store));
 
-static void
-show_bookmarks_context_menu (
-  PanelFileBrowserWidget *    self,
-  const FileBrowserLocation * loc,
-  double                      x,
-  double                      y)
-{
-  GMenu *     menu = g_menu_new ();
-  GMenuItem * menuitem;
-
-  self->cur_loc = loc;
-
-  menuitem = z_gtk_create_menu_item (
-    _ ("Delete"), "edit-delete", "app.panel-file-browser-delete-bookmark");
-  g_menu_append_item (menu, menuitem);
-
-  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
-}
-
-static void
-on_bookmark_right_click (
-  GtkGestureClick *        gesture,
-  gint                     n_press,
-  gdouble                  x_dbl,
-  gdouble                  y_dbl,
-  PanelFileBrowserWidget * self)
-{
-  if (n_press != 1)
-    return;
-
-  GtkTreePath *       path;
-  GtkTreeViewColumn * column;
-
-  int x, y;
-  gtk_tree_view_convert_widget_to_bin_window_coords (
-    GTK_TREE_VIEW (self->bookmarks_tree_view), (int) x_dbl, (int) y_dbl, &x, &y);
-
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection ((self->bookmarks_tree_view));
-  if (
-    !gtk_tree_view_get_path_at_pos (
-      GTK_TREE_VIEW (self->bookmarks_tree_view), x, y, &path, &column, NULL,
-      NULL))
-    {
-      g_message ("no path at position %d %d", x, y);
-      // if we can't find path at pos, we surely don't
-      // want to pop up the menu
-      return;
-    }
-
-  gtk_tree_selection_unselect_all (selection);
-  gtk_tree_selection_select_path (selection, path);
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    GTK_TREE_MODEL (self->bookmarks_tree_model), &iter, path);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    GTK_TREE_MODEL (self->bookmarks_tree_model), &iter, COLUMN_DESCR, &value);
-  gtk_tree_path_free (path);
-
-  FileBrowserLocation * loc = g_value_get_pointer (&value);
-
-  show_bookmarks_context_menu (self, loc, x, y);
+  return GTK_SELECTION_MODEL (sel);
 }
 
 void
 panel_file_browser_refresh_bookmarks (PanelFileBrowserWidget * self)
 {
-  self->bookmarks_tree_model =
-    GTK_TREE_MODEL (create_model_for_locations (self));
-  gtk_tree_view_set_model (
-    self->bookmarks_tree_view, GTK_TREE_MODEL (self->bookmarks_tree_model));
+  GtkSelectionModel * model = create_model_for_locations (self);
+  gtk_list_view_set_model (self->bookmarks_list_view, model);
 }
 
 /**
@@ -250,6 +165,23 @@ get_selected_file (GtkWidget * widget)
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
 
   return wrapped_obj;
+}
+
+FileBrowserLocation *
+panel_file_browser_widget_get_selected_bookmark (PanelFileBrowserWidget * self)
+{
+  GtkSelectionModel * model =
+    gtk_list_view_get_model (self->bookmarks_list_view);
+  GObject * gobj =
+    gtk_single_selection_get_selected_item (GTK_SINGLE_SELECTION (model));
+  if (!gobj)
+    return NULL;
+
+  /* get wrapped object */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
+
+  return (FileBrowserLocation *) wrapped_obj->obj;
 }
 
 static GListModel *
@@ -349,17 +281,21 @@ files_list_view_setup (
 
 static void
 on_bookmark_row_activated (
-  GtkTreeView *            tree_view,
-  GtkTreePath *            tp,
-  GtkTreeViewColumn *      column,
-  PanelFileBrowserWidget * self)
+  GtkListView * list_view,
+  guint         position,
+  gpointer      user_data)
 {
-  GtkTreeModel * model = GTK_TREE_MODEL (gtk_tree_view_get_model (tree_view));
-  GtkTreeIter    iter;
-  gtk_tree_model_get_iter (model, &iter, tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (model, &iter, 2, &value);
-  FileBrowserLocation * loc = g_value_get_pointer (&value);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+
+  GObject * gobj = g_list_model_get_object (
+    G_LIST_MODEL (gtk_list_view_get_model (list_view)), position);
+  if (!gobj)
+    return;
+
+  /* get wrapped object */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
+  FileBrowserLocation * loc = (FileBrowserLocation *) wrapped_obj->obj;
 
   file_manager_set_selection (FILE_MANAGER, loc, true, true);
   self->files_selection_model =
@@ -424,54 +360,16 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
 }
 
 static void
-tree_view_setup (
+bookmarks_list_view_setup (
   PanelFileBrowserWidget * self,
-  GtkTreeView *            tree_view,
-  GtkTreeModel *           model,
-  bool                     allow_multi,
-  bool                     dnd)
+  GtkListView *            list_view,
+  GtkSelectionModel *      model)
 {
-  /* instantiate tree view using model */
-  gtk_tree_view_set_model (tree_view, GTK_TREE_MODEL (model));
-
-  /* init tree view */
-  GtkCellRenderer *   renderer;
-  GtkTreeViewColumn * column;
-  if (GTK_TREE_MODEL (self->bookmarks_tree_model) == model)
-    {
-      /* column for icon */
-      renderer = gtk_cell_renderer_pixbuf_new ();
-      column = gtk_tree_view_column_new_with_attributes (
-        "icon", renderer, "icon-name", COLUMN_ICON, NULL);
-      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
-
-      /* column for name */
-      renderer = gtk_cell_renderer_text_new ();
-      column = gtk_tree_view_column_new_with_attributes (
-        "name", renderer, "text", COLUMN_NAME, NULL);
-      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
-
-      /* set search column */
-      gtk_tree_view_set_search_column (GTK_TREE_VIEW (tree_view), COLUMN_NAME);
-    }
-  else
-    {
-      /* column for name */
-      renderer = gtk_cell_renderer_text_new ();
-      column = gtk_tree_view_column_new_with_attributes (
-        "name", renderer, "text", 0, NULL);
-      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
-    }
-
-  /* hide headers and allow multi-selection */
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree_view), false);
-
-  if (allow_multi)
-    {
-      gtk_tree_selection_set_mode (
-        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
-        GTK_SELECTION_MULTIPLE);
-    }
+  gtk_list_view_set_model (list_view, model);
+  self->bookmarks_item_factory =
+    item_factory_new (ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
+  gtk_list_view_set_factory (
+    list_view, self->bookmarks_item_factory->list_item_factory);
 }
 
 static void
@@ -541,13 +439,10 @@ panel_file_browser_widget_new (void)
     self->filters_toolbar, GTK_WIDGET (self), (GenericCallback) refilter_files);
 
   /* populate bookmarks */
-  self->bookmarks_tree_model =
-    GTK_TREE_MODEL (create_model_for_locations (self));
-  tree_view_setup (
-    self, self->bookmarks_tree_view,
-    GTK_TREE_MODEL (self->bookmarks_tree_model), false, true);
+  GtkSelectionModel * bookmarks_model = create_model_for_locations (self);
+  bookmarks_list_view_setup (self, self->bookmarks_list_view, bookmarks_model);
   g_signal_connect (
-    self->bookmarks_tree_view, "row-activated",
+    self->bookmarks_list_view, "activate",
     G_CALLBACK (on_bookmark_row_activated), self);
 
   /* populate files */
@@ -572,14 +467,6 @@ panel_file_browser_widget_new (void)
   g_signal_connect (G_OBJECT (self), "map", G_CALLBACK (on_map), self);
   g_signal_connect (
     G_OBJECT (self), "notify::position", G_CALLBACK (on_position_change), self);
-
-  /* connect right click handlers */
-  GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
-  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
-  g_signal_connect (
-    G_OBJECT (mp), "pressed", G_CALLBACK (on_bookmark_right_click), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self->bookmarks_tree_view), GTK_EVENT_CONTROLLER (mp));
 
   return self;
 }
@@ -616,7 +503,7 @@ panel_file_browser_widget_class_init (PanelFileBrowserWidgetClass * _klass)
   BIND_CHILD (file_search_entry);
   BIND_CHILD (files_list_view);
   BIND_CHILD (filters_toolbar);
-  BIND_CHILD (bookmarks_tree_view);
+  BIND_CHILD (bookmarks_list_view);
   BIND_CHILD (auditioner_controls);
 
 #undef BIND_CHILD

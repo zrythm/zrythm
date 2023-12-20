@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_BACKEND_FILE_MANAGER_H__
@@ -30,11 +30,10 @@ typedef enum FileManagerSpecialLocation
 /**
  * Locations to be used in the file browser.
  *
- * These are to be saved/updated every time there
- * are changes and reloaded when Zrythm starts.
+ * These are to be saved/updated every time there are changes and reloaded when
+ * Zrythm starts.
  *
- * Label is the visible part and path is the actual
- * path.
+ * Label is the visible part and path is the actual path.
  * Eg. "Home" -> /home/user
  * "Documents" -> /home/user/Documents
  * "Samples" -> (some arbitrary path)
@@ -128,6 +127,23 @@ file_manager_free (FileManager * self);
 FileBrowserLocation *
 file_browser_location_new (void);
 
+static inline const char *
+file_browser_location_get_icon_name (const FileBrowserLocation * loc)
+{
+  switch (loc->special_location)
+    {
+    case FILE_MANAGER_NONE:
+      return "folder";
+    case FILE_MANAGER_HOME:
+      return "user-home";
+    case FILE_MANAGER_DESKTOP:
+      return "desktop";
+    case FILE_MANAGER_DRIVE:
+      return "drive-harddisk-symbolic";
+    }
+  return "folder";
+}
+
 FileBrowserLocation *
 file_browser_location_clone (FileBrowserLocation * loc);
 
@@ -152,6 +168,9 @@ file_manager_remove_location_and_save (
   FileManager * self,
   const char *  location,
   bool          skip_if_standard);
+
+GMenuModel *
+file_browser_location_generate_context_menu (const FileBrowserLocation * self);
 
 NONNULL void
 file_browser_location_free (FileBrowserLocation * loc);

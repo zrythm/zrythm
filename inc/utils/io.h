@@ -111,8 +111,7 @@ io_get_files_in_dir_as_basenames (
   bool         with_ext);
 
 /**
- * Returns a list of the files in the given
- * directory.
+ * Returns a list of the files in the given directory.
  *
  * @return a NULL terminated array of strings that
  *   must be free'd with g_strfreev(), or NULL if
@@ -122,8 +121,7 @@ io_get_files_in_dir_as_basenames (
   io_get_files_in_dir_ending_in (dir, 0, NULL, allow_empty)
 
 /**
- * Returns a list of the files in the given
- * directory.
+ * Returns a list of the files in the given directory.
  *
  * @param dir The directory to look for.
  * @param allow_empty Whether to allow returning

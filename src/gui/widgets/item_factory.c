@@ -5,6 +5,7 @@
 #include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/file_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/color_area.h"
@@ -540,6 +541,19 @@ add_plugin_collection_context_menu (
 }
 
 static void
+add_file_browser_location_context_menu (
+  PopoverMenuBinWidget *      bin,
+  const FileBrowserLocation * loc)
+{
+  GMenuModel * model = file_browser_location_generate_context_menu (loc);
+
+  if (model)
+    {
+      popover_menu_bin_widget_set_menu_model (bin, G_MENU_MODEL (model));
+    }
+}
+
+static void
 item_factory_bind_cb (
   GtkSignalListItemFactory * factory,
   GtkListItem *              listitem,
@@ -927,6 +941,17 @@ item_factory_bind_cb (
               char * label = channel_send_target_describe (target);
               gtk_label_set_text (lbl, label);
               g_free (label);
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION:
+            {
+              FileBrowserLocation * loc = (FileBrowserLocation *) obj->obj;
+
+              const char * icon_name = file_browser_location_get_icon_name (loc);
+              gtk_image_set_from_icon_name (img, icon_name);
+
+              gtk_label_set_text (lbl, loc->label);
+              add_file_browser_location_context_menu (bin, loc);
             }
             break;
           default:

@@ -77,9 +77,7 @@ add_category_and_author (PluginManager * self, char * category, char * author)
   g_return_if_fail (category);
   if (!string_is_ascii (category))
     {
-      g_warning (
-        "Ignoring non-ASCII plugin category "
-        "name...");
+      g_warning ("Ignoring non-ASCII plugin category name...");
     }
   bool ignore_category = false;
   for (int i = 0; i < self->num_plugin_categories; i++)
@@ -1015,10 +1013,7 @@ scan_carla_descriptors_from_paths (
   const char * protocol_str = plugin_protocol_to_str (protocol);
   if (!plugin_manager_supports_protocol (self, protocol))
     {
-      g_warning (
-        "Plugin protocol %s not supported in this "
-        "build",
-        protocol_str);
+      g_warning ("Plugin protocol %s not supported in this build", protocol_str);
       return;
     }
   g_message ("Scanning %s plugins...", protocol_str);

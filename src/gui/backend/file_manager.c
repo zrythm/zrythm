@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * Copyright (C) 2015 Georges Basile Stavracas Neto <georges.stavracas@gmail.com>
@@ -24,6 +24,7 @@
 #include "gui/backend/file_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -86,12 +87,14 @@ file_manager_new (void)
 
   file_manager_set_selection (self, fl, false, false);
 
+#if 0
   fl = file_browser_location_new ();
   /* TRANSLATORS: Desktop directory */
   fl->label = g_strdup (_ ("Desktop"));
   fl->path = g_strdup (g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
   fl->special_location = FILE_MANAGER_DESKTOP;
   g_ptr_array_add (self->locations, fl);
+#endif
 
   /* drives */
   g_message ("adding drives...");
@@ -435,6 +438,19 @@ file_browser_location_print (const FileBrowserLocation * loc)
   g_message (
     "[FileBrowserLocation] %s: '%s', special: %d", loc->label, loc->path,
     loc->special_location);
+}
+
+GMenuModel *
+file_browser_location_generate_context_menu (const FileBrowserLocation * self)
+{
+  GMenu *     menu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Delete"), "edit-delete", "app.panel-file-browser-delete-bookmark");
+  g_menu_append_item (menu, menuitem);
+
+  return G_MENU_MODEL (menu);
 }
 
 void

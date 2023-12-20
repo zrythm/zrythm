@@ -3587,9 +3587,11 @@ on_bookmark_delete_response (
 
 DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
 {
-  g_return_if_fail (MW_PANEL_FILE_BROWSER->cur_loc);
+  FileBrowserLocation * loc =
+    panel_file_browser_widget_get_selected_bookmark (MW_PANEL_FILE_BROWSER);
+  g_return_if_fail (loc);
 
-  if (MW_PANEL_FILE_BROWSER->cur_loc->special_location > FILE_MANAGER_NONE)
+  if (loc->special_location > FILE_MANAGER_NONE)
     {
       ui_show_error_message (false, _ ("Cannot delete standard bookmark"));
       return;
@@ -3607,8 +3609,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
     ADW_MESSAGE_DIALOG (dialog), "cancel");
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
   g_signal_connect (
-    dialog, "response", G_CALLBACK (on_bookmark_delete_response),
-    MW_PANEL_FILE_BROWSER->cur_loc->path);
+    dialog, "response", G_CALLBACK (on_bookmark_delete_response), loc->path);
   gtk_window_present (GTK_WINDOW (dialog));
 }
 

@@ -2051,9 +2051,7 @@ plugin_clone (Plugin * src, GError ** error)
   g_debug ("[0/5] cloning plugin '%s'", buf);
 
   /* save the state of the original plugin */
-  g_message (
-    "[1/5] saving state of source plugin (if "
-    "instantiated)");
+  g_message ("[1/5] saving state of source plugin (if instantiated)");
   if (src->instantiated)
     {
       if (src->setting->open_with_carla)
@@ -2081,9 +2079,7 @@ plugin_clone (Plugin * src, GError ** error)
     }
 
   /* create a new plugin with same descriptor */
-  g_message (
-    "[2/5] creating new plugin with same "
-    "setting");
+  g_message ("[2/5] creating new plugin with same setting");
   GError * err = NULL;
   self = plugin_new_from_setting (
     src->setting, src->id.track_name_hash, src->id.slot_type, src->id.slot,
@@ -2125,9 +2121,7 @@ plugin_clone (Plugin * src, GError ** error)
   self->num_out_ports = src->num_out_ports;
 
   /* copy the state directory */
-  g_message (
-    "[4/5] copying state directory from source "
-    "plugin");
+  g_message ("[4/5] copying state directory from source plugin");
   plugin_copy_state_dir (self, src, F_NOT_BACKUP, NULL);
 
   g_message ("[5/5] done");

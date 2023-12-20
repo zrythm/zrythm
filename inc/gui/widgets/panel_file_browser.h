@@ -1,17 +1,18 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 #define __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 
 #include "dsp/supported_file.h"
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 
-typedef struct _FileAuditionerControlsWidget FileAuditionerControlsWidget;
-typedef struct FileBrowserLocation           FileBrowserLocation;
-typedef struct _FileBrowserFiltersWidget     FileBrowserFiltersWidget;
-typedef struct ItemFactory                   ItemFactory;
+TYPEDEF_STRUCT_UNDERSCORED (FileAuditionerControlsWidget);
+TYPEDEF_STRUCT (FileBrowserLocation);
+TYPEDEF_STRUCT_UNDERSCORED (FileBrowserFiltersWidget);
+TYPEDEF_STRUCT (ItemFactory);
 
 /**
  * @addtogroup widgets
@@ -25,7 +26,7 @@ G_DECLARE_FINAL_TYPE (
   panel_file_browser_widget,
   Z,
   PANEL_FILE_BROWSER_WIDGET,
-  GtkWidget)
+  GtkWidget);
 
 #define MW_PANEL_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
@@ -38,8 +39,8 @@ typedef struct _PanelFileBrowserWidget
   GtkBox * browser_top;
   GtkBox * browser_bot;
 
-  GtkTreeView *  bookmarks_tree_view;
-  GtkTreeModel * bookmarks_tree_model;
+  GtkListView * bookmarks_list_view;
+  ItemFactory * bookmarks_item_factory;
 
   GtkLabel * file_info;
   ZFileType  selected_type;
@@ -61,8 +62,7 @@ typedef struct _PanelFileBrowserWidget
   FileAuditionerControlsWidget * auditioner_controls;
 
   /** Temp. */
-  const FileBrowserLocation * cur_loc;
-  const SupportedFile *       cur_file;
+  const SupportedFile * cur_file;
 
   bool first_draw;
 
@@ -72,6 +72,9 @@ typedef struct _PanelFileBrowserWidget
 
 void
 panel_file_browser_refresh_bookmarks (PanelFileBrowserWidget * self);
+
+FileBrowserLocation *
+panel_file_browser_widget_get_selected_bookmark (PanelFileBrowserWidget * self);
 
 PanelFileBrowserWidget *
 panel_file_browser_widget_new (void);

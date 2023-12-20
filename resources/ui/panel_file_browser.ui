@@ -33,14 +33,10 @@
             </child>
             <child>
               <object class="GtkScrolledWindow" id="bookmarks_scroll">
-                <property name="focusable">1</property>
                 <property name="vexpand">1</property>
                 <property name="child">
-                  <object class="GtkTreeView" id="bookmarks_tree_view">
-                    <property name="focusable">1</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
-                    </child>
+                  <object class="GtkListView" id="bookmarks_list_view">
+                    <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
                   </object>
                 </property>
               </object>

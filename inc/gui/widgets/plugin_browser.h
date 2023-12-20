@@ -21,7 +21,7 @@ G_DECLARE_FINAL_TYPE (
   plugin_browser_widget,
   Z,
   PLUGIN_BROWSER_WIDGET,
-  GtkWidget)
+  GtkWidget);
 
 TYPEDEF_STRUCT_UNDERSCORED (ExpanderBoxWidget);
 TYPEDEF_STRUCT (PluginCollection);
