@@ -1767,7 +1767,8 @@ do_import (PluginImportData * data)
   bool plugin_valid = true;
   if (data->pl)
     {
-      Track * orig_track = plugin_get_track (data->pl);
+      Track * orig_track = tracklist_find_track_by_name_hash (
+        TRACKLIST, data->pl->id.track_name_hash);
 
       /* if plugin at original position do nothing */
       if (
@@ -1833,6 +1834,11 @@ do_import (PluginImportData * data)
           plugin_valid = false;
         }
     }
+  else
+    {
+      g_critical ("No descriptor or plugin given");
+      return;
+    }
 
   if (!plugin_valid)
     {
@@ -1879,6 +1885,9 @@ channel_handle_plugin_import (
   data->slot = slot;
   data->slot_type = slot_type;
   data->copy = copy;
+  data->pl = sel && sel->has_any ? sel->plugins[0] : NULL;
+
+  g_message ("handling plugin import on channel %s...", self->track->name);
 
   if (ask_if_overwrite)
     {
