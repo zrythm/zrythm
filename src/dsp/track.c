@@ -734,8 +734,7 @@ track_get_recording (const Track * const track)
 }
 
 /**
- * Sets recording and connects/disconnects the
- * JACK ports.
+ * Sets recording and connects/disconnects the JACK ports.
  */
 void
 track_set_recording (Track * track, bool recording, bool fire_events)
@@ -750,9 +749,7 @@ track_set_recording (Track * track, bool recording, bool fire_events)
 
   if (!channel)
     {
-      g_critical (
-        "Recording not implemented yet for this "
-        "track.");
+      g_critical ("Recording not implemented yet for this track.");
       return;
     }
 

@@ -245,8 +245,7 @@ recording_manager_handle_recording (
   if (G_UNLIKELY (!track_type_can_record (tr->type)))
     {
     }
-  /* else if not recording at all (recording
-   * stopped) */
+  /* else if not recording at all (recording stopped) */
   else if (
     !TRANSPORT->recording || !track_get_recording (tr) || !TRANSPORT_IS_ROLLING)
     {
@@ -518,8 +517,7 @@ delete_automation_points (
       automation_region_remove_ap (region, ap, false, true);
     }
 
-  /* create a new automation point at the pos with
-   * the previous value */
+  /* create a new automation point at the pos with the previous value */
   if (region->last_recorded_ap)
     {
       /* remove the last recorded AP if its
@@ -549,9 +547,8 @@ delete_automation_points (
 }
 
 /**
- * Creates a new automation point and deletes
- * anything between the last recorded automation
- * point and this point.
+ * Creates a new automation point and deletes anything between the last recorded
+ * automation point and this point.
  *
  * @note Runs in GTK thread only.
  */
@@ -995,8 +992,7 @@ handle_midi_event (RecordingManager * self, RecordingEvent * ev)
   position_add_ticks (&local_pos, -r_obj->pos.ticks);
   position_add_ticks (&local_end_pos, -r_obj->pos.ticks);
 
-  /* if overwrite mode, clear any notes inside the
-   * range */
+  /* if overwrite mode, clear any notes inside the range */
   if (TRANSPORT->recording_mode == RECORDING_MODE_OVERWRITE_EVENTS)
     {
       for (int i = region->num_midi_notes - 1; i >= 0; i--)
@@ -1261,19 +1257,16 @@ handle_start_recording (
 
   if (is_automation)
     {
-      /* don't unset recording paused, this will
-       * be unset by handle_resume() */
+      /* don't unset recording paused, this will be unset by handle_resume() */
       /*at->recording_paused = false;*/
 
-      /* nothing, wait for event to start
-       * writing data */
+      /* nothing, wait for event to start writing data */
       Port * port = port_find_from_identifier (&at->port_id);
       float  value = port_get_control_value (port, false);
 
       if (automation_track_should_be_recording (at, cur_time, true))
         {
-          /* set recorded value to something else
-           * to force the recorder to start
+          /* set recorded value to something else to force the recorder to start
            * writing */
           g_message ("SHOULD BE RECORDING");
           at->last_recorded_value = value + 2.f;

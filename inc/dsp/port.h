@@ -315,8 +315,7 @@ typedef struct Port
   /**
    * Last timestamp the control changed.
    *
-   * This is used when recording automation in
-   * "touch" mode.
+   * This is used when recording automation in "touch" mode.
    */
   gint64 last_change;
 

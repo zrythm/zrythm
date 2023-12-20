@@ -32,8 +32,6 @@ typedef struct AutomationModeWidget   AutomationModeWidget;
  * @{
  */
 
-#define AUTOMATION_TRACK_SCHEMA_VERSION 2
-
 #define MAX_AUTOMATION_POINTS 1200
 
 /** Release time in ms when in touch record mode. */
@@ -47,25 +45,12 @@ typedef enum AutomationMode
   NUM_AUTOMATION_MODES,
 } AutomationMode;
 
-static const cyaml_strval_t automation_mode_strings[] = {
-  {"Read",       AUTOMATION_MODE_READ  },
-  { "Rec",       AUTOMATION_MODE_RECORD},
-  { "Off",       AUTOMATION_MODE_OFF   },
-  { "<invalid>", NUM_AUTOMATION_MODES  },
-};
-
 typedef enum AutomationRecordMode
 {
   AUTOMATION_RECORD_MODE_TOUCH,
   AUTOMATION_RECORD_MODE_LATCH,
   NUM_AUTOMATION_RECORD_MODES,
 } AutomationRecordMode;
-
-static const cyaml_strval_t automation_record_mode_strings[] = {
-  {"Touch",      AUTOMATION_RECORD_MODE_TOUCH},
-  { "Latch",     AUTOMATION_RECORD_MODE_LATCH},
-  { "<invalid>", NUM_AUTOMATION_RECORD_MODES },
-};
 
 typedef struct AutomationTrack
 {
@@ -110,34 +95,29 @@ typedef struct AutomationTrack
   /** Automation mode. */
   AutomationMode automation_mode;
 
-  /** Automation record mode, when
-   * \ref AutomationTrack.automation_mode is
+  /** Automation record mode, when \ref AutomationTrack.automation_mode is
    * set to record. */
   AutomationRecordMode record_mode;
 
-  /** To be set to true when recording starts
-   * (when the first change is received) and
-   * false when recording ends. */
+  /** To be set to true when recording starts (when the first change is
+   * received) and false when recording ends. */
   bool recording_started;
 
   /** Region currently recording to. */
   ZRegion * recording_region;
 
   /**
-   * This is a flag to let the recording manager
-   * know that a START signal was already sent for
-   * recording.
+   * This is a flag to let the recording manager know that a START signal was
+   * already sent for recording.
    *
-   * This is because \ref
-   * AutomationTrack.recording_region
-   * takes a cycle or 2 to become non-NULL.
+   * This is because \ref AutomationTrack.recording_region takes a cycle or 2 to
+   * become non-NULL.
    */
   bool recording_start_sent;
 
   /**
-   * This must only be set by the RecordingManager
-   * when temporarily pausing recording, eg when
-   * looping or leaving the punch range.
+   * This must only be set by the RecordingManager when temporarily pausing
+   * recording, eg when looping or leaving the punch range.
    *
    * See \ref
    * RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
@@ -240,26 +220,20 @@ HOT NONNULL bool
 automation_track_should_read_automation (AutomationTrack * at, gint64 cur_time);
 
 /**
- * Returns if the automation track should currently
- * be recording data.
+ * Returns if the automation track should currently be recording data.
  *
- * Returns false if in touch mode after the release
- * time has passed.
+ * Returns false if in touch mode after the release time has passed.
  *
- * This function assumes that the transport will
- * be rolling.
+ * This function assumes that the transport will be rolling.
  *
- * @param cur_time Current time from
- *   g_get_monotonic_time() passed here to ensure
- *   the same timestamp is used in sequential calls.
- * @param record_aps If set to true, this function
- *   will return whether we should be recording
- *   automation point data. If set to false, this
- *   function will return whether we should be
- *   recording a region (eg, if an automation point
- *   was already created before and we are still
- *   recording inside a region regardless of whether
- *   we should create/edit automation points or not.
+ * @param cur_time Current time from g_get_monotonic_time() passed here to
+ *   ensure the same timestamp is used in sequential calls.
+ * @param record_aps If set to true, this function will return whether we
+ *   should be recording automation point data. If set to false, this
+ *   function will return whether we should be recording a region (eg, if an
+ *   automation point was already created before and we are still recording
+ *   inside a region regardless of whether we should create/edit automation
+ *   points or not.
  */
 HOT NONNULL bool
 automation_track_should_be_recording (
