@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -106,6 +106,12 @@ typedef struct AutomationTrack
   /** Last value recorded in this automation
    * track. */
   float last_recorded_value;
+
+  /* These are used to reset to initial values when temporarily automatically
+   * enabling automation for CC ports when recording MIDI. */
+  bool           before_modes_set;
+  AutomationMode automation_mode_before;
+  // AutomationRecordMode record_mode_before;
 
   /** Automation mode. */
   AutomationMode automation_mode;

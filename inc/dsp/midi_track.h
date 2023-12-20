@@ -55,6 +55,22 @@ midi_track_fill_midi_events (
   MidiEvents *    midi_events);
 
 /**
+ * Set MIDI CC's to Touch mode temporarily.
+ *
+ * Used when starting recording on a MIDI-based track.
+ */
+void
+midi_track_enable_automation_auto_record (Track * self);
+
+/**
+ * Unset MIDI CC Touch mode if set temporarily.
+ *
+ * Used when stopping recording on a MIDI-based track.
+ */
+void
+midi_track_disable_automation_auto_record (Track * self);
+
+/**
  * Frees the track.
  *
  * TODO

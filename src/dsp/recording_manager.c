@@ -10,6 +10,7 @@
 #include "dsp/clip.h"
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
+#include "dsp/midi_track.h"
 #include "dsp/recording_event.h"
 #include "dsp/recording_manager.h"
 #include "dsp/track.h"
@@ -255,6 +256,11 @@ recording_manager_handle_recording (
         {
           tr->recording_stop_sent = true;
 
+          if (tr->in_signal_type == TYPE_EVENT)
+            {
+              midi_track_disable_automation_auto_record (tr);
+            }
+
           /* send stop recording event */
           RecordingEvent * re =
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
@@ -295,6 +301,11 @@ recording_manager_handle_recording (
       if (!tr->recording_region && !tr->recording_start_sent)
         {
           tr->recording_start_sent = true;
+
+          if (tr->in_signal_type == TYPE_EVENT)
+            {
+              midi_track_enable_automation_auto_record (tr);
+            }
 
           /* send start recording event */
           RecordingEvent * re =
@@ -593,6 +604,7 @@ create_automation_point (
       ap->curve_opts.algo = CURVE_ALGORITHM_PULSE;
       automation_region_add_ap (region, ap, true);
       region->last_recorded_ap = ap;
+      at->created = true;
       return ap;
     }
 

@@ -544,7 +544,8 @@ automation_track_should_be_recording (
       Port * port = at->port;
       g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
       gint64 diff = cur_time - port->last_change;
-      if (diff < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
+      if (
+        port->last_change > 0 && diff < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
         {
           /* still recording */
           return true;
