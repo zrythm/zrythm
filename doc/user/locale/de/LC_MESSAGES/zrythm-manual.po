@@ -42,15 +42,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-11-30 20:42+0900\n"
-"PO-Revision-Date: 2023-09-06 20:45+0000\n"
-"Last-Translator: UltraBlack <mail@chonkyrabbit.eu>\n"
+"PO-Revision-Date: 2023-12-22 20:45+0000\n"
+"Last-Translator: Arnold <as103@mailbox.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -65,11 +66,11 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
-"Zrythm versteht die folgenden Umgebungsvariablen. Sie können in :file:`."
-"bashrc` oder einer ähnlichen Shell-Konfigurationsdatei konfiguriert werden, "
-"in den Einstellungen des Betriebssystems oder sie können direkt beim Aufruf "
-"von :program:`zrythm` oder :program:`zrythm_launch` übergeben werden, wie: "
-"``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
+"Zrythm versteht die folgenden Umgebungsvariablen. Diese können in :file:`."
+"bashrc` oder einer ähnlichen Shell-Konfigurationsdatei, sowie in den "
+"Einstellungen des Betriebssystems konfiguriert werden, oder sie werden "
+"direkt beim Aufruf von :program:`zrythm` oder :program:`zrythm_launch` "
+"übergeben, wie: ``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
@@ -447,14 +448,12 @@ msgstr ""
 "gelöscht werden können."
 
 #: ../../chords-and-scales/chord-pad.rst:62
-#, fuzzy
 msgid "Custom Packs"
-msgstr "Eigene Marker"
+msgstr "Eigene Zusammenstellungen"
 
 #: ../../chords-and-scales/chord-pad.rst:65
-#, fuzzy
 msgid "Creating Custom Packs"
-msgstr "Spuren erzeugen"
+msgstr "Eigene Pakete erzeugen"
 
 #: ../../chords-and-scales/chord-pad.rst:67
 msgid ""
@@ -469,9 +468,8 @@ msgid "Creating a chord preset pack"
 msgstr "Erstellen eines Akkord-Preset-Pakets"
 
 #: ../../chords-and-scales/chord-pad.rst:77
-#, fuzzy
 msgid "Editing Custom Packs"
-msgstr "Spuren bearbeiten"
+msgstr "Benutzerdefinierte Pakete bearbeiten"
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
@@ -508,9 +506,8 @@ msgid "Saving a chord preset"
 msgstr "Speichern eines Akkord-Presets"
 
 #: ../../chords-and-scales/chord-pad.rst:103
-#, fuzzy
 msgid "Loading Presets"
-msgstr "Laden von Projekten"
+msgstr "Voreinstellungen laden"
 
 #: ../../chords-and-scales/chord-pad.rst:105
 msgid ""
@@ -522,9 +519,8 @@ msgstr ""
 "Preset aus."
 
 #: ../../chords-and-scales/chord-pad.rst:112
-#, fuzzy
 msgid "Selecting a chord preset"
-msgstr "Spuren auswählen"
+msgstr "Voreingestellte Akkorde auswählen"
 
 #: ../../chords-and-scales/chord-pad.rst:114
 msgid ""
@@ -561,7 +557,7 @@ msgid ""
 "semitone up or down."
 msgstr ""
 "Durch Klicken auf die Aufwärts-/Abwärts-Transponier-Schaltflächen werden "
-"alle Akkorde um 1 Halbton nach oben oder unten transponiert."
+"alle Akkorde um einen Halbton nach oben oder unten transponiert."
 
 #: ../../chords-and-scales/chord-pad.rst:136
 #, fuzzy
@@ -569,9 +565,8 @@ msgid "Editing Chords"
 msgstr "Spuren bearbeiten"
 
 #: ../../chords-and-scales/chord-pad.rst:139
-#, fuzzy
 msgid "Chord Selection"
-msgstr "Akkord-Editor"
+msgstr "Akkord-Auswahl"
 
 #: ../../chords-and-scales/chord-pad.rst:141
 msgid ""
@@ -647,14 +642,12 @@ msgstr ""
 "Abspielkopfes entsprechen."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:22
-#, fuzzy
 msgid "No highlighting"
-msgstr "Hervorheben"
+msgstr "Keine Hervorhebung"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:28
-#, fuzzy
 msgid "Chord highlighting"
-msgstr "Hervorheben"
+msgstr "Akkorde hervorheben"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:34
 #, fuzzy
@@ -708,7 +701,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
-msgstr "Aktuelle Einstellungen"
+msgstr "Aktuelle Einstellungen einsehen"
 
 #: ../../configuration/additional-settings.rst:28
 msgid "See :option:`zrythm --print-settings`."
@@ -717,7 +710,7 @@ msgstr "Siehe die :option:`zrythm --print-settings`."
 #: ../../configuration/additional-settings.rst:31
 #: ../../configuration/preferences.rst:106
 msgid "Reset to Factory Settings"
-msgstr "Zurücksetzen auf Werkseinstellungen"
+msgstr "Auf Werkseinstellungen zurücksetzen"
 
 #: ../../configuration/additional-settings.rst:33
 msgid ""
@@ -725,7 +718,7 @@ msgid ""
 "Reset to Factory Settings`."
 msgstr ""
 "Siehe :option:`zrythm --reset-to-factory` und :ref:`configuration/"
-"preferences:Zurücksetzen auf Werkseinstellungen`."
+"preferences:Auf Werkseinstellungen zurücksetzen`."
 
 #: ../../configuration/additional-settings.rst:37
 #, fuzzy
@@ -744,6 +737,12 @@ msgid ""
 "plugin-window:Opening Plugins in Bridged Mode>` to use and whether to use a :"
 "ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
 msgstr ""
+"Im :term:`Zrythm user path` in der Datei :file:`plugin-settings.yaml` "
+"befindet sich eine Sammlung plugin-spezifischer Einstellungen, wie "
+"beispielsweise ob das Plugin mit :term:`Carla` geöffnet werden soll, welcher "
+":ref:`Bridge Mode <plugins-files/plugins/plugin-window:Opening Plugins in "
+"Bridged Mode>  verwendet werden soll, oder ob ein bestimmtes :ref:`Benutzer-"
+"Interface <plugins-files/plugins/plugin-window:Generic UIs>`. zu nutzen ist."
 
 #: ../../configuration/additional-settings.rst:46
 msgid ""
@@ -751,12 +750,17 @@ msgid ""
 "apply it when you choose to instantiate that plugin from the :doc:`plugin "
 "browser <../plugins-files/plugins/plugin-browser>`."
 msgstr ""
+"Zrythm wird für jedes Plugin die zuletzt verwendeten Einstellungen speichern "
+"und diese automatisch anwenden, wenn das Plugin erneut vom :doc:`Plugin "
+"Browser <../plugins-files/plugins/plugin-browser>` aufgerufen wird."
 
 #: ../../configuration/additional-settings.rst:51
 msgid ""
 "This file is generated and maintained automatically by Zrythm and users are "
 "not expected to edit it."
 msgstr ""
+"Diese Datei wird von Zrythm automatisch generiert und gepflegt, eine "
+"Bearbeitung durch den Nutzer ist nicht vorgesehen."
 
 #: ../../configuration/device-setup.rst:7
 #, fuzzy
@@ -777,10 +781,14 @@ msgid ""
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
+"Zrythm wird sich automatisch mit den in den :ref:`Bevorzugten Einstellungen <"
+"configuration/preferences:Preferences>`genannten Geräten verbinden und diese "
+"in den :ref:`Spur-Eingängen <tracks/inspector-page:Inputs>`, sowie an "
+"anderen Stellen zur Verfügung stellen."
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
-msgstr ""
+msgstr "JACK/PipeWire"
 
 #: ../../configuration/device-setup.rst:25
 #, fuzzy
@@ -799,7 +807,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:33
 msgid "Device connections in Qjackctl"
-msgstr ""
+msgstr "Geräteverbindungen in Qjackctl"
 
 #: ../../configuration/device-setup.rst:35
 msgid ""
@@ -808,14 +816,21 @@ msgid ""
 "such a tool can be used to route signals from other apps into Zrythm to "
 "record their output, or to route the output of Zrythm into other JACK apps."
 msgstr ""
+"Zyrthm verwaltet Hardwareverbindungen selbstständig. Es ist nicht notwendig, "
+"dass Nutzer Patchbays verwenden, um MIDI- oder Audiogeräte zu verbinden. "
+"Trotzdem kann ein solches Werkzeug verwendet werden, um die Ausgangssignale "
+"anderer Programme zur Aufnahme an Zrythm weiterzuleiten, oder um die Ausgabe "
+"von Zrythm an JACK-Programme weiterzuleiten."
 
 #: ../../configuration/device-setup.rst:42
 msgid "Any connections made externally will not be remembered by Zrythm."
 msgstr ""
+"Verbindungen, die außerhalb des Programms hergestellt werden, werden von "
+"Zrythm nicht gespeichert."
 
 #: ../../configuration/device-setup.rst:46
 msgid "MIDI Bindings"
-msgstr ""
+msgstr "MIDI Zuweisungen"
 
 #: ../../configuration/device-setup.rst:49
 #, fuzzy
@@ -829,6 +844,12 @@ msgid ""
 "<configuration/preferences:Preferences>`, a mapping can be created by right-"
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
+"Einstellungsmöglichkeiten an MIDI-Geräten können entsprechenden "
+"Einstellungen innerhalb von Zrythm zugeordnet werden, wenn diese "
+"Einstellungen unterstützt werden. Diese Zuordnung kann durch Rechtsklick und "
+"die Auswahl :guilabel:`MIDI lernen` erstellt werden, nachdem ein Gerät in "
+"den :ref:`Einstellungen <configuration/preferences:Preferences>` aktiviert "
+"wurde."
 
 #: ../../configuration/device-setup.rst:62
 msgid "MIDI learn on channel sends"
@@ -839,6 +860,8 @@ msgid ""
 "A window will show up asking you to press a key or move a knob on your MIDI "
 "device."
 msgstr ""
+"Sie werden durch ein Dialogfenster angewiesen, an Ihrem MIDI-Gerät eine "
+"Taste zu drücken oder einen Drehknopf einzustellen."
 
 #: ../../configuration/device-setup.rst:70
 msgid "MIDI learn window"
@@ -849,10 +872,12 @@ msgid ""
 "When the mapping is confirmed, the selected control can be controlled using "
 "the MIDI device."
 msgstr ""
+"Nachdem die Zuordnung bestätigt wurde, kann die ausgewählte Einstellung am "
+"MIDI-Gerät gemacht werden."
 
 #: ../../configuration/device-setup.rst:76
 msgid "Managing Bindings"
-msgstr ""
+msgstr "Zuweisungen verwalten"
 
 #: ../../configuration/device-setup.rst:78
 msgid ""
@@ -875,7 +900,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:94
 msgid "Deleting a binding"
-msgstr ""
+msgstr "Eine Zuweisung löschen"
 
 #: ../../configuration/intro.rst:9
 msgid "Configuration"
@@ -907,14 +932,18 @@ msgid ""
 "guilabel:`Plugins`, and each item in the preferences contains a tooltip that "
 "explains what it does."
 msgstr ""
+"Die Eintellungen sind in Sektionen unterteilt, wie beispielsweise "
+":guilabel:`Allgemein` and :guilabel:`Plugins`. Jeder Eintrag in den "
+"Einstellungen zeigt einen Tooltip, der die Funktion erklärt."
 
 #: ../../configuration/preferences.rst:27
 msgid "Zrythm must be restarted for changes to take effect."
 msgstr ""
+"Um die Änderungen übernehmen zu können, muss Zrythm neu gestartet werden."
 
 #: ../../configuration/preferences.rst:31
 msgid "Searching"
-msgstr ""
+msgstr "Suche"
 
 #: ../../configuration/preferences.rst:33
 msgid ""
@@ -922,10 +951,14 @@ msgid ""
 "results will appear automatically. Clicking on one of the results will "
 "navigate to the corresponding item in the preferences."
 msgstr ""
+"Für die Einstellungen gibt es eine Suchfunktion. Beginnen Sie einfach, den "
+"Suchbegriff einzugeben und die Suchergebnisse werden angezeigt. Wenn Sie auf "
+"ein Ergebnis klicken, werden Sie zu dem entsprechenden Eintrag in den "
+"Einstellungen geleitet."
 
 #: ../../configuration/preferences.rst:42
 msgid "Searching the user preferences"
-msgstr ""
+msgstr "Die bevorzugten Eintellungen duchsuchen"
 
 #: ../../configuration/preferences.rst:45
 #, fuzzy
@@ -936,6 +969,8 @@ msgstr "Einstellungen"
 msgid ""
 "Below is a list of notable preference items with some comments about them."
 msgstr ""
+"Weiter unten finden Sie eine kommentierte Liste mit wichtigen "
+"Einstellungsmöglichkeiten."
 
 #: ../../configuration/preferences.rst:51
 #, fuzzy
@@ -964,6 +999,7 @@ msgstr ""
 #: ../../configuration/preferences.rst:69
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
+"Zrythm ignoriert Signale von Geräten, die nicht ausdrücklich aktiviert sind."
 
 #: ../../configuration/preferences.rst:73
 #, fuzzy
@@ -1901,9 +1937,8 @@ msgid "Shift the audio by 1 sample backward or forward."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:85
-#, fuzzy
 msgid "Reverse"
-msgstr "Meter"
+msgstr "Umdrehen"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
@@ -2360,7 +2395,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid ""
@@ -2370,7 +2405,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:131
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: ../../editing/clip-editors/piano-roll.rst:130
 msgid ""
@@ -2384,16 +2419,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Connect all selected notes so that they play smoothly."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:140
-#, fuzzy
 msgid "Portato"
-msgstr "Format"
+msgstr "Portato"
 
 #: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Similar to legato, but leaves some space between the notes."
@@ -3536,7 +3570,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:135
 msgid "Region"
-msgstr "Region"
+msgstr "Bereich"
 
 #: ../../editing/timeline/arranger.rst:45
 msgid "The following types of regions exist."
@@ -9363,7 +9397,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:80 ../../tracks/track-types.rst:82
 #: ../../tracks/track-types.rst:83 ../../tracks/track-types.rst:85
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio Group"
