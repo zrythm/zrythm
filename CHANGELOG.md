@@ -6,6 +6,14 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.5.3.1] - 2023-12-22
+### Changed
+- Don't whitelist any plugins on Wayland
+
+### Fixed
+- Fix strange behavior when attempting to delete a directory bookmark (#4948)
+- Fix plugin moving/copying being broken
+
 ## [1.0.0-beta.5.2.1] - 2023-12-19
 ### Added
 - Allow copy-pasting objects from other Zrythm instances
