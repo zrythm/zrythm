@@ -15,21 +15,22 @@
 # Hartmut Wagener <hartmut.w.wagener@t-online.de>, 2023.
 # CyCode <cycode@cycode.eu>, 2023.
 # UltraBlack <mail@chonkyrabbit.eu>, 2023.
+# Arnold <as103@mailbox.org>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-09-06 20:45+0000\n"
-"Last-Translator: UltraBlack <mail@chonkyrabbit.eu>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2023-12-22 20:45+0000\n"
+"Last-Translator: Arnold <as103@mailbox.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -107,14 +108,12 @@ msgid "Folder"
 msgstr "Ordner"
 
 #: inc/dsp/snap_grid.h:52
-#, fuzzy
 msgid "bar"
-msgstr "1 Takt"
+msgstr "Takt"
 
 #: inc/dsp/snap_grid.h:53
-#, fuzzy
 msgid "beat"
-msgstr "Eurobeat"
+msgstr "Schlag"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"
@@ -122,7 +121,7 @@ msgstr "normal"
 
 #: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:437
 msgid "dotted"
-msgstr "Punktiert"
+msgstr "gepunktet"
 
 #: inc/dsp/snap_grid.h:75 src/gui/widgets/digital_meter.c:440
 msgid "triplet"
@@ -204,11 +203,11 @@ msgstr "Normalisieren - LUFS"
 
 #: inc/dsp/audio_function.h:59
 msgid "Linear fade in"
-msgstr "Lineares Fade-in"
+msgstr "Lineares Einblenden"
 
 #: inc/dsp/audio_function.h:60
 msgid "Linear fade out"
-msgstr "Lineares Fade-out"
+msgstr "Lineares Ausblenden"
 
 #: inc/dsp/audio_function.h:61 src/gui/widgets/home_toolbar.c:125
 msgid "Nudge left"
@@ -254,11 +253,11 @@ msgstr "Flam"
 
 #: inc/dsp/midi_function.h:44 inc/dsp/automation_function.h:34
 msgid "Flip H"
-msgstr "Horiz. wenden"
+msgstr "Horiz. spiegeln"
 
 #: inc/dsp/midi_function.h:45 inc/dsp/automation_function.h:35
 msgid "Flip V"
-msgstr "Vert. wenden"
+msgstr "Vert. spiegeln"
 
 #: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:181
 msgid "Legato"
@@ -274,7 +273,7 @@ msgstr "Stakkato"
 
 #: inc/dsp/midi_function.h:49 resources/ui/editor_toolbar.ui:199
 msgid "Strum"
-msgstr "Zupfen"
+msgstr "Anschlagen"
 
 #: inc/dsp/transport.h:51 inc/schemas/gui/backend/arranger_object.h:35
 #: inc/gui/backend/arranger_object.h:82 src/dsp/channel_send.c:56
@@ -301,7 +300,7 @@ msgstr "4 Takte"
 
 #: inc/dsp/region.h:62 src/gui/widgets/track.c:968
 msgid "Inherit"
-msgstr "Erben"
+msgstr "Übernehmen"
 
 #: inc/dsp/region.h:63 src/dsp/automation_track.c:159
 #: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:414
@@ -469,9 +468,8 @@ msgid "Oriental"
 msgstr "Orientalisch"
 
 #: inc/dsp/scale.h:167 inc/schemas/dsp/scale.h:131
-#, fuzzy
 msgid "Romanian Minor"
-msgstr "Harmonisches Moll"
+msgstr "Mi Sheberach"
 
 #: inc/dsp/scale.h:168 inc/schemas/dsp/scale.h:132
 msgid "Altered"
@@ -510,9 +508,8 @@ msgid "Enigmatic Minor"
 msgstr "Harmonisches Moll"
 
 #: inc/dsp/scale.h:176 inc/schemas/dsp/scale.h:140
-#, fuzzy
 msgid "Composite"
-msgstr "Komposition"
+msgstr "Zusammengesetzt"
 
 #: inc/dsp/scale.h:177 inc/schemas/dsp/scale.h:141
 msgid "Bhairav"
@@ -627,7 +624,7 @@ msgstr "Alle"
 #: inc/gui/backend/arranger_object.h:84 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
-msgstr "Region"
+msgstr "Bereich"
 
 #: inc/schemas/gui/backend/arranger_object.h:38
 #: inc/gui/backend/arranger_object.h:85
@@ -669,7 +666,7 @@ msgstr "Ausscheiden _t"
 
 #: inc/utils/gtk.h:48
 msgid "_Copy"
-msgstr "_Kopieren"
+msgstr "C_Kopieren"
 
 #: inc/utils/gtk.h:51
 msgid "_Paste"
@@ -705,7 +702,7 @@ msgstr "Stummschalten"
 #: inc/utils/gtk.h:70 src/gui/widgets/track.c:328 src/gui/widgets/track.c:838
 #: src/gui/widgets/channel.c:634
 msgid "Unmute"
-msgstr "Laut schalten"
+msgstr "Stummschaltung aufheben"
 
 #: inc/utils/ui.h:82
 msgid "High"
@@ -742,9 +739,8 @@ msgstr "Fehler beim Dekomprimieren der Projektdatei %s"
 #: src/actions/actions.c:841 src/actions/actions.c:860
 #: src/gui/widgets/main_window.c:122
 #: src/project/project_init_flow_manager.c:655
-#, fuzzy
 msgid "Failed to save project"
-msgstr "Objekte konnten nicht verschoben werden"
+msgstr "Projekt konnte nicht gespeichert werden"
 
 #: src/project.c:791
 #, fuzzy
@@ -769,9 +765,8 @@ msgid "Failed to write audio pool to disk"
 msgstr "Audiospur konnte nicht erstellt werden"
 
 #: src/project.c:1064
-#, fuzzy
 msgid "Failed to clone project"
-msgstr "Spur konnte nicht geklont werden"
+msgstr "Peojekt konnte nicht geklont werden"
 
 #: src/zrythm_app.c:126
 msgid "Error - Backtrace:\n"
@@ -789,7 +784,7 @@ msgstr "%s ist abgestürzt. "
 
 #: src/zrythm_app.c:210
 msgid "Failed fetching the latest release version"
-msgstr ""
+msgstr "Neueste Version konnte nicht angefordert werden"
 
 #: src/zrythm_app.c:223
 #, fuzzy
@@ -803,7 +798,7 @@ msgstr "Laufende %s Version <b>%s</b>%s%s"
 
 #: src/zrythm_app.c:245
 msgid "New Zrythm Version"
-msgstr ""
+msgstr "Neue Zrythm Version"
 
 #: src/zrythm_app.c:246
 #, c-format
@@ -821,15 +816,16 @@ msgid "Setting up main window"
 msgstr "Richte Hauptfenster ein"
 
 #: src/zrythm_app.c:381
-#, fuzzy
 msgid "No Project Selected"
-msgstr "Kein Objekt ausgewählt"
+msgstr "Kein Projekt ausgewählt"
 
 #: src/zrythm_app.c:384
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
-msgstr "Es wurde kein Projekt ausgewählt. %s wird nun geschlossen."
+msgstr ""
+"Es wurde kein Projekt ausgewählt oder Projekt konnte nicht geladen werden. "
+"%s wird nun geschlossen."
 
 #: src/zrythm_app.c:408
 msgid "Loading project"
@@ -866,9 +862,8 @@ msgid "Waiting for project"
 msgstr "Projekt lädt"
 
 #: src/zrythm_app.c:767
-#, fuzzy
 msgid "Icon Theme Not Found"
-msgstr "Icon-Design"
+msgstr "Icon-Design konnte nicht gefunden werden"
 
 #: src/zrythm_app.c:811
 #, c-format
@@ -877,6 +872,10 @@ msgid ""
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
 msgstr ""
+"Der ausführende Nutzer hat keine ausreichenden Rechte, um %s unbegrenzt "
+"Speicher zu reservieren (lock unlimited memory). Dies kann zu Aussetzern im "
+"Audio führen. Für weitere Informationen siehe Abschnitt \"Erste Schritte\" "
+"im Handbuch."
 
 #: src/zrythm_app.c:827
 #, c-format
@@ -884,9 +883,9 @@ msgid "Could not get system memory lock limit (%s)"
 msgstr "Das Sperrlimit des Arbeitsspeichers konnte nicht ermittelt werden (%s)"
 
 #: src/zrythm_app.c:846
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot lock down memory: %s"
-msgstr "Track Vereinen"
+msgstr "Arbeitsspeicher konnte nicht reserviert werden: %s"
 
 #: src/zrythm_app.c:972
 #, c-format
@@ -923,8 +922,8 @@ msgstr "Datei %s nicht gefunden."
 #: src/zrythm_app.c:1355
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
-"Es wurde kein Ausgabedatei angegeben. Bitte geben Sie eine an mittels `--"
-"output=FILE`."
+"Es wurde keine Ausgabedatei angegeben. Bitte geben Sie eine an mittels "
+"`--output=FILE`."
 
 #: src/zrythm_app.c:1406
 #, c-format
@@ -954,11 +953,11 @@ msgstr "YAML-PROJEKT-DATEI in das .zpj-Format konvertieren"
 
 #: src/zrythm_app.c:1580
 msgid "Generate a project from SCRIPT-FILE"
-msgstr "Erzeugen eines Projekts aus SCRIPT-DATEI"
+msgstr "Projekt aus SCRIPT-DATEI erzeugen"
 
 #: src/zrythm_app.c:1582
 msgid "Print output in user-friendly way"
-msgstr "Druckausgabe auf benutzerfreundliche Weise"
+msgstr "Benutzerfreundliche Druckausgabe"
 
 #: src/zrythm_app.c:1584
 msgid "Print current settings"
@@ -1013,7 +1012,7 @@ msgstr "Führen Sie %s aus, optional mit Angabe einer Projektdatei."
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
-"Diese Zrythm Version unterstützt es nicht, mehr als %d Spuren zu erstellen."
+"Diese Zrythm Version unterstützt das Erstellen von mehr als %d Spuren nicht."
 
 #: src/actions/range_action.c:673 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -1036,9 +1035,8 @@ msgid "Failed to perform action"
 msgstr "Ausführen der Aktion fehlgeschlagen"
 
 #: src/actions/chord_action.c:157
-#, fuzzy
 msgid "Change chords"
-msgstr "Farbe ändern"
+msgstr "Akkorde ändern"
 
 #: src/actions/port_connection_action.c:167
 msgid "Connect ports"
@@ -1078,12 +1076,11 @@ msgstr "MIDI-Mapping aufheben"
 
 #: src/actions/port_action.c:137
 msgid "Set control value"
-msgstr "Setze Wert für Steuerelement"
+msgstr "Wert für Steuerelement einstellen"
 
 #: src/actions/actions.c:340
-#, fuzzy
 msgid "Guile Disabled"
-msgstr "Deaktivieren"
+msgstr "Guile deaktiviert"
 
 #: src/actions/actions.c:343
 #, c-format
@@ -1095,14 +1092,13 @@ msgstr ""
 "Ihrer %s -Installation nicht aktiviert."
 
 #: src/actions/actions.c:715
-#, fuzzy
 msgid "Discard Changes?"
-msgstr "Nicht gespeicherte Änderungen"
+msgstr "Nicht gespeicherte Änderungen verwerfen?"
 
 #: src/actions/actions.c:716
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
-"Alle nicht gespeicherten Änderungen am aktuellen Projekt gehen verloren. "
+"Alle nicht gespeicherten Änderungen im aktuellen Projekt gehen verloren. "
 "Fortfahren?"
 
 #: src/actions/actions.c:719 src/actions/actions.c:808
@@ -1127,12 +1123,12 @@ msgstr ""
 #: resources/ui/port_selector_dialog.ui:120
 #: resources/ui/string_entry_dialog.ui:10
 msgid "_Cancel"
-msgstr "_Abbrechen"
+msgstr "C_Abbrechen"
 
 #: src/actions/actions.c:719 src/actions/actions.c:808
 #: src/gui/widgets/main_window.c:155
 msgid "_Discard"
-msgstr ""
+msgstr "D_Verwerfen"
 
 #: src/actions/actions.c:720 src/actions/actions.c:809
 #: src/gui/widgets/main_window.c:156
@@ -1143,9 +1139,8 @@ msgid "_Save"
 msgstr "_Speichern"
 
 #: src/actions/actions.c:737
-#, fuzzy
 msgid "Failed to load project"
-msgstr "Objekt konnte nicht erstellt werden"
+msgstr "Projekt konnte nicht geladen werden"
 
 #: src/actions/actions.c:763 src/gui/widgets/project_toolbar.c:22
 #: resources/ui/project_assistant.ui:34
@@ -1153,9 +1148,8 @@ msgid "Open Project"
 msgstr "Projekt öffnen"
 
 #: src/actions/actions.c:803 src/gui/widgets/main_window.c:150
-#, fuzzy
 msgid "Save Changes?"
-msgstr "Nicht gespeicherte Änderungen"
+msgstr "Änderungen speichern?"
 
 #: src/actions/actions.c:804
 #, fuzzy
@@ -1246,18 +1240,17 @@ msgid "Failed to delete tracks"
 msgstr "Spuren konnten nicht gelöscht werden"
 
 #: src/actions/actions.c:1790
-#, fuzzy
 msgid "Delete Tracks?"
-msgstr "_Spuren löschen"
+msgstr "Spuren löschen?"
 
 #: src/actions/actions.c:1791
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
-"Die Ausgewählten Spuren enthalten uninitialisierte Plugins. Es wird nicht "
-"möglich sein, deren Löschung rückgängig zu machen, und die Aktionschronik "
-"wird geleert. Mit Löschen fortfahren?"
+"Die ausgewählten Spuren enthalten nicht-instanzierte Plugins. Löschen kann "
+"nicht rückgängig gemacht werden und der Aktionsverlauf wird geleert. Mit "
+"Löschen fortfahren?"
 
 #: src/actions/actions.c:1850
 msgid "Failed to pin/unpin tracks"
@@ -1297,9 +1290,8 @@ msgid "Failed to disable tracks"
 msgstr "Spuren konnten nicht deaktiviert werden"
 
 #: src/actions/actions.c:2076
-#, fuzzy
 msgid "Invalid Selection For Quantize"
-msgstr "Ungültig"
+msgstr "Ungültige Auswahl für Quantisierung"
 
 #: src/actions/actions.c:2077
 #, c-format
@@ -1353,14 +1345,12 @@ msgid "Failed to apply audio function"
 msgstr "Audiofunktion konnte nicht angewendet werden"
 
 #: src/actions/actions.c:2440
-#, fuzzy
 msgid "Please enter a valid ratio."
-msgstr "Bitte geben Sie einen gültigen Namen ein."
+msgstr "Bitte geben Sie eine gültige Kennzahl ein."
 
 #: src/actions/actions.c:2574
-#, fuzzy
 msgid "Pitch Ratio"
-msgstr "Tonhöhe"
+msgstr "Verhältnis Tonhöhe"
 
 #: src/actions/actions.c:2655
 #: src/gui/widgets/popovers/track_filter_popover.c:261
@@ -1368,28 +1358,24 @@ msgid "Track name"
 msgstr "Spurname"
 
 #: src/actions/actions.c:2674
-#, fuzzy
 msgid "Object name"
-msgstr "Projektname"
+msgstr "Objektname"
 
 #: src/actions/actions.c:2705
 msgid "An object cannot be created at the selected location."
-msgstr "Ein Objekt kann an der Ausgewählten Position nicht erstellt werden."
+msgstr "An der ausgewählten Position kann kein Objekt erstellt werden."
 
 #: src/actions/actions.c:2739
-#, fuzzy
 msgid "Failed to set region color"
-msgstr "Curve-Algorithmus konnte nicht gesetzt werden"
+msgstr "Farbe der Region konnte nicht gesetzt werden"
 
 #: src/actions/actions.c:2766
-#, fuzzy
 msgid "Region Color"
-msgstr "Regionsinhalt"
+msgstr "Farbe der Region"
 
 #: src/actions/actions.c:2798
-#, fuzzy
 msgid "Failed to reset region color"
-msgstr "Fehler beim Schreiben der Datei: %s"
+msgstr "Farbe der Region konnte nicht zurückgesetzt werden"
 
 #: src/actions/actions.c:2837
 msgid "Please enter a BPM"
@@ -1432,13 +1418,12 @@ msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
-"Keine eigenen Vorlagenpakete gefunden. Bitte erstelle ein Vorlagenpaket im "
-"Akkord Vorlagen Browser."
+"Keine eigenen Vorlagenpakete gefunden. Bitte erstellenn Sie ein "
+"Vorlagenpaket im Akkordvorlagen-Browser."
 
 #: src/actions/actions.c:3258
-#, fuzzy
 msgid "Failed to create pack"
-msgstr "Spur konnte nicht erstellt werden"
+msgstr "Paket konnte nicht erstellt werden"
 
 #: src/actions/actions.c:3270 src/actions/actions.c:3325
 msgid "Preset Pack Name"
@@ -1446,9 +1431,8 @@ msgstr "Preset-Paket-Name"
 
 #: src/actions/actions.c:3301 src/actions/actions.c:3353
 #: src/actions/actions.c:3574 src/actions/actions.c:3838
-#, fuzzy
 msgid "Delete?"
-msgstr "Löschen"
+msgstr "Löschen?"
 
 #: src/actions/actions.c:3302
 #, fuzzy
@@ -1477,19 +1461,17 @@ msgid "Failed to delete plugins"
 msgstr "Plugins konnten nicht gelöscht werden"
 
 #: src/actions/actions.c:3453
-#, fuzzy
 msgid "Delete Plugins?"
-msgstr "Plugin löschen"
+msgstr "Plugin löschen?"
 
 #: src/actions/actions.c:3454
-#, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
 msgstr ""
-"Die Ausgewählten Spuren enthalten uninitialisierte Plugins. Es wird nicht "
-"möglich sein, deren Löschung rückgängig zu machen, und die Aktionschronik "
-"wird geleert. Mit Löschen fortfahren?"
+"Die ausgewählten Spuren enthalten nicht-instanzierte Plugins. Löschen kann "
+"nicht rückgängig gemacht werden und der Aktionsverlauf wird geleert. Mit dem "
+"Löschen fortfahren?"
 
 #: src/actions/actions.c:3505
 #, c-format
@@ -1512,7 +1494,7 @@ msgstr "Sind Sie sicher, dass Sie dieses Lesezeichen entfernen möchten?"
 
 #: src/actions/actions.c:3769 src/actions/actions.c:3800
 msgid "Collection name"
-msgstr "Sammlungsname"
+msgstr "Name der Sammlung"
 
 #: src/actions/actions.c:3841
 #, fuzzy, c-format
@@ -1527,10 +1509,9 @@ msgid "Failed to change direct output"
 msgstr "Direktausgang konnte nicht geändert werden"
 
 #: src/actions/tracklist_selections.c:191
-#, fuzzy
 msgid "Cannot duplicate tracks: selection contains an uncopyable track"
 msgstr ""
-"Spuren können nicht gelöscht werden: Auswahl enthält eine nicht löschbare "
+"Spuren können nicht dupliziert werden: Auswahl enthält eine nicht kopierbare "
 "Spur"
 
 #: src/actions/tracklist_selections.c:202
@@ -1545,17 +1526,17 @@ msgid "Failed getting contents for %s"
 msgstr "Inhalt für %s konnte nicht abgerufen werden"
 
 #: src/actions/tracklist_selections.c:289 src/dsp/track.c:1953
-#, fuzzy, c-format
+#, c-format
 msgid "Failed creating audio clip from file at %s"
-msgstr "Fehler beim Schreiben der Datei: %s"
+msgstr "Aus der Datei %s konnte kein Audioclip erstellt werden"
 
 #: src/actions/tracklist_selections.c:316
 msgid "No tracks selected"
-msgstr "Kein Spuren ausgewählt"
+msgstr "Keine Spuren ausgewählt"
 
 #: src/actions/tracklist_selections.c:332
 msgid "Failed to clone tracklist selections"
-msgstr "Die Spurenliste Auswahl konnte nicht geklont werden"
+msgstr "Die Auswahl der Spurenliste konnte nicht dupliziert werden"
 
 #: src/actions/tracklist_selections.c:347
 #: src/actions/tracklist_selections.c:913
@@ -1566,7 +1547,7 @@ msgstr "Spur konnte nicht geklont werden"
 
 #: src/actions/tracklist_selections.c:372
 msgid "Failed to clone tracklist selections: "
-msgstr "Die Spurenliste Auswahl konnte nicht geklont werden: "
+msgstr "Die Auswahl der Spurenliste konnte nicht dupliziert werden "
 
 #: src/actions/tracklist_selections.c:670
 #, c-format
@@ -1577,7 +1558,7 @@ msgstr "%s Spur"
 #: src/dsp/channel.c:1825
 #, c-format
 msgid "Failed to create plugin %s"
-msgstr "Datei %s konnte nicht erstellt werden"
+msgstr "Plugin %s konnte nicht erstellt werden"
 
 #: src/actions/tracklist_selections.c:715
 #, c-format
@@ -4732,13 +4713,12 @@ msgid "Bounce to Audio"
 msgstr "Bounce-Nachhall"
 
 #: src/gui/widgets/timeline_arranger.c:1299
-#, fuzzy
 msgid "Failed to add region to track"
-msgstr "Spur konnte nicht erstellt werden"
+msgstr "Der Spur konnte keine Region zugefügt werden"
 
 #: src/gui/widgets/timeline_arranger.c:1308
 msgid "Failed to create selections"
-msgstr "Auswahl konnten nicht erstellt werden"
+msgstr "Auswahl konnte nicht erstellt werden"
 
 #: src/gui/widgets/bot_bar.c:39
 msgid "Playhead"
