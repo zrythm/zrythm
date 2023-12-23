@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -24,9 +24,10 @@ Cue point
 Playhead position
   Shown as a grey, down-facing arrow.
 Loop points
-  Shown as 2 green arrows, and the area between them is
-  shown in bright green if loop is enabled, or grey if
-  disabled. Can be dragged to reposition.
+  Shown as 2 green arrows, and the area between them is shown in bright green
+  if loop is enabled, or grey if disabled. Can be dragged to reposition.
+
+  .. tip:: Looping can be enabled/disabled using the loop button in the :ref:`transport controls <playback-and-recording/transport-controls:Controls>`.
 
 Clicking and dragging on empty space in the
 bottom half of the ruler will allow
