@@ -151,8 +151,8 @@ stretcher_new_rubberband (
     }
   rubberband_set_default_debug_level (0);
 
-  g_message (
-    "%s: time ratio: %f, latency: %u", __func__, time_ratio,
+  g_debug (
+    "created rubberband stretcher: time ratio: %f, latency: %u", time_ratio,
     stretcher_get_latency (self));
 
   return self;

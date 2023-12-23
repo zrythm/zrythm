@@ -1001,7 +1001,7 @@ plugin_generate_window_title (Plugin * self)
   if (setting->bridge_mode != CARLA_BRIDGE_NONE)
     {
       sprintf (
-        bridge_mode, _ (" - bridge: %s"),
+        bridge_mode, " - bridge: %s",
         carla_bridge_mode_strings[setting->bridge_mode].str);
     }
 
@@ -1009,7 +1009,7 @@ plugin_generate_window_title (Plugin * self)
   sprintf (slot, "#%d", self->id.slot + 1);
   if (self->id.slot_type == PLUGIN_SLOT_INSTRUMENT)
     {
-      strcpy (slot, _ ("instrument"));
+      strcpy (slot, "instrument");
     }
 
   char title[500];
@@ -1283,13 +1283,11 @@ plugin_move_automation (
 void
 plugin_set_ui_refresh_rate (Plugin * self)
 {
-  g_message ("setting refresh rate...");
-
   if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
     {
       self->ui_update_hz = 30.f;
       self->ui_scale_factor = 1.f;
-      return;
+      goto return_refresh_rate_and_scale_factor;
     }
 
   /* if no preferred refresh rate is set,
@@ -1303,26 +1301,29 @@ plugin_set_ui_refresh_rate (Plugin * self)
   else
     {
       self->ui_update_hz = (float) z_gtk_get_primary_monitor_refresh_rate ();
-      g_message (
+      g_debug (
         "refresh rate returned by GDK: %.01f", (double) self->ui_update_hz);
     }
 
   /* if no preferred scale factor is set,
    * use the monitor's scale factor */
-  float scale_factor_setting =
-    (float) g_settings_get_double (S_P_PLUGINS_UIS, "scale-factor");
-  if (scale_factor_setting >= 0.5f)
-    {
-      /* use user-specified scale factor */
-      self->ui_scale_factor = scale_factor_setting;
-    }
-  else
-    {
-      /* set the scale factor */
-      self->ui_scale_factor = (float) z_gtk_get_primary_monitor_scale_factor ();
-      g_message (
-        "scale factor returned by GDK: %.01f", (double) self->ui_scale_factor);
-    }
+  {
+    float scale_factor_setting =
+      (float) g_settings_get_double (S_P_PLUGINS_UIS, "scale-factor");
+    if (scale_factor_setting >= 0.5f)
+      {
+        /* use user-specified scale factor */
+        self->ui_scale_factor = scale_factor_setting;
+      }
+    else
+      {
+        /* set the scale factor */
+        self->ui_scale_factor =
+          (float) z_gtk_get_primary_monitor_scale_factor ();
+        g_debug (
+          "scale factor returned by GDK: %.01f", (double) self->ui_scale_factor);
+      }
+  }
 
   /* clamp the refresh rate to sensible limits */
   if (
@@ -1350,6 +1351,7 @@ plugin_set_ui_refresh_rate (Plugin * self)
         self->ui_scale_factor, PLUGIN_MIN_SCALE_FACTOR, PLUGIN_MAX_SCALE_FACTOR);
     }
 
+return_refresh_rate_and_scale_factor:
   g_message ("refresh rate set to %f", (double) self->ui_update_hz);
   g_message ("scale factor set to %f", (double) self->ui_scale_factor);
 }

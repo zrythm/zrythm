@@ -10,6 +10,7 @@
 #ifndef __UTILS_TYPES_H__
 #define __UTILS_TYPES_H__
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -135,16 +136,13 @@ typedef enum AudioValueFormat
  */
 typedef struct EngineProcessTimeInfo
 {
-  /** Global position at the start of the
-   * processing cycle. */
-  /* FIXME in some places this is adjusted to the
-   * local offset. it should be adjusted to the
-   * local offset everywhere */
+  /** Global position at the start of the processing cycle. */
+  /* FIXME in some places this is adjusted to the local offset. it should be
+   * adjusted to the local offset everywhere */
   unsigned_frame_t g_start_frame;
 
-  /** Offset in the current processing cycle,
-   * between 0 and the number of frames in
-   * AudioEngine.block_length. */
+  /** Offset in the current processing cycle, between 0 and the number of frames
+   * in AudioEngine.block_length. */
   nframes_t local_offset;
 
   /**
@@ -152,6 +150,15 @@ typedef struct EngineProcessTimeInfo
    */
   nframes_t nframes;
 } EngineProcessTimeInfo;
+
+static inline void
+engine_process_time_info_print (const EngineProcessTimeInfo * self)
+{
+  g_message (
+    "Global start frame: %" PRIuFAST64 " | local offset: %" PRIu32
+    " | num frames: %" PRIu32,
+    self->g_start_frame, self->local_offset, self->nframes);
+}
 
 typedef enum CacheTypes
 {

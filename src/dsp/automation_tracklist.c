@@ -113,7 +113,7 @@ automation_tracklist_init (AutomationTracklist * self, Track * track)
 {
   self->track = track;
 
-  g_message ("initing automation tracklist...");
+  /*g_debug ("initing automation tracklist...");*/
 
   self->visible_ats = g_ptr_array_new ();
   /*self->ats_size = 1;*/

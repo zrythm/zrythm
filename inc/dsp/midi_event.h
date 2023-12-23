@@ -43,8 +43,7 @@ typedef struct ChordDescriptor ChordDescriptor;
  */
 typedef struct MidiEvent
 {
-  /** Time of the MIDI event, in frames from the
-   * start of the current cycle. */
+  /** Time of the MIDI event, in frames from the start of the current cycle. */
   midi_time_t time;
 
   /** Time using g_get_monotonic_time (). */
@@ -248,12 +247,17 @@ midi_events_add_cc_volume (
 int
 midi_events_has_note_on (MidiEvents * self, int check_main, int check_queued);
 
+static inline bool
+midi_events_has_any (MidiEvents * self, bool check_queued)
+{
+  return (check_queued ? self->num_queued_events : self->num_events) > 0;
+}
+
 /**
  * Parses a MidiEvent from a raw MIDI buffer.
  *
- * This must be a full 3-byte message. If in
- * 'running status' mode, the caller is responsible
- * for prepending the status byte.
+ * This must be a full 3-byte message. If in 'running status' mode, the caller
+ * is responsible for prepending the status byte.
  */
 void
 midi_events_add_event_from_buf (

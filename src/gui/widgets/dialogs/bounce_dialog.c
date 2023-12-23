@@ -200,6 +200,8 @@ bounce_dialog_widget_init (BounceDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_window_set_focus (GTK_WINDOW (self), GTK_WIDGET (self->bounce_btn));
+
   gtk_spin_button_set_value (
     self->tail_spin, (double) g_settings_get_int (S_UI, "bounce-tail"));
 

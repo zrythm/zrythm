@@ -1528,8 +1528,6 @@ track_get_last_region (Track * track)
 void
 track_generate_automation_tracks (Track * track)
 {
-  g_message ("generating automation tracks for '%s'", track->name);
-
   AutomationTracklist * atl = track_get_automation_tracklist (track);
   AutomationTrack *     at;
 
@@ -1627,7 +1625,7 @@ track_generate_automation_tracks (Track * track)
       break;
     }
 
-  g_message ("done");
+  g_debug ("generated automation tracks for '%s'", track->name);
 }
 
 /**
@@ -2649,16 +2647,20 @@ track_fill_events (
         }
     }
 
-#if 0
-  g_message ("TRACK %s ENDING", self->name);
-#endif
-
   if (midi_events)
     {
       midi_events_clear_duplicates (midi_events, F_QUEUED);
 
       /* sort events */
       midi_events_sort (midi_events, F_QUEUED);
+
+#if 0
+      if (midi_events_has_any (midi_events, F_QUEUED))
+        {
+          engine_process_time_info_print (time_nfo);
+          midi_events_print (midi_events, F_QUEUED);
+        }
+#endif
 
       zix_sem_post (&midi_events->access_sem);
     }

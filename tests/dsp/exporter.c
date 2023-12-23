@@ -1063,6 +1063,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/exporter/"
 
   g_test_add_func (
+    TEST_PREFIX "test bounce region with first note",
+    (GTestFunc) test_bounce_region_with_first_note);
+  g_test_add_func (
     TEST_PREFIX "test export midi range", (GTestFunc) test_export_midi_range);
   g_test_add_func (
     TEST_PREFIX "test bounce instrument track",
@@ -1083,9 +1086,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test bounce midi track routed to instrument track",
     (GTestFunc) test_bounce_midi_track_routed_to_instrument_track);
-  g_test_add_func (
-    TEST_PREFIX "test bounce region with first note",
-    (GTestFunc) test_bounce_region_with_first_note);
   g_test_add_func (
     TEST_PREFIX "test bounce region", (GTestFunc) test_bounce_region);
 #if 0

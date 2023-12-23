@@ -33,7 +33,7 @@ editor_settings_set_scroll_start_x (EditorSettings * self, int x, bool validate)
         {
         }
     }
-  g_debug ("scrolled horizontally to %d", self->scroll_start_x);
+  /*g_debug ("scrolled horizontally to %d", self->scroll_start_x);*/
 }
 
 void
@@ -78,7 +78,7 @@ editor_settings_set_scroll_start_y (EditorSettings * self, int y, bool validate)
           self->scroll_start_y -= diff;
         }
     }
-  g_debug ("scrolled vertically to %d", self->scroll_start_y);
+  /*g_debug ("scrolled vertically to %d", self->scroll_start_y);*/
 }
 
 /**
@@ -89,5 +89,6 @@ editor_settings_append_scroll (EditorSettings * self, int dx, int dy, bool valid
 {
   editor_settings_set_scroll_start_x (self, self->scroll_start_x + dx, validate);
   editor_settings_set_scroll_start_y (self, self->scroll_start_y + dy, validate);
-  g_debug ("scrolled to (%d, %d)", self->scroll_start_x, self->scroll_start_y);
+  /*g_debug ("scrolled to (%d, %d)", self->scroll_start_x,
+   * self->scroll_start_y);*/
 }

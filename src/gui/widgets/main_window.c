@@ -205,7 +205,7 @@ on_key_pressed (
           focus_child = next_child;
           next_child = gtk_widget_get_focus_child (GTK_WIDGET (focus_child));
         }
-      z_gtk_widget_print_hierarchy (focus_child);
+      /*z_gtk_widget_print_hierarchy (focus_child);*/
       if (!GTK_IS_EDITABLE (focus_child))
         {
           g_action_group_activate_action (

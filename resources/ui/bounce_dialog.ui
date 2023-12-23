@@ -100,7 +100,6 @@
           <object class="GtkButton" id="bounce_btn">
             <property name="label" translatable="yes">Bounce</property>
             <property name="focusable">1</property>
-            <property name="has-focus">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_bounce_clicked" object="BounceDialogWidget" swapped="no"/>
           </object>

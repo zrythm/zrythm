@@ -1050,8 +1050,7 @@ midi_region_fill_midi_events (
       send_notes_off_at (
         self, midi_events,
         (midi_time_t)
-        /* -1 to send event 1 sample
-         * before the end point */
+        /* -1 to send event 1 sample before the end point */
         ((time_nfo->local_offset + time_nfo->nframes) - 1));
     }
 
