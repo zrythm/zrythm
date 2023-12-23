@@ -559,6 +559,47 @@ string_utf8_strcasecmp (const char * s1, const char * s2)
   return retval;
 }
 
+char *
+string_expand_env_vars (const char * src)
+{
+  static const char * env_part_regex = "(.*)(\\$\\{.*\\})(.*)";
+  char *              expanded_str = g_strdup (src);
+  do
+    {
+      char * env_var_part =
+        string_get_regex_group (expanded_str, env_part_regex, 2);
+      if (!env_var_part)
+        break;
+
+      char * old = expanded_str;
+      char * env_var_part_inside = g_strdup (&env_var_part[2]);
+      env_var_part_inside[strlen (env_var_part_inside) - 1] = '\0';
+      const char * env_val = g_getenv (env_var_part_inside);
+      expanded_str = string_replace (old, env_var_part, env_val ? env_val : "");
+      g_free (env_var_part_inside);
+      g_free (old);
+    }
+  while (true);
+
+  return expanded_str;
+}
+
+void
+string_print_strv (const char * prefix, char ** strv)
+{
+  const char * cur = NULL;
+  GString *    gstr = g_string_new (prefix);
+  g_string_append (gstr, ":");
+  for (int i = 0; (cur = strv[i]) != NULL; i++)
+    {
+      g_string_append_printf (gstr, " %s |", cur);
+    }
+  char * res = g_string_free (gstr, false);
+  res[strlen (res) - 1] = '\0';
+  g_message ("%s", res);
+  g_free (res);
+}
+
 /**
  * Clones the given string array.
  */

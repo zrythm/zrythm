@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -178,6 +178,111 @@ plugin_manager_get_node (PluginManager * self, const char * uri)
 }
 
 static void
+add_expanded_paths (GStrvBuilder * builder, char ** paths_from_settings)
+{
+  const char * cur_path = NULL;
+  for (int i = 0; (cur_path = paths_from_settings[i]) != NULL; i++)
+    {
+      char * expanded_cur_path = string_expand_env_vars (cur_path);
+      /* split because the env might contain multiple paths */
+      char ** expanded_paths =
+        g_strsplit (expanded_cur_path, G_SEARCHPATH_SEPARATOR_S, 0);
+      g_strv_builder_addv (builder, (const char **) expanded_paths);
+      g_strfreev (expanded_paths);
+      g_free (expanded_cur_path);
+    }
+}
+
+static char **
+get_lv2_paths (PluginManager * self)
+{
+  GStrvBuilder * builder = g_strv_builder_new ();
+
+  if (ZRYTHM_TESTING)
+    {
+      /* add test plugins if testing */
+      const char * tests_builddir = g_getenv ("G_TEST_BUILDDIR");
+      const char * root_builddir = g_getenv ("G_TEST_BUILD_ROOT_DIR");
+      g_return_val_if_fail (tests_builddir, NULL);
+      g_return_val_if_fail (root_builddir, NULL);
+
+      char * test_lv2_plugins =
+        g_build_filename (tests_builddir, "lv2plugins", NULL);
+      char * test_root_plugins =
+        g_build_filename (root_builddir, "data", "plugins", NULL);
+      g_strv_builder_add_many (
+        builder, test_lv2_plugins, test_root_plugins, NULL);
+      g_free (test_lv2_plugins);
+      g_free (test_root_plugins);
+
+      const char * paths_from_settings[] = {
+        "${LV2_PATH}", "/usr/lib/lv2", NULL
+      };
+      add_expanded_paths (builder, (char **) paths_from_settings);
+
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("LV2 paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "lv2-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
+#ifdef _WOE32
+      g_strv_builder_add_many (
+        builder, "C:\\Program Files\\Common Files\\LV2", NULL);
+#elif defined(__APPLE__)
+      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/LV2");
+#elif defined(FLATPAK_BUILD)
+      g_strv_builder_add_many (
+        builder, "/app/lib/lv2", "/app/extensions/Plugins/lv2", NULL);
+#else /* non-flatpak UNIX */
+      {
+        char * home_lv2 = g_build_filename (g_get_home_dir (), ".lv2", NULL);
+        g_strv_builder_add (builder, home_lv2);
+        g_free (home_lv2);
+        g_strv_builder_add_many (
+          builder, "/usr/lib/lv2", "/usr/local/lib/lv2", NULL);
+#  if defined(INSTALLER_VER)
+        g_strv_builder_add_many (
+          builder, "/usr/lib64/lv2", "/usr/local/lib64/lv2", NULL);
+#  else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/lv2",
+              "/usr/local/" LIBDIR_NAME "/lv2", NULL);
+          }
+      }
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
+    }
+  else
+    {
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
+    }
+
+  /* add special paths */
+  char * builtin_plugins_path =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
+  char * special_plugins_path =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+  g_strv_builder_add_many (
+    builder, builtin_plugins_path, special_plugins_path, NULL);
+  g_free_and_null (builtin_plugins_path);
+  g_free_and_null (special_plugins_path);
+
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("LV2 paths", paths);
+
+  return paths;
+}
+
+static void
 create_and_load_lilv_word (PluginManager * self)
 {
   g_message ("Creating Lilv World...");
@@ -186,97 +291,14 @@ create_and_load_lilv_word (PluginManager * self)
 
   /* load all installed plugins on system */
   self->lv2_path = NULL;
-  LilvNode * lv2_path = NULL;
-  char *     env_lv2_path = getenv ("LV2_PATH");
-  char *     builtin_plugins_path =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
-  char * special_plugins_path =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
-  char * extra_zrythm_plugin_paths = g_strdup_printf (
-    "%s" G_SEARCHPATH_SEPARATOR_S "%s", builtin_plugins_path,
-    special_plugins_path);
-  g_free_and_null (builtin_plugins_path);
-  g_free_and_null (special_plugins_path);
-  if (env_lv2_path && (strlen (env_lv2_path) > 0))
-    {
-      self->lv2_path = g_strdup_printf (
-        "%s" G_SEARCHPATH_SEPARATOR_S "%s", env_lv2_path,
-        extra_zrythm_plugin_paths);
-    }
-  /* else if no LV2_PATH passed */
-  else
-    {
-#ifdef FLATPAK_BUILD
-      self->lv2_path = g_strdup_printf (
-        "%s/.lv2:/app/lib/lv2:"
-        "/app/extensions/Plugins/lv2:%s",
-        g_get_home_dir (), extra_zrythm_plugin_paths);
-#elif defined(_WOE32)
-      char * appdata_path =
-        windows_get_special_path (WINDOWS_SPECIAL_PATH_APPDATA);
-      char * common_program_files_path =
-        windows_get_special_path (WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES);
-      self->lv2_path = g_strdup_printf (
-        "%s" G_SEARCHPATH_SEPARATOR_S "%s" G_SEARCHPATH_SEPARATOR_S "%s",
-        appdata_path, common_program_files_path, extra_zrythm_plugin_paths);
-      g_free_and_null (appdata_path);
-      g_free_and_null (common_program_files_path);
-#elif defined(__APPLE__)
-      self->lv2_path = g_strdup_printf (
-        "%s/Library/Audio/Plug-Ins/LV2:"
-        "/Library/Audio/Plug-Ins/LV2:"
-        "/usr/local/lib/lv2:/usr/lib/lv2:%s",
-        g_get_home_dir (), extra_zrythm_plugin_paths);
-#elif defined(INSTALLER_VER) // GNU or similar
-      self->lv2_path = g_strdup_printf (
-        "%s/.lv2:"
-        "/usr/local/lib64/lv2:"
-        "/usr/local/lib/lv2:"
-        "/usr/lib64/lv2:"
-        "/usr/lib/lv2:%s",
-        g_get_home_dir (), extra_zrythm_plugin_paths);
-#else                        // GNU or similar
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          self->lv2_path = g_strdup_printf (
-            "%s/.lv2:/usr/local/lib/lv2:"
-            "/usr/lib/lv2:%s",
-            g_get_home_dir (), extra_zrythm_plugin_paths);
-        }
-      else
-        {
-          self->lv2_path = g_strdup_printf (
-            "%s/.lv2:/usr/local/" LIBDIR_NAME "/lv2:/usr/" LIBDIR_NAME
-            "/lv2:"
-            /* some distros report the wrong
-             * LIBDIR_NAME so hardcode these */
-            "/usr/local/lib/lv2:/usr/lib/lv2:%s",
-            g_get_home_dir (), extra_zrythm_plugin_paths);
-        }
-#endif                       // end per-OS logic
-    }
 
+  char ** lv2_plugin_paths = get_lv2_paths (self);
+  g_return_if_fail (lv2_plugin_paths);
+  self->lv2_path = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, lv2_plugin_paths);
+  g_return_if_fail (self->lv2_path);
   g_message ("LV2 path: %s", self->lv2_path);
 
-  g_return_if_fail (self->lv2_path);
-
-  /* add test plugins if testing */
-  if (ZRYTHM_TESTING)
-    {
-      const char * tests_builddir = g_getenv ("G_TEST_BUILDDIR");
-      const char * root_builddir = g_getenv ("G_TEST_BUILD_ROOT_DIR");
-      g_return_if_fail (tests_builddir);
-      g_return_if_fail (root_builddir);
-
-      char * before_path = self->lv2_path;
-      self->lv2_path = g_strdup_printf (
-        "%s:%s/lv2plugins:%s/data/plugins", before_path, tests_builddir,
-        root_builddir);
-      g_free (before_path);
-    }
-
-  lv2_path = lilv_new_string (world, self->lv2_path);
-
+  LilvNode * lv2_path = lilv_new_string (world, self->lv2_path);
   g_message ("%s: LV2 path: %s", __func__, self->lv2_path);
   lilv_world_set_option (world, LILV_OPTION_LV2_PATH, lv2_path);
 
@@ -412,76 +434,66 @@ plugin_manager_new (void)
 
 #ifdef HAVE_CARLA
 static char **
-get_vst_paths (PluginManager * self)
+get_vst2_paths (PluginManager * self)
 {
-  g_message ("%s: getting paths...", __func__);
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-#  ifdef _WOE32
-  char ** paths;
   if (ZRYTHM_TESTING)
     {
-      GStrvBuilder * builder = g_strv_builder_new ();
-      paths = g_strv_builder_end (builder);
+      const char * paths_from_settings[] = { "${VST_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
+
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("VST2 paths", paths);
+
+      return paths;
     }
-  else
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst2-search-paths");
+  if (paths_from_settings[0] == NULL)
     {
-      paths =
-        g_settings_get_strv (S_P_PLUGINS_PATHS, "vst-search-paths-windows");
-    }
-  g_return_val_if_fail (paths, NULL);
+      /* no paths given - use default */
+#  ifdef _WOE32
+      g_strv_builder_add_many (
+        builder, "C:\\Program Files\\Common Files\\VST2",
+        "C:\\Program Files\\VSTPlugins",
+        "C:\\Program Files\\Steinberg\\VSTPlugins",
+        "C:\\Program Files\\Common Files\\VST2",
+        "C:\\Program Files\\Common Files\\Steinberg\\VST2", NULL);
 #  elif defined(__APPLE__)
-  char ** paths = g_strsplit (
-    "/Library/Audio/Plug-ins/VST" G_SEARCHPATH_SEPARATOR_S,
-    G_SEARCHPATH_SEPARATOR_S, -1);
-#  else
-  char * vst_path = g_strdup (getenv ("VST_PATH"));
-  if (!vst_path || (strlen (vst_path) == 0))
-    {
-#    ifdef FLATPAK_BUILD
-      vst_path = g_strdup ("/app/extensions/Plugins/vst");
-#    elif defined(INSTALLER_VER)
-      vst_path = g_strdup_printf (
-        "%s/.vst:%s/vst:"
-        "/usr/lib/vst:"
-        "/usr/lib64/vst:"
-        "/usr/local/lib/vst:"
-        "/usr/local/lib64/vst",
-        g_get_home_dir (), g_get_home_dir ());
-#    else  /* else if not installer ver */
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          vst_path = g_strdup_printf (
-            "%s/.vst:%s/vst:"
-            "/usr/" LIBDIR_NAME
-            "/vst:"
-            "/usr/local/" LIBDIR_NAME "/vst",
-            g_get_home_dir (), g_get_home_dir ());
-        }
-      else
-        {
-          vst_path = g_strdup_printf (
-            "%s/.vst:%s/vst:"
-            "/usr/lib/vst:"
-            "/usr/" LIBDIR_NAME
-            "/vst:"
-            "/usr/local/lib/vst:"
-            "/usr/local/" LIBDIR_NAME "/vst",
-            g_get_home_dir (), g_get_home_dir ());
-        }
-#    endif /* FLATPAK_BUILD */
-
-      g_message ("Using standard VST paths: %s", vst_path);
+      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/VST");
+#  elif defined(FLATPAK_BUILD)
+      g_strv_builder_add (builder, "/app/extensions/Plugins/vst");
+#  else /* non-flatpak UNIX */
+      {
+        char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
+        g_strv_builder_add (builder, home_vst);
+        g_free (home_vst);
+        g_strv_builder_add_many (
+          builder, "/usr/lib/vst", "/usr/local/lib/vst", NULL);
+#    if defined(INSTALLER_VER)
+        g_strv_builder_add_many (
+          builder, "/usr/lib64/vst", "/usr/local/lib64/vst", NULL);
+#    else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/vst",
+              "/usr/local/" LIBDIR_NAME "/vst", NULL);
+          }
+      }
+#    endif /* endif non-flatpak UNIX */
+#  endif   /* endif per-platform code */
     }
   else
     {
-      g_message ("using %s from the environment (VST_PATH)", vst_path);
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  g_return_val_if_fail (vst_path, NULL);
-  char ** paths = g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
-  g_free (vst_path);
-#  endif   // __APPLE__
 
-  g_message ("%s: done", __func__);
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("VST2 paths", paths);
 
   return paths;
 }
@@ -489,62 +501,63 @@ get_vst_paths (PluginManager * self)
 static char **
 get_vst3_paths (PluginManager * self)
 {
-#  ifdef _WOE32
-  return g_strsplit (
-    "C:\\Program Files\\Common Files\\VST3" G_SEARCHPATH_SEPARATOR_S
-    "C:\\Program Files (x86)\\Common Files\\VST3",
-    G_SEARCHPATH_SEPARATOR_S, 0);
-#  elif defined(__APPLE__)
-  return g_strsplit (
-    "/Library/Audio/Plug-ins/VST3" G_SEARCHPATH_SEPARATOR_S,
-    G_SEARCHPATH_SEPARATOR_S, -1);
-#  else
-  char * vst_path = g_strdup (getenv ("VST3_PATH"));
-  if (!vst_path || (strlen (vst_path) == 0))
-    {
-#    ifdef FLATPAK_BUILD
-      vst_path = g_strdup ("/app/extensions/Plugins/vst3");
-#    elif defined(INSTALLER_VER)
-      vst_path = g_strdup_printf (
-        "%s/.vst3:"
-        "/usr/lib/vst3:"
-        "/usr/lib64/vst3:"
-        "/usr/local/lib/vst3:"
-        "/usr/local/lib64/vst3",
-        g_get_home_dir ());
-#    else /* else if not installer ver */
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          vst_path = g_strdup_printf (
-            "%s/.vst3:"
-            "/usr/lib/vst3:"
-            "/usr/local/lib/vst3",
-            g_get_home_dir ());
-        }
-      else
-        {
-          vst_path = g_strdup_printf (
-            "%s/.vst3:"
-            "/usr/lib/vst3:"
-            "/usr/" LIBDIR_NAME
-            "/vst3:"
-            "/usr/local/lib/vst3:"
-            "/usr/local/" LIBDIR_NAME "/vst3",
-            g_get_home_dir ());
-        }
-#    endif
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-      g_message ("Using standard VST3 paths: %s", vst_path);
+  if (ZRYTHM_TESTING)
+    {
+      const char * paths_from_settings[] = { "${VST3_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
+
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("VST3 paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst3-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
+#  ifdef _WOE32
+      g_strv_builder_add_many (
+        builder, "C:\\Program Files\\Common Files\\VST3",
+        "C:\\Program Files\\Common Files\\VST3", NULL);
+#  elif defined(__APPLE__)
+      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/VST3");
+#  elif defined(FLATPAK_BUILD)
+      g_strv_builder_add (builder, "/app/extensions/Plugins/vst3");
+#  else /* non-flatpak UNIX */
+        {
+          char * home_vst3 = g_build_filename (g_get_home_dir (), ".vst3", NULL);
+          g_strv_builder_add (builder, home_vst3);
+          g_free (home_vst3);
+          g_strv_builder_add_many (
+            builder, "/usr/lib/vst3", "/usr/local/lib/vst3", NULL);
+#    if defined(INSTALLER_VER)
+          g_strv_builder_add_many (
+            builder, "/usr/lib64/vst3", "/usr/local/lib64/vst3", NULL);
+#    else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/vst3",
+              "/usr/local/" LIBDIR_NAME "/vst3", NULL);
+          }
+      }
+#    endif /* endif non-flatpak UNIX */
+#  endif   /* endif per-platform code */
     }
   else
     {
-      g_message ("using %s from the environment (VST3_PATH)", vst_path);
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  g_return_val_if_fail (vst_path, NULL);
-  char ** paths = g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
-  g_free (vst_path);
+
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("VST3 paths", paths);
+
   return paths;
-#  endif // __APPLE__
 }
 
 static int
@@ -579,9 +592,9 @@ get_vst3_count (PluginManager * self)
 }
 
 static int
-get_vst_count (PluginManager * self)
+get_vst2_count (PluginManager * self)
 {
-  char ** paths = get_vst_paths (self);
+  char ** paths = get_vst2_paths (self);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -665,48 +678,55 @@ get_sf_count (PluginManager * self, ZPluginProtocol prot)
 static char **
 get_dssi_paths (PluginManager * self)
 {
-  g_debug ("%s: getting paths...", __func__);
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-  char * dssi_path = g_strdup (getenv ("DSSI_PATH"));
-  if (!dssi_path || (strlen (dssi_path) == 0))
+  if (ZRYTHM_TESTING)
     {
-#  ifdef FLATPAK_BUILD
-      dssi_path = g_strdup ("/app/extensions/Plugins/dssi");
-#  elif defined(INSTALLER_VER)
-      dssi_path = g_strdup (
-        "/usr/lib/dssi:"
-        "/usr/lib64/dssi:"
-        "/usr/local/lib/dssi:"
-        "/usr/local/lib64/dssi");
-#  else  /* else if not installer ver */
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          dssi_path = g_strdup (
-            "/usr/" LIBDIR_NAME
-            "/dssi:"
-            "/usr/local/" LIBDIR_NAME "/dssi");
-        }
-      else
-        {
-          dssi_path = g_strdup (
-            "/usr/lib/dssi:"
-            "/usr/" LIBDIR_NAME
-            "/dssi:"
-            "/usr/local/lib/dssi:"
-            "/usr/local/" LIBDIR_NAME "/dssi");
-        }
-#  endif /* flatpak build */
+      const char * paths_from_settings[] = { "${DSSI_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
 
-      g_message ("Using standard DSSI paths: %s", dssi_path);
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("DSSI paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "dssi-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
+#  if defined(FLATPAK_BUILD)
+      g_strv_builder_add (builder, "/app/extensions/Plugins/dssi");
+#  else /* non-flatpak UNIX */
+      {
+        char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
+        g_strv_builder_add (builder, home_vst);
+        g_free (home_vst);
+        g_strv_builder_add_many (
+          builder, "/usr/lib/dssi", "/usr/local/lib/dssi", NULL);
+#    if defined(INSTALLER_VER)
+        g_strv_builder_add_many (
+          builder, "/usr/lib64/dssi", "/usr/local/lib64/dssi", NULL);
+#    else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/dssi",
+              "/usr/local/" LIBDIR_NAME "/dssi", NULL);
+          }
+      }
+#    endif /* endif non-flatpak UNIX */
+#  endif   /* endif per-platform code */
     }
   else
     {
-      g_message ("using %s from the environment (DSSI_PATH)", dssi_path);
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  char ** paths = g_strsplit (dssi_path, G_SEARCHPATH_SEPARATOR_S, 0);
-  g_free (dssi_path);
 
-  g_debug ("%s: done", __func__);
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("DSSI paths", paths);
 
   return paths;
 }
@@ -714,48 +734,52 @@ get_dssi_paths (PluginManager * self)
 static char **
 get_ladspa_paths (PluginManager * self)
 {
-  g_debug ("%s: getting paths...", __func__);
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-  char * ladspa_path = g_strdup (getenv ("LADSPA_PATH"));
-  if (!ladspa_path || (strlen (ladspa_path) == 0))
+  if (ZRYTHM_TESTING)
     {
-#  ifdef FLATPAK_BUILD
-      ladspa_path = g_strdup ("/app/extensions/Plugins/ladspa");
-#  elif defined(INSTALLER_VER)
-      ladspa_path = g_strdup (
-        "/usr/lib/ladspa:"
-        "/usr/lib64/ladspa:"
-        "/usr/local/lib/ladspa:"
-        "/usr/local/lib64/ladspa");
-#  else  /* else if not installer ver */
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          ladspa_path = g_strdup (
-            "/usr/" LIBDIR_NAME
-            "/ladspa:"
-            "/usr/local/" LIBDIR_NAME "/ladspa");
-        }
-      else
-        {
-          ladspa_path = g_strdup (
-            "/usr/lib/ladspa:"
-            "/usr/" LIBDIR_NAME
-            "/ladspa:"
-            "/usr/local/lib/ladspa:"
-            "/usr/local/" LIBDIR_NAME "/ladspa");
-        }
-#  endif /* flatpak build */
+      const char * paths_from_settings[] = { "${LADSPA_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
 
-      g_message ("Using standard LADSPA paths: %s", ladspa_path);
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("LADSPA paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "ladspa-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
+#  if defined(FLATPAK_BUILD)
+      g_strv_builder_add (builder, "/app/extensions/Plugins/ladspa");
+#  else /* non-flatpak UNIX */
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/lib/ladspa", "/usr/local/lib/ladspa", NULL);
+#    if defined(INSTALLER_VER)
+          g_strv_builder_add_many (
+            builder, "/usr/lib64/ladspa", "/usr/local/lib64/ladspa", NULL);
+#    else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/ladspa",
+              "/usr/local/" LIBDIR_NAME "/ladspa", NULL);
+          }
+      }
+#    endif /* endif non-flatpak UNIX */
+#  endif   /* endif per-platform code */
     }
   else
     {
-      g_message ("using %s from the environment (LADSPA)", ladspa_path);
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  char ** paths = g_strsplit (ladspa_path, G_SEARCHPATH_SEPARATOR_S, 0);
-  g_free (ladspa_path);
 
-  g_debug ("%s: done", __func__);
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("LADSPA paths", paths);
 
   return paths;
 }
@@ -767,66 +791,62 @@ get_ladspa_paths (PluginManager * self)
 static char **
 get_clap_paths (PluginManager * self)
 {
-  g_message ("%s: getting paths...", __func__);
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-#  ifdef _WOE32
-  char ** paths = g_strsplit (
-    "C:\\Program Files\\Common Files\\CLAP" G_SEARCHPATH_SEPARATOR_S
-    "C:\\Program Files (x86)\\Common Files\\CLAP",
-    G_SEARCHPATH_SEPARATOR_S, 0);
-#  elif defined(__APPLE__)
-  char ** paths = g_strsplit (
-    "/Library/Audio/Plug-ins/CLAP" G_SEARCHPATH_SEPARATOR_S,
-    G_SEARCHPATH_SEPARATOR_S, -1);
-#  else
-  char * clap_path = g_strdup (getenv ("CLAP_PATH"));
-  if (!clap_path || (strlen (clap_path) == 0))
+  if (ZRYTHM_TESTING)
     {
-#    ifdef FLATPAK_BUILD
-      clap_path = g_strdup ("/app/extensions/Plugins/clap");
-#    elif defined(INSTALLER_VER)
-      clap_path = g_strdup_printf (
-        "%s/.clap:%s/.local/lib/clap:"
-        "/usr/lib/clap:"
-        "/usr/lib64/clap:"
-        "/usr/local/lib/clap:"
-        "/usr/local/lib64/clap",
-        g_get_home_dir (), g_get_home_dir ());
-#    else /* else if not flatpak && not installer ver */
-      if (string_is_equal (LIBDIR_NAME, "lib"))
-        {
-          clap_path = g_strdup_printf (
-            "%s/.clap:%s/.local/lib/clap:"
-            "/usr/" LIBDIR_NAME
-            "/clap:"
-            "/usr/local/" LIBDIR_NAME "/clap",
-            g_get_home_dir (), g_get_home_dir ());
-        }
-      else
-        {
-          clap_path = g_strdup_printf (
-            "%s/.clap:%s/.local/lib/clap:"
-            "/usr/lib/clap:"
-            "/usr/" LIBDIR_NAME
-            "/clap:"
-            "/usr/local/lib/clap:"
-            "/usr/local/" LIBDIR_NAME "/clap",
-            g_get_home_dir (), g_get_home_dir ());
-        }
-#    endif
+      const char * paths_from_settings[] = { "${CLAP_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
 
-      g_message ("Using standard CLAP paths: %s", clap_path);
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("CLAP paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "clap-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
+#  ifdef _WOE32
+      g_strv_builder_add_many (
+        builder, "C:\\Program Files\\Common Files\\CLAP",
+        "C:\\Program Files (x86)\\Common Files\\CLAP", NULL);
+#  elif defined(__APPLE__)
+          g_strv_builder_add (builder, "/Library/Audio/Plug-ins/CLAP");
+#  elif defined(FLATPAK_BUILD)
+      g_strv_builder_add (builder, "/app/extensions/Plugins/clap");
+#  else /* non-flatpak UNIX */
+          {
+            char * home_clap =
+              g_build_filename (g_get_home_dir (), ".clap", NULL);
+            g_strv_builder_add (builder, home_clap);
+            g_free (home_clap);
+            g_strv_builder_add_many (
+              builder, "/usr/lib/clap", "/usr/local/lib/clap", NULL);
+#    if defined(INSTALLER_VER)
+            g_strv_builder_add_many (
+              builder, "/usr/lib64/clap", "/usr/local/lib64/clap", NULL);
+#    else  /* else if unix and not installer ver */
+        if (!string_is_equal (LIBDIR_NAME, "lib"))
+          {
+            g_strv_builder_add_many (
+              builder, "/usr/" LIBDIR_NAME "/clap",
+              "/usr/local/" LIBDIR_NAME "/clap", NULL);
+          }
+      }
+#    endif /* endif non-flatpak UNIX */
+#  endif   /* endif per-platform code */
     }
   else
     {
-      g_message ("using %s from the environment (CLAP_PATH)", clap_path);
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  g_return_val_if_fail (clap_path, NULL);
-  char ** paths = g_strsplit (clap_path, G_SEARCHPATH_SEPARATOR_S, 0);
-  g_free (clap_path);
-#  endif // __APPLE__
 
-  g_message ("%s: done", __func__);
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("CLAP paths", paths);
 
   return paths;
 }
@@ -865,49 +885,33 @@ get_clap_count (PluginManager * self)
 static char **
 get_jsfx_paths (PluginManager * self)
 {
-  g_message ("%s: getting paths...", __func__);
+  GStrvBuilder * builder = g_strv_builder_new ();
 
-  char ** env_paths = NULL;
-
-  char * jsfx_env_path = g_strdup (getenv ("JSFX_PATH"));
-  if (jsfx_env_path)
-    {
-      if (strlen (jsfx_env_path) > 0)
-        {
-          g_message (
-            "Prepending %s from the environment (JSFX_PATH)", jsfx_env_path);
-          env_paths = g_strsplit (jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
-        }
-      g_free (jsfx_env_path);
-    }
-
-  /* append paths from preferences */
-  char ** pref_paths;
   if (ZRYTHM_TESTING)
     {
-      GStrvBuilder * builder = g_strv_builder_new ();
-      pref_paths = g_strv_builder_end (builder);
+      const char * paths_from_settings[] = { "${JSFX_PATH}", NULL };
+      add_expanded_paths (builder, (char **) paths_from_settings);
+
+      char ** paths = g_strv_builder_end (builder);
+      string_print_strv ("JSFX paths", paths);
+
+      return paths;
+    }
+
+  char ** paths_from_settings =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "jsfx-search-paths");
+  if (paths_from_settings[0] == NULL)
+    {
+      /* no paths given - use default */
     }
   else
     {
-      pref_paths = g_settings_get_strv (S_P_PLUGINS_PATHS, "jsfx-search-paths");
+      /* use paths given */
+      add_expanded_paths (builder, paths_from_settings);
     }
-  g_return_val_if_fail (pref_paths, NULL);
-
-  GStrvBuilder * builder = g_strv_builder_new ();
-  if (env_paths)
-    {
-      g_strv_builder_addv (builder, (const char **) env_paths);
-      g_strfreev (env_paths);
-      env_paths = NULL;
-    }
-  /* FIXME skip duplicates, otherwise plugins show twice */
-  g_strv_builder_addv (builder, (const char **) pref_paths);
-  g_strfreev (pref_paths);
 
   char ** paths = g_strv_builder_end (builder);
-
-  g_message ("%s: done", __func__);
+  string_print_strv ("JSFX paths", paths);
 
   return paths;
 }
@@ -1024,11 +1028,11 @@ scan_carla_descriptors_from_paths (
   switch (protocol)
     {
     case Z_PLUGIN_PROTOCOL_VST:
-      paths = get_vst_paths (self);
+      paths = get_vst2_paths (self);
 #  ifdef __APPLE__
       suffix = ".vst";
 #  else
-      suffix = LIB_SUFFIX;
+          suffix = LIB_SUFFIX;
 #  endif
       break;
     case Z_PLUGIN_PROTOCOL_VST3:
@@ -1258,15 +1262,6 @@ scan_carla_descriptors_from_paths (
 }
 #endif
 
-/**
- * Scans for plugins, optionally updating the
- * progress.
- *
- * @param max_progress Maximum progress for this
- *   stage.
- * @param progress Pointer to a double (0.0-1.0) to
- *   update based on the current progress.
- */
 void
 plugin_manager_scan_plugins (
   PluginManager * self,
@@ -1289,7 +1284,7 @@ plugin_manager_scan_plugins (
 
   double size = (double) lilv_plugins_size (lilv_plugins);
 #ifdef HAVE_CARLA
-  size += (double) get_vst_count (self);
+  size += (double) get_vst2_count (self);
   size += (double) get_vst3_count (self);
   size += (double) get_sf_count (self, Z_PLUGIN_PROTOCOL_SFZ);
   size += (double) get_sf_count (self, Z_PLUGIN_PROTOCOL_SF2);

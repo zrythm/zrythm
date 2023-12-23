@@ -219,7 +219,12 @@ get_path_type (const char * group, const char * subgroup, const char * key)
       return PATH_TYPE_DIRECTORY;
     }
   else if (
-    KEY_IS ("Plugins", "Paths", "vst-search-paths-windows")
+    KEY_IS ("Plugins", "Paths", "vst2-search-paths")
+    || KEY_IS ("Plugins", "Paths", "vst3-search-paths")
+    || KEY_IS ("Plugins", "Paths", "clap-search-paths")
+    || KEY_IS ("Plugins", "Paths", "lv2-search-paths")
+    || KEY_IS ("Plugins", "Paths", "dssi-search-paths")
+    || KEY_IS ("Plugins", "Paths", "ladspa-search-paths")
     || KEY_IS ("Plugins", "Paths", "jsfx-search-paths")
     || KEY_IS ("Plugins", "Paths", "sfz-search-paths")
     || KEY_IS ("Plugins", "Paths", "sf2-search-paths"))
@@ -240,8 +245,9 @@ should_be_hidden (const char * group, const char * subgroup, const char * key)
     || audio_backend_is_rtaudio (audio_backend);
 
   return
-#ifndef _WOE32
-    KEY_IS ("Plugins", "Paths", "vst-search-paths-windows") ||
+#if defined(_WOE32) || defined(__APPLE__)
+    KEY_IS ("Plugins", "Paths", "dssi-search-paths")
+    || KEY_IS ("Plugins", "Paths", "ladspa-search-paths") ||
 #endif
 #ifndef HAVE_CARLA
     KEY_IS ("Plugins", "Paths", "sfz-search-paths")
@@ -661,6 +667,15 @@ add_subgroup (
   AdwPreferencesGroup * subgroup =
     ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
   adw_preferences_group_set_title (subgroup, localized_subgroup_name);
+  if (
+    string_is_equal (localized_subgroup_name, _ ("Paths"))
+    && string_is_equal (info->group_name, _ ("Plugins")))
+    {
+      char * descr = g_strdup_printf (
+        _ ("Multiple search paths must be separated by the %s character. Environment variables are supported with the following syntax: ${ENV_VAR_NAME}. Leave blank to use default paths."),
+        G_SEARCHPATH_SEPARATOR_S);
+      adw_preferences_group_set_description (subgroup, descr);
+    }
   adw_preferences_page_add (page, subgroup);
 
   GStrvBuilder * builder = g_strv_builder_new ();

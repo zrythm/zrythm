@@ -112,10 +112,6 @@ need_transport_total_bar_update (UndoableAction * self, bool _do)
   return true;
 }
 
-/**
- * Returns whether the action requires pausing
- * the engine.
- */
 bool
 undoable_action_needs_pause (UndoableAction * self)
 {
@@ -123,8 +119,7 @@ undoable_action_needs_pause (UndoableAction * self)
     {
     case UA_ARRANGER_SELECTIONS:
       {
-        /* always needs a pause to update the track playback
-         * snapshots */
+        /* always needs a pause to update the track playback snapshots */
         return true;
       }
       break;

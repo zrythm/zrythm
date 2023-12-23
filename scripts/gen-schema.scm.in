@@ -1241,26 +1241,41 @@ Args:
                      "info" "ai" "[1,1]"
                      "Plugins" "Paths")
                    (make-schema-key
-                     "vst-search-paths-windows" "as"
-                     "[ \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
-        \"C:\\\\Program Files\\\\VSTPlugins\",
-        \"C:\\\\Program Files\\\\Steinberg\\\\VSTPlugins\",
-        \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
-        \"C:\\\\Program Files\\\\Common Files\\\\Steinberg\\\\VST2\" ]"
+                     "vst2-search-paths" "as" "[]"
                      "VST2 plugins"
-                     "VST2 plugin search paths separated by : (or ; on Windows).")
+                     "VST2 plugin search paths.")
+                   (make-schema-key
+                     "vst3-search-paths" "as" "[]"
+                     "VST3 plugins"
+                     "VST3 plugin search paths.")
+                   (make-schema-key
+                     "clap-search-paths" "as" "[]"
+                     "CLAP plugins"
+                     "CLAP plugin search paths.")
+                   (make-schema-key
+                     "lv2-search-paths" "as" "[]"
+                     "LV2 plugins"
+                     "LV2 plugin search paths. Paths for plugins bundled with Zrythm will be appended to this list.")
+                   (make-schema-key
+                     "dssi-search-paths" "as" "[]"
+                     "DSSI plugins"
+                     "DSSI plugin search paths.")
+                   (make-schema-key
+                     "ladspa-search-paths" "as" "[]"
+                     "LADSPA plugins"
+                     "LADSPA plugin search paths.")
+                   (make-schema-key
+                     "jsfx-search-paths" "as" "[]"
+                     "JSFX plugins"
+                     "JSFX plugin search paths.")
                    (make-schema-key
                      "sfz-search-paths" "as" "[]"
                      "SFZ instruments"
-                     "SFZ instrument search paths separated by : (or ; on Windows).")
+                     "SFZ instrument search paths.")
                    (make-schema-key
                      "sf2-search-paths" "as" "[]"
                      "SF2 instruments"
-                     "SF2 instrument search paths separated by : (or ; on Windows).")
-                   (make-schema-key
-                     "jsfx-search-paths" "as" "[]"
-                     "JSFX plugin paths"
-                     "JSFX plugin search paths separated by : (or ; on Windows).")
+                     "SF2 instrument search paths.")
                  )) ;; plugins/paths
              ))) ;; plugins
 

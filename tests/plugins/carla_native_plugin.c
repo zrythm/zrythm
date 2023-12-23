@@ -33,6 +33,9 @@ test_vst_instrument_makes_sound (void)
         {
           /* vst3 */
           pl_path = SURGE_XT_PATH;
+          /* TODO: remove this line after Surge XT issue is fixed in Carla 2.6.0
+           */
+          pl_path = NULL;
         }
 #  endif
       if (!pl_path)

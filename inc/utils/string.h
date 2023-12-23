@@ -222,6 +222,15 @@ int
 string_utf8_strcasecmp (const char * s1, const char * s2);
 
 /**
+ * Expands environment variables enclosed in ${} in the given string.
+ */
+char *
+string_expand_env_vars (const char * src);
+
+void
+string_print_strv (const char * prefix, char ** strv);
+
+/**
  * Clones the given string array.
  */
 char **

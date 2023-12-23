@@ -777,12 +777,10 @@ track_processor_process (
       else if (
         TRANSPORT->play_state == PLAYSTATE_ROLLING || track_is_auditioner (tr))
         {
-          /* fill midi events from piano roll
-           * data */
+          /* fill midi events from piano roll data */
 #if 0
           g_message (
-            "filling midi events for %s from %ld",
-            tr->name, g_start_frames);
+            "filling midi events for %s from %ld", tr->name, g_start_frames);
 #endif
           track_fill_events (tr, time_nfo, pr->midi_events, NULL);
         }
@@ -797,8 +795,8 @@ track_processor_process (
         }
 #endif
 
-      /* append midi events from modwheel and
-       * pitchbend control ports to MIDI out */
+      /* append midi events from modwheel and pitchbend control ports to MIDI
+       * out */
       if (tr->type != TRACK_TYPE_CHORD)
         {
           add_events_from_midi_cc_control_ports (self, local_offset);
@@ -808,13 +806,11 @@ track_processor_process (
 #if 0
           g_debug (
             "%s midi processor out has %d events",
-            tr->name,
-            self->midi_out->midi_events->num_events);
+            tr->name, self->midi_out->midi_events->num_events);
 #endif
         }
 
-      /* append the midi events from piano roll to
-       * MIDI out */
+      /* append the midi events from piano roll to MIDI out */
       midi_events_append (
         self->midi_out->midi_events, pr->midi_events, local_offset, nframes,
         false);
@@ -831,9 +827,7 @@ track_processor_process (
             0)
         {
           g_message ("midi out");
-          midi_events_print (
-            self->midi_out->midi_events,
-            F_NOT_QUEUED);
+          midi_events_print (self->midi_out->midi_events, F_NOT_QUEUED);
         }
 #endif
     } /* if has piano roll or is chord track */
