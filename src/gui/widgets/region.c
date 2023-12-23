@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -1062,7 +1062,16 @@ draw_audio_part (
   signed_frame_t prev_frames = (signed_frame_t) (multiplier * local_start_x);
   signed_frame_t curr_frames = prev_frames;
 
-  float prev_min = 0.5f, prev_max = 0.5f;
+  float * prev_min = object_new_n (clip->channels, float);
+  float * prev_max = object_new_n (clip->channels, float);
+  dsp_fill (prev_min, 0.5f, clip->channels);
+  dsp_fill (prev_max, 0.5f, clip->channels);
+  float * ch_min = object_new_n (clip->channels, float);
+  float * ch_max = object_new_n (clip->channels, float);
+  dsp_fill (ch_min, 0.5f, clip->channels);
+  dsp_fill (ch_max, 0.5f, clip->channels);
+  const double full_height_per_ch =
+    (double) full_height / (double) clip->channels;
   for (double i = local_start_x; i < (double) local_end_x; i += increment)
     {
       curr_frames = (signed_frame_t) (multiplier * i);
@@ -1082,12 +1091,13 @@ draw_audio_part (
         }
 
       z_return_if_fail_cmp (curr_frames, >=, 0);
-      float          min = 0.f, max = 0.f;
       signed_frame_t from = (MAX (0, prev_frames));
       signed_frame_t to = (MIN ((signed_frame_t) clip->num_frames, curr_frames));
       signed_frame_t frames_to_check = to - from;
       if (from + frames_to_check > (signed_frame_t) clip->num_frames)
-        frames_to_check = (signed_frame_t) clip->num_frames - from;
+        {
+          frames_to_check = (signed_frame_t) clip->num_frames - from;
+        }
       z_return_if_fail_cmp (from, <, (signed_frame_t) clip->num_frames);
       z_return_if_fail_cmp (
         from + frames_to_check, <=, (signed_frame_t) clip->num_frames);
@@ -1096,75 +1106,86 @@ draw_audio_part (
           size_t frames_to_check_unsigned = (size_t) frames_to_check;
           for (unsigned int k = 0; k < clip->channels; k++)
             {
-              min = dsp_min (
+              ch_min[k] = dsp_min (
                 &clip->ch_frames[k][from], (size_t) frames_to_check_unsigned);
-              max = dsp_max (
+              ch_max[k] = dsp_max (
                 &clip->ch_frames[k][from], (size_t) frames_to_check_unsigned);
-            }
 
-          /* normalize */
-          min = (min + 1.f) / 2.f;
-          max = (max + 1.f) / 2.f;
+              /* normalize */
+              ch_min[k] = (ch_min[k] + 1.f) / 2.f;
+              ch_max[k] = (ch_max[k] + 1.f) / 2.f;
+            }
         }
       else
         {
-          min = prev_min;
-          max = prev_max;
+          dsp_copy (prev_min, ch_min, clip->channels);
+          dsp_copy (prev_max, ch_max, clip->channels);
         }
 
-      /* adjust to draw from the middle so it draws bars
-       * instead of single points when zoomed */
-      if (max > 0.5f && min > 0.5f)
+      for (unsigned int k = 0; k < clip->channels; k++)
         {
-          min = 0.5f;
-        }
-      if (min < 0.5f && max < 0.5f)
-        {
-          max = 0.5f;
-        }
+          /* adjust to draw from the middle so it draws bars instead of single
+           * points when zoomed */
+          if (ch_max[k] > 0.5f && ch_min[k] > 0.5f)
+            {
+              ch_min[k] = 0.5f;
+            }
+          if (ch_min[k] < 0.5f && ch_max[k] < 0.5f)
+            {
+              ch_max[k] = 0.5f;
+            }
+          /* local from the full rect y */
+          double local_min_y =
+            MAX ((double) ch_min[k] * (double) full_height_per_ch, 0.0);
+          /* local from the full rect y */
+          double local_max_y = MIN (
+            (double) ch_max[k] * (double) full_height_per_ch,
+            (double) full_height_per_ch);
 
-      /* local from the full rect y */
-      double local_min_y = MAX ((double) min * (double) full_height, 0.0);
-      /* local from the full rect y */
-      double local_max_y =
-        MIN ((double) max * (double) full_height, (double) full_height);
-
-      /* only draw if non-silent */
-      float       avg = (max + min) / 2.f;
-      const float epsilon = 0.001f;
-      if (!math_floats_equal_epsilon (avg, 0.5f, epsilon) || max - min > epsilon)
-        {
-          gtk_snapshot_append_color (
-            snapshot, &object_fill_color,
-            &GRAPHENE_RECT_INIT (
-              (float) i, (float) local_min_y, (float) MAX (width, 1),
-              (float) MAX (local_max_y - local_min_y, 1)));
-        }
+          /* only draw if non-silent */
+          float       avg = (ch_max[k] + ch_min[k]) / 2.f;
+          const float epsilon = 0.001f;
+          if (
+            !math_floats_equal_epsilon (avg, 0.5f, epsilon)
+            || ch_max[k] - ch_min[k] > epsilon)
+            {
+              gtk_snapshot_save (snapshot);
+              gtk_snapshot_translate (
+                snapshot,
+                &GRAPHENE_POINT_INIT (0, (float) k * (float) full_height_per_ch));
+              gtk_snapshot_append_color (
+                snapshot, &object_fill_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) i, (float) local_min_y, (float) MAX (width, 1),
+                  (float) MAX (local_max_y - local_min_y, 1)));
+              gtk_snapshot_restore (snapshot);
+            }
+          prev_min[k] = ch_min[k];
+          prev_max[k] = ch_max[k];
+        } /* endforeach channel k */
 
       prev_frames = curr_frames;
-      prev_min = min;
-      prev_max = max;
     }
+  free (ch_min);
+  free (ch_max);
+  free (prev_min);
+  free (prev_max);
 }
 
 /**
  * Draw audio.
  *
- * At this point, cr is translated to start at 0,0
- * in the full rect.
+ * At this point, cr is translated to start at 0,0 in the full rect.
  *
  * @param rect Arranger rectangle.
- * @param cache_applied_rect The rectangle where
- *   the previous cache was pasted at, where
- *   0,0 is the region's top left corner. This
- *   is so that the cached part is not re-drawn.
+ * @param cache_applied_rect The rectangle where the previous cache was
+ *   pasted at, where 0,0 is the region's top left corner. This is so that
+ *   the cached part is not re-drawn.
  *   Only x and width are useful.
- * @param cache_applied_offset_x The offset from
- *   the region's top-left corner at
- *   which the cache was applied (can be negative).
- * @param cache_applied_width The width of the
- *   cache, starting from cache_applied_offset_x
- *   (even if negative).
+ * @param cache_applied_offset_x The offset from the region's top-left corner
+ *   at which the cache was applied (can be negative).
+ * @param cache_applied_width The width of the cache, starting from
+ *   cache_applied_offset_x (even if negative).
  */
 static void
 draw_audio_region (
