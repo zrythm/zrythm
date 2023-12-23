@@ -318,7 +318,7 @@ ui_pos_to_px_editor (Position * pos, bool use_padding)
  *   padding.
  */
 static signed_frame_t
-px_to_frames (double px, int has_padding, RulerWidget * ruler)
+px_to_frames (double px, bool has_padding, RulerWidget * ruler)
 {
   if (has_padding)
     {
@@ -334,16 +334,8 @@ px_to_frames (double px, int has_padding, RulerWidget * ruler)
                      / ruler->px_per_tick);
 }
 
-/**
- * Converts from pixels to frames.
- *
- * Returns the frames.
- *
- * @param has_padding Whether then given px contains
- *   padding.
- */
 signed_frame_t
-ui_px_to_frames_timeline (double px, int has_padding)
+ui_px_to_frames_timeline (double px, bool has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
@@ -351,16 +343,8 @@ ui_px_to_frames_timeline (double px, int has_padding)
   return px_to_frames (px, has_padding, Z_RULER_WIDGET (MW_RULER));
 }
 
-/**
- * Converts from pixels to frames.
- *
- * Returns the frames.
- *
- * @param has_padding Whether then given px contains
- *   padding.
- */
 signed_frame_t
-ui_px_to_frames_editor (double px, int has_padding)
+ui_px_to_frames_editor (double px, bool has_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;

@@ -582,22 +582,20 @@ ui_px_to_pos_timeline (double px, Position * pos, bool has_padding);
  *
  * Returns the frames.
  *
- * @param has_padding Whether then given px contains
- *   padding.
+ * @param has_padding Whether then given px contains padding.
  */
 signed_frame_t
-ui_px_to_frames_timeline (double px, int has_padding);
+ui_px_to_frames_timeline (double px, bool has_padding);
 
 /**
  * Converts from pixels to frames.
  *
  * Returns the frames.
  *
- * @param has_padding Whether then given px contains
- *   padding.
+ * @param has_padding Whether then given px contains padding.
  */
 signed_frame_t
-ui_px_to_frames_editor (double px, int has_padding);
+ui_px_to_frames_editor (double px, bool has_padding);
 
 /**
  * Converts position to px, optionally adding the

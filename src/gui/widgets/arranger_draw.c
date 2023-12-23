@@ -598,12 +598,20 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   GdkRGBA   audio_lines_color = {
     color->red + 0.3f, color->green + 0.3f, color->blue + 0.3f, 0.9f
   };
-  float prev_min = 0.5f, prev_max = 0.5f;
+  float * prev_min = object_new_n (clip->channels, float);
+  float * prev_max = object_new_n (clip->channels, float);
+  dsp_fill (prev_min, 0.5f, clip->channels);
+  dsp_fill (prev_max, 0.5f, clip->channels);
+  float * ch_min = object_new_n (clip->channels, float);
+  float * ch_max = object_new_n (clip->channels, float);
+  dsp_fill (ch_min, 0.5f, clip->channels);
+  dsp_fill (ch_max, 0.5f, clip->channels);
+  const double height_per_ch = (double) rect->height / (double) clip->channels;
   for (double i = local_start_x; i < local_end_x; i += increment)
     {
       signed_frame_t curr_frames =
         ui_px_to_frames_editor (i, 1) - obj->pos.frames;
-      if (curr_frames < 0)
+      if (curr_frames <= 0)
         continue;
 
       if (prev_frames >= (signed_frame_t) clip->num_frames)
@@ -612,7 +620,6 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
           continue;
         }
 
-      float  min = 0.f, max = 0.f;
       size_t from = (size_t) (MAX (0, prev_frames));
       size_t to =
         (size_t) (MIN (clip->num_frames, (unsigned_frame_t) curr_frames));
@@ -625,51 +632,68 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
         {
           for (unsigned int k = 0; k < clip->channels; k++)
             {
-              min = dsp_min (&clip->ch_frames[k][from], frames_to_check);
-              max = dsp_max (&clip->ch_frames[k][from], frames_to_check);
-            }
+              ch_min[k] =
+                dsp_min (&clip->ch_frames[k][from], (size_t) frames_to_check);
+              ch_max[k] =
+                dsp_max (&clip->ch_frames[k][from], (size_t) frames_to_check);
 
-          /* normalize */
-          min = (min + 1.f) / 2.f;
-          max = (max + 1.f) / 2.f;
+              /* normalize */
+              ch_min[k] = (ch_min[k] + 1.f) / 2.f;
+              ch_max[k] = (ch_max[k] + 1.f) / 2.f;
+            }
         }
       else
         {
-          min = prev_min;
-          max = prev_max;
+          dsp_copy (prev_min, ch_min, clip->channels);
+          dsp_copy (prev_max, ch_max, clip->channels);
         }
 
-      /* adjust to draw from the middle so it draws bars
-       * instead of single points when zoomed */
-      if (max > 0.5f && min > 0.5f)
+      for (unsigned int k = 0; k < clip->channels; k++)
         {
-          min = 0.5f;
-        }
-      if (min < 0.5f && max < 0.5f)
-        {
-          max = 0.5f;
-        }
+          /* adjust to draw from the middle so it draws bars instead of single
+           * points when zoomed */
+          if (ch_max[k] > 0.5f && ch_min[k] > 0.5f)
+            {
+              ch_min[k] = 0.5f;
+            }
+          if (ch_min[k] < 0.5f && ch_max[k] < 0.5f)
+            {
+              ch_max[k] = 0.5f;
+            }
 
-      double min_y = MAX ((double) min * (double) rect->height, 0.0);
-      double max_y =
-        MIN ((double) max * (double) rect->height, (double) rect->height);
+          double min_y = MAX ((double) ch_min[k] * (double) height_per_ch, 0.0);
+          double max_y = MIN (
+            (double) ch_max[k] * (double) height_per_ch, (double) height_per_ch);
 
-      /* only draw if non-silent */
-      float       avg = (max + min) / 2.f;
-      const float epsilon = 0.001f;
-      if (!math_floats_equal_epsilon (avg, 0.5f, epsilon) || max - min > epsilon)
-        {
-          gtk_snapshot_append_color (
-            snapshot, &audio_lines_color,
-            &GRAPHENE_RECT_INIT (
-              (float) i, (float) min_y, (float) MAX (width, 1),
-              (float) MAX (max_y - min_y, 1)));
-        }
+          /* only draw if non-silent */
+          float       avg = (ch_max[k] + ch_min[k]) / 2.f;
+          const float epsilon = 0.001f;
+          if (
+            !math_floats_equal_epsilon (avg, 0.5f, epsilon)
+            || ch_max[k] - ch_min[k] > epsilon)
+            {
+              gtk_snapshot_save (snapshot);
+              gtk_snapshot_translate (
+                snapshot,
+                &GRAPHENE_POINT_INIT (0, (float) k * (float) height_per_ch));
+              gtk_snapshot_append_color (
+                snapshot, &audio_lines_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) i, (float) min_y, (float) MAX (width, 1),
+                  (float) MAX (max_y - min_y, 1)));
+              gtk_snapshot_restore (snapshot);
+            }
+
+          prev_min[k] = ch_min[k];
+          prev_max[k] = ch_max[k];
+        } /* endforeach channel k */
 
       prev_frames = curr_frames;
-      prev_min = min;
-      prev_max = max;
     }
+  free (ch_min);
+  free (ch_max);
+  free (prev_min);
+  free (prev_max);
 
   /* draw gain line */
   float gain_fader_val = math_get_fader_val_from_amp (ar->gain);
