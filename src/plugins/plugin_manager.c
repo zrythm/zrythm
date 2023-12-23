@@ -244,19 +244,19 @@ get_lv2_paths (PluginManager * self)
         char * home_lv2 = g_build_filename (g_get_home_dir (), ".lv2", NULL);
         g_strv_builder_add (builder, home_lv2);
         g_free (home_lv2);
-        g_strv_builder_add_many (
-          builder, "/usr/lib/lv2", "/usr/local/lib/lv2", NULL);
-#  if defined(INSTALLER_VER)
-        g_strv_builder_add_many (
-          builder, "/usr/lib64/lv2", "/usr/local/lib64/lv2", NULL);
-#  else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/lv2",
-              "/usr/local/" LIBDIR_NAME "/lv2", NULL);
-          }
       }
+      g_strv_builder_add_many (
+        builder, "/usr/lib/lv2", "/usr/local/lib/lv2", NULL);
+#  if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/lv2", "/usr/local/lib64/lv2", NULL);
+#  else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/" LIBDIR_NAME "/lv2",
+            "/usr/local/" LIBDIR_NAME "/lv2", NULL);
+        }
 #  endif /* endif non-flatpak UNIX */
 #endif   /* endif per-platform code */
     }
@@ -470,19 +470,19 @@ get_vst2_paths (PluginManager * self)
         char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
         g_strv_builder_add (builder, home_vst);
         g_free (home_vst);
-        g_strv_builder_add_many (
-          builder, "/usr/lib/vst", "/usr/local/lib/vst", NULL);
-#    if defined(INSTALLER_VER)
-        g_strv_builder_add_many (
-          builder, "/usr/lib64/vst", "/usr/local/lib64/vst", NULL);
-#    else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/vst",
-              "/usr/local/" LIBDIR_NAME "/vst", NULL);
-          }
       }
+      g_strv_builder_add_many (
+        builder, "/usr/lib/vst", "/usr/local/lib/vst", NULL);
+#    if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/vst", "/usr/local/lib64/vst", NULL);
+#    else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/" LIBDIR_NAME "/vst",
+            "/usr/local/" LIBDIR_NAME "/vst", NULL);
+        }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
     }
@@ -528,23 +528,23 @@ get_vst3_paths (PluginManager * self)
 #  elif defined(FLATPAK_BUILD)
       g_strv_builder_add (builder, "/app/extensions/Plugins/vst3");
 #  else /* non-flatpak UNIX */
-        {
-          char * home_vst3 = g_build_filename (g_get_home_dir (), ".vst3", NULL);
-          g_strv_builder_add (builder, home_vst3);
-          g_free (home_vst3);
-          g_strv_builder_add_many (
-            builder, "/usr/lib/vst3", "/usr/local/lib/vst3", NULL);
-#    if defined(INSTALLER_VER)
-          g_strv_builder_add_many (
-            builder, "/usr/lib64/vst3", "/usr/local/lib64/vst3", NULL);
-#    else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/vst3",
-              "/usr/local/" LIBDIR_NAME "/vst3", NULL);
-          }
+      {
+        char * home_vst3 = g_build_filename (g_get_home_dir (), ".vst3", NULL);
+        g_strv_builder_add (builder, home_vst3);
+        g_free (home_vst3);
       }
+      g_strv_builder_add_many (
+        builder, "/usr/lib/vst3", "/usr/local/lib/vst3", NULL);
+#    if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/vst3", "/usr/local/lib64/vst3", NULL);
+#    else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/" LIBDIR_NAME "/vst3",
+            "/usr/local/" LIBDIR_NAME "/vst3", NULL);
+        }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
     }
@@ -703,19 +703,19 @@ get_dssi_paths (PluginManager * self)
         char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
         g_strv_builder_add (builder, home_vst);
         g_free (home_vst);
-        g_strv_builder_add_many (
-          builder, "/usr/lib/dssi", "/usr/local/lib/dssi", NULL);
-#    if defined(INSTALLER_VER)
-        g_strv_builder_add_many (
-          builder, "/usr/lib64/dssi", "/usr/local/lib64/dssi", NULL);
-#    else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/dssi",
-              "/usr/local/" LIBDIR_NAME "/dssi", NULL);
-          }
       }
+      g_strv_builder_add_many (
+        builder, "/usr/lib/dssi", "/usr/local/lib/dssi", NULL);
+#    if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/dssi", "/usr/local/lib64/dssi", NULL);
+#    else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/" LIBDIR_NAME "/dssi",
+            "/usr/local/" LIBDIR_NAME "/dssi", NULL);
+        }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
     }
@@ -755,20 +755,18 @@ get_ladspa_paths (PluginManager * self)
 #  if defined(FLATPAK_BUILD)
       g_strv_builder_add (builder, "/app/extensions/Plugins/ladspa");
 #  else /* non-flatpak UNIX */
+      g_strv_builder_add_many (
+        builder, "/usr/lib/ladspa", "/usr/local/lib/ladspa", NULL);
+#    if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/ladspa", "/usr/local/lib64/ladspa", NULL);
+#    else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
         {
           g_strv_builder_add_many (
-            builder, "/usr/lib/ladspa", "/usr/local/lib/ladspa", NULL);
-#    if defined(INSTALLER_VER)
-          g_strv_builder_add_many (
-            builder, "/usr/lib64/ladspa", "/usr/local/lib64/ladspa", NULL);
-#    else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/ladspa",
-              "/usr/local/" LIBDIR_NAME "/ladspa", NULL);
-          }
-      }
+            builder, "/usr/" LIBDIR_NAME "/ladspa",
+            "/usr/local/" LIBDIR_NAME "/ladspa", NULL);
+        }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
     }
@@ -814,28 +812,27 @@ get_clap_paths (PluginManager * self)
         builder, "C:\\Program Files\\Common Files\\CLAP",
         "C:\\Program Files (x86)\\Common Files\\CLAP", NULL);
 #  elif defined(__APPLE__)
-          g_strv_builder_add (builder, "/Library/Audio/Plug-ins/CLAP");
+      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/CLAP");
 #  elif defined(FLATPAK_BUILD)
       g_strv_builder_add (builder, "/app/extensions/Plugins/clap");
 #  else /* non-flatpak UNIX */
-          {
-            char * home_clap =
-              g_build_filename (g_get_home_dir (), ".clap", NULL);
-            g_strv_builder_add (builder, home_clap);
-            g_free (home_clap);
-            g_strv_builder_add_many (
-              builder, "/usr/lib/clap", "/usr/local/lib/clap", NULL);
-#    if defined(INSTALLER_VER)
-            g_strv_builder_add_many (
-              builder, "/usr/lib64/clap", "/usr/local/lib64/clap", NULL);
-#    else  /* else if unix and not installer ver */
-        if (!string_is_equal (LIBDIR_NAME, "lib"))
-          {
-            g_strv_builder_add_many (
-              builder, "/usr/" LIBDIR_NAME "/clap",
-              "/usr/local/" LIBDIR_NAME "/clap", NULL);
-          }
+      {
+        char * home_clap = g_build_filename (g_get_home_dir (), ".clap", NULL);
+        g_strv_builder_add (builder, home_clap);
+        g_free (home_clap);
       }
+      g_strv_builder_add_many (
+        builder, "/usr/lib/clap", "/usr/local/lib/clap", NULL);
+#    if defined(INSTALLER_VER)
+      g_strv_builder_add_many (
+        builder, "/usr/lib64/clap", "/usr/local/lib64/clap", NULL);
+#    else  /* else if unix and not installer ver */
+      if (!string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          g_strv_builder_add_many (
+            builder, "/usr/" LIBDIR_NAME "/clap",
+            "/usr/local/" LIBDIR_NAME "/clap", NULL);
+        }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
     }
@@ -1032,7 +1029,7 @@ scan_carla_descriptors_from_paths (
 #  ifdef __APPLE__
       suffix = ".vst";
 #  else
-          suffix = LIB_SUFFIX;
+      suffix = LIB_SUFFIX;
 #  endif
       break;
     case Z_PLUGIN_PROTOCOL_VST3:
