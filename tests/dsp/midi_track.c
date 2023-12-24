@@ -632,6 +632,56 @@ test_fill_midi_events (void)
   midi_events_clear (events, F_QUEUED);
 
   /**
+   * Premise (bug #3317):
+   * Region: <1.2.1.0 ~ 5.4.1.0> (loop end 4.2.1.0)
+   * Note: <2.4.3.37.2 ~ 4.2.3.37.2>
+   *
+   * Expected result:
+   * Note on at 2.4.3.37.2 and note off at 4.2.1.0.
+   */
+  g_assert_true (position_parse (&r_obj->pos, "1.2.1.0.0"));
+  g_assert_true (position_parse (&r_obj->end_pos, "5.4.1.0.0"));
+  g_assert_true (position_parse (&r_obj->loop_end_pos, "4.2.1.0.0"));
+  position_set_to_bar (&TRANSPORT->loop_start_pos, 1);
+  position_set_to_bar (&TRANSPORT->loop_end_pos, 8);
+  g_assert_true (position_parse (&mn_obj->pos, "2.4.3.37.2"));
+  g_assert_true (position_parse (&mn_obj->end_pos, "4.2.3.37.2"));
+
+  /* check note on */
+  time_nfo.g_start_frame =
+    (unsigned_frame_t) r_obj->pos.frames + (unsigned_frame_t) mn_obj->pos.frames
+    - 4;
+  time_nfo.g_start_frame_w_offset =
+    (unsigned_frame_t) r_obj->pos.frames + (unsigned_frame_t) mn_obj->pos.frames
+    - 4;
+  time_nfo.local_offset = 0;
+  time_nfo.nframes = 30;
+  SET_CACHES_AND_FILL;
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
+  ev = &events->queued_events[0];
+  g_assert_true (midi_is_note_on (ev->raw_buffer));
+  g_assert_cmpuint (ev->time, ==, 4);
+  midi_events_clear (events, F_QUEUED);
+
+  /* check note off at region loop */
+  time_nfo.g_start_frame =
+    (unsigned_frame_t) r_obj->pos.frames
+    + (unsigned_frame_t) r_obj->loop_end_pos.frames - 4;
+  time_nfo.g_start_frame_w_offset =
+    (unsigned_frame_t) r_obj->pos.frames
+    + (unsigned_frame_t) r_obj->loop_end_pos.frames - 4;
+  time_nfo.local_offset = 0;
+  time_nfo.nframes = 30;
+  SET_CACHES_AND_FILL;
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
+  ev = &events->queued_events[0];
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_cmpuint (ev->time, ==, 3);
+  midi_events_clear (events, F_QUEUED);
+
+  /**
    *
    * Premise: note starts inside region and ends
    *   outside it.

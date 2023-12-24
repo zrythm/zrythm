@@ -1659,8 +1659,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
           if (port->id.type != TYPE_AUDIO)
             continue;
 
-          /* if close to 0 set it to the denormal
-           * prevention val */
+          /* if close to 0 set it to the denormal prevention val */
           if (math_floats_equal_epsilon (plugin->gain->control, 0.f, 0.00001f))
             {
               dsp_fill (

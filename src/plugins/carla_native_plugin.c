@@ -716,8 +716,7 @@ carla_native_plugin_process (
       }
   }
 
-  /* set actual audio out bufs (carla will write
-   * to these) */
+  /* set actual audio out bufs (carla will write to these) */
   {
     size_t audio_ports = 0;
     for (int i = 0; i < self->plugin->num_out_ports; i++)
@@ -763,9 +762,11 @@ carla_native_plugin_process (
         ev->time < time_nfo->local_offset
         || ev->time >= time_nfo->local_offset + time_nfo->nframes)
         {
-          /* skip events scheduled
-           * for another split within
-           * the processing cycle */
+          /* skip events scheduled for another split within the processing cycle
+           */
+#  if 0
+          g_debug ("skip events scheduled for another split within the processing cycle: ev->time %u, local_offset %u, nframes %u", ev->time, time_nfo->local_offset, time_nfo->nframes);
+#  endif
           continue;
         }
 
@@ -773,17 +774,15 @@ carla_native_plugin_process (
       g_message (
         "writing plugin input event %d "
         "at time %u - "
-        "local frames %u nframes %u",
+        "local offset %u nframes %u",
         num_events_written,
         ev->time - time_nfo->local_offset,
         time_nfo->local_offset, time_nfo->nframes);
       midi_event_print (ev);
 #  endif
 
-      /* event time is relative to the current
-       * zrythm full cycle (not split). it
-       * needs to be made relative to the
-       * current split */
+      /* event time is relative to the current zrythm full cycle (not split). it
+       * needs to be made relative to the current split */
       events[num_events_written].time = ev->time - time_nfo->local_offset;
       events[num_events_written].size = 3;
       events[num_events_written].data[0] = ev->raw_buffer[0];
@@ -800,10 +799,9 @@ carla_native_plugin_process (
   if (num_events_written > 0)
     {
 #  if 0
-      g_message (
+      g_debug (
         "Carla plugin %s has %d MIDI events",
-        self->plugin->descr->name,
-        num_events_written);
+        self->plugin->setting->descr->name, num_events_written);
 #  endif
     }
 
