@@ -28,15 +28,15 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/audio_track.h"
-#include "dsp/control_port.h"
-#include "dsp/engine.h"
-#include "dsp/engine_alsa.h"
-
 #ifdef HAVE_C11_THREADS
 #  include <threads.h>
 #endif
 
+#include "dsp/audio_track.h"
+#include "dsp/control_port.h"
+#include "dsp/engine.h"
+#include "dsp/engine_alsa.h"
+#include "utils/debug.h"
 #ifdef HAVE_JACK
 #  include "dsp/engine_jack.h"
 #endif
@@ -92,10 +92,8 @@ router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo)
   g_return_if_fail (
     time_nfo.local_offset + time_nfo.nframes <= AUDIO_ENGINE->nframes);
 
-  /* only set the kickoff thread when not called
-   * from the gtk thread (sometimes this is called
-   * from the gtk thread to force some
-   * processing) */
+  /* only set the kickoff thread when not called from the gtk thread (sometimes
+   * this is called from the gtk thread to force some processing) */
   if (g_thread_self () != zrythm_app->gtk_thread)
     self->process_kickoff_thread = g_thread_self ();
 
@@ -108,6 +106,8 @@ router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo)
   self->global_offset =
     self->max_route_playback_latency - AUDIO_ENGINE->remaining_latency_preroll;
   memcpy (&self->time_nfo, &time_nfo, sizeof (EngineProcessTimeInfo));
+  z_return_if_fail_cmp (
+    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
 
   /* read control port change events */
   while (

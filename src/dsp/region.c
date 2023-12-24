@@ -1263,8 +1263,7 @@ region_timeline_frames_to_local (
     {
       signed_frame_t diff_frames = timeline_frames - r_obj->pos.frames;
 
-      /* special case: timeline frames is exactly
-       * at the end of the region */
+      /* special case: timeline frames is exactly at the end of the region */
       if (timeline_frames == r_obj->end_pos.frames)
         return diff_frames;
 

@@ -102,6 +102,7 @@ test_fill_midi_events (void)
   /* try basic fill */
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = (unsigned_frame_t) pos.frames,
+    .g_start_frame_w_offset = (unsigned_frame_t) pos.frames,
     .local_offset = 0,
     .nframes = BUFFER_SIZE,
   };
@@ -124,7 +125,8 @@ test_fill_midi_events (void)
    * Expected result:
    * MIDI note start is skipped (no events).
    */
-  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames + 1;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames + 1;
   time_nfo.local_offset = 1;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -139,6 +141,7 @@ test_fill_midi_events (void)
    * only 1 sample.
    */
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 1;
   SET_CACHES_AND_FILL;
@@ -154,6 +157,7 @@ test_fill_midi_events (void)
    */
   position_add_frames (&pos, BUFFER_SIZE);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -170,6 +174,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, (-BUFFER_SIZE) - 1);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -186,6 +191,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -BUFFER_SIZE);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -213,6 +219,7 @@ test_fill_midi_events (void)
   pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, -BUFFER_SIZE);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -236,6 +243,7 @@ test_fill_midi_events (void)
   pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, (-BUFFER_SIZE) + 1);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -256,6 +264,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, (-BUFFER_SIZE) + 1);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -299,6 +308,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -365);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 512;
   SET_CACHES_AND_FILL;
@@ -340,6 +350,7 @@ test_fill_midi_events (void)
   position_set_to_bar (&pos, 3);
   position_add_frames (&pos, -365);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 2000;
   SET_CACHES_AND_FILL;
@@ -385,6 +396,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -6);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -402,6 +414,7 @@ test_fill_midi_events (void)
   position_set_to_bar (&pos, 1);
   position_update_frames_from_ticks (&pos, 0.0);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -418,6 +431,7 @@ test_fill_midi_events (void)
   position_set_to_bar (&pos, 3);
   position_update_frames_from_ticks (&pos, 0.0);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -433,6 +447,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -10);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -451,6 +466,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -10);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -492,6 +508,7 @@ test_fill_midi_events (void)
   position_add_frames (&pos, r_obj->pos.frames);
   position_add_frames (&pos, -10);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -523,6 +540,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -10);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -558,6 +576,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&mn_obj->end_pos, &pos);
   position_set_to_bar (&pos, 3);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
@@ -587,6 +606,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
   position_add_frames (&pos, -30);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 30;
   SET_CACHES_AND_FILL;
@@ -602,6 +622,7 @@ test_fill_midi_events (void)
 
   position_set_to_pos (&pos, &TRANSPORT->loop_start_pos);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 10;
   SET_CACHES_AND_FILL;
@@ -630,6 +651,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &mn_obj->pos);
   position_add_frames (&pos, -10);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
   SET_CACHES_AND_FILL;
@@ -661,6 +683,7 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->loop_end_pos);
   position_add_frames (&pos, -5);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
   SET_CACHES_AND_FILL;

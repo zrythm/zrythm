@@ -42,11 +42,13 @@ test_process_master (void)
   nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = 0,
+    .g_start_frame_w_offset = 0,
     .local_offset = 0,
     .nframes = local_offset,
   };
   track_processor_process (P_MASTER_TRACK->processor, &time_nfo);
-  time_nfo.g_start_frame = local_offset;
+  time_nfo.g_start_frame = 0;
+  time_nfo.g_start_frame_w_offset = local_offset;
   time_nfo.local_offset = local_offset;
   time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
   track_processor_process (P_MASTER_TRACK->processor, &time_nfo);

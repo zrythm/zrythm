@@ -357,8 +357,7 @@ do_takes_loop_no_punch (
   (void) touch_r_obj;
 
   /* assert that MIDI events are created */
-  /* FIXME this assumes it runs after the first test
-   */
+  /* FIXME this assumes it runs after the first test */
   g_assert_cmpint (ins_track->lanes[1]->num_regions, ==, 1);
   g_assert_cmpint (ins_track->lanes[2]->num_regions, ==, 1);
   mr = ins_track->lanes[1]->regions[0];

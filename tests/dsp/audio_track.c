@@ -66,6 +66,7 @@ test_fill_when_region_starts_on_loop_end (void)
   position_add_frames (&pos, -nframes);
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = (unsigned_frame_t) pos.frames,
+    .g_start_frame_w_offset = (unsigned_frame_t) pos.frames,
     .local_offset = 0,
     .nframes = (nframes_t) nframes,
   };
@@ -80,6 +81,7 @@ test_fill_when_region_starts_on_loop_end (void)
    * played */
   position_set_to_bar (&pos, LOOP_BAR);
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame_w_offset = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = (nframes_t) nframes;
   track_fill_events (track, &time_nfo, NULL, ports);

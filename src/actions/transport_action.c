@@ -157,6 +157,7 @@ do_or_undo (TransportAction * self, bool _do, GError ** error)
   engine_process_prepare (AUDIO_ENGINE, 1);
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+    .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 1,
   };

@@ -2503,7 +2503,7 @@ track_fill_events (
     }
 
   const unsigned_frame_t g_end_frames =
-    time_nfo->g_start_frame + time_nfo->nframes;
+    time_nfo->g_start_frame_w_offset + time_nfo->nframes;
 
   if (midi_events)
     {
@@ -2515,7 +2515,7 @@ track_fill_events (
   g_message (
     "%s: TRACK %s STARTING from %ld, "
     "local start frame %u, nframes %u",
-    __func__, self->name, time_nfo->g_start_frame,
+    __func__, self->name, time_nfo->g_start_frame_w_offset,
     time_nfo->local_offset, time_nfo->nframes);
 #endif
 
@@ -2570,7 +2570,7 @@ track_fill_events (
            * (inclusive of its last point) */
           if (
             !region_is_hit_by_range (
-              r, (signed_frame_t) time_nfo->g_start_frame,
+              r, (signed_frame_t) time_nfo->g_start_frame_w_offset,
               (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
               F_INCLUSIVE))
             {
@@ -2578,7 +2578,8 @@ track_fill_events (
             }
 
           signed_frame_t num_frames_to_process = MIN (
-            r_obj->end_pos.frames - (signed_frame_t) time_nfo->g_start_frame,
+            r_obj->end_pos.frames
+              - (signed_frame_t) time_nfo->g_start_frame_w_offset,
             (signed_frame_t) time_nfo->nframes);
           nframes_t frames_processed = 0;
 
@@ -2586,13 +2587,15 @@ track_fill_events (
             {
               unsigned_frame_t cur_g_start_frame =
                 time_nfo->g_start_frame + frames_processed;
+              unsigned_frame_t cur_g_start_frame_w_offset =
+                time_nfo->g_start_frame_w_offset + frames_processed;
               nframes_t cur_local_start_frame =
                 time_nfo->local_offset + frames_processed;
 
               bool           is_end_loop;
               signed_frame_t cur_num_frames_till_next_r_loop_or_end;
               region_get_frames_till_next_loop_or_end (
-                r, (signed_frame_t) cur_g_start_frame,
+                r, (signed_frame_t) cur_g_start_frame_w_offset,
                 &cur_num_frames_till_next_r_loop_or_end, &is_end_loop);
 
 #if 0
@@ -2612,12 +2615,14 @@ track_fill_events (
                 || (cur_num_frames_till_next_r_loop_or_end == num_frames_to_process && !is_end_loop)
                 ||
                 /* region end */
-                ((signed_frame_t) time_nfo->g_start_frame + num_frames_to_process
+                ((signed_frame_t) time_nfo->g_start_frame_w_offset
+                   + num_frames_to_process
                  == r_obj->end_pos.frames)
                 ||
                 /* transport end */
                 (TRANSPORT_IS_LOOPING
-                 && (signed_frame_t) time_nfo->g_start_frame + num_frames_to_process
+                 && (signed_frame_t) time_nfo->g_start_frame_w_offset
+                        + num_frames_to_process
                       == TRANSPORT->loop_end_pos.frames);
 
               /* number of frames to process this
@@ -2627,6 +2632,7 @@ track_fill_events (
 
               const EngineProcessTimeInfo nfo = {
                 .g_start_frame = cur_g_start_frame,
+                .g_start_frame_w_offset = cur_g_start_frame_w_offset,
                 .local_offset = cur_local_start_frame,
                 .nframes = cur_num_frames_till_next_r_loop_or_end
               };

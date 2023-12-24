@@ -830,7 +830,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
       g_debug (
         "%s: g_start %ld, start frame %u, nframes "
         "%u",
-        __func__, time_nfo->g_start_frame,
+        __func__, time_nfo->g_start_frame_w_offset,
         time_nfo->local_offset,
         time_nfo->nframes);
 #endif
@@ -917,7 +917,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
                * clip */
               stereo_ports_fill_from_clip (
                 self->stereo_out, clip,
-                time_nfo->g_start_frame,
+                time_nfo->g_start_frame_w_offset,
                 time_nfo->local_offset,
                 time_nfo->nframes);
 #endif
@@ -944,11 +944,8 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
                     time_nfo->nframes);
 
                   /* add listened signal */
-                  /* TODO add "listen" buffer
-                   * on fader struct and add
-                   * listened tracks to it during
-                   * processing instead of looping
-                   * here */
+                  /* TODO add "listen" buffer on fader struct and add listened
+                   * tracks to it during processing instead of looping here */
                   float listen_amp = fader_get_amp (CONTROL_ROOM->listen_fader);
                   for (int i = 0; i < TRACKLIST->num_tracks; i++)
                     {

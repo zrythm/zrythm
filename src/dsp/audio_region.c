@@ -315,8 +315,7 @@ audio_region_fill_stereo_ports (
   g_return_if_fail (clip);
   Track * track = arranger_object_get_track (r_obj);
 
-  /* if timestretching in the timeline, skip
-   * processing */
+  /* if timestretching in the timeline, skip processing */
   if (
     G_UNLIKELY (
       ZRYTHM_HAVE_UI && MW_TIMELINE
@@ -333,7 +332,8 @@ audio_region_fill_stereo_ports (
 
   /* restretch if necessary */
   Position g_start_pos;
-  position_from_frames (&g_start_pos, (signed_frame_t) time_nfo->g_start_frame);
+  position_from_frames (
+    &g_start_pos, (signed_frame_t) time_nfo->g_start_frame_w_offset);
   bpm_t  cur_bpm = tempo_track_get_bpm_at_pos (P_TEMPO_TRACK, &g_start_pos);
   double timestretch_ratio = 1.0;
   bool   needs_rt_timestretch = false;
@@ -364,7 +364,7 @@ audio_region_fill_stereo_ports (
 #endif
 
   signed_frame_t r_local_frames_at_start = region_timeline_frames_to_local (
-    self, (signed_frame_t) time_nfo->g_start_frame, F_NORMALIZE);
+    self, (signed_frame_t) time_nfo->g_start_frame_w_offset, F_NORMALIZE);
 
 #if 0
   Position r_local_pos_at_start;
@@ -395,14 +395,17 @@ audio_region_fill_stereo_ports (
     {
       unsigned_frame_t current_local_frame = time_nfo->local_offset + j;
       signed_frame_t   r_local_pos = region_timeline_frames_to_local (
-        self, (signed_frame_t) (time_nfo->g_start_frame + j), F_NORMALIZE);
+        self, (signed_frame_t) (time_nfo->g_start_frame_w_offset + j),
+        F_NORMALIZE);
       if (r_local_pos < 0 || j > AUDIO_ENGINE->block_length)
         {
           g_critical (
             "invalid r_local_pos %" PRId64 ", j %" PRIu64
             ", "
-            "g_start_frames %" PRIu64 ", nframes %u",
-            r_local_pos, j, time_nfo->g_start_frame, time_nfo->nframes);
+            "g_start_frames (with offset) %" PRIu64 ", cycle offset %" PRIu32
+            ", nframes %u",
+            r_local_pos, j, time_nfo->g_start_frame_w_offset,
+            time_nfo->local_offset, time_nfo->nframes);
           return;
         }
 
@@ -499,7 +502,7 @@ audio_region_fill_stereo_ports (
 
       /* current frame local to region start */
       const signed_frame_t current_local_frame =
-        (signed_frame_t) (time_nfo->g_start_frame + current_cycle_frame)
+        (signed_frame_t) (time_nfo->g_start_frame_w_offset + j)
         - r_obj->pos.frames;
 
       /* skip to fade out (or builtin fade out) if
@@ -546,8 +549,7 @@ audio_region_fill_stereo_ports (
           stereo_ports->l->buf[current_cycle_frame] *= fade_out;
           stereo_ports->r->buf[current_cycle_frame] *= fade_out;
         }
-      /* if inside builtin fade in, apply builtin
-       * fade in */
+      /* if inside builtin fade in, apply builtin fade in */
       if (
         current_local_frame >= 0
         && current_local_frame < AUDIO_REGION_BUILTIN_FADE_FRAMES)

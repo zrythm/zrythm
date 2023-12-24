@@ -253,7 +253,8 @@ sample_processor_process (
           track_processor_clear_buffers (track->processor);
 
           EngineProcessTimeInfo time_nfo = {
-            .g_start_frame =
+            .g_start_frame = (unsigned_frame_t) self->playhead.frames,
+            .g_start_frame_w_offset =
               (unsigned_frame_t) self->playhead.frames + cycle_offset,
             .local_offset = cycle_offset,
             .nframes = nframes,

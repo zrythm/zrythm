@@ -1055,17 +1055,17 @@ midi_region_fill_midi_events (
     }
 
   const signed_frame_t r_local_pos = region_timeline_frames_to_local (
-    self, (signed_frame_t) time_nfo->g_start_frame, F_NORMALIZE);
+    self, (signed_frame_t) time_nfo->g_start_frame_w_offset, F_NORMALIZE);
 
 #if 0
-  if (time_nfo->g_start_frame == 0)
+  if (time_nfo->g_start_frame_w_offset == 0)
     {
       g_debug (
         "%s: fill midi events - g start %ld - "
         "local start %"PRIu32" - time_nfo->nframes %"PRIu32" - "
         "notes off at end %u - "
         "r local pos %ld",
-        __func__, time_nfo->g_start_frame,
+        __func__, time_nfo->g_start_frame_w_offset,
         time_nfo->local_offset, time_nfo->nframes,
         note_off_at_end, r_local_pos);
     }
@@ -1147,11 +1147,10 @@ midi_region_fill_midi_events (
             }
 
 #if 0
-          if (time_nfo->g_start_frame == 0)
+          if (time_nfo->g_start_frame_w_offset == 0)
             {
               g_debug (
-                "note ends within cycle (end "
-                "frames %ld - note off time: %u",
+                "note ends within cycle (end frames %ld - note off time: %u",
                 mn_obj_end_frames, _time);
             }
 #endif

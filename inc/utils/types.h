@@ -136,17 +136,19 @@ typedef enum AudioValueFormat
  */
 typedef struct EngineProcessTimeInfo
 {
-  /** Global position at the start of the processing cycle. */
-  /* FIXME in some places this is adjusted to the local offset. it should be
-   * adjusted to the local offset everywhere */
+  /** Global position at the start of the processing cycle (no offset added). */
   unsigned_frame_t g_start_frame;
+
+  /** Global position with EngineProcessTimeInfo.local_offset added, for
+   * convenience. */
+  unsigned_frame_t g_start_frame_w_offset;
 
   /** Offset in the current processing cycle, between 0 and the number of frames
    * in AudioEngine.block_length. */
   nframes_t local_offset;
 
   /**
-   * Number of frames to process in this call.
+   * Number of frames to process in this call, starting from the offset.
    */
   nframes_t nframes;
 } EngineProcessTimeInfo;
@@ -155,9 +157,10 @@ static inline void
 engine_process_time_info_print (const EngineProcessTimeInfo * self)
 {
   g_message (
-    "Global start frame: %" PRIuFAST64 " | local offset: %" PRIu32
-    " | num frames: %" PRIu32,
-    self->g_start_frame, self->local_offset, self->nframes);
+    "Global start frame: %" PRIuFAST64 " (with offset %" PRIuFAST64
+    ") | local offset: %" PRIu32 " | num frames: %" PRIu32,
+    self->g_start_frame, self->g_start_frame_w_offset, self->local_offset,
+    self->nframes);
 }
 
 typedef enum CacheTypes

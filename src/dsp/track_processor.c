@@ -463,8 +463,8 @@ handle_recording (
   unsigned_frame_t each_nframes[6];
   int              num_split_points = 1;
 
-  unsigned_frame_t start_frames = time_nfo->g_start_frame;
-  unsigned_frame_t end_frames = start_frames + time_nfo->nframes;
+  unsigned_frame_t start_frames = time_nfo->g_start_frame_w_offset;
+  unsigned_frame_t end_frames = time_nfo->g_start_frame + time_nfo->nframes;
 
   /* split the cycle at loop and punch points and
    * record */
@@ -669,12 +669,13 @@ handle_recording (
       /*loop_hit && i == loop_end_idx;*/
 
 #if 0
-      g_message ("sending %ld for %ld frames",
-        split_point, each_nframes[i]);
+      g_debug (
+        "sending %ld for %ld frames", split_point, each_nframes[i]);
 #endif
 
       EngineProcessTimeInfo cur_time_nfo = {
         .g_start_frame = split_point,
+        .g_start_frame_w_offset = split_point,
         .local_offset = 0,
         .nframes = each_nframes[i],
       };
@@ -745,10 +746,6 @@ track_processor_process (
   TrackProcessor *                    self,
   const EngineProcessTimeInfo * const time_nfo)
 {
-#define g_start_frames (time_nfo->g_start_frames)
-#define local_offset (time_nfo->local_offset)
-#define nframes (time_nfo->nframes)
-
   Track * tr = self->track;
 
   /* if frozen or disabled, skip */
@@ -780,7 +777,7 @@ track_processor_process (
           /* fill midi events from piano roll data */
 #if 0
           g_message (
-            "filling midi events for %s from %ld", tr->name, g_start_frames);
+            "filling midi events for %s from %ld", tr->name, time_nfo->g_start_frame_w_offset);
 #endif
           track_fill_events (tr, time_nfo, pr->midi_events, NULL);
         }
@@ -799,7 +796,7 @@ track_processor_process (
        * out */
       if (tr->type != TRACK_TYPE_CHORD)
         {
-          add_events_from_midi_cc_control_ports (self, local_offset);
+          add_events_from_midi_cc_control_ports (self, time_nfo->local_offset);
         }
       if (self->midi_out->midi_events->num_events > 0)
         {
@@ -812,8 +809,8 @@ track_processor_process (
 
       /* append the midi events from piano roll to MIDI out */
       midi_events_append (
-        self->midi_out->midi_events, pr->midi_events, local_offset, nframes,
-        false);
+        self->midi_out->midi_events, pr->midi_events, time_nfo->local_offset,
+        time_nfo->nframes, false);
 
 #if 0
       if (pr->midi_events->num_events > 0)
@@ -846,7 +843,8 @@ track_processor_process (
               midi_events_append_w_filter (
                 self->midi_in->midi_events,
                 AUDIO_ENGINE->midi_editor_manual_press->midi_events,
-                tr->channel->midi_channels, local_offset, nframes, F_NOT_QUEUED);
+                tr->channel->midi_channels, time_nfo->local_offset,
+                time_nfo->nframes, F_NOT_QUEUED);
             }
           /* otherwise append normally */
           else
@@ -854,7 +852,7 @@ track_processor_process (
               midi_events_append (
                 self->midi_in->midi_events,
                 AUDIO_ENGINE->midi_editor_manual_press->midi_events,
-                local_offset, nframes, F_NOT_QUEUED);
+                time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
             }
         }
     }
@@ -868,23 +866,26 @@ track_processor_process (
         || (tr->type == TRACK_TYPE_AUDIO && control_port_is_toggled (self->monitor_audio)))
         {
           dsp_mix2 (
-            &self->stereo_out->l->buf[local_offset],
-            &self->stereo_in->l->buf[local_offset], 1.f,
-            self->input_gain ? self->input_gain->control : 1.f, nframes);
+            &self->stereo_out->l->buf[time_nfo->local_offset],
+            &self->stereo_in->l->buf[time_nfo->local_offset], 1.f,
+            self->input_gain ? self->input_gain->control : 1.f,
+            time_nfo->nframes);
 
           if (self->mono && control_port_is_toggled (self->mono))
             {
               dsp_mix2 (
-                &self->stereo_out->r->buf[local_offset],
-                &self->stereo_in->l->buf[local_offset], 1.f,
-                self->input_gain ? self->input_gain->control : 1.f, nframes);
+                &self->stereo_out->r->buf[time_nfo->local_offset],
+                &self->stereo_in->l->buf[time_nfo->local_offset], 1.f,
+                self->input_gain ? self->input_gain->control : 1.f,
+                time_nfo->nframes);
             }
           else
             {
               dsp_mix2 (
-                &self->stereo_out->r->buf[local_offset],
-                &self->stereo_in->r->buf[local_offset], 1.f,
-                self->input_gain ? self->input_gain->control : 1.f, nframes);
+                &self->stereo_out->r->buf[time_nfo->local_offset],
+                &self->stereo_in->r->buf[time_nfo->local_offset], 1.f,
+                self->input_gain ? self->input_gain->control : 1.f,
+                time_nfo->nframes);
             }
         }
       break;
@@ -910,7 +911,7 @@ track_processor_process (
         {
           midi_events_transform_chord_and_append (
             self->midi_out->midi_events, self->midi_in->midi_events,
-            local_offset, nframes, F_NOT_QUEUED);
+            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
         }
       /* else if not chord track, simply pass the
        * input MIDI data to the output port */
@@ -918,7 +919,7 @@ track_processor_process (
         {
           midi_events_append (
             self->midi_out->midi_events, self->midi_in->midi_events,
-            local_offset, nframes, F_NOT_QUEUED);
+            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
         }
 
       /* if pending a panic message, append it */
@@ -938,11 +939,10 @@ track_processor_process (
     !track_is_auditioner (tr) && TRANSPORT->preroll_frames_remaining == 0
     && (track_type_can_record (tr->type) || tr->automation_tracklist.num_ats > 0))
     {
-      /* handle recording. this will only create events in
-       * regions. it will not copy the input content to the
-       * output ports.
-       * this will also create automation for MIDI CC, if any
-       * (see midi_mappings_apply_cc_events above) */
+      /* handle recording. this will only create events in regions. it will not
+       * copy the input content to the output ports. this will also create
+       * automation for MIDI CC, if any (see midi_mappings_apply_cc_events
+       * above) */
       handle_recording (self, time_nfo);
     }
 
@@ -950,16 +950,12 @@ track_processor_process (
   if (tr->type == TRACK_TYPE_AUDIO)
     {
       dsp_mul_k2 (
-        &self->stereo_out->l->buf[local_offset], self->output_gain->control,
-        nframes);
+        &self->stereo_out->l->buf[time_nfo->local_offset],
+        self->output_gain->control, time_nfo->nframes);
       dsp_mul_k2 (
-        &self->stereo_out->r->buf[local_offset], self->output_gain->control,
-        nframes);
+        &self->stereo_out->r->buf[time_nfo->local_offset],
+        self->output_gain->control, time_nfo->nframes);
     }
-
-#undef g_start_frames
-#undef local_offset
-#undef nframes
 }
 
 /**

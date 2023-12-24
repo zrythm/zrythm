@@ -342,6 +342,7 @@ export_audio (ExportSettings * info)
       engine_process_prepare (AUDIO_ENGINE, nframes);
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+        .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = nframes,
       };

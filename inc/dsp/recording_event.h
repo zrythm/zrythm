@@ -80,11 +80,10 @@ typedef struct RecordingEvent
   /** ZRegion name, if applicable. */
   char region_name[200];
 
-  /** Global start frames of the event. */
-  unsigned_frame_t g_start_frame;
+  /** Global start frames of the event (including offset). */
+  unsigned_frame_t g_start_frame_w_offset;
 
-  /** Offset from \ref RecordingEvent.g_start_frames
-   * that this event starts from. */
+  /** Offset in current cycle that this event starts from. */
   nframes_t local_offset;
 
   /**
@@ -125,7 +124,7 @@ typedef struct RecordingEvent
   re->type = 0; \
   re->track_name_hash = 0; \
   re->region_name[0] = '\0'; \
-  re->g_start_frame = 0; \
+  re->g_start_frame_w_offset = 0; \
   re->local_offset = 0; \
   re->has_midi_event = 0; \
   memset (&re->midi_event, 0, sizeof (MidiEvent)); \

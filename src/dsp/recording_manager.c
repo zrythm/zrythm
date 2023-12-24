@@ -204,7 +204,7 @@ recording_manager_handle_recording (
   g_message (
     "handling recording from %ld (%" PRIu32
     " frames)",
-    g_start_frames + local_offset, nframes);
+    g_start_frames + ev->local_offset, ev->nframes);
 #endif
 
   /* whether to skip adding track recording
@@ -225,7 +225,8 @@ recording_manager_handle_recording (
   if (TRANSPORT->punch_mode)
     {
       Position tmp;
-      position_from_frames (&tmp, (signed_frame_t) time_nfo->g_start_frame);
+      position_from_frames (
+        &tmp, (signed_frame_t) time_nfo->g_start_frame_w_offset);
       inside_punch_range =
         transport_position_is_inside_punch_range (TRANSPORT, &tmp);
     }
@@ -259,7 +260,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->track_name_hash = tr->name_hash;
@@ -278,7 +279,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->track_name_hash = tr->name_hash;
@@ -300,7 +301,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->track_name_hash = tr->name_hash;
@@ -333,7 +334,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->automation_track_idx = at->index;
@@ -349,8 +350,7 @@ recording_manager_handle_recording (
           at->recording_start_sent
           && time_nfo->nframes == 0)
         &&
-        ((time_nfo->g_start_frame
-          + time_nfo->local_offset)
+        (time_nfo->g_start_frame_w_offset
          ==
          (unsigned_frame_t)
          TRANSPORT->loop_end_pos.frames))
@@ -360,7 +360,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->automation_track_idx = at->index;
@@ -384,7 +384,7 @@ recording_manager_handle_recording (
                 (RecordingEvent *) object_pool_get (self->event_obj_pool);
               recording_event_init (re);
               re->type = RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
-              re->g_start_frame = time_nfo->g_start_frame;
+              re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
               re->local_offset = time_nfo->local_offset;
               re->nframes = time_nfo->nframes;
               re->automation_track_idx = at->index;
@@ -413,7 +413,7 @@ recording_manager_handle_recording (
                 (RecordingEvent *) object_pool_get (self->event_obj_pool);
               recording_event_init (re);
               re->type = RECORDING_EVENT_TYPE_MIDI;
-              re->g_start_frame = time_nfo->g_start_frame;
+              re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
               re->local_offset = time_nfo->local_offset;
               re->nframes = time_nfo->nframes;
               re->has_midi_event = 1;
@@ -429,7 +429,7 @@ recording_manager_handle_recording (
                 (RecordingEvent *) object_pool_get (self->event_obj_pool);
               recording_event_init (re);
               re->type = RECORDING_EVENT_TYPE_MIDI;
-              re->g_start_frame = time_nfo->g_start_frame;
+              re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
               re->local_offset = time_nfo->local_offset;
               re->nframes = time_nfo->nframes;
               re->has_midi_event = 0;
@@ -444,7 +444,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_AUDIO;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           dsp_copy (
@@ -484,7 +484,7 @@ recording_manager_handle_recording (
             (RecordingEvent *) object_pool_get (self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_AUTOMATION;
-          re->g_start_frame = time_nfo->g_start_frame;
+          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->automation_track_idx = at->index;
@@ -610,7 +610,11 @@ handle_pause_event (RecordingManager * self, RecordingEvent * ev)
 
   /* pausition to pause at */
   Position pause_pos;
-  position_from_frames (&pause_pos, (signed_frame_t) ev->g_start_frame);
+  position_from_frames (&pause_pos, (signed_frame_t) ev->g_start_frame_w_offset);
+
+#if 0
+  g_debug ("track %s pause start frames %" PRIuFAST64 ", nframes %u", tr->name, pause_pos.frames, ev->nframes);
+#endif
 
   if (ev->type == RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING)
     {
@@ -669,7 +673,11 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
   /* position to resume from */
   Position resume_pos;
   position_from_frames (
-    &resume_pos, (signed_frame_t) (ev->g_start_frame + ev->local_offset));
+    &resume_pos, (signed_frame_t) ev->g_start_frame_w_offset);
+
+#if 0
+  g_debug ("track %s resume start frames %" PRIuFAST64 ", nframes %u", tr->name, resume_pos.frames, ev->nframes);
+#endif
 
   /* position 1 frame afterwards */
   Position end_pos = resume_pos;
@@ -830,15 +838,12 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
   (void) handled_resume;
   /*g_debug ("handled resume %d", handled_resume);*/
 
-  unsigned_frame_t g_start_frames = ev->g_start_frame;
-  nframes_t        nframes = ev->nframes;
-  nframes_t        local_offset = ev->local_offset;
-  Track *          tr =
+  Track * tr =
     tracklist_find_track_by_name_hash (TRACKLIST, ev->track_name_hash);
 
   /* get end position */
-  unsigned_frame_t start_frames = g_start_frames + ev->local_offset;
-  unsigned_frame_t end_frames = start_frames + (long) nframes;
+  unsigned_frame_t start_frames = ev->g_start_frame_w_offset;
+  unsigned_frame_t end_frames = start_frames + (long) ev->nframes;
 
   Position start_pos, end_pos;
   position_from_frames (&start_pos, (signed_frame_t) start_frames);
@@ -892,18 +897,12 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
       z_return_if_fail_cmp (i, >=, 0);
       z_return_if_fail_cmp (i, <, (signed_frame_t) clip->num_frames);
       g_warn_if_fail (
-        cur_local_offset >= local_offset
-        && cur_local_offset < local_offset + nframes);
+        cur_local_offset >= ev->local_offset
+        && cur_local_offset < ev->local_offset + ev->nframes);
 
       /* set clip frames */
       clip->frames[i * clip->channels] = ev->lbuf[cur_local_offset];
       clip->frames[i * clip->channels + 1] = ev->rbuf[cur_local_offset];
-#if 0
-      region->frames[i * clip->channels] =
-        ev->lbuf[cur_local_offset];
-      region->frames[i * clip->channels + 1] =
-        ev->rbuf[cur_local_offset];
-#endif
 
       cur_local_offset++;
     }
@@ -943,20 +942,16 @@ handle_midi_event (RecordingManager * self, RecordingEvent * ev)
 {
   handle_resume_event (self, ev);
 
-  unsigned_frame_t g_start_frames = ev->g_start_frame;
-  nframes_t        nframes = ev->nframes;
-  Track *          tr =
+  Track * tr =
     tracklist_find_track_by_name_hash (TRACKLIST, ev->track_name_hash);
 
   g_return_if_fail (tr->recording_region);
 
-  /* get end position */
-  unsigned_frame_t start_frames = g_start_frames + ev->local_offset;
-  unsigned_frame_t end_frames = start_frames + nframes;
-
   Position start_pos, end_pos;
-  position_from_frames (&start_pos, (signed_frame_t) start_frames);
-  position_from_frames (&end_pos, (signed_frame_t) end_frames);
+  position_from_frames (&start_pos, (signed_frame_t) ev->g_start_frame_w_offset);
+  position_from_frames (
+    &end_pos,
+    (signed_frame_t) ev->g_start_frame_w_offset + (signed_frame_t) ev->nframes);
 
   /* get the recording region */
   ZRegion *        region = tr->recording_region;
@@ -1078,9 +1073,6 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
 {
   handle_resume_event (self, ev);
 
-  unsigned_frame_t g_start_frames = ev->g_start_frame;
-  nframes_t        nframes = ev->nframes;
-  /*nframes_t local_offset = ev->local_offset;*/
   Track * tr =
     tracklist_find_track_by_name_hash (TRACKLIST, ev->track_name_hash);
   AutomationTrack * at = tr->automation_tracklist.ats[ev->automation_track_idx];
@@ -1098,8 +1090,8 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
   gint64 cur_time = g_get_monotonic_time ();
 
   /* get end position */
-  unsigned_frame_t start_frames = g_start_frames + ev->local_offset;
-  unsigned_frame_t end_frames = start_frames + nframes;
+  unsigned_frame_t start_frames = ev->g_start_frame_w_offset;
+  unsigned_frame_t end_frames = start_frames + ev->nframes;
 
   Position start_pos, end_pos;
   position_from_frames (&start_pos, (signed_frame_t) start_frames);
@@ -1225,7 +1217,7 @@ handle_start_recording (
     }
 
   /* get end position */
-  unsigned_frame_t start_frames = ev->g_start_frame + ev->local_offset;
+  unsigned_frame_t start_frames = ev->g_start_frame_w_offset;
   unsigned_frame_t end_frames = start_frames + ev->nframes;
 
   g_message (

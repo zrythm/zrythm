@@ -1047,6 +1047,7 @@ engine_wait_for_pause (
       engine_process_prepare (self, 1);
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+        .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = 1,
       };
@@ -1571,6 +1572,7 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
 
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+    .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 0,
   };
@@ -1626,12 +1628,13 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
 
         } /* foreach route */
 
-      /* offset to start processing at in this
-       * cycle */
+      /* offset to start processing at in this cycle */
       nframes_t preroll_offset =
         total_frames_to_process - total_frames_remaining;
       g_warn_if_fail (preroll_offset + num_preroll_frames <= self->nframes);
 
+      split_time_nfo.g_start_frame_w_offset =
+        split_time_nfo.g_start_frame + preroll_offset;
       split_time_nfo.local_offset = preroll_offset;
       split_time_nfo.nframes = num_preroll_frames;
       router_start_cycle (self->router, split_time_nfo);
@@ -1664,6 +1667,8 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
             total_frames_remaining, self->transport->countin_frames_remaining);
 
           /* process for countin frames */
+          split_time_nfo.g_start_frame_w_offset =
+            split_time_nfo.g_start_frame + cur_offset;
           split_time_nfo.local_offset = cur_offset;
           split_time_nfo.nframes = countin_frames;
           router_start_cycle (self->router, split_time_nfo);
@@ -1686,6 +1691,8 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
             total_frames_remaining, self->transport->preroll_frames_remaining);
 
           /* process for preroll frames */
+          split_time_nfo.g_start_frame_w_offset =
+            split_time_nfo.g_start_frame + cur_offset;
           split_time_nfo.local_offset = cur_offset;
           split_time_nfo.nframes = preroll_frames;
           router_start_cycle (self->router, split_time_nfo);
@@ -1696,6 +1703,8 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
           nframes_t remaining_frames = total_frames_remaining - preroll_frames;
           if (remaining_frames > 0)
             {
+              split_time_nfo.g_start_frame_w_offset =
+                split_time_nfo.g_start_frame + cur_offset;
               split_time_nfo.local_offset = cur_offset;
               split_time_nfo.nframes = remaining_frames;
               router_start_cycle (self->router, split_time_nfo);
@@ -1703,9 +1712,10 @@ engine_process (AudioEngine * self, const nframes_t total_frames_to_process)
         }
       else
         {
-          /* run the cycle for the remaining
-           * frames - this will also play the
+          /* run the cycle for the remaining frames - this will also play the
            * queued metronome events (if any) */
+          split_time_nfo.g_start_frame_w_offset =
+            split_time_nfo.g_start_frame + cur_offset;
           split_time_nfo.local_offset = cur_offset;
           split_time_nfo.nframes = total_frames_remaining;
           router_start_cycle (self->router, split_time_nfo);

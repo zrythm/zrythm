@@ -48,6 +48,7 @@ test_fill_stereo_ports (void)
   transport_add_to_playhead (TRANSPORT, -20);
   const EngineProcessTimeInfo time_nfo = {
     .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+    .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 100
   };

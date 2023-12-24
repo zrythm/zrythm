@@ -82,15 +82,14 @@ test_midi_file_playback (void)
         /* run 80 cycles */
         &stop_pos, BUFFER_SIZE * 80);
 
-      /* set region end somewhere within the
-       * covered positions to check for warnings */
+      /* set region end somewhere within the covered positions to check for
+       * warnings */
       Position tmp;
       position_set_to_pos (&tmp, &start_pos);
       position_add_frames (&tmp, BUFFER_SIZE * 32 + BUFFER_SIZE / 3);
       arranger_object_end_pos_setter ((ArrangerObject *) region, &tmp);
 
-      /* start filling events to see if any
-       * warnings occur */
+      /* start filling events to see if any warnings occur */
       for (
         signed_frame_t i = start_pos.frames; i < stop_pos.frames;
         i += BUFFER_SIZE)
@@ -100,6 +99,8 @@ test_midi_file_playback (void)
             {
               EngineProcessTimeInfo time_nfo = {
                 .g_start_frame = (unsigned_frame_t) i,
+                .g_start_frame_w_offset =
+                  (unsigned_frame_t) i + (unsigned_frame_t) j,
                 .local_offset = (nframes_t) j,
                 .nframes = BUFFER_SIZE,
               };

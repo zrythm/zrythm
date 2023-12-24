@@ -2330,9 +2330,6 @@ stereo_ports_new_generic (
 void
 port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
-#define nframes (time_nfo.nframes)
-#define local_offset (time_nfo.local_offset)
-
   g_return_if_fail (IS_PORT (port));
 
   const PortIdentifier * id = &port->id;
@@ -2426,12 +2423,13 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             {
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
-              sum_data_from_jack (port, local_offset, nframes);
+              sum_data_from_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
 #ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
-              sum_data_from_windows_mme (port, local_offset, nframes);
+              sum_data_from_windows_mme (
+                port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -2439,7 +2437,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
-              port_sum_data_from_rtmidi (port, local_offset, nframes);
+              port_sum_data_from_rtmidi (
+                port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
             default:
@@ -2532,8 +2531,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                   midi_time_t midi_time = (midi_time_t) floor (
                     ratio * (double) AUDIO_ENGINE->block_length);
                   if (
-                    midi_time >= local_offset
-                    && midi_time < local_offset + nframes)
+                    midi_time >= time_nfo.local_offset
+                    && midi_time < time_nfo.local_offset + time_nfo.nframes)
                     {
                       uint8_t beat_msg = MIDI_CLOCK_BEAT;
                       midi_events_add_raw (
@@ -2541,7 +2540,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 #if 0
                       g_debug (
                         "(i = %d) time %u / %u", i, midi_time,
-                        local_offset + nframes);
+                        time_nfo.local_offset + time_nfo.nframes);
 #endif
                     }
                 }
@@ -2583,8 +2582,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                 {
                   midi_events_append_w_filter (
                     port->midi_events, src_port->midi_events,
-                    track->channel->midi_channels, local_offset, nframes,
-                    F_NOT_QUEUED);
+                    track->channel->midi_channels, time_nfo.local_offset,
+                    time_nfo.nframes, F_NOT_QUEUED);
                   continue;
                 }
 
@@ -2592,8 +2591,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
 
           midi_events_append (
-            port->midi_events, src_port->midi_events, local_offset, nframes,
-            F_NOT_QUEUED);
+            port->midi_events, src_port->midi_events, time_nfo.local_offset,
+            time_nfo.nframes, F_NOT_QUEUED);
         } /* foreach source */
 
       if (id->flow == FLOW_OUTPUT)
@@ -2602,12 +2601,13 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             {
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
-              send_data_to_jack (port, local_offset, nframes);
+              send_data_to_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
 #ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
-              send_data_to_windows_mme (port, local_offset, nframes);
+              send_data_to_windows_mme (
+                port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
             default:
@@ -2633,7 +2633,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
         }
 
-      if (local_offset + nframes == AUDIO_ENGINE->block_length)
+      if (time_nfo.local_offset + time_nfo.nframes == AUDIO_ENGINE->block_length)
         {
           MidiEvents * events = port->midi_events;
           if (port->write_ring_buffers)
@@ -2665,7 +2665,9 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
     case TYPE_CV:
       if (noroll)
         {
-          dsp_fill (&port->buf[local_offset], DENORMAL_PREVENTION_VAL, nframes);
+          dsp_fill (
+            &port->buf[time_nfo.local_offset], DENORMAL_PREVENTION_VAL,
+            time_nfo.nframes);
           break;
         }
 
@@ -2689,11 +2691,12 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             {
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
-              sum_data_from_jack (port, local_offset, nframes);
+              sum_data_from_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
             case AUDIO_BACKEND_DUMMY:
-              sum_data_from_dummy (port, local_offset, nframes);
+              sum_data_from_dummy (
+                port, time_nfo.local_offset, time_nfo.nframes);
               break;
             default:
               break;
@@ -2732,27 +2735,32 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
           if (G_LIKELY (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)))
             {
               dsp_add2 (
-                &port->buf[local_offset], &src_port->buf[local_offset], nframes);
+                &port->buf[time_nfo.local_offset],
+                &src_port->buf[time_nfo.local_offset], time_nfo.nframes);
             }
           else
             {
               dsp_mix2 (
-                &port->buf[local_offset], &src_port->buf[local_offset], 1.f,
-                multiplier, nframes);
+                &port->buf[time_nfo.local_offset],
+                &src_port->buf[time_nfo.local_offset], 1.f, multiplier,
+                time_nfo.nframes);
             }
 
           if (
             G_UNLIKELY (id->type == TYPE_CV)
             || id->owner_type == PORT_OWNER_TYPE_FADER)
             {
-              float abs_peak = dsp_abs_max (&port->buf[local_offset], nframes);
+              float abs_peak = dsp_abs_max (
+                &port->buf[time_nfo.local_offset], time_nfo.nframes);
               if (abs_peak > maxf)
                 {
                   /* this limiting wastes around
                    * 50% of port processing so only
                    * do it on CV connections and
                    * faders if they exceed maxf */
-                  dsp_limit1 (&port->buf[local_offset], minf, maxf, nframes);
+                  dsp_limit1 (
+                    &port->buf[time_nfo.local_offset], minf, maxf,
+                    time_nfo.nframes);
                 }
             }
         } /* foreach source */
@@ -2763,7 +2771,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             {
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
-              send_data_to_jack (port, local_offset, nframes);
+              send_data_to_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
             default:
@@ -2771,7 +2779,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
         }
 
-      if (local_offset + nframes == AUDIO_ENGINE->block_length)
+      if (time_nfo.local_offset + time_nfo.nframes == AUDIO_ENGINE->block_length)
         {
           size_t size = sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
           size_t write_space_avail = zix_ring_write_space (port->audio_ring);
@@ -2804,7 +2812,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                 port->peak = -1.f;
 
               bool changed = dsp_abs_max_with_existing_peak (
-                &port->buf[local_offset], &port->peak, nframes);
+                &port->buf[time_nfo.local_offset], &port->peak,
+                time_nfo.nframes);
               if (changed)
                 {
                   port->peak_timestamp = g_get_monotonic_time ();
@@ -2828,8 +2837,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                    stereo_in->r)))
         {
           dsp_fill (
-            &port->buf[local_offset], AUDIO_ENGINE->denormal_prevention_val,
-            nframes);
+            &port->buf[time_nfo.local_offset],
+            AUDIO_ENGINE->denormal_prevention_val, time_nfo.nframes);
         }
 
       /* if bouncing track directly to master (e.g., when
@@ -2859,8 +2868,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 
 #define _ADD(l_or_r) \
   dsp_add2 ( \
-    &P_MASTER_TRACK->channel->stereo_out->l_or_r->buf[local_offset], \
-    &port->buf[local_offset], nframes)
+    &P_MASTER_TRACK->channel->stereo_out->l_or_r->buf[time_nfo.local_offset], \
+    &port->buf[time_nfo.local_offset], time_nfo.nframes)
 
           Channel *        ch;
           Fader *          prefader;
@@ -2959,7 +2968,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             at, AUDIO_ENGINE->timestamp_start))
           {
             Position pos;
-            position_from_frames (&pos, (signed_frame_t) time_nfo.g_start_frame);
+            position_from_frames (
+              &pos, (signed_frame_t) time_nfo.g_start_frame_w_offset);
 
             /* if playhead pos changed manually
              * recently or transport is rolling,
@@ -3032,9 +3042,6 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
     default:
       break;
     }
-
-#undef nframes
-#undef local_offset
 }
 
 /**

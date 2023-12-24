@@ -21,6 +21,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/debug.h"
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 
@@ -191,6 +192,8 @@ on_node_finish (GraphNode * self)
 HOT static void
 process_node (const GraphNode * node, const EngineProcessTimeInfo time_nfo)
 {
+  z_return_if_fail_cmp (
+    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
@@ -273,8 +276,7 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
   /*g_message (*/
   /*"processing %s", graph_node_get_name (node));*/
 
-  /* skip BPM during cycle (already processed in
-   * router_start_cycle()) */
+  /* skip BPM during cycle (already processed in router_start_cycle()) */
   if (
     G_UNLIKELY (
       node->graph->router->callback_in_progress && node->port
@@ -309,16 +311,13 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
   /* only compensate latency when rolling */
   if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
-      /* if the playhead is before the loop-end
-       * point and the latency-compensated position
-       * is after the loop-end point it means that
-       * the loop was crossed, so compensate for
-       * that.
+      /* if the playhead is before the loop-end point and the
+       * latency-compensated position is after the loop-end point it means that
+       * the loop was crossed, so compensate for that.
        *
-       * if the position is before loop-end and
-       * position + frames is after loop end (there
-       * is a loop inside the range), that should be
-       * handled by the ports/processors instead */
+       * if the position is before loop-end and position + frames is after loop
+       * end (there is a loop inside the range), that should be handled by the
+       * ports/processors instead */
       Position playhead_copy = *PLAYHEAD;
       g_warn_if_fail (
         node->route_playback_latency >= AUDIO_ENGINE->remaining_latency_preroll);
@@ -326,6 +325,8 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
         TRANSPORT, &playhead_copy,
         node->route_playback_latency - AUDIO_ENGINE->remaining_latency_preroll);
       time_nfo.g_start_frame = (unsigned_frame_t) playhead_copy.frames;
+      time_nfo.g_start_frame_w_offset =
+        (unsigned_frame_t) playhead_copy.frames + time_nfo.local_offset;
     }
 
   /* split at loop points */
@@ -333,7 +334,8 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
     nframes_t num_processable_frames = 0;
     (num_processable_frames = MIN (
        transport_is_loop_point_met (
-         TRANSPORT, (signed_frame_t) time_nfo.g_start_frame, time_nfo.nframes),
+         TRANSPORT, (signed_frame_t) time_nfo.g_start_frame_w_offset,
+         time_nfo.nframes),
        time_nfo.nframes))
     != 0;)
     {
@@ -345,8 +347,7 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
         g_start_frames, num_processable_frames);
 #endif
 
-      /* temporarily change the nframes to avoid
-       * having to declare a separate
+      /* temporarily change the nframes to avoid having to declare a separate
        * EngineProcessTimeInfo */
       nframes_t orig_nframes = time_nfo.nframes;
       time_nfo.nframes = num_processable_frames;
@@ -356,12 +357,17 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
       time_nfo.nframes = orig_nframes - num_processable_frames;
 
       /* loop back to loop start */
-      time_nfo.g_start_frame =
-        (time_nfo.g_start_frame + num_processable_frames
+      unsigned_frame_t frames_to_add =
+        (num_processable_frames
          + (unsigned_frame_t) TRANSPORT->loop_start_pos.frames)
         - (unsigned_frame_t) TRANSPORT->loop_end_pos.frames;
+      time_nfo.g_start_frame_w_offset += frames_to_add;
+      time_nfo.g_start_frame += frames_to_add;
       time_nfo.local_offset += num_processable_frames;
     }
+
+  z_return_if_fail_cmp (
+    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
 
   if (time_nfo.nframes > 0)
     {

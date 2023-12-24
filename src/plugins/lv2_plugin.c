@@ -1350,6 +1350,7 @@ lv2_plugin_get_latency (Lv2Plugin * self)
     {
       const EngineProcessTimeInfo time_nfo = {
         .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
+        .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = 0
       };
@@ -2686,7 +2687,7 @@ lv2_plugin_process (
    * something has changed */
   const bool xport_changed =
     self->rolling != (TRANSPORT_IS_ROLLING)
-    || self->gframes != time_nfo->g_start_frame
+    || self->gframes != time_nfo->g_start_frame_w_offset
     || !math_floats_equal (
       self->bpm, tempo_track_get_current_bpm (P_TEMPO_TRACK));
 #if 0
@@ -2711,17 +2712,16 @@ lv2_plugin_process (
   LV2_Atom * lv2_pos = (LV2_Atom *) pos_buf;
   if (xport_changed && self->want_position)
     {
-      /* Build an LV2 position object to report
-       * change to plugin */
+      /* Build an LV2 position object to report change to plugin */
       Position start_pos;
       position_from_frames (
-        &start_pos, (signed_frame_t) time_nfo->g_start_frame);
+        &start_pos, (signed_frame_t) time_nfo->g_start_frame_w_offset);
       LV2_Atom_Forge * forge = &self->dsp_forge;
       lv2_atom_forge_set_buffer (forge, pos_buf, sizeof (pos_buf));
       LV2_Atom_Forge_Frame frame;
       lv2_atom_forge_object (forge, &frame, 0, PM_URIDS.time_Position);
       lv2_atom_forge_key (forge, PM_URIDS.time_frame);
-      lv2_atom_forge_long (forge, (long) time_nfo->g_start_frame);
+      lv2_atom_forge_long (forge, (long) time_nfo->g_start_frame_w_offset);
       lv2_atom_forge_key (forge, PM_URIDS.time_speed);
       lv2_atom_forge_float (
         forge, TRANSPORT->play_state == PLAYSTATE_ROLLING ? 1.0 : 0.0);
@@ -2745,19 +2745,19 @@ lv2_plugin_process (
       lv2_atom_forge_float (forge, tempo_track_get_current_bpm (P_TEMPO_TRACK));
     }
 
-  /* Update transport state to expected values for
-   * next cycle */
+  /* Update transport state to expected values for next cycle */
   if (TRANSPORT_IS_ROLLING)
     {
       Position gpos;
       position_from_frames (
-        &gpos, (signed_frame_t) (time_nfo->g_start_frame + time_nfo->nframes));
+        &gpos,
+        (signed_frame_t) (time_nfo->g_start_frame_w_offset + time_nfo->nframes));
       self->gframes = (unsigned_frame_t) gpos.frames;
       self->rolling = 1;
     }
   else
     {
-      self->gframes = time_nfo->g_start_frame;
+      self->gframes = time_nfo->g_start_frame_w_offset;
       self->rolling = 0;
     }
   self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
@@ -2828,10 +2828,7 @@ lv2_plugin_process (
                   if (ZRYTHM_TESTING)
                     {
                       g_message (
-                        "writing plugin input "
-                        "event %d at time %u - "
-                        "local frames %u nframes "
-                        "%u",
+                        "writing plugin input event %d at time %u - local frames %u nframes %u",
                         num_events_written, ev->time - time_nfo->local_offset,
                         time_nfo->local_offset, time_nfo->nframes);
                       midi_event_print (ev);
