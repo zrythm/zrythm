@@ -305,20 +305,6 @@ apply_plugin (
   return 0;
 }
 
-/**
- * Applies the given action to the given selections.
- *
- * This will save a file in the pool and store the pool ID in
- * the selections.
- *
- * @param sel Selections to edit.
- * @param type Function type. If invalid is passed, this will
- *   simply add the audio file in the pool for the unchanged
- *   audio material (used in audio selection actions for the
- *   selections before the change).
- *
- * @return Whether successful.
- */
 bool
 audio_function_apply (
   ArrangerSelections * sel,
@@ -552,6 +538,21 @@ audio_function_apply (
             return false;
           }
       }
+      break;
+    case AUDIO_FUNCTION_COPY_L_TO_R:
+      use_interleaved = false;
+      if (channels == 2)
+        {
+          dsp_copy (ch_dest_frames[1], ch_src_frames[0], num_frames);
+        }
+      else
+        {
+          g_set_error_literal (
+            error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
+            Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+            _ ("This function can only be used on audio clips with 2 channels"));
+          return false;
+        }
       break;
     case AUDIO_FUNCTION_EXT_PROGRAM:
       {

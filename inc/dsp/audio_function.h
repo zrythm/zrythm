@@ -12,7 +12,7 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
-#include "utils/yaml.h"
+#include <stdbool.h>
 
 #include <glib/gi18n.h>
 
@@ -37,6 +37,7 @@ typedef enum AudioFunctionType
   AUDIO_FUNCTION_NUDGE_RIGHT,
   AUDIO_FUNCTION_REVERSE,
   AUDIO_FUNCTION_PITCH_SHIFT,
+  AUDIO_FUNCTION_COPY_L_TO_R,
 
   /** External program. */
   AUDIO_FUNCTION_EXT_PROGRAM,
@@ -51,21 +52,12 @@ typedef enum AudioFunctionType
   AUDIO_FUNCTION_INVALID,
 } AudioFunctionType;
 
-static const cyaml_strval_t audio_function_type_strings[] = {
-  {N_ ("Invert"),            AUDIO_FUNCTION_INVERT         },
-  { N_ ("Normalize peak"),   AUDIO_FUNCTION_NORMALIZE_PEAK },
-  { N_ ("Normalize RMS"),    AUDIO_FUNCTION_NORMALIZE_RMS  },
-  { N_ ("Normalize LUFS"),   AUDIO_FUNCTION_NORMALIZE_LUFS },
-  { N_ ("Linear fade in"),   AUDIO_FUNCTION_LINEAR_FADE_IN },
-  { N_ ("Linear fade out"),  AUDIO_FUNCTION_LINEAR_FADE_OUT},
-  { N_ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT     },
-  { N_ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT    },
-  { N_ ("Reverse"),          AUDIO_FUNCTION_REVERSE        },
-  { N_ ("Pitch shift"),      AUDIO_FUNCTION_PITCH_SHIFT    },
-  { N_ ("External program"), AUDIO_FUNCTION_EXT_PROGRAM    },
-  { N_ ("Guile script"),     AUDIO_FUNCTION_GUILE_SCRIPT   },
-  { N_ ("Custom plugin"),    AUDIO_FUNCTION_CUSTOM_PLUGIN  },
-  { N_ ("Invalid"),          AUDIO_FUNCTION_INVALID        },
+static const char * audio_function_type_strings[] = {
+  N_ ("Invert"),         N_ ("Normalize peak"), N_ ("Normalize RMS"),
+  N_ ("Normalize LUFS"), N_ ("Linear fade in"), N_ ("Linear fade out"),
+  N_ ("Nudge left"),     N_ ("Nudge right"),    N_ ("Reverse"),
+  N_ ("Pitch shift"),    N_ ("Copy L to R"),    N_ ("External program"),
+  N_ ("Guile script"),   N_ ("Custom plugin"),  N_ ("Invalid"),
 };
 
 typedef struct AudioFunctionOpts
@@ -80,7 +72,7 @@ typedef struct AudioFunctionOpts
 static inline const char *
 audio_function_type_to_string (AudioFunctionType type)
 {
-  return audio_function_type_strings[type].str;
+  return audio_function_type_strings[type];
 }
 
 char *
