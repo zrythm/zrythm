@@ -35,10 +35,13 @@
 #include <gtk/gtk.h>
 
 /**
- * A buffer of n bars after the end of the last
- * object.
+ * A buffer of n bars after the end of the last object.
  */
 #define BARS_END_BUFFER 4
+
+/** Millisec to allow moving further backward when very close to the calculated
+ * backward position. */
+#define REPEATED_BACKWARD_MS 240
 
 static void
 init_common (Transport * self)
@@ -711,7 +714,7 @@ transport_update_positions (Transport * self, bool update_from_ticks)
 
 #define GATHER_MARKERS \
   /* gather all markers */ \
-  Position markers[60]; \
+  Position markers[80]; \
   int      num_markers = 0, i; \
   for (i = 0; i < P_MARKER_TRACK->num_markers; i++) \
     { \
@@ -781,16 +784,17 @@ transport_goto_prev_marker (Transport * self)
 
   for (i = num_markers - 1; i >= 0; i--)
     {
+      if (position_is_after_or_equal (&markers[i], &self->playhead_pos))
+        continue;
+
       if (
-        position_is_before (&markers[i], &self->playhead_pos)
-        && TRANSPORT_IS_ROLLING && i > 0
+        TRANSPORT_IS_ROLLING && i > 0
         && (position_to_ms (&self->playhead_pos) - position_to_ms (&markers[i]))
-             < 180)
+             < REPEATED_BACKWARD_MS)
         {
-          move_to_marker_or_pos_and_fire_events (self, NULL, &markers[i - 1]);
-          break;
+          continue;
         }
-      else if (position_is_before (&markers[i], &self->playhead_pos))
+      else
         {
           move_to_marker_or_pos_and_fire_events (self, NULL, &markers[i]);
           break;
@@ -1091,7 +1095,11 @@ transport_move_backward (Transport * self, bool with_wait)
   bool     ret = snap_grid_get_nearby_snap_point (
     &pos, SNAP_GRID_TIMELINE, &self->playhead_pos, true);
   g_return_if_fail (ret);
-  if (position_is_equal (&pos, &self->playhead_pos) && pos.frames > 0)
+  /* if prev snap point is exactly at the playhead or very close it, go back
+   * more */
+  if (pos.frames > 0
+    && (position_is_equal (&pos, &self->playhead_pos) || (TRANSPORT_IS_ROLLING && (position_to_ms (&self->playhead_pos) - position_to_ms (&pos))
+         < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       position_add_ticks (&tmp, -1);
