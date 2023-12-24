@@ -1446,6 +1446,7 @@ activate_toggle_left_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
+  g_debug ("left panel toggle");
   g_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_start (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_start (MW_CENTER_DOCK->dock));
@@ -1457,6 +1458,7 @@ activate_toggle_right_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
+  g_debug ("right panel toggle");
   g_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_end (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_end (MW_CENTER_DOCK->dock));
@@ -1468,6 +1470,7 @@ activate_toggle_bot_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
+  g_debug ("bot panel toggle");
   g_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_bottom (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_bottom (MW_CENTER_DOCK->dock));

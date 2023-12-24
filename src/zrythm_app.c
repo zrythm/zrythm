@@ -1270,9 +1270,9 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("<Control>c", "app.copy");
   INSTALL_ACCEL ("<Control>v", "app.paste");
   INSTALL_ACCEL ("<Control>d", "app.duplicate");
-  INSTALL_ACCEL ("<Control><Shift>4", "app.toggle-left-panel");
-  INSTALL_ACCEL ("<Control><Shift>6", "app.toggle-right-panel");
-  INSTALL_ACCEL ("<Control><Shift>2", "app.toggle-bot-panel");
+  INSTALL_ACCEL ("<Shift>F10", "app.toggle-left-panel");
+  INSTALL_ACCEL ("<Shift>F12", "app.toggle-right-panel");
+  INSTALL_ACCEL ("<Shift>F11", "app.toggle-bot-panel");
   INSTALL_ACCEL ("<Control>equal", "app.zoom-in::global");
   INSTALL_ACCEL ("<Control>minus", "app.zoom-out::global");
   INSTALL_ACCEL_WITH_SECONDARY (
