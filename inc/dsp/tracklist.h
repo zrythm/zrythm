@@ -118,6 +118,9 @@ typedef struct Tracklist
 
   /** Pointer to owner project, if any. */
   Project * project;
+
+  /** Width of track widgets. */
+  int width;
 } Tracklist;
 
 /**

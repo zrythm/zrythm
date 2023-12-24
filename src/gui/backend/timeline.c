@@ -25,9 +25,9 @@ Timeline *
 timeline_clone (Timeline * src)
 {
   Timeline * self = object_new (Timeline);
-  self->schema_version = TIMELINE_SCHEMA_VERSION;
 
   self->editor_settings = src->editor_settings;
+  self->tracks_width = src->tracks_width;
 
   return self;
 }
@@ -39,7 +39,6 @@ Timeline *
 timeline_new (void)
 {
   Timeline * self = object_new (Timeline);
-  self->schema_version = TIMELINE_SCHEMA_VERSION;
 
   return self;
 }

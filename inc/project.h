@@ -51,7 +51,7 @@ typedef struct TracklistSelections TracklistSelections;
  */
 
 #define PROJECT_FORMAT_MAJOR 1
-#define PROJECT_FORMAT_MINOR 7
+#define PROJECT_FORMAT_MINOR 8
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"

@@ -146,6 +146,7 @@ timeline_serialize_to_json (
     yyjson_mut_obj_add_obj (doc, t_obj, "editorSettings");
   editor_settings_serialize_to_json (
     doc, editor_settings_obj, &t->editor_settings, error);
+  yyjson_mut_obj_add_int (doc, t_obj, "tracksWidth", t->tracks_width);
   return true;
 }
 
@@ -318,6 +319,11 @@ timeline_deserialize_from_json (
   yyjson_val * editor_settings_obj = yyjson_obj_iter_get (&it, "editorSettings");
   editor_settings_deserialize_from_json (
     doc, editor_settings_obj, &t->editor_settings, error);
+  yyjson_val * tracks_width_obj = yyjson_obj_iter_get (&it, "tracksWidth");
+  if (tracks_width_obj) /* available after 1.8 */
+    {
+      t->tracks_width = yyjson_get_int (tracks_width_obj);
+    }
   return true;
 }
 

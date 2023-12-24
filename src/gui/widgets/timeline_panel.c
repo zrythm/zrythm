@@ -26,6 +26,16 @@
 
 G_DEFINE_TYPE (TimelinePanelWidget, timeline_panel_widget, GTK_TYPE_BOX)
 
+static void
+on_vertical_divider_position_change (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  GtkPaned * paned = GTK_PANED (gobject);
+  PRJ_TIMELINE->tracks_width = gtk_paned_get_position (paned);
+}
+
 void
 timeline_panel_widget_setup (TimelinePanelWidget * self)
 {
@@ -118,6 +128,10 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
     GTK_WIDGET (self->timeline_divider_box), "timeline-divider-box");
 
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), false);
+
+  g_signal_connect (
+    G_OBJECT (self->tracklist_timeline), "notify::position",
+    G_CALLBACK (on_vertical_divider_position_change), NULL);
 }
 
 static void

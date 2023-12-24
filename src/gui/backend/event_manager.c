@@ -1030,6 +1030,8 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         MW_RULER, ruler_widget_get_zoom_level (MW_RULER));
       ruler_widget_set_zoom_level (
         EDITOR_RULER, ruler_widget_get_zoom_level (EDITOR_RULER));
+      gtk_paned_set_position (
+        MW_TIMELINE_PANEL->tracklist_timeline, PRJ_TIMELINE->tracks_width);
       break;
     case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
       /* TODO */

@@ -29,6 +29,7 @@
           <object class="GtkBox" id="timelines_plus_ruler">
             <property name="name">timelines-plus-ruler-box</property>
             <property name="orientation">vertical</property>
+            <property name="width-request">64</property>
             <child>
               <object class="RulerWidget" id="ruler">
               </object>

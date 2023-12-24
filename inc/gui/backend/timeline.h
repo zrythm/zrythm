@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -11,15 +11,12 @@
 #define __GUI_BACKEND_TIMELINE_H__
 
 #include "gui/backend/editor_settings.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup gui_backend
  *
  * @{
  */
-
-#define TIMELINE_SCHEMA_VERSION 1
 
 #define PRJ_TIMELINE (PROJECT->timeline)
 
@@ -31,25 +28,12 @@
  */
 typedef struct Timeline
 {
-  int schema_version;
-
   /** Settings for the timeline. */
   EditorSettings editor_settings;
+
+  /** Width of the left side of the timeline panel. */
+  int tracks_width;
 } Timeline;
-
-static const cyaml_schema_field_t timeline_fields_schema[] = {
-  YAML_FIELD_INT (Timeline, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Timeline,
-    editor_settings,
-    editor_settings_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t timeline_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, Timeline, timeline_fields_schema),
-};
 
 /**
  * Inits the Timeline after a Project is loaded.
