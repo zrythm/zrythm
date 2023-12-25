@@ -6,6 +6,24 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.0.1] - 2023-12-25
+### Added
+- Allow setting custom paths via the UI for all plugin formats (#4138)
+- User manual: mention how to enable timeline loop range (#4145)
+- Go to previous point when pressing transport backward button twice quickly during playback (#3355)
+- Remember tracklist width per project (#4091)
+- Add audio function to copy left channel to right channel (##4075)
+
+### Changed
+- Draw each audio channel individually in audio regions
+- Change (previously broken) panel visibility toggle shortcuts to Shift+F10~12 (#4131)
+
+### Fixed
+- Fix attempting to go to previous marker during playback not working when cue point is at the current marker
+- Fix various timing issues during audio processing that caused occasional errors (#3346)
+
+### Removed
+
 ## [1.0.0-beta.5.3.1] - 2023-12-22
 ### Changed
 - Don't whitelist any plugins on Wayland
