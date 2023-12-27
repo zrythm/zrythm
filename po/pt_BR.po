@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-08-22 20:45+0000\n"
+"PO-Revision-Date: 2023-12-27 20:45+0000\n"
 "Last-Translator: Murilo Gama <murilovsky2030@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -732,9 +732,8 @@ msgid "Failed to save project"
 msgstr "Falha ao salvar projeto"
 
 #: src/project.c:791
-#, fuzzy
 msgid "Failed to serialize project"
-msgstr "Falha na desserialização do projeto YAML"
+msgstr "Falha ao serializar projeto"
 
 #: src/project.c:804
 msgid "Failed to compress project file"
@@ -772,12 +771,11 @@ msgstr "O %s travou. "
 
 #: src/zrythm_app.c:210
 msgid "Failed fetching the latest release version"
-msgstr ""
+msgstr "Falha ao buscar a última versão lançada"
 
 #: src/zrythm_app.c:223
-#, fuzzy
 msgid "Changelog"
-msgstr "Mudar cor"
+msgstr "Relatório de Mudanças"
 
 #: src/zrythm_app.c:225
 #, c-format
@@ -786,7 +784,7 @@ msgstr "Executando %s versão <b>%s</b>%s%s"
 
 #: src/zrythm_app.c:245
 msgid "New Zrythm Version"
-msgstr ""
+msgstr "Nova Versão do Zrythm"
 
 #: src/zrythm_app.c:246
 #, c-format
@@ -804,9 +802,8 @@ msgid "Setting up main window"
 msgstr "Configurando a janela principal"
 
 #: src/zrythm_app.c:381
-#, fuzzy
 msgid "No Project Selected"
-msgstr "Nenhum objeto selecionado"
+msgstr "Nenhum Projeto Selecionado"
 
 #: src/zrythm_app.c:384
 #, c-format
@@ -851,9 +848,8 @@ msgid "Waiting for project"
 msgstr "Aguardando projeto"
 
 #: src/zrythm_app.c:767
-#, fuzzy
 msgid "Icon Theme Not Found"
-msgstr "Tema de ícones"
+msgstr "Tema de Ícones Não Encontrado"
 
 #: src/zrythm_app.c:811
 #, c-format
@@ -1081,9 +1077,8 @@ msgstr ""
 "habilitada na sua instalação do %s."
 
 #: src/actions/actions.c:715
-#, fuzzy
 msgid "Discard Changes?"
-msgstr "Alterações não salvas"
+msgstr "Descartar Alterações?"
 
 #: src/actions/actions.c:716
 msgid "Any unsaved changes to the current project will be lost. Continue?"
@@ -1117,7 +1112,7 @@ msgstr "_Cancelar"
 #: src/actions/actions.c:719 src/actions/actions.c:808
 #: src/gui/widgets/main_window.c:155
 msgid "_Discard"
-msgstr ""
+msgstr "_Descartar"
 
 #: src/actions/actions.c:720 src/actions/actions.c:809
 #: src/gui/widgets/main_window.c:156
@@ -1137,18 +1132,16 @@ msgid "Open Project"
 msgstr "Abrir projeto"
 
 #: src/actions/actions.c:803 src/gui/widgets/main_window.c:150
-#, fuzzy
 msgid "Save Changes?"
-msgstr "Alterações não salvas"
+msgstr "Salvar Alterações?"
 
 #: src/actions/actions.c:804
-#, fuzzy
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
-"O projeto contém alterações não salvas.\n"
-"Se você sair sem salvar, as alterações não salvas serão perdidas."
+"O projeto contém alterações não salvas.Se você sair sem salvar, as "
+"alterações não salvas serão perdidas."
 
 #: src/actions/actions.c:879
 msgid "Save Project"
@@ -1229,9 +1222,8 @@ msgid "Failed to delete tracks"
 msgstr "Falha ao excluir faixas"
 
 #: src/actions/actions.c:1790
-#, fuzzy
 msgid "Delete Tracks?"
-msgstr "_Excluir Faixas"
+msgstr "Excluir Faixas?"
 
 #: src/actions/actions.c:1791
 msgid ""
@@ -1279,9 +1271,8 @@ msgid "Failed to disable tracks"
 msgstr "Falha ao desabilitar faixas"
 
 #: src/actions/actions.c:2076
-#, fuzzy
 msgid "Invalid Selection For Quantize"
-msgstr "Intervalo de tempo inválido"
+msgstr "Seleção para Quantizar é Inválida"
 
 #: src/actions/actions.c:2077
 #, c-format
@@ -1412,9 +1403,8 @@ msgstr ""
 "de presets a partir do gerenciador de presets de acordes."
 
 #: src/actions/actions.c:3258
-#, fuzzy
 msgid "Failed to create pack"
-msgstr "Falha ao criar faixa"
+msgstr "Falha ao criar pacote"
 
 #: src/actions/actions.c:3270 src/actions/actions.c:3325
 msgid "Preset Pack Name"
@@ -1422,19 +1412,17 @@ msgstr "Nome do pacote de presets"
 
 #: src/actions/actions.c:3301 src/actions/actions.c:3353
 #: src/actions/actions.c:3574 src/actions/actions.c:3838
-#, fuzzy
 msgid "Delete?"
-msgstr "Excluir"
+msgstr "Excluir?"
 
 #: src/actions/actions.c:3302
-#, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
-msgstr "Você tem certeza de que deseja excluir esse pacote de presets?"
+msgstr ""
+"Você tem certeza de que deseja excluir esse pacote de presets de acordes?"
 
 #: src/actions/actions.c:3354
-#, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
-msgstr "Você tem certeza de que deseja excluir esse pacote de presets?"
+msgstr "Você tem certeza de que deseja excluir esse presets de acorde?"
 
 #: src/actions/actions.c:3377
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
@@ -1443,27 +1431,24 @@ msgstr "Nome do preset"
 
 #: src/actions/actions.c:3397 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:303 src/gui/widgets/balance_control.c:345
-#, fuzzy
 msgid "Failed to change balance"
-msgstr "Falha ao abrir o arquivo: %s"
+msgstr "Falha ao mudar o balanço"
 
 #: src/actions/actions.c:3431 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr "Falha ao excluir plugins"
 
 #: src/actions/actions.c:3453
-#, fuzzy
 msgid "Delete Plugins?"
-msgstr "Excluir plugin"
+msgstr "Excluir Plugins?"
 
 #: src/actions/actions.c:3454
-#, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
 msgstr ""
 "A seleção contém plugins não instanciados. Não será possível desfazer sua "
-"exclusão e o histórico do desfazer será esvaziado. Continuar com a exclusão?"
+"exclusão e o histórico do desfazer será esvaziado."
 
 #: src/actions/actions.c:3505
 #, c-format
