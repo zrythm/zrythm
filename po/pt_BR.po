@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-12-27 20:45+0000\n"
+"PO-Revision-Date: 2023-12-28 20:45+0000\n"
 "Last-Translator: Murilo Gama <murilovsky2030@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
@@ -1474,10 +1474,10 @@ msgid "Collection name"
 msgstr "Nome da coleção"
 
 #: src/actions/actions.c:3841
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
-msgstr "Essa coleção contém %d plugins. Tem certeza que deseja removê-la?"
+msgstr "A coleção '%s' contém %d plugins. Tem certeza que deseja removê-la?"
 
 #: src/actions/actions.c:4017
 msgid "Failed to change direct output"
@@ -1644,14 +1644,14 @@ msgid "Unfold Track"
 msgstr "Expandir faixa"
 
 #: src/actions/tracklist_selections.c:1908
-#, fuzzy, c-format
+#, c-format
 msgid "Change Fader from %.1f to %.1f"
-msgstr "Mudar BPM de %.2f para %.2f"
+msgstr "Mudar Fader de %.1f para %.1f"
 
 #: src/actions/tracklist_selections.c:1912
-#, fuzzy, c-format
+#, c-format
 msgid "Change Pan from %.1f to %.1f"
-msgstr "Mudar BPM de %.2f para %.2f"
+msgstr "Mudar Pan de %.1f para %.1f"
 
 #: src/actions/tracklist_selections.c:1915
 #: src/actions/tracklist_selections.c:1973
@@ -1997,9 +1997,9 @@ msgid "Modulators"
 msgstr "Moduladores"
 
 #: src/dsp/supported_file.c:274
-#, fuzzy, c-format
+#, c-format
 msgid "Failed reading metadata for %s"
-msgstr "Falha ao obter o conteúdo de %s"
+msgstr "Falha ao ler metadados de %s"
 
 #: src/dsp/supported_file.c:278
 #, c-format
@@ -2157,7 +2157,7 @@ msgstr "O JACK foi encerrado"
 
 #: src/dsp/engine_jack.c:495
 msgid "JACK Error"
-msgstr ""
+msgstr "Erro no JACK"
 
 #. TRANSLATORS: JACK failure messages
 #: src/dsp/engine_jack.c:589
@@ -2336,9 +2336,8 @@ msgid "Automation"
 msgstr "Automação"
 
 #: src/dsp/engine.c:484 src/dsp/engine.c:558
-#, fuzzy
 msgid "Backend Initialization Failed"
-msgstr "Falha ao inicializar o arquivo de áudio"
+msgstr "Falha ao Inicializar Backend"
 
 #: src/dsp/engine.c:485
 #, c-format
@@ -2374,9 +2373,8 @@ msgstr ""
 "backend dummy. Confira suas configurações de backend nas Preferências."
 
 #: src/dsp/engine.c:599
-#, fuzzy
 msgid "Invalid Backend Combination"
-msgstr "posição inicial"
+msgstr "Combinação Inválida no Backend"
 
 #: src/dsp/engine.c:600
 msgid ""
@@ -2388,9 +2386,8 @@ msgstr ""
 "quanto de MIDI."
 
 #: src/dsp/engine.c:790
-#, fuzzy
 msgid "Selected Backend Not Found"
-msgstr "Os mecanismos selecionados estão operacionais"
+msgstr "Backend Selecionado Não Foi Encontrado"
 
 #: src/dsp/engine.c:791
 #, c-format
@@ -2464,9 +2461,8 @@ msgid "PulseAudio Error: Failed to connect"
 msgstr "Erro no PulseAudio: Falha ao conectar"
 
 #: src/dsp/engine_pulse.c:414
-#, fuzzy
 msgid "Pulseaudio Backend Test Failed"
-msgstr "Substitua o backend de áudio para usar"
+msgstr "Backend PulseAudio Falhou no Teste"
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
 #: resources/ui/inspector_chord.ui:7
@@ -2542,7 +2538,6 @@ msgstr "Falha ao alterar BPM"
 
 #: src/dsp/automation_point.c:227 src/gui/widgets/balance_control.c:310
 #: src/gui/widgets/item_factory.c:295 src/gui/widgets/item_factory.c:315
-#, fuzzy
 msgid "Invalid Value"
 msgstr "Valor inválido"
 
@@ -2644,14 +2639,13 @@ msgid "PortAudio Error: %s"
 msgstr "Erro no PortAudio: %s"
 
 #: src/dsp/tracklist.c:1213
-#, fuzzy
 msgid "Failed to create MIDI track"
-msgstr "Falha ao escrever o arquivo: %s"
+msgstr "Falha ao criar faixa MIDI"
 
 #: src/dsp/tracklist.c:1228
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add region %d to track"
-msgstr "Falha ao criar faixa"
+msgstr "Falha ao adicionar região %d a faixa"
 
 #: src/dsp/tracklist.c:1240
 #, fuzzy, c-format
