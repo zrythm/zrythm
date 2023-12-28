@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# Software In Interlingua <softinterlingua@gmail.com>, 2020.
+# Software In Interlingua <softinterlingua@gmail.com>, 2020, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2020-08-08 00:38+0000\n"
+"PO-Revision-Date: 2023-12-28 20:45+0000\n"
 "Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
 "Language-Team: Interlingua <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/ia/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:189
@@ -54,7 +54,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:91 src/audio/fader.c:150
 msgid "Mute"
-msgstr ""
+msgstr "Silentiar"
 
 #: inc/utils/gtk.h:97
 msgid "Unmute"
@@ -68,7 +68,7 @@ msgstr ""
 #: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:445 src/audio/region.c:391
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: inc/audio/track.h:159 src/project.c:604
 #: src/gui/widgets/route_target_selector_popover.c:153
@@ -83,7 +83,7 @@ msgstr ""
 
 #: inc/audio/track.h:161 src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "Marcator"
 
 #: inc/audio/track.h:162 src/audio/tempo_track.c:85
 msgid "Tempo"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: inc/audio/track.h:163
 msgid "Audio FX"
-msgstr ""
+msgstr "Audio FX"
 
 #: inc/audio/track.h:164
 msgid "Audio Group"
@@ -99,11 +99,11 @@ msgstr ""
 
 #: inc/audio/track.h:165 src/audio/region.c:388
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:166
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: inc/audio/track.h:167
 msgid "MIDI Group"
