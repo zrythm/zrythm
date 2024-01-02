@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Software In Interlingua <softinterlingua@gmail.com>, 2020, 2023.
+# famese <hmcb2080@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2023-12-28 20:45+0000\n"
-"Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
+"PO-Revision-Date: 2024-01-02 20:45+0000\n"
+"Last-Translator: famese <hmcb2080@gmail.com>\n"
 "Language-Team: Interlingua <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/ia/>\n"
 "Language: ia\n"
@@ -30,7 +31,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:55
 msgid "_Copy"
-msgstr ""
+msgstr "_Copiar"
 
 #: inc/utils/gtk.h:61
 msgid "_Paste"
