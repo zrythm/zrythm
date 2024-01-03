@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-30 20:42+0900\n"
-"PO-Revision-Date: 2023-11-23 20:45+0000\n"
+"PO-Revision-Date: 2024-01-03 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1204,7 +1205,7 @@ msgstr ""
 
 #: ../../contributing/overview.rst:43
 msgid ":ref:`contributing/reporting-bugs:Reporting Bugs`"
-msgstr ""
+msgstr ":ref:`contributing/reporting-bugs:Reporting Bugs`"
 
 #: ../../contributing/overview.rst:46
 msgid "Editing this Manual"
@@ -1377,19 +1378,19 @@ msgstr "Informar d'un error"
 
 #: ../../contributing/reporting-bugs.rst:9
 msgid "There are three types of bugs:"
-msgstr ""
+msgstr "Hi ha tres tipus d'errors:"
 
 #: ../../contributing/reporting-bugs.rst:11
 msgid "wrong or unexpected behavior that don't cause errors"
-msgstr ""
+msgstr "conducta incorrecta o inesperada que no causa errors"
 
 #: ../../contributing/reporting-bugs.rst:12
 msgid "soft errors"
-msgstr ""
+msgstr "errors lleus"
 
 #: ../../contributing/reporting-bugs.rst:13
 msgid "hard errors (crashes)"
-msgstr ""
+msgstr "errors greus (bloquejos)"
 
 #: ../../contributing/reporting-bugs.rst:16
 #, fuzzy
@@ -1401,6 +1402,8 @@ msgid ""
 "In this case, please report the issue on our `issue tracker "
 "<issue_tracker_>`_ with enough details to help us reproduce the problem."
 msgstr ""
+"En aquest cas informa del problema al nostre`issue tracker <issue_tracker_>`"
+"_ amb prou detalls per ajudar-nos a reproduir el problema."
 
 #: ../../contributing/reporting-bugs.rst:22
 #, fuzzy
@@ -1409,23 +1412,23 @@ msgstr "Inclou els següents apartats:"
 
 #: ../../contributing/reporting-bugs.rst:24
 msgid "a screenshot/screencast showing the problem"
-msgstr ""
+msgstr "una captura de pantalla/gravació de pantalla que mostri el problema"
 
 #: ../../contributing/reporting-bugs.rst:25
 msgid "a description of the problem"
-msgstr ""
+msgstr "Una descripció del problema"
 
 #: ../../contributing/reporting-bugs.rst:26
 msgid "steps to reproduce the problem"
-msgstr ""
+msgstr "passos per a reproduir el problema"
 
 #: ../../contributing/reporting-bugs.rst:27
 msgid "OS and Zrythm version information"
-msgstr ""
+msgstr "Informació de la versió del sistema operatiu i la del Zrythm"
 
 #: ../../contributing/reporting-bugs.rst:28
 msgid "last 100 lines of the log file"
-msgstr ""
+msgstr "les últimes 100 línies del fitxer de registre"
 
 #: ../../contributing/reporting-bugs.rst:30
 #, fuzzy
@@ -1434,22 +1437,26 @@ msgstr "Les operacions següents s'apliquen a les regions."
 
 #: ../../contributing/reporting-bugs.rst:34
 msgid "Obtaining a Screenshot/Screencast"
-msgstr ""
+msgstr "Obtenció d'una captura de pantalla/gravació de pantalla"
 
 #: ../../contributing/reporting-bugs.rst:36
 msgid ""
 "You can press the :kbd:`PrintScreen` on your keyboard to obtain a screenshot."
 msgstr ""
+"Pots prémer la tecla :kbd:`PrintScreen` del teu teclat per a obtenir una "
+"captura de pantalla."
 
 #: ../../contributing/reporting-bugs.rst:39
 msgid ""
 "To obtain a screencast you can use a screen recording software such as OBS, "
 "or :kbd:`Control-Shift-Alt-R` on GNOME."
 msgstr ""
+"Per a obtenir una gravació de pantalla, pots utilitzar un programari de "
+"gravació de pantalla com ara OBS, o :kbd:`Control-Shift-Alt-R` a GNOME."
 
 #: ../../contributing/reporting-bugs.rst:43
 msgid "Problem Description"
-msgstr ""
+msgstr "Descripció del problema"
 
 #: ../../contributing/reporting-bugs.rst:45
 msgid ""
@@ -1458,6 +1465,10 @@ msgid ""
 "example <https://gitlab.zrythm.org/zrythm/zrythm/-/issues/4202>`_ of a good "
 "bug description:"
 msgstr ""
+"Hauríes d'incloure el màxim de detalls possibles per ajudar-nos a entendre i "
+"reproduir el problema, en cas contrari no podrem fer-hi res. `Aquí tens un "
+"exemple <https://gitlab.zrythm.org/zrythm/zrythm/-/issues/4202>`_ d'una bona "
+"descripció d'error:"
 
 #: ../../contributing/reporting-bugs.rst:51
 msgid "Pixelated and misaligned timebase master and transport client icons"
@@ -1468,10 +1479,12 @@ msgid ""
 "As can be seen in the following screenshot, the two icons are seemingly "
 "misaligned, moved into each other and also very pixelated."
 msgstr ""
+"Com es pot veure a la següent captura de pantalla, les dues icones estan "
+"aparentment desalineades, es mouen entre si i també molt pixelades."
 
 #: ../../contributing/reporting-bugs.rst:56
 msgid "Steps to Reproduce"
-msgstr ""
+msgstr "Passos per a reproduir"
 
 #: ../../contributing/reporting-bugs.rst:58
 msgid ""
@@ -1480,15 +1493,18 @@ msgid ""
 "error so that we can fix it. If we can't reproduce the issue, it is very "
 "difficult to find or fix the issue."
 msgstr ""
+"Si us plau, indica els passos exactes per a reproduir el problema, partint "
+"d'un projecte en blanc (si és possible). Seguirem aquests passos exactes per "
+"a reproduir l'error i així poder solucionar-lo. Si no podem reproduir el "
+"problema, és molt difícil trobar o solucionar el problema."
 
 #: ../../contributing/reporting-bugs.rst:64
 msgid "Here is an example of helpful steps to reproduce:"
-msgstr ""
+msgstr "Aquí tens un exemple de passos útils per a reproduir:"
 
 #: ../../contributing/reporting-bugs.rst:66
-#, fuzzy
 msgid "Create an empty project"
-msgstr "Crea un projecte nou."
+msgstr "Crear un projecte nou"
 
 #: ../../contributing/reporting-bugs.rst:67
 #, fuzzy
@@ -1513,9 +1529,8 @@ msgid "Delete the 2nd note"
 msgstr "Suprimir la connexió"
 
 #: ../../contributing/reporting-bugs.rst:72
-#, fuzzy
 msgid "Zrythm freezes"
-msgstr "Executable Zrythm."
+msgstr "Executable Zrythm"
 
 #: ../../contributing/reporting-bugs.rst:75
 msgid "OS and Zrythm Version Information"
@@ -1533,6 +1548,9 @@ msgid ""
 "You can obtain OS information from the About dialog (click :guilabel:"
 "`Troubleshooting` then :guilabel:`Debugging Information`)"
 msgstr ""
+"Pots obtenir informació del sistema operatiu des del diàleg Quant a (fes "
+"clic a :guilabel:`Troubleshooting` i després :guilabel:`Debugging "
+"Information`)"
 
 #: ../../contributing/reporting-bugs.rst:91
 #, fuzzy
@@ -1546,16 +1564,22 @@ msgid ""
 "lines. You may be asked to provide the full log file (please compress it "
 "first)."
 msgstr ""
+"El fitxer de registre es pot trobar a :ref:`the location specified here <"
+"appendix/files-and-directories:Log File>`. Prorciona almenys les 100 últimes "
+"línies. És possible que se't demani que proporcionis el fitxer de registre "
+"complet (comprimeix-lo primer)."
 
 #: ../../contributing/reporting-bugs.rst:99
 msgid "Soft Errors"
-msgstr ""
+msgstr "Errors lleus"
 
 #: ../../contributing/reporting-bugs.rst:101
 msgid ""
 "In this case Zrythm will display a bug report dialog. Please follow the "
 "instructions in this dialog to report the issue."
 msgstr ""
+"En aquest cas, Zrythm mostrarà un diàleg d'informe d'error. Si us plau, "
+"segueix les instruccions d'aquest diàleg per a informar del problema."
 
 #: ../../contributing/reporting-bugs.rst:105
 #, fuzzy
@@ -1568,6 +1592,10 @@ msgid ""
 "may not contain enough information to help us fix the issue. In this case, "
 "please follow the steps below to generate a core dump or a backtrace."
 msgstr ""
+"Si Zrythm falla, és possible que no es mostri un diàleg d'informe d'error o "
+"que el fitxer de registre no contingui prou informació per ajudar-nos a "
+"solucionar el problema. En aquest cas, si us plau, segueix els passos "
+"següents per a generar un abocament de nucli o una traça inversa."
 
 #: ../../contributing/reporting-bugs.rst:113
 #, fuzzy
@@ -1580,6 +1608,8 @@ msgid ""
 "you have ``systemd-coredump`` or the equivalent package installed on your "
 "distro."
 msgstr ""
+"Hauràs d'escriure algunes ordres en un terminal. A més, assegura't de tenir "
+"instal·lat ``systemd-coredump`` o el paquet equivalent a la teva distribució."
 
 #: ../../contributing/reporting-bugs.rst:119
 msgid ""
@@ -1588,10 +1618,14 @@ msgid ""
 "current directory after running the first 2 commands below and running "
 "Zrythm until it crashes."
 msgstr ""
+"Els passos següents s'apliquen als usuaris de systemd (la gran majoria dels "
+"usuaris de GNU/Linux). Per als usuaris que no són de sistema, normalment "
+"poden obtenir el fitxer principal al directori actual després d'executar les "
+"2 primeres ordres a continuació i executar Zrythm fins que es bloquegi."
 
 #: ../../contributing/reporting-bugs.rst:125
 msgid "First, enable core dumps:"
-msgstr ""
+msgstr "Primer, habilita els abocaments de nuclis:"
 
 #: ../../contributing/reporting-bugs.rst:131
 msgid "Tell Linux to add the PID (Process ID) to the core dump:"
@@ -1680,9 +1714,8 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:217
-#, fuzzy
 msgid "A confirmation dialog will appear:"
-msgstr "Diàleg de configuració inicial"
+msgstr "Apareixerà un quadre de diàleg de confirmació:"
 
 #: ../../credits/intro.rst:5
 msgid "Credits"
@@ -5435,9 +5468,8 @@ msgid "This will clear ALL your user settings."
 msgstr "Això esborrarà TOTS els paràmetres d'usuari."
 
 #: ../../invoking-from-command-line/intro.rst:53
-#, fuzzy
 msgid "Print version information."
-msgstr "Informació del rerefons"
+msgstr "Imprimir informació de la versió."
 
 #: ../../invoking-from-command-line/intro.rst:57
 msgid "Convert a .zpj project file to YAML."
