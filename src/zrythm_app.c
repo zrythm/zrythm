@@ -1273,8 +1273,10 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("<Shift>F10", "app.toggle-left-panel");
   INSTALL_ACCEL ("<Shift>F12", "app.toggle-right-panel");
   INSTALL_ACCEL ("<Shift>F11", "app.toggle-bot-panel");
-  INSTALL_ACCEL ("<Control>equal", "app.zoom-in::global");
-  INSTALL_ACCEL ("<Control>minus", "app.zoom-out::global");
+  INSTALL_ACCEL_WITH_SECONDARY (
+    "<Control>equal", "<Control>KP_Add", "app.zoom-in::global");
+  INSTALL_ACCEL_WITH_SECONDARY (
+    "<Control>minus", "<Control>KP_Subtract", "app.zoom-out::global");
   INSTALL_ACCEL_WITH_SECONDARY (
     "<Control>plus", "<Control>0", "app.original-size::global");
   INSTALL_ACCEL ("<Control>bracketleft", "app.best-fit::global");
