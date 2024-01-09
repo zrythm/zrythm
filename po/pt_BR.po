@@ -11,13 +11,13 @@
 # Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>, 2022.
 # Gabriel fresan <gabrielfrsan@proton.me>, 2022.
 # Filipe Motta <luiz_filipe_motta@hotmail.com>, 2023.
-# Murilo Gama <murilovsky2030@gmail.com>, 2023.
+# Murilo Gama <murilovsky2030@gmail.com>, 2023, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-12-28 20:45+0000\n"
+"PO-Revision-Date: 2024-01-09 20:45+0000\n"
 "Last-Translator: Murilo Gama <murilovsky2030@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
@@ -4885,7 +4885,7 @@ msgstr "Configuração Inicial"
 #: src/gui/widgets/dialogs/first_run.c:203
 #: src/gui/widgets/dialogs/scripting_dialog.c:92
 msgid "Language"
-msgstr "Linguagem"
+msgstr "Idioma"
 
 #: src/gui/widgets/dialogs/first_run.c:204
 #, fuzzy
