@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# Software In Interlingua <softinterlingua@gmail.com>, 2020, 2023.
+# Software In Interlingua <softinterlingua@gmail.com>, 2020, 2023, 2024.
 # famese <hmcb2080@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2024-01-02 20:45+0000\n"
-"Last-Translator: famese <hmcb2080@gmail.com>\n"
+"PO-Revision-Date: 2024-01-10 20:45+0000\n"
+"Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
 "Language-Team: Interlingua <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/ia/>\n"
 "Language: ia\n"
@@ -43,7 +43,7 @@ msgstr "_Deler"
 
 #: inc/utils/gtk.h:73
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "R_ader selection"
 
 #: inc/utils/gtk.h:79
 msgid "Select A_ll"
@@ -59,7 +59,7 @@ msgstr "Silentiar"
 
 #: inc/utils/gtk.h:97
 msgid "Unmute"
-msgstr ""
+msgstr "Non plus silentiar"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:175
@@ -181,11 +181,11 @@ msgstr ""
 
 #: inc/audio/region.h:85 src/audio/automation_track.c:99
 msgid "Off"
-msgstr ""
+msgstr "Disactivar"
 
 #: inc/audio/region.h:87 src/audio/automation_track.c:93
 msgid "On"
-msgstr ""
+msgstr "Activate"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -208,7 +208,7 @@ msgstr ""
 
 #: inc/audio/pan.h:77 src/utils/ui.c:760
 msgid "Square Root"
-msgstr ""
+msgstr "Radice quadrate"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
