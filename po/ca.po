@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# Maite Guix <maite.guix@gmail.com>, 2022, 2023.
+# Maite Guix <maite.guix@gmail.com>, 2022, 2023, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-11-22 20:45+0000\n"
+"PO-Revision-Date: 2024-01-10 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2.1-rc\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -8554,7 +8554,7 @@ msgstr "Canviat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Port some more deprecated GTK widgets to new ones"
-msgstr ""
+msgstr "Porta alguns ginys GTK més obsolets als nous"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Make the dialog flow for creating/loading projects async"
