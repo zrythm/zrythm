@@ -16,17 +16,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-11-30 20:42+0900\n"
+"POT-Creation-Date: 2024-01-11 21:08+0900\n"
 "PO-Revision-Date: 2023-12-02 11:54+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/es/>\n"
 "Language: es\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/es/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -34,12 +33,13 @@ msgid "Environment Variables"
 msgstr "Variables de entorno"
 
 #: ../../appendix/environment.rst:13
+#, fuzzy
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
 "operating system's settings, or they can be passed directly when running :"
-"program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
-"path zrythm_launch``"
+"program:`zrythm` or :program:`zrythm_launch`, like: "
+"``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
 "Zrythm entiende las siguientes variables de entorno. Pueden ser configuradas "
 "en :file:`.bashrc` o un archivo de configuración del shell similar, la "
@@ -47,38 +47,21 @@ msgstr ""
 "ejecutar :program:`zrythm` o :program:`zrythm_launch`, como: ``LV2_PATH=/mi/"
 "ruta personalizada zrythm_launch``"
 
-#: ../../appendix/environment.rst:23
-msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr "Defina aquí las ubicaciones donde buscar complementos de :term:`LV2`."
-
-#: ../../appendix/environment.rst:26
-msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr "Ejemplo: ``LV2_PATH=$HOME/custom-lv2-dir``"
-
-#: ../../appendix/environment.rst:31
+#: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
 msgstr "Establézcalo en 1 para deshabilitar el escaneo de complementos."
 
-#: ../../appendix/environment.rst:33
+#: ../../appendix/environment.rst:23
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 msgstr "Ejemplos: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
-#: ../../appendix/environment.rst:38
-msgid "Set this to the locations to scan for :term:`VST2` plugins."
-msgstr "Establece las ubicaciones para buscar plugins :term:`VST2`."
-
-#: ../../appendix/environment.rst:43
-msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr ""
-"Configure esto en las ubicaciones para buscar complementos :term:`VST3`."
-
-#: ../../appendix/environment.rst:48
+#: ../../appendix/environment.rst:28
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
 "Número de hilos DSP a usar. Por defecto se establece al número de núcleos "
 "del CPU - 1."
 
-#: ../../appendix/environment.rst:53
+#: ../../appendix/environment.rst:33
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
 "Establezca a 1 para mostrar información adicional útil para desarrolladores."
@@ -254,8 +237,8 @@ msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"Este archivo contiene las colecciones de plugins. Se encuentra en "
-":file:`plugin_collections.yaml` bajo el :term:`Zrythm user path`."
+"Este archivo contiene las colecciones de plugins. Se encuentra en :file:"
+"`plugin_collections.yaml` bajo el :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
@@ -269,8 +252,8 @@ msgid ""
 msgstr ""
 "Zrythm escribirá en un archivo de registro en cada ejecución dentro del "
 "subdirectorio :file:`log` bajo la ruta de usuario :term:`Zrythm`. El nombre "
-"del fichero contendrá la fecha y hora actuales, por ejemplo "
-":file:`log_2020-06-26_15-34-19.log`."
+"del fichero contendrá la fecha y hora actuales, por ejemplo :file:"
+"`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
@@ -363,8 +346,8 @@ msgid ""
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
 "Se encuentra una lista de paquetes preestablecidos y ajustes preestablecidos "
-"en el :ref:`Panel derecho <zrythm-interface/right-panel:Panel derecho>` en "
-":guilabel:`Chord Preset Browser`."
+"en el :ref:`Panel derecho <zrythm-interface/right-panel:Panel derecho>` en :"
+"guilabel:`Chord Preset Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
@@ -3984,7 +3967,7 @@ msgstr ""
 msgid "Shown as a grey, down-facing arrow."
 msgstr "Se muestra como una flecha gris hacia abajo."
 
-#: ../../editing/timeline/ruler.rst:29
+#: ../../editing/timeline/ruler.rst:30
 msgid "Loop points"
 msgstr "Puntos del bucle"
 
@@ -3997,7 +3980,13 @@ msgstr ""
 "brillante si el bucle está activado o gris si está desactivado. Se puede "
 "arrastrar para cambiar la posición."
 
-#: ../../editing/timeline/ruler.rst:31
+#: ../../editing/timeline/ruler.rst:30
+msgid ""
+"Looping can be enabled/disabled using the loop button in the :ref:`transport "
+"controls <playback-and-recording/transport-controls:Controls>`."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:32
 #, fuzzy
 msgid ""
 "Clicking and dragging on empty space in the bottom half of the ruler will "
@@ -4006,11 +3995,11 @@ msgstr ""
 "Hacer clic y arrastrar en un espacio vacío permite ajustar la posición del "
 "cabezal de reproducción."
 
-#: ../../editing/timeline/ruler.rst:36
+#: ../../editing/timeline/ruler.rst:37
 msgid "Setting the Cue Point"
 msgstr "Establecer el punto de referencia"
 
-#: ../../editing/timeline/ruler.rst:37
+#: ../../editing/timeline/ruler.rst:38
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
@@ -4018,18 +4007,18 @@ msgstr ""
 "Haz doble clic dentro de la regla para establecer el punto de referencia, al "
 "cual se volverá cuando la reproducción se detenga."
 
-#: ../../editing/timeline/ruler.rst:41
+#: ../../editing/timeline/ruler.rst:42
 msgid "Range Selection"
 msgstr "Selección de intervalo"
 
-#: ../../editing/timeline/ruler.rst:42
+#: ../../editing/timeline/ruler.rst:43
 msgid ""
 "Clicking and dragging in the top half of the ruler will create a :term:"
 "`range <Range>` selection. If an existing range exists, you can click an "
 "drag it to move it."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:50
+#: ../../editing/timeline/ruler.rst:51
 msgid "Range selection"
 msgstr "Selección de intervalo"
 
@@ -4641,7 +4630,6 @@ msgid "The installers also include bundled plugins."
 msgstr "Los instaladores también incluyen complementos incorporados."
 
 #: ../../getting-started/installation.rst:28
-#: ../../plugins-files/plugins/scanning.rst:79
 msgid "Windows"
 msgstr "Windows"
 
@@ -4683,8 +4671,8 @@ msgid ""
 "org/zrythm/zrythm/>`_."
 msgstr ""
 "Puedes compilar Zrythm desde el código fuente, bien usando un `source "
-"distribution tarball <https://www.zrythm.org/releases/>`_ o `git "
-"<https://gitlab.zrythm.org/zrythm/zrythm/>`_."
+"distribution tarball <https://www.zrythm.org/releases/>`_ o `git <https://"
+"gitlab.zrythm.org/zrythm/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:51
 msgid ""
@@ -5379,23 +5367,15 @@ msgstr "Esto borrará TODOS los ajustes de usuario."
 msgid "Print version information."
 msgstr "Imprimir información de la versión."
 
-#: ../../invoking-from-command-line/intro.rst:57
-msgid "Convert a .zpj project file to YAML."
-msgstr ""
-
-#: ../../invoking-from-command-line/intro.rst:61
-msgid "Convert a YAML file to the .zpj format."
-msgstr ""
-
-#: ../../invoking-from-command-line/intro.rst:63
+#: ../../invoking-from-command-line/intro.rst:55
 msgid "Prints the Zrythm version."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:66
+#: ../../invoking-from-command-line/intro.rst:58
 msgid "zrythm_launch"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:67
+#: ../../invoking-from-command-line/intro.rst:59
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -6984,14 +6964,14 @@ msgstr "Buscador de plugins"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, :term:`VST3`, "
-"LADSPA, DSSI and :term:`AU` plugins. LV2 is the recommended standard."
+"until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
+"term:`VST3`, LADSPA, DSSI and :term:`AU` plugins."
 msgstr ""
 "Zrythm busca los plugins al inicio y los recuerda hasta que se cierra. "
 "Admite los plugins :term:`LV2`, :term:`VST2`, :term:`VST3` y :term:`AU`. LV2 "
 "es el estándar recomendado."
 
-#: ../../plugins-files/plugins/scanning.rst:18
+#: ../../plugins-files/plugins/scanning.rst:15
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
@@ -6999,115 +6979,41 @@ msgstr ""
 "Los instrumentos :term:`SFZ` y :term:`SF2` también son compatibles y se "
 "escanean como plugins de instrumentos."
 
-#: ../../plugins-files/plugins/scanning.rst:22
+#: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by passing :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` "
-"when running Zrythm."
+"Plugin scanning can be disabled by passing the :envvar:"
+"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable when running Zrythm."
 msgstr ""
 "El análisis de plugins se puede desactivar al pasar :envvar:"
 "`NO_SCAN_PLUGINS` cuando se ejecuta Zrythm."
 
-#: ../../plugins-files/plugins/scanning.rst:27
-msgid "LV2 Scan"
-msgstr "Escanear LV2"
+#: ../../plugins-files/plugins/scanning.rst:22
+#, fuzzy
+msgid "Scan Paths"
+msgstr "Caminos"
+
+#: ../../plugins-files/plugins/scanning.rst:24
+msgid ""
+"Zrythm will scan for plugins in the plugin search paths specified in the :"
+"ref:`preferences <configuration/preferences:Preferences>`. If the search "
+"path is left empty, Zrythm will scan for plugins in the standard paths "
+"according to the specifications of each plugin format (if any)."
+msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:29
-#, fuzzy
 msgid ""
-"Zrythm will scan for LV2 plugins in the `standard paths specified here "
-"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_."
+"You can use environment variables (e.g., ``LV2_PATH``) when specifying "
+"search paths in the preferences. The allowed syntax is ``${ENV_VAR_NAME}`` "
+"where ``ENV_VAR_NAME`` is the name of the environment variable."
 msgstr ""
-"Zrythm buscará plugins LV2 en las `rutas estándar especificadas aquí "
-"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. Puedes "
-"omitir este comportamiento al pasar :envvar:`LV2_PATH`."
 
-#: ../../plugins-files/plugins/scanning.rst:32
+#: ../../plugins-files/plugins/scanning.rst:35
 #, fuzzy
-msgid ""
-"On Flatpak builds, Zrythm will scan for LV2 plugins in the following paths."
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+msgid "Plugin Cache"
+msgstr "Búsqueda de complementos"
 
-#: ../../plugins-files/plugins/scanning.rst:39
-#, fuzzy
-msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
-msgstr ""
-"Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
-"`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid "VST2/VST3 Scan"
-msgstr "Escanear VST2/VST3"
-
-#: ../../plugins-files/plugins/scanning.rst:46
-msgid "GNU/Linux and FreeBSD"
-msgstr "GNU/Linux y FreeBSD"
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid "Zrythm will scan for VST2 plugins in the following paths,"
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:55
-#: ../../plugins-files/plugins/scanning.rst:70
-msgid "and VST3 plugins in the following paths."
-msgstr "y plugins VST3 en las siguientes rutas."
-
-#: ../../plugins-files/plugins/scanning.rst:61
-#: ../../plugins-files/plugins/scanning.rst:118
-#: ../../plugins-files/plugins/scanning.rst:138
-msgid ""
-"If your system uses a libdir other than ``lib`` (for example ``lib64``), "
-"Zrythm will scan for plugins in both locations."
-msgstr ""
-"Si tu sistema usa un libdir distinto de ``lib`` (por ejemplo, `` lib64``), "
-"Zrythm busca plugins en ambas ubicaciones."
-
-#: ../../plugins-files/plugins/scanning.rst:65
-#, fuzzy
-msgid ""
-"On Flatpak builds, Zrythm will scan for VST2 plugins in the following paths"
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:74
-#, fuzzy
-msgid ""
-"You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-"`VST3_PATH`, respectively."
-msgstr ""
-"Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
-"`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:80
-#, fuzzy
-msgid ""
-"Zrythm will scan for VST plugins in the paths specified in the :ref:"
-"`preferences <configuration/preferences:Preferences>`."
-msgstr ""
-"Zrythm busca plugins VST en las rutas especificadas en :ref:`vst-paths`."
-
-#: ../../plugins-files/plugins/scanning.rst:85
-msgid "MacOS"
-msgstr "macOS"
-
-#: ../../plugins-files/plugins/scanning.rst:86
-msgid ""
-"Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
-"locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000171310>`_."
-msgstr ""
-"Zrythm buscará plugins VST en las rutas especificadas en `Ubicaciones de "
-"plugins VST en Mac OS X y macOS <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000171310>` _."
-
-#: ../../plugins-files/plugins/scanning.rst:89
-msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
-msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
-
-#: ../../plugins-files/plugins/scanning.rst:90
-msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
-msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
-
-#: ../../plugins-files/plugins/scanning.rst:92
+#: ../../plugins-files/plugins/scanning.rst:37
 #, fuzzy
 msgid ""
 "Zrythm will remember scanned VST plugins and save this information in :file:"
@@ -7121,7 +7027,7 @@ msgstr ""
 "Zrythm recuerda los plugins VST escaneados y guarda esta información en :"
 "file:`cached_plugin_descriptors.yaml` en la :term:`Zrythm user path`."
 
-#: ../../plugins-files/plugins/scanning.rst:98
+#: ../../plugins-files/plugins/scanning.rst:40
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
@@ -7130,56 +7036,11 @@ msgstr ""
 "este archivo para forzar un nuevo análisis de los plugins previamente "
 "analizados."
 
-#: ../../plugins-files/plugins/scanning.rst:103
-msgid "DSSI Scan"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:104
-#, fuzzy
-msgid "Zrythm will scan for DSSI plugins in the following paths,"
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:110
-#, fuzzy
-msgid ""
-"On Flatpak builds, Zrythm will scan for DSSI plugins in the following paths."
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:115
-#, fuzzy
-msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
-msgstr ""
-"Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
-"`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:123
-msgid "LADSPA Scan"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:124
-#, fuzzy
-msgid "Zrythm will scan for LADSPA plugins in the following paths,"
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:130
-#, fuzzy
-msgid ""
-"On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
-"paths."
-msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
-
-#: ../../plugins-files/plugins/scanning.rst:135
-#, fuzzy
-msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
-msgstr ""
-"Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
-"`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:143
+#: ../../plugins-files/plugins/scanning.rst:44
 msgid "AU Scan"
 msgstr "Escaneo de AU"
 
-#: ../../plugins-files/plugins/scanning.rst:144
+#: ../../plugins-files/plugins/scanning.rst:45
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location at :"
 "file:`/Library/Audio/Plug-Ins/Components`."
@@ -7187,39 +7048,38 @@ msgstr ""
 "En MacOS, los plugins :term:`AU` se escanean en su ubicación estándar en :"
 "file:`/Library/Audio/Plug-Ins/Components`."
 
-#: ../../plugins-files/plugins/scanning.rst:149
+#: ../../plugins-files/plugins/scanning.rst:49
 msgid "SFZ/SF2 Scan"
 msgstr "Escanear SFZ/SF2"
 
-#: ../../plugins-files/plugins/scanning.rst:150
+#: ../../plugins-files/plugins/scanning.rst:50
 #, fuzzy
 msgid ""
-":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
+":term:`SFZ` and :term:`SF2` instruments will be scanned in all directories "
 "and subdirectories specified in the :ref:`preferences <configuration/"
 "preferences:Preferences>`."
 msgstr ""
 "Los instrumentos :term:`SFZ` y :term:`SF2` se escanean en todos los "
 "directorios y subdirectorios especificados en :ref:`vst-paths`."
 
-#: ../../plugins-files/plugins/scanning.rst:156
+#: ../../plugins-files/plugins/scanning.rst:55
 msgid "About Flatpak"
 msgstr "Tocante a Flatpak"
 
-#: ../../plugins-files/plugins/scanning.rst:158
+#: ../../plugins-files/plugins/scanning.rst:57
 msgid ""
-"When using Flatpak builds, only plugins installed as Flatpaks should be used "
-"(i.e., plugins using the `Linux Audio base extension <https://github.com/"
-"flathub/org.freedesktop.LinuxAudio.BaseExtension>`_)."
+"When using Zrythm as a Flatpak, only Flatpak plugins should be used (i.e., "
+"plugins using the `Linux Audio base extension`_)."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:162
+#: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
 "While Zrythm allows the user to use plugins not packaged as Flatpaks using "
 "the environment variables above, this is not recommended and we do not offer "
 "support if it causes issues."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:167
+#: ../../plugins-files/plugins/scanning.rst:65
 msgid ""
 "Flatpak builds have no access to :file:`/usr` so it is not possible to use "
 "system plugins, even when using the environment variables above."
@@ -7288,14 +7148,17 @@ msgstr "El archivo de proyecto"
 
 #: ../../projects/project-structure.rst:109
 msgid ""
-"Zrythm uses a custom `MIME <https://en.wikipedia.org/wiki/MIME>`_ type ``x-"
-"zrythm-project`` (which is an alias of ``application/zstd``) for its project "
-"files (``project.zpj``). This is a `zstd <https://facebook.github.io/zstd/"
-">`_-compressed `YAML <http://yaml.org/>`_ file that can be decompressed "
-"(converted to YAML) for inspection using :option:`zrythm --zpj-to-yaml`."
+"Zrythm project files (``project.zpj``) are `zstd <https://facebook.github.io/"
+"zstd/>`_-compressed `JSON <https://www.json.org/>`_ files (the project file "
+"`MIME type <https://en.wikipedia.org/wiki/MIME>`_ ``x-zrythm-project`` is an "
+"alias of ``application/zstd``)."
 msgstr ""
 
-#: ../../projects/project-structure.rst:121
+#: ../../projects/project-structure.rst:115
+msgid "Project files can be converted to JSON using:"
+msgstr ""
+
+#: ../../projects/project-structure.rst:122
 #, fuzzy
 msgid "Audio Pool"
 msgstr ""
@@ -7304,14 +7167,14 @@ msgstr ""
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Posición del cabezal"
 
-#: ../../projects/project-structure.rst:122
+#: ../../projects/project-structure.rst:123
 msgid ""
 "The audio pool (:file:`pool` directory) contains all audio files currently "
 "used by the project. Zrythm will automatically delete unused files during "
 "save."
 msgstr ""
 
-#: ../../projects/project-structure.rst:126
+#: ../../projects/project-structure.rst:127
 msgid "These files will be copied to backups as well."
 msgstr ""
 
@@ -9952,6 +9815,122 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Set this to the locations to scan for :term:`LV2` plugins."
+#~ msgstr ""
+#~ "Defina aquí las ubicaciones donde buscar complementos de :term:`LV2`."
+
+#~ msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
+#~ msgstr "Ejemplo: ``LV2_PATH=$HOME/custom-lv2-dir``"
+
+#~ msgid "Set this to the locations to scan for :term:`VST2` plugins."
+#~ msgstr "Establece las ubicaciones para buscar plugins :term:`VST2`."
+
+#~ msgid "Set this to the locations to scan for :term:`VST3` plugins."
+#~ msgstr ""
+#~ "Configure esto en las ubicaciones para buscar complementos :term:`VST3`."
+
+#~ msgid "LV2 Scan"
+#~ msgstr "Escanear LV2"
+
+#~ msgid ""
+#~ "Zrythm will scan for LV2 plugins in the `standard paths specified here "
+#~ "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_."
+#~ msgstr ""
+#~ "Zrythm buscará plugins LV2 en las `rutas estándar especificadas aquí "
+#~ "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. Puedes "
+#~ "omitir este comportamiento al pasar :envvar:`LV2_PATH`."
+
+#~ msgid ""
+#~ "On Flatpak builds, Zrythm will scan for LV2 plugins in the following "
+#~ "paths."
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
+#~ msgstr ""
+#~ "Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
+#~ "`VST3_PATH`."
+
+#~ msgid "VST2/VST3 Scan"
+#~ msgstr "Escanear VST2/VST3"
+
+#~ msgid "GNU/Linux and FreeBSD"
+#~ msgstr "GNU/Linux y FreeBSD"
+
+#~ msgid "Zrythm will scan for VST2 plugins in the following paths,"
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid "and VST3 plugins in the following paths."
+#~ msgstr "y plugins VST3 en las siguientes rutas."
+
+#~ msgid ""
+#~ "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
+#~ "Zrythm will scan for plugins in both locations."
+#~ msgstr ""
+#~ "Si tu sistema usa un libdir distinto de ``lib`` (por ejemplo, `` "
+#~ "lib64``), Zrythm busca plugins en ambas ubicaciones."
+
+#~ msgid ""
+#~ "On Flatpak builds, Zrythm will scan for VST2 plugins in the following "
+#~ "paths"
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid ""
+#~ "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
+#~ "`VST3_PATH`, respectively."
+#~ msgstr ""
+#~ "Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
+#~ "`VST3_PATH`."
+
+#~ msgid ""
+#~ "Zrythm will scan for VST plugins in the paths specified in the :ref:"
+#~ "`preferences <configuration/preferences:Preferences>`."
+#~ msgstr ""
+#~ "Zrythm busca plugins VST en las rutas especificadas en :ref:`vst-paths`."
+
+#~ msgid "MacOS"
+#~ msgstr "macOS"
+
+#~ msgid ""
+#~ "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
+#~ "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
+#~ "articles/115000171310>`_."
+#~ msgstr ""
+#~ "Zrythm buscará plugins VST en las rutas especificadas en `Ubicaciones de "
+#~ "plugins VST en Mac OS X y macOS <https://helpcenter.steinberg.de/hc/en-us/"
+#~ "articles/115000171310>` _."
+
+#~ msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
+#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
+
+#~ msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
+#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
+
+#~ msgid "Zrythm will scan for DSSI plugins in the following paths,"
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid ""
+#~ "On Flatpak builds, Zrythm will scan for DSSI plugins in the following "
+#~ "paths."
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
+#~ msgstr ""
+#~ "Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
+#~ "`VST3_PATH`."
+
+#~ msgid "Zrythm will scan for LADSPA plugins in the following paths,"
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid ""
+#~ "On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
+#~ "paths."
+#~ msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
+
+#~ msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
+#~ msgstr ""
+#~ "Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
+#~ "`VST3_PATH`."
+
 #~ msgid "the directory for local application data on Windows"
 #~ msgstr "el directorio de los datos locales de aplicaciones en Windows"
 
@@ -10449,9 +10428,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Tasa de refresco en Hz. Si se establece en 0, se utilizará la frecuencia "
 #~ "de actualización de la pantalla."
-
-#~ msgid "Paths"
-#~ msgstr "Caminos"
 
 #~ msgid "VST plugins"
 #~ msgstr ""
