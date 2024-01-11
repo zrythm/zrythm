@@ -9,7 +9,7 @@ furo==2023.9.10
 gprof2dot==2022.7.29
 idna==3.4
 imagesize==1.4.1
-Jinja2==3.1.2
+Jinja2==3.1.3
 MarkupSafe==2.1.3
 packaging==23.1
 Pygments==2.16.1
