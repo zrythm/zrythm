@@ -247,33 +247,37 @@ test_mixdown_midi_routed_to_instrument_track (void)
   tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, NULL);
 
-  /* bounce it */
-  ExportSettings * settings = export_settings_new ();
-  settings->mode = EXPORT_MODE_FULL;
-  export_settings_set_bounce_defaults (
-    settings, EXPORT_FORMAT_WAV, NULL, __func__);
-  settings->time_range = TIME_RANGE_LOOP;
+  for (int k = 0; k < 2; k++)
+    {
+      /* bounce it */
+      ExportSettings * settings = export_settings_new ();
+      settings->mode = EXPORT_MODE_FULL;
+      export_settings_set_bounce_defaults (
+        settings, k == 0 ? EXPORT_FORMAT_WAV : EXPORT_FORMAT_FLAC, NULL,
+        __func__);
+      settings->time_range = TIME_RANGE_LOOP;
 
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+      EngineState state;
+      GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
 
-  /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
+      /* start exporting in a new thread */
+      GThread * thread = g_thread_new (
+        "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (settings->progress_info);
+      print_progress_and_sleep (settings->progress_info);
 
-  g_thread_join (thread);
+      g_thread_join (thread);
 
-  exporter_post_export (settings, conns, &state);
+      exporter_post_export (settings, conns, &state);
 
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
-  z_chromaprint_check_fingerprint_similarity (
-    filepath, settings->file_uri, 97, 34);
-  g_free (filepath);
+      char * filepath = g_build_filename (
+        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
+      z_chromaprint_check_fingerprint_similarity (
+        filepath, settings->file_uri, 97, 34);
+      g_free (filepath);
 
-  export_settings_free (settings);
+      export_settings_free (settings);
+    }
 
   test_helper_zrythm_cleanup ();
 #endif
@@ -323,46 +327,50 @@ test_bounce_region_with_first_note (void)
     region->midi_notes[0]->base.pos.frames, ==,
     region->base.loop_start_pos.frames);
 
-  /* bounce it */
-  ExportSettings * settings = export_settings_new ();
-  settings->mode = EXPORT_MODE_REGIONS;
-  export_settings_set_bounce_defaults (
-    settings, EXPORT_FORMAT_WAV, NULL, region->name);
-  timeline_selections_mark_for_bounce (
-    TL_SELECTIONS, settings->bounce_with_parents);
-  position_add_ms (&settings->custom_end, 4000);
-
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
-
-  /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
-
-  print_progress_and_sleep (settings->progress_info);
-
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
-
-  /* assert non silent */
-  AudioClip * clip = audio_clip_new_from_file (settings->file_uri, NULL);
-  bool        has_audio = false;
-  for (unsigned_frame_t i = 0; i < clip->num_frames; i++)
+  for (int k = 0; k < 2; k++)
     {
-      for (channels_t j = 0; j < clip->channels; j++)
+      /* bounce it */
+      ExportSettings * settings = export_settings_new ();
+      settings->mode = EXPORT_MODE_REGIONS;
+      export_settings_set_bounce_defaults (
+        settings, k == 0 ? EXPORT_FORMAT_WAV : EXPORT_FORMAT_FLAC, NULL,
+        region->name);
+      timeline_selections_mark_for_bounce (
+        TL_SELECTIONS, settings->bounce_with_parents);
+      position_add_ms (&settings->custom_end, 4000);
+
+      EngineState state;
+      GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+
+      /* start exporting in a new thread */
+      GThread * thread = g_thread_new (
+        "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
+
+      print_progress_and_sleep (settings->progress_info);
+
+      g_thread_join (thread);
+
+      exporter_post_export (settings, conns, &state);
+
+      /* assert non silent */
+      AudioClip * clip = audio_clip_new_from_file (settings->file_uri, NULL);
+      bool        has_audio = false;
+      for (unsigned_frame_t i = 0; i < clip->num_frames; i++)
         {
-          if (fabsf (clip->ch_frames[j][i]) > 1e-10f)
+          for (channels_t j = 0; j < clip->channels; j++)
             {
-              has_audio = true;
-              break;
+              if (fabsf (clip->ch_frames[j][i]) > 1e-10f)
+                {
+                  has_audio = true;
+                  break;
+                }
             }
         }
-    }
-  g_assert_true (has_audio);
-  audio_clip_free (clip);
+      g_assert_true (has_audio);
+      audio_clip_free (clip);
 
-  export_settings_free (settings);
+      export_settings_free (settings);
+    }
 
   test_helper_zrythm_cleanup ();
 #endif

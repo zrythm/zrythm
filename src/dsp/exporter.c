@@ -23,6 +23,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -321,8 +322,9 @@ export_audio (ExportSettings * info)
   /*((end_pos.frames - 1) -*/
   /*start_pos.frames);*/
   const double total_ticks = (end_pos.ticks - start_pos.ticks);
-  sf_count_t   covered_frames = 0;
-  double       covered_ticks = 0;
+  /* frames written so far */
+  sf_count_t covered_frames = 0;
+  double     covered_ticks = 0;
   /*sf_count_t last_playhead_frames = start_pos.frames;*/
   const size_t out_ptr_sz = AUDIO_ENGINE->block_length * EXPORT_CHANNELS;
   float        out_ptr[out_ptr_sz];
@@ -330,8 +332,7 @@ export_audio (ExportSettings * info)
   float        clip_amp = 0.f;
   do
     {
-      /* calculate number of frames to process
-       * this time */
+      /* calculate number of frames to process this time */
       const double    nticks = end_pos.ticks - TRANSPORT->playhead_pos.ticks;
       const nframes_t nframes = (nframes_t) MIN (
         (long) ceil (AUDIO_ENGINE->frames_per_tick * nticks),
@@ -349,9 +350,8 @@ export_audio (ExportSettings * info)
       router_start_cycle (ROUTER, time_nfo);
       engine_post_process (AUDIO_ENGINE, nframes, nframes);
 
-      /* by this time, the Master channel should have its
-       * Stereo Out ports filled. pass its buffers to the
-       * output */
+      /* by this time, the Master channel should have its Stereo Out ports
+       * filled - pass its buffers to the output */
       float tmp_l[nframes];
       float tmp_r[nframes];
       /*
@@ -388,31 +388,46 @@ export_audio (ExportSettings * info)
           ditherer_process (&ditherer, out_ptr, nframes, 2);
         }
 
+        /* no seek needed */
+#if 0
       /* seek to the write position in the file */
       if (covered_frames != 0)
         {
           sf_count_t seek_cnt =
             sf_seek (sndfile, covered_frames, SEEK_SET | SFM_WRITE);
+          /*g_debug ("seek count: %ld", seek_cnt);*/
 
-          /* wav is weird for some reason */
-          if (
-            info->format == EXPORT_FORMAT_WAV
-            || info->format == EXPORT_FORMAT_RAW)
+          /* note: FLAC returns -1
+           * see https://github.com/libsndfile/libsndfile/issues/34#issuecomment-19867245
+           * although it says it's fixed, this error still appears in 1.2.2 */
+          if (seek_cnt < 0)
             {
-              if (seek_cnt < 0)
-                {
-                  char err_str[256];
-                  sf_error_str (0, err_str, sizeof (err_str) - 1);
-                  g_message ("Error seeking file: %s", err_str);
-                }
-              g_warn_if_fail (seek_cnt == covered_frames);
+              char * err_str = g_strdup_printf (
+                _ ("Export failed: Error seeking file at %ld"),
+                covered_frames);
+              progress_info_mark_completed (
+                pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+              g_free (err_str);
+              return -1;
             }
         }
+#endif
 
-      /* write the frames for the current
-       * cycle */
+      /* write the frames for the current cycle */
       sf_count_t written_frames = sf_writef_float (sndfile, out_ptr, nframes);
-      g_warn_if_fail (written_frames == nframes);
+      if (written_frames != nframes)
+        {
+          written_frames = sf_writef_float (sndfile, out_ptr, nframes);
+          char * err_str = g_strdup_printf (
+            _ ("Export failed: %ld frames written (expected %d)"),
+            written_frames, nframes);
+          progress_info_mark_completed (
+            pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+          g_free (err_str);
+          return -1;
+        }
+      /*g_debug ("wrote %d frames (total %ld)", nframes, covered_frames +
+       * nframes);*/
 
       covered_frames += nframes;
       covered_ticks += AUDIO_ENGINE->ticks_per_frame * nframes;

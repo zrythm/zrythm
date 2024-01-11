@@ -799,6 +799,7 @@ carla_native_plugin_process (
   if (num_events_written > 0)
     {
 #  if 0
+      engine_process_time_info_print (time_nfo);
       g_debug (
         "Carla plugin %s has %d MIDI events",
         self->plugin->setting->descr->name, num_events_written);
