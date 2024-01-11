@@ -6,6 +6,11 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.0.26] - 2024-01-11
+### Changed
+- Support ctrl + numpad -/+ for zooming in/out
+- Update Spanish, French, Japanese, German, Portuguese (Brasil), Interlingua, Russian, Catalan translations
+
 ## [1.0.0-beta.6.0.1] - 2023-12-25
 ### Added
 - Allow setting custom paths via the UI for all plugin formats (#4138)
@@ -21,8 +26,6 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fix attempting to go to previous marker during playback not working when cue point is at the current marker
 - Fix various timing issues during audio processing that caused occasional errors (#3346)
-
-### Removed
 
 ## [1.0.0-beta.5.3.1] - 2023-12-22
 ### Changed
