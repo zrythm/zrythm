@@ -195,9 +195,11 @@ engine_rtaudio_setup (AudioEngine * self)
   char * out_device =
     g_settings_get_string (S_P_GENERAL_ENGINE, "rtaudio-audio-device-name");
   unsigned int out_device_id = UINT_MAX;
-  for (unsigned int i = 0; i < (unsigned int) dev_count; i++)
+  for (int i = 0; i < dev_count; i++)
     {
-      rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (self->rtaudio, i);
+      unsigned int          dev_id = rtaudio_get_device_id (self->rtaudio, i);
+      rtaudio_device_info_t dev_nfo =
+        rtaudio_get_device_info (self->rtaudio, dev_id);
       char dev_nfo_str[800];
       print_dev_info (&dev_nfo, dev_nfo_str);
       g_message ("RtAudio device %d: %s", i, dev_nfo_str);
@@ -205,8 +207,8 @@ engine_rtaudio_setup (AudioEngine * self)
         string_is_equal (dev_nfo.name, out_device)
         && dev_nfo.output_channels > 0)
         {
-          g_message ("found device at index %d", i);
-          out_device_id = i;
+          g_message ("found device with id %u at index %d", dev_id, i);
+          out_device_id = dev_id;
         }
     }
   if (out_device_id == UINT_MAX)
@@ -322,9 +324,10 @@ engine_rtaudio_get_device_names (
   int num_devs = rtaudio_device_count (rtaudio);
   g_return_if_fail (num_devs >= 0);
   *num_names = 0;
-  for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
+  for (int i = 0; i < num_devs; i++)
     {
-      rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (rtaudio, i);
+      unsigned int          dev_id = rtaudio_get_device_id (rtaudio, i);
+      rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (rtaudio, dev_id);
       if (input && (dev_nfo.input_channels > 0 || dev_nfo.duplex_channels > 0))
         {
           names[(*num_names)++] = g_strdup (dev_nfo.name);
