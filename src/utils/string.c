@@ -36,8 +36,6 @@
 
 #include <gtk/gtk.h>
 
-#include <pcre.h>
-
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 #include <regex.h>
@@ -224,15 +222,14 @@ string_remove_until_after_first_match (const char * str, const char * match)
 void
 string_replace_regex (char ** str, const char * regex, const char * replace_str)
 {
-  pcre2_code * re;
   PCRE2_SIZE   erroffset;
   int          errorcode;
-  re = pcre2_compile (
+  pcre2_code * re = pcre2_compile (
     (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset, NULL);
   if (!re)
     {
-      PCRE2_UCHAR8 buffer[120];
-      pcre2_get_error_message (errorcode, buffer, 120);
+      PCRE2_UCHAR8 buffer[1200];
+      pcre2_get_error_message (errorcode, buffer, 1200);
 
       g_warning ("failed to compile regex %s: %s", regex, buffer);
       return;
@@ -292,46 +289,29 @@ string_get_regex_group_as_int (
 char *
 string_get_regex_group (const char * str, const char * regex, int group)
 {
-  int          OVECCOUNT = 60;
-  const char * error;
-  int          erroffset;
-  pcre *       re;
-  int          rc;
-  int          ovector[OVECCOUNT];
-
-  re = pcre_compile (
-    /* pattern */
-    regex,
-    /* options */
-    0,
-    /* error message */
-    &error,
-    /* error offset */
-    &erroffset,
-    /* use default character tables */
-    0);
+  PCRE2_SIZE   erroffset;
+  int          errorcode;
+  pcre2_code * re = pcre2_compile (
+    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset, NULL);
 
   if (!re)
     {
-      g_warning ("pcre_compile failed (offset: %d), %s", erroffset, error);
+      PCRE2_UCHAR8 buffer[1200];
+      pcre2_get_error_message (errorcode, buffer, 1200);
+
+      g_warning ("failed to compile regex %s: %s", regex, buffer);
       return NULL;
     }
 
-  rc = pcre_exec (
-    re,           /* the compiled pattern */
-    0,            /* no extra data - pattern was not studied */
-    str,          /* the string to match */
-    strlen (str), /* the length of the string */
-    0,            /* start at offset 0 in the subject */
-    0,            /* default options */
-    ovector,      /* output vector for substring information */
-    OVECCOUNT);   /* number of elements in the output vector */
-
+  pcre2_match_data * match_data =
+    pcre2_match_data_create_from_pattern (re, NULL);
+  int rc =
+    pcre2_match (re, (PCRE2_SPTR) str, strlen (str), 0, 0, match_data, NULL);
   if (rc < 0)
     {
       switch (rc)
         {
-        case PCRE_ERROR_NOMATCH:
+        case PCRE2_ERROR_NOMATCH:
           /*g_message ("String %s didn't match", str);*/
           break;
 
@@ -339,23 +319,26 @@ string_get_regex_group (const char * str, const char * regex, int group)
           g_message ("Error while matching \"%s\": %d", str, rc);
           break;
         }
-      free (re);
+      pcre2_code_free (re);
       return NULL;
     }
 
-#if 0
-  for (int i = 0; i < rc; i++)
+  PCRE2_UCHAR * ret_buf;
+  PCRE2_SIZE    ret_buf_sz;
+  int           ret_code = pcre2_substring_get_bynumber (
+    match_data, (uint32_t) group, &ret_buf, &ret_buf_sz);
+  if (ret_code != 0)
     {
-      g_message (
-        "%2d: %.*s", i,
-        ovector[2 * i + 1] - ovector[2 * i],
-        str + ovector[2 * i]);
+      g_debug ("Error while matching \"%s\": %d", str, rc);
+      pcre2_code_free (re);
+      pcre2_match_data_free (match_data);
+      return NULL;
     }
-#endif
-
-  return g_strdup_printf (
-    "%.*s", ovector[2 * group + 1] - ovector[2 * group],
-    str + ovector[2 * group]);
+  pcre2_match_data_free (match_data);
+  char * ret_str = g_strdup ((char *) ret_buf);
+  pcre2_substring_free (ret_buf);
+  pcre2_code_free (re);
+  return ret_str;
 }
 
 /**
@@ -372,80 +355,77 @@ string_get_regex_group (const char * str, const char * regex, int group)
 int
 string_get_int_after_last_space (const char * str, char * str_without_num)
 {
-  int          OVECCOUNT = 60;
-  const char * error;
-  int          erroffset;
-  pcre *       re;
-  int          rc;
-  int          i;
-  int          ovector[OVECCOUNT];
-
   const char * regex = "(.*) ([\\d]+)";
-
-  re = pcre_compile (
-    /* pattern */
-    regex,
-    /* options */
-    0,
-    /* error message */
-    &error,
-    /* error offset */
-    &erroffset,
-    /* use default character tables */
-    0);
-
+  PCRE2_SIZE   erroffset;
+  int          errorcode;
+  pcre2_code * re = pcre2_compile (
+    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset, NULL);
   if (!re)
     {
-      g_error ("pcre_compile failed (offset: %d), %s", erroffset, error);
+      PCRE2_UCHAR8 buffer[1200];
+      pcre2_get_error_message (errorcode, buffer, 1200);
+
+      g_error ("failed to compile regex %s: %s", regex, buffer);
       return -1;
     }
 
-  rc = pcre_exec (
-    re,           /* the compiled pattern */
-    0,            /* no extra data - pattern was not studied */
-    str,          /* the string to match */
-    strlen (str), /* the length of the string */
-    0,            /* start at offset 0 in the subject */
-    0,            /* default options */
-    ovector,      /* output vector for substring information */
-    OVECCOUNT);   /* number of elements in the output vector */
-
+  pcre2_match_data * match_data =
+    pcre2_match_data_create_from_pattern (re, NULL);
+  int rc =
+    pcre2_match (re, (PCRE2_SPTR) str, strlen (str), 0, 0, match_data, NULL);
   if (rc < 0)
     {
       switch (rc)
         {
-        case PCRE_ERROR_NOMATCH:
-          g_message ("%s: String %s didn't match", __func__, str);
+        case PCRE2_ERROR_NOMATCH:
+          g_message ("String %s didn't match", str);
           break;
 
         default:
-          g_message ("%s: Error while matching \"%s\": %d", __func__, str, rc);
+          g_message ("Error while matching \"%s\": %d", str, rc);
           break;
         }
-      free (re);
+      pcre2_code_free (re);
       return -1;
     }
 
-#if 0
-  for (i = 0; i < rc; i++)
+  PCRE2_UCHAR * num_ret_buf;
+  PCRE2_SIZE    num_ret_buf_sz;
+  int           ret_code = pcre2_substring_get_bynumber (
+    match_data, (uint32_t) 2, &num_ret_buf, &num_ret_buf_sz);
+  if (ret_code != 0)
     {
-      g_message (
-        "%2d: %.*s", i,
-        ovector[2 * i + 1] - ovector[2 * i],
-        str + ovector[2 * i]);
+      g_debug ("Error while matching \"%s\": %d", str, rc);
+      pcre2_code_free (re);
+      pcre2_match_data_free (match_data);
+      return -1;
     }
-#endif
 
   if (str_without_num)
     {
-      i = rc - 2;
-      sprintf (
-        str_without_num, "%.*s", ovector[2 * i + 1] - ovector[2 * i],
-        str + ovector[2 * i]);
+      PCRE2_UCHAR * str_ret_buf;
+      PCRE2_SIZE    str_ret_buf_sz;
+      ret_code = pcre2_substring_get_bynumber (
+        match_data, (uint32_t) 1, &str_ret_buf, &str_ret_buf_sz);
+      if (ret_code != 0)
+        {
+          g_debug ("Error while matching \"%s\": %d", str, rc);
+          pcre2_code_free (re);
+          pcre2_match_data_free (match_data);
+          return -1;
+        }
+      strcpy (str_without_num, (char *) str_ret_buf);
+      pcre2_substring_free (str_ret_buf);
     }
 
-  i = rc - 1;
-  return atoi (str + ovector[i * 2]);
+  pcre2_match_data_free (match_data);
+  char * num_ret_str = g_strdup ((char *) num_ret_buf);
+  int    ret_num = atoi (num_ret_str);
+  pcre2_substring_free (num_ret_buf);
+  pcre2_code_free (re);
+  g_free (num_ret_str);
+
+  return ret_num;
 }
 
 /**

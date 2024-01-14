@@ -1243,12 +1243,6 @@ vamp_host_sdk_dep = dependency (
   'vamp-hostsdk', static: vamp_static)
 vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
-pcre_dep = dependency (
-  'libpcre',
-  fallback: ['pcre', 'pcre_dep'],
-  default_options: [
-    'default_library=static',
-    ])
 pcre2_dep = dependency (
   'libpcre2-8',
   fallback: ['pcre2', 'libpcre2_8'],
@@ -1301,7 +1295,6 @@ zrythm_deps = [
   sord_dep,
   sratom_dep,
   lilv_dep,
-  pcre_dep,
   pcre2_dep,
   dependency ('rubberband'),
   dependency ('epoxy'),
