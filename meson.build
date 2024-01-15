@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 project (
@@ -105,7 +105,7 @@ meson_build_root = meson.current_build_dir ()
 prog_name = get_option ('program_name')
 prog_name_lowercase = prog_name.to_lower()
 copyright_name = 'The ' + prog_name + ' contributors'
-copyright_years = '2018-2023'
+copyright_years = '2018-2024'
 issue_tracker_url = 'https://gitlab.zrythm.org/zrythm/zrythm/-/issues'
 
 prefix = get_option ('prefix')
