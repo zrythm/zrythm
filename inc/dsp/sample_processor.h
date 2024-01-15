@@ -16,20 +16,21 @@
 #include "dsp/sample_playback.h"
 #include "utils/types.h"
 
+#include <zix/sem.h>
+
 typedef enum MetronomeType   MetronomeType;
 typedef struct SupportedFile SupportedFile;
 typedef struct Tracklist     Tracklist;
 typedef struct PluginSetting PluginSetting;
 typedef struct MidiEvents    MidiEvents;
 typedef struct ChordPreset   ChordPreset;
+TYPEDEF_STRUCT (Graph);
 
 /**
  * @addtogroup dsp
  *
  * @{
  */
-
-#define SAMPLE_PROCESSOR_SCHEMA_VERSION 2
 
 #define SAMPLE_PROCESSOR (AUDIO_ENGINE->sample_processor)
 
@@ -44,8 +45,6 @@ typedef struct ChordPreset   ChordPreset;
  */
 typedef struct SampleProcessor
 {
-  int schema_version;
-
   /** An array of samples currently being played. */
   SamplePlayback current_samples[256];
   int            num_current_samples;
@@ -61,8 +60,7 @@ typedef struct SampleProcessor
   /** Fader connected to the main output. */
   Fader * fader;
 
-  /** Playhead for the tracklist (used when
-   * auditioning files). */
+  /** Playhead for the tracklist (used when auditioning files). */
   Position playhead;
 
   /**
@@ -78,18 +76,14 @@ typedef struct SampleProcessor
 
   /** Pointer to owner audio engin, if any. */
   AudioEngine * audio_engine;
+
+  /** Temp processing graph. */
+  Graph * graph;
+
+  /** Semaphore to be locked while rebuilding the sample processor tracklist and
+   * graph. */
+  ZixSem rebuilding_sem;
 } SampleProcessor;
-
-static const cyaml_schema_field_t sample_processor_fields_schema[] = {
-  YAML_FIELD_INT (SampleProcessor, schema_version),
-  YAML_FIELD_MAPPING_PTR (SampleProcessor, fader, fader_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t sample_processor_schema = {
-  YAML_VALUE_PTR (SampleProcessor, sample_processor_fields_schema),
-};
 
 /**
  * Initializes a SamplePlayback with a sample to

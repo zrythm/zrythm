@@ -32,6 +32,7 @@ init_common (SampleProcessor * self)
 {
   self->tracklist = tracklist_new (NULL, self);
   self->midi_events = midi_events_new ();
+  zix_sem_init (&self->rebuilding_sem, 1);
 
   if (!ZRYTHM_TESTING)
     {
@@ -89,7 +90,6 @@ sample_processor_new (AudioEngine * engine)
 {
   SampleProcessor * self = object_new (SampleProcessor);
   self->audio_engine = engine;
-  self->schema_version = SAMPLE_PROCESSOR_SCHEMA_VERSION;
 
   self->fader = fader_new (FADER_TYPE_SAMPLE_PROCESSOR, false, NULL, NULL, self);
 
@@ -151,9 +151,8 @@ sample_processor_process (
   const nframes_t   cycle_offset,
   const nframes_t   nframes)
 {
-  nframes_t        j;
-  nframes_t        max_frames;
-  SamplePlayback * sp;
+  nframes_t j;
+  nframes_t max_frames;
   g_return_if_fail (
     self && self->fader && self->fader->stereo_out && self->fader->stereo_out->l
     && self->fader->stereo_out->l->buf && self->fader->stereo_out->r
@@ -161,18 +160,24 @@ sample_processor_process (
 
   z_return_if_fail_cmp (self->num_current_samples, <, 256);
 
-  float *
-    l = self->fader->stereo_out->l->buf,
-   *r = self->fader->stereo_out->r->buf;
+  bool lock_acquired =
+    zix_sem_try_wait (&self->rebuilding_sem) == ZIX_STATUS_SUCCESS;
+  if (!lock_acquired)
+    {
+      g_message ("lock not acquired");
+      return;
+    }
+
+  float * l = self->fader->stereo_out->l->buf;
+  float * r = self->fader->stereo_out->r->buf;
 
   /* process the samples in the queue */
   for (int i = self->num_current_samples - 1; i >= 0; i--)
     {
-      sp = &self->current_samples[i];
+      SamplePlayback * sp = &self->current_samples[i];
       z_return_if_fail_cmp (sp->channels, >, 0);
 
-      /* if sample starts after this cycle (eg,
-       * when counting in for metronome),
+      /* if sample starts after this cycle (eg, when counting in for metronome),
        * update offset and skip processing */
       if (sp->start_offset >= nframes)
         {
@@ -183,8 +188,7 @@ sample_processor_process (
       /* if sample is already playing */
       if (sp->offset > 0)
         {
-          /* fill in the buffer for as many frames
-           * as possible */
+          /* fill in the buffer for as many frames as possible */
           max_frames = MIN ((nframes_t) (sp->buf_size - sp->offset), nframes);
           for (j = 0; j < max_frames; j++)
             {
@@ -306,6 +310,8 @@ sample_processor_process (
   /* stop rolling if no more material */
   if (position_is_after (&self->playhead, &self->file_end_pos))
     self->roll = false;
+
+  zix_sem_post (&self->rebuilding_sem);
 }
 
 /**
@@ -415,8 +421,7 @@ queue_file_or_chord_preset (
   const SupportedFile * file,
   const ChordPreset *   chord_pset)
 {
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
+  zix_sem_wait (&self->rebuilding_sem);
 
   /* clear tracks */
   for (int i = self->tracklist->num_tracks - 1; i >= 0; i--)
@@ -656,9 +661,22 @@ queue_file_or_chord_preset (
   g_message ("playing until %s", file_end_pos_str);
   position_add_bars (&self->file_end_pos, 1);
 
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
+  /*
+   * Create a graph so that port buffers are created (FIXME this is hacky,
+   * create port buffers elsewhere).
+   *
+   * WARNING: this must not run while the engine is running because the engine
+   * might access the port buffer created here, so we use the port operation
+   * lock also used by the engine. The engine will skip its cycle until the port
+   * operation lock is released.
+   */
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+  self->graph = graph_new_full (NULL, self);
+  graph_setup (self->graph, 1, 1);
+  graph_free (self->graph);
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
-  engine_resume (AUDIO_ENGINE, &state);
+  zix_sem_post (&self->rebuilding_sem);
 }
 
 /**
@@ -687,13 +705,8 @@ sample_processor_queue_chord_preset (
 void
 sample_processor_stop_file_playback (SampleProcessor * self)
 {
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
-
   self->roll = false;
   position_set_to_bar (&self->playhead, 1);
-
-  engine_resume (AUDIO_ENGINE, &state);
 }
 
 void
@@ -706,7 +719,6 @@ SampleProcessor *
 sample_processor_clone (const SampleProcessor * src)
 {
   SampleProcessor * self = object_new (SampleProcessor);
-  self->schema_version = SAMPLE_PROCESSOR_SCHEMA_VERSION;
 
   self->fader = fader_clone (src->fader);
 
@@ -722,6 +734,8 @@ sample_processor_free (SampleProcessor * self)
   object_free_w_func_and_null (tracklist_free, self->tracklist);
   object_free_w_func_and_null (fader_free, self->fader);
   object_free_w_func_and_null (midi_events_free, self->midi_events);
+
+  zix_sem_destroy (&self->rebuilding_sem);
 
   object_zero_and_free (self);
 }

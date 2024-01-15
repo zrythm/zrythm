@@ -649,7 +649,6 @@ engine_event_free (AudioEngineEvent * ev)
 static void
 init_common (AudioEngine * self)
 {
-  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
   self->metronome = metronome_new ();
   self->router = router_new ();
 
@@ -908,7 +907,6 @@ engine_new (Project * project)
 
   AudioEngine * self = object_new (AudioEngine);
   self->project = project;
-  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
 
   if (project)
     {
@@ -2077,7 +2075,6 @@ AudioEngine *
 engine_clone (const AudioEngine * src)
 {
   AudioEngine * self = object_new (AudioEngine);
-  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
 
   self->transport_type = src->transport_type;
   self->sample_rate = src->sample_rate;

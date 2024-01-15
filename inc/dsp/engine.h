@@ -70,8 +70,6 @@ typedef struct MPMCQueue         MPMCQueue;
  * @{
  */
 
-#define AUDIO_ENGINE_SCHEMA_VERSION 2
-
 #define BLOCK_LENGTH 4096  // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
@@ -361,8 +359,6 @@ typedef struct AudioEnginePositionInfo
  */
 typedef struct AudioEngine
 {
-  int schema_version;
-
   /**
    * Cycle count to know which cycle we are in.
    *
@@ -802,37 +798,6 @@ typedef struct AudioEngine
   AudioEnginePositionInfo pos_nfo_at_end;
 
 } AudioEngine;
-
-static const cyaml_schema_field_t engine_fields_schema[] = {
-  YAML_FIELD_INT (AudioEngine, schema_version),
-  YAML_FIELD_ENUM (AudioEngine, transport_type, jack_transport_type_strings),
-  YAML_FIELD_INT (AudioEngine, sample_rate),
-  YAML_FIELD_FLOAT (AudioEngine, frames_per_tick),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, monitor_out, stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, midi_editor_manual_press, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, midi_in, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, transport, transport_fields_schema),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, pool, audio_pool_fields_schema),
-  YAML_FIELD_MAPPING_PTR (AudioEngine, control_room, control_room_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine,
-    sample_processor,
-    sample_processor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine,
-    hw_in_processor,
-    hardware_processor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine,
-    hw_out_processor,
-    hardware_processor_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t engine_schema = {
-  YAML_VALUE_PTR (AudioEngine, engine_fields_schema),
-};
 
 void
 engine_realloc_port_buffers (AudioEngine * self, nframes_t buf_size);

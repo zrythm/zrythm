@@ -155,6 +155,9 @@ typedef struct Graph
    */
   GPtrArray * external_out_ports;
 
+  /** Sample processor, if temporary graph for sample processor. */
+  SampleProcessor * sample_processor;
+
 } Graph;
 
 void
@@ -272,6 +275,9 @@ graph_start (Graph * graph);
 /**
  * Returns a new graph.
  */
+Graph *
+graph_new_full (Router * router, SampleProcessor * sample_processor);
+
 Graph *
 graph_new (Router * router);
 

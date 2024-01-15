@@ -1104,18 +1104,21 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
   graph_update_latencies (self, true);
 
   /* ========================
-   * set up caches to tracks, channels, plugins,
-   * automation tracks, etc.
+   * set up caches to tracks, channels, plugins, automation tracks, etc.
    *
-   * this is because indices can be changed by the
-   * GUI thread while the graph is running
-   * TODO or maybe not needed since there is a lock
-   * now
+   * this is because indices can be changed by the GUI thread while the graph is
+   * running TODO or maybe not needed since there is a lock now
    * ======================== */
 
-  clip_editor_set_caches (CLIP_EDITOR);
-  tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
-  tracklist_set_caches (SAMPLE_PROCESSOR->tracklist, CACHE_TYPE_ALL);
+  if (self->sample_processor)
+    {
+      tracklist_set_caches (SAMPLE_PROCESSOR->tracklist, CACHE_TYPE_ALL);
+    }
+  else
+    {
+      clip_editor_set_caches (CLIP_EDITOR);
+      tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
+    }
 
   /*graph_print (self);*/
 
@@ -1228,13 +1231,15 @@ graph_start (Graph * graph)
  * Returns a new graph.
  */
 Graph *
-graph_new (Router * router)
+graph_new_full (Router * router, SampleProcessor * sample_processor)
 {
-  g_return_val_if_fail (router, NULL);
+  g_return_val_if_fail (
+    (router && !sample_processor) || (!router && sample_processor), NULL);
 
   Graph * self = object_new (Graph);
 
   self->router = router;
+  self->sample_processor = sample_processor;
   self->trigger_queue = mpmc_queue_new ();
   self->init_trigger_list = object_new (GraphNode *);
   self->terminal_nodes = object_new (GraphNode *);
@@ -1253,6 +1258,12 @@ graph_new (Router * router)
   g_atomic_int_set (&self->trigger_queue_size, 0);
 
   return self;
+}
+
+Graph *
+graph_new (Router * router)
+{
+  return graph_new_full (router, NULL);
 }
 
 /**
