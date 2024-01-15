@@ -96,11 +96,23 @@ active_hardware_mb_widget_new (void)
 }
 
 static void
+dispose (ActiveHardwareMbWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->mbutton));
+
+  G_OBJECT_CLASS (active_hardware_mb_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 active_hardware_mb_widget_class_init (ActiveHardwareMbWidgetClass * klass)
 {
   gtk_widget_class_set_css_name (GTK_WIDGET_CLASS (klass), "active-hw-mb");
   gtk_widget_class_set_layout_manager_type (
     GTK_WIDGET_CLASS (klass), GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
 
 static void
