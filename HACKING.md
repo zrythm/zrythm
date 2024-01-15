@@ -203,6 +203,20 @@ To get a coverage report see
 <https://mesonbuild.com/howtox.html#producing-a-coverage-report>.
 
 # Profiling
+
+## perf
+To profile with gprof (recommended), set optimization to 2 and debug to true
+and run:
+
+    perf record --event=cache-references,cache-misses,cycles,instructions,branches,faults,migrations,cpu-clock --stat build/src/zrythm --dummy
+
+Then examine the report with:
+
+    perf report --input=perf.data --hide-unresolved
+
+See also:
+* <http://sandsoftwaresound.net/perf/perf-tutorial-hot-spots/>
+
 ## gprof
 To profile with gprof,
 use the `profiling` option when running meson,
@@ -220,12 +234,10 @@ along with
 be used for a graphical representation of the
 results.
 
-gprof has the advantage of being fast (the program
-runs at normal speed).
+gprof has the advantage of being fast (the program runs at normal speed).
 
-*If you are running Zrythm using `zrythm_launch`,
-use the path of the `zrythm` binary in the same
-directory.*
+*If you are running Zrythm using `zrythm_launch`, use the path of the `zrythm`
+binary in the same directory.*
 
 ## Callgrind
 Alternatively, you can use callgrind with kcachegrind.

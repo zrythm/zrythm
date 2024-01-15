@@ -161,6 +161,7 @@ callgrind*
 
 # profiling
 results*
+perf.data*
 
 # subprojects
 subprojects/**/*
