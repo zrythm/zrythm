@@ -289,6 +289,8 @@ string_get_regex_group_as_int (
 char *
 string_get_regex_group (const char * str, const char * regex, int group)
 {
+  g_return_val_if_fail (str && regex, NULL);
+
   PCRE2_SIZE   erroffset;
   int          errorcode;
   pcre2_code * re = pcre2_compile (
