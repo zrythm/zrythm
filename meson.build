@@ -764,9 +764,9 @@ if is_gcc
   test_strict_cflags += [
     '-Weverything',
 
-    '-Wsuggest-attribute=pure',
-    '-Wsuggest-attribute=const',
-    '-Wsuggest-attribute=noreturn',
+    #'-Wsuggest-attribute=pure',
+    #'-Wsuggest-attribute=const',
+    #'-Wsuggest-attribute=noreturn',
     '-Wsuggest-attribute=format',
     #'-Wsuggest-attribute=malloc',
     '-Wsuggest-attribute=cold',
