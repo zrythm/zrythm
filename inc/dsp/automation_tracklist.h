@@ -26,25 +26,23 @@ typedef struct AutomationLane  AutomationLane;
  */
 
 /**
- * Each track has an automation tracklist with automation
- * tracks to be generated at runtime, and filled in with
- * automation points/curves when loading projects.
+ * Each track has an automation tracklist with automation tracks to be generated
+ * at runtime, and filled in with automation points/curves when loading projects.
  */
 typedef struct AutomationTracklist
 {
   /**
    * Automation tracks in this automation tracklist.
    *
-   * These should be updated with ALL of the automatables
-   * available in the channel and its plugins every time there
-   * is an update.
+   * These should be updated with ALL of the automatables available in the
+   * channel and its plugins every time there is an update.
    *
-   * Active automation lanes that are shown in the UI,
-   * including hidden ones, can be found using @ref
-   * AutomationTrack.created and @ref AutomationTrack.visible.
+   * Active automation lanes that are shown in the UI, including hidden ones,
+   * can be found using @ref AutomationTrack.created and @ref
+   * AutomationTrack.visible.
    *
-   * Automation tracks become active automation lanes when they
-   * have automation or are selected.
+   * Automation tracks become active automation lanes when they have automation
+   * or are selected.
    */
   AutomationTrack ** ats;
   int                num_ats;
@@ -56,12 +54,10 @@ typedef struct AutomationTracklist
   size_t ats_size;
 
   /**
-   * Cache of automation tracks in record mode, used in
-   * recording manager to avoid looping over all automation
-   * tracks.
+   * Cache of automation tracks in record mode, used in recording manager to
+   * avoid looping over all automation tracks.
    *
-   * Its size should be as large as
-   * AutomationTracklist.num_ats.
+   * Its size should be as large as AutomationTracklist.num_ats.
    */
   AutomationTrack ** ats_in_record_mode;
   int                num_ats_in_record_mode;

@@ -16,17 +16,14 @@
 
 #include <zix/ring.h>
 
-/**
- * Get the current meter value.
- *
- * This should only be called once in a draw
- * cycle.
- */
 void
 meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max)
 {
   Port * port = self->port;
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  if (ZRYTHM_TESTING)
+    {
+      g_return_if_fail (IS_PORT_AND_NONNULL (port));
+    }
 
   /* get amplitude */
   float amp = -1.f;

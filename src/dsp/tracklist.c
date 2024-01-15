@@ -465,7 +465,10 @@ tracklist_find_track_by_name_hash (Tracklist * self, unsigned int hash)
       for (int i = 0; i < self->num_tracks; i++)
         {
           Track * track = self->tracks[i];
-          g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
+          if (ZRYTHM_TESTING)
+            {
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
+            }
           if (G_UNLIKELY (track_get_name_hash (track) == hash))
             return track;
         }

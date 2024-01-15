@@ -473,10 +473,12 @@ recording_manager_handle_recording (
   if (!TRANSPORT_IS_ROLLING)
     return;
 
-  /* FIXME optimize -- too many loops */
-  for (int i = 0; i < atl->num_ats; i++)
+  for (
+    int i = 0;
+    /* use cache */
+    i < atl->num_ats_in_record_mode; i++)
     {
-      AutomationTrack * at = atl->ats[i];
+      AutomationTrack * at = atl->ats_in_record_mode[i];
 
       /* only proceed if automation should be recording */
 
