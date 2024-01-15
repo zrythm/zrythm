@@ -123,8 +123,8 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
 #if MPMC_USE_STD_ATOMIC
           if (
             atomic_compare_exchange_weak_explicit (
-              &self->enqueue_pos, &pos, pos + 1, memory_order_acquire,
-              memory_order_acquire))
+              &self->enqueue_pos, &pos, pos + 1, memory_order_relaxed,
+              memory_order_relaxed))
 #else
           if (g_atomic_int_compare_and_exchange (
                 &self->enqueue_pos, pos, (pos + 1)))

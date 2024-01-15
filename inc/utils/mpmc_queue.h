@@ -37,7 +37,7 @@
 
 #include <stddef.h>
 
-#define MPMC_USE_STD_ATOMIC 0
+#define MPMC_USE_STD_ATOMIC 1
 
 #if MPMC_USE_STD_ATOMIC
 #  include <stdatomic.h>
