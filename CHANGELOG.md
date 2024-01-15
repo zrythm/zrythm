@@ -6,6 +6,18 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.0.38] - 2024-01-15
+### Changed
+- Various optimizations
+
+### Fixed
+- Fix RtAudio device names not being fetched correctly
+- Fix hardware menu button not disposing its child when deleted
+- Fix unnecessary pausing and attack part of samples being clipped in the file browser (#3323)
+
+### Removed
+- Drop pcre dependency (only pcre2 needed now)
+
 ## [1.0.0-beta.6.0.26] - 2024-01-11
 ### Changed
 - Support ctrl + numpad -/+ for zooming in/out
