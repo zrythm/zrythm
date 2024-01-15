@@ -62,8 +62,7 @@ graph_on_reached_terminal_node (Graph * self)
 
   if (g_atomic_int_dec_and_test (&self->terminal_refcnt))
     {
-      /* all terminal nodes have completed,
-       * we're done with this cycle. */
+      /* all terminal nodes have completed, we're done with this cycle. */
       g_warn_if_fail (g_atomic_int_get (&self->trigger_queue_size) == 0);
 
       /* Notify caller */

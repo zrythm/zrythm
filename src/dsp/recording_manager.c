@@ -469,29 +469,35 @@ recording_manager_handle_recording (
     return;
 
   /* add automation events */
+
+  if (!TRANSPORT_IS_ROLLING)
+    return;
+
   /* FIXME optimize -- too many loops */
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
 
-      /* if automation should be recording */
-      if (
-        G_UNLIKELY (TRANSPORT_IS_ROLLING && at->recording_start_sent)
-        && automation_track_should_be_recording (at, cur_time, false))
-        {
-          /* send recording event */
-          RecordingEvent * re =
-            (RecordingEvent *) object_pool_get (self->event_obj_pool);
-          recording_event_init (re);
-          re->type = RECORDING_EVENT_TYPE_AUTOMATION;
-          re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
-          re->local_offset = time_nfo->local_offset;
-          re->nframes = time_nfo->nframes;
-          re->automation_track_idx = at->index;
-          re->track_name_hash = tr->name_hash;
-          /*UP_RECEIVED (re);*/
-          recording_event_queue_push_back_event (self->event_queue, re);
-        }
+      /* only proceed if automation should be recording */
+
+      if (G_LIKELY (!at->recording_start_sent))
+        continue;
+
+      if (!automation_track_should_be_recording (at, cur_time, false))
+        continue;
+
+      /* send recording event */
+      RecordingEvent * re =
+        (RecordingEvent *) object_pool_get (self->event_obj_pool);
+      recording_event_init (re);
+      re->type = RECORDING_EVENT_TYPE_AUTOMATION;
+      re->g_start_frame_w_offset = time_nfo->g_start_frame_w_offset;
+      re->local_offset = time_nfo->local_offset;
+      re->nframes = time_nfo->nframes;
+      re->automation_track_idx = at->index;
+      re->track_name_hash = tr->name_hash;
+      /*UP_RECEIVED (re);*/
+      recording_event_queue_push_back_event (self->event_queue, re);
     }
 }
 

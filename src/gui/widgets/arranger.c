@@ -670,12 +670,10 @@ get_hit_objects (
               AutomationTracklist * atl = track_get_automation_tracklist (track);
               if (atl && track->automation_visible)
                 {
-                  for (int j = 0; j < atl->num_ats; j++)
+                  for (size_t j = 0; j < atl->visible_ats->len; j++)
                     {
-                      AutomationTrack * at = atl->ats[j];
-
-                      if (!at->visible)
-                        continue;
+                      AutomationTrack * at =
+                        g_ptr_array_index (atl->visible_ats, j);
 
                       for (int k = 0; k < at->num_regions; k++)
                         {

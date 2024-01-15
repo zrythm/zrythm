@@ -365,12 +365,11 @@ draw_timeline_bg (
       AutomationTracklist * atl = track_get_automation_tracklist (track);
       if (atl)
         {
-          AutomationTrack * at;
-          for (j = 0; j < atl->num_ats; j++)
+          for (size_t k = 0; k < atl->visible_ats->len; k++)
             {
-              at = atl->ats[j];
+              AutomationTrack * at = g_ptr_array_index (atl->visible_ats, k);
 
-              if (!at->created || !at->visible)
+              if (!at->created)
                 continue;
 
               /* horizontal line above automation

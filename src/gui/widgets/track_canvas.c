@@ -419,11 +419,11 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
         }
     }
 
-  for (int i = 0; i < atl->num_ats; i++)
+  for (size_t i = 0; i < atl->visible_ats->len; i++)
     {
-      AutomationTrack * at = atl->ats[i];
+      AutomationTrack * at = g_ptr_array_index (atl->visible_ats, i);
 
-      if (!(at->created && at->visible))
+      if (!at->created)
         continue;
 
       /* remember y */

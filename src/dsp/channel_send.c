@@ -663,7 +663,10 @@ channel_send_clone (const ChannelSend * src)
 bool
 channel_send_is_enabled (const ChannelSend * self)
 {
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (self->enabled), false);
+  if (ZRYTHM_TESTING)
+    {
+      g_return_val_if_fail (IS_PORT_AND_NONNULL (self->enabled), false);
+    }
 
   bool enabled = control_port_is_toggled (self->enabled);
 

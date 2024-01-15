@@ -951,11 +951,9 @@ port_apply_fader (
 }
 
 /**
- * First sets port buf to 0, then sums the given
- * port signal from its inputs.
+ * First sets port buf to 0, then sums the given port signal from its inputs.
  *
- * @param noroll Clear the port buffer in this
- *   range.
+ * @param noroll Clear the port buffer in this range.
  */
 HOT NONNULL void
 port_process (

@@ -2549,7 +2549,10 @@ track_fill_events (
           ZRegion * r =
             tt == TRACK_TYPE_CHORD ? chord_regions[i] : lane->regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) r;
-          g_return_if_fail (IS_REGION (r));
+          if (ZRYTHM_TESTING)
+            {
+              g_return_if_fail (IS_REGION (r));
+            }
 
           /* skip region if muted */
           if (arranger_object_get_muted (r_obj, true))

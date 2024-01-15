@@ -2320,18 +2320,9 @@ stereo_ports_new_generic (
   return ports;
 }
 
-/**
- * First sets port buf to 0, then sums the given
- * port signal from its inputs.
- *
- * @param noroll Clear the port buffer in this
- *   range.
- */
 void
 port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
-  g_return_if_fail (IS_PORT (port));
-
   const PortIdentifier * id = &port->id;
 
   Track * track = NULL;

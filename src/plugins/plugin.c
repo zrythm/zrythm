@@ -1638,7 +1638,10 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
     }
 #endif
 
-  /* turn off any trigger input controls */
+    /* turn off any trigger input controls */
+    /* (only used in direct LV2 implementation which is now disabled, so skip
+     * this for now to avoid unnecessary loops) */
+#if 0
   for (size_t i = 0; i < plugin->ctrl_in_ports->len; i++)
     {
       Port * port = g_ptr_array_index (plugin->ctrl_in_ports, i);
@@ -1649,6 +1652,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
           port_set_control_value (port, 0.f, 0, 1);
         }
     }
+#endif
 
   /* if plugin has gain, apply it */
   if (!math_floats_equal_epsilon (plugin->gain->control, 1.f, 0.001f))
@@ -2141,12 +2145,6 @@ plugin_clone (Plugin * src, GError ** error)
   return self;
 }
 
-/**
- * Returns whether the plugin is enabled.
- *
- * @param check_track Whether to check if the track
- *   is enabled as well.
- */
 bool
 plugin_is_enabled (Plugin * self, bool check_track)
 {
