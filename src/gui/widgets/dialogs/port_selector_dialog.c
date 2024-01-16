@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
@@ -19,6 +19,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+/* FIXME this should re-use the same logic from automatable selector popover */
 
 G_DEFINE_TYPE (
   PortSelectorDialogWidget,
@@ -97,8 +99,7 @@ create_model_for_ports (
   PortType type = self->port->id.type;
   PortFlow flow = self->port->id.flow;
 
-/* Add a new row to the model if not already
- * in the destinations */
+/* Add a new row to the model if not already in the destinations */
 #define ADD_ROW \
   if ( \
     (flow == FLOW_INPUT && !ports_connected (port, self->port)) \
@@ -159,6 +160,12 @@ create_model_for_ports (
                   ADD_ROW;
                   port = track->channel->fader->balance;
                   ADD_ROW;
+                  for (int j = 0; j < STRIP_SIZE; j++)
+                    {
+                      ChannelSend * send = track->channel->sends[j];
+                      port = send->amount;
+                      ADD_ROW;
+                    }
                 }
               if (track->type == TRACK_TYPE_MODULATOR)
                 {
