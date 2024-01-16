@@ -2323,17 +2323,18 @@ stereo_ports_new_generic (
 void
 port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
-  const PortIdentifier * id = &port->id;
+  const PortIdentifier id = port->id;
+  PortOwnerType        owner_type = id.owner_type;
 
   Track * track = NULL;
   if (
-    id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR
-    || id->owner_type == PORT_OWNER_TYPE_TRACK
-    || id->owner_type == PORT_OWNER_TYPE_CHANNEL ||
+    owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR
+    || owner_type == PORT_OWNER_TYPE_TRACK
+    || owner_type == PORT_OWNER_TYPE_CHANNEL ||
     /* if track/channel fader */
-    (id->owner_type == PORT_OWNER_TYPE_FADER
-     && (id->flags2 & PORT_FLAG2_PREFADER || id->flags2 & PORT_FLAG2_POSTFADER))
-    || (id->owner_type == PORT_OWNER_TYPE_PLUGIN && id->plugin_id.slot_type == PLUGIN_SLOT_INSTRUMENT))
+    (owner_type == PORT_OWNER_TYPE_FADER
+     && (id.flags2 & PORT_FLAG2_PREFADER || id.flags2 & PORT_FLAG2_POSTFADER))
+    || (owner_type == PORT_OWNER_TYPE_PLUGIN && id.plugin_id.slot_type == PLUGIN_SLOT_INSTRUMENT))
     {
       if (ZRYTHM_TESTING)
         track = port_get_track (port, true);
@@ -2343,16 +2344,15 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
     }
 
   bool is_stereo_port =
-    id->flags & PORT_FLAG_STEREO_L || id->flags & PORT_FLAG_STEREO_R;
+    id.flags & PORT_FLAG_STEREO_L || id.flags & PORT_FLAG_STEREO_R;
 
-  switch (id->type)
+  switch (id.type)
     {
     case TYPE_EVENT:
       if (noroll)
         break;
 
-      if (
-        G_UNLIKELY (id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR && !track))
+      if (G_UNLIKELY (owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR && !track))
         {
           g_return_if_reached ();
         }
@@ -2362,7 +2362,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
        * pressed keys in the UI) */
       if (
         G_UNLIKELY (
-          id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR && track
+          owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR && track
           && port == track->processor->midi_out
           && port->midi_events->num_events > 0 && CLIP_EDITOR->has_region
           && CLIP_EDITOR->region_id.track_name_hash
@@ -2401,14 +2401,14 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((id->owner_type !=
+      if ((owner_type !=
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-           (id->owner_type ==
+           (owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
             track &&
             track_type_can_record (track->type) &&
             track_get_recording (track))) &&
-           id->flow == FLOW_INPUT)
+           id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
@@ -2438,7 +2438,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
         }
 
       /* set midi capture if hardware */
-      if (id->owner_type == PORT_OWNER_TYPE_HW)
+      if (owner_type == PORT_OWNER_TYPE_HW)
         {
           MidiEvents * events = port->midi_events;
           if (events->num_events > 0)
@@ -2556,7 +2556,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
            * MIDI channel is valid */
           if (
             src_port->id.owner_type == PORT_OWNER_TYPE_HW
-            && id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
+            && owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               g_return_if_fail (track);
 
@@ -2586,7 +2586,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             time_nfo.nframes, F_NOT_QUEUED);
         } /* foreach source */
 
-      if (id->flow == FLOW_OUTPUT)
+      if (id.flow == FLOW_OUTPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
@@ -2612,11 +2612,11 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 #if 0
           g_message (
             "port %s has %d events",
-            id->label,
+            id.label,
             port->midi_events->num_events);
 #endif
 
-          if (id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
+          if (owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
@@ -2663,20 +2663,20 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
         }
 
       g_return_if_fail (
-        id->owner_type != PORT_OWNER_TYPE_TRACK_PROCESSOR
+        owner_type != PORT_OWNER_TYPE_TRACK_PROCESSOR
         || IS_TRACK_AND_NONNULL (track));
 
       /* only consider incoming external data if
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((id->owner_type !=
+      if ((owner_type !=
              PORT_OWNER_TYPE_TRACK_PROCESSOR
-           || (id->owner_type ==
+           || (owner_type ==
                  PORT_OWNER_TYPE_TRACK_PROCESSOR
                && track_type_can_record (track->type)
                && track_get_recording (track)))
-          && id->flow == FLOW_INPUT)
+          && id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -2702,14 +2702,14 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             continue;
 
           float minf = 0.f, maxf = 0.f, depth_range, multiplier;
-          if (G_LIKELY (id->type == TYPE_AUDIO))
+          if (G_LIKELY (id.type == TYPE_AUDIO))
             {
               minf = -2.f;
               maxf = 2.f;
               depth_range = 1.f;
               multiplier = conn->multiplier;
             }
-          else if (id->type == TYPE_CV)
+          else if (id.type == TYPE_CV)
             {
               maxf = port->maxf;
               minf = port->minf;
@@ -2738,17 +2738,15 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
 
           if (
-            G_UNLIKELY (id->type == TYPE_CV)
-            || id->owner_type == PORT_OWNER_TYPE_FADER)
+            G_UNLIKELY (id.type == TYPE_CV)
+            || owner_type == PORT_OWNER_TYPE_FADER)
             {
               float abs_peak = dsp_abs_max (
                 &port->buf[time_nfo.local_offset], time_nfo.nframes);
               if (abs_peak > maxf)
                 {
-                  /* this limiting wastes around
-                   * 50% of port processing so only
-                   * do it on CV connections and
-                   * faders if they exceed maxf */
+                  /* this limiting wastes around 50% of port processing so only
+                   * do it on CV connections and faders if they exceed maxf */
                   dsp_limit1 (
                     &port->buf[time_nfo.local_offset], minf, maxf,
                     time_nfo.nframes);
@@ -2756,7 +2754,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
         } /* foreach source */
 
-      if (id->flow == FLOW_OUTPUT)
+      if (id.flow == FLOW_OUTPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -2775,8 +2773,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
           size_t size = sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
           size_t write_space_avail = zix_ring_write_space (port->audio_ring);
 
-          /* move the read head 8 blocks to make
-           * space if no space avail to write */
+          /* move the read head 8 blocks to make space if no space avail to
+           * write */
           if (write_space_avail / size < 1)
             {
               zix_ring_skip (port->audio_ring, size * 8);
@@ -2787,8 +2785,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 
       /* if track output (to be shown on mixer) */
       if (
-        id->owner_type == PORT_OWNER_TYPE_CHANNEL && is_stereo_port
-        && id->flow == FLOW_OUTPUT)
+        owner_type == PORT_OWNER_TYPE_CHANNEL && is_stereo_port
+        && id.flow == FLOW_OUTPUT)
         {
           g_return_if_fail (IS_TRACK_AND_NONNULL (track));
           Channel * ch = track->channel;
@@ -2812,9 +2810,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             }
         }
 
-      /* if bouncing tracks directly to master (e.g., when
-       * bouncing the track on its own without parents),
-       * clear master input */
+      /* if bouncing tracks directly to master (e.g., when bouncing the track on
+       * its own without parents), clear master input */
       if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode > BOUNCE_OFF
               && !AUDIO_ENGINE->bounce_with_parents
@@ -2832,28 +2829,27 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             AUDIO_ENGINE->denormal_prevention_val, time_nfo.nframes);
         }
 
-      /* if bouncing track directly to master (e.g., when
-       * bouncing the track on its own without parents), add
-       * the buffer to master output */
+      /* if bouncing track directly to master (e.g., when bouncing the track on
+       * its own without parents), add the buffer to master output */
       if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode >
                 BOUNCE_OFF &&
-              (id->owner_type ==
+              (owner_type ==
                  PORT_OWNER_TYPE_CHANNEL ||
-               id->owner_type ==
+               owner_type ==
                  PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-               (id->owner_type ==
+               (owner_type ==
                  PORT_OWNER_TYPE_FADER
                 &&
-                id->flags2 &
+                id.flags2 &
                   PORT_FLAG2_PREFADER)
                ||
-               (id->owner_type ==
+               (owner_type ==
                  PORT_OWNER_TYPE_PLUGIN &&
-                id->plugin_id.slot_type ==
+                id.plugin_id.slot_type ==
                   PLUGIN_SLOT_INSTRUMENT)) &&
               is_stereo_port &&
-              id->flow == FLOW_OUTPUT &&
+              id.flow == FLOW_OUTPUT &&
               track && track->bounce_to_master))
         {
 
@@ -2928,23 +2924,23 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
     case TYPE_CONTROL:
       {
         if (
-          id->flow != FLOW_INPUT
-          || (id->owner_type == PORT_OWNER_TYPE_FADER && (id->flags2 & PORT_FLAG2_MONITOR_FADER || id->flags2 & PORT_FLAG2_PREFADER))
-          || id->flags & PORT_FLAG_TP_MONO || id->flags & PORT_FLAG_TP_INPUT_GAIN
-          || !(id->flags & PORT_FLAG_AUTOMATABLE))
+          id.flow != FLOW_INPUT
+          || (owner_type == PORT_OWNER_TYPE_FADER && (id.flags2 & PORT_FLAG2_MONITOR_FADER || id.flags2 & PORT_FLAG2_PREFADER))
+          || id.flags & PORT_FLAG_TP_MONO || id.flags & PORT_FLAG_TP_INPUT_GAIN
+          || !(id.flags & PORT_FLAG_AUTOMATABLE))
           {
             break;
           }
 
         /* calculate value from automation track */
-        g_return_if_fail (id->flags & PORT_FLAG_AUTOMATABLE);
+        g_return_if_fail (id.flags & PORT_FLAG_AUTOMATABLE);
         AutomationTrack * at = port->at;
         if (G_UNLIKELY (!at))
           {
             g_critical (
               "No automation track found for port "
               "%s",
-              id->label);
+              id.label);
           }
         if (ZRYTHM_TESTING && at)
           {
@@ -2954,7 +2950,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
           }
 
         if (
-          at && id->flags & PORT_FLAG_AUTOMATABLE
+          at && id.flags & PORT_FLAG_AUTOMATABLE
           && automation_track_should_read_automation (
             at, AUDIO_ENGINE->timestamp_start))
           {
@@ -2962,19 +2958,15 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             position_from_frames (
               &pos, (signed_frame_t) time_nfo.g_start_frame_w_offset);
 
-            /* if playhead pos changed manually
-             * recently or transport is rolling,
-             * we will force the last known
-             * automation point value regardless
-             * of whether there is a region at
-             * current pos */
+            /* if playhead pos changed manually recently or transport is
+             * rolling, we will force the last known automation point value
+             * regardless of whether there is a region at current pos */
             bool can_read_previous_automation =
               TRANSPORT_IS_ROLLING
               || (TRANSPORT->last_manual_playhead_change - AUDIO_ENGINE->last_timestamp_start > 0);
 
-            /* if there was an automation event
-             * at the playhead position, set val
-             * and flag */
+            /* if there was an automation event at the playhead position, set
+             * val and flag */
             AutomationPoint * ap = automation_track_get_ap_before_pos (
               at, &pos, !can_read_previous_automation, Z_F_USE_SNAPSHOTS);
             if (ap)
@@ -2992,11 +2984,11 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
         bool first_cv = true;
         for (int k = 0; k < port->num_srcs; k++)
           {
-            Port *                 src_port = port->srcs[k];
             const PortConnection * conn = port->src_connections[k];
-            if (!conn->enabled)
+            if (G_UNLIKELY (!conn->enabled))
               continue;
 
+            Port * src_port = port->srcs[k];
             if (src_port->id.type == TYPE_CV)
               {
                 maxf = port->maxf;
