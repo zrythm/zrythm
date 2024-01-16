@@ -2274,22 +2274,31 @@ carla_native_plugin_close (CarlaNativePlugin * self)
     }
 
   PluginDescriptor * descr = self->plugin->setting->descr;
+  const char *       name = self->plugin->setting->descr->name;
+  g_debug ("closing plugin %s...", name);
   if (self->native_plugin_descriptor)
     {
+      g_debug ("deactivating %s...", name);
       self->native_plugin_descriptor->deactivate (self->native_plugin_handle);
+      g_debug ("deactivated %s", name);
       if (
         descr->protocol != Z_PLUGIN_PROTOCOL_LV2
         || lv2_plugin_can_cleanup (descr->uri))
         {
+          g_debug ("cleaning up %s...", name);
           self->native_plugin_descriptor->cleanup (self->native_plugin_handle);
+          g_debug ("cleaned up %s", name);
         }
       self->native_plugin_descriptor = NULL;
     }
   if (self->host_handle)
     {
+      g_debug ("freeing host handle for %s...", name);
       carla_host_handle_free (self->host_handle);
       self->host_handle = NULL;
+      g_debug ("free'd host handle for %s", name);
     }
+  g_debug ("closed plugin %s", name);
 }
 
 /**
