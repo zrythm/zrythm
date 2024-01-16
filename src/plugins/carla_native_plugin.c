@@ -1981,18 +1981,13 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
           g_return_if_fail (MAIN_WINDOW);
           g_debug ("setting tick callback for %s", pl->setting->descr->name);
           /* do not use tick callback: */
-          /* falktx: I am doing some checks on
-           * ildaeil/carla, and see there is a nice
-           * way without conflicts to avoid the GL
-           * context issues. it came from cardinal,
-           * where I cannot draw plugin UIs in the
-           * same function as the main stuff,
-           * because it is in between other opengl
-           * calls (before and after). the solution
-           * I found was to have a dedicated idle
-           * timer, and handle the plugin UI stuff
-           * there, outside of the main application
-           * draw function */
+          /* falktx: I am doing some checks on ildaeil/carla, and see there is a
+           * nice way without conflicts to avoid the GL context issues. it came
+           * from cardinal, where I cannot draw plugin UIs in the same function
+           * as the main stuff, because it is in between other opengl calls
+           * (before and after). the solution I found was to have a dedicated
+           * idle timer, and handle the plugin UI stuff there, outside of the
+           * main application draw function */
           self->tick_cb = g_timeout_add_full (
             G_PRIORITY_DEFAULT,
             /* 60 fps */
@@ -2267,6 +2262,12 @@ carla_native_plugin_load_state (
 void
 carla_native_plugin_close (CarlaNativePlugin * self)
 {
+  if (self->host_handle)
+    {
+      g_debug ("setting carla engine about to close...");
+      carla_set_engine_about_to_close (self->host_handle);
+    }
+
   if (self->tick_cb)
     {
       g_source_remove (self->tick_cb);
