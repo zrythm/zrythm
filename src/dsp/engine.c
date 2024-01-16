@@ -963,9 +963,17 @@ engine_wait_for_pause (
   bool          force_pause,
   bool          with_fadeout)
 {
+  g_message ("waiting for engine to pause...");
+
   state->running = g_atomic_int_get (&self->run);
   state->playing = TRANSPORT_IS_ROLLING;
   state->looping = TRANSPORT->loop;
+
+  if (!state->running)
+    {
+      g_message ("engine not running - won't wait for pause");
+      return;
+    }
 
   if (
     with_fadeout && state->running && !self->stop_dummy_audio_thread
@@ -1040,8 +1048,7 @@ engine_wait_for_pause (
         &RECORDING_MANAGER->processing_sem);
 #endif
 
-      /* run one more time to flush panic
-       * messages */
+      /* run one more time to flush panic messages */
       engine_process_prepare (self, 1);
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
@@ -1058,6 +1065,12 @@ void
 engine_resume (AudioEngine * self, EngineState * state)
 {
   g_message ("resuming engine...");
+
+  if (!state->running)
+    {
+      g_message ("engine was not running - won't resume");
+      return;
+    }
 
   Transport * xport = self->transport;
   xport->loop = state->looping;
