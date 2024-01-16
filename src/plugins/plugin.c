@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -2124,6 +2124,7 @@ plugin_clone (Plugin * src, GError ** error)
     }
   self->num_in_ports = src->num_in_ports;
   self->num_out_ports = src->num_out_ports;
+  set_enabled_and_gain (self);
 
   /* copy the state directory */
   g_message ("[4/5] copying state directory from source plugin");

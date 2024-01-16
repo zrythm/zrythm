@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
@@ -7,6 +7,7 @@
 #include "gui/widgets/channel_slot_activate_button.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   ChannelSlotActivateButtonWidget,
@@ -20,11 +21,15 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
     Z_CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET (user_data);
 
   Plugin * pl = channel_slot_widget_get_plugin (self->owner);
-  if (pl)
-    {
-      plugin_set_enabled (
-        pl, gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
-    }
+  if (!pl)
+    return;
+
+  GAction * action = g_action_map_lookup_action (
+    G_ACTION_MAP (zrythm_app), "plugin-toggle-enabled");
+  char tmp[500];
+  sprintf (tmp, "%p", pl);
+  GVariant * var = g_variant_new_string (tmp);
+  g_action_activate (action, var);
 }
 
 /**

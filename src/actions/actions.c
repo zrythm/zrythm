@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -3434,7 +3434,18 @@ DEFINE_SIMPLE (activate_plugin_toggle_enabled)
   sscanf (str, "%p", &pl);
   g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
 
-  plugin_set_enabled (pl, !plugin_is_enabled (pl, false), true);
+  GError * err = NULL;
+  bool     new_val = !plugin_is_enabled (pl, false);
+  if (!plugin_is_selected (pl))
+    {
+      plugin_select (pl, F_SELECT, F_EXCLUSIVE);
+    }
+  bool success = mixer_selections_action_perform_change_status (
+    MIXER_SELECTIONS, new_val, &err);
+  if (!success)
+    {
+      HANDLE_ERROR (err, "%s", _ ("Failed to change plugin states"));
+    }
 }
 
 DEFINE_SIMPLE (activate_plugin_inspect)

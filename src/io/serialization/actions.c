@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
@@ -230,6 +230,7 @@ mixer_selections_action_serialize_to_json (
     doc, action_obj, "toTrackNameHash", action->to_track_name_hash);
   yyjson_mut_obj_add_int (doc, action_obj, "newChannel", action->new_channel);
   yyjson_mut_obj_add_int (doc, action_obj, "numPlugins", action->num_plugins);
+  yyjson_mut_obj_add_int (doc, action_obj, "newVal", action->new_val);
   if (action->setting)
     {
       yyjson_mut_val * setting_obj =
@@ -858,6 +859,12 @@ mixer_selections_action_deserialize_from_json (
     yyjson_get_uint (yyjson_obj_iter_get (&it, "toTrackNameHash"));
   action->new_channel = yyjson_get_int (yyjson_obj_iter_get (&it, "newChannel"));
   action->num_plugins = yyjson_get_int (yyjson_obj_iter_get (&it, "numPlugins"));
+  /* introduced in 1.9 */
+  yyjson_val * new_val_obj = yyjson_obj_iter_get (&it, "newVal");
+  if (new_val_obj)
+    {
+      action->new_val = yyjson_get_int (new_val_obj);
+    }
   yyjson_val * setting_obj = yyjson_obj_iter_get (&it, "setting");
   if (setting_obj)
     {

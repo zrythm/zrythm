@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_MIXER_SELECTIONS_ACTION_H__
@@ -24,14 +24,16 @@ typedef enum MixerSelectionsActionType
   MIXER_SELECTIONS_ACTION_CREATE,
   MIXER_SELECTIONS_ACTION_DELETE,
   MIXER_SELECTIONS_ACTION_MOVE,
+  MIXER_SELECTIONS_ACTION_CHANGE_STATUS,
 } MixerSelectionsActionType;
 
 static const cyaml_strval_t mixer_selections_action_type_strings[] = {
-  {"Copy",    MIXER_SELECTIONS_ACTION_COPY  },
-  { "Paste",  MIXER_SELECTIONS_ACTION_PASTE },
-  { "Create", MIXER_SELECTIONS_ACTION_CREATE},
-  { "Delete", MIXER_SELECTIONS_ACTION_DELETE},
-  { "Move",   MIXER_SELECTIONS_ACTION_MOVE  },
+  {"Copy",           MIXER_SELECTIONS_ACTION_COPY         },
+  { "Paste",         MIXER_SELECTIONS_ACTION_PASTE        },
+  { "Create",        MIXER_SELECTIONS_ACTION_CREATE       },
+  { "Delete",        MIXER_SELECTIONS_ACTION_DELETE       },
+  { "Move",          MIXER_SELECTIONS_ACTION_MOVE         },
+  { "Change Status", MIXER_SELECTIONS_ACTION_CHANGE_STATUS},
 };
 
 /**
@@ -61,9 +63,11 @@ typedef struct MixerSelectionsAction
    * a new channel, if applicable. */
   bool new_channel;
 
-  /** Number of plugins to create, when creating
-   * new plugins. */
+  /** Number of plugins to create, when creating new plugins. */
   int num_plugins;
+
+  /** Used when changing status. */
+  int new_val;
 
   /**
    * PluginSetting to use when creating.
@@ -134,36 +138,42 @@ mixer_selections_action_new (
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
+  int                            new_val,
   GError **                      error);
 
 #define mixer_selections_action_new_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_new ( \
     NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, error)
+    setting, num_plugins, 0, error)
 
 #define mixer_selections_action_new_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_new_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_new_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_new_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, error)
+    0, 0, error)
+
+#define mixer_selections_action_new_change_status(ms, new_val, error) \
+  mixer_selections_action_new ( \
+    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
+    new_val, error)
 
 NONNULL MixerSelectionsAction *
 mixer_selections_action_clone (const MixerSelectionsAction * src);
@@ -178,36 +188,42 @@ mixer_selections_action_perform (
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
+  int                            new_val,
   GError **                      error);
 
 #define mixer_selections_action_perform_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_perform ( \
     NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, error)
+    setting, num_plugins, 0, error)
 
 #define mixer_selections_action_perform_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_perform_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_perform_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, error)
+    to_slot, NULL, 0, 0, error)
 
 #define mixer_selections_action_perform_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, error)
+    0, 0, error)
+
+#define mixer_selections_action_perform_change_status(ms, new_val, error) \
+  mixer_selections_action_perform ( \
+    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
+    new_val, error)
 
 int
 mixer_selections_action_do (MixerSelectionsAction * self, GError ** error);

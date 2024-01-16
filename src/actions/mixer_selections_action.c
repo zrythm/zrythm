@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -116,6 +116,7 @@ mixer_selections_action_new (
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
+  int                            new_val,
   GError **                      error)
 {
   MixerSelectionsAction * self = object_new (MixerSelectionsAction);
@@ -125,6 +126,7 @@ mixer_selections_action_new (
   self->type = type;
   self->slot_type = slot_type;
   self->to_slot = to_slot;
+  self->new_val = new_val;
   self->to_track_name_hash = to_track_name_hash;
   if (to_track_name_hash == 0)
     {
@@ -211,11 +213,12 @@ mixer_selections_action_perform (
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
+  int                            new_val,
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     mixer_selections_action_new, error, ms, connections_mgr, type, slot_type,
-    to_track_name_hash, to_slot, setting, num_plugins, error);
+    to_track_name_hash, to_slot, setting, num_plugins, new_val, error);
 }
 
 static void
@@ -275,9 +278,7 @@ revert_automation (
           continue;
         }
 
-      /* find corresponding automation
-       * track in track and copy
-       * regions */
+      /* find corresponding automation track in track and copy regions */
       AutomationTrack * actual_at = automation_tracklist_get_plugin_at (
         atl, ms->type, slot, cloned_at->port_id.port_index,
         cloned_at->port_id.sym);
@@ -677,6 +678,31 @@ do_or_undo_create_or_delete (
   return 0;
 }
 
+static int
+do_or_undo_change_status (MixerSelectionsAction * self, bool _do, GError ** error)
+{
+  MixerSelections * ms = self->ms_before;
+  Track *           track = tracklist_find_track_by_name_hash (
+    TRACKLIST, self->ms_before->track_name_hash);
+  Channel * ch = track->channel;
+
+  for (int i = 0; i < ms->num_slots; i++)
+    {
+      Plugin * own_pl = ms->plugins[i];
+      Plugin * pl = plugin_find (&own_pl->id);
+      plugin_set_enabled (
+        pl, _do ? self->new_val : plugin_is_enabled (own_pl, false),
+        i == ms->num_slots - 1);
+    }
+
+  if (ch)
+    {
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+    }
+
+  return 0;
+}
+
 /**
  * @return Whether successful.
  */
@@ -704,8 +730,7 @@ copy_automation_from_track1_to_track2 (
           continue;
         }
 
-      /* find the corresponding at in the new
-       * track */
+      /* find the corresponding at in the new track */
       AutomationTracklist * atl = track_get_automation_tracklist (to_track);
       g_return_val_if_fail (atl, false);
       for (int k = 0; k < atl->num_ats; k++)
@@ -1067,12 +1092,14 @@ do_or_undo (MixerSelectionsAction * self, bool _do, GError ** error)
     case MIXER_SELECTIONS_ACTION_PASTE:
       return do_or_undo_create_or_delete (self, _do, true, error);
       break;
+    case MIXER_SELECTIONS_ACTION_CHANGE_STATUS:
+      return do_or_undo_change_status (self, _do, error);
+      break;
     default:
       g_warn_if_reached ();
     }
 
-  /* if first do and keeping track of connections,
-   * clone the new connections */
+  /* if first do and keeping track of connections, clone the new connections */
   if (_do && self->connections_mgr_before && !self->connections_mgr_after)
     self->connections_mgr_after =
       port_connections_manager_clone (PORT_CONNECTIONS_MGR);
@@ -1149,6 +1176,18 @@ mixer_selections_action_stringize (MixerSelectionsAction * self)
         {
           return g_strdup_printf (
             _ ("Paste %d Plugins"), self->ms_before->num_slots);
+        }
+    case MIXER_SELECTIONS_ACTION_CHANGE_STATUS:
+      if (self->ms_before->num_slots == 1)
+        {
+          return g_strdup_printf (
+            _ ("Change Status for %s"),
+            self->ms_before->plugins[0]->setting->descr->name);
+        }
+      else
+        {
+          return g_strdup_printf (
+            _ ("Change Status for %d Plugins"), self->ms_before->num_slots);
         }
     default:
       g_warn_if_reached ();

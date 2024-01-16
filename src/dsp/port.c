@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -2141,9 +2141,7 @@ port_set_control_value (
                   pl->own_enabled_port->control, self->control))
                 {
                   g_debug (
-                    "generic enabled "
-                    "changed - changing "
-                    "plugin's own enabled");
+                    "generic enabled changed - changing plugin's own enabled");
                   port_set_control_value (
                     pl->own_enabled_port, self->control, false,
                     F_PUBLISH_EVENTS);
@@ -2152,9 +2150,7 @@ port_set_control_value (
           else if (!math_floats_equal (pl->enabled->control, self->control))
             {
               g_debug (
-                "plugin's own enabled "
-                "changed - changing "
-                "generic enabled");
+                "plugin's own enabled changed - changing generic enabled");
               port_set_control_value (
                 pl->enabled, self->control, false, F_PUBLISH_EVENTS);
             }
