@@ -1885,7 +1885,7 @@ channel_handle_plugin_import (
   data->slot = slot;
   data->slot_type = slot_type;
   data->copy = copy;
-  data->pl = sel && sel->has_any ? sel->plugins[0] : NULL;
+  data->pl = pl && sel && sel->has_any ? sel->plugins[0] : NULL;
 
   g_message ("handling plugin import on channel %s...", self->track->name);
 
