@@ -277,7 +277,7 @@ ui_px_to_pos_editor (double px, Position * pos, bool has_padding)
 }
 
 PURE NONNULL static inline int
-pos_to_px (Position * pos, int use_padding, RulerWidget * ruler)
+pos_to_px (const Position * pos, int use_padding, RulerWidget * ruler)
 {
   int px = (int) (pos->ticks * ruler->px_per_tick);
 
@@ -292,7 +292,7 @@ pos_to_px (Position * pos, int use_padding, RulerWidget * ruler)
  * ruler padding.
  */
 int
-ui_pos_to_px_timeline (Position * pos, int use_padding)
+ui_pos_to_px_timeline (const Position * pos, int use_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
@@ -305,7 +305,7 @@ ui_pos_to_px_timeline (Position * pos, int use_padding)
  * piano_roll ruler.
  */
 int
-ui_pos_to_px_editor (Position * pos, bool use_padding)
+ui_pos_to_px_editor (const Position * pos, bool use_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;

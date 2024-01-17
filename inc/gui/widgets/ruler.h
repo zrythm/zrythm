@@ -187,7 +187,8 @@ typedef struct _RulerWidget
 
   /* layout for drawing text */
   PangoLayout * layout_normal;
-  PangoLayout * layout_small;
+  PangoLayout * monospace_layout_small;
+  PangoLayout * marker_layout;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

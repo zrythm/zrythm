@@ -602,14 +602,14 @@ ui_px_to_frames_editor (double px, bool has_padding);
  * ruler padding.
  */
 NONNULL int
-ui_pos_to_px_timeline (Position * pos, int use_padding);
+ui_pos_to_px_timeline (const Position * pos, int use_padding);
 
 /**
  * Converts position to px, optionally adding the ruler
  * padding.
  */
 NONNULL int
-ui_pos_to_px_editor (Position * pos, bool use_padding);
+ui_pos_to_px_editor (const Position * pos, bool use_padding);
 
 /**
  * Converts from pixels to position.

@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "actions/actions.h"
+#include "dsp/marker_track.h"
 #include "dsp/position.h"
 #include "dsp/tempo_track.h"
 #include "dsp/transport.h"
@@ -34,6 +35,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -584,6 +586,29 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   cairo_destroy (cr);
 }
 
+static void
+draw_markers (RulerWidget * self, GtkSnapshot * snapshot, int height)
+{
+  Track * track = P_MARKER_TRACK;
+  for (int i = 0; i < track->num_markers; i++)
+    {
+      const Marker * m = track->markers[i];
+      const float    cur_px = (float) ui_pos_to_px_timeline (&m->base.pos, 1);
+      gtk_snapshot_append_color (
+        snapshot, &track->color, &GRAPHENE_RECT_INIT (cur_px, 6.f, 2.f, 12.f));
+
+      int textw, texth;
+      pango_layout_set_text (self->marker_layout, m->name, -1);
+      pango_layout_get_pixel_size (self->marker_layout, &textw, &texth);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot, &GRAPHENE_POINT_INIT (cur_px + 2.f, 6.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->marker_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1.f));
+      gtk_snapshot_restore (snapshot);
+    }
+}
+
 /**
  * Returns the playhead's x coordinate in absolute
  * coordinates.
@@ -776,9 +801,9 @@ draw_lines_and_labels (
                   sprintf (
                     text, "%d:%02d", i / ten_secs_per_min,
                     (i % ten_secs_per_min) * 10);
-                  pango_layout_set_text (self->layout_small, text, -1);
+                  pango_layout_set_text (self->monospace_layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
+                    self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
@@ -786,7 +811,8 @@ draw_lines_and_labels (
                       (float) curr_px + 1.f - (float) textw / 2.f,
                       (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
-                    snapshot, self->layout_small, &secondary_text_color);
+                    snapshot, self->monospace_layout_small,
+                    &secondary_text_color);
                   gtk_snapshot_restore (snapshot);
                 }
             }
@@ -816,9 +842,9 @@ draw_lines_and_labels (
                     text, "%d:%02d", i / secs_per_min,
                     ((i / secs_per_10_sec) % ten_secs_per_min) * 10
                       + i % secs_per_10_sec);
-                  pango_layout_set_text (self->layout_small, text, -1);
+                  pango_layout_set_text (self->monospace_layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
+                    self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
@@ -826,7 +852,8 @@ draw_lines_and_labels (
                       (float) curr_px + 1.f - (float) textw / 2.f,
                       (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
-                    snapshot, self->layout_small, &tertiary_text_color);
+                    snapshot, self->monospace_layout_small,
+                    &tertiary_text_color);
                   gtk_snapshot_restore (snapshot);
                 }
             }
@@ -894,9 +921,9 @@ draw_lines_and_labels (
                 {
                   sprintf (
                     text, "%d.%d", i / beats_per_bar + 1, i % beats_per_bar + 1);
-                  pango_layout_set_text (self->layout_small, text, -1);
+                  pango_layout_set_text (self->monospace_layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
+                    self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
@@ -904,7 +931,8 @@ draw_lines_and_labels (
                       (float) curr_px + 1.f - (float) textw / 2.f,
                       (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
-                    snapshot, self->layout_small, &secondary_text_color);
+                    snapshot, self->monospace_layout_small,
+                    &secondary_text_color);
                   gtk_snapshot_restore (snapshot);
                 }
             }
@@ -935,9 +963,9 @@ draw_lines_and_labels (
                     text, "%d.%d.%d", i / TRANSPORT->sixteenths_per_bar + 1,
                     ((i / sixteenths_per_beat) % beats_per_bar) + 1,
                     i % sixteenths_per_beat + 1);
-                  pango_layout_set_text (self->layout_small, text, -1);
+                  pango_layout_set_text (self->monospace_layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
+                    self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
@@ -945,7 +973,8 @@ draw_lines_and_labels (
                       (float) curr_px + 1.f - (float) textw / 2.f,
                       (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
-                    snapshot, self->layout_small, &tertiary_text_color);
+                    snapshot, self->monospace_layout_small,
+                    &tertiary_text_color);
                   gtk_snapshot_restore (snapshot);
                 }
             }
@@ -1139,6 +1168,11 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       draw_punch_in (self, snapshot, &visible_rect_gdk);
       draw_punch_out (self, snapshot, &visible_rect_gdk);
+    }
+
+  if (self->type == TYPE (EDITOR))
+    {
+      draw_markers (self, snapshot, height);
     }
 
   /* --------- draw playhead ---------- */
@@ -1867,6 +1901,10 @@ dispose (RulerWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
+  object_free_w_func_and_null (g_object_unref, self->layout_normal);
+  object_free_w_func_and_null (g_object_unref, self->monospace_layout_small);
+  object_free_w_func_and_null (g_object_unref, self->marker_layout);
+
   G_OBJECT_CLASS (ruler_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
@@ -1922,9 +1960,16 @@ ruler_widget_init (RulerWidget * self)
     pango_font_description_from_string ("Monospace 11");
   pango_layout_set_font_description (self->layout_normal, desc);
   pango_font_description_free (desc);
-  self->layout_small = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+
+  self->monospace_layout_small =
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
   desc = pango_font_description_from_string ("Monospace 6");
-  pango_layout_set_font_description (self->layout_small, desc);
+  pango_layout_set_font_description (self->monospace_layout_small, desc);
+  pango_font_description_free (desc);
+
+  self->marker_layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  desc = pango_font_description_from_string ("7");
+  pango_layout_set_font_description (self->marker_layout, desc);
   pango_font_description_free (desc);
 
   gtk_widget_add_tick_callback (
