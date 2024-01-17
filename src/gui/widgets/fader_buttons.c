@@ -236,6 +236,13 @@ on_btn_right_click (
 }
 
 static void
+on_e_clicked (GtkButton * self, gpointer user_data)
+{
+  ui_show_error_message (
+    _ ("Unimplemented"), _ ("This feature is not implemented yet"));
+}
+
+static void
 fader_buttons_finalize (FaderButtonsWidget * self)
 {
   g_debug ("finalizing...");
@@ -271,6 +278,9 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
     G_OBJECT (self->listen), "toggled", G_CALLBACK (on_listen_toggled), self);
   self->record_toggled_handler_id = g_signal_connect (
     G_OBJECT (self->record), "toggled", G_CALLBACK (on_record_toggled), self);
+
+  g_signal_connect (
+    G_OBJECT (self->e), "clicked", G_CALLBACK (on_e_clicked), self);
 
   /* add right click menus */
   GtkGestureClick * mp;
