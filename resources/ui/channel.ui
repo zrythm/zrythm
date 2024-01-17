@@ -81,6 +81,11 @@
                         <property name="hexpand">1</property>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkToggleButton" id="instrument_ui_toggle">
+                        <property name="icon-name">jam-icons-screen</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <layout>

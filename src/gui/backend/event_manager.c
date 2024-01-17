@@ -507,6 +507,8 @@ on_plugin_window_visibility_changed (Plugin * pl)
         default:
           break;
         }
+
+      channel_widget_refresh_instrument_ui_toggle (track->channel->widget);
     }
 
   if (pl->modulator_widget)

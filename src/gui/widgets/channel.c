@@ -9,6 +9,8 @@
 #include "dsp/master_track.h"
 #include "dsp/meter.h"
 #include "dsp/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -448,6 +450,43 @@ setup_channel_icon (ChannelWidget * self)
   gtk_widget_set_sensitive (GTK_WIDGET (self->icon), track_is_enabled (track));
 }
 
+void
+channel_widget_refresh_instrument_ui_toggle (ChannelWidget * self)
+{
+  g_signal_handler_block (
+    self->instrument_ui_toggle, self->instrument_ui_toggled_id);
+  gtk_toggle_button_set_active (
+    self->instrument_ui_toggle, self->channel->instrument->visible);
+  g_signal_handler_unblock (
+    self->instrument_ui_toggle, self->instrument_ui_toggled_id);
+}
+
+static void
+on_instrument_ui_toggled (GtkToggleButton * toggle, gpointer user_data)
+{
+  ChannelWidget * self = Z_CHANNEL_WIDGET (user_data);
+  Plugin *        pl = self->channel->instrument;
+  pl->visible = gtk_toggle_button_get_active (toggle);
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
+}
+
+static void
+setup_instrument_ui_toggle (ChannelWidget * self)
+{
+  Track * track = channel_get_track (self->channel);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->instrument_ui_toggle),
+    track->type == TRACK_TYPE_INSTRUMENT);
+  if (track->type != TRACK_TYPE_INSTRUMENT)
+    return;
+
+  gtk_toggle_button_set_active (
+    self->instrument_ui_toggle, self->channel->instrument->visible);
+  self->instrument_ui_toggled_id = g_signal_connect (
+    self->instrument_ui_toggle, "toggled",
+    G_CALLBACK (on_instrument_ui_toggled), self);
+}
+
 static void
 refresh_output (ChannelWidget * self)
 {
@@ -829,6 +868,7 @@ channel_widget_new (Channel * channel)
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);
+  setup_instrument_ui_toggle (self);
   editable_label_widget_setup (
     self->name, track, (GenericStringGetter) track_get_name,
     (GenericStringSetter) track_set_name_with_action);
@@ -927,6 +967,7 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   BIND_CHILD (meter_r);
   BIND_CHILD (meter_reading);
   BIND_CHILD (icon);
+  BIND_CHILD (instrument_ui_toggle);
   BIND_CHILD (balance_control_box);
   BIND_CHILD (highlight_left_box);
   BIND_CHILD (highlight_right_box);

@@ -35,10 +35,15 @@ typedef struct _ChannelWidget
   ColorAreaWidget *           color;
   GtkBox *                    icon_and_name_event_box;
   EditableLabelWidget *       name;
-  GtkBox *                    phase_controls;
-  GtkButton *                 phase_invert;
-  GtkLabel *                  phase_reading;
-  KnobWidget *                phase_knob;
+  GtkToggleButton *           instrument_ui_toggle;
+
+  /** Handler ID. */
+  gulong instrument_ui_toggled_id;
+
+  GtkBox *     phase_controls;
+  GtkButton *  phase_invert;
+  GtkLabel *   phase_reading;
+  KnobWidget * phase_knob;
 
   /** Instrument slot. */
   GtkBox *            instrument_box;
@@ -135,8 +140,7 @@ void
 channel_widget_redraw_fader (ChannelWidget * self);
 
 /**
- * Creates a channel widget using the given channel
- * data.
+ * Creates a channel widget using the given channel data.
  */
 ChannelWidget *
 channel_widget_new (Channel * channel);
@@ -155,6 +159,9 @@ channel_widget_refresh (ChannelWidget * self);
 
 void
 channel_widget_refresh_buttons (ChannelWidget * self);
+
+void
+channel_widget_refresh_instrument_ui_toggle (ChannelWidget * self);
 
 /**
  * Displays the widget.
