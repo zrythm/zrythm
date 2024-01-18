@@ -231,6 +231,8 @@ mixer_selections_action_serialize_to_json (
   yyjson_mut_obj_add_int (doc, action_obj, "newChannel", action->new_channel);
   yyjson_mut_obj_add_int (doc, action_obj, "numPlugins", action->num_plugins);
   yyjson_mut_obj_add_int (doc, action_obj, "newVal", action->new_val);
+  yyjson_mut_obj_add_int (
+    doc, action_obj, "newBridgeMode", action->new_bridge_mode);
   if (action->setting)
     {
       yyjson_mut_val * setting_obj =
@@ -864,6 +866,12 @@ mixer_selections_action_deserialize_from_json (
   if (new_val_obj)
     {
       action->new_val = yyjson_get_int (new_val_obj);
+    }
+  /* introduced in 1.9 */
+  yyjson_val * new_bridge_mode_obj = yyjson_obj_iter_get (&it, "newBridgeMode");
+  if (new_bridge_mode_obj)
+    {
+      action->new_bridge_mode = yyjson_get_int (new_bridge_mode_obj);
     }
   yyjson_val * setting_obj = yyjson_obj_iter_get (&it, "setting");
   if (setting_obj)

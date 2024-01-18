@@ -77,6 +77,8 @@ typedef struct _ChannelSlotWidget
   GtkPopoverMenu * popover_menu;
 
   ChannelSlotActivateButtonWidget * activate_btn;
+
+  GtkImage * bridge_icon;
 } ChannelSlotWidget;
 
 /**

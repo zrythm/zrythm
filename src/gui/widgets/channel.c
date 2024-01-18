@@ -453,12 +453,15 @@ setup_channel_icon (ChannelWidget * self)
 void
 channel_widget_refresh_instrument_ui_toggle (ChannelWidget * self)
 {
-  g_signal_handler_block (
-    self->instrument_ui_toggle, self->instrument_ui_toggled_id);
-  gtk_toggle_button_set_active (
-    self->instrument_ui_toggle, self->channel->instrument->visible);
-  g_signal_handler_unblock (
-    self->instrument_ui_toggle, self->instrument_ui_toggled_id);
+  if (self->channel->instrument)
+    {
+      g_signal_handler_block (
+        self->instrument_ui_toggle, self->instrument_ui_toggled_id);
+      gtk_toggle_button_set_active (
+        self->instrument_ui_toggle, self->channel->instrument->visible);
+      g_signal_handler_unblock (
+        self->instrument_ui_toggle, self->instrument_ui_toggled_id);
+    }
 }
 
 static void

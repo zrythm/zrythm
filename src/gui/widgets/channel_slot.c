@@ -518,6 +518,29 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
       gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
     }
 
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->bridge_icon),
+    plugin && plugin->setting->bridge_mode != CARLA_BRIDGE_NONE);
+  if (plugin)
+    {
+      switch (plugin->setting->bridge_mode)
+        {
+        case CARLA_BRIDGE_FULL:
+          gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");
+          gtk_widget_set_tooltip_text (
+            GTK_WIDGET (self->bridge_icon), _ ("Bridged (Full)"));
+          break;
+        case CARLA_BRIDGE_UI:
+          gtk_image_set_from_icon_name (
+            self->bridge_icon, "material-design-remote-desktop");
+          gtk_widget_set_tooltip_text (
+            GTK_WIDGET (self->bridge_icon), _ ("Bridged (UI)"));
+          break;
+        case CARLA_BRIDGE_NONE:
+          break;
+        }
+    }
+
   return G_SOURCE_CONTINUE;
 }
 
@@ -555,16 +578,25 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     {
       GMenu * plugin_submenu = g_menu_new ();
 
-      /* add bypass option */
+      /* bypass */
       char tmp[500];
       sprintf (tmp, "app.plugin-toggle-enabled::%p", pl);
-      menuitem = z_gtk_create_menu_item (_ ("Bypass"), NULL, tmp);
-      g_menu_append_item (plugin_submenu, menuitem);
+      g_menu_append (plugin_submenu, _ ("Bypass"), tmp);
 
-      /* add inspect option */
-      menuitem =
-        z_gtk_create_menu_item (_ ("Inspect"), NULL, "app.plugin-inspect");
-      g_menu_append_item (plugin_submenu, menuitem);
+      /* inspect */
+      g_menu_append (plugin_submenu, _ ("Inspect"), "app.plugin-inspect");
+
+      /* change load behavior */
+      GMenu * load_behavior_menu = g_menu_new ();
+      sprintf (tmp, "app.plugin-change-load-behavior::%p,%s", pl, "normal");
+      g_menu_append (load_behavior_menu, _ ("Normal"), tmp);
+      sprintf (tmp, "app.plugin-change-load-behavior::%p,%s", pl, "ui");
+      g_menu_append (load_behavior_menu, _ ("Bridge UI"), tmp);
+      sprintf (tmp, "app.plugin-change-load-behavior::%p,%s", pl, "full");
+      g_menu_append (load_behavior_menu, _ ("Bridge Full"), tmp);
+      g_menu_append_submenu (
+        plugin_submenu, _ ("Change Load Behavior"),
+        G_MENU_MODEL (load_behavior_menu));
 
       g_menu_append_section (menu, _ ("Plugin"), G_MENU_MODEL (plugin_submenu));
     }
@@ -770,6 +802,7 @@ dispose (ChannelSlotWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (GTK_WIDGET (self->activate_btn));
+  gtk_widget_unparent (GTK_WIDGET (self->bridge_icon));
 
   G_OBJECT_CLASS (channel_slot_widget_parent_class)->dispose (G_OBJECT (self));
 }
@@ -832,6 +865,15 @@ channel_slot_widget_init (ChannelSlotWidget * self)
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
+
+  self->bridge_icon =
+    GTK_IMAGE (gtk_image_new_from_icon_name ("iconoir-bridge3d"));
+  gtk_widget_set_parent (GTK_WIDGET (self->bridge_icon), GTK_WIDGET (self));
+  gtk_widget_set_halign (GTK_WIDGET (self->bridge_icon), GTK_ALIGN_END);
+  gtk_widget_set_valign (GTK_WIDGET (self->bridge_icon), GTK_ALIGN_END);
+  gtk_widget_set_hexpand (GTK_WIDGET (self->bridge_icon), true);
+  gtk_image_set_pixel_size (self->bridge_icon, 16);
+  gtk_widget_set_visible (GTK_WIDGET (self->bridge_icon), false);
 }
 
 static void

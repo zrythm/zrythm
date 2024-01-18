@@ -3448,6 +3448,40 @@ DEFINE_SIMPLE (activate_plugin_toggle_enabled)
     }
 }
 
+DEFINE_SIMPLE (activate_plugin_change_load_behavior)
+{
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
+  Plugin *     pl = NULL;
+  char         new_behavior[600];
+  sscanf (str, "%p,%s", &pl, new_behavior);
+  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+
+  plugin_select (pl, F_SELECT, F_EXCLUSIVE);
+
+  CarlaBridgeMode new_bridge_mode = CARLA_BRIDGE_NONE;
+  if (string_is_equal (new_behavior, "normal"))
+    {
+      new_bridge_mode = CARLA_BRIDGE_NONE;
+    }
+  else if (string_is_equal (new_behavior, "ui"))
+    {
+      new_bridge_mode = CARLA_BRIDGE_UI;
+    }
+  else if (string_is_equal (new_behavior, "full"))
+    {
+      new_bridge_mode = CARLA_BRIDGE_FULL;
+    }
+
+  GError * err = NULL;
+  bool     success = mixer_selections_action_perform_change_load_behavior (
+    MIXER_SELECTIONS, new_bridge_mode, &err);
+  if (!success)
+    {
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to change load behavior"));
+    }
+}
+
 DEFINE_SIMPLE (activate_plugin_inspect)
 {
   left_dock_edge_widget_refresh_with_page (

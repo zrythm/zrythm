@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="128px"
+   height="128px"
+   viewBox="0 0 24 24"
+   stroke-width="1.53"
+   fill="none"
+   color="#f6f5f4"
+   style="--darkreader-inline-color: #e2dfdb;"
+   data-darkreader-inline-color=""
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="bridge3d.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="6.3125"
+     inkscape:cx="63.920792"
+     inkscape:cy="64"
+     inkscape:window-width="2560"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
+  <path
+     d="M18 4L21 4"
+     stroke="#f6f5f4"
+     stroke-width="1.53"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="stroke:#f2f2f2"
+     data-darkreader-inline-stroke=""
+     id="path1" />
+  <path
+     d="M10 21C10.5523 21 11 20.5523 11 20C11 19.4477 10.5523 19 10 19C9.44772 19 9 19.4477 9 20C9 20.5523 9.44772 21 10 21Z"
+     fill="#f6f5f4"
+     stroke="#f6f5f4"
+     stroke-width="1.53"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="stroke:#f2f2f2"
+     data-darkreader-inline-stroke=""
+     id="path2" />
+  <path
+     d="M14 5C14.5523 5 15 4.55228 15 4C15 3.44772 14.5523 3 14 3C13.4477 3 13 3.44772 13 4C13 4.55228 13.4477 5 14 5Z"
+     fill="#f6f5f4"
+     stroke="#f6f5f4"
+     stroke-width="1.53"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="stroke:#f2f2f2"
+     data-darkreader-inline-stroke=""
+     id="path3" />
+  <path
+     d="M10 20C10 20 16.5 17.5 12 12C7.5 6.5 14 4 14 4"
+     stroke="#f6f5f4"
+     stroke-width="1.53"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="stroke:#f2f2f2"
+     data-darkreader-inline-stroke=""
+     id="path4" />
+  <path
+     d="M3 20H6"
+     stroke="#f6f5f4"
+     stroke-width="1.53"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="stroke:#f2f2f2"
+     data-darkreader-inline-stroke=""
+     id="path5" />
+</svg>

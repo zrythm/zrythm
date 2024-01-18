@@ -423,6 +423,7 @@ DECLARE_SIMPLE (activate_port_connection_remove);
 DECLARE_SIMPLE (activate_plugin_toggle_enabled);
 DECLARE_SIMPLE (activate_plugin_inspect);
 DECLARE_SIMPLE (activate_mixer_selections_delete);
+DECLARE_SIMPLE (activate_plugin_change_load_behavior);
 
 /* panel file browser actions */
 DECLARE_SIMPLE (activate_panel_file_browser_add_bookmark);

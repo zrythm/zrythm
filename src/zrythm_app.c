@@ -1173,6 +1173,14 @@ zrythm_app_startup (GApplication * app)
     icon_theme, "/org/zrythm/Zrythm/app/icons/box-icons");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/breeze-icons");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/iconpark");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/iconoir");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/material-design");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/css.gg");
 
   g_message ("Resource paths set");
 

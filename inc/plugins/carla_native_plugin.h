@@ -270,6 +270,11 @@ carla_native_plugin_has_custom_ui (const PluginDescriptor * descr);
 NONNULL nframes_t
 carla_native_plugin_get_latency (CarlaNativePlugin * self);
 
+int
+carla_native_plugin_add_internal_plugin_from_descr (
+  CarlaNativePlugin *      self,
+  const PluginDescriptor * descr);
+
 /**
  * Deactivates, cleanups and frees the instance.
  */

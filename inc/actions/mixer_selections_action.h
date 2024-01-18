@@ -25,15 +25,17 @@ typedef enum MixerSelectionsActionType
   MIXER_SELECTIONS_ACTION_DELETE,
   MIXER_SELECTIONS_ACTION_MOVE,
   MIXER_SELECTIONS_ACTION_CHANGE_STATUS,
+  MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR,
 } MixerSelectionsActionType;
 
 static const cyaml_strval_t mixer_selections_action_type_strings[] = {
-  {"Copy",           MIXER_SELECTIONS_ACTION_COPY         },
-  { "Paste",         MIXER_SELECTIONS_ACTION_PASTE        },
-  { "Create",        MIXER_SELECTIONS_ACTION_CREATE       },
-  { "Delete",        MIXER_SELECTIONS_ACTION_DELETE       },
-  { "Move",          MIXER_SELECTIONS_ACTION_MOVE         },
-  { "Change Status", MIXER_SELECTIONS_ACTION_CHANGE_STATUS},
+  {"Copy",                  MIXER_SELECTIONS_ACTION_COPY                },
+  { "Paste",                MIXER_SELECTIONS_ACTION_PASTE               },
+  { "Create",               MIXER_SELECTIONS_ACTION_CREATE              },
+  { "Delete",               MIXER_SELECTIONS_ACTION_DELETE              },
+  { "Move",                 MIXER_SELECTIONS_ACTION_MOVE                },
+  { "Change Status",        MIXER_SELECTIONS_ACTION_CHANGE_STATUS       },
+  { "Change Load Behavior", MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR},
 };
 
 /**
@@ -68,6 +70,9 @@ typedef struct MixerSelectionsAction
 
   /** Used when changing status. */
   int new_val;
+
+  /** Used when changing load behavior. */
+  CarlaBridgeMode new_bridge_mode;
 
   /**
    * PluginSetting to use when creating.
@@ -139,41 +144,48 @@ mixer_selections_action_new (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error);
 
 #define mixer_selections_action_new_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_new ( \
     NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, 0, error)
+    setting, num_plugins, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_new ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, 0, error)
+    0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_change_status(ms, new_val, error) \
   mixer_selections_action_new ( \
     ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
-    new_val, error)
+    new_val, CARLA_BRIDGE_NONE, error)
+
+#define mixer_selections_action_new_change_load_behavior( \
+  ms, new_bridge_mode, error) \
+  mixer_selections_action_perform ( \
+    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, 0, 0, 0, NULL, 0, \
+    0, new_bridge_mode, error)
 
 NONNULL MixerSelectionsAction *
 mixer_selections_action_clone (const MixerSelectionsAction * src);
@@ -189,41 +201,48 @@ mixer_selections_action_perform (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error);
 
 #define mixer_selections_action_perform_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_perform ( \
     NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, 0, error)
+    setting, num_plugins, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, error)
+    to_slot, NULL, 0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_perform ( \
     ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, 0, error)
+    0, 0, CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_change_status(ms, new_val, error) \
   mixer_selections_action_perform ( \
     ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
-    new_val, error)
+    new_val, CARLA_BRIDGE_NONE, error)
+
+#define mixer_selections_action_perform_change_load_behavior( \
+  ms, new_bridge_mode, error) \
+  mixer_selections_action_perform ( \
+    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, 0, 0, 0, NULL, 0, \
+    0, new_bridge_mode, error)
 
 int
 mixer_selections_action_do (MixerSelectionsAction * self, GError ** error);

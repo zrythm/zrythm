@@ -154,20 +154,17 @@ typedef struct Plugin
   /** Whether plugin UI is opened or not. */
   bool visible;
 
-  /** Latency reported by the Lv2Plugin, if any,
-   * in samples. */
+  /** Latency reported by the Lv2Plugin, if any, in samples. */
   nframes_t latency;
 
-  /** Whether the plugin is currently instantiated
-   * or not. */
+  /** Whether the plugin is currently instantiated or not. */
   bool instantiated;
 
-  /** Set to true if instantiation failed and the
-   * plugin will be treated as disabled. */
+  /** Set to true if instantiation failed and the plugin will be treated as
+   * disabled. */
   bool instantiation_failed;
 
-  /** Whether the plugin is currently activated
-   * or not. */
+  /** Whether the plugin is currently activated or not. */
   bool activated;
 
   /**
@@ -591,8 +588,7 @@ HOT NONNULL OPTIMIZE_O3 void
 plugin_prepare_process (Plugin * self);
 
 /**
- * Instantiates the plugin (e.g. when adding to a
- * channel)
+ * Instantiates the plugin (e.g. when adding to a channel)
  */
 NONNULL_ARGS (1)
 int plugin_instantiate (Plugin * self, LilvState * state, GError ** error);
@@ -716,16 +712,15 @@ NONNULL void
 plugin_connect_to_plugin (Plugin * src, Plugin * dest);
 
 /**
- * Disconnect the automatic connections from the
- * given source Plugin to the given destination
- * Plugin.
+ * Disconnect the automatic connections from the given source Plugin to the
+ * given destination Plugin.
  */
 NONNULL void
 plugin_disconnect_from_plugin (Plugin * src, Plugin * dest);
 
 /**
- * Connects the Plugin's output Port's to the
- * input Port's of the given Channel's prefader.
+ * Connects the Plugin's output Port's to the input Port's of the given
+ * Channel's prefader.
  *
  * Used when doing automatic connections.
  */
@@ -733,9 +728,8 @@ NONNULL void
 plugin_connect_to_prefader (Plugin * pl, Channel * ch);
 
 /**
- * Disconnect the automatic connections from the
- * Plugin to the Channel's prefader (if last
- * Plugin).
+ * Disconnect the automatic connections from the Plugin to the Channel's
+ * prefader (if last Plugin).
  */
 NONNULL void
 plugin_disconnect_from_prefader (Plugin * pl, Channel * ch);
@@ -751,12 +745,10 @@ NONNULL void
 plugin_disconnect (Plugin * plugin);
 
 /**
- * Deletes any state files associated with this
- * plugin.
+ * Deletes any state files associated with this plugin.
  *
- * This should be called when a plugin instance is
- * removed from the project (including undo stacks)
- * to remove any files not needed anymore.
+ * This should be called when a plugin instance is removed from the project
+ * (including undo stacks) to remove any files not needed anymore.
  */
 NONNULL void
 plugin_delete_state_files (Plugin * self);

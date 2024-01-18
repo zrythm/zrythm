@@ -217,6 +217,30 @@ Comment:
   The files have been slightly modified.
   From https://iconpark.oceanengine.com/official.
 
+Files:
+  resources/icons/iconoir/*.svg
+Copyright: 2021 Luca Burgio
+License: MIT
+Comment:
+  The files have been slightly modified.
+  From https://github.com/iconoir-icons/iconoir.
+
+Files:
+  resources/icons/material-design/*.svg
+Copyright: Pictogrammers
+License: Apache-2.0
+Comment:
+  The files have been slightly modified.
+  From https://github.com/Templarian/MaterialDesign.
+
+Files:
+  resources/icons/css.gg/*.svg
+Copyright: 2019 css.gg
+License: MIT
+Comment:
+  The files have been slightly modified.
+  From https://github.com/astrit/css.gg.
+
 Files: resources/icons/font-awesome/*.svg
 Copyright: Font Awesome project
 License: CC-BY-4.0

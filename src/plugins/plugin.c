@@ -2715,11 +2715,10 @@ done2:;
 }
 
 /**
- * To be called immediately when a channel or
- * plugin is deleted.
+ * To be called immediately when a channel or plugin is deleted.
  *
- * A call to plugin_free can be made at any point
- * later just to free the resources.
+ * A call to plugin_free can be made at any point later just to free the
+ * resources.
  */
 void
 plugin_disconnect (Plugin * self)

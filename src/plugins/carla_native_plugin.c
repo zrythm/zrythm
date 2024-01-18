@@ -1313,13 +1313,12 @@ carla_native_plugin_update_buffer_size_and_sample_rate (CarlaNativePlugin * self
     }
 }
 
-static int
-add_internal_plugin_from_descr (
+int
+carla_native_plugin_add_internal_plugin_from_descr (
   CarlaNativePlugin *      self,
   const PluginDescriptor * descr)
 {
-  /** Number of instances to instantiate (1
-   * normally or 2 for mono plugins). */
+  /** Number of instances to instantiate (1 normally or 2 for mono plugins). */
   int num_instances = descr->num_audio_ins == 1 ? 2 : 1;
 
   const PluginType type = get_plugin_type_from_protocol (descr->protocol);
@@ -1591,10 +1590,6 @@ carla_native_plugin_instantiate (
     (int) ((float) self->plugin->ui_scale_factor * 1000.f), NULL);
 
   /* set whether UI should stay on top */
-  carla_set_engine_option (
-    self->host_handle, ENGINE_OPTION_FRONTEND_UI_SCALE,
-    (int) ((float) self->plugin->ui_scale_factor * 1000.f), NULL);
-
   /* disable for now */
 #  if 0
   if (!ZRYTHM_TESTING &&
@@ -1620,9 +1615,7 @@ carla_native_plugin_instantiate (
   switch (setting->bridge_mode)
     {
     case CARLA_BRIDGE_FULL:
-      g_message (
-        "plugin must be bridged whole, "
-        "using plugin bridge");
+      g_message ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         self->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, NULL);
       break;
@@ -1656,7 +1649,7 @@ carla_native_plugin_instantiate (
       return -1;
     }
 
-  int ret = add_internal_plugin_from_descr (self, descr);
+  int ret = carla_native_plugin_add_internal_plugin_from_descr (self, descr);
 
   carla_native_plugin_update_buffer_size_and_sample_rate (self);
 

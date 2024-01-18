@@ -25,11 +25,6 @@
 
 #define PLUGIN_SETTINGS_FILENAME "plugin-settings.yaml"
 
-/**
- * Creates a plugin setting with the recommended
- * settings for the given plugin descriptor based
- * on the current setup.
- */
 PluginSetting *
 plugin_setting_new_default (const PluginDescriptor * descr)
 {
@@ -49,6 +44,8 @@ plugin_setting_new_default (const PluginDescriptor * descr)
       self = object_new (PluginSetting);
       self->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
       self->descr = plugin_descriptor_clone (descr);
+      /* bridge all plugins by default */
+      self->bridge_mode = CARLA_BRIDGE_FULL;
       plugin_setting_validate (self, false);
     }
 
@@ -174,14 +171,14 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #endif
 
 #ifdef HAVE_CARLA
-  /* if no bridge mode specified, calculate the
-   * bridge mode here */
+  /* if no bridge mode specified, calculate the bridge mode here */
   /*g_debug ("%s: recalculating bridge mode...", __func__);*/
   if (self->bridge_mode == CARLA_BRIDGE_NONE)
     {
       self->bridge_mode = descr->min_bridge_mode;
       if (self->bridge_mode == CARLA_BRIDGE_NONE)
         {
+#  if 0
           /* bridge if plugin is not whitelisted */
           if (!plugin_descriptor_is_whitelisted (descr))
             {
@@ -190,6 +187,7 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
               /*g_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
+#  endif
         }
       else
         {

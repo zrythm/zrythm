@@ -9,12 +9,14 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"
+#include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -117,6 +119,7 @@ mixer_selections_action_new (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error)
 {
   MixerSelectionsAction * self = object_new (MixerSelectionsAction);
@@ -127,6 +130,7 @@ mixer_selections_action_new (
   self->slot_type = slot_type;
   self->to_slot = to_slot;
   self->new_val = new_val;
+  self->new_bridge_mode = new_bridge_mode;
   self->to_track_name_hash = to_track_name_hash;
   if (to_track_name_hash == 0)
     {
@@ -214,11 +218,13 @@ mixer_selections_action_perform (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     mixer_selections_action_new, error, ms, connections_mgr, type, slot_type,
-    to_track_name_hash, to_slot, setting, num_plugins, new_val, error);
+    to_track_name_hash, to_slot, setting, num_plugins, new_val, new_bridge_mode,
+    error);
 }
 
 static void
@@ -703,6 +709,69 @@ do_or_undo_change_status (MixerSelectionsAction * self, bool _do, GError ** erro
   return 0;
 }
 
+static int
+do_or_undo_change_load_behavior (
+  MixerSelectionsAction * self,
+  bool                    _do,
+  GError **               error)
+{
+  MixerSelections * ms = self->ms_before;
+  Track *           track = tracklist_find_track_by_name_hash (
+    TRACKLIST, self->ms_before->track_name_hash);
+  Channel * ch = track->channel;
+
+  for (int i = 0; i < ms->num_slots; i++)
+    {
+      Plugin * own_pl = ms->plugins[i];
+      Plugin * pl = plugin_find (&own_pl->id);
+      pl->setting->bridge_mode =
+        _do ? self->new_bridge_mode : own_pl->setting->bridge_mode;
+
+      /* TODO - below is tricky */
+#if 0
+      carla_set_engine_option (
+        pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, false, NULL);
+      carla_set_engine_option (
+        pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, false, NULL);
+
+      switch (pl->setting->bridge_mode)
+        {
+        case CARLA_BRIDGE_FULL:
+          carla_set_engine_option (
+            pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, NULL);
+          break;
+        case CARLA_BRIDGE_UI:
+          carla_set_engine_option (
+            pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, NULL);
+          break;
+        default:
+          break;
+        }
+
+      plugin_activate (pl, false);
+      carla_remove_plugin (
+        pl->carla->host_handle, 0);
+      carla_native_plugin_add_internal_plugin_from_descr (
+        pl->carla, pl->setting->descr);
+      plugin_activate (pl, true);
+#endif
+    }
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      ui_show_error_message (
+        _ ("Project Reload Needed"),
+        _ ("Plugin load behavior changes will only take effect after you save and re-load the project"));
+    }
+
+  if (ch)
+    {
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+    }
+
+  return 0;
+}
+
 /**
  * @return Whether successful.
  */
@@ -1095,6 +1164,9 @@ do_or_undo (MixerSelectionsAction * self, bool _do, GError ** error)
     case MIXER_SELECTIONS_ACTION_CHANGE_STATUS:
       return do_or_undo_change_status (self, _do, error);
       break;
+    case MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR:
+      return do_or_undo_change_load_behavior (self, _do, error);
+      break;
     default:
       g_warn_if_reached ();
     }
@@ -1189,6 +1261,10 @@ mixer_selections_action_stringize (MixerSelectionsAction * self)
           return g_strdup_printf (
             _ ("Change Status for %d Plugins"), self->ms_before->num_slots);
         }
+    case MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR:
+      return g_strdup_printf (
+        _ ("Change Load Behavior for %s"),
+        self->ms_before->plugins[0]->setting->descr->name);
     default:
       g_warn_if_reached ();
     }

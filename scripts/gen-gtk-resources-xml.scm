@@ -120,7 +120,8 @@ Args:
                      (string-suffix? ".png" f))))))
            '("arena" "gnome-builder" "gnome-icon-library" "ext"
              "fork-awesome" "font-awesome"
-             "fluentui" "jam-icons" "box-icons" "iconpark"))
+             "fluentui" "jam-icons" "box-icons" "iconpark"
+             "iconoir" "material-design" "css.gg"))
 
          ;; insert standard gtk menus
          ;; (see GtkApplication docs)
