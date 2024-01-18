@@ -137,6 +137,14 @@ Comment:
   git commits in the gnome-builder project.
 
 Files:
+  */zrythm-dark/*/edit-select-stretch.svg
+Copyright: Elementor Icons
+License: OFL-1.1
+  The files have been modified.
+Comment:
+  From https://github.com/elementor/elementor-icons.
+
+Files:
   */zrythm-dark/*/auto-scroll-playhead.svg
   */zrythm-dark/*/arrow-down-small.svg
   */zrythm-dark/*/arrow-up-small.svg
@@ -208,6 +216,14 @@ License: MIT
 Comment:
   The files have been slightly modified.
   From https://github.com/microsoft/fluentui-system-icons.
+
+Files:
+  resources/icons/box-icons/*.svg
+Copyright: 2015-2021 Aniket Suvarna
+License: MIT
+Comment:
+  The files have been slightly modified.
+  From https://github.com/atisawd/boxicons.
 
 Files:
   resources/icons/iconpark/*.svg
@@ -391,11 +407,18 @@ Files:
   doc/user/_static/img/creating-port-connection.png
   doc/user/_static/img/creating-timeline-object.png
   doc/user/_static/img/cue-point.png
+  doc/user/_static/img/debugging-info.png
   doc/user/_static/img/della_plugin_window.png
   doc/user/_static/img/drag-to-modulators-tab.png
   doc/user/_static/img/drop-plugin-to-mixer.png
   doc/user/_static/img/drop-plugin-to-slot.png
   doc/user/_static/img/drop-plugin-to-tracklist.png
+  doc/user/_static/img/drmingw-install-confirmation.png
+  doc/user/_static/img/drmingw-install.png
+  doc/user/_static/img/drmingw-saveas.png
+  doc/user/_static/img/drmingw-trace.png
+  doc/user/_static/img/drmingw-uninstall-confirmation.png
+  doc/user/_static/img/drmingw-uninstall.png
   doc/user/_static/img/drum-mode.png
   doc/user/_static/img/duplicating-midi-region.png
   doc/user/_static/img/edit-audio-external-app.png
@@ -517,6 +540,7 @@ Files:
   doc/user/_static/img/start-end-markers.png
   doc/user/_static/img/status_bar.png
   doc/user/_static/img/tempo-track.png
+  doc/user/_static/img/terminal-version-info.png
   doc/user/_static/img/time-sig.png
   doc/user/_static/img/timeline-arranger.png
   doc/user/_static/img/timeline-detached.png
