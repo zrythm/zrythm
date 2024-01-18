@@ -58,8 +58,8 @@ option (
 option (
   'graphviz',
   type: 'feature',
-  value: 'auto',
-  description: 'Compile with GraphViz support (for exporting graphs)')
+  value: 'disabled',
+  description: 'Compile with GraphViz support (for exporting graphs - only useful for developers)')
 
 option (
   'guile',
