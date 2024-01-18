@@ -1131,10 +1131,10 @@ create_ports (CarlaNativePlugin * self, bool loading)
             {
               const CarlaParameterInfo * param_info =
                 carla_get_parameter_info (self->host_handle, 0, i);
-              g_critical (
-                "port '%s' at param ID %u could not be retrieved [%s]",
+              g_warning (
+                "port '%s' at param ID %u could not be retrieved [%s], will ignore",
                 param_info->name, i, self->plugin->setting->descr->name);
-              return;
+              continue;
             }
         }
       /* else if not loading (create new ports) */
