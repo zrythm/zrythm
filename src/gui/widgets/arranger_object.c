@@ -845,18 +845,6 @@ arranger_object_draw (
     }
 }
 
-/**
- * Returns if the cached object should be visible,
- * ie, while copy- moving (ctrl+drag) we want to
- * show both the object at its original position
- * and the current object.
- *
- * This refers to the object at its original
- * position (called "transient").
- *
- * @param arranger Owner arranger. Should be passed
- *   to speed up calculation.
- */
 bool
 arranger_object_should_orig_be_visible (
   ArrangerObject * self,

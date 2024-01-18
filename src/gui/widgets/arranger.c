@@ -406,16 +406,24 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
       return false;
     }
 
-  /* --- optimization to skip expensive
-   * calculations for most objects --- */
+  /* --- optimization to skip expensive calculations for most objects --- */
+
+  bool orig_visible = arranger_object_should_orig_be_visible (obj, self);
+  if (G_UNLIKELY (orig_visible))
+    {
+      g_return_if_fail (obj->transient);
+    }
 
   /* skip objects that end before the rect */
   if (arranger_object_type_has_length (obj->type))
     {
       Position g_obj_end_pos;
+      Position g_obj_end_pos_transient;
       if (arranger_object_type_has_global_pos (obj->type))
         {
           g_obj_end_pos = obj->end_pos;
+          if (orig_visible)
+            g_obj_end_pos_transient = obj->transient->end_pos;
         }
       else
         {
@@ -423,19 +431,33 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
           g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
           g_obj_end_pos = r->base.pos;
           position_add_ticks (&g_obj_end_pos, obj->end_pos.ticks);
+          if (orig_visible)
+            {
+              g_obj_end_pos_transient = r->base.pos;
+              position_add_ticks (
+                &g_obj_end_pos_transient, obj->transient->end_pos.ticks);
+            }
         }
       if (position_is_before (&g_obj_end_pos, &nfo->start_pos))
         {
-          return false;
+          if (orig_visible)
+            {
+              if (position_is_before (&g_obj_end_pos_transient, &nfo->start_pos))
+                return false;
+            }
+          else
+            return false;
         }
     }
 
-  /* skip objects that start a few pixels after
-   * the end */
+  /* skip objects that start a few pixels after the end */
   Position g_obj_start_pos;
+  Position g_obj_start_pos_transient;
   if (arranger_object_type_has_global_pos (obj->type))
     {
       g_obj_start_pos = obj->pos;
+      if (orig_visible)
+        g_obj_start_pos_transient = obj->transient->pos;
     }
   else
     {
@@ -443,11 +465,28 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
       g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
       g_obj_start_pos = r->base.pos;
       position_add_ticks (&g_obj_start_pos, obj->pos.ticks);
+      if (orig_visible)
+        {
+          g_obj_start_pos_transient = r->base.pos;
+          position_add_ticks (
+            &g_obj_start_pos_transient, obj->transient->pos.ticks);
+        }
     }
-  position_add_ticks (&g_obj_start_pos, -12.0 / ruler->px_per_tick);
+  const double ticks_to_add = -12.0 / ruler->px_per_tick;
+  position_add_ticks (&g_obj_start_pos, ticks_to_add);
+  if (orig_visible)
+    {
+      position_add_ticks (&g_obj_start_pos_transient, ticks_to_add);
+    }
   if (position_is_after (&g_obj_start_pos, &nfo->end_pos))
     {
-      return false;
+      if (orig_visible)
+        {
+          if (position_is_after (&g_obj_start_pos_transient, &nfo->end_pos))
+            return false;
+        }
+      else
+        return false;
     }
 
   /* --- end optimization --- */
@@ -463,7 +502,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
       if (
         (ui_rectangle_overlap (&obj->full_rect, rect) ||
          /* also check original (transient) */
-         (arranger_object_should_orig_be_visible (obj, self) && obj->transient
+         (orig_visible && obj->transient
           && ui_rectangle_overlap (&obj->transient->full_rect, rect))))
         {
           add = true;
@@ -474,32 +513,31 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
        &obj->full_rect, x >= 0 ? true : false, y >= 0 ? true : false, x, y, 0, 0)
      ||
      /* also check original (transient) */
-     (arranger_object_should_orig_be_visible (obj, self) && obj->transient
+     (orig_visible
       && ui_is_point_in_rect_hit (
         &obj->transient->full_rect, x >= 0 ? true : false,
         y >= 0 ? true : false, x, y, 0, 0))))
     {
-      /* object to check for automation point
-       * curve cross (either main object or
-       * transient) */
-      ArrangerObject * obj_to_check =
-        (arranger_object_should_orig_be_visible (obj, self) && obj->transient
-         && ui_is_point_in_rect_hit (
-           &obj->transient->full_rect, x >= 0 ? true : false,
-           y >= 0 ? true : false, x, y, 0, 0))
-          ? obj->transient
-          : obj;
-
-      /** handle special case for automation
-       * points */
-      if (
-        obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT
-        && !automation_point_is_point_hit ((AutomationPoint *) obj_to_check, x, y)
-        && !automation_point_is_curve_hit (
-          (AutomationPoint *) obj_to_check, x, y, 16.0))
+      if (obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
-          return false;
-        }
+          /* object to check for automation point curve cross (either main
+           * object or transient) */
+          AutomationPoint * ap_to_check =
+            (AutomationPoint *) ((orig_visible
+                                  && ui_is_point_in_rect_hit (
+                                    &obj->transient->full_rect, x >= 0 ? true : false,
+                                    y >= 0 ? true : false, x, y, 0, 0))
+                                   ? obj->transient
+                                   : obj);
+
+          /* handle special case for automation points */
+          if (
+            !automation_point_is_point_hit (ap_to_check, x, y)
+            && !automation_point_is_curve_hit (ap_to_check, x, y, 16.0))
+            {
+              return false;
+            }
+        } /* endif automation point */
 
       add = true;
     }
@@ -602,8 +640,7 @@ get_hit_objects (
                   continue;
                 }
 
-              /* skip if track should not be
-               * visible */
+              /* skip if track should not be visible */
               if (!track_get_should_be_visible (track))
                 continue;
 
@@ -622,8 +659,7 @@ get_hit_objects (
                   double full_track_height =
                     track_get_full_visible_height (track);
 
-                  /* skip if track ends before the
-                   * rect */
+                  /* skip if track ends before the rect */
                   if (track_y > full_track_height)
                     {
                       continue;
@@ -936,7 +972,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
   EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   arranger_selections_add_ticks (sel, ticks_diff);
-  g_debug ("adding %f ticks to selections", ticks_diff);
+  /*g_debug ("adding %f ticks to selections", ticks_diff);*/
 
   if (sel->type == ARRANGER_SELECTIONS_TYPE_AUTOMATION)
     {

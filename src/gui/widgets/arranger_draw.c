@@ -152,10 +152,9 @@ draw_arranger_object (
 
       arranger_object_set_full_rectangle (obj, self);
 
-      /* only draw if the object's rectangle is
-       * hit by the drawable region (for regions,
-       * the logic is handled inside region_draw()
-       * so the check is skipped) */
+      /* only draw if the object's rectangle is hit by the drawable region (for
+       * regions, the logic is handled inside region_draw() so the check is
+       * skipped) */
       bool rect_hit_or_region =
         ui_rectangle_overlap (&obj->full_rect, rect)
         || obj->type == ARRANGER_OBJECT_TYPE_REGION;

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -186,16 +170,13 @@ arranger_object_draw (
   GdkRectangle *   rect);
 
 /**
- * Returns if the cached object should be visible,
- * ie, while copy- moving (ctrl+drag) we want to
- * show both the object at its original position
- * and the current object.
+ * Returns if the cached object should be visible, ie, while copy- moving
+ * (ctrl+drag) we want to show both the object at its original position and the
+ * current object.
  *
- * This refers to the object at its original
- * position (called "transient").
+ * This refers to the object at its original position (called "transient").
  *
- * @param arranger Owner arranger. Should be passed
- *   to speed up calculation.
+ * @param arranger Owner arranger. Should be passed to speed up calculation.
  */
 NONNULL_ARGS (1)
 OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
