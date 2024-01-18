@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -467,9 +467,9 @@ make_control (
     }
   else if (TYPE_EQUALS (BOOLEAN))
     {
-      widget = gtk_switch_new ();
+      widget = adw_switch_row_new ();
       g_settings_bind (
-        info->settings, key, widget, "state", G_SETTINGS_BIND_DEFAULT);
+        info->settings, key, widget, "active", G_SETTINGS_BIND_DEFAULT);
     }
   else if (TYPE_EQUALS (INT32) || TYPE_EQUALS (UINT32) || TYPE_EQUALS (DOUBLE))
     {
@@ -477,7 +477,7 @@ make_control (
       get_range_vals (range, current_var, type, &lower, &upper, &current);
       GtkAdjustment * adj =
         gtk_adjustment_new (current, lower, upper, 1.0, 1.0, 1.0);
-      widget = gtk_spin_button_new (adj, 1, TYPE_EQUALS (DOUBLE) ? 3 : 0);
+      widget = adw_spin_row_new (adj, 1, TYPE_EQUALS (DOUBLE) ? 3 : 0);
       g_settings_bind (
         info->settings, key, widget, "value", G_SETTINGS_BIND_DEFAULT);
     }
@@ -591,7 +591,7 @@ make_control (
           else
             {
               /* create basic string entry control */
-              widget = gtk_entry_new ();
+              widget = adw_entry_row_new ();
               char * current_val = g_settings_get_string (info->settings, key);
               gtk_editable_set_text (GTK_EDITABLE (widget), current_val);
               g_free (current_val);
@@ -619,7 +619,7 @@ make_control (
     {
       if (get_path_type (info->group_name, info->name, key) == PATH_TYPE_ENTRY)
         {
-          widget = gtk_entry_new ();
+          widget = adw_entry_row_new ();
           char ** paths = g_settings_get_strv (info->settings, key);
           char *  joined_str = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, paths);
           gtk_editable_set_text (GTK_EDITABLE (widget), joined_str);
@@ -725,21 +725,24 @@ add_subgroup (
       GtkWidget * widget = make_control (self, group_idx, subgroup_idx, key);
       if (widget)
         {
-          AdwPreferencesRow * row = NULL;
-          if (ADW_IS_COMBO_ROW (widget))
+          bool                widget_is_row = ADW_IS_PREFERENCES_ROW (widget);
+          AdwPreferencesRow * row =
+            widget_is_row
+              ? ADW_PREFERENCES_ROW (widget)
+              : ADW_PREFERENCES_ROW (adw_action_row_new ());
+
+          adw_preferences_row_set_title (row, summary);
+          if (ADW_IS_ACTION_ROW (row))
             {
-              row = ADW_PREFERENCES_ROW (widget);
+              adw_action_row_set_subtitle (ADW_ACTION_ROW (row), description);
             }
           else
             {
-              row = ADW_PREFERENCES_ROW (adw_action_row_new ());
+              gtk_widget_set_tooltip_text (GTK_WIDGET (row), description);
             }
-
-          adw_preferences_row_set_title (row, summary);
-          adw_action_row_set_subtitle (ADW_ACTION_ROW (row), description);
           adw_preferences_group_add (subgroup, GTK_WIDGET (row));
 
-          if (!ADW_IS_COMBO_ROW (widget))
+          if (!widget_is_row)
             {
               if (GTK_IS_SWITCH (widget))
                 {
