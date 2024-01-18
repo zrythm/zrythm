@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -42,6 +42,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
@@ -108,15 +109,6 @@ arranger_object_get_selections_for_type (ArrangerObjectType type)
     }
 }
 
-/**
- * Selects the object by adding it to its
- * corresponding selections or making it the
- * only selection.
- *
- * @param select 1 to select, 0 to deselect.
- * @param append 1 to append, 0 to make it the only
- *   selection.
- */
 void
 arranger_object_select (
   ArrangerObject * self,
@@ -156,6 +148,16 @@ arranger_object_select (
   else
     {
       arranger_selections_remove_object (selections, self);
+    }
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      bool autoselect_track = g_settings_get_boolean (S_UI, "track-autoselect");
+      Track * track = arranger_object_get_track (self);
+      if (autoselect_track && track && track_is_in_active_project (track))
+        {
+          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+        }
     }
 
   if (fire_events)

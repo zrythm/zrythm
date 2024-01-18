@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <string.h>
@@ -21,16 +21,6 @@ G_DEFINE_TYPE (
   TracklistPreferencesPopoverWidget,
   tracklist_preferences_popover_widget,
   GTK_TYPE_POPOVER)
-
-static void
-on_auto_arm_switch_changed (
-  GObject *    gobject,
-  GParamSpec * pspec,
-  gpointer     user_data)
-{
-  bool active = gtk_switch_get_active (GTK_SWITCH (gobject));
-  g_settings_set_boolean (S_UI, "track-autoarm", active);
-}
 
 TracklistPreferencesPopoverWidget *
 tracklist_preferences_popover_widget_new (void)
@@ -65,18 +55,26 @@ tracklist_preferences_popover_widget_init (
     adw_preferences_page_add (ppage, pgroup);
 
     {
-      AdwActionRow * switch_row = ADW_ACTION_ROW (adw_action_row_new ());
+      AdwSwitchRow * switch_row = ADW_SWITCH_ROW (adw_switch_row_new ());
       adw_preferences_row_set_title (
         ADW_PREFERENCES_ROW (switch_row), _ ("Auto-arm for Recording"));
       adw_action_row_set_subtitle (
         ADW_ACTION_ROW (switch_row),
         _ ("Arm tracks for recording when clicked/selected."));
-      GtkSwitch * s = GTK_SWITCH (gtk_switch_new ());
-      gtk_switch_set_active (s, g_settings_get_boolean (S_UI, "track-autoarm"));
-      adw_action_row_add_suffix (switch_row, GTK_WIDGET (s));
-      gtk_widget_set_valign (GTK_WIDGET (s), GTK_ALIGN_CENTER);
-      g_signal_connect (
-        s, "notify::active", G_CALLBACK (on_auto_arm_switch_changed), self);
+      g_settings_bind (
+        S_UI, "track-autoarm", switch_row, "active", G_SETTINGS_BIND_DEFAULT);
+      adw_preferences_group_add (pgroup, GTK_WIDGET (switch_row));
+    }
+
+    {
+      AdwSwitchRow * switch_row = ADW_SWITCH_ROW (adw_switch_row_new ());
+      adw_preferences_row_set_title (
+        ADW_PREFERENCES_ROW (switch_row), _ ("Auto-select"));
+      adw_action_row_set_subtitle (
+        ADW_ACTION_ROW (switch_row),
+        _ ("Select tracks when their regions are clicked/selected."));
+      g_settings_bind (
+        S_UI, "track-autoselect", switch_row, "active", G_SETTINGS_BIND_DEFAULT);
       adw_preferences_group_add (pgroup, GTK_WIDGET (switch_row));
     }
   }

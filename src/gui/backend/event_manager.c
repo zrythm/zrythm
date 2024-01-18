@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -649,13 +649,13 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
       break;
     case ET_TRACKLIST_SELECTIONS_CHANGED:
-      /* only refresh the inspector if the
-       * tracklist selection changed by
-       * clicking on a track */
+      /* only refresh the inspector if the tracklist selection changed by
+       * clicking on a track or on a region */
       if (
         PROJECT->last_selection == SELECTION_TYPE_TRACKLIST
         || PROJECT->last_selection == SELECTION_TYPE_INSERT
-        || PROJECT->last_selection == SELECTION_TYPE_MIDI_FX)
+        || PROJECT->last_selection == SELECTION_TYPE_MIDI_FX
+        || PROJECT->last_selection == SELECTION_TYPE_TIMELINE)
         {
           left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
         }

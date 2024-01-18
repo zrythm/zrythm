@@ -422,13 +422,11 @@ ArrangerSelections *
 arranger_object_get_selections_for_type (ArrangerObjectType type);
 
 /**
- * Selects the object by adding it to its
- * corresponding selections or making it the
- * only selection.
+ * Selects the object by adding it to its corresponding selections or making it
+ * the only selection.
  *
  * @param select 1 to select, 0 to deselect.
- * @param append 1 to append, 0 to make it the only
- *   selection.
+ * @param append 1 to append, 0 to make it the only selection.
  */
 void
 arranger_object_select (

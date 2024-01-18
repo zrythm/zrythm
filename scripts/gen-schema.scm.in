@@ -629,6 +629,10 @@ Args:
                  "track-autoarm" "b" "true"
                  "Auto-arm tracks"
                  "Whether to automatically arm tracks for recording.")
+               (make-schema-key
+                 "track-autoselect" "b" "true"
+                 "Auto-select tracks"
+                 "Whether to automatically select tracks when a region beloging to the track is clicked.")
              ))) ;; ui
 
          (schema-print
