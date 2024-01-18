@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// clang-format off
+// SPDX-FileCopyrightText: © 2019, 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -41,6 +27,7 @@ typedef struct _ToolboxWidget
 {
   GtkBox            parent_instance;
   GtkToggleButton * select_mode;
+  GtkToggleButton * stretch_mode;
   GtkToggleButton * edit_mode;
   GtkToggleButton * cut_mode;
   GtkToggleButton * erase_mode;
@@ -49,6 +36,7 @@ typedef struct _ToolboxWidget
   GtkImage *        select_img;
 
   gulong select_handler_id;
+  gulong stretch_handler_id;
   gulong edit_handler_id;
   gulong cut_handler_id;
   gulong erase_handler_id;

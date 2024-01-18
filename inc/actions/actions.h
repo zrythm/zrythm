@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -53,65 +53,19 @@ activate_scripting_interface (
   GVariant *      variant,
   gpointer        user_data);
 
-/**
- * Activate audition mode.
- */
-void
-activate_audition_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+DECLARE_SIMPLE (activate_audition_mode);
+DECLARE_SIMPLE (activate_select_mode);
+DECLARE_SIMPLE (activate_stretch_mode);
+DECLARE_SIMPLE (activate_select_or_stretch_mode);
+DECLARE_SIMPLE (activate_edit_mode);
+DECLARE_SIMPLE (activate_cut_mode);
+DECLARE_SIMPLE (activate_eraser_mode);
+DECLARE_SIMPLE (activate_ramp_mode);
 
-/**
- * Activate select mode.
- */
-void
-activate_select_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+DECLARE_SIMPLE (activate_quit);
 
-/**
- * Activate edit mode.
- */
-void
-activate_edit_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
-
-/**
- * Activate cut mode.
- */
-void
-activate_cut_mode (GSimpleAction * action, GVariant * variant, gpointer user_data);
-
-/**
- * Activate eraser mode.
- */
-void
-activate_eraser_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
-
-/**
- * Activate ramp mode.
- */
-void
-activate_ramp_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
-
-void
-activate_quit (GSimpleAction * action, GVariant * variant, gpointer user_data);
-
-void
-activate_zoom_in (GSimpleAction * action, GVariant * variant, gpointer user_data);
-
-void
-activate_zoom_out (GSimpleAction * action, GVariant * variant, gpointer user_data);
+DECLARE_SIMPLE (activate_zoom_in);
+DECLARE_SIMPLE (activate_zoom_out);
 
 DECLARE_SIMPLE (activate_cycle_focus);
 DECLARE_SIMPLE (activate_cycle_focus_backwards);

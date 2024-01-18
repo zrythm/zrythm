@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -211,6 +211,9 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
     {
     case ARRANGER_CURSOR_SELECT:
       SET_X_CURSOR (pointer);
+      break;
+    case ARRANGER_CURSOR_SELECT_STRETCH:
+      SET_X_CURSOR (pointer_stretch);
       break;
     case ARRANGER_CURSOR_EDIT:
       SET_X_CURSOR (pencil);
@@ -5057,6 +5060,9 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
+
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
@@ -5100,7 +5106,7 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
             }
 
           /* set cursor to normal */
-          return ARRANGER_CURSOR_SELECT;
+          return ac;
         }
       else if (P_TOOL == TOOL_EDIT)
         ac = ARRANGER_CURSOR_EDIT;
@@ -5168,6 +5174,9 @@ get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
+
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
@@ -5189,7 +5198,7 @@ get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
                 }
             }
 
-          return ARRANGER_CURSOR_SELECT;
+          return ac;
         }
       else if (P_TOOL == TOOL_EDIT)
         ac = ARRANGER_CURSOR_EDIT;
@@ -5233,7 +5242,6 @@ get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
       break;
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
     case UI_OVERLAY_ACTION_SELECTING:
-      ac = ARRANGER_CURSOR_SELECT;
       /* TODO depends on tool */
       break;
     case UI_OVERLAY_ACTION_STARTING_RAMP:
@@ -5258,6 +5266,9 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
 {
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
+
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
 
   int is_hit =
     arranger_widget_get_hit_arranger_object (
@@ -5284,6 +5295,7 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
           }
           break;
         case TOOL_SELECT_STRETCH:
+          ac = ARRANGER_CURSOR_SELECT_STRETCH;
           break;
         case TOOL_EDIT:
           ac = ARRANGER_CURSOR_EDIT;
@@ -5344,6 +5356,9 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
+
   ArrangerObject * hit_obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
     self->hover_x, self->hover_y);
@@ -5371,11 +5386,12 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
             else
               {
                 /* set cursor to normal */
-                return ARRANGER_CURSOR_SELECT;
+                return ac;
               }
           }
           break;
         case TOOL_SELECT_STRETCH:
+          ac = ARRANGER_CURSOR_SELECT_STRETCH;
           break;
         case TOOL_EDIT:
           ac = ARRANGER_CURSOR_EDIT;
@@ -5447,6 +5463,9 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
 {
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
+
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
 
   ArrangerObject * r_obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_REGION, self->hover_x,
@@ -5546,20 +5565,19 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
                     if (track_widget_is_cursor_in_range_select_half (
                           track->widget, self->hover_y))
                       {
-                        /* set cursor to range
-                         * selection */
+                        /* set cursor to range selection */
                         return ARRANGER_CURSOR_RANGE;
                       }
                     else
                       {
                         /* set cursor to normal */
-                        return ARRANGER_CURSOR_SELECT;
+                        return ac;
                       }
                   }
                 else
                   {
                     /* set cursor to normal */
-                    return ARRANGER_CURSOR_SELECT;
+                    return ac;
                   }
               }
           }
@@ -5673,6 +5691,9 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
+  if (P_TOOL == TOOL_SELECT_STRETCH)
+    ac = ARRANGER_CURSOR_SELECT_STRETCH;
+
   ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, self->hover_x,
     self->hover_y);
@@ -5715,7 +5736,7 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
               if (tool == TOOL_EDIT)
                 return ARRANGER_CURSOR_EDIT;
               else
-                return ARRANGER_CURSOR_SELECT;
+                return ac;
             }
         }
       else if (P_TOOL == TOOL_EDIT)
@@ -5758,7 +5779,6 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
       break;
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
     case UI_OVERLAY_ACTION_SELECTING:
-      ac = ARRANGER_CURSOR_SELECT;
       /* TODO depends on tool */
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
@@ -6221,8 +6241,8 @@ arranger_widget_class_init (ArrangerWidgetClass * _klass)
     wklass, GDK_KEY_space, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func,
     "s", "record-play", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func, "s", "select-mode",
-    NULL);
+    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func, "s",
+    "select-or-stretch-mode", NULL);
   gtk_widget_class_add_binding (
     wklass, GDK_KEY_2, 0, z_gtk_simple_action_shortcut_func, "s", "edit-mode",
     NULL);

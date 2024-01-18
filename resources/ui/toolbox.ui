@@ -16,6 +16,16 @@
       </object>
     </child>
     <child>
+      <object class="GtkToggleButton" id="stretch_mode">
+        <property name="tooltip-text" translatable="true">Select-Stretch mode</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon-name">edit-select-stretch</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkToggleButton" id="edit_mode">
         <property name="tooltip-text" translatable="true">Edit mode</property>
         <child>

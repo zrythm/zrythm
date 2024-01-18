@@ -381,6 +381,10 @@ typedef enum UiDragMode
 void
 ui_set_pointer_cursor (GtkWidget * widget);
 
+#define ui_set_pointer_stretch_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), "edit-select-stretch", 3, 1);
+
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "pencil", 3, 18);
 
