@@ -380,9 +380,8 @@ typedef struct ObjectOverlapInfo
 } ObjectOverlapInfo;
 
 /**
- * Adds the object to the array if it or its
- * transient overlaps with the rectangle, or with
- * \ref x \ref y if \ref rect is NULL.
+ * Adds the object to the array if it or its transient overlaps with the
+ * rectangle, or with \ref x \ref y if \ref rect is NULL.
  *
  * @return Whether the object was added or not.
  */
@@ -411,7 +410,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
   bool orig_visible = arranger_object_should_orig_be_visible (obj, self);
   if (G_UNLIKELY (orig_visible))
     {
-      g_return_if_fail (obj->transient);
+      g_return_val_if_fail (obj->transient, false);
     }
 
   /* skip objects that end before the rect */

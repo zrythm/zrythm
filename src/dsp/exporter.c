@@ -388,7 +388,8 @@ export_audio (ExportSettings * info)
           ditherer_process (&ditherer, out_ptr, nframes, 2);
         }
 
-        /* no seek needed */
+      /* no seek needed */
+      (void) covered_frames; /* avoid unused warning */
 #if 0
       /* seek to the write position in the file */
       if (covered_frames != 0)
