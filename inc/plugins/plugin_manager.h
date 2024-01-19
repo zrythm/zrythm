@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -82,9 +82,11 @@ typedef struct PluginManager
 
   char * lv2_path;
 
-  /** Whether the plugin manager has been set up
-   * already. */
+  /** Whether the plugin manager has been set up already. */
   bool setup;
+
+  /** Number of newly scanned (newly cached) plugins. */
+  int num_new_plugins;
 
 } PluginManager;
 

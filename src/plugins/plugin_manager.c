@@ -1202,6 +1202,7 @@ scan_carla_descriptors_from_paths (
                           cached_plugin_descriptors_add (
                             self->cached_plugin_descriptors, clone,
                             F_NO_SERIALIZE);
+                          self->num_new_plugins++;
                         }
                       g_debug (
                         "%d descriptors cached for "
@@ -1292,6 +1293,8 @@ plugin_manager_scan_plugins (
 #  endif
 #endif
 
+  self->num_new_plugins = 0;
+
   /* scan LV2 */
   g_message ("%s: Scanning LV2 plugins...", __func__);
   unsigned int count = 0;
@@ -1328,6 +1331,7 @@ plugin_manager_scan_plugins (
             {
               cached_plugin_descriptors_add (
                 self->cached_plugin_descriptors, descriptor, F_NO_SERIALIZE);
+              self->num_new_plugins++;
             }
         }
 
@@ -1461,7 +1465,9 @@ plugin_manager_scan_plugins (
     self->plugin_authors, (size_t) self->num_plugin_authors, sizeof (char *),
     sort_alphabetical_func);
 
-  g_message ("%s: %d Plugins scanned.", __func__, self->plugin_descriptors->len);
+  g_message (
+    "%d Plugins scanned (%d new).", self->plugin_descriptors->len,
+    self->num_new_plugins);
 
   /*print_plugins ();*/
 }

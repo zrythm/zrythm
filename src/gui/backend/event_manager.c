@@ -76,6 +76,7 @@
 #include "gui/widgets/tracklist_header.h"
 #include "gui/widgets/transport_controls.h"
 #include "plugins/plugin_gtk.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -1019,6 +1020,12 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
             zrythm_app_ui_message_free (ui_msg);
           }
       }
+
+      if (PLUGIN_MANAGER->num_new_plugins > 0)
+        {
+          ui_show_notification_idle_printf (
+            _ ("%d new plugins detected"), PLUGIN_MANAGER->num_new_plugins);
+        }
       break;
     case ET_SPLASH_CLOSED:
       break;
