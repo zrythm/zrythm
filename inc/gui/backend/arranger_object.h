@@ -220,18 +220,15 @@ typedef struct ArrangerObject
 
   int magic;
 
-  /** Parent region identifier for objects that are
-   * part of a region. */
+  /** Parent region identifier for objects that are part of a region. */
   RegionIdentifier region_id;
 
   /**
-   * Object's index in the previous lane (before
-   * being moved to a new lane/track).
+   * Object's index in the previous lane (before being moved to a new
+   * lane/track).
    *
-   * Used at runtime when duplicating objects
-   * in new lanes/tracks so we can put the
-   * object back to its place before creating
-   * new copies.
+   * Used at runtime when duplicating objects in new lanes/tracks so we can put
+   * the object back to its place before creating new copies.
    *
    * @see arranger_selections_action_do().
    */
@@ -246,16 +243,13 @@ typedef struct ArrangerObject
    */
   bool deleted_temporarily;
 
-  /* ---- The following should only be used for
-   * objects that really need caching, such as
-   * audio regions ---- */
+  /* --- The following should only be used for objects that really need caching,
+   * such as audio regions --- */
 
   /**
-   * Set to true to blit the cached surface, false
-   * to redraw.
+   * Set to true to blit the cached surface, false to redraw.
    *
-   * @note This is only used if \ref
-   *   ArrangerObject.can_cache_drawing is true.
+   * @note This is only used if \ref ArrangerObject.can_cache_drawing is true.
    */
   bool use_cache;
 
@@ -654,15 +648,15 @@ void
 arranger_object_remove_linked_region (ArrangerObject * self, ZRegion * region);
 
 /**
- * Moves the object by the given amount of
- * ticks.
+ * Moves the object by the given amount of ticks.
+ *
+ * @memberof ArrangerObject
  */
 void
 arranger_object_move (ArrangerObject * self, const double ticks);
 
 /**
- * Returns the length of the ArrangerObject (if
- * it has length) in ticks.
+ * Returns the length of the ArrangerObject (if it has length) in ticks.
  *
  * (End Position - start Position).
  */
@@ -716,8 +710,7 @@ arranger_object_get_loop_length_in_frames (const ArrangerObject * const self)
  * @param from_ticks Whether to update the
  *   positions based on ticks (true) or frames
  *   (false).
- * @param action To be passed when called from an undoable
- *   action.
+ * @param action To be passed when called from an undoable action.
  */
 void
 arranger_object_update_positions (
@@ -733,16 +726,13 @@ void
 arranger_object_free (ArrangerObject * self);
 
 /**
- * Resizes the object on the left side or right
- * side by given amount of ticks, for objects that
- * do not have loops (currently none? keep it as
- * reference).
+ * Resizes the object on the left side or right side by given amount of ticks,
+ * for objects that do not have loops (currently none? keep it as reference).
  *
- * @param left 1 to resize left side, 0 to resize
- *   right side.
+ * @param left 1 to resize left side, 0 to resize right side.
  * @param ticks Number of ticks to resize.
- * @param during_ui_action Whether this is called
- *   during a UI action (not at the end).
+ * @param during_ui_action Whether this is called during a UI action (not at
+ *   the end).
  *
  * @return Whether successful.
  */
@@ -776,8 +766,7 @@ arranger_object_add_ticks_to_children (ArrangerObject * self, const double ticks
  *
  * @param cc CamelCase (eg, Region).
  * @param obj The object.
- * @param val_name The struct member name to set
- *   the primitive value to.
+ * @param val_name The struct member name to set the primitive value to.
  * @param val_value The value to store.
  */
 #define arranger_object_set_string(cc, obj, val_name, val_value) \
@@ -836,19 +825,16 @@ arranger_object_clone (const ArrangerObject * self);
 /**
  * Splits the given object at the given Position.
  *
- * if \ref is_project is true, it deletes the original object
- * and adds 2 new objects in the same parent (Track or
- * AutomationTrack or Region).
+ * if \ref is_project is true, it deletes the original object and adds 2 new
+ * objects in the same parent (Track or AutomationTrack or Region).
  *
  * @param region The ArrangerObject to split. This
  *   ArrangerObject will be deleted.
  * @param pos The Position to split at.
  * @param pos_is_local If the position is local (1) or global
  *   (0).
- * @param r1 Address to hold the pointer to the newly created
- *   ArrangerObject 1.
- * @param r2 Address to hold the pointer to the newly created
- *   ArrangerObject 2.
+ * @param r1 Address to hold the pointer to the newly created ArrangerObject 1.
+ * @param r2 Address to hold the pointer to the newly created ArrangerObject 2.
  * @param is_project Whether the object being passed is a
  *   project object. If true, it will be removed from the
  *   project and the child objects will be added to the
@@ -880,8 +866,9 @@ WARN_UNUSED_RESULT NONNULL_ARGS (1, 2) bool arranger_object_unsplit (
   GError **         error);
 
 /**
- * Sets the name of the object, if the object can
- * have a name.
+ * Sets the name of the object, if the object can have a name.
+ *
+ * @memberof ArrangerObject
  */
 void
 arranger_object_set_name (
@@ -899,17 +886,15 @@ void
 arranger_object_set_name_with_action (ArrangerObject * self, const char * name);
 
 /**
- * Sets the end position of the ArrangerObject and
- * also sets the loop end and fade out so that
- * they are at the end.
+ * Sets the end position of the ArrangerObject and also sets the loop end and
+ * fade out so that they are at the end.
  */
 void
 arranger_object_set_start_pos_full_size (ArrangerObject * obj, Position * pos);
 
 /**
- * Sets the end position of the ArrangerObject and
- * also sets the loop end and fade out to that
- * position.
+ * Sets the end position of the ArrangerObject and also sets the loop end and
+ * fade out to that position.
  */
 void
 arranger_object_set_end_pos_full_size (ArrangerObject * obj, Position * pos);
