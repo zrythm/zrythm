@@ -690,7 +690,6 @@ test_fill_midi_events (void)
    * Note on inside region and note off at region
    * end.
    */
-  g_message ("-------------------");
   position_set_to_bar (&r_obj->pos, 1);
   position_set_to_bar (&r_obj->end_pos, 2);
   position_set_to_bar (&r_obj->loop_start_pos, 1);

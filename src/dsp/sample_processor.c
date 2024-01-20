@@ -657,7 +657,7 @@ queue_file_or_chord_preset (
 
   /* add some room to end pos */
   char file_end_pos_str[600];
-  position_to_string_full (&self->file_end_pos, file_end_pos_str, 2);
+  position_to_string_full (&self->file_end_pos, file_end_pos_str, 3);
   g_message ("playing until %s", file_end_pos_str);
   position_add_bars (&self->file_end_pos, 1);
 

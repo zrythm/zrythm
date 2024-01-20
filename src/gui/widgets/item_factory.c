@@ -675,13 +675,13 @@ item_factory_bind_cb (
                 string_is_equal (self->column_name, _ ("Start"))
                 || string_is_equal (self->column_name, _ ("Position")))
                 {
-                  position_to_string_full (&arr_obj->pos, str, 1);
+                  position_to_string_full (&arr_obj->pos, str, 3);
                 }
               else if (string_is_equal (self->column_name, _ ("End")))
                 {
                   if (arranger_object_type_has_length (arr_obj->type))
                     {
-                      position_to_string_full (&arr_obj->end_pos, str, 1);
+                      position_to_string_full (&arr_obj->end_pos, str, 3);
                     }
                   else
                     {
@@ -692,7 +692,7 @@ item_factory_bind_cb (
                 {
                   if (arranger_object_type_can_loop (arr_obj->type))
                     {
-                      position_to_string_full (&arr_obj->loop_start_pos, str, 1);
+                      position_to_string_full (&arr_obj->loop_start_pos, str, 3);
                     }
                   else
                     {
@@ -703,7 +703,7 @@ item_factory_bind_cb (
                 {
                   if (arranger_object_type_can_loop (arr_obj->type))
                     {
-                      position_to_string_full (&arr_obj->loop_end_pos, str, 1);
+                      position_to_string_full (&arr_obj->loop_end_pos, str, 3);
                     }
                   else
                     {
@@ -714,7 +714,7 @@ item_factory_bind_cb (
                 {
                   if (arranger_object_type_can_loop (arr_obj->type))
                     {
-                      position_to_string_full (&arr_obj->clip_start_pos, str, 1);
+                      position_to_string_full (&arr_obj->clip_start_pos, str, 3);
                     }
                   else
                     {
@@ -725,7 +725,7 @@ item_factory_bind_cb (
                 {
                   if (arranger_object_can_fade (arr_obj))
                     {
-                      position_to_string_full (&arr_obj->fade_in_pos, str, 1);
+                      position_to_string_full (&arr_obj->fade_in_pos, str, 3);
                     }
                   else
                     {
@@ -736,7 +736,7 @@ item_factory_bind_cb (
                 {
                   if (arranger_object_can_fade (arr_obj))
                     {
-                      position_to_string_full (&arr_obj->fade_out_pos, str, 1);
+                      position_to_string_full (&arr_obj->fade_out_pos, str, 3);
                     }
                   else
                     {
