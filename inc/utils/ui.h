@@ -404,7 +404,7 @@ ui_set_pointer_cursor (GtkWidget * widget);
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "audio-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "transform-move", 10, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cursor-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
