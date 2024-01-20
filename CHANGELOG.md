@@ -1,10 +1,40 @@
 <!---
-SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou
+SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou
 SPDX-License-Identifier: FSFAP
 -->
 
 # Changelog
 All notable changes to this project will be documented in this file.
+
+## [1.0.0-beta.6.1.1] - 2024-01-20
+### Added
+- Allow toggling bypass on multiple plugins (#4853)
+- Make track sends available to modulator outputs (#4819)
+- Add button to show instrument UI in mixer channels (#4422)
+- Show markers in editor ruler (#4777)
+- Allow changing plugin load behavior (#4407)
+- Display bridge status in plugin slots
+- Add option to auto-select tracks when selecting regions (#4201)
+- Display how many new plugins were detected on each run
+
+### Changed
+- MPMC queue: switch to C11 atomics implementation
+- Various optimizations
+- Skip engine pause/resume when engine is already stopped
+- Make fader buttons smaller
+- Show "Unimplemented" message when clicking channel settings button
+- Make stretch mode a separate button in the toolbox
+- Graphviz dependency is now disabled by default
+- Modernize some preferences rows using new libadwaita widgets
+- Show more precise positions in event viewer
+- Add outline to some cursors
+
+### Fixed
+- Fix DnD from the plugin browser being broken when a plugin is selected in the mixer (#4974)
+- Fix specified plugin bridge mode being ignored in some cases
+- Ignore carla parameters that are not found in input ports on project load (fixes error being thrown when this happens)
+- Fix stretch mode icon (#3991)
+- Fix original objects disappearing when copy-moving their newly created objects offscreen (#3303)
 
 ## [1.0.0-beta.6.0.38] - 2024-01-15
 ### Changed
