@@ -1202,6 +1202,8 @@ paste_cb (GObject * source_object, GAsyncResult * res, gpointer data)
       return;
     }
 
+  /*g_debug ("pasted:\n%s", txt);*/
+
   err = NULL;
   Clipboard * clipboard = clipboard_deserialize_from_json_str (txt, true, &err);
   if (!clipboard)

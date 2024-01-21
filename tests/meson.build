@@ -324,6 +324,7 @@ if get_option ('tests')
     'project': { 'parallel': false },
     'settings/settings': { 'parallel': true },
     'utils/arrays': { 'parallel': true },
+    'utils/compression': { 'parallel': true },
     'utils/file': { 'parallel': true },
     'utils/general': { 'parallel': true },
     'utils/hash': { 'parallel': true },

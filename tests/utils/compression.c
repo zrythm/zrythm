@@ -1,0 +1,34 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "zrythm-test-config.h"
+
+#include "utils/compression.h"
+
+#include <glib.h>
+
+static void
+test_decompression (void)
+{
+  const char * base64str =
+    "KLUv/WD9AnUOAFZbUyMwbfQIFW0RJmyBF/FDW4mxy3PWcCllsvblWy3R5YSREZHCAUcASwBKAErj+nDQTon7a3So8Xs7RbXhEeJuaDzlvknjr87gSOMqJ7Tu4ye8hPEjaLmVguNeja1HdELc/KhPhgTjQOSwEMrAjV+CWI4EUvHPIe6rnkVZmIUpRllqURRbEkxRCcGckfsqlVCWuk24T8JYslSiFmNN4zwqwRqHITz53PdRVOI0rh85hbiXxTBrOU3TMIZJPIoTjT9yyb0kyuM8bC1lBSSQ+14Y8U8qHs6pgpzQejTt5NzqpUdHdYOP/ODhnFppmrTgIWHkVk9hp0V9CSHo5CKHhXQ2oltpMS3+ORT3PjodDmJhhAxY4QL9B/WI26GhcbXuHxiLj+4qt8Md+DpxX3dI0X+KDPlPG9zvKUca0xmn41aJ1VhCbzxFnFPiZoAJ3yTAATIgAEKEoDsDogrNGAhfeoVFSBqYBQOAp7tzAz1o7qZ9jhxn/kga5jsotLU2USfPjD9svHl1iszWkhCi+H7U8n4CYnsxnCGIlnHYAf3I99SOqDDDIfByVyRuCvgWGCLCKjSwbXilzoaNC2Mdd0X0Aal2QycD4f01Ofy9V4I/AQ==";
+
+  GError * err = NULL;
+  char *   res_str = compression_decompress_from_base64_str (base64str, &err);
+  g_assert_true (
+    g_str_has_suffix (res_str, ",\"markerTrackVisibilityIndex\":0}}"));
+  g_free (res_str);
+}
+
+int
+main (int argc, char * argv[])
+{
+  g_test_init (&argc, &argv, NULL);
+
+#define TEST_PREFIX "/utils/compression/"
+
+  g_test_add_func (
+    TEST_PREFIX "test decompression", (GTestFunc) test_decompression);
+
+  return g_test_run ();
+}

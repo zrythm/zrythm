@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/compression.h"
@@ -80,6 +80,10 @@ compression_decompress_from_base64_str (const char * b64, GError ** error)
         "uncompressed_size != frame_content_size");
       return NULL;
     }
+
+  /* make string null-terminated */
+  dest = g_realloc (dest, dest_size + sizeof (char));
+  dest[dest_size] = '\0';
 
   return dest;
 }
