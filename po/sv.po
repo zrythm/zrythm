@@ -7,13 +7,14 @@
 # tygyh <jonis9898@hotmail.com>, 2022.
 # Ivar <ivar.bjerling@protonmail.com>, 2023.
 # Ivar <ivar@ivarbjerling.com>, 2023.
+# verstt <weblate.7lken@passmail.net>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-01-11 21:08+0900\n"
-"PO-Revision-Date: 2023-11-17 13:43+0000\n"
-"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
+"PO-Revision-Date: 2024-01-21 20:45+0000\n"
+"Last-Translator: verstt <weblate.7lken@passmail.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -101,11 +102,11 @@ msgstr "Mapp"
 
 #: inc/dsp/snap_grid.h:52
 msgid "bar"
-msgstr ""
+msgstr "takt"
 
 #: inc/dsp/snap_grid.h:53
 msgid "beat"
-msgstr ""
+msgstr "taktslag"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"
@@ -113,7 +114,7 @@ msgstr "normal"
 
 #: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:437
 msgid "dotted"
-msgstr "prickad"
+msgstr "punkterad"
 
 #: inc/dsp/snap_grid.h:75 src/gui/widgets/digital_meter.c:440
 msgid "triplet"
@@ -175,7 +176,7 @@ msgstr "ALSA Sequencer (fungerar ej)"
 
 #: inc/dsp/engine.h:299
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSA-Sequencer (rtmidi)"
+msgstr "ALSA Sequencer (rtmidi)"
 
 #: inc/dsp/audio_function.h:56
 msgid "Invert"
@@ -184,35 +185,35 @@ msgstr "Invertera"
 #: inc/dsp/audio_function.h:56
 #, fuzzy
 msgid "Normalize peak"
-msgstr "Normal"
+msgstr "Normalisera topp"
 
 #: inc/dsp/audio_function.h:56
 #, fuzzy
 msgid "Normalize RMS"
-msgstr "Normal"
+msgstr "Normalisera RMS"
 
 #: inc/dsp/audio_function.h:57
 #, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normal"
+msgstr "Normalisera LUFS"
 
 #: inc/dsp/audio_function.h:57
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linjär"
+msgstr "Linjär intoning"
 
 #: inc/dsp/audio_function.h:57
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Utgång för monitorns fader"
+msgstr "Linjär uttoning"
 
 #: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:125
+#, fuzzy
 msgid "Nudge left"
-msgstr ""
+msgstr "Knuffa vänster"
 
 #: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:126
+#, fuzzy
 msgid "Nudge right"
-msgstr ""
+msgstr "Knuffa höger"
 
 #: inc/dsp/audio_function.h:58
 msgid "Reverse"
@@ -224,21 +225,22 @@ msgid "Pitch shift"
 msgstr "Tonhjul"
 
 #: inc/dsp/audio_function.h:59
+#, fuzzy
 msgid "Copy L to R"
-msgstr ""
+msgstr "Kopiera L till R"
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
 msgstr "Externt program"
 
 #: inc/dsp/audio_function.h:60
-#, fuzzy
 msgid "Guile script"
-msgstr "Standardbank"
+msgstr "Guile-skript"
 
 #: inc/dsp/audio_function.h:60
+#, fuzzy
 msgid "Custom plugin"
-msgstr ""
+msgstr "Anpassat tillägg"
 
 #: inc/dsp/audio_function.h:60 src/dsp/channel_send.c:73
 #: src/dsp/channel_send.c:95
@@ -289,15 +291,15 @@ msgstr "Ingen"
 
 #: inc/dsp/transport.h:52
 msgid "1 bar"
-msgstr ""
+msgstr "1 takt"
 
 #: inc/dsp/transport.h:53
 msgid "2 bars"
-msgstr ""
+msgstr "2 takter"
 
 #: inc/dsp/transport.h:54
 msgid "4 bars"
-msgstr ""
+msgstr "4 takter"
 
 #: inc/dsp/region.h:62 src/gui/widgets/track.c:968
 msgid "Inherit"
@@ -546,7 +548,7 @@ msgstr ""
 
 #: inc/dsp/scale.h:186
 msgid "Balinese"
-msgstr ""
+msgstr "Balinesisk"
 
 #: inc/dsp/scale.h:187
 msgid "RagaTodi"
@@ -554,11 +556,11 @@ msgstr ""
 
 #: inc/dsp/scale.h:188
 msgid "Japanese 1"
-msgstr ""
+msgstr "Japansk 1"
 
 #: inc/dsp/scale.h:189
 msgid "Japanese 2"
-msgstr ""
+msgstr "Japansk 2"
 
 #: inc/dsp/automation_function.h:37 resources/ui/editor_toolbar.ui:209
 #, fuzzy
@@ -780,8 +782,9 @@ msgid "%s has crashed. "
 msgstr "%s har krashat. "
 
 #: src/zrythm_app.c:210
+#, fuzzy
 msgid "Failed fetching the latest release version"
-msgstr ""
+msgstr "Misslyckades med att hämta den senaste versionen"
 
 #: src/zrythm_app.c:223
 #, fuzzy
@@ -794,8 +797,9 @@ msgid "Running %s version <b>%s</b>%s%s"
 msgstr "Kör %s version <b>%s</b>%s%s"
 
 #: src/zrythm_app.c:245
+#, fuzzy
 msgid "New Zrythm Version"
-msgstr ""
+msgstr "Ny version för Zrythm"
 
 #: src/zrythm_app.c:246
 #, c-format
@@ -804,6 +808,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"En ny version av Zrythm har släppts: <b> %s </b>\n"
+"\n"
+"Din nuvarande version är %s"
 
 #: src/zrythm_app.c:337
 msgid "Setting up main window"
@@ -860,17 +867,20 @@ msgid "Icon Theme Not Found"
 msgstr "Ikontema"
 
 #: src/zrythm_app.c:811
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
 msgstr ""
+"Din användare saknar privilegier för att tillåta %s att låsa oändligt med "
+"minne. Detta kan leda till ljudbortfall. Vänligen se avsnittet ’Getting "
+"Started’ i användarmanualen för mer information."
 
 #: src/zrythm_app.c:827
-#, c-format
+#, c-format, fuzzy
 msgid "Could not get system memory lock limit (%s)"
-msgstr ""
+msgstr "Kunde inte hämta systemets gräns för låsning av minne (%s)"
 
 #: src/zrythm_app.c:846
 #, fuzzy, c-format
@@ -912,7 +922,7 @@ msgstr ""
 #: src/zrythm_app.c:1368
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "libguile krävs för detta alternativ\n"
 
 #: src/zrythm_app.c:1494
 #, fuzzy
@@ -925,7 +935,7 @@ msgstr "Generera ett projekt från SCRIPT-FILE"
 
 #: src/zrythm_app.c:1498
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Skriv ut på ett användarvänligt sätt"
 
 #: src/zrythm_app.c:1500
 msgid "Print current settings"
@@ -947,15 +957,16 @@ msgid "Override the MIDI backend to use"
 msgstr "Välj vilken MIDI-backend som ska användas."
 
 #: src/zrythm_app.c:1508
+#, fuzzy
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Kortform av --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1530
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
 #: src/zrythm_app.c:1535
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Examples:\n"
 "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
@@ -963,6 +974,12 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"Exempel:\n"
+"  --gen-project a.scm -o mittprojekt    Generera mittprojekt från a.scm\n"
+"  -p --pretty                         Skriv ut nuvarande inställningar på "
+"användarvänligt sätt\n"
+"\n"
+"Vänligen rapportera problem till %s\n"
 
 #: src/zrythm_app.c:1545
 #, c-format
@@ -3068,7 +3085,7 @@ msgstr "Plugin-inspektör"
 
 #: src/utils/gtk.c:1034 src/gui/widgets/right_dock_edge.c:91
 msgid "Plugin Browser"
-msgstr "Pluginutforskare"
+msgstr "Insticksfilutforskare"
 
 #: src/utils/gtk.c:1037 src/gui/widgets/right_dock_edge.c:98
 #: src/gui/widgets/right_dock_edge.c:123
@@ -3092,7 +3109,7 @@ msgstr "Tidslinje"
 #: src/utils/gtk.c:1047 src/gui/widgets/main_notebook.c:113
 #, fuzzy
 msgid "MIDI CC Bindings"
-msgstr "CC-kopplingar"
+msgstr "MIDI CC-kopplingar"
 
 #: src/utils/gtk.c:1050 src/gui/widgets/main_notebook.c:111
 msgid "Port Connections"
@@ -3155,9 +3172,8 @@ msgid "Failed to paste tracks"
 msgstr "Kunde inte återställa schemat %s"
 
 #: src/gui/backend/event_manager.c:266
-#, fuzzy
 msgid "Plugin Crashed"
-msgstr "Pluginutforskare"
+msgstr "Insticksfil kraschade"
 
 #: src/gui/backend/event_manager.c:267
 #, c-format
@@ -3643,7 +3659,7 @@ msgstr "Inget klipp är valt"
 #: src/gui/widgets/panel_file_browser.c:461
 #: src/gui/widgets/plugin_browser.c:996 resources/ui/automatable_selector.ui:38
 msgid "Search..."
-msgstr ""
+msgstr "Sök…"
 
 #: src/gui/widgets/drag_dest_box.c:262 src/gui/widgets/timeline_arranger.c:1354
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
@@ -4161,7 +4177,7 @@ msgstr "Klicka för att aktivera ingångar"
 
 #: src/gui/widgets/view_toolbar.c:21
 msgid "Toggle Status Bar"
-msgstr "Aktivera/Inaktivera statusfältet"
+msgstr "Aktivera/inaktivera statusfältet"
 
 #: src/gui/widgets/view_toolbar.c:22
 msgid "Fullscreen"
@@ -4214,9 +4230,8 @@ msgid "empty slot"
 msgstr "tomt fack"
 
 #: src/gui/widgets/port_connection_row.c:49
-#, fuzzy
 msgid "Failed to enable connection"
-msgstr "Aktivera/Inaktivera koppling"
+msgstr "Misslyckades med att aktivera koppling"
 
 #: src/gui/widgets/port_connection_row.c:64
 #, fuzzy
@@ -4225,7 +4240,7 @@ msgstr "Kunde inte öppna filen: %s"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
-msgstr "Aktivera/Inaktivera koppling"
+msgstr "Aktivera/inaktivera koppling"
 
 #: src/gui/widgets/port_connection_row.c:136
 msgid "Delete connection"
@@ -4812,9 +4827,8 @@ msgid "Failed to connect send"
 msgstr "Kunde inte hitta något plugin med URI: %s"
 
 #: src/gui/widgets/main_notebook.c:116
-#, fuzzy
 msgid "Scenes (Live View)"
-msgstr "Scener (Livevy)"
+msgstr "Scener (livevisning)"
 
 #: src/gui/widgets/channel_send.c:192
 #, fuzzy
@@ -6065,7 +6079,7 @@ msgstr "Aktivera"
 #: src/plugins/plugin.c:270
 #, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "Aktivera/Inaktivera koppling"
+msgstr "Aktiverar eller inaktiverar insticksfilen"
 
 #: src/plugins/plugin.c:289
 #, fuzzy
@@ -6724,11 +6738,11 @@ msgstr "Skanna ytterligare efter MIDI-kontroller"
 
 #: resources/ui/main_window.ui:37 resources/ui/view_toolbar.ui:41
 msgid "Toggle Left Panel"
-msgstr "Aktivera/Inaktivera vänster panel"
+msgstr "Aktivera/inaktivera vänsterpanel"
 
 #: resources/ui/main_window.ui:51 resources/ui/view_toolbar.ui:59
 msgid "Toggle Right Panel"
-msgstr "Aktivera/Inaktivera höger panel"
+msgstr "Aktivera/inaktivera högerpanel"
 
 #: resources/ui/fader_buttons.ui:92
 msgid "Channel settings"
@@ -6895,11 +6909,12 @@ msgstr ""
 #: resources/ui/editor_toolbar.ui:128
 #, fuzzy
 msgid "Toggle ghost note visibility"
-msgstr "Aktivera/Inaktivera höger panel"
+msgstr "Aktivera/inaktivera synlighet av tonlös not"
 
 #: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
+#, fuzzy
 msgid "Toggle event viewer"
-msgstr "Aktivera/Inaktivera eventvisaren"
+msgstr "Aktivera/inaktivera händelsevisaren"
 
 #: resources/ui/editor_toolbar.ui:166 resources/ui/editor_toolbar.ui:215
 msgid "Flip"
@@ -6964,7 +6979,7 @@ msgstr "Skala-objekt"
 
 #: resources/ui/bot_bar.ui:65 resources/ui/view_toolbar.ui:47
 msgid "Toggle Bottom Panel"
-msgstr "Aktivera/Inaktivera nedre panelen"
+msgstr "Aktivera/inaktivera bottenpanel"
 
 #: resources/ui/project_assistant.ui:6
 #, fuzzy
@@ -7137,7 +7152,7 @@ msgstr "Tystad"
 
 #: resources/ui/view_toolbar.ui:53
 msgid "Toggle Top Panel"
-msgstr "Aktivera/Inaktivera övre panelen"
+msgstr "Aktivera/inaktivera toppanel"
 
 #: resources/ui/automatable_selector.ui:13
 msgid "Filters"
@@ -7313,7 +7328,7 @@ msgstr "Allmänt"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
-msgstr "Aktivera/Inaktivera fullskärm"
+msgstr "Aktivera/inaktivera fullskärm"
 
 #: resources/gtk/help-overlay.ui:60
 msgid "Quit"
@@ -7325,15 +7340,15 @@ msgstr "Paneler"
 
 #: resources/gtk/help-overlay.ui:74
 msgid "Toggle left panel"
-msgstr "Aktivera/Inaktivera vänster panel"
+msgstr "Aktivera/inaktivera vänsterpanel"
 
 #: resources/gtk/help-overlay.ui:81
 msgid "Toggle right panel"
-msgstr "Aktivera/Inaktivera höger panel"
+msgstr "Aktivera/inaktivera högerpanel"
 
 #: resources/gtk/help-overlay.ui:88
 msgid "Toggle bottom panel"
-msgstr "Aktivera/Inaktivera nedre panelen"
+msgstr "Aktivera/inaktivera bottenpanelen"
 
 #: resources/gtk/help-overlay.ui:103
 msgid "Create new project"
@@ -8763,88 +8778,76 @@ msgid "VST2 plugins"
 msgstr "VST-plugin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1191
-#, fuzzy
 msgid "VST2 plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för VST2-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1195
-#, fuzzy
 msgid "VST3 plugins"
-msgstr "VST-plugin"
+msgstr "VST3-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1196
-#, fuzzy
 msgid "VST3 plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för VST3-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1200
-#, fuzzy
 msgid "CLAP plugins"
-msgstr "Plugin"
+msgstr "CLAP-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1201
-#, fuzzy
 msgid "CLAP plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för CLAP-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1205
-#, fuzzy
 msgid "LV2 plugins"
-msgstr "VST-plugin"
+msgstr "LV2-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1206
 msgid ""
 "LV2 plugin search paths. Paths for plugins bundled with Zrythm will be "
 "appended to this list."
 msgstr ""
+"Filsökvägar för LV2-insticksfiler. Filsökvägar för inbyggda insticksfiler "
+"kommer läggas till på denna lista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1210
-#, fuzzy
 msgid "DSSI plugins"
-msgstr "VST-plugin"
+msgstr "DSSI-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1211
-#, fuzzy
 msgid "DSSI plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för DSSI-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1215
-#, fuzzy
 msgid "LADSPA plugins"
-msgstr "VST-plugin"
+msgstr "LADSPA-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1216
-#, fuzzy
 msgid "LADSPA plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för LADSPA-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1220
-#, fuzzy
 msgid "JSFX plugins"
-msgstr "VST-plugin"
+msgstr "JSFX-insticksfiler"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1221
-#, fuzzy
 msgid "JSFX plugin search paths."
-msgstr "Pluginutforskarfilter"
+msgstr "Filsökvägar för JSFX-insticksfiler."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1225
 msgid "SFZ instruments"
 msgstr "SFZ-instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1226
-#, fuzzy
 msgid "SFZ instrument search paths."
-msgstr "Instrument"
+msgstr "Filsökvägar för SFZ-instrument."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1230
 msgid "SF2 instruments"
 msgstr "SF2-instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1231
-#, fuzzy
 msgid "SF2 instrument search paths."
-msgstr "Instrument"
+msgstr "Filsökvägar för SF2-instrument."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1239
 #: build/data/org.zrythm.Zrythm.gschema.xml:1253
@@ -8854,16 +8857,16 @@ msgstr "Redigering"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1244
 msgid "Fade algorithm"
-msgstr "Fade-algoritm"
+msgstr "Toningsalgoritm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1245
 msgid "Default fade in/out algorithm."
-msgstr ""
+msgstr "Standardalgoritm för in- och uttoning."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1259
 #, fuzzy
 msgid "Default automation curve algorithm."
-msgstr "Kunde inte återställa schemat %s"
+msgstr "Standardalgoritm för automationskurvor."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1273
 msgid "Undo stack length"
