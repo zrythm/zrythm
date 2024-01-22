@@ -34,15 +34,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-01-11 21:08+0900\n"
-"PO-Revision-Date: 2023-11-17 13:43+0000\n"
-"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
+"PO-Revision-Date: 2024-01-21 20:45+0000\n"
+"Last-Translator: verstt <weblate.7lken@passmail.net>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/sv/>\n"
 "Language: sv\n"
-"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/sv/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -2141,13 +2142,13 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:24
 #: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:55
-#, fuzzy
 msgid "Markers"
-msgstr "Markör"
+msgstr "Markörer"
 
 #: ../../editing/clip-editors/ruler.rst:28
+#, fuzzy
 msgid "Clip Start"
-msgstr ""
+msgstr "Klippstart"
 
 #: ../../editing/clip-editors/ruler.rst:27
 msgid ""
@@ -2766,7 +2767,7 @@ msgstr ""
 
 #: ../../editing/event-viewers.rst:28 ../../editing/intro.rst:9
 msgid "Editing"
-msgstr ""
+msgstr "Redigering"
 
 #: ../../editing/event-viewers.rst:30
 msgid ""
@@ -5800,7 +5801,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:9
 msgid "Plugin Browser"
-msgstr "Pluginutforskare"
+msgstr "Insticksfilutforskare"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:11
 msgid ""
@@ -7909,7 +7910,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "Mapp"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
@@ -8471,7 +8472,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Aktivera/inaktivera statusfältet"
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid "Toggles the visibility of the status bar."
