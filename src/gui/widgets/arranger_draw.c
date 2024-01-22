@@ -733,8 +733,7 @@ draw_automation_bg (
   const int        height,
   GdkRectangle *   rect)
 {
-  /* draws horizontal lines at the cut-off points
-   * where automation can be drawn */
+  /* draws horizontal lines at the cut-off points where automation can be drawn */
 #if 0
   gtk_snapshot_append_color (
     snapshot, &thick_grid_line_color,

@@ -42,13 +42,6 @@ automation_point_settings_changed (
   return !same;
 }
 
-/**
- * Draws the AutomationPoint in the given cairo
- * context in absolute coordinates.
- *
- * @param rect Arranger rectangle.
- * @param layout Pango layout to draw text with.
- */
 void
 automation_point_draw (
   AutomationPoint * ap,
@@ -231,6 +224,7 @@ automation_point_draw (
     g_settings_get_boolean (S_UI, "show-automation-values")
     && !(arranger->action != UI_OVERLAY_ACTION_NONE && !obj->transient))
     {
+#if ZRYTHM_TARGET_VER_MAJ > 1
       char text[50];
       sprintf (text, "%f", (double) ap->fvalue);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
@@ -240,6 +234,7 @@ automation_point_draw (
         upslope
           ? ((obj->full_rect.y + obj->full_rect.height) - AP_WIDGET_POINT_SIZE / 2)
           : (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2));
+#endif
     }
 
   cairo_restore (cr);

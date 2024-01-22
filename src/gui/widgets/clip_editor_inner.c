@@ -174,8 +174,10 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, true);
           automation_editor_space_widget_refresh (self->automation_editor_space);
+#if ZRYTHM_TARGET_VER_MAJ > 1
           gtk_widget_set_visible (
             GTK_WIDGET (self->show_automation_values), true);
+#endif
           break;
         }
     }

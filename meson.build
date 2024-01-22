@@ -301,6 +301,8 @@ cdata.set_quoted (
   # vcs_tag() broke on windows builds so just use the given
   # version
   os_windows ? version_fallback : '@VCS_TAG@')
+# target major version (what this branch targets)
+cdata.set ('ZRYTHM_TARGET_VER_MAJ', 1)
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())

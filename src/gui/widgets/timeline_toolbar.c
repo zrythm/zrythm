@@ -58,6 +58,10 @@ timeline_toolbar_widget_init (TimelineToolbarWidget * self)
 
 #undef SET_TOOLTIP
 
+#if ZRYTHM_TARGET_VER_MAJ == 1
+  gtk_widget_set_visible (GTK_WIDGET (self->musical_mode_toggle), false);
+#endif
+
   zoom_buttons_widget_setup (
     self->zoom_buttons, true, GTK_ORIENTATION_HORIZONTAL);
 }

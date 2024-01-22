@@ -1127,8 +1127,10 @@ region_get_arranger_for_children (ZRegion * self)
 bool
 region_get_musical_mode (ZRegion * self)
 {
+#if ZRYTHM_TARGET_VER_MAJ == 1
   /* off for v1 */
   return false;
+#endif
 
   switch (self->musical_mode)
     {
