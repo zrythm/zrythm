@@ -555,3 +555,9 @@ route-target-selector button.toggle {
     font-size: 11px;
   }
 }
+
+/* fix shortcut window page buttons being tiny */
+shortcuts-section > box > stackswitcher > button {
+  padding: 8px;
+  min-width: 16px;
+}
