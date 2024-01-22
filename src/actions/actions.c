@@ -3083,16 +3083,16 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
 {
   CurveAlgorithm curve_algo = (CurveAlgorithm) g_variant_get_int32 (variant);
 
-  g_return_if_fail (AUTOMATION_SELECTIONS->num_automation_points == 1);
-
-  AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[0];
-
   /* clone the selections before the change */
   ArrangerSelections * sel_before =
     arranger_selections_clone ((ArrangerSelections *) AUTOMATION_SELECTIONS);
 
   /* change */
-  ap->curve_opts.algo = curve_algo;
+  for (int i = 0; i < AUTOMATION_SELECTIONS->num_automation_points; i++)
+    {
+      AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[i];
+      ap->curve_opts.algo = curve_algo;
+    }
 
   /* perform action */
   GError * err = NULL;
