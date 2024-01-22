@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "dsp/chord_object.h"
 #include "dsp/chord_region.h"
@@ -113,8 +115,8 @@ chord_region_remove_chord_object (
   /* deselect */
   if (CHORD_SELECTIONS)
     {
-      arranger_object_select (
-        (ArrangerObject *) chord, F_NO_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+      arranger_selections_remove_object (
+        (ArrangerSelections *) CHORD_SELECTIONS, (ArrangerObject *) chord);
     }
 
   int pos = -1;

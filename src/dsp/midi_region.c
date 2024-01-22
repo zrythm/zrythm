@@ -300,14 +300,6 @@ midi_region_remove_midi_note (
         (ArrangerSelections *) MA_SELECTIONS, (ArrangerObject *) midi_note);
     }
 
-  /*ARRANGER_WIDGET_GET_PRIVATE (*/
-  /*MW_MIDI_ARRANGER);*/
-  /*if (ar_prv->start_object ==*/
-  /*(ArrangerObject *) midi_note)*/
-  /*{*/
-  /*ar_prv->start_object = NULL;*/
-  /*}*/
-
   array_delete (region->midi_notes, region->num_midi_notes, midi_note);
 
   for (int i = 0; i < region->num_midi_notes; i++)
