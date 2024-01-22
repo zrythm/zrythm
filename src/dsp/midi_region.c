@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
