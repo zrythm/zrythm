@@ -407,11 +407,8 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
 
   /* --- optimization to skip expensive calculations for most objects --- */
 
-  bool orig_visible = arranger_object_should_orig_be_visible (obj, self);
-  if (G_UNLIKELY (orig_visible))
-    {
-      g_return_val_if_fail (obj->transient, false);
-    }
+  bool orig_visible =
+    arranger_object_should_orig_be_visible (obj, self) && obj->transient;
 
   /* skip objects that end before the rect */
   if (arranger_object_type_has_length (obj->type))
