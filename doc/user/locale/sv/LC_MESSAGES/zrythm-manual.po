@@ -33,17 +33,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-11 21:08+0900\n"
+"POT-Creation-Date: 2024-01-22 21:07+0900\n"
 "PO-Revision-Date: 2024-01-21 20:45+0000\n"
 "Last-Translator: verstt <weblate.7lken@passmail.net>\n"
-"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/sv/>\n"
 "Language: sv\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/sv/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -253,7 +252,7 @@ msgstr ""
 msgid "Troubleshooting"
 msgstr "Felsökning"
 
-#: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
+#: ../../appendix/troubleshooting.rst:11
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/piano-roll.rst:149
 #: ../../exporting/audio-and-midi.rst:39
@@ -849,37 +848,28 @@ msgstr "Kortkommandon"
 
 #: ../../configuration/shortcuts.rst:9
 msgid ""
-"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or :"
-"kbd:`Control-F1`."
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Shift-Control-?`."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:13
+#: ../../configuration/shortcuts.rst:12
 #, fuzzy
 msgid "Global Shortcuts"
 msgstr "Kortkommandon"
 
-#: ../../configuration/shortcuts.rst:19
+#: ../../configuration/shortcuts.rst:18
 #, fuzzy
-msgid "Editor Shortcuts"
+msgid "Arranger Shortcuts"
 msgstr "Kortkommandon"
 
-#: ../../configuration/shortcuts.rst:25
+#: ../../configuration/shortcuts.rst:24
 #, fuzzy
 msgid "Custom Shortcuts"
 msgstr "Kortkommandon"
 
-#: ../../configuration/shortcuts.rst:27
+#: ../../configuration/shortcuts.rst:26
 msgid ""
-"Shortcuts can be overridden by placing a file named :file:`shortcuts.yaml` "
-"under the :term:`Zrythm user path`."
-msgstr ""
-
-#: ../../configuration/shortcuts.rst:31
-msgid "An example is given below."
-msgstr ""
-
-#: ../../configuration/shortcuts.rst:47
-msgid "Make this more user friendly & document all actions."
+"Custom shortcuts are currently unsupported and are scheduled to be "
+"implemented in version 2."
 msgstr ""
 
 #: ../../configuration/ui-scaling-and-wayland.rst:8

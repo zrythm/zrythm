@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-11 21:08+0900\n"
+"POT-Creation-Date: 2024-01-22 21:07+0900\n"
 "PO-Revision-Date: 2023-06-06 04:48+0000\n"
 "Last-Translator: Ewan Arends <ewan.arends10@gmail.com>\n"
 "Language: nl\n"
@@ -250,7 +250,7 @@ msgstr ""
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
+#: ../../appendix/troubleshooting.rst:11
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/piano-roll.rst:149
 #: ../../exporting/audio-and-midi.rst:39
@@ -850,34 +850,25 @@ msgstr ""
 
 #: ../../configuration/shortcuts.rst:9
 msgid ""
-"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or :"
-"kbd:`Control-F1`."
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Shift-Control-?`."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:13
+#: ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:19
-msgid "Editor Shortcuts"
+#: ../../configuration/shortcuts.rst:18
+msgid "Arranger Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:25
+#: ../../configuration/shortcuts.rst:24
 msgid "Custom Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:27
+#: ../../configuration/shortcuts.rst:26
 msgid ""
-"Shortcuts can be overridden by placing a file named :file:`shortcuts.yaml` "
-"under the :term:`Zrythm user path`."
-msgstr ""
-
-#: ../../configuration/shortcuts.rst:31
-msgid "An example is given below."
-msgstr ""
-
-#: ../../configuration/shortcuts.rst:47
-msgid "Make this more user friendly & document all actions."
+"Custom shortcuts are currently unsupported and are scheduled to be "
+"implemented in version 2."
 msgstr ""
 
 #: ../../configuration/ui-scaling-and-wayland.rst:8

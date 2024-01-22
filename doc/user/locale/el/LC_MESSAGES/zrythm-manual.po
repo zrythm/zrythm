@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-11 21:08+0900\n"
+"POT-Creation-Date: 2024-01-22 21:07+0900\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -226,7 +226,7 @@ msgstr "Ενέργειες μενού"
 msgid "Troubleshooting"
 msgstr "Επίλυση προβλημάτων"
 
-#: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
+#: ../../appendix/troubleshooting.rst:11
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/piano-roll.rst:149
 #: ../../exporting/audio-and-midi.rst:39
@@ -882,41 +882,29 @@ msgstr "Συντομεύσεις πληκτρολογίου"
 #: ../../configuration/shortcuts.rst:9
 #, fuzzy
 msgid ""
-"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or :"
-"kbd:`Control-F1`."
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Shift-Control-?`."
 msgstr ""
 "Οι συντομεύσεις για την αναίρεση και την επαναφορά είναι :kbd:`Control-z` "
 "και :kbd:`Control-Shift-z`."
 
-#: ../../configuration/shortcuts.rst:13
+#: ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
 msgstr "Γενικές συντομεύσεις"
 
-#: ../../configuration/shortcuts.rst:19
-msgid "Editor Shortcuts"
-msgstr "Συντομεύσεις επεξεργαστή"
+#: ../../configuration/shortcuts.rst:18
+#, fuzzy
+msgid "Arranger Shortcuts"
+msgstr "Ταξινόμος αντικειμένων"
 
-#: ../../configuration/shortcuts.rst:25
+#: ../../configuration/shortcuts.rst:24
 #, fuzzy
 msgid "Custom Shortcuts"
 msgstr "Συντομεύσεις επεξεργαστή"
 
-#: ../../configuration/shortcuts.rst:27
-#, fuzzy
+#: ../../configuration/shortcuts.rst:26
 msgid ""
-"Shortcuts can be overridden by placing a file named :file:`shortcuts.yaml` "
-"under the :term:`Zrythm user path`."
-msgstr ""
-"Το Zrythm θα θυμάται τα σκαναρισμένα πρόσθετα VST και θα αποθηκεύσει αυτές "
-"τις πληροφορίες στο :file:`cached_plugin_descriptors.yaml` στο :term:`Zrythm "
-"user path`."
-
-#: ../../configuration/shortcuts.rst:31
-msgid "An example is given below."
-msgstr ""
-
-#: ../../configuration/shortcuts.rst:47
-msgid "Make this more user friendly & document all actions."
+"Custom shortcuts are currently unsupported and are scheduled to be "
+"implemented in version 2."
 msgstr ""
 
 #: ../../configuration/ui-scaling-and-wayland.rst:8
@@ -10207,6 +10195,17 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Editor Shortcuts"
+#~ msgstr "Συντομεύσεις επεξεργαστή"
+
+#~ msgid ""
+#~ "Shortcuts can be overridden by placing a file named :file:`shortcuts."
+#~ "yaml` under the :term:`Zrythm user path`."
+#~ msgstr ""
+#~ "Το Zrythm θα θυμάται τα σκαναρισμένα πρόσθετα VST και θα αποθηκεύσει "
+#~ "αυτές τις πληροφορίες στο :file:`cached_plugin_descriptors.yaml` στο :"
+#~ "term:`Zrythm user path`."
 
 #~ msgid "LV2 Scan"
 #~ msgstr "Σκανάρισμα LV2"
