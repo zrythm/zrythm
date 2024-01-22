@@ -140,6 +140,7 @@ chord_object_serialize_to_json (
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, co_obj, "base");
   arranger_object_serialize_to_json (doc, base_obj, &co->base, error);
   yyjson_mut_obj_add_int (doc, co_obj, "index", co->index);
+  yyjson_mut_obj_add_int (doc, co_obj, "chordIndex", co->chord_index);
   return true;
 }
 
@@ -378,6 +379,12 @@ chord_object_deserialize_from_json (
   yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
   arranger_object_deserialize_from_json (doc, base_obj, &co->base, error);
   co->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
+  /* this was missing until mid-1.9 */
+  yyjson_val * chord_index_val = yyjson_obj_iter_get (&it, "chordIndex");
+  if (chord_index_val)
+    {
+      co->chord_index = yyjson_get_int (chord_index_val);
+    }
   co->magic = CHORD_OBJECT_MAGIC;
   return true;
 }

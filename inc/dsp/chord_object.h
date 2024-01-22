@@ -50,8 +50,7 @@ typedef struct ChordObject
   /** The index inside the region. */
   int index;
 
-  /** The index of the chord it belongs to
-   * (0 topmost). */
+  /** The index of the chord it belongs to (0 topmost). */
   int chord_index;
 
   int magic;
