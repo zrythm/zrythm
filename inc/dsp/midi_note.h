@@ -151,8 +151,7 @@ void
 midi_note_shift_pitch (MidiNote * self, const int delta);
 
 /**
- * Returns if the MIDI note is hit at given pos (in
- * the timeline).
+ * Returns if the MIDI note is hit at given pos (in the timeline).
  */
 int
 midi_note_hit (MidiNote * self, const signed_frame_t gframes);

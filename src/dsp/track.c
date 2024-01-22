@@ -2595,11 +2595,11 @@ track_fill_events (
               nframes_t cur_local_start_frame =
                 time_nfo->local_offset + frames_processed;
 
-              bool           is_end_loop;
+              bool           is_loop_end;
               signed_frame_t cur_num_frames_till_next_r_loop_or_end;
               region_get_frames_till_next_loop_or_end (
                 r, (signed_frame_t) cur_g_start_frame_w_offset,
-                &cur_num_frames_till_next_r_loop_or_end, &is_end_loop);
+                &cur_num_frames_till_next_r_loop_or_end, &is_loop_end);
 
 #if 0
               g_message (
@@ -2612,24 +2612,27 @@ track_fill_events (
                 cur_local_start_frame);
 #endif
 
-              /* whether we need a note off */
-              bool need_note_off =
-                (cur_num_frames_till_next_r_loop_or_end < num_frames_to_process)
-                || (cur_num_frames_till_next_r_loop_or_end == num_frames_to_process && !is_end_loop)
-                ||
-                /* region end */
-                ((signed_frame_t) time_nfo->g_start_frame_w_offset
-                   + num_frames_to_process
-                 == r_obj->end_pos.frames)
-                ||
-                /* transport end */
-                (TRANSPORT_IS_LOOPING
-                 && (signed_frame_t) time_nfo->g_start_frame_w_offset
-                        + num_frames_to_process
-                      == TRANSPORT->loop_end_pos.frames);
+              const bool is_region_end =
+                (signed_frame_t) time_nfo->g_start_frame_w_offset
+                  + num_frames_to_process
+                == r_obj->end_pos.frames;
 
-              /* number of frames to process this
-               * time */
+              const bool is_transport_end =
+                TRANSPORT_IS_LOOPING
+                && (signed_frame_t) time_nfo->g_start_frame_w_offset
+                       + num_frames_to_process
+                     == TRANSPORT->loop_end_pos.frames;
+
+              /* whether we need a note off */
+              const bool need_note_off =
+                (cur_num_frames_till_next_r_loop_or_end < num_frames_to_process)
+                || (cur_num_frames_till_next_r_loop_or_end == num_frames_to_process && !is_loop_end)
+                /* region end */
+                || is_region_end
+                /* transport end */
+                || is_transport_end;
+
+              /* number of frames to process this time */
               cur_num_frames_till_next_r_loop_or_end = MIN (
                 cur_num_frames_till_next_r_loop_or_end, num_frames_to_process);
 
@@ -2643,7 +2646,9 @@ track_fill_events (
               if (midi_events)
                 {
                   midi_region_fill_midi_events (
-                    r, &nfo, need_note_off, midi_events);
+                    r, &nfo, need_note_off,
+                    !is_transport_end && (is_loop_end || is_region_end),
+                    midi_events);
                 }
               else if (stereo_ports)
                 {

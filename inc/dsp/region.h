@@ -391,15 +391,13 @@ region_timeline_frames_to_local (
   const bool            normalize);
 
 /**
- * Returns the number of frames until the next
- * loop end point or the end of the region.
+ * Returns the number of frames until the next loop end point or the end of the
+ * region.
  *
- * @param[in] timeline_frames Global frames at
- *   start.
+ * @param[in] timeline_frames Global frames at start.
  * @param[out] ret_frames Return frames.
- * @param[out] is_loop Whether the return frames
- *   are for a loop (if false, the return frames
- *   are for the region's end).
+ * @param[out] is_loop Whether the return frames are for a loop (if false,
+ *   the return frames are for the region's end).
  *
  * @public @memberof ZRegion
  */

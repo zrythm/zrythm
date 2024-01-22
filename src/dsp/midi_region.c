@@ -987,14 +987,23 @@ midi_region_add_events (
 }
 
 /**
- * Sends all MIDI notes off at the given local
- * point.
+ * Sends MIDI note off events or an "all notes off" event at the current time.
+ *
+ * @param is_note_off_for_loop_or_region_end Whether this is called to send
+ *   note off events for notes at the loop end/region end boundary (as
+ *   opposed to a transport loop boundary).
+ *   If true, separate MIDI note off events will be sent for notes at the
+ *   border. Otherwise, a single all notes off event will be sent.
  */
-static inline void
-send_notes_off_at (ZRegion * self, MidiEvents * midi_events, midi_time_t time)
+OPTIMIZE_O3
+REALTIME
+static void
+send_note_offs (
+  ZRegion *                           self,
+  MidiEvents *                        midi_events,
+  const EngineProcessTimeInfo * const time_nfo,
+  bool                                is_note_off_for_loop_or_region_end)
 {
-  /*g_debug ("sending notes off at %u", time);*/
-
   midi_byte_t channel = 1;
   if (self->id.type == REGION_TYPE_MIDI)
     {
@@ -1005,45 +1014,47 @@ send_notes_off_at (ZRegion * self, MidiEvents * midi_events, midi_time_t time)
       /* FIXME set channel */
     }
 
-  midi_events_add_all_notes_off (midi_events, channel, time, F_QUEUED);
+  /* -1 to send event 1 sample before the end point */
+  const midi_time_t midi_time_for_note_off =
+    (midi_time_t) ((time_nfo->local_offset + time_nfo->nframes) - 1);
+  const signed_frame_t frame_for_note_off =
+    (time_nfo->g_start_frame_w_offset + time_nfo->nframes) - 1;
+  if (is_note_off_for_loop_or_region_end && self->id.type == REGION_TYPE_MIDI)
+    {
+      for (int i = 0; i < self->num_midi_notes; i++)
+        {
+          MidiNote * mn = self->midi_notes[i];
+          if (midi_note_hit (mn, frame_for_note_off))
+            {
+              midi_events_add_note_off (
+                midi_events, channel, mn->val, midi_time_for_note_off, F_QUEUED);
+            }
+        }
+    }
+  else
+    {
+      midi_events_add_all_notes_off (
+        midi_events, channel, midi_time_for_note_off, F_QUEUED);
+    }
 }
 
-/**
- * Fills MIDI event queue from the region.
- *
- * The events are dequeued right after the call to
- * this function.
- *
- * @note The caller already splits calls to this
- *   function at each sub-loop inside the region,
- *   so region loop related logic is not needed.
- *
- * @param note_off_at_end Whether a note off should
- *   be added at the end frame (eg, when the caller
- *   knows there is a region loop or the region
- *   ends).
- * @param midi_events MidiEvents to fill (from
- *   Piano Roll Port for example).
- */
 void
 midi_region_fill_midi_events (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
   bool                                note_off_at_end,
+  bool                                is_note_off_for_loop_or_region_end,
   MidiEvents *                        midi_events)
 {
   ArrangerObject * r_obj = (ArrangerObject *) self;
   Track *          track = arranger_object_get_track (r_obj);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
-  /* send all MIDI notes off if needed */
+  /* send note offs if needed */
   if (note_off_at_end)
     {
-      send_notes_off_at (
-        self, midi_events,
-        (midi_time_t)
-        /* -1 to send event 1 sample before the end point */
-        ((time_nfo->local_offset + time_nfo->nframes) - 1));
+      send_note_offs (
+        self, midi_events, time_nfo, is_note_off_for_loop_or_region_end);
     }
 
   const signed_frame_t r_local_pos = region_timeline_frames_to_local (

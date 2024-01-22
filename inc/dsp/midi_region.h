@@ -128,19 +128,17 @@ midi_region_pop_unended_note (ZRegion * self, int pitch);
 /**
  * Fills MIDI event queue from the region.
  *
- * The events are dequeued right after the call to
- * this function.
+ * The events are dequeued right after the call to this function.
  *
- * @note The caller already splits calls to this
- *   function at each sub-loop inside the region,
- *   so region loop related logic is not needed.
+ * @note The caller already splits calls to this function at each sub-loop
+ *   inside the region, so region loop related logic is not needed.
  *
- * @param note_off_at_end Whether a note off should
- *   be added at the end frame (eg, when the caller
- *   knows there is a region loop or the region
- *   ends).
- * @param midi_events MidiEvents to fill (from
- *   Piano Roll Port for example).
+ * @param note_off_at_end Whether a note off should be added at the end frame
+ *   (eg, when the caller knows there is a region loop or the region ends).
+ * @param is_note_off_for_loop_or_region_end Whether @p note_off_at_end is
+ *   for a region loop end or the region's end (in this case normal note offs
+ *   will be sent, otherwise a single ALL NOTES OFF event will be sent).
+ * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
  */
 OPTIMIZE_O3
 REALTIME
@@ -149,6 +147,7 @@ midi_region_fill_midi_events (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
   bool                                note_off_at_end,
+  bool                                is_note_off_for_loop_or_region_end,
   MidiEvents *                        midi_events);
 
 /**

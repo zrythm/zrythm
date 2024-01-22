@@ -185,8 +185,7 @@ test_fill_midi_events (void)
    * End: region end
    *
    * Expected result:
-   * MIDI note off event ends 1 sample before the
-   * region end.
+   * MIDI note off event ends 1 sample before the region end.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -BUFFER_SIZE);
@@ -195,12 +194,10 @@ test_fill_midi_events (void)
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
-  g_assert_cmpint (events->num_queued_events, ==, 2);
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
-  g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
-  ev = &events->queued_events[1];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
   midi_events_clear (events, F_QUEUED);
 
@@ -268,12 +265,10 @@ test_fill_midi_events (void)
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
-  g_assert_cmpint (events->num_queued_events, ==, 2);
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
-  g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
-  ev = &events->queued_events[1];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
   midi_events_clear (events, F_QUEUED);
 
@@ -338,8 +333,7 @@ test_fill_midi_events (void)
   position_update_frames_from_ticks (&mn_obj->end_pos, 0.0);
 
   /*
-   * Premise: note starts at the loop_start point
-   * after clip start.
+   * Premise: note starts at the loop_start point after clip start.
    * Start: before first loop
    * End: after first loop
    *
@@ -354,9 +348,10 @@ test_fill_midi_events (void)
   time_nfo.local_offset = 0;
   time_nfo.nframes = 2000;
   SET_CACHES_AND_FILL;
+  midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 364);
   ev = &events->queued_events[1];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
@@ -512,14 +507,12 @@ test_fill_midi_events (void)
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
-  g_assert_cmpint (events->num_queued_events, ==, 3);
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
-  g_assert_cmpuint (ev->time, ==, 9);
-  ev = &events->queued_events[2];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 10);
   midi_events_clear (events, F_QUEUED);
@@ -545,12 +538,9 @@ test_fill_midi_events (void)
   time_nfo.nframes = BUFFER_SIZE;
   SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (events->num_queued_events, ==, 2);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
-  g_assert_cmpuint (ev->time, ==, 9);
-  ev = &events->queued_events[1];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   midi_events_clear (events, F_QUEUED);
 
@@ -588,8 +578,7 @@ test_fill_midi_events (void)
   midi_events_clear (events, F_QUEUED);
 
   /**
-   * Premise: note starts at 1.1.1.0 and ends right
-   * before transport loop end.
+   * Premise: note starts at 1.1.1.0 and ends right before transport loop end.
    *
    * Expected result:
    * Note off before loop end and note on at
@@ -677,18 +666,16 @@ test_fill_midi_events (void)
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 3);
   midi_events_clear (events, F_QUEUED);
 
   /**
    *
-   * Premise: note starts inside region and ends
-   *   outside it.
+   * Premise: note starts inside region and ends outside it.
    *
    * Expected result:
-   * Note on inside region and note off at region
-   * end.
+   * Note on inside region and note off at region end.
    */
   position_set_to_bar (&r_obj->pos, 1);
   position_set_to_bar (&r_obj->end_pos, 2);
@@ -710,7 +697,7 @@ test_fill_midi_events (void)
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 10);
   ev = &events->queued_events[1];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 39);
   midi_events_clear (events, F_QUEUED);
 
@@ -737,14 +724,11 @@ test_fill_midi_events (void)
   time_nfo.nframes = 50;
   SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (events->num_queued_events, ==, 3);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
-  g_assert_cmpuint (ev->time, ==, 4);
-  ev = &events->queued_events[1];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 5);
-  ev = &events->queued_events[2];
+  ev = &events->queued_events[1];
   g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 14);
   midi_events_clear (events, F_QUEUED);
