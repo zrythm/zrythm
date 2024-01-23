@@ -6,6 +6,30 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.2.1] - 2024-01-24
+### Added
+- Support editing the curve for multiple automation points (#4991)
+
+### Changed
+- Add outline to object-stretch cursors
+- Update Swedish translations
+- Update shortcuts window (#4110)
+- Send normal note offs instead of "all notes off" at region loop and end boundaries (#4036)
+- Use lowercase for FLAC extension when exporting FLAC files
+- Port MIDI function dialog to AdwToolbarView
+
+### Fixed
+- Fix clipboard paste being broken
+- Fix chord index not being saved with chord objects in project files (#4995)
+- Fix error when closing the project while a chord object is selected
+- Fix error when copy-moving objects
+- Fix incorrect MIDI pitchbend handling (#3318, #4000, #4997)
+- Fix MIDI channel pressure handling when automating from its automation lane
+
+### Removed
+- Remove musical mode toggle from timeline toolbar
+- Remove option to overlay text value for automation points
+
 ## [1.0.0-beta.6.1.1] - 2024-01-20
 ### Added
 - Allow toggling bypass on multiple plugins (#4853)
