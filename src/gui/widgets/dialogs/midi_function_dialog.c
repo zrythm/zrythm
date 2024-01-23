@@ -345,6 +345,7 @@ midi_function_dialog_widget_init (MidiFunctionDialogWidget * self)
 
   self->page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
   adw_toolbar_view_set_content (self->view, GTK_WIDGET (self->page));
+  adw_header_bar_set_show_end_title_buttons (self->header, false);
 
   /* close on escape */
   z_gtk_window_make_escapable (GTK_WINDOW (self));
