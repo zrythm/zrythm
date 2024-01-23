@@ -48,7 +48,7 @@ static const char * pretty_formats[] = {
 };
 
 static const char * format_exts[] = {
-  "aiff", "au",  "caf", "FLAC", "mp3", "ogg",
+  "aiff", "au",  "caf", "flac", "mp3", "ogg",
   "ogg",  "raw", "wav", "w64",  "mid", "mid",
 };
 

@@ -180,10 +180,6 @@ supported_file_get_type (const char * file)
   return type;
 }
 
-/**
- * Returns the most common extension for the given
- * filetype.
- */
 const char *
 supported_file_type_get_ext (ZFileType type)
 {
@@ -196,7 +192,7 @@ supported_file_type_get_ext (ZFileType type)
       return g_strdup ("mp3");
       break;
     case FILE_TYPE_FLAC:
-      return g_strdup ("FLAC");
+      return g_strdup ("flac");
       break;
     case FILE_TYPE_OGG:
       return g_strdup ("ogg");
