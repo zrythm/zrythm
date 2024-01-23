@@ -38,8 +38,8 @@ typedef struct _MidiFunctionDialogWidget
 {
   AdwWindow parent_instance;
 
-  /** Box for header/content. */
-  GtkBox * vbox;
+  /** Toolbar View for header/content. */
+  AdwToolbarView * view;
 
   AdwHeaderBar * header;
 
