@@ -49,9 +49,11 @@
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */
 #define MIDI_CH1_NOTE_ON 0x90
 #define MIDI_CH1_NOTE_OFF 0x80
+/** Also known as Polyphonic Key Pressure. */
 #define MIDI_CH1_POLY_AFTERTOUCH 0xA0
 #define MIDI_CH1_CTRL_CHANGE 0xB0
 #define MIDI_CH1_PROG_CHANGE 0xC0
+/** Also known as Channel Pressure. */
 #define MIDI_CH1_CHAN_AFTERTOUCH 0xD0
 #define MIDI_CH1_PITCH_WHEEL_RANGE 0xE0
 #define MIDI_ALL_NOTES_OFF 0x7B
@@ -226,11 +228,12 @@ midi_is_controller (const midi_byte_t short_msg[3])
 }
 
 /**
- * Used for MIDI controls whose values are split
- * between MSB/LSB.
+ * Used for MIDI controls whose values are split between MSB/LSB.
  *
  * @param second_byte LSB.
  * @param third_byte MSB.
+ *
+ * @return A value between 0 and 0x4000 (16384).
  */
 static inline uint32_t
 midi_get_14_bit_value (const midi_byte_t short_msg[3])

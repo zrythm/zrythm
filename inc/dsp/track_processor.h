@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -117,18 +117,19 @@ typedef struct TrackProcessor
   /**
    * Polyphonic key pressure (aftertouch).
    *
-   * This message is most often sent by pressing
-   * down on the key after it "bottoms out".
+   * This message is most often sent by pressing down on the key after it
+   * "bottoms out".
+   *
+   * FIXME this is completely wrong. It's supposed to be per-key, so 128 x 16
+   * ports.
    */
   Port * poly_key_pressure[16];
 
   /**
    * Channel pressure (aftertouch).
    *
-   * This message is different from polyphonic
-   * after-touch - sends the single greatest
-   * pressure value (of all the current depressed
-   * keys).
+   * This message is different from polyphonic after-touch - sends the single
+   * greatest pressure value (of all the current depressed keys).
    */
   Port * channel_pressure[16];
 
@@ -259,17 +260,14 @@ track_processor_get_track (const TrackProcessor * self)
  * Process the TrackProcessor.
  *
  * This function performs the following:
- * - produce output audio/MIDI into stereo out or
- *   midi out, based on any audio/MIDI regions,
- *   if has piano roll or is audio track
- * - produce additional output MIDI events based on
- *   any MIDI CC automation, if has piano roll
- * - change MIDI CC control port values based on any
- *   MIDI input, if applicable
+ * - produce output audio/MIDI into stereo out or midi out, based on any
+ *   audio/MIDI regions, if has piano roll or is audio track
+ * - produce additional output MIDI events based on any MIDI CC automation
+ *   regions, if applicable
+ * - change MIDI CC control port values based on any MIDI input, if recording
  *   --- at this point the output is ready ---
- * - handle recording (create events in regions and
- *   automation, including MIDI CC automation,
- *   based on the MIDI CC control ports)
+ * - handle recording (create events in regions and automation, including
+ *   MIDI CC automation, based on the MIDI CC control ports)
  *
  * @param g_start_frames The global start frames.
  * @param local_offset The local start frames.

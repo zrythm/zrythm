@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -59,8 +59,21 @@ init_common (TrackProcessor * self)
               /* bind */
               midi_mappings_bind_track (
                 self->cc_mappings, buf, cc_port, F_NO_PUBLISH_EVENTS);
-            }
-        }
+            } /* endforeach 0..127 */
+
+          Port * pb = self->pitch_bend[i];
+          g_return_if_fail (pb);
+          Port * kp = self->poly_key_pressure[i];
+          g_return_if_fail (kp);
+          Port * cp = self->channel_pressure[i];
+          g_return_if_fail (cp);
+
+          /* set caches */
+          pb->midi_channel = i + 1;
+          kp->midi_channel = i + 1;
+          cp->midi_channel = i + 1;
+
+        } /* endforeach 0..15 */
     }
 
   self->updated_midi_automatable_ports = mpmc_queue_new ();
@@ -701,15 +714,21 @@ add_events_from_midi_cc_control_ports (
         {
           midi_events_add_pitchbend (
             self->midi_out->midi_events, cc->midi_channel,
-            math_round_float_to_signed_32 (cc->control), local_offset, false);
+            math_round_float_to_signed_32 (cc->control) + 0x2000, local_offset,
+            F_NOT_QUEUED);
         }
       else if (cc->id.flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
         {
-          /* TODO */
+#if ZRYTHM_TARGET_VER_MAJ > 1
+          /* TODO - unsupported in v1 */
+#endif
         }
       else if (cc->id.flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
         {
-          /* TODO */
+          midi_events_add_channel_pressure (
+            self->midi_out->midi_events, cc->midi_channel,
+            (midi_byte_t) math_round_float_to_signed_32 (cc->control * 127.f),
+            local_offset, F_NOT_QUEUED);
         }
       else
         {
@@ -721,26 +740,6 @@ add_events_from_midi_cc_control_ports (
     }
 }
 
-/**
- * Process the TrackProcessor.
- *
- * This function performs the following:
- * - produce output audio/MIDI into stereo out or
- *   midi out, based on any audio/MIDI regions,
- *   if has piano roll or is audio track
- * - produce additional output MIDI events based on
- *   any MIDI CC automation regions, if applicable
- * - change MIDI CC control port values based on any
- *   MIDI input, if recording
- *   --- at this point the output is ready ---
- * - handle recording (create events in regions and
- *   automation, including MIDI CC automation,
- *   based on the MIDI CC control ports)
- *
- * @param g_start_frames The global start frames.
- * @param local_offset The local start frames.
- * @param nframes The number of frames to process.
- */
 void
 track_processor_process (
   TrackProcessor *                    self,
@@ -816,12 +815,10 @@ track_processor_process (
       if (pr->midi_events->num_events > 0)
         {
           g_message ("PR");
-          midi_events_print (
-            pr->midi_events, F_NOT_QUEUED);
+          midi_events_print (pr->midi_events, F_NOT_QUEUED);
         }
 
-      if (self->midi_out->midi_events->num_events >
-            0)
+      if (self->midi_out->midi_events->num_events > 0)
         {
           g_message ("midi out");
           midi_events_print (self->midi_out->midi_events, F_NOT_QUEUED);

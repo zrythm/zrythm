@@ -320,7 +320,7 @@ midi_events_add_raw (
  * Adds a control event to the given MidiEvents.
  *
  * @param channel MIDI channel starting from 1.
- * @param pitchbend -8192 to 8191
+ * @param pitchbend 0 to 16384.
  * @param queued Add to queued events instead.
  */
 void
@@ -329,7 +329,15 @@ midi_events_add_pitchbend (
   midi_byte_t  channel,
   uint32_t     pitchbend,
   midi_time_t  time,
-  int          queued);
+  bool         queued);
+
+void
+midi_events_add_channel_pressure (
+  MidiEvents * self,
+  midi_byte_t  channel,
+  midi_byte_t  value,
+  midi_time_t  time,
+  bool         queued);
 
 /**
  * Queues MIDI note off to event queue.

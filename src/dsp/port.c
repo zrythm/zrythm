@@ -737,19 +737,12 @@ port_receive_midi_events_from_jack (
     }
 
 #  if 0
-  if (self->midi_events->num_events > 0)
+  if (midi_events_has_any (self->midi_events, F_NOT_QUEUED))
     {
-      MidiEvent * ev =
-        &self->midi_events->events[0];
       char designation[600];
-      port_get_full_designation (
-        self, designation);
-      g_debug (
-        "JACK MIDI (%s): have %d events\n"
-        "first event is: [%u] %hhx %hhx %hhx",
-        designation, num_events,
-        ev->time, ev->raw_buffer[0],
-        ev->raw_buffer[1], ev->raw_buffer[2]);
+      port_get_full_designation (self, designation);
+      g_debug ("JACK MIDI (%s): have %d events", designation, num_events);
+      midi_events_print (self->midi_events, F_NOT_QUEUED);
     }
 #  endif
 }
@@ -2034,23 +2027,6 @@ port_forward_control_change_event (Port * self)
     }
 }
 
-/**
- * Sets the given control value to the
- * corresponding underlying structure in the Port.
- *
- * Note: this is only for setting the base values
- * (eg when automating via an automation lane). For
- * CV automations this should not be used.
- *
- * @param is_normalized Whether the given value is
- *   normalized between 0 and 1.
- * @param forward_event Whether to forward a port
- *   control change event to the plugin UI. Only
- *   applicable for plugin control ports.
- *   If the control is being changed manually or
- *   from within Zrythm, this should be true to
- *   notify the plugin of the change.
- */
 void
 port_set_control_value (
   Port *      self,
@@ -2100,14 +2076,12 @@ port_set_control_value (
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
 
-      /* if time sig value, update transport
-       * caches */
+      /* if time sig value, update transport caches */
       if (
         id->flags2 & PORT_FLAG2_BEATS_PER_BAR
         || id->flags2 & PORT_FLAG2_BEAT_UNIT)
         {
-          /* this must only be called during
-           * processing kickoff or while the
+          /* this must only be called during processing kickoff or while the
            * engine is stopped */
           g_return_if_fail (
             !engine_get_run (AUDIO_ENGINE)

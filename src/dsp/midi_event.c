@@ -698,21 +698,16 @@ midi_events_add_control_change (
     self->num_events++;
 }
 
-/**
- * Adds a control event to the given MidiEvents.
- *
- * @param channel MIDI channel starting from 1.
- * @param pitchbend -8192 to 8191
- * @param queued Add to queued events instead.
- */
 void
 midi_events_add_pitchbend (
   MidiEvents * self,
   midi_byte_t  channel,
   uint32_t     pitchbend,
   midi_time_t  time,
-  int          queued)
+  bool         queued)
 {
+  g_return_if_fail (pitchbend < 0x4000 && channel > 0);
+
   MidiEvent * ev;
   if (queued)
     ev = &self->queued_events[self->num_queued_events];
@@ -722,8 +717,35 @@ midi_events_add_pitchbend (
   ev->time = time;
   ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
   midi_get_bytes_from_combined (
-    pitchbend + 8192, &ev->raw_buffer[1], &ev->raw_buffer[2]);
+    pitchbend, &ev->raw_buffer[1], &ev->raw_buffer[2]);
   ev->raw_buffer_sz = 3;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+void
+midi_events_add_channel_pressure (
+  MidiEvents * self,
+  midi_byte_t  channel,
+  midi_byte_t  value,
+  midi_time_t  time,
+  bool         queued)
+{
+  g_return_if_fail (channel > 0);
+
+  MidiEvent * ev;
+  if (queued)
+    ev = &self->queued_events[self->num_queued_events];
+  else
+    ev = &self->events[self->num_events];
+
+  ev->time = time;
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_CHAN_AFTERTOUCH | (channel - 1));
+  ev->raw_buffer[1] = value;
+  ev->raw_buffer_sz = 2;
 
   if (queued)
     self->num_queued_events++;
@@ -940,6 +962,9 @@ note_off:
       midi_events_add_pitchbend (
         self, channel, midi_get_14_bit_value (buf), time, queued);
       break;
+    case MIDI_CH1_CHAN_AFTERTOUCH:
+      midi_events_add_channel_pressure (self, channel, buf[1], time, queued);
+      break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
       if (buf[0] != 0xFE)
@@ -953,6 +978,9 @@ note_off:
     case MIDI_CH1_CTRL_CHANGE:
       midi_events_add_control_change (self, 1, buf[1], buf[2], time, queued);
       break;
+    case MIDI_CH1_POLY_AFTERTOUCH:
+      /* TODO unimplemented */
+      /* fallthrough */
     default:
       midi_events_add_raw (self, buf, (size_t) buf_size, time, queued);
       break;
