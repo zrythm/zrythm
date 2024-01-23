@@ -328,8 +328,8 @@ midi_function_dialog_widget_init (MidiFunctionDialogWidget * self)
   gtk_window_set_icon_name (GTK_WINDOW (self), "zrythm");
   gtk_window_set_modal (GTK_WINDOW (self), true);
 
-  self->vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  adw_window_set_content (ADW_WINDOW (self), GTK_WIDGET (self->vbox));
+  self->view = ADW_TOOLBAR_VIEW (adw_toolbar_view_new ());
+  adw_window_set_content (ADW_WINDOW (self), GTK_WIDGET (self->view));
 
   self->header = ADW_HEADER_BAR (adw_header_bar_new ());
   self->ok_btn = GTK_BUTTON (gtk_button_new_with_mnemonic (_ ("_Apply")));
@@ -341,10 +341,11 @@ midi_function_dialog_widget_init (MidiFunctionDialogWidget * self)
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->cancel_btn), "window.close");
   adw_header_bar_pack_start (self->header, GTK_WIDGET (self->cancel_btn));
-  gtk_box_append (self->vbox, GTK_WIDGET (self->header));
+  adw_toolbar_view_add_top_bar (self->view, GTK_WIDGET (self->header));
 
   self->page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
-  gtk_box_append (self->vbox, GTK_WIDGET (self->page));
+  adw_toolbar_view_set_content (self->view, GTK_WIDGET (self->page));
+  adw_header_bar_set_show_end_title_buttons (self->header, false);
 
   /* close on escape */
   z_gtk_window_make_escapable (GTK_WINDOW (self));
