@@ -127,7 +127,7 @@ void
 For more information on warnings and assertions see
 <https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
 
-Also see [Running GLib Applications](https://developer.gnome.org/glib/stable/glib-running.html).
+Also see [Running GLib Applications](https://docs.gtk.org/glib/running.html).
 
 We suggest building with `-Dextra_debug_info` which
 essentially adds `-g3` to the CFLAGS. This allows
