@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+stages:
+  - setup
+  - check
+  - build
+  - test
+
+default:
+  cache:
+    - key: configured-cache-1
+      paths:
+        - venv
+        - subprojects/gtk4
+        - subprojects/libadwaita
+        - subprojects/libpanel
+        - subprojects/yyjson
+        - subprojects/libcyaml
+    - key: $CI_COMMIT_TIMESTAMP
+      paths:
+        - build
+  tags:
+    - archlinux
+  before_script:
+    - source ./venv/bin/activate
+
+configure:
+  stage: setup
+  before_script:
+    - python3 -m venv venv
+    - source ./venv/bin/activate
+    - python3 -m pip install -r requirements.txt
+  script:
+    - CC=gcc meson setup build -Dstrict_flags=true -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml -Dtests=true
+
+clang-format-check:
+  stage: check
+  script:
+    - ninja -C build clang-format-check
+
+build:
+  stage: build
+  script:
+    - ninja -C build
+
+test:
+  stage: test
+  script:
+    - ninja -C build test
