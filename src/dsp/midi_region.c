@@ -1018,7 +1018,7 @@ send_note_offs (
   const midi_time_t midi_time_for_note_off =
     (midi_time_t) ((time_nfo->local_offset + time_nfo->nframes) - 1);
   const signed_frame_t frame_for_note_off =
-    (time_nfo->g_start_frame_w_offset + time_nfo->nframes) - 1;
+    (signed_frame_t) (time_nfo->g_start_frame_w_offset + time_nfo->nframes) - 1;
   if (is_note_off_for_loop_or_region_end && self->id.type == REGION_TYPE_MIDI)
     {
       for (int i = 0; i < self->num_midi_notes; i++)
