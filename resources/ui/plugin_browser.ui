@@ -95,7 +95,7 @@
                             <property name="child">
                               <object class="GtkListView" id="author_list_view">
                                 <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
-                            </object>
+                              </object>
                             </property>
                           </object>
                         </child>
@@ -200,9 +200,8 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="browser_bot">
-            <property name="orientation">vertical</property>
-            <child>
+          <object class="AdwToolbarView" id="browser_bot">
+            <child type="top">
               <object class="GtkBox">
                 <child>
                   <object class="GtkBox" id="plugin_toolbar">
@@ -302,10 +301,22 @@
                 </child>
               </object>
             </child>
-            <child>
-              <object class="GtkSearchEntry" id="plugin_search_entry"/>
+            <child type="top">
+              <object class="GtkSearchBar">
+                <property name="search-mode-enabled">True</property>
+                <property name="child">
+                  <!-- xxx: Pack the search entry inside a box so that Escape key won't hide the bar -->
+                  <object class="AdwClamp">
+                    <child>
+                      <object class="GtkSearchEntry" id="plugin_search_entry">
+                        <property name="hexpand">1</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
             </child>
-            <child>
+            <property name="content">
               <object class="GtkScrolledWindow" id="plugin_scroll">
                 <property name="vexpand">true</property>
                 <property name="child">
@@ -314,8 +325,8 @@
                   </object>
                 </property>
               </object>
-            </child>
-            <child>
+            </property>
+            <child type="bottom">
               <object class="GtkLabel" id="plugin_info">
                 <attributes>
                   <attribute name="variant" value="small-caps"></attribute>
