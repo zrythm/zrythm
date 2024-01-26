@@ -22,7 +22,7 @@ stages:
 
 default:
   cache:
-    - key: configured-cache-1
+    - key: configured-cache-2
       paths:
         - venv
         - subprojects/gtk4
