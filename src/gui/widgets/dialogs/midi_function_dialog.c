@@ -85,9 +85,10 @@ init_fields (MidiFunctionDialogWidget * self)
         row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 127, 1));
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("Start Velocity"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "start-velocity"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row),
+          g_settings_get_int (self->settings, "start-velocity"));
         g_settings_bind (
           self->settings, "start-velocity", row, "value",
           G_SETTINGS_BIND_DEFAULT);
@@ -96,12 +97,12 @@ init_fields (MidiFunctionDialogWidget * self)
         row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 127, 1));
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("End Velocity"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "end-velocity"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row),
+          g_settings_get_int (self->settings, "end-velocity"));
         g_settings_bind (
-          self->settings, "end-velocity", row, "value",
-          G_SETTINGS_BIND_DEFAULT);
+          self->settings, "end-velocity", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
         row = ADW_ACTION_ROW (adw_combo_row_new ());
@@ -127,15 +128,14 @@ init_fields (MidiFunctionDialogWidget * self)
           NULL, NULL);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
-	row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
+        row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("Curviness %"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "curviness"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "curviness"));
         g_settings_bind (
-          self->settings, "curviness", row, "value",
-          G_SETTINGS_BIND_DEFAULT);
+          self->settings, "curviness", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
       }
       break;
@@ -144,24 +144,23 @@ init_fields (MidiFunctionDialogWidget * self)
         adw_preferences_group_set_description (
           pgroup, _ ("Note: Flam is currently unimplemented"));
 
-	row = ADW_ACTION_ROW (adw_spin_row_new_with_range (-100, 100, 1));
+        row = ADW_ACTION_ROW (adw_spin_row_new_with_range (-100, 100, 1));
         adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Time"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_double (self->settings, "time"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row), g_settings_get_double (self->settings, "time"));
         g_settings_bind (
           self->settings, "time", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
-	row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 127, 1));
+        row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 127, 1));
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("Velocity"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "velocity"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "velocity"));
         g_settings_bind (
-          self->settings, "velocity", row, "value",
-	  G_SETTINGS_BIND_DEFAULT);
+          self->settings, "velocity", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
       }
       break;
@@ -170,8 +169,9 @@ init_fields (MidiFunctionDialogWidget * self)
         row = ADW_ACTION_ROW (adw_switch_row_new ());
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("Ascending"));
-	adw_switch_row_set_active (
-          ADW_SWITCH_ROW (row), g_settings_get_boolean (self->settings, "ascending"));
+        adw_switch_row_set_active (
+          ADW_SWITCH_ROW (row),
+          g_settings_get_boolean (self->settings, "ascending"));
         g_settings_bind (
           self->settings, "ascending", row, "active", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
@@ -199,26 +199,24 @@ init_fields (MidiFunctionDialogWidget * self)
           NULL, NULL);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
-	row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
+        row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
         adw_preferences_row_set_title (
           ADW_PREFERENCES_ROW (row), _ ("Curviness %"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "curviness"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row), g_settings_get_int (self->settings, "curviness"));
         g_settings_bind (
-	  self->settings, "curviness", row, "value",
-	  G_SETTINGS_BIND_DEFAULT);
+          self->settings, "curviness", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
-	row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 200, 1));
-        adw_preferences_row_set_title (
-          ADW_PREFERENCES_ROW (row), _ ("Time"));
-	adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
-	adw_spin_row_set_value (
-	  ADW_SPIN_ROW (row), g_settings_get_double (self->settings, "total-time"));
+        row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 200, 1));
+        adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Time"));
+        adw_spin_row_set_digits (ADW_SPIN_ROW (row), 0);
+        adw_spin_row_set_value (
+          ADW_SPIN_ROW (row),
+          g_settings_get_double (self->settings, "total-time"));
         g_settings_bind (
-	  self->settings, "total-time", row, "value",
-	  G_SETTINGS_BIND_DEFAULT);
+          self->settings, "total-time", row, "value", G_SETTINGS_BIND_DEFAULT);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
       }
       break;
