@@ -37,14 +37,6 @@
 
 #define TYPE(x) (ARRANGER_SELECTIONS_TYPE_##x)
 
-/**
- * Inits the selections after loading a project.
- *
- * @param project Whether these are project
- *   selections (as opposed to clones).
- * @param action To be passed when this is called from an
- *   undoable action.
- */
 void
 arranger_selections_init_loaded (
   ArrangerSelections * self,
@@ -2276,9 +2268,8 @@ arranger_selections_paste_to_pos (
       return;
     }
 
-  /* note: the objects in these selections will become the
-   * actual project objects so they should not be free'd
-   * here */
+  /* note: the objects in these selections will become the actual project
+   * objects so they should not be free'd here */
   ArrangerSelections * clone_sel = arranger_selections_clone (self);
   g_return_if_fail (clone_sel);
 

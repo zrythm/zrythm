@@ -131,16 +131,14 @@ typedef struct ZRegion
 
   /* ==== AUDIO REGION ==== */
 
-  /** Audio pool ID of the associated audio file,
-   * mostly used during serialization. */
+  /** Audio pool ID of the associated audio file, mostly used during
+   * serialization. */
   int pool_id;
 
   /**
-   * Whether currently running the stretching
-   * algorithm.
+   * Whether currently running the stretching algorithm.
    *
-   * If this is true, region drawing will be
-   * deferred.
+   * If this is true, region drawing will be deferred.
    */
   bool stretching;
 
@@ -153,13 +151,11 @@ typedef struct ZRegion
   double stretch_ratio;
 
   /**
-   * Whether to read the clip from the pool (used
-   * in most cases).
+   * Whether to read the clip from the pool (used in most cases).
    */
   bool read_from_pool;
 
-  /** Gain to apply to the audio (amplitude
-   * 0.0-2.0). */
+  /** Gain to apply to the audio (amplitude 0.0-2.0). */
   float gain;
 
   /**
@@ -664,9 +660,8 @@ region_get_arranger_for_children (ZRegion * self);
 /**
  * Sanity checking.
  *
- * @param frames_per_tick Frames per tick used when
- * validating audio regions. Passing 0 will use the value
- * from the current engine.
+ * @param frames_per_tick Frames per tick used when validating audio regions.
+ * Passing 0 will use the value from the current engine.
  *
  * @public @memberof ZRegion
  */

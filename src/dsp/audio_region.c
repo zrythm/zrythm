@@ -591,13 +591,6 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates)
     (unsigned int) AUDIO_ENGINE->sample_rate, candidates);
 }
 
-/**
- * Sanity checking.
- *
- * @param frames_per_tick Frames per tick used when validating
- * audio regions. Passing 0 will use the value from the
- * current engine.
- */
 bool
 audio_region_validate (ZRegion * self, double frames_per_tick)
 {
@@ -606,11 +599,10 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
       AudioClip * clip = audio_region_get_clip (self);
       g_return_val_if_fail (clip, false);
 
-      /* verify that the loop does not contain more
-       * frames than available in the clip */
-      /* use global positions because sometimes the loop
-       * appears to have 1 more frame due to rounding to
-       * nearest frame*/
+      /* verify that the loop does not contain more frames than available in the
+       * clip */
+      /* use global positions because sometimes the loop appears to have 1 more
+       * frame due to rounding to nearest frame*/
       ArrangerObject * obj = (ArrangerObject *) self;
       signed_frame_t   loop_start_global = position_get_frames_from_ticks (
         obj->pos.ticks + obj->loop_start_pos.ticks, frames_per_tick);
@@ -634,28 +626,16 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
   return true;
 }
 
-/**
- * Fixes off-by-one rounding errors when changing BPM or
- * sample rate which result in the looped part being longer
- * than there are actual frames in the clip.
- *
- * @param frames_per_tick Frames per tick used when validating
- * audio regions. Passing 0 will use the value from the
- * current engine.
- *
- * @return Whether positions were adjusted.
- */
 bool
 audio_region_fix_positions (ZRegion * self, double frames_per_tick)
 {
   AudioClip * clip = audio_region_get_clip (self);
   g_return_val_if_fail (clip, false);
 
-  /* verify that the loop does not contain more
-   * frames than available in the clip */
-  /* use global positions because sometimes the loop
-   * appears to have 1 more frame due to rounding to
-   * nearest frame*/
+  /* verify that the loop does not contain more frames than available in the
+   * clip */
+  /* use global positions because sometimes the loop appears to have 1 more
+   * frame due to rounding to nearest frame*/
   ArrangerObject * obj = (ArrangerObject *) self;
   signed_frame_t   loop_start_global = position_get_frames_from_ticks (
     obj->pos.ticks + obj->loop_start_pos.ticks, frames_per_tick);

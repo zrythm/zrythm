@@ -369,9 +369,8 @@ arranger_object_get_name (const ArrangerObject * self);
 /**
  * Generates a human readable name for the object.
  *
- * If the object has a name, this returns a copy
- * of the name, otherwise generates something
- * appropriate.
+ * If the object has a name, this returns a copy of the name, otherwise
+ * generates something appropriate.
  *
  * Must be free'd by caller.
  */
@@ -533,8 +532,7 @@ arranger_object_get_position_from_type (
 /**
  * Callback when beginning to edit the object.
  *
- * This saves a clone of its current state to its
- * arranger.
+ * This saves a clone of its current state to its arranger.
  */
 void
 arranger_object_edit_begin (const ArrangerObject * self);
@@ -553,25 +551,24 @@ void
 arranger_object_edit_position_finish (const ArrangerObject * self);
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas the set_pos func is
+ * used during arranger actions.
+ *
+ * @note This validates the position.
  */
 void
 arranger_object_pos_setter (ArrangerObject * self, const Position * pos);
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas the set_pos func is
+ * used during arranger actions.
  */
 void
 arranger_object_end_pos_setter (ArrangerObject * self, const Position * pos);
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas the set_pos func is
+ * used during arranger actions.
  */
 void
 arranger_object_clip_start_pos_setter (
@@ -579,9 +576,8 @@ arranger_object_clip_start_pos_setter (
   const Position * pos);
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas the set_pos func is
+ * used during arranger actions.
  */
 void
 arranger_object_loop_start_pos_setter (
@@ -589,9 +585,8 @@ arranger_object_loop_start_pos_setter (
   const Position * pos);
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas the set_pos func is
+ * used during arranger actions.
  */
 void
 arranger_object_loop_end_pos_setter (ArrangerObject * self, const Position * pos);
@@ -793,7 +788,9 @@ arranger_object_post_deserialize (ArrangerObject * self);
 /**
  * Validates the arranger object.
  *
- * @return True if valid.
+ * @return Whether valid.
+ *
+ * @public @memberof ArrangerObject
  */
 bool
 arranger_object_validate (const ArrangerObject * const self);
@@ -807,11 +804,10 @@ bool
 arranger_object_validate_name (ArrangerObject * self, const char * name);
 
 /**
- * Returns the ArrangerObject matching the
- * given one.
+ * Returns the ArrangerObject matching the given one.
  *
- * This should be called when we have a copy or a
- * clone, to get the actual region in the project.
+ * This should be called when we have a copy or a clone, to get the actual
+ * region in the project.
  */
 ArrangerObject *
 arranger_object_find (ArrangerObject * obj);
@@ -900,9 +896,9 @@ void
 arranger_object_set_end_pos_full_size (ArrangerObject * obj, Position * pos);
 
 /**
- * Appends the ArrangerObject to where it belongs in the
- * project (eg, a Track), without taking into account its
- * previous index (eg, before deletion if undoing).
+ * Appends the ArrangerObject to where it belongs in the project (eg, a Track),
+ * without taking into account its previous index (eg, before deletion if
+ * undoing).
  *
  * @return Whether successful.
  */

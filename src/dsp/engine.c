@@ -148,9 +148,7 @@ engine_update_frames_per_tick (
   if (g_thread_self () == zrythm_app->gtk_thread)
     {
       g_message (
-        "updating frames per tick: "
-        "beats per bar %d, "
-        "bpm %f, sample rate %u",
+        "updating frames per tick: beats per bar %d, bpm %f, sample rate %u",
         beats_per_bar, (double) bpm, sample_rate);
     }
   else if (thread_check)
