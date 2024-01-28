@@ -1633,6 +1633,12 @@ arranger_object_post_deserialize (ArrangerObject * self)
       break;
     }
 
+  /* TODO: this acts as if a BPM change happened (and is only effective if so),
+   * so if no BPM change happened this is unnecessary, so this should be
+   * refactored in the future. this was added to fix copy-pasting audio regions
+   * after changing the BPM (see #4993) */
+  arranger_object_update_positions (self, true, true, NULL);
+
   post_deserialize_children (self);
 }
 

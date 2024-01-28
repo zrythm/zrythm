@@ -1482,7 +1482,17 @@ arranger_selections_post_deserialize (ArrangerSelections * self)
 #define POST_DESERIALIZE(sel, sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
     { \
-      arranger_object_post_deserialize ((ArrangerObject *) sel->sc##s[i]); \
+      ArrangerObject * obj = (ArrangerObject *) sel->sc##s[i]; \
+      /* throws an error otherwise */ \
+      if (obj->type == ARRANGER_OBJECT_TYPE_REGION) \
+        { \
+          ZRegion * r = (ZRegion *) obj; \
+          if (r->id.type == REGION_TYPE_AUDIO) \
+            { \
+              r->read_from_pool = true; \
+            } \
+        } \
+      arranger_object_post_deserialize (obj); \
     }
 
   switch (self->type)

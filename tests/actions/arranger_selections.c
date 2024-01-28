@@ -11,6 +11,8 @@
 #include "dsp/master_track.h"
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
+#include "gui/backend/clipboard.h"
+#include "io/serialization/clipboard.h"
 #include "project.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
@@ -592,6 +594,59 @@ test_move_timeline (void)
             ==, 2);
         }
     }
+
+  test_helper_zrythm_cleanup ();
+}
+
+/**
+ * Tests copying an audio region then pasting it after changing the BPM.
+ */
+static void
+test_copy_paste_audio_after_bpm_change (void)
+{
+  rebootstrap_timeline ();
+
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+  g_assert_cmpint (TL_SELECTIONS->num_regions, ==, 0);
+  Track * audio_track =
+    tracklist_find_track_by_name (TRACKLIST, AUDIO_TRACK_NAME);
+  g_assert_nonnull (audio_track);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) audio_track->lanes[AUDIO_REGION_LANE]->regions[0]);
+  g_assert_cmpint (TL_SELECTIONS->num_regions, ==, 1);
+  track_select (audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  Clipboard * clipboard = clipboard_new_for_arranger_selections (
+    (ArrangerSelections *) TL_SELECTIONS, F_CLONE);
+  g_return_if_fail (clipboard);
+  if (clipboard->timeline_sel)
+    {
+      timeline_selections_set_vis_track_indices (clipboard->timeline_sel);
+    }
+  GError * err = NULL;
+  char *   serialized = clipboard_serialize_to_json_str (clipboard, true, &err);
+  g_return_if_fail (serialized);
+  clipboard_free (clipboard);
+
+  err = NULL;
+  bool success = transport_action_perform_bpm_change (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 110.f, false, &err);
+  g_assert_true (success);
+
+  err = NULL;
+  clipboard = clipboard_deserialize_from_json_str (serialized, true, &err);
+  g_assert_nonnull (clipboard);
+  g_free (serialized);
+
+  ArrangerSelections * sel = clipboard_get_selections (clipboard);
+  g_assert_nonnull (sel);
+  arranger_selections_post_deserialize (sel);
+  g_assert_true (arranger_selections_can_be_pasted (sel));
+  arranger_selections_paste_to_pos (sel, PLAYHEAD, F_UNDOABLE);
+
+  clipboard_free (clipboard);
 
   test_helper_zrythm_cleanup ();
 }
@@ -3111,6 +3166,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test copy paste audio after bpm change",
+    (GTestFunc) test_copy_paste_audio_after_bpm_change);
   g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower samplerate",
     (GTestFunc) test_move_audio_region_and_lower_samplerate);
