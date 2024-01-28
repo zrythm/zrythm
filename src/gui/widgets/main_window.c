@@ -744,20 +744,6 @@ main_window_widget_init (MainWindowWidget * self)
   adw_view_switcher_set_policy (
     self->view_switcher, ADW_VIEW_SWITCHER_POLICY_WIDE);
 
-  /* make sure the header bar includes the app
-   * icon (if not, add it at the start) */
-  gchar * strval;
-  g_object_get (
-    G_OBJECT (zrythm_app->default_settings), "gtk-decoration-layout", &strval,
-    NULL);
-  if (!string_contains_substr (strval, "icon"))
-    {
-      char * new_layout = new_layout = g_strdup_printf ("icon,%s", strval);
-      gtk_header_bar_set_decoration_layout (self->header_bar, new_layout);
-      g_free (new_layout);
-    }
-  g_free (strval);
-
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
   gtk_event_controller_set_propagation_phase (
