@@ -19,7 +19,6 @@ G_DECLARE_FINAL_TYPE (
   MAIN_WINDOW_WIDGET,
   AdwApplicationWindow)
 
-typedef struct _HeaderWidget      HeaderWidget;
 typedef struct _ToolboxWidget     ToolboxWidget;
 typedef struct _CenterDockWidget  CenterDockWidget;
 typedef struct _BotBarWidget      BotBarWidget;
@@ -60,12 +59,8 @@ typedef struct _MainWindowWidget
   GtkBox *    header_start_box;
   GtkBox *    header_end_box;
   GtkButton * z_icon;
-  GtkButton * preferences;
-  GtkButton * log_viewer;
-  GtkButton * scripting_interface;
 
   GtkBox *           main_box;
-  HeaderWidget *     header;
   TopBarWidget *     top_bar;
   GtkBox *           center_box;
   CenterDockWidget * center_dock;

@@ -66,7 +66,6 @@
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_notebook.h"
@@ -313,7 +312,7 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
     }
 #endif
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER)
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       MAIN_WINDOW->log_has_pending_warnings = false;
       EVENTS_PUSH (ET_LOG_WARNING_STATE_CHANGED, NULL);

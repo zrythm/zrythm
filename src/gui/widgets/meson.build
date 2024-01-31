@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 widget_srcs = files([
@@ -67,9 +68,6 @@ widget_srcs = files([
   'foldable_notebook.c',
   'folder_channel.c',
   'gtk_flipper.c',
-  'header.c',
-  'help_toolbar.c',
-  'home_toolbar.c',
   'inspector_ap.c',
   'inspector_chord.c',
   'inspector_editor.c',
@@ -113,7 +111,6 @@ widget_srcs = files([
   'ports_expander.c',
   'preferences.c',
   'preroll_count_selector.c',
-  'project_toolbar.c',
   'range_action_buttons.c',
   'quantize_box.c',
   'region.c',
@@ -145,7 +142,6 @@ widget_srcs = files([
   'two_col_expander_box.c',
   'velocity.c',
   'velocity_settings.c',
-  'view_toolbar.c',
   'volume.c',
   'zoom_buttons.c',
   ])

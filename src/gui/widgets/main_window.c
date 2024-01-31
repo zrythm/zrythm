@@ -27,7 +27,6 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
-#include "gui/widgets/header.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
@@ -47,7 +46,6 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
-#include "gui/widgets/view_toolbar.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/error.h"
@@ -347,7 +345,6 @@ main_window_widget_setup (MainWindowWidget * self)
       return;
     }
 
-  header_widget_setup (self->header, PROJECT->title);
   main_window_widget_refresh_undo_redo_buttons (self);
 
   toolbox_widget_refresh (self->toolbox);
@@ -485,10 +482,6 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   BIND_CHILD (start_dock_switcher);
   BIND_CHILD (end_dock_switcher);
   BIND_CHILD (window_title);
-  BIND_CHILD (preferences);
-  BIND_CHILD (log_viewer);
-  BIND_CHILD (scripting_interface);
-  BIND_CHILD (header);
   BIND_CHILD (toolbox);
   BIND_CHILD (undo_btn);
   BIND_CHILD (redo_btn);
@@ -797,7 +790,6 @@ main_window_widget_init (MainWindowWidget * self)
   g_action_map_add_action_entries (
     G_ACTION_MAP (zrythm_app), actions, G_N_ELEMENTS (actions), zrythm_app);
 
-  g_type_ensure (HEADER_WIDGET_TYPE);
   g_type_ensure (TOP_BAR_WIDGET_TYPE);
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);
@@ -813,13 +805,6 @@ main_window_widget_init (MainWindowWidget * self)
   SET_DOCK (self->bot_bar->bot_dock_switcher);
 
 #undef SET_DOCK
-
-#define SET_TOOLTIP(x, tooltip) \
-  z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (self->x), tooltip)
-  SET_TOOLTIP (preferences, _ ("Preferences"));
-  SET_TOOLTIP (log_viewer, _ ("Log viewer"));
-  SET_TOOLTIP (scripting_interface, _ ("Scripting interface"));
-#undef SET_TOOLTIP
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
