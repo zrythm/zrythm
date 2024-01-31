@@ -1261,12 +1261,12 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL_WITH_SECONDARY (keybind, NULL, action)
 
   INSTALL_ACCEL ("F1", "app.manual");
-  INSTALL_ACCEL ("<Alt>F4", "app.quit");
+  INSTALL_ACCEL ("<Control>q", "app.quit");
   INSTALL_ACCEL ("F6", "app.cycle-focus");
   INSTALL_ACCEL ("<Shift>F6", "app.cycle-focus-backwards");
   INSTALL_ACCEL ("F10", "app.focus-first-widget");
   INSTALL_ACCEL ("F11", "app.fullscreen");
-  INSTALL_ACCEL ("<Control><Shift>p", "app.preferences");
+  INSTALL_ACCEL ("<Control>comma", "app.preferences");
   INSTALL_ACCEL ("<Control>n", "app.new");
   INSTALL_ACCEL ("<Control>o", "app.open");
   INSTALL_ACCEL ("<Control>s", "app.save");
