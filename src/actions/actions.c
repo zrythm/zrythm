@@ -161,7 +161,8 @@ static void
 cycle_focus (const bool backwards)
 {
   GtkWidget * widgets[] = {
-    z_gtk_get_first_focusable_child (GTK_WIDGET (MAIN_WINDOW->view_switcher)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MAIN_WINDOW->start_dock_switcher)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_LEFT_DOCK_EDGE)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_CENTER_DOCK->main_notebook)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_RIGHT_DOCK_EDGE)),
@@ -212,8 +213,8 @@ DEFINE_SIMPLE (activate_cycle_focus_backwards)
 
 DEFINE_SIMPLE (activate_focus_first_widget)
 {
-  gtk_widget_grab_focus (
-    z_gtk_get_first_focusable_child (GTK_WIDGET (MAIN_WINDOW->view_switcher)));
+  gtk_widget_grab_focus (z_gtk_get_first_focusable_child (
+    GTK_WIDGET (MAIN_WINDOW->start_dock_switcher)));
 }
 
 DEFINE_SIMPLE (activate_chat)

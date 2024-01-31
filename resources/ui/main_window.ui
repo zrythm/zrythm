@@ -16,10 +16,9 @@
             <child type="start">
               <object class="GtkBox" id="header_start_box">
                 <child>
-                  <object class="AdwViewSwitcher" id="view_switcher">
-                    <style>
-                      <class name="main-toolbar-view-switcher"/>
-                    </style>
+                  <object class="PanelToggleButton" id="start_dock_switcher">
+                    <property name="area">start</property>
+                    <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
                   </object>
                 </child>
                 <child>
@@ -32,9 +31,39 @@
                   </object>
                 </child>
                 <child>
-                  <object class="PanelToggleButton" id="start_dock_switcher">
-                    <property name="area">start</property>
-                    <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
+                  <object class="AdwSplitButton" id="undo_btn">
+                    <style>
+                      <class name="raised"/>
+                    </style>
+                    <property name="sensitive">0</property>
+                    <property name="action-name">app.undo</property>
+                    <property name="icon-name">edit-undo</property>
+                    <property name="tooltip-text">Undo</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwSplitButton" id="redo_btn">
+                    <style>
+                      <class name="raised"/>
+                    </style>
+                    <property name="sensitive">0</property>
+                    <property name="action-name">app.redo</property>
+                    <property name="icon-name">edit-redo</property>
+                    <property name="tooltip-text">Redo</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <style>
+                      <class name="spacer"/>
+                      <class name="thick-separator"/>
+                    </style>
+                    <property name="orientation">vertical</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="ToolboxWidget" id="toolbox">
+                    <property name="visible">1</property>
                   </object>
                 </child>
               </object>

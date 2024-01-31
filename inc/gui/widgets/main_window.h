@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
@@ -19,6 +20,7 @@ G_DECLARE_FINAL_TYPE (
   AdwApplicationWindow)
 
 typedef struct _HeaderWidget      HeaderWidget;
+typedef struct _ToolboxWidget     ToolboxWidget;
 typedef struct _CenterDockWidget  CenterDockWidget;
 typedef struct _BotBarWidget      BotBarWidget;
 typedef struct _TopBarWidget      TopBarWidget;
@@ -50,7 +52,10 @@ typedef struct _MainWindowWidget
   AdwWindowTitle *    window_title;
   PanelToggleButton * end_dock_switcher;
 
-  AdwViewSwitcher * view_switcher;
+  ToolboxWidget * toolbox;
+
+  AdwSplitButton * undo_btn;
+  AdwSplitButton * redo_btn;
 
   GtkBox *    header_start_box;
   GtkBox *    header_end_box;
@@ -88,6 +93,9 @@ typedef struct _MainWindowWidget
  */
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * app);
+
+void
+main_window_widget_refresh_undo_redo_buttons (MainWindowWidget * self);
 
 /**
  * Refreshes the state of the main window.
