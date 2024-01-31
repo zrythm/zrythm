@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -13,6 +14,9 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
+typedef struct _MidiActivityBarWidget   MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget      LiveWaveformWidget;
+typedef struct _SpectrumAnalyzerWidget  SpectrumAnalyzerWidget;
 typedef struct _DigitalMeterWidget      DigitalMeterWidget;
 typedef struct _TransportControlsWidget TransportControlsWidget;
 typedef struct _CpuWidget               CpuWidget;
@@ -66,6 +70,12 @@ typedef struct _BotBarWidget
   GtkWidget * client_img;
 
   GtkBox * playhead_box;
+
+  LiveWaveformWidget *     live_waveform;
+  SpectrumAnalyzerWidget * spectrum_analyzer;
+  MidiActivityBarWidget *  midi_activity;
+  GtkLabel *               midi_in_lbl;
+  GtkBox *                 meter_box;
 
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;

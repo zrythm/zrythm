@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -11,6 +12,7 @@
 
 #include "dsp/engine.h"
 #include "dsp/engine_jack.h"
+#include "dsp/master_track.h"
 #include "dsp/metronome.h"
 #include "dsp/transport.h"
 #include "gui/widgets/bot_bar.h"
@@ -18,8 +20,13 @@
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/gtk_flipper.h"
+#include "gui/widgets/live_waveform.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/meter.h"
+#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/preroll_count_selector.h"
+#include "gui/widgets/spectrum_analyzer.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
@@ -512,6 +519,10 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (CPU_WIDGET_TYPE);
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
   g_type_ensure (PANEL_TYPE_TOGGLE_BUTTON);
+  g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
+  g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
+  g_type_ensure (GTK_TYPE_FLIPPER);
+  g_type_ensure (SPECTRUM_ANALYZER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -520,6 +531,18 @@ bot_bar_widget_init (BotBarWidget * self)
   ui_gdk_rgba_to_hex (&UI_COLORS->record_checked, self->red_hex);
 
   setup_metronome (self);
+
+  /* setup midi visualizers */
+  live_waveform_widget_setup_engine (self->live_waveform);
+  spectrum_analyzer_widget_setup_engine (self->spectrum_analyzer);
+  midi_activity_bar_widget_setup_engine (self->midi_activity);
+  midi_activity_bar_widget_set_animation (
+    self->midi_activity, MAB_ANIMATION_FLASH);
+
+  MeterWidget * l = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->l, 8);
+  MeterWidget * r = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->r, 8);
+  gtk_box_append (self->meter_box, GTK_WIDGET (l));
+  gtk_box_append (self->meter_box, GTK_WIDGET (r));
 
   /* setup digital meters */
   self->digital_bpm =
@@ -549,6 +572,10 @@ bot_bar_widget_class_init (BotBarWidgetClass * _klass)
   BIND_CHILD (digital_meters);
   BIND_CHILD (metronome);
   BIND_CHILD (transport_controls);
+  BIND_CHILD (live_waveform);
+  BIND_CHILD (spectrum_analyzer);
+  BIND_CHILD (midi_activity);
+  BIND_CHILD (meter_box);
   BIND_CHILD (cpu_load);
   BIND_CHILD (engine_status_label);
   BIND_CHILD (playhead_box);
