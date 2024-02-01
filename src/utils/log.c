@@ -42,7 +42,6 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/backtrace.h"
@@ -808,7 +807,7 @@ log_idle_cb (Log * self)
 
       if (
         ev->log_level == G_LOG_LEVEL_WARNING && ZRYTHM_HAVE_UI && MAIN_WINDOW
-        && MW_HEADER && !MAIN_WINDOW->log_has_pending_warnings)
+        && !MAIN_WINDOW->log_has_pending_warnings)
         {
           MAIN_WINDOW->log_has_pending_warnings = true;
           EVENTS_PUSH (ET_LOG_WARNING_STATE_CHANGED, NULL);

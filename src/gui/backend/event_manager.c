@@ -44,8 +44,6 @@
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/header.h"
-#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
@@ -793,7 +791,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       mixer_widget_hard_refresh (MW_MIXER);
       break;
     case ET_UNDO_REDO_ACTION_DONE:
-      home_toolbar_widget_refresh_undo_redo_buttons (MW_HOME_TOOLBAR);
+      main_window_widget_refresh_undo_redo_buttons (MAIN_WINDOW);
       main_window_widget_set_project_title (MAIN_WINDOW, PROJECT);
       break;
     case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
@@ -1034,7 +1032,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case ET_PROJECT_LOADED:
       main_window_widget_set_project_title (MAIN_WINDOW, (Project *) ev->arg);
-      home_toolbar_widget_refresh_undo_redo_buttons (MW_HOME_TOOLBAR);
+      main_window_widget_refresh_undo_redo_buttons (MAIN_WINDOW);
       ruler_widget_set_zoom_level (
         MW_RULER, ruler_widget_get_zoom_level (MW_RULER));
       ruler_widget_set_zoom_level (
@@ -1121,7 +1119,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         (ArrangerSelections *) TL_SELECTIONS);
       break;
     case ET_LOG_WARNING_STATE_CHANGED:
-      header_widget_refresh (MW_HEADER);
       break;
     case ET_PLAYHEAD_SCROLL_MODE_CHANGED:
       break;

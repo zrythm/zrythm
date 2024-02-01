@@ -6,8 +6,6 @@
 #include "actions/undoable_action.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/header.h"
-#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/error.h"

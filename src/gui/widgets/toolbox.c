@@ -11,8 +11,6 @@
 #include "gui/backend/tool.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/header.h"
-#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"

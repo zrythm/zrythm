@@ -110,10 +110,6 @@ dialog
 .header header,
 .header .toolbar,
 .header > box,
-home-toolbar,
-project-toolbar,
-view-toolbar,
-help-toolbar,
 menubar
 {
   background-color: $bg_darker_variant2;
@@ -461,10 +457,6 @@ dropdown stack row,
 dropdown stack row:hover,
 row.combo > box.header > box > listview,
 row.combo > box.header > box > listview > row {
-  background-color: transparent;
-}
-
-.main-toolbar-view-switcher button {
   background-color: transparent;
 }
 

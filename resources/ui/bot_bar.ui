@@ -43,6 +43,68 @@
             <property name="hexpand">True</property>
             <property name="halign">end</property>
             <child>
+              <object class="GtkBox">
+                <property name="tooltip_text" translatable="yes">MIDI in activity</property>
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <child>
+                  <object class="GtkFlipper">
+                    <property name="flip-horizontal">1</property>
+                    <property name="flip-vertical">1</property>
+                    <property name="rotate">1</property>
+                    <property name="child">
+                      <object class="GtkLabel" id="midi_in_lbl">
+                        <style>
+                          <class name="small-vertical-lbl"/>
+                        </style>
+                        <!-- TRANSLATORS: either leave this untranslated or make sure the translated text is max 7 characters -->
+                        <property name="label" translatable="no">MIDI in</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="MidiActivityBarWidget" id="midi_activity">
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="LiveWaveformWidget" id="live_waveform">
+                <property name="width-request">48</property>
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <property name="margin_start">4</property>
+                <property name="margin_end">4</property>
+                <property name="tooltip-text" translatable="yes">Live Waveform Indicator</property>
+                <style>
+                  <class name="signal-preview"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="SpectrumAnalyzerWidget" id="spectrum_analyzer">
+                <property name="width-request">128</property>
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <property name="margin_start">4</property>
+                <property name="margin_end">4</property>
+                <property name="tooltip-text" translatable="yes">Spectrum Analyzer</property>
+                <style>
+                  <class name="signal-preview"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="meter_box">
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <property name="margin_start">4</property>
+                <property name="margin_end">4</property>
+                <property name="tooltip-text" translatable="yes">Peak Meter</property>
+              </object>
+            </child>
+            <child>
               <object class="CpuWidget" id="cpu_load">
                 <property name="visible">1</property>
                 <property name="valign">center</property>

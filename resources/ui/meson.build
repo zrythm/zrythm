@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 resource_files += files ([
@@ -27,9 +28,6 @@ resource_files += files ([
   'fader_controls_grid.ui',
   'fishbowl_window.ui',
   'generic_progress_dialog.ui',
-  'header.ui',
-  'help_toolbar.ui',
-  'home_toolbar.ui',
   'inspector_ap.ui',
   'inspector_chord.ui',
   'inspector_editor.ui',
@@ -49,7 +47,6 @@ resource_files += files ([
   'port_selector_dialog.ui',
   'project_assistant.ui',
   'project_scale_popover.ui',
-  'project_toolbar.ui',
   'quantize_box.ui',
   'quantize_dialog.ui',
   'range_action_buttons.ui',
@@ -66,5 +63,4 @@ resource_files += files ([
   'tracklist_header.ui',
   'track.ui',
   'transport_controls.ui',
-  'view_toolbar.ui',
   ])

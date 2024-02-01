@@ -21,7 +21,7 @@
 #define TOOLBOX_WIDGET_TYPE (toolbox_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ToolboxWidget, toolbox_widget, Z, TOOLBOX_WIDGET, GtkBox)
 
-#define MW_TOOLBOX MW_HOME_TOOLBAR->toolbox
+#define MW_TOOLBOX MAIN_WINDOW->toolbox
 
 typedef struct _ToolboxWidget
 {

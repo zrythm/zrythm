@@ -66,7 +66,6 @@
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_notebook.h"
@@ -161,7 +160,8 @@ static void
 cycle_focus (const bool backwards)
 {
   GtkWidget * widgets[] = {
-    z_gtk_get_first_focusable_child (GTK_WIDGET (MAIN_WINDOW->view_switcher)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MAIN_WINDOW->start_dock_switcher)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_LEFT_DOCK_EDGE)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_CENTER_DOCK->main_notebook)),
     z_gtk_get_first_focusable_child (GTK_WIDGET (MW_RIGHT_DOCK_EDGE)),
@@ -212,8 +212,8 @@ DEFINE_SIMPLE (activate_cycle_focus_backwards)
 
 DEFINE_SIMPLE (activate_focus_first_widget)
 {
-  gtk_widget_grab_focus (
-    z_gtk_get_first_focusable_child (GTK_WIDGET (MAIN_WINDOW->view_switcher)));
+  gtk_widget_grab_focus (z_gtk_get_first_focusable_child (
+    GTK_WIDGET (MAIN_WINDOW->start_dock_switcher)));
 }
 
 DEFINE_SIMPLE (activate_chat)
@@ -312,7 +312,7 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
     }
 #endif
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER)
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       MAIN_WINDOW->log_has_pending_warnings = false;
       EVENTS_PUSH (ET_LOG_WARNING_STATE_CHANGED, NULL);
