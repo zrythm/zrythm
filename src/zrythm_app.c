@@ -529,9 +529,8 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
         use_demo_template ? ZRYTHM->demo_template : NULL);
 
 #ifdef __APPLE__
-      /* possibly not necessary / working, forces app
-       * window on top */
-      show_on_top ();
+      /* possibly not necessary / working, forces app window on top */
+      /*show_on_top ();*/
 #endif
     }
 
