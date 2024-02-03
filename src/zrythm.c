@@ -20,7 +20,6 @@
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"

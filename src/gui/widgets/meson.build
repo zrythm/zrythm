@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -68,6 +68,7 @@ widget_srcs = files([
   'foldable_notebook.c',
   'folder_channel.c',
   'gtk_flipper.c',
+  'greeter.c',
   'inspector_ap.c',
   'inspector_chord.c',
   'inspector_editor.c',
@@ -122,7 +123,6 @@ widget_srcs = files([
   'selection_info.c',
   'snap_grid.c',
   'spectrum_analyzer.c',
-  'splash.c',
   'string_list_item_factory.c',
   'text_expander.c',
   'timeline_arranger.c',

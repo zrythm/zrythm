@@ -202,11 +202,9 @@ typedef struct Zrythm
   /**
    * Project data.
    *
-   * This is what should be exported/imported when
-   * saving/loading projects.
+   * This is what should be exported/imported when saving/loading projects.
    *
-   * The only reason this is a pointer is to easily
-   * deserialize.
+   * The only reason this is a pointer is to easily deserialize.
    */
   Project * project;
 
@@ -214,28 +212,24 @@ typedef struct Zrythm
   char * recent_projects[MAX_RECENT_PROJECTS + 1];
   int    num_recent_projects;
 
-  /** NULL terminated array of project template absolute
-   * paths. */
+  /** NULL terminated array of project template absolute paths. */
   char ** templates;
 
   /**
-   * Demo project template used when running for the first
-   * time.
+   * Demo project template used when running for the first time.
    *
    * This is a copy of one of the strings in Zrythm.templates.
    */
   char * demo_template;
 
-  /** Whether the open file is a template to be used
-   * to create a new project from. */
+  /** Whether the open file is a template to be used to create a new project
+   * from. */
   bool opening_template;
 
-  /** Whether creating a new project, either from
-   * a template or blank. */
+  /** Whether creating a new project, either from a template or blank. */
   bool creating_project;
 
-  /** Path to create a project in, including its
-   * title. */
+  /** Path to create a project in, including its title. */
   char * create_project_path;
 
   /**
@@ -289,14 +283,6 @@ typedef struct Zrythm
 
   /** Log settings. */
   // Log *               log;
-
-  /**
-   * Progress done (0.0 ~ 1.0).
-   *
-   * To be used in things like the splash screen,
-   * loading projects, etc.
-   */
-  double progress;
 
   /** 1 if Zrythm has a UI, 0 if headless (eg, when
    * unit-testing). */

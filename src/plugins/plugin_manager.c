@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 
+#include "gui/widgets/greeter.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla/carla_discovery.h"
@@ -1239,14 +1240,14 @@ scan_carla_descriptors_from_paths (
                 {
                   sprintf (
                     prog_str,
-                    /* TRANSLATORS: first argument
-                     * is plugin protocol, 2nd
-                     * argument is path */
-                    _ ("Skipped %1$s plugin at "
-                       "%2$s"),
-                    protocol_str, plugin_path);
+                    /* TRANSLATORS: first argument is plugin protocol, 2nd
+                       argument is path */
+                    _ ("Skipped %1$s plugin at %2$s"), protocol_str,
+                    plugin_path);
                 }
-              zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
+              g_return_if_fail (zrythm_app->greeter);
+              greeter_widget_set_progress_and_status (
+                zrythm_app->greeter, NULL, prog_str, *progress);
             }
         }
       if (plugin_idx > 0 && !ZRYTHM_TESTING)
@@ -1354,7 +1355,9 @@ plugin_manager_scan_plugins (
               const char *     uri_str = lilv_node_as_string (lv2_uri);
               sprintf (prog_str, _ ("Skipped LV2 plugin at %s"), uri_str);
             }
-          zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
+          g_return_if_fail (zrythm_app->greeter);
+          greeter_widget_set_progress_and_status (
+            zrythm_app->greeter, NULL, prog_str, *progress);
         }
     }
   g_message ("%s: Scanned %d LV2 plugins", __func__, count);

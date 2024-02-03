@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 widget_srcs += files([
@@ -9,19 +9,15 @@ widget_srcs += files([
   'bind_cc_dialog.c',
   'bounce_dialog.c',
   'bug_report_dialog.c',
-  'create_project_dialog.c',
   'export_dialog.c',
   'export_midi_file_dialog.c',
   'export_progress_dialog.c',
   'file_import_progress_dialog.c',
-  'first_run.c',
   'generic_progress_dialog.c',
   'midi_function_dialog.c',
   'object_color_chooser_dialog.c',
   'port_info.c',
   'port_selector_dialog.c',
-  'project_assistant.c',
-  #'project_progress_dialog.c',
   'quantize_dialog.c',
   'save_chord_preset_dialog.c',
   'scripting_dialog.c',

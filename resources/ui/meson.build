@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -19,7 +19,6 @@ resource_files += files ([
   'clip_editor_inner.ui',
   'clip_editor.ui',
   'control_room.ui',
-  'create_project_dialog.ui',
   'editor_toolbar.ui',
   'event_viewer.ui',
   'expander_box.ui',
@@ -28,6 +27,7 @@ resource_files += files ([
   'fader_controls_grid.ui',
   'fishbowl_window.ui',
   'generic_progress_dialog.ui',
+  'greeter.ui',
   'inspector_ap.ui',
   'inspector_chord.ui',
   'inspector_editor.ui',
@@ -45,7 +45,6 @@ resource_files += files ([
   'panel_file_browser.ui',
   'plugin_browser.ui',
   'port_selector_dialog.ui',
-  'project_assistant.ui',
   'project_scale_popover.ui',
   'quantize_box.ui',
   'quantize_dialog.ui',
@@ -54,7 +53,6 @@ resource_files += files ([
   'scale_selector_window.ui',
   'snap_box.ui',
   'snap_grid_popover.ui',
-  'splash.ui',
   'string_entry_dialog.ui',
   'timeline_panel.ui',
   'timeline_toolbar.ui',

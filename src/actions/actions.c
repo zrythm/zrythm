@@ -52,20 +52,19 @@
 #include "gui/widgets/dialogs/arranger_object_info.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
-#include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/midi_function_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
-#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/dialogs/save_chord_preset_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/greeter.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_notebook.h"
@@ -683,7 +682,9 @@ proceed_to_new_response_cb (
 {
   if (string_is_equal (response, "discard"))
     {
-      project_assistant_widget_present (GTK_WINDOW (MAIN_WINDOW), true, NULL);
+      GreeterWidget * greeter =
+        greeter_widget_new (zrythm_app, GTK_WINDOW (MAIN_WINDOW), false, true);
+      gtk_window_present (GTK_WINDOW (greeter));
     }
   else if (string_is_equal (response, "save"))
     {
@@ -697,7 +698,9 @@ proceed_to_new_response_cb (
           HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
           return;
         }
-      project_assistant_widget_present (GTK_WINDOW (MAIN_WINDOW), true, NULL);
+      GreeterWidget * greeter =
+        greeter_widget_new (zrythm_app, GTK_WINDOW (MAIN_WINDOW), false, true);
+      gtk_window_present (GTK_WINDOW (greeter));
     }
   else
     {
@@ -727,39 +730,11 @@ activate_new (GSimpleAction * action, GVariant * variant, gpointer user_data)
 }
 
 static void
-on_project_load_done (bool success, GError * error, void * user_data)
-{
-  if (!success)
-    {
-      HANDLE_ERROR_LITERAL (error, _ ("Failed to load project"));
-    }
-}
-
-static void
-open_project_ready_cb (GObject * source_object, GAsyncResult * res, gpointer data)
-{
-  GFile * selected_file =
-    gtk_file_dialog_open_finish (GTK_FILE_DIALOG (source_object), res, NULL);
-  if (selected_file)
-    {
-      char * filepath = g_file_get_path (selected_file);
-      g_object_unref (selected_file);
-      g_message ("opening project at: %s", filepath);
-      project_init_flow_manager_load_or_create_default_project (
-        filepath, Z_F_NOT_TEMPLATE, on_project_load_done, NULL);
-      g_free (filepath);
-    }
-}
-
-static void
 choose_and_open_project (void)
 {
-  GtkFileDialog * dialog = gtk_file_dialog_new ();
-  GFile *         project_dir = g_file_new_for_path (PROJECT->dir);
-  gtk_file_dialog_set_initial_folder (dialog, project_dir);
-  gtk_file_dialog_set_accept_label (dialog, _ ("Open Project"));
-  gtk_file_dialog_open (
-    dialog, GTK_WINDOW (MAIN_WINDOW), NULL, open_project_ready_cb, NULL);
+  GreeterWidget * greeter =
+    greeter_widget_new (zrythm_app, GTK_WINDOW (MAIN_WINDOW), false, false);
+  gtk_window_present (GTK_WINDOW (greeter));
 }
 
 static void

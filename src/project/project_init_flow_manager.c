@@ -14,7 +14,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/dialogs/create_project_dialog.h"
+#include "gui/widgets/greeter.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_panel.h"
@@ -166,10 +166,8 @@ setup_main_window (Project * self)
 }
 
 /**
- * Returns the filepath of a backup (directory),
- * if any,
- * if it has a newer timestamp than the actual
- * file being loaded.
+ * Returns the filepath of a backup (directory), if any, if it has a newer
+ * timestamp than the actual file being loaded.
  *
  * @param dir The non-backup dir.
  */
@@ -1177,53 +1175,16 @@ load_from_file (
 }
 
 static void
-on_create_project_response (
-  GtkDialog *              dialog,
-  gint                     response_id,
-  ProjectInitFlowManager * flow_mgr)
-{
-  if (response_id == GTK_RESPONSE_OK)
-    {
-      g_message (
-        "%s: creating project %s", __func__, ZRYTHM->create_project_path);
-      GError *  err = NULL;
-      Project * created_prj = create_default (
-        PROJECT, ZRYTHM->create_project_path, false, true, &err);
-      if (!created_prj)
-        {
-          GError * error = NULL;
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            &error, err, "Failed to create default project");
-          project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
-        }
-
-      save_and_activate_after_successful_load_or_create (flow_mgr);
-    }
-  else
-    {
-      project_init_flow_manager_call_last_callback_fail (
-        flow_mgr,
-        g_error_new_literal (
-          Z_PROJECT_INIT_FLOW_MANAGER_ERROR,
-          Z_PROJECT_INIT_FLOW_MANAGER_ERROR_FAILED, _ ("No project selected")));
-    }
-}
-
-static void
 load_from_file_ready_cb (bool success, GError * error, void * user_data)
 {
   ProjectInitFlowManager * flow_mgr = (ProjectInitFlowManager *) user_data;
   if (!success)
     {
-      HANDLE_ERROR_LITERAL (
-        error,
-        _ ("Failed to load project. Will create "
-           "a new one instead."));
+      GreeterWidget * greeter =
+        greeter_widget_new (zrythm_app, NULL, false, false);
+      gtk_window_present (GTK_WINDOW (greeter));
 
-      CreateProjectDialogWidget * dialog = create_project_dialog_widget_new ();
-      gtk_window_present (GTK_WINDOW (dialog));
-      g_signal_connect (
-        dialog, "response", G_CALLBACK (on_create_project_response), flow_mgr);
+      project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
       return;
     } /* endif failed to load project */
 

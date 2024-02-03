@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -56,11 +56,9 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/dialogs/first_run.h"
-#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/dialogs/welcome_message_dialog.h"
+#include "gui/widgets/greeter.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -334,7 +332,8 @@ on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer dat
 
   ZrythmApp * self = ZRYTHM_APP (data);
 
-  zrythm_app_set_progress_status (self, _ ("Setting up main window"), 0.98);
+  /*greeter_widget_set_progress_and_status (self->greeter, _("Setting Up"), _
+   * ("Setting up main window"), 0.98);*/
 
   /*main_window_widget_setup (MAIN_WINDOW);*/
 
@@ -349,12 +348,6 @@ on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer dat
       PROJECT->last_successful_autosave_time = g_get_monotonic_time ();
       self->project_autosave_source_id =
         g_timeout_add_seconds (3, project_autosave_cb, NULL);
-    }
-
-  if (self->splash)
-    {
-      splash_window_widget_close (self->splash);
-      self->splash = NULL;
     }
 
   g_message ("done");
@@ -372,6 +365,7 @@ no_project_selected_exit_response_cb (
 static void
 project_load_or_create_ready_cb (bool success, GError * error, void * user_data)
 {
+  g_application_release (g_application_get_default ());
   if (!success)
     {
       /* FIXME never called */
@@ -395,41 +389,41 @@ project_load_or_create_ready_cb (bool success, GError * error, void * user_data)
 }
 
 /**
- * Called after the main window has been
- * initialized.
+ * Called after the main window has been initialized.
  *
- * Loads the project backend or creates the default
- * one.
- * FIXME rename
+ * Loads the project backend or creates the default one.
  */
 static void
 on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_data)
 {
-  zrythm_app_set_progress_status (zrythm_app, _ ("Loading project"), 0.8);
+  ZrythmApp * self = ZRYTHM_APP (user_data);
+
+  greeter_widget_set_progress_and_status (
+    self->greeter, NULL, _ ("Loading Project"), 0.99);
 
   g_debug (
     "on_load_project called | open filename '%s' "
     "| opening template %d",
     ZRYTHM->open_filename, ZRYTHM->opening_template);
+  g_application_hold (g_application_get_default ());
   project_init_flow_manager_load_or_create_default_project (
     ZRYTHM->open_filename, ZRYTHM->opening_template,
     project_load_or_create_ready_cb, NULL);
 }
 
-static void *
-init_thread (gpointer data)
+void *
+zrythm_app_init_thread (ZrythmApp * self)
 {
   g_message ("init thread starting...");
 
-  ZrythmApp * self = ZRYTHM_APP (data);
-
-  zrythm_app_set_progress_status (self, _ ("Initializing settings"), 0.0);
+  greeter_widget_set_progress_and_status (
+    self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
 
   ZRYTHM->debug = env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
   char msg[500];
   sprintf (msg, _ ("Initializing %s directories"), PROGRAM_NAME);
-  zrythm_app_set_progress_status (self, msg, 0.01);
+  greeter_widget_set_progress_and_status (self->greeter, NULL, msg, 0.01);
   GError * err = NULL;
   bool     success = zrythm_init_user_dirs_and_files (ZRYTHM, &err);
   if (!success)
@@ -441,7 +435,8 @@ init_thread (gpointer data)
   zrythm_init_templates (ZRYTHM);
 
   /* init log */
-  zrythm_app_set_progress_status (self, _ ("Initializing logging system"), 0.02);
+  greeter_widget_set_progress_and_status (
+    self->greeter, NULL, _ ("Initializing logging system"), 0.02);
   success = log_init_with_file (LOG, NULL, &err);
   if (!success)
     {
@@ -461,18 +456,18 @@ init_thread (gpointer data)
     "system.");
 #endif
 
-  zrythm_app_set_progress_status (self, _ ("Initializing caches"), 0.05);
+  greeter_widget_set_progress_and_status (
+    self->greeter, NULL, _ ("Initializing caches"), 0.05);
   self->ui_caches = ui_caches_new ();
 
-  zrythm_app_set_progress_status (self, _ ("Initializing file manager"), 0.15);
+  greeter_widget_set_progress_and_status (
+    self->greeter, NULL, _ ("Initializing file manager"), 0.06);
   file_manager_load_files (FILE_MANAGER);
 
-  if (!g_settings_get_boolean (S_GENERAL, "first-run"))
-    {
-      zrythm_app_set_progress_status (self, _ ("Scanning plugins"), 0.4);
-      plugin_manager_scan_plugins (
-        ZRYTHM->plugin_manager, 0.7, &ZRYTHM->progress);
-    }
+  greeter_widget_set_progress_and_status (
+    self->greeter, _ ("Scanning Plugins"), NULL, 0.10);
+  plugin_manager_scan_plugins (
+    ZRYTHM->plugin_manager, 0.90, &self->greeter->progress);
 
   self->init_finished = true;
 
@@ -481,13 +476,6 @@ init_thread (gpointer data)
   return NULL;
 }
 
-/**
- * Unlike the init thread, this will run in the main GTK
- * thread. Do not put expensive logic here.
- *
- * This should be ran after the expensive initialization has
- * finished.
- */
 int
 zrythm_app_prompt_for_project_func (ZrythmApp * self)
 {
@@ -504,25 +492,11 @@ zrythm_app_prompt_for_project_func (ZrythmApp * self)
   return G_SOURCE_CONTINUE;
 }
 
-static void
-license_info_dialog_response_cb (
-  GtkDialog * dialog,
-  gint        response_id,
-  ZrythmApp * self)
-{
-  g_debug ("license info dialog closed. displaying first run dialog");
-
-  FirstRunWindow * first_run_dialog =
-    first_run_window_new (GTK_WINDOW (self->splash));
-  gtk_window_present (GTK_WINDOW (first_run_dialog));
-}
-
 /**
  * Called before on_load_project.
  *
- * Checks if a project was given in the command
- * line. If not, it prompts the user for a project
- * (start assistant).
+ * Checks if a project was given in the command line. If not, it prompts the
+ * user for a project.
  */
 static void
 on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer data)
@@ -538,40 +512,21 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
     }
   else
     {
-      if (g_settings_get_boolean (S_GENERAL, "first-run"))
-        {
-          AdwMessageDialog * dialog =
-            welcome_message_dialog_new (GTK_WINDOW (self->splash));
-          gtk_window_present (GTK_WINDOW (dialog));
-          g_signal_connect (
-            G_OBJECT (dialog), "response",
-            G_CALLBACK (license_info_dialog_response_cb), self);
-          g_message ("showing license info dialog");
-
-          return;
-        }
-
-      zrythm_app_set_progress_status (self, _ ("Waiting for project"), 0.8);
-
-      /* if running for the first time (even after the
-       * GSetting is set to false) run the demo project,
-       * otherwise ask the user for a project */
+      /* if running for the first time (even after the GSetting is set to false)
+       * run the demo project, otherwise ask the user for a project */
       bool use_demo_template = self->is_first_run && ZRYTHM->demo_template;
 #ifdef _WOE32
       /* crashes on windows -- fix first then re-enable */
       use_demo_template = false;
 #endif
-      if (use_demo_template)
-        {
-          project_assistant_widget_present (
-            GTK_WINDOW (self->splash), false, ZRYTHM->demo_template);
-        }
-      else
-        {
-          /* show the assistant */
-          project_assistant_widget_present (
-            GTK_WINDOW (self->splash), false, NULL);
-        }
+
+      /* disable this functionality on all platforms for now - it causes issues
+       * with triplesynth and complicates the greeter flow */
+      use_demo_template = false;
+
+      greeter_widget_select_project (
+        self->greeter, false, false,
+        use_demo_template ? ZRYTHM->demo_template : NULL);
 
 #ifdef __APPLE__
       /* possibly not necessary / working, forces app
@@ -581,26 +536,6 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
     }
 
   g_message ("done");
-}
-
-/**
- * Sets the current status and progress percentage
- * during loading.
- *
- * The splash screen then reads these values from
- * the Zrythm struct.
- */
-void
-zrythm_app_set_progress_status (
-  ZrythmApp *  self,
-  const char * text,
-  const double perc)
-{
-  zix_sem_wait (&self->progress_status_lock);
-  g_message ("%s", text);
-  strcpy (self->status, text);
-  ZRYTHM->progress = perc;
-  zix_sem_post (&self->progress_status_lock);
 }
 
 void
@@ -613,8 +548,7 @@ zrythm_app_set_font_scale (ZrythmApp * self, double font_scale)
 }
 
 /*
- * Called after startup if no filename is passed on
- * command line.
+ * Called after startup if no filename is passed on command line.
  */
 static void
 zrythm_app_activate (GApplication * _app)
@@ -626,8 +560,7 @@ zrythm_app_activate (GApplication * _app)
 }
 
 /**
- * Called when a filename is passed to the command line
- * instead of activate.
+ * Called when a filename is passed to the command line instead of activate.
  *
  * Always gets called after startup and before the tasks.
  */
@@ -934,8 +867,7 @@ raise_open_file_limit (void)
 }
 
 /**
- * First function that gets called afted CLI args
- * are parsed and processed.
+ * First function that gets called afted CLI args are parsed and processed.
  *
  * This gets called before open or activate.
  */
@@ -946,10 +878,10 @@ zrythm_app_startup (GApplication * app)
 
   ZrythmApp * self = ZRYTHM_APP (app);
 
-  /* init localization, using system locale if
-   * first run */
+  /* init localization, using system locale if first run */
   GSettings * prefs = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
-  localization_init (g_settings_get_boolean (prefs, "first-run"), true, true);
+  self->is_first_run = g_settings_get_boolean (prefs, "first-run");
+  localization_init (self->is_first_run, true, true);
   g_object_unref (G_OBJECT (prefs));
 
   char * exe_path = NULL;
@@ -1149,8 +1081,8 @@ zrythm_app_startup (GApplication * app)
   load_icon (self->default_settings, icon_theme, "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
-  /* TODO auto-generate this code from meson (also in
-   * gen-gtk-resources-xml script) */
+  /* TODO auto-generate this code from meson (also in gen-gtk-resources-xml
+   * script) */
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
@@ -1233,20 +1165,8 @@ zrythm_app_startup (GApplication * app)
   /* print detected vamp plugins */
   vamp_print_all ();
 
-  /* show splash screen */
-  self->splash = splash_window_widget_new (self);
-  g_debug ("created splash widget");
-  gtk_window_present (GTK_WINDOW (self->splash));
-  g_debug ("presented splash widget");
-
-  /* start initialization in another thread */
-  zix_sem_init (&self->progress_status_lock, 1);
-  self->init_thread =
-    g_thread_new ("init_thread", (GThreadFunc) init_thread, self);
-
-  /* set a source func in the main GTK thread to
-   * check when initialization finished */
-  g_idle_add ((GSourceFunc) zrythm_app_prompt_for_project_func, self);
+  self->greeter = greeter_widget_new (self, NULL, true, false);
+  gtk_window_present (GTK_WINDOW (self->greeter));
 
   /* install accelerators for each action */
   const char * primary = NULL;
