@@ -325,26 +325,22 @@
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </property> <!-- AdwToolbarView content -->
-                        <child type="bottom">
-                          <object class="GtkActionBar">
-                            <child type="center">
-                              <object class="GtkBox">
-                                <property name="spacing">12</property>
+                            <child>
+                              <object class="AdwPreferencesGroup">
                                 <child>
                                   <object class="GtkButton" id="create_project_confirm_btn">
                                     <property name="label" translatable="yes">Create Project</property>
-                                    <property name="halign">end</property>
+                                    <property name="halign">center</property>
                                     <style>
                                       <class name="suggested-action"/>
+                                      <class name="pill"/>
                                     </style>
                                   </object>
                                 </child>
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property> <!-- AdwToolbarView content -->
                       </object>
                     </property> <!-- nav page child -->
                   </object>
