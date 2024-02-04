@@ -209,7 +209,7 @@
                       end spinner approach -->
                       <object class="AdwStatusPage" id="status_page">
                         <property name="icon-name">zrythm</property>
-                        <property name="title" translatable="yes">Loading</property>
+                        <property name="title" translatable="yes">Zrythm</property>
                         <property name="hexpand">True</property>
                       </object>
                     </child>

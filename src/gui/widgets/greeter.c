@@ -286,7 +286,7 @@ begin_init (GreeterWidget * self)
 static void
 on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  gtk_window_set_title (GTK_WINDOW (self), _ ("Loading"));
+  gtk_window_set_title (GTK_WINDOW (self), _ ("Zrythm"));
   gtk_stack_set_visible_child_name (self->stack, "progress");
 
   g_settings_set_boolean (S_GENERAL, "first-run", false);
@@ -616,7 +616,7 @@ greeter_widget_new (
   /* else if not first run, skip to the "progress" part (don't show welcome UI) */
   else if (is_startup && !app->is_first_run)
     {
-      gtk_window_set_title (GTK_WINDOW (self), _ ("Loading"));
+      gtk_window_set_title (GTK_WINDOW (self), _ ("Zrythm"));
       gtk_stack_set_visible_child_name (self->stack, "progress");
       begin_init (self);
     }
