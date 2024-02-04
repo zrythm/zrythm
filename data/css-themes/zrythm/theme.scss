@@ -83,6 +83,7 @@ paned {
   background-color: $bg_dark_variant1;
 }
 
+.main-window-header,
 left-dock-edge notebook header,
 right-dock-edge notebook header,
 bot-dock-edge notebook header,
@@ -422,10 +423,6 @@ popover.snap-grid-popover button.note-type {
 label.small-vertical-lbl {
   font-family: sans-serif;
   font-size: 6pt;
-}
-
-headerbar {
-  background-color: $bg_darker_variant2;
 }
 
 /* this is used in adwaita preferences window */
