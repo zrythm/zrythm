@@ -126,13 +126,13 @@ button {
 
   &.toggle:hover,
   &.popup:hover,
-  &:hover,
+  &:not(.close):hover,
   &.flat:hover,
   &.text-button:hover {
     background-color: $bg_lighter_variant1;
   }
 
-  &:not(.toggle):active,
+  &:not(.toggle):not(.close):active,
   &.flat:not(.toggle):active,
   &:not(.record-button):not(.solo-button).toggle:active,
   &.text-button:active {
