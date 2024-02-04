@@ -309,13 +309,10 @@ supported_file_get_icon_name (const SupportedFile * const self)
     case FILE_TYPE_MIDI:
       return "audio-midi";
     case FILE_TYPE_MP3:
-      return "audio-x-mpeg";
     case FILE_TYPE_FLAC:
-      return "audio-x-flac";
     case FILE_TYPE_OGG:
-      return "application-ogg";
     case FILE_TYPE_WAV:
-      return "audio-x-wav";
+      return "gnome-icon-library-sound-wave-symbolic";
     case FILE_TYPE_DIR:
       return "folder";
     case FILE_TYPE_PARENT_DIR:

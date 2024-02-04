@@ -4,7 +4,7 @@
 [Icon Theme]
 Name=Zrythm Dark
 Comment=Zrythm Dark by the Zrythm authors
-Inherits=breeze-dark,default
+Inherits=default
 Directories=scalable/actions,scalable/apps,scalable/devices,scalable/emotes,scalable/mimetypes,scalable/places,scalable/status,scalable/tracktypes
 
 [scalable/actions]

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -53,15 +53,16 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 #define TRACK_ICON_NAME_MUTE "mute"
 #define TRACK_ICON_NAME_LISTEN "listen"
 #define TRACK_ICON_NAME_SHOW_UI "jam-icons-screen"
-#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES "node-type-cusp"
-#define TRACK_ICON_NAME_SHOW_TRACK_LANES "format-justify-fill"
-#define TRACK_ICON_NAME_LOCK "document-decrypt"
+#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES "automation-4p"
+#define TRACK_ICON_NAME_SHOW_TRACK_LANES "untitled-ui-rows-03"
+#define TRACK_ICON_NAME_LOCK "gnome-icon-library-padlock2-symbolic"
+#define TRACK_ICON_NAME_UNLOCK "gnome-icon-library-padlock2-open-symbolic"
 #define TRACK_ICON_NAME_FREEZE "fork-awesome-snowflake-o"
 #define TRACK_ICON_NAME_PLUS "add"
 #define TRACK_ICON_NAME_MINUS "remove"
 #define TRACK_ICON_NAME_BUS "effect"
 #define TRACK_ICON_NAME_CHORDS "minuet-chords"
-#define TRACK_ICON_NAME_SHOW_MARKERS "kdenlive-show-markers"
+#define TRACK_ICON_NAME_SHOW_MARKERS "gnome-icon-library-flag-outline-thick-symbolic"
 #define TRACK_ICON_NAME_MIDI "instrument"
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
 #define TRACK_ICON_NAME_MODULATOR "modulator"

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -103,7 +103,7 @@ track_properties_expander_widget_setup (
   /* set name and icon */
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self), _ ("Track Properties"));
-  expander_box_widget_set_icon_name (Z_EXPANDER_BOX_WIDGET (self), "info");
+  expander_box_widget_set_icon_name (Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-general-properties-symbolic");
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self), GTK_ORIENTATION_VERTICAL);
 

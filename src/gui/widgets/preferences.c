@@ -792,11 +792,11 @@ get_group_icon (const char * schema_str)
     }
   else if (string_contains_substr (schema_str, "preferences.dsp"))
     {
-      icon_name = "signal-audio";
+      icon_name = "gnome-icon-library-terminal-symbolic";
     }
   else if (string_contains_substr (schema_str, "preferences.plugins"))
     {
-      icon_name = "plugins";
+      icon_name = "plugin";
     }
   else if (string_contains_substr (schema_str, "preferences.editing"))
     {
@@ -804,11 +804,11 @@ get_group_icon (const char * schema_str)
     }
   else if (string_contains_substr (schema_str, "preferences.projects"))
     {
-      icon_name = "project-open";
+      icon_name = "gnome-icon-library-rich-text-symbolic";
     }
   else if (string_contains_substr (schema_str, "preferences.ui"))
     {
-      icon_name = "interface";
+      icon_name = "gnome-icon-library-display-symbolic";
     }
 
   g_debug ("icon name for %s: %s", schema_str, icon_name);

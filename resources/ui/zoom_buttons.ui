@@ -22,7 +22,7 @@
     </child>
     <child>
       <object class="GtkButton" id="best_fit">
-        <property name="icon-name">zoom-fit-best</property>
+        <property name="icon-name">gnome-icon-library-object-scale-to-fit-symbolic</property>
         <property name="action-name">app.best-fit</property>
       </object>
     </child>

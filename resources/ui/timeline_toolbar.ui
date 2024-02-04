@@ -73,7 +73,7 @@
     <child>
       <object class="GtkButton" id="merge_btn">
         <property name="action-name">app.merge-selection</property>
-        <property name="icon-name">merge</property>
+        <property name="icon-name">iconpark-merge-cells</property>
         <property name="tooltip-text" translatable="yes">Merge selections</property>
       </object>
     </child>

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -107,7 +107,7 @@ text_expander_widget_init (TextExpanderWidget * self)
 
   self->edit_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->edit_btn));
-  gtk_menu_button_set_icon_name (self->edit_btn, "edit");
+  gtk_menu_button_set_icon_name (self->edit_btn, "pencil");
 
   self->popover = GTK_POPOVER (gtk_popover_new ());
   gtk_menu_button_set_popover (

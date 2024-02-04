@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 22 22"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="filename-bpm-amarok.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="36.727273"
+     inkscape:cx="10.986386"
+     inkscape:cy="11"
+     inkscape:window-width="2560"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="m11 3a8 8 0 0 0 -8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8 8 8 0 0 0 -8-8zm0 1a7 7 0 0 1 7 7 7 7 0 0 1 -7 7 7 7 0 0 1 -7-7 7 7 0 0 1 7-7zm0 2a5 5 0 0 0 -3.3183594 1.2675781l.7089844.7089844a4 4 0 0 1 2.609375-.9765625 4 4 0 0 1 4 4h1a5 5 0 0 0 -5-5zm1.34375 2.1660156-2.146484 4.9765624c-.1228.13979-.2106929.309601-.2578129.494141-.007.0298-.0145312.061497-.0195312.091797l-.0058594.013672h.0058594c-.09.56146.2209301 1.08675.7187501 1.21289.49878.12537 1.020701-.190386 1.207031-.728516l.007813.001954v-.029297c.008-.0247.016537-.049119.023437-.074219.0449-.18195.04636-.372001.005859-.550781zm-5.8691406.7226563a5 5 0 0 0 -.4746094 2.1113281h1a4 4 0 0 1 .2382812-1.3476562z"
+     fill="#eff0f1"
+     id="path1"
+     style="fill:#f2f2f2" />
+</svg>

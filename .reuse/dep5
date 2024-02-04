@@ -155,12 +155,19 @@ Files:
   */zrythm-dark/*/cut-clip.svg
   */zrythm-dark/*/data-warning.svg
   */zrythm-dark/*/markers.svg
+  */zrythm-dark/*/minuet-chords.svg
+  */zrythm-dark/*/minuet-scales.svg
+  */zrythm-dark/*/tool-measure.svg
+  */zrythm-dark/*/timeline-insert.svg
+  */zrythm-dark/*/timeline-extract.svg
+  */zrythm-dark/*/zoom-original.svg
 Copyright: 2014 Uri Herrera <uri_herrera@nitrux.in> and others
 License: GPL-3.0-or-later
   The files have been modified (color changes and other minor changes).
 Comment: KDE Breeze Icon theme
 
 Files:
+  */zrythm-dark/*/automation-4p.svg
   */zrythm-dark/*/cutter.svg
   */zrythm-dark/*/logo-abletonlink.svg
   */zrythm-dark/*/logo-au.svg
@@ -248,6 +255,14 @@ License: Apache-2.0
 Comment:
   The files have been slightly modified.
   From https://github.com/Templarian/MaterialDesign.
+
+Files:
+  resources/icons/untitled-ui/*.svg
+Copyright: Jordan Hughes
+License: CC-BY-4.0
+Comment:
+  The files have been slightly modified.
+  From https://www.figma.com/community/file/1114001199549197320/untitled-ui-icons-1-100-essential-figma-icons.
 
 Files:
   resources/icons/css.gg/*.svg

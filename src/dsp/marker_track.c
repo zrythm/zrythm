@@ -26,7 +26,7 @@ marker_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MARKER;
   self->main_height = TRACK_DEF_HEIGHT / 2;
-  self->icon_name = g_strdup ("markers");
+  self->icon_name = g_strdup ("gnome-icon-library-flag-outline-thick-symbolic");
 
   /* GTK color picker color */
   gdk_rgba_parse (&self->color, "#813D9C");

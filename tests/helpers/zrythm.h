@@ -603,8 +603,6 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
   GdkDisplay *   display = gdk_display_get_default ();
   GtkIconTheme * icon_theme = gtk_icon_theme_get_for_display (display);
   gtk_icon_theme_add_resource_path (
-    icon_theme, "/org/zrythm/Zrythm/app/icons/breeze-icons");
-  gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/fork-awesome");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/font-awesome");

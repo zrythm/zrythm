@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -56,7 +56,7 @@ enum
 #define PROTOCOLS_ICON "protocol"
 #define COLLECTIONS_ICON "favorite"
 #define CATEGORIES_ICON "category"
-#define AUTHORS_ICON "user"
+#define AUTHORS_ICON "gnome-icon-library-person-symbolic"
 
 static void
 on_selection_changed (

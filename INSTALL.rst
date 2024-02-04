@@ -36,8 +36,6 @@ attempting to build or run Zrythm.
 
 Required
 ++++++++
-`breeze-icons (LGPLv3+) <https://github.com/KDE/breeze-icons>`_
-  Various icons
 
 `carla (GPLv2+) <https://kx.studio/Applications:Carla>`_
   Support for various plugin formats

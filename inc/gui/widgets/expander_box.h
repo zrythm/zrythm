@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou
+// <alex@zrythm.org> SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -87,20 +87,6 @@ void
 expander_box_widget_set_icon_name (
   ExpanderBoxWidget * self,
   const char *        icon_name);
-
-/**
- * Sets the icon resource to show.
- */
-static inline void
-expander_box_widget_set_icon_resource (
-  ExpanderBoxWidget * self,
-  IconType            icon_type,
-  const char *        path)
-{
-  ExpanderBoxWidgetPrivate * prv = expander_box_widget_get_private (self);
-
-  resources_set_image_icon (prv->btn_img, icon_type, path);
-}
 
 void
 expander_box_widget_add_content (ExpanderBoxWidget * self, GtkWidget * content);

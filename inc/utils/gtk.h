@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -224,19 +224,6 @@ z_gtk_button_new_with_icon_and_text (
   bool           icon_first,
   GtkOrientation orientation,
   int            spacing);
-
-/**
- * Creates a button with the given resource name as icon.
- */
-GtkButton *
-z_gtk_button_new_with_resource (IconType icon_type, const char * name);
-
-/**
- * Creates a toggle button with the given resource name as
- * icon.
- */
-GtkToggleButton *
-z_gtk_toggle_button_new_with_resource (IconType icon_type, const char * name);
 
 #define z_gtk_create_menu_item(lbl_name, icn_name, action_name) \
   z_gtk_create_menu_item_full (lbl_name, icn_name, action_name)

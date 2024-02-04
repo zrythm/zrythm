@@ -693,7 +693,7 @@ load_icon (
       strcpy (
         err_msg,
         "Failed to load icon from icon theme. "
-        "Please install zrythm and breeze-icons.");
+        "Please install zrythm.");
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_literal (_ ("Icon Theme Not Found"), err_msg);
@@ -1076,8 +1076,6 @@ zrythm_app_startup (GApplication * app)
   /* try to load some icons */
   /* zrythm */
   load_icon (self->default_settings, icon_theme, "solo");
-  /* breeze dark */
-  load_icon (self->default_settings, icon_theme, "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
   /* TODO auto-generate this code from meson (also in gen-gtk-resources-xml
@@ -1103,13 +1101,13 @@ zrythm_app_startup (GApplication * app)
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/box-icons");
   gtk_icon_theme_add_resource_path (
-    icon_theme, "/org/zrythm/Zrythm/app/icons/breeze-icons");
-  gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/iconpark");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/iconoir");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/material-design");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/untitled-ui");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/css.gg");
 

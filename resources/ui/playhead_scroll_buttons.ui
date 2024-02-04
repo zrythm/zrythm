@@ -13,7 +13,7 @@
         <property name="tooltip-text" translatable="yes">Scroll when playhead reaches the edge</property>
         <child>
           <object class="GtkImage">
-            <property name="icon-name">measure</property>
+            <property name="icon-name">tool-measure</property>
           </object>
         </child>
       </object>

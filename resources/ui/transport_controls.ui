@@ -7,7 +7,7 @@
         <property name="tooltip_text" translatable="yes">Return to cue point on stop</property>
         <child>
           <object class="GtkImage">
-            <property name="icon-name">anchor</property>
+            <property name="icon-name">font-awesome-anchor</property>
           </object>
         </child>
       </object>

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -113,7 +113,7 @@ set_icon_from_port_type (PortsExpanderWidget * self, PortType type)
       Z_EXPANDER_BOX_WIDGET (self), "audio-midi");
   else if (type == TYPE_CONTROL)
     expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self), "configure");
+      Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-wrench-wide-symbolic");
 }
 
 typedef struct PortGroup

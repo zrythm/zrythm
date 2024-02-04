@@ -85,7 +85,7 @@
                   <object class="AdwViewStackPage">
                     <property name="name">authors</property>
                     <property name="title" translatable="yes">Author</property>
-                    <property name="icon-name">user</property>
+                    <property name="icon-name">gnome-icon-library-person-symbolic</property>
                     <property name="child">
                       <object class="GtkBox" id="author_box">
                         <property name="orientation">vertical</property>

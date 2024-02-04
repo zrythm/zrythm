@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 22 22"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="minuet-scales.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="36.727273"
+     inkscape:cx="10.986386"
+     inkscape:cy="11"
+     inkscape:window-width="2560"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="m16 3v2h-13v1h13v1.6523a1.9977 1.9977 0 0 0 -.365-.1523l-.008-.002a1.9977 1.9977 0 0 0 -2.488 1.334 1.9977 1.9977 0 0 0 -.041.168h-.098v-2h-1v2h-9v1h9v1.652a1.9977 1.9977 0 0 0 -.365-.152l-.008-.002a1.9977 1.9977 0 0 0 -2.4883 1.334 1.9977 1.9977 0 0 0 -.041.168h-.0977v-2h-1v2h-5v1h5v1.654a1.9977 1.9977 0 0 0 -.3652-.154l-.0078-.002a1.9977 1.9977 0 0 0 -2.4883 1.334 1.9977 1.9977 0 0 0 -.041.168h-2.0977v1h2.1445a1.9977 1.9977 0 0 0 1.3262 1.322 1.9977 1.9977 0 0 0 2.4902-1.322h10.0391v-1h-9.9961a1.9977 1.9977 0 0 0 -.0039-.018v-2.982h.1445a1.9977 1.9977 0 0 0 1.3285 1.322 1.9977 1.9977 0 0 0 2.488-1.322h6.039v-1h-5.996a1.9977 1.9977 0 0 0 -.004-.018v-2.982h.145a1.9977 1.9977 0 0 0 1.328 1.322 1.9977 1.9977 0 0 0 2.488-1.322h2.039v-1h-1.996a1.9977 1.9977 0 0 0 -.004-.0176v-2.9824h2v-1h-2v-2h-1zm-.943 5.457a.97972.97972 0 0 1 .255.0352l.026.0078a.97972.97972 0 0 1 .652 1.2168.97972.97972 0 0 1 -1.213.6602.97972.97972 0 0 1 -.668-1.209.97972.97972 0 0 1 .948-.711zm-4 4a.97972.97972 0 0 1 .255.035l.026.008a.97972.97972 0 0 1 .652 1.217.97972.97972 0 0 1 -1.213.66.97972.97972 0 0 1 -.668-1.209.97972.97972 0 0 1 .948-.711zm-4.0004 4a.97972.97972 0 0 1 .2559.035l.0254.008a.97972.97972 0 0 1 .6523 1.217.97972.97972 0 0 1 -1.2129.66.97972.97972 0 0 1 -.6679-1.209.97972.97972 0 0 1 .9472-.711z"
+     fill="#eff0f1"
+     id="path1"
+     style="fill:#f2f2f2" />
+</svg>

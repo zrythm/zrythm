@@ -107,8 +107,7 @@ create_model_for_ports (
     { \
       gtk_list_store_append (list_store, &iter); \
       gtk_list_store_set ( \
-        list_store, &iter, 0, "node-type-cusp", 1, port->id.label, 2, port, \
-        -1); \
+        list_store, &iter, 0, "automation-4p", 1, port->id.label, 2, port, -1); \
     }
 
   /* if filtering to track ports */

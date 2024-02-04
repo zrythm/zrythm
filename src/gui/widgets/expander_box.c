@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/expander_box.h"
@@ -190,7 +190,7 @@ expander_box_widget_init (ExpanderBoxWidget * self)
     GTK_FLIPPER (gtk_flipper_new (GTK_WIDGET (prv->btn_label)));
   gtk_widget_set_hexpand (GTK_WIDGET (prv->btn_label_flipper), true);
   gtk_widget_set_halign (GTK_WIDGET (prv->btn_label_flipper), GTK_ALIGN_START);
-  prv->btn_img = GTK_IMAGE (gtk_image_new_from_icon_name ("plugins"));
+  prv->btn_img = GTK_IMAGE (gtk_image_new_from_icon_name ("info"));
   gtk_widget_set_name (GTK_WIDGET (prv->btn_img), "expander-box-btn-image");
   GtkWidget * box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_name (GTK_WIDGET (box), "expander-box-btn-box");

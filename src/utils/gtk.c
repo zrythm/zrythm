@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -578,31 +578,6 @@ z_gtk_button_new_with_icon_and_text (
     GTK_BUTTON (btn), name, text, icon_first, orientation, spacing);
   gtk_widget_set_visible (GTK_WIDGET (btn), true);
 
-  return btn;
-}
-
-/**
- * Creates a button with the given resource name as icon.
- */
-GtkButton *
-z_gtk_button_new_with_resource (IconType icon_type, const char * name)
-{
-  GtkButton * btn = GTK_BUTTON (gtk_button_new ());
-  resources_add_icon_to_button (btn, icon_type, name);
-  gtk_widget_set_visible (GTK_WIDGET (btn), 1);
-  return btn;
-}
-
-/**
- * Creates a toggle button with the given resource name as
- * icon.
- */
-GtkToggleButton *
-z_gtk_toggle_button_new_with_resource (IconType icon_type, const char * name)
-{
-  GtkToggleButton * btn = GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
-  resources_add_icon_to_button (GTK_BUTTON (btn), icon_type, name);
-  gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   return btn;
 }
 
