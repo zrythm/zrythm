@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
@@ -52,7 +53,7 @@ list row:hover
 }
 
 progressbar > trough > progress {
-  background-color: $z_purple;
+  background-image: linear-gradient(90deg, $z_yellow, $z_purple);
 }
 
 treeview.view:selected,
