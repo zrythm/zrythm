@@ -95,7 +95,7 @@ typedef struct _GreeterWidget
   AdwEntryRow *         project_title_row;
   AdwActionRow *        project_parent_dir_row;
   IdeFileChooserEntry * project_parent_dir_fc;
-  GtkListBox *          templates_list_box;
+  AdwComboRow *         templates_combo_row;
   GPtrArray *           templates_arr;
   GPtrArray *           templates_item_factories;
   AdwPreferencesGroup * templates_pref_group;

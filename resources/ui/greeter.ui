@@ -300,7 +300,6 @@
                           <object class="AdwPreferencesPage">
                             <child>
                               <object class="AdwPreferencesGroup">
-                                <property name="title" translatable="yes">Project Details</property>
                                 <child>
                                   <object class="AdwEntryRow" id="project_title_row">
                                     <property name="title" translatable="yes">Project Name</property>
@@ -311,14 +310,12 @@
                                     <property name="title" translatable="yes">Parent Directory</property>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwPreferencesGroup">
-                                <property name="title" translatable="yes">Template</property>
                                 <child>
-                                  <object class="GtkListBox" id="templates_list_box">
-                                    <property name="selection-mode">browse</property>
+                                  <object class="AdwComboRow" id="templates_combo_row">
+                                    <property name="title" translatable="yes">Template</property>
+                                    <property name="model">
+                                      <object class="GtkStringList"/>
+                                    </property>
                                   </object>
                                 </child>
                               </object>

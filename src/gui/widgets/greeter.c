@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -150,23 +151,18 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 }
 
 static AdwActionRow *
-create_action_row_from_project_info (
-  GreeterWidget * self,
-  ProjectInfo *   nfo,
-  bool            is_template)
+create_action_row_from_project_info (GreeterWidget * self, ProjectInfo * nfo)
 {
   AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), nfo->name);
   adw_action_row_set_subtitle (row, nfo->filename);
-  if (!is_template)
-    {
-      GtkWidget * img = gtk_image_new_from_icon_name ("go-next-symbolic");
-      adw_action_row_add_suffix (row, img);
-      gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), true);
-      g_signal_connect (
-        G_OBJECT (row), "activated", G_CALLBACK (on_project_row_activated),
-        self);
-    }
+
+  GtkWidget * img = gtk_image_new_from_icon_name ("go-next-symbolic");
+  adw_action_row_add_suffix (row, img);
+  gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), true);
+  g_signal_connect (
+    G_OBJECT (row), "activated", G_CALLBACK (on_project_row_activated), self);
+
   g_object_set_data (G_OBJECT (row), "project-info", nfo);
   return row;
 }
@@ -178,8 +174,7 @@ refresh_projects (GreeterWidget * self)
     {
       ProjectInfo * nfo =
         (ProjectInfo *) g_ptr_array_index (self->project_infos_arr, i);
-      AdwActionRow * row =
-        create_action_row_from_project_info (self, nfo, false);
+      AdwActionRow * row = create_action_row_from_project_info (self, nfo);
       adw_preferences_group_add (
         self->recent_projects_pref_group, GTK_WIDGET (row));
     }
@@ -188,12 +183,14 @@ refresh_projects (GreeterWidget * self)
 static void
 refresh_templates (GreeterWidget * self)
 {
+  GListModel * templates = adw_combo_row_get_model (self->templates_combo_row);
   for (size_t i = 0; i < self->templates_arr->len; i++)
     {
       ProjectInfo * nfo =
         (ProjectInfo *) g_ptr_array_index (self->templates_arr, i);
-      AdwActionRow * row = create_action_row_from_project_info (self, nfo, true);
-      gtk_list_box_append (self->templates_list_box, GTK_WIDGET (row));
+      gtk_string_list_append (GTK_STRING_LIST (templates), nfo->name);
+      g_object_set_data (
+        G_OBJECT (g_list_model_get_item (templates, i)), "project-info", nfo);
     }
 }
 
@@ -407,9 +404,9 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   g_free (str);
   g_message ("creating project at: %s", ZRYTHM->create_project_path);
 
-  GtkListBoxRow * row = gtk_list_box_get_selected_row (self->templates_list_box);
-  ProjectInfo * selected_template =
-    g_object_get_data (G_OBJECT (row), "project-info");
+  GObject * template =
+    adw_combo_row_get_selected_item (self->templates_combo_row);
+  ProjectInfo * selected_template = g_object_get_data (template, "project-info");
   g_return_if_fail (selected_template);
 
   ZRYTHM->creating_project = true;
@@ -463,9 +460,7 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
     GTK_EDITABLE (self->project_title_row), untitled_project);
   g_free (untitled_project);
 
-  GtkListBoxRow * row =
-    gtk_list_box_get_row_at_index (self->templates_list_box, 0);
-  gtk_list_box_select_row (self->templates_list_box, row);
+  adw_combo_row_set_selected (self->templates_combo_row, 0);
 }
 
 static void
@@ -847,7 +842,7 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
   BIND_CHILD (create_project_nav_page);
   BIND_CHILD (project_title_row);
   BIND_CHILD (project_parent_dir_row);
-  BIND_CHILD (templates_list_box);
+  BIND_CHILD (templates_combo_row);
   BIND_CHILD (create_project_confirm_btn);
 
 #undef BIND_CHILD
