@@ -214,10 +214,15 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="progress_bar">
-                        <property name="show-text">true</property>
-                        <property name="margin-start">36</property>
-                        <property name="margin-end">36</property>
+                      <object class="AdwClamp">
+                        <property name="maximum-size">450</property>
+                        <child>
+                          <object class="GtkProgressBar" id="progress_bar">
+                            <property name="show-text">true</property>
+                            <property name="margin-start">36</property>
+                            <property name="margin-end">36</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
