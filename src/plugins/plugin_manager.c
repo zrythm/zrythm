@@ -1448,7 +1448,9 @@ plugin_manager_scan_plugins (
                 {
                   sprintf (prog_str, _ ("Skipped AU plugin at %u"), i);
                 }
-              zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
+              g_return_if_fail (zrythm_app->greeter);
+              greeter_widget_set_progress_and_status (
+                zrythm_app->greeter, NULL, prog_str, *progress);
             }
         }
     }
