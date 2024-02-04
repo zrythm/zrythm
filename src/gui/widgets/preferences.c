@@ -899,11 +899,12 @@ static void
 on_window_closed (GtkWidget * object, PreferencesWidget * self)
 {
   ui_show_notification_idle_printf (
-    _ ("Some changes will only take "
-       "effect after you restart %s"),
-    PROGRAM_NAME);
+    _ ("Some changes will only take effect after you restart %s"), PROGRAM_NAME);
 
-  MAIN_WINDOW->preferences_opened = false;
+  if (MAIN_WINDOW)
+    {
+      MAIN_WINDOW->preferences_opened = false;
+    }
 }
 
 /**
@@ -934,6 +935,7 @@ preferences_widget_class_init (PreferencesWidgetClass * _klass)
 static void
 preferences_widget_init (PreferencesWidget * self)
 {
+  gtk_window_set_modal (GTK_WINDOW (self), true);
 #if 0
   self->group_notebook =
     GTK_NOTEBOOK (gtk_notebook_new ());

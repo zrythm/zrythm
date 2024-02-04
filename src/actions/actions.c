@@ -261,16 +261,21 @@ activate_preferences (
   GVariant *      variant,
   gpointer        user_data)
 {
-  if (MAIN_WINDOW->preferences_opened)
+  if (MAIN_WINDOW && MAIN_WINDOW->preferences_opened)
     {
       return;
     }
 
   GtkWindow * preferences_window = GTK_WINDOW (preferences_widget_new ());
   g_return_if_fail (preferences_window);
-  gtk_window_set_transient_for (preferences_window, GTK_WINDOW (MAIN_WINDOW));
+  GListModel * toplevels = gtk_window_get_toplevels ();
+  GtkWindow * transient_for = GTK_WINDOW (g_list_model_get_item (toplevels, 0));
+  gtk_window_set_transient_for (preferences_window, transient_for);
   gtk_window_present (GTK_WINDOW (preferences_window));
-  MAIN_WINDOW->preferences_opened = true;
+  if (MAIN_WINDOW)
+    {
+      MAIN_WINDOW->preferences_opened = true;
+    }
 }
 
 /**
