@@ -56,6 +56,10 @@ progressbar > trough > progress {
   background-image: linear-gradient(90deg, $z_yellow, $z_purple);
 }
 
+progressbar > text {
+  padding-bottom: 8px;
+}
+
 treeview.view:selected,
 listview row:selected,
 columnview row:selected,
