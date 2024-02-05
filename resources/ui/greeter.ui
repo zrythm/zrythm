@@ -316,6 +316,11 @@
                                     <property name="model">
                                       <object class="GtkStringList"/>
                                     </property>
+                                    <child type="suffix">
+                                      <object class="CcListRowInfoButton" id="templates_info_button">
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>

@@ -11,6 +11,7 @@ resource_files += files ([
   'bot_bar.ui',
   'bounce_dialog.ui',
   'center_dock.ui',
+  'cc-list-row-info-button.ui',
   'channel.ui',
   'chord_editor_space.ui',
   'chord_key.ui',

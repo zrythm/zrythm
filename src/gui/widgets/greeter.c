@@ -13,6 +13,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/cc-list-row-info-button.h"
 #include "gui/widgets/file_chooser_entry.h"
 #include "gui/widgets/greeter.h"
 #include "gui/widgets/item_factory.h"
@@ -739,6 +740,16 @@ greeter_widget_init (GreeterWidget * self)
     adw_preferences_group_add (pref_group, GTK_WIDGET (row));
   }
 
+  /* set templates info button label */
+  char * str = g_strdup_printf (
+    _ ("You can create your own templates by copying a project directory under “templates” in the <a href=\"%s\">Zrythm user path</a>."),
+    dir);
+  cc_list_row_info_button_set_text (self->templates_info_button, str);
+  cc_list_row_info_button_set_text_callback (
+    self->templates_info_button, G_CALLBACK (z_gtk_activate_dir_link_func));
+
+  g_free (str);
+
   /* add error text */
   gtk_widget_add_css_class (GTK_WIDGET (self->lang_error_txt), "error");
   adw_preferences_group_add (pref_group, GTK_WIDGET (self->lang_error_txt));
@@ -812,6 +823,8 @@ greeter_widget_init (GreeterWidget * self)
 static void
 greeter_widget_class_init (GreeterWidgetClass * _klass)
 {
+  g_type_ensure (CC_TYPE_LIST_ROW_INFO_BUTTON);
+
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (wklass, "greeter.ui");
   gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_DIALOG);
@@ -843,6 +856,7 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
   BIND_CHILD (project_title_row);
   BIND_CHILD (project_parent_dir_row);
   BIND_CHILD (templates_combo_row);
+  BIND_CHILD (templates_info_button);
   BIND_CHILD (create_project_confirm_btn);
 
 #undef BIND_CHILD

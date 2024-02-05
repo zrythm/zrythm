@@ -4,6 +4,7 @@
 #ifndef __GUI_WIDGETS_GREETER_H__
 #define __GUI_WIDGETS_GREETER_H__
 
+#include "gui/widgets/cc-list-row-info-button.h"
 #include "utils/types.h"
 
 #include <adwaita.h>
@@ -15,6 +16,7 @@ G_DECLARE_FINAL_TYPE (GreeterWidget, greeter_widget, Z, GREETER_WIDGET, AdwWindo
 
 TYPEDEF_STRUCT_UNDERSCORED (ZrythmApp);
 TYPEDEF_STRUCT_UNDERSCORED (IdeFileChooserEntry);
+TYPEDEF_STRUCT_UNDERSCORED (CcListRowInfoButton);
 
 /**
  * @addtogroup widgets
@@ -96,6 +98,7 @@ typedef struct _GreeterWidget
   AdwActionRow *        project_parent_dir_row;
   IdeFileChooserEntry * project_parent_dir_fc;
   AdwComboRow *         templates_combo_row;
+  CcListRowInfoButton * templates_info_button;
   GPtrArray *           templates_arr;
   GPtrArray *           templates_item_factories;
   AdwPreferencesGroup * templates_pref_group;
