@@ -4,15 +4,12 @@
   <requires lib="Adw" version="1.0"/>
   <requires lib="Panel" version="1.0"/>
   <template class="MainWindowWidget" parent="AdwApplicationWindow">
-    <property name="focusable">1</property>
     <property name="icon_name">zrythm</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <property name="content">
-      <object class="GtkBox" id="main_box">
-        <property name="name">main-window-main-box</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkHeaderBar" id="header_bar">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
             <child type="start">
               <object class="GtkBox" id="header_start_box">
                 <child>
@@ -100,12 +97,8 @@
               </object>
             </child>
           </object>
-        </child>
-        <child>
-          <object class="TopBarWidget" id="top_bar">
-          </object>
-        </child>
-        <child>
+        </child> <!-- end AdwToolbarView top child -->
+        <property name="content">
           <object class="GtkBox" id="center_box">
             <property name="name">main-window-center-box</property>
             <property name="vexpand">1</property>
@@ -120,8 +113,8 @@
               </object>
             </child>
           </object>
-        </child>
-        <child>
+        </property> <!-- end content for AdwToolbarView -->
+        <child type="bottom">
           <object class="BotBarWidget" id="bot_bar">
           </object>
         </child>

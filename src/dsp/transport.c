@@ -22,7 +22,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
-#include "gui/widgets/top_bar.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/debug.h"

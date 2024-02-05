@@ -131,7 +131,6 @@ widget_srcs = files([
   'timeline_toolbar.c',
   #'timeline_selection_info.c',
   'toolbox.c',
-  'top_bar.c',
   'track.c',
   'track_canvas.c',
   'track_input_expander.c',

@@ -44,7 +44,6 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/toolbox.h"
-#include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -365,7 +364,6 @@ main_window_widget_setup (MainWindowWidget * self)
   /*GTK_WINDOW (self), "zrythm");*/
 
   /* setup top and bot bars */
-  top_bar_widget_refresh (self->top_bar);
   bot_bar_widget_setup (self->bot_bar);
 
   /* setup mixer */
@@ -477,15 +475,12 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (wklass, MainWindowWidget, x)
 
   BIND_CHILD (toast_overlay);
-  BIND_CHILD (main_box);
-  BIND_CHILD (header_bar);
   BIND_CHILD (start_dock_switcher);
   BIND_CHILD (end_dock_switcher);
   BIND_CHILD (window_title);
   BIND_CHILD (toolbox);
   BIND_CHILD (undo_btn);
   BIND_CHILD (redo_btn);
-  BIND_CHILD (top_bar);
   BIND_CHILD (center_box);
   BIND_CHILD (center_dock);
   BIND_CHILD (bot_bar);
@@ -790,7 +785,6 @@ main_window_widget_init (MainWindowWidget * self)
   g_action_map_add_action_entries (
     G_ACTION_MAP (zrythm_app), actions, G_N_ELEMENTS (actions), zrythm_app);
 
-  g_type_ensure (TOP_BAR_WIDGET_TYPE);
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);
   g_type_ensure (PANEL_TYPE_TOGGLE_BUTTON);

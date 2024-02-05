@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
@@ -46,7 +48,6 @@ typedef struct _MainWindowWidget
 {
   AdwApplicationWindow parent_instance;
 
-  GtkHeaderBar *      header_bar;
   PanelToggleButton * start_dock_switcher;
   AdwWindowTitle *    window_title;
   PanelToggleButton * end_dock_switcher;
@@ -60,8 +61,6 @@ typedef struct _MainWindowWidget
   GtkBox *    header_end_box;
   GtkButton * z_icon;
 
-  GtkBox *           main_box;
-  TopBarWidget *     top_bar;
   GtkBox *           center_box;
   CenterDockWidget * center_dock;
   BotBarWidget *     bot_bar;

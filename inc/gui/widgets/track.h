@@ -62,7 +62,8 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 #define TRACK_ICON_NAME_MINUS "remove"
 #define TRACK_ICON_NAME_BUS "effect"
 #define TRACK_ICON_NAME_CHORDS "minuet-chords"
-#define TRACK_ICON_NAME_SHOW_MARKERS "gnome-icon-library-flag-outline-thick-symbolic"
+#define TRACK_ICON_NAME_SHOW_MARKERS \
+  "gnome-icon-library-flag-outline-thick-symbolic"
 #define TRACK_ICON_NAME_MIDI "instrument"
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
 #define TRACK_ICON_NAME_MODULATOR "modulator"

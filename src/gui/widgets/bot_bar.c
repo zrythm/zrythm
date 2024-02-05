@@ -27,7 +27,6 @@
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/preroll_count_selector.h"
 #include "gui/widgets/spectrum_analyzer.h"
-#include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
 #include "settings/settings.h"

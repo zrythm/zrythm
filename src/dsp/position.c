@@ -18,7 +18,6 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
-#include "gui/widgets/top_bar.h"
 #include "project.h"
 #include "utils/algorithms.h"
 #include "utils/math.h"

@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "dsp/engine.h"
 #include "dsp/port.h"
@@ -163,7 +165,9 @@ plugin_properties_expander_widget_setup (
   /* set name and icon */
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self), _ ("Plugin Properties"));
-  expander_box_widget_set_icon_name (Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-general-properties-symbolic");
+  expander_box_widget_set_icon_name (
+    Z_EXPANDER_BOX_WIDGET (self),
+    "gnome-icon-library-general-properties-symbolic");
 
   GtkWidget * lbl;
 

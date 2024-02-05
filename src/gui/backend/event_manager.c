@@ -67,7 +67,6 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/toolbox.h"
-#include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/tracklist.h"
@@ -913,8 +912,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       chord_editor_space_widget_refresh_chords (MW_CHORD_EDITOR_SPACE);
       break;
     case ET_JACK_TRANSPORT_TYPE_CHANGED:
-      g_message ("doing");
-      top_bar_widget_refresh (TOP_BAR);
       break;
     case ET_SELECTING_IN_ARRANGER:
       {
