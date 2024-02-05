@@ -270,13 +270,13 @@
                                 <property name="spacing">12</property>
                                 <child>
                                   <object class="GtkButton" id="create_new_project_btn">
-                                    <property name="label" translatable="yes">Create _New Project...</property>
+                                    <property name="label" translatable="yes">Create _New Project…</property>
                                     <property name="use-underline">1</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="select_folder_btn">
-                                    <property name="label" translatable="yes">Open From _Path...</property>
+                                    <property name="label" translatable="yes">Open From _Path…</property>
                                     <property name="use-underline">1</property>
                                   </object>
                                 </child>
