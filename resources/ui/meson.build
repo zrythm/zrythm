@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-resource_files += files ([
+ui_xml_files = [
   'audio_editor_space.ui',
   'automatable_selector.ui',
   'automation_editor_space.ui',
@@ -61,4 +61,31 @@ resource_files += files ([
   'tracklist_header.ui',
   'track.ui',
   'transport_controls.ui',
-  ])
+  ]
+
+resource_files += files (ui_xml_files)
+
+# Add target to run tidy to check for XML errors
+if tidy_bin.found ()
+  tidy_targets = []
+  foreach ui_xml_file : ui_xml_files
+    _name = 'html-tidy-' + ui_xml_file + '-check'
+    tidy_targets += custom_target (
+      _name,
+      output: _name,
+      build_by_default: false,
+      command: [
+        tidy_bin, '--add-xml-space', 'yes', '--indent', 'yes',
+        '--wrap', '120', '--vertical-space', 'no',
+        '-xml', '-errors', '-quiet',
+        meson.current_source_dir () / ui_xml_file,
+        ],
+      input: ui_xml_file,
+      )
+  endforeach
+  run_target (
+    'html-tidy-check',
+    command: [
+      'echo', 'HTML-Tidy on resource UI files succeeded.', ],
+    depends: tidy_targets)
+endif

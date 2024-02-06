@@ -92,6 +92,7 @@ faust2lv2 = find_program (
   'faust2lv2', required: false)
 sox = find_program (
   'sox', required: false)
+tidy_bin = find_program ('tidy', required: false)
 
 # --- Set common variables ---
 
