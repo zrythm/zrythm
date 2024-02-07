@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: LGPL-2.0-or-later
  */
 
 #ifndef __GTK_FISHBOWL_H__

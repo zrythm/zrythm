@@ -679,6 +679,15 @@ Copyright: 2006-2019 Queen Mary, University of London
 License: GPL-2.0-or-later
 
 Files:
+  src/dsp/vamp-ports/BeatTrack.h
+  src/dsp/vamp-ports/BeatTrack.cpp
+  src/dsp/vamp-ports/FixedTempoEstimator.h
+  src/dsp/vamp-ports/FixedTempoEstimator.cpp
+Copyright: Centre for Digital Music, Queen Mary, University of London
+License: GPL-2.0-or-later
+Comment: QM Vamp Plugin Set
+
+Files:
   ext/qm-dsp/ext/kissfft/*.h*
   ext/qm-dsp/ext/kissfft/*/*.h*
   ext/qm-dsp/ext/kissfft/*.c
