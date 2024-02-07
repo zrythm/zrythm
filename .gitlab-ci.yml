@@ -57,6 +57,11 @@ html-tidy-check:
   script:
     - ninja -C build html-tidy-check
 
+reuse-check:
+  stage: check
+  script:
+    - reuse lint
+
 build:
   stage: build
   script:
