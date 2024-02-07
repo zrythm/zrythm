@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->
+
 Repository Management
 =====================
 

@@ -4,6 +4,10 @@ Upstream-Contact: Alexandros Theodotou <alex@zrythm.org>
 Source: https://gitlab.zrythm.org/zrythm/zrythm
 License: LicenseRef-ZrythmLicense
 
+Files: .gitlab/issue_templates/*
+Copyright: 2023 Alexandros Theodotou <alex@zrythm.org>
+License: FSFAP
+
 Files: data/fonts/DSEG14-Classic-MINI/*
 Copyright: 2017, keshikan (http://www.keshikan.net), with Reserved Font Name "DSEG".
 License: OFL-1.1
@@ -156,6 +160,7 @@ Files:
   */zrythm-dark/*/cut-clip.svg
   */zrythm-dark/*/data-warning.svg
   */zrythm-dark/*/document-edit-symbolic.svg
+  */zrythm-dark/*/filename-bpm-amarok.svg
   */zrythm-dark/*/markers.svg
   */zrythm-dark/*/minuet-chords.svg
   */zrythm-dark/*/minuet-scales.svg
@@ -362,6 +367,7 @@ License: CC-BY-SA-4.0
 Files:
   doc/user/_static/img/about-dialog.png
   doc/user/_static/img/armed-track.png
+  doc/user/_static/img/arranger-shortcuts.png
   doc/user/_static/img/audio-arranger.png
   doc/user/_static/img/audio-editor.png
   doc/user/_static/img/audio-fx-track.png
@@ -469,7 +475,7 @@ Files:
   doc/user/_static/img/first-run-interface.png
   doc/user/_static/img/folder-track.png
   doc/user/_static/img/global_menus.png
-  doc/user/_static/img/global_shortcuts.png
+  doc/user/_static/img/global-shortcuts.png
   doc/user/_static/img/haas_plugin_window.png
   doc/user/_static/img/initial-configuration-dialog.png
   doc/user/_static/img/instrument-track.png

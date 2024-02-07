@@ -1,5 +1,5 @@
 <!---
-SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou
+SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
