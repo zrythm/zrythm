@@ -88,7 +88,9 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->plugin_browser_box = box;
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->plugin_browser));
-  ADD_TAB (GTK_WIDGET (box), "plugin-solid", _ ("Plugin Browser"));
+  ADD_TAB (
+    GTK_WIDGET (box), "gnome-icon-library-puzzle-piece-symbolic",
+    _ ("Plugin Browser"));
 
   /* add file browser */
   self->file_browser = panel_file_browser_widget_new ();

@@ -796,7 +796,7 @@ get_group_icon (const char * schema_str)
     }
   else if (string_contains_substr (schema_str, "preferences.plugins"))
     {
-      icon_name = "plugin";
+      icon_name = "gnome-icon-library-puzzle-piece-symbolic";
     }
   else if (string_contains_substr (schema_str, "preferences.editing"))
     {
@@ -823,8 +823,7 @@ add_group (PreferencesWidget * self, int group_idx)
   char **                 non_relocatable;
   g_settings_schema_source_list_schemas (source, 1, &non_relocatable, NULL);
 
-  /* loop once to get the max subgroup index and
-   * group name */
+  /* loop once to get the max subgroup index and group name */
   char *       schema_str;
   const char * group_name = NULL;
   const char * subgroup_name = NULL;
@@ -918,6 +917,10 @@ preferences_widget_new (void)
 
   for (int i = 0; i <= 6; i++)
     {
+      /* skip scripting for now - out of scope */
+      if (i == 6)
+        continue;
+
       add_group (self, i);
     }
 
