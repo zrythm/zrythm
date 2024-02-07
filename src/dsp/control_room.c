@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
  */
 
 #include "dsp/control_room.h"

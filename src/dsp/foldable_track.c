@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
  */
 
 #include <stdlib.h>

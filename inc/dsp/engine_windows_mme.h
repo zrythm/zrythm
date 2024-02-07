@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
  */
 
 #ifndef __AUDIO_ENGINE_WINDOWS_MME_H__

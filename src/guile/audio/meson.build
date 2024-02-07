@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 #
 # This file is part of Zrythm
 #
