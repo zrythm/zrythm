@@ -53,6 +53,7 @@ Files:
   doc/user/_static/favicon.ico
   doc/user/_static/z.svg
   */zrythm-dark/*/zrythm.svg
+  */zrythm-dark/*/zrythm-monochrome.svg
   */zrythm-dark/*/zrythm-splash*
 Copyright: 2020 Alexandros Theodotou <alex@zrythm.org>
 License: LicenseRef-ZrythmLogoLicense

@@ -21,6 +21,7 @@ widget_srcs = files([
   'balance_control.c',
   'bar_slider.c',
   'bot_bar.c',
+  'cc-list-row-info-button.c',
   'bot_dock_edge.c',
   'bounce_step_selector.c',
   'button_with_menu.c',

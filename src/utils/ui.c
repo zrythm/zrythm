@@ -466,7 +466,11 @@ void
 ui_show_notification (const char * msg)
 {
   AdwToast * toast = adw_toast_new (msg);
-  adw_toast_overlay_add_toast (MAIN_WINDOW->toast_overlay, toast);
+  if (MAIN_WINDOW)
+    {
+      adw_toast_overlay_add_toast (MAIN_WINDOW->toast_overlay, toast);
+    }
+    /* TODO: add toast overlay in greeter too */
 #if 0
   gtk_label_set_text (MAIN_WINDOW->notification_label,
                       msg);

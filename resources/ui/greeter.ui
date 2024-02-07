@@ -208,16 +208,21 @@
                       </object>
                       end spinner approach -->
                       <object class="AdwStatusPage" id="status_page">
-                        <property name="icon-name">zrythm</property>
-                        <property name="title" translatable="yes">Loading</property>
+                        <property name="icon-name">zrythm-monochrome</property>
+                        <property name="title" translatable="yes">Zrythm</property>
                         <property name="hexpand">True</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="progress_bar">
-                        <property name="show-text">true</property>
-                        <property name="margin-start">36</property>
-                        <property name="margin-end">36</property>
+                      <object class="AdwClamp">
+                        <property name="maximum-size">450</property>
+                        <child>
+                          <object class="GtkProgressBar" id="progress_bar">
+                            <property name="show-text">true</property>
+                            <property name="margin-start">36</property>
+                            <property name="margin-end">36</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -238,7 +243,16 @@
                     <property name="child">
                       <object class="AdwToolbarView">
                         <child type="top">
-                          <object class="AdwHeaderBar"/>
+                          <object class="AdwHeaderBar">
+                            <child type="end">
+                              <object class="GtkMenuButton">
+                                <property name="primary">True</property>
+                                <property name="icon-name">open-menu-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Menu</property>
+                                <property name="menu-model">primary_menu</property>
+                              </object>
+                            </child>
+                          </object>
                         </child>
                         <property name="content">
                           <object class="AdwPreferencesPage">
@@ -256,13 +270,13 @@
                                 <property name="spacing">12</property>
                                 <child>
                                   <object class="GtkButton" id="create_new_project_btn">
-                                    <property name="label" translatable="yes">Create _New Project...</property>
+                                    <property name="label" translatable="yes">Create _New Project…</property>
                                     <property name="use-underline">1</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="select_folder_btn">
-                                    <property name="label" translatable="yes">Open From _Path...</property>
+                                    <property name="label" translatable="yes">Open From _Path…</property>
                                     <property name="use-underline">1</property>
                                   </object>
                                 </child>
@@ -286,7 +300,6 @@
                           <object class="AdwPreferencesPage">
                             <child>
                               <object class="AdwPreferencesGroup">
-                                <property name="title" translatable="yes">Project Details</property>
                                 <child>
                                   <object class="AdwEntryRow" id="project_title_row">
                                     <property name="title" translatable="yes">Project Name</property>
@@ -297,38 +310,37 @@
                                     <property name="title" translatable="yes">Parent Directory</property>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwPreferencesGroup">
-                                <property name="title" translatable="yes">Template</property>
                                 <child>
-                                  <object class="GtkListBox" id="templates_list_box">
-                                    <property name="selection-mode">browse</property>
+                                  <object class="AdwComboRow" id="templates_combo_row">
+                                    <property name="title" translatable="yes">Template</property>
+                                    <property name="model">
+                                      <object class="GtkStringList"/>
+                                    </property>
+                                    <child type="suffix">
+                                      <object class="CcListRowInfoButton" id="templates_info_button">
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </property> <!-- AdwToolbarView content -->
-                        <child type="bottom">
-                          <object class="GtkActionBar">
-                            <child type="center">
-                              <object class="GtkBox">
-                                <property name="spacing">12</property>
+                            <child>
+                              <object class="AdwPreferencesGroup">
                                 <child>
                                   <object class="GtkButton" id="create_project_confirm_btn">
                                     <property name="label" translatable="yes">Create Project</property>
-                                    <property name="halign">end</property>
+                                    <property name="halign">center</property>
                                     <style>
                                       <class name="suggested-action"/>
+                                      <class name="pill"/>
                                     </style>
                                   </object>
                                 </child>
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property> <!-- AdwToolbarView content -->
                       </object>
                     </property> <!-- nav page child -->
                   </object>
@@ -340,4 +352,21 @@
       </object>
     </property>
   </template>
+  <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Create _New Project…</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About Zrythm</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

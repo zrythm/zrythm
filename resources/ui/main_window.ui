@@ -10,6 +10,9 @@
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
+            <style>
+              <class name="main-window-header"/>
+            </style>
             <child type="start">
               <object class="GtkBox" id="header_start_box">
                 <child>

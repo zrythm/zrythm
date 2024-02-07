@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -12,6 +13,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/cc-list-row-info-button.h"
 #include "gui/widgets/file_chooser_entry.h"
 #include "gui/widgets/greeter.h"
 #include "gui/widgets/item_factory.h"
@@ -150,23 +152,18 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 }
 
 static AdwActionRow *
-create_action_row_from_project_info (
-  GreeterWidget * self,
-  ProjectInfo *   nfo,
-  bool            is_template)
+create_action_row_from_project_info (GreeterWidget * self, ProjectInfo * nfo)
 {
   AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), nfo->name);
   adw_action_row_set_subtitle (row, nfo->filename);
-  if (!is_template)
-    {
-      GtkWidget * img = gtk_image_new_from_icon_name ("go-next-symbolic");
-      adw_action_row_add_suffix (row, img);
-      gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), true);
-      g_signal_connect (
-        G_OBJECT (row), "activated", G_CALLBACK (on_project_row_activated),
-        self);
-    }
+
+  GtkWidget * img = gtk_image_new_from_icon_name ("go-next-symbolic");
+  adw_action_row_add_suffix (row, img);
+  gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), true);
+  g_signal_connect (
+    G_OBJECT (row), "activated", G_CALLBACK (on_project_row_activated), self);
+
   g_object_set_data (G_OBJECT (row), "project-info", nfo);
   return row;
 }
@@ -178,8 +175,7 @@ refresh_projects (GreeterWidget * self)
     {
       ProjectInfo * nfo =
         (ProjectInfo *) g_ptr_array_index (self->project_infos_arr, i);
-      AdwActionRow * row =
-        create_action_row_from_project_info (self, nfo, false);
+      AdwActionRow * row = create_action_row_from_project_info (self, nfo);
       adw_preferences_group_add (
         self->recent_projects_pref_group, GTK_WIDGET (row));
     }
@@ -188,12 +184,14 @@ refresh_projects (GreeterWidget * self)
 static void
 refresh_templates (GreeterWidget * self)
 {
+  GListModel * templates = adw_combo_row_get_model (self->templates_combo_row);
   for (size_t i = 0; i < self->templates_arr->len; i++)
     {
       ProjectInfo * nfo =
         (ProjectInfo *) g_ptr_array_index (self->templates_arr, i);
-      AdwActionRow * row = create_action_row_from_project_info (self, nfo, true);
-      gtk_list_box_append (self->templates_list_box, GTK_WIDGET (row));
+      gtk_string_list_append (GTK_STRING_LIST (templates), nfo->name);
+      g_object_set_data (
+        G_OBJECT (g_list_model_get_item (templates, i)), "project-info", nfo);
     }
 }
 
@@ -286,7 +284,7 @@ begin_init (GreeterWidget * self)
 static void
 on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  gtk_window_set_title (GTK_WINDOW (self), _ ("Loading"));
+  gtk_window_set_title (GTK_WINDOW (self), _ ("Zrythm"));
   gtk_stack_set_visible_child_name (self->stack, "progress");
 
   g_settings_set_boolean (S_GENERAL, "first-run", false);
@@ -407,9 +405,9 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   g_free (str);
   g_message ("creating project at: %s", ZRYTHM->create_project_path);
 
-  GtkListBoxRow * row = gtk_list_box_get_selected_row (self->templates_list_box);
-  ProjectInfo * selected_template =
-    g_object_get_data (G_OBJECT (row), "project-info");
+  GObject * template =
+    adw_combo_row_get_selected_item (self->templates_combo_row);
+  ProjectInfo * selected_template = g_object_get_data (template, "project-info");
   g_return_if_fail (selected_template);
 
   ZRYTHM->creating_project = true;
@@ -463,9 +461,7 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
     GTK_EDITABLE (self->project_title_row), untitled_project);
   g_free (untitled_project);
 
-  GtkListBoxRow * row =
-    gtk_list_box_get_row_at_index (self->templates_list_box, 0);
-  gtk_list_box_select_row (self->templates_list_box, row);
+  adw_combo_row_set_selected (self->templates_combo_row, 0);
 }
 
 static void
@@ -616,7 +612,7 @@ greeter_widget_new (
   /* else if not first run, skip to the "progress" part (don't show welcome UI) */
   else if (is_startup && !app->is_first_run)
     {
-      gtk_window_set_title (GTK_WINDOW (self), _ ("Loading"));
+      gtk_window_set_title (GTK_WINDOW (self), _ ("Zrythm"));
       gtk_stack_set_visible_child_name (self->stack, "progress");
       begin_init (self);
     }
@@ -744,6 +740,16 @@ greeter_widget_init (GreeterWidget * self)
     adw_preferences_group_add (pref_group, GTK_WIDGET (row));
   }
 
+  /* set templates info button label */
+  char * str = g_strdup_printf (
+    _ ("You can create your own templates by copying a project directory under “templates” in the <a href=\"%s\">Zrythm user path</a>."),
+    dir);
+  cc_list_row_info_button_set_text (self->templates_info_button, str);
+  cc_list_row_info_button_set_text_callback (
+    self->templates_info_button, G_CALLBACK (z_gtk_activate_dir_link_func));
+
+  g_free (str);
+
   /* add error text */
   gtk_widget_add_css_class (GTK_WIDGET (self->lang_error_txt), "error");
   adw_preferences_group_add (pref_group, GTK_WIDGET (self->lang_error_txt));
@@ -817,6 +823,8 @@ greeter_widget_init (GreeterWidget * self)
 static void
 greeter_widget_class_init (GreeterWidgetClass * _klass)
 {
+  g_type_ensure (CC_TYPE_LIST_ROW_INFO_BUTTON);
+
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (wklass, "greeter.ui");
   gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_DIALOG);
@@ -847,7 +855,8 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
   BIND_CHILD (create_project_nav_page);
   BIND_CHILD (project_title_row);
   BIND_CHILD (project_parent_dir_row);
-  BIND_CHILD (templates_list_box);
+  BIND_CHILD (templates_combo_row);
+  BIND_CHILD (templates_info_button);
   BIND_CHILD (create_project_confirm_btn);
 
 #undef BIND_CHILD
