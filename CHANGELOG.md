@@ -6,6 +6,35 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.3.1] - 2024-02-08
+### Added
+- Add primary menu to the header bar
+
+### Changed
+- Port MIDI function dialog rows to new libadwaita widgets
+- Port plugin/file browsers to AdwToolbarView
+- Change some global keyboard shortcuts
+- Move visualizers to bottom bar
+- Merge header bar toggles and secondary global toolbar into the main toolbar
+- Redesign/merge first-run screen, welcome dialog, project selector and project creator into a new greeter window
+- Only set header bar color on main project window
+- Mac: don't try to force window on top
+- Change some icons
+- Don't style window close button
+- Use AdwToolbarView for main project window
+- Add gradient to progress bars and padding to progress bar captions
+- GTK: Force old GL renderer on Windows
+
+### Fixed
+- Fix error when copy-pasting audio regions after a BPM change (#4993)
+- Zrythm is now fully REUSE 3.0 compliant (fixed license issues reported by `reuse lint`)
+
+### Removed
+- Remove Zrythm logo from header bar
+- Remove some buttons that used to be in the main and secondary toolbars
+- Remove scripting interface button (out of scope for v1)
+- Remove dependency on breeze icons
+
 ## [1.0.0-beta.6.2.1] - 2024-01-24
 ### Added
 - Support editing the curve for multiple automation points (#4991)
