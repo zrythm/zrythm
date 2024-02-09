@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
@@ -520,13 +520,11 @@ on_outputs_stereo_response (
 
 static void
 on_contains_multiple_outputs_response (
-  GtkDialog *     dialog,
-  gint            response_id,
-  PluginSetting * self)
+  AdwMessageDialog * dialog,
+  char *             response,
+  PluginSetting *    self)
 {
-  bool autoroute_multiout = response_id == GTK_RESPONSE_YES;
-
-  if (autoroute_multiout)
+  if (string_is_equal (response, "yes"))
     {
       GtkWidget * stereo_dialog = adw_message_dialog_new (
         GTK_WINDOW (MAIN_WINDOW), _ ("Stereo?"), _ ("Are the outputs stereo?"));
@@ -542,12 +540,14 @@ on_contains_multiple_outputs_response (
         setting_clone, plugin_setting_free_closure, 0);
       gtk_window_present (GTK_WINDOW (stereo_dialog));
     }
-  else
+  else if (string_is_equal (response, "no"))
     {
       activate_finish (self, false, false);
     }
-
-  gtk_window_destroy (GTK_WINDOW (dialog));
+  else
+    {
+      /* do nothing */
+    }
 }
 
 /**
@@ -563,14 +563,16 @@ plugin_setting_activate (const PluginSetting * self)
 
   if (self->descr->num_audio_outs > 2 && type == TRACK_TYPE_INSTRUMENT)
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION,
-        GTK_BUTTONS_YES_NO, "%s",
-        _ ("This plugin contains multiple "
-           "audio outputs. "
-           "Would you like to auto-route each "
-           "output to a separate FX track?"));
+      AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW), _ ("Auto-route?"),
+        _ (
+          "This plugin contains multiple audio outputs. Would you like to auto-route each output to a separate FX track?")));
+      adw_message_dialog_add_responses (
+        dialog, "cancel", _ ("_Cancel"), "no", _ ("_No"), "yes", _ ("_Yes"),
+        NULL);
+      adw_message_dialog_set_close_response (dialog, "cancel");
+      adw_message_dialog_set_response_appearance (
+        dialog, "yes", ADW_RESPONSE_SUGGESTED);
       PluginSetting * setting_clone = plugin_setting_clone (self, false);
       g_signal_connect_data (
         dialog, "response", G_CALLBACK (on_contains_multiple_outputs_response),
