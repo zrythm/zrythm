@@ -112,8 +112,8 @@ appdata_file_in_unformatted = custom_target (
   depend_files: gen_appdata_xml_wrap,
   output: '@0@.appdata.xml.in.in'.format (app_id),
   command: [
-    gen_appdata_xml_wrap,
-    meson_build_root / '@OUTPUT@', app_id,
+    bash, '-c', '@INPUT@' + ' "$1" "$2"',
+    '_ignored', meson_build_root / '@OUTPUT@',  app_id,
     ])
 appdata_file_in = custom_target (
   'appdata-xml-in',
