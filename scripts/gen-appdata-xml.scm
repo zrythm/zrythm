@@ -1,4 +1,4 @@
-;;; SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 ;;; SPDX-License-Identifier: LicenseRef-ZrythmLicense
 ;;;
 ;;; Generate appdata.xml
@@ -77,7 +77,7 @@
                      (type "development"))
                   (url
                     ,(string-append
-                       "https://git.sr.ht/~alextee/zrythm/refs/v" ver))
+                       "@RELEASE_TAG_BASE_URL@/v" ver))
                   (description
                     ,(fold
                       (lambda (x accumulator)
@@ -139,7 +139,7 @@ Args:
                  (project_license  "AGPL-3.0-or-later")
                  (name "Zrythm")
                  (developer_name
-                   "The Zrythm contributors")
+                   "The Zrythm project")
                  (summary "Digital audio workstation")
                  (description
                    (p "Zrythm is a digital audio
@@ -148,8 +148,7 @@ be featureful and easy to use.
 It offers streamlined editing workflows with flexible
 tools, limitless automation capabilities, powerful
 mixing features, chord assistance and support for
-various plugin and file formats.")
-                   (p "Zrythm can be extended with user scripts written in Scheme or ECMAScript."))
+various plugin and file formats."))
                  (categories
                    (category "AudioVideo")
                    (category "Audio"))
@@ -164,7 +163,7 @@ various plugin and file formats.")
                    "@FAQ_URL@")
                  (url
                    (@ (type "help"))
-                   "@USER_MANUAL_URL@")
+                   "@CHATROOM_URL@")
                  (url
                    (@ (type "donation"))
                    "@DONATION_URL@")

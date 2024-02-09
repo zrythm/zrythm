@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 app_id = 'org.zrythm.Zrythm'
@@ -108,6 +108,7 @@ if os_gnu or os_freebsd
   appdata_file_in_unformatted = custom_target (
     'appdata-xml-in-tmp',
     input: gen_appdata_xml_wrap,
+    depend_files: gen_appdata_xml_wrap,
     output: '@0@.appdata.xml.in.in'.format (app_id),
     command: [
       gen_appdata_xml_wrap,

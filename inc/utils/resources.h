@@ -18,7 +18,8 @@
  * Helpers for loading and using resources such as icons.
  */
 
-#define RESOURCES_PATH "/org/zrythm/Zrythm/app"
+#define RESOURCES_PATH_TOP "/org/zrythm/Zrythm"
+#define RESOURCES_PATH RESOURCES_PATH_TOP "/app"
 #define RESOURCES_TEMPLATE_PATH RESOURCES_PATH "/ui"
 #define RESOURCES_GL_SHADERS_PATH RESOURCES_PATH "/gl/shaders"
 

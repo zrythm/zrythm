@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 # gen resources XML
@@ -9,21 +9,22 @@ resource_files = files ([
 
 subdir ('ui')
 
-zrythm_gresources_xml = configure_file (
+zrythm_gresources_xml = custom_target (
+  'zrythm-gresources-xml',
   output: 'zrythm.gresources.xml',
-  input: [
-    gen_gtk_resources_xml_wrap,
-    resource_files,
-    ],
+  depend_files: [ resource_files ],
+  depends: appdata_file,
   command: [
-    '@INPUT0@',
+    gen_gtk_resources_xml_wrap,
     meson.current_source_dir(),
-    '@OUTPUT@'
+    appdata_file.full_path(),
+    meson.current_build_dir() / 'zrythm.gresources.xml'
     ])
 
 zrythm_resources = gnome.compile_resources (
   'zrythm-resources',
   zrythm_gresources_xml,
+  dependencies: appdata_file,
   source_dir: resources_dir,
   c_name: 'zrythm',
 )

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 scripts_conf = {
@@ -7,12 +7,14 @@ scripts_conf = {
   'MESON_SOURCE_ROOT': meson_src_root,
   'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
   'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
-  'BUG_REPORT_URL': cdata.get ('ISSUE_TRACKER_URL'),
-  'FAQ_URL': 'https://manual.zrythm.org/en/getting-started/faq.html',
-  'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
+  'BUG_REPORT_URL': issue_tracker_url,
+  'CHATROOM_URL': chatroom_url,
+  'FAQ_URL': faq_url,
+  'USER_MANUAL_URL': user_manual_url,
   'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',
   'CONTACT_URL': 'https://www.zrythm.org/en/community.html#contact',
-  'MAIN_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/screenshot-20221015.png',
+  'MAIN_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png',
+  'RELEASE_TAG_BASE_URL': 'https://gitlab.zrythm.org/zrythm/zrythm/-/tags/'
   }
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
@@ -61,7 +63,12 @@ configure_file (
     'LINGUAS': locales_for_gen_schema_scm },
   )
 
-# ---- create wraps needed on windows mingw ----
+# ----
+# Create shell-script wrappers that execute the Guile scripts.
+#
+# This is to avoid errors on platforms like MingW when running Guile scripts
+# directly.
+# ----
 
 generic_guile_wrap_name = 'generic_guile_wrap.sh'
 
@@ -92,11 +99,13 @@ gen_gtk_resources_xml_wrap = configure_file (
     'SCRIPT_NAME': src_script },
   )
 
+src_script = 'gen-appdata-xml.scm'
 gen_appdata_xml_wrap = configure_file (
   output: 'gen-appdata-xml.sh',
   input: generic_guile_wrap_name,
+  depfile: src_script,
   configuration: scripts_conf + {
-    'SCRIPT_NAME': 'gen-appdata-xml.scm'},
+    'SCRIPT_NAME': src_script },
   )
 
 gen_completions_sh = configure_file (

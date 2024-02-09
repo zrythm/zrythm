@@ -108,6 +108,9 @@ prog_name_lowercase = prog_name.to_lower()
 copyright_name = 'The ' + prog_name + ' contributors'
 copyright_years = '2018-2024'
 issue_tracker_url = 'https://gitlab.zrythm.org/zrythm/zrythm/-/issues'
+chatroom_url = 'https://matrix.to/#/#zrythmdaw:matrix.org'
+user_manual_url = 'https://manual.zrythm.org/en/index.html'
+faq_url = 'https://manual.zrythm.org/en/getting-started/faq.html'
 
 prefix = get_option ('prefix')
 bindir = prefix / get_option ('bindir')
@@ -302,6 +305,9 @@ cdata.set_quoted (
   # vcs_tag() broke on windows builds so just use the given
   # version
   os_windows ? version_fallback : '@VCS_TAG@')
+# this always uses the latest release version from VERSION.txt
+cdata.set_quoted (
+  'RELEASE_VERSION', meson.project_version ())
 # target major version (what this branch targets)
 cdata.set ('ZRYTHM_TARGET_VER_MAJ', 1)
 cdata.set_quoted (
@@ -379,8 +385,7 @@ cdata.set_quoted (
   'PURCHASE_URL',
   'https://www.zrythm.org/en/download.html')
 cdata.set_quoted (
-  'USER_MANUAL_URL',
-  'https://manual.zrythm.org/en/index.html')
+  'USER_MANUAL_URL', user_manual_url)
 cdata.set_quoted (
   'LICENSE_URL',
   'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt')
@@ -1572,8 +1577,8 @@ ext_srcs = []
 subdir ('scripts')
 subdir ('po')
 subdir ('ext')
-subdir ('resources')
 subdir ('data')
+subdir ('resources')
 subdir ('inc')
 subdir ('src')
 subdir ('tests')

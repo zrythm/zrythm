@@ -1,4 +1,4 @@
-;;; SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 ;;; SPDX-License-Identifier: LicenseRef-ZrythmLicense
 ;;;
 ;;; Generate gtk.gresources.xml
@@ -21,19 +21,20 @@
 #!
 Args:
 1: resources dir
-2: output file
+2: appdata file
+3: output file
 !#
 (define (main . args)
 
   ;; verify number of args
-  (unless (eq? (length args) 3)
-    (display "Need 2 arguments")
+  (unless (eq? (length args) 4)
+    (display "Need 3 arguments")
     (newline)
     (exit -1))
 
   ;; get args
   (match args
-    ((this-program resources-dir output-file)
+    ((this-program resources-dir appdata-file output-file)
 
      ;; open file
      (with-output-to-file output-file
@@ -41,7 +42,7 @@ Args:
 
          (display
 "<!--
-  Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2018-2024 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -126,11 +127,16 @@ Args:
          ;; insert standard gtk menus
          ;; (see GtkApplication docs)
          (display
+           (string-append
 "  </gresource>
   <gresource prefix='/org/zrythm/Zrythm'>
     <file preprocess='xml-stripblanks'>gtk/menus.ui</file>
     <file preprocess='xml-stripblanks'>gtk/help-overlay.ui</file>
+    <file preprocess='xml-stripblanks'>" (basename appdata-file) "</file>
   </gresource>
-</gresources>"))))))
+"))
+
+         ;; end
+         (display "</gresources>"))))))
 
 (apply main (program-arguments))

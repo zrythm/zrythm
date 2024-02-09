@@ -21,11 +21,11 @@ about_dialog_widget_new (GtkWindow * parent)
 {
   const char * artists[] = {
     "Alexandros Theodotou <alex@zrythm.org>", "Daniel Peterson",
-    "Carlos Han (C.K. Design) <https://twitter.com/karl_iaxd>", NULL
+    "Carlos Han (C.K. Design)", NULL
   };
   const char * authors[] = {
-    "Alexandros Theodotou <alex@zrythm.org>", "Ryan Gonzalez",
-    "Sascha Bast <sash@mischkonsum.org>", "Georg Krause", NULL
+    "Alexandros Theodotou <alex@zrythm.org>", "Miró Allard",  "Ryan Gonzalez",
+    "Sascha Bast <sash@mischkonsum.org>",     "Georg Krause", NULL
   };
   const char * documenters[] = {
     "Alexandros Theodotou <alex@zrythm.org>", NULL
@@ -35,32 +35,30 @@ about_dialog_widget_new (GtkWindow * parent)
   char * version = zrythm_get_version (true);
   char * sys_nfo = zrythm_get_system_info ();
 
-  /* quick hack - eventually reuse the XML from appdata.xml */
-  char * release_notes =
-    g_strdup_printf ("<p>%s</p>", CHANGELOG_TXT_FOR_ABOUT_DIALOG);
+  AdwAboutWindow * dialog = ADW_ABOUT_WINDOW (adw_about_window_new_from_appdata (
+    RESOURCES_PATH_TOP "/org.zrythm.Zrythm.appdata.xml", RELEASE_VERSION));
 
-  AdwAboutWindow * dialog = g_object_new (
-    ADW_TYPE_ABOUT_WINDOW, "artists", artists, "developers", authors,
-    "copyright",
+  adw_about_window_set_artists (dialog, artists);
+  adw_about_window_set_developers (dialog, authors);
+  adw_about_window_set_documenters (dialog, documenters);
+  adw_about_window_set_translator_credits (dialog, translators);
+  adw_about_window_set_copyright (
+    dialog,
     "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME
 #if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) || !defined(HAVE_CUSTOM_NAME)
-    "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
+    "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou, registered in the UK and other countries"
 #endif
-    ,
-    "developer-name", COPYRIGHT_NAME, "documenters", documenters,
-    "application-icon", "zrythm",
-    /*"logo", pixbuf,*/
-    "application-name", PROGRAM_NAME, "comments",
-    _ ("a highly automated and intuitive digital audio workstation"),
-    "debug-info", sys_nfo, "issue-url", ISSUE_TRACKER_URL, "license-type",
-    GTK_LICENSE_AGPL_3_0, "translator-credits", translators, "release-notes",
-    release_notes, "website", "https://www.zrythm.org", "version", version,
-    NULL);
+  );
+  adw_about_window_set_comments (
+    dialog, _ ("a highly automated and intuitive digital audio workstation"));
+  adw_about_window_set_debug_info (dialog, sys_nfo);
+  adw_about_window_set_version (dialog, version);
+
   gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+  gtk_window_set_modal (GTK_WINDOW (dialog), true);
 
   g_free (version);
   g_free (sys_nfo);
-  g_free (release_notes);
 
   return GTK_WINDOW (dialog);
 }
