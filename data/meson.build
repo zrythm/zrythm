@@ -103,69 +103,69 @@ if os_gnu or os_freebsd
       args: [localized_desktop_file]
     )
   endif
-
-  # appdata
-  appdata_file_in_unformatted = custom_target (
-    'appdata-xml-in-tmp',
-    input: gen_appdata_xml_wrap,
-    depend_files: gen_appdata_xml_wrap,
-    output: '@0@.appdata.xml.in.in'.format (app_id),
-    command: [
-      gen_appdata_xml_wrap,
-      meson_build_root / '@OUTPUT@', app_id,
-      ])
-  appdata_file_in = custom_target (
-    'appdata-xml-in',
-    input: appdata_file_in_unformatted,
-    output: '@0@.appdata.xml.in'.format (app_id),
-    command: [
-      xmllint, '--format', '--output', '@OUTPUT@',
-      '@INPUT@',
-      ])
-  appdata_file = i18n.merge_file (
-    input: appdata_file_in,
-    output: '@0@.appdata.xml'.format (app_id),
-    type: 'xml',
-    po_dir: meson_build_root / 'po',
-    install: true,
-    install_dir: datadir / 'metainfo',
-    )
-  run_target (
-    'gen-appdata-xml',
-    command: [ 'echo', 'Generated appdata.xml' ],
-    depends: appdata_file)
-  # Validate the appdata file
-  appstream_util = find_program (
-    'appstream-util', required: false)
-  if appstream_util.found ()
-    test ('appstream-util-validate-appdata',
-      appstream_util,
-      suite: 'data',
-      args: [
-        'validate-relax', '--nonet',
-        appdata_file.full_path()
-      ],
-      depends: [
-        appdata_file,
-      ],
-    )
-  endif
-  appstreamcli = find_program (
-    'appstreamcli', required: false)
-  if appstreamcli.found ()
-    test ('appstream-cli-validate-appdata',
-      appstreamcli,
-      suite: 'data',
-      args: [
-        'validate',
-        appdata_file.full_path()
-      ],
-      depends: [
-        appdata_file,
-      ],
-    )
-  endif
 endif # gnu or freebsd
+
+# appdata
+appdata_file_in_unformatted = custom_target (
+  'appdata-xml-in-tmp',
+  input: gen_appdata_xml_wrap,
+  depend_files: gen_appdata_xml_wrap,
+  output: '@0@.appdata.xml.in.in'.format (app_id),
+  command: [
+    gen_appdata_xml_wrap,
+    meson_build_root / '@OUTPUT@', app_id,
+    ])
+appdata_file_in = custom_target (
+  'appdata-xml-in',
+  input: appdata_file_in_unformatted,
+  output: '@0@.appdata.xml.in'.format (app_id),
+  command: [
+    xmllint, '--format', '--output', '@OUTPUT@',
+    '@INPUT@',
+    ])
+appdata_file = i18n.merge_file (
+  input: appdata_file_in,
+  output: '@0@.appdata.xml'.format (app_id),
+  type: 'xml',
+  po_dir: meson_build_root / 'po',
+  install: true,
+  install_dir: datadir / 'metainfo',
+  )
+run_target (
+  'gen-appdata-xml',
+  command: [ 'echo', 'Generated appdata.xml' ],
+  depends: appdata_file)
+# Validate the appdata file
+appstream_util = find_program (
+  'appstream-util', required: false)
+if appstream_util.found ()
+  test ('appstream-util-validate-appdata',
+    appstream_util,
+    suite: 'data',
+    args: [
+      'validate-relax', '--nonet',
+      appdata_file.full_path()
+    ],
+    depends: [
+      appdata_file,
+    ],
+  )
+endif
+appstreamcli = find_program (
+  'appstreamcli', required: false)
+if appstreamcli.found ()
+  test ('appstream-cli-validate-appdata',
+    appstreamcli,
+    suite: 'data',
+    args: [
+      'validate',
+      appdata_file.full_path()
+    ],
+    depends: [
+      appdata_file,
+    ],
+  )
+endif
 
 if os_darwin
   zrythm_gdb = configure_file (
