@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "zrythm-config.h"
 
@@ -16,12 +14,6 @@
 int
 main (int argc, char ** argv)
 {
-#ifdef _WOE32
-  /* force old GL renderer on windows until this is fixed:
-   * https://gitlab.gnome.org/GNOME/gtk/-/issues/6401 */
-  g_setenv ("GSK_RENDERER", "gl", false);
-#endif
-
   LOG = log_new ();
 
   /* send activate signal */
