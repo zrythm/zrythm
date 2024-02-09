@@ -4,8 +4,8 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Cubic Distortion"
 version: "1.0"
-Code generated with Faust 2.54.9 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn cubic_distortion -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __cubic_distortion_H__
@@ -106,7 +106,13 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distorti
 #ifndef __export__
 #define __export__
 
-#define FAUSTVERSION "2.54.9"
+// Version as a global string
+#define FAUSTVERSION "2.70.3"
+
+// Version as separated [major,minor,patch] values
+#define FAUSTMAJORVERSION 2
+#define FAUSTMINORVERSION 70
+#define FAUSTPATCHVERSION 3
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -324,17 +330,37 @@ class FAUST_API dsp_factory {
     
     public:
     
+        /* Return factory name */
         virtual std::string getName() = 0;
+    
+        /* Return factory SHA key */
         virtual std::string getSHAKey() = 0;
+    
+        /* Return factory expanded DSP code */
         virtual std::string getDSPCode() = 0;
+    
+        /* Return factory compile options */
         virtual std::string getCompileOptions() = 0;
+    
+        /* Get the Faust DSP factory list of library dependancies */
         virtual std::vector<std::string> getLibraryList() = 0;
+    
+        /* Get the list of all used includes */
         virtual std::vector<std::string> getIncludePathnames() = 0;
+    
+        /* Get warning messages list for a given compilation */
         virtual std::vector<std::string> getWarningMessages() = 0;
     
+        /* Create a new DSP instance, to be deleted with C++ 'delete' */
         virtual dsp* createDSPInstance() = 0;
     
+        /* Static tables initialization, possibly implemened in sub-classes*/
+        virtual void classInit(int sample_rate) {};
+    
+        /* Set a custom memory manager to be used when creating instances */
         virtual void setMemoryManager(dsp_memory_manager* manager) = 0;
+    
+        /* Return the currently set custom memory manager */
         virtual dsp_memory_manager* getMemoryManager() = 0;
     
 };
@@ -769,10 +795,11 @@ class cubic_distortion : public dsp {
 	int fSampleRate;
 	
  public:
-	
+	cubic_distortion() {}
+
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn cubic_distortion -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Cubic distortion");
 		m->declare("effect.lib/author", "Julius O. Smith (jos at ccrma.stanford.edu)");
@@ -853,6 +880,7 @@ class cubic_distortion : public dsp {
 		classInit(sample_rate);
 		instanceInit(sample_rate);
 	}
+	
 	virtual void instanceInit(int sample_rate) {
 		instanceConstants(sample_rate);
 		instanceResetUserInterface();
@@ -966,7 +994,7 @@ class cubic_distortion : public dsp {
 			}
 		}
 		/* Remaining frames */
-		if ((vindex < count)) {
+		if (vindex < count) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
 			int vsize = count - vindex;
@@ -2385,12 +2413,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 	plugin->map->map(plugin->map->handle, MIDI_EVENT_URI);
     }
   }
+	
   if (!plugin->map) {
     fprintf
-      (stderr, "%s: host doesn't support urid:map, giving up\n",
+      (stderr, "%s: host doesn't support urid:map. MIDI will not be supported.\n",
        PLUGIN_URI);
-    delete plugin;
-    return 0;
   }
   return (LV2_Handle)plugin;
 }

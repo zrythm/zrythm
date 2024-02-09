@@ -4,8 +4,8 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Phaser"
 version: "1.0"
-Code generated with Faust 2.54.9 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn phaser -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __phaser_H__
@@ -106,7 +106,13 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -
 #ifndef __export__
 #define __export__
 
-#define FAUSTVERSION "2.54.9"
+// Version as a global string
+#define FAUSTVERSION "2.70.3"
+
+// Version as separated [major,minor,patch] values
+#define FAUSTMAJORVERSION 2
+#define FAUSTMINORVERSION 70
+#define FAUSTPATCHVERSION 3
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -324,17 +330,37 @@ class FAUST_API dsp_factory {
     
     public:
     
+        /* Return factory name */
         virtual std::string getName() = 0;
+    
+        /* Return factory SHA key */
         virtual std::string getSHAKey() = 0;
+    
+        /* Return factory expanded DSP code */
         virtual std::string getDSPCode() = 0;
+    
+        /* Return factory compile options */
         virtual std::string getCompileOptions() = 0;
+    
+        /* Get the Faust DSP factory list of library dependancies */
         virtual std::vector<std::string> getLibraryList() = 0;
+    
+        /* Get the list of all used includes */
         virtual std::vector<std::string> getIncludePathnames() = 0;
+    
+        /* Get warning messages list for a given compilation */
         virtual std::vector<std::string> getWarningMessages() = 0;
     
+        /* Create a new DSP instance, to be deleted with C++ 'delete' */
         virtual dsp* createDSPInstance() = 0;
     
+        /* Static tables initialization, possibly implemened in sub-classes*/
+        virtual void classInit(int sample_rate) {};
+    
+        /* Set a custom memory manager to be used when creating instances */
         virtual void setMemoryManager(dsp_memory_manager* manager) = 0;
+    
+        /* Return the currently set custom memory manager */
         virtual dsp_memory_manager* getMemoryManager() = 0;
     
 };
@@ -779,6 +805,7 @@ class phaser : public dsp {
 	float fConst2;
 	FAUSTFLOAT fHslider3;
 	FAUSTFLOAT fHslider4;
+	float fConst3;
 	FAUSTFLOAT fHslider5;
 	FAUSTFLOAT fHslider6;
 	float fRec4_perm[4];
@@ -796,12 +823,14 @@ class phaser : public dsp {
 	float fRec8_perm[4];
 	
  public:
-	
+	phaser() {}
+
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.9");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("basics.lib/tabulateNd", "Copyright (C) 2023 Bart Brouns <bart@magnetophon.nl>");
+		m->declare("basics.lib/version", "1.12.0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn phaser -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Phaser effect");
 		m->declare("filename", "phaser.dsp");
@@ -819,22 +848,22 @@ class phaser : public dsp {
 		m->declare("filters.lib/tf2:author", "Julius O. Smith III");
 		m->declare("filters.lib/tf2:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 		m->declare("filters.lib/tf2:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/version", "0.3");
+		m->declare("filters.lib/version", "1.3.0");
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.5");
+		m->declare("maths.lib/version", "2.7.0");
 		m->declare("name", "Phaser");
 		m->declare("oscillators.lib/name", "Faust Oscillator Library");
-		m->declare("oscillators.lib/version", "0.3");
+		m->declare("oscillators.lib/version", "1.5.0");
 		m->declare("phaflangers.lib/name", "Faust Phaser and Flanger Library");
-		m->declare("phaflangers.lib/version", "0.1");
+		m->declare("phaflangers.lib/version", "1.1.0");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.3");
+		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.3");
+		m->declare("signals.lib/version", "1.5.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -856,7 +885,8 @@ class phaser : public dsp {
 		fSampleRate = sample_rate;
 		float fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
 		fConst1 = 6.2831855f / fConst0;
-		fConst2 = 1.0f / fConst0;
+		fConst2 = 3.1415927f / fConst0;
+		fConst3 = 1.0f / fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
@@ -921,6 +951,7 @@ class phaser : public dsp {
 		classInit(sample_rate);
 		instanceInit(sample_rate);
 	}
+	
 	virtual void instanceInit(int sample_rate) {
 		instanceConstants(sample_rate);
 		instanceResetUserInterface();
@@ -1005,14 +1036,14 @@ class phaser : public dsp {
 		int* iVec0 = &iVec0_tmp[4];
 		float fRec7_tmp[36];
 		float* fRec7 = &fRec7_tmp[4];
-		float fSlow4 = std::exp(fConst2 * (0.0f - 3.1415927f * float(fHslider2)));
+		float fSlow4 = std::exp(-(fConst2 * float(fHslider2)));
 		float fSlow5 = phaser_faustpower2_f(fSlow4);
 		float fSlow6 = float(fHslider3);
-		float fSlow7 = 0.5f * (0.0f - fConst1 * (fSlow6 - std::max<float>(fSlow6, float(fHslider4))));
-		float fSlow8 = fConst1 * fSlow6;
+		float fSlow7 = 3.1415927f * (fSlow6 - std::max<float>(fSlow6, float(fHslider4)));
+		float fSlow8 = 6.2831855f * fSlow6;
 		float fZec0[32];
 		float fZec1[32];
-		float fSlow9 = 0.0f - 2.0f * fSlow4;
+		float fSlow9 = 2.0f * fSlow4;
 		float fSlow10 = float(fHslider5);
 		float fSlow11 = std::pow(1e+01f, 0.05f * float(fHslider6));
 		float fRec4_tmp[36];
@@ -1031,9 +1062,10 @@ class phaser : public dsp {
 		float* fRec1 = &fRec1_tmp[4];
 		float fRec0_tmp[36];
 		float* fRec0 = &fRec0_tmp[4];
-		float fSlow12 = 0.5f * ((int(float(fCheckbox1))) ? 2.0f : float(fHslider7));
-		float fSlow13 = ((int(float(fCheckbox0))) ? -1.0f * fSlow12 : fSlow12);
-		float fSlow14 = 1.0f - fSlow12;
+		float fSlow12 = ((int(float(fCheckbox1))) ? 2.0f : float(fHslider7));
+		float fSlow13 = 0.5f * fSlow12;
+		float fSlow14 = ((int(float(fCheckbox0))) ? -0.5f * fSlow12 : fSlow13);
+		float fSlow15 = 1.0f - fSlow13;
 		float fZec8[32];
 		float fZec9[32];
 		float fRec12_tmp[36];
@@ -1106,7 +1138,7 @@ class phaser : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = fSlow8 + fSlow7 * (1.0f - fRec6[i]);
+				fZec0[i] = fSlow8 - fSlow7 * (1.0f - fRec6[i]);
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -1126,7 +1158,7 @@ class phaser : public dsp {
 			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec8[i] = fSlow8 + fSlow7 * (1.0f - fRec7[i]);
+				fZec8[i] = fSlow8 - fSlow7 * (1.0f - fRec7[i]);
 			}
 			/* Recursive loop 8 */
 			/* Pre code */
@@ -1147,15 +1179,15 @@ class phaser : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = fRec4[i - 1] * std::cos(fRec5[i] * fZec0[i]);
-				fRec4[i] = fSlow11 * float(input0[i]) + fSlow10 * fRec0[i - 1] - (fSlow9 * fZec1[i] + fSlow5 * fRec4[i - 2]);
-				fZec3[i] = fRec3[i - 1] * std::cos(fZec2[i] * fZec0[i]);
-				fRec3[i] = fSlow5 * (fRec4[i] - fRec3[i - 2]) + fRec4[i - 2] + fSlow9 * (fZec1[i] - fZec3[i]);
-				fZec5[i] = fRec2[i - 1] * std::cos(fZec4[i] * fZec0[i]);
-				fRec2[i] = fSlow5 * (fRec3[i] - fRec2[i - 2]) + fRec3[i - 2] + fSlow9 * (fZec3[i] - fZec5[i]);
-				fZec7[i] = fRec1[i - 1] * std::cos(fZec6[i] * fZec0[i]);
-				fRec1[i] = fSlow5 * (fRec2[i] - fRec1[i - 2]) + fRec2[i - 2] + fSlow9 * (fZec5[i] - fZec7[i]);
-				fRec0[i] = fSlow5 * fRec1[i] + fSlow9 * fZec7[i] + fRec1[i - 2];
+				fZec1[i] = fRec4[i - 1] * std::cos(fConst3 * fRec5[i] * fZec0[i]);
+				fRec4[i] = fSlow11 * float(input0[i]) + fSlow10 * fRec0[i - 1] + fSlow9 * fZec1[i] - fSlow5 * fRec4[i - 2];
+				fZec3[i] = fRec3[i - 1] * std::cos(fConst3 * fZec2[i] * fZec0[i]);
+				fRec3[i] = fRec4[i - 2] + fSlow5 * (fRec4[i] - fRec3[i - 2]) - fSlow9 * (fZec1[i] - fZec3[i]);
+				fZec5[i] = fRec2[i - 1] * std::cos(fConst3 * fZec4[i] * fZec0[i]);
+				fRec2[i] = fRec3[i - 2] + fSlow5 * (fRec3[i] - fRec2[i - 2]) - fSlow9 * (fZec3[i] - fZec5[i]);
+				fZec7[i] = fRec1[i - 1] * std::cos(fConst3 * fZec6[i] * fZec0[i]);
+				fRec1[i] = fRec2[i - 2] + fSlow5 * (fRec2[i] - fRec1[i - 2]) - fSlow9 * (fZec5[i] - fZec7[i]);
+				fRec0[i] = fRec1[i - 2] + fSlow5 * fRec1[i] - fSlow9 * fZec7[i];
 			}
 			/* Post code */
 			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
@@ -1192,15 +1224,15 @@ class phaser : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec9[i] = fRec12[i - 1] * std::cos(fRec5[i] * fZec8[i]);
-				fRec12[i] = fSlow11 * float(input1[i]) + fSlow10 * fRec8[i - 1] - (fSlow9 * fZec9[i] + fSlow5 * fRec12[i - 2]);
-				fZec10[i] = fRec11[i - 1] * std::cos(fZec2[i] * fZec8[i]);
-				fRec11[i] = fSlow5 * (fRec12[i] - fRec11[i - 2]) + fRec12[i - 2] + fSlow9 * (fZec9[i] - fZec10[i]);
-				fZec11[i] = fRec10[i - 1] * std::cos(fZec4[i] * fZec8[i]);
-				fRec10[i] = fSlow5 * (fRec11[i] - fRec10[i - 2]) + fRec11[i - 2] + fSlow9 * (fZec10[i] - fZec11[i]);
-				fZec12[i] = fRec9[i - 1] * std::cos(fZec6[i] * fZec8[i]);
-				fRec9[i] = fSlow5 * (fRec10[i] - fRec9[i - 2]) + fRec10[i - 2] + fSlow9 * (fZec11[i] - fZec12[i]);
-				fRec8[i] = fSlow5 * fRec9[i] + fSlow9 * fZec12[i] + fRec9[i - 2];
+				fZec9[i] = fRec12[i - 1] * std::cos(fConst3 * fRec5[i] * fZec8[i]);
+				fRec12[i] = fSlow11 * float(input1[i]) + fSlow10 * fRec8[i - 1] + fSlow9 * fZec9[i] - fSlow5 * fRec12[i - 2];
+				fZec10[i] = fRec11[i - 1] * std::cos(fConst3 * fZec2[i] * fZec8[i]);
+				fRec11[i] = fRec12[i - 2] + fSlow5 * (fRec12[i] - fRec11[i - 2]) - fSlow9 * (fZec9[i] - fZec10[i]);
+				fZec11[i] = fRec10[i - 1] * std::cos(fConst3 * fZec4[i] * fZec8[i]);
+				fRec10[i] = fRec11[i - 2] + fSlow5 * (fRec11[i] - fRec10[i - 2]) - fSlow9 * (fZec10[i] - fZec11[i]);
+				fZec12[i] = fRec9[i - 1] * std::cos(fConst3 * fZec6[i] * fZec8[i]);
+				fRec9[i] = fRec10[i - 2] + fSlow5 * (fRec10[i] - fRec9[i - 2]) - fSlow9 * (fZec11[i] - fZec12[i]);
+				fRec8[i] = fRec9[i - 2] + fSlow5 * fRec9[i] - fSlow9 * fZec12[i];
 			}
 			/* Post code */
 			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
@@ -1221,16 +1253,16 @@ class phaser : public dsp {
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fSlow11 * float(input0[i]) * fSlow14 + fRec0[i] * fSlow13);
+				output0[i] = FAUSTFLOAT(fSlow11 * float(input0[i]) * fSlow15 + fRec0[i] * fSlow14);
 			}
 			/* Vectorizable loop 11 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fSlow11 * float(input1[i]) * fSlow14 + fRec8[i] * fSlow13);
+				output1[i] = FAUSTFLOAT(fSlow11 * float(input1[i]) * fSlow15 + fRec8[i] * fSlow14);
 			}
 		}
 		/* Remaining frames */
-		if ((vindex < count)) {
+		if (vindex < count) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* input1 = &input1_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
@@ -1285,7 +1317,7 @@ class phaser : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = fSlow8 + fSlow7 * (1.0f - fRec6[i]);
+				fZec0[i] = fSlow8 - fSlow7 * (1.0f - fRec6[i]);
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -1305,7 +1337,7 @@ class phaser : public dsp {
 			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec8[i] = fSlow8 + fSlow7 * (1.0f - fRec7[i]);
+				fZec8[i] = fSlow8 - fSlow7 * (1.0f - fRec7[i]);
 			}
 			/* Recursive loop 8 */
 			/* Pre code */
@@ -1326,15 +1358,15 @@ class phaser : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = fRec4[i - 1] * std::cos(fRec5[i] * fZec0[i]);
-				fRec4[i] = fSlow11 * float(input0[i]) + fSlow10 * fRec0[i - 1] - (fSlow9 * fZec1[i] + fSlow5 * fRec4[i - 2]);
-				fZec3[i] = fRec3[i - 1] * std::cos(fZec2[i] * fZec0[i]);
-				fRec3[i] = fSlow5 * (fRec4[i] - fRec3[i - 2]) + fRec4[i - 2] + fSlow9 * (fZec1[i] - fZec3[i]);
-				fZec5[i] = fRec2[i - 1] * std::cos(fZec4[i] * fZec0[i]);
-				fRec2[i] = fSlow5 * (fRec3[i] - fRec2[i - 2]) + fRec3[i - 2] + fSlow9 * (fZec3[i] - fZec5[i]);
-				fZec7[i] = fRec1[i - 1] * std::cos(fZec6[i] * fZec0[i]);
-				fRec1[i] = fSlow5 * (fRec2[i] - fRec1[i - 2]) + fRec2[i - 2] + fSlow9 * (fZec5[i] - fZec7[i]);
-				fRec0[i] = fSlow5 * fRec1[i] + fSlow9 * fZec7[i] + fRec1[i - 2];
+				fZec1[i] = fRec4[i - 1] * std::cos(fConst3 * fRec5[i] * fZec0[i]);
+				fRec4[i] = fSlow11 * float(input0[i]) + fSlow10 * fRec0[i - 1] + fSlow9 * fZec1[i] - fSlow5 * fRec4[i - 2];
+				fZec3[i] = fRec3[i - 1] * std::cos(fConst3 * fZec2[i] * fZec0[i]);
+				fRec3[i] = fRec4[i - 2] + fSlow5 * (fRec4[i] - fRec3[i - 2]) - fSlow9 * (fZec1[i] - fZec3[i]);
+				fZec5[i] = fRec2[i - 1] * std::cos(fConst3 * fZec4[i] * fZec0[i]);
+				fRec2[i] = fRec3[i - 2] + fSlow5 * (fRec3[i] - fRec2[i - 2]) - fSlow9 * (fZec3[i] - fZec5[i]);
+				fZec7[i] = fRec1[i - 1] * std::cos(fConst3 * fZec6[i] * fZec0[i]);
+				fRec1[i] = fRec2[i - 2] + fSlow5 * (fRec2[i] - fRec1[i - 2]) - fSlow9 * (fZec5[i] - fZec7[i]);
+				fRec0[i] = fRec1[i - 2] + fSlow5 * fRec1[i] - fSlow9 * fZec7[i];
 			}
 			/* Post code */
 			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
@@ -1371,15 +1403,15 @@ class phaser : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec9[i] = fRec12[i - 1] * std::cos(fRec5[i] * fZec8[i]);
-				fRec12[i] = fSlow11 * float(input1[i]) + fSlow10 * fRec8[i - 1] - (fSlow9 * fZec9[i] + fSlow5 * fRec12[i - 2]);
-				fZec10[i] = fRec11[i - 1] * std::cos(fZec2[i] * fZec8[i]);
-				fRec11[i] = fSlow5 * (fRec12[i] - fRec11[i - 2]) + fRec12[i - 2] + fSlow9 * (fZec9[i] - fZec10[i]);
-				fZec11[i] = fRec10[i - 1] * std::cos(fZec4[i] * fZec8[i]);
-				fRec10[i] = fSlow5 * (fRec11[i] - fRec10[i - 2]) + fRec11[i - 2] + fSlow9 * (fZec10[i] - fZec11[i]);
-				fZec12[i] = fRec9[i - 1] * std::cos(fZec6[i] * fZec8[i]);
-				fRec9[i] = fSlow5 * (fRec10[i] - fRec9[i - 2]) + fRec10[i - 2] + fSlow9 * (fZec11[i] - fZec12[i]);
-				fRec8[i] = fSlow5 * fRec9[i] + fSlow9 * fZec12[i] + fRec9[i - 2];
+				fZec9[i] = fRec12[i - 1] * std::cos(fConst3 * fRec5[i] * fZec8[i]);
+				fRec12[i] = fSlow11 * float(input1[i]) + fSlow10 * fRec8[i - 1] + fSlow9 * fZec9[i] - fSlow5 * fRec12[i - 2];
+				fZec10[i] = fRec11[i - 1] * std::cos(fConst3 * fZec2[i] * fZec8[i]);
+				fRec11[i] = fRec12[i - 2] + fSlow5 * (fRec12[i] - fRec11[i - 2]) - fSlow9 * (fZec9[i] - fZec10[i]);
+				fZec11[i] = fRec10[i - 1] * std::cos(fConst3 * fZec4[i] * fZec8[i]);
+				fRec10[i] = fRec11[i - 2] + fSlow5 * (fRec11[i] - fRec10[i - 2]) - fSlow9 * (fZec10[i] - fZec11[i]);
+				fZec12[i] = fRec9[i - 1] * std::cos(fConst3 * fZec6[i] * fZec8[i]);
+				fRec9[i] = fRec10[i - 2] + fSlow5 * (fRec10[i] - fRec9[i - 2]) - fSlow9 * (fZec11[i] - fZec12[i]);
+				fRec8[i] = fRec9[i - 2] + fSlow5 * fRec9[i] - fSlow9 * fZec12[i];
 			}
 			/* Post code */
 			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
@@ -1400,12 +1432,12 @@ class phaser : public dsp {
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fSlow11 * float(input0[i]) * fSlow14 + fRec0[i] * fSlow13);
+				output0[i] = FAUSTFLOAT(fSlow11 * float(input0[i]) * fSlow15 + fRec0[i] * fSlow14);
 			}
 			/* Vectorizable loop 11 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fSlow11 * float(input1[i]) * fSlow14 + fRec8[i] * fSlow13);
+				output1[i] = FAUSTFLOAT(fSlow11 * float(input1[i]) * fSlow15 + fRec8[i] * fSlow14);
 			}
 		}
 	}
@@ -2760,12 +2792,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 	plugin->map->map(plugin->map->handle, MIDI_EVENT_URI);
     }
   }
+	
   if (!plugin->map) {
     fprintf
-      (stderr, "%s: host doesn't support urid:map, giving up\n",
+      (stderr, "%s: host doesn't support urid:map. MIDI will not be supported.\n",
        PLUGIN_URI);
-    delete plugin;
-    return 0;
   }
   return (LV2_Handle)plugin;
 }

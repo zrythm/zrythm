@@ -4,8 +4,8 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Smooth Delay"
 version: "1.0"
-Code generated with Faust 2.54.9 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn smooth_delay -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn smooth_delay -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __smooth_delay_H__
@@ -106,7 +106,13 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn smooth_delay -
 #ifndef __export__
 #define __export__
 
-#define FAUSTVERSION "2.54.9"
+// Version as a global string
+#define FAUSTVERSION "2.70.3"
+
+// Version as separated [major,minor,patch] values
+#define FAUSTMAJORVERSION 2
+#define FAUSTMINORVERSION 70
+#define FAUSTPATCHVERSION 3
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -324,17 +330,37 @@ class FAUST_API dsp_factory {
     
     public:
     
+        /* Return factory name */
         virtual std::string getName() = 0;
+    
+        /* Return factory SHA key */
         virtual std::string getSHAKey() = 0;
+    
+        /* Return factory expanded DSP code */
         virtual std::string getDSPCode() = 0;
+    
+        /* Return factory compile options */
         virtual std::string getCompileOptions() = 0;
+    
+        /* Get the Faust DSP factory list of library dependancies */
         virtual std::vector<std::string> getLibraryList() = 0;
+    
+        /* Get the list of all used includes */
         virtual std::vector<std::string> getIncludePathnames() = 0;
+    
+        /* Get warning messages list for a given compilation */
         virtual std::vector<std::string> getWarningMessages() = 0;
     
+        /* Create a new DSP instance, to be deleted with C++ 'delete' */
         virtual dsp* createDSPInstance() = 0;
     
+        /* Static tables initialization, possibly implemened in sub-classes*/
+        virtual void classInit(int sample_rate) {};
+    
+        /* Set a custom memory manager to be used when creating instances */
         virtual void setMemoryManager(dsp_memory_manager* manager) = 0;
+    
+        /* Return the currently set custom memory manager */
         virtual dsp_memory_manager* getMemoryManager() = 0;
     
 };
@@ -779,15 +805,17 @@ class smooth_delay : public dsp {
 	float fRec5_perm[4];
 	
  public:
-	
+	smooth_delay() {}
+
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.9");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn smooth_delay -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("basics.lib/tabulateNd", "Copyright (C) 2023 Bart Brouns <bart@magnetophon.nl>");
+		m->declare("basics.lib/version", "1.12.0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn smooth_delay -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("delays.lib/name", "Faust Delay Library");
-		m->declare("delays.lib/version", "0.1");
+		m->declare("delays.lib/version", "1.1.0");
 		m->declare("description", "Delay plugin");
 		m->declare("filename", "smooth_delay.dsp");
 		m->declare("license", "AGPL-3.0-or-later");
@@ -795,12 +823,12 @@ class smooth_delay : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.5");
+		m->declare("maths.lib/version", "2.7.0");
 		m->declare("name", "Smooth Delay");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.3");
+		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.3");
+		m->declare("signals.lib/version", "1.5.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -867,6 +895,7 @@ class smooth_delay : public dsp {
 		classInit(sample_rate);
 		instanceInit(sample_rate);
 	}
+	
 	virtual void instanceInit(int sample_rate) {
 		instanceConstants(sample_rate);
 		instanceResetUserInterface();
@@ -905,7 +934,6 @@ class smooth_delay : public dsp {
 		FAUSTFLOAT* output1_ptr = outputs[1];
 		float fSlow0 = fConst1 * float(fHslider0);
 		float fSlow1 = fConst2 / float(fHslider1);
-		float fSlow2 = 0.0f - fSlow1;
 		float fZec0[32];
 		float fRec1_tmp[36];
 		float* fRec1 = &fRec1_tmp[4];
@@ -915,14 +943,14 @@ class smooth_delay : public dsp {
 		float* fRec3 = &fRec3_tmp[4];
 		float fRec4_tmp[36];
 		float* fRec4 = &fRec4_tmp[4];
-		float fSlow3 = 0.01f * float(fHslider2);
+		float fSlow2 = 0.01f * float(fHslider2);
 		int iZec1[32];
 		float fZec2[32];
 		int iZec3[32];
 		float fRec0_tmp[36];
 		float* fRec0 = &fRec0_tmp[4];
-		float fSlow4 = 0.01f * float(fHslider3);
-		float fSlow5 = 1.0f - fSlow4;
+		float fSlow3 = 0.01f * float(fHslider3);
+		float fSlow4 = 1.0f - fSlow3;
 		float fZec4[32];
 		float fRec5_tmp[36];
 		float* fRec5 = &fRec5_tmp[4];
@@ -950,7 +978,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = ((fRec1[i - 1] != 0.0f) ? (((fRec2[i - 1] > 0.0f) & (fRec2[i - 1] < 1.0f)) ? fRec1[i - 1] : 0.0f) : (((fRec2[i - 1] == 0.0f) & (fSlow0 != fRec3[i - 1])) ? fSlow1 : (((fRec2[i - 1] == 1.0f) & (fSlow0 != fRec4[i - 1])) ? fSlow2 : 0.0f)));
+				fZec0[i] = ((fRec1[i - 1] != 0.0f) ? (((fRec2[i - 1] > 0.0f) & (fRec2[i - 1] < 1.0f)) ? fRec1[i - 1] : 0.0f) : (((fRec2[i - 1] == 0.0f) & (fSlow0 != fRec3[i - 1])) ? fSlow1 : (((fRec2[i - 1] == 1.0f) & (fSlow0 != fRec4[i - 1])) ? -fSlow1 : 0.0f)));
 				fRec1[i] = fZec0[i];
 				fRec2[i] = std::max<float>(0.0f, std::min<float>(1.0f, fRec2[i - 1] + fZec0[i]));
 				fRec3[i] = (((fRec2[i - 1] >= 1.0f) & (fRec4[i - 1] != fSlow0)) ? fSlow0 : fRec3[i - 1]);
@@ -987,7 +1015,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[(i + fYec0_idx) & 1048575] = float(input0[i]) + fSlow3 * fRec0[i - 1];
+				fYec0[(i + fYec0_idx) & 1048575] = float(input0[i]) + fSlow2 * fRec0[i - 1];
 				fZec2[i] = fYec0[(i + fYec0_idx - iZec1[i]) & 1048575];
 				fRec0[i] = fZec2[i] + fRec2[i] * (fYec0[(i + fYec0_idx - iZec3[i]) & 1048575] - fZec2[i]);
 			}
@@ -1004,7 +1032,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 1048575] = float(input1[i]) + fSlow3 * fRec5[i - 1];
+				fYec1[(i + fYec1_idx) & 1048575] = float(input1[i]) + fSlow2 * fRec5[i - 1];
 				fZec4[i] = fYec1[(i + fYec1_idx - iZec1[i]) & 1048575];
 				fRec5[i] = fZec4[i] + fRec2[i] * (fYec1[(i + fYec1_idx - iZec3[i]) & 1048575] - fZec4[i]);
 			}
@@ -1016,16 +1044,16 @@ class smooth_delay : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fSlow4 * fRec0[i] + fSlow5 * float(input0[i]));
+				output0[i] = FAUSTFLOAT(fSlow3 * fRec0[i] + fSlow4 * float(input0[i]));
 			}
 			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fSlow4 * fRec5[i] + fSlow5 * float(input1[i]));
+				output1[i] = FAUSTFLOAT(fSlow3 * fRec5[i] + fSlow4 * float(input1[i]));
 			}
 		}
 		/* Remaining frames */
-		if ((vindex < count)) {
+		if (vindex < count) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* input1 = &input1_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
@@ -1047,7 +1075,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = ((fRec1[i - 1] != 0.0f) ? (((fRec2[i - 1] > 0.0f) & (fRec2[i - 1] < 1.0f)) ? fRec1[i - 1] : 0.0f) : (((fRec2[i - 1] == 0.0f) & (fSlow0 != fRec3[i - 1])) ? fSlow1 : (((fRec2[i - 1] == 1.0f) & (fSlow0 != fRec4[i - 1])) ? fSlow2 : 0.0f)));
+				fZec0[i] = ((fRec1[i - 1] != 0.0f) ? (((fRec2[i - 1] > 0.0f) & (fRec2[i - 1] < 1.0f)) ? fRec1[i - 1] : 0.0f) : (((fRec2[i - 1] == 0.0f) & (fSlow0 != fRec3[i - 1])) ? fSlow1 : (((fRec2[i - 1] == 1.0f) & (fSlow0 != fRec4[i - 1])) ? -fSlow1 : 0.0f)));
 				fRec1[i] = fZec0[i];
 				fRec2[i] = std::max<float>(0.0f, std::min<float>(1.0f, fRec2[i - 1] + fZec0[i]));
 				fRec3[i] = (((fRec2[i - 1] >= 1.0f) & (fRec4[i - 1] != fSlow0)) ? fSlow0 : fRec3[i - 1]);
@@ -1084,7 +1112,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[(i + fYec0_idx) & 1048575] = float(input0[i]) + fSlow3 * fRec0[i - 1];
+				fYec0[(i + fYec0_idx) & 1048575] = float(input0[i]) + fSlow2 * fRec0[i - 1];
 				fZec2[i] = fYec0[(i + fYec0_idx - iZec1[i]) & 1048575];
 				fRec0[i] = fZec2[i] + fRec2[i] * (fYec0[(i + fYec0_idx - iZec3[i]) & 1048575] - fZec2[i]);
 			}
@@ -1101,7 +1129,7 @@ class smooth_delay : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 1048575] = float(input1[i]) + fSlow3 * fRec5[i - 1];
+				fYec1[(i + fYec1_idx) & 1048575] = float(input1[i]) + fSlow2 * fRec5[i - 1];
 				fZec4[i] = fYec1[(i + fYec1_idx - iZec1[i]) & 1048575];
 				fRec5[i] = fZec4[i] + fRec2[i] * (fYec1[(i + fYec1_idx - iZec3[i]) & 1048575] - fZec4[i]);
 			}
@@ -1113,12 +1141,12 @@ class smooth_delay : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fSlow4 * fRec0[i] + fSlow5 * float(input0[i]));
+				output0[i] = FAUSTFLOAT(fSlow3 * fRec0[i] + fSlow4 * float(input0[i]));
 			}
 			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fSlow4 * fRec5[i] + fSlow5 * float(input1[i]));
+				output1[i] = FAUSTFLOAT(fSlow3 * fRec5[i] + fSlow4 * float(input1[i]));
 			}
 		}
 	}
@@ -2473,12 +2501,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 	plugin->map->map(plugin->map->handle, MIDI_EVENT_URI);
     }
   }
+	
   if (!plugin->map) {
     fprintf
-      (stderr, "%s: host doesn't support urid:map, giving up\n",
+      (stderr, "%s: host doesn't support urid:map. MIDI will not be supported.\n",
        PLUGIN_URI);
-    delete plugin;
-    return 0;
   }
   return (LV2_Handle)plugin;
 }

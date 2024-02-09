@@ -4,8 +4,8 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Compressor"
 version: "1.0"
-Code generated with Faust 2.54.9 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn compressor -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __compressor_H__
@@ -106,7 +106,13 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es
 #ifndef __export__
 #define __export__
 
-#define FAUSTVERSION "2.54.9"
+// Version as a global string
+#define FAUSTVERSION "2.70.3"
+
+// Version as separated [major,minor,patch] values
+#define FAUSTMAJORVERSION 2
+#define FAUSTMINORVERSION 70
+#define FAUSTPATCHVERSION 3
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -324,17 +330,37 @@ class FAUST_API dsp_factory {
     
     public:
     
+        /* Return factory name */
         virtual std::string getName() = 0;
+    
+        /* Return factory SHA key */
         virtual std::string getSHAKey() = 0;
+    
+        /* Return factory expanded DSP code */
         virtual std::string getDSPCode() = 0;
+    
+        /* Return factory compile options */
         virtual std::string getCompileOptions() = 0;
+    
+        /* Get the Faust DSP factory list of library dependancies */
         virtual std::vector<std::string> getLibraryList() = 0;
+    
+        /* Get the list of all used includes */
         virtual std::vector<std::string> getIncludePathnames() = 0;
+    
+        /* Get warning messages list for a given compilation */
         virtual std::vector<std::string> getWarningMessages() = 0;
     
+        /* Create a new DSP instance, to be deleted with C++ 'delete' */
         virtual dsp* createDSPInstance() = 0;
     
+        /* Static tables initialization, possibly implemened in sub-classes*/
+        virtual void classInit(int sample_rate) {};
+    
+        /* Set a custom memory manager to be used when creating instances */
         virtual void setMemoryManager(dsp_memory_manager* manager) = 0;
+    
+        /* Return the currently set custom memory manager */
         virtual dsp_memory_manager* getMemoryManager() = 0;
     
 };
@@ -769,15 +795,17 @@ class compressor : public dsp {
 	FAUSTFLOAT fHslider4;
 	
  public:
-	
+	compressor() {}
+
 	void metadata(Meta* m) { 
 		m->declare("analyzers.lib/amp_follower_ar:author", "Jonatan Liljedahl, revised by Romain Michon");
 		m->declare("analyzers.lib/name", "Faust Analyzer Library");
-		m->declare("analyzers.lib/version", "0.2");
+		m->declare("analyzers.lib/version", "1.2.0");
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.9");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("basics.lib/tabulateNd", "Copyright (C) 2023 Bart Brouns <bart@magnetophon.nl>");
+		m->declare("basics.lib/version", "1.12.0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn compressor -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("compressors.lib/compression_gain_mono:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compression_gain_mono:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 		m->declare("compressors.lib/compression_gain_mono:license", "MIT-style STK-4.3 license");
@@ -785,7 +813,7 @@ class compressor : public dsp {
 		m->declare("compressors.lib/compressor_stereo:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 		m->declare("compressors.lib/compressor_stereo:license", "MIT-style STK-4.3 license");
 		m->declare("compressors.lib/name", "Faust Compressor Effect Library");
-		m->declare("compressors.lib/version", "0.4");
+		m->declare("compressors.lib/version", "1.6.0");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Basic compressor");
 		m->declare("filename", "compressor.dsp");
@@ -794,14 +822,14 @@ class compressor : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.5");
+		m->declare("maths.lib/version", "2.7.0");
 		m->declare("name", "Compressor");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.3");
+		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
 		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
-		m->declare("signals.lib/version", "0.3");
+		m->declare("signals.lib/version", "1.5.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -845,6 +873,7 @@ class compressor : public dsp {
 		classInit(sample_rate);
 		instanceInit(sample_rate);
 	}
+	
 	virtual void instanceInit(int sample_rate) {
 		instanceConstants(sample_rate);
 		instanceResetUserInterface();
@@ -888,24 +917,23 @@ class compressor : public dsp {
 		float fZec0[32];
 		float fSlow0 = 0.001f * float(fHslider0);
 		int iSlow1 = std::fabs(fSlow0) < 1.1920929e-07f;
-		float fSlow2 = ((iSlow1) ? 0.0f : std::exp(0.0f - fConst0 / ((iSlow1) ? 1.0f : fSlow0)));
+		float fSlow2 = ((iSlow1) ? 0.0f : std::exp(-(fConst0 / ((iSlow1) ? 1.0f : fSlow0))));
 		float fSlow3 = float(fHslider1);
 		float fSlow4 = 0.001f * fSlow3;
 		int iSlow5 = std::fabs(fSlow4) < 1.1920929e-07f;
-		float fSlow6 = ((iSlow5) ? 0.0f : std::exp(0.0f - fConst0 / ((iSlow5) ? 1.0f : fSlow4)));
+		float fSlow6 = ((iSlow5) ? 0.0f : std::exp(-(fConst0 / ((iSlow5) ? 1.0f : fSlow4))));
 		float fZec1[32];
 		float fRec1_tmp[36];
 		float* fRec1 = &fRec1_tmp[4];
 		float fSlow7 = 0.0005f * fSlow3;
 		int iSlow8 = std::fabs(fSlow7) < 1.1920929e-07f;
-		float fSlow9 = ((iSlow8) ? 0.0f : std::exp(0.0f - fConst0 / ((iSlow8) ? 1.0f : fSlow7)));
+		float fSlow9 = ((iSlow8) ? 0.0f : std::exp(-(fConst0 / ((iSlow8) ? 1.0f : fSlow7))));
 		float fSlow10 = 1.0f - fSlow9;
 		float fSlow11 = float(fHslider2);
 		float fSlow12 = 1.0f / std::max<float>(1.1920929e-07f, float(fHslider3)) + -1.0f;
 		float fRec0_tmp[36];
 		float* fRec0 = &fRec0_tmp[4];
 		float fSlow13 = 0.01f * float(fHslider4);
-		float fSlow14 = 1.0f - fSlow13;
 		float fZec2[32];
 		int vindex = 0;
 		/* Main loop */
@@ -950,7 +978,7 @@ class compressor : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = fSlow14 + fSlow13 * std::pow(1e+01f, 0.05f * fRec0[i]);
+				fZec2[i] = 1.0f - fSlow13 * (1.0f - std::pow(1e+01f, 0.05f * fRec0[i]));
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -964,7 +992,7 @@ class compressor : public dsp {
 			}
 		}
 		/* Remaining frames */
-		if ((vindex < count)) {
+		if (vindex < count) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* input1 = &input1_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
@@ -1005,7 +1033,7 @@ class compressor : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = fSlow14 + fSlow13 * std::pow(1e+01f, 0.05f * fRec0[i]);
+				fZec2[i] = 1.0f - fSlow13 * (1.0f - std::pow(1e+01f, 0.05f * fRec0[i]));
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -2370,12 +2398,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 	plugin->map->map(plugin->map->handle, MIDI_EVENT_URI);
     }
   }
+	
   if (!plugin->map) {
     fprintf
-      (stderr, "%s: host doesn't support urid:map, giving up\n",
+      (stderr, "%s: host doesn't support urid:map. MIDI will not be supported.\n",
        PLUGIN_URI);
-    delete plugin;
-    return 0;
   }
   return (LV2_Handle)plugin;
 }
