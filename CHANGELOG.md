@@ -6,6 +6,14 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.3.8] - 2024-02-09
+### Changed
+- Re-generate built-in plugins with latest faust
+- Port the last remaining GtkMessageDialog to AdwMessageDialog
+- Generate the about dialog from appdata XML
+- Update some information in the about dialog and in the appdata XML
+- GTK: Don't force GL renderer on Windows (revert change in previous release)
+
 ## [1.0.0-beta.6.3.1] - 2024-02-08
 ### Added
 - Add primary menu to the header bar
