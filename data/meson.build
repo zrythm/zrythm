@@ -120,17 +120,32 @@ appdata_file_in = custom_target (
   input: appdata_file_in_unformatted,
   output: '@0@.appdata.xml.in'.format (app_id),
   command: [
-    xmllint, '--format', '--output', '@OUTPUT@',
-    '@INPUT@',
+    xmllint, '--format', '--output', '@OUTPUT@', '@INPUT@',
     ])
-appdata_file = i18n.merge_file (
-  input: appdata_file_in,
-  output: '@0@.appdata.xml'.format (app_id),
-  type: 'xml',
-  po_dir: meson_build_root / 'po',
-  install: true,
-  install_dir: datadir / 'metainfo',
-  )
+
+if os_windows
+  # we have an issue similar to:
+  # https://gitlab.gnome.org/GNOME/gimp/-/issues/10742
+  # except that appstream and gettext-tools are already installed
+  # just skip merging translations for now and use the file as-is
+  appdata_file = custom_target (
+    'appdata-xml',
+    input: appdata_file_in,
+    output: '@0@.appdata.xml'.format (app_id),
+    command: [
+      xmllint, '--format', '--output', '@OUTPUT@', '@INPUT@',
+      ])
+else
+  appdata_file = i18n.merge_file (
+    input: appdata_file_in,
+    output: '@0@.appdata.xml'.format (app_id),
+    type: 'xml',
+    po_dir: meson_build_root / 'po',
+    install: true,
+    install_dir: datadir / 'metainfo',
+    )
+endif
+
 run_target (
   'gen-appdata-xml',
   command: [ 'echo', 'Generated appdata.xml' ],
