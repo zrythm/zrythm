@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.6.3.13] - 2024-02-09
+## [1.0.0-beta.6.3.14] - 2024-02-09
 ### Changed
 - Re-generate built-in plugins with latest faust
 - Port the last remaining GtkMessageDialog to AdwMessageDialog
