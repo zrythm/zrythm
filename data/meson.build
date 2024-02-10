@@ -113,7 +113,8 @@ appdata_file_in_unformatted = custom_target (
   output: '@0@.appdata.xml.in.in'.format (app_id),
   command: [
     bash, '-c', '@INPUT@' + ' "$1" "$2"',
-    '_ignored', meson_build_root / '@OUTPUT@',  app_id,
+    '_ignored',
+    meson_build_root / '@OUTPUT@',  app_id,
     ])
 appdata_file_in = custom_target (
   'appdata-xml-in',
