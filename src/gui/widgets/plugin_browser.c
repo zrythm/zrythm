@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -88,16 +89,30 @@ update_plugin_info_label (PluginBrowserWidget * self)
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
 
-  char * label = g_strdup_printf (
-    "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
-    "%d\nControls: %d, %d\nCV: %d, %d",
-    descr->author, descr->category_str, plugin_protocol_to_str (descr->protocol),
-    descr->arch == ARCH_32 ? " (32-bit)" : "", descr->num_audio_ins,
-    descr->num_audio_outs, descr->num_midi_ins, descr->num_midi_outs,
-    descr->num_ctrl_ins, descr->num_ctrl_outs, descr->num_cv_ins,
-    descr->num_cv_outs);
-  gtk_label_set_text (self->plugin_info, label);
-  g_free (label);
+  char * type_label = g_strdup_printf (
+    "%s • %s%s", descr->category_str, plugin_protocol_to_str (descr->protocol),
+    descr->arch == ARCH_32 ? " (32-bit)" : "");
+  char * audio_label =
+    g_strdup_printf ("%d, %d", descr->num_audio_ins, descr->num_audio_outs);
+  char * midi_label =
+    g_strdup_printf ("%d, %d", descr->num_midi_ins, descr->num_midi_outs);
+  char * ctrl_label =
+    g_strdup_printf ("%d, %d", descr->num_ctrl_ins, descr->num_ctrl_outs);
+  char * cv_label =
+    g_strdup_printf ("%d, %d", descr->num_cv_ins, descr->num_cv_outs);
+
+  gtk_label_set_text (self->plugin_author_label, descr->author);
+  gtk_label_set_text (self->plugin_type_label, type_label);
+  gtk_label_set_text (self->plugin_audio_label, audio_label);
+  gtk_label_set_text (self->plugin_midi_label, midi_label);
+  gtk_label_set_text (self->plugin_ctrl_label, ctrl_label);
+  gtk_label_set_text (self->plugin_cv_label, cv_label);
+
+  g_free (type_label);
+  g_free (audio_label);
+  g_free (midi_label);
+  g_free (ctrl_label);
+  g_free (cv_label);
 }
 
 static PluginBrowserSortStyle
@@ -964,8 +979,6 @@ plugin_browser_widget_new (void)
 
   self->symap = symap_new ();
 
-  gtk_label_set_xalign (self->plugin_info, 0);
-
   /* setup collections */
   GtkSelectionModel * model = create_model_for_collections ();
   list_view_setup (self, self->collection_list_view, model, true);
@@ -1118,7 +1131,12 @@ plugin_browser_widget_class_init (PluginBrowserWidgetClass * _klass)
   BIND_CHILD (plugin_search_entry);
   BIND_CHILD (plugin_list_view);
   BIND_CHILD (browser_bot);
-  BIND_CHILD (plugin_info);
+  BIND_CHILD (plugin_author_label);
+  BIND_CHILD (plugin_type_label);
+  BIND_CHILD (plugin_audio_label);
+  BIND_CHILD (plugin_midi_label);
+  BIND_CHILD (plugin_ctrl_label);
+  BIND_CHILD (plugin_cv_label);
   BIND_CHILD (stack_switcher_box);
   BIND_CHILD (stack);
   BIND_CHILD (plugin_toolbar);
