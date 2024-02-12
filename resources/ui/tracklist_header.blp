@@ -1,0 +1,45 @@
+using Gtk 4.0;
+
+template $TracklistHeaderWidget : Widget {
+  Box {
+    styles [
+      "toolbar",
+    ]
+
+    Image {
+      icon-name: "track-inspector";
+    }
+
+    Label track_count_lbl {
+      label: "18/18";
+      margin-start: 3;
+      margin-end: 3;
+    }
+
+    MenuButton filter_menu_btn {
+      direction: right;
+      tooltip-text: _("Track filters & visibility");
+
+      Box {
+        Image {
+          icon-name: "gnome-icon-library-funnel-outline-symbolic";
+        }
+
+        Separator {
+          styles [
+            "spacer",
+          ]
+        }
+
+        Image {
+          icon-name: "gnome-icon-library-eye-open-negative-filled-symbolic";
+        }
+      }
+    }
+
+    MenuButton tracklist_pref_btn {
+      icon-name: "gnome-icon-library-settings-symbolic";
+      tooltip-text: _("Tracklist Settings");
+    }
+  }
+}

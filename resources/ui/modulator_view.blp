@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ModulatorViewWidget : Widget {
+  hexpand: true;
+
+  $ColorAreaWidget color {
+    width-request: "5";
+  }
+
+  Box {
+    hexpand: true;
+    orientation: vertical;
+
+    Box {
+      vexpand: true;
+
+      $GtkFlipper {
+        flip-horizontal: "1";
+        flip-vertical: "1";
+        rotate: "1";
+        child: 
+        Label track_name_lbl {
+        }
+
+        ;
+      }
+
+      ScrolledWindow {
+        child:         Box modulators_and_macros_box {
+          orientation: vertical;
+
+          Box modulators_box_container {
+            orientation: horizontal;
+
+            Adw.StatusPage no_modulators_status_page {
+              styles [
+                "compact",
+              ]
+
+              hexpand: true;
+              title: _("No modulators");
+              description: _("Drag and drop a modulator plugin from the plugin browser");
+              icon-name: "modulator";
+            }
+
+            Box modulators_box {
+              vexpand: true;
+            }
+          }
+
+          Box macros_box {
+          }
+        }
+
+        ;
+      }
+
+      Box side_toolbar {
+        halign: center;
+
+        styles [
+          "toolbar",
+        ]
+
+        orientation: vertical;
+      }
+    }
+
+    Box bot_toolbar {
+      valign: center;
+
+      styles [
+        "toolbar",
+      ]
+    }
+  }
+}

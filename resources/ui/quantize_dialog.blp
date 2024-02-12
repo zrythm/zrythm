@@ -1,0 +1,103 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $QuantizeDialogWidget : Gtk.Dialog {
+  title: _("Quantize Options");
+  [internal-child content_area]
+  Gtk.Box {
+    orientation: vertical;
+    spacing: 2;
+    Gtk.Box main_box {
+      margin-start: 4;
+      margin-end: 4;
+      margin-top: 4;
+      margin-bottom: 4;
+      orientation: vertical;
+      spacing: 3;
+      Gtk.Box {
+        spacing: 3;
+        Gtk.Label  quantize_to_lbl {
+          label: _("Quantize to");
+          xalign: 0;
+        }
+        Gtk.Box note_length_box {
+          hexpand: true;
+          orientation: vertical;
+        }
+        Gtk.Box note_type_box {
+          hexpand: true;
+          orientation: vertical;
+        }
+      }
+      Gtk.Box {
+        spacing: 3;
+        Gtk.Label adjust_lbl {
+          label: _("Adjust");
+          xalign: 0;
+        }
+        Gtk.ToggleButton adjust_start {
+          hexpand: true;
+          label: _("start");
+          focusable: true;
+          receives-default: true;
+        }
+        Gtk.ToggleButton adjust_end {
+          hexpand: true;
+          label: _("end");
+          focusable: true;
+          receives-default: true;
+        }
+      }
+      Gtk.Box {
+        spacing: 3;
+        Gtk.Label amount_lbl {
+          label: _("Amount");
+          xalign: 0;
+        }
+        Gtk.Box amount_box {
+          hexpand: true;
+          orientation: vertical;
+        }
+      }
+      Gtk.Box {
+        spacing: 3;
+        Gtk.Label swing_lbl {
+          label: _("Swing");
+          xalign: 0;
+        }
+        Gtk.Box swing_box {
+          hexpand: true;
+          orientation: vertical;
+        }
+        Gtk.Label {
+          label: _("Randomization");
+        }
+        Gtk.Box randomization_box {
+          hexpand: true;
+          orientation: vertical;
+        }
+      }
+    }
+  }
+  [internal-child action_area]
+  Gtk.Box {
+    valign: center;
+    Gtk.Button quantize_btn {
+      label: _("_Quantize");
+      focusable: true;
+      receives-default: true;
+      use-underline: true;
+      clicked => $on_quantize_clicked(template);
+    }
+    Gtk.Button cancel_btn {
+      label: _("_Cancel");
+      focusable: true;
+      receives-default: true;
+      use-underline: true;
+      clicked => $on_cancel_clicked(template);
+    }
+  }
+}
+Gtk.SizeGroup lbl_size_group {
+  widgets [quantize_to_lbl, adjust_lbl, amount_lbl, swing_lbl ]
+}

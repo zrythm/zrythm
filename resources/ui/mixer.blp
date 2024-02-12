@@ -1,0 +1,17 @@
+using Gtk 4.0;
+
+template $MixerWidget : Gtk.Box {
+  Gtk.ScrolledWindow {
+    focusable: true;
+    hexpand: true;
+    vscrollbar-policy: never;
+    Gtk.Viewport {
+      Gtk.Box channels_box {
+        $AddTrackMenuButtonWidget channels_add { }
+      }
+    }
+  }
+  Gtk.Box master_box {
+    halign: center;
+  }
+}

@@ -1,0 +1,64 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $AutomatableSelectorPopoverWidget : Popover {
+  closed => $on_closed();
+  child: 
+  Box {
+    Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        title: _("Filters");
+
+        ScrolledWindow {
+          min-content-height: 260;
+          hscrollbar-policy: never;
+          child: 
+          ListView type_listview {
+          }
+
+          ;
+        }
+      }
+    }
+
+    Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        title: _("Port");
+
+        Box {
+          orientation: vertical;
+
+          SearchEntry port_search_entry {
+            placeholder-text: _("Search...");
+            width-request: 64;
+          }
+
+          ScrolledWindow {
+            min-content-height: 260;
+            hscrollbar-policy: never;
+            child: 
+            ListView port_listview {
+              tab-behavior: item;
+            }
+
+            ;
+          }
+        }
+      }
+    }
+
+    Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        title: _("Info");
+
+        Label info {
+          margin-start: 3;
+          margin-end: 3;
+          label: _("label");
+        }
+      }
+    }
+  }
+
+  ;
+}

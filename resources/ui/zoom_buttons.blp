@@ -1,0 +1,23 @@
+using Gtk 4.0;
+
+template $ZoomButtonsWidget : Box {
+  Button zoom_in {
+    icon-name: "zoom-in";
+    action-name: "app.zoom-in";
+  }
+
+  Button zoom_out {
+    icon-name: "zoom-out";
+    action-name: "app.zoom-out";
+  }
+
+  Button original_size {
+    icon-name: "zoom-original";
+    action-name: "app.original-size";
+  }
+
+  Button best_fit {
+    icon-name: "gnome-icon-library-object-scale-to-fit-symbolic";
+    action-name: "app.best-fit";
+  }
+}

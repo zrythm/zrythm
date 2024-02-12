@@ -1,0 +1,87 @@
+using Gtk 4.0;
+
+template $ChordPadPanelWidget : Grid {
+  Box left_toolbar {
+    styles [
+      "toolbar",
+    ]
+
+    orientation: vertical;
+
+    layout {
+      column: "0";
+      row: "0";
+      row-span: "3";
+    }
+  }
+
+  Box top_toolbar {
+    name: "chord-pad-toolbar";
+
+    styles [
+      "toolbar",
+    ]
+
+    Box {
+      orientation: horizontal;
+
+      Button save_preset_btn {
+      }
+
+      MenuButton load_preset_btn {
+      }
+    }
+
+    Separator {
+      styles [
+        "spacer",
+      ]
+
+      orientation: vertical;
+    }
+
+    Box {
+      orientation: horizontal;
+
+      styles [
+        "toolbar-child-box",
+      ]
+
+      Label {
+        label: _("Transpose");
+      }
+
+      Box {
+        orientation: horizontal;
+
+        Button transpose_up_btn {
+          icon-name: "arrow-up-small";
+        }
+
+        Button transpose_down_btn {
+          icon-name: "arrow-down-small";
+        }
+      }
+    }
+
+    layout {
+      column: "1";
+      row: "0";
+      column-span: "2";
+    }
+  }
+
+  Grid chords_grid {
+    hexpand: true;
+    vexpand: true;
+    column-homogeneous: true;
+    row-homogeneous: true;
+
+    layout {
+      column: "1";
+      row: "1";
+      column-span: "2";
+      row-span: "2";
+    }
+  }
+}

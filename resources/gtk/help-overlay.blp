@@ -1,0 +1,292 @@
+using Gtk 4.0;
+
+ShortcutsWindow help_overlay {
+  modal: true;
+
+  ShortcutsSection {
+    section-name: "global";
+    title: _("Global Shortcuts");
+
+    ShortcutsGroup {
+      title: _("General");
+
+      ShortcutsShortcut {
+        title: _("Preferences");
+        accelerator: "<ctrl><shift>p";
+      }
+
+      ShortcutsShortcut {
+        title: _("Keyboard shortcuts");
+        accelerator: "<ctrl><shift>question";
+      }
+
+      ShortcutsShortcut {
+        title: _("Toggle fullscreen");
+        accelerator: "F11";
+      }
+
+      ShortcutsShortcut {
+        title: _("Quit");
+        accelerator: "<alt>F4";
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Panels");
+
+      ShortcutsShortcut {
+        title: _("Toggle left panel");
+        accelerator: "<shift>F10";
+      }
+
+      ShortcutsShortcut {
+        title: _("Toggle right panel");
+        accelerator: "<shift>F12";
+      }
+
+      ShortcutsShortcut {
+        title: _("Toggle bottom panel");
+        accelerator: "<shift>F11";
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Focus");
+
+      ShortcutsShortcut {
+        title: _("Cycle focus");
+        accelerator: "F6";
+      }
+
+      ShortcutsShortcut {
+        title: _("Cycle focus backwards");
+        accelerator: "<shift>F6";
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Project");
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>n";
+        title: _("New");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>o";
+        title: _("Open");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>s";
+        title: _("Save");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl><shift>s";
+        title: _("Save as...");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>e";
+        title: _("Export as...");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Clipboard");
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>c";
+        title: _("Copy selection to clipboard");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>x";
+        title: _("Cut selection to clipboard");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>v";
+        title: _("Paste from clipboard");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Undo and Redo");
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>z";
+        title: _("Undo previous command");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl><shift>z";
+        title: _("Redo previous command");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Transport");
+
+      ShortcutsShortcut {
+        accelerator: "Home";
+        title: _("Go to start marker");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "End";
+        title: _("Go to end marker");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "Page_Up";
+        title: _("Go to previous marker");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "Page_Down";
+        title: _("Go to next marker");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>space";
+        title: _("Play/Stop");
+      }
+    }
+  }
+
+  ShortcutsSection {
+    section-name: "editor";
+    title: _("Arranger Shortcuts");
+
+    ShortcutsGroup {
+      title: _("Tools");
+
+      ShortcutsShortcut {
+        title: _("Select/Stretch tool");
+        accelerator: "1";
+      }
+
+      ShortcutsShortcut {
+        title: _("Pencil tool");
+        accelerator: "2";
+      }
+
+      ShortcutsShortcut {
+        title: _("Eraser tool");
+        accelerator: "3";
+      }
+
+      ShortcutsShortcut {
+        title: _("Ramp tool");
+        accelerator: "4";
+      }
+
+      ShortcutsShortcut {
+        title: _("Audition tool");
+        accelerator: "5";
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Zooming");
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>equal";
+        title: _("Zoom in");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>minus";
+        title: _("Zoom out");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>bracketleft";
+        title: _("Best fit");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>plus";
+        title: _("Original size");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Selections");
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>a";
+        title: _("Select all");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>backslash";
+        title: _("Unselect all");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>l";
+        title: _("Loop selection");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Quantizing");
+
+      ShortcutsShortcut {
+        accelerator: "q";
+        title: _("Quick Quantize");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<ctrl>q";
+        title: _("Quantize");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Transport");
+
+      ShortcutsShortcut {
+        accelerator: "space";
+        title: _("Play/Stop");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<shift>space";
+        title: _("Record-play");
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Object Actions");
+
+      ShortcutsShortcut {
+        accelerator: "<shift>m";
+        title: _("Mute selection");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<shift>less";
+        title: _("Nudge selection left");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "<shift>greater";
+        title: _("Nudge selection right");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "Delete";
+        title: _("Delete selection");
+      }
+
+      ShortcutsShortcut {
+        accelerator: "F2";
+        title: _("Rename selected object");
+      }
+    }
+  }
+}

@@ -1,0 +1,628 @@
+using Gtk 4.0;
+
+template $ChordSelectorWindowWidget : Dialog {
+  visible: true;
+  title: "Chord Selector";
+  modal: true;
+  icon-name: "zrythm";
+  child: 
+  Notebook notebook {
+    focusable: true;
+
+    NotebookPage {
+      child:       Box {
+        orientation: vertical;
+
+        Label {
+          margin-start: 8;
+          label: _("Root Note");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_root_note_flowbox {
+          homogeneous: true;
+          max-children-per-line: 12;
+          activate-on-single-click: false;
+
+          FlowBoxChild creator_root_note_c {
+            focusable: true;
+            child: 
+            Label {
+              label: _("C");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_cs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_d {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_ds {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_e {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_f {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_fs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F♯");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_g {
+            focusable: true;
+            child: 
+            Label {
+              label: _("G");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_gs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_a {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_as {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_b {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B");
+            }
+
+            ;
+          }
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Type");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_type_flowbox {
+          homogeneous: true;
+          activate-on-single-click: false;
+
+          FlowBoxChild creator_type_maj {
+            focusable: true;
+            child: 
+            Label {
+              label: _("maj");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_type_min {
+            focusable: true;
+            child: 
+            Label {
+              label: _("min");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_type_dim {
+            focusable: true;
+            child: 
+            Label {
+              label: _("dim");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_type_sus4 {
+            focusable: true;
+            child: 
+            Label {
+              label: _("sus4");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_type_sus2 {
+            focusable: true;
+            child: 
+            Label {
+              label: _("sus2");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_type_aug {
+            focusable: true;
+            child: 
+            Label {
+              label: _("aug");
+            }
+
+            ;
+          }
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Accent");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_accent_flowbox {
+          homogeneous: true;
+          min-children-per-line: 9;
+          max-children-per-line: 9;
+          activate-on-single-click: false;
+
+          FlowBoxChild creator_accent_7 {
+            focusable: true;
+            child: 
+            Label {
+              label: _("7");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_j7 {
+            focusable: true;
+            child: 
+            Label {
+              label: _("j7");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_b9 {
+            focusable: true;
+            child: 
+            Label {
+              label: "♭9";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_9 {
+            focusable: true;
+            child: 
+            Label {
+              label: "9";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_s9 {
+            focusable: true;
+            child: 
+            Label {
+              label: "♯9";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_11 {
+            focusable: true;
+            child: 
+            Label {
+              label: "11";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_b5_s11 {
+            focusable: true;
+            child: 
+            Label {
+              label: "♭5/♯11";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_s5_b13 {
+            focusable: true;
+            child: 
+            Label {
+              label: "♯5/♭13";
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_accent_6_13 {
+            focusable: true;
+            child: 
+            Label {
+              label: "6/13";
+            }
+
+            ;
+          }
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Bass Note");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_bass_note_flowbox {
+          homogeneous: true;
+          max-children-per-line: 12;
+          activate-on-single-click: false;
+
+          FlowBoxChild creator_bass_note_c {
+            focusable: true;
+            child: 
+            Label {
+              label: _("C");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_cs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_d {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_ds {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_e {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_f {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_fs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F♯");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_g {
+            focusable: true;
+            child: 
+            Label {
+              label: _("G");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_gs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_a {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_as {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_bass_note_b {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B");
+            }
+
+            ;
+          }
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Visibility");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        Box {
+          CheckButton creator_visibility_all {
+            label: _("All");
+          }
+
+          CheckButton creator_visibility_in_scale {
+            label: _("In scale");
+          }
+        }
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Creator");
+      }
+
+      ;
+    }
+
+    NotebookPage {
+      position: 1;
+      child: 
+      FlowBox diatonic_flowbox {
+        homogeneous: true;
+        activate-on-single-click: false;
+
+        FlowBoxChild diatonic_i {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_i_lbl {
+            label: "I";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_ii {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_ii_lbl {
+            label: "II";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_iii {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_iii_lbl {
+            label: "III";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_iv {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_iv_lbl {
+            label: "IV";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_v {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_v_lbl {
+            label: "V";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_vi {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_vi_lbl {
+            label: "VI";
+          }
+
+          ;
+        }
+
+        FlowBoxChild diatonic_vii {
+          focusable: true;
+          valign: start;
+          child: 
+          Label diatonic_vii_lbl {
+            label: "VII";
+          }
+
+          ;
+        }
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Diatonic");
+      }
+
+      ;
+    }
+
+    NotebookPage {
+      position: 2;
+      child: 
+      Label {
+        label: _("TODO keyboard");
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Custom");
+      }
+
+      ;
+    }
+
+    NotebookPage {
+      position: 3;
+      child: 
+      Label {
+        label: _("TODO");
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Circle of Fifths");
+      }
+
+      ;
+    }
+  }
+
+  ;
+}

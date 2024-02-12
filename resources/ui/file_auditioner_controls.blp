@@ -1,0 +1,32 @@
+using Gtk 4.0;
+
+template $FileAuditionerControlsWidget : Gtk.Box {
+  focusable: true;
+  orientation: vertical;
+  Gtk.Box btn_toolbar {
+    styles [
+      "toolbar",
+    ]
+    homogeneous: true;
+    Gtk.Button play_btn {
+      tooltip-text: _("Play/Pause");
+      icon-name: "media-playback-start";
+      clicked => $on_play_clicked();
+    }
+    Gtk.Button stop_btn {
+      tooltip-text: _("Stop");
+      icon-name: "media-playback-stop";
+      clicked => $on_stop_clicked();
+    }
+    $VolumeWidget volume {
+      tooltip-text: _("Volume");
+    }
+    Gtk.MenuButton file_settings_btn {
+      tooltip-text: _("Preferences");
+      Gtk.Image {
+        icon-name: "fork-awesome-fa-cog";
+      }
+    }
+  }
+  Gtk.DropDown instrument_dropdown {}
+}

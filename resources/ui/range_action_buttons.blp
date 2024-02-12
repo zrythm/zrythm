@@ -1,0 +1,19 @@
+using Gtk 4.0;
+
+template $RangeActionButtonsWidget : Box {
+  Button insert_silence {
+    focusable: true;
+    receives-default: true;
+    icon-name: "timeline-insert";
+    action-name: "app.insert-silence";
+    tooltip-text: _("Insert silence");
+  }
+
+  Button remove {
+    focusable: true;
+    receives-default: true;
+    icon-name: "timeline-extract";
+    action-name: "app.remove-range";
+    tooltip-text: _("Remove range");
+  }
+}

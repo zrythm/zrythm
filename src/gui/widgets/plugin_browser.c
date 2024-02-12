@@ -802,6 +802,8 @@ on_visible_child_changed (
 static void
 toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
 {
+  g_return_if_fail (GTK_IS_TOGGLE_BUTTON (btn));
+  g_return_if_fail (Z_IS_PLUGIN_BROWSER_WIDGET (self));
   if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */

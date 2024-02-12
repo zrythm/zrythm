@@ -1,0 +1,28 @@
+using Gtk 4.0;
+
+template $CcListRowInfoButton : Widget {
+  MenuButton button {
+    tooltip-text: _("More Information");
+    icon-name: "info-symbolic";
+
+    styles [
+      "flat",
+    ]
+    popover: 
+    Popover popover {
+      Label label {
+        halign: center;
+        margin-bottom: 6;
+        margin-end: 6;
+        margin-start: 6;
+        margin-top: 6;
+        max-width-chars: 50;
+        valign: center;
+        wrap: true;
+        selectable: bind-property popover.visible no-sync-create inverted;
+      }
+    }
+
+    ;
+  }
+}

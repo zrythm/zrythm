@@ -1,0 +1,62 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PanelFileBrowserWidget : Gtk.Widget {
+  vexpand: true;
+  Gtk.Paned paned {
+    shrink-end-child: false;
+    resize-end-child: false;
+    shrink-start-child: false;
+    resize-start-child: false;
+    focusable: true;
+    orientation: vertical;
+    position: 220;
+    position-set: true;
+    wide-handle: true;
+    Gtk.Box browser_top {
+      orientation: vertical;
+      Gtk.Box bookmarks_label_box {
+        Gtk.Image {
+          icon-name: "favorite";
+        }
+        Gtk.Label {
+          label: _("Bookmarks");
+        }
+      }
+      Gtk.ScrolledWindow bookmarks_scroll {
+        vexpand: true;
+        Gtk.ListView bookmarks_list_view {
+          tab-behavior: item;
+        }
+      }
+    }
+    Adw.ToolbarView browser_bot {
+      [top]
+      $FileBrowserFiltersWidget filters_toolbar { }
+      [top]
+      Gtk.SearchBar {
+        search-mode-enabled: true;
+        child:
+        // xxx: Pack the search entry inside a box so that Escape key won't hide the bar
+        Adw.Clamp {
+          Gtk.SearchEntry file_search_entry {
+            hexpand: true;
+          }
+        };
+      }
+      content:
+      Gtk.ScrolledWindow files_scroll {
+        focusable: true;
+        vexpand: true;
+        child:
+        Gtk.ListView files_list_view { };
+      };
+      [bottom]
+      $FileAuditionerControlsWidget auditioner_controls { }
+      [bottom]
+      Gtk.Label file_info {
+        /* TODO attributes */
+      }
+    }
+  }
+}

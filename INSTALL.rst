@@ -22,6 +22,9 @@ and the following
 `sassc (Expat) <https://github.com/sass/sassc>`_
   CSS compilation
 
+`blueprint-compiler (LGPLv3+) <https://gitlab.gnome.org/jwestman/blueprint-compiler>`_
+  UI file compilation
+
 If your meson version is too old, you can either
 install meson from
 `pip <https://pypi.org/project/pip/>`_

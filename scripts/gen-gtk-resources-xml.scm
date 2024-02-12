@@ -27,14 +27,14 @@ Args:
 (define (main . args)
 
   ;; verify number of args
-  (unless (eq? (length args) 4)
-    (display "Need 3 arguments")
+  (unless (eq? (length args) 5)
+    (display "Need 4 arguments")
     (newline)
     (exit -1))
 
   ;; get args
   (match args
-    ((this-program resources-dir appdata-file output-file)
+    ((this-program resources-dir resources-build-dir appdata-file output-file)
 
      ;; open file
      (with-output-to-file output-file
@@ -89,13 +89,12 @@ Args:
            (lambda (x)
              (display
                (string-append
-                 "    <file preprocess="
-                 "'xml-stripblanks'>ui/" x
-                 "</file>"))
+                 "    <file preprocess=\"xml-stripblanks\">ui/" x "</file>"))
+
              (newline))
            (scandir
              (join-path
-               (list resources-dir "ui"))
+               (list resources-build-dir "ui"))
              (lambda (f)
                (string-suffix? ".ui" f))))
 

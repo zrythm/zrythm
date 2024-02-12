@@ -1,0 +1,26 @@
+using Gtk 4.0;
+
+template $AutomationEditorSpaceWidget : Box {
+  Paned main_top_bot_paned {
+    hexpand: true;
+    shrink-start-child: false;
+    focusable: true;
+    orientation: vertical;
+
+    Box left_slash_arranger_box {
+      height-request: 120;
+      vexpand: true;
+
+      Box left_box {
+      }
+
+      Box arranger_box {
+        hexpand: true;
+        orientation: vertical;
+
+        $ArrangerWidget arranger {
+        }
+      }
+    }
+  }
+}

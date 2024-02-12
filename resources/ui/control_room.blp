@@ -1,0 +1,49 @@
+using Gtk 4.0;
+
+template $ControlRoomWidget : Grid {
+  Box main_knob_placeholder {
+    orientation: vertical;
+
+    layout {
+      column: "1";
+      row: "1";
+    }
+  }
+
+  Box left_of_main_knob_toolbar {
+    styles [
+      "toolbar",
+    ]
+
+    orientation: vertical;
+
+    ToggleButton dim_output {
+      tooltip-text: "Temporarily dim the main output level";
+      action-name: "app.toggle-dim-output";
+      icon-name: "dim";
+    }
+
+    layout {
+      column: "0";
+      row: "1";
+    }
+  }
+
+  Box main_meter_placeholder {
+    orientation: vertical;
+
+    layout {
+      column: "2";
+      row: "1";
+    }
+  }
+
+  Box listen_dim_slider_placeholder {
+    orientation: vertical;
+
+    layout {
+      column: "0";
+      row: "2";
+    }
+  }
+}

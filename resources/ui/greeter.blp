@@ -1,0 +1,273 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $GreeterWidget : Adw.Window {
+  icon-name: "zrythm";
+  modal: true;
+  width-request: 256;
+  content:
+  Gtk.Stack stack {
+    transition-type: crossfade;
+    Gtk.StackPage {
+      name: "first-run";
+      title: _("Welcome");
+      child:
+      Adw.NavigationView nav_view {
+        // 1st page of navigation:
+        // various welcome messages inside a carousel (only on first run)
+        Adw.NavigationPage nav_carousel_page {
+          title: _("Welcome");
+          child:
+          Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+            content:
+            Gtk.Box {
+              orientation: vertical;
+              Adw.Carousel welcome_carousel {
+                hexpand: true;
+                vexpand: true;
+                Adw.StatusPage {
+                  icon-name: "zrythm";
+                  title: _("Welcome");
+                  description: _("Welcome to the Zrythm digital audio workstation. Please scroll to proceed.");
+                  vexpand: true;
+                  hexpand: true;
+                }
+                Adw.StatusPage read_manual_status_page {
+                  icon-name: "gnome-icon-library-open-book-symbolic";
+                  title: _("Read the Manual");
+                  vexpand: true;
+                  hexpand: true;
+                }
+                Adw.StatusPage donate_status_page {
+                  icon-name: "gnome-icon-library-credit-card-symbolic";
+                  title: _("Donate");
+                  vexpand: true;
+                  hexpand: true;
+                }
+                Adw.StatusPage about_flatpak_status_page {
+                  icon-name: "gnome-icon-library-flatpak-symbolic";
+                  title: _("About Flatpak");
+                  vexpand: true;
+                  hexpand: true;
+                }
+                /*
+                Adw.StatusPage legal_info_status_page {
+                  icon-name: "font-awesome-balance-scale-right-weighted";
+                  title: _("Legal Info");
+                  vexpand: true;
+                  hexpand: true;
+                }
+                */
+                Adw.StatusPage {
+                  title: _("All Ready!");
+                  hexpand: true;
+                  child:
+                  Gtk.Button continue_to_config_btn {
+                    label: _("_Proceed to Configuration");
+                    can-shrink: true;
+                    use-underline: true;
+                    halign: center;
+                    styles [
+                      "suggested-action",
+                      "pill",
+                    ]
+                  };
+                }
+              }
+              Adw.CarouselIndicatorDots {
+                carousel: welcome_carousel;
+              }
+            };
+            [bottom]
+            Gtk.ActionBar { }
+          };
+        }
+        // 2nd page of navigation:
+        // configuration (only on first run)
+        Adw.NavigationPage nav_config_page {
+          title: _("Configuration");
+          child:
+          Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+            content:
+            Adw.PreferencesPage pref_page {};
+            [bottom]
+            Gtk.ActionBar {
+              [end]
+              Gtk.Button config_ok_btn {
+                label: _("_Continue");
+                use-underline: true;
+                styles [
+                  "suggested-action",
+                ]
+              }
+              [end]
+              Gtk.Button config_reset_btn {
+                label: _("_Reset");
+                use-underline: true;
+              }
+            }
+          };
+        }
+      };
+    } /* end first-run stack page */
+    Gtk.StackPage {
+      name: "progress";
+      title: _("Progress");
+      child:
+      Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar { }
+        content:
+        Gtk.Box {
+          orientation: vertical;
+          /*
+          // spinner approach
+          Gtk.Box {
+            spacing: 12;
+            homogeneous: true;
+            orientation: vertical;
+            halign: center;
+            valign: center;
+            hexpand: true;
+            vexpand: true;
+            Gtk.Spinner {
+              halign: center;
+              valign: center;
+              spinning: true;
+              width-request: 32;
+              height-request: 32;
+            }
+            Gtk.Label status_title {
+              justify: center;
+              wrap: true;
+              halign: 0.0;
+              valign: 0.0;
+              styles [
+                "title-1",
+              ]
+            }
+            Gtk.Label status_description {
+              justify: center;
+              wrap: true;
+              halign: 0.0;
+              valign: 0.0;
+            }
+          }
+          // end spinner approach
+          */
+          Adw.StatusPage status_page {
+            icon-name: "zrythm-monochrome";
+            title: "Zrythm";
+            hexpand: true;
+          }
+          Adw.Clamp {
+            maximum-size: 450;
+            Gtk.ProgressBar progress_bar {
+              show-text: true;
+              margin-start: 36;
+              margin-end: 36;
+            }
+          }
+        };
+      };
+    }
+    Gtk.StackPage {
+      name: "project-selector";
+      title: _("Open a Project");
+      child:
+      Adw.NavigationView  open_prj_navigation_view {
+        Adw.NavigationPage {
+          title: _("Open a Project");
+          child:
+          Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {
+              [end]
+              Gtk.MenuButton {
+                primary: true;
+                icon-name: "open-menu-symbolic";
+                tooltip-text: _("Menu");
+                menu-model: primary_menu;
+              }
+            }
+            content:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup recent_projects_pref_group {
+                title: _("Recent Projects");
+              }
+            };
+          };
+          [bottom]
+          Gtk.ActionBar {
+            [center]
+            Gtk.Box {
+              spacing: 12;
+              Gtk.Button create_new_project_btn {
+                label: _("Create _New Project…");
+                use-underline: true;
+              }
+              Gtk.Button select_folder_btn {
+                label: _("Open From _Path…");
+                use-underline: true;
+              }
+            }
+          }
+        }
+        Adw.NavigationPage create_project_nav_page {
+          title: _("Create New Project");
+          child:
+          Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+            content:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                Adw.EntryRow project_title_row {
+                  title: _("Project Name");
+                }
+                Adw.ActionRow project_parent_dir_row {
+                  title: _("Parent Directory");
+                }
+                Adw.ComboRow templates_combo_row {
+                  title: _("Template");
+                  model: Gtk.StringList { };
+                  [suffix]
+                  $CcListRowInfoButton templates_info_button {
+                    valign: center;
+                  }
+                }
+              }
+              Adw.PreferencesGroup {
+                Gtk.Button create_project_confirm_btn {
+                  label: _("Create Project");
+                  halign: center;
+                  styles [
+                    "suggested-action",
+                    "pill",
+                  ]
+                }
+              }
+            };
+          };
+        }
+      };
+    }
+  };
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+    item {
+      label: _("_About Zrythm");
+      action: "app.about";
+    }
+  }
+}

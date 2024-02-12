@@ -1,0 +1,200 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ExportDialogWidget : Gtk.Dialog {
+  title: _("Export As...");
+  decorated: false;
+  use-header-bar: 0;
+  modal: true;
+  icon-name: "zrythm";
+  [internal-child content_area]
+  Gtk.Box {
+    orientation: vertical;
+    Adw.HeaderBar {
+      centering-policy: strict;
+      [title]
+      Adw.ViewSwitcherTitle title {
+        stack: stack;
+      }
+    }
+    Adw.ViewStack stack {
+      Adw.ViewStackPage {
+        name: "audio";
+        title: _("Audio");
+        icon-name: "signal-audio";
+        child:
+        Gtk.Box {
+          homogeneous: true;
+          Adw.PreferencesPage {
+            title: _("Export Audio");
+            width-request: 512;
+            Adw.PreferencesGroup {
+              title: _("Metadata");
+              Adw.EntryRow audio_title {
+                title: _("Title");
+              }
+              Adw.EntryRow audio_artist {
+                title: _("Artist");
+              }
+              Adw.EntryRow audio_genre {
+                title: _("Genre");
+              }
+            }
+            Adw.PreferencesGroup {
+              title: _("Options");
+              Adw.ComboRow audio_format {
+                title: _("Format");
+              }
+              Adw.ComboRow audio_bit_depth {
+                title: _("Bit Depth");
+              }
+              Adw.ActionRow audio_dither {
+                title: _("Dither");
+                activatable-widget: audio_dither_switch;
+                Gtk.Switch audio_dither_switch {
+                  valign: center;
+                  state: false;
+                }
+              }
+              Adw.ComboRow audio_filename_pattern {
+                title: _("Filename Pattern");
+              }
+              Adw.ComboRow audio_mixdown_or_stems {
+                title: _("Mixdown or Stems");
+                subtitle: _("Whether to export the selected tracks as a single mixdown file or each track in its own file.");
+              }
+            }
+          }
+          Adw.PreferencesPage {
+            title: _("Export Audio");
+            width-request: 512;
+            Adw.PreferencesGroup {
+              title: _("Selection");
+              Adw.ComboRow audio_time_range_combo {
+                title: _("Time Range");
+                subtitle: _("Only events inside this time range will be exported.");
+              }
+              Adw.ActionRow audio_custom_tr_row {
+                title: _("Custom Time Range");
+                Gtk.Box audio_custom_tr_start_meter_box {}
+                Gtk.Label {
+                  label: " ~ ";
+                }
+                Gtk.Box audio_custom_tr_end_meter_box {}
+              }
+              Adw.ExpanderRow {
+                title: _("Track Selection");
+                expanded: true;
+                Gtk.ListBoxRow {
+                  activatable: false;
+                  Gtk.ScrolledWindow {
+                    height-request: 200;
+                    Gtk.ColumnView  audio_tracks_view {
+                      styles [
+                        "data-table",
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            Adw.PreferencesGroup {
+              title: _("Output");
+              Gtk.Label audio_output_label { }
+            }
+          }
+        };
+      }
+      Adw.ViewStackPage {
+        name: "midi";
+        title: "MIDI";
+        icon-name: "signal-midi";
+        child:
+        Gtk.Box {
+          homogeneous: true;
+          Adw.PreferencesPage {
+            title: _("Export MIDI");
+            width-request: 512;
+            Adw.PreferencesGroup {
+              title: _("Metadata");
+              Adw.EntryRow midi_title {
+                title: _("Title");
+              }
+              Adw.EntryRow midi_artist {
+                title: _("Artist");
+              }
+              Adw.EntryRow midi_genre {
+                title: _("Genre");
+              }
+            }
+            Adw.PreferencesGroup {
+              title: _("Options");
+              Adw.ComboRow midi_format {
+                title: _("Format");
+                model:
+                Gtk.StringList {
+                  strings [
+                    "Type 0",
+                    "Type 1",
+                  ]
+                };
+              }
+              Adw.ActionRow midi_export_lanes_as_tracks {
+                title: _("Export Lanes as Tracks");
+                activatable-widget: midi_export_lanes_as_tracks_switch;
+                Gtk.Switch midi_export_lanes_as_tracks_switch {
+                  valign: center;
+                  state: false;
+                }
+              }
+              Adw.ComboRow midi_filename_pattern {
+                title: _("Filename Pattern");
+              }
+              Adw.ComboRow midi_mixdown_or_stems {
+                title: _("Mixdown or Stems");
+                subtitle: _("Whether to export the selected tracks as a single mixdown file or each track in its own file.");
+              }
+            }
+          }
+          Adw.PreferencesPage {
+            title: _("Export MIDI");
+            Adw.PreferencesGroup {
+              title: _("Selection");
+              Adw.ComboRow midi_time_range_combo {
+                title: _("Time Range");
+                subtitle: _("Only events inside this time range will be exported.");
+              }
+              Adw.ActionRow midi_custom_tr_row {
+                title: _("Custom Time Range");
+                Gtk.Box midi_custom_tr_start_meter_box {}
+                Gtk.Label {
+                  label: " ~ ";
+                }
+                Gtk.Box midi_custom_tr_end_meter_box {}
+              }
+              Adw.ExpanderRow {
+                title: _("Track Selection");
+                expanded: true;
+                Gtk.ListBoxRow {
+                  activatable: false;
+                  Gtk.ScrolledWindow {
+                    height-request: 200;
+                    Gtk.ColumnView midi_tracks_view {
+                      styles [
+                        "data-table",
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            Adw.PreferencesGroup {
+              title: _("Output");
+              Gtk.Label midi_output_label { }
+            }
+          }
+        };
+      }
+    }
+  }
+}

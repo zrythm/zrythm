@@ -1,0 +1,19 @@
+using Gtk 4.0;
+
+template $InspectorPluginWidget : Gtk.Box {
+  orientation: vertical;
+  spacing: 2;
+  $ColorAreaWidget color {
+    height-request: 8;
+    margin-bottom: 1;
+  }
+  $PluginPropertiesExpanderWidget properties { }
+  $PortsExpanderWidget ctrl_ins { }
+  $PortsExpanderWidget ctrl_outs { }
+  $PortsExpanderWidget cv_ins { }
+  $PortsExpanderWidget cv_outs { }
+  $PortsExpanderWidget audio_ins { }
+  $PortsExpanderWidget audio_outs { }
+  $PortsExpanderWidget midi_ins { }
+  $PortsExpanderWidget midi_outs { }
+}

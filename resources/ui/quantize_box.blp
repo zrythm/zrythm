@@ -1,0 +1,21 @@
+using Gtk 4.0;
+
+template $QuantizeBoxWidget : Box {
+  Button quick_quantize_btn {
+    focusable: true;
+    receives-default: true;
+    icon-name: "quick-quantize";
+    action-name: "app.quick-quantize";
+    action-target: "\"global\"";
+    tooltip-text: _("Quick Quantize");
+  }
+
+  Button quantize_opts_btn {
+    focusable: true;
+    receives-default: true;
+    icon-name: "quantize-options";
+    action-name: "app.quantize-options";
+    action-target: "\"global\"";
+    tooltip-text: _("Full Quantize...");
+  }
+}

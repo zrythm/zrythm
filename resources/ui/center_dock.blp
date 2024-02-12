@@ -1,0 +1,39 @@
+using Gtk 4.0;
+
+template $CenterDockWidget : Widget {
+  $PanelDock dock {
+    reveal-start: "true";
+    reveal-bottom: "true";
+    reveal-end: "true";
+    hexpand: "true";
+    vexpand: "true";
+
+    $PanelPaned {
+      $MainNotebookWidget main_notebook {
+        hexpand: "true";
+      }
+    }
+
+    [start]
+    $PanelPaned {
+      orientation: "vertical";
+
+      $LeftDockEdgeWidget left_dock_edge {
+      }
+    }
+
+    [bottom]
+    $PanelPaned {
+      $BotDockEdgeWidget bot_dock_edge {
+      }
+    }
+
+    [end]
+    $PanelPaned {
+      orientation: "vertical";
+
+      $RightDockEdgeWidget right_dock_edge {
+      }
+    }
+  }
+}

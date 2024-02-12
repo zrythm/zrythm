@@ -1,0 +1,34 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StringEntryDialogWidget : Adw.MessageDialog {
+  body: _("Please enter a value");
+  default-response: "ok";
+  close-response: "cancel";
+  modal: true;
+
+  responses [
+    cancel: _("_Cancel"),
+    ok: _("_OK") suggested,
+  ]
+  extra-child: 
+  Box {
+    orientation: vertical;
+    spacing: 2;
+
+    Box {
+      margin-start: 8;
+      margin-end: 8;
+      margin-top: 8;
+      margin-bottom: 8;
+      orientation: vertical;
+      spacing: 4;
+
+      Entry entry {
+        focusable: true;
+      }
+    }
+  }
+
+  ;
+}

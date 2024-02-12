@@ -1,0 +1,45 @@
+using Gtk 4.0;
+
+template $ChordEditorSpaceWidget : Box {
+  Paned main_top_bot_paned {
+    hexpand: true;
+    shrink-end-child: false;
+    resize-end-child: false;
+    shrink-start-child: false;
+    focusable: true;
+    orientation: vertical;
+
+    Box chord_keys_slash_arranger_box {
+      height-request: 120;
+      vexpand: true;
+
+      Box left_box {
+        ScrolledWindow chord_keys_scroll {
+          focusable: true;
+          hscrollbar-policy: never;
+          vscrollbar-policy: external;
+          child: 
+          Viewport chord_keys_viewport {
+            scroll-to-focus: false;
+            child: 
+            Box chord_keys_box {
+              orientation: vertical;
+            }
+
+            ;
+          }
+
+          ;
+        }
+      }
+
+      Box arranger_box {
+        hexpand: true;
+        orientation: vertical;
+
+        $ArrangerWidget arranger {
+        }
+      }
+    }
+  }
+}

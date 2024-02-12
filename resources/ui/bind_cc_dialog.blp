@@ -1,0 +1,40 @@
+using Gtk 4.0;
+
+template $BindCcDialogWidget : Dialog {
+  title: _("Bind MIDI CC");
+  icon-name: "zrythm";
+
+  [internal-child content_area]
+  Box {
+    orientation: vertical;
+    spacing: 2;
+
+    Label {
+      label: _("Press a key or move a knob on your MIDI device");
+      wrap: true;
+    }
+
+    Label lbl {
+      vexpand: true;
+      label: _("Waiting for input...");
+    }
+  }
+
+  [internal-child action_area]
+  Box {
+    valign: center;
+
+    Button cancel_btn {
+      label: _("Cancel");
+      focusable: true;
+      receives-default: true;
+    }
+
+    Button ok_btn {
+      label: _("OK");
+      sensitive: false;
+      focusable: true;
+      receives-default: true;
+    }
+  }
+}

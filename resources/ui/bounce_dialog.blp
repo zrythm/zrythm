@@ -1,0 +1,79 @@
+using Gtk 4.0;
+
+Gtk.Adjustment adjustment1 {
+  upper: 40000;
+  step-increment: 1;
+  page-increment: 10;
+}
+template $BounceDialogWidget : Gtk.Dialog {
+  title: _("Bounce Options");
+  modal: true;
+  icon-name: "zrythm";
+  [internal-child content_area]
+  Gtk.Box {
+    orientation: vertical;
+    spacing: 2;
+    Gtk.Grid {
+      Gtk.CheckButton bounce_with_parents  {
+        label: _("Bounce With Parents");
+        layout {
+          column: 0;
+          row: 0;
+          column-span: 3;
+        }
+      }
+      Gtk.Box bounce_step_box {
+        layout {
+          column: 0;
+          row: 1;
+          column-span: 3;
+        }
+      }
+      Gtk.Label {
+        label: _("Tail");
+        layout {
+          column: 0;
+          row: 2;
+        }
+      }
+      Gtk.SpinButton tail_spin {
+        focusable: true;
+        adjustment: adjustment1;
+        climb-rate: 1;
+        snap-to-ticks: true;
+        numeric: true;
+        layout {
+          column:  1;
+          row: 2;
+        }
+      }
+      Gtk.Label {
+        label: _("ms");
+        layout {
+          column: 2;
+          row: 2;
+        }
+      }
+    }
+    Gtk.CheckButton disable_after_bounce {
+      label: _("Disable After Bounce");
+      focusable: true;
+    }
+  }
+  [internal-child action_area]
+  Gtk.Box {
+    valign: center;
+    Gtk.Button cancel_btn {
+      label: _("Cancel");
+      focusable: true;
+      receives-default: true;
+      clicked => $on_cancel_clicked(template);
+    }
+    Gtk.Button bounce_btn {
+      label: _("Bounce");
+      focusable: true;
+      receives-default: true;
+      clicked => $on_bounce_clicked(template);
+    }
+  }
+}

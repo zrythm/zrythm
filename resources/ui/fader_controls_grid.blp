@@ -1,0 +1,50 @@
+using Gtk 4.0;
+
+template $FaderControlsGridWidget : Grid {
+  Box meters_box {
+    $MeterWidget meter_l {
+      visible: "1";
+    }
+
+    $MeterWidget meter_r {
+      visible: "1";
+    }
+
+    Label meter_readings {
+      hexpand: true;
+      justify: center;
+      label: "Peak:\n0.0db\n\nRMS:\n0.0db";
+    }
+
+    layout {
+      column: "1";
+      row: "1";
+    }
+  }
+
+  Box balance_box {
+    layout {
+      column: "0";
+      row: "0";
+      column-span: "2";
+    }
+  }
+
+  $FaderWidget fader {
+    layout {
+      column: "0";
+      row: "1";
+    }
+  }
+
+  $FaderButtonsWidget fader_buttons {
+    margin-top: "4";
+    orientation: "horizontal";
+
+    layout {
+      column: "0";
+      row: "2";
+      column-span: "2";
+    }
+  }
+}

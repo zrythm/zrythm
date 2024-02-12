@@ -93,6 +93,7 @@ faust2lv2 = find_program (
 sox = find_program (
   'sox', required: false)
 tidy_bin = find_program ('tidy', required: false)
+blueprint_compiler = find_program ('blueprint-compiler')
 
 # --- Set common variables ---
 

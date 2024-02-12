@@ -1,0 +1,98 @@
+using Gtk 4.0;
+
+template $TimelineToolbarWidget : Box {
+  styles [
+    "toolbar",
+    "arranger-toolbar",
+    "timeline-toolbar",
+  ]
+
+  $SnapGridWidget snap_grid {
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  $QuantizeBoxWidget quantize_box {
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  ToggleButton musical_mode_toggle {
+    action-name: "app.toggle-musical-mode";
+    icon-name: "musical-mode";
+    tooltip-text: _("Musical mode");
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  $RangeActionButtonsWidget range_action_buttons {
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  $PlayheadScrollButtonsWidget playhead_scroll_buttons {
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  Button merge_btn {
+    action-name: "app.merge-selection";
+    icon-name: "iconpark-merge-cells";
+    tooltip-text: _("Merge selections");
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  $ZoomButtonsWidget zoom_buttons {
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  Button event_viewer_toggle {
+    action-name: "app.toggle-timeline-event-viewer";
+    icon-name: "event-viewer";
+    tooltip-text: _("Toggle event viewer");
+  }
+}

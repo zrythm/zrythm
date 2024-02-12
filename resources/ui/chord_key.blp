@@ -1,0 +1,61 @@
+using Gtk 4.0;
+
+template $ChordKeyWidget : Grid {
+  Label chord_lbl {
+    label: _("Amin 7");
+    ellipsize: end;
+    xalign: 0;
+    margin-start: 3;
+
+    layout {
+      column: "1";
+      column-span: "2";
+      row: "0";
+    }
+  }
+
+  Box btn_box {
+    Button choose_chord_btn {
+      focusable: true;
+      receives-default: true;
+
+      Image {
+        icon-name: "minuet-scales";
+      }
+    }
+
+    Button invert_prev_btn {
+      focusable: true;
+      receives-default: true;
+
+      Image {
+        icon-name: "go-previous";
+      }
+    }
+
+    Button invert_next_btn {
+      focusable: true;
+      receives-default: true;
+
+      Image {
+        icon-name: "go-next";
+      }
+    }
+
+    layout {
+      column: "2";
+      column-span: "2";
+      row: "0";
+    }
+  }
+
+  Box piano_box {
+    orientation: vertical;
+
+    layout {
+      column: "1";
+      row: "2";
+      column-span: "3";
+    }
+  }
+}

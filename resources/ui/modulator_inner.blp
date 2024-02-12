@@ -1,0 +1,46 @@
+using Gtk 4.0;
+
+template $ModulatorInnerWidget : Gtk.Box {
+  orientation: vertical;
+  Gtk.Box toolbar {
+    styles [
+      "toolbar",
+    ]
+    Gtk.ToggleButton show_hide_ui_btn {
+      icon-name: "jam-icons-screen";
+      tooltip-text: _("Show/Hide UI");
+      toggled => $on_show_hide_ui_toggled(template);
+    }
+    Gtk.Box {}
+    Gtk.Button delete_btn {
+      icon-name: "edit-delete";
+      tooltip-text: _("Delete");
+      clicked => $on_delete_clicked(template);
+    }
+  }
+  Gtk.ScrolledWindow content_scroll {
+    focusable: true;
+    vexpand: true;
+    hscrollbar-policy: never;
+    child:
+    Gtk.Viewport {
+      child:
+      Gtk.Box content_box {
+        spacing: 4;
+        Gtk.Box controls_box {
+          margin-start: 1;
+          margin-end: 1;
+          margin-top: 3;
+          orientation: vertical;
+          spacing: 2;
+        }
+        Gtk.Box waveforms_box {
+          margin-start: 1;
+          margin-top: 2;
+          orientation: vertical;
+          spacing: 2;
+        }
+      };
+    };
+  }
+}

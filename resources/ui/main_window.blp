@@ -1,0 +1,178 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MainWindowWidget : Adw.ApplicationWindow {
+  icon-name: "zrythm";
+  destroy => $on_main_window_destroy();
+  content: 
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      styles [
+        "main-window-header",
+      ]
+
+      [start]
+      Box header_start_box {
+        $PanelToggleButton start_dock_switcher {
+          area: "start";
+          tooltip-text: _("Toggle Left Panel");
+        }
+
+        Separator {
+          styles [
+            "spacer",
+            "thick-separator",
+          ]
+
+          orientation: vertical;
+        }
+
+        Adw.SplitButton undo_btn {
+          styles [
+            "raised",
+          ]
+
+          sensitive: false;
+          action-name: "app.undo";
+          icon-name: "edit-undo";
+          tooltip-text: "Undo";
+        }
+
+        Adw.SplitButton redo_btn {
+          styles [
+            "raised",
+          ]
+
+          sensitive: false;
+          action-name: "app.redo";
+          icon-name: "edit-redo";
+          tooltip-text: "Redo";
+        }
+
+        Separator {
+          styles [
+            "spacer",
+            "thick-separator",
+          ]
+
+          orientation: vertical;
+        }
+
+        $ToolboxWidget toolbox {
+          visible: "1";
+        }
+      }
+      title-widget: 
+      Adw.WindowTitle window_title {
+      }
+
+      ;
+
+      [end]
+      Box header_end_box {
+        $PanelToggleButton end_dock_switcher {
+          area: "end";
+          tooltip-text: _("Toggle Right Panel");
+        }
+
+        Separator {
+          styles [
+            "spacer",
+            "thick-separator",
+          ]
+
+          orientation: vertical;
+        }
+
+        MenuButton {
+          primary: true;
+          icon-name: "open-menu-symbolic";
+          tooltip-text: _("Menu");
+          menu-model: primary_menu;
+        }
+      }
+    }
+    content: 
+    Box center_box {
+      name: "main-window-center-box";
+      vexpand: true;
+
+      Adw.ToastOverlay toast_overlay {
+        $CenterDockWidget center_dock {
+          hexpand: "1";
+        }
+      }
+    }
+
+    ;
+
+    [bottom]
+    $BotBarWidget bot_bar {
+    }
+  }
+
+  ;
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Open a Project…");
+      action: "app.open";
+    }
+
+    item {
+      label: _("Create _New Project…");
+      action: "app.new";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Save");
+      action: "app.save";
+    }
+
+    item {
+      label: _("Save _As…");
+      action: "app.save-as";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Export As…");
+      action: "app.export-as";
+    }
+
+    item {
+      label: _("Export _Graph…");
+      action: "app.export-graph";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Fullscreen");
+      action: "app.fullscreen";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("_About Zrythm");
+      action: "app.about";
+    }
+  }
+}

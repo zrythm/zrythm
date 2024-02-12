@@ -1,0 +1,36 @@
+using Gtk 4.0;
+
+template $InspectorTrackWidget : Widget {
+  $ColorAreaWidget color {
+    height-request: "8";
+    margin-bottom: "1";
+  }
+
+  $TrackPropertiesExpanderWidget track_info {
+  }
+
+  $TrackInputExpanderWidget inputs {
+  }
+
+  $PortsExpanderWidget controls {
+  }
+
+  $PortsExpanderWidget outputs {
+  }
+
+  $PluginStripExpanderWidget midi_fx {
+  }
+
+  $PluginStripExpanderWidget inserts {
+  }
+
+  $ChannelSendsExpanderWidget sends {
+    vexpand: "False";
+  }
+
+  $FaderControlsExpanderWidget fader {
+  }
+
+  $TextExpanderWidget comment {
+  }
+}

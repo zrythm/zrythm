@@ -1,0 +1,97 @@
+using Gtk 4.0;
+
+template $PortSelectorDialogWidget : Gtk.Dialog {
+  [internal-child content_area]
+  Gtk.Box {
+    orientation: vertical;
+    Gtk.Label {
+      label: _("Select a Port...");
+    }
+    Gtk.Box {
+      vexpand: true;
+      spacing: 1;
+      Gtk.Box track_box {
+        hexpand: true;
+        orientation: vertical;
+        Gtk.Label {
+          margin-start: 4;
+          margin-end: 4;
+          hexpand: true;
+          label: _("Track");
+        }
+        Gtk.ScrolledWindow track_scroll {
+          hscrollbar-policy: never;
+          propagate-natural-height: true;
+          vexpand: true;
+          child:
+          Gtk.TreeView track_treeview {
+            focusable: true;
+            [internal-child selection]
+            Gtk.TreeSelection { }
+          };
+        }
+      }
+      Gtk.Separator track_separator {
+        orientation: vertical;
+      }
+      Gtk.Box plugin_box {
+        hexpand: true;
+        orientation: vertical;
+        Gtk.Label {
+          margin-start: 4;
+          margin-end: 4;
+          hexpand: true;
+          label: _("Plugin");
+        }
+        Gtk.ScrolledWindow plugin_scroll {
+          hscrollbar-policy: never;
+          propagate-natural-height: true;
+          vexpand: true;
+          child:
+          Gtk.TreeView plugin_treeview {
+            focusable: true;
+            [internal-child selection]
+            Gtk.TreeSelection { }
+          };
+        }
+      }
+      Gtk.Separator plugin_separator {
+        orientation: vertical;
+      }
+      Gtk.Box port_box {
+        hexpand: true;
+        orientation: vertical;
+        Gtk.Label {
+          margin-start: 4;
+          margin-end: 4;
+          hexpand: true;
+          label: _("Port");
+        }
+        Gtk.ScrolledWindow port_scroll {
+          hscrollbar-policy: never;
+          propagate-natural-height: true;
+          vexpand: true;
+          child:
+          Gtk.TreeView port_treeview {
+            focusable: true;
+            [internal-child selection]
+            Gtk.TreeSelection { }
+          };
+        }
+      }
+      Gtk.Separator port_separator {
+        orientation: vertical;
+      }
+    }
+  }
+  [action response=cancel]
+  Gtk.Button cancel_btn {
+    label: _("_Cancel");
+    use-underline: true;
+  }
+  [action response=ok default]
+  Gtk.Button ok_btn {
+    label: _("_OK");
+    use-underline: true;
+  }
+}

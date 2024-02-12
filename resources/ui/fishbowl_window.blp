@@ -1,0 +1,76 @@
+using Gtk 4.0;
+
+template $FishbowlWindowWidget : Window {
+  visible: true;
+  title: _("Fishbowl");
+
+  [titlebar]
+  HeaderBar  {
+    Box {
+      styles [
+        "linked",
+      ]
+
+      Button {
+        Image {
+          icon-name: "pan-start-symbolic";
+        }
+
+        clicked => $prev_button_clicked_cb(bowl);
+      }
+
+      Button {
+        Image {
+          icon-name: "pan-end-symbolic";
+        }
+
+        clicked => $next_button_clicked_cb(bowl);
+      }
+    }
+
+    [end]
+    Label {
+      label: "fps";
+    }
+
+    [end]
+    Label {
+      label: bind-property bowl.framerate no-sync-create;
+    }
+
+    [end]
+    Label {
+      label: "Icons, ";
+    }
+
+    [end]
+    Label {
+      label: bind-property bowl.count no-sync-create;
+    }
+
+    [end]
+    ToggleButton changes_allow {
+      visible: bind-property changes_allow.active no-sync-create inverted;
+
+      Image {
+        icon-name: "changes-allow";
+      }
+    }
+
+    [end]
+    ToggleButton changes_prevent {
+      active: bind-property changes_allow.active no-sync-create inverted bidirectional;
+      visible: bind-property changes_prevent.active no-sync-create inverted;
+
+      Image {
+        icon-name: "changes-prevent";
+      }
+    }
+  }
+
+  $GtkFishbowl bowl {
+    visible: "True";
+    animating: "True";
+    benchmark: bind-property changes_allow.active no-sync-create inverted;
+  }
+}

@@ -1,0 +1,123 @@
+using Gtk 4.0;
+
+template $BotBarWidget : Widget {
+  CenterBox center_box {
+    [start]
+    Label engine_status_label {
+      justify: left;
+      halign: start;
+      margin-start: 4;
+      margin-end: 1;
+      margin-top: 1;
+      margin-bottom: 1;
+      hexpand: true;
+    }
+
+    [center]
+    Box mid_box_parent {
+      hexpand: false;
+      hexpand-set: true;
+      halign: center;
+
+      Box digital_meters {
+      }
+
+      $ButtonWithMenuWidget metronome {
+        halign: "center";
+        receives-default: "1";
+      }
+
+      $TransportControlsWidget transport_controls {
+      }
+
+      Box playhead_box {
+      }
+    }
+
+    [end]
+    Box cpu_box {
+      hexpand: true;
+      halign: end;
+
+      Box {
+        tooltip-text: _("MIDI in activity");
+        margin-top: 4;
+        margin-bottom: 4;
+
+        $GtkFlipper {
+          flip-horizontal: "1";
+          flip-vertical: "1";
+          rotate: "1";
+          child: 
+          Label midi_in_lbl {
+            styles [
+              "small-vertical-lbl",
+            ]
+
+            label: "MIDI in";
+          }
+
+          ;
+        }
+
+        $MidiActivityBarWidget midi_activity {
+        }
+      }
+
+      $LiveWaveformWidget live_waveform {
+        width-request: "48";
+        margin-top: "4";
+        margin-bottom: "4";
+        margin-start: "4";
+        margin-end: "4";
+        tooltip-text: _("Live Waveform Indicator");
+
+        styles [
+          "signal-preview",
+        ]
+      }
+
+      $SpectrumAnalyzerWidget spectrum_analyzer {
+        width-request: "128";
+        margin-top: "4";
+        margin-bottom: "4";
+        margin-start: "4";
+        margin-end: "4";
+        tooltip-text: _("Spectrum Analyzer");
+
+        styles [
+          "signal-preview",
+        ]
+      }
+
+      Box meter_box {
+        margin-top: 4;
+        margin-bottom: 4;
+        margin-start: 4;
+        margin-end: 4;
+        tooltip-text: _("Peak Meter");
+      }
+
+      $CpuWidget cpu_load {
+        visible: "1";
+        valign: "center";
+        margin-start: "4";
+        margin-end: "4";
+      }
+
+      Separator {
+        styles [
+          "spacer",
+          "thick-separator",
+        ]
+
+        orientation: vertical;
+      }
+
+      $PanelToggleButton bot_dock_switcher {
+        area: "bottom";
+        tooltip-text: _("Toggle Bottom Panel");
+      }
+    }
+  }
+}

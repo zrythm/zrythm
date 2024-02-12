@@ -1,0 +1,29 @@
+using Gtk 4.0;
+
+template $PlayheadScrollButtonsWidget : Widget {
+  styles [
+    "linked",
+  ]
+
+  ToggleButton scroll_edges {
+    focusable: true;
+    receives-default: true;
+    action-name: "app.timeline-playhead-scroll-edges";
+    tooltip-text: _("Scroll when playhead reaches the edge");
+
+    Image {
+      icon-name: "tool-measure";
+    }
+  }
+
+  ToggleButton follow {
+    focusable: true;
+    receives-default: true;
+    action-name: "app.timeline-playhead-follow";
+    tooltip-text: _("Follow playhead");
+
+    Image {
+      icon-name: "auto-scroll-playhead";
+    }
+  }
+}

@@ -1,0 +1,26 @@
+using Gtk 4.0;
+
+template $EventViewerWidget : Box {
+  focusable: true;
+  orientation: vertical;
+
+  Label {
+    label: _("Event Viewer");
+  }
+
+  ScrolledWindow {
+    hscrollbar-policy: never;
+    vexpand: true;
+    child: 
+    ColumnView column_view {
+      styles [
+        "data-table",
+      ]
+
+      focusable: true;
+      reorderable: true;
+    }
+
+    ;
+  }
+}

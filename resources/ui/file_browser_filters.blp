@@ -1,0 +1,25 @@
+using Gtk 4.0;
+
+template $FileBrowserFiltersWidget : Gtk.Box {
+  styles [
+    "toolbar",
+  ]
+  Gtk.ToggleButton toggle_audio {
+    tooltip-text: _("Audio");
+    hexpand: true;
+    icon-name: "signal-audio";
+    toggled => toggles_changed(template);
+  }
+  Gtk.ToggleButton toggle_midi {
+    tooltip-text: "MIDI";
+    hexpand: true;
+    icon-name: "signal-midi";
+    toggled => toggles_changed(template);
+  }
+  Gtk.ToggleButton toggle_presets {
+    tooltip-text: _("Presets");
+    hexpand: true;
+    icon-name: "modulator";
+    toggled => toggles_changed(template);
+  }
+}

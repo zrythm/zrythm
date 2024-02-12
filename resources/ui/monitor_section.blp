@@ -1,0 +1,143 @@
+using Gtk 4.0;
+
+template $MonitorSectionWidget : Box {
+  orientation: vertical;
+  spacing: 8;
+
+  Box {
+    halign: center;
+
+    Box {
+      halign: center;
+
+      Label soloed_tracks_lbl {
+        label: "label";
+      }
+
+      Button soloing_btn {
+        focusable: true;
+        receives-default: true;
+
+        Image {
+          icon-name: "unsolo";
+        }
+      }
+    }
+
+    Box {
+      Label muted_tracks_lbl {
+        label: "label";
+      }
+
+      Button muting_btn {
+        focusable: true;
+        receives-default: true;
+
+        Image {
+          icon-name: "unmute";
+        }
+      }
+    }
+
+    Box {
+      Label listened_tracks_lbl {
+        label: "label";
+      }
+
+      Button listening_btn {
+        focusable: true;
+        receives-default: true;
+
+        Image {
+          icon-name: "unlisten";
+        }
+      }
+    }
+
+    styles [
+      "linked",
+    ]
+  }
+
+  Box {
+    homogeneous: true;
+
+    Box mute_level_box {
+      orientation: vertical;
+    }
+
+    Box listen_level_box {
+      orientation: vertical;
+    }
+
+    Box dim_level_box {
+      orientation: vertical;
+    }
+  }
+
+  Box monitor_buttons_box {
+    margin-start: 2;
+    margin-end: 2;
+    spacing: 2;
+    homogeneous: true;
+
+    ToggleButton mono_toggle {
+      label: "togglebutton";
+      focusable: true;
+      receives-default: true;
+      tooltip-text: "Sum to mono";
+    }
+
+    ToggleButton dim_toggle {
+      label: "togglebutton";
+      focusable: true;
+      receives-default: true;
+      tooltip-text: "Dim output";
+    }
+
+    ToggleButton mute_toggle {
+      label: "togglebutton";
+      focusable: true;
+      receives-default: true;
+      tooltip-text: "Mute output";
+    }
+  }
+
+  Box monitor_level_box {
+    orientation: vertical;
+  }
+
+  Box {
+    orientation: vertical;
+
+    Box {
+      spacing: 2;
+
+      Label l_label {
+        label: _("L");
+        width-chars: 3;
+        tooltip-text: "Left output";
+      }
+
+      Box left_output_box {
+        hexpand: true;
+        orientation: vertical;
+      }
+    }
+
+    Box {
+      spacing: 2;
+
+      Label r_label {
+        label: _("R");
+        width-chars: 3;
+        tooltip-text: "Right output";
+      }
+
+      Box right_output_box {
+        hexpand: true;
+        orientation: vertical;
+      }
+    }
+  }
+}

@@ -1,0 +1,310 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PluginBrowserWidget : Gtk.Widget {
+  vexpand: true;
+  Gtk.Paned paned {
+    shrink-end-child: false;
+    shrink-start-child: false;
+    focusable: true;
+    orientation: vertical;
+    position: 220;
+    position-set: true;
+    wide-handle: true;
+    vexpand: true;
+    Gtk.Box {
+      orientation: vertical;
+      Gtk.Box stack_switcher_box { }
+      Adw.ViewStack stack {
+        vexpand: true;
+        Adw.ViewStackPage {
+          name: "collections";
+          title: _("Collection");
+          icon-name: "favorite";
+          child:
+          Gtk.Box collection_box {
+            orientation: vertical;
+            Gtk.ScrolledWindow collection_scroll {
+              vexpand: true;
+              child:
+              Gtk.ListView collection_list_view {
+                tab-behavior: item;
+              };
+            }
+            Gtk.Box {
+              styles [
+                "toolbar",
+              ]
+              orientation: horizontal;
+              Gtk.Button {
+                icon-name: "box-icons-book-add";
+                action-name: "app.plugin-collection-add";
+                tooltip-text: _("Add Collection");
+              }
+              Gtk.Button {
+                icon-name: "box-icons-rename";
+                action-name: "app.plugin-collection-rename";
+                tooltip-text: _("Rename Collection");
+              }
+              Gtk.Button {
+                icon-name: "box-icons-trash";
+                action-name: "app.plugin-collection-remove";
+                tooltip-text: _("Delete Collection");
+              }
+              Gtk.Button {
+                icon-name: "box-icons-reset";
+                action-name: "app.plugin-browser-reset";
+                action-target: "'collection'";
+                tooltip-text: _("Reset");
+              }
+            }
+          };
+        }
+        Adw.ViewStackPage {
+          name: "authors";
+          title: _("Author");
+          icon-name: "gnome-icon-library-person-symbolic";
+          child:
+          Gtk.Box author_box {
+            orientation: vertical;
+            Gtk.ScrolledWindow author_scroll {
+              vexpand: true;
+              child:
+              Gtk.ListView author_list_view {
+                tab-behavior: item;
+              };
+            }
+            Gtk.Box {
+              styles [
+                "toolbar",
+              ]
+              orientation: horizontal;
+              Gtk.Button {
+                icon-name: "box-icons-reset";
+                action-name: "app.plugin-browser-reset";
+                action-target: "'author'";
+                tooltip-text: _("Reset");
+              }
+            }
+          };
+        }
+        Adw.ViewStackPage {
+          name: "categories";
+          title: _("Category");
+          icon-name: "category";
+          child:
+          Gtk.Box category_box {
+            orientation: vertical;
+            Gtk.ScrolledWindow category_scroll {
+              vexpand: true;
+              child:
+              Gtk.ListView category_list_view {
+                tab-behavior: item;
+              };
+            }
+            Gtk.Box {
+              styles [
+                "toolbar",
+              ]
+              orientation: horizontal;
+              Gtk.Button {
+                icon-name: "box-icons-reset";
+                action-name: "app.plugin-browser-reset";
+                action-target: "'category'";
+                tooltip-text: _("Reset");
+              }
+            }
+          };
+        }
+        Adw.ViewStackPage {
+          name: "protocols";
+          title: _("Protocol");
+          icon-name: "protocol";
+          child:
+          Gtk.Box protocol_box {
+            orientation: vertical;
+            Gtk.ScrolledWindow protocol_scroll {
+              vexpand: true;
+              child:
+              Gtk.ListView protocol_list_view {
+                tab-behavior: item;
+              };
+            }
+            Gtk.Box {
+              styles [
+                "toolbar",
+              ]
+              orientation: horizontal;
+              Gtk.Button {
+                icon-name: "box-icons-reset";
+                action-name: "app.plugin-browser-reset";
+                action-target: "'protocol'";
+                tooltip-text: _("Reset");
+              }
+            }
+          };
+        }
+      }
+      Adw.ToolbarView browser_bot {
+        [top]
+        Gtk.Box {
+          Gtk.Box plugin_toolbar {
+            styles [
+              "toolbar",
+            ]
+            Gtk.ToggleButton toggle_instruments {
+              icon-name: "instrument";
+              tooltip-text: _("Instruments");
+              hexpand: true;
+              toggled => $toggles_changed(template);
+            }
+            Gtk.ToggleButton toggle_effects {
+              icon-name: "audio-insert";
+              tooltip-text: _("Effects");
+              hexpand: true;
+              toggled => $toggles_changed(template);
+            }
+            Gtk.ToggleButton toggle_modulators {
+              icon-name: "modulator";
+              tooltip-text: _("Modulators");
+              hexpand: true;
+              toggled => $toggles_changed(template);
+            }
+            Gtk.ToggleButton toggle_midi_modifiers {
+              icon-name: "signal-midi";
+              tooltip-text: _("MIDI Modifiers");
+              hexpand: true;
+              toggled => $toggles_changed(template);
+            }
+          }
+          Gtk.Separator {
+            styles [
+              "spacer",
+            ]
+            orientation: vertical;
+          }
+          Gtk.Box sort_box {
+            orientation: horizontal;
+            Gtk.Box sort_type_box {
+              styles [
+                "linked",
+              ]
+              Gtk.ToggleButton alpha_sort_btn {
+                icon-name: "gnome-icon-library-font-x-generic-symbolic";
+                tooltip-text: _("Sort alphabetically");
+              }
+              Gtk.ToggleButton last_used_sort_btn {
+                icon-name: "gnome-icon-library-clock-alt-symbolic";
+                tooltip-text: _("Sort by recently used");
+              }
+              Gtk.ToggleButton most_used_sort_btn {
+                icon-name: "gnome-icon-library-fire2-symbolic";
+                tooltip-text: _("Sort by most used");
+              }
+            }
+          }
+        }
+        [top]
+        Gtk.SearchBar {
+          search-mode-enabled: true;
+          child:
+          // xxx: Pack the search entry inside a box so that Escape key won't hide the bar
+          Adw.Clamp {
+            Gtk.SearchEntry  plugin_search_entry {
+              hexpand: true;
+            }
+          };
+        }
+        content:
+        Gtk.ScrolledWindow plugin_scroll {
+          vexpand: true;
+          child:
+          Gtk.ListView plugin_list_view {
+            tab-behavior: item;
+          };
+        };
+        [bottom]
+        Gtk.Box {
+          margin-start: 12;
+          margin-end: 12;
+          margin-top: 8;
+          margin-bottom: 8;
+          orientation: vertical;
+          halign: center;
+          Gtk.Label plugin_author_label {
+            hexpand: true;
+            ellipsize: end;
+            styles [ "heading" ]
+          }
+          Gtk.Label plugin_type_label {
+            hexpand: true;
+            styles [ "dim-label", "bold-label" ]
+          }
+        }
+        [bottom]
+        Gtk.Box {
+          margin-bottom: 8;
+          orientation: horizontal;
+          spacing: 6;
+          halign: center;
+          Gtk.Grid {
+            margin-start: 8;
+            column-spacing: 6;
+            halign: end;
+            Gtk.Label {
+              label: _("Audio");
+              xalign: 1;
+              styles [ "dim-label" ]
+              layout { column: 0; row: 0; }
+            }
+            Gtk.Label plugin_audio_label {
+              hexpand: true;
+              xalign: 0;
+              width-chars: 5;
+              layout { column: 1; row: 0; }
+            }
+            Gtk.Label {
+              label: "MIDI";
+              xalign: 1;
+              styles [ "dim-label" ]
+              layout { column: 0; row: 1; }
+            }
+            Gtk.Label plugin_midi_label {
+              hexpand: true;
+              xalign: 0;
+              width-chars: 5;
+              layout { column: 1; row: 1; }
+            }
+          }
+          Gtk.Grid {
+            column-spacing: 6;
+            Gtk.Label {
+              label: _("Controls");
+              xalign: 1;
+              styles [ "dim-label" ]
+              layout { column: 0; row: 0; }
+            }
+            Gtk.Label plugin_ctrl_label {
+              hexpand: true;
+              xalign: 0;
+              width-chars: 7;
+              layout { column: 1; row: 0; }
+            }
+            Gtk.Label {
+              label: "CV";
+              xalign: 1;
+              styles [ "dim-label" ]
+              layout { column: 0; row: 1; }
+            }
+            Gtk.Label plugin_cv_label {
+              hexpand: true;
+              xalign: 0;
+              width-chars: 7;
+              layout { column: 1; row: 1; }
+            }
+          }
+        }
+      }
+    }
+  }
+}

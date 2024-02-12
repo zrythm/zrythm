@@ -1,0 +1,43 @@
+using Gtk 4.0;
+
+template $SnapBoxWidget : Box {
+  styles [
+    "linked",
+  ]
+
+  homogeneous: false;
+
+  ToggleButton snap_to_grid {
+    action-name: "app.snap-to-grid";
+    action-target: "\"timeline\"";
+    tooltip-text: _("Snap to grid");
+
+    Image {
+      icon-name: "gnome-builder-ui-packing-symbolic-light";
+    }
+  }
+
+  ToggleButton snap_to_grid_keep_offset {
+    action-name: "app.snap-keep-offset";
+    action-target: "\"timeline\"";
+    tooltip-text: _("Keep offset");
+
+    Image {
+      icon-name: "gnome-builder-widget-layout-symbolic-light";
+    }
+  }
+
+  ToggleButton snap_to_events {
+    action-name: "app.snap-events";
+    action-target: "\"timeline\"";
+    tooltip-text: _("Snap to events");
+
+    Image {
+      icon-name: "gnome-builder-builder-split-tab-right-symbolic-light";
+    }
+  }
+
+  $SnapGridWidget snap_grid {
+    receives-default: "True";
+  }
+}

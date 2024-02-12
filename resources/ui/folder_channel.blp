@@ -1,0 +1,115 @@
+using Gtk 4.0;
+
+template $FolderChannelWidget : Widget {
+  margin-top: 2;
+  margin-bottom: 4;
+
+  Grid grid {
+    row-spacing: 4;
+
+    Box icon_and_name_event_box {
+      vexpand: true;
+
+      Box {
+        orientation: vertical;
+        spacing: 4;
+        margin-top: 4;
+        margin-bottom: 4;
+
+        Image icon {
+          halign: center;
+          valign: center;
+        }
+
+        $GtkFlipper {
+          flip-horizontal: "1";
+          flip-vertical: "1";
+          rotate: "1";
+          vexpand: "1";
+          child: 
+          Label name_lbl {
+            styles [
+              "folder_channel_label",
+            ]
+
+            max-width-chars: 10;
+            ellipsize: end;
+            hexpand: true;
+          }
+
+          ;
+        }
+      }
+
+      layout {
+        column: "2";
+        row: "3";
+      }
+    }
+
+    $ColorAreaWidget color_top {
+      height-request: "8";
+      margin-bottom: "3";
+
+      layout {
+        column: "1";
+        row: "0";
+        column-span: "3";
+      }
+    }
+
+    $ColorAreaWidget color_left {
+      width-request: "6";
+      margin-bottom: "3";
+
+      layout {
+        column: "1";
+        row: "0";
+        row-span: "4";
+      }
+    }
+
+    Box highlight_left_box {
+      orientation: vertical;
+
+      layout {
+        column: "0";
+        row: "0";
+        row-span: "4";
+      }
+    }
+
+    Box highlight_right_box {
+      orientation: vertical;
+
+      layout {
+        column: "3";
+        row: "0";
+        row-span: "4";
+      }
+    }
+
+    $FaderButtonsWidget fader_buttons {
+      orientation: "vertical";
+
+      layout {
+        column: "2";
+        row: "2";
+      }
+    }
+
+    ToggleButton fold_toggle {
+      focusable: true;
+      receives-default: true;
+
+      styles [
+        "small-button",
+      ]
+
+      layout {
+        column: "2";
+        row: "1";
+      }
+    }
+  }
+}

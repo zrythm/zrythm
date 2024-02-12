@@ -1,0 +1,54 @@
+using Gtk 4.0;
+
+template $ChordPackBrowserWidget : Gtk.Box {
+  Gtk.Paned paned {
+    shrink-end-child: false;
+    resize-end-child: false;
+    shrink-start-child: false;
+    resize-start-child: false;
+    focusable: true;
+    orientation: vertical;
+    position: 220;
+    position-set: true;
+    wide-handle: true;
+    Gtk.Box browser_top {
+      orientation: vertical;
+      Gtk.Box packs_label_box {
+        Gtk.Image {
+          icon-name: "favorite";
+        }
+        Gtk.Label {
+          label: _("Packs");
+        }
+      }
+      Gtk.ScrolledWindow packs_scroll {
+        focusable: true;
+        vexpand: true;
+        child:
+        Gtk.ListView packs_list_view { };
+      }
+      Gtk.Box {
+        styles [
+          "toolbar",
+        ]
+        Gtk.Button add_pack {
+          action-name: "app.add-chord-preset-pack";
+          icon-name: "add";
+        }
+      }
+    }
+    Gtk.Box browser_bot {
+      orientation: vertical;
+      Gtk.ScrolledWindow psets_scroll {
+        focusable: true;
+        vexpand: true;
+        child:
+        Gtk.ListView psets_list_view { };
+      }
+      $FileAuditionerControlsWidget auditioner_controls { }
+      Gtk.Label pset_info {
+        /* TODO attributes */
+      }
+    }
+  }
+}

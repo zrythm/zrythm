@@ -1,0 +1,49 @@
+using Gtk 4.0;
+
+template $ProjectToolbarWidget : Box {
+  styles [
+    "toolbar",
+  ]
+
+  Box {
+    Button new {
+      action-name: "app.new";
+      icon-name: "document-new";
+    }
+
+    Button save_btn {
+      action-name: "app.save";
+      icon-name: "document-save";
+    }
+
+    Button save_as_btn {
+      action-name: "app.save-as";
+      icon-name: "document-save-as";
+    }
+
+    Button open {
+      action-name: "app.open";
+      icon-name: "document-open";
+    }
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+
+    orientation: vertical;
+  }
+
+  Box {
+    Button export_as {
+      icon-name: "document-export";
+      action-name: "app.export-as";
+    }
+
+    Button export_graph {
+      icon-name: "distribute-graph-directed";
+      action-name: "app.export-graph";
+    }
+  }
+}

@@ -1,0 +1,94 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $FaderButtonsWidget : Box {
+  styles [
+    "linked",
+  ]
+
+  margin-top: 4;
+
+  ToggleButton mono_compat {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Mono compatibility");
+
+    Adw.ButtonContent {
+      icon-name: "mono";
+    }
+  }
+
+  ToggleButton record {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Record");
+
+    Adw.ButtonContent {
+      icon-name: "media-record";
+    }
+  }
+
+  ToggleButton solo {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Solo");
+
+    Adw.ButtonContent {
+      icon-name: "solo";
+    }
+  }
+
+  ToggleButton mute {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Mute");
+
+    Adw.ButtonContent {
+      icon-name: "mute";
+    }
+  }
+
+  ToggleButton listen {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Listen");
+
+    Adw.ButtonContent {
+      icon-name: "listen";
+    }
+  }
+
+  ToggleButton swap_phase {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Swap phase");
+
+    Adw.ButtonContent {
+      icon-name: "phase";
+    }
+  }
+
+  Button e {
+    hexpand: true;
+    vexpand: true;
+    focusable: true;
+    receives-default: true;
+    tooltip-text: _("Channel settings");
+
+    Adw.ButtonContent {
+      icon-name: "gnome-builder-lang-enum-value-symbolic-light";
+    }
+  }
+}

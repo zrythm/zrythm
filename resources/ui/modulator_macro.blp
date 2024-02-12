@@ -1,0 +1,68 @@
+using Gtk 4.0;
+
+template $ModulatorMacroWidget : Widget {
+  Grid grid {
+    column-spacing: 1;
+
+    DrawingArea output {
+      margin-start: 4;
+      margin-end: 4;
+
+      layout {
+        column: "2";
+        row: "1";
+      }
+    }
+
+    DrawingArea inputs {
+      margin-top: 2;
+      margin-bottom: 2;
+
+      layout {
+        column: "0";
+        row: "2";
+        column-span: "3";
+      }
+    }
+
+    Button outputs {
+      focusable: true;
+      focus-on-click: false;
+      receives-default: true;
+      valign: start;
+
+      styles [
+        "small-button",
+      ]
+
+      Image {
+        icon-name: "automate";
+      }
+
+      layout {
+        column: "2";
+        row: "0";
+      }
+    }
+
+    Button add_input {
+      focusable: true;
+      focus-on-click: false;
+      receives-default: true;
+      valign: end;
+
+      styles [
+        "small-button",
+      ]
+
+      Image {
+        icon-name: "add";
+      }
+
+      layout {
+        column: "0";
+        row: "1";
+      }
+    }
+  }
+}

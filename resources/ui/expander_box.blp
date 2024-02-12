@@ -1,0 +1,23 @@
+using Gtk 4.0;
+
+template $ExpanderBoxWidget : Box {
+  orientation: vertical;
+
+  Button button {
+    focusable: true;
+    receives-default: true;
+  }
+
+  Revealer revealer {
+    name: "expander-box-revealer";
+    transition-type: none;
+    reveal-child: true;
+    child: 
+    Box content {
+      name: "expander-box-reveal-child-box";
+      orientation: vertical;
+    }
+
+    ;
+  }
+}

@@ -1,0 +1,40 @@
+using Gtk 4.0;
+
+template $LogViewerWidget : Window {
+  default-width: 780;
+  default-height: 550;
+  child: 
+  Box {
+    orientation: vertical;
+
+    Box {
+      Label {
+        label: _("Log Level");
+      }
+
+      ComboBoxText log_level {
+      }
+    }
+
+    ScrolledWindow scrolled_win {
+      vexpand: true;
+      focusable: true;
+      child: 
+      Box source_view_box {
+        focusable: true;
+      }
+
+      ;
+    }
+
+    Box {
+      Button {
+        label: _("Save As...");
+        focusable: true;
+        receives-default: true;
+      }
+    }
+  }
+
+  ;
+}

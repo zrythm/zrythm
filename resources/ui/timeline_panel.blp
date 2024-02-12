@@ -1,0 +1,43 @@
+using Gtk 4.0;
+
+template $TimelinePanelWidget : Box {
+  vexpand: true;
+  orientation: vertical;
+
+  $TimelineToolbarWidget timeline_toolbar {
+  }
+
+  Paned tracklist_timeline {
+    name: "tracklist-timeline-paned";
+
+    Box tracklist_top {
+      orientation: vertical;
+
+      $TracklistHeaderWidget tracklist_header {
+      }
+
+      $TracklistWidget tracklist {
+        name: "tracklist";
+      }
+    }
+
+    Box timelines_plus_ruler {
+      name: "timelines-plus-ruler-box";
+      orientation: vertical;
+      width-request: 64;
+
+      $RulerWidget ruler {
+      }
+
+      Box timeline_divider_box {
+        orientation: vertical;
+
+        $ArrangerWidget pinned_timeline {
+        }
+
+        $ArrangerWrapperWidget timeline_wrapper {
+        }
+      }
+    }
+  }
+}

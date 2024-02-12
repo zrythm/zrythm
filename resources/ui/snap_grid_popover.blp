@@ -1,0 +1,197 @@
+using Gtk 4.0;
+
+template $SnapGridPopoverWidget : Popover {
+  name: "snap-grid-popover";
+  closed => $on_closed();
+  child: 
+  Box {
+    margin-start: 2;
+    margin-end: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    orientation: vertical;
+    spacing: 2;
+
+    Box default_box {
+      orientation: vertical;
+
+      Box {
+      }
+
+      Box {
+      }
+    }
+
+    Frame {
+      label-xalign: 0.5;
+
+      Grid snap_grid {
+        margin-start: 4;
+        margin-end: 4;
+        margin-top: 2;
+        margin-bottom: 2;
+        row-spacing: 2;
+        column-spacing: 2;
+
+        Box snap_length_box {
+          width-request: 80;
+          tooltip-text: _("Note length");
+          hexpand: true;
+          orientation: vertical;
+
+          layout {
+            column: "0";
+            row: "0";
+          }
+        }
+
+        Box snap_type_box {
+          hexpand: true;
+          orientation: vertical;
+
+          ToggleButton snap_triplet_toggle {
+            label: _("t");
+            tooltip-text: _("Triplet");
+
+            styles [
+              "note-type",
+            ]
+          }
+
+          ToggleButton snap_dotted_toggle {
+            tooltip-text: _("Dotted");
+
+            Image {
+              icon-name: "augmentation-dot";
+            }
+
+            styles [
+              "note-type",
+            ]
+          }
+
+          layout {
+            column: "1";
+            row: "0";
+          }
+        }
+
+        CheckButton snap_adaptive {
+          label: _("Adaptive");
+          tooltip-text: _("Adaptive length");
+
+          layout {
+            column: "0";
+            row: "1";
+            column-span: "2";
+          }
+        }
+      }
+
+      [label]
+      Label {
+        label: _("Snap");
+      }
+    }
+
+    Frame {
+      label-xalign: 0.5;
+
+      Grid default_grid {
+        margin-start: 4;
+        margin-end: 4;
+        margin-top: 2;
+        margin-bottom: 2;
+        row-spacing: 2;
+        column-spacing: 2;
+
+        Box default_length_box {
+          width-request: 80;
+          tooltip-text: _("Note length");
+          hexpand: true;
+          orientation: vertical;
+
+          layout {
+            column: "0";
+            row: "0";
+          }
+        }
+
+        Box default_type_box {
+          hexpand: true;
+          orientation: vertical;
+
+          ToggleButton default_triplet_toggle {
+            label: _("t");
+            tooltip-text: _("Triplet");
+
+            styles [
+              "note-type",
+            ]
+          }
+
+          ToggleButton default_dotted_toggle {
+            tooltip-text: _("Dotted");
+
+            Image {
+              icon-name: "augmentation-dot";
+            }
+
+            styles [
+              "note-type",
+            ]
+          }
+
+          layout {
+            column: "1";
+            row: "0";
+          }
+        }
+
+        CheckButton default_adaptive {
+          label: _("Adaptive");
+          tooltip-text: _("Adaptive length");
+
+          layout {
+            column: "0";
+            row: "1";
+            column-span: "2";
+          }
+        }
+
+        ToggleButton link_toggle {
+          label: _("Link");
+          tooltip-text: _("Link length to snap setting");
+
+          layout {
+            column: "0";
+            row: "2";
+            column-span: "2";
+          }
+        }
+
+        ToggleButton last_object_toggle {
+          label: _("Last object");
+          tooltip-text: _("Use last created object\'s length");
+
+          layout {
+            column: "0";
+            row: "3";
+            column-span: "2";
+          }
+        }
+      }
+
+      [label]
+      Label {
+        label: _("Length");
+      }
+    }
+  }
+
+  ;
+
+  styles [
+    "snap-grid-popover",
+  ]
+}

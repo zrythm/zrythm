@@ -1,0 +1,135 @@
+using Gtk 4.0;
+
+template $ChannelWidget : Gtk.Widget {
+  margin-top: 2;
+  margin-bottom: 4;
+  Gtk.Box box {
+    Gtk.Grid grid {
+      name: "channel-grid";
+      Gtk.Box icon_and_name_event_box {
+        name: "channel-icon-and-name-box";
+        Gtk.Box {
+          name: "channel-icon-box";
+          spacing: 2;
+          Gtk.Image icon {
+            name: "channel-icon-image";
+            halign: center;
+            valign: center;
+          }
+          $EditableLabelWidget name {
+            hexpand: true;
+          }
+          Gtk.ToggleButton instrument_ui_toggle {
+            icon-name: "jam-icons-screen";
+          }
+        }
+        layout {
+          row: 1;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      Gtk.Box fader_area {
+        name: "channel-fader-area-box";
+        vexpand: true;
+        $FaderButtonsWidget fader_buttons {
+          orientation: vertical;
+        }
+        $FaderWidget fader { }
+        Gtk.Box meter_area {
+          name: "channel-meter-area-box";
+          orientation: vertical;
+          Gtk.Box {
+            name: "channel-meter-area-inner-box";
+            vexpand: true;
+            $MeterWidget meter_l { }
+            $MeterWidget meter_r { }
+          }
+          Gtk.Label meter_reading {
+            name: "channel-meter-reading-label";
+            valign: center;
+            /* TODO font-desc attribute */
+          }
+        }
+        layout {
+          row: 6;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      Gtk.Box balance_control_box {
+        name: "channel-balance-control-box";
+        margin-top: 1;
+        margin-bottom: 1;
+        orientation: vertical;
+        layout {
+          row: 5;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      $RouteTargetSelectorWidget output {
+        layout {
+          row: 7;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      $ColorAreaWidget color {
+        height-request: 8;
+        margin-bottom: 3;
+        layout {
+          row: 0;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      Gtk.Box instrument_box {
+        name: "channel-instrument-box";
+        layout {
+          row: 3;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      Gtk.Box mid_box {
+        name: "channel-mid-box";
+        orientation: vertical;
+        $PluginStripExpanderWidget midi_fx {}
+        $PluginStripExpanderWidget inserts {}
+        $ChannelSendsExpanderWidget sends {}
+        layout {
+          row: 4;
+          column: 1;
+          column-span: 2;
+        }
+      }
+      Gtk.Box highlight_left_box {
+        name: "channel-highlight-left-box";
+        orientation: vertical;
+        layout {
+          row: 0;
+          column: 0;
+          row-span: 7;
+        }
+      }
+      Gtk.Box highlight_right_box {
+        name: "channel-highlight-right-box";
+        orientation: vertical;
+        layout {
+          row: 0;
+          column: 3;
+          row-span: 7;
+        }
+      }
+      Gtk.Box aux_buttons_box {
+        name: "channel-aux-buttons-box";
+        layout {
+          row: 2;
+          column: 1;
+          column-span: 2;
+        }
+      }
+    }
+  }
+}

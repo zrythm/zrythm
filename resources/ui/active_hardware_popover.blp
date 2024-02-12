@@ -1,0 +1,42 @@
+using Gtk 4.0;
+
+template $ActiveHardwarePopoverWidget : Popover {
+  closed => $on_closed();
+  child: 
+  Box {
+    orientation: vertical;
+
+    Label {
+      label: _("Ports found");
+    }
+
+    ScrolledWindow {
+      focusable: true;
+      hscrollbar-policy: never;
+      max-content-height: 86;
+      propagate-natural-height: true;
+      child: 
+      Viewport {
+        child:         Box controllers_box {
+          orientation: vertical;
+        }
+
+        ;
+      }
+
+      ;
+    }
+
+    Separator {
+    }
+
+    Button rescan {
+      label: _("Rescan");
+      focusable: true;
+      receives-default: true;
+      tooltip-text: _("Scan again for MIDI controllers");
+    }
+  }
+
+  ;
+}

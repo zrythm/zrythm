@@ -1,0 +1,212 @@
+using Gtk 4.0;
+
+template $ScaleSelectorWindowWidget : Dialog {
+  title: "Scale Selector";
+  modal: true;
+  child: 
+  Notebook {
+    focusable: true;
+
+    NotebookPage {
+      child:       Box {
+        orientation: vertical;
+
+        Label {
+          margin-start: 8;
+          label: _("Root Key");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_root_note_flowbox {
+          homogeneous: true;
+          min-children-per-line: 12;
+          max-children-per-line: 12;
+          selection-mode: browse;
+          activate-on-single-click: false;
+
+          FlowBoxChild creator_root_note_c {
+            focusable: true;
+            child: 
+            Label {
+              label: _("C");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_cs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_d {
+            focusable: true;
+            child: 
+            Label {
+              label: _("D");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_ds {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_e {
+            focusable: true;
+            child: 
+            Label {
+              label: _("E");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_f {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_fs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("F♯");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_g {
+            focusable: true;
+            child: 
+            Label {
+              label: _("G");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_gs {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_a {
+            focusable: true;
+            child: 
+            Label {
+              label: _("A");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_as {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B♭");
+            }
+
+            ;
+          }
+
+          FlowBoxChild creator_root_note_b {
+            focusable: true;
+            child: 
+            Label {
+              label: _("B");
+            }
+
+            ;
+          }
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Scale");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_type_flowbox {
+          homogeneous: true;
+          selection-mode: browse;
+          activate-on-single-click: false;
+        }
+
+        Label {
+          margin-start: 8;
+          label: _("Scale - Other");
+          xalign: 0;
+
+          styles [
+            "section_heading",
+          ]
+        }
+
+        FlowBox creator_type_other_flowbox {
+          homogeneous: true;
+          selection-mode: browse;
+          activate-on-single-click: false;
+        }
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Creator");
+      }
+
+      ;
+    }
+
+    NotebookPage {
+      position: 2;
+      child: 
+      Label {
+        label: _("TODO keyboard");
+      }
+
+      ;
+      tab: 
+      Label {
+        label: _("Custom");
+      }
+
+      ;
+    }
+  }
+
+  ;
+}

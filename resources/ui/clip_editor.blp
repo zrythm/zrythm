@@ -1,0 +1,23 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ClipEditorWidget : Box {
+  Stack stack {
+    Adw.StatusPage no_selection_page {
+      title: _("No clip selected");
+      description: _("Select a clip from the timeline");
+      icon-name: "roadmap";
+    }
+
+    Box main_box {
+      orientation: vertical;
+
+      $EditorToolbarWidget editor_toolbar {
+        vexpand: "0";
+      }
+
+      $ClipEditorInnerWidget clip_editor_inner {
+      }
+    }
+  }
+}

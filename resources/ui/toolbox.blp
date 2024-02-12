@@ -1,0 +1,63 @@
+using Gtk 4.0;
+
+template $ToolboxWidget : Box {
+  styles [
+    "linked",
+  ]
+
+  ToggleButton select_mode {
+    tooltip-text: _("Select mode");
+
+    Image select_img {
+      icon-name: "edit-select";
+    }
+  }
+
+  ToggleButton stretch_mode {
+    tooltip-text: _("Select-Stretch mode");
+
+    Image {
+      icon-name: "edit-select-stretch";
+    }
+  }
+
+  ToggleButton edit_mode {
+    tooltip-text: _("Edit mode");
+
+    Image {
+      icon-name: "pencil";
+    }
+  }
+
+  ToggleButton cut_mode {
+    tooltip-text: _("Cut mode");
+
+    Image {
+      icon-name: "cut-tool";
+    }
+  }
+
+  ToggleButton erase_mode {
+    tooltip-text: _("Erase mode");
+
+    Image {
+      icon-name: "draw-eraser";
+    }
+  }
+
+  ToggleButton ramp_mode {
+    tooltip-text: _("Ramp mode");
+
+    Image {
+      icon-name: "draw-line";
+    }
+  }
+
+  ToggleButton audition_mode {
+    tooltip-text: _("Audition mode");
+
+    Image {
+      icon-name: "audio-volume-high";
+    }
+  }
+}

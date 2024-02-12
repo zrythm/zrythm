@@ -1,0 +1,60 @@
+using Gtk 4.0;
+
+template $MidiEditorSpaceWidget : Gtk.Widget {
+  Gtk.Paned midi_arranger_velocity_paned {
+    hexpand: true;
+    focusable: true;
+    orientation: vertical;
+    Gtk.Box midi_notes_arranger_box {
+      height-request: 120;
+      vexpand: true;
+      Gtk.Box midi_notes_box {
+        hexpand: false;
+        Gtk.ScrolledWindow piano_roll_keys_scroll {
+          hexpand: true;
+          focusable: true;
+          hscrollbar-policy: never;
+          vscrollbar-policy: external;
+          child:
+          Gtk.Viewport {
+            scroll-to-focus: false;
+            $PianoRollKeysWidget piano_roll_keys {}
+          };
+        }
+      }
+      Gtk.Box midi_arranger_box {
+        hexpand: true;
+        vexpand: true;
+        orientation: vertical;
+        $ArrangerWrapperWidget arranger_wrapper { }
+      }
+      Gtk.Box midi_vel_label_editor_box {
+        height-request: 60;
+        orientation: horizontal;
+        Gtk.Box midi_vel_chooser_box {
+          orientation: vertical;
+          Gtk.ComboBoxText midi_modifier_chooser {
+            items [
+              _("Velocity"),
+              _("Pitch Wheel"),
+              _("Mod Wheel"),
+              _("Aftertouch"),
+            ]
+          }
+        }
+        Gtk.Box midi_modifier_toolbar_and_arranger_box {
+          orientation: vertical;
+          Gtk.Box midi_modifier_toolbar {
+            styles [
+              "toolbar",
+            ]
+            $VelocitySettingsWidget velocity_settings { }
+          }
+          $ArrangerWidget modifier_arranger {
+            vexpand: true;
+          }
+        }
+      }
+    }
+  }
+}
