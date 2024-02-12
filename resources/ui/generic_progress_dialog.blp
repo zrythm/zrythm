@@ -26,14 +26,14 @@ template $GenericProgressDialogWidget : Gtk.Dialog {
       label: _("OK");
       focusable: true;
       receives-default: true;
-      clicked => on_ok_clicked(template);
+      clicked => $on_ok_clicked();
     }
     Gtk.Button cannncel {
       visible: false;
       label: _("Cancel");
       focusable: true;
       receives-default: true;
-      clicked => on_cancel_clicked(template);
+      clicked => $on_cancel_clicked();
     }
   }
 }

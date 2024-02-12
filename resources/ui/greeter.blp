@@ -184,6 +184,7 @@ template $GreeterWidget : Adw.Window {
           title: _("Open a Project");
           child:
           Adw.ToolbarView {
+
             [top]
             Adw.HeaderBar {
               [end]
@@ -194,28 +195,30 @@ template $GreeterWidget : Adw.Window {
                 menu-model: primary_menu;
               }
             }
+
             content:
             Adw.PreferencesPage {
               Adw.PreferencesGroup recent_projects_pref_group {
                 title: _("Recent Projects");
               }
             };
-          };
-          [bottom]
-          Gtk.ActionBar {
-            [center]
-            Gtk.Box {
-              spacing: 12;
-              Gtk.Button create_new_project_btn {
-                label: _("Create _New Project…");
-                use-underline: true;
-              }
-              Gtk.Button select_folder_btn {
-                label: _("Open From _Path…");
-                use-underline: true;
+
+            [bottom]
+            Gtk.ActionBar {
+              [center]
+              Gtk.Box {
+                spacing: 12;
+                Gtk.Button create_new_project_btn {
+                  label: _("Create _New Project…");
+                  use-underline: true;
+                }
+                Gtk.Button select_folder_btn {
+                  label: _("Open From _Path…");
+                  use-underline: true;
+                }
               }
             }
-          }
+          };
         }
         Adw.NavigationPage create_project_nav_page {
           title: _("Create New Project");

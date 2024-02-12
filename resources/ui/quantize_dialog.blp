@@ -87,14 +87,14 @@ template $QuantizeDialogWidget : Gtk.Dialog {
       focusable: true;
       receives-default: true;
       use-underline: true;
-      clicked => $on_quantize_clicked(template);
+      clicked => $on_quantize_clicked();
     }
     Gtk.Button cancel_btn {
       label: _("_Cancel");
       focusable: true;
       receives-default: true;
       use-underline: true;
-      clicked => $on_cancel_clicked(template);
+      clicked => $on_cancel_clicked();
     }
   }
 }

@@ -4,7 +4,7 @@ using Adw 1;
 template $MainWindowWidget : Adw.ApplicationWindow {
   icon-name: "zrythm";
   destroy => $on_main_window_destroy();
-  content: 
+  content:
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {
@@ -63,7 +63,7 @@ template $MainWindowWidget : Adw.ApplicationWindow {
           visible: "1";
         }
       }
-      title-widget: 
+      title-widget:
       Adw.WindowTitle window_title {
       }
 
@@ -92,27 +92,28 @@ template $MainWindowWidget : Adw.ApplicationWindow {
           menu-model: primary_menu;
         }
       }
-    }
-    content: 
-    Box center_box {
-      name: "main-window-center-box";
-      vexpand: true;
+    } /* end [top] */
 
-      Adw.ToastOverlay toast_overlay {
-        $CenterDockWidget center_dock {
-          hexpand: "1";
+    content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Box center_box {
+        name: "main-window-center-box";
+        vexpand: true;
+
+        Adw.ToastOverlay toast_overlay {
+          $CenterDockWidget center_dock {
+            hexpand: "1";
+          }
         }
       }
-    }
 
-    ;
-
-    [bottom]
-    $BotBarWidget bot_bar {
-    }
-  }
-
-  ;
+      // note: this must not be in AdwToolbarView's [bottom] because it makes buttons unclickable
+      // (the bottom bar becomes a draggable window handle)
+      $BotBarWidget bot_bar {}
+    };
+  };
 }
 
 menu primary_menu {
@@ -121,7 +122,6 @@ menu primary_menu {
       label: _("_Open a Project…");
       action: "app.open";
     }
-
     item {
       label: _("Create _New Project…");
       action: "app.new";
@@ -133,7 +133,6 @@ menu primary_menu {
       label: _("_Save");
       action: "app.save";
     }
-
     item {
       label: _("Save _As…");
       action: "app.save-as";
@@ -145,7 +144,6 @@ menu primary_menu {
       label: _("_Export As…");
       action: "app.export-as";
     }
-
     item {
       label: _("Export _Graph…");
       action: "app.export-graph";
@@ -164,12 +162,10 @@ menu primary_menu {
       label: _("_Preferences");
       action: "app.preferences";
     }
-
     item {
       label: _("_Keyboard Shortcuts");
       action: "win.show-help-overlay";
     }
-
     item {
       label: _("_About Zrythm");
       action: "app.about";

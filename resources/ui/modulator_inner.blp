@@ -9,13 +9,13 @@ template $ModulatorInnerWidget : Gtk.Box {
     Gtk.ToggleButton show_hide_ui_btn {
       icon-name: "jam-icons-screen";
       tooltip-text: _("Show/Hide UI");
-      toggled => $on_show_hide_ui_toggled(template);
+      toggled => $on_show_hide_ui_toggled();
     }
     Gtk.Box {}
     Gtk.Button delete_btn {
       icon-name: "edit-delete";
       tooltip-text: _("Delete");
-      clicked => $on_delete_clicked(template);
+      clicked => $on_delete_clicked();
     }
   }
   Gtk.ScrolledWindow content_scroll {

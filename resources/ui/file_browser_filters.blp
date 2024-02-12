@@ -8,18 +8,18 @@ template $FileBrowserFiltersWidget : Gtk.Box {
     tooltip-text: _("Audio");
     hexpand: true;
     icon-name: "signal-audio";
-    toggled => toggles_changed(template);
+    toggled => $toggles_changed();
   }
   Gtk.ToggleButton toggle_midi {
     tooltip-text: "MIDI";
     hexpand: true;
     icon-name: "signal-midi";
-    toggled => toggles_changed(template);
+    toggled => $toggles_changed();
   }
   Gtk.ToggleButton toggle_presets {
     tooltip-text: _("Presets");
     hexpand: true;
     icon-name: "modulator";
-    toggled => toggles_changed(template);
+    toggled => $toggles_changed();
   }
 }

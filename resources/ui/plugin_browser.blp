@@ -145,163 +145,166 @@ template $PluginBrowserWidget : Gtk.Widget {
           };
         }
       }
-      Adw.ToolbarView browser_bot {
-        [top]
-        Gtk.Box {
-          Gtk.Box plugin_toolbar {
-            styles [
-              "toolbar",
-            ]
-            Gtk.ToggleButton toggle_instruments {
-              icon-name: "instrument";
-              tooltip-text: _("Instruments");
-              hexpand: true;
-              toggled => $toggles_changed(template);
-            }
-            Gtk.ToggleButton toggle_effects {
-              icon-name: "audio-insert";
-              tooltip-text: _("Effects");
-              hexpand: true;
-              toggled => $toggles_changed(template);
-            }
-            Gtk.ToggleButton toggle_modulators {
-              icon-name: "modulator";
-              tooltip-text: _("Modulators");
-              hexpand: true;
-              toggled => $toggles_changed(template);
-            }
-            Gtk.ToggleButton toggle_midi_modifiers {
-              icon-name: "signal-midi";
-              tooltip-text: _("MIDI Modifiers");
-              hexpand: true;
-              toggled => $toggles_changed(template);
-            }
+    }
+    Adw.ToolbarView browser_bot {
+      [top]
+      Gtk.Box {
+        Gtk.Box plugin_toolbar {
+          styles [
+            "toolbar",
+          ]
+          Gtk.ToggleButton toggle_instruments {
+            icon-name: "instrument";
+            tooltip-text: _("Instruments");
+            hexpand: true;
+            toggled => $toggles_changed();
           }
-          Gtk.Separator {
-            styles [
-              "spacer",
-            ]
-            orientation: vertical;
+          Gtk.ToggleButton toggle_effects {
+            icon-name: "audio-insert";
+            tooltip-text: _("Effects");
+            hexpand: true;
+            toggled => $toggles_changed();
           }
-          Gtk.Box sort_box {
-            orientation: horizontal;
-            Gtk.Box sort_type_box {
-              styles [
-                "linked",
-              ]
-              Gtk.ToggleButton alpha_sort_btn {
-                icon-name: "gnome-icon-library-font-x-generic-symbolic";
-                tooltip-text: _("Sort alphabetically");
-              }
-              Gtk.ToggleButton last_used_sort_btn {
-                icon-name: "gnome-icon-library-clock-alt-symbolic";
-                tooltip-text: _("Sort by recently used");
-              }
-              Gtk.ToggleButton most_used_sort_btn {
-                icon-name: "gnome-icon-library-fire2-symbolic";
-                tooltip-text: _("Sort by most used");
-              }
-            }
+          Gtk.ToggleButton toggle_modulators {
+            icon-name: "modulator";
+            tooltip-text: _("Modulators");
+            hexpand: true;
+            toggled => $toggles_changed();
+          }
+          Gtk.ToggleButton toggle_midi_modifiers {
+            icon-name: "signal-midi";
+            tooltip-text: _("MIDI Modifiers");
+            hexpand: true;
+            toggled => $toggles_changed();
           }
         }
-        [top]
-        Gtk.SearchBar {
-          search-mode-enabled: true;
-          child:
-          // xxx: Pack the search entry inside a box so that Escape key won't hide the bar
-          Adw.Clamp {
-            Gtk.SearchEntry  plugin_search_entry {
-              hexpand: true;
-            }
-          };
-        }
-        content:
-        Gtk.ScrolledWindow plugin_scroll {
-          vexpand: true;
-          child:
-          Gtk.ListView plugin_list_view {
-            tab-behavior: item;
-          };
-        };
-        [bottom]
-        Gtk.Box {
-          margin-start: 12;
-          margin-end: 12;
-          margin-top: 8;
-          margin-bottom: 8;
+        Gtk.Separator {
+          styles [
+            "spacer",
+          ]
           orientation: vertical;
-          halign: center;
-          Gtk.Label plugin_author_label {
-            hexpand: true;
-            ellipsize: end;
-            styles [ "heading" ]
-          }
-          Gtk.Label plugin_type_label {
-            hexpand: true;
-            styles [ "dim-label", "bold-label" ]
+        }
+        Gtk.Box sort_box {
+          orientation: horizontal;
+          Gtk.Box sort_type_box {
+            styles [
+              "linked",
+            ]
+            Gtk.ToggleButton alpha_sort_btn {
+              icon-name: "gnome-icon-library-font-x-generic-symbolic";
+              tooltip-text: _("Sort alphabetically");
+            }
+            Gtk.ToggleButton last_used_sort_btn {
+              icon-name: "gnome-icon-library-clock-alt-symbolic";
+              tooltip-text: _("Sort by recently used");
+            }
+            Gtk.ToggleButton most_used_sort_btn {
+              icon-name: "gnome-icon-library-fire2-symbolic";
+              tooltip-text: _("Sort by most used");
+            }
           }
         }
-        [bottom]
-        Gtk.Box {
-          margin-bottom: 8;
-          orientation: horizontal;
-          spacing: 6;
-          halign: center;
-          Gtk.Grid {
-            margin-start: 8;
-            column-spacing: 6;
-            halign: end;
-            Gtk.Label {
-              label: _("Audio");
-              xalign: 1;
-              styles [ "dim-label" ]
-              layout { column: 0; row: 0; }
-            }
-            Gtk.Label plugin_audio_label {
-              hexpand: true;
-              xalign: 0;
-              width-chars: 5;
-              layout { column: 1; row: 0; }
-            }
-            Gtk.Label {
-              label: "MIDI";
-              xalign: 1;
-              styles [ "dim-label" ]
-              layout { column: 0; row: 1; }
-            }
-            Gtk.Label plugin_midi_label {
-              hexpand: true;
-              xalign: 0;
-              width-chars: 5;
-              layout { column: 1; row: 1; }
-            }
+      }
+
+      [top]
+      Gtk.SearchBar {
+        search-mode-enabled: true;
+        child:
+        // xxx: Pack the search entry inside a box so that Escape key won't hide the bar
+        Adw.Clamp {
+          Gtk.SearchEntry  plugin_search_entry {
+            hexpand: true;
           }
-          Gtk.Grid {
-            column-spacing: 6;
-            Gtk.Label {
-              label: _("Controls");
-              xalign: 1;
-              styles [ "dim-label" ]
-              layout { column: 0; row: 0; }
-            }
-            Gtk.Label plugin_ctrl_label {
-              hexpand: true;
-              xalign: 0;
-              width-chars: 7;
-              layout { column: 1; row: 0; }
-            }
-            Gtk.Label {
-              label: "CV";
-              xalign: 1;
-              styles [ "dim-label" ]
-              layout { column: 0; row: 1; }
-            }
-            Gtk.Label plugin_cv_label {
-              hexpand: true;
-              xalign: 0;
-              width-chars: 7;
-              layout { column: 1; row: 1; }
-            }
+        };
+      }
+
+      content:
+      Gtk.ScrolledWindow plugin_scroll {
+        vexpand: true;
+        child:
+        Gtk.ListView plugin_list_view {
+          tab-behavior: item;
+        };
+      };
+
+      [bottom]
+      Gtk.Box {
+        margin-start: 12;
+        margin-end: 12;
+        margin-top: 8;
+        margin-bottom: 8;
+        orientation: vertical;
+        halign: center;
+        Gtk.Label plugin_author_label {
+          hexpand: true;
+          ellipsize: end;
+          styles [ "heading" ]
+        }
+        Gtk.Label plugin_type_label {
+          hexpand: true;
+          styles [ "dim-label", "bold-label" ]
+        }
+      }
+      [bottom]
+      Gtk.Box {
+        margin-bottom: 8;
+        orientation: horizontal;
+        spacing: 6;
+        halign: center;
+        Gtk.Grid {
+          margin-start: 8;
+          column-spacing: 6;
+          halign: end;
+          Gtk.Label {
+            label: _("Audio");
+            xalign: 1;
+            styles [ "dim-label" ]
+            layout { column: 0; row: 0; }
+          }
+          Gtk.Label plugin_audio_label {
+            hexpand: true;
+            xalign: 0;
+            width-chars: 5;
+            layout { column: 1; row: 0; }
+          }
+          Gtk.Label {
+            label: "MIDI";
+            xalign: 1;
+            styles [ "dim-label" ]
+            layout { column: 0; row: 1; }
+          }
+          Gtk.Label plugin_midi_label {
+            hexpand: true;
+            xalign: 0;
+            width-chars: 5;
+            layout { column: 1; row: 1; }
+          }
+        }
+        Gtk.Grid {
+          column-spacing: 6;
+          Gtk.Label {
+            label: _("Controls");
+            xalign: 1;
+            styles [ "dim-label" ]
+            layout { column: 0; row: 0; }
+          }
+          Gtk.Label plugin_ctrl_label {
+            hexpand: true;
+            xalign: 0;
+            width-chars: 7;
+            layout { column: 1; row: 0; }
+          }
+          Gtk.Label {
+            label: "CV";
+            xalign: 1;
+            styles [ "dim-label" ]
+            layout { column: 0; row: 1; }
+          }
+          Gtk.Label plugin_cv_label {
+            hexpand: true;
+            xalign: 0;
+            width-chars: 7;
+            layout { column: 1; row: 1; }
           }
         }
       }
