@@ -327,11 +327,149 @@
               </object>
             </property>
             <child type="bottom">
-              <object class="GtkLabel" id="plugin_info">
-                <attributes>
-                  <attribute name="variant" value="small-caps"></attribute>
-                  <attribute name="stretch" value="condensed"></attribute>
-                </attributes>
+              <object class="GtkBox">
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+                <property name="margin_top">8</property>
+                <property name="margin_bottom">6</property>
+                <property name="orientation">vertical</property>
+                <property name="halign">center</property>
+                <child>
+                  <object class="GtkLabel" id="plugin_author_label">
+                    <property name="hexpand">True</property>
+                    <property name="ellipsize">3</property>
+                    <style>
+                      <class name="heading"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="plugin_type_label">
+                    <property name="hexpand">True</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="bottom">
+              <object class="GtkBox">
+                <property name="margin_bottom">8</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <property name="halign">center</property>
+                <child>
+                  <object class="GtkGrid">
+                    <property name="margin-start">8</property>
+                    <property name="column_spacing">6</property>
+                    <property name="halign">end</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Audio</property>
+                        <property name="xalign">1</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="plugin_audio_label">
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <property name="width-chars">5</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">MIDI</property>
+                        <property name="xalign">1</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="plugin_midi_label">
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <property name="width-chars">5</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkGrid">
+                    <property name="column_spacing">6</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Controls</property>
+                        <property name="xalign">1</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="plugin_ctrl_label">
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <property name="width-chars">7</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">CV</property>
+                        <property name="xalign">1</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="plugin_cv_label">
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <property name="width-chars">7</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

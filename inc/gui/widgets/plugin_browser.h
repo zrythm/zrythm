@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -114,7 +115,12 @@ typedef struct _PluginBrowserWidget
 
   /** A label to show info about the currently
    * selected Plugin. */
-  GtkLabel * plugin_info;
+  GtkLabel * plugin_author_label;
+  GtkLabel * plugin_type_label;
+  GtkLabel * plugin_audio_label;
+  GtkLabel * plugin_midi_label;
+  GtkLabel * plugin_ctrl_label;
+  GtkLabel * plugin_cv_label;
 
   /** Symbol IDs (for quick comparison) of selected authors. */
   GArray * selected_authors;
