@@ -603,10 +603,10 @@ Comment:
   Screenshots and other images used in the user manual
 
 Files: 
-  resources/ui/*.ui
-  resources/gtk/help-overlay.ui
-  resources/gtk/menus.ui
-Copyright: 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+  resources/ui/*.blp
+  resources/gtk/help-overlay.blp
+  resources/gtk/menus.blp
+Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: LicenseRef-ZrythmLicense
 Comment: UI XML files
 

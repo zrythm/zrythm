@@ -52,11 +52,6 @@ clang-format-check:
   script:
     - ninja -C build clang-format-check
 
-html-tidy-check:
-  stage: check
-  script:
-    - ninja -C build html-tidy-check
-
 reuse-check:
   stage: check
   script:
