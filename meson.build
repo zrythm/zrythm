@@ -43,12 +43,9 @@ bash = find_program ('bash')
 grep = find_program ('grep')
 dot_bin = find_program ('dot', required: false)
 doxygen = find_program ('doxygen', required: false)
-rubberband = find_program (
-  'rubberband', required: false)
-cppcheck = find_program (
-  'cppcheck', required: false)
-clang_tidy = find_program (
-  'clang-tidy', required: false)
+rubberband = find_program ('rubberband', required: false)
+cppcheck = find_program ('cppcheck', required: false)
+clang_tidy = find_program ('clang-tidy', required: false)
 jq = find_program ('jq', required: false)
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
@@ -56,42 +53,27 @@ sphinx_build = find_program (
 sphinx_intl = find_program (
   'sphinx-intl',
   required: get_option ('user_manual'))
-sass = find_program (
-  'sass', required: get_option ('user_manual'))
-help2man = find_program (
-  ['help2man'],
-  required: get_option ('manpage'))
+sass = find_program ('sass', required: get_option ('user_manual'))
+help2man = find_program (['help2man'], required: get_option ('manpage'))
 find_program (
   'flex', required: get_option ('completions'))
-stoat = find_program (
-  ['stoat'], required: false)
-python3 = find_program (
-  ['python3', 'python'])
-guile = find_program (
-  ['guile2.2', 'guile'])
-guild = find_program (
-  ['guild2.2', 'guild'], required: false)
+stoat = find_program (['stoat'], required: false)
+python3 = find_program (['python3', 'python'])
+guile = find_program (['guile2.2', 'guile'])
+guild = find_program (['guild2.2', 'guild'], required: false)
 guile_snarf = find_program (
   ['guile-snarf2.2', 'guile-snarf'], required: false)
-pandoc = find_program (
-  ['pandoc'], required: false)
-texi2html = find_program (
-  ['texi2html'], required: false)
-ulimit = find_program (
-  'tools/check_have_unlimited_memlock.sh')
-get_lv2_bundle_uri_bin = find_program (
-  'tools/get_lv2_bundle_uri.sh')
-get_vst_path_bin = find_program (
-  'tools/get_vst_path.sh')
+pandoc = find_program (['pandoc'], required: false)
+texi2html = find_program (['texi2html'], required: false)
+ulimit = find_program ('tools/check_have_unlimited_memlock.sh')
+get_lv2_bundle_uri_bin = find_program ('tools/get_lv2_bundle_uri.sh')
+get_vst_path_bin = find_program ('tools/get_vst_path.sh')
 manpage_completions_run_sh = find_program (
   'ext/sh-manpage-completions/run.sh')
 xmllint = find_program ('xmllint')
-iwyu_tool = find_program (
-  'iwyu_tool', 'iwyu-tool', required: false)
-faust2lv2 = find_program (
-  'faust2lv2', required: false)
-sox = find_program (
-  'sox', required: false)
+iwyu_tool = find_program ('iwyu_tool', 'iwyu-tool', required: false)
+faust2lv2 = find_program ('faust2lv2', required: false)
+sox = find_program ('sox', required: false)
 tidy_bin = find_program ('tidy', required: false)
 blueprint_compiler = find_program ('blueprint-compiler')
 
