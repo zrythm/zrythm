@@ -300,17 +300,17 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
                 powerSpectrumdB, nextPowerSpectrumdB,
                 (j - freqPos) / (float) freqDelta));
               /*fScrollingTexture.drawPixelOnCurrentLine(j, lerpedColor);*/
-              gtk_snapshot_append_color (
-                snapshot, &color_green,
-                &GRAPHENE_RECT_INIT (
-                  (float) j, height - 2, 1, -(float) height * lerped_amt));
+              const float     px_amt = (float) height * lerped_amt;
+              graphene_rect_t draw_rect = GRAPHENE_RECT_INIT (
+                (float) j, (float) height - px_amt, 1, px_amt);
+              gtk_snapshot_append_color (snapshot, &color_green, &draw_rect);
             }
         }
 
-      gtk_snapshot_append_color (
-        snapshot, &color_green,
-        &GRAPHENE_RECT_INIT (
-          (float) freqPos, height - 2, 1, -(float) height * amp));
+      const float     px_amt = (float) height * amp;
+      graphene_rect_t draw_rect = GRAPHENE_RECT_INIT (
+        (float) freqPos, (float) height - px_amt, 1, px_amt);
+      gtk_snapshot_append_color (snapshot, &color_green, &draw_rect);
 
       /*fScrollingTexture.drawPixelOnCurrentLine(freqPos, pixelColor);*/
     }
