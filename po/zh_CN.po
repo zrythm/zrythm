@@ -22,13 +22,14 @@
 # Frank <1425943868ho@gmail.com>, 2023.
 # 金东杰 <ar0m@tutanota.com>, 2023.
 # David Jiang <david.jiang2024@gmail.com>, 2023.
+# 雪と葉 <vescrity@foxmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2023-11-05 20:45+0000\n"
-"Last-Translator: David Jiang <david.jiang2024@gmail.com>\n"
+"PO-Revision-Date: 2024-02-03 20:45+0000\n"
+"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -36,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -216,11 +217,11 @@ msgstr "线性淡出"
 
 #: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:125
 msgid "Nudge left"
-msgstr ""
+msgstr "向左微调"
 
 #: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:126
 msgid "Nudge right"
-msgstr ""
+msgstr "向右微调"
 
 #: inc/dsp/audio_function.h:58
 msgid "Reverse"
@@ -236,7 +237,7 @@ msgstr ""
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
-msgstr ""
+msgstr "外部程序"
 
 #: inc/dsp/audio_function.h:60
 msgid "Guile script"
@@ -423,7 +424,7 @@ msgstr "中国音阶"
 
 #: inc/dsp/scale.h:154
 msgid "Diminished"
-msgstr ""
+msgstr "减弱"
 
 #: inc/dsp/scale.h:155
 msgid "Dominant Diminished"
@@ -454,8 +455,9 @@ msgid "Hirajoshi"
 msgstr ""
 
 #: inc/dsp/scale.h:162
+#, fuzzy
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "匈牙利吉卜赛(Hungarian Gypsy)"
 
 #: inc/dsp/scale.h:163
 msgid "Insen"
@@ -527,11 +529,12 @@ msgstr ""
 
 #: inc/dsp/scale.h:180
 msgid "Iwato"
-msgstr ""
+msgstr "岩户"
 
 #: inc/dsp/scale.h:181
+#, fuzzy
 msgid "Kumoi"
-msgstr ""
+msgstr "云居/云井(Kumoi)"
 
 #: inc/dsp/scale.h:182
 msgid "Pelog"
@@ -742,9 +745,8 @@ msgid "Failed to save project"
 msgstr "未能保存项目"
 
 #: src/project.c:786
-#, fuzzy
 msgid "Failed to serialize project"
-msgstr "反序列化 YAML 项目失败"
+msgstr "反序列化项目失败"
 
 #: src/project.c:799
 msgid "Failed to compress project file"
@@ -786,14 +788,13 @@ msgid "Failed fetching the latest release version"
 msgstr ""
 
 #: src/zrythm_app.c:223
-#, fuzzy
 msgid "Changelog"
-msgstr "修改颜色"
+msgstr "更改记录"
 
 #: src/zrythm_app.c:225
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
-msgstr ""
+msgstr "运行%s版<b>%s</b>%s%s"
 
 #: src/zrythm_app.c:245
 msgid "New Zrythm Version"
@@ -806,6 +807,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"新版本的 Zrythm 已经发布。<b>%s</b>\n"
+"\n"
+"您当前的版本是 %s"
 
 #: src/zrythm_app.c:337
 msgid "Setting up main window"
@@ -858,7 +862,7 @@ msgstr "等待项目"
 
 #: src/zrythm_app.c:767
 msgid "Icon Theme Not Found"
-msgstr ""
+msgstr "没有找到图标主题"
 
 #: src/zrythm_app.c:811
 #, c-format
@@ -866,7 +870,8 @@ msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
-msgstr ""
+msgstr "你当前用户没有足够的权限以允许 %s "
+"锁定无限内存。这可能会导致音频掉线。请参考用户手册中的'入门'部分了解详情。"
 
 #: src/zrythm_app.c:827
 #, c-format
@@ -960,11 +965,10 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 "样例:\n"
-"\t--zpj-to-yaml a.zpj > b.yaml\t转换 a.zpj 到 YAML 并且保存为 b.yaml\n"
-"\t--gen-project a.scm -o myproject\t从 a.scm 生成 myproject\n"
-"\t-p --pretty\t以利于阅读的方式打印当前设置\n"
+"  --gen-project a.scm -o myproject    从 a.scm 生成 myproject \n"
+"  -p --pretty                         输出当前设置\n"
 "\n"
-"请报告问题至 %s\n"
+"问题/请求请上报至 %s\n"
 
 #: src/zrythm_app.c:1553
 #, c-format
@@ -974,7 +978,7 @@ msgstr "运行 %s, 可选地传递一个工程文件。"
 #: src/zrythm_app.c:1581
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
-msgstr ""
+msgstr "这个版本的 Zrythm 不支持创建超过 %d 条轨道。"
 
 #: src/actions/range_action.c:673 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -1053,9 +1057,8 @@ msgid ""
 msgstr "您的%s安装中未启用使用<a href=\"%s\">GNU Guile</a>的脚本扩展性。"
 
 #: src/actions/actions.c:712
-#, fuzzy
 msgid "Discard Changes?"
-msgstr "未保存的更改"
+msgstr "放弃更改？"
 
 #: src/actions/actions.c:713
 msgid "Any unsaved changes to the current project will be lost. Continue?"
@@ -1088,7 +1091,7 @@ msgstr "取消（_C）"
 #: src/actions/actions.c:716 src/actions/actions.c:805
 #: src/gui/widgets/main_window.c:154
 msgid "_Discard"
-msgstr ""
+msgstr "丢弃"
 
 #: src/actions/actions.c:717 src/actions/actions.c:806
 #: src/gui/widgets/main_window.c:155
@@ -1108,15 +1111,14 @@ msgid "Open Project"
 msgstr "开放项目"
 
 #: src/actions/actions.c:800 src/gui/widgets/main_window.c:149
-#, fuzzy
 msgid "Save Changes?"
-msgstr "未保存的更改"
+msgstr "保存更改吗？"
 
 #: src/actions/actions.c:801
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
-msgstr ""
+msgstr "该项目包含未保存的更改。如果你继续，所有没保存的更改将丢失。"
 
 #: src/actions/actions.c:876
 msgid "Save Project"
@@ -1180,14 +1182,14 @@ msgid "Tracks copied to clipboard"
 msgstr "从剪贴板粘贴"
 
 #: src/actions/actions.c:1197
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to paste data: %s"
-msgstr "粘贴音轨失败"
+msgstr "粘贴音轨失败：%s"
 
 #: src/actions/actions.c:1212
 #, c-format
 msgid "invalid clipboard data received: %s"
-msgstr ""
+msgstr "剪切版数据无效: %s"
 
 #: src/actions/actions.c:1277
 msgid "Can't paste incompatible data"
@@ -1222,15 +1224,15 @@ msgid "Failed to delete tracks"
 msgstr "删除音轨失败"
 
 #: src/actions/actions.c:1813
-#, fuzzy
 msgid "Delete Tracks?"
-msgstr "删除音道"
+msgstr "删除轨道？"
 
 #: src/actions/actions.c:1814
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
-msgstr ""
+msgstr "选定的轨道包含未被证实的插件。删除它们将无法撤消，撤消历史将被清除。继续删除"
+"吗？"
 
 #: src/actions/actions.c:1873
 msgid "Failed to pin/unpin tracks"
@@ -1278,7 +1280,7 @@ msgstr "无效时间范围"
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
-msgstr ""
+msgstr "必须先选择时间线或编辑器。当前的选择是 %s 。"
 
 #: src/actions/actions.c:2167
 msgid "Failed to mute selections"
@@ -1294,7 +1296,7 @@ msgstr ""
 
 #: src/actions/actions.c:2191
 msgid "Cannot merge looped regions"
-msgstr ""
+msgstr "无法合并循环区域"
 
 #: src/actions/actions.c:2205
 msgid "Failed to merge selections"
@@ -1412,9 +1414,8 @@ msgstr "预设包名"
 
 #: src/actions/actions.c:3329 src/actions/actions.c:3381
 #: src/actions/actions.c:3649 src/actions/actions.c:3912
-#, fuzzy
 msgid "Delete?"
-msgstr "删除"
+msgstr "删除？"
 
 #: src/actions/actions.c:3330
 msgid "Are you sure you want to delete this chord preset pack?"
@@ -1449,9 +1450,8 @@ msgid "Failed to delete plugins"
 msgstr "未能删除插件"
 
 #: src/actions/actions.c:3526
-#, fuzzy
 msgid "Delete Plugins?"
-msgstr "删除插件"
+msgstr "删除插件？"
 
 #: src/actions/actions.c:3527
 msgid ""
@@ -1947,9 +1947,8 @@ msgid "Failed to revert deleted plugin"
 msgstr "未能恢复已删除的插件"
 
 #: src/actions/mixer_selections_action.c:763
-#, fuzzy
 msgid "Project Reload Needed"
-msgstr "项目已保存。"
+msgstr "项目需要重新加载"
 
 #: src/actions/mixer_selections_action.c:764
 #, fuzzy
@@ -2008,9 +2007,9 @@ msgid "Paste %d Plugins"
 msgstr "粘贴 %d 个插件"
 
 #: src/actions/mixer_selections_action.c:1256
-#, fuzzy, c-format
+#, c-format
 msgid "Change Status for %s"
-msgstr "更改端口"
+msgstr "更改 %s 的状态"
 
 #: src/actions/mixer_selections_action.c:1262
 #, fuzzy, c-format
@@ -2695,12 +2694,12 @@ msgstr "未能创建 MIDI 音轨"
 #: src/dsp/tracklist.c:1231
 #, fuzzy, c-format
 msgid "Failed to add region %d to track"
-msgstr "未能创建音轨"
+msgstr "未能添加 区域 %d 到音轨"
 
 #: src/dsp/tracklist.c:1243
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create region %d inside track %s"
-msgstr "未能创建文件夹轨道"
+msgstr "未能创建 区域 %d 到轨道 %s"
 
 #: src/dsp/tracklist.c:1332
 msgid "No file was found"
@@ -2802,9 +2801,9 @@ msgid ""
 msgstr ""
 
 #: src/io/file_import.c:143
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get track from hash %u"
-msgstr "未能于 %d 创建音轨"
+msgstr "未能从 hash %u 获取轨道"
 
 #: src/io/file_import.c:182
 #, fuzzy, c-format
@@ -2817,9 +2816,9 @@ msgid "sf_format_check failed for '%s': %s (error code %i)"
 msgstr ""
 
 #: src/io/audio_file.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open audio file at '%s': %s (error code %i)"
-msgstr "无法写入文件:%s"
+msgstr "在 '%s' 打开音频文件失败：%s (错误代码 %i)"
 
 #: src/io/audio_file.c:172 src/io/audio_file.c:242
 #, fuzzy
@@ -2847,9 +2846,9 @@ msgid "Expected to read %<PRId64> frames but actually read %zd frames"
 msgstr ""
 
 #: src/io/audio_file.c:307
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to close audio file at '%s': %s (error code %i)"
-msgstr "无法写入文件:%s"
+msgstr "于 '%s' 处关闭音频文件失败: %s (错误代码 %i)"
 
 #: src/utils/resampler.c:112
 #, fuzzy, c-format
@@ -2991,9 +2990,8 @@ msgid "Scenes"
 msgstr ""
 
 #: src/utils/dialogs.c:22
-#, fuzzy
 msgid "Overwrite Plugin?"
-msgstr "覆盖插件"
+msgstr "覆盖插件？"
 
 #: src/utils/dialogs.c:23
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -3050,14 +3048,13 @@ msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
 #: src/gui/backend/event_manager.c:1027
-#, fuzzy, c-format
+#, c-format
 msgid "%d new plugins detected"
-msgstr "未选择区域"
+msgstr "发现 %d 个新插件"
 
 #: src/gui/backend/event_manager.c:1100
-#, fuzzy
 msgid "Plugin collections updated."
-msgstr "插件浏览器集锦"
+msgstr "插件锦集已更新。"
 
 #: src/gui/backend/event_manager.c:1143
 msgid "Plugin preset saved."
@@ -3181,7 +3178,7 @@ msgstr "无通道"
 #: src/gui/widgets/midi_channel_selection_dropdown.c:106
 #, fuzzy, c-format
 msgid "Channel %d"
-msgstr "通道%s"
+msgstr "通道 %d"
 
 #: src/gui/widgets/bounce_step_selector.c:127
 msgid "Bounce step selector"
@@ -3258,16 +3255,14 @@ msgid "All preferences have been successfully reset to initial values"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:167
-#, fuzzy
 msgid "Reset Settings?"
-msgstr "重置到出厂设置"
+msgstr "重置设置？"
 
 #: src/gui/widgets/preferences.c:170
-#, fuzzy
 msgid ""
 "This will reset Zrythm to factory settings. <b>You will lose all your "
 "preferences</b>."
-msgstr "这会将 Zrythm 重置为出厂设置。<b>你将丢失所有首选项</b>。继续吗？"
+msgstr "这会将 Zrythm 重置为出厂设置。<b>你将丢失你所有的偏好设置</b>。"
 
 #: src/gui/widgets/preferences.c:173 resources/ui/first_run_window.ui:32
 msgid "_Reset"
@@ -3347,7 +3342,7 @@ msgstr "未能复制或移动音轨"
 #: src/gui/widgets/route_target_selector.c:60
 #, fuzzy, c-format
 msgid "Failed to change direct out to %s"
-msgstr "更改 direct out 失败"
+msgstr "更改 直接输出 至 %s 失败"
 
 #: src/gui/widgets/route_target_selector.c:91
 #, fuzzy
@@ -4183,16 +4178,14 @@ msgid "Scales"
 msgstr "音阶"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:158
-#, fuzzy
 msgid "Device Inputs"
-msgstr "设备"
+msgstr "设备输入"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:240
 msgid "All MIDI Inputs"
 msgstr "所有MIDI输入"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:241
-#, fuzzy
 msgid "No Inputs"
 msgstr "无输入"
 
@@ -4239,7 +4232,7 @@ msgstr "筛选到的MIDI通道"
 #: src/gui/widgets/track_input_expander.c:208
 #: src/gui/widgets/monitor_section.c:261
 msgid "Mono"
-msgstr ""
+msgstr "单声道"
 
 #. add gain port
 #: src/gui/widgets/track_input_expander.c:220 src/plugins/plugin.c:287
@@ -4258,7 +4251,7 @@ msgstr "暗显"
 #: src/gui/widgets/monitor_section.c:58
 #, c-format
 msgid "<small>%d muted</small>"
-msgstr ""
+msgstr "<small>静音 %d</small>"
 
 #: src/gui/widgets/monitor_section.c:61
 msgid "Currently muted tracks"
@@ -4267,7 +4260,7 @@ msgstr "当前静音的音轨"
 #: src/gui/widgets/monitor_section.c:63
 #, c-format
 msgid "<small>%d soloed</small>"
-msgstr ""
+msgstr "<small>独奏 %d</small>"
 
 #: src/gui/widgets/monitor_section.c:66
 msgid "Currently soloed tracks"
@@ -4276,11 +4269,11 @@ msgstr "当前独奏的音轨"
 #: src/gui/widgets/monitor_section.c:68
 #, c-format
 msgid "<small>%d listened</small>"
-msgstr ""
+msgstr "<small>试听 %d</small>。"
 
 #: src/gui/widgets/monitor_section.c:71
 msgid "Currently listened tracks"
-msgstr ""
+msgstr "当前试听音轨数"
 
 #: src/gui/widgets/monitor_section.c:96
 msgid "Failed to unsolo all tracks"
@@ -4316,7 +4309,7 @@ msgstr "静音中"
 
 #: src/gui/widgets/monitor_section.c:358
 msgid "Listening"
-msgstr ""
+msgstr "试听中"
 
 #: src/gui/widgets/fader_controls_grid.c:78
 msgid "Peak"
@@ -4447,14 +4440,12 @@ msgid "Note Notation"
 msgstr "音符记法"
 
 #: src/gui/widgets/piano_roll_keys.c:508
-#, fuzzy
 msgid "Select notes in pitch"
-msgstr "选择路径"
+msgstr "按音高选择音符"
 
 #: src/gui/widgets/piano_roll_keys.c:513
-#, fuzzy
 msgid "Append notes in pitch to selection"
-msgstr "未能分割所选"
+msgstr ""
 
 #: src/gui/widgets/editor_ruler.c:212
 msgid "Failed to edit position"
@@ -4462,7 +4453,7 @@ msgstr "未能编辑位置"
 
 #: src/gui/widgets/file_chooser_entry.c:429
 msgid "Browse…"
-msgstr ""
+msgstr "浏览…"
 
 #: src/gui/widgets/balance_control.c:207
 #, fuzzy
@@ -4758,9 +4749,8 @@ msgid "JACK Timebase master"
 msgstr "JACK时基Master"
 
 #: src/gui/widgets/bot_bar.c:302
-#, fuzzy
 msgid "Please enter a valid number"
-msgstr "请输入有效名称。"
+msgstr "请输入有效的数值"
 
 #: src/gui/widgets/bot_bar.c:346
 msgid "Buffer Size"
@@ -4847,9 +4837,8 @@ msgid "Operation unimplemented"
 msgstr "未执行操作"
 
 #: src/gui/widgets/tracklist.c:329
-#, fuzzy
 msgid "Create New Instrument Track?"
-msgstr "创建%s音轨"
+msgstr "创建新的乐器轨道？"
 
 #: src/gui/widgets/tracklist.c:330
 msgid ""
@@ -5093,9 +5082,9 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:80
-#, fuzzy, c-format
+#, c-format
 msgid "Imported %d files"
-msgstr "显示不受支持的文件"
+msgstr "导入了 %d 个文件"
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:84
 #, fuzzy
@@ -5455,9 +5444,8 @@ msgstr "创建(_C)"
 #. just show the error and let the program continue - this was called
 #. * while another project is already running
 #: src/gui/widgets/dialogs/project_assistant.c:214
-#, fuzzy
 msgid "Project loading failed"
-msgstr "项目已保存。"
+msgstr "项目加载失败"
 
 #: src/gui/widgets/dialogs/project_assistant.c:421
 #: src/project/project_init_flow_manager.c:1208
@@ -6035,9 +6023,8 @@ msgid "Failed to connect R port"
 msgstr "连接 R 端口失败"
 
 #: src/settings/plugin_settings.c:532
-#, fuzzy
 msgid "Stereo?"
-msgstr "立体声输入"
+msgstr "立体声？"
 
 #: src/settings/plugin_settings.c:532
 msgid "Are the outputs stereo?"
@@ -6260,9 +6247,8 @@ msgid "Failed to initialize the audio file pool"
 msgstr "无法写入文件:%s"
 
 #: src/project/project_init_flow_manager.c:1081
-#, fuzzy
 msgid "Project Upgraded"
-msgstr "项目已保存。"
+msgstr "项目已更新"
 
 #: src/project/project_init_flow_manager.c:1082
 #, c-format
@@ -7692,9 +7678,8 @@ msgid "Last used pitch shift ratio"
 msgstr "上次使用的音频功能"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:514
-#, fuzzy
 msgid "Last used pitch shift ratio."
-msgstr "上次使用的音频功能"
+msgstr "上次使用的移调比率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
 msgid "Playhead scroll edges (timeline)"

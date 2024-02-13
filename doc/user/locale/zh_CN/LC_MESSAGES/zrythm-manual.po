@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2023-11-05 06:19+0000\n"
-"Last-Translator: David Jiang <david.jiang2024@gmail.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2024-01-29 20:45+0000\n"
+"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -390,11 +391,11 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
-msgstr ""
+msgstr "自定义 packs 可以右键重命名或删除"
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
-msgstr ""
+msgstr "重命名或删除自定义和弦预设 pack"
 
 #: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
@@ -614,7 +615,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:13
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "连接 MIDI 和 音频设备"
 
 #: ../../configuration/device-setup.rst:15
 msgid ""
@@ -625,7 +626,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
-msgstr ""
+msgstr "JACK/PipeWire"
 
 #: ../../configuration/device-setup.rst:25
 msgid ""
@@ -635,8 +636,9 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:33
+#, fuzzy
 msgid "Device connections in Qjackctl"
-msgstr ""
+msgstr "在 Qjackctl 连接设备"
 
 #: ../../configuration/device-setup.rst:35
 msgid ""
@@ -1271,7 +1273,7 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:72
 #, fuzzy
 msgid "Zrythm freezes"
-msgstr "zrythm"
+msgstr "Zrythm freezes"
 
 #: ../../contributing/reporting-bugs.rst:75
 msgid "OS and Zrythm Version Information"
@@ -8408,7 +8410,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
-msgstr "聊天"
+msgstr "交流讨论"
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Join the Zrythm chatroom on Matrix."
