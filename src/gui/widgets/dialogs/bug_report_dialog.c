@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -474,7 +474,7 @@ bug_report_dialog_new (
       : g_strdup ("<undo stack uninitialized>\n");
   self->undo_stack_long =
     PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack
-      ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 64)
+      ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 32)
       : g_strdup ("<undo stack uninitialized>\n");
   self->backtrace = g_strdup (backtrace);
   self->system_nfo = zrythm_get_system_info ();
