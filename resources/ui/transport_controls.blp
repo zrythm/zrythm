@@ -10,45 +10,38 @@ template $TransportControlsWidget : Box {
   $ButtonWithMenuWidget trans_record {
     receives-default: "1";
   }
-
-  Button play {
-    tooltip-text: _("Play");
-
-    Image {
-      icon-name: "media-playback-start";
+  Gtk.Box {
+    styles [ "linked" ]
+    Button play {
+      tooltip-text: _("Play");
+      Image {
+        icon-name: "media-playback-start";
+      }
     }
-  }
-
-  Button stop {
-    tooltip-text: _("Stop");
-
-    Image {
-      icon-name: "media-playback-stop";
+    Button stop {
+      tooltip-text: _("Stop");
+      Image {
+        icon-name: "media-playback-stop";
+      }
     }
-  }
-
-  Button backward {
-    tooltip-text: _("Backward");
-
-    Image {
-      icon-name: "media-seek-backward";
+    Button backward {
+      tooltip-text: _("Backward");
+      Image {
+        icon-name: "media-seek-backward";
+      }
     }
-  }
-
-  Button forward {
-    tooltip-text: _("Forward");
-
-    Image {
-      icon-name: "media-seek-forward";
+    Button forward {
+      tooltip-text: _("Forward");
+      Image {
+        icon-name: "media-seek-forward";
+      }
     }
-  }
-
-  ToggleButton loop {
-    tooltip-text: _("Loop");
-    action-name: "app.toggle-loop";
-
-    Image {
-      icon-name: "media-playlist-repeat";
+    ToggleButton loop {
+      tooltip-text: _("Loop");
+      action-name: "app.toggle-loop";
+      Image {
+        icon-name: "media-playlist-repeat";
+      }
     }
   }
 }
