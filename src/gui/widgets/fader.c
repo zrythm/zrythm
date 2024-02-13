@@ -62,7 +62,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float fader_val = self->fader ? self->fader->fader_val : 1.f;
   float value_px = height * fader_val;
 
-  const float line_thickness = width / 4.f;
+  const float line_thickness = width / 5.f;
   const float line_radius = 4.f;
 
   const graphene_rect_t line_rect = GRAPHENE_RECT_INIT (
@@ -97,7 +97,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_pop (snapshot);
 
   /* draw fader handle */
-  const float           handle_height = line_thickness * 5.f;
+  const float           handle_height = 28.f;
   const float           handle_radius = 3.f;
   const graphene_rect_t handle_rect = GRAPHENE_RECT_INIT (
     0.f, (height - value_px) - handle_height / 2.f, width, handle_height);
