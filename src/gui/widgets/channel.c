@@ -857,7 +857,7 @@ channel_widget_new (Channel * channel)
     }
   channel_sends_expander_widget_setup (self->sends, CSE_POSITION_CHANNEL, track);
   setup_aux_buttons (self);
-  fader_widget_setup (self->fader, channel->fader, 38, -1);
+  fader_widget_setup (self->fader, channel->fader, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);

@@ -53,11 +53,10 @@ typedef struct _FaderWidget
 } FaderWidget;
 
 /**
- * Creates a new Fader widget and binds it to the
- * given Fader.
+ * Creates a new Fader widget and binds it to the given Fader.
  */
 void
-fader_widget_setup (FaderWidget * self, Fader * fader, int width, int height);
+fader_widget_setup (FaderWidget * self, Fader * fader, int height);
 
 /**
  * @}

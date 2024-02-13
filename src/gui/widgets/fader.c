@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -422,19 +422,15 @@ fader_tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, gpointer user_da
   return G_SOURCE_CONTINUE;
 }
 
-/**
- * Creates a new Fader widget and binds it to the
- * given Fader.
- */
 void
-fader_widget_setup (FaderWidget * self, Fader * fader, int width, int height)
+fader_widget_setup (FaderWidget * self, Fader * fader, int height)
 {
   g_return_if_fail (IS_FADER (fader));
 
   self->fader = fader;
 
   /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self), width, height);
+  gtk_widget_set_size_request (GTK_WIDGET (self), 20, height);
 }
 
 static void
@@ -461,7 +457,12 @@ fader_widget_init (FaderWidget * self)
 
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("Fader"));
 
-  self->layout = z_cairo_create_default_pango_layout (GTK_WIDGET (self));
+  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  {
+    PangoFontDescription * desc = pango_font_description_from_string ("7");
+    pango_layout_set_font_description (self->layout, desc);
+    pango_font_description_free (desc);
+  }
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (

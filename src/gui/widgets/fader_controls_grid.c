@@ -166,7 +166,7 @@ setup_fader (FaderControlsGridWidget * self)
     {
       Channel * ch = track_get_channel (self->track);
       g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
-      fader_widget_setup (self->fader, ch->fader, 36, 128);
+      fader_widget_setup (self->fader, ch->fader, 128);
       gtk_widget_set_margin_start (GTK_WIDGET (self->fader), 12);
       gtk_widget_set_halign (GTK_WIDGET (self->fader), GTK_ALIGN_CENTER);
     }
