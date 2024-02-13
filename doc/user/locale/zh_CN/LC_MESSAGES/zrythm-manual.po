@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2024-01-29 20:45+0000\n"
-"Last-Translator: Corpulentj <david.jiang2024@gmail.com>\n"
+"PO-Revision-Date: 2024-02-03 20:45+0000\n"
+"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -4385,7 +4385,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:66
 msgid "Mono"
-msgstr ""
+msgstr "单声道"
 
 #: ../../glossary/intro.rst:103
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
