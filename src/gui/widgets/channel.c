@@ -133,7 +133,7 @@ channel_widget_tick_cb (
   else
     {
       char string[40];
-      if (val < -10.)
+      if (val < -9.99)
         {
           sprintf (string, "%.0f", val);
         }

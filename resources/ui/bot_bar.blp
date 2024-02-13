@@ -48,20 +48,14 @@ template $BotBarWidget : Widget {
           flip-horizontal: "1";
           flip-vertical: "1";
           rotate: "1";
-          child: 
+          child:
           Label midi_in_lbl {
-            styles [
-              "small-vertical-lbl",
-            ]
-
+            styles [ "small-vertical-lbl", ]
             label: "MIDI in";
-          }
-
-          ;
+          };
         }
 
-        $MidiActivityBarWidget midi_activity {
-        }
+        $MidiActivityBarWidget midi_activity {}
       }
 
       $LiveWaveformWidget live_waveform {

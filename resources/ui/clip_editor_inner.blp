@@ -3,32 +3,23 @@ using Gtk 4.0;
 template $ClipEditorInnerWidget : Widget {
   hexpand: true;
   vexpand: true;
-
   $ColorAreaWidget color_bar {
-    width-request: "5";
+    width-request: 5;
   }
-
   Box inner_box {
     hexpand: true;
     orientation: vertical;
-
     Box top_box {
       vexpand: true;
-
       $GtkFlipper {
-        flip-horizontal: "1";
-        flip-vertical: "1";
-        rotate: "1";
-        child: 
+        flip-horizontal: true;
+        flip-vertical: true;
+        rotate: true;
+        child:
         Label track_name_lbl {
-          styles [
-            "editor-track-name-lbl",
-          ]
-
+          styles [ "editor-track-name-lbl", ]
           label: _("Select a region...");
-        }
-
-        ;
+        };
       }
 
       Box fourbox {
@@ -44,7 +35,6 @@ template $ClipEditorInnerWidget : Widget {
             ToggleButton toggle_notation {
               focusable: true;
               receives-default: true;
-
               Image {
                 icon-name: "font-awesome-drum-solid";
               }

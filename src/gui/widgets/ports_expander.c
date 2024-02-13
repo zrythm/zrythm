@@ -399,7 +399,7 @@ ports_expander_widget_setup_plugin (
             GTK_WIDGET (group_label),
             "ports-expander-inspector-port-group-label");
           gtk_label_set_xalign (GTK_LABEL (group_label), 0.f);
-          gtk_widget_add_css_class (group_label, "port-group-lbl");
+          gtk_widget_add_css_class (group_label, "small-and-bold");
           gtk_widget_set_margin_top (group_label, 3);
           gtk_widget_set_margin_bottom (group_label, 3);
           two_col_expander_box_widget_add_single (

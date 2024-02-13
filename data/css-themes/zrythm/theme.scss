@@ -342,15 +342,18 @@ automation-lane
 }
 
 .section_heading,
-.port-group-lbl
+.small-and-bold
 {
   font-weight: bold;
   font-size: small;
 }
 
-.channel_label_smaller
-{
-  font-size: smaller;
+.x-small {
+  font-size: x-small;
+}
+
+.xx-small {
+  font-size: xx-small;
 }
 
 /* statckswitcher in the inspector */

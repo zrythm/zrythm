@@ -46,9 +46,8 @@ template $ChannelWidget : Gtk.Widget {
             $MeterWidget meter_r { }
           }
           Gtk.Label meter_reading {
-            name: "channel-meter-reading-label";
             valign: center;
-            /* TODO font-desc attribute */
+            styles [ "xx-small" ]
           }
         }
         layout {
