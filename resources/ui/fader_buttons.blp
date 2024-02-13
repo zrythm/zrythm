@@ -2,69 +2,56 @@ using Gtk 4.0;
 using Adw 1;
 
 template $FaderButtonsWidget : Box {
-  styles [
-    "linked",
-  ]
-
+  styles [ "linked", ]
   margin-top: 4;
-
   ToggleButton mono_compat {
     hexpand: true;
     vexpand: true;
     focusable: true;
     receives-default: true;
     tooltip-text: _("Mono compatibility");
-
     Adw.ButtonContent {
       icon-name: "mono";
     }
   }
-
   ToggleButton record {
     hexpand: true;
     vexpand: true;
     focusable: true;
     receives-default: true;
     tooltip-text: _("Record");
-
     Adw.ButtonContent {
       icon-name: "media-record";
     }
   }
-
   ToggleButton solo {
     hexpand: true;
     vexpand: true;
     focusable: true;
     receives-default: true;
     tooltip-text: _("Solo");
-
     Adw.ButtonContent {
       icon-name: "solo";
     }
   }
-
   ToggleButton mute {
     hexpand: true;
     vexpand: true;
     focusable: true;
     receives-default: true;
     tooltip-text: _("Mute");
-
     Adw.ButtonContent {
       icon-name: "mute";
     }
   }
-
   ToggleButton listen {
     hexpand: true;
     vexpand: true;
     focusable: true;
     receives-default: true;
     tooltip-text: _("Listen");
-
     Adw.ButtonContent {
-      icon-name: "listen";
+      icon-name: "gnome-icon-library-headphones-symbolic";
     }
   }
 

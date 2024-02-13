@@ -51,7 +51,7 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 #define TRACK_ICON_NAME_RECORD "media-record"
 #define TRACK_ICON_NAME_SOLO "solo"
 #define TRACK_ICON_NAME_MUTE "mute"
-#define TRACK_ICON_NAME_LISTEN "listen"
+#define TRACK_ICON_NAME_LISTEN "gnome-icon-library-headphones-symbolic"
 #define TRACK_ICON_NAME_SHOW_UI "jam-icons-screen"
 #define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES "automation-4p"
 #define TRACK_ICON_NAME_SHOW_TRACK_LANES "untitled-ui-rows-03"

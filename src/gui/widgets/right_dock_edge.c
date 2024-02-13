@@ -97,7 +97,9 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->file_browser_box = box;
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->file_browser));
-  ADD_TAB (GTK_WIDGET (box), "folder-music-line", _ ("File Browser"));
+  ADD_TAB (
+    GTK_WIDGET (box), "gnome-icon-library-library-music-symbolic",
+    _ ("File Browser"));
 
   /* add control room */
   self->monitor_section = monitor_section_widget_new ();
