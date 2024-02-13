@@ -1493,7 +1493,7 @@ recording_manager_new (void)
 
   self->pending_aps = g_ptr_array_new ();
 
-  const size_t max_events = 10000;
+  const size_t max_events = ZRYTHM_TESTING ? 400 : 10000;
   self->event_obj_pool = object_pool_new (
     (ObjectCreatorFunc) recording_event_new,
     (ObjectFreeFunc) recording_event_free, (int) max_events);
