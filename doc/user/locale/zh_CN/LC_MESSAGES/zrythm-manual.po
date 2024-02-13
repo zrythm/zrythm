@@ -15,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
 "PO-Revision-Date: 2024-01-29 20:45+0000\n"
-"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
+"Last-Translator: Corpulentj <david.jiang2024@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -403,7 +403,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:91
 msgid "Saving Presets"
-msgstr ""
+msgstr "保存预设中"
 
 #: ../../chords-and-scales/chord-pad.rst:93
 msgid ""
