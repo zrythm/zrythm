@@ -23,11 +23,7 @@ template $ChannelWidget : Gtk.Widget {
             icon-name: "jam-icons-screen";
           }
         }
-        layout {
-          row: 1;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 1; column: 1; column-span: 2; }
       }
       Gtk.Box fader_area {
         name: "channel-fader-area-box";
@@ -35,12 +31,11 @@ template $ChannelWidget : Gtk.Widget {
         $FaderButtonsWidget fader_buttons {
           orientation: vertical;
         }
-        $FaderWidget fader { }
+        $FaderWidget fader {}
         Gtk.Box meter_area {
           name: "channel-meter-area-box";
           orientation: vertical;
           Gtk.Box {
-            name: "channel-meter-area-inner-box";
             vexpand: true;
             $MeterWidget meter_l { }
             $MeterWidget meter_r { }
@@ -50,22 +45,14 @@ template $ChannelWidget : Gtk.Widget {
             styles [ "xx-small" ]
           }
         }
-        layout {
-          row: 6;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 6; column: 1; column-span: 2; }
       }
       Gtk.Box balance_control_box {
         name: "channel-balance-control-box";
         margin-top: 1;
         margin-bottom: 1;
         orientation: vertical;
-        layout {
-          row: 5;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 5; column: 1; column-span: 2; }
       }
       $RouteTargetSelectorWidget output {
         layout {
@@ -85,11 +72,7 @@ template $ChannelWidget : Gtk.Widget {
       }
       Gtk.Box instrument_box {
         name: "channel-instrument-box";
-        layout {
-          row: 3;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 3; column: 1; column-span: 2; }
       }
       Gtk.Box mid_box {
         name: "channel-mid-box";
@@ -97,37 +80,21 @@ template $ChannelWidget : Gtk.Widget {
         $PluginStripExpanderWidget midi_fx {}
         $PluginStripExpanderWidget inserts {}
         $ChannelSendsExpanderWidget sends {}
-        layout {
-          row: 4;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 4; column: 1; column-span: 2; }
       }
       Gtk.Box highlight_left_box {
         name: "channel-highlight-left-box";
         orientation: vertical;
-        layout {
-          row: 0;
-          column: 0;
-          row-span: 7;
-        }
+        layout { row: 0; column: 0; row-span: 7; }
       }
       Gtk.Box highlight_right_box {
         name: "channel-highlight-right-box";
         orientation: vertical;
-        layout {
-          row: 0;
-          column: 3;
-          row-span: 7;
-        }
+        layout { row: 0; column: 3; row-span: 7; }
       }
       Gtk.Box aux_buttons_box {
         name: "channel-aux-buttons-box";
-        layout {
-          row: 2;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 2; column: 1; column-span: 2; }
       }
     }
   }

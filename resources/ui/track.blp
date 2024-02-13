@@ -7,13 +7,10 @@ template $TrackWidget : Widget {
 
   Box main_box {
     name: "track-main-box";
-
-    Box group_colors_box {
-    }
-
+    Box group_colors_box {}
     $TrackCanvasWidget canvas {
-      hexpand: "1";
-      vexpand: "1";
+      hexpand: true;
+      vexpand: true;
     }
 
     $MeterWidget meter_l {

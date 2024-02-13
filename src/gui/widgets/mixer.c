@@ -112,7 +112,9 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
       /* create chan widget if necessary */
       if (!ch->widget)
-        ch->widget = channel_widget_new (ch);
+        {
+          ch->widget = channel_widget_new (ch);
+        }
 
       channel_widget_refresh (ch->widget);
 

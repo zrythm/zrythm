@@ -514,16 +514,6 @@ refresh_name (ChannelWidget * self)
     }
 }
 
-/**
- * Sets up the icon and name box for drag & move.
- */
-/*static void*/
-/*setup_drag_move (*/
-/*ChannelWidget * self)*/
-/*{*/
-
-/*}*/
-
 static void
 setup_balance_control (ChannelWidget * self)
 {

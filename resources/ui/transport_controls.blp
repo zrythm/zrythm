@@ -3,12 +3,10 @@ using Gtk 4.0;
 template $TransportControlsWidget : Box {
   ToggleButton return_to_cue_toggle {
     tooltip-text: _("Return to cue point on stop");
-
     Image {
       icon-name: "font-awesome-anchor";
     }
   }
-
   $ButtonWithMenuWidget trans_record {
     receives-default: "1";
   }

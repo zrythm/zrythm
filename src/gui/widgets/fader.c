@@ -75,12 +75,6 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
   gtk_snapshot_pop (snapshot);
 
-  /*const int padding = 2;*/
-  /*graphene_rect_t graphene_rect =*/
-  /*GRAPHENE_RECT_INIT (*/
-  /*padding, padding, width - padding * 2,*/
-  /*height - padding * 2);*/
-
   /* draw filled in bar */
   double       intensity = fader_val;
   const double intensity_inv = 1.0 - intensity;
