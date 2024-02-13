@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
@@ -28,17 +28,14 @@ typedef struct _MeterWidget
   /** Hovered or not. */
   int hover;
 
-  /** Padding size for the border. */
-  int padding;
-
   GdkRGBA start_color;
   GdkRGBA end_color;
 
   float meter_val;
   float meter_peak;
 
-  /** Caches of last drawn values so that meters
-   * are redrawn only when there are changes. */
+  /** Caches of last drawn values so that meters are redrawn only when there are
+   * changes. */
   float last_meter_val;
   float last_meter_peak;
 
@@ -51,9 +48,10 @@ typedef struct _MeterWidget
  * Sets up an existing meter and binds it to the given port.
  *
  * @param port Port this meter is for.
+ * @param small Whether this should be smaller than normal size.
  */
 void
-meter_widget_setup (MeterWidget * self, Port * port, int width);
+meter_widget_setup (MeterWidget * self, Port * port, bool small);
 
 /**
  * Creates a new MeterWidget and binds it to the given port.

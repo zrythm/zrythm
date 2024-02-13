@@ -2,14 +2,11 @@ using Gtk 4.0;
 
 template $FaderControlsGridWidget : Grid {
   Box meters_box {
-    $MeterWidget meter_l {
-      visible: "1";
+    Gtk.Box {
+      spacing: 2;
+      $MeterWidget meter_l {}
+      $MeterWidget meter_r {}
     }
-
-    $MeterWidget meter_r {
-      visible: "1";
-    }
-
     Label meter_readings {
       hexpand: true;
       justify: center;

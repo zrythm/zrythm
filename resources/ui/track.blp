@@ -12,13 +12,10 @@ template $TrackWidget : Widget {
       hexpand: true;
       vexpand: true;
     }
-
-    $MeterWidget meter_l {
-      visible: "True";
-    }
-
-    $MeterWidget meter_r {
-      visible: "True";
+    Gtk.Box {
+      spacing: 2;
+      $MeterWidget meter_l {}
+      $MeterWidget meter_r {}
     }
   }
 

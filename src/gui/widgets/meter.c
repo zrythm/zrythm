@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -21,20 +21,18 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   MeterWidget * self = Z_METER_WIDGET (widget);
 
-  int width = gtk_widget_get_width (widget);
-  int height = gtk_widget_get_height (widget);
+  float width = (float) gtk_widget_get_width (widget);
+  float height = (float) gtk_widget_get_height (widget);
 
   /* get values */
   float peak = self->meter_peak;
   float meter_val = self->meter_val;
 
-  float value_px = (float) height * meter_val;
+  float value_px = height * meter_val;
   if (value_px < 0)
     value_px = 0;
 
-  /* draw filled in bar */
-  float width_without_padding = (float) (width - self->padding * 2);
-
+#if 0
   GdkRGBA     bar_color = { 0, 0, 0, 1 };
   float       intensity = meter_val;
   const float intensity_inv = 1.f - intensity;
@@ -45,44 +43,40 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   bar_color.blue =
     intensity_inv * self->end_color.blue + intensity * self->start_color.blue;
 
-  graphene_rect_t graphene_rect =
-    GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
-
   GdkRGBA color4;
   color_morph (&UI_COLORS->bright_green, &bar_color, 0.5f, &color4);
   color4.alpha = 1.f;
+#endif
 
-  /* use gradient */
-  GskColorStop stop1, stop2, stop3, stop4, stop5;
+  /* gradient */
+  /* Red 2 Yellow 2  Green 2
+   * https://developer.gnome.org/hig/reference/palette.html */
+  GskColorStop stop1, stop2, stop3;
   stop1.offset = 0;
-  stop1.color = UI_COLORS->z_purple;
-  stop2.offset = 0.2f;
-  stop2.color = self->start_color;
-  stop3.offset = 0.5f;
-  stop3.color = bar_color;
-  stop4.offset = 0.8f;
-  stop4.color = color4;
-  stop5.offset = 1;
-  stop5.color = UI_COLORS->darkish_green;
-  GskColorStop stops[] = { stop1, stop2, stop3, stop4, stop5 };
+  gdk_rgba_parse (&stop1.color, "#ED333B");
+  stop2.offset = 0.5f;
+  gdk_rgba_parse (&stop2.color, "#F8E45C");
+  stop3.offset = 1.f;
+  gdk_rgba_parse (&stop3.color, "#57E389");
+  GskColorStop stops[] = {
+    stop1,
+    stop2,
+    stop3,
+  };
 
-  /* used to stretch the gradient a little bit to
-   * make it look alive */
+  /* used to stretch the gradient a little bit to make it look alive */
   float value_px_for_gradient = (1 - value_px) * 0.02f;
 
-  float x = (float) self->padding;
   gtk_snapshot_append_linear_gradient (
-    snapshot,
-    &GRAPHENE_RECT_INIT (
-      x, (float) height - value_px, x + width_without_padding, value_px),
-    &GRAPHENE_POINT_INIT (0.f, (float) width),
-    &GRAPHENE_POINT_INIT (0, (float) height - value_px_for_gradient), stops,
+    snapshot, &GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px),
+    &GRAPHENE_POINT_INIT (0.f, width),
+    &GRAPHENE_POINT_INIT (0, height - value_px_for_gradient), stops,
     G_N_ELEMENTS (stops));
 
   /* draw meter line */
   gtk_snapshot_append_color (
     snapshot, &Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1),
-    &GRAPHENE_RECT_INIT (x, (float) height - value_px, width_without_padding, 1));
+    &GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1));
 
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
@@ -90,7 +84,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (peak_amp > 1.f && self->meter->port->id.type == TYPE_AUDIO)
     {
       /* make higher peak brighter */
-      color.red = 0.6f + 0.4f * (float) peak;
+      color.red = 0.6f + 0.4f * peak;
       color.green = 0.1f;
       color.blue = 0.05f;
       color.alpha = 1;
@@ -98,32 +92,17 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   else
     {
       /* make higher peak brighter */
-      color.red = 0.4f + 0.4f * (float) peak;
-      color.green = 0.4f + 0.4f * (float) peak;
-      color.blue = 0.4f + 0.4f * (float) peak;
+      color.red = 0.4f + 0.4f * peak;
+      color.green = 0.4f + 0.4f * peak;
+      color.blue = 0.4f + 0.4f * peak;
       color.alpha = 1;
     }
-  float peak_px = (float) peak * (float) height;
+  float peak_px = peak * height;
   gtk_snapshot_append_color (
-    snapshot, &color,
-    &GRAPHENE_RECT_INIT (x, (float) height - peak_px, width_without_padding, 2));
+    snapshot, &color, &GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2));
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;
-
-  /* draw border line */
-  const float border_width = 1.f;
-  GdkRGBA     border_color = { 0.1f, 0.1f, 0.1f, 0.8f };
-  float       border_widths[] = {
-    border_width, border_width, border_width, border_width
-  };
-  GdkRGBA border_colors[] = {
-    border_color, border_color, border_color, border_color
-  };
-  GskRoundedRect rounded_rect;
-  gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
-  gtk_snapshot_append_border (
-    snapshot, &rounded_rect, border_widths, border_colors);
 }
 
 static void
@@ -202,13 +181,8 @@ meter_timeout (
 }
 #endif
 
-/**
- * Sets up an existing meter and binds it to the given port.
- *
- * @param port Port this meter is for.
- */
 void
-meter_widget_setup (MeterWidget * self, Port * port, int width)
+meter_widget_setup (MeterWidget * self, Port * port, bool small)
 {
   if (self->meter)
     {
@@ -216,9 +190,13 @@ meter_widget_setup (MeterWidget * self, Port * port, int width)
     }
   self->meter = meter_new_for_port (port);
   g_return_if_fail (self->meter);
-  self->padding = 2;
 
   /* set size */
+  int width = small ? 4 : 8;
+  if (port->id.type == TYPE_EVENT)
+    {
+      width = small ? 6 : 10;
+    }
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
 
   /* connect signals */
@@ -250,7 +228,7 @@ meter_widget_new (Port * port, int width)
 {
   MeterWidget * self = g_object_new (METER_WIDGET_TYPE, NULL);
 
-  meter_widget_setup (self, port, width);
+  meter_widget_setup (self, port, false);
 
   return self;
 }

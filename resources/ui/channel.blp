@@ -27,6 +27,7 @@ template $ChannelWidget : Gtk.Widget {
       }
       Gtk.Box fader_area {
         name: "channel-fader-area-box";
+        spacing: 4;
         vexpand: true;
         $FaderButtonsWidget fader_buttons {
           orientation: vertical;
@@ -37,6 +38,7 @@ template $ChannelWidget : Gtk.Widget {
           orientation: vertical;
           Gtk.Box {
             vexpand: true;
+            spacing: 2;
             $MeterWidget meter_l { }
             $MeterWidget meter_r { }
           }

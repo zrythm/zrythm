@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_bus_track.h"
@@ -2043,19 +2043,17 @@ track_widget_new (Track * track)
       switch (track->out_signal_type)
         {
         case TYPE_EVENT:
-          meter_widget_setup (self->meter_l, self->track->channel->midi_out, 8);
+          meter_widget_setup (
+            self->meter_l, self->track->channel->midi_out, true);
           gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 2);
-          self->meter_l->padding = 0;
           gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
           break;
         case TYPE_AUDIO:
           meter_widget_setup (
-            self->meter_l, self->track->channel->stereo_out->l, 6);
-          self->meter_l->padding = 0;
+            self->meter_l, self->track->channel->stereo_out->l, true);
           meter_widget_setup (
-            self->meter_r, self->track->channel->stereo_out->r, 6);
-          self->meter_r->padding = 0;
+            self->meter_r, self->track->channel->stereo_out->r, true);
           break;
         default:
           break;
