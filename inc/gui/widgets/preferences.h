@@ -18,7 +18,7 @@ G_DECLARE_FINAL_TYPE (
   preferences_widget,
   Z,
   PREFERENCES_WIDGET,
-  AdwPreferencesWindow)
+  AdwPreferencesDialog)
 
 typedef struct Preferences             Preferences;
 typedef struct _MidiControllerMbWidget MidiControllerMbWidget;
@@ -51,7 +51,7 @@ typedef struct SubgroupInfo
  */
 typedef struct _PreferencesWidget
 {
-  AdwPreferencesWindow parent_instance;
+  AdwPreferencesDialog parent_instance;
   GtkNotebook *        group_notebook;
 
   SubgroupInfo subgroup_infos[12][40];

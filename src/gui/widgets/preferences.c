@@ -27,7 +27,7 @@
 
 #include <locale.h>
 
-G_DEFINE_TYPE (PreferencesWidget, preferences_widget, ADW_TYPE_PREFERENCES_WINDOW)
+G_DEFINE_TYPE (PreferencesWidget, preferences_widget, ADW_TYPE_PREFERENCES_DIALOG)
 
 static const char * reset_to_factory_key = "reset-to-factory";
 
@@ -143,14 +143,14 @@ font_scale_adjustment_changed (GtkAdjustment * adjustment, void * data)
 
 static void
 reset_to_factory_response_cb (
-  AdwMessageDialog * dialog,
-  char *             response,
-  GtkWindow *        preferences_window)
+  AdwAlertDialog * dialog,
+  char *           response,
+  AdwDialog *      preferences_window)
 {
   if (string_is_equal (response, "reset"))
     {
       settings_reset_to_factory (false, false);
-      gtk_window_destroy (preferences_window);
+      adw_dialog_force_close (preferences_window);
 
       ui_show_notification_idle (_ (
         "All preferences have been successfully reset to initial "
@@ -163,27 +163,26 @@ on_reset_to_factory_clicked (GtkButton * btn, gpointer user_data)
 {
   CallbackData * data = (CallbackData *) user_data;
 
-  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
-    GTK_WINDOW (data->preferences_widget), _ ("Reset Settings?"), NULL));
-  adw_message_dialog_format_body_markup (
+  AdwAlertDialog * dialog =
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Reset Settings?"), NULL));
+  adw_alert_dialog_format_body_markup (
     dialog,
     _ ("This will reset Zrythm to factory settings. <b>You will lose "
        "all your preferences</b>."));
-  adw_message_dialog_add_responses (
-    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "reset", _ ("_Reset"),
-    NULL);
+  adw_alert_dialog_add_responses (
+    dialog, "cancel", _ ("_Cancel"), "reset", _ ("_Reset"), NULL);
 
-  adw_message_dialog_set_response_appearance (
-    ADW_MESSAGE_DIALOG (dialog), "reset", ADW_RESPONSE_DESTRUCTIVE);
-  adw_message_dialog_set_default_response (
-    ADW_MESSAGE_DIALOG (dialog), "cancel");
-  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_alert_dialog_set_response_appearance (
+    dialog, "reset", ADW_RESPONSE_DESTRUCTIVE);
+  adw_alert_dialog_set_default_response (dialog, "cancel");
+  adw_alert_dialog_set_close_response (dialog, "cancel");
 
   g_signal_connect (
     dialog, "response", G_CALLBACK (reset_to_factory_response_cb),
     data->preferences_widget);
 
-  gtk_window_present (GTK_WINDOW (dialog));
+  adw_alert_dialog_choose (
+    dialog, GTK_WIDGET (data->preferences_widget), NULL, NULL, NULL);
 }
 
 static void
@@ -875,7 +874,7 @@ add_group (PreferencesWidget * self, int group_idx)
   /* create a page for the group */
   AdwPreferencesPage * page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
   adw_preferences_page_set_title (page, localized_group_name);
-  adw_preferences_window_add (ADW_PREFERENCES_WINDOW (self), page);
+  adw_preferences_dialog_add (ADW_PREFERENCES_DIALOG (self), page);
 
   /* set icon */
   if (self->subgroup_infos[group_idx][0].group_icon)
@@ -938,7 +937,6 @@ preferences_widget_class_init (PreferencesWidgetClass * _klass)
 static void
 preferences_widget_init (PreferencesWidget * self)
 {
-  gtk_window_set_modal (GTK_WINDOW (self), true);
 #if 0
   self->group_notebook =
     GTK_NOTEBOOK (gtk_notebook_new ());

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -20,7 +20,7 @@
  * Creates and displays the dialog asynchronously.
  */
 void
-ask_to_check_for_updates_dialog_run_async (GtkWindow * parent);
+ask_to_check_for_updates_dialog_run_async (GtkWidget * parent);
 
 /**
  * @}

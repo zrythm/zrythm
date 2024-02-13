@@ -261,9 +261,9 @@ zrythm_app_check_for_updates (ZrythmApp * self)
 {
   if (g_settings_get_boolean (S_GENERAL, "first-check-for-updates"))
     {
-      /* this will call zrythm_app_check_for_updates() again
-       * later if the response is yes */
-      ask_to_check_for_updates_dialog_run_async (GTK_WINDOW (MAIN_WINDOW));
+      /* this will call zrythm_app_check_for_updates() again later if the
+       * response is yes */
+      ask_to_check_for_updates_dialog_run_async (GTK_WIDGET (MAIN_WINDOW));
       return;
     }
 

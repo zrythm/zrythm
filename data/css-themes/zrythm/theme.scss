@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
  * SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
@@ -77,7 +77,6 @@ notebook stack
 tracklist,
 ruler,
 piano-roll-labels,
-window,
 filechooser #pathbarbox,
 paned {
   background-color: $bg_dark_variant1;
@@ -107,7 +106,6 @@ piano-roll-toolbar,
 .file-browser .toolbar,
 bot-dock-edge .toolbar,
 bot-dock-edge .toolbar > stack,
-dialog
 {
   background-color: $bg_dark_variant2;
 }

@@ -30,6 +30,11 @@ on_closed (ActiveHardwarePopoverWidget * self, gpointer user_data)
 static void
 get_controllers (ActiveHardwarePopoverWidget * self, GPtrArray * controllers)
 {
+  if (!PROJECT)
+    {
+      return;
+    }
+
   HardwareProcessor * processor =
     self->owner->input
       ? AUDIO_ENGINE->hw_in_processor

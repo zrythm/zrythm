@@ -1,6 +1,6 @@
 [wrap-git]
 directory=libadwaita
 url=https://gitlab.gnome.org/GNOME/libadwaita
-# 1.4.2
-revision=fd5892e94ddd9baf44dcfb2faaa97211a2532d6d
+# 1.5.beta
+revision=fb97bcc3aaf999c274d0f03bf9d7076ec4c97878
 depth=1

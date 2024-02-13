@@ -158,20 +158,14 @@ ui_show_message_full (
   GtkWindow * win = NULL;
   if (ZRYTHM_HAVE_UI)
     {
-      GtkWidget * dialog = adw_message_dialog_new (parent_window, title, buf);
-      adw_message_dialog_add_responses (
-        ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
-      adw_message_dialog_set_default_response (
-        ADW_MESSAGE_DIALOG (dialog), "ok");
-      adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
-      win = GTK_WINDOW (dialog);
-      gtk_window_set_icon_name (win, "zrythm");
-      if (parent_window)
-        {
-          gtk_window_set_transient_for (win, parent_window);
-          gtk_window_set_modal (win, true);
-        }
-      gtk_window_present (win);
+      AdwAlertDialog * dialog =
+        ADW_ALERT_DIALOG (adw_alert_dialog_new (title, buf));
+      adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), NULL);
+      adw_alert_dialog_set_default_response (dialog, "ok");
+      adw_alert_dialog_set_close_response (dialog, "ok");
+      adw_alert_dialog_choose (
+        dialog, parent_window ? GTK_WIDGET (parent_window) : NULL, NULL, NULL,
+        NULL);
     }
 
   free (buf);
