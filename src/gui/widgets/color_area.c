@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/track.h"
@@ -8,6 +8,7 @@
 #include "gui/widgets/track.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -16,6 +17,19 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_WIDGET)
+
+#define icon_texture_size 16
+
+static void
+recreate_icon_texture (ColorAreaWidget * self)
+{
+  g_return_if_fail (self->track);
+  object_free_w_func_and_null (g_object_unref, self->track_icon);
+  self->track_icon = z_gdk_texture_new_from_icon_name (
+    self->track->icon_name, icon_texture_size, icon_texture_size, 1);
+  object_free_w_func_and_null (g_free, self->last_track_icon_name);
+  self->last_track_icon_name = g_strdup (self->track->icon_name);
+}
 
 /**
  * Draws the color picker.
@@ -85,6 +99,39 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (0.f, (float) start_y, (float) width, (float) h));
+        }
+
+      /* also show icon */
+      if (width >= icon_texture_size && height >= icon_texture_size)
+        {
+          if (
+            !self->track_icon
+            || !string_is_equal (self->last_track_icon_name, track->icon_name))
+            {
+              recreate_icon_texture (self);
+            }
+
+          /* TODO figure out how to draw dark colors */
+          GdkRGBA c2;
+          ui_get_contrast_color (&track->color, &c2);
+          graphene_matrix_t color_matrix;
+          graphene_matrix_init_from_float (
+            &color_matrix,
+            (float[16]){ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, c2.alpha });
+          graphene_vec4_t color_offset;
+          graphene_vec4_init (&color_offset, c2.red, c2.green, c2.blue, 0);
+
+          gtk_snapshot_push_color_matrix (
+            snapshot, &color_matrix, &color_offset);
+
+          const float hspacing = 2.f;
+          const float vspacing = (float) (height - icon_texture_size) / 2.f;
+          gtk_snapshot_append_texture (
+            snapshot, self->track_icon,
+            &GRAPHENE_RECT_INIT (
+              hspacing, vspacing, icon_texture_size, icon_texture_size));
+
+          gtk_snapshot_pop (snapshot);
         }
     }
 }
@@ -168,6 +215,8 @@ static void
 finalize (ColorAreaWidget * self)
 {
   object_free_w_func_and_null (g_ptr_array_unref, self->parents);
+  object_free_w_func_and_null (g_object_unref, self->track_icon);
+  object_free_w_func_and_null (g_free, self->last_track_icon_name);
 
   G_OBJECT_CLASS (color_area_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -176,6 +225,7 @@ static void
 color_area_widget_init (ColorAreaWidget * self)
 {
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_overflow (GTK_WIDGET (self), false);
 
   gtk_accessible_update_property (
     GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Color", -1);
