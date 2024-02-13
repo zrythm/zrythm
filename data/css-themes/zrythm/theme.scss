@@ -533,6 +533,10 @@ fader-buttons button {
   padding: 3px;
 }
 
+fader {
+  color: $accent_color;
+}
+
 /* add focus right on any focusable widget */
 * {
   @include focus-ring();

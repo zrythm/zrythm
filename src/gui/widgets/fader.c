@@ -51,109 +51,10 @@ accessible_range_init (GtkAccessibleRangeInterface * iface)
   iface->set_current_value = accessible_range_set_current_value;
 }
 
-/* previous implementation */
-static void
-fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
-{
-  FaderWidget * self = Z_FADER_WIDGET (widget);
-
-  int width = gtk_widget_get_width (widget);
-  int height = gtk_widget_get_height (widget);
-
-  float fader_val = self->fader ? self->fader->fader_val : 1.f;
-  float value_px = (float) height * fader_val;
-
-  const float fill_radius = 2.f;
-
-  /* draw background bar */
-  GskRoundedRect rounded_rect;
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect,
-    &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height), fill_radius);
-  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
-  gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f),
-    &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
-  gtk_snapshot_pop (snapshot);
-
-  /* draw filled in bar */
-  double       intensity = fader_val;
-  const double intensity_inv = 1.0 - intensity;
-  double       r =
-    intensity_inv * self->end_color.red + intensity * self->start_color.red;
-  double g =
-    intensity_inv * self->end_color.green + intensity * self->start_color.green;
-  double b =
-    intensity_inv * self->end_color.blue + intensity * self->start_color.blue;
-  double a =
-    intensity_inv * self->end_color.alpha + intensity * self->start_color.alpha;
-
-  if (!self->hover)
-    a = 0.9f;
-
-  const float inner_line_width = 2.f;
-
-  const float     border_width = 3.f;
-  graphene_rect_t value_graphene_rect = GRAPHENE_RECT_INIT (
-    border_width, border_width, (float) width - border_width * 2.f,
-    (float) height - border_width * 2.f);
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &value_graphene_rect, fill_radius);
-  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
-  gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT ((float) r, (float) g, (float) b, (float) a),
-    &GRAPHENE_RECT_INIT (
-      0.f, ((float) height - value_px) + (float) inner_line_width * 2.f,
-      (float) width, value_px));
-  gtk_snapshot_pop (snapshot);
-
-  /* draw fader thin line */
-  GdkRGBA color;
-  if (self->hover || self->dragging)
-    {
-      color = Z_GDK_RGBA_INIT (0.8f, 0.8f, 0.8f, 1);
-    }
-  else
-    {
-      color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
-    }
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &GRAPHENE_RECT_INIT (
-      border_width, ((float) height - value_px) - (float) inner_line_width / 2.f,
-      (float) width - border_width * 2.f, inner_line_width));
-
-  /* draw value */
-  if (self->hover)
-    {
-      char val_str[60];
-      ui_get_db_value_as_string (self->fader->volume, val_str);
-      pango_layout_set_text (self->layout, val_str, -1);
-      int x_px, y_px;
-      pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
-      float   start_x = (float) width / 2.f - x_px / 2.f;
-      bool    show_text_at_bottom = y_px > (height - value_px);
-      float   start_y = show_text_at_bottom ? height / 2.f - y_px / 2.f : 0;
-      GdkRGBA text_color =
-        show_text_at_bottom
-          ? Z_GDK_RGBA_INIT (1, 1, 1, 1)
-          : Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_translate (snapshot, &GRAPHENE_POINT_INIT (start_x, start_y));
-      gtk_snapshot_append_layout (snapshot, self->layout, &text_color);
-    }
-}
-
 static void
 fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   FaderWidget * self = Z_FADER_WIDGET (widget);
-
-  const bool use_old = false;
-  if (use_old)
-    {
-      fader_snapshot_old (widget, snapshot);
-      return;
-    }
 
   float width = (float) gtk_widget_get_width (widget);
   float height = (float) gtk_widget_get_height (widget);
@@ -161,7 +62,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float fader_val = self->fader ? self->fader->fader_val : 1.f;
   float value_px = height * fader_val;
 
-  const float line_thickness = width / 3.f;
+  const float line_thickness = width / 4.f;
   const float line_radius = 4.f;
 
   const graphene_rect_t line_rect = GRAPHENE_RECT_INIT (
@@ -178,14 +79,12 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw filled in bar */
   double       intensity = fader_val;
   const double intensity_inv = 1.0 - intensity;
-  double       r =
-    intensity_inv * self->end_color.red + intensity * self->start_color.red;
-  double g =
-    intensity_inv * self->end_color.green + intensity * self->start_color.green;
-  double b =
-    intensity_inv * self->end_color.blue + intensity * self->start_color.blue;
-  double a =
-    intensity_inv * self->end_color.alpha + intensity * self->start_color.alpha;
+  GdkRGBA      fg_color;
+  gtk_widget_get_color (widget, &fg_color);
+  double r = intensity_inv * self->end_color.red + intensity * fg_color.red;
+  double g = intensity_inv * self->end_color.green + intensity * fg_color.green;
+  double b = intensity_inv * self->end_color.blue + intensity * fg_color.blue;
+  double a = intensity_inv * self->end_color.alpha + intensity * fg_color.alpha;
 
   if (!self->hover)
     a = 0.9f;
@@ -198,7 +97,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_pop (snapshot);
 
   /* draw fader handle */
-  const float           handle_height = line_thickness * 4.f;
+  const float           handle_height = line_thickness * 5.f;
   const float           handle_radius = 3.f;
   const graphene_rect_t handle_rect = GRAPHENE_RECT_INIT (
     0.f, (height - value_px) - handle_height / 2.f, width, handle_height);
@@ -520,7 +419,6 @@ dispose (FaderWidget * self)
 static void
 fader_widget_init (FaderWidget * self)
 {
-  self->start_color = UI_COLORS->fader_fill_start;
   self->end_color = UI_COLORS->fader_fill_end;
 
   gtk_widget_set_focusable (GTK_WIDGET (self), true);

@@ -1227,7 +1227,6 @@ ui_caches_new (void)
   SET_COLOR (postfader_send, POSTFADER_SEND);
   SET_COLOR (solo_active, SOLO_ACTIVE);
   SET_COLOR (solo_checked, SOLO_CHECKED);
-  SET_COLOR (fader_fill_start, FADER_FILL_START);
   SET_COLOR (fader_fill_end, FADER_FILL_END);
   SET_COLOR (highlight_scale_bg, HIGHLIGHT_SCALE_BG);
   SET_COLOR (highlight_chord_bg, HIGHLIGHT_CHORD_BG);

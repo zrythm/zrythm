@@ -34,7 +34,6 @@ typedef struct _FaderWidget
   double           last_y;
   bool             hover;
   bool             dragging;
-  GdkRGBA          start_color;
   GdkRGBA          end_color;
 
   /** Value at start. */
