@@ -193,7 +193,7 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
   gtk_widget_set_hexpand (GTK_WIDGET (self->stereo_l_input), true);
   gtk_size_group_add_widget (
     self->audio_input_size_group, GTK_WIDGET (self->stereo_l_input));
-  self->mono = z_gtk_toggle_button_new_with_icon ("mono");
+  self->mono = z_gtk_toggle_button_new_with_icon ("codicons-merge");
   gtk_widget_set_visible (GTK_WIDGET (self->mono), true);
   g_signal_connect (self->mono, "toggled", G_CALLBACK (on_mono_toggled), self);
   two_col_expander_box_widget_add_pair (

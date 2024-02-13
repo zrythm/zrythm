@@ -121,7 +121,8 @@ Args:
            '("arena" "gnome-builder" "gnome-icon-library" "ext"
              "fork-awesome" "font-awesome"
              "fluentui" "jam-icons" "box-icons" "iconpark"
-             "iconoir" "material-design" "untitled-ui" "css.gg"))
+             "iconoir" "material-design" "untitled-ui" "css.gg"
+             "codicons"))
 
          ;; insert standard gtk menus
          ;; (see GtkApplication docs)

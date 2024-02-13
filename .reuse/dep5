@@ -240,6 +240,14 @@ Comment:
   From https://github.com/atisawd/boxicons.
 
 Files:
+  resources/icons/codicons/*.svg
+Copyright: Microsoft and other contributors
+License: CC-BY-4.0
+Comment:
+  The files have been slightly modified.
+  From https://github.com/microsoft/vscode-codicons.
+
+Files:
   resources/icons/iconpark/*.svg
 Copyright: IconPark contributors <https://github.com/bytedance/IconPark>
 License: Apache-2.0

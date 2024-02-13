@@ -1110,6 +1110,8 @@ zrythm_app_startup (GApplication * app)
     icon_theme, "/org/zrythm/Zrythm/app/icons/untitled-ui");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/css.gg");
+  gtk_icon_theme_add_resource_path (
+    icon_theme, "/org/zrythm/Zrythm/app/icons/codicons");
 
   g_message ("Resource paths set");
 

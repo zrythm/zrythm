@@ -258,7 +258,7 @@ monitor_section_widget_setup (
   gtk_box_append (GTK_BOX (self->dim_level_box), GTK_WIDGET (self->dim_level));
 
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (self->mono_toggle), "mono", _ ("Mono"), true,
+    GTK_BUTTON (self->mono_toggle), "codicons-merge", _ ("Mono"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->mono_toggle, fader_get_mono_compat_enabled (MONITOR_FADER));
