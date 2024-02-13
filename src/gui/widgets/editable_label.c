@@ -204,6 +204,8 @@ editable_label_widget_init (EditableLabelWidget * self)
   gtk_widget_set_parent (GTK_WIDGET (label), GTK_WIDGET (self));
   self->label = GTK_LABEL (label);
   gtk_label_set_ellipsize (self->label, PANGO_ELLIPSIZE_END);
+  gtk_widget_set_hexpand (GTK_WIDGET (label), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (label), true);
 
   self->popover = GTK_POPOVER (gtk_popover_new ());
   gtk_widget_set_parent (GTK_WIDGET (self->popover), GTK_WIDGET (self));

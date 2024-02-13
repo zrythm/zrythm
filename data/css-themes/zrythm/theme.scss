@@ -272,6 +272,18 @@ modulator-view two-col-expander-box
 }
 
 channel {
+  //border-radius: 5px;
+
+  grid {
+    padding-left: 3px;
+    padding-right: 3px;
+
+    button {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
+
   button.flat {
     padding-left: 3px;
     padding-right: 3px;

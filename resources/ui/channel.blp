@@ -1,23 +1,28 @@
 using Gtk 4.0;
 
 template $ChannelWidget : Gtk.Widget {
+  overflow: hidden;
   margin-top: 2;
   margin-bottom: 4;
   Gtk.Box box {
+    orientation: vertical;
+    $ColorAreaWidget color {
+      height-request: 20;
+      margin-bottom: 3;
+    }
     Gtk.Grid grid {
       name: "channel-grid";
       Gtk.Box icon_and_name_event_box {
         name: "channel-icon-and-name-box";
+        vexpand-set: true;
         Gtk.Box {
           name: "channel-icon-box";
           spacing: 2;
-          Gtk.Image icon {
-            name: "channel-icon-image";
-            halign: center;
-            valign: center;
-          }
           $EditableLabelWidget name {
             hexpand: true;
+            vexpand: true;
+            margin-start: 2;
+            halign: start;
           }
           Gtk.ToggleButton instrument_ui_toggle {
             icon-name: "jam-icons-screen";
@@ -57,20 +62,7 @@ template $ChannelWidget : Gtk.Widget {
         layout { row: 5; column: 1; column-span: 2; }
       }
       $RouteTargetSelectorWidget output {
-        layout {
-          row: 7;
-          column: 1;
-          column-span: 2;
-        }
-      }
-      $ColorAreaWidget color {
-        height-request: 8;
-        margin-bottom: 3;
-        layout {
-          row: 0;
-          column: 1;
-          column-span: 2;
-        }
+        layout { row: 7; column: 1; column-span: 2; }
       }
       Gtk.Box instrument_box {
         name: "channel-instrument-box";

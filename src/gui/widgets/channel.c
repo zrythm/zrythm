@@ -442,14 +442,6 @@ channel_widget_update_midi_fx_and_inserts (ChannelWidget * self)
     }
 }
 
-static void
-setup_channel_icon (ChannelWidget * self)
-{
-  Track * track = channel_get_track (self->channel);
-  gtk_image_set_from_icon_name (self->icon, track->icon_name);
-  gtk_widget_set_sensitive (GTK_WIDGET (self->icon), track_is_enabled (track));
-}
-
 void
 channel_widget_refresh_instrument_ui_toggle (ChannelWidget * self)
 {
@@ -564,7 +556,6 @@ channel_widget_refresh (ChannelWidget * self)
   channel_widget_refresh_buttons (self);
   refresh_color (self);
   update_reveal_status (self);
-  setup_channel_icon (self);
 
   Track * track = channel_get_track (self->channel);
   if (track_is_selected (track))
@@ -860,7 +851,6 @@ channel_widget_new (Channel * channel)
   fader_widget_setup (self->fader, channel->fader, -1);
   setup_meter (self);
   setup_balance_control (self);
-  setup_channel_icon (self);
   setup_instrument_ui_toggle (self);
   editable_label_widget_setup (
     self->name, track, (GenericStringGetter) track_get_name,
@@ -959,7 +949,6 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   BIND_CHILD (meter_l);
   BIND_CHILD (meter_r);
   BIND_CHILD (meter_reading);
-  BIND_CHILD (icon);
   BIND_CHILD (instrument_ui_toggle);
   BIND_CHILD (balance_control_box);
   BIND_CHILD (highlight_left_box);

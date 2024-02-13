@@ -33,30 +33,29 @@ template $FolderChannelWidget : Widget {
       layout { column: 2; row: 3; }
     }
     $ColorAreaWidget color_top {
-      height-request: "8";
-      margin-bottom: "3";
-      layout { column: "1"; row: "0"; column-span: "3"; }
+      height-request: 20;
+      margin-bottom: 3;
+      layout { column: 1; row: 0; column-span: 3; }
     }
     $ColorAreaWidget color_left {
-      width-request: "6";
-      margin-bottom: "3";
-      layout { column: "1"; row: "0"; row-span: "4"; }
+      width-request: 6;
+      margin-bottom: 3;
+      layout { column: 1; row: 0; row-span: 4; }
     }
     Box highlight_left_box {
       orientation: vertical;
-      layout { column: "0"; row: "0"; row-span: "4";
+      layout { column: 0; row: 0; row-span: 4;
       }
     }
     Box highlight_right_box {
       orientation: vertical;
-      layout { column: "3"; row: "0"; row-span: "4"; }
+      layout { column: 3; row: 0; row-span: 4; }
     }
-
     $FaderButtonsWidget fader_buttons {
-      orientation: "vertical";
+      orientation: vertical;
       layout {
-        column: "2";
-        row: "2";
+        column: 2;
+        row: 2;
       }
     }
     ToggleButton fold_toggle {
