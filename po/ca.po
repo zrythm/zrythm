@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2024-01-10 20:45+0000\n"
+"PO-Revision-Date: 2024-02-12 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -1175,7 +1175,7 @@ msgstr "Error en enganxar pistes"
 #: src/actions/actions.c:1212
 #, c-format
 msgid "invalid clipboard data received: %s"
-msgstr ""
+msgstr "dades del porta-retalls rebudes no vàlides: %s"
 
 #: src/actions/actions.c:1277
 msgid "Can't paste incompatible data"
@@ -2012,7 +2012,7 @@ msgstr "Canvia els símbols del port per a alguns connectors del paquet"
 #: src/actions/mixer_selections_action.c:1266
 #, c-format
 msgid "Change Load Behavior for %s"
-msgstr ""
+msgstr "Canviar el comportament de càrrega per a %s"
 
 #: src/dsp/modulator_track.c:58 src/utils/gtk.c:1023
 #: src/gui/widgets/bot_dock_edge.c:216
@@ -2281,7 +2281,7 @@ msgstr "Posicions no vàlides - s'omet la funció"
 
 #: src/dsp/audio_function.c:553
 msgid "This function can only be used on audio clips with 2 channels"
-msgstr ""
+msgstr "Aquesta funció només es pot utilitzar en clips d'àudio amb 2 canals"
 
 #: src/dsp/audio_function.c:568
 msgid "Failed to get audio clip from external program"
@@ -2457,12 +2457,12 @@ msgstr "Format SNDFILE no vàlid %s: 0x%08X != 0x%08X"
 #: src/dsp/exporter.c:407
 #, c-format
 msgid "Export failed: Error seeking file at %ld"
-msgstr ""
+msgstr "Ha fallat l'exportació: error en cercar el fitxer a %ld"
 
 #: src/dsp/exporter.c:423
 #, c-format
 msgid "Export failed: %ld frames written (expected %d)"
-msgstr ""
+msgstr "Ha fallat l'exportació: %ld fotogrames escrits (s'esperava %d)"
 
 #: src/dsp/exporter.c:515
 #, c-format
@@ -2597,7 +2597,7 @@ msgstr "Valor no vàlid"
 #: src/dsp/automation_point.c:226
 #, c-format
 msgid "Please enter a number between %f and %f"
-msgstr ""
+msgstr "Introdueix un número entre %f i %f"
 
 #: src/dsp/recording_manager.c:136
 msgid "Failed to create recorded regions"
@@ -3319,6 +3319,9 @@ msgid ""
 "variables are supported with the following syntax: ${ENV_VAR_NAME}. Leave "
 "blank to use default paths."
 msgstr ""
+"Els camins de cerca múltiples han d'estar separats pel caràcter %s. Les "
+"variables d'entorn s'admeten amb la sintaxi següent: ${ENV_VAR_NAME}. Deixa-"
+"ho en blanc per a utilitzar els camins predeterminats."
 
 #. add option to reset to factory
 #: src/gui/widgets/preferences.c:687
@@ -4030,11 +4033,11 @@ msgstr "Ranura #%d"
 
 #: src/gui/widgets/channel_slot.c:531
 msgid "Bridged (Full)"
-msgstr ""
+msgstr "En pont (complet)"
 
 #: src/gui/widgets/channel_slot.c:537
 msgid "Bridged (UI)"
-msgstr ""
+msgstr "En pont (IU)"
 
 #: src/gui/widgets/channel_slot.c:584
 msgid "Bypass"
@@ -4047,11 +4050,11 @@ msgstr "Inspeccionar"
 
 #: src/gui/widgets/channel_slot.c:594
 msgid "Bridge UI"
-msgstr ""
+msgstr "Pont IU"
 
 #: src/gui/widgets/channel_slot.c:596
 msgid "Bridge Full"
-msgstr ""
+msgstr "Pont complet"
 
 #: src/gui/widgets/channel_slot.c:598
 #, fuzzy
@@ -4479,7 +4482,7 @@ msgstr "Balanç"
 
 #: src/gui/widgets/balance_control.c:283
 msgid "Please enter a decimal number between -100 and 100"
-msgstr ""
+msgstr "Introdueix un nombre decimal entre -100 i 100"
 
 #: src/gui/widgets/balance_control.c:354
 msgid "Balance Value"
@@ -5672,7 +5675,7 @@ msgstr "Arma les pistes per a gravar en fer clic/seleccionar."
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:72
 msgid "Auto-select"
-msgstr ""
+msgstr "Selecció automàtica"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:75
 #, fuzzy
@@ -6266,7 +6269,7 @@ msgstr "Error en salvar el projecte"
 #: src/project/project_init_flow_manager.c:812
 #, c-format
 msgid "Failed to read JSON: [code: %<PRIu32>, pos: %zu] %s"
-msgstr ""
+msgstr "No s'ha pogut llegir JSON: [codi: %<PRIu32>, pos: %zu] %s"
 
 #: src/project/project_init_flow_manager.c:829
 msgid "Failed to deserialize project YAML"
@@ -7097,7 +7100,7 @@ msgstr "Commutar quadre inferior"
 
 #: resources/gtk/help-overlay.ui:87
 msgid "Focus"
-msgstr ""
+msgstr "Focus"
 
 #: resources/gtk/help-overlay.ui:90
 msgid "Cycle focus"
