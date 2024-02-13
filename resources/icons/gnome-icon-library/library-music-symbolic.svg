@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="16px"
+   viewBox="0 0 16 16"
+   width="16px"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="library-music-symbolic.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="50.5"
+     inkscape:cx="7.990099"
+     inkscape:cy="8"
+     inkscape:window-width="2560"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <filter
+     id="a"
+     height="1"
+     width="1"
+     x="0"
+     y="0">
+    <feColorMatrix
+       color-interpolation-filters="sRGB"
+       values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+       id="feColorMatrix1" />
+  </filter>
+  <mask
+     id="b">
+    <g
+       filter="url(#a)"
+       id="g1">
+      <path
+         d="m -1.6 -1.6 h 19.2 v 19.2 h -19.2 z"
+         fill-opacity="0.5"
+         id="path1" />
+    </g>
+  </mask>
+  <clipPath
+     id="c">
+    <path
+       d="m 0 0 h 1600 v 1200 h -1600 z"
+       id="path2" />
+  </clipPath>
+  <mask
+     id="d">
+    <g
+       filter="url(#a)"
+       id="g3">
+      <path
+         d="m -1.6 -1.6 h 19.2 v 19.2 h -19.2 z"
+         fill-opacity="0.7"
+         id="path3" />
+    </g>
+  </mask>
+  <clipPath
+     id="e">
+    <path
+       d="m 0 0 h 1600 v 1200 h -1600 z"
+       id="path4" />
+  </clipPath>
+  <mask
+     id="f">
+    <g
+       filter="url(#a)"
+       id="g5">
+      <path
+         d="m -1.6 -1.6 h 19.2 v 19.2 h -19.2 z"
+         fill-opacity="0.35"
+         id="path5" />
+    </g>
+  </mask>
+  <clipPath
+     id="g">
+    <path
+       d="m 0 0 h 1600 v 1200 h -1600 z"
+       id="path6" />
+  </clipPath>
+  <path
+     d="m 5 0 c -1.089844 0 -2 0.910156 -2 2 v 9 c 0 1.089844 0.910156 2 2 2 h 9 c 1.089844 0 2 -0.910156 2 -2 v -9 c 0 -1.089844 -0.910156 -2 -2 -2 z m 8 2 v 2 h -2 v 5 c 0 1.105469 -0.894531 2 -2 2 s -2 -0.894531 -2 -2 s 0.894531 -2 2 -2 c 0.351562 0 0.695312 0.09375 1 0.269531 v -5.269531 z m 0 0"
+     fill="#222222"
+     id="path7"
+     style="fill:#f2f2f2" />
+  <path
+     d="m 2 3 c -1.089844 0 -2 0.910156 -2 2 v 9 c 0 1.089844 0.910156 2 2 2 h 9 c 1.089844 0 2 -0.910156 2 -2 h -11 z m 0 0"
+     fill="#222222"
+     id="path8"
+     style="fill:#f2f2f2" />
+  <g
+     mask="url(#b)"
+     id="g10"
+     style="fill:#f2f2f2">
+    <g
+       clip-path="url(#c)"
+       transform="matrix(1 0 0 1 -620 -964)"
+       id="g9"
+       style="fill:#f2f2f2">
+      <path
+         d="m 550 182 c -0.351562 0.003906 -0.695312 0.101562 -1 0.28125 v 3.4375 c 0.304688 0.179688 0.648438 0.277344 1 0.28125 c 1.105469 0 2 -0.894531 2 -2 s -0.894531 -2 -2 -2 z m 0 5 c -0.339844 0 -0.679688 0.058594 -1 0.175781 v 6.824219 h 4 v -4 c 0 -1.65625 -1.34375 -3 -3 -3 z m 0 0"
+         id="path9"
+         style="fill:#f2f2f2" />
+    </g>
+  </g>
+  <g
+     mask="url(#d)"
+     id="g12"
+     style="fill:#f2f2f2">
+    <g
+       clip-path="url(#e)"
+       transform="matrix(1 0 0 1 -620 -964)"
+       id="g11"
+       style="fill:#f2f2f2">
+      <path
+         d="m 569 182 v 4 c 1.105469 0 2 -0.894531 2 -2 s -0.894531 -2 -2 -2 z m 0 5 v 7 h 3 v -4 c 0 -1.65625 -1.34375 -3 -3 -3 z m 0 0"
+         id="path10"
+         style="fill:#f2f2f2" />
+    </g>
+  </g>
+  <g
+     mask="url(#f)"
+     id="g14"
+     style="fill:#f2f2f2">
+    <g
+       clip-path="url(#g)"
+       transform="matrix(1 0 0 1 -620 -964)"
+       id="g13"
+       style="fill:#f2f2f2">
+      <path
+         d="m 573 182.269531 v 3.449219 c 0.613281 -0.355469 0.996094 -1.007812 1 -1.71875 c 0 -0.714844 -0.382812 -1.375 -1 -1.730469 z m 0 4.90625 v 6.824219 h 2 v -4 c 0 -1.269531 -0.800781 -2.402344 -2 -2.824219 z m 0 0"
+         id="path12"
+         style="fill:#f2f2f2" />
+    </g>
+  </g>
+</svg>
