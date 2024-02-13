@@ -8,13 +8,14 @@
 # Seio Inoue <sei0okun@gmail.com>, 2022.
 # KokiOgawa <mupimupicandy@gmail.com>, 2022.
 # Artemy Fedotov <catlovescpp@gmail.com>, 2023.
+# Lighthigh57 <shuntan125@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2023-08-10 20:45+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2024-02-05 20:45+0000\n"
+"Last-Translator: Lighthigh57 <shuntan125@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -99,14 +100,12 @@ msgid "Folder"
 msgstr "フォルダ"
 
 #: inc/dsp/snap_grid.h:52
-#, fuzzy
 msgid "bar"
-msgstr "1バー"
+msgstr "小節"
 
 #: inc/dsp/snap_grid.h:53
-#, fuzzy
 msgid "beat"
-msgstr "ユーロビート"
+msgstr "拍"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"
@@ -790,7 +789,7 @@ msgstr "%s がクラッシュしました。 "
 
 #: src/zrythm_app.c:210
 msgid "Failed fetching the latest release version"
-msgstr ""
+msgstr "最新バージョンの取得に失敗しました。"
 
 #: src/zrythm_app.c:223
 #, fuzzy
@@ -987,9 +986,9 @@ msgid "Run %s, optionally passing a project file."
 msgstr "%sを実行し、オプションでプロジェクトファイルを渡します。"
 
 #: src/zrythm_app.c:1581
-#, c-format
+#, c-format, fuzzy
 msgid "This version of Zrythm does not support creating more than %d tracks."
-msgstr ""
+msgstr "Zrythm のこのバージョンでは、%d 以上のトラックの作成をサポートしていません."
 
 #: src/actions/range_action.c:673 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -1861,14 +1860,14 @@ msgid "Unpin %d Tracks"
 msgstr "%dトラックの固定を解除 (Unpin)"
 
 #: src/actions/transport_action.c:259
-#, c-format
+#, c-format, fuzzy
 msgid "Change BPM from %.2f to %.2f"
-msgstr ""
+msgstr "BPMを%.2fから%.2fに変更"
 
 #: src/actions/transport_action.c:262
-#, c-format
+#, c-format, fuzzy
 msgid "Change beats per bar from %d to %d"
-msgstr ""
+msgstr "一小節当たり%d拍から%d拍に変更"
 
 #: src/actions/transport_action.c:266
 #, c-format
