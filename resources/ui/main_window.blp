@@ -6,6 +6,8 @@ template $MainWindowWidget : Adw.ApplicationWindow {
   destroy => $on_main_window_destroy();
   content:
   Adw.ToolbarView {
+    top-bar-style: raised;
+
     [top]
     Adw.HeaderBar {
       styles [
