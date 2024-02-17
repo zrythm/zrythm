@@ -48,6 +48,18 @@ Zrythm executable.
   .. warning:: This will clear ALL your user
     settings.
 
+.. cmdoption:: --audio-backend=BACKEND
+
+  Override the audio backend to use.
+
+  BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl
+
+.. cmdoption:: --midi-backend=BACKEND
+
+  Override the MIDI backend to use.
+
+  BACKEND is one of: dummy, rtmidi, windows_mme
+
 .. cmdoption:: -v, --version
 
   Print version information.
