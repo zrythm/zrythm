@@ -32,17 +32,39 @@ on_cancel_clicked (GtkButton * btn, BounceDialogWidget * self)
 }
 
 static void
+progress_close_cb (ExportData * data)
+{
+  g_thread_join (data->thread);
+
+  exporter_post_export (data->info, data->conns, data->state);
+
+  BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (data->parent_owner);
+
+  ProgressInfo * pinfo = data->info->progress_info;
+  if (
+    !self->bounce_to_file
+    && progress_info_get_completion_type (pinfo) == PROGRESS_COMPLETED_SUCCESS)
+    {
+      /* create audio track with bounced material */
+      exporter_create_audio_track_after_bounce (data->info, &self->start_pos);
+    }
+
+  gtk_window_close (GTK_WINDOW (self));
+}
+
+static void
 on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
 {
-  ExportSettings * settings = export_settings_new ();
+  ExportSettings * info = export_settings_new ();
+  ExportData *     data = export_data_new (GTK_WIDGET (self), info);
 
   switch (self->type)
     {
     case BOUNCE_DIALOG_REGIONS:
-      settings->mode = EXPORT_MODE_REGIONS;
+      data->info->mode = EXPORT_MODE_REGIONS;
       break;
     case BOUNCE_DIALOG_TRACKS:
-      settings->mode = EXPORT_MODE_TRACKS;
+      data->info->mode = EXPORT_MODE_TRACKS;
       break;
     }
 
@@ -54,64 +76,45 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
   else
     {
       export_settings_set_bounce_defaults (
-        settings, EXPORT_FORMAT_WAV, NULL, self->bounce_name);
+        data->info, EXPORT_FORMAT_WAV, NULL, self->bounce_name);
     }
 
-  Position start_pos;
-  position_init (&start_pos);
+  position_init (&self->start_pos);
   switch (self->type)
     {
     case BOUNCE_DIALOG_REGIONS:
       timeline_selections_mark_for_bounce (
-        TL_SELECTIONS, settings->bounce_with_parents);
-      settings->mode = EXPORT_MODE_REGIONS;
+        TL_SELECTIONS, data->info->bounce_with_parents);
+      data->info->mode = EXPORT_MODE_REGIONS;
       arranger_selections_get_start_pos (
-        (ArrangerSelections *) TL_SELECTIONS, &start_pos, F_GLOBAL);
+        (ArrangerSelections *) TL_SELECTIONS, &self->start_pos, F_GLOBAL);
       break;
     case BOUNCE_DIALOG_TRACKS:
       {
         tracklist_selections_mark_for_bounce (
-          TRACKLIST_SELECTIONS, settings->bounce_with_parents, F_NO_MARK_MASTER);
-        settings->mode = EXPORT_MODE_TRACKS;
+          TRACKLIST_SELECTIONS, data->info->bounce_with_parents,
+          F_NO_MARK_MASTER);
+        data->info->mode = EXPORT_MODE_TRACKS;
 
         /* start at start marker */
         Marker *         m = marker_track_get_start_marker (P_MARKER_TRACK);
         ArrangerObject * m_obj = (ArrangerObject *) m;
-        position_set_to_pos (&start_pos, &m_obj->pos);
+        position_set_to_pos (&self->start_pos, &m_obj->pos);
       }
       break;
     }
 
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+  data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
 
   /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
+  data->thread = g_thread_new (
+    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, data->info);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
-    export_progress_dialog_widget_new (settings, true, false, F_CANCELABLE);
-  gtk_window_set_transient_for (GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
-  z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
-
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
-
-  ProgressInfo * pinfo = settings->progress_info;
-
-  if (
-    !self->bounce_to_file
-    && progress_info_get_completion_type (pinfo) == PROGRESS_COMPLETED_SUCCESS)
-    {
-      /* create audio track with bounced material */
-      exporter_create_audio_track_after_bounce (settings, &start_pos);
-    }
-
-  object_free_w_func_and_null (export_settings_free, settings);
-
-  gtk_window_close (GTK_WINDOW (self));
+    export_progress_dialog_widget_new (
+      data, true, progress_close_cb, false, F_CANCELABLE);
+  adw_dialog_present (ADW_DIALOG (progress_dialog), GTK_WIDGET (self));
 }
 
 static void

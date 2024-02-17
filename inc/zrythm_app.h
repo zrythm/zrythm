@@ -219,10 +219,7 @@ zrythm_app_get_primary_accel_for_action (
  * To be used to exit Zrythm using the "response" signal on a message dialog.
  */
 void
-zrythm_exit_response_callback (
-  AdwMessageDialog * self,
-  gchar *            response,
-  gpointer           user_data);
+zrythm_exit_response_callback (AdwDialog * dialog, gpointer user_data);
 
 /**
  * @}

@@ -100,9 +100,7 @@ template $GreeterWidget : Adw.Window {
               Gtk.Button config_ok_btn {
                 label: _("_Continue");
                 use-underline: true;
-                styles [
-                  "suggested-action",
-                ]
+                styles [ "suggested-action", ]
               }
               [end]
               Gtk.Button config_reset_btn {
@@ -168,6 +166,7 @@ template $GreeterWidget : Adw.Window {
             maximum-size: 450;
             Gtk.ProgressBar progress_bar {
               show-text: true;
+              ellipsize: end;
               margin-start: 36;
               margin-end: 36;
             }

@@ -4051,8 +4051,6 @@ on_drag_end_audio (ArrangerWidget * self)
 NONNULL static void
 on_drag_end_timeline (ArrangerWidget * self)
 {
-  g_debug ("drag end timeline starting...");
-
   ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 

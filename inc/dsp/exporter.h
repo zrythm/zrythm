@@ -136,8 +136,7 @@ bounce_step_to_str (BounceStep bounce_step)
 }
 
 /**
- * Export settings to be passed to the exporter
- * to use.
+ * Export settings to be passed to the exporter to use.
  */
 typedef struct ExportSettings
 {

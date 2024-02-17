@@ -1,39 +1,18 @@
 using Gtk 4.0;
+using Adw 1;
 
-template $GenericProgressDialogWidget : Gtk.Dialog {
-  modal: true;
-  deletable: false;
-  [internal-child content_area]
-  Gtk.Box {
-    orientation: vertical;
-    spacing: 2;
-    Gtk.Box {
-      margin-start: 2;
-      margin-end: 2;
-      orientation: vertical;
-      spacing: 3;
-      Gtk.Label label { }
-      Gtk.ProgressBar progress_bar {
-        show-text: true;
-      }
-    }
-  }
-  [internal-child action_area]
-  Gtk.Box action_btn_box {
-    valign: center;
-    Gtk.Button ok {
-      visible: false;
-      label: _("OK");
-      focusable: true;
-      receives-default: true;
-      clicked => $on_ok_clicked();
-    }
-    Gtk.Button cannncel {
-      visible: false;
-      label: _("Cancel");
-      focusable: true;
-      receives-default: true;
-      clicked => $on_cancel_clicked();
-    }
-  }
+template $GenericProgressDialogWidget : Adw.AlertDialog {
+  can-close: false;
+  heading: _("Progress");
+  default-response: "ok";
+  close-response: "cancel";
+  response => $on_response_cb() after;
+  extra-child:
+  Gtk.ProgressBar progress_bar {
+    show-text: true;
+  };
+  responses [
+    cancel: _("_Cancel") disabled,
+    ok: _("_OK") disabled,
+  ]
 }

@@ -5,7 +5,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: files ('VERSION.txt'),
   license: 'AGPL-3-or-later',
-  meson_version: '>= 0.57.0',
+  meson_version: '>= 0.58.0',
   default_options: [
     # 1: -Wall
     # 2: -Wall -Wextra
@@ -75,7 +75,6 @@ iwyu_tool = find_program ('iwyu_tool', 'iwyu-tool', required: false)
 faust2lv2 = find_program ('faust2lv2', required: false)
 sox = find_program ('sox', required: false)
 tidy_bin = find_program ('tidy', required: false)
-blueprint_compiler = find_program ('blueprint-compiler')
 
 # --- Set common variables ---
 

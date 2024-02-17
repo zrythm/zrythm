@@ -151,10 +151,14 @@ segv_handler (int sig)
         {
           char str[500];
           sprintf (str, _ ("%s has crashed. "), PROGRAM_NAME);
-          zrythm_app->bug_report_dialog =
-            bug_report_dialog_new (GTK_WINDOW (MAIN_WINDOW), str, bt, true);
+          GtkWindow * win =
+            gtk_application_get_active_window (GTK_APPLICATION (zrythm_app));
+          zrythm_app->bug_report_dialog = bug_report_dialog_new (
+            win ? GTK_WIDGET (win) : NULL, str, bt, true);
 
-          gtk_window_present (GTK_WINDOW (zrythm_app->bug_report_dialog));
+          adw_dialog_present (
+            ADW_DIALOG (zrythm_app->bug_report_dialog),
+            win ? GTK_WIDGET (win) : NULL);
         }
 
       return;
@@ -1507,10 +1511,7 @@ zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
 }
 
 void
-zrythm_exit_response_callback (
-  AdwMessageDialog * self,
-  gchar *            response,
-  gpointer           user_data)
+zrythm_exit_response_callback (AdwDialog * dialog, gpointer user_data)
 {
   exit (EXIT_SUCCESS);
 }

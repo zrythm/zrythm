@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -16,6 +16,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -29,10 +30,30 @@ G_DEFINE_TYPE (
   export_progress_dialog_widget,
   GENERIC_PROGRESS_DIALOG_WIDGET_TYPE)
 
-static void
-on_open_directory_clicked (GtkButton * btn, ExportProgressDialogWidget * self)
+ExportData *
+export_data_new (GtkWidget * parent_owner, ExportSettings * info)
 {
-  char * dir = io_get_dir (self->info->file_uri);
+  ExportData * data = object_new (ExportData);
+  data->info = info;
+  data->parent_owner = parent_owner;
+  data->state = object_new (EngineState);
+  return data;
+}
+
+static void
+export_data_free (ExportData * data)
+{
+  object_zero_and_free (data->state);
+  object_free_w_func_and_null (g_ptr_array_unref, data->tracks);
+  object_free_w_func_and_null (export_settings_free, data->info);
+  ;
+  object_zero_and_free (data);
+}
+
+static void
+on_open_directory_clicked (ExportProgressDialogWidget * self)
+{
+  char * dir = io_get_dir (self->data->info->file_uri);
   io_open_directory (dir);
   g_free (dir);
 }
@@ -42,10 +63,11 @@ on_open_directory_clicked (GtkButton * btn, ExportProgressDialogWidget * self)
  */
 ExportProgressDialogWidget *
 export_progress_dialog_widget_new (
-  ExportSettings * info,
-  bool             autoclose,
-  bool             show_open_dir_btn,
-  bool             cancelable)
+  ExportData *                      data,
+  bool                              autoclose,
+  ExportProgressDialogCloseCallback close_callback,
+  bool                              show_open_dir_btn,
+  bool                              cancelable)
 {
   g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
@@ -55,35 +77,44 @@ export_progress_dialog_widget_new (
   GenericProgressDialogWidget * generic_progress_dialog =
     Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
-  self->info = info;
+  self->data = data;
 
+  char * basename = g_path_get_basename (data->info->file_uri);
+  char * exporting_msg = g_strdup_printf (_ ("Exporting %s"), basename);
+  g_free_and_null (basename);
   generic_progress_dialog_widget_setup (
-    generic_progress_dialog, _ ("Export Progress"), info->progress_info,
-    _ ("Exporting..."), autoclose, cancelable);
+    generic_progress_dialog, _ ("Export Progress"), data->info->progress_info,
+    exporting_msg, autoclose, (GenericCallback) close_callback, self->data,
+    cancelable);
+  g_free_and_null (exporting_msg);
 
   self->show_open_dir_btn = show_open_dir_btn;
 
   if (show_open_dir_btn)
     {
-      self->open_directory =
-        GTK_BUTTON (gtk_button_new_with_label (_ ("Open Directory")));
-      gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->open_directory), _ ("Opens the containing directory"));
-      g_signal_connect (
-        G_OBJECT (self->open_directory), "clicked",
-        G_CALLBACK (on_open_directory_clicked), self);
-
-      generic_progress_dialog_add_button (
-        generic_progress_dialog, self->open_directory, true, true);
+      generic_progress_dialog_add_response (
+        generic_progress_dialog, "open-directory", _ ("Open Directory"),
+        (GenericCallback) on_open_directory_clicked, self, true);
     }
 
   return self;
 }
 
 static void
+export_progress_dialog_finalize (ExportProgressDialogWidget * self)
+{
+  object_free_w_func_and_null (export_data_free, self->data);
+
+  G_OBJECT_CLASS (export_progress_dialog_widget_parent_class)
+    ->finalize (G_OBJECT (self));
+}
+
+static void
 export_progress_dialog_widget_class_init (
   ExportProgressDialogWidgetClass * _klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize = (GObjectFinalizeFunc) export_progress_dialog_finalize;
 }
 
 static void

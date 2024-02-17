@@ -790,10 +790,13 @@ log_idle_cb (Log * self)
             {
               char msg[500];
               sprintf (msg, _ ("%s has encountered an error\n"), PROGRAM_NAME);
+              GtkWindow * win = gtk_application_get_active_window (
+                GTK_APPLICATION (zrythm_app));
               zrythm_app->bug_report_dialog = bug_report_dialog_new (
-                MAIN_WINDOW ? GTK_WINDOW (MAIN_WINDOW) : NULL, msg,
-                ev->backtrace, false);
-              gtk_window_present (GTK_WINDOW (zrythm_app->bug_report_dialog));
+                win ? GTK_WIDGET (win) : NULL, msg, ev->backtrace, false);
+              adw_dialog_present (
+                ADW_DIALOG (zrythm_app->bug_report_dialog),
+                win ? GTK_WIDGET (win) : NULL);
             }
 
           /* write the backtrace to the log after

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/main_window.c"
@@ -8,13 +8,13 @@
 
 #include <glib/gi18n.h>
 
-GtkWindow *
+AdwDialog *
 error_handle_prv (GError * err, const char * format, ...)
 {
   va_list args;
   va_start (args, format);
 
-  GtkWindow * win = NULL;
+  AdwDialog * win = NULL;
   if (err)
     {
       char * tmp = g_strdup_vprintf (format, args);

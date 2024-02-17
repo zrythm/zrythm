@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -129,9 +129,9 @@ ui_set_pointer_cursor (GtkWidget * widget)
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-select", 3, 1);
 }
 
-GtkWindow *
+AdwDialog *
 ui_show_message_full (
-  GtkWindow *  parent_window,
+  GtkWidget *  parent,
   const char * title,
   const char * format,
   ...)
@@ -155,17 +155,18 @@ ui_show_message_full (
   g_message ("%s: %s", title, buf);
 
   /* if have UI, also show a message dialog */
-  GtkWindow * win = NULL;
+  AdwDialog * win = NULL;
   if (ZRYTHM_HAVE_UI)
     {
       AdwAlertDialog * dialog =
         ADW_ALERT_DIALOG (adw_alert_dialog_new (title, buf));
       adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), NULL);
       adw_alert_dialog_set_default_response (dialog, "ok");
+      adw_alert_dialog_set_response_appearance (
+        dialog, "ok", ADW_RESPONSE_SUGGESTED);
       adw_alert_dialog_set_close_response (dialog, "ok");
-      adw_alert_dialog_choose (
-        dialog, parent_window ? GTK_WIDGET (parent_window) : NULL, NULL, NULL,
-        NULL);
+      adw_dialog_present (ADW_DIALOG (dialog), parent);
+      win = ADW_DIALOG (dialog);
     }
 
   free (buf);

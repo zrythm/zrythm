@@ -60,6 +60,8 @@ typedef struct _BounceDialogWidget
    * audio track (TODO, or make it a gsetting). */
   int bounce_to_file;
 
+  Position start_pos;
+
   char * bounce_name;
 } BounceDialogWidget;
 
