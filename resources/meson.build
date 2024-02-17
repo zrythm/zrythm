@@ -1,12 +1,13 @@
 # SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-blp_files = files ([
+blp_filenames = [
   'ui/chord_selector_window.blp',
   'ui/project_scale_popover.blp',
   'ui/audio_editor_space.blp',
   'ui/automation_editor_space.blp',
   'ui/active_hardware_popover.blp',
+  'ui/bug_report_dialog.blp',
   'ui/main_window.blp',
   'ui/cc-list-row-info-button.blp',
   'ui/chord_editor_space.blp',
@@ -66,25 +67,24 @@ blp_files = files ([
   'ui/file_browser_filters.blp',
   'gtk/menus.blp',
   'gtk/help-overlay.blp',
-  ])
+  ]
 
-blueprints = custom_target ('blueprints',
-  input: blp_files,
-  output: '.',
-  command: [blueprint_compiler, 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
-)
+ui_files = []
+foreach blp : blp_filenames
+  ui_files += files (blp.replace ('.blp', '.ui'))
+endforeach
 
 zrythm_gresources_xml = custom_target (
   'zrythm-gresources-xml',
   output: 'zrythm.gresources.xml',
   input: gen_gtk_resources_xml_wrap,
-  depend_files: [ gen_gtk_resources_xml_wrap ],
-  depends: [ appdata_file, blueprints, ],
+  depend_files: [ gen_gtk_resources_xml_wrap, ui_files ],
+  depends: [ appdata_file, ],
   command: [
     bash, '-c', '@INPUT@' + ' "$1" "$2" "$3" "$4"',
     '_ignored',
     meson.current_source_dir(),
-    meson.current_build_dir(),
+    meson.current_source_dir(),
     appdata_file.full_path(),
     meson.current_build_dir() / 'zrythm.gresources.xml'
     ])
@@ -92,7 +92,7 @@ zrythm_gresources_xml = custom_target (
 zrythm_resources = gnome.compile_resources (
   'zrythm-resources',
   zrythm_gresources_xml,
-  dependencies: [ appdata_file, blueprints, ],
+  dependencies: [ appdata_file, ui_files, ],
   source_dir: [ meson.current_source_dir (), meson.current_build_dir (), ],
   c_name: 'zrythm',
 )

@@ -1236,7 +1236,12 @@ z_gtk_generate_screenshot_image (
     gtk_widget_get_width (GTK_WIDGET (widget)),
     gtk_widget_get_height (GTK_WIDGET (widget)));
   GskRenderNode * node = gtk_snapshot_free_to_node (snapshot);
-  GskRenderer *   renderer = gsk_renderer_new_for_surface (
+  if (!node)
+    {
+      g_warning ("Failed to create node for snapshot %p", snapshot);
+      return;
+    }
+  GskRenderer * renderer = gsk_renderer_new_for_surface (
     z_gtk_widget_get_surface (GTK_WIDGET (MAIN_WINDOW)));
   g_return_if_fail (renderer);
   GdkTexture * texture = gsk_renderer_render_texture (renderer, node, NULL);

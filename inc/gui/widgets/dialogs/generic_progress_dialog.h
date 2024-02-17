@@ -12,7 +12,7 @@
 
 #include <stdbool.h>
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #define GENERIC_PROGRESS_DIALOG_WIDGET_TYPE \
   (generic_progress_dialog_widget_get_type ())
@@ -21,7 +21,7 @@ G_DECLARE_DERIVABLE_TYPE (
   generic_progress_dialog_widget,
   Z,
   GENERIC_PROGRESS_DIALOG_WIDGET,
-  GtkDialog)
+  AdwAlertDialog)
 
 typedef struct ProgressInfo ProgressInfo;
 
@@ -33,12 +33,18 @@ typedef struct ProgressInfo ProgressInfo;
 
 typedef struct GenericProgressDialogButton
 {
-  GtkButton * btn;
+  char response[200];
 
   /**
    * Only show the button when the action is finished.
    */
   bool only_on_finish;
+
+  /** Callback when this response is made. */
+  GenericCallback cb;
+
+  /** Callback object. */
+  void * cb_obj;
 } GenericProgressDialogButton;
 
 /**
@@ -46,16 +52,10 @@ typedef struct GenericProgressDialogButton
  */
 typedef struct
 {
-  GtkLabel *       label;
   GtkProgressBar * progress_bar;
-  GtkButton *      ok;
-  GtkButton *      cancel;
-
-  GtkBox * action_btn_box;
 
   /**
-   * Whether to automatically close the progress
-   * dialog when finished.
+   * Whether to automatically close the progress dialog when finished.
    *
    * This will hide the OK button.
    */
@@ -76,15 +76,18 @@ typedef struct
   GenericProgressDialogButton extra_buttons[10];
   size_t                      num_extra_buttons;
 
+  /** Optional callback when autoclose is requested. */
+  GenericCallback close_cb;
+
+  /** Callback object. */
+  void * close_cb_obj;
+
 } GenericProgressDialogWidgetPrivate;
 
 typedef struct _GenericProgressDialogWidgetClass
 {
-  GtkDialogClass parent_class;
+  AdwAlertDialogClass parent_class;
 } GenericProgressDialogWidgetClass;
-
-GenericProgressDialogWidget *
-generic_progress_dialog_widget_new (void);
 
 /**
  * Sets up a progress dialog widget.
@@ -96,21 +99,24 @@ generic_progress_dialog_widget_setup (
   ProgressInfo *                progress_info,
   const char *                  initial_label,
   bool                          autoclose,
+  GenericCallback               close_callback,
+  void *                        close_callback_object,
   bool                          cancelable);
 
 /**
- * Adds a button at the start or end of the button box.
- *
- * @param start Whether to add the button at the
- *   start of the button box, otherwise the button
- *   will be added at the end.
+ * Adds a response to the dialog.
  */
 void
-generic_progress_dialog_add_button (
+generic_progress_dialog_add_response (
   GenericProgressDialogWidget * self,
-  GtkButton *                   btn,
-  bool                          start,
+  const char *                  response,
+  const char *                  response_label,
+  GenericCallback               callback,
+  void *                        callback_object,
   bool                          only_on_finish);
+
+GenericProgressDialogWidget *
+generic_progress_dialog_widget_new (void);
 
 /**
  * @}

@@ -26,7 +26,10 @@
 
 #include <yyjson.h>
 
-G_DEFINE_TYPE (BugReportDialogWidget, bug_report_dialog_widget, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (
+  BugReportDialogWidget,
+  bug_report_dialog_widget,
+  ADW_TYPE_ALERT_DIALOG)
 
 #define GITLAB_RESPONSE 450
 #define EMAIL_RESPONSE 451
@@ -40,9 +43,14 @@ validate_input (BugReportDialogWidget * self)
   if (string_is_empty (steps_to_reproduce))
     {
       g_free_and_null (steps_to_reproduce);
-      GtkAlertDialog * dialog = GTK_ALERT_DIALOG (
-        gtk_alert_dialog_new ("%s", _ ("Please enter more details")));
-      gtk_alert_dialog_show (dialog, GTK_WINDOW (self));
+      AdwAlertDialog * dialog = ADW_ALERT_DIALOG (adw_alert_dialog_new (
+        _ ("Need More Info"), _ ("Please enter more details")));
+      adw_alert_dialog_add_responses (
+        ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+      adw_alert_dialog_set_default_response (ADW_ALERT_DIALOG (dialog), "ok");
+      adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "ok");
+
+      adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (self));
       return false;
     }
 
@@ -119,22 +127,38 @@ get_json_string (BugReportDialogWidget * self)
 
 typedef struct AutomaticReportData
 {
-  const char *   json;
-  const char *   screenshot_path;
-  const char *   log_file_path;
-  ProgressInfo * progress_nfo;
+  ProgressInfo *          progress_nfo;
+  BugReportDialogWidget * self;
+  GThread *               thread;
 } AutomaticReportData;
+
+static AutomaticReportData *
+automatic_report_data_new (BugReportDialogWidget * self)
+{
+  AutomaticReportData * data = object_new (AutomaticReportData);
+  data->progress_nfo = progress_info_new ();
+  data->self = self;
+  return data;
+}
+
+static void
+automatic_report_data_free (AutomaticReportData * data)
+{
+  object_free_w_func_and_null (progress_info_free, data->progress_nfo);
+  object_zero_and_free (data);
+}
 
 static void *
 send_data (AutomaticReportData * data)
 {
-  GError * err = NULL;
-  int      ret = z_curl_post_json_no_auth (
-    BUG_REPORT_API_ENDPOINT, data->json, 7, &err,
+  BugReportDialogWidget * self = data->self;
+  GError *                err = NULL;
+  int                     ret = z_curl_post_json_no_auth (
+    BUG_REPORT_API_ENDPOINT, self->json_str, 7, &err,
     /* screenshot */
-    "screenshot", data->screenshot_path, "image/jpeg",
+    "screenshot", self->screenshot_path, "image/jpeg",
     /* log */
-    "log_file", data->log_file_path, "application/zstd", NULL);
+    "log_file", self->log_file_path, "application/zstd", NULL);
   if (ret != 0)
     {
       progress_info_mark_completed (
@@ -149,22 +173,104 @@ send_data (AutomaticReportData * data)
 }
 
 static void
+send_data_ready_cb (
+  GObject *             source_object,
+  GAsyncResult *        res,
+  AutomaticReportData * data)
+{
+  adw_alert_dialog_choose_finish (ADW_ALERT_DIALOG (source_object), res);
+
+  g_thread_join (data->thread);
+
+  BugReportDialogWidget * self = data->self;
+
+  if (
+    progress_info_get_completion_type (data->progress_nfo)
+    == PROGRESS_COMPLETED_SUCCESS)
+    {
+      adw_alert_dialog_set_response_enabled (
+        ADW_ALERT_DIALOG (self), "automatic", false);
+    }
+
+  if (self->log_file_path)
+    {
+      io_remove (self->log_file_path);
+      g_free_and_null (self->log_file_path);
+    }
+  if (self->log_file_tmpdir)
+    {
+      io_rmdir (self->log_file_tmpdir, Z_F_NO_FORCE);
+      g_free_and_null (self->log_file_tmpdir);
+    }
+  if (self->screenshot_path)
+    {
+      io_remove (self->screenshot_path);
+      g_free_and_null (self->screenshot_path);
+    }
+  if (self->screenshot_tmpdir)
+    {
+      io_rmdir (self->screenshot_tmpdir, Z_F_NO_FORCE);
+      g_free_and_null (self->screenshot_tmpdir);
+    }
+
+  automatic_report_data_free (data);
+
+  g_free_and_null (self->json_str);
+
+  adw_dialog_force_close (ADW_DIALOG (self));
+}
+
+static void
+on_send_automatically_response (
+  AdwAlertDialog *        dialog,
+  char *                  response,
+  BugReportDialogWidget * self)
+{
+  if (!string_is_equal (response, "ok"))
+    return;
+
+  char message[6000];
+  strcpy (message, _ ("Sending"));
+
+  AutomaticReportData * data = automatic_report_data_new (self);
+  /*strcpy (data.progress_nfo.label_str, _ ("Sending data..."));*/
+  /*strcpy (data.progress_nfo.label_done_str, _ ("Done"));*/
+  /*strcpy (data.progress_nfo.error_str, _ ("Failed"));*/
+  GenericProgressDialogWidget * progress_dialog =
+    generic_progress_dialog_widget_new ();
+  generic_progress_dialog_widget_setup (
+    progress_dialog, _ ("Sending..."), data->progress_nfo,
+    _ ("Sending data..."), true, NULL, NULL, false);
+
+  /* start sending in a new thread */
+  data->thread =
+    g_thread_new ("send_data_thread", (GThreadFunc) send_data, data);
+
+  /* run dialog */
+  adw_alert_dialog_choose (
+    ADW_ALERT_DIALOG (progress_dialog), GTK_WIDGET (self), NULL,
+    (GAsyncReadyCallback) send_data_ready_cb, data);
+}
+
+static void
 on_preview_and_send_automatically_response (BugReportDialogWidget * self)
 {
   if (!validate_input (self))
     return;
 
   /* create new dialog */
-  GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget *    dialog = gtk_dialog_new_with_buttons (
-    _ ("Send Automatically"), GTK_WINDOW (self), flags, _ ("_OK"),
-    GTK_RESPONSE_OK, _ ("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
+  AdwAlertDialog * dialog =
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send Automatically"), NULL));
+  adw_alert_dialog_add_responses (
+    ADW_ALERT_DIALOG (dialog), "cancel", _ ("_Cancel"), "ok", _ ("_OK"), NULL);
+  adw_alert_dialog_set_response_appearance (
+    dialog, "ok", ADW_RESPONSE_SUGGESTED);
+  adw_alert_dialog_set_default_response (dialog, "ok");
 
-  GtkWidget * content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  GtkGrid *   grid = GTK_GRID (gtk_grid_new ());
+  GtkGrid * grid = GTK_GRID (gtk_grid_new ());
   z_gtk_widget_set_margin (GTK_WIDGET (grid), 4);
   gtk_grid_set_row_spacing (grid, 2);
-  gtk_box_append (GTK_BOX (content_area), GTK_WIDGET (grid));
+  adw_alert_dialog_set_extra_child (dialog, GTK_WIDGET (grid));
 
   /* set top text */
   char * atag = g_strdup_printf ("<a href=\"%s\">", PRIVACY_POLICY_URL);
@@ -184,7 +290,7 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   GtkWidget * json_heading = gtk_label_new ("");
   gtk_label_set_markup (GTK_LABEL (json_heading), _ ("<b>Data</b>"));
   gtk_grid_attach (grid, json_heading, 0, 1, 1, 1);
-  char *      json_str = get_json_string (self);
+  self->json_str = get_json_string (self);
   GtkWidget * json_label = gtk_source_view_new ();
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (json_label), GTK_WRAP_WORD_CHAR);
   gtk_text_view_set_editable (GTK_TEXT_VIEW (json_label), false);
@@ -194,7 +300,7 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   GtkSourceLanguage *        lang =
     gtk_source_language_manager_get_language (manager, "json");
   gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (json_label_buf), lang);
-  gtk_text_buffer_set_text (json_label_buf, json_str, -1);
+  gtk_text_buffer_set_text (json_label_buf, self->json_str, -1);
   GtkSourceStyleSchemeManager * style_mgr =
     gtk_source_style_scheme_manager_get_default ();
   gtk_source_style_scheme_manager_prepend_search_path (
@@ -220,14 +326,14 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   GtkWidget * log_file_heading = gtk_label_new ("");
   gtk_label_set_markup (GTK_LABEL (log_file_heading), _ ("<b>Log file</b>"));
   gtk_grid_attach (grid, log_file_heading, 0, 3, 1, 1);
-  char * log_file_tmpdir = NULL;
-  char * log_file_path = NULL;
+  self->log_file_tmpdir = NULL;
+  self->log_file_path = NULL;
   if (LOG && LOG->log_filepath)
     {
       /* create a zstd-compressed log file */
       GError * err = NULL;
       bool     ret = log_generate_compressed_file (
-        LOG, &log_file_tmpdir, &log_file_path, &err);
+        LOG, &self->log_file_tmpdir, &self->log_file_path, &err);
       if (!ret)
         {
           g_warning (
@@ -238,10 +344,11 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
         }
     }
   GtkWidget * log_file_path_lbl = gtk_label_new (NULL);
-  if (log_file_path)
+  if (self->log_file_path)
     {
       char * str = g_strdup_printf (
-        "<a href=\"file://%s\">%s</a>", log_file_path, log_file_path);
+        "<a href=\"file://%s\">%s</a>", self->log_file_path,
+        self->log_file_path);
       gtk_label_set_markup (GTK_LABEL (log_file_path_lbl), str);
       g_free (str);
     }
@@ -251,108 +358,35 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   GtkWidget * screenshot_heading = gtk_label_new ("");
   gtk_label_set_markup (GTK_LABEL (screenshot_heading), _ ("<b>Screenshot</b>"));
   gtk_grid_attach (grid, screenshot_heading, 0, 5, 1, 1);
-  char * screenshot_tmpdir = NULL;
-  char * screenshot_path = NULL;
-  if (MAIN_WINDOW)
-    {
-      const char * option_keys[] = {
-        "quality",
-        NULL,
-      };
-      const char * option_vals[] = {
-        "30",
-        NULL,
-      };
-      z_gtk_generate_screenshot_image (
-        GTK_WIDGET (MAIN_WINDOW), "jpeg", (char **) option_keys,
-        (char **) option_vals, &screenshot_tmpdir, &screenshot_path, true);
-    }
   GtkWidget * img = gtk_image_new ();
-  if (screenshot_path)
+  if (self->screenshot_path)
     {
       GError *    err = NULL;
       GdkPixbuf * pixbuf = gdk_pixbuf_new_from_file_at_scale (
-        screenshot_path, 580, 360, true, &err);
+        self->screenshot_path, 580, 360, true, &err);
       gtk_widget_set_size_request (GTK_WIDGET (img), 580, 360);
       if (pixbuf)
         {
-          gtk_image_set_from_pixbuf (GTK_IMAGE (img), pixbuf);
+          GdkTexture * texture = gdk_texture_new_for_pixbuf (pixbuf);
+          gtk_image_set_from_paintable (
+            GTK_IMAGE (img), GDK_PAINTABLE (texture));
           g_object_unref (pixbuf);
+          g_object_unref (texture);
         }
       else
         {
           g_warning (
-            "could not get pixbuf from %s: %s", screenshot_path, err->message);
+            "could not get pixbuf from %s: %s", self->screenshot_path,
+            err->message);
         }
     }
   gtk_grid_attach (grid, img, 0, 6, 1, 1);
 
   /* run the dialog */
-  int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-
-  if (ret != GTK_RESPONSE_OK)
-    return;
-
-  char message[6000];
-  strcpy (message, _ ("Sending"));
-
-  AutomaticReportData data;
-  memset (&data, 0, sizeof (AutomaticReportData));
-  data.json = json_str;
-  data.screenshot_path = screenshot_path;
-  data.log_file_path = log_file_path;
-  data.progress_nfo = progress_info_new ();
-  /*strcpy (data.progress_nfo.label_str, _ ("Sending data..."));*/
-  /*strcpy (data.progress_nfo.label_done_str, _ ("Done"));*/
-  /*strcpy (data.progress_nfo.error_str, _ ("Failed"));*/
-  GenericProgressDialogWidget * progress_dialog =
-    generic_progress_dialog_widget_new ();
-  generic_progress_dialog_widget_setup (
-    progress_dialog, _ ("Sending..."), data.progress_nfo, _ ("Sending data..."),
-    true, false);
-
-  /* start sending in a new thread */
-  GThread * thread =
-    g_thread_new ("send_data_thread", (GThreadFunc) send_data, &data);
-
-  /* run dialog */
-  gtk_window_set_transient_for (GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
-  z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
-
-  g_thread_join (thread);
-
-  if (
-    progress_info_get_completion_type (data.progress_nfo)
-    == PROGRESS_COMPLETED_SUCCESS)
-    {
-      gtk_dialog_set_response_sensitive (
-        GTK_DIALOG (self), PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, false);
-    }
-
-  if (log_file_path)
-    {
-      io_remove (log_file_path);
-      g_free_and_null (log_file_path);
-    }
-  if (log_file_tmpdir)
-    {
-      io_rmdir (log_file_tmpdir, Z_F_NO_FORCE);
-      g_free_and_null (log_file_tmpdir);
-    }
-  if (screenshot_path)
-    {
-      io_remove (screenshot_path);
-      g_free_and_null (screenshot_path);
-    }
-  if (screenshot_tmpdir)
-    {
-      io_rmdir (screenshot_tmpdir, Z_F_NO_FORCE);
-      g_free_and_null (screenshot_tmpdir);
-    }
-
-  progress_info_free (data.progress_nfo);
-
-  g_free (json_str);
+  g_signal_connect (
+    G_OBJECT (dialog), "response", G_CALLBACK (on_send_automatically_response),
+    self);
+  adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (self));
 }
 
 static void
@@ -362,19 +396,19 @@ on_gitlab_response (BugReportDialogWidget * self)
     return;
 
   /* create new dialog */
-  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
-    adw_message_dialog_new (GTK_WINDOW (self), _ ("Send via GitLab"), NULL));
+  AdwAlertDialog * dialog =
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send via GitLab"), NULL));
 
-  adw_message_dialog_add_responses (
-    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
-  adw_message_dialog_set_response_appearance (
-    ADW_MESSAGE_DIALOG (dialog), "ok", ADW_RESPONSE_SUGGESTED);
-  adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
-  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_alert_dialog_add_responses (
+    ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+  adw_alert_dialog_set_response_appearance (
+    ADW_ALERT_DIALOG (dialog), "ok", ADW_RESPONSE_SUGGESTED);
+  adw_alert_dialog_set_default_response (ADW_ALERT_DIALOG (dialog), "ok");
+  adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "ok");
 
   /* set top text */
-  adw_message_dialog_format_body_markup (
-    ADW_MESSAGE_DIALOG (dialog),
+  adw_alert_dialog_format_body_markup (
+    ADW_ALERT_DIALOG (dialog),
     _ ("Please copy the template below in a <a href=\"%s\">new issue</a>."),
     NEW_ISSUE_URL);
 
@@ -394,10 +428,10 @@ on_gitlab_response (BugReportDialogWidget * self)
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (label));
 
-  adw_message_dialog_set_extra_child (dialog, scrolled_window);
+  adw_alert_dialog_set_extra_child (dialog, scrolled_window);
 
   /* run the dialog */
-  gtk_window_present (GTK_WINDOW (dialog));
+  adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (self));
 }
 
 static void
@@ -412,37 +446,42 @@ on_email_response (BugReportDialogWidget * self)
     "mailto:%s?body=%s", NEW_ISSUE_URL, report_template);
   g_free (report_template);
 
-  gtk_show_uri (GTK_WINDOW (self), email_url, GDK_CURRENT_TIME);
+  /* TODO port to URI launcher */
+  (void) email_url;
+  /*gtk_show_uri (GTK_WINDOW (self), email_url, GDK_CURRENT_TIME);*/
   g_free (email_url);
 }
 
 static void
-on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
+on_response_cb (
+  AdwAlertDialog *        dialog,
+  char *                  response,
+  BugReportDialogWidget * self)
 {
-  BugReportDialogWidget * self = Z_BUG_REPORT_DIALOG_WIDGET (user_data);
-
-  g_debug ("response %d", response_id);
-
-  switch (response_id)
+  if (string_is_equal (response, "cancel"))
     {
-    case GTK_RESPONSE_CLOSE:
-    case GTK_RESPONSE_DELETE_EVENT:
-      gtk_window_destroy (GTK_WINDOW (dialog));
+      adw_dialog_force_close (ADW_DIALOG (dialog));
 
       if (self->fatal)
         {
           exit (EXIT_FAILURE);
         }
-      break;
-    case GITLAB_RESPONSE:
+    }
+  else if (string_is_equal (response, "gitlab"))
+    {
       on_gitlab_response (self);
-      break;
-    case EMAIL_RESPONSE:
+    }
+  else if (string_is_equal (response, "email"))
+    {
       on_email_response (self);
-      break;
-    case PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE:
+    }
+  else if (string_is_equal (response, "automatic"))
+    {
       on_preview_and_send_automatically_response (self);
-      break;
+    }
+  else
+    {
+      g_return_if_reached ();
     }
 }
 
@@ -451,14 +490,32 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
  */
 BugReportDialogWidget *
 bug_report_dialog_new (
-  GtkWindow *  parent,
+  GtkWidget *  parent,
   const char * msg_prefix,
   const char * backtrace,
   bool         fatal)
 {
   BugReportDialogWidget * self = g_object_new (
-    BUG_REPORT_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "title",
+    BUG_REPORT_DIALOG_WIDGET_TYPE, "heading",
     fatal ? _ ("Fatal Error") : _ ("Error"), NULL);
+
+  self->screenshot_tmpdir = NULL;
+  self->screenshot_path = NULL;
+  if (parent)
+    {
+      const char * option_keys[] = {
+        "quality",
+        NULL,
+      };
+      const char * option_vals[] = {
+        "30",
+        NULL,
+      };
+      z_gtk_generate_screenshot_image (
+        GTK_WIDGET (parent), "jpeg", (char **) option_keys,
+        (char **) option_vals, &self->screenshot_tmpdir, &self->screenshot_path,
+        true);
+    }
 
   char * markup = g_strdup_printf (
     _ ("%sPlease help us fix this by "
@@ -506,6 +563,21 @@ dispose (BugReportDialogWidget * self)
 static void
 bug_report_dialog_widget_class_init (BugReportDialogWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "bug_report_dialog.ui");
+
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child (klass, BugReportDialogWidget, x)
+
+  BIND_CHILD (top_lbl);
+  BIND_CHILD (backtrace_lbl);
+  BIND_CHILD (log_lbl);
+  BIND_CHILD (system_info_lbl);
+  BIND_CHILD (user_input_text_view);
+  gtk_widget_class_bind_template_callback (klass, on_response_cb);
+
+#undef BIND_CHILD
+
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
@@ -513,83 +585,5 @@ bug_report_dialog_widget_class_init (BugReportDialogWidgetClass * _klass)
 static void
 bug_report_dialog_widget_init (BugReportDialogWidget * self)
 {
-  GtkBox * content_area =
-    GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self)));
-
-  AdwPreferencesPage * pref_page =
-    ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
-  gtk_box_append (content_area, GTK_WIDGET (pref_page));
-
-  self->top_lbl = GTK_LABEL (gtk_label_new (""));
-  gtk_label_set_justify (self->top_lbl, GTK_JUSTIFY_CENTER);
-  gtk_widget_add_css_class (GTK_WIDGET (self->top_lbl), "title-4");
-  AdwPreferencesGroup * pref_group =
-    ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
-  adw_preferences_group_add (pref_group, GTK_WIDGET (self->top_lbl));
-  adw_preferences_page_add (pref_page, pref_group);
-
-  pref_group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
-  adw_preferences_group_set_title (pref_group, _ ("What did you do?"));
-  adw_preferences_group_set_description (
-    pref_group,
-    _ ("Please enter as many details as possible "
-       "(such as steps to reproduce)"));
-  adw_preferences_page_add (pref_page, pref_group);
-
-  self->user_input_text_view = GTK_TEXT_VIEW (gtk_text_view_new ());
-  gtk_widget_set_size_request (GTK_WIDGET (self->user_input_text_view), -1, 120);
-  gtk_text_view_set_accepts_tab (self->user_input_text_view, false);
-  gtk_text_view_set_wrap_mode (self->user_input_text_view, GTK_WRAP_WORD_CHAR);
-  adw_preferences_group_add (
-    pref_group, GTK_WIDGET (self->user_input_text_view));
-
-  pref_group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
-  adw_preferences_group_set_title (pref_group, _ ("Error details"));
-  adw_preferences_page_add (pref_page, pref_group);
-
-  {
-    AdwExpanderRow * exp_row = ADW_EXPANDER_ROW (adw_expander_row_new ());
-    adw_preferences_row_set_title (
-      ADW_PREFERENCES_ROW (exp_row), _ ("Backtrace"));
-    self->backtrace_lbl = GTK_LABEL (gtk_label_new (""));
-    gtk_label_set_selectable (self->backtrace_lbl, true);
-    GtkListBoxRow * row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-    gtk_list_box_row_set_child (row, GTK_WIDGET (self->backtrace_lbl));
-    adw_expander_row_add_row (exp_row, GTK_WIDGET (row));
-    adw_preferences_group_add (pref_group, GTK_WIDGET (exp_row));
-  }
-
-  {
-    AdwExpanderRow * exp_row = ADW_EXPANDER_ROW (adw_expander_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (exp_row), _ ("Log"));
-    self->log_lbl = GTK_LABEL (gtk_label_new (""));
-    gtk_label_set_selectable (self->log_lbl, true);
-    GtkListBoxRow * row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-    gtk_list_box_row_set_child (row, GTK_WIDGET (self->log_lbl));
-    adw_expander_row_add_row (exp_row, GTK_WIDGET (row));
-    adw_preferences_group_add (pref_group, GTK_WIDGET (exp_row));
-  }
-
-  {
-    AdwExpanderRow * exp_row = ADW_EXPANDER_ROW (adw_expander_row_new ());
-    adw_preferences_row_set_title (
-      ADW_PREFERENCES_ROW (exp_row), _ ("System info"));
-    self->system_info_lbl = GTK_LABEL (gtk_label_new (""));
-    gtk_label_set_selectable (self->system_info_lbl, true);
-    GtkListBoxRow * row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-    gtk_list_box_row_set_child (row, GTK_WIDGET (self->system_info_lbl));
-    adw_expander_row_add_row (exp_row, GTK_WIDGET (row));
-    adw_preferences_group_add (pref_group, GTK_WIDGET (exp_row));
-  }
-
-  /* --- responses --- */
-
-  gtk_dialog_add_buttons (
-    GTK_DIALOG (self), _ ("_Close"), GTK_RESPONSE_CLOSE,
-    _ ("Submit on _GitLab"), GITLAB_RESPONSE,
-    /*_ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,*/
-    _ ("Preview and send _automatically (privately/recommended)"),
-    PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, NULL);
-
-  g_signal_connect (G_OBJECT (self), "response", G_CALLBACK (on_response), self);
+  gtk_widget_init_template (GTK_WIDGET (self));
 }

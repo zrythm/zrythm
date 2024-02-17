@@ -723,10 +723,8 @@ exporter_prepare_tracks_for_export (
   GPtrArray * conns = NULL;
   if (settings->mode != EXPORT_MODE_FULL)
     {
-      /* disconnect all track faders from
-       * their channel outputs so that
-       * sends and custom connections will
-       * work */
+      /* disconnect all track faders from their channel outputs so that sends
+       * and custom connections will work */
       conns = g_ptr_array_new_full (100, (GDestroyNotify) port_connection_free);
       for (int j = 0; j < TRACKLIST->num_tracks; j++)
         {
@@ -818,14 +816,6 @@ exporter_post_export (
   g_message ("engine resumed");
 }
 
-/**
- * Generic export thread to be used for simple
- * exporting.
- *
- * See bounce_dialog for an example.
- *
- * To be used as a GThreadFunc.
- */
 void *
 exporter_generic_export_thread (void * data)
 {
@@ -963,12 +953,6 @@ exporter_create_audio_track_after_bounce (
     }
 }
 
-/**
- * Exports an audio file based on the given
- * settings.
- *
- * @return Non-zero if fail.
- */
 int
 exporter_export (ExportSettings * info)
 {

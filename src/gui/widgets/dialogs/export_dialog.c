@@ -21,6 +21,7 @@
 #include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -448,15 +449,6 @@ on_visible_child_changed (
   update_text (self);
 }
 
-static void
-on_progress_dialog_closed (
-  GtkDialog *          dialog,
-  int                  response_id,
-  ExportDialogWidget * self)
-{
-  update_text (self);
-}
-
 /**
  * Initializes the export info struct.
  *
@@ -565,6 +557,90 @@ init_export_info (ExportDialogWidget * self, Track * track)
   return info;
 }
 
+static void
+progress_close_cb (ExportData * data)
+{
+  g_debug ("export ready cb");
+
+  ExportDialogWidget * self = Z_EXPORT_DIALOG_WIDGET (data->parent_owner);
+
+  g_thread_join (data->thread);
+
+  if (data->export_stems)
+    {
+      /* re-connect disconnected connections */
+      exporter_post_export (data->info, data->conns, data->state);
+
+      Track * track = g_ptr_array_index (data->tracks, data->cur_track);
+      track->bounce = false;
+
+      /* stop if last stem not successful */
+      ExportSettings * prev_info = data->info;
+      if (
+        progress_info_get_status (prev_info->progress_info)
+          == PROGRESS_STATUS_COMPLETED
+        && (progress_info_get_completion_type (prev_info->progress_info) == PROGRESS_COMPLETED_SUCCESS || progress_info_get_completion_type (prev_info->progress_info) == PROGRESS_COMPLETED_HAS_WARNING))
+        {
+          g_debug ("~ finished bouncing stem for %s ~", track->name);
+
+          data->cur_track++;
+          if (data->cur_track < data->tracks->len)
+            {
+              /* bounce the next track */
+              track = g_ptr_array_index (data->tracks, data->cur_track);
+              g_debug ("~ bouncing stem for %s ~", track->name);
+
+              /* unmark all tracks for bounce */
+              tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
+
+              track_mark_for_bounce (
+                track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
+                F_MARK_PARENTS);
+
+              ExportSettings * new_info = init_export_info (self, track);
+              ExportData *     new_data =
+                export_data_new (GTK_WIDGET (self), new_info);
+              new_data->export_stems = true;
+              new_data->tracks = g_ptr_array_copy (data->tracks, NULL, NULL);
+              new_data->cur_track = data->cur_track;
+
+              new_data->conns = exporter_prepare_tracks_for_export (
+                new_data->info, new_data->state);
+
+              g_message ("exporting %s", new_data->info->file_uri);
+
+              /* start exporting in a new thread */
+              new_data->thread = g_thread_new (
+                "stem_export_thread",
+                (GThreadFunc) exporter_generic_export_thread, new_data->info);
+
+              /* create a progress dialog and show */
+              /* don't use autoclose - instead force close in the callback
+               * (couldn't figure out how to get autoclose working - the
+               * callback wasn't getting called otherwise so just autoclose from
+               * the callback instead) */
+              ExportProgressDialogWidget * progress_dialog =
+                export_progress_dialog_widget_new (
+                  new_data, true, progress_close_cb, true, F_CANCELABLE);
+              adw_dialog_present (
+                ADW_DIALOG (progress_dialog), GTK_WIDGET (self));
+              return;
+            }
+        } /*endif prev export completed */
+    }
+  else
+    {
+      /* re-connect disconnected connections */
+      exporter_post_export (data->info, data->conns, data->state);
+
+      g_debug ("~ finished bouncing mixdown ~");
+    }
+
+  ui_show_notification (_ ("Exported"));
+
+  update_text (self);
+}
+
 /**
  * Export.
  *
@@ -599,58 +675,52 @@ on_export (ExportDialogWidget * self, bool audio)
     }
   g_free (exports_dir);
 
+  /* begin export */
+
   if (export_stems)
     {
-      /* export each track individually */
-      for (size_t i = 0; i < tracks->len; i++)
-        {
-          Track * track = g_ptr_array_index (tracks, i);
-          g_debug ("~ bouncing stem for %s ~", track->name);
+      /* export the first track for now */
+      Track *          track = g_ptr_array_index (tracks, 0);
+      ExportSettings * info = init_export_info (self, track);
+      ExportData *     data = export_data_new (GTK_WIDGET (self), info);
+      data->export_stems = export_stems;
+      data->tracks = tracks;
+      data->cur_track = 0;
 
-          /* unmark all tracks for bounce */
-          tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
+      g_debug ("~ bouncing stem for %s ~", track->name);
 
-          track_mark_for_bounce (
-            track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN, F_MARK_PARENTS);
+      /* unmark all tracks for bounce */
+      tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
 
-          ExportSettings * info = init_export_info (self, track);
+      track_mark_for_bounce (
+        track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN, F_MARK_PARENTS);
 
-          EngineState state;
-          GPtrArray * conns = exporter_prepare_tracks_for_export (info, &state);
+      data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
 
-          g_message ("exporting %s", info->file_uri);
+      g_message ("exporting %s", data->info->file_uri);
 
-          /* start exporting in a new thread */
-          GThread * thread = g_thread_new (
-            "export_thread", (GThreadFunc) exporter_generic_export_thread, info);
+      /* start exporting in a new thread */
+      data->thread = g_thread_new (
+        "export_thread", (GThreadFunc) exporter_generic_export_thread,
+        data->info);
 
-          /* create a progress dialog and block */
-          ExportProgressDialogWidget * progress_dialog =
-            export_progress_dialog_widget_new (info, true, true, F_CANCELABLE);
-          gtk_window_set_transient_for (
-            GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
-          g_signal_connect (
-            G_OBJECT (progress_dialog), "response",
-            G_CALLBACK (on_progress_dialog_closed), self);
-          z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
-
-          g_thread_join (thread);
-
-          /* re-connect disconnected connections */
-          exporter_post_export (info, conns, &state);
-
-          track->bounce = false;
-
-          object_free_w_func_and_null (export_settings_free, info);
-
-          g_debug ("~ finished bouncing stem for %s ~", track->name);
-        }
+      /* create a progress dialog and show */
+      /* don't use autoclose - instead force close in the callback (couldn't
+       * figure out how to get autoclose working - the callback wasn't getting
+       * called otherwise so just autoclose from the callback instead) */
+      ExportProgressDialogWidget * progress_dialog =
+        export_progress_dialog_widget_new (
+          data, true, progress_close_cb, true, F_CANCELABLE);
+      adw_dialog_present (ADW_DIALOG (progress_dialog), GTK_WIDGET (self));
     }
   else /* if exporting mixdown */
     {
       g_debug ("~ bouncing mixdown ~");
 
       ExportSettings * info = init_export_info (self, NULL);
+      ExportData *     data = export_data_new (GTK_WIDGET (self), info);
+      data->export_stems = false;
+      data->tracks = tracks;
 
       /* unmark all tracks for bounce */
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
@@ -663,38 +733,24 @@ on_export (ExportDialogWidget * self, bool audio)
             track, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_MARK_PARENTS);
         }
 
-      g_message ("exporting %s", info->file_uri);
+      g_message ("exporting %s", data->info->file_uri);
 
-      EngineState state;
-      GPtrArray * conns = exporter_prepare_tracks_for_export (info, &state);
+      data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
 
       /* start exporting in a new thread */
-      GThread * thread = g_thread_new (
-        "export_thread", (GThreadFunc) exporter_generic_export_thread, info);
+      data->thread = g_thread_new (
+        "export_thread", (GThreadFunc) exporter_generic_export_thread,
+        data->info);
 
-      /* create a progress dialog and block */
+      /* create a progress dialog and show */
+      /* don't use autoclose - instead force close in the callback (couldn't
+       * figure out how to get autoclose working - the callback wasn't getting
+       * called otherwise so just autoclose from the callback instead) */
       ExportProgressDialogWidget * progress_dialog =
-        export_progress_dialog_widget_new (info, true, true, F_CANCELABLE);
-      gtk_window_set_transient_for (
-        GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
-      g_signal_connect (
-        G_OBJECT (progress_dialog), "response",
-        G_CALLBACK (on_progress_dialog_closed), self);
-      z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
-
-      g_thread_join (thread);
-
-      /* re-connect disconnected connections */
-      exporter_post_export (info, conns, &state);
-
-      object_free_w_func_and_null (export_settings_free, info);
-
-      g_debug ("~ finished bouncing mixdown ~");
+        export_progress_dialog_widget_new (
+          data, false, progress_close_cb, true, F_CANCELABLE);
+      adw_dialog_present (ADW_DIALOG (progress_dialog), GTK_WIDGET (self));
     }
-
-  ui_show_notification (_ ("Exported"));
-
-  g_ptr_array_unref (tracks);
 }
 
 static void

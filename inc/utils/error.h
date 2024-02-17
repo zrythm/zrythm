@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -10,14 +10,14 @@
 #ifndef __UTILS_ERROR_H__
 #define __UTILS_ERROR_H__
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 /**
  * Only to be called by HANDLE_ERROR macro.
  *
  * @return The error window, if any.
  */
-GtkWindow *
+AdwDialog *
 error_handle_prv (GError * err, const char * format, ...) G_GNUC_PRINTF (2, 3);
 
 /**

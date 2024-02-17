@@ -1,0 +1,64 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $BugReportDialogWidget : Adw.AlertDialog {
+  default-response: "automatic";
+  close-response: "cancel";
+  can-close: false;
+  response => $on_response_cb();
+  extra-child:
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      Gtk.Label top_lbl {
+        justify: center;
+        styles [ "title-4" ]
+      }
+    }
+    Adw.PreferencesGroup {
+      title: _("What did you do?");
+      description: _("Please enter as many details as possible (such as steps to reproduce)");
+      Gtk.TextView user_input_text_view {
+        width-request: -1;
+        height-request: 120;
+        accepts-tab: false;
+        wrap-mode: char;
+      }
+    }
+    Adw.PreferencesGroup {
+      title: _("Error details");
+      Adw.ExpanderRow {
+        title: _("Backtrace");
+        Gtk.ListBoxRow {
+          child:
+          Gtk.Label backtrace_lbl {
+            selectable: true;
+          };
+        }
+      }
+      Adw.ExpanderRow {
+        title: _("Log");
+        Gtk.ListBoxRow {
+          child:
+          Gtk.Label log_lbl {
+            selectable: true;
+          };
+        }
+      }
+      Adw.ExpanderRow {
+        title: _("System info");
+        Gtk.ListBoxRow {
+          child:
+          Gtk.Label system_info_lbl {
+            selectable: true;
+          };
+        }
+      }
+    }
+  };
+
+  responses [
+    cancel: _("_Cancel"),
+    gitlab: _("Submit on _GitLab"),
+    automatic: _("Preview & Send _Automatically") suggested,
+  ]
+}

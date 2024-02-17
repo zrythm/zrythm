@@ -1,17 +1,21 @@
-/*
- * SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
- * SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 @import '_palette';
 @import '_drawing';
 
-/* override adwaita colors */
+// override adwaita colors - duplicates are needed because scss doesn't
+// allow the @ syntax and gtk_color() doesn't work as expected (it uses
+// libadwaita's colors)
 $accent_color: $dark_orange;
 $accent_bg_color: $bright_orange;
-@define-color accent_color #{$accent_color};
-@define-color accent_bg_color #{$accent_bg_color};
+$window_bg_color: $bg_darker_variant1;
+$dialog_bg_color: $bg_dark_variant1;
+@define-color accent_color #{$dark_orange};
+@define-color accent_bg_color #{$bright_orange};
+@define-color window_bg_color #{$window_bg_color};
+@define-color dialog_bg_color #{$dialog_bg_color};
 
 /* taken from libadwaita */
 $ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -47,7 +51,6 @@ entry selection,
 treeview.view:hover,
 listview row:hover,
 columnview row:hover,
-list row:hover
 {
   background-color: $hover_color;
 }
@@ -63,7 +66,6 @@ progressbar > text {
 treeview.view:selected,
 listview row:selected,
 columnview row:selected,
-list row:selected
 {
   background-color: $z_purple;
 }
@@ -114,7 +116,6 @@ bot-dock-edge .toolbar > stack,
 .header header,
 .header .toolbar,
 .header > box,
-menubar
 {
   background-color: $bg_darker_variant2;
 }
@@ -189,9 +190,7 @@ arranger-bg,
 treeview.view,
 listview.view,
 columnview.view,
-list row,
 timeline-minimap-bg,
-list
 {
   background-color: $bg_darker_variant1;
 }
@@ -314,8 +313,7 @@ channel {
   border-right: 0px;
 }
 
-/* make the header box on the right match the
- * style of the notebook */
+/* make the header box on the right match the style of the notebook */
 .header > box {
   border-top: 1px;
   border-bottom: 1px;

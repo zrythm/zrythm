@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_BUG_REPORT_DIALOG_H__
 #define __GUI_WIDGETS_BUG_REPORT_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -29,11 +29,11 @@ G_DECLARE_FINAL_TYPE (
   bug_report_dialog_widget,
   Z,
   BUG_REPORT_DIALOG_WIDGET,
-  GtkDialog)
+  AdwAlertDialog)
 
 typedef struct _BugReportDialogWidget
 {
-  GtkDialog parent_instance;
+  AdwAlertDialog parent_instance;
 
   GtkLabel * top_lbl;
 
@@ -51,6 +51,13 @@ typedef struct _BugReportDialogWidget
   char * system_nfo;
   bool   fatal;
 
+  /* Used when sending automatically. */
+  char * log_file_path;
+  char * log_file_tmpdir;
+  char * screenshot_path;
+  char * screenshot_tmpdir;
+  char * json_str;
+
 } BugReportDialogWidget;
 
 /**
@@ -58,7 +65,7 @@ typedef struct _BugReportDialogWidget
  */
 BugReportDialogWidget *
 bug_report_dialog_new (
-  GtkWindow *  parent,
+  GtkWidget *  parent,
   const char * msg_prefix,
   const char * backtrace,
   bool         fatal);

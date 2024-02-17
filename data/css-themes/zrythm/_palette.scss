@@ -40,51 +40,7 @@ $highlight_scale_fg: #F79616;
 $highlight_bass_fg: white;
 $highlight_both_fg: white;
 
-/* These are fetched with
- * gtk_style_context_lookup_color(). They must always
- * be present under these names. */
-
-@define-color bg_color #{$bg_color};
-@define-color bg_dark_variant1 #{$bg_dark_variant1};
-@define-color bg_dark_variant2 #{$bg_dark_variant2};
-@define-color bg_darker_variant1 #{$bg_darker_variant1};
-@define-color bg_darker_variant2 #{$bg_darker_variant2};
-@define-color bg_light_variant1 #{$bg_light_variant1};
-@define-color bg_light_variant2 #{$bg_light_variant2};
-@define-color bg_lighter_variant1 #{$bg_lighter_variant1};
-@define-color bg_lighter_variant2 #{$bg_lighter_variant2};
-@define-color dark_variant1 #{$dark_variant1};
-@define-color dark_variant2 #{$dark_variant2};
-@define-color light_variant1 #{$light_variant1};
-@define-color light_variant2 #{$light_variant2};
-@define-color bright_green #{$bright_green};
-@define-color darkish_green #{$darkish_green};
-@define-color dark_orange #{$dark_orange};
-@define-color darker_orange #{$darker_orange};
-@define-color z_yellow #{$z_yellow};
-@define-color bright_orange #{$bright_orange};
-@define-color z_purple #{$z_purple};
-@define-color matcha #{$matcha};
-@define-color hover_color #{$hover_color};
-@define-color selection_color #{$selection_color};
-@define-color light_blueish #{$light_blueish};
-@define-color prefader_send #{$prefader_send};
-@define-color postfader_send #{$postfader_send};
-@define-color solo_checked #{$darkish_green};
-@define-color solo_active #{$matcha};
-@define-color fader_fill_start #{$dark_orange};
-@define-color fader_fill_end #{$z_yellow};
-@define-color highlight_scale_bg #{$highlight_scale_bg};
-@define-color highlight_chord_bg #{$highlight_chord_bg};
-@define-color highlight_bass_bg #{$light_blueish};
-@define-color highlight_both_bg #{$highlight_both_bg};
-@define-color highlight_scale_fg #{$highlight_scale_fg};
-@define-color highlight_chord_fg #{$highlight_scale_fg};
-@define-color highlight_bass_fg #{$highlight_bass_fg};
-@define-color highlight_both_fg #{$highlight_both_fg};
-
-/* see https://coolors.co/ to generate more or use
- * GPick */
+/* see https://coolors.co/ to generate more or use GPick */
 
 /* other colors */
 $dim_fg: gtkalpha(currentColor, .55);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -466,29 +466,31 @@ ui_on_motion_set_status_bar_text_cb (
  *
  * @return The message window.
  */
-GtkWindow *
+AdwDialog *
 ui_show_message_full (
-  GtkWindow *  parent_window,
+  GtkWidget *  parent,
   const char * title,
   const char * format,
   ...) G_GNUC_PRINTF (3, 4);
 
 #define UI_ACTIVE_WINDOW_OR_NULL \
   (gtk_application_get_active_window (GTK_APPLICATION (zrythm_app)) \
-     ? gtk_application_get_active_window (GTK_APPLICATION (zrythm_app)) \
+     ? GTK_WIDGET ( \
+       gtk_application_get_active_window (GTK_APPLICATION (zrythm_app))) \
      : NULL)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_printf(title, fmt, ...) \
-  ui_show_message_full (UI_ACTIVE_WINDOW_OR_NULL, title, fmt, __VA_ARGS__)
+  ui_show_message_full ( \
+    GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, fmt, __VA_ARGS__)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_literal(title, str) \
-  ui_show_message_full (UI_ACTIVE_WINDOW_OR_NULL, title, "%s", str)
+  ui_show_message_full (GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, "%s", str)
 
 /**
  * Wrapper to show error message so that no casting

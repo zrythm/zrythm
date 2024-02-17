@@ -534,13 +534,15 @@ z_gdk_rectangle_print (const GdkRectangle * rect);
  * Mimics the blocking behavior.
  *
  * @return The response ID.
+ *
+ * @deprecated Use async dialogs instead.
  */
 int
 z_gtk_dialog_run (GtkDialog * dialog, bool destroy_on_close);
 
 /**
- * The popover must already exist as a children
- * of its intended widget (or a common parent).
+ * The popover must already exist as a children of its intended widget (or a
+ * common parent).
  *
  * This function will set the new menu and show it.
  */

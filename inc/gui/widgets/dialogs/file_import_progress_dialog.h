@@ -65,7 +65,7 @@ file_import_progress_dialog_new (
   const char **       filepaths,
   FileImportInfo *    import_info,
   TracksReadyCallback tracks_ready_cb,
-  GtkWindow *         parent);
+  GtkWidget *         parent);
 
 /**
  * Runs the dialog and imports each file asynchronously while

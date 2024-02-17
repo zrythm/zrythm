@@ -315,7 +315,8 @@ on_audio_backend_selected_item_changed (
   gtk_widget_set_visible (
     GTK_WIDGET (self->audio_backend_rtaudio_device_row), show_opts);
   ui_setup_audio_device_name_combo_row (
-    ADW_COMBO_ROW (self->audio_backend_rtaudio_device_row), show_opts, false);
+    ADW_COMBO_ROW (self->audio_backend_rtaudio_device_row),
+    show_opts && MAIN_WINDOW, false);
   gtk_widget_set_visible (
     GTK_WIDGET (self->audio_backend_buffer_size_row), show_opts);
   gtk_widget_set_visible (
@@ -366,7 +367,8 @@ make_control (
     || KEY_IS ("General", "Engine", "sdl-audio-device-name"))
     {
       widget = adw_combo_row_new ();
-      ui_setup_audio_device_name_combo_row (ADW_COMBO_ROW (widget), true, true);
+      ui_setup_audio_device_name_combo_row (
+        ADW_COMBO_ROW (widget), MAIN_WINDOW != NULL, true);
       if (KEY_IS ("General", "Engine", "rtaudio-audio-device-name"))
         {
           self->audio_backend_rtaudio_device_row = ADW_PREFERENCES_ROW (widget);

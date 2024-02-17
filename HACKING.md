@@ -186,6 +186,15 @@ to color all the track backgrounds red.
       background-color: red;
     }
 
+# Adding UI Files
+
+We use blueprint-compiler to compile .blp files into GTK XML .ui files. This
+is done manually:
+
+    flatpak run org.zrythm.DevTools.BlueprintCompiler batch-compile resources resources resources/ui/*.blp resources/gtk/*.blp
+    # or, with a recent version of blueprint-compiler installed
+    blueprint-compiler batch-compile resources resources resources/ui/*.blp resources/gtk/*.blp
+
 # Tests and Coverage
 To run the test suite, use
 
