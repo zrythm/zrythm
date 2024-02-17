@@ -1,5 +1,6 @@
 .. SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
-   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+.. SPDX-FileCopyrightText: © 2024 Ikem Krueger
+.. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
@@ -47,6 +48,18 @@ Zrythm executable.
 
   .. warning:: This will clear ALL your user
     settings.
+
+.. cmdoption:: --audio-backend=BACKEND
+
+  Override the audio backend to use.
+
+  BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl
+
+.. cmdoption:: --midi-backend=BACKEND
+
+  Override the MIDI backend to use.
+
+  BACKEND is one of: dummy, rtmidi, windows_mme
 
 .. cmdoption:: -v, --version
 
