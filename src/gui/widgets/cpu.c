@@ -288,7 +288,7 @@ cpu_widget_init (CpuWidget * self)
   gtk_widget_set_has_tooltip (GTK_WIDGET (self), true);
 
   self->cpu_texture = z_gdk_texture_new_from_icon_name (
-    "ext-iconfinder_cpu_2561419", ICON_SIZE, ICON_SIZE, 1);
+    "gnome-icon-library-processor-symbolic", ICON_SIZE, ICON_SIZE, 1);
   self->dsp_texture = z_gdk_texture_new_from_icon_name (
     "font-awesome-wave-square-solid", ICON_SIZE, ICON_SIZE, 1);
 

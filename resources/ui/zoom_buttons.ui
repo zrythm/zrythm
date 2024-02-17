@@ -9,19 +9,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
   <template class="ZoomButtonsWidget" parent="GtkBox">
     <child>
       <object class="GtkButton" id="zoom_in">
-        <property name="icon-name">zoom-in</property>
+        <property name="icon-name">gnome-icon-library-arrows-pointing-inward-symbolic</property>
         <property name="action-name">app.zoom-in</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="zoom_out">
-        <property name="icon-name">zoom-out</property>
+        <property name="icon-name">gnome-icon-library-arrows-pointing-outward-symbolic</property>
         <property name="action-name">app.zoom-out</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="original_size">
-        <property name="icon-name">zoom-original</property>
+        <property name="icon-name">gnome-icon-library-fullscreen-square-symbolic</property>
         <property name="action-name">app.original-size</property>
       </object>
     </child>

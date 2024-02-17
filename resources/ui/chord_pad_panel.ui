@@ -61,12 +61,12 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <property name="orientation">0</property>
                 <child>
                   <object class="GtkButton" id="transpose_up_btn">
-                    <property name="icon-name">arrow-up-small</property>
+                    <property name="icon-name">gnome-icon-library-go-up-symbolic</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="transpose_down_btn">
-                    <property name="icon-name">arrow-down-small</property>
+                    <property name="icon-name">gnome-icon-library-go-down-symbolic</property>
                   </object>
                 </child>
               </object>

@@ -26,7 +26,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               <object class="GtkBox" id="bookmarks_label_box">
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">favorite</property>
+                    <property name="icon-name">gnome-icon-library-starred-symbolic</property>
                   </object>
                 </child>
                 <child>

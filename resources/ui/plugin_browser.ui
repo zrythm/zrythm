@@ -31,7 +31,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <object class="AdwViewStackPage">
                     <property name="name">collections</property>
                     <property name="title" translatable="true">Collection</property>
-                    <property name="icon-name">favorite</property>
+                    <property name="icon-name">gnome-icon-library-starred-symbolic</property>
                     <property name="child">
                       <object class="GtkBox" id="collection_box">
                         <property name="orientation">1</property>

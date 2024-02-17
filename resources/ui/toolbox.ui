@@ -45,7 +45,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <property name="tooltip-text" translatable="true">Cut mode</property>
         <child>
           <object class="GtkImage">
-            <property name="icon-name">cut-tool</property>
+            <property name="icon-name">gnome-icon-library-cut-symbolic</property>
           </object>
         </child>
       </object>
@@ -55,7 +55,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <property name="tooltip-text" translatable="true">Erase mode</property>
         <child>
           <object class="GtkImage">
-            <property name="icon-name">draw-eraser</property>
+            <property name="icon-name">gnome-icon-library-eraser-symbolic</property>
           </object>
         </child>
       </object>

@@ -55,7 +55,7 @@ enum
 };
 
 #define PROTOCOLS_ICON "protocol"
-#define COLLECTIONS_ICON "favorite"
+#define COLLECTIONS_ICON "gnome-icon-library-starred-symbolic"
 #define CATEGORIES_ICON "category"
 #define AUTHORS_ICON "gnome-icon-library-person-symbolic"
 

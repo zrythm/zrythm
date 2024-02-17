@@ -392,10 +392,12 @@ ui_set_pointer_cursor (GtkWidget * widget);
     GTK_WIDGET (widget), "gnome-icon-library-brush-symbolic", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cut-tool", 9, 6);
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), "gnome-icon-library-cut-symbolic", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-eraser", 3, 6);
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), "gnome-icon-library-eraser-symbolic", 3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-line", 3, 6);

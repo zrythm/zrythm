@@ -32,7 +32,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="tooltip-text" translatable="true">Play</property>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">media-playback-start</property>
+                <property name="icon-name">gnome-icon-library-media-playback-start-symbolic</property>
               </object>
             </child>
           </object>
@@ -42,7 +42,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="tooltip-text" translatable="true">Stop</property>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">media-playback-stop</property>
+                <property name="icon-name">gnome-icon-library-media-playback-stop-symbolic</property>
               </object>
             </child>
           </object>
@@ -52,7 +52,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="tooltip-text" translatable="true">Backward</property>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">media-seek-backward</property>
+                <property name="icon-name">gnome-icon-library-media-seek-backward-symbolic</property>
               </object>
             </child>
           </object>
@@ -62,7 +62,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="tooltip-text" translatable="true">Forward</property>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">media-seek-forward</property>
+                <property name="icon-name">gnome-icon-library-media-seek-forward-symbolic</property>
               </object>
             </child>
           </object>
@@ -73,7 +73,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="action-name">app.toggle-loop</property>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">media-playlist-repeat</property>
+                <property name="icon-name">gnome-icon-library-media-playlist-repeat-symbolic</property>
               </object>
             </child>
           </object>

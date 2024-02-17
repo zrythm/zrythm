@@ -447,7 +447,8 @@ static void
 setup_metronome (BotBarWidget * self)
 {
   /* setup metronome button */
-  self->metronome_btn = z_gtk_toggle_button_new_with_icon ("metronome");
+  self->metronome_btn =
+    z_gtk_toggle_button_new_with_icon ("gnome-icon-library-metronome-symbolic");
   gtk_widget_set_size_request (GTK_WIDGET (self->metronome_btn), 18, -1);
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->metronome_btn), "app.toggle-metronome");

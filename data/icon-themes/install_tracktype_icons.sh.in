@@ -15,7 +15,6 @@ cmd3="@CMD3@"
 
 declare -a icons=(
   "actions/bus"
-  "actions/markers"
   "status/bars"
   "status/signal-audio"
   "status/signal-midi")

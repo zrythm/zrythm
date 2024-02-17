@@ -785,7 +785,7 @@ get_group_icon (const char * schema_str)
   const char * icon_name = NULL;
   if (string_contains_substr (schema_str, "preferences.general"))
     {
-      icon_name = "info";
+      icon_name = "gnome-icon-library-controls-big-symbolic";
     }
   else if (string_contains_substr (schema_str, "preferences.scripting"))
     {

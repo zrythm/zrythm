@@ -63,7 +63,9 @@ button_with_menu_widget_setup (
   self->menu_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_menu_button_set_icon_name (
     GTK_MENU_BUTTON (self->menu_btn),
-    downward_arrow ? "arrow-down-small" : "arrow-up-small");
+    downward_arrow
+      ? "gnome-icon-library-go-down-symbolic"
+      : "gnome-icon-library-go-up-symbolic");
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_btn));
   /* TODO write CSS rule to set image size to 6 */
   gtk_widget_add_css_class (GTK_WIDGET (self->menu_btn), "arrow-button");

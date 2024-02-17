@@ -94,9 +94,9 @@ file list.
 
    File auditioning controls
 
-|icon_media-playback-start| Play
+Play
   Trigger playback of the selected file.
-|icon_media-playback-stop| Stop
+Stop
   Stop playback of the selected file.
 Volume
   Control the loudness of the output audio.

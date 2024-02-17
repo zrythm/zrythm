@@ -11,6 +11,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <signal name="destroy" handler="on_main_window_destroy"/>
     <property name="content">
       <object class="AdwToolbarView">
+        <property name="top-bar-style">1</property>
         <child type="top">
           <object class="AdwHeaderBar">
             <style>

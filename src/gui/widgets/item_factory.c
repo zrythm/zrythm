@@ -496,7 +496,8 @@ add_supported_file_context_menu (
   if (descr->type == FILE_TYPE_DIR)
     {
       sprintf (tmp, "app.panel-file-browser-add-bookmark::%p", descr);
-      menuitem = z_gtk_create_menu_item (_ ("Add Bookmark"), "favorite", tmp);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Add Bookmark"), "gnome-icon-library-starred-symbolic", tmp);
       g_menu_append_item (menu, menuitem);
     }
 

@@ -6139,7 +6139,8 @@ arranger_widget_setup (
       self->fork_awesome_snowflake_texture = z_gdk_texture_new_from_icon_name (
         "fork-awesome-snowflake-o", icon_texture_size, icon_texture_size, 1);
       self->media_playlist_repeat_texture = z_gdk_texture_new_from_icon_name (
-        "media-playlist-repeat", icon_texture_size, icon_texture_size, 1);
+        "gnome-icon-library-media-playlist-repeat-symbolic", icon_texture_size,
+        icon_texture_size, 1);
       break;
     case TYPE (AUTOMATION):
       gtk_widget_add_css_class (GTK_WIDGET (self), "automation-arranger");

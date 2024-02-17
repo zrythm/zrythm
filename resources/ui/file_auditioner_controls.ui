@@ -18,14 +18,14 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <child>
           <object class="GtkButton" id="play_btn">
             <property name="tooltip-text" translatable="true">Play/Pause</property>
-            <property name="icon-name">media-playback-start</property>
+            <property name="icon-name">gnome-icon-library-media-playback-start-symbolic</property>
             <signal name="clicked" handler="on_play_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="stop_btn">
             <property name="tooltip-text" translatable="true">Stop</property>
-            <property name="icon-name">media-playback-stop</property>
+            <property name="icon-name">gnome-icon-library-media-playback-stop-symbolic</property>
             <signal name="clicked" handler="on_stop_clicked"/>
           </object>
         </child>

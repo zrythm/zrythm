@@ -145,7 +145,7 @@ text_expander_widget_init (TextExpanderWidget * self)
     Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (box));
 
   expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self), "text-bubble");
+    Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-chat-symbolic");
 
   GtkEventControllerFocus * focus_controller =
     GTK_EVENT_CONTROLLER_FOCUS (gtk_event_controller_focus_new ());

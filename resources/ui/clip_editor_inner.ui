@@ -77,7 +77,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <property name="action-name">app.show-automation-values</property>
                             <child>
                               <object class="GtkImage">
-                                <property name="icon-name">text-bubble</property>
+                                <property name="icon-name">gnome-icon-library-chat-symbolic</property>
                               </object>
                             </child>
                           </object>

@@ -10,12 +10,12 @@ template $FileAuditionerControlsWidget : Gtk.Box {
     homogeneous: true;
     Gtk.Button play_btn {
       tooltip-text: _("Play/Pause");
-      icon-name: "media-playback-start";
+      icon-name: "gnome-icon-library-media-playback-start-symbolic";
       clicked => $on_play_clicked();
     }
     Gtk.Button stop_btn {
       tooltip-text: _("Stop");
-      icon-name: "media-playback-stop";
+      icon-name: "gnome-icon-library-media-playback-stop-symbolic";
       clicked => $on_stop_clicked();
     }
     $VolumeWidget volume {
