@@ -104,6 +104,9 @@
 #include <libpanel.h>
 
 #include <curl/curl.h>
+#ifdef HAVE_VALGRIND
+#  include <valgrind/valgrind.h>
+#endif
 
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
@@ -927,9 +930,16 @@ zrythm_app_startup (GApplication * app)
 
   /* install segfault handler */
   g_message ("Installing signal handlers...");
-  signal (SIGSEGV, segv_handler);
-  signal (SIGABRT, segv_handler);
-  signal (SIGTERM, sigterm_handler);
+#ifdef HAVE_VALGRIND
+  if (!RUNNING_ON_VALGRIND)
+    {
+#endif
+      signal (SIGSEGV, segv_handler);
+      signal (SIGABRT, segv_handler);
+      signal (SIGTERM, sigterm_handler);
+#ifdef HAVE_VALGRIND
+    }
+#endif
 
 #ifdef HAVE_X11
   /* init xlib threads */
