@@ -612,11 +612,13 @@ Comment:
 
 Files: 
   resources/ui/*.blp
-  resources/gtk/help-overlay.blp
-  resources/gtk/menus.blp
-Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+  resources/gtk/*.blp
+  resources/ui/*.ui
+  resources/gtk/*.ui
+Copyright: 2019-2024 The Zrythm contributors
 License: LicenseRef-ZrythmLicense
 Comment: UI XML files
+  See commit history for author info.
 
 Files: po/*.po
 Copyright: The Zrythm translators
