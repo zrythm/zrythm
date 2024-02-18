@@ -6,6 +6,31 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.4.1] - 2024-02-18
+### Changed
+- Redesign plugin info label
+- Build: port UI files to blueprint format and generate UI files via blueprint-compiler
+- Redesign channel views in the mixer
+- Update some icons
+- Redesign faders
+- Link transport control buttons together
+- Drop borders from meters and change color gradient
+- Unit tests: require less RAM
+- Port various dialogs to AdwDialog
+- Bump libadwaita requirement to >= 1.5
+- Use raised top bar style for main window (#5023)
+- CSS theme: Specify named colors `@window_bg_color` and `@dialog_bg_color` instead of coloring specific widget backgrounds
+- Debugging: don't set signal handlers when running from valgrind
+- Update Chinese (Simplified), Japanese, Hindi, Catalan translations
+- Install Zrythm icon as org.zrythm.Zrythm.svg instead of zrythm.svg
+- User manual: document `--audio-backend` and `--midi-backend` CLI options
+
+### Fixed
+- Fix error when sending a bug report for a project with many actions on the undo stack (#5016)
+- Fix spectrum analyzer not rendering correctly with ngl renderer (#5008)
+- Fix cancel button when exporting stems only cancelling export for the current stem
+- Fix device selection dropdown crashing in preferences when opened from the greeter
+
 ## [1.0.0-beta.6.3.18] - 2024-02-09
 ### Changed
 - Re-generate built-in plugins with latest faust
