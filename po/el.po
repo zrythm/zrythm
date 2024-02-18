@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:54+0900\n"
 "PO-Revision-Date: 2022-08-07 15:52+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
@@ -41,14 +41,13 @@ msgstr "Αποστολή μετα-fader"
 msgid "Instrument"
 msgstr "Όργανο"
 
-#: inc/dsp/track.h:164 src/dsp/region.c:471 src/gui/widgets/bot_bar.c:409
-#: resources/ui/file_browser_filters.ui:10
+#: inc/dsp/track.h:164 src/dsp/region.c:471 src/gui/widgets/bot_bar.c:415
 #: build/data/org.zrythm.Zrythm.gschema.xml:1245
 msgid "Audio"
 msgstr "Ήχος"
 
 #: inc/dsp/track.h:165 src/gui/widgets/route_target_selector.c:87
-#: src/project/project_init_flow_manager.c:576
+#: src/project/project_init_flow_manager.c:574
 msgid "Master"
 msgstr "Μάστερ"
 
@@ -80,7 +79,6 @@ msgstr "Ομάδα ήχου"
 
 #: inc/dsp/track.h:172 src/dsp/region.c:468
 #: src/gui/widgets/popovers/automatable_selector_popover.c:342
-#: resources/ui/file_browser_filters.ui:18
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -204,11 +202,11 @@ msgstr "Γραμμικό"
 msgid "Linear fade out"
 msgstr "Γραμμικό ξεθώριασμα"
 
-#: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:125
+#: inc/dsp/audio_function.h:58
 msgid "Nudge left"
 msgstr ""
 
-#: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:126
+#: inc/dsp/audio_function.h:58
 msgid "Nudge right"
 msgstr ""
 
@@ -243,11 +241,11 @@ msgstr "Προσαρμοσμένο πρόσθετο"
 msgid "Invalid"
 msgstr "Άκυρο"
 
-#: inc/dsp/midi_function.h:42 resources/ui/editor_toolbar.ui:154
+#: inc/dsp/midi_function.h:42
 msgid "Crescendo"
 msgstr "Κρεσέντο"
 
-#: inc/dsp/midi_function.h:43 resources/ui/editor_toolbar.ui:160
+#: inc/dsp/midi_function.h:43
 msgid "Flam"
 msgstr "Φλαμ"
 
@@ -259,19 +257,19 @@ msgstr "Περιστροφή H"
 msgid "Flip V"
 msgstr "Περιστροφή V"
 
-#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:181
+#: inc/dsp/midi_function.h:46
 msgid "Legato"
 msgstr "Λεγκάτο"
 
-#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:187
+#: inc/dsp/midi_function.h:47
 msgid "Portato"
 msgstr "Πορτάτο"
 
-#: inc/dsp/midi_function.h:48 resources/ui/editor_toolbar.ui:193
+#: inc/dsp/midi_function.h:48
 msgid "Staccato"
 msgstr "Στακάτο"
 
-#: inc/dsp/midi_function.h:49 resources/ui/editor_toolbar.ui:199
+#: inc/dsp/midi_function.h:49
 msgid "Strum"
 msgstr "Παίξιμο"
 
@@ -280,8 +278,8 @@ msgstr "Παίξιμο"
 #: src/gui/widgets/route_target_selector.c:77
 #: src/gui/widgets/route_target_selector.c:112
 #: src/gui/widgets/route_target_selector.c:204
-#: src/gui/widgets/plugin_properties_expander.c:157
-#: src/gui/widgets/plugin_properties_expander.c:158
+#: src/gui/widgets/plugin_properties_expander.c:143
+#: src/gui/widgets/plugin_properties_expander.c:144
 msgid "None"
 msgstr "Κανένα"
 
@@ -302,14 +300,14 @@ msgid "Inherit"
 msgstr "Ενσωμάτωση"
 
 #: inc/dsp/region.h:63 src/dsp/automation_track.c:154
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:415
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:421
 msgid "Off"
 msgstr "Ανενεργό"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
 #: src/gui/widgets/cc_bindings_tree.c:150
 #: src/gui/widgets/port_connections_tree.c:194
-#: src/gui/widgets/item_factory.c:590 src/gui/widgets/bot_bar.c:415
+#: src/gui/widgets/item_factory.c:591 src/gui/widgets/bot_bar.c:421
 msgid "On"
 msgstr "Ενεργό"
 
@@ -569,7 +567,7 @@ msgstr ""
 msgid "Japanese 2"
 msgstr ""
 
-#: inc/dsp/automation_function.h:37 resources/ui/editor_toolbar.ui:209
+#: inc/dsp/automation_function.h:37
 #, fuzzy
 msgid "Flatten"
 msgstr "Μοτίβο ονόματος αρχείου"
@@ -588,11 +586,11 @@ msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:571
+#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:570
 msgid "Linear"
 msgstr "Γραμμικό"
 
-#: inc/dsp/pan.h:61 src/utils/ui.c:572
+#: inc/dsp/pan.h:61 src/utils/ui.c:571
 msgid "Square Root"
 msgstr "Τετραγωνική ρίζα"
 
@@ -640,10 +638,10 @@ msgstr "_Αντιγραφή"
 msgid "_Paste"
 msgstr "_Επικόλληση"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1819 src/actions/actions.c:3333
-#: src/actions/actions.c:3385 src/actions/actions.c:3531
-#: src/actions/actions.c:3653 src/actions/actions.c:3920
-#: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:134
+#: inc/utils/gtk.h:54 src/actions/actions.c:1798 src/actions/actions.c:3316
+#: src/actions/actions.c:3368 src/actions/actions.c:3514
+#: src/actions/actions.c:3636 src/actions/actions.c:3903
+#: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "_Διαγραφή"
 
@@ -656,45 +654,42 @@ msgstr "_Καθαρισμός επιλογής"
 msgid "Select A_ll"
 msgstr "_Επιλογή όλων"
 
-#: inc/utils/gtk.h:64 src/gui/widgets/home_toolbar.c:120
+#: inc/utils/gtk.h:64
 msgid "Duplicate"
 msgstr "Δημιουργία διπλοτύπου"
 
 #: inc/utils/gtk.h:67 src/gui/widgets/track.c:332 src/gui/widgets/track.c:831
 #: src/gui/widgets/monitor_section.c:35 src/gui/widgets/monitor_section.c:272
-#: src/gui/widgets/channel.c:669 resources/ui/fader_buttons.ui:57
-#: build/data/org.zrythm.Zrythm.gschema.xml:316
+#: src/gui/widgets/channel.c:650 build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Mute"
 msgstr "Σίγαση"
 
 #: inc/utils/gtk.h:70 src/gui/widgets/track.c:328 src/gui/widgets/track.c:838
-#: src/gui/widgets/channel.c:676
+#: src/gui/widgets/channel.c:657
 msgid "Unmute"
 msgstr "Κατάργηση σίγασης"
 
-#: inc/utils/ui.h:82
+#: inc/utils/ui.h:81
 msgid "High"
 msgstr "Ψηλά"
 
-#: inc/utils/ui.h:83 src/gui/widgets/channel_slot.c:592
+#: inc/utils/ui.h:82 src/gui/widgets/channel_slot.c:592
 msgid "Normal"
 msgstr "Κανονικά"
 
-#: inc/utils/ui.h:84
+#: inc/utils/ui.h:83
 msgid "Low"
 msgstr "Χαμηλά"
 
-#: inc/utils/ui.h:85
+#: inc/utils/ui.h:84
 msgid "Ultra Low"
 msgstr ""
 
 #: inc/gui/backend/arranger_object.h:81
-#: resources/ui/chord_selector_window.ui:489
 msgid "All"
 msgstr "Όλα"
 
-#: inc/gui/backend/arranger_object.h:82 resources/ui/inspector_master.ui:7
-#: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
+#: inc/gui/backend/arranger_object.h:82
 msgid "Region"
 msgstr "Περιοχή"
 
@@ -716,96 +711,95 @@ msgstr "Σημείο αυτοματισμού"
 
 #: inc/gui/backend/arranger_object.h:88 src/gui/widgets/velocity_settings.c:64
 #: src/gui/widgets/event_viewer.c:605 src/gui/widgets/item_factory.c:249
-#: src/gui/widgets/item_factory.c:760
-#: src/gui/widgets/dialogs/midi_function_dialog.c:172
-#: resources/ui/midi_editor_space.ui:62
+#: src/gui/widgets/item_factory.c:761
+#: src/gui/widgets/dialogs/midi_function_dialog.c:158
 msgid "Velocity"
 msgstr "Ταχύτητα"
 
-#: src/project.c:303
+#: src/project.c:301
 #, fuzzy, c-format
 msgid "Failed to create backup directory %s"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project.c:492
+#: src/project.c:490
 #, fuzzy, c-format
 msgid "Unable to read file at %s"
 msgstr "Αδυναμία ανάγνωσης αρχείου: %s"
 
-#: src/project.c:508
+#: src/project.c:506
 #, fuzzy, c-format
 msgid "Failed to decompress project file at %s"
 msgstr "Αποτυχία αποσυμπίεσης του αρχείου έργου: %s"
 
-#: src/project.c:632 src/actions/actions.c:697 src/actions/actions.c:784
-#: src/actions/actions.c:838 src/actions/actions.c:857
-#: src/gui/widgets/main_window.c:121
-#: src/project/project_init_flow_manager.c:677
+#: src/project.c:630 src/actions/actions.c:702 src/actions/actions.c:763
+#: src/actions/actions.c:817 src/actions/actions.c:836
+#: src/gui/widgets/main_window.c:120
+#: src/project/project_init_flow_manager.c:675
 #, fuzzy
 msgid "Failed to save project"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/project.c:786
+#: src/project.c:784
 #, fuzzy
 msgid "Failed to serialize project"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project.c:799
+#: src/project.c:797
 #, fuzzy
 msgid "Failed to compress project file"
 msgstr "Αποτυχία αποσυμπίεσης του αρχείου έργου: %s"
 
-#: src/project.c:840 src/project.c:843
+#: src/project.c:838 src/project.c:841
 msgid "Backup saved."
 msgstr "Το αντίγραφο αρχείου αποθηκεύτηκε."
 
-#: src/project.c:853
+#: src/project.c:851
 msgid "Project saved."
 msgstr "Το έργο αποθηκεύτηκε."
 
-#: src/project.c:1047
+#: src/project.c:1045
 #, fuzzy
 msgid "Failed to write audio pool to disk"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project.c:1059
+#: src/project.c:1057
 #, fuzzy
 msgid "Failed to clone project"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/zrythm_app.c:126
+#: src/zrythm_app.c:127
 msgid "Error - Backtrace:\n"
 msgstr "Σφάλμα - Backtrace:\n"
 
-#: src/zrythm_app.c:128
+#: src/zrythm_app.c:129
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "Σφάλμα: %s - Backtrace:\n"
 
-#: src/zrythm_app.c:155
+#: src/zrythm_app.c:156
 #, c-format
 msgid "%s has crashed. "
 msgstr "Το %s έχει κρασάρει. "
 
-#: src/zrythm_app.c:210
+#: src/zrythm_app.c:215
 msgid "Failed fetching the latest release version"
 msgstr ""
 
-#: src/zrythm_app.c:223
+#: src/zrythm_app.c:228
 #, fuzzy
 msgid "Changelog"
 msgstr "Αλλαγή χρώματος"
 
-#: src/zrythm_app.c:225
+#: src/zrythm_app.c:230
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
 msgstr ""
 
-#: src/zrythm_app.c:245
+#: src/zrythm_app.c:250
 msgid "New Zrythm Version"
 msgstr ""
 
-#: src/zrythm_app.c:246
+#: src/zrythm_app.c:251
 #, c-format
 msgid ""
 "A new version of Zrythm has been released: <b>%s</b>\n"
@@ -813,60 +807,58 @@ msgid ""
 "Your current version is %s"
 msgstr ""
 
-#: src/zrythm_app.c:337
-msgid "Setting up main window"
-msgstr "Ρύθμιση του κύριου παραθύρου"
-
-#: src/zrythm_app.c:381
+#: src/zrythm_app.c:382
 #, fuzzy
 msgid "No Project Selected"
 msgstr "Δεν έχει επιλεγεί αντικείμενο"
 
-#: src/zrythm_app.c:384
+#: src/zrythm_app.c:385
 #, fuzzy, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
 msgstr "Κανένα έργο δεν έχει επιλεχθεί. Το %s πρόκειται να κλείσει."
 
-#: src/zrythm_app.c:408
-msgid "Loading project"
+#: src/zrythm_app.c:409
+#, fuzzy
+msgid "Loading Project"
 msgstr "Φόρτωση έργου"
 
-#: src/zrythm_app.c:426
+#: src/zrythm_app.c:427
+#, fuzzy
+msgid "Initializing"
+msgstr "Αρχικοποίηση..."
+
+#: src/zrythm_app.c:427
 msgid "Initializing settings"
 msgstr "Αρχικοποίηση ρυθμίσεων"
 
-#: src/zrythm_app.c:431
+#: src/zrythm_app.c:432
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Αρχικοποίηση %s καταλόγων"
 
-#. init log
-#: src/zrythm_app.c:444
+#: src/zrythm_app.c:446
 msgid "Initializing logging system"
 msgstr "Αρχικοποίηση συστήματος καταγραφής"
 
-#: src/zrythm_app.c:464
+#: src/zrythm_app.c:467
 msgid "Initializing caches"
 msgstr "Αρχικοποίηση κρυφής μνήμης cache"
 
-#: src/zrythm_app.c:467
+#: src/zrythm_app.c:471
 msgid "Initializing file manager"
 msgstr "Αρχικοποίηση διαχειριστή αρχείων"
 
-#: src/zrythm_app.c:472
-msgid "Scanning plugins"
+#: src/zrythm_app.c:475
+#, fuzzy
+msgid "Scanning Plugins"
 msgstr "Σκανάρισμα προσθέτων"
 
-#: src/zrythm_app.c:554
-msgid "Waiting for project"
-msgstr "Φόρτωση έργου"
-
-#: src/zrythm_app.c:767
+#: src/zrythm_app.c:706
 msgid "Icon Theme Not Found"
 msgstr ""
 
-#: src/zrythm_app.c:811
+#: src/zrythm_app.c:750
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -874,17 +866,17 @@ msgid ""
 "section in the user manual for details."
 msgstr ""
 
-#: src/zrythm_app.c:827
+#: src/zrythm_app.c:766
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
-#: src/zrythm_app.c:846
+#: src/zrythm_app.c:785
 #, fuzzy, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "Άρση σόλο κομματιού"
 
-#: src/zrythm_app.c:973
+#: src/zrythm_app.c:911
 #, fuzzy, c-format
 msgid ""
 "%s-%s\n"
@@ -910,54 +902,54 @@ msgstr ""
 "Υποστηρίξτε αυτό το έργο στο https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1349
+#: src/zrythm_app.c:1282
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Δεν ορίστηκε εξαγόμενο αρχείο. Πρέπει να ορίσετε ένα με `--output [FILE]`."
 
-#: src/zrythm_app.c:1376
+#: src/zrythm_app.c:1309
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Το libguile είναι προαπαιτούμενο για αυτή την επιλογή\n"
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1435
 msgid "Print version information"
 msgstr "Προβολή πληροφοριών έκδοσης"
 
-#: src/zrythm_app.c:1504
+#: src/zrythm_app.c:1437
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Δημιουργία ενός έργου από το SCRIPT-FILE"
 
-#: src/zrythm_app.c:1506
+#: src/zrythm_app.c:1439
 #, fuzzy
 msgid "Print output in user-friendly way"
 msgstr "Προβολή προϊόντος με φιλικό προς τον χρήστη τρόπο"
 
-#: src/zrythm_app.c:1508
+#: src/zrythm_app.c:1441
 msgid "Print current settings"
 msgstr "Προβολή τρεχουσών ρυθμίσεων"
 
-#: src/zrythm_app.c:1510 src/gui/widgets/preferences.c:704
+#: src/zrythm_app.c:1443 src/gui/widgets/preferences.c:705
 msgid "Reset to factory settings"
 msgstr "Επαναφορά στις εργαστηριακές ρυθμίσεις"
 
-#: src/zrythm_app.c:1512
+#: src/zrythm_app.c:1445
 msgid "Override the audio backend to use"
 msgstr "Παράκαμψη παρασκηνίου ήχου προς χρήση"
 
-#: src/zrythm_app.c:1514
+#: src/zrythm_app.c:1447
 msgid "Override the MIDI backend to use"
 msgstr "Παράκαμψη παρασκηνίου MIDI προς χρήση"
 
-#: src/zrythm_app.c:1516
+#: src/zrythm_app.c:1449
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Συντομογραφία για --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1538
+#: src/zrythm_app.c:1471
 msgid "[PROJECT-FILE]"
 msgstr "[ΑΡΧΕΙΟ-ΕΡΓΟΥ]"
 
-#: src/zrythm_app.c:1543
+#: src/zrythm_app.c:1476
 #, fuzzy, c-format
 msgid ""
 "Examples:\n"
@@ -974,17 +966,17 @@ msgstr ""
 "\n"
 "Παρακαλούμε αναφέρετε σφάλματα στο %s\n"
 
-#: src/zrythm_app.c:1553
+#: src/zrythm_app.c:1486
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Εκτέλεση %s, προαιρετικά περνώντας ένα αρχείο έργου."
 
-#: src/zrythm_app.c:1581
+#: src/zrythm_app.c:1514
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
 
-#: src/actions/range_action.c:673 resources/ui/range_action_buttons.ui:11
+#: src/actions/range_action.c:673
 msgid "Insert silence"
 msgstr "Εισαγωγή σίγασης"
 
@@ -992,17 +984,17 @@ msgstr "Εισαγωγή σίγασης"
 msgid "Delete range"
 msgstr "Διαγραφή εύρους"
 
-#: src/actions/undo_manager.c:190 src/actions/actions.c:1018
+#: src/actions/undo_manager.c:188 src/actions/actions.c:997
 #, fuzzy
 msgid "Failed to undo action"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:1014
+#: src/actions/undo_manager.c:238 src/actions/actions.c:993
 #, fuzzy
 msgid "Failed to redo action"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/undo_manager.c:283
+#: src/actions/undo_manager.c:281
 #, fuzzy
 msgid "Failed to perform action"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
@@ -1052,12 +1044,12 @@ msgstr "Αποδέσμευση χαρτογράφησης MIDI"
 msgid "Set control value"
 msgstr "Ορισμός τιμής χειριστή"
 
-#: src/actions/actions.c:339
+#: src/actions/actions.c:342
 #, fuzzy
 msgid "Guile Disabled"
 msgstr "Απενεργοποίηση"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:345
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1066,94 +1058,81 @@ msgstr ""
 "Επεκτασιμότητα scripting με <a href=\"%s\">Το GNU GUILE</a> δεν είναι "
 "ενεργοποιημένο στην εγκατάστασή σας %s."
 
-#: src/actions/actions.c:712
+#: src/actions/actions.c:719
 msgid "Discard Changes?"
 msgstr ""
 
-#: src/actions/actions.c:713
+#: src/actions/actions.c:720
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "Όλες οι μη αποθηκευμένες αλλαγές στο παρόν έργο θα χαθούν. Συνέχεια;"
 
-#: src/actions/actions.c:716 src/actions/actions.c:805
-#: src/actions/actions.c:1818 src/actions/actions.c:3332
-#: src/actions/actions.c:3384 src/actions/actions.c:3530
-#: src/actions/actions.c:3652 src/actions/actions.c:3919 src/dsp/clip.c:692
-#: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:154
+#: src/actions/actions.c:723 src/actions/actions.c:784
+#: src/actions/actions.c:1797 src/actions/actions.c:3315
+#: src/actions/actions.c:3367 src/actions/actions.c:3513
+#: src/actions/actions.c:3635 src/actions/actions.c:3902 src/dsp/clip.c:692
+#: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
-#: src/gui/widgets/plugin_properties_expander.c:93
+#: src/gui/widgets/plugin_properties_expander.c:79
 #: src/gui/widgets/tracklist.c:334
-#: src/gui/widgets/dialogs/midi_function_dialog.c:340
+#: src/gui/widgets/dialogs/midi_function_dialog.c:312
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:231
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:112
-#: src/gui/widgets/dialogs/export_dialog.c:1205
-#: src/gui/widgets/dialogs/create_project_dialog.c:106
-#: src/gui/widgets/dialogs/bug_report_dialog.c:161
+#: src/gui/widgets/dialogs/export_dialog.c:1261
+#: src/gui/widgets/dialogs/bug_report_dialog.c:265
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:131
 #: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:297
 #: src/plugins/lv2/lv2_gtk.c:61 src/plugins/lv2/lv2_gtk.c:244
-#: resources/ui/first_run_window.ui:38 resources/ui/quantize_dialog.ui:149
-#: resources/ui/port_selector_dialog.ui:120
-#: resources/ui/string_entry_dialog.ui:10
+#: src/settings/plugin_settings.c:571
 msgid "_Cancel"
 msgstr "_Άκυρο"
 
-#: src/actions/actions.c:716 src/actions/actions.c:805
-#: src/gui/widgets/main_window.c:154
+#: src/actions/actions.c:723 src/actions/actions.c:784
+#: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr ""
 
-#: src/actions/actions.c:717 src/actions/actions.c:806
-#: src/gui/widgets/main_window.c:155
+#: src/actions/actions.c:724 src/actions/actions.c:785
+#: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
 msgstr "_Αποθήκευση"
 
-#: src/actions/actions.c:734
-#, fuzzy
-msgid "Failed to load project"
-msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
-
-#: src/actions/actions.c:760 src/gui/widgets/project_toolbar.c:24
-#: resources/ui/project_assistant.ui:34
-msgid "Open Project"
-msgstr "Άνοιγμα έργου"
-
-#: src/actions/actions.c:800 src/gui/widgets/main_window.c:149
+#: src/actions/actions.c:779 src/gui/widgets/main_window.c:148
 #, fuzzy
 msgid "Save Changes?"
 msgstr "Αποθήκευση κατάστασης"
 
-#: src/actions/actions.c:801
+#: src/actions/actions.c:780
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
 
-#: src/actions/actions.c:876
+#: src/actions/actions.c:855
 msgid "Save Project"
 msgstr "Αποθήκευση έργου"
 
-#: src/actions/actions.c:909
+#: src/actions/actions.c:888
 msgid "Export routing graph"
 msgstr "Εξαγωγή γραφήματος δρομολόγησης"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 msgid "Image (PNG)"
 msgstr "Εικόνα (PNG)"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 #, fuzzy
 msgid "Image (SVG)"
 msgstr "Εικόνα (PNG)"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 msgid "Dot graph"
 msgstr "Γράφημα σημαδιών"
 
-#: src/actions/actions.c:915
+#: src/actions/actions.c:894
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1162,72 +1141,72 @@ msgstr ""
 "Το γράφημα θα εξαχθεί στο <a href=\"%s\">%s</a>\n"
 "Επιλέξτε φορμάτ με το οποίο θα γίνει εξαγωγή"
 
-#: src/actions/actions.c:962
+#: src/actions/actions.c:941
 msgid "Graph exported"
 msgstr "Το γράφημα εξήχθη"
 
-#: src/actions/actions.c:990 src/guile/actions/undo_manager.c:66
+#: src/actions/actions.c:969 src/guile/actions/undo_manager.c:53
 #, fuzzy
 msgid "Failed to undo"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1053 src/guile/actions/undo_manager.c:89
+#: src/actions/actions.c:1032 src/guile/actions/undo_manager.c:76
 #, fuzzy
 msgid "Failed to redo"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1090 src/actions/actions.c:1103
-#: src/actions/actions.c:1325
+#: src/actions/actions.c:1069 src/actions/actions.c:1082
+#: src/actions/actions.c:1304
 #, fuzzy
 msgid "Failed to delete selections"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1141
+#: src/actions/actions.c:1120
 #, fuzzy
 msgid "Selections copied to clipboard"
 msgstr "Αποκοπή αντιγραφής στο πρόχειρο"
 
-#: src/actions/actions.c:1162
+#: src/actions/actions.c:1141
 #, fuzzy
 msgid "Plugins copied to clipboard"
 msgstr "Αποκοπή αντιγραφής στο πρόχειρο"
 
-#: src/actions/actions.c:1180
+#: src/actions/actions.c:1159
 #, fuzzy
 msgid "Tracks copied to clipboard"
 msgstr "Επικόλληση από το πρόχειρο"
 
-#: src/actions/actions.c:1197
+#: src/actions/actions.c:1176
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1212
+#: src/actions/actions.c:1191
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1277
+#: src/actions/actions.c:1256
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1350
+#: src/actions/actions.c:1329
 #, fuzzy
 msgid "Failed to duplicate selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:1564
+#: src/actions/actions.c:1543
 #, fuzzy
 msgid "Failed to unbind"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/actions/actions.c:1598 src/actions/actions.c:2057
-#: src/actions/actions.c:2084
+#: src/actions/actions.c:1577 src/actions/actions.c:2036
+#: src/actions/actions.c:2063
 #, fuzzy
 msgid "Failed to quantize"
 msgstr "Ενεργοποιεί ή απενεργοποιεί το πρόσθετο"
 
-#: src/actions/actions.c:1668 src/dsp/track.c:3453
+#: src/actions/actions.c:1647 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
@@ -1235,311 +1214,311 @@ msgstr "Ενεργοποιεί ή απενεργοποιεί το πρόσθετ
 msgid "Failed to create track"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:1720
+#: src/actions/actions.c:1699
 #, fuzzy
 msgid "Failed to duplicate tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1795 src/actions/actions.c:1841
+#: src/actions/actions.c:1774 src/actions/actions.c:1820
 #, fuzzy
 msgid "Failed to delete tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1813
+#: src/actions/actions.c:1792
 #, fuzzy
 msgid "Delete Tracks?"
 msgstr "_Διαγραφή κομματιών"
 
-#: src/actions/actions.c:1814
+#: src/actions/actions.c:1793
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1873
+#: src/actions/actions.c:1852
 #, fuzzy
 msgid "Failed to pin/unpin tracks"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/actions/actions.c:1884
+#: src/actions/actions.c:1863
 #, fuzzy
 msgid "Failed to solo tracks"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:1895
+#: src/actions/actions.c:1874
 #, fuzzy
 msgid "Failed to unsolo tracks"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1885
 #, fuzzy
 msgid "Failed to mute tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1896
 #, fuzzy
 msgid "Failed to unmute tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1928
+#: src/actions/actions.c:1907
 #, fuzzy
 msgid "Failed to listen tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1939
+#: src/actions/actions.c:1918
 #, fuzzy
 msgid "Failed to unlisten tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1950
+#: src/actions/actions.c:1929
 #, fuzzy
 msgid "Failed to enable tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:1961
+#: src/actions/actions.c:1940
 #, fuzzy
 msgid "Failed to disable tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:2099
+#: src/actions/actions.c:2078
 #, fuzzy
 msgid "Invalid Selection For Quantize"
 msgstr "Άκυρο"
 
-#: src/actions/actions.c:2100
+#: src/actions/actions.c:2079
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2167
+#: src/actions/actions.c:2146
 #, fuzzy
 msgid "Failed to mute selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:2180
+#: src/actions/actions.c:2159
 msgid "No regions selected"
 msgstr "Δεν έχει επιλεγεί περιοχή"
 
-#: src/actions/actions.c:2186
+#: src/actions/actions.c:2165
 msgid "Selections must be on the same lane"
 msgstr "Οι επιλογές πρέπει να βρίσκονται στην ίδια λωρίδα"
 
-#: src/actions/actions.c:2191
+#: src/actions/actions.c:2170
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2205
+#: src/actions/actions.c:2184
 #, fuzzy
 msgid "Failed to merge selections"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:2283
+#: src/actions/actions.c:2262
 #, fuzzy
 msgid "Failed to insert silence"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:2300
+#: src/actions/actions.c:2279
 #, fuzzy
 msgid "Failed to remove range"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:2376 src/actions/arranger_selections.c:538
-#: src/gui/widgets/dialogs/midi_function_dialog.c:274
+#: src/actions/actions.c:2355 src/actions/arranger_selections.c:538
+#: src/gui/widgets/dialogs/midi_function_dialog.c:246
 #, fuzzy
 msgid "Failed to apply MIDI function"
 msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
-#: src/actions/actions.c:2408 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2387 src/actions/arranger_selections.c:570
 #, fuzzy
 msgid "Failed to apply automation function"
 msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
-#: src/actions/actions.c:2448 src/actions/actions.c:3000
+#: src/actions/actions.c:2427 src/actions/actions.c:2980
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 #, fuzzy
 msgid "Failed to apply audio function"
 msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
-#: src/actions/actions.c:2464
+#: src/actions/actions.c:2443
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "Εισάγετε μια τιμή"
 
-#: src/actions/actions.c:2602
+#: src/actions/actions.c:2581
 #, fuzzy
 msgid "Pitch Ratio"
 msgstr "Τόνος"
 
-#: src/actions/actions.c:2683
+#: src/actions/actions.c:2662
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "Όνομα κομματιού"
 
-#: src/actions/actions.c:2702
+#: src/actions/actions.c:2681
 #, fuzzy
 msgid "Object name"
 msgstr "Όνομα έργου"
 
-#: src/actions/actions.c:2733
+#: src/actions/actions.c:2712
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2767
+#: src/actions/actions.c:2746
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:2794
+#: src/actions/actions.c:2774
 #, fuzzy
 msgid "Region Color"
 msgstr "Χρώμα περιοχής"
 
-#: src/actions/actions.c:2826
+#: src/actions/actions.c:2806
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:2865
+#: src/actions/actions.c:2845
 #, fuzzy
 msgid "Please enter a BPM"
 msgstr "Εισάγετε μια τιμή"
 
 #. TODO
-#: src/actions/actions.c:2873 src/dsp/scale.c:517
+#: src/actions/actions.c:2853 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:316 src/gui/widgets/tracklist.c:360
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr "Μη ενσωματωμένο"
 
-#: src/actions/actions.c:2873
+#: src/actions/actions.c:2853
 #, fuzzy
 msgid "Tap BPM not implemented yet"
 msgstr "Μη ενσωματωμένο"
 
-#: src/actions/actions.c:2928
+#: src/actions/actions.c:2908
 #, fuzzy
 msgid "Failed to move selections"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:2944
+#: src/actions/actions.c:2924
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2946
+#: src/actions/actions.c:2926
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:3104
+#: src/actions/actions.c:3087
 #, fuzzy
 msgid "Failed to set curve algorithm"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:3153
+#: src/actions/actions.c:3136
 #, fuzzy
 msgid "Failed to edit fades"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:3215
+#: src/actions/actions.c:3198
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3286
+#: src/actions/actions.c:3269
 #, fuzzy
 msgid "Failed to create pack"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:3298 src/actions/actions.c:3353
+#: src/actions/actions.c:3281 src/actions/actions.c:3336
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "Όνομα κομματιού"
 
-#: src/actions/actions.c:3329 src/actions/actions.c:3381
-#: src/actions/actions.c:3649 src/actions/actions.c:3912
+#: src/actions/actions.c:3312 src/actions/actions.c:3364
+#: src/actions/actions.c:3632 src/actions/actions.c:3895
 #, fuzzy
 msgid "Delete?"
 msgstr "Διαγραφή"
 
-#: src/actions/actions.c:3330
+#: src/actions/actions.c:3313
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3382
+#: src/actions/actions.c:3365
 msgid "Are you sure you want to delete this chord preset?"
 msgstr ""
 
-#: src/actions/actions.c:3405
+#: src/actions/actions.c:3388
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 #, fuzzy
 msgid "Preset Name"
 msgstr "Προρυθμίσεις"
 
-#: src/actions/actions.c:3425 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3408 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 #, fuzzy
 msgid "Failed to change balance"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:3447
+#: src/actions/actions.c:3430
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:3481
+#: src/actions/actions.c:3464
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:3504 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3487 src/gui/widgets/modulator_inner.c:71
 #, fuzzy
 msgid "Failed to delete plugins"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/actions/actions.c:3526
+#: src/actions/actions.c:3509
 #, fuzzy
 msgid "Delete Plugins?"
 msgstr "Διαγραφή προσθέτου"
 
-#: src/actions/actions.c:3527
+#: src/actions/actions.c:3510
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
 msgstr ""
 
-#: src/actions/actions.c:3578
+#: src/actions/actions.c:3561
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/actions/actions.c:3603
+#: src/actions/actions.c:3586
 #, fuzzy, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/actions.c:3644
+#: src/actions/actions.c:3627
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3650
+#: src/actions/actions.c:3633
 msgid "Are you sure you want to delete this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3843 src/actions/actions.c:3874
+#: src/actions/actions.c:3826 src/actions/actions.c:3857
 #, fuzzy
 msgid "Collection name"
 msgstr "Συλλογή"
 
-#: src/actions/actions.c:3915
+#: src/actions/actions.c:3898
 #, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4091
+#: src/actions/actions.c:4077
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
@@ -1557,7 +1536,7 @@ msgstr ""
 msgid "Failed getting contents for %s"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1947
+#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1910
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
@@ -2033,7 +2012,7 @@ msgid "Could not create plugin"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:497 src/dsp/audio_function.c:140
-#: src/dsp/track.c:2029 src/dsp/track.c:3011
+#: src/dsp/track.c:2026 src/dsp/track.c:3013
 #, fuzzy
 msgid "Failed to instantiate plugin"
 msgstr "Ενεργοποιεί ή απενεργοποιεί το πρόσθετο"
@@ -2120,18 +2099,18 @@ msgstr "Αντιγραφή %d προσθέτων"
 msgid "Change Load Behavior for %s"
 msgstr ""
 
-#: src/dsp/modulator_track.c:58 src/utils/gtk.c:1023
+#: src/dsp/modulator_track.c:58 src/utils/gtk.c:998
 #: src/gui/widgets/bot_dock_edge.c:216
 #: src/gui/widgets/popovers/automatable_selector_popover.c:329
 msgid "Modulators"
 msgstr "Διαμορφωτές"
 
-#: src/dsp/supported_file.c:276
+#: src/dsp/supported_file.c:272
 #, fuzzy, c-format
 msgid "Failed reading metadata for %s"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/dsp/supported_file.c:280
+#: src/dsp/supported_file.c:276
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -2141,8 +2120,7 @@ msgid ""
 "Bit depth: %d bits"
 msgstr ""
 
-#: src/dsp/snap_grid.c:244 resources/ui/snap_grid_popover.ui:112
-#: resources/ui/snap_grid_popover.ui:190
+#: src/dsp/snap_grid.c:244
 msgid "Adaptive"
 msgstr "Προσαρμοστικό"
 
@@ -2273,13 +2251,11 @@ msgstr "Αποτυχία επαναφοράς σχήματος %s"
 msgid "Markers"
 msgstr "Σημάδια"
 
-#: src/dsp/marker_track.c:59 src/gui/widgets/timeline_selection_info.c:192
-#: resources/ui/quantize_dialog.ui:62
+#: src/dsp/marker_track.c:59 src/gui/widgets/timeline_selection_info.c:179
 msgid "start"
 msgstr "έναρξη"
 
-#: src/dsp/marker_track.c:66 src/gui/widgets/timeline_selection_info.c:197
-#: resources/ui/quantize_dialog.ui:70
+#: src/dsp/marker_track.c:66 src/gui/widgets/timeline_selection_info.c:184
 msgid "end"
 msgstr "τέλος"
 
@@ -2450,23 +2426,23 @@ msgstr "Δεν μπορεί να δρομολογηθεί"
 msgid "Cannot set track listened"
 msgstr "Δεν μπορεί να δρομολογηθεί"
 
-#: src/dsp/track.c:2711 src/settings/plugin_settings.c:374
+#: src/dsp/track.c:2713 src/settings/plugin_settings.c:374
 #: src/settings/plugin_settings.c:410
 #, fuzzy
 msgid "Failed to rename track"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/dsp/track.c:3053 src/dsp/track.c:3095
+#: src/dsp/track.c:3055 src/dsp/track.c:3097
 #, fuzzy
 msgid "Cannot set track comment"
 msgstr "Δεν μπορεί να δρομολογηθεί"
 
-#: src/dsp/track.c:3129
+#: src/dsp/track.c:3131
 #, fuzzy
 msgid "Cannot set track icon"
 msgstr "Δεν μπορεί να δρομολογηθεί"
 
-#: src/dsp/track.c:3351
+#: src/dsp/track.c:3353
 #, fuzzy
 msgid "Cannot set track enabled"
 msgstr "Δεν μπορεί να δρομολογηθεί"
@@ -2488,12 +2464,12 @@ msgstr "Κλείδωμα"
 msgid "Automation"
 msgstr "Αυτοματισμός"
 
-#: src/dsp/engine.c:485 src/dsp/engine.c:559
+#: src/dsp/engine.c:483 src/dsp/engine.c:557
 #, fuzzy
 msgid "Backend Initialization Failed"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/dsp/engine.c:486
+#: src/dsp/engine.c:484
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
@@ -2503,19 +2479,19 @@ msgstr ""
 "παρασκήνιο αντί αυτού. Ελέγξτε τις επιλογές του παρασκηνίου σας στις "
 "ρυθμίσεις."
 
-#: src/dsp/engine.c:525
+#: src/dsp/engine.c:523
 #, fuzzy
 msgid "Backend Error"
 msgstr "Σφάλμα παρασκηνίου"
 
-#: src/dsp/engine.c:526
+#: src/dsp/engine.c:524
 #, c-format
 msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
 
-#: src/dsp/engine.c:560
+#: src/dsp/engine.c:558
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -2525,12 +2501,12 @@ msgstr ""
 "παρασκήνιο αντί αυτού. Ελέγξτε τις επιλογές του παρασκηνίου σας στις "
 "ρυθμίσεις."
 
-#: src/dsp/engine.c:600
+#: src/dsp/engine.c:598
 #, fuzzy
 msgid "Invalid Backend Combination"
 msgstr "θέση έναρξης"
 
-#: src/dsp/engine.c:601
+#: src/dsp/engine.c:599
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
@@ -2539,12 +2515,12 @@ msgstr ""
 "θέλετε να χρησιμοποιήσετε JACK, επιλέξτε το JACK ως παρασκήνιο του ήχου και "
 "του MIDI σας."
 
-#: src/dsp/engine.c:790
+#: src/dsp/engine.c:788
 #, fuzzy
 msgid "Selected Backend Not Found"
 msgstr "Τα επιλεγμένα παρασκήνια είναι λειτουργικά"
 
-#: src/dsp/engine.c:791
+#: src/dsp/engine.c:789
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2592,12 +2568,12 @@ msgid ""
 "The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
 msgstr ""
 
-#: src/dsp/exporter.c:962
+#: src/dsp/exporter.c:952
 #, fuzzy
 msgid "Failed to create audio track"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/dsp/exporter.c:992
+#: src/dsp/exporter.c:976
 #, fuzzy
 msgid "Invalid time range"
 msgstr "Άκυρο"
@@ -2628,7 +2604,6 @@ msgid "Pulseaudio Backend Test Failed"
 msgstr "Το παρασκήνιο ήχου προς χρήση."
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
 msgid "Chords"
 msgstr "Συγχορδίες"
 
@@ -2663,12 +2638,10 @@ msgstr ""
 
 #: src/dsp/clip.c:691 src/utils/ui.c:163 src/utils/dialogs.c:40
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:83
-#: src/gui/widgets/dialogs/create_project_dialog.c:107
-#: src/gui/widgets/dialogs/bug_report_dialog.c:160
-#: src/gui/widgets/dialogs/bug_report_dialog.c:369
-#: src/plugins/lv2/lv2_gtk.c:245 resources/ui/first_run_window.ui:26
-#: resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:11
+#: src/gui/widgets/dialogs/bug_report_dialog.c:49
+#: src/gui/widgets/dialogs/bug_report_dialog.c:265
+#: src/gui/widgets/dialogs/bug_report_dialog.c:403
+#: src/plugins/lv2/lv2_gtk.c:245
 msgid "_OK"
 msgstr "_OK"
 
@@ -2715,7 +2688,7 @@ msgstr "Εισάγετε μια τιμή"
 
 #: src/dsp/automation_point.c:226 src/gui/widgets/balance_control.c:291
 #: src/gui/widgets/balance_control.c:297 src/gui/widgets/item_factory.c:296
-#: src/gui/widgets/item_factory.c:316 src/gui/widgets/bot_bar.c:302
+#: src/gui/widgets/item_factory.c:316 src/gui/widgets/bot_bar.c:308
 #, fuzzy
 msgid "Invalid Value"
 msgstr "Άκυρο"
@@ -2887,7 +2860,8 @@ msgid "Failed to copy tracks"
 msgstr "Τοποθέτηση κομματιού σε σόλο"
 
 #: src/dsp/tracklist.c:1629 src/utils/error.c:26
-#: src/gui/widgets/dialogs/bug_report_dialog.c:461
+#: src/gui/widgets/dialogs/bug_report_dialog.c:500
+#: src/gui/widgets/dialogs/generic_progress_dialog.c:142
 msgid "Error"
 msgstr ""
 
@@ -3016,11 +2990,11 @@ msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 msgid "soxr_process() error: %s"
 msgstr ""
 
-#: src/utils/ui.c:573
+#: src/utils/ui.c:572
 msgid "Sine (Equal Power)"
 msgstr "Ημίτονο (ίση ισχύς)"
 
-#: src/utils/ui.c:855
+#: src/utils/ui.c:854
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -3029,7 +3003,7 @@ msgstr ""
 "Δεν υπάρχει locale για τη γλώσσα που επιλέξατε (%s). Εγκαταστήστε πρώτα ένα "
 "και επανεκκινήστε %s"
 
-#: src/utils/ui.c:861
+#: src/utils/ui.c:860
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -3046,11 +3020,11 @@ msgstr ""
 "2. Εκτελέστε το <b>locale-gen</b> ως root\n"
 "3. Επανεκκινήστε %s"
 
-#: src/utils/ui.c:886
+#: src/utils/ui.c:885
 msgid "Experimental Feature"
 msgstr ""
 
-#: src/utils/ui.c:887
+#: src/utils/ui.c:886
 msgid ""
 "BPM and time signature automation is an experimental feature. Using it may "
 "corrupt your project."
@@ -3089,63 +3063,63 @@ msgstr "Σφάλμα ALSA: %s"
 #. FIXME the names should be fetched from the
 #. * tab labels instead of repeating the names
 #. * here
-#: src/utils/gtk.c:1021
+#: src/utils/gtk.c:996
 msgid "Mixer"
 msgstr "Μίκτης"
 
-#: src/utils/gtk.c:1025
+#: src/utils/gtk.c:1000
 msgid "Chord Pad"
 msgstr "Ταμπλέτα συγχορδιών"
 
-#: src/utils/gtk.c:1026
+#: src/utils/gtk.c:1001
 msgid "Editor"
 msgstr "Επεξεργαστής"
 
-#: src/utils/gtk.c:1028 src/gui/widgets/left_dock_edge.c:176
+#: src/utils/gtk.c:1003 src/gui/widgets/left_dock_edge.c:176
 #, fuzzy
 msgid "Track Inspector"
 msgstr "Επιθεωρητής κομματιού"
 
-#: src/utils/gtk.c:1031 src/gui/widgets/left_dock_edge.c:186
+#: src/utils/gtk.c:1006 src/gui/widgets/left_dock_edge.c:186
 #, fuzzy
 msgid "Plugin Inspector"
 msgstr "Επιθεωρητής προσθέτου"
 
-#: src/utils/gtk.c:1034 src/gui/widgets/right_dock_edge.c:91
+#: src/utils/gtk.c:1009 src/gui/widgets/right_dock_edge.c:93
 msgid "Plugin Browser"
 msgstr "Περιηγητής προσθέτων"
 
-#: src/utils/gtk.c:1037 src/gui/widgets/right_dock_edge.c:98
-#: src/gui/widgets/right_dock_edge.c:123
+#: src/utils/gtk.c:1012 src/gui/widgets/right_dock_edge.c:102
+#: src/gui/widgets/right_dock_edge.c:127
 msgid "File Browser"
 msgstr "Περιηγητής αρχείων"
 
-#: src/utils/gtk.c:1039 src/gui/widgets/right_dock_edge.c:112
+#: src/utils/gtk.c:1014 src/gui/widgets/right_dock_edge.c:116
 msgid "Chord Preset Browser"
 msgstr ""
 
-#: src/utils/gtk.c:1042 src/gui/widgets/track.c:348
+#: src/utils/gtk.c:1017 src/gui/widgets/track.c:348
 #: src/gui/widgets/monitor_section.c:29
 #, fuzzy
 msgid "Monitor"
 msgstr "Μόνιτορ έξω"
 
-#: src/utils/gtk.c:1044 src/gui/widgets/main_notebook.c:108
+#: src/utils/gtk.c:1019 src/gui/widgets/main_notebook.c:108
 #, fuzzy
 msgid "Timeline"
 msgstr "Χρονικό εύρος"
 
-#: src/utils/gtk.c:1047 src/gui/widgets/main_notebook.c:113
+#: src/utils/gtk.c:1022 src/gui/widgets/main_notebook.c:113
 #, fuzzy
 msgid "MIDI CC Bindings"
 msgstr "Δεσμεύσεις CC"
 
-#: src/utils/gtk.c:1050 src/gui/widgets/main_notebook.c:111
+#: src/utils/gtk.c:1025 src/gui/widgets/main_notebook.c:111
 #, fuzzy
 msgid "Port Connections"
 msgstr "Σύνδεσμοι θυρών"
 
-#: src/utils/gtk.c:1052
+#: src/utils/gtk.c:1027
 msgid "Scenes"
 msgstr ""
 
@@ -3163,7 +3137,7 @@ msgstr "Ένα πρόσθετο υπάρχει ήδη στην επιλεγμέ�
 msgid "_Overwrite"
 msgstr "Επεγγραφή γεγονότων"
 
-#: src/utils/log.c:793
+#: src/utils/log.c:792
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr ""
@@ -3184,9 +3158,7 @@ msgid "Desktop"
 msgstr ""
 
 #: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:51
-#: src/gui/widgets/home_toolbar.c:121
 #: src/gui/widgets/port_connections_tree.c:131 src/plugins/collection.c:170
-#: resources/ui/modulator_inner.ui:24
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -3200,66 +3172,64 @@ msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 msgid "Failed to paste tracks"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/backend/event_manager.c:267
+#: src/gui/backend/event_manager.c:264
 #, fuzzy
 msgid "Plugin Crashed"
 msgstr "Περιηγητής προσθέτων"
 
-#: src/gui/backend/event_manager.c:268
+#: src/gui/backend/event_manager.c:265
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1027
+#: src/gui/backend/event_manager.c:1022
 #, fuzzy, c-format
 msgid "%d new plugins detected"
 msgstr "Δεν έχει επιλεγεί περιοχή"
 
-#: src/gui/backend/event_manager.c:1100
+#: src/gui/backend/event_manager.c:1095
 #, fuzzy
 msgid "Plugin collections updated."
 msgstr "Καρτέλα περιηγητή προσθέτων"
 
-#: src/gui/backend/event_manager.c:1143
+#: src/gui/backend/event_manager.c:1137
 #, fuzzy
 msgid "Plugin preset saved."
 msgstr "Φίλτρο περιηγητή προσθέτων"
 
-#: src/gui/backend/event_manager.c:1146
+#: src/gui/backend/event_manager.c:1140
 #, fuzzy
 msgid "Plugin preset loaded."
 msgstr "Καρτέλα περιηγητή προσθέτων"
 
-#: src/gui/backend/arranger_selections.c:2319
+#: src/gui/backend/arranger_selections.c:2320
 #, fuzzy
 msgid "Failed to add region"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/backend/arranger_selections.c:2352
+#: src/gui/backend/arranger_selections.c:2353
 #, fuzzy
 msgid "Failed to paste selections"
 msgstr "Αδυναμία επικόλλησης επιλογών"
 
-#: src/gui/backend/arranger_object.c:1671
+#: src/gui/backend/arranger_object.c:1666
 #, fuzzy
 msgid "Failed to edit object"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/backend/arranger_object.c:3099
+#: src/gui/backend/arranger_object.c:3042
 #, c-format
 msgid "Invalid object name %s"
 msgstr "Άκυρο όνομα αντικειμένου %s"
 
-#: src/gui/backend/arranger_object.c:3125
+#: src/gui/backend/arranger_object.c:3068
 #, fuzzy
 msgid "Failed to rename object"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:287
+#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:254
 #: src/gui/widgets/preferences.c:339 src/gui/widgets/modulator_inner.c:130
 #: src/gui/widgets/modulator_macro.c:129 src/gui/widgets/balance_control.c:253
-#: resources/ui/plugin_browser.ui:75 resources/ui/plugin_browser.ui:113
-#: resources/ui/plugin_browser.ui:151 resources/ui/plugin_browser.ui:189
 msgid "Reset"
 msgstr "Επαναφορά"
 
@@ -3364,65 +3334,55 @@ msgstr "Επιλογή όλων"
 msgid "Device"
 msgstr "Συσκευή"
 
-#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:633
+#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:634
 msgid "Note/Control"
 msgstr "Νότα/χειριστής"
 
 #: src/gui/widgets/cc_bindings_tree.c:172
 #: src/gui/widgets/port_connections_tree.c:211
-#: src/gui/widgets/item_factory.c:648
+#: src/gui/widgets/item_factory.c:649
 msgid "Destination"
 msgstr "Προορισμός"
 
-#: src/gui/widgets/fader.c:332 src/gui/widgets/item_factory.c:296
+#: src/gui/widgets/fader.c:299 src/gui/widgets/item_factory.c:296
 #: src/gui/widgets/item_factory.c:316
 #, fuzzy
 msgid "Invalid value"
 msgstr "Άκυρο"
 
-#: src/gui/widgets/fader.c:365
+#: src/gui/widgets/fader.c:332
 #, fuzzy
 msgid "Fader Value"
 msgstr "Ένταση fader"
 
 #. set name and icon
-#: src/gui/widgets/fader.c:468 src/gui/widgets/fader_controls_expander.c:39
+#: src/gui/widgets/fader.c:430 src/gui/widgets/fader_controls_expander.c:39
 msgid "Fader"
 msgstr "Fader"
 
-#: src/gui/widgets/main_window.c:150
+#: src/gui/widgets/main_window.c:149
 msgid ""
 "The project contains unsaved changes. If you quit without saving, unsaved "
 "changes will be lost."
 msgstr ""
 
-#: src/gui/widgets/main_window.c:249
+#: src/gui/widgets/main_window.c:248
 msgid "Startup Error"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:738 src/gui/widgets/preferences.c:916
-#: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
-#: resources/gtk/help-overlay.ui:36
-msgid "Preferences"
-msgstr "Επιλογές"
+#: src/gui/widgets/main_window.c:270
+msgid "Redo"
+msgstr "Επαναφορά"
 
-#: src/gui/widgets/main_window.c:739
-msgid "Log viewer"
-msgstr "Προβολέας αρχείου καταγραφής"
+#: src/gui/widgets/main_window.c:270
+#: build/data/org.zrythm.Zrythm.gschema.xml:1273
+msgid "Undo"
+msgstr "Αναίρεση"
 
-#: src/gui/widgets/main_window.c:740
-msgid "Scripting interface"
-msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
-
-#: src/gui/widgets/right_dock_edge.c:105
+#: src/gui/widgets/right_dock_edge.c:109
 #, fuzzy
 msgid "Monitor Section"
 msgstr "Είσοδος μόνιτορ fader"
-
-#: src/gui/widgets/header.c:91
-#, c-format
-msgid "About %s"
-msgstr "Σχετικά με %s"
 
 #: src/gui/widgets/preferences.c:156
 msgid "All preferences have been successfully reset to initial values"
@@ -3442,32 +3402,32 @@ msgstr ""
 "Αυτό θα επαναφέρει το %s στις εργαστηριακές ρυθμίσεις. Θα χάσετε όλες τις "
 "ρυθμίσεις σας. Πληκτρολογήστε «y» για να συνεχίσετε: "
 
-#: src/gui/widgets/preferences.c:173 resources/ui/first_run_window.ui:32
+#: src/gui/widgets/preferences.c:173
 #, fuzzy
 msgid "_Reset"
 msgstr "Επαναφορά"
 
-#: src/gui/widgets/preferences.c:491
+#: src/gui/widgets/preferences.c:492
 msgid "Select a folder"
 msgstr "Επιλογή φακέλου"
 
-#: src/gui/widgets/preferences.c:492
+#: src/gui/widgets/preferences.c:493
 msgid "Select a file"
 msgstr "Επιλογή αρχείου"
 
-#: src/gui/widgets/preferences.c:671
+#: src/gui/widgets/preferences.c:672
 #: build/data/org.zrythm.Zrythm.gschema.xml:1123
 #: build/data/org.zrythm.Zrythm.gschema.xml:1191
 msgid "Paths"
 msgstr "Μονοπάτια"
 
-#: src/gui/widgets/preferences.c:672
+#: src/gui/widgets/preferences.c:673
 #: build/data/org.zrythm.Zrythm.gschema.xml:1159
 #: build/data/org.zrythm.Zrythm.gschema.xml:1190
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
-#: src/gui/widgets/preferences.c:675
+#: src/gui/widgets/preferences.c:676
 #, c-format
 msgid ""
 "Multiple search paths must be separated by the %s character. Environment "
@@ -3476,13 +3436,13 @@ msgid ""
 msgstr ""
 
 #. add option to reset to factory
-#: src/gui/widgets/preferences.c:687
+#: src/gui/widgets/preferences.c:688
 #: build/data/org.zrythm.Zrythm.gschema.xml:1151
 #, fuzzy
 msgid "Other"
 msgstr "Θόρυβος διασποράς"
 
-#: src/gui/widgets/preferences.c:706
+#: src/gui/widgets/preferences.c:707
 msgid "Reset all preferences to initial values."
 msgstr ""
 
@@ -3491,29 +3451,9 @@ msgstr ""
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Κάποιες αλλαγές θα λειτουργήσουν μόνο αν επανεκκινήσετε %s"
 
-#: src/gui/widgets/help_toolbar.c:21
-msgid "About Zrythm"
-msgstr "Σχετικά με το Zrythm"
-
-#: src/gui/widgets/help_toolbar.c:22
-msgid "Chat (Matrix)"
-msgstr "Συνομιλία (Matrix)"
-
-#: src/gui/widgets/help_toolbar.c:23
-msgid "Manual"
-msgstr "Εγχειρίδιο"
-
-#: src/gui/widgets/help_toolbar.c:24
-msgid "Keyboard Shortcuts"
-msgstr "Συντομεύσεις πληκτρολογίου"
-
-#: src/gui/widgets/help_toolbar.c:25
-msgid "Donate"
-msgstr "Δωρεά"
-
-#: src/gui/widgets/help_toolbar.c:26
-msgid "Report a Bug"
-msgstr "Αναφορά σφάλματος"
+#: src/gui/widgets/preferences.c:917
+msgid "Preferences"
+msgstr "Επιλογές"
 
 #: src/gui/widgets/folder_channel.c:144
 #, fuzzy
@@ -3560,98 +3500,94 @@ msgid "Unrouted"
 msgstr "Σε σίγαση"
 
 #: src/gui/widgets/event_viewer.c:502 src/gui/widgets/event_viewer.c:639
-#: src/gui/widgets/plugin_properties_expander.c:191
-#: src/gui/widgets/item_factory.c:236 src/gui/widgets/item_factory.c:746
-#: src/gui/widgets/item_factory.c:792 src/gui/widgets/item_factory.c:811
+#: src/gui/widgets/plugin_properties_expander.c:180
+#: src/gui/widgets/item_factory.c:236 src/gui/widgets/item_factory.c:747
+#: src/gui/widgets/item_factory.c:793 src/gui/widgets/item_factory.c:812
 #: src/gui/widgets/dialogs/port_info.c:46
-#: src/gui/widgets/dialogs/export_dialog.c:975
-#: src/gui/widgets/dialogs/project_assistant.c:569
+#: src/gui/widgets/dialogs/export_dialog.c:1031
 #: src/gui/widgets/dialogs/arranger_object_info.c:39
 #: src/gui/widgets/popovers/track_filter_popover.c:180
-#: resources/ui/create_project_dialog.ui:31
 msgid "Name"
 msgstr "Όνομα"
 
 #: src/gui/widgets/event_viewer.c:510
-#: src/gui/widgets/plugin_properties_expander.c:202
-#: src/gui/widgets/item_factory.c:754 src/gui/widgets/dialogs/port_info.c:59
-#: resources/ui/chord_selector_window.ui:157
+#: src/gui/widgets/plugin_properties_expander.c:191
+#: src/gui/widgets/item_factory.c:755 src/gui/widgets/dialogs/port_info.c:59
 msgid "Type"
 msgstr "Τύπος"
 
 #: src/gui/widgets/event_viewer.c:519 src/gui/widgets/event_viewer.c:614
 #: src/gui/widgets/event_viewer.c:709 src/gui/widgets/item_factory.c:200
-#: src/gui/widgets/item_factory.c:675
-#: src/gui/widgets/dialogs/export_dialog.c:1100
+#: src/gui/widgets/item_factory.c:676
+#: src/gui/widgets/dialogs/export_dialog.c:1156
 msgid "Start"
 msgstr "Έναρξη"
 
 #: src/gui/widgets/event_viewer.c:528 src/gui/widgets/item_factory.c:211
-#: src/gui/widgets/item_factory.c:713
+#: src/gui/widgets/item_factory.c:714
 msgid "Clip start"
 msgstr "Έναρξη κλιπ"
 
 #: src/gui/widgets/event_viewer.c:537 src/gui/widgets/item_factory.c:216
-#: src/gui/widgets/item_factory.c:691
+#: src/gui/widgets/item_factory.c:692
 msgid "Loop start"
 msgstr "Έναρξη λούπας"
 
 #: src/gui/widgets/event_viewer.c:546 src/gui/widgets/item_factory.c:221
-#: src/gui/widgets/item_factory.c:702
+#: src/gui/widgets/item_factory.c:703
 msgid "Loop end"
 msgstr "Τέλος λούπας"
 
 #: src/gui/widgets/event_viewer.c:555 src/gui/widgets/item_factory.c:226
-#: src/gui/widgets/item_factory.c:724
+#: src/gui/widgets/item_factory.c:725
 #, fuzzy
 msgid "Fade in"
 msgstr "Είσοδος fader"
 
 #: src/gui/widgets/event_viewer.c:564 src/gui/widgets/item_factory.c:231
-#: src/gui/widgets/item_factory.c:735
+#: src/gui/widgets/item_factory.c:736
 #, fuzzy
 msgid "Fade out"
 msgstr "Έξοδος fader"
 
 #: src/gui/widgets/event_viewer.c:573 src/gui/widgets/event_viewer.c:623
 #: src/gui/widgets/event_viewer.c:714 src/gui/widgets/item_factory.c:206
-#: src/gui/widgets/item_factory.c:680
-#: src/gui/widgets/dialogs/export_dialog.c:1108
+#: src/gui/widgets/item_factory.c:681
+#: src/gui/widgets/dialogs/export_dialog.c:1164
 msgid "End"
 msgstr "Τέλος"
 
-#: src/gui/widgets/event_viewer.c:589 src/gui/widgets/item_factory.c:663
+#: src/gui/widgets/event_viewer.c:589 src/gui/widgets/item_factory.c:664
 msgid "Note"
 msgstr "Νότα"
 
 #: src/gui/widgets/event_viewer.c:597 src/gui/widgets/piano_roll_keys.c:502
-#: src/gui/widgets/item_factory.c:268 src/gui/widgets/item_factory.c:669
+#: src/gui/widgets/item_factory.c:268 src/gui/widgets/item_factory.c:670
 msgid "Pitch"
 msgstr "Τόνος"
 
 #: src/gui/widgets/event_viewer.c:648 src/gui/widgets/event_viewer.c:673
 #: src/gui/widgets/digital_meter.c:101 src/gui/widgets/item_factory.c:201
-#: src/gui/widgets/item_factory.c:676 resources/ui/inspector_master.ui:51
-#: resources/ui/inspector_ap.ui:51 resources/ui/inspector_midi.ui:51
+#: src/gui/widgets/item_factory.c:677
 msgid "Position"
 msgstr "Θέση"
 
-#: src/gui/widgets/event_viewer.c:664 src/gui/widgets/item_factory.c:765
+#: src/gui/widgets/event_viewer.c:664 src/gui/widgets/item_factory.c:766
 msgid "Index"
 msgstr "Ευρετήριο"
 
 #: src/gui/widgets/event_viewer.c:682 src/gui/widgets/item_factory.c:287
-#: src/gui/widgets/item_factory.c:770
+#: src/gui/widgets/item_factory.c:771
 msgid "Value"
 msgstr "Τιμή"
 
-#: src/gui/widgets/event_viewer.c:691 src/gui/widgets/item_factory.c:775
+#: src/gui/widgets/event_viewer.c:691 src/gui/widgets/item_factory.c:776
 #, fuzzy
 msgid "Curve type"
 msgstr "τύπος νότας"
 
 #: src/gui/widgets/event_viewer.c:700 src/gui/widgets/item_factory.c:310
-#: src/gui/widgets/item_factory.c:780
+#: src/gui/widgets/item_factory.c:781
 #: build/data/org.zrythm.Zrythm.gschema.xml:582
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Curviness"
@@ -3693,7 +3629,7 @@ msgid "No file selected"
 msgstr "Δεν έχει επιλεγεί κλιπ"
 
 #: src/gui/widgets/panel_file_browser.c:461
-#: src/gui/widgets/plugin_browser.c:996 resources/ui/automatable_selector.ui:38
+#: src/gui/widgets/plugin_browser.c:1011
 msgid "Search..."
 msgstr ""
 
@@ -3714,7 +3650,7 @@ msgid "Failed to move or copy track"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
 #: src/gui/widgets/track.c:311 src/gui/widgets/track.c:816
-#: src/gui/widgets/channel.c:654 resources/ui/fader_buttons.ui:43
+#: src/gui/widgets/channel.c:635
 msgid "Solo"
 msgstr "Σόλο"
 
@@ -3727,22 +3663,21 @@ msgid "Show instrument UI"
 msgstr "Προβολή διεπαφής χρήστη του οργάνου"
 
 #: src/gui/widgets/track.c:339 src/gui/widgets/track.c:853
-#: src/gui/widgets/channel.c:691
+#: src/gui/widgets/channel.c:672
 #, fuzzy
 msgid "Unlisten"
 msgstr "Ακρόαση"
 
 #: src/gui/widgets/track.c:343 src/gui/widgets/track.c:846
-#: src/gui/widgets/monitor_section.c:41 src/gui/widgets/channel.c:684
-#: resources/ui/fader_buttons.ui:71
+#: src/gui/widgets/monitor_section.c:41 src/gui/widgets/channel.c:665
 msgid "Listen"
 msgstr "Ακρόαση"
 
-#: src/gui/widgets/track.c:352 resources/ui/fader_buttons.ui:15
+#: src/gui/widgets/track.c:352
 msgid "Mono compatibility"
 msgstr "Συμβατότητα μόνο"
 
-#: src/gui/widgets/track.c:356 resources/ui/fader_buttons.ui:85
+#: src/gui/widgets/track.c:356
 msgid "Swap phase"
 msgstr ""
 
@@ -3800,23 +3735,23 @@ msgstr ""
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2297
+#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2294
 msgid "Marker name"
 msgstr "Όνομα δείκτη"
 
-#: src/gui/widgets/track.c:703 src/gui/widgets/channel.c:615
+#: src/gui/widgets/track.c:703 src/gui/widgets/channel.c:596
 msgid "_Delete Track"
 msgstr "_Διαγραφή κομματιού"
 
-#: src/gui/widgets/track.c:705 src/gui/widgets/channel.c:617
+#: src/gui/widgets/track.c:705 src/gui/widgets/channel.c:598
 msgid "_Delete Tracks"
 msgstr "_Διαγραφή κομματιών"
 
-#: src/gui/widgets/track.c:713 src/gui/widgets/channel.c:624
+#: src/gui/widgets/track.c:713 src/gui/widgets/channel.c:605
 msgid "_Duplicate Track"
 msgstr "_Δημιουργία διπλοτύπου του κομματιού"
 
-#: src/gui/widgets/track.c:715 src/gui/widgets/channel.c:626
+#: src/gui/widgets/track.c:715 src/gui/widgets/channel.c:607
 msgid "_Duplicate Tracks"
 msgstr "_Δημιουργία διπλοτύπου των κομματιών"
 
@@ -3824,23 +3759,23 @@ msgstr "_Δημιουργία διπλοτύπου των κομματιών"
 msgid "Add Region"
 msgstr "Προσθήκη περιοχής"
 
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:633
+#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
 msgid "Hide Track"
 msgstr "Απόκρυψη κομματιού"
 
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:633
+#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
 msgid "Hide Tracks"
 msgstr "Απόκρυψη κομματιών"
 
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:638
+#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
 msgid "Pin/Unpin Track"
 msgstr "Καρφίτσωμα/Ξεκαρφίτσωμα κομματιού"
 
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:638
+#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
 msgid "Pin/Unpin Tracks"
 msgstr "Καρφίτσωμα/ξεκαρφίτσωμα κομματιών"
 
-#: src/gui/widgets/track.c:741 src/gui/widgets/channel.c:715
+#: src/gui/widgets/track.c:741 src/gui/widgets/channel.c:696
 #, fuzzy
 msgid "Change color..."
 msgstr "Αλλαγή χρώματος"
@@ -3852,7 +3787,7 @@ msgstr "όνομα_περιοχής"
 
 #: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:201
 #: src/gui/widgets/channel_slot.c:623 src/gui/widgets/timeline_arranger.c:983
-#: src/gui/widgets/timeline_arranger.c:1142 resources/ui/header.ui:11
+#: src/gui/widgets/timeline_arranger.c:1142
 msgid "Edit"
 msgstr "Επεξεργασία"
 
@@ -3872,8 +3807,7 @@ msgid "Append Lane Automation Regions to Selection"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
 #: src/gui/widgets/track.c:786 src/gui/widgets/piano_roll_keys.c:519
-#: src/gui/widgets/midi_arranger.c:456 resources/ui/export_dialog.ui:103
-#: resources/ui/export_dialog.ui:247
+#: src/gui/widgets/midi_arranger.c:456
 #, fuzzy
 msgid "Selection"
 msgstr "Επιλογές"
@@ -3886,11 +3820,11 @@ msgstr "Γρήγορη μετατροπή σε ήχο"
 msgid "Bounce..."
 msgstr "Μετατροπή σε ήχο..."
 
-#: src/gui/widgets/track.c:802 resources/ui/bounce_dialog.ui:101
+#: src/gui/widgets/track.c:802
 msgid "Bounce"
 msgstr "Μετατροπή σε ήχο"
 
-#: src/gui/widgets/track.c:823 src/gui/widgets/channel.c:661
+#: src/gui/widgets/track.c:823 src/gui/widgets/channel.c:642
 #, fuzzy
 msgid "Unsolo"
 msgstr "Άρση σόλο κομματιού"
@@ -3909,20 +3843,20 @@ msgstr ""
 msgid "Direct Output"
 msgstr "Απευθείας έξω"
 
-#: src/gui/widgets/track.c:903 src/gui/widgets/channel.c:696
+#: src/gui/widgets/track.c:903 src/gui/widgets/channel.c:677
 #: src/gui/widgets/popovers/automatable_selector_popover.c:169
 #: src/gui/widgets/popovers/automatable_selector_popover.c:385
 #, fuzzy
 msgid "Channel"
 msgstr "Κανάλι %s"
 
-#: src/gui/widgets/track.c:912 src/gui/widgets/bot_bar.c:428
-#: src/gui/widgets/channel.c:704
+#: src/gui/widgets/track.c:912 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:685
 msgid "Disable"
 msgstr "Απενεργοποίηση"
 
-#: src/gui/widgets/track.c:918 src/gui/widgets/bot_bar.c:428
-#: src/gui/widgets/channel.c:710
+#: src/gui/widgets/track.c:918 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:691
 msgid "Enable"
 msgstr "Ενεργοποίηση"
 
@@ -3986,209 +3920,207 @@ msgstr "Προσθήκη κομματιού εφέ"
 msgid "Curve algorithm"
 msgstr "Αλγόριθμος καμπύλης"
 
-#: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/plugin_properties_expander.c:77
 #, fuzzy
 msgid "Load Preset"
 msgstr "Fade προρύθμισης"
 
-#: src/gui/widgets/plugin_properties_expander.c:94
+#: src/gui/widgets/plugin_properties_expander.c:80
 msgid "_Load"
 msgstr ""
 
-#: src/gui/widgets/plugin_properties_expander.c:131 src/plugins/plugin.c:451
+#: src/gui/widgets/plugin_properties_expander.c:117 src/plugins/plugin.c:451
 #: src/plugins/plugin_gtk.c:155
 #, fuzzy
 msgid "Failed to apply preset"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/gui/widgets/plugin_properties_expander.c:181
+#: src/gui/widgets/plugin_properties_expander.c:167
 msgid "Plugin Properties"
 msgstr "Ιδιότητες προσθέτου"
 
-#: src/gui/widgets/plugin_properties_expander.c:213
+#: src/gui/widgets/plugin_properties_expander.c:202
 msgid "Banks"
 msgstr "Τράπεζες"
 
-#: src/gui/widgets/plugin_properties_expander.c:224
-#: resources/ui/file_browser_filters.ui:26
+#: src/gui/widgets/plugin_properties_expander.c:213
 msgid "Presets"
 msgstr "Προρυθμίσεις"
 
-#: src/gui/widgets/plugin_properties_expander.c:243
-#: src/gui/widgets/project_toolbar.c:22 resources/gtk/help-overlay.ui:121
+#: src/gui/widgets/plugin_properties_expander.c:232
 msgid "Save"
 msgstr "Αποθήκευση"
 
-#: src/gui/widgets/plugin_properties_expander.c:245
+#: src/gui/widgets/plugin_properties_expander.c:234
 #, fuzzy
 msgid "Save preset"
 msgstr "Fade προρύθμισης"
 
-#: src/gui/widgets/plugin_properties_expander.c:247
+#: src/gui/widgets/plugin_properties_expander.c:236
 msgid "Load"
 msgstr "Φόρτωση"
 
-#: src/gui/widgets/plugin_properties_expander.c:249
+#: src/gui/widgets/plugin_properties_expander.c:238
 #, fuzzy
 msgid "Load preset"
 msgstr "Fade προρύθμισης"
 
-#: src/gui/widgets/arranger.c:1334
+#: src/gui/widgets/arranger.c:1331
 #, fuzzy
 msgid "Create Object"
 msgstr "Δημιουργία καινούριου έργου"
 
-#: src/gui/widgets/arranger.c:1337
+#: src/gui/widgets/arranger.c:1334
 #, fuzzy
 msgid "Create"
 msgstr "Δημιουργία %s"
 
-#: src/gui/widgets/arranger.c:1635 src/gui/widgets/arranger.c:1651
-#: src/gui/widgets/arranger.c:1692 src/gui/widgets/arranger.c:1751
-#: src/gui/widgets/arranger.c:1769
+#: src/gui/widgets/arranger.c:1632 src/gui/widgets/arranger.c:1648
+#: src/gui/widgets/arranger.c:1689 src/gui/widgets/arranger.c:1748
+#: src/gui/widgets/arranger.c:1766
 #, fuzzy
 msgid "Failed to move selection"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:1708 src/gui/widgets/arranger.c:3895
+#: src/gui/widgets/arranger.c:1705 src/gui/widgets/arranger.c:3892
 #, fuzzy
 msgid "Failed to move chords"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/widgets/arranger.c:2018 src/gui/widgets/timeline_arranger.c:309
+#: src/gui/widgets/arranger.c:2015 src/gui/widgets/timeline_arranger.c:309
 #, fuzzy
 msgid "Failed to create region"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:2324
+#: src/gui/widgets/arranger.c:2321
 #, fuzzy
 msgid "Automation value"
 msgstr "Προβολή λωρίδων αυτοματισμού"
 
-#: src/gui/widgets/arranger.c:2344 src/gui/widgets/arranger.c:2365
+#: src/gui/widgets/arranger.c:2341 src/gui/widgets/arranger.c:2362
 #, fuzzy
 msgid "Cannot Resize"
 msgstr "Δεν μπορεί να δρομολογηθεί"
 
-#: src/gui/widgets/arranger.c:2345
+#: src/gui/widgets/arranger.c:2342
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2366
+#: src/gui/widgets/arranger.c:2363
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3502
+#: src/gui/widgets/arranger.c:3499
 #, fuzzy
 msgid "Failed to delete selection"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3523 src/gui/widgets/arranger.c:4045
+#: src/gui/widgets/arranger.c:3520 src/gui/widgets/arranger.c:4042
 #, fuzzy
 msgid "Failed to edit selection"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3566
+#: src/gui/widgets/arranger.c:3563
 #, fuzzy
 msgid "Failed to move automation"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3586
+#: src/gui/widgets/arranger.c:3583
 #, fuzzy
 msgid "Failed to duplicate automation"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3606 src/gui/widgets/arranger.c:3932
-#: src/gui/widgets/arranger.c:4317
+#: src/gui/widgets/arranger.c:3603 src/gui/widgets/arranger.c:3929
+#: src/gui/widgets/arranger.c:4312
 #, fuzzy
 msgid "Failed to create objects"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3623
+#: src/gui/widgets/arranger.c:3620
 #, fuzzy
 msgid "Failed to fill automation"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3650 src/gui/widgets/arranger.c:3688
-#: src/gui/widgets/arranger.c:3705 src/gui/widgets/timeline_arranger.c:852
+#: src/gui/widgets/arranger.c:3647 src/gui/widgets/arranger.c:3685
+#: src/gui/widgets/arranger.c:3702 src/gui/widgets/timeline_arranger.c:852
 #, fuzzy
 msgid "Failed to edit selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3733 src/gui/widgets/arranger.c:3752
+#: src/gui/widgets/arranger.c:3730 src/gui/widgets/arranger.c:3749
 #, fuzzy
 msgid "Failed to resize objects"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3760 src/gui/widgets/arranger.c:3799
+#: src/gui/widgets/arranger.c:3757 src/gui/widgets/arranger.c:3796
 #, fuzzy
 msgid "Failed to move MIDI notes"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3817
+#: src/gui/widgets/arranger.c:3814
 #, fuzzy
 msgid "Failed to duplicate MIDI notes"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/widgets/arranger.c:3836
+#: src/gui/widgets/arranger.c:3833
 #, fuzzy
 msgid "Failed to create MIDI notes"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:3913
+#: src/gui/widgets/arranger.c:3910
 #, fuzzy
 msgid "Failed to duplicate chords"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/widgets/arranger.c:3993 src/gui/widgets/arranger.c:4221
+#: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4216
 #, fuzzy
 msgid "Failed resizing selection"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4073
+#: src/gui/widgets/arranger.c:4068
 #, fuzzy
 msgid "Failed to edit timeline objects"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/widgets/arranger.c:4092 src/gui/widgets/arranger.c:4111
+#: src/gui/widgets/arranger.c:4087 src/gui/widgets/arranger.c:4106
 #, fuzzy
 msgid "Failed to resize timeline objects"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4128
+#: src/gui/widgets/arranger.c:4123
 #, fuzzy
 msgid "Failed to resize selection"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4147
+#: src/gui/widgets/arranger.c:4142
 #, fuzzy
 msgid "Failed setting fade in position"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4165 src/gui/widgets/arranger.c:4188
-#: src/gui/widgets/arranger.c:4204
+#: src/gui/widgets/arranger.c:4160 src/gui/widgets/arranger.c:4183
+#: src/gui/widgets/arranger.c:4199
 #, fuzzy
 msgid "Failed resizing selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/gui/widgets/arranger.c:4269
+#: src/gui/widgets/arranger.c:4264
 #, fuzzy
 msgid "Failed to move objects"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4299
+#: src/gui/widgets/arranger.c:4294
 #, fuzzy
 msgid "Failed to link or copy selection"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4350
+#: src/gui/widgets/arranger.c:4345
 #, fuzzy
 msgid "Failed to split selection"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/arranger.c:4359
+#: src/gui/widgets/arranger.c:4354
 #, c-format
 msgid "%s name"
 msgstr "όνομα %s"
@@ -4212,30 +4144,6 @@ msgstr "Κλικ για ενεργοποίηση εισαγωγών"
 #, fuzzy
 msgid "Click to enable outputs"
 msgstr "Κλικ για ενεργοποίηση εισαγωγών"
-
-#: src/gui/widgets/view_toolbar.c:21
-msgid "Toggle Status Bar"
-msgstr "Εναλλαγή μπάρας λειτουργίας"
-
-#: src/gui/widgets/view_toolbar.c:22
-msgid "Fullscreen"
-msgstr "Πλήρης οθόνη"
-
-#: src/gui/widgets/project_toolbar.c:21
-msgid "New Project"
-msgstr "Άνοιγμα έργου"
-
-#: src/gui/widgets/project_toolbar.c:23
-msgid "Save As"
-msgstr "Αποθήκευση ως"
-
-#: src/gui/widgets/project_toolbar.c:25
-msgid "Export As"
-msgstr "Εξαγωγή ως"
-
-#: src/gui/widgets/project_toolbar.c:26
-msgid "Export Graph"
-msgstr "Εξαγωγή γραφήματος"
 
 #: src/gui/widgets/channel_slot.c:150
 msgid "No instrument"
@@ -4276,7 +4184,7 @@ msgstr ""
 msgid "Change Load Behavior"
 msgstr "Αλλαγή fader"
 
-#: src/gui/widgets/channel_slot.c:601 resources/ui/port_selector_dialog.ui:60
+#: src/gui/widgets/channel_slot.c:601
 msgid "Plugin"
 msgstr "Πρόσθετο"
 
@@ -4289,21 +4197,21 @@ msgstr "_Επιλογή"
 msgid "empty slot"
 msgstr "άδεια θέση"
 
-#: src/gui/widgets/port_connection_row.c:49
+#: src/gui/widgets/port_connection_row.c:36
 #, fuzzy
 msgid "Failed to enable connection"
 msgstr "Ενεργοποίηση/απενεργοποίηση σύνδεσης"
 
-#: src/gui/widgets/port_connection_row.c:64
+#: src/gui/widgets/port_connection_row.c:51
 #, fuzzy
 msgid "Failed to disconnect"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/gui/widgets/port_connection_row.c:107
+#: src/gui/widgets/port_connection_row.c:94
 msgid "Enable/disable connection"
 msgstr "Ενεργοποίηση/απενεργοποίηση σύνδεσης"
 
-#: src/gui/widgets/port_connection_row.c:136
+#: src/gui/widgets/port_connection_row.c:123
 msgid "Delete connection"
 msgstr "Διαγραφή σύνδεσης"
 
@@ -4317,7 +4225,6 @@ msgstr "Έναρξη σε εισαγόμενο MIDI"
 
 #: src/gui/widgets/transport_controls.c:328
 #: src/gui/widgets/dialogs/midi_function_dialog.c:76
-#: resources/ui/export_dialog.ui:60 resources/ui/export_dialog.ui:201
 msgid "Options"
 msgstr "Ρυθμίσεις"
 
@@ -4346,47 +4253,13 @@ msgstr "Λειτουργία ηχογράφησης"
 msgid "Preroll"
 msgstr ""
 
-#: src/gui/widgets/transport_controls.c:388 resources/ui/fader_buttons.ui:29
+#: src/gui/widgets/transport_controls.c:388
 msgid "Record"
 msgstr "Ηχογράφηση"
 
 #: src/gui/widgets/transport_controls.c:388
 msgid "Record options"
 msgstr "Ρυθμίσεις ηχογράφησης"
-
-#: src/gui/widgets/home_toolbar.c:37
-msgid "Redo"
-msgstr "Επαναφορά"
-
-#: src/gui/widgets/home_toolbar.c:37
-#: build/data/org.zrythm.Zrythm.gschema.xml:1273
-msgid "Undo"
-msgstr "Αναίρεση"
-
-#: src/gui/widgets/home_toolbar.c:117
-msgid "Cut"
-msgstr "Αποκοπή"
-
-#: src/gui/widgets/home_toolbar.c:118
-msgid "Copy"
-msgstr "Αντιγραφή"
-
-#: src/gui/widgets/home_toolbar.c:119
-msgid "Paste"
-msgstr "Επικόλληση"
-
-#: src/gui/widgets/home_toolbar.c:122
-#, fuzzy
-msgid "Clear selection"
-msgstr "Καθαρισμός επιλογής"
-
-#: src/gui/widgets/home_toolbar.c:123 resources/gtk/help-overlay.ui:296
-msgid "Select all"
-msgstr "Επιλογή όλων"
-
-#: src/gui/widgets/home_toolbar.c:124 resources/gtk/help-overlay.ui:308
-msgid "Loop selection"
-msgstr "Επιλογή λούπας"
 
 #: src/gui/widgets/bot_dock_edge.c:214
 msgid "Editor view"
@@ -4455,12 +4328,10 @@ msgstr "Είσοδος ήχου (%s) για ηχογράφηση"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:59
-#: resources/ui/monitor_section.ui:153
 msgid "L"
 msgstr "Α"
 
 #: src/gui/widgets/track_input_expander.c:59
-#: resources/ui/automation_track.ui:64 resources/ui/monitor_section.ui:174
 msgid "R"
 msgstr "Δ"
 
@@ -4591,7 +4462,7 @@ msgid "start position"
 msgstr "θέση έναρξης"
 
 #: src/gui/widgets/editor_selection_info.c:55
-#: src/gui/widgets/timeline_selection_info.c:302
+#: src/gui/widgets/timeline_selection_info.c:289
 msgid "No object selected"
 msgstr "Δεν έχει επιλεγεί αντικείμενο"
 
@@ -4649,19 +4520,19 @@ msgstr "Είσοδος MIDI"
 msgid "MIDI Out"
 msgstr "Έξοδος MIDI"
 
-#: src/gui/widgets/ruler.c:1341 src/gui/widgets/bot_bar.c:154
+#: src/gui/widgets/ruler.c:1341 src/gui/widgets/bot_bar.c:160
 msgid "BBT"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:156
-#: src/gui/widgets/dialogs/midi_function_dialog.c:158
-#: src/gui/widgets/dialogs/midi_function_dialog.c:238
+#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:162
+#: src/gui/widgets/dialogs/midi_function_dialog.c:148
+#: src/gui/widgets/dialogs/midi_function_dialog.c:213
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 #, fuzzy
 msgid "Time"
 msgstr "Χρονικό εύρος"
 
-#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:157
+#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:163
 #, fuzzy
 msgid "Display"
 msgstr "προβολή BBT"
@@ -4772,22 +4643,22 @@ msgstr "Επισήμανση κλίμακας"
 msgid "Highlight Both"
 msgstr "Επισήμανση και των δύο"
 
-#: src/gui/widgets/timeline_selection_info.c:203
+#: src/gui/widgets/timeline_selection_info.c:190
 msgid "clip start (rel.)"
 msgstr "έναρξη κλιπ (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:209
+#: src/gui/widgets/timeline_selection_info.c:196
 msgid "loop start (rel.)"
 msgstr "έναρξη λούπας (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:215
+#: src/gui/widgets/timeline_selection_info.c:202
 msgid "loop end (rel.)"
 msgstr "τέλος λούπας (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:234
-#: src/gui/widgets/timeline_selection_info.c:250
-#: src/gui/widgets/timeline_selection_info.c:265
-#: src/gui/widgets/timeline_selection_info.c:281
+#: src/gui/widgets/timeline_selection_info.c:221
+#: src/gui/widgets/timeline_selection_info.c:237
+#: src/gui/widgets/timeline_selection_info.c:252
+#: src/gui/widgets/timeline_selection_info.c:268
 msgid "position"
 msgstr "θέση"
 
@@ -4796,10 +4667,9 @@ msgstr "θέση"
 msgid "Failed to enable binding"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/item_factory.c:88 src/gui/widgets/item_factory.c:600
+#: src/gui/widgets/item_factory.c:88 src/gui/widgets/item_factory.c:601
 #: src/gui/widgets/popovers/track_filter_popover.c:183
 #: src/gui/widgets/popovers/track_filter_popover.c:297
-#: resources/ui/chord_selector_window.ui:478
 msgid "Visibility"
 msgstr "Ορατότητα"
 
@@ -4848,30 +4718,27 @@ msgstr "Άκυρο"
 msgid "Invalid pitch"
 msgstr "Άκυρο"
 
-#: src/gui/widgets/item_factory.c:499
+#: src/gui/widgets/item_factory.c:500
 msgid "Add Bookmark"
 msgstr ""
 
-#: src/gui/widgets/item_factory.c:688 src/gui/widgets/item_factory.c:699
-#: src/gui/widgets/item_factory.c:710 src/gui/widgets/item_factory.c:721
-#: src/gui/widgets/item_factory.c:732 src/gui/widgets/item_factory.c:743
+#: src/gui/widgets/item_factory.c:689 src/gui/widgets/item_factory.c:700
+#: src/gui/widgets/item_factory.c:711 src/gui/widgets/item_factory.c:722
+#: src/gui/widgets/item_factory.c:733 src/gui/widgets/item_factory.c:744
 #: src/gui/widgets/dialogs/port_info.c:81
 msgid "N/A"
 msgstr "N/A"
 
-#: src/gui/widgets/item_factory.c:793
-#: src/gui/widgets/dialogs/project_assistant.c:570
+#: src/gui/widgets/item_factory.c:794
 #, fuzzy
 msgid "Template Name"
 msgstr "Όνομα κομματιού"
 
-#: src/gui/widgets/item_factory.c:797
-#: src/gui/widgets/dialogs/project_assistant.c:578
+#: src/gui/widgets/item_factory.c:798
 msgid "Path"
 msgstr "Μονοπάτι"
 
-#: src/gui/widgets/item_factory.c:801
-#: src/gui/widgets/dialogs/project_assistant.c:586
+#: src/gui/widgets/item_factory.c:802
 msgid "Last Modified"
 msgstr "Τροποποιημένο τελευταία φορά"
 
@@ -4983,116 +4850,217 @@ msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 msgid "Failed to create selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/bot_bar.c:39
+#: src/gui/widgets/bot_bar.c:45
 msgid "Playhead"
 msgstr "Κεφαλή αναπαραγωγής"
 
-#: src/gui/widgets/bot_bar.c:40
+#: src/gui/widgets/bot_bar.c:46
 msgid "Playhead [Jack Timebase Master]"
 msgstr "Κεφαλή αναπαραγωγής [Jack TImebase Master]"
 
-#: src/gui/widgets/bot_bar.c:41
+#: src/gui/widgets/bot_bar.c:47
 msgid "Playhead [Jack Client]"
 msgstr "Κεφαλή αναπαραγωγής [Πελάτης Jack]"
 
-#: src/gui/widgets/bot_bar.c:130
+#: src/gui/widgets/bot_bar.c:136
 #, fuzzy
 msgid "Input"
 msgstr "Είσοδοι"
 
 #. TRANSLATORS: tap tempo
-#: src/gui/widgets/bot_bar.c:134
+#: src/gui/widgets/bot_bar.c:140
 msgid "Tap"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:168
+#: src/gui/widgets/bot_bar.c:174
 msgid "Become JACK Transport master"
 msgstr "Δημιουργία JACK Transport master"
 
-#: src/gui/widgets/bot_bar.c:171
+#: src/gui/widgets/bot_bar.c:177
 msgid "Sync to JACK Transport"
 msgstr "Συγχρονισμός με JACK Transport"
 
-#: src/gui/widgets/bot_bar.c:174
+#: src/gui/widgets/bot_bar.c:180
 msgid "Unlink JACK Transport"
 msgstr "Αποσύνδεση JACK Transport"
 
-#: src/gui/widgets/bot_bar.c:212
+#: src/gui/widgets/bot_bar.c:218
 msgid "playhead"
 msgstr "κεφαλή αναπαραγωγής"
 
-#: src/gui/widgets/bot_bar.c:249
+#: src/gui/widgets/bot_bar.c:255
 msgid "JACK Transport client"
 msgstr "Πελάτης JACK Transport"
 
-#: src/gui/widgets/bot_bar.c:256
+#: src/gui/widgets/bot_bar.c:262
 msgid "JACK Timebase master"
 msgstr "JACK Timebase master"
 
-#: src/gui/widgets/bot_bar.c:302
+#: src/gui/widgets/bot_bar.c:308
 #, fuzzy
 msgid "Please enter a valid number"
 msgstr "Εισάγετε μια τιμή"
 
-#: src/gui/widgets/bot_bar.c:346
+#: src/gui/widgets/bot_bar.c:352
 msgid "Buffer Size"
 msgstr "Μέγεθος ενδιάμεσης μνήμης"
 
-#: src/gui/widgets/bot_bar.c:356
+#: src/gui/widgets/bot_bar.c:362
 msgid "Feature Not Available"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:357
+#: src/gui/widgets/bot_bar.c:363
 msgid "This feature is not available at the moment"
 msgstr "Αυτή η λειτουργία δεν είναι προς το παρόν διαθέσιμη"
 
-#: src/gui/widgets/bot_bar.c:413
+#: src/gui/widgets/bot_bar.c:419
 msgid "Status"
 msgstr "Κατάσταση"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
-#: src/gui/widgets/bot_bar.c:418
+#: src/gui/widgets/bot_bar.c:424
 msgid "Buf sz"
 msgstr "Μέγ ενδ μν"
 
 #. TRANSLATORS: verb - change buffer size
-#: src/gui/widgets/bot_bar.c:422
+#: src/gui/widgets/bot_bar.c:428
 #, fuzzy
 msgid "change"
 msgstr "Εύρος"
 
 #. TRANSLATORS: sample rate
-#: src/gui/widgets/bot_bar.c:425
+#: src/gui/widgets/bot_bar.c:431
 msgid "Rate"
 msgstr "Ρυθμός δείγματος"
 
-#: src/gui/widgets/bot_bar.c:450
+#: src/gui/widgets/bot_bar.c:457
 msgid "Metronome"
 msgstr "Μετρονόμος"
 
-#: src/gui/widgets/bot_bar.c:450
+#: src/gui/widgets/bot_bar.c:457
 #, fuzzy
 msgid "Metronome options"
 msgstr "Μετρονόμος"
 
 #. volume
-#: src/gui/widgets/bot_bar.c:460 resources/ui/file_auditioner_controls.ui:29
+#: src/gui/widgets/bot_bar.c:467
 msgid "Volume"
 msgstr "Ένταση"
 
 #. countin
-#: src/gui/widgets/bot_bar.c:472
+#: src/gui/widgets/bot_bar.c:479
 msgid "Count-in"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:526
+#: src/gui/widgets/bot_bar.c:549
 msgid "bpm"
 msgstr "bpm"
 
-#: src/gui/widgets/bot_bar.c:528
+#: src/gui/widgets/bot_bar.c:551
 msgid "time sig."
 msgstr "μέτρο"
+
+#: src/gui/widgets/greeter.c:41
+#, fuzzy
+msgid "<File not found>"
+msgstr "Το αρχείο %s δεν βρέθηκε."
+
+#. just show the error and let the program continue - this was called
+#. * while another project is already running
+#: src/gui/widgets/greeter.c:98
+#, fuzzy
+msgid "Project loading failed"
+msgstr "Το έργο αποθηκεύτηκε."
+
+#: src/gui/widgets/greeter.c:287 src/gui/widgets/greeter.c:615
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:6
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:38
+msgid "Zrythm"
+msgstr "Zrythm"
+
+#. get next available "Untitled Project"
+#: src/gui/widgets/greeter.c:452
+msgid "Untitled Project"
+msgstr "Άτιτλο έργο"
+
+#: src/gui/widgets/greeter.c:473
+#, fuzzy
+msgid "Select Project"
+msgstr "Επιλογή έργου"
+
+#: src/gui/widgets/greeter.c:508
+#, fuzzy
+msgid "Open a Project"
+msgstr "Άνοιγμα έργου"
+
+#: src/gui/widgets/greeter.c:542
+msgid "Blank project"
+msgstr "Κενό έργο"
+
+#: src/gui/widgets/greeter.c:654
+#: src/gui/widgets/dialogs/welcome_message_dialog.c:26
+#, c-format
+msgid ""
+"If this is your first time using Zrythm, we suggest going through the "
+"'Getting Started' section in the %suser manual%s."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:662
+#, c-format
+msgid ""
+"Zrythm relies on donations and purchases to sustain development. If you "
+"enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:678
+msgid "Only plugins installed via Flatpak are supported."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:686
+#, c-format
+msgid ""
+"Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s, "
+"registered in the UK and other countries."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:706
+msgid "Initial Configuration"
+msgstr ""
+
+#: src/gui/widgets/greeter.c:714 src/gui/widgets/dialogs/scripting_dialog.c:92
+msgid "Language"
+msgstr "Γλώσσα"
+
+#: src/gui/widgets/greeter.c:715
+#, fuzzy
+msgid "Preferred language"
+msgstr "Ισορροπία pre-fader"
+
+#: src/gui/widgets/greeter.c:727
+#, fuzzy
+msgid "User path"
+msgstr "Επιλογή όλων"
+
+#: src/gui/widgets/greeter.c:728
+msgid "Location to save user files"
+msgstr ""
+
+#: src/gui/widgets/greeter.c:730
+#, fuzzy
+msgid "Select a directory"
+msgstr "Επιλογή έργου"
+
+#: src/gui/widgets/greeter.c:745
+#, c-format
+msgid ""
+"You can create your own templates by copying a project directory under "
+"“templates” in the <a href=\"%s\">Zrythm user path</a>."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:794
+msgid "Select parent directory to save the project in"
+msgstr "Επιλογή καταλόγου γονέα στον οποίο θα αποθηκευτεί το έργο"
 
 #: src/gui/widgets/tracklist.c:66
 msgid "Add _MIDI Track"
@@ -5167,7 +5135,7 @@ msgstr ""
 msgid "Preset Packs"
 msgstr "Προρυθμίσεις"
 
-#: src/gui/widgets/log_viewer.c:98
+#: src/gui/widgets/log_viewer.c:85
 msgid "Log Viewer"
 msgstr "Προβολέας αρχείου καταγραφής σφαλμάτων"
 
@@ -5183,46 +5151,10 @@ msgstr "Απευθείας έξω"
 msgid "Track Properties"
 msgstr "Ιδιότητες κομματιού"
 
-#: src/gui/widgets/channel.c:642
+#: src/gui/widgets/channel.c:623
 #: src/gui/widgets/popovers/automatable_selector_popover.c:346
-#: resources/ui/port_selector_dialog.ui:26
 msgid "Track"
 msgstr "Κομμάτι"
-
-#: src/gui/widgets/dialogs/first_run.c:194
-msgid "Initial Configuration"
-msgstr ""
-
-#: src/gui/widgets/dialogs/first_run.c:203
-#: src/gui/widgets/dialogs/scripting_dialog.c:92
-msgid "Language"
-msgstr "Γλώσσα"
-
-#: src/gui/widgets/dialogs/first_run.c:204
-#, fuzzy
-msgid "Preferred language"
-msgstr "Ισορροπία pre-fader"
-
-#: src/gui/widgets/dialogs/first_run.c:213
-#, fuzzy
-msgid "User path"
-msgstr "Επιλογή όλων"
-
-#: src/gui/widgets/dialogs/first_run.c:214
-msgid "Location to save user files"
-msgstr ""
-
-#: src/gui/widgets/dialogs/first_run.c:216
-#, fuzzy
-msgid "Select a directory"
-msgstr "Επιλογή έργου"
-
-#: src/gui/widgets/dialogs/welcome_message_dialog.c:26
-#, c-format
-msgid ""
-"If this is your first time using Zrythm, we suggest going through the "
-"'Getting Started' section in the %suser manual%s."
-msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:34
 #, c-format
@@ -5268,35 +5200,35 @@ msgstr ""
 msgid "Start Velocity"
 msgstr "Προεπιλεγμένη τράπεζα"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:102
+#: src/gui/widgets/dialogs/midi_function_dialog.c:99
 #, fuzzy
 msgid "End Velocity"
 msgstr "Ταχύτητα"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:115
-#: src/gui/widgets/dialogs/midi_function_dialog.c:200
+#: src/gui/widgets/dialogs/midi_function_dialog.c:109
+#: src/gui/widgets/dialogs/midi_function_dialog.c:180
 #, fuzzy
 msgid "Curve"
 msgstr "Καμπυλότητα"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:139
-#: src/gui/widgets/dialogs/midi_function_dialog.c:224
+#: src/gui/widgets/dialogs/midi_function_dialog.c:133
+#: src/gui/widgets/dialogs/midi_function_dialog.c:204
 #, fuzzy
 msgid "Curviness %"
 msgstr "Καμπυλότητα"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:155
+#: src/gui/widgets/dialogs/midi_function_dialog.c:145
 #, fuzzy
 msgid "Note: Flam is currently unimplemented"
 msgstr "Μη ενσωματωμένο"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:189
+#: src/gui/widgets/dialogs/midi_function_dialog.c:171
 #: build/data/org.zrythm.Zrythm.gschema.xml:605
 #, fuzzy
 msgid "Ascending"
 msgstr "Δεσμεύσεις CC"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:335
+#: src/gui/widgets/dialogs/midi_function_dialog.c:307
 #, fuzzy
 msgid "_Apply"
 msgstr "Εφαρμογή %s"
@@ -5314,19 +5246,9 @@ msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 msgid "These ports cannot be connected"
 msgstr "Αυτές οι θύρες δεν μπορούν να συνδεθούν"
 
-#: src/gui/widgets/dialogs/port_selector_dialog.c:309
+#: src/gui/widgets/dialogs/port_selector_dialog.c:308
 msgid "Track Ports"
 msgstr "Θύρες κομματιού"
-
-#: src/gui/widgets/dialogs/project_progress_dialog.c:45
-#, fuzzy
-msgid "Saved"
-msgstr "Αποθήκευση"
-
-#: src/gui/widgets/dialogs/project_progress_dialog.c:48
-#, fuzzy
-msgid "Project Progress"
-msgstr "Πρόοδος εξαγωγής"
 
 #: src/gui/widgets/dialogs/port_info.c:30
 #: src/gui/widgets/dialogs/port_info.c:136
@@ -5393,22 +5315,22 @@ msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 msgid "File Import"
 msgstr "Περιηγητής αρχείων"
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:34
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:31
 msgid "Check for Updates?"
 msgstr ""
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:36
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:33
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
 msgstr ""
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
-#: src/settings/plugin_settings.c:535
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
+#: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
 msgid "_Yes"
 msgstr ""
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
-#: src/settings/plugin_settings.c:535
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
+#: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
 #, fuzzy
 msgid "_No"
 msgstr "Όχι"
@@ -5433,7 +5355,7 @@ msgid "Select MIDI file"
 msgstr "Επιλογή αρχείου MIDI"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:112
-#: src/gui/widgets/dialogs/export_dialog.c:1206
+#: src/gui/widgets/dialogs/export_dialog.c:1262
 msgid "_Export"
 msgstr "_Εξαγωγή"
 
@@ -5478,21 +5400,21 @@ msgstr "Μετονομασία κομματιού"
 msgid "Export lanes as"
 msgstr "Εξαγωγή ως"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:70
+#: src/gui/widgets/dialogs/quantize_dialog.c:57
 #, fuzzy
 msgid "Failed to quantize editor selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:83
+#: src/gui/widgets/dialogs/quantize_dialog.c:70
 #, fuzzy
 msgid "Failed to quantize timeline selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:111
+#: src/gui/widgets/dialogs/quantize_dialog.c:98
 msgid "note length"
 msgstr "διάρκεια νότας"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:116
+#: src/gui/widgets/dialogs/quantize_dialog.c:103
 msgid "note type"
 msgstr "τύπος νότας"
 
@@ -5513,11 +5435,11 @@ msgstr "Εκτέλεση"
 msgid "The result will be printed here"
 msgstr "Το αποτέλεσμα θα εμφανισθεί εδώ"
 
-#: src/gui/widgets/dialogs/export_dialog.c:199
+#: src/gui/widgets/dialogs/export_dialog.c:200
 msgid "none"
 msgstr "κανένα"
 
-#: src/gui/widgets/dialogs/export_dialog.c:275
+#: src/gui/widgets/dialogs/export_dialog.c:276
 msgid ""
 "\n"
 "1 more file..."
@@ -5525,7 +5447,7 @@ msgstr ""
 "\n"
 "1 ακόμα αρχείο..."
 
-#: src/gui/widgets/dialogs/export_dialog.c:280
+#: src/gui/widgets/dialogs/export_dialog.c:281
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -5534,268 +5456,174 @@ msgstr ""
 "\n"
 "%d ακόμα αρχεία..."
 
-#: src/gui/widgets/dialogs/export_dialog.c:373
+#: src/gui/widgets/dialogs/export_dialog.c:374
 msgid "The following files will be created:"
 msgstr "Τα ακόλουθα αρχεία θα δημιουργηθούν:"
 
-#: src/gui/widgets/dialogs/export_dialog.c:374
+#: src/gui/widgets/dialogs/export_dialog.c:375
 msgid "in the directory:"
 msgstr "στον κατάλογο:"
 
-#: src/gui/widgets/dialogs/export_dialog.c:587
-msgid "No tracks to export"
-msgstr "Δεν υπάρχουν κομμάτια προς εξαγωγή"
-
-#: src/gui/widgets/dialogs/export_dialog.c:695
+#: src/gui/widgets/dialogs/export_dialog.c:639
 msgid "Exported"
 msgstr "Εξάχθηκε"
 
-#: src/gui/widgets/dialogs/export_dialog.c:960
+#: src/gui/widgets/dialogs/export_dialog.c:663
+msgid "No tracks to export"
+msgstr "Δεν υπάρχουν κομμάτια προς εξαγωγή"
+
+#: src/gui/widgets/dialogs/export_dialog.c:1016
 msgid "Export"
 msgstr "Εξαγωγή"
 
-#: src/gui/widgets/dialogs/export_dialog.c:967
-#: resources/ui/inspector_master.ui:40 resources/ui/inspector_ap.ui:40
-#: resources/ui/inspector_midi.ui:40
+#: src/gui/widgets/dialogs/export_dialog.c:1023
 msgid "Color"
 msgstr "Χρώμα"
 
-#: src/gui/widgets/dialogs/export_dialog.c:971
+#: src/gui/widgets/dialogs/export_dialog.c:1027
 msgid "Icon"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:989
+#: src/gui/widgets/dialogs/export_dialog.c:1045
 msgid "<name>.<format>"
 msgstr "<όνομα>.<μορφή>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:990
+#: src/gui/widgets/dialogs/export_dialog.c:1046
 msgid "<date>_<name>.<format>"
 msgstr "<ημερομηνία>_<όνομα>.<μορφή>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1022
+#: src/gui/widgets/dialogs/export_dialog.c:1078
 msgid "Mixdown"
 msgstr "Μίξη"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1023
+#: src/gui/widgets/dialogs/export_dialog.c:1079
 msgid "Stems"
 msgstr "Στελέχη"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1062
+#: src/gui/widgets/dialogs/export_dialog.c:1118
 #, fuzzy
 msgctxt "Export time range"
 msgid "Loop"
 msgstr "Λούπα"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1063
+#: src/gui/widgets/dialogs/export_dialog.c:1119
 #, fuzzy
 msgctxt "Export time range"
 msgid "Song"
 msgstr "Τραγούδι"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1064
+#: src/gui/widgets/dialogs/export_dialog.c:1120
 #, fuzzy
 msgctxt "Export time range"
 msgid "Custom"
 msgstr "Προσαρμοσμένο"
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:72
-msgid "Create New Project"
-msgstr "Δημιουργία καινούριου έργου"
+#: src/gui/widgets/dialogs/export_progress_dialog.c:83
+#, fuzzy, c-format
+msgid "Exporting %s"
+msgstr "Εξαγωγή ως"
 
-#. get next available "Untitled Project"
-#: src/gui/widgets/dialogs/create_project_dialog.c:81
-msgid "Untitled Project"
-msgstr "Άτιτλο έργο"
-
-#: src/gui/widgets/dialogs/create_project_dialog.c:111
-msgid "Select parent directory to save the project in"
-msgstr "Επιλογή καταλόγου γονέα στον οποίο θα αποθηκευτεί το έργο"
-
-#: src/gui/widgets/dialogs/export_progress_dialog.c:61
+#: src/gui/widgets/dialogs/export_progress_dialog.c:86
 msgid "Export Progress"
 msgstr "Πρόοδος εξαγωγής"
 
-#: src/gui/widgets/dialogs/export_progress_dialog.c:62
-msgid "Exporting..."
-msgstr "Εξαγωγή..."
-
-#: src/gui/widgets/dialogs/export_progress_dialog.c:69
+#: src/gui/widgets/dialogs/export_progress_dialog.c:96
 msgid "Open Directory"
 msgstr "Άνοιγμα καταλόγου"
 
-#: src/gui/widgets/dialogs/export_progress_dialog.c:71
-msgid "Opens the containing directory"
-msgstr "Ανοίγει τον περιεχόμενο κατάλογο"
-
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:54
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:63
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:41
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:50
 #, c-format
 msgid "%s color"
 msgstr "%s χρώμα"
 
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:73
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:60
 #, fuzzy
 msgid "Track color"
 msgstr "Θύρες κομματιού"
 
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:117
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:104
 #, fuzzy
 msgid "Failed to change color"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:44
+#: src/gui/widgets/dialogs/bug_report_dialog.c:47
+#, fuzzy
+msgid "Need More Info"
+msgstr "Πληροφορίες θύρας"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:47
 #, fuzzy
 msgid "Please enter more details"
 msgstr "Εισάγετε μια τιμή"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:146
+#: src/gui/widgets/dialogs/bug_report_dialog.c:170
 #, fuzzy
 msgid "Sent successfully"
 msgstr "Επιτυχής εκτέλεση δέσμης εντολών"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:160
+#: src/gui/widgets/dialogs/bug_report_dialog.c:233
+#, fuzzy
+msgid "Sending"
+msgstr "Δεσμεύσεις CC"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:242
+msgid "Sending..."
+msgstr ""
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:243
+msgid "Sending data..."
+msgstr ""
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:263
 #, fuzzy
 msgid "Send Automatically"
 msgstr "Αυτοματισμός"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:172
+#: src/gui/widgets/dialogs/bug_report_dialog.c:278
 #, c-format
 msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:185
+#: src/gui/widgets/dialogs/bug_report_dialog.c:291
 msgid "<b>Data</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:221
+#: src/gui/widgets/dialogs/bug_report_dialog.c:327
 msgid "<b>Log file</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:252
+#: src/gui/widgets/dialogs/bug_report_dialog.c:359
 msgid "<b>Screenshot</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:297
-#, fuzzy
-msgid "Sending"
-msgstr "Δεσμεύσεις CC"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:311
-msgid "Sending..."
-msgstr ""
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:311
-msgid "Sending data..."
-msgstr ""
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:366
+#: src/gui/widgets/dialogs/bug_report_dialog.c:400
 msgid "Send via GitLab"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:378
+#: src/gui/widgets/dialogs/bug_report_dialog.c:412
 #, c-format
 msgid "Please copy the template below in a <a href=\"%s\">new issue</a>."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:461
+#: src/gui/widgets/dialogs/bug_report_dialog.c:500
 msgid "Fatal Error"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:464
+#: src/gui/widgets/dialogs/bug_report_dialog.c:521
 #, fuzzy, c-format
 msgid "%sPlease help us fix this by submitting a bug report"
 msgstr ""
 "%sΠαρακαλούμε βοηθήστε μας να το φτιάξουμε %sυποβάλλοντας μια αναφορά "
 "σφάλματος%s."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:532
-msgid "What did you do?"
-msgstr ""
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:535
-#, fuzzy
-msgid "Please enter as many details as possible (such as steps to reproduce)"
-msgstr "Εισάγετε μια τιμή"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:547
-#, fuzzy
-msgid "Error details"
-msgstr "Λεπτομέρεια γραφικών"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:553
-#, fuzzy
-msgid "Backtrace"
-msgstr "Σφάλμα - Backtrace:\n"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:564
-#, fuzzy
-msgid "Log"
-msgstr "Χαμηλά"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:576
-#, fuzzy
-msgid "System info"
-msgstr "Προβολή πληροφοριών"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:588
-#, fuzzy
-msgid "_Close"
-msgstr "Κλείσιμο"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:589
-msgid "Submit on _GitLab"
-msgstr ""
-
-#. _ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,
-#: src/gui/widgets/dialogs/bug_report_dialog.c:591
-msgid "Preview and send _automatically (privately/recommended)"
-msgstr ""
-
-#: src/gui/widgets/dialogs/about_dialog.c:54
+#: src/gui/widgets/dialogs/about_dialog.c:53
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 "ένας εξαιρετικά αυτοματοποιημένος και εύληπτος ψηφιακός σταθμός επεξεργασίας "
 "ήχου"
-
-#: src/gui/widgets/dialogs/project_assistant.c:26
-#, fuzzy
-msgid "<File not found>"
-msgstr "Το αρχείο %s δεν βρέθηκε."
-
-#: src/gui/widgets/dialogs/project_assistant.c:120
-#: resources/ui/project_assistant.ui:101
-#, fuzzy
-msgid "_Open Selected"
-msgstr "_Επιλογή"
-
-#: src/gui/widgets/dialogs/project_assistant.c:125
-#, fuzzy
-msgid "_Create"
-msgstr "Δημιουργία %s"
-
-#. just show the error and let the program continue - this was called
-#. * while another project is already running
-#: src/gui/widgets/dialogs/project_assistant.c:214
-#, fuzzy
-msgid "Project loading failed"
-msgstr "Το έργο αποθηκεύτηκε."
-
-#: src/gui/widgets/dialogs/project_assistant.c:421
-#: src/project/project_init_flow_manager.c:1208
-#, fuzzy
-msgid "No project selected"
-msgstr "Δεν έχει επιλεγεί αντικείμενο"
-
-#: src/gui/widgets/dialogs/project_assistant.c:473
-#, fuzzy
-msgid "Select Project"
-msgstr "Επιλογή έργου"
-
-#: src/gui/widgets/dialogs/project_assistant.c:675
-msgid "Blank project"
-msgstr "Κενό έργο"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:31
 #, fuzzy
@@ -5824,7 +5652,6 @@ msgid "Enter group name"
 msgstr "Εισαγωγή ονόματος περιοχής..."
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:63
-#: resources/ui/bind_cc_dialog.ui:43 resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
 msgstr "Εντάξει"
 
@@ -5941,14 +5768,11 @@ msgid "Link to snap"
 msgstr ""
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:293
-#: resources/ui/snap_grid_popover.ui:212
 #, fuzzy
 msgid "Last object"
 msgstr "Φόρτωση έργου"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:294
-#: resources/ui/chord_selector_window.ui:614
-#: resources/ui/scale_selector_window.ui:208
 msgid "Custom"
 msgstr "Προσαρμοσμένο"
 
@@ -5964,8 +5788,6 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:316
-#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
-#: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr "Διάρκεια"
 
@@ -6020,12 +5842,12 @@ msgstr "Επιτυχής εκτέλεση δέσμης εντολών"
 msgid "Script execution failed"
 msgstr "Αποτυχία εκτέλεσης δέσμης εντολών"
 
-#: src/guile/actions/port_connection_action.c:47
+#: src/guile/actions/port_connection_action.c:34
 #, fuzzy
 msgid "Failed to connect ports"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/guile/actions/channel_send_action.c:45
+#: src/guile/actions/channel_send_action.c:32
 #, fuzzy
 msgid "Failed to create audio send"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
@@ -6040,37 +5862,36 @@ msgstr "Συγχώνευση επιλογών"
 msgid "Failed to serialize cached plugin descriptors"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/plugins/plugin_manager.c:396
+#: src/plugins/plugin_manager.c:397
 msgid "Error loading LV2 bundle dir: "
 msgstr "Σφάλμα φόρτωσης καταλόγου πακέτου LV2: "
 
-#: src/plugins/plugin_manager.c:1232
+#: src/plugins/plugin_manager.c:1233
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Σκαναρίστηκε %s πρόσθετο: %s"
 
-#. TRANSLATORS: first argument
-#. * is plugin protocol, 2nd
-#. * argument is path
+#. TRANSLATORS: first argument is plugin protocol, 2nd
+#. argument is path
 #: src/plugins/plugin_manager.c:1245
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "Παραλείφθηκε %1$s πρόσθετο στο %2$s"
 
-#: src/plugins/plugin_manager.c:1349
+#: src/plugins/plugin_manager.c:1350
 msgid "Scanned LV2 plugin"
 msgstr "Σκαναρίστηκε πρόσθετο LV2"
 
-#: src/plugins/plugin_manager.c:1355
+#: src/plugins/plugin_manager.c:1356
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "Παραλείφθηκε πρόσθετο LV2 στο %s"
 
-#: src/plugins/plugin_manager.c:1441
+#: src/plugins/plugin_manager.c:1444
 msgid "Scanned AU plugin"
 msgstr "Σκαναρίστηκε πρόσθετο AU"
 
-#: src/plugins/plugin_manager.c:1446
+#: src/plugins/plugin_manager.c:1449
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "Παραλείφθηκε πρόσθετο AU στο %u"
@@ -6405,32 +6226,36 @@ msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 msgid "Failed to connect R port"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/settings/plugin_settings.c:532
+#: src/settings/plugin_settings.c:530
 #, fuzzy
 msgid "Stereo?"
 msgstr "Είσοδος στέρεο"
 
-#: src/settings/plugin_settings.c:532
+#: src/settings/plugin_settings.c:530
 msgid "Are the outputs stereo?"
 msgstr ""
 
-#: src/settings/plugin_settings.c:570
+#: src/settings/plugin_settings.c:567
+msgid "Auto-route?"
+msgstr ""
+
+#: src/settings/plugin_settings.c:569
 msgid ""
 "This plugin contains multiple audio outputs. Would you like to auto-route "
 "each output to a separate FX track?"
 msgstr ""
 
-#: src/settings/plugin_settings.c:635
+#: src/settings/plugin_settings.c:637
 #, fuzzy
 msgid "Failed to serialize plugin settings"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/settings/plugin_settings.c:645
+#: src/settings/plugin_settings.c:647
 #, fuzzy
 msgid "Failed to write plugin settings file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/settings/chord_preset.c:102 src/settings/chord_preset_pack.c:129
+#: src/settings/chord_preset.c:102 src/settings/chord_preset_pack.c:116
 #, fuzzy
 msgid "_Rename"
 msgstr "όνομα_περιοχής"
@@ -6558,94 +6383,94 @@ msgstr "Ματαίωση...\n"
 msgid "Reset to factory settings successful\n"
 msgstr "Επιτυχής επαναφορά στις εργαστηριακές ρυθμίσεις\n"
 
-#: src/project/project_init_flow_manager.c:263
+#: src/project/project_init_flow_manager.c:261
 #, fuzzy
 msgid "Failed to deserialize v1 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:275
+#: src/project/project_init_flow_manager.c:273
 #, fuzzy
 msgid "Failed to serialize v1 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:306
+#: src/project/project_init_flow_manager.c:304
 #, fuzzy
 msgid "Failed to deserialize v2/3 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:343
+#: src/project/project_init_flow_manager.c:341
 #, fuzzy
 msgid "Failed to serialize v3 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:375
+#: src/project/project_init_flow_manager.c:373
 #, fuzzy
 msgid "Failed to deserialize v4 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:396
+#: src/project/project_init_flow_manager.c:394
 #, fuzzy
 msgid "Failed to serialize v4 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:426
+#: src/project/project_init_flow_manager.c:424
 #, fuzzy
 msgid "Failed to deserialize v5 project file"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:434
+#: src/project/project_init_flow_manager.c:432
 #, fuzzy
 msgid "Failed to convert v5 YAML project file to JSON"
 msgstr "Αποτυχία αποσυμπίεσης του αρχείου έργου: %s"
 
-#: src/project/project_init_flow_manager.c:741
+#: src/project/project_init_flow_manager.c:739
 #, fuzzy
 msgid "Failed to get existing text"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/project/project_init_flow_manager.c:766
+#: src/project/project_init_flow_manager.c:764
 #, fuzzy
 msgid "Invalid project: missing version"
 msgstr "Άκυρο όνομα αντικειμένου %s"
 
-#: src/project/project_init_flow_manager.c:785
+#: src/project/project_init_flow_manager.c:783
 #, fuzzy
 msgid "Failed to upgrade YAML project schema"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:799
+#: src/project/project_init_flow_manager.c:797
 #, fuzzy
 msgid "Failed to upgrade project schema to JSON"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:812
+#: src/project/project_init_flow_manager.c:810
 #, c-format
 msgid "Failed to read JSON: [code: %<PRIu32>, pos: %zu] %s"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:829
+#: src/project/project_init_flow_manager.c:827
 #, fuzzy
 msgid "Failed to deserialize project YAML"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:851
+#: src/project/project_init_flow_manager.c:849
 #, c-format
 msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
 "'%s')."
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:970
+#: src/project/project_init_flow_manager.c:968
 #, fuzzy
 msgid "Failed to initialize the audio file pool"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project/project_init_flow_manager.c:1081
+#: src/project/project_init_flow_manager.c:1079
 #, fuzzy
 msgid "Project Upgraded"
 msgstr "Το έργο αποθηκεύτηκε."
 
-#: src/project/project_init_flow_manager.c:1082
+#: src/project/project_init_flow_manager.c:1080
 #, c-format
 msgid ""
 "This project has been automatically upgraded to v1.%d. Saving this project "
@@ -6653,11 +6478,11 @@ msgid ""
 "As...'."
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1156
+#: src/project/project_init_flow_manager.c:1154
 msgid "Open Backup?"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1158
+#: src/project/project_init_flow_manager.c:1156
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -6668,992 +6493,13 @@ msgstr ""
 "  %s.\n"
 "Χρήση του νεότερου αντιγράφου αρχείου;"
 
-#: src/project/project_init_flow_manager.c:1161
+#: src/project/project_init_flow_manager.c:1159
 msgid "Open Backup"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1162
+#: src/project/project_init_flow_manager.c:1160
 msgid "Ignore"
 msgstr ""
-
-#: src/project/project_init_flow_manager.c:1220
-msgid "Failed to load project. Will create a new one instead."
-msgstr "Αποτυχία φόρτωσης έργου. Θα δημιουργηθεί καινούριο αντί αυτού."
-
-#: resources/ui/chord_selector_window.ui:20
-msgid "Root Note"
-msgstr "Βασική νότα"
-
-#: resources/ui/chord_selector_window.ui:37
-#: resources/ui/chord_selector_window.ui:358
-#: resources/ui/scale_selector_window.ui:38
-msgid "C"
-msgstr "Ντο"
-
-#: resources/ui/chord_selector_window.ui:47
-#: resources/ui/chord_selector_window.ui:368
-#: resources/ui/scale_selector_window.ui:48
-msgid "D♭"
-msgstr "Ρε♭"
-
-#: resources/ui/chord_selector_window.ui:57
-#: resources/ui/chord_selector_window.ui:378
-#: resources/ui/scale_selector_window.ui:58
-msgid "D"
-msgstr "Ρε"
-
-#: resources/ui/chord_selector_window.ui:67
-#: resources/ui/chord_selector_window.ui:388
-#: resources/ui/scale_selector_window.ui:68
-msgid "E♭"
-msgstr "Μι♭"
-
-#: resources/ui/chord_selector_window.ui:77
-#: resources/ui/chord_selector_window.ui:398
-#: resources/ui/scale_selector_window.ui:78
-msgid "E"
-msgstr "Μι"
-
-#: resources/ui/chord_selector_window.ui:87
-#: resources/ui/chord_selector_window.ui:408
-#: resources/ui/scale_selector_window.ui:88
-msgid "F"
-msgstr "Φα"
-
-#: resources/ui/chord_selector_window.ui:97
-#: resources/ui/chord_selector_window.ui:418
-#: resources/ui/scale_selector_window.ui:98
-msgid "F♯"
-msgstr "Φα♯"
-
-#: resources/ui/chord_selector_window.ui:107
-#: resources/ui/chord_selector_window.ui:428
-#: resources/ui/scale_selector_window.ui:108
-msgid "G"
-msgstr "Σολ"
-
-#: resources/ui/chord_selector_window.ui:117
-#: resources/ui/chord_selector_window.ui:438
-#: resources/ui/scale_selector_window.ui:118
-msgid "A♭"
-msgstr "Λα♭"
-
-#: resources/ui/chord_selector_window.ui:127
-#: resources/ui/chord_selector_window.ui:448
-#: resources/ui/scale_selector_window.ui:128
-msgid "A"
-msgstr "Λα"
-
-#: resources/ui/chord_selector_window.ui:137
-#: resources/ui/chord_selector_window.ui:458
-#: resources/ui/scale_selector_window.ui:138
-msgid "B♭"
-msgstr "Σι♭"
-
-#: resources/ui/chord_selector_window.ui:147
-#: resources/ui/chord_selector_window.ui:468
-#: resources/ui/scale_selector_window.ui:148
-msgid "B"
-msgstr "Σι"
-
-#: resources/ui/chord_selector_window.ui:173
-msgid "maj"
-msgstr "ματζόρε"
-
-#: resources/ui/chord_selector_window.ui:183
-msgid "min"
-msgstr "μινόρε"
-
-#: resources/ui/chord_selector_window.ui:193
-msgid "dim"
-msgstr "χαμήλωμα"
-
-#: resources/ui/chord_selector_window.ui:203
-msgid "sus4"
-msgstr "sus4"
-
-#: resources/ui/chord_selector_window.ui:213
-msgid "sus2"
-msgstr "sus2"
-
-#: resources/ui/chord_selector_window.ui:223
-msgid "aug"
-msgstr "aug"
-
-#: resources/ui/chord_selector_window.ui:233
-msgid "Accent"
-msgstr "Τόνος"
-
-#: resources/ui/chord_selector_window.ui:251
-msgid "7"
-msgstr "7"
-
-#: resources/ui/chord_selector_window.ui:261
-msgid "j7"
-msgstr "j7"
-
-#: resources/ui/chord_selector_window.ui:341
-msgid "Bass Note"
-msgstr "Νότα μπάσου"
-
-#: resources/ui/chord_selector_window.ui:494
-msgid "In scale"
-msgstr "Σε κλίμακα"
-
-#: resources/ui/chord_selector_window.ui:506
-#: resources/ui/scale_selector_window.ui:193
-msgid "Creator"
-msgstr "Δημιουργός"
-
-#: resources/ui/chord_selector_window.ui:599
-msgid "Diatonic"
-msgstr "Διατονική"
-
-#: resources/ui/chord_selector_window.ui:609
-#: resources/ui/scale_selector_window.ui:203
-msgid "TODO keyboard"
-msgstr "ΝΑΓΙΝΕΙ πληκτρολόγιο"
-
-#: resources/ui/chord_selector_window.ui:624
-msgid "TODO"
-msgstr "ΝΑΓΙΝΕΙ"
-
-#: resources/ui/chord_selector_window.ui:629
-msgid "Circle of Fifths"
-msgstr "Κύκλος των πέμπτων"
-
-#: resources/ui/file_auditioner_controls.ui:15
-msgid "Play/Pause"
-msgstr ""
-
-#: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:32
-msgid "Stop"
-msgstr "Παύση"
-
-#: resources/ui/active_hardware_popover.ui:11
-msgid "Ports found"
-msgstr "Εντοπισμένες θύρες"
-
-#: resources/ui/active_hardware_popover.ui:48
-msgid "Rescan"
-msgstr "Σκανάρισμα ξανά"
-
-#: resources/ui/active_hardware_popover.ui:51
-msgid "Scan again for MIDI controllers"
-msgstr "Σκανάρισμα ξανά για χειριστές MIDI"
-
-#: resources/ui/main_window.ui:37 resources/ui/view_toolbar.ui:41
-msgid "Toggle Left Panel"
-msgstr "Εναλλαγή αριστερού πάνελ"
-
-#: resources/ui/main_window.ui:51 resources/ui/view_toolbar.ui:59
-msgid "Toggle Right Panel"
-msgstr "Εναλλαγή δεξιού πάνελ"
-
-#: resources/ui/fader_buttons.ui:99
-msgid "Channel settings"
-msgstr "Ρυθμίσεις καναλιού"
-
-#: resources/ui/help_toolbar.ui:40
-msgid "News"
-msgstr "Νέα"
-
-#: resources/ui/snap_box.ui:13
-msgid "Snap to grid"
-msgstr ""
-
-#: resources/ui/snap_box.ui:25
-msgid "Keep offset"
-msgstr ""
-
-#: resources/ui/snap_box.ui:37
-msgid "Snap to events"
-msgstr ""
-
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
-msgid "Note length"
-msgstr "Διάρκεια νότας"
-
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
-msgid "t"
-msgstr "t"
-
-#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
-msgid "Triplet"
-msgstr "Τρίηχο"
-
-#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
-msgid "Dotted"
-msgstr "Διάστικτο"
-
-#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
-msgid "Adaptive length"
-msgstr "Προσαρμοστική διάρκεια"
-
-#: resources/ui/snap_grid_popover.ui:125
-msgid "Snap"
-msgstr "Σναπάρισμα"
-
-#: resources/ui/snap_grid_popover.ui:201
-msgid "Link"
-msgstr "Σύνδεση"
-
-#: resources/ui/snap_grid_popover.ui:202
-msgid "Link length to snap setting"
-msgstr ""
-
-#: resources/ui/snap_grid_popover.ui:213
-#, fuzzy
-msgid "Use last created object's length"
-msgstr "Διάρκεια αντικειμένου χρονολογίου"
-
-#: resources/ui/panel_file_browser.ui:29
-msgid "Bookmarks"
-msgstr ""
-
-#: resources/ui/first_run_window.ui:6
-#, fuzzy
-msgid "Set Up Zrythm"
-msgstr "Εγκατάσταση Zrythm"
-
-#: resources/ui/transport_controls.ui:7
-msgid "Return to cue point on stop"
-msgstr "Επιστροφή στο σημείο cue κατά την παύση"
-
-#: resources/ui/transport_controls.ui:22
-msgid "Play"
-msgstr "Έναρξη"
-
-#: resources/ui/transport_controls.ui:42
-msgid "Backward"
-msgstr "Πίσω"
-
-#: resources/ui/transport_controls.ui:52
-msgid "Forward"
-msgstr "Μπροστά"
-
-#: resources/ui/transport_controls.ui:62
-msgid "Loop"
-msgstr "Λούπα"
-
-#: resources/ui/event_viewer.ui:9
-msgid "Event Viewer"
-msgstr "Προβολέας γεγονότων"
-
-#: resources/ui/plugin_browser.ui:28
-msgid "Collection"
-msgstr "Συλλογή"
-
-#: resources/ui/plugin_browser.ui:53
-#, fuzzy
-msgid "Add Collection"
-msgstr "Προσθήκη στο έργο"
-
-#: resources/ui/plugin_browser.ui:60
-#, fuzzy
-msgid "Rename Collection"
-msgstr "Συλλογή"
-
-#: resources/ui/plugin_browser.ui:67
-#, fuzzy
-msgid "Delete Collection"
-msgstr "Διαγραφή σύνδεσης"
-
-#: resources/ui/plugin_browser.ui:87
-msgid "Author"
-msgstr ""
-
-#: resources/ui/plugin_browser.ui:125
-msgid "Category"
-msgstr "Κατηγορία"
-
-#: resources/ui/plugin_browser.ui:163
-msgid "Protocol"
-msgstr "Πρωτόκολλο"
-
-#: resources/ui/plugin_browser.ui:265
-msgid "Sort alphabetically"
-msgstr ""
-
-#: resources/ui/plugin_browser.ui:271
-msgid "Sort by recently used"
-msgstr ""
-
-#: resources/ui/plugin_browser.ui:277
-msgid "Sort by most used"
-msgstr ""
-
-#: resources/ui/header.ui:22 resources/gtk/help-overlay.ui:105
-msgid "Project"
-msgstr "Έργο"
-
-#: resources/ui/header.ui:33
-msgid "View"
-msgstr "Προβολή"
-
-#: resources/ui/header.ui:44
-msgid "Help"
-msgstr "Βοήθεια"
-
-#: resources/ui/header.ui:59
-msgid "MIDI in activity"
-msgstr "MIDI σε δραστηριότητα"
-
-#: resources/ui/header.ui:91
-#, fuzzy
-msgid "Live Waveform Indicator"
-msgstr "Ζωντανή ένδειξη κυματομορφής"
-
-#: resources/ui/header.ui:104
-msgid "Spectrum Analyzer"
-msgstr ""
-
-#: resources/ui/header.ui:116
-msgid "Peak Meter"
-msgstr ""
-
-#: resources/ui/editor_toolbar.ui:128
-#, fuzzy
-msgid "Toggle ghost note visibility"
-msgstr "Εναλλαγή δεξιού πάνελ"
-
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
-msgid "Toggle event viewer"
-msgstr "Εναλλαγή προβολέα γεγονότων"
-
-#: resources/ui/editor_toolbar.ui:166 resources/ui/editor_toolbar.ui:215
-msgid "Flip"
-msgstr "Περιστροφή"
-
-#: resources/ui/editor_toolbar.ui:168 resources/ui/editor_toolbar.ui:217
-msgid "Horizontal"
-msgstr "Οριζόντια"
-
-#: resources/ui/editor_toolbar.ui:174 resources/ui/editor_toolbar.ui:223
-msgid "Vertical"
-msgstr "Κάθετα"
-
-#: resources/ui/create_project_dialog.ui:22
-msgid "Parent directory"
-msgstr "Κατάλογος γονέας"
-
-#: resources/ui/fishbowl_window.ui:6
-msgid "Fishbowl"
-msgstr "Μικροσκόπιο"
-
-#: resources/ui/quantize_dialog.ui:5
-msgid "Quantize Options"
-msgstr "Ρυθμίσεις κβαντοποίησης"
-
-#: resources/ui/quantize_dialog.ui:26
-msgid "Quantize to"
-msgstr "Κβαντοποίηση σε"
-
-#: resources/ui/quantize_dialog.ui:55
-msgid "Adjust"
-msgstr "Προσαρμογή"
-
-#: resources/ui/quantize_dialog.ui:82
-msgid "Amount"
-msgstr "Ποσό"
-
-#: resources/ui/quantize_dialog.ui:102
-msgid "Swing"
-msgstr "Ταλάντευση"
-
-#: resources/ui/quantize_dialog.ui:117
-msgid "Randomization"
-msgstr "Τυχαιοποίηση"
-
-#: resources/ui/quantize_dialog.ui:140
-msgid "_Quantize"
-msgstr "_Κβαντοποίηση"
-
-#: resources/ui/scale_selector_window.ui:19
-msgid "Root Key"
-msgstr "Βασικό κλειδί"
-
-#: resources/ui/scale_selector_window.ui:158 resources/ui/inspector_chord.ui:18
-msgid "Scale"
-msgstr "Κλίμακα"
-
-#: resources/ui/scale_selector_window.ui:175
-#, fuzzy
-msgid "Scale - Other"
-msgstr "Αντικείμενο κλίμακας"
-
-#: resources/ui/bot_bar.ui:65 resources/ui/view_toolbar.ui:47
-msgid "Toggle Bottom Panel"
-msgstr "Εναλλαγή κάτω πάνελ"
-
-#: resources/ui/project_assistant.ui:6
-#, fuzzy
-msgid "Select a Project"
-msgstr "Επιλογή έργου"
-
-#: resources/ui/project_assistant.ui:60
-#, fuzzy
-msgid "Create New"
-msgstr "Δημιουργία %s"
-
-#: resources/ui/project_assistant.ui:107
-msgid "Open from _Path"
-msgstr ""
-
-#: resources/ui/modulator_inner.ui:14
-msgid "Show/hide UI"
-msgstr "Εμφάνιση/απόκρυψη διεπαφής χρήστη"
-
-#: resources/ui/automation_track.ui:8
-msgid "Control this automation track is for"
-msgstr "Ο χειριστής αυτού του κομματιού αυτοματισμού είναι για"
-
-#: resources/ui/automation_track.ui:19
-msgid "Mute automation track"
-msgstr "Σίγαση κομματιού αυτοματισμού"
-
-#: resources/ui/automation_track.ui:53
-msgid "RW"
-msgstr "RW"
-
-#: resources/ui/automation_track.ui:56
-msgid "Write automation"
-msgstr "Εγγραφή αυτοματισμού"
-
-#: resources/ui/automation_track.ui:67
-msgid "Read automation"
-msgstr "Ανάγνωση αυτοματισμού"
-
-#: resources/ui/automation_track.ui:81
-msgid "0.0"
-msgstr "0.0"
-
-#: resources/ui/automation_track.ui:95
-msgid "Remove automation track"
-msgstr "Αφαίρεση κομματιού αυτοματισμού"
-
-#: resources/ui/automation_track.ui:107
-msgid "Add automation track"
-msgstr "Προσθήκη κομματιού αυτοματισμού"
-
-#: resources/ui/chord_pad_panel.ui:53
-#, fuzzy
-msgid "Transpose"
-msgstr "Τύπος προβολής μεταφοράς"
-
-#: resources/ui/inspector_chord.ui:29
-msgid "Enforce scale"
-msgstr "Επιβολή κλίμακας"
-
-#: resources/ui/export_dialog.ui:6
-msgid "Export As..."
-msgstr "Εξαγωγή ως..."
-
-#: resources/ui/export_dialog.ui:40 resources/ui/export_dialog.ui:181
-msgid "Metadata"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:43 resources/ui/export_dialog.ui:184
-#: build/data/org.zrythm.Zrythm.gschema.xml:939
-#: build/data/org.zrythm.Zrythm.gschema.xml:988
-msgid "Title"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:48 resources/ui/export_dialog.ui:189
-#: build/data/org.zrythm.Zrythm.gschema.xml:934
-#: build/data/org.zrythm.Zrythm.gschema.xml:983
-msgid "Artist"
-msgstr "Καλλιτέχνης"
-
-#: resources/ui/export_dialog.ui:53 resources/ui/export_dialog.ui:194
-#: build/data/org.zrythm.Zrythm.gschema.xml:929
-#: build/data/org.zrythm.Zrythm.gschema.xml:978
-msgid "Genre"
-msgstr "Είδος"
-
-#: resources/ui/export_dialog.ui:63 resources/ui/export_dialog.ui:204
-#: build/data/org.zrythm.Zrythm.gschema.xml:949
-#: build/data/org.zrythm.Zrythm.gschema.xml:999
-msgid "Format"
-msgstr "Φορμάτ"
-
-#: resources/ui/export_dialog.ui:68
-#, fuzzy
-msgid "Bit Depth"
-msgstr "Βάθος bit"
-
-#: resources/ui/export_dialog.ui:73
-#: build/data/org.zrythm.Zrythm.gschema.xml:959
-msgid "Dither"
-msgstr "Θόρυβος διασποράς"
-
-#: resources/ui/export_dialog.ui:85 resources/ui/export_dialog.ui:229
-msgid "Filename Pattern"
-msgstr "Μοτίβο ονόματος αρχείου"
-
-#: resources/ui/export_dialog.ui:90 resources/ui/export_dialog.ui:234
-#, fuzzy
-msgid "Mixdown or Stems"
-msgstr "Μίξη"
-
-#: resources/ui/export_dialog.ui:91 resources/ui/export_dialog.ui:235
-msgid ""
-"Whether to export the selected tracks as a single mixdown file or each track "
-"in its own file."
-msgstr ""
-
-#: resources/ui/export_dialog.ui:106 resources/ui/export_dialog.ui:250
-#: build/data/org.zrythm.Zrythm.gschema.xml:944
-#: build/data/org.zrythm.Zrythm.gschema.xml:993
-msgid "Time range"
-msgstr "Χρονικό εύρος"
-
-#: resources/ui/export_dialog.ui:107 resources/ui/export_dialog.ui:251
-msgid "Only events inside this time range will be exported."
-msgstr ""
-
-#: resources/ui/export_dialog.ui:112 resources/ui/export_dialog.ui:256
-#, fuzzy
-msgid "Custom time range"
-msgstr "Χρονικό εύρος"
-
-#: resources/ui/export_dialog.ui:130 resources/ui/export_dialog.ui:274
-#, fuzzy
-msgid "Track Selection"
-msgstr "Επιλογές"
-
-#: resources/ui/export_dialog.ui:155 resources/ui/export_dialog.ui:299
-#, fuzzy
-msgid "Output"
-msgstr "Εξαγόμενα αρχεία"
-
-#: resources/ui/export_dialog.ui:217
-#, fuzzy
-msgid "Export Lanes as Tracks"
-msgstr "Εξαγωγή ως"
-
-#: resources/ui/port_selector_dialog.ui:10
-msgid "Select a port..."
-msgstr "Επιλογή θύρας..."
-
-#: resources/ui/port_selector_dialog.ui:94
-#: resources/ui/automatable_selector.ui:32
-msgid "Port"
-msgstr "Θύρα"
-
-#: resources/ui/inspector_master.ui:18 resources/ui/inspector_ap.ui:18
-#: resources/ui/inspector_midi.ui:18
-msgid "region_name"
-msgstr "όνομα_περιοχής"
-
-#: resources/ui/inspector_master.ui:19 resources/ui/inspector_ap.ui:19
-#: resources/ui/inspector_midi.ui:19
-msgid "Enter region name..."
-msgstr "Εισαγωγή ονόματος περιοχής..."
-
-#: resources/ui/inspector_master.ui:82 resources/ui/inspector_ap.ui:82
-#: resources/ui/inspector_midi.ui:82
-msgid "Muted"
-msgstr "Σε σίγαση"
-
-#: resources/ui/view_toolbar.ui:53
-msgid "Toggle Top Panel"
-msgstr "Εναλλαγή πάνω πάνελ"
-
-#: resources/ui/automatable_selector.ui:13
-msgid "Filters"
-msgstr ""
-
-#: resources/ui/automatable_selector.ui:63
-#, fuzzy
-msgid "Info"
-msgstr "Πληροφορίες θύρας"
-
-#: resources/ui/automatable_selector.ui:68
-msgid "label"
-msgstr "ετικέτα"
-
-#: resources/ui/string_entry_dialog.ui:5
-msgid "Please enter a value"
-msgstr "Εισάγετε μια τιμή"
-
-#: resources/ui/range_action_buttons.ui:20
-msgid "Remove range"
-msgstr "Αφαίρεση εύρους"
-
-#: resources/ui/timeline_toolbar.ui:38
-#: build/data/org.zrythm.Zrythm.gschema.xml:402
-msgid "Musical mode"
-msgstr "Μουσικός τρόπος"
-
-#: resources/ui/timeline_toolbar.ui:77
-msgid "Merge selections"
-msgstr "Συγχώνευση επιλογών"
-
-#: resources/ui/modulator_view.ui:43
-#, fuzzy
-msgid "No modulators"
-msgstr "Διαμορφωτές"
-
-#: resources/ui/modulator_view.ui:44
-#, fuzzy
-msgid "Drag and drop a modulator plugin from the plugin browser"
-msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
-
-#: resources/ui/log_viewer.ui:17
-msgid "Log Level"
-msgstr "Επίπεδο αρχείου καταγραφής"
-
-#: resources/ui/log_viewer.ui:40
-msgid "Save As..."
-msgstr "Αποθήκευση ως..."
-
-#: resources/ui/midi_editor_space.ui:63
-msgid "Pitch Wheel"
-msgstr "Ρόδα τόνου"
-
-#: resources/ui/midi_editor_space.ui:64
-msgid "Mod Wheel"
-msgstr "Ρόδα διαμόρφωσης"
-
-#: resources/ui/midi_editor_space.ui:65
-msgid "Aftertouch"
-msgstr "Aftertouch"
-
-#: resources/ui/quantize_box.ui:12 resources/gtk/help-overlay.ui:320
-msgid "Quick Quantize"
-msgstr "Γρήγορη κβαντοποίηση"
-
-#: resources/ui/quantize_box.ui:22
-msgid "Full Quantize..."
-msgstr "Ολόκληρη κβαντοποίηση..."
-
-#: resources/ui/bounce_dialog.ui:10
-msgid "Bounce Options"
-msgstr "Ρυθμίσεις μετατροπής σε ήχο"
-
-#: resources/ui/bounce_dialog.ui:21
-#: build/data/org.zrythm.Zrythm.gschema.xml:335
-#, fuzzy
-msgid "Bounce with parents"
-msgstr "Μετατροπή σε ήχο με εφέ"
-
-#: resources/ui/bounce_dialog.ui:40
-msgid "Tail"
-msgstr "Ουρά"
-
-#: resources/ui/bounce_dialog.ui:62
-msgid "ms"
-msgstr "ms"
-
-#: resources/ui/bounce_dialog.ui:82
-#: build/data/org.zrythm.Zrythm.gschema.xml:340
-#, fuzzy
-msgid "Disable after bounce"
-msgstr "Απενεργοποίηση σύνδεσης θύρας"
-
-#: resources/ui/bounce_dialog.ui:93 resources/ui/bind_cc_dialog.ui:36
-#: resources/ui/generic_progress_dialog.ui:52
-msgid "Cancel"
-msgstr "Άκυρο"
-
-#: resources/ui/chord_key.ui:7
-msgid "Amin 7"
-msgstr "Amin 7"
-
-#: resources/ui/chord_pack_browser.ui:28
-#, fuzzy
-msgid "Packs"
-msgstr "Κομμάτια"
-
-#: resources/ui/playhead_scroll_buttons.ui:13
-msgid "Scroll when playhead reaches the edge"
-msgstr ""
-
-#: resources/ui/playhead_scroll_buttons.ui:26
-#, fuzzy
-msgid "Follow playhead"
-msgstr "κεφαλή αναπαραγωγής"
-
-#: resources/ui/clip_editor.ui:9
-msgid "No clip selected"
-msgstr "Δεν έχει επιλεγεί κλιπ"
-
-#: resources/ui/clip_editor.ui:10
-#, fuzzy
-msgid "Select a clip from the timeline"
-msgstr "Οι επιλογές πρέπει να βρίσκονται στην ίδια λωρίδα"
-
-#: resources/ui/bind_cc_dialog.ui:5
-msgid "Bind MIDI CC"
-msgstr "Δέσμευση MIDI CC"
-
-#: resources/ui/bind_cc_dialog.ui:16
-msgid "Press a key or move a knob on your MIDI device"
-msgstr ""
-"Πατήστε πλήκτρο ή μετακινήστε ένα περιστροφικό επιλογέα στη MIDI συσκευή σας"
-
-#: resources/ui/bind_cc_dialog.ui:23
-msgid "Waiting for input..."
-msgstr "Αναμονή για εισαγωγή..."
-
-#: resources/ui/clip_editor_inner.ui:29
-msgid "Select a region..."
-msgstr "Επιλογή περιοχής..."
-
-#: resources/ui/splash.ui:10
-msgid "Splash"
-msgstr "Splash"
-
-#: resources/ui/splash.ui:25
-msgid "Initializing..."
-msgstr "Αρχικοποίηση..."
-
-#: resources/ui/tracklist_header.ui:25
-#, fuzzy
-msgid "Track filters & visibility"
-msgstr "Ορατότητα"
-
-#: resources/ui/tracklist_header.ui:52
-#, fuzzy
-msgid "Tracklist Settings"
-msgstr "Επιλογές"
-
-#: resources/gtk/help-overlay.ui:29
-msgid "Global Shortcuts"
-msgstr "Γενικές συντομεύσεις"
-
-#: resources/gtk/help-overlay.ui:33
-#: build/data/org.zrythm.Zrythm.gschema.xml:1073
-#: build/data/org.zrythm.Zrythm.gschema.xml:1122
-#: build/data/org.zrythm.Zrythm.gschema.xml:1136
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
-#: build/data/org.zrythm.Zrythm.gschema.xml:1288
-#: build/data/org.zrythm.Zrythm.gschema.xml:1303
-#: build/data/org.zrythm.Zrythm.gschema.xml:1357
-msgid "General"
-msgstr "Γενικά"
-
-#: resources/gtk/help-overlay.ui:42
-#, fuzzy
-msgid "Keyboard shortcuts"
-msgstr "Συντομεύσεις πληκτρολογίου"
-
-#: resources/gtk/help-overlay.ui:48
-#, fuzzy
-msgid "Toggle fullscreen"
-msgstr "Εναλλαγή πλήρους οθόνης"
-
-#: resources/gtk/help-overlay.ui:54
-msgid "Quit"
-msgstr "Έξοδος"
-
-#: resources/gtk/help-overlay.ui:63
-msgid "Panels"
-msgstr "Πάνελς"
-
-#: resources/gtk/help-overlay.ui:66
-msgid "Toggle left panel"
-msgstr "Εναλλαγή αριστερού πάνελ"
-
-#: resources/gtk/help-overlay.ui:72
-msgid "Toggle right panel"
-msgstr "Εναλλαγή δεξιού πάνελ"
-
-#: resources/gtk/help-overlay.ui:78
-msgid "Toggle bottom panel"
-msgstr "Εναλλαγή κάτω πάνελ"
-
-#: resources/gtk/help-overlay.ui:87
-msgid "Focus"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:90
-msgid "Cycle focus"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:96
-msgid "Cycle focus backwards"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:109
-#, fuzzy
-msgid "New"
-msgstr "Νέα"
-
-#: resources/gtk/help-overlay.ui:115
-#, fuzzy
-msgid "Open"
-msgstr "_Άνοιγμα"
-
-#: resources/gtk/help-overlay.ui:127
-#, fuzzy
-msgid "Save as..."
-msgstr "Αποθήκευση ως..."
-
-#: resources/gtk/help-overlay.ui:133
-#, fuzzy
-msgid "Export as..."
-msgstr "Εξαγωγή ως..."
-
-#: resources/gtk/help-overlay.ui:141
-#, fuzzy
-msgid "Clipboard"
-msgstr "Έναρξη κλιπ"
-
-#: resources/gtk/help-overlay.ui:145
-msgid "Copy selection to clipboard"
-msgstr "Αντιγραφή επιλογής στο πρόχειρο"
-
-#: resources/gtk/help-overlay.ui:151
-msgid "Cut selection to clipboard"
-msgstr "Αποκοπή αντιγραφής στο πρόχειρο"
-
-#: resources/gtk/help-overlay.ui:157
-msgid "Paste from clipboard"
-msgstr "Επικόλληση από το πρόχειρο"
-
-#: resources/gtk/help-overlay.ui:165
-msgid "Undo and Redo"
-msgstr "Αναίρεση και επαναφορά"
-
-#: resources/gtk/help-overlay.ui:169
-msgid "Undo previous command"
-msgstr "Αναίρεση προηγούμενης εντολής"
-
-#: resources/gtk/help-overlay.ui:175
-msgid "Redo previous command"
-msgstr "Επαναφορά προηγούμενης εντολής"
-
-#: resources/gtk/help-overlay.ui:183 resources/gtk/help-overlay.ui:334
-#, fuzzy
-msgid "Transport"
-msgstr "Λούπα μεταφοράς"
-
-#: resources/gtk/help-overlay.ui:187
-#, fuzzy
-msgid "Go to start marker"
-msgstr "έναρξη λούπας (rel.)"
-
-#: resources/gtk/help-overlay.ui:193
-msgid "Go to end marker"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:199
-#, fuzzy
-msgid "Go to previous marker"
-msgstr "Αναίρεση προηγούμενης εντολής"
-
-#: resources/gtk/help-overlay.ui:205
-msgid "Go to next marker"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:211 resources/gtk/help-overlay.ui:338
-#, fuzzy
-msgid "Play/Stop"
-msgstr "Παύση"
-
-#: resources/gtk/help-overlay.ui:223
-#, fuzzy
-msgid "Arranger Shortcuts"
-msgstr "Συντομεύσεις πληκτρολογίου"
-
-#: resources/gtk/help-overlay.ui:226
-#, fuzzy
-msgid "Tools"
-msgstr "Εργαλείο"
-
-#: resources/gtk/help-overlay.ui:229
-msgid "Select/Stretch tool"
-msgstr "Επιλογή/Τέντωμα"
-
-#: resources/gtk/help-overlay.ui:235
-msgid "Pencil tool"
-msgstr "Μολύβι"
-
-#: resources/gtk/help-overlay.ui:241
-msgid "Eraser tool"
-msgstr "Σβήστρα"
-
-#: resources/gtk/help-overlay.ui:247
-msgid "Ramp tool"
-msgstr "Ράμπα"
-
-#: resources/gtk/help-overlay.ui:253
-msgid "Audition tool"
-msgstr "Ακρόαση"
-
-#: resources/gtk/help-overlay.ui:262
-msgid "Zooming"
-msgstr "Ζουμάρισμα"
-
-#: resources/gtk/help-overlay.ui:266
-msgid "Zoom in"
-msgstr "Ζουμ μέσα"
-
-#: resources/gtk/help-overlay.ui:272
-msgid "Zoom out"
-msgstr "Ζουμ έξω"
-
-#: resources/gtk/help-overlay.ui:278
-msgid "Best fit"
-msgstr "Καλύτερη δυνατή εφαρμογή"
-
-#: resources/gtk/help-overlay.ui:284
-msgid "Original size"
-msgstr "Πρωτότυπο μέγεθος"
-
-#: resources/gtk/help-overlay.ui:292
-msgid "Selections"
-msgstr "Επιλογές"
-
-#: resources/gtk/help-overlay.ui:302
-msgid "Unselect all"
-msgstr "Αποεπιλογή όλων"
-
-#: resources/gtk/help-overlay.ui:316
-msgid "Quantizing"
-msgstr "Κβαντοποίηση"
-
-#: resources/gtk/help-overlay.ui:326
-msgid "Quantize"
-msgstr "Κβαντοποίηση"
-
-#: resources/gtk/help-overlay.ui:344
-#, fuzzy
-msgid "Record-play"
-msgstr "Ηχογράφηση"
-
-#: resources/gtk/help-overlay.ui:352
-#, fuzzy
-msgid "Object Actions"
-msgstr "Όνομα έργου"
-
-#: resources/gtk/help-overlay.ui:356
-#, fuzzy
-msgid "Mute selection"
-msgstr "Συγχώνευση επιλογών"
-
-#: resources/gtk/help-overlay.ui:362
-#, fuzzy
-msgid "Nudge selection left"
-msgstr "Συγχώνευση επιλογών"
-
-#: resources/gtk/help-overlay.ui:368
-#, fuzzy
-msgid "Nudge selection right"
-msgstr "Συγχώνευση επιλογών"
-
-#: resources/gtk/help-overlay.ui:374
-#, fuzzy
-msgid "Delete selection"
-msgstr "Διαγραφή σύνδεσης"
-
-#: resources/gtk/help-overlay.ui:380
-#, fuzzy
-msgid "Rename selected object"
-msgstr "Αφαιρεί επιλεγμένο έργο από τη λίστα"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
@@ -7812,9 +6658,19 @@ msgstr ""
 msgid "A list of output devices to route the right monitor output to."
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:335
+#, fuzzy
+msgid "Bounce with parents"
+msgstr "Μετατροπή σε ήχο με εφέ"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:336
 msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:340
+#, fuzzy
+msgid "Disable after bounce"
+msgstr "Απενεργοποίηση σύνδεσης θύρας"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:341
 #, fuzzy
@@ -7944,6 +6800,10 @@ msgstr "Κατάλογος του τελευταίου έργου"
 #: build/data/org.zrythm.Zrythm.gschema.xml:398
 msgid "Last set velocity on a MIDI note."
 msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:402
+msgid "Musical mode"
+msgstr "Μουσικός τρόπος"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:403
 msgid ""
@@ -8797,14 +7657,29 @@ msgstr ""
 msgid "Scenes panel size when detached."
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:929
+#: build/data/org.zrythm.Zrythm.gschema.xml:978
+msgid "Genre"
+msgstr "Είδος"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:930
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr "Είδος προς χρήση κατά την εξαγωγή, αν ο τύπος αρχείου το υποστηρίζει."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:934
+#: build/data/org.zrythm.Zrythm.gschema.xml:983
+msgid "Artist"
+msgstr "Καλλιτέχνης"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:935
 msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 "Καλλιτέχνης προς χρήση κατά την εξαγωγή, αν ο τύπος αρχείου το υποστηρίζει."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:939
+#: build/data/org.zrythm.Zrythm.gschema.xml:988
+msgid "Title"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:940
 #, fuzzy
@@ -8812,10 +7687,20 @@ msgid "Title to use when exporting, if the file type supports it."
 msgstr ""
 "Καλλιτέχνης προς χρήση κατά την εξαγωγή, αν ο τύπος αρχείου το υποστηρίζει."
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:944
+#: build/data/org.zrythm.Zrythm.gschema.xml:993
+msgid "Time range"
+msgstr "Χρονικό εύρος"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Time range to export."
 msgstr "Χρονικό εύρος που θα εξαχθεί."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:949
+#: build/data/org.zrythm.Zrythm.gschema.xml:999
+msgid "Format"
+msgstr "Φορμάτ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
 msgid "Format to export to."
@@ -8830,6 +7715,10 @@ msgstr "Μοτίβο ονόματος αρχείου"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1005
 msgid "Filename pattern for exported files."
 msgstr "Μοτίβο αρχείου ονόματος για εξαγόμενα αρχεία."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:959
+msgid "Dither"
+msgstr "Θόρυβος διασποράς"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
 msgid "Add low level noise to reduce errors on lower bit depths."
@@ -8950,6 +7839,16 @@ msgstr "Λειτουργία ηχογράφησης"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "Number of bars to pre-roll when recording."
 msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1073
+#: build/data/org.zrythm.Zrythm.gschema.xml:1122
+#: build/data/org.zrythm.Zrythm.gschema.xml:1136
+#: build/data/org.zrythm.Zrythm.gschema.xml:1150
+#: build/data/org.zrythm.Zrythm.gschema.xml:1288
+#: build/data/org.zrythm.Zrythm.gschema.xml:1303
+#: build/data/org.zrythm.Zrythm.gschema.xml:1357
+msgid "General"
+msgstr "Γενικά"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1078
 msgid "Audio backend"
@@ -9282,14 +8181,10 @@ msgstr ""
 "Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
 "π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:6
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
-msgid "Zrythm"
-msgstr "Zrythm"
-
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
-msgid "The Zrythm contributors"
-msgstr "Οι συνεργάτες του Zrythm"
+#, fuzzy
+msgid "The Zrythm project"
+msgstr "Αποθήκευση έργου"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
 #, fuzzy
@@ -9304,141 +8199,1045 @@ msgid ""
 "support for various plugin and file formats."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:17
-msgid ""
-"Zrythm can be extended with user scripts written in Scheme or ECMAScript."
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:34
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:33
 #, fuzzy
 msgid "Main window with plugins"
 msgstr "Σκανάρισμα προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:40
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
 msgstr "DAW"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:54
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
 #, fuzzy
 msgid "Changed:"
 msgstr "Εύρος"
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+msgid "Re-generate built-in plugins with latest faust"
+msgstr ""
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
-msgid "Various optimizations"
-msgstr "Ελάσσονα Πεντατονική"
+msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Generate the about dialog from appdata XML"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
-msgid "Fixed:"
+msgid "Update some information in the about dialog and in the appdata XML"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
-msgid "Fix RtAudio device names not being fetched correctly"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-msgid "Fix hardware menu button not disposing its child when deleted"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid ""
-"Fix unnecessary pausing and attack part of samples being clipped in the file "
-"browser (#3323)"
+"GTK: Don't force GL renderer on Windows (revert change in previous release)"
 msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
-#, fuzzy
-msgid "Removed:"
-msgstr "Αφαίρεση"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-msgid "Drop pcre dependency (only pcre2 needed now)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+msgid "Added:"
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Add primary menu to the header bar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid "Port MIDI function dialog rows to new libadwaita widgets"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid "Port plugin/file browsers to AdwToolbarView"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#, fuzzy
+msgid "Change some global keyboard shortcuts"
+msgstr "Συντομεύσεις πληκτρολογίου"
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
-msgid "Support ctrl + numpad -/+ for zooming in/out"
+msgid "Move visualizers to bottom bar"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid ""
-"Update Spanish, French, Japanese, German, Portuguese (Brasil), Interlingua, "
-"Russian, Catalan translations"
+"Merge header bar toggles and secondary global toolbar into the main toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid ""
+"Redesign/merge first-run screen, welcome dialog, project selector and "
+"project creator into a new greeter window"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Only set header bar color on main project window"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Mac: don't try to force window on top"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#, fuzzy
+msgid "Change some icons"
+msgstr "Αλλαγή εικονιδίου"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Don't style window close button"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+msgid "Use AdwToolbarView for main project window"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-msgid "Added:"
+msgid "Add gradient to progress bars and padding to progress bar captions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-msgid "Allow setting custom paths via the UI for all plugin formats (#4138)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+msgid "GTK: Force old GL renderer on Windows"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
-msgid "User manual: mention how to enable timeline loop range (#4145)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-msgid ""
-"Go to previous point when pressing transport backward button twice quickly "
-"during playback (#3355)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
-msgid "Remember tracklist width per project (#4091)"
+msgid "Fix error when copy-pasting audio regions after a BPM change (#4993)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-msgid "Add audio function to copy left channel to right channel (##4075)"
+msgid ""
+"Zrythm is now fully REUSE 3.0 compliant (fixed license issues reported by "
+"`reuse lint`)"
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#, fuzzy
+msgid "Removed:"
+msgstr "Αφαίρεση"
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
-msgid "Draw each audio channel individually in audio regions"
+msgid "Remove Zrythm logo from header bar"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
-msgid ""
-"Change (previously broken) panel visibility toggle shortcuts to Shift+F10~12 "
-"(#4131)"
+msgid "Remove some buttons that used to be in the main and secondary toolbars"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-msgid ""
-"Fix attempting to go to previous marker during playback not working when cue "
-"point is at the current marker"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+msgid "Remove scripting interface button (out of scope for v1)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-msgid ""
-"Fix various timing issues during audio processing that caused occasional "
-"errors (#3346)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+msgid "Remove dependency on breeze icons"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-msgid "Don't whitelist any plugins on Wayland"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+msgid "Support editing the curve for multiple automation points (#4991)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+msgid "Add outline to object-stretch cursors"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+msgid "Update Swedish translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+msgid "Update shortcuts window (#4110)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid ""
-"Fix strange behavior when attempting to delete a directory bookmark (#4948)"
+"Send normal note offs instead of \"all notes off\" at region loop and end "
+"boundaries (#4036)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-msgid "Fix plugin moving/copying being broken"
+msgid "Use lowercase for FLAC extension when exporting FLAC files"
 msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+msgid "Port MIDI function dialog to AdwToolbarView"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+msgid "Fix clipboard paste being broken"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+msgid ""
+"Fix chord index not being saved with chord objects in project files (#4995)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+msgid "Fix error when closing the project while a chord object is selected"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+msgid "Fix error when copy-moving objects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+msgid "Fix incorrect MIDI pitchbend handling (#3318, #4000, #4997)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+msgid ""
+"Fix MIDI channel pressure handling when automating from its automation lane"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+msgid "Remove musical mode toggle from timeline toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+msgid "Remove option to overlay text value for automation points"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+msgid "Allow toggling bypass on multiple plugins (#4853)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
+msgid "Make track sends available to modulator outputs (#4819)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
+msgid "Add button to show instrument UI in mixer channels (#4422)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
+msgid "Show markers in editor ruler (#4777)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
+#, fuzzy
+msgid "Allow changing plugin load behavior (#4407)"
+msgstr "Αποτυχία επαναφοράς σχήματος %s"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
+msgid "Display bridge status in plugin slots"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
+msgid "Add option to auto-select tracks when selecting regions (#4201)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+msgid "Display how many new plugins were detected on each run"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
+msgid "MPMC queue: switch to C11 atomics implementation"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
+#, fuzzy
+msgid "Various optimizations"
+msgstr "Ελάσσονα Πεντατονική"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
+msgid "Skip engine pause/resume when engine is already stopped"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
+msgid "Make fader buttons smaller"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
+msgid "Show \"Unimplemented\" message when clicking channel settings button"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
+msgid "Make stretch mode a separate button in the toolbox"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
+msgid "Graphviz dependency is now disabled by default"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
+msgid "Modernize some preferences rows using new libadwaita widgets"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
+msgid "Show more precise positions in event viewer"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
+msgid "Add outline to some cursors"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
+msgid ""
+"Fix DnD from the plugin browser being broken when a plugin is selected in "
+"the mixer (#4974)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
+msgid "Fix specified plugin bridge mode being ignored in some cases"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
+msgid ""
+"Ignore carla parameters that are not found in input ports on project load "
+"(fixes error being thrown when this happens)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
+msgid "Fix stretch mode icon (#3991)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
+msgid ""
+"Fix original objects disappearing when copy-moving their newly created "
+"objects offscreen (#3303)"
+msgstr ""
+
+#~ msgid "Setting up main window"
+#~ msgstr "Ρύθμιση του κύριου παραθύρου"
+
+#~ msgid "Waiting for project"
+#~ msgstr "Φόρτωση έργου"
+
+#, fuzzy
+#~ msgid "Failed to load project"
+#~ msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
+
+#~ msgid "Open Project"
+#~ msgstr "Άνοιγμα έργου"
+
+#~ msgid "Log viewer"
+#~ msgstr "Προβολέας αρχείου καταγραφής"
+
+#~ msgid "Scripting interface"
+#~ msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
+
+#, c-format
+#~ msgid "About %s"
+#~ msgstr "Σχετικά με %s"
+
+#~ msgid "About Zrythm"
+#~ msgstr "Σχετικά με το Zrythm"
+
+#~ msgid "Chat (Matrix)"
+#~ msgstr "Συνομιλία (Matrix)"
+
+#~ msgid "Manual"
+#~ msgstr "Εγχειρίδιο"
+
+#~ msgid "Keyboard Shortcuts"
+#~ msgstr "Συντομεύσεις πληκτρολογίου"
+
+#~ msgid "Donate"
+#~ msgstr "Δωρεά"
+
+#~ msgid "Report a Bug"
+#~ msgstr "Αναφορά σφάλματος"
+
+#~ msgid "Toggle Status Bar"
+#~ msgstr "Εναλλαγή μπάρας λειτουργίας"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Πλήρης οθόνη"
+
+#~ msgid "New Project"
+#~ msgstr "Άνοιγμα έργου"
+
+#~ msgid "Save As"
+#~ msgstr "Αποθήκευση ως"
+
+#~ msgid "Export Graph"
+#~ msgstr "Εξαγωγή γραφήματος"
+
+#~ msgid "Cut"
+#~ msgstr "Αποκοπή"
+
+#~ msgid "Copy"
+#~ msgstr "Αντιγραφή"
+
+#~ msgid "Paste"
+#~ msgstr "Επικόλληση"
+
+#, fuzzy
+#~ msgid "Clear selection"
+#~ msgstr "Καθαρισμός επιλογής"
+
+#~ msgid "Select all"
+#~ msgstr "Επιλογή όλων"
+
+#~ msgid "Loop selection"
+#~ msgstr "Επιλογή λούπας"
+
+#, fuzzy
+#~ msgid "Saved"
+#~ msgstr "Αποθήκευση"
+
+#, fuzzy
+#~ msgid "Project Progress"
+#~ msgstr "Πρόοδος εξαγωγής"
+
+#~ msgid "Create New Project"
+#~ msgstr "Δημιουργία καινούριου έργου"
+
+#~ msgid "Exporting..."
+#~ msgstr "Εξαγωγή..."
+
+#~ msgid "Opens the containing directory"
+#~ msgstr "Ανοίγει τον περιεχόμενο κατάλογο"
+
+#, fuzzy
+#~ msgid ""
+#~ "Please enter as many details as possible (such as steps to reproduce)"
+#~ msgstr "Εισάγετε μια τιμή"
+
+#, fuzzy
+#~ msgid "Error details"
+#~ msgstr "Λεπτομέρεια γραφικών"
+
+#, fuzzy
+#~ msgid "Backtrace"
+#~ msgstr "Σφάλμα - Backtrace:\n"
+
+#, fuzzy
+#~ msgid "Log"
+#~ msgstr "Χαμηλά"
+
+#, fuzzy
+#~ msgid "System info"
+#~ msgstr "Προβολή πληροφοριών"
+
+#, fuzzy
+#~ msgid "_Close"
+#~ msgstr "Κλείσιμο"
+
+#, fuzzy
+#~ msgid "_Open Selected"
+#~ msgstr "_Επιλογή"
+
+#, fuzzy
+#~ msgid "_Create"
+#~ msgstr "Δημιουργία %s"
+
+#, fuzzy
+#~ msgid "No project selected"
+#~ msgstr "Δεν έχει επιλεγεί αντικείμενο"
+
+#~ msgid "Failed to load project. Will create a new one instead."
+#~ msgstr "Αποτυχία φόρτωσης έργου. Θα δημιουργηθεί καινούριο αντί αυτού."
+
+#~ msgid "Root Note"
+#~ msgstr "Βασική νότα"
+
+#~ msgid "C"
+#~ msgstr "Ντο"
+
+#~ msgid "D♭"
+#~ msgstr "Ρε♭"
+
+#~ msgid "D"
+#~ msgstr "Ρε"
+
+#~ msgid "E♭"
+#~ msgstr "Μι♭"
+
+#~ msgid "E"
+#~ msgstr "Μι"
+
+#~ msgid "F"
+#~ msgstr "Φα"
+
+#~ msgid "F♯"
+#~ msgstr "Φα♯"
+
+#~ msgid "G"
+#~ msgstr "Σολ"
+
+#~ msgid "A♭"
+#~ msgstr "Λα♭"
+
+#~ msgid "A"
+#~ msgstr "Λα"
+
+#~ msgid "B♭"
+#~ msgstr "Σι♭"
+
+#~ msgid "B"
+#~ msgstr "Σι"
+
+#~ msgid "maj"
+#~ msgstr "ματζόρε"
+
+#~ msgid "min"
+#~ msgstr "μινόρε"
+
+#~ msgid "dim"
+#~ msgstr "χαμήλωμα"
+
+#~ msgid "sus4"
+#~ msgstr "sus4"
+
+#~ msgid "sus2"
+#~ msgstr "sus2"
+
+#~ msgid "aug"
+#~ msgstr "aug"
+
+#~ msgid "Accent"
+#~ msgstr "Τόνος"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "j7"
+#~ msgstr "j7"
+
+#~ msgid "Bass Note"
+#~ msgstr "Νότα μπάσου"
+
+#~ msgid "In scale"
+#~ msgstr "Σε κλίμακα"
+
+#~ msgid "Creator"
+#~ msgstr "Δημιουργός"
+
+#~ msgid "Diatonic"
+#~ msgstr "Διατονική"
+
+#~ msgid "TODO keyboard"
+#~ msgstr "ΝΑΓΙΝΕΙ πληκτρολόγιο"
+
+#~ msgid "TODO"
+#~ msgstr "ΝΑΓΙΝΕΙ"
+
+#~ msgid "Circle of Fifths"
+#~ msgstr "Κύκλος των πέμπτων"
+
+#~ msgid "Stop"
+#~ msgstr "Παύση"
+
+#~ msgid "Ports found"
+#~ msgstr "Εντοπισμένες θύρες"
+
+#~ msgid "Rescan"
+#~ msgstr "Σκανάρισμα ξανά"
+
+#~ msgid "Scan again for MIDI controllers"
+#~ msgstr "Σκανάρισμα ξανά για χειριστές MIDI"
+
+#~ msgid "Toggle Left Panel"
+#~ msgstr "Εναλλαγή αριστερού πάνελ"
+
+#~ msgid "Toggle Right Panel"
+#~ msgstr "Εναλλαγή δεξιού πάνελ"
+
+#~ msgid "Channel settings"
+#~ msgstr "Ρυθμίσεις καναλιού"
+
+#~ msgid "News"
+#~ msgstr "Νέα"
+
+#~ msgid "Note length"
+#~ msgstr "Διάρκεια νότας"
+
+#~ msgid "t"
+#~ msgstr "t"
+
+#~ msgid "Triplet"
+#~ msgstr "Τρίηχο"
+
+#~ msgid "Dotted"
+#~ msgstr "Διάστικτο"
+
+#~ msgid "Adaptive length"
+#~ msgstr "Προσαρμοστική διάρκεια"
+
+#~ msgid "Snap"
+#~ msgstr "Σναπάρισμα"
+
+#~ msgid "Link"
+#~ msgstr "Σύνδεση"
+
+#, fuzzy
+#~ msgid "Use last created object's length"
+#~ msgstr "Διάρκεια αντικειμένου χρονολογίου"
+
+#, fuzzy
+#~ msgid "Set Up Zrythm"
+#~ msgstr "Εγκατάσταση Zrythm"
+
+#~ msgid "Return to cue point on stop"
+#~ msgstr "Επιστροφή στο σημείο cue κατά την παύση"
+
+#~ msgid "Play"
+#~ msgstr "Έναρξη"
+
+#~ msgid "Backward"
+#~ msgstr "Πίσω"
+
+#~ msgid "Forward"
+#~ msgstr "Μπροστά"
+
+#~ msgid "Loop"
+#~ msgstr "Λούπα"
+
+#~ msgid "Event Viewer"
+#~ msgstr "Προβολέας γεγονότων"
+
+#~ msgid "Collection"
+#~ msgstr "Συλλογή"
+
+#, fuzzy
+#~ msgid "Add Collection"
+#~ msgstr "Προσθήκη στο έργο"
+
+#, fuzzy
+#~ msgid "Rename Collection"
+#~ msgstr "Συλλογή"
+
+#, fuzzy
+#~ msgid "Delete Collection"
+#~ msgstr "Διαγραφή σύνδεσης"
+
+#~ msgid "Category"
+#~ msgstr "Κατηγορία"
+
+#~ msgid "Protocol"
+#~ msgstr "Πρωτόκολλο"
+
+#~ msgid "Project"
+#~ msgstr "Έργο"
+
+#~ msgid "View"
+#~ msgstr "Προβολή"
+
+#~ msgid "Help"
+#~ msgstr "Βοήθεια"
+
+#~ msgid "MIDI in activity"
+#~ msgstr "MIDI σε δραστηριότητα"
+
+#, fuzzy
+#~ msgid "Live Waveform Indicator"
+#~ msgstr "Ζωντανή ένδειξη κυματομορφής"
+
+#, fuzzy
+#~ msgid "Toggle ghost note visibility"
+#~ msgstr "Εναλλαγή δεξιού πάνελ"
+
+#~ msgid "Toggle event viewer"
+#~ msgstr "Εναλλαγή προβολέα γεγονότων"
+
+#~ msgid "Flip"
+#~ msgstr "Περιστροφή"
+
+#~ msgid "Horizontal"
+#~ msgstr "Οριζόντια"
+
+#~ msgid "Vertical"
+#~ msgstr "Κάθετα"
+
+#~ msgid "Parent directory"
+#~ msgstr "Κατάλογος γονέας"
+
+#~ msgid "Fishbowl"
+#~ msgstr "Μικροσκόπιο"
+
+#~ msgid "Quantize Options"
+#~ msgstr "Ρυθμίσεις κβαντοποίησης"
+
+#~ msgid "Quantize to"
+#~ msgstr "Κβαντοποίηση σε"
+
+#~ msgid "Adjust"
+#~ msgstr "Προσαρμογή"
+
+#~ msgid "Amount"
+#~ msgstr "Ποσό"
+
+#~ msgid "Swing"
+#~ msgstr "Ταλάντευση"
+
+#~ msgid "Randomization"
+#~ msgstr "Τυχαιοποίηση"
+
+#~ msgid "_Quantize"
+#~ msgstr "_Κβαντοποίηση"
+
+#~ msgid "Root Key"
+#~ msgstr "Βασικό κλειδί"
+
+#~ msgid "Scale"
+#~ msgstr "Κλίμακα"
+
+#, fuzzy
+#~ msgid "Scale - Other"
+#~ msgstr "Αντικείμενο κλίμακας"
+
+#~ msgid "Toggle Bottom Panel"
+#~ msgstr "Εναλλαγή κάτω πάνελ"
+
+#, fuzzy
+#~ msgid "Select a Project"
+#~ msgstr "Επιλογή έργου"
+
+#, fuzzy
+#~ msgid "Create New"
+#~ msgstr "Δημιουργία %s"
+
+#~ msgid "Show/hide UI"
+#~ msgstr "Εμφάνιση/απόκρυψη διεπαφής χρήστη"
+
+#~ msgid "Control this automation track is for"
+#~ msgstr "Ο χειριστής αυτού του κομματιού αυτοματισμού είναι για"
+
+#~ msgid "Mute automation track"
+#~ msgstr "Σίγαση κομματιού αυτοματισμού"
+
+#~ msgid "RW"
+#~ msgstr "RW"
+
+#~ msgid "Write automation"
+#~ msgstr "Εγγραφή αυτοματισμού"
+
+#~ msgid "Read automation"
+#~ msgstr "Ανάγνωση αυτοματισμού"
+
+#~ msgid "0.0"
+#~ msgstr "0.0"
+
+#~ msgid "Remove automation track"
+#~ msgstr "Αφαίρεση κομματιού αυτοματισμού"
+
+#~ msgid "Add automation track"
+#~ msgstr "Προσθήκη κομματιού αυτοματισμού"
+
+#, fuzzy
+#~ msgid "Transpose"
+#~ msgstr "Τύπος προβολής μεταφοράς"
+
+#~ msgid "Enforce scale"
+#~ msgstr "Επιβολή κλίμακας"
+
+#~ msgid "Export As..."
+#~ msgstr "Εξαγωγή ως..."
+
+#, fuzzy
+#~ msgid "Bit Depth"
+#~ msgstr "Βάθος bit"
+
+#~ msgid "Filename Pattern"
+#~ msgstr "Μοτίβο ονόματος αρχείου"
+
+#, fuzzy
+#~ msgid "Mixdown or Stems"
+#~ msgstr "Μίξη"
+
+#, fuzzy
+#~ msgid "Custom time range"
+#~ msgstr "Χρονικό εύρος"
+
+#, fuzzy
+#~ msgid "Track Selection"
+#~ msgstr "Επιλογές"
+
+#, fuzzy
+#~ msgid "Output"
+#~ msgstr "Εξαγόμενα αρχεία"
+
+#, fuzzy
+#~ msgid "Export Lanes as Tracks"
+#~ msgstr "Εξαγωγή ως"
+
+#~ msgid "Select a port..."
+#~ msgstr "Επιλογή θύρας..."
+
+#~ msgid "Port"
+#~ msgstr "Θύρα"
+
+#~ msgid "region_name"
+#~ msgstr "όνομα_περιοχής"
+
+#~ msgid "Enter region name..."
+#~ msgstr "Εισαγωγή ονόματος περιοχής..."
+
+#~ msgid "Muted"
+#~ msgstr "Σε σίγαση"
+
+#~ msgid "Toggle Top Panel"
+#~ msgstr "Εναλλαγή πάνω πάνελ"
+
+#, fuzzy
+#~ msgid "Info"
+#~ msgstr "Πληροφορίες θύρας"
+
+#~ msgid "label"
+#~ msgstr "ετικέτα"
+
+#~ msgid "Please enter a value"
+#~ msgstr "Εισάγετε μια τιμή"
+
+#~ msgid "Remove range"
+#~ msgstr "Αφαίρεση εύρους"
+
+#~ msgid "Merge selections"
+#~ msgstr "Συγχώνευση επιλογών"
+
+#, fuzzy
+#~ msgid "No modulators"
+#~ msgstr "Διαμορφωτές"
+
+#, fuzzy
+#~ msgid "Drag and drop a modulator plugin from the plugin browser"
+#~ msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
+
+#~ msgid "Log Level"
+#~ msgstr "Επίπεδο αρχείου καταγραφής"
+
+#~ msgid "Save As..."
+#~ msgstr "Αποθήκευση ως..."
+
+#~ msgid "Pitch Wheel"
+#~ msgstr "Ρόδα τόνου"
+
+#~ msgid "Mod Wheel"
+#~ msgstr "Ρόδα διαμόρφωσης"
+
+#~ msgid "Aftertouch"
+#~ msgstr "Aftertouch"
+
+#~ msgid "Quick Quantize"
+#~ msgstr "Γρήγορη κβαντοποίηση"
+
+#~ msgid "Full Quantize..."
+#~ msgstr "Ολόκληρη κβαντοποίηση..."
+
+#~ msgid "Bounce Options"
+#~ msgstr "Ρυθμίσεις μετατροπής σε ήχο"
+
+#~ msgid "Tail"
+#~ msgstr "Ουρά"
+
+#~ msgid "ms"
+#~ msgstr "ms"
+
+#~ msgid "Cancel"
+#~ msgstr "Άκυρο"
+
+#~ msgid "Amin 7"
+#~ msgstr "Amin 7"
+
+#, fuzzy
+#~ msgid "Packs"
+#~ msgstr "Κομμάτια"
+
+#, fuzzy
+#~ msgid "Follow playhead"
+#~ msgstr "κεφαλή αναπαραγωγής"
+
+#~ msgid "No clip selected"
+#~ msgstr "Δεν έχει επιλεγεί κλιπ"
+
+#, fuzzy
+#~ msgid "Select a clip from the timeline"
+#~ msgstr "Οι επιλογές πρέπει να βρίσκονται στην ίδια λωρίδα"
+
+#~ msgid "Bind MIDI CC"
+#~ msgstr "Δέσμευση MIDI CC"
+
+#~ msgid "Press a key or move a knob on your MIDI device"
+#~ msgstr ""
+#~ "Πατήστε πλήκτρο ή μετακινήστε ένα περιστροφικό επιλογέα στη MIDI συσκευή "
+#~ "σας"
+
+#~ msgid "Waiting for input..."
+#~ msgstr "Αναμονή για εισαγωγή..."
+
+#~ msgid "Select a region..."
+#~ msgstr "Επιλογή περιοχής..."
+
+#~ msgid "Splash"
+#~ msgstr "Splash"
+
+#, fuzzy
+#~ msgid "Track filters & visibility"
+#~ msgstr "Ορατότητα"
+
+#, fuzzy
+#~ msgid "Tracklist Settings"
+#~ msgstr "Επιλογές"
+
+#~ msgid "Global Shortcuts"
+#~ msgstr "Γενικές συντομεύσεις"
+
+#, fuzzy
+#~ msgid "Toggle fullscreen"
+#~ msgstr "Εναλλαγή πλήρους οθόνης"
+
+#~ msgid "Quit"
+#~ msgstr "Έξοδος"
+
+#~ msgid "Panels"
+#~ msgstr "Πάνελς"
+
+#~ msgid "Toggle left panel"
+#~ msgstr "Εναλλαγή αριστερού πάνελ"
+
+#~ msgid "Toggle right panel"
+#~ msgstr "Εναλλαγή δεξιού πάνελ"
+
+#~ msgid "Toggle bottom panel"
+#~ msgstr "Εναλλαγή κάτω πάνελ"
+
+#, fuzzy
+#~ msgid "New"
+#~ msgstr "Νέα"
+
+#, fuzzy
+#~ msgid "Open"
+#~ msgstr "_Άνοιγμα"
+
+#, fuzzy
+#~ msgid "Save as..."
+#~ msgstr "Αποθήκευση ως..."
+
+#, fuzzy
+#~ msgid "Export as..."
+#~ msgstr "Εξαγωγή ως..."
+
+#, fuzzy
+#~ msgid "Clipboard"
+#~ msgstr "Έναρξη κλιπ"
+
+#~ msgid "Copy selection to clipboard"
+#~ msgstr "Αντιγραφή επιλογής στο πρόχειρο"
+
+#~ msgid "Cut selection to clipboard"
+#~ msgstr "Αποκοπή αντιγραφής στο πρόχειρο"
+
+#~ msgid "Paste from clipboard"
+#~ msgstr "Επικόλληση από το πρόχειρο"
+
+#~ msgid "Undo and Redo"
+#~ msgstr "Αναίρεση και επαναφορά"
+
+#~ msgid "Undo previous command"
+#~ msgstr "Αναίρεση προηγούμενης εντολής"
+
+#~ msgid "Redo previous command"
+#~ msgstr "Επαναφορά προηγούμενης εντολής"
+
+#, fuzzy
+#~ msgid "Transport"
+#~ msgstr "Λούπα μεταφοράς"
+
+#, fuzzy
+#~ msgid "Go to start marker"
+#~ msgstr "έναρξη λούπας (rel.)"
+
+#, fuzzy
+#~ msgid "Go to previous marker"
+#~ msgstr "Αναίρεση προηγούμενης εντολής"
+
+#, fuzzy
+#~ msgid "Play/Stop"
+#~ msgstr "Παύση"
+
+#, fuzzy
+#~ msgid "Arranger Shortcuts"
+#~ msgstr "Συντομεύσεις πληκτρολογίου"
+
+#, fuzzy
+#~ msgid "Tools"
+#~ msgstr "Εργαλείο"
+
+#~ msgid "Select/Stretch tool"
+#~ msgstr "Επιλογή/Τέντωμα"
+
+#~ msgid "Pencil tool"
+#~ msgstr "Μολύβι"
+
+#~ msgid "Eraser tool"
+#~ msgstr "Σβήστρα"
+
+#~ msgid "Ramp tool"
+#~ msgstr "Ράμπα"
+
+#~ msgid "Audition tool"
+#~ msgstr "Ακρόαση"
+
+#~ msgid "Zooming"
+#~ msgstr "Ζουμάρισμα"
+
+#~ msgid "Zoom in"
+#~ msgstr "Ζουμ μέσα"
+
+#~ msgid "Zoom out"
+#~ msgstr "Ζουμ έξω"
+
+#~ msgid "Best fit"
+#~ msgstr "Καλύτερη δυνατή εφαρμογή"
+
+#~ msgid "Original size"
+#~ msgstr "Πρωτότυπο μέγεθος"
+
+#~ msgid "Selections"
+#~ msgstr "Επιλογές"
+
+#~ msgid "Unselect all"
+#~ msgstr "Αποεπιλογή όλων"
+
+#~ msgid "Quantizing"
+#~ msgstr "Κβαντοποίηση"
+
+#~ msgid "Quantize"
+#~ msgstr "Κβαντοποίηση"
+
+#, fuzzy
+#~ msgid "Record-play"
+#~ msgstr "Ηχογράφηση"
+
+#, fuzzy
+#~ msgid "Object Actions"
+#~ msgstr "Όνομα έργου"
+
+#, fuzzy
+#~ msgid "Mute selection"
+#~ msgstr "Συγχώνευση επιλογών"
+
+#, fuzzy
+#~ msgid "Nudge selection left"
+#~ msgstr "Συγχώνευση επιλογών"
+
+#, fuzzy
+#~ msgid "Nudge selection right"
+#~ msgstr "Συγχώνευση επιλογών"
+
+#, fuzzy
+#~ msgid "Delete selection"
+#~ msgstr "Διαγραφή σύνδεσης"
+
+#, fuzzy
+#~ msgid "Rename selected object"
+#~ msgstr "Αφαιρεί επιλεγμένο έργο από τη λίστα"
+
+#~ msgid "The Zrythm contributors"
+#~ msgstr "Οι συνεργάτες του Zrythm"
 
 #~ msgid "Create new project"
 #~ msgstr "Δημιουργία καινούριου έργου"
-
-#~ msgid "Open a project"
-#~ msgstr "Άνοιγμα έργου"
-
-#~ msgid "Save the project"
-#~ msgstr "Αποθήκευση έργου"
 
 #~ msgid "Copy and Paste"
 #~ msgstr "Αντιγραφή και επικόλληση"

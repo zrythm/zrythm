@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:38+0900\n"
 "PO-Revision-Date: 2023-11-04 20:45+0000\n"
 "Last-Translator: marcin mikołajczak <me@mkljczk.pl>\n"
 "Language: pl\n"
@@ -4522,65 +4522,81 @@ msgid ""
 "Theodotou in the United Kingdom.*"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:11
+#: ../../invoking-from-command-line/intro.rst:12
 msgid "Command Line"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:13
+#: ../../invoking-from-command-line/intro.rst:14
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:18
+#: ../../invoking-from-command-line/intro.rst:19
 msgid "Zrythm executable."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:24
+#: ../../invoking-from-command-line/intro.rst:25
 msgid "Print a list of available options."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:28
+#: ../../invoking-from-command-line/intro.rst:29
 msgid "Pretty-print the output (where applicable)."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:32
+#: ../../invoking-from-command-line/intro.rst:33
 msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 msgid "Reset user settings to their default values."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:43
+#: ../../invoking-from-command-line/intro.rst:44
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:48
+#: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:53
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Override the audio backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid "BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
+msgid "Override the MIDI backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:62
+msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:66
 msgid "Print version information."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:68
 msgid "Prints the Zrythm version."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:71
 msgid "zrythm_launch"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -5217,6 +5233,7 @@ msgid "Sets the settings to use when recording."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Play"
 msgstr ""
 
@@ -5227,6 +5244,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:49
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop"
 msgstr ""
 
@@ -5409,16 +5427,8 @@ msgstr ""
 msgid "File auditioning controls"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
-msgid "|icon_media-playback-start| Play"
-msgstr ""
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
-msgid "|icon_media-playback-stop| Stop"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:100

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:38+0900\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -5323,11 +5323,11 @@ msgstr ""
 "*Το Zrythm και το λογότυπο του Zrythm είναι καταχωρημένα εμπορικά σήματα του "
 "Αλέξανδρου Θεοδότου στο Ηνωμένο Βασίλειο*"
 
-#: ../../invoking-from-command-line/intro.rst:11
+#: ../../invoking-from-command-line/intro.rst:12
 msgid "Command Line"
 msgstr "Γραμμή εντολών"
 
-#: ../../invoking-from-command-line/intro.rst:13
+#: ../../invoking-from-command-line/intro.rst:14
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
@@ -5335,25 +5335,25 @@ msgstr ""
 "Το Zrythm παρέχει κάποιες λειτουργίες που μπορούν να χρησιμοποιηθούν με το :"
 "term:`CLI`."
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
 msgstr "zrythm"
 
-#: ../../invoking-from-command-line/intro.rst:18
+#: ../../invoking-from-command-line/intro.rst:19
 msgid "Zrythm executable."
 msgstr "Εκτελέσιμο αρχείο Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:24
+#: ../../invoking-from-command-line/intro.rst:25
 #, fuzzy
 msgid "Print a list of available options."
 msgstr "Εκτυπώνει μια λίστα διαθέσιμων επιλογών."
 
-#: ../../invoking-from-command-line/intro.rst:28
+#: ../../invoking-from-command-line/intro.rst:29
 #, fuzzy
 msgid "Pretty-print the output (where applicable)."
 msgstr "Προβάλλει φορμαρισμένο το εξαγόμενο (όπου είναι δυνατό)."
 
-#: ../../invoking-from-command-line/intro.rst:32
+#: ../../invoking-from-command-line/intro.rst:33
 #, fuzzy
 msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
@@ -5362,12 +5362,12 @@ msgstr ""
 "Εκτυπώνει όλες τις ρυθμίσεις του χρήστη. Μπορεί να συνδυαστεί με το :option:"
 "`--pretty` για να προβληθεί φορμαρισμένο το εξαγόμενο, όπως παρακάτω."
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 #, fuzzy
 msgid "Reset user settings to their default values."
 msgstr "Επαναφέρει τις ρυθμίσεις του χρήστη στις προεπιλεγμένες τιμές τους."
 
-#: ../../invoking-from-command-line/intro.rst:43
+#: ../../invoking-from-command-line/intro.rst:44
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
@@ -5376,24 +5376,40 @@ msgstr ""
 "Επηρεάζει μόνο τις ρυθμίσεις που εκτυπώνονται με το :option:`-p`. Αυτό *δεν* "
 "θα επηρεάσει κανένα αρχείο στο :term:`Zrythm user path`."
 
-#: ../../invoking-from-command-line/intro.rst:48
+#: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
 msgstr "Αυτό θα καθαρίσει ΟΛΕΣ τις ρυθμίσεις του χρήστη σας."
 
-#: ../../invoking-from-command-line/intro.rst:53
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Override the audio backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid "BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
+msgid "Override the MIDI backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:62
+msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:66
 #, fuzzy
 msgid "Print version information."
 msgstr "Πληροφορίες παρασκηνίου"
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:68
 msgid "Prints the Zrythm version."
 msgstr "Εκτυπώνει την έκδοση του Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:71
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -6181,6 +6197,7 @@ msgstr ""
 "ηχογράφηση."
 
 #: ../../playback-and-recording/transport-controls.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Play"
 msgstr "Έναρξη"
 
@@ -6193,6 +6210,7 @@ msgstr ""
 "αναπαραγωγής θα μετακινηθεί στο σημείο cue."
 
 #: ../../playback-and-recording/transport-controls.rst:49
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop"
 msgstr "Παύση"
 
@@ -6400,16 +6418,8 @@ msgstr ""
 msgid "File auditioning controls"
 msgstr "Επιπρόσθετοι χειριστές"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
-msgid "|icon_media-playback-start| Play"
-msgstr ""
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
-msgid "|icon_media-playback-stop| Stop"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:100

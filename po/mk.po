@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:54+0900\n"
 "PO-Revision-Date: 2023-03-15 03:55+0000\n"
 "Last-Translator: AND <andrejdam@protonmail.com>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -36,14 +36,13 @@ msgstr "После потенциометарот"
 msgid "Instrument"
 msgstr "Инструмент"
 
-#: inc/dsp/track.h:164 src/dsp/region.c:471 src/gui/widgets/bot_bar.c:409
-#: resources/ui/file_browser_filters.ui:10
+#: inc/dsp/track.h:164 src/dsp/region.c:471 src/gui/widgets/bot_bar.c:415
 #: build/data/org.zrythm.Zrythm.gschema.xml:1245
 msgid "Audio"
 msgstr "Аудио"
 
 #: inc/dsp/track.h:165 src/gui/widgets/route_target_selector.c:87
-#: src/project/project_init_flow_manager.c:576
+#: src/project/project_init_flow_manager.c:574
 msgid "Master"
 msgstr "Главен (мастер)"
 
@@ -75,7 +74,6 @@ msgstr "Аудио збир (група)"
 
 #: inc/dsp/track.h:172 src/dsp/region.c:468
 #: src/gui/widgets/popovers/automatable_selector_popover.c:342
-#: resources/ui/file_browser_filters.ui:18
 msgid "MIDI"
 msgstr "МИДИ"
 
@@ -194,11 +192,11 @@ msgstr "Линеарно појачување"
 msgid "Linear fade out"
 msgstr "Линеарно затишување"
 
-#: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:125
+#: inc/dsp/audio_function.h:58
 msgid "Nudge left"
 msgstr "Помести лево"
 
-#: inc/dsp/audio_function.h:58 src/gui/widgets/home_toolbar.c:126
+#: inc/dsp/audio_function.h:58
 msgid "Nudge right"
 msgstr "Помести десно"
 
@@ -232,11 +230,11 @@ msgstr "Сопствен приклучок"
 msgid "Invalid"
 msgstr "Невалидно"
 
-#: inc/dsp/midi_function.h:42 resources/ui/editor_toolbar.ui:154
+#: inc/dsp/midi_function.h:42
 msgid "Crescendo"
 msgstr "Крешендо"
 
-#: inc/dsp/midi_function.h:43 resources/ui/editor_toolbar.ui:160
+#: inc/dsp/midi_function.h:43
 msgid "Flam"
 msgstr "Форшлаг"
 
@@ -248,19 +246,19 @@ msgstr "Хоризонтално превртување"
 msgid "Flip V"
 msgstr "Вертикално превртување"
 
-#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:181
+#: inc/dsp/midi_function.h:46
 msgid "Legato"
 msgstr "Легато (врзано)"
 
-#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:187
+#: inc/dsp/midi_function.h:47
 msgid "Portato"
 msgstr "Портато (носено; артикулирано легато)"
 
-#: inc/dsp/midi_function.h:48 resources/ui/editor_toolbar.ui:193
+#: inc/dsp/midi_function.h:48
 msgid "Staccato"
 msgstr "Стакато (одсечно)"
 
-#: inc/dsp/midi_function.h:49 resources/ui/editor_toolbar.ui:199
+#: inc/dsp/midi_function.h:49
 msgid "Strum"
 msgstr "Струнење"
 
@@ -269,8 +267,8 @@ msgstr "Струнење"
 #: src/gui/widgets/route_target_selector.c:77
 #: src/gui/widgets/route_target_selector.c:112
 #: src/gui/widgets/route_target_selector.c:204
-#: src/gui/widgets/plugin_properties_expander.c:157
-#: src/gui/widgets/plugin_properties_expander.c:158
+#: src/gui/widgets/plugin_properties_expander.c:143
+#: src/gui/widgets/plugin_properties_expander.c:144
 msgid "None"
 msgstr "Ништо"
 
@@ -291,14 +289,14 @@ msgid "Inherit"
 msgstr "Наследи"
 
 #: inc/dsp/region.h:63 src/dsp/automation_track.c:154
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:415
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:421
 msgid "Off"
 msgstr "Исклучено"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
 #: src/gui/widgets/cc_bindings_tree.c:150
 #: src/gui/widgets/port_connections_tree.c:194
-#: src/gui/widgets/item_factory.c:590 src/gui/widgets/bot_bar.c:415
+#: src/gui/widgets/item_factory.c:591 src/gui/widgets/bot_bar.c:421
 msgid "On"
 msgstr "Вклучено"
 
@@ -546,7 +544,7 @@ msgstr "Јапонска 1"
 msgid "Japanese 2"
 msgstr "Јапонска 2"
 
-#: inc/dsp/automation_function.h:37 resources/ui/editor_toolbar.ui:209
+#: inc/dsp/automation_function.h:37
 #, fuzzy
 msgid "Flatten"
 msgstr "Шема на име на датотека"
@@ -565,11 +563,11 @@ msgid "-6dB"
 msgstr "-6дБ"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:571
+#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:570
 msgid "Linear"
 msgstr "Линеарен"
 
-#: inc/dsp/pan.h:61 src/utils/ui.c:572
+#: inc/dsp/pan.h:61 src/utils/ui.c:571
 msgid "Square Root"
 msgstr "Квадратен корен"
 
@@ -617,10 +615,10 @@ msgstr "_Копирај"
 msgid "_Paste"
 msgstr "_Залепи"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1819 src/actions/actions.c:3333
-#: src/actions/actions.c:3385 src/actions/actions.c:3531
-#: src/actions/actions.c:3653 src/actions/actions.c:3920
-#: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:134
+#: inc/utils/gtk.h:54 src/actions/actions.c:1798 src/actions/actions.c:3316
+#: src/actions/actions.c:3368 src/actions/actions.c:3514
+#: src/actions/actions.c:3636 src/actions/actions.c:3903
+#: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "_Бриши"
 
@@ -633,45 +631,42 @@ msgstr "_Поништи избор"
 msgid "Select A_ll"
 msgstr "Одбери _сѐ"
 
-#: inc/utils/gtk.h:64 src/gui/widgets/home_toolbar.c:120
+#: inc/utils/gtk.h:64
 msgid "Duplicate"
 msgstr "Удвои"
 
 #: inc/utils/gtk.h:67 src/gui/widgets/track.c:332 src/gui/widgets/track.c:831
 #: src/gui/widgets/monitor_section.c:35 src/gui/widgets/monitor_section.c:272
-#: src/gui/widgets/channel.c:669 resources/ui/fader_buttons.ui:57
-#: build/data/org.zrythm.Zrythm.gschema.xml:316
+#: src/gui/widgets/channel.c:650 build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Mute"
 msgstr "Занеми звук"
 
 #: inc/utils/gtk.h:70 src/gui/widgets/track.c:328 src/gui/widgets/track.c:838
-#: src/gui/widgets/channel.c:676
+#: src/gui/widgets/channel.c:657
 msgid "Unmute"
 msgstr "Однеми (реактивирај) звук"
 
-#: inc/utils/ui.h:82
+#: inc/utils/ui.h:81
 msgid "High"
 msgstr "Високо"
 
-#: inc/utils/ui.h:83 src/gui/widgets/channel_slot.c:592
+#: inc/utils/ui.h:82 src/gui/widgets/channel_slot.c:592
 msgid "Normal"
 msgstr "Нормално"
 
-#: inc/utils/ui.h:84
+#: inc/utils/ui.h:83
 msgid "Low"
 msgstr "Ниско"
 
-#: inc/utils/ui.h:85
+#: inc/utils/ui.h:84
 msgid "Ultra Low"
 msgstr "Суперниско"
 
 #: inc/gui/backend/arranger_object.h:81
-#: resources/ui/chord_selector_window.ui:489
 msgid "All"
 msgstr "Сите"
 
-#: inc/gui/backend/arranger_object.h:82 resources/ui/inspector_master.ui:7
-#: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
+#: inc/gui/backend/arranger_object.h:82
 msgid "Region"
 msgstr "Регион"
 
@@ -693,92 +688,91 @@ msgstr "Точка во автоматизација"
 
 #: inc/gui/backend/arranger_object.h:88 src/gui/widgets/velocity_settings.c:64
 #: src/gui/widgets/event_viewer.c:605 src/gui/widgets/item_factory.c:249
-#: src/gui/widgets/item_factory.c:760
-#: src/gui/widgets/dialogs/midi_function_dialog.c:172
-#: resources/ui/midi_editor_space.ui:62
+#: src/gui/widgets/item_factory.c:761
+#: src/gui/widgets/dialogs/midi_function_dialog.c:158
 msgid "Velocity"
 msgstr "Гласност"
 
-#: src/project.c:303
+#: src/project.c:301
 #, c-format
 msgid "Failed to create backup directory %s"
 msgstr "Неуспешно создадена сигурносна папка %s"
 
-#: src/project.c:492
+#: src/project.c:490
 #, c-format
 msgid "Unable to read file at %s"
 msgstr "Неможност да се прочита датотеката при %s"
 
-#: src/project.c:508
+#: src/project.c:506
 #, c-format
 msgid "Failed to decompress project file at %s"
 msgstr "Неможност да се декомпримира проектната датотека при %s"
 
-#: src/project.c:632 src/actions/actions.c:697 src/actions/actions.c:784
-#: src/actions/actions.c:838 src/actions/actions.c:857
-#: src/gui/widgets/main_window.c:121
-#: src/project/project_init_flow_manager.c:677
+#: src/project.c:630 src/actions/actions.c:702 src/actions/actions.c:763
+#: src/actions/actions.c:817 src/actions/actions.c:836
+#: src/gui/widgets/main_window.c:120
+#: src/project/project_init_flow_manager.c:675
 msgid "Failed to save project"
 msgstr "Неможност да се зачува проектот"
 
-#: src/project.c:786
+#: src/project.c:784
 #, fuzzy
 msgid "Failed to serialize project"
 msgstr "Неможност да се одсеријализира проектниот YAML"
 
-#: src/project.c:799
+#: src/project.c:797
 msgid "Failed to compress project file"
 msgstr "Неможност да се декомпримира проектната датотека"
 
-#: src/project.c:840 src/project.c:843
+#: src/project.c:838 src/project.c:841
 msgid "Backup saved."
 msgstr "Сигурносната копија е зачувана."
 
-#: src/project.c:853
+#: src/project.c:851
 msgid "Project saved."
 msgstr "Проектот е зачуван."
 
-#: src/project.c:1047
+#: src/project.c:1045
 msgid "Failed to write audio pool to disk"
 msgstr "Неможност да се зачува аудио содржината на диск"
 
-#: src/project.c:1059
+#: src/project.c:1057
 msgid "Failed to clone project"
 msgstr "Неможност да се клонира проектот"
 
-#: src/zrythm_app.c:126
+#: src/zrythm_app.c:127
 msgid "Error - Backtrace:\n"
 msgstr "Грешка - Извештај:\n"
 
-#: src/zrythm_app.c:128
+#: src/zrythm_app.c:129
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "Грешка: %s - Извештај:\n"
 
-#: src/zrythm_app.c:155
+#: src/zrythm_app.c:156
 #, c-format
 msgid "%s has crashed. "
 msgstr "%s се сруши. "
 
-#: src/zrythm_app.c:210
+#: src/zrythm_app.c:215
 msgid "Failed fetching the latest release version"
 msgstr ""
 
-#: src/zrythm_app.c:223
+#: src/zrythm_app.c:228
 #, fuzzy
 msgid "Changelog"
 msgstr "Промени боја"
 
-#: src/zrythm_app.c:225
+#: src/zrythm_app.c:230
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
 msgstr "Подигната е %s верзија <b>%s</b>%s%s"
 
-#: src/zrythm_app.c:245
+#: src/zrythm_app.c:250
 msgid "New Zrythm Version"
 msgstr ""
 
-#: src/zrythm_app.c:246
+#: src/zrythm_app.c:251
 #, c-format
 msgid ""
 "A new version of Zrythm has been released: <b>%s</b>\n"
@@ -789,16 +783,12 @@ msgstr ""
 "\n"
 "Твојата сегашна верзија е %s"
 
-#: src/zrythm_app.c:337
-msgid "Setting up main window"
-msgstr "Нагодувања на главниот прозорец"
-
-#: src/zrythm_app.c:381
+#: src/zrythm_app.c:382
 #, fuzzy
 msgid "No Project Selected"
 msgstr "Не е избран проект"
 
-#: src/zrythm_app.c:384
+#: src/zrythm_app.c:385
 #, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
@@ -806,46 +796,48 @@ msgstr ""
 "Не беше одбран проект или проектот не успеа при вчитување. %s сега ќе се "
 "затвори."
 
-#: src/zrythm_app.c:408
-msgid "Loading project"
+#: src/zrythm_app.c:409
+#, fuzzy
+msgid "Loading Project"
 msgstr "Вчитување на проект"
 
-#: src/zrythm_app.c:426
+#: src/zrythm_app.c:427
+#, fuzzy
+msgid "Initializing"
+msgstr "Иницијализација..."
+
+#: src/zrythm_app.c:427
 msgid "Initializing settings"
 msgstr "Нагодувања при подигнување"
 
-#: src/zrythm_app.c:431
+#: src/zrythm_app.c:432
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Подигнување на папките %s"
 
-#. init log
-#: src/zrythm_app.c:444
+#: src/zrythm_app.c:446
 msgid "Initializing logging system"
 msgstr "Подигнување на системот за запис"
 
-#: src/zrythm_app.c:464
+#: src/zrythm_app.c:467
 msgid "Initializing caches"
 msgstr "Подигнување на привремената меморија"
 
-#: src/zrythm_app.c:467
+#: src/zrythm_app.c:471
 msgid "Initializing file manager"
 msgstr "Подигнување на управувачот со датотеки"
 
-#: src/zrythm_app.c:472
-msgid "Scanning plugins"
+#: src/zrythm_app.c:475
+#, fuzzy
+msgid "Scanning Plugins"
 msgstr "Сканирање на приклучоци"
 
-#: src/zrythm_app.c:554
-msgid "Waiting for project"
-msgstr "Чекам проект"
-
-#: src/zrythm_app.c:767
+#: src/zrythm_app.c:706
 #, fuzzy
 msgid "Icon Theme Not Found"
 msgstr "Иконска тема"
 
-#: src/zrythm_app.c:811
+#: src/zrythm_app.c:750
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -857,18 +849,18 @@ msgstr ""
 "кон 'Започнувајќи' ('Getting Started') главата во корисничкото упатство за "
 "повеќе детали."
 
-#: src/zrythm_app.c:827
+#: src/zrythm_app.c:766
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 "Не може да се прибави системската граница за заклучување на меморија (%s)"
 
-#: src/zrythm_app.c:846
+#: src/zrythm_app.c:785
 #, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "Не може да се заклучи меморијата: %s"
 
-#: src/zrythm_app.c:973
+#: src/zrythm_app.c:911
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -895,54 +887,54 @@ msgstr ""
 "Поддржи го овој проект на https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1349
+#: src/zrythm_app.c:1282
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Не е одредена излезна датотека. Ве молиме одредете таква со '--"
 "output=ИМЕ_НА_ДАТОТЕКА'."
 
-#: src/zrythm_app.c:1376
+#: src/zrythm_app.c:1309
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "За таа опција е потребен libguile\n"
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1435
 msgid "Print version information"
 msgstr "Прикажи информација за верзијата"
 
-#: src/zrythm_app.c:1504
+#: src/zrythm_app.c:1437
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Создади проект од SCRIPT-FILE"
 
-#: src/zrythm_app.c:1506
+#: src/zrythm_app.c:1439
 msgid "Print output in user-friendly way"
 msgstr "Прикажи го излезот на корисничко-пријатен формат"
 
-#: src/zrythm_app.c:1508
+#: src/zrythm_app.c:1441
 msgid "Print current settings"
 msgstr "Прикажи ги сегашните нагодувања"
 
-#: src/zrythm_app.c:1510 src/gui/widgets/preferences.c:704
+#: src/zrythm_app.c:1443 src/gui/widgets/preferences.c:705
 msgid "Reset to factory settings"
 msgstr "Врати на фабрички поставки"
 
-#: src/zrythm_app.c:1512
+#: src/zrythm_app.c:1445
 msgid "Override the audio backend to use"
 msgstr "Преиначи го позадинскиот аудио систем кој се користи"
 
-#: src/zrythm_app.c:1514
+#: src/zrythm_app.c:1447
 msgid "Override the MIDI backend to use"
 msgstr "Преиначи го позадинскиот МИДИ систем кој се користи"
 
-#: src/zrythm_app.c:1516
+#: src/zrythm_app.c:1449
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Кратенка за --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1538
+#: src/zrythm_app.c:1471
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1543
+#: src/zrythm_app.c:1476
 #, fuzzy, c-format
 msgid ""
 "Examples:\n"
@@ -959,17 +951,17 @@ msgstr ""
 "\n"
 "Ве молиме пријавете проблеми на %s\n"
 
-#: src/zrythm_app.c:1553
+#: src/zrythm_app.c:1486
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Покрени го %s, опционално приложи и проектна датотека."
 
-#: src/zrythm_app.c:1581
+#: src/zrythm_app.c:1514
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr "Оваа верзија на Zrythm не поддржува создавање на повеќе од %d ленти."
 
-#: src/actions/range_action.c:673 resources/ui/range_action_buttons.ui:11
+#: src/actions/range_action.c:673
 msgid "Insert silence"
 msgstr "Внеси тишина"
 
@@ -977,15 +969,15 @@ msgstr "Внеси тишина"
 msgid "Delete range"
 msgstr "Избриши го размерот"
 
-#: src/actions/undo_manager.c:190 src/actions/actions.c:1018
+#: src/actions/undo_manager.c:188 src/actions/actions.c:997
 msgid "Failed to undo action"
 msgstr "Неуспешно поништена акција"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:1014
+#: src/actions/undo_manager.c:238 src/actions/actions.c:993
 msgid "Failed to redo action"
 msgstr "Неуспешно повторена акција"
 
-#: src/actions/undo_manager.c:283
+#: src/actions/undo_manager.c:281
 msgid "Failed to perform action"
 msgstr "Неуспешно изведена акција"
 
@@ -1033,12 +1025,12 @@ msgstr "Одврзи МИДИ мапирање"
 msgid "Set control value"
 msgstr "Постави контролна вредност"
 
-#: src/actions/actions.c:339
+#: src/actions/actions.c:342
 #, fuzzy
 msgid "Guile Disabled"
 msgstr "Оневозможи"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:345
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1047,68 +1039,56 @@ msgstr ""
 "Проширување со скриптирање преку <a href=\"%s\">GNU Guile</a> не е "
 "овозможено на твојата %s инсталација."
 
-#: src/actions/actions.c:712
+#: src/actions/actions.c:719
 #, fuzzy
 msgid "Discard Changes?"
 msgstr "Незачувани промени"
 
-#: src/actions/actions.c:713
+#: src/actions/actions.c:720
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Ќе се изгубат сите незачувани промени на сегашниот проект. Да продолжам?"
 
-#: src/actions/actions.c:716 src/actions/actions.c:805
-#: src/actions/actions.c:1818 src/actions/actions.c:3332
-#: src/actions/actions.c:3384 src/actions/actions.c:3530
-#: src/actions/actions.c:3652 src/actions/actions.c:3919 src/dsp/clip.c:692
-#: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:154
+#: src/actions/actions.c:723 src/actions/actions.c:784
+#: src/actions/actions.c:1797 src/actions/actions.c:3315
+#: src/actions/actions.c:3367 src/actions/actions.c:3513
+#: src/actions/actions.c:3635 src/actions/actions.c:3902 src/dsp/clip.c:692
+#: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
-#: src/gui/widgets/plugin_properties_expander.c:93
+#: src/gui/widgets/plugin_properties_expander.c:79
 #: src/gui/widgets/tracklist.c:334
-#: src/gui/widgets/dialogs/midi_function_dialog.c:340
+#: src/gui/widgets/dialogs/midi_function_dialog.c:312
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:231
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:112
-#: src/gui/widgets/dialogs/export_dialog.c:1205
-#: src/gui/widgets/dialogs/create_project_dialog.c:106
-#: src/gui/widgets/dialogs/bug_report_dialog.c:161
+#: src/gui/widgets/dialogs/export_dialog.c:1261
+#: src/gui/widgets/dialogs/bug_report_dialog.c:265
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:131
 #: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:297
 #: src/plugins/lv2/lv2_gtk.c:61 src/plugins/lv2/lv2_gtk.c:244
-#: resources/ui/first_run_window.ui:38 resources/ui/quantize_dialog.ui:149
-#: resources/ui/port_selector_dialog.ui:120
-#: resources/ui/string_entry_dialog.ui:10
+#: src/settings/plugin_settings.c:571
 msgid "_Cancel"
 msgstr "_Одкажи"
 
-#: src/actions/actions.c:716 src/actions/actions.c:805
-#: src/gui/widgets/main_window.c:154
+#: src/actions/actions.c:723 src/actions/actions.c:784
+#: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr ""
 
-#: src/actions/actions.c:717 src/actions/actions.c:806
-#: src/gui/widgets/main_window.c:155
+#: src/actions/actions.c:724 src/actions/actions.c:785
+#: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
 msgstr "_Зачувај"
 
-#: src/actions/actions.c:734
-msgid "Failed to load project"
-msgstr "Неуспешно вчитување на проект"
-
-#: src/actions/actions.c:760 src/gui/widgets/project_toolbar.c:24
-#: resources/ui/project_assistant.ui:34
-msgid "Open Project"
-msgstr "Отвори проект"
-
-#: src/actions/actions.c:800 src/gui/widgets/main_window.c:149
+#: src/actions/actions.c:779 src/gui/widgets/main_window.c:148
 #, fuzzy
 msgid "Save Changes?"
 msgstr "Незачувани промени"
 
-#: src/actions/actions.c:801
+#: src/actions/actions.c:780
 #, fuzzy
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
@@ -1117,27 +1097,27 @@ msgstr ""
 "Проектот содржи незачувани промени.\n"
 "Ако го изгасиш без да зачуваш, промените ќе бидат изгубени."
 
-#: src/actions/actions.c:876
+#: src/actions/actions.c:855
 msgid "Save Project"
 msgstr "Зачувај проект"
 
-#: src/actions/actions.c:909
+#: src/actions/actions.c:888
 msgid "Export routing graph"
 msgstr "Извади сигнален графикон"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 msgid "Image (PNG)"
 msgstr "Слика (PNG)"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 msgid "Image (SVG)"
 msgstr "Слика (SVG)"
 
-#: src/actions/actions.c:910
+#: src/actions/actions.c:889
 msgid "Dot graph"
 msgstr "Графикон во точки"
 
-#: src/actions/actions.c:915
+#: src/actions/actions.c:894
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1146,86 +1126,86 @@ msgstr ""
 "Графиконот ќе се извади во <a href=\"%s\">%s</a>\n"
 "Ве молиме одберете во каква форма"
 
-#: src/actions/actions.c:962
+#: src/actions/actions.c:941
 msgid "Graph exported"
 msgstr "Графиконот беше успешно изваден"
 
-#: src/actions/actions.c:990 src/guile/actions/undo_manager.c:66
+#: src/actions/actions.c:969 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
 msgstr "Неуспешно поништување"
 
-#: src/actions/actions.c:1053 src/guile/actions/undo_manager.c:89
+#: src/actions/actions.c:1032 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
 msgstr "Неуспешно повторување"
 
-#: src/actions/actions.c:1090 src/actions/actions.c:1103
-#: src/actions/actions.c:1325
+#: src/actions/actions.c:1069 src/actions/actions.c:1082
+#: src/actions/actions.c:1304
 msgid "Failed to delete selections"
 msgstr "Неуспешно бришење на избраните делови"
 
-#: src/actions/actions.c:1141
+#: src/actions/actions.c:1120
 #, fuzzy
 msgid "Selections copied to clipboard"
 msgstr "Исечи го избраното во површината за исечоци"
 
-#: src/actions/actions.c:1162
+#: src/actions/actions.c:1141
 #, fuzzy
 msgid "Plugins copied to clipboard"
 msgstr "Исечи го избраното во површината за исечоци"
 
-#: src/actions/actions.c:1180
+#: src/actions/actions.c:1159
 #, fuzzy
 msgid "Tracks copied to clipboard"
 msgstr "Залепи од површина за исечоци"
 
-#: src/actions/actions.c:1197
+#: src/actions/actions.c:1176
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "Неуспешно лепење на ленти"
 
-#: src/actions/actions.c:1212
+#: src/actions/actions.c:1191
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1277
+#: src/actions/actions.c:1256
 msgid "Can't paste incompatible data"
 msgstr "Не може да се залепат неодговарачки податоци"
 
-#: src/actions/actions.c:1350
+#: src/actions/actions.c:1329
 msgid "Failed to duplicate selections"
 msgstr "Неуспешно дуплирање на одбраните делови"
 
-#: src/actions/actions.c:1564
+#: src/actions/actions.c:1543
 msgid "Failed to unbind"
 msgstr "Неуспешно одврзување"
 
-#: src/actions/actions.c:1598 src/actions/actions.c:2057
-#: src/actions/actions.c:2084
+#: src/actions/actions.c:1577 src/actions/actions.c:2036
+#: src/actions/actions.c:2063
 msgid "Failed to quantize"
 msgstr "Неуспешно подредување (квантизација)"
 
-#: src/actions/actions.c:1668 src/dsp/track.c:3453
+#: src/actions/actions.c:1647 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
 msgid "Failed to create track"
 msgstr "Неуспешно создавање на лента"
 
-#: src/actions/actions.c:1720
+#: src/actions/actions.c:1699
 msgid "Failed to duplicate tracks"
 msgstr "Неуспешно дуплирање ленти"
 
-#: src/actions/actions.c:1795 src/actions/actions.c:1841
+#: src/actions/actions.c:1774 src/actions/actions.c:1820
 msgid "Failed to delete tracks"
 msgstr "Неуспешно бришење ленти"
 
-#: src/actions/actions.c:1813
+#: src/actions/actions.c:1792
 #, fuzzy
 msgid "Delete Tracks?"
 msgstr "Из_бриши ленти"
 
-#: src/actions/actions.c:1814
+#: src/actions/actions.c:1793
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1233,48 +1213,48 @@ msgstr ""
 "Одбраните ленти содржат неиницирани приклучоци. Нивното бришење не може да "
 "се поврати, и историјата на акции ќе биде избришана. Да продолжам со бришење?"
 
-#: src/actions/actions.c:1873
+#: src/actions/actions.c:1852
 msgid "Failed to pin/unpin tracks"
 msgstr "Неуспешно закачување / одкачување на ленти"
 
-#: src/actions/actions.c:1884
+#: src/actions/actions.c:1863
 msgid "Failed to solo tracks"
 msgstr "Неуспешно солирање на ленти"
 
-#: src/actions/actions.c:1895
+#: src/actions/actions.c:1874
 msgid "Failed to unsolo tracks"
 msgstr "Неуспешно одсолирање на ленти"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1885
 msgid "Failed to mute tracks"
 msgstr "Неуспешно занемување на ленти"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1896
 msgid "Failed to unmute tracks"
 msgstr "Неуспешно однемување на ленти"
 
-#: src/actions/actions.c:1928
+#: src/actions/actions.c:1907
 msgid "Failed to listen tracks"
 msgstr "Неуспешно преслушување на ленти"
 
-#: src/actions/actions.c:1939
+#: src/actions/actions.c:1918
 msgid "Failed to unlisten tracks"
 msgstr "Неуспешно одслушување на ленти"
 
-#: src/actions/actions.c:1950
+#: src/actions/actions.c:1929
 msgid "Failed to enable tracks"
 msgstr "Неуспешно овозможување на ленти"
 
-#: src/actions/actions.c:1961
+#: src/actions/actions.c:1940
 msgid "Failed to disable tracks"
 msgstr "Неуспешно оневозможување на ленти"
 
-#: src/actions/actions.c:2099
+#: src/actions/actions.c:2078
 #, fuzzy
 msgid "Invalid Selection For Quantize"
 msgstr "Невалиден временски опсег"
 
-#: src/actions/actions.c:2100
+#: src/actions/actions.c:2079
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
@@ -1283,121 +1263,121 @@ msgstr ""
 "Мора прво да се одбере или временската линија или уредникот. Сегашниот одбир "
 "е %s"
 
-#: src/actions/actions.c:2167
+#: src/actions/actions.c:2146
 msgid "Failed to mute selections"
 msgstr "Неуспешно занемување на избраното"
 
-#: src/actions/actions.c:2180
+#: src/actions/actions.c:2159
 msgid "No regions selected"
 msgstr "Не се одбрани никакви региони"
 
-#: src/actions/actions.c:2186
+#: src/actions/actions.c:2165
 msgid "Selections must be on the same lane"
 msgstr "Избраните мора да бидат на иста патека"
 
-#: src/actions/actions.c:2191
+#: src/actions/actions.c:2170
 msgid "Cannot merge looped regions"
 msgstr "Не можам да спојам повторувачки региони"
 
-#: src/actions/actions.c:2205
+#: src/actions/actions.c:2184
 msgid "Failed to merge selections"
 msgstr "Неможност да се спојат одбраните делови"
 
-#: src/actions/actions.c:2283
+#: src/actions/actions.c:2262
 msgid "Failed to insert silence"
 msgstr "Неуспешност да се внесе тишина"
 
-#: src/actions/actions.c:2300
+#: src/actions/actions.c:2279
 msgid "Failed to remove range"
 msgstr "Неуспешност да се избрише растојание"
 
-#: src/actions/actions.c:2376 src/actions/arranger_selections.c:538
-#: src/gui/widgets/dialogs/midi_function_dialog.c:274
+#: src/actions/actions.c:2355 src/actions/arranger_selections.c:538
+#: src/gui/widgets/dialogs/midi_function_dialog.c:246
 msgid "Failed to apply MIDI function"
 msgstr "Неуспешност при примена на МИДИ функција"
 
-#: src/actions/actions.c:2408 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2387 src/actions/arranger_selections.c:570
 msgid "Failed to apply automation function"
 msgstr "Неуспешност при примена на автоматизирачка функција"
 
-#: src/actions/actions.c:2448 src/actions/actions.c:3000
+#: src/actions/actions.c:2427 src/actions/actions.c:2980
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr "Неможност да се примени аудио функцијата"
 
-#: src/actions/actions.c:2464
+#: src/actions/actions.c:2443
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "Ве молиме внесете валидно име."
 
-#: src/actions/actions.c:2602
+#: src/actions/actions.c:2581
 #, fuzzy
 msgid "Pitch Ratio"
 msgstr "Висина (тон)"
 
-#: src/actions/actions.c:2683
+#: src/actions/actions.c:2662
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "Име на лента"
 
-#: src/actions/actions.c:2702
+#: src/actions/actions.c:2681
 msgid "Object name"
 msgstr "Име на објект"
 
-#: src/actions/actions.c:2733
+#: src/actions/actions.c:2712
 msgid "An object cannot be created at the selected location."
 msgstr "Не може да се создаде објект на одбраното место."
 
-#: src/actions/actions.c:2767
+#: src/actions/actions.c:2746
 msgid "Failed to set region color"
 msgstr "Неможност да се намести боја на распонот"
 
-#: src/actions/actions.c:2794
+#: src/actions/actions.c:2774
 msgid "Region Color"
 msgstr "Боја на распон"
 
-#: src/actions/actions.c:2826
+#: src/actions/actions.c:2806
 msgid "Failed to reset region color"
 msgstr "Неможност да се поврати бојата на распонот"
 
-#: src/actions/actions.c:2865
+#: src/actions/actions.c:2845
 msgid "Please enter a BPM"
 msgstr "Ве молиме внесете УВМ (удари во минута)"
 
 #. TODO
-#: src/actions/actions.c:2873 src/dsp/scale.c:517
+#: src/actions/actions.c:2853 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:316 src/gui/widgets/tracklist.c:360
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr "Сѐ уште неспроведено"
 
-#: src/actions/actions.c:2873
+#: src/actions/actions.c:2853
 #, fuzzy
 msgid "Tap BPM not implemented yet"
 msgstr "Операцијата не е применета"
 
-#: src/actions/actions.c:2928
+#: src/actions/actions.c:2908
 msgid "Failed to move selections"
 msgstr "Неможност да се помести избраното"
 
-#: src/actions/actions.c:2944
+#: src/actions/actions.c:2924
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "Одкриените УВМ се: %.2f"
 
-#: src/actions/actions.c:2946
+#: src/actions/actions.c:2926
 msgid "Candidates:"
 msgstr "Кандидати:"
 
-#: src/actions/actions.c:3104
+#: src/actions/actions.c:3087
 msgid "Failed to set curve algorithm"
 msgstr "Неможност да се постави алгоритмот на кривата"
 
-#: src/actions/actions.c:3153
+#: src/actions/actions.c:3136
 msgid "Failed to edit fades"
 msgstr "Неможност да се уредат затишувањата / појачувањата"
 
-#: src/actions/actions.c:3215
+#: src/actions/actions.c:3198
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1405,63 +1385,63 @@ msgstr ""
 "Не се понајдени посебни пакети со местенки. Ве молиме најпрво создадете "
 "пакет со местенки преку прелистувачот за акордски местенки."
 
-#: src/actions/actions.c:3286
+#: src/actions/actions.c:3269
 #, fuzzy
 msgid "Failed to create pack"
 msgstr "Неуспешно создавање на лента"
 
-#: src/actions/actions.c:3298 src/actions/actions.c:3353
+#: src/actions/actions.c:3281 src/actions/actions.c:3336
 msgid "Preset Pack Name"
 msgstr "Име на пакет со местенки"
 
-#: src/actions/actions.c:3329 src/actions/actions.c:3381
-#: src/actions/actions.c:3649 src/actions/actions.c:3912
+#: src/actions/actions.c:3312 src/actions/actions.c:3364
+#: src/actions/actions.c:3632 src/actions/actions.c:3895
 #, fuzzy
 msgid "Delete?"
 msgstr "Бриши"
 
-#: src/actions/actions.c:3330
+#: src/actions/actions.c:3313
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr ""
 "Дали сте сигурни дека сакате да го тргнете овој пакет на акордски местенки?"
 
-#: src/actions/actions.c:3382
+#: src/actions/actions.c:3365
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
 msgstr ""
 "Дали сте сигурни дека сакате да го тргнете овој пакет на акордски местенки?"
 
-#: src/actions/actions.c:3405
+#: src/actions/actions.c:3388
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
 msgstr "Име на местенка"
 
-#: src/actions/actions.c:3425 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3408 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 msgid "Failed to change balance"
 msgstr "Неуспешна промена на рамнотежа"
 
-#: src/actions/actions.c:3447
+#: src/actions/actions.c:3430
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "Неуспешно создавање на приклучок %s"
 
-#: src/actions/actions.c:3481
+#: src/actions/actions.c:3464
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "Неуспешна промена на боја"
 
-#: src/actions/actions.c:3504 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3487 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr "Неуспешно бришење на приклучоци"
 
-#: src/actions/actions.c:3526
+#: src/actions/actions.c:3509
 #, fuzzy
 msgid "Delete Plugins?"
 msgstr "Избриши приклучок"
 
-#: src/actions/actions.c:3527
+#: src/actions/actions.c:3510
 #, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
@@ -1471,37 +1451,37 @@ msgstr ""
 "поврати, и историјата на поништување на акции исто така ќе се избрише. Да "
 "продолжам со бришењето?"
 
-#: src/actions/actions.c:3578
+#: src/actions/actions.c:3561
 #, c-format
 msgid "Failed to reset %s"
 msgstr "Неможност да се поврати состојбата на %s"
 
-#: src/actions/actions.c:3603
+#: src/actions/actions.c:3586
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Неуспешно одврзување на %s од %s"
 
-#: src/actions/actions.c:3644
+#: src/actions/actions.c:3627
 msgid "Cannot delete standard bookmark"
 msgstr "Неможност да се избрише вообичаениот обележувач"
 
-#: src/actions/actions.c:3650
+#: src/actions/actions.c:3633
 #, fuzzy
 msgid "Are you sure you want to delete this bookmark?"
 msgstr "Дали сте сигурни дека сакате да го избришете овој обележувач?"
 
-#: src/actions/actions.c:3843 src/actions/actions.c:3874
+#: src/actions/actions.c:3826 src/actions/actions.c:3857
 msgid "Collection name"
 msgstr "Име на збирот"
 
-#: src/actions/actions.c:3915
+#: src/actions/actions.c:3898
 #, fuzzy, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 "Овој збир содржи %d приклучоци. Дали сте сигурни дека сакате да го тргнете?"
 
-#: src/actions/actions.c:4091
+#: src/actions/actions.c:4077
 msgid "Failed to change direct output"
 msgstr "Неуспешно менување на директниот излез"
 
@@ -1522,7 +1502,7 @@ msgstr ""
 msgid "Failed getting contents for %s"
 msgstr "Неуспешно прибавување на содржина за %s"
 
-#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1947
+#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1910
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "Неуспенен запис на аудио парче во датотеката: %s"
@@ -1954,7 +1934,7 @@ msgid "Could not create plugin"
 msgstr "Неуспешно создавање на приклучок"
 
 #: src/actions/mixer_selections_action.c:497 src/dsp/audio_function.c:140
-#: src/dsp/track.c:2029 src/dsp/track.c:3011
+#: src/dsp/track.c:2026 src/dsp/track.c:3013
 msgid "Failed to instantiate plugin"
 msgstr "Неуспешна иницијализација на приклучок"
 
@@ -2039,18 +2019,18 @@ msgstr "Копирај ги приклучоците %d"
 msgid "Change Load Behavior for %s"
 msgstr ""
 
-#: src/dsp/modulator_track.c:58 src/utils/gtk.c:1023
+#: src/dsp/modulator_track.c:58 src/utils/gtk.c:998
 #: src/gui/widgets/bot_dock_edge.c:216
 #: src/gui/widgets/popovers/automatable_selector_popover.c:329
 msgid "Modulators"
 msgstr "Модулатори"
 
-#: src/dsp/supported_file.c:276
+#: src/dsp/supported_file.c:272
 #, fuzzy, c-format
 msgid "Failed reading metadata for %s"
 msgstr "Неуспешно прибавување на содржина за %s"
 
-#: src/dsp/supported_file.c:280
+#: src/dsp/supported_file.c:276
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -2065,8 +2045,7 @@ msgstr ""
 "Канал(и): %u | Стапка на битови: %'d.%d кб/с\n"
 "Длабочина на битови: %d битна"
 
-#: src/dsp/snap_grid.c:244 resources/ui/snap_grid_popover.ui:112
-#: resources/ui/snap_grid_popover.ui:190
+#: src/dsp/snap_grid.c:244
 msgid "Adaptive"
 msgstr "Прилагодливо"
 
@@ -2186,13 +2165,11 @@ msgstr "Неуспех да се намести МИДИ модус"
 msgid "Markers"
 msgstr "Означувачи"
 
-#: src/dsp/marker_track.c:59 src/gui/widgets/timeline_selection_info.c:192
-#: resources/ui/quantize_dialog.ui:62
+#: src/dsp/marker_track.c:59 src/gui/widgets/timeline_selection_info.c:179
 msgid "start"
 msgstr "почеток"
 
-#: src/dsp/marker_track.c:66 src/gui/widgets/timeline_selection_info.c:197
-#: resources/ui/quantize_dialog.ui:70
+#: src/dsp/marker_track.c:66 src/gui/widgets/timeline_selection_info.c:184
 msgid "end"
 msgstr "крај"
 
@@ -2355,20 +2332,20 @@ msgstr "Лентата не може да се солира"
 msgid "Cannot set track listened"
 msgstr "Лентата не може да се преслушува"
 
-#: src/dsp/track.c:2711 src/settings/plugin_settings.c:374
+#: src/dsp/track.c:2713 src/settings/plugin_settings.c:374
 #: src/settings/plugin_settings.c:410
 msgid "Failed to rename track"
 msgstr "Лентата не може да се преименува"
 
-#: src/dsp/track.c:3053 src/dsp/track.c:3095
+#: src/dsp/track.c:3055 src/dsp/track.c:3097
 msgid "Cannot set track comment"
 msgstr "Не може да се постави коментар на лентата"
 
-#: src/dsp/track.c:3129
+#: src/dsp/track.c:3131
 msgid "Cannot set track icon"
 msgstr "Не може да се постави икона на лентата"
 
-#: src/dsp/track.c:3351
+#: src/dsp/track.c:3353
 msgid "Cannot set track enabled"
 msgstr "Лентата не може да се овозможи"
 
@@ -2389,12 +2366,12 @@ msgstr "Закачување"
 msgid "Automation"
 msgstr "Автомација"
 
-#: src/dsp/engine.c:485 src/dsp/engine.c:559
+#: src/dsp/engine.c:483 src/dsp/engine.c:557
 #, fuzzy
 msgid "Backend Initialization Failed"
 msgstr "Неуспешен запис на аудио датотека"
 
-#: src/dsp/engine.c:486
+#: src/dsp/engine.c:484
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
@@ -2404,12 +2381,12 @@ msgstr ""
 "ќе го користам симулативниот. Ве молиме проверете ги вашите поставки за "
 "заднински аудио систем во Поставките."
 
-#: src/dsp/engine.c:525
+#: src/dsp/engine.c:523
 #, fuzzy
 msgid "Backend Error"
 msgstr "Грешка во позадинскиот систем"
 
-#: src/dsp/engine.c:526
+#: src/dsp/engine.c:524
 #, c-format
 msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
@@ -2419,7 +2396,7 @@ msgstr ""
 "аудио систем (моментално, твојот заднински аудио систем е: %s). Наместо ова, "
 "ќе го користам симулативниот МИДИ задниски систем."
 
-#: src/dsp/engine.c:560
+#: src/dsp/engine.c:558
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -2429,12 +2406,12 @@ msgstr ""
 "го користам симулативниот заднински МИДИ систем. Ве молиме проверете ги "
 "поставките за заднински систем во Поставките."
 
-#: src/dsp/engine.c:600
+#: src/dsp/engine.c:598
 #, fuzzy
 msgid "Invalid Backend Combination"
 msgstr "Невалидна позиција"
 
-#: src/dsp/engine.c:601
+#: src/dsp/engine.c:599
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
@@ -2443,11 +2420,11 @@ msgstr ""
 "Ако сакате да го користите JACK, ве молиме одберете го JACK воедно како и "
 "аудио и МИДИ заднински систем."
 
-#: src/dsp/engine.c:790
+#: src/dsp/engine.c:788
 msgid "Selected Backend Not Found"
 msgstr ""
 
-#: src/dsp/engine.c:791
+#: src/dsp/engine.c:789
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2500,11 +2477,11 @@ msgstr ""
 "Извезеното аудио содржи делови кои се погласни од 0 дБ (најгласното е %.1f "
 "дБ)."
 
-#: src/dsp/exporter.c:962
+#: src/dsp/exporter.c:952
 msgid "Failed to create audio track"
 msgstr "Неуспешно создавање на аудио лента"
 
-#: src/dsp/exporter.c:992
+#: src/dsp/exporter.c:976
 msgid "Invalid time range"
 msgstr "Невалиден временски опсег"
 
@@ -2534,7 +2511,6 @@ msgid "Pulseaudio Backend Test Failed"
 msgstr ""
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
 msgid "Chords"
 msgstr "Акорди"
 
@@ -2568,12 +2544,10 @@ msgstr "Уреди во надворешна програма"
 
 #: src/dsp/clip.c:691 src/utils/ui.c:163 src/utils/dialogs.c:40
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:83
-#: src/gui/widgets/dialogs/create_project_dialog.c:107
-#: src/gui/widgets/dialogs/bug_report_dialog.c:160
-#: src/gui/widgets/dialogs/bug_report_dialog.c:369
-#: src/plugins/lv2/lv2_gtk.c:245 resources/ui/first_run_window.ui:26
-#: resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:11
+#: src/gui/widgets/dialogs/bug_report_dialog.c:49
+#: src/gui/widgets/dialogs/bug_report_dialog.c:265
+#: src/gui/widgets/dialogs/bug_report_dialog.c:403
+#: src/plugins/lv2/lv2_gtk.c:245
 msgid "_OK"
 msgstr "_Во ред"
 
@@ -2619,7 +2593,7 @@ msgstr "Ве молиме внесете вредност"
 
 #: src/dsp/automation_point.c:226 src/gui/widgets/balance_control.c:291
 #: src/gui/widgets/balance_control.c:297 src/gui/widgets/item_factory.c:296
-#: src/gui/widgets/item_factory.c:316 src/gui/widgets/bot_bar.c:302
+#: src/gui/widgets/item_factory.c:316 src/gui/widgets/bot_bar.c:308
 #, fuzzy
 msgid "Invalid Value"
 msgstr "Невалидна вредност"
@@ -2782,7 +2756,8 @@ msgid "Failed to copy tracks"
 msgstr "Неуспешно копирање на ленти"
 
 #: src/dsp/tracklist.c:1629 src/utils/error.c:26
-#: src/gui/widgets/dialogs/bug_report_dialog.c:461
+#: src/gui/widgets/dialogs/bug_report_dialog.c:500
+#: src/gui/widgets/dialogs/generic_progress_dialog.c:142
 msgid "Error"
 msgstr "Грешка"
 
@@ -2910,11 +2885,11 @@ msgstr "Неуспешно извршување на акција на кана�
 msgid "soxr_process() error: %s"
 msgstr ""
 
-#: src/utils/ui.c:573
+#: src/utils/ui.c:572
 msgid "Sine (Equal Power)"
 msgstr "Синус (еднаква моќ)"
 
-#: src/utils/ui.c:855
+#: src/utils/ui.c:854
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -2923,7 +2898,7 @@ msgstr ""
 "Не е достапна локална поддршка за јазикот кој го избравте (%s). Ве молиме "
 "пред тоа инсталирајте таква и рестартирајте го %s"
 
-#: src/utils/ui.c:861
+#: src/utils/ui.c:860
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2942,11 +2917,11 @@ msgstr ""
 "2. Покрени го <b>locale-gen</b> како администратор\n"
 "3. Рестартирај го %s"
 
-#: src/utils/ui.c:886
+#: src/utils/ui.c:885
 msgid "Experimental Feature"
 msgstr ""
 
-#: src/utils/ui.c:887
+#: src/utils/ui.c:886
 msgid ""
 "BPM and time signature automation is an experimental feature. Using it may "
 "corrupt your project."
@@ -2988,57 +2963,57 @@ msgstr "Грешка при претрага %d: %s"
 #. FIXME the names should be fetched from the
 #. * tab labels instead of repeating the names
 #. * here
-#: src/utils/gtk.c:1021
+#: src/utils/gtk.c:996
 msgid "Mixer"
 msgstr "Миксета"
 
-#: src/utils/gtk.c:1025
+#: src/utils/gtk.c:1000
 msgid "Chord Pad"
 msgstr "Површина со акорди"
 
-#: src/utils/gtk.c:1026
+#: src/utils/gtk.c:1001
 msgid "Editor"
 msgstr "Уредник"
 
-#: src/utils/gtk.c:1028 src/gui/widgets/left_dock_edge.c:176
+#: src/utils/gtk.c:1003 src/gui/widgets/left_dock_edge.c:176
 msgid "Track Inspector"
 msgstr "Инспектор за ленти"
 
-#: src/utils/gtk.c:1031 src/gui/widgets/left_dock_edge.c:186
+#: src/utils/gtk.c:1006 src/gui/widgets/left_dock_edge.c:186
 msgid "Plugin Inspector"
 msgstr "Инспектор за приклучоци"
 
-#: src/utils/gtk.c:1034 src/gui/widgets/right_dock_edge.c:91
+#: src/utils/gtk.c:1009 src/gui/widgets/right_dock_edge.c:93
 msgid "Plugin Browser"
 msgstr "Прелистувач за приклучоци"
 
-#: src/utils/gtk.c:1037 src/gui/widgets/right_dock_edge.c:98
-#: src/gui/widgets/right_dock_edge.c:123
+#: src/utils/gtk.c:1012 src/gui/widgets/right_dock_edge.c:102
+#: src/gui/widgets/right_dock_edge.c:127
 msgid "File Browser"
 msgstr "Прелистувач на датотеки"
 
-#: src/utils/gtk.c:1039 src/gui/widgets/right_dock_edge.c:112
+#: src/utils/gtk.c:1014 src/gui/widgets/right_dock_edge.c:116
 msgid "Chord Preset Browser"
 msgstr "Прелистувач за акордски местенки"
 
-#: src/utils/gtk.c:1042 src/gui/widgets/track.c:348
+#: src/utils/gtk.c:1017 src/gui/widgets/track.c:348
 #: src/gui/widgets/monitor_section.c:29
 msgid "Monitor"
 msgstr "Набљудувач (монитор)"
 
-#: src/utils/gtk.c:1044 src/gui/widgets/main_notebook.c:108
+#: src/utils/gtk.c:1019 src/gui/widgets/main_notebook.c:108
 msgid "Timeline"
 msgstr "Временска линија"
 
-#: src/utils/gtk.c:1047 src/gui/widgets/main_notebook.c:113
+#: src/utils/gtk.c:1022 src/gui/widgets/main_notebook.c:113
 msgid "MIDI CC Bindings"
 msgstr "МИДИ CC поврзувања"
 
-#: src/utils/gtk.c:1050 src/gui/widgets/main_notebook.c:111
+#: src/utils/gtk.c:1025 src/gui/widgets/main_notebook.c:111
 msgid "Port Connections"
 msgstr "Портови врски"
 
-#: src/utils/gtk.c:1052
+#: src/utils/gtk.c:1027
 msgid "Scenes"
 msgstr "Сцени"
 
@@ -3056,7 +3031,7 @@ msgstr "На одбраното место веќе постои приклуч�
 msgid "_Overwrite"
 msgstr "Препиши врз постоечки приклучок"
 
-#: src/utils/log.c:793
+#: src/utils/log.c:792
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr "%s пресретна грешка\n"
@@ -3076,9 +3051,7 @@ msgid "Desktop"
 msgstr "Папка на работната површина"
 
 #: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:51
-#: src/gui/widgets/home_toolbar.c:121
 #: src/gui/widgets/port_connections_tree.c:131 src/plugins/collection.c:170
-#: resources/ui/modulator_inner.ui:24
 msgid "Delete"
 msgstr "Бриши"
 
@@ -3091,60 +3064,58 @@ msgstr "Неуспешно клонирање на лентата „%s“"
 msgid "Failed to paste tracks"
 msgstr "Неуспешно лепење на ленти"
 
-#: src/gui/backend/event_manager.c:267
+#: src/gui/backend/event_manager.c:264
 #, fuzzy
 msgid "Plugin Crashed"
 msgstr "Прелистувач за приклучоци"
 
-#: src/gui/backend/event_manager.c:268
+#: src/gui/backend/event_manager.c:265
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr "Приклучокот „%s“ се сруши и го оневозможив."
 
-#: src/gui/backend/event_manager.c:1027
+#: src/gui/backend/event_manager.c:1022
 #, fuzzy, c-format
 msgid "%d new plugins detected"
 msgstr "Не се одбрани никакви региони"
 
-#: src/gui/backend/event_manager.c:1100
+#: src/gui/backend/event_manager.c:1095
 #, fuzzy
 msgid "Plugin collections updated."
 msgstr "Збирови во прелистувачот на приклучоци"
 
-#: src/gui/backend/event_manager.c:1143
+#: src/gui/backend/event_manager.c:1137
 msgid "Plugin preset saved."
 msgstr "Местенката на приклучокот е зачувана."
 
-#: src/gui/backend/event_manager.c:1146
+#: src/gui/backend/event_manager.c:1140
 msgid "Plugin preset loaded."
 msgstr "Местенката на приклучокот е вчитана."
 
-#: src/gui/backend/arranger_selections.c:2319
+#: src/gui/backend/arranger_selections.c:2320
 msgid "Failed to add region"
 msgstr "Неуспешно додавање на регион"
 
-#: src/gui/backend/arranger_selections.c:2352
+#: src/gui/backend/arranger_selections.c:2353
 msgid "Failed to paste selections"
 msgstr "Неуспешно лепење на избраното"
 
-#: src/gui/backend/arranger_object.c:1671
+#: src/gui/backend/arranger_object.c:1666
 msgid "Failed to edit object"
 msgstr "Неуспешно уредување на објект"
 
-#: src/gui/backend/arranger_object.c:3099
+#: src/gui/backend/arranger_object.c:3042
 #, c-format
 msgid "Invalid object name %s"
 msgstr "Невалидно име на објект %s"
 
-#: src/gui/backend/arranger_object.c:3125
+#: src/gui/backend/arranger_object.c:3068
 msgid "Failed to rename object"
 msgstr "Неуспешно преименување на објект"
 
-#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:287
+#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:254
 #: src/gui/widgets/preferences.c:339 src/gui/widgets/modulator_inner.c:130
 #: src/gui/widgets/modulator_macro.c:129 src/gui/widgets/balance_control.c:253
-#: resources/ui/plugin_browser.ui:75 resources/ui/plugin_browser.ui:113
-#: resources/ui/plugin_browser.ui:151 resources/ui/plugin_browser.ui:189
 msgid "Reset"
 msgstr "Ресетирај"
 
@@ -3245,32 +3216,32 @@ msgstr "Одбери патека"
 msgid "Device"
 msgstr "Уред"
 
-#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:633
+#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:634
 msgid "Note/Control"
 msgstr "Нота / Контрола"
 
 #: src/gui/widgets/cc_bindings_tree.c:172
 #: src/gui/widgets/port_connections_tree.c:211
-#: src/gui/widgets/item_factory.c:648
+#: src/gui/widgets/item_factory.c:649
 msgid "Destination"
 msgstr "Цел (дестинација)"
 
-#: src/gui/widgets/fader.c:332 src/gui/widgets/item_factory.c:296
+#: src/gui/widgets/fader.c:299 src/gui/widgets/item_factory.c:296
 #: src/gui/widgets/item_factory.c:316
 msgid "Invalid value"
 msgstr "Невалидна вредност"
 
-#: src/gui/widgets/fader.c:365
+#: src/gui/widgets/fader.c:332
 #, fuzzy
 msgid "Fader Value"
 msgstr "Гласнина по потенциометар"
 
 #. set name and icon
-#: src/gui/widgets/fader.c:468 src/gui/widgets/fader_controls_expander.c:39
+#: src/gui/widgets/fader.c:430 src/gui/widgets/fader_controls_expander.c:39
 msgid "Fader"
 msgstr "Потенциометар"
 
-#: src/gui/widgets/main_window.c:150
+#: src/gui/widgets/main_window.c:149
 #, fuzzy
 msgid ""
 "The project contains unsaved changes. If you quit without saving, unsaved "
@@ -3279,33 +3250,23 @@ msgstr ""
 "Проектот содржи незачувани промени.\n"
 "Ако го изгасиш без да зачуваш, промените ќе бидат изгубени."
 
-#: src/gui/widgets/main_window.c:249
+#: src/gui/widgets/main_window.c:248
 #, fuzzy
 msgid "Startup Error"
 msgstr "Фатална грешка"
 
-#: src/gui/widgets/main_window.c:738 src/gui/widgets/preferences.c:916
-#: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
-#: resources/gtk/help-overlay.ui:36
-msgid "Preferences"
-msgstr "Поставки"
+#: src/gui/widgets/main_window.c:270
+msgid "Redo"
+msgstr "Повтори"
 
-#: src/gui/widgets/main_window.c:739
-msgid "Log viewer"
-msgstr "Прегледник на записник"
+#: src/gui/widgets/main_window.c:270
+#: build/data/org.zrythm.Zrythm.gschema.xml:1273
+msgid "Undo"
+msgstr "Поврати"
 
-#: src/gui/widgets/main_window.c:740
-msgid "Scripting interface"
-msgstr "Околина за скриптирање"
-
-#: src/gui/widgets/right_dock_edge.c:105
+#: src/gui/widgets/right_dock_edge.c:109
 msgid "Monitor Section"
 msgstr "Оддел на монитори"
-
-#: src/gui/widgets/header.c:91
-#, c-format
-msgid "About %s"
-msgstr "За %s"
 
 #: src/gui/widgets/preferences.c:156
 msgid "All preferences have been successfully reset to initial values"
@@ -3325,31 +3286,31 @@ msgstr ""
 "Ова ќе го врати Zrythm na фабричките поставки. <b>Ќе ги изгубиш сите твои "
 "поставки</b>. Да продолжам?"
 
-#: src/gui/widgets/preferences.c:173 resources/ui/first_run_window.ui:32
+#: src/gui/widgets/preferences.c:173
 msgid "_Reset"
 msgstr "_Врати одново"
 
-#: src/gui/widgets/preferences.c:491
+#: src/gui/widgets/preferences.c:492
 msgid "Select a folder"
 msgstr "Одбери папка"
 
-#: src/gui/widgets/preferences.c:492
+#: src/gui/widgets/preferences.c:493
 msgid "Select a file"
 msgstr "Одбери датотека"
 
-#: src/gui/widgets/preferences.c:671
+#: src/gui/widgets/preferences.c:672
 #: build/data/org.zrythm.Zrythm.gschema.xml:1123
 #: build/data/org.zrythm.Zrythm.gschema.xml:1191
 msgid "Paths"
 msgstr "Патеки"
 
-#: src/gui/widgets/preferences.c:672
+#: src/gui/widgets/preferences.c:673
 #: build/data/org.zrythm.Zrythm.gschema.xml:1159
 #: build/data/org.zrythm.Zrythm.gschema.xml:1190
 msgid "Plugins"
 msgstr "Приклучоци"
 
-#: src/gui/widgets/preferences.c:675
+#: src/gui/widgets/preferences.c:676
 #, c-format
 msgid ""
 "Multiple search paths must be separated by the %s character. Environment "
@@ -3358,12 +3319,12 @@ msgid ""
 msgstr ""
 
 #. add option to reset to factory
-#: src/gui/widgets/preferences.c:687
+#: src/gui/widgets/preferences.c:688
 #: build/data/org.zrythm.Zrythm.gschema.xml:1151
 msgid "Other"
 msgstr "Останато"
 
-#: src/gui/widgets/preferences.c:706
+#: src/gui/widgets/preferences.c:707
 msgid "Reset all preferences to initial values."
 msgstr "Врати ги сите поставки на почетните вредности."
 
@@ -3372,29 +3333,9 @@ msgstr "Врати ги сите поставки на почетните вре
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Некои промени ќе настанат само одкога ќе го рестартираш %s"
 
-#: src/gui/widgets/help_toolbar.c:21
-msgid "About Zrythm"
-msgstr "За Zrythm"
-
-#: src/gui/widgets/help_toolbar.c:22
-msgid "Chat (Matrix)"
-msgstr "Муабет (Матрикс)"
-
-#: src/gui/widgets/help_toolbar.c:23
-msgid "Manual"
-msgstr "Упатство"
-
-#: src/gui/widgets/help_toolbar.c:24
-msgid "Keyboard Shortcuts"
-msgstr "Тастатурни кратенки"
-
-#: src/gui/widgets/help_toolbar.c:25
-msgid "Donate"
-msgstr "Донирај"
-
-#: src/gui/widgets/help_toolbar.c:26
-msgid "Report a Bug"
-msgstr "Пријави грешка"
+#: src/gui/widgets/preferences.c:917
+msgid "Preferences"
+msgstr "Поставки"
 
 #: src/gui/widgets/folder_channel.c:144
 msgid "Failed to move or copy track(s)"
@@ -3440,95 +3381,91 @@ msgid "Unrouted"
 msgstr "Занемено"
 
 #: src/gui/widgets/event_viewer.c:502 src/gui/widgets/event_viewer.c:639
-#: src/gui/widgets/plugin_properties_expander.c:191
-#: src/gui/widgets/item_factory.c:236 src/gui/widgets/item_factory.c:746
-#: src/gui/widgets/item_factory.c:792 src/gui/widgets/item_factory.c:811
+#: src/gui/widgets/plugin_properties_expander.c:180
+#: src/gui/widgets/item_factory.c:236 src/gui/widgets/item_factory.c:747
+#: src/gui/widgets/item_factory.c:793 src/gui/widgets/item_factory.c:812
 #: src/gui/widgets/dialogs/port_info.c:46
-#: src/gui/widgets/dialogs/export_dialog.c:975
-#: src/gui/widgets/dialogs/project_assistant.c:569
+#: src/gui/widgets/dialogs/export_dialog.c:1031
 #: src/gui/widgets/dialogs/arranger_object_info.c:39
 #: src/gui/widgets/popovers/track_filter_popover.c:180
-#: resources/ui/create_project_dialog.ui:31
 msgid "Name"
 msgstr "Име"
 
 #: src/gui/widgets/event_viewer.c:510
-#: src/gui/widgets/plugin_properties_expander.c:202
-#: src/gui/widgets/item_factory.c:754 src/gui/widgets/dialogs/port_info.c:59
-#: resources/ui/chord_selector_window.ui:157
+#: src/gui/widgets/plugin_properties_expander.c:191
+#: src/gui/widgets/item_factory.c:755 src/gui/widgets/dialogs/port_info.c:59
 msgid "Type"
 msgstr "Вид"
 
 #: src/gui/widgets/event_viewer.c:519 src/gui/widgets/event_viewer.c:614
 #: src/gui/widgets/event_viewer.c:709 src/gui/widgets/item_factory.c:200
-#: src/gui/widgets/item_factory.c:675
-#: src/gui/widgets/dialogs/export_dialog.c:1100
+#: src/gui/widgets/item_factory.c:676
+#: src/gui/widgets/dialogs/export_dialog.c:1156
 msgid "Start"
 msgstr "Почеток"
 
 #: src/gui/widgets/event_viewer.c:528 src/gui/widgets/item_factory.c:211
-#: src/gui/widgets/item_factory.c:713
+#: src/gui/widgets/item_factory.c:714
 msgid "Clip start"
 msgstr "Почеток на исечок"
 
 #: src/gui/widgets/event_viewer.c:537 src/gui/widgets/item_factory.c:216
-#: src/gui/widgets/item_factory.c:691
+#: src/gui/widgets/item_factory.c:692
 msgid "Loop start"
 msgstr "Почеток на јамка"
 
 #: src/gui/widgets/event_viewer.c:546 src/gui/widgets/item_factory.c:221
-#: src/gui/widgets/item_factory.c:702
+#: src/gui/widgets/item_factory.c:703
 msgid "Loop end"
 msgstr "Крај на јамка"
 
 #: src/gui/widgets/event_viewer.c:555 src/gui/widgets/item_factory.c:226
-#: src/gui/widgets/item_factory.c:724
+#: src/gui/widgets/item_factory.c:725
 msgid "Fade in"
 msgstr "Појачување"
 
 #: src/gui/widgets/event_viewer.c:564 src/gui/widgets/item_factory.c:231
-#: src/gui/widgets/item_factory.c:735
+#: src/gui/widgets/item_factory.c:736
 msgid "Fade out"
 msgstr "Стишување"
 
 #: src/gui/widgets/event_viewer.c:573 src/gui/widgets/event_viewer.c:623
 #: src/gui/widgets/event_viewer.c:714 src/gui/widgets/item_factory.c:206
-#: src/gui/widgets/item_factory.c:680
-#: src/gui/widgets/dialogs/export_dialog.c:1108
+#: src/gui/widgets/item_factory.c:681
+#: src/gui/widgets/dialogs/export_dialog.c:1164
 msgid "End"
 msgstr "Крај"
 
-#: src/gui/widgets/event_viewer.c:589 src/gui/widgets/item_factory.c:663
+#: src/gui/widgets/event_viewer.c:589 src/gui/widgets/item_factory.c:664
 msgid "Note"
 msgstr "Забелешка"
 
 #: src/gui/widgets/event_viewer.c:597 src/gui/widgets/piano_roll_keys.c:502
-#: src/gui/widgets/item_factory.c:268 src/gui/widgets/item_factory.c:669
+#: src/gui/widgets/item_factory.c:268 src/gui/widgets/item_factory.c:670
 msgid "Pitch"
 msgstr "Висина (тон)"
 
 #: src/gui/widgets/event_viewer.c:648 src/gui/widgets/event_viewer.c:673
 #: src/gui/widgets/digital_meter.c:101 src/gui/widgets/item_factory.c:201
-#: src/gui/widgets/item_factory.c:676 resources/ui/inspector_master.ui:51
-#: resources/ui/inspector_ap.ui:51 resources/ui/inspector_midi.ui:51
+#: src/gui/widgets/item_factory.c:677
 msgid "Position"
 msgstr "Позиција"
 
-#: src/gui/widgets/event_viewer.c:664 src/gui/widgets/item_factory.c:765
+#: src/gui/widgets/event_viewer.c:664 src/gui/widgets/item_factory.c:766
 msgid "Index"
 msgstr "Индекс"
 
 #: src/gui/widgets/event_viewer.c:682 src/gui/widgets/item_factory.c:287
-#: src/gui/widgets/item_factory.c:770
+#: src/gui/widgets/item_factory.c:771
 msgid "Value"
 msgstr "Вредност"
 
-#: src/gui/widgets/event_viewer.c:691 src/gui/widgets/item_factory.c:775
+#: src/gui/widgets/event_viewer.c:691 src/gui/widgets/item_factory.c:776
 msgid "Curve type"
 msgstr "Вид на кривула"
 
 #: src/gui/widgets/event_viewer.c:700 src/gui/widgets/item_factory.c:310
-#: src/gui/widgets/item_factory.c:780
+#: src/gui/widgets/item_factory.c:781
 #: build/data/org.zrythm.Zrythm.gschema.xml:582
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Curviness"
@@ -3566,7 +3503,7 @@ msgid "No file selected"
 msgstr "Не е избрана ниту една датотека"
 
 #: src/gui/widgets/panel_file_browser.c:461
-#: src/gui/widgets/plugin_browser.c:996 resources/ui/automatable_selector.ui:38
+#: src/gui/widgets/plugin_browser.c:1011
 msgid "Search..."
 msgstr "Пребарај..."
 
@@ -3584,7 +3521,7 @@ msgid "Failed to move or copy track"
 msgstr "Неуспешно преместување или копирање на лента"
 
 #: src/gui/widgets/track.c:311 src/gui/widgets/track.c:816
-#: src/gui/widgets/channel.c:654 resources/ui/fader_buttons.ui:43
+#: src/gui/widgets/channel.c:635
 msgid "Solo"
 msgstr "Соло"
 
@@ -3597,21 +3534,20 @@ msgid "Show instrument UI"
 msgstr "Покажи го лицето на инструментот"
 
 #: src/gui/widgets/track.c:339 src/gui/widgets/track.c:853
-#: src/gui/widgets/channel.c:691
+#: src/gui/widgets/channel.c:672
 msgid "Unlisten"
 msgstr "Одслушај"
 
 #: src/gui/widgets/track.c:343 src/gui/widgets/track.c:846
-#: src/gui/widgets/monitor_section.c:41 src/gui/widgets/channel.c:684
-#: resources/ui/fader_buttons.ui:71
+#: src/gui/widgets/monitor_section.c:41 src/gui/widgets/channel.c:665
 msgid "Listen"
 msgstr "Преслушај"
 
-#: src/gui/widgets/track.c:352 resources/ui/fader_buttons.ui:15
+#: src/gui/widgets/track.c:352
 msgid "Mono compatibility"
 msgstr "Моно соодветност"
 
-#: src/gui/widgets/track.c:356 resources/ui/fader_buttons.ui:85
+#: src/gui/widgets/track.c:356
 msgid "Swap phase"
 msgstr "Замени фаза"
 
@@ -3669,23 +3605,23 @@ msgstr "Склопи"
 msgid "Unfold"
 msgstr "Расклопи"
 
-#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2297
+#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2294
 msgid "Marker name"
 msgstr "Име на покажувач"
 
-#: src/gui/widgets/track.c:703 src/gui/widgets/channel.c:615
+#: src/gui/widgets/track.c:703 src/gui/widgets/channel.c:596
 msgid "_Delete Track"
 msgstr "Из_бриши лента"
 
-#: src/gui/widgets/track.c:705 src/gui/widgets/channel.c:617
+#: src/gui/widgets/track.c:705 src/gui/widgets/channel.c:598
 msgid "_Delete Tracks"
 msgstr "Из_бриши ленти"
 
-#: src/gui/widgets/track.c:713 src/gui/widgets/channel.c:624
+#: src/gui/widgets/track.c:713 src/gui/widgets/channel.c:605
 msgid "_Duplicate Track"
 msgstr "_Дуплирај лента"
 
-#: src/gui/widgets/track.c:715 src/gui/widgets/channel.c:626
+#: src/gui/widgets/track.c:715 src/gui/widgets/channel.c:607
 msgid "_Duplicate Tracks"
 msgstr "_Дуплирај ленти"
 
@@ -3693,23 +3629,23 @@ msgstr "_Дуплирај ленти"
 msgid "Add Region"
 msgstr "Додај регион"
 
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:633
+#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
 msgid "Hide Track"
 msgstr "Скриј лента"
 
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:633
+#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
 msgid "Hide Tracks"
 msgstr "Скриј ленти"
 
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:638
+#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
 msgid "Pin/Unpin Track"
 msgstr "Прикачи / одкачи лента"
 
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:638
+#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
 msgid "Pin/Unpin Tracks"
 msgstr "Прикачи / одкачи ленти"
 
-#: src/gui/widgets/track.c:741 src/gui/widgets/channel.c:715
+#: src/gui/widgets/track.c:741 src/gui/widgets/channel.c:696
 msgid "Change color..."
 msgstr "Смени боја..."
 
@@ -3719,7 +3655,7 @@ msgstr "Преименувај..."
 
 #: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:201
 #: src/gui/widgets/channel_slot.c:623 src/gui/widgets/timeline_arranger.c:983
-#: src/gui/widgets/timeline_arranger.c:1142 resources/ui/header.ui:11
+#: src/gui/widgets/timeline_arranger.c:1142
 msgid "Edit"
 msgstr "Уреди"
 
@@ -3739,8 +3675,7 @@ msgid "Append Lane Automation Regions to Selection"
 msgstr "Неуспешна поделба на избраното"
 
 #: src/gui/widgets/track.c:786 src/gui/widgets/piano_roll_keys.c:519
-#: src/gui/widgets/midi_arranger.c:456 resources/ui/export_dialog.ui:103
-#: resources/ui/export_dialog.ui:247
+#: src/gui/widgets/midi_arranger.c:456
 msgid "Selection"
 msgstr "Избор"
 
@@ -3752,11 +3687,11 @@ msgstr "Брзо уснимување"
 msgid "Bounce..."
 msgstr "Усними..."
 
-#: src/gui/widgets/track.c:802 resources/ui/bounce_dialog.ui:101
+#: src/gui/widgets/track.c:802
 msgid "Bounce"
 msgstr "Усними"
 
-#: src/gui/widgets/track.c:823 src/gui/widgets/channel.c:661
+#: src/gui/widgets/track.c:823 src/gui/widgets/channel.c:642
 msgid "Unsolo"
 msgstr "Одсолирај"
 
@@ -3772,19 +3707,19 @@ msgstr "Мета на насочување"
 msgid "Direct Output"
 msgstr "Непосреден излез"
 
-#: src/gui/widgets/track.c:903 src/gui/widgets/channel.c:696
+#: src/gui/widgets/track.c:903 src/gui/widgets/channel.c:677
 #: src/gui/widgets/popovers/automatable_selector_popover.c:169
 #: src/gui/widgets/popovers/automatable_selector_popover.c:385
 msgid "Channel"
 msgstr "Канал"
 
-#: src/gui/widgets/track.c:912 src/gui/widgets/bot_bar.c:428
-#: src/gui/widgets/channel.c:704
+#: src/gui/widgets/track.c:912 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:685
 msgid "Disable"
 msgstr "Оневозможи"
 
-#: src/gui/widgets/track.c:918 src/gui/widgets/bot_bar.c:428
-#: src/gui/widgets/channel.c:710
+#: src/gui/widgets/track.c:918 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:691
 msgid "Enable"
 msgstr "Овозможи"
 
@@ -3840,86 +3775,84 @@ msgstr "Додај лента"
 msgid "Curve algorithm"
 msgstr "Алгоритам на кривула"
 
-#: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/plugin_properties_expander.c:77
 msgid "Load Preset"
 msgstr "Вчитај местенка"
 
-#: src/gui/widgets/plugin_properties_expander.c:94
+#: src/gui/widgets/plugin_properties_expander.c:80
 msgid "_Load"
 msgstr "_Вчитај"
 
-#: src/gui/widgets/plugin_properties_expander.c:131 src/plugins/plugin.c:451
+#: src/gui/widgets/plugin_properties_expander.c:117 src/plugins/plugin.c:451
 #: src/plugins/plugin_gtk.c:155
 msgid "Failed to apply preset"
 msgstr "Неуспешна примена на местенка"
 
-#: src/gui/widgets/plugin_properties_expander.c:181
+#: src/gui/widgets/plugin_properties_expander.c:167
 msgid "Plugin Properties"
 msgstr "Својства на приклучокот"
 
-#: src/gui/widgets/plugin_properties_expander.c:213
+#: src/gui/widgets/plugin_properties_expander.c:202
 msgid "Banks"
 msgstr "Колекции"
 
-#: src/gui/widgets/plugin_properties_expander.c:224
-#: resources/ui/file_browser_filters.ui:26
+#: src/gui/widgets/plugin_properties_expander.c:213
 msgid "Presets"
 msgstr "Местенки"
 
-#: src/gui/widgets/plugin_properties_expander.c:243
-#: src/gui/widgets/project_toolbar.c:22 resources/gtk/help-overlay.ui:121
+#: src/gui/widgets/plugin_properties_expander.c:232
 msgid "Save"
 msgstr "Зачувај"
 
-#: src/gui/widgets/plugin_properties_expander.c:245
+#: src/gui/widgets/plugin_properties_expander.c:234
 msgid "Save preset"
 msgstr "Зачувај местенка"
 
-#: src/gui/widgets/plugin_properties_expander.c:247
+#: src/gui/widgets/plugin_properties_expander.c:236
 msgid "Load"
 msgstr "Вчитај"
 
-#: src/gui/widgets/plugin_properties_expander.c:249
+#: src/gui/widgets/plugin_properties_expander.c:238
 msgid "Load preset"
 msgstr "Вчитај местенка"
 
-#: src/gui/widgets/arranger.c:1334
+#: src/gui/widgets/arranger.c:1331
 msgid "Create Object"
 msgstr "Создај објект"
 
-#: src/gui/widgets/arranger.c:1337
+#: src/gui/widgets/arranger.c:1334
 msgid "Create"
 msgstr "Создај"
 
-#: src/gui/widgets/arranger.c:1635 src/gui/widgets/arranger.c:1651
-#: src/gui/widgets/arranger.c:1692 src/gui/widgets/arranger.c:1751
-#: src/gui/widgets/arranger.c:1769
+#: src/gui/widgets/arranger.c:1632 src/gui/widgets/arranger.c:1648
+#: src/gui/widgets/arranger.c:1689 src/gui/widgets/arranger.c:1748
+#: src/gui/widgets/arranger.c:1766
 msgid "Failed to move selection"
 msgstr "Неуспешно преместување на избраното"
 
-#: src/gui/widgets/arranger.c:1708 src/gui/widgets/arranger.c:3895
+#: src/gui/widgets/arranger.c:1705 src/gui/widgets/arranger.c:3892
 msgid "Failed to move chords"
 msgstr "Неуспешно преместување на акорди"
 
-#: src/gui/widgets/arranger.c:2018 src/gui/widgets/timeline_arranger.c:309
+#: src/gui/widgets/arranger.c:2015 src/gui/widgets/timeline_arranger.c:309
 msgid "Failed to create region"
 msgstr "Неуспешно создавање на регион"
 
-#: src/gui/widgets/arranger.c:2324
+#: src/gui/widgets/arranger.c:2321
 msgid "Automation value"
 msgstr "Автомациона вредност"
 
-#: src/gui/widgets/arranger.c:2344 src/gui/widgets/arranger.c:2365
+#: src/gui/widgets/arranger.c:2341 src/gui/widgets/arranger.c:2362
 #, fuzzy
 msgid "Cannot Resize"
 msgstr "Не може да се пренасочи"
 
-#: src/gui/widgets/arranger.c:2345
+#: src/gui/widgets/arranger.c:2342
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 "Не може да се провеличи бидејќи избраното содржи објекти кои немаат величина"
 
-#: src/gui/widgets/arranger.c:2366
+#: src/gui/widgets/arranger.c:2363
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
@@ -3927,94 +3860,94 @@ msgstr ""
 "Не може да се провеличи бидејќи избраното содржи мешавина од јамчести и "
 "нејамчести објекти"
 
-#: src/gui/widgets/arranger.c:3502
+#: src/gui/widgets/arranger.c:3499
 msgid "Failed to delete selection"
 msgstr "Неуспешно бришење на избраното"
 
-#: src/gui/widgets/arranger.c:3523 src/gui/widgets/arranger.c:4045
+#: src/gui/widgets/arranger.c:3520 src/gui/widgets/arranger.c:4042
 msgid "Failed to edit selection"
 msgstr "Неуспешн уредување на избраното"
 
-#: src/gui/widgets/arranger.c:3566
+#: src/gui/widgets/arranger.c:3563
 msgid "Failed to move automation"
 msgstr "Неуспешно преместување на автомација"
 
-#: src/gui/widgets/arranger.c:3586
+#: src/gui/widgets/arranger.c:3583
 msgid "Failed to duplicate automation"
 msgstr "Неуспешна дупликација на автомација"
 
-#: src/gui/widgets/arranger.c:3606 src/gui/widgets/arranger.c:3932
-#: src/gui/widgets/arranger.c:4317
+#: src/gui/widgets/arranger.c:3603 src/gui/widgets/arranger.c:3929
+#: src/gui/widgets/arranger.c:4312
 msgid "Failed to create objects"
 msgstr "Неуспешно создавање на објекти"
 
-#: src/gui/widgets/arranger.c:3623
+#: src/gui/widgets/arranger.c:3620
 msgid "Failed to fill automation"
 msgstr "Неуспешно пополнување на автомација"
 
-#: src/gui/widgets/arranger.c:3650 src/gui/widgets/arranger.c:3688
-#: src/gui/widgets/arranger.c:3705 src/gui/widgets/timeline_arranger.c:852
+#: src/gui/widgets/arranger.c:3647 src/gui/widgets/arranger.c:3685
+#: src/gui/widgets/arranger.c:3702 src/gui/widgets/timeline_arranger.c:852
 msgid "Failed to edit selections"
 msgstr "Неуспешно уредување на одбраното"
 
-#: src/gui/widgets/arranger.c:3733 src/gui/widgets/arranger.c:3752
+#: src/gui/widgets/arranger.c:3730 src/gui/widgets/arranger.c:3749
 msgid "Failed to resize objects"
 msgstr "Неуспешно провеличување на објекти"
 
-#: src/gui/widgets/arranger.c:3760 src/gui/widgets/arranger.c:3799
+#: src/gui/widgets/arranger.c:3757 src/gui/widgets/arranger.c:3796
 msgid "Failed to move MIDI notes"
 msgstr "Неуспешно преместување на МИДИ ноти"
 
-#: src/gui/widgets/arranger.c:3817
+#: src/gui/widgets/arranger.c:3814
 msgid "Failed to duplicate MIDI notes"
 msgstr "Неуспешно дуплирање на МИДИ ноти"
 
-#: src/gui/widgets/arranger.c:3836
+#: src/gui/widgets/arranger.c:3833
 msgid "Failed to create MIDI notes"
 msgstr "Неуспешно создавање на МИДИ ноти"
 
-#: src/gui/widgets/arranger.c:3913
+#: src/gui/widgets/arranger.c:3910
 msgid "Failed to duplicate chords"
 msgstr "Неуспешно дуплирање на акорди"
 
-#: src/gui/widgets/arranger.c:3993 src/gui/widgets/arranger.c:4221
+#: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4216
 msgid "Failed resizing selection"
 msgstr "Неуспешно провеличење на избраното"
 
-#: src/gui/widgets/arranger.c:4073
+#: src/gui/widgets/arranger.c:4068
 msgid "Failed to edit timeline objects"
 msgstr "Неуспешно уредување на објекти во временската линија"
 
-#: src/gui/widgets/arranger.c:4092 src/gui/widgets/arranger.c:4111
+#: src/gui/widgets/arranger.c:4087 src/gui/widgets/arranger.c:4106
 msgid "Failed to resize timeline objects"
 msgstr "Неуспешно провеличење на објекти на временската линија"
 
-#: src/gui/widgets/arranger.c:4128
+#: src/gui/widgets/arranger.c:4123
 msgid "Failed to resize selection"
 msgstr "Неуспешно провеличење на одбраното"
 
-#: src/gui/widgets/arranger.c:4147
+#: src/gui/widgets/arranger.c:4142
 msgid "Failed setting fade in position"
 msgstr "Неуспешно поставување на позиција на појачување"
 
-#: src/gui/widgets/arranger.c:4165 src/gui/widgets/arranger.c:4188
-#: src/gui/widgets/arranger.c:4204
+#: src/gui/widgets/arranger.c:4160 src/gui/widgets/arranger.c:4183
+#: src/gui/widgets/arranger.c:4199
 msgid "Failed resizing selections"
 msgstr "Неуспешно провеличење на избраното"
 
-#: src/gui/widgets/arranger.c:4269
+#: src/gui/widgets/arranger.c:4264
 msgid "Failed to move objects"
 msgstr "Неуспешно преместување на објекти"
 
-#: src/gui/widgets/arranger.c:4299
+#: src/gui/widgets/arranger.c:4294
 msgid "Failed to link or copy selection"
 msgstr "Неуспешно врзување или копирање на избраното"
 
-#: src/gui/widgets/arranger.c:4350
+#: src/gui/widgets/arranger.c:4345
 msgid "Failed to split selection"
 msgstr "Неуспешна поделба на избраното"
 
-#: src/gui/widgets/arranger.c:4359
+#: src/gui/widgets/arranger.c:4354
 #, c-format
 msgid "%s name"
 msgstr "%s име"
@@ -4036,30 +3969,6 @@ msgstr "Кликни за да овозможиш влезови"
 #: src/gui/widgets/active_hardware_mb.c:86
 msgid "Click to enable outputs"
 msgstr "Кликни за да овозможиш излези"
-
-#: src/gui/widgets/view_toolbar.c:21
-msgid "Toggle Status Bar"
-msgstr "(Вк/иск)лучи ја статусната лента"
-
-#: src/gui/widgets/view_toolbar.c:22
-msgid "Fullscreen"
-msgstr "На цел екран"
-
-#: src/gui/widgets/project_toolbar.c:21
-msgid "New Project"
-msgstr "Нов проект"
-
-#: src/gui/widgets/project_toolbar.c:23
-msgid "Save As"
-msgstr "Зачувај како"
-
-#: src/gui/widgets/project_toolbar.c:25
-msgid "Export As"
-msgstr "Извади како"
-
-#: src/gui/widgets/project_toolbar.c:26
-msgid "Export Graph"
-msgstr "Извади графикон"
 
 #: src/gui/widgets/channel_slot.c:150
 msgid "No instrument"
@@ -4100,7 +4009,7 @@ msgstr ""
 msgid "Change Load Behavior"
 msgstr "Промени потенциометар"
 
-#: src/gui/widgets/channel_slot.c:601 resources/ui/port_selector_dialog.ui:60
+#: src/gui/widgets/channel_slot.c:601
 msgid "Plugin"
 msgstr "Приклучок"
 
@@ -4112,19 +4021,19 @@ msgstr "Избери"
 msgid "empty slot"
 msgstr "празно место"
 
-#: src/gui/widgets/port_connection_row.c:49
+#: src/gui/widgets/port_connection_row.c:36
 msgid "Failed to enable connection"
 msgstr "Неуспешно овозможување на врската"
 
-#: src/gui/widgets/port_connection_row.c:64
+#: src/gui/widgets/port_connection_row.c:51
 msgid "Failed to disconnect"
 msgstr "Неуспешно исклучување"
 
-#: src/gui/widgets/port_connection_row.c:107
+#: src/gui/widgets/port_connection_row.c:94
 msgid "Enable/disable connection"
 msgstr "Овозможи / оневозможи врска"
 
-#: src/gui/widgets/port_connection_row.c:136
+#: src/gui/widgets/port_connection_row.c:123
 msgid "Delete connection"
 msgstr "Избриши врска"
 
@@ -4138,7 +4047,6 @@ msgstr "Почни при МИДИ влез"
 
 #: src/gui/widgets/transport_controls.c:328
 #: src/gui/widgets/dialogs/midi_function_dialog.c:76
-#: resources/ui/export_dialog.ui:60 resources/ui/export_dialog.ui:201
 msgid "Options"
 msgstr "Избор"
 
@@ -4167,46 +4075,13 @@ msgstr "Режим на снимање"
 msgid "Preroll"
 msgstr "Предпочеток"
 
-#: src/gui/widgets/transport_controls.c:388 resources/ui/fader_buttons.ui:29
+#: src/gui/widgets/transport_controls.c:388
 msgid "Record"
 msgstr "Снимај"
 
 #: src/gui/widgets/transport_controls.c:388
 msgid "Record options"
 msgstr "Избор при снимање"
-
-#: src/gui/widgets/home_toolbar.c:37
-msgid "Redo"
-msgstr "Повтори"
-
-#: src/gui/widgets/home_toolbar.c:37
-#: build/data/org.zrythm.Zrythm.gschema.xml:1273
-msgid "Undo"
-msgstr "Поврати"
-
-#: src/gui/widgets/home_toolbar.c:117
-msgid "Cut"
-msgstr "Исечи"
-
-#: src/gui/widgets/home_toolbar.c:118
-msgid "Copy"
-msgstr "Копирај"
-
-#: src/gui/widgets/home_toolbar.c:119
-msgid "Paste"
-msgstr "Залепи"
-
-#: src/gui/widgets/home_toolbar.c:122
-msgid "Clear selection"
-msgstr "Поништи избрано"
-
-#: src/gui/widgets/home_toolbar.c:123 resources/gtk/help-overlay.ui:296
-msgid "Select all"
-msgstr "Избери сѐ"
-
-#: src/gui/widgets/home_toolbar.c:124 resources/gtk/help-overlay.ui:308
-msgid "Loop selection"
-msgstr "Повторувај го избраното"
 
 #: src/gui/widgets/bot_dock_edge.c:214
 msgid "Editor view"
@@ -4274,12 +4149,10 @@ msgstr "Аудио влез (%s) за снимање"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:59
-#: resources/ui/monitor_section.ui:153
 msgid "L"
 msgstr "Л"
 
 #: src/gui/widgets/track_input_expander.c:59
-#: resources/ui/automation_track.ui:64 resources/ui/monitor_section.ui:174
 msgid "R"
 msgstr "Д"
 
@@ -4398,7 +4271,7 @@ msgid "start position"
 msgstr "почетна позиција"
 
 #: src/gui/widgets/editor_selection_info.c:55
-#: src/gui/widgets/timeline_selection_info.c:302
+#: src/gui/widgets/timeline_selection_info.c:289
 msgid "No object selected"
 msgstr "Не е избран никаков објект"
 
@@ -4456,18 +4329,18 @@ msgstr "МИДИ влез"
 msgid "MIDI Out"
 msgstr "МИДИ излез"
 
-#: src/gui/widgets/ruler.c:1341 src/gui/widgets/bot_bar.c:154
+#: src/gui/widgets/ruler.c:1341 src/gui/widgets/bot_bar.c:160
 msgid "BBT"
 msgstr "BBT"
 
-#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:156
-#: src/gui/widgets/dialogs/midi_function_dialog.c:158
-#: src/gui/widgets/dialogs/midi_function_dialog.c:238
+#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:162
+#: src/gui/widgets/dialogs/midi_function_dialog.c:148
+#: src/gui/widgets/dialogs/midi_function_dialog.c:213
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Time"
 msgstr "Време"
 
-#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:157
+#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:163
 msgid "Display"
 msgstr "Приказ"
 
@@ -4572,22 +4445,22 @@ msgstr "Акцентирај скала"
 msgid "Highlight Both"
 msgstr "Акцентирај ги обете"
 
-#: src/gui/widgets/timeline_selection_info.c:203
+#: src/gui/widgets/timeline_selection_info.c:190
 msgid "clip start (rel.)"
 msgstr "почеток на исечокот (рел.)"
 
-#: src/gui/widgets/timeline_selection_info.c:209
+#: src/gui/widgets/timeline_selection_info.c:196
 msgid "loop start (rel.)"
 msgstr "почеток на јамка (рел.)"
 
-#: src/gui/widgets/timeline_selection_info.c:215
+#: src/gui/widgets/timeline_selection_info.c:202
 msgid "loop end (rel.)"
 msgstr "крај на јамка (рел.)"
 
-#: src/gui/widgets/timeline_selection_info.c:234
-#: src/gui/widgets/timeline_selection_info.c:250
-#: src/gui/widgets/timeline_selection_info.c:265
-#: src/gui/widgets/timeline_selection_info.c:281
+#: src/gui/widgets/timeline_selection_info.c:221
+#: src/gui/widgets/timeline_selection_info.c:237
+#: src/gui/widgets/timeline_selection_info.c:252
+#: src/gui/widgets/timeline_selection_info.c:268
 msgid "position"
 msgstr "позиција"
 
@@ -4595,10 +4468,9 @@ msgstr "позиција"
 msgid "Failed to enable binding"
 msgstr "Неуспешно овозможување на врзување"
 
-#: src/gui/widgets/item_factory.c:88 src/gui/widgets/item_factory.c:600
+#: src/gui/widgets/item_factory.c:88 src/gui/widgets/item_factory.c:601
 #: src/gui/widgets/popovers/track_filter_popover.c:183
 #: src/gui/widgets/popovers/track_filter_popover.c:297
-#: resources/ui/chord_selector_window.ui:478
 msgid "Visibility"
 msgstr "Видливост"
 
@@ -4642,29 +4514,26 @@ msgstr "Невалидна тонска висина"
 msgid "Invalid pitch"
 msgstr "Невалидна тонска висина"
 
-#: src/gui/widgets/item_factory.c:499
+#: src/gui/widgets/item_factory.c:500
 msgid "Add Bookmark"
 msgstr "Додај ознака"
 
-#: src/gui/widgets/item_factory.c:688 src/gui/widgets/item_factory.c:699
-#: src/gui/widgets/item_factory.c:710 src/gui/widgets/item_factory.c:721
-#: src/gui/widgets/item_factory.c:732 src/gui/widgets/item_factory.c:743
+#: src/gui/widgets/item_factory.c:689 src/gui/widgets/item_factory.c:700
+#: src/gui/widgets/item_factory.c:711 src/gui/widgets/item_factory.c:722
+#: src/gui/widgets/item_factory.c:733 src/gui/widgets/item_factory.c:744
 #: src/gui/widgets/dialogs/port_info.c:81
 msgid "N/A"
 msgstr "Н/П"
 
-#: src/gui/widgets/item_factory.c:793
-#: src/gui/widgets/dialogs/project_assistant.c:570
+#: src/gui/widgets/item_factory.c:794
 msgid "Template Name"
 msgstr "Име на шаблон"
 
-#: src/gui/widgets/item_factory.c:797
-#: src/gui/widgets/dialogs/project_assistant.c:578
+#: src/gui/widgets/item_factory.c:798
 msgid "Path"
 msgstr "Патека"
 
-#: src/gui/widgets/item_factory.c:801
-#: src/gui/widgets/dialogs/project_assistant.c:586
+#: src/gui/widgets/item_factory.c:802
 msgid "Last Modified"
 msgstr "Последен пат изменето на"
 
@@ -4760,114 +4629,217 @@ msgstr "Неуспешно додавање на регион на лентат�
 msgid "Failed to create selections"
 msgstr "Неуспешно создавање на избрани делови"
 
-#: src/gui/widgets/bot_bar.c:39
+#: src/gui/widgets/bot_bar.c:45
 msgid "Playhead"
 msgstr "Позициона глава"
 
-#: src/gui/widgets/bot_bar.c:40
+#: src/gui/widgets/bot_bar.c:46
 msgid "Playhead [Jack Timebase Master]"
 msgstr "Позициона глава [Jack Timebase Master]"
 
-#: src/gui/widgets/bot_bar.c:41
+#: src/gui/widgets/bot_bar.c:47
 msgid "Playhead [Jack Client]"
 msgstr "Позициона глава [Jack клиент]"
 
-#: src/gui/widgets/bot_bar.c:130
+#: src/gui/widgets/bot_bar.c:136
 msgid "Input"
 msgstr "Влез"
 
 #. TRANSLATORS: tap tempo
-#: src/gui/widgets/bot_bar.c:134
+#: src/gui/widgets/bot_bar.c:140
 msgid "Tap"
 msgstr "Тапкање"
 
-#: src/gui/widgets/bot_bar.c:168
+#: src/gui/widgets/bot_bar.c:174
 msgid "Become JACK Transport master"
 msgstr "Постани господар на JACK управувањето"
 
-#: src/gui/widgets/bot_bar.c:171
+#: src/gui/widgets/bot_bar.c:177
 msgid "Sync to JACK Transport"
 msgstr "Синхронизирај се со JACK управувањето"
 
-#: src/gui/widgets/bot_bar.c:174
+#: src/gui/widgets/bot_bar.c:180
 msgid "Unlink JACK Transport"
 msgstr "Одврзи се од JACK управување"
 
-#: src/gui/widgets/bot_bar.c:212
+#: src/gui/widgets/bot_bar.c:218
 msgid "playhead"
 msgstr "позициона глава"
 
-#: src/gui/widgets/bot_bar.c:249
+#: src/gui/widgets/bot_bar.c:255
 msgid "JACK Transport client"
 msgstr "JACK управувачки клиент"
 
-#: src/gui/widgets/bot_bar.c:256
+#: src/gui/widgets/bot_bar.c:262
 msgid "JACK Timebase master"
 msgstr "JACK Timebase господар"
 
-#: src/gui/widgets/bot_bar.c:302
+#: src/gui/widgets/bot_bar.c:308
 #, fuzzy
 msgid "Please enter a valid number"
 msgstr "Ве молиме внесете валидно име."
 
-#: src/gui/widgets/bot_bar.c:346
+#: src/gui/widgets/bot_bar.c:352
 #, fuzzy
 msgid "Buffer Size"
 msgstr "Величина на пуфер"
 
-#: src/gui/widgets/bot_bar.c:356
+#: src/gui/widgets/bot_bar.c:362
 msgid "Feature Not Available"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:357
+#: src/gui/widgets/bot_bar.c:363
 msgid "This feature is not available at the moment"
 msgstr "Оваа функција е моментално недостапна"
 
-#: src/gui/widgets/bot_bar.c:413
+#: src/gui/widgets/bot_bar.c:419
 msgid "Status"
 msgstr "Статус"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
-#: src/gui/widgets/bot_bar.c:418
+#: src/gui/widgets/bot_bar.c:424
 msgid "Buf sz"
 msgstr "Гол. на пуфер"
 
 #. TRANSLATORS: verb - change buffer size
-#: src/gui/widgets/bot_bar.c:422
+#: src/gui/widgets/bot_bar.c:428
 msgid "change"
 msgstr "промени"
 
 #. TRANSLATORS: sample rate
-#: src/gui/widgets/bot_bar.c:425
+#: src/gui/widgets/bot_bar.c:431
 msgid "Rate"
 msgstr "Стапка"
 
-#: src/gui/widgets/bot_bar.c:450
+#: src/gui/widgets/bot_bar.c:457
 msgid "Metronome"
 msgstr "Метроном"
 
-#: src/gui/widgets/bot_bar.c:450
+#: src/gui/widgets/bot_bar.c:457
 msgid "Metronome options"
 msgstr "Метрономски опции"
 
 #. volume
-#: src/gui/widgets/bot_bar.c:460 resources/ui/file_auditioner_controls.ui:29
+#: src/gui/widgets/bot_bar.c:467
 msgid "Volume"
 msgstr "Гласнина"
 
 #. countin
-#: src/gui/widgets/bot_bar.c:472
+#: src/gui/widgets/bot_bar.c:479
 msgid "Count-in"
 msgstr "Предброење"
 
-#: src/gui/widgets/bot_bar.c:526
+#: src/gui/widgets/bot_bar.c:549
 msgid "bpm"
 msgstr "увм"
 
-#: src/gui/widgets/bot_bar.c:528
+#: src/gui/widgets/bot_bar.c:551
 msgid "time sig."
 msgstr "временски запис"
+
+#: src/gui/widgets/greeter.c:41
+msgid "<File not found>"
+msgstr "<Датотеката не е пронајдена>"
+
+#. just show the error and let the program continue - this was called
+#. * while another project is already running
+#: src/gui/widgets/greeter.c:98
+#, fuzzy
+msgid "Project loading failed"
+msgstr "Проектот е зачуван."
+
+#: src/gui/widgets/greeter.c:287 src/gui/widgets/greeter.c:615
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:6
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:38
+msgid "Zrythm"
+msgstr "Zrythm"
+
+#. get next available "Untitled Project"
+#: src/gui/widgets/greeter.c:452
+msgid "Untitled Project"
+msgstr "Проект без наслов"
+
+#: src/gui/widgets/greeter.c:473
+#, fuzzy
+msgid "Select Project"
+msgstr "Избери проект"
+
+#: src/gui/widgets/greeter.c:508
+#, fuzzy
+msgid "Open a Project"
+msgstr "Отвори проект"
+
+#: src/gui/widgets/greeter.c:542
+msgid "Blank project"
+msgstr "Празен проект"
+
+#: src/gui/widgets/greeter.c:654
+#: src/gui/widgets/dialogs/welcome_message_dialog.c:26
+#, c-format
+msgid ""
+"If this is your first time using Zrythm, we suggest going through the "
+"'Getting Started' section in the %suser manual%s."
+msgstr ""
+"Ако прв пат го користите Zrythm, ви препорачуваме да ја прелистате главата "
+"„Започнувајќи“ („Getting Started“) во %sкорисничкото упатство%s."
+
+#: src/gui/widgets/greeter.c:662
+#, fuzzy, c-format
+msgid ""
+"Zrythm relies on donations and purchases to sustain development. If you "
+"enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
+msgstr ""
+"%sZrythm зависи од донации и продажби за да го оддржи развојот%s. Ако "
+"уживате во програмот ве молиме размислете да %sдонирате%s или да %sкупите "
+"инсталација%s."
+
+#: src/gui/widgets/greeter.c:678
+#, fuzzy
+msgid "Only plugins installed via Flatpak are supported."
+msgstr "Поддржани се само Флетпек-инсталираните приклучоци."
+
+#: src/gui/widgets/greeter.c:686
+#, fuzzy, c-format
+msgid ""
+"Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s, "
+"registered in the UK and other countries."
+msgstr "Zrythm и Zrythm знакот се %sтрговски марки на Александрос Теодоту%s."
+
+#: src/gui/widgets/greeter.c:706
+msgid "Initial Configuration"
+msgstr "Почетна состојба"
+
+#: src/gui/widgets/greeter.c:714 src/gui/widgets/dialogs/scripting_dialog.c:92
+msgid "Language"
+msgstr "Јазик"
+
+#: src/gui/widgets/greeter.c:715
+msgid "Preferred language"
+msgstr "Предпочитан јазик"
+
+#: src/gui/widgets/greeter.c:727
+msgid "User path"
+msgstr "Патека на корисникот"
+
+#: src/gui/widgets/greeter.c:728
+msgid "Location to save user files"
+msgstr "Локација за зачувување на корисничките датотеки"
+
+#: src/gui/widgets/greeter.c:730
+msgid "Select a directory"
+msgstr "Одбери папка"
+
+#: src/gui/widgets/greeter.c:745
+#, c-format
+msgid ""
+"You can create your own templates by copying a project directory under "
+"“templates” in the <a href=\"%s\">Zrythm user path</a>."
+msgstr ""
+
+#: src/gui/widgets/greeter.c:794
+msgid "Select parent directory to save the project in"
+msgstr "Одбери матична папка во која да го зачуваш проектот"
 
 #: src/gui/widgets/tracklist.c:66
 msgid "Add _MIDI Track"
@@ -4939,7 +4911,7 @@ msgstr "Преддефинирано"
 msgid "Preset Packs"
 msgstr "Збирови на местенки"
 
-#: src/gui/widgets/log_viewer.c:98
+#: src/gui/widgets/log_viewer.c:85
 msgid "Log Viewer"
 msgstr "Прелистувач на записот"
 
@@ -4955,45 +4927,10 @@ msgstr "Директен излез"
 msgid "Track Properties"
 msgstr "Својства на лента"
 
-#: src/gui/widgets/channel.c:642
+#: src/gui/widgets/channel.c:623
 #: src/gui/widgets/popovers/automatable_selector_popover.c:346
-#: resources/ui/port_selector_dialog.ui:26
 msgid "Track"
 msgstr "Лента"
-
-#: src/gui/widgets/dialogs/first_run.c:194
-msgid "Initial Configuration"
-msgstr "Почетна состојба"
-
-#: src/gui/widgets/dialogs/first_run.c:203
-#: src/gui/widgets/dialogs/scripting_dialog.c:92
-msgid "Language"
-msgstr "Јазик"
-
-#: src/gui/widgets/dialogs/first_run.c:204
-msgid "Preferred language"
-msgstr "Предпочитан јазик"
-
-#: src/gui/widgets/dialogs/first_run.c:213
-msgid "User path"
-msgstr "Патека на корисникот"
-
-#: src/gui/widgets/dialogs/first_run.c:214
-msgid "Location to save user files"
-msgstr "Локација за зачувување на корисничките датотеки"
-
-#: src/gui/widgets/dialogs/first_run.c:216
-msgid "Select a directory"
-msgstr "Одбери папка"
-
-#: src/gui/widgets/dialogs/welcome_message_dialog.c:26
-#, c-format
-msgid ""
-"If this is your first time using Zrythm, we suggest going through the "
-"'Getting Started' section in the %suser manual%s."
-msgstr ""
-"Ако прв пат го користите Zrythm, ви препорачуваме да ја прелистате главата "
-"„Започнувајќи“ („Getting Started“) во %sкорисничкото упатство%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:34
 #, c-format
@@ -5046,35 +4983,35 @@ msgstr "Добредојдовте при Zrythm ДАРс"
 msgid "Start Velocity"
 msgstr "Гласност"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:102
+#: src/gui/widgets/dialogs/midi_function_dialog.c:99
 #, fuzzy
 msgid "End Velocity"
 msgstr "Гласност"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:115
-#: src/gui/widgets/dialogs/midi_function_dialog.c:200
+#: src/gui/widgets/dialogs/midi_function_dialog.c:109
+#: src/gui/widgets/dialogs/midi_function_dialog.c:180
 #, fuzzy
 msgid "Curve"
 msgstr "Искривеност"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:139
-#: src/gui/widgets/dialogs/midi_function_dialog.c:224
+#: src/gui/widgets/dialogs/midi_function_dialog.c:133
+#: src/gui/widgets/dialogs/midi_function_dialog.c:204
 #, fuzzy
 msgid "Curviness %"
 msgstr "Искривеност"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:155
+#: src/gui/widgets/dialogs/midi_function_dialog.c:145
 #, fuzzy
 msgid "Note: Flam is currently unimplemented"
 msgstr "Операцијата не е применета"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:189
+#: src/gui/widgets/dialogs/midi_function_dialog.c:171
 #: build/data/org.zrythm.Zrythm.gschema.xml:605
 #, fuzzy
 msgid "Ascending"
 msgstr "Испраќање"
 
-#: src/gui/widgets/dialogs/midi_function_dialog.c:335
+#: src/gui/widgets/dialogs/midi_function_dialog.c:307
 #, fuzzy
 msgid "_Apply"
 msgstr "Примени %s"
@@ -5092,17 +5029,9 @@ msgstr "Неуспешно поврзување на %s со %s"
 msgid "These ports cannot be connected"
 msgstr "Овие порти не може да се поврзат"
 
-#: src/gui/widgets/dialogs/port_selector_dialog.c:309
+#: src/gui/widgets/dialogs/port_selector_dialog.c:308
 msgid "Track Ports"
 msgstr "Следи порти"
-
-#: src/gui/widgets/dialogs/project_progress_dialog.c:45
-msgid "Saved"
-msgstr "Зачувано"
-
-#: src/gui/widgets/dialogs/project_progress_dialog.c:48
-msgid "Project Progress"
-msgstr "Проектен напредок"
 
 #: src/gui/widgets/dialogs/port_info.c:30
 #: src/gui/widgets/dialogs/port_info.c:136
@@ -5169,23 +5098,23 @@ msgstr "Неуспешен внес на датотеки"
 msgid "File Import"
 msgstr "Прелистувач на датотеки"
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:34
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:31
 #, fuzzy
 msgid "Check for Updates?"
 msgstr "Провери за надоградби"
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:36
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:33
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
 msgstr "Дали сакаш %s да проверува за надградби при подигнување?"
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
-#: src/settings/plugin_settings.c:535
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
+#: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
 msgid "_Yes"
 msgstr ""
 
-#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
-#: src/settings/plugin_settings.c:535
+#: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
+#: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
 #, fuzzy
 msgid "_No"
 msgstr "Не"
@@ -5207,7 +5136,7 @@ msgid "Select MIDI file"
 msgstr "Одбери МИДИ датотека"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:112
-#: src/gui/widgets/dialogs/export_dialog.c:1206
+#: src/gui/widgets/dialogs/export_dialog.c:1262
 msgid "_Export"
 msgstr "_Извади"
 
@@ -5247,19 +5176,19 @@ msgstr "Одделни ленти"
 msgid "Export lanes as"
 msgstr "Извади патеки како"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:70
+#: src/gui/widgets/dialogs/quantize_dialog.c:57
 msgid "Failed to quantize editor selections"
 msgstr "Неуспешно поредување (квантизација) на одбраното во уредникот"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:83
+#: src/gui/widgets/dialogs/quantize_dialog.c:70
 msgid "Failed to quantize timeline selections"
 msgstr "Неуспешно поредување (квантизација) на избраното во временската линија"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:111
+#: src/gui/widgets/dialogs/quantize_dialog.c:98
 msgid "note length"
 msgstr "должина на нота"
 
-#: src/gui/widgets/dialogs/quantize_dialog.c:116
+#: src/gui/widgets/dialogs/quantize_dialog.c:103
 msgid "note type"
 msgstr "вид на нота"
 
@@ -5279,11 +5208,11 @@ msgstr "Изврши"
 msgid "The result will be printed here"
 msgstr "Резултатот тука ќе се одпечати"
 
-#: src/gui/widgets/dialogs/export_dialog.c:199
+#: src/gui/widgets/dialogs/export_dialog.c:200
 msgid "none"
 msgstr "ништо"
 
-#: src/gui/widgets/dialogs/export_dialog.c:275
+#: src/gui/widgets/dialogs/export_dialog.c:276
 msgid ""
 "\n"
 "1 more file..."
@@ -5291,7 +5220,7 @@ msgstr ""
 "\n"
 "Уште 1 датотека..."
 
-#: src/gui/widgets/dialogs/export_dialog.c:280
+#: src/gui/widgets/dialogs/export_dialog.c:281
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -5300,124 +5229,123 @@ msgstr ""
 "\n"
 "Уште %d датотеки..."
 
-#: src/gui/widgets/dialogs/export_dialog.c:373
+#: src/gui/widgets/dialogs/export_dialog.c:374
 msgid "The following files will be created:"
 msgstr "Ќе се создадат следниве датотеки:"
 
-#: src/gui/widgets/dialogs/export_dialog.c:374
+#: src/gui/widgets/dialogs/export_dialog.c:375
 msgid "in the directory:"
 msgstr "во папката:"
 
-#: src/gui/widgets/dialogs/export_dialog.c:587
-msgid "No tracks to export"
-msgstr "Нема ленти за извоз"
-
-#: src/gui/widgets/dialogs/export_dialog.c:695
+#: src/gui/widgets/dialogs/export_dialog.c:639
 msgid "Exported"
 msgstr "Извадено"
 
-#: src/gui/widgets/dialogs/export_dialog.c:960
+#: src/gui/widgets/dialogs/export_dialog.c:663
+msgid "No tracks to export"
+msgstr "Нема ленти за извоз"
+
+#: src/gui/widgets/dialogs/export_dialog.c:1016
 #, fuzzy
 msgid "Export"
 msgstr "_Извади"
 
-#: src/gui/widgets/dialogs/export_dialog.c:967
-#: resources/ui/inspector_master.ui:40 resources/ui/inspector_ap.ui:40
-#: resources/ui/inspector_midi.ui:40
+#: src/gui/widgets/dialogs/export_dialog.c:1023
 msgid "Color"
 msgstr "Боја"
 
-#: src/gui/widgets/dialogs/export_dialog.c:971
+#: src/gui/widgets/dialogs/export_dialog.c:1027
 msgid "Icon"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:989
+#: src/gui/widgets/dialogs/export_dialog.c:1045
 msgid "<name>.<format>"
 msgstr "<име>.<форма>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:990
+#: src/gui/widgets/dialogs/export_dialog.c:1046
 msgid "<date>_<name>.<format>"
 msgstr "<датум>_<име>.<форма>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1022
+#: src/gui/widgets/dialogs/export_dialog.c:1078
 msgid "Mixdown"
 msgstr "Умиксување"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1023
+#: src/gui/widgets/dialogs/export_dialog.c:1079
 msgid "Stems"
 msgstr "Изворни аудио стебла"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1062
+#: src/gui/widgets/dialogs/export_dialog.c:1118
 msgctxt "Export time range"
 msgid "Loop"
 msgstr "Јамка"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1063
+#: src/gui/widgets/dialogs/export_dialog.c:1119
 msgctxt "Export time range"
 msgid "Song"
 msgstr "Песна"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1064
+#: src/gui/widgets/dialogs/export_dialog.c:1120
 msgctxt "Export time range"
 msgid "Custom"
 msgstr "Прилагоден(о)"
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:72
-msgid "Create New Project"
-msgstr "Создај нов проект"
+#: src/gui/widgets/dialogs/export_progress_dialog.c:83
+#, fuzzy, c-format
+msgid "Exporting %s"
+msgstr "Извади како"
 
-#. get next available "Untitled Project"
-#: src/gui/widgets/dialogs/create_project_dialog.c:81
-msgid "Untitled Project"
-msgstr "Проект без наслов"
-
-#: src/gui/widgets/dialogs/create_project_dialog.c:111
-msgid "Select parent directory to save the project in"
-msgstr "Одбери матична папка во која да го зачуваш проектот"
-
-#: src/gui/widgets/dialogs/export_progress_dialog.c:61
+#: src/gui/widgets/dialogs/export_progress_dialog.c:86
 msgid "Export Progress"
 msgstr "Напредок во извозот"
 
-#: src/gui/widgets/dialogs/export_progress_dialog.c:62
-msgid "Exporting..."
-msgstr "Извоз..."
-
-#: src/gui/widgets/dialogs/export_progress_dialog.c:69
+#: src/gui/widgets/dialogs/export_progress_dialog.c:96
 msgid "Open Directory"
 msgstr "Отворена папка"
 
-#: src/gui/widgets/dialogs/export_progress_dialog.c:71
-msgid "Opens the containing directory"
-msgstr "Ја отвора содржателната папка"
-
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:54
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:63
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:41
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:50
 #, c-format
 msgid "%s color"
 msgstr "%s боја"
 
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:73
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:60
 msgid "Track color"
 msgstr "Боја на лента"
 
-#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:117
+#: src/gui/widgets/dialogs/object_color_chooser_dialog.c:104
 msgid "Failed to change color"
 msgstr "Неуспешна промена на боја"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:44
+#: src/gui/widgets/dialogs/bug_report_dialog.c:47
+#, fuzzy
+msgid "Need More Info"
+msgstr "Инфо за порта"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:47
 msgid "Please enter more details"
 msgstr "Ве молиме внесете повеќе детали"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:146
+#: src/gui/widgets/dialogs/bug_report_dialog.c:170
 msgid "Sent successfully"
 msgstr "Успешно испратено"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:160
+#: src/gui/widgets/dialogs/bug_report_dialog.c:233
+msgid "Sending"
+msgstr "Испраќање"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:242
+msgid "Sending..."
+msgstr "Испраќање..."
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:243
+msgid "Sending data..."
+msgstr "Испраќање податоци..."
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:263
 msgid "Send Automatically"
 msgstr "Автоматски испратено"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:172
+#: src/gui/widgets/dialogs/bug_report_dialog.c:278
 #, c-format
 msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
@@ -5427,127 +5355,41 @@ msgstr ""
 "испрати. Преку притискање на „Во ред“, се согласуваш со нашата %sПолиса за "
 "приватност%s."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:185
+#: src/gui/widgets/dialogs/bug_report_dialog.c:291
 msgid "<b>Data</b>"
 msgstr "<b>Податоци</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:221
+#: src/gui/widgets/dialogs/bug_report_dialog.c:327
 msgid "<b>Log file</b>"
 msgstr "<b>Датотека-записник</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:252
+#: src/gui/widgets/dialogs/bug_report_dialog.c:359
 msgid "<b>Screenshot</b>"
 msgstr "<b>Снимка од екран</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:297
-msgid "Sending"
-msgstr "Испраќање"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:311
-msgid "Sending..."
-msgstr "Испраќање..."
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:311
-msgid "Sending data..."
-msgstr "Испраќање податоци..."
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:366
+#: src/gui/widgets/dialogs/bug_report_dialog.c:400
 #, fuzzy
 msgid "Send via GitLab"
 msgstr "Испрати преку Sourcehut"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:378
+#: src/gui/widgets/dialogs/bug_report_dialog.c:412
 #, fuzzy, c-format
 msgid "Please copy the template below in a <a href=\"%s\">new issue</a>."
 msgstr "Ве молиме ископирајте го шаблонот подолу во %sнов примерок%s."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:461
+#: src/gui/widgets/dialogs/bug_report_dialog.c:500
 msgid "Fatal Error"
 msgstr "Фатална грешка"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:464
+#: src/gui/widgets/dialogs/bug_report_dialog.c:521
 #, c-format
 msgid "%sPlease help us fix this by submitting a bug report"
 msgstr ""
 "%sВе молиме помогнете нѝ со ова преку поднесување на извештај за грешки"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:532
-msgid "What did you do?"
-msgstr "Што направи?"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:535
-msgid "Please enter as many details as possible (such as steps to reproduce)"
-msgstr ""
-"Ве молиме внесете што е можно повеќе детали (како, на пр., чекори за "
-"репродукција)"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:547
-msgid "Error details"
-msgstr "Детали за грешка"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:553
-msgid "Backtrace"
-msgstr "Позадински записник"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:564
-msgid "Log"
-msgstr "Записник"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:576
-msgid "System info"
-msgstr "Инфо од системот"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:588
-msgid "_Close"
-msgstr "_Затвори"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:589
-#, fuzzy
-msgid "Submit on _GitLab"
-msgstr "Поднеси на _SourceHut"
-
-#. _ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,
-#: src/gui/widgets/dialogs/bug_report_dialog.c:591
-msgid "Preview and send _automatically (privately/recommended)"
-msgstr "Прегледај и испрати _автоматски (приватно и препорачано)"
-
-#: src/gui/widgets/dialogs/about_dialog.c:54
+#: src/gui/widgets/dialogs/about_dialog.c:53
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr "високо автоматизирана и интуитивна работна станица за дигитално аудио"
-
-#: src/gui/widgets/dialogs/project_assistant.c:26
-msgid "<File not found>"
-msgstr "<Датотеката не е пронајдена>"
-
-#: src/gui/widgets/dialogs/project_assistant.c:120
-#: resources/ui/project_assistant.ui:101
-msgid "_Open Selected"
-msgstr "_Отвори го избраното"
-
-#: src/gui/widgets/dialogs/project_assistant.c:125
-msgid "_Create"
-msgstr "_Создај"
-
-#. just show the error and let the program continue - this was called
-#. * while another project is already running
-#: src/gui/widgets/dialogs/project_assistant.c:214
-#, fuzzy
-msgid "Project loading failed"
-msgstr "Проектот е зачуван."
-
-#: src/gui/widgets/dialogs/project_assistant.c:421
-#: src/project/project_init_flow_manager.c:1208
-msgid "No project selected"
-msgstr "Не е избран проект"
-
-#: src/gui/widgets/dialogs/project_assistant.c:473
-#, fuzzy
-msgid "Select Project"
-msgstr "Избери проект"
-
-#: src/gui/widgets/dialogs/project_assistant.c:675
-msgid "Blank project"
-msgstr "Празен проект"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:31
 msgid "Failed to bind mapping"
@@ -5574,7 +5416,6 @@ msgid "Enter group name"
 msgstr "Внеси име на група"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:63
-#: resources/ui/bind_cc_dialog.ui:43 resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
 msgstr "Во ред"
 
@@ -5684,13 +5525,10 @@ msgid "Link to snap"
 msgstr "Врска кон прилепување"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:293
-#: resources/ui/snap_grid_popover.ui:212
 msgid "Last object"
 msgstr "Последен објект"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:294
-#: resources/ui/chord_selector_window.ui:614
-#: resources/ui/scale_selector_window.ui:208
 msgid "Custom"
 msgstr "Сопствено"
 
@@ -5708,8 +5546,6 @@ msgstr ""
 "создаден објект, или одреди сопствена должина"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:316
-#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
-#: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr "Должина"
 
@@ -5763,11 +5599,11 @@ msgstr "Скриптата се изврши успешно"
 msgid "Script execution failed"
 msgstr "Извршувањето на скриптата е неуспешно"
 
-#: src/guile/actions/port_connection_action.c:47
+#: src/guile/actions/port_connection_action.c:34
 msgid "Failed to connect ports"
 msgstr "Неуспешно поврзување на порти"
 
-#: src/guile/actions/channel_send_action.c:45
+#: src/guile/actions/channel_send_action.c:32
 msgid "Failed to create audio send"
 msgstr "Неуспешно создавање на аудио препраќање"
 
@@ -5781,37 +5617,36 @@ msgstr "Неуспешно поредување (квантизација) на 
 msgid "Failed to serialize cached plugin descriptors"
 msgstr "Неуспешно создавање на приклучок %s"
 
-#: src/plugins/plugin_manager.c:396
+#: src/plugins/plugin_manager.c:397
 msgid "Error loading LV2 bundle dir: "
 msgstr "Неуспешно вчитување на LV2 папка: "
 
-#: src/plugins/plugin_manager.c:1232
+#: src/plugins/plugin_manager.c:1233
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Сканиран %s приклучок: %s"
 
-#. TRANSLATORS: first argument
-#. * is plugin protocol, 2nd
-#. * argument is path
+#. TRANSLATORS: first argument is plugin protocol, 2nd
+#. argument is path
 #: src/plugins/plugin_manager.c:1245
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "Прескокнат е %1$s приклучокот при %2$s"
 
-#: src/plugins/plugin_manager.c:1349
+#: src/plugins/plugin_manager.c:1350
 msgid "Scanned LV2 plugin"
 msgstr "Сканиран LV2 приклучок"
 
-#: src/plugins/plugin_manager.c:1355
+#: src/plugins/plugin_manager.c:1356
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "Прескокнат е LV2 приклучок при %s"
 
-#: src/plugins/plugin_manager.c:1441
+#: src/plugins/plugin_manager.c:1444
 msgid "Scanned AU plugin"
 msgstr "Сканиран AU приклучок"
 
-#: src/plugins/plugin_manager.c:1446
+#: src/plugins/plugin_manager.c:1449
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "Прескокнат е AU приклучок при %u"
@@ -6122,16 +5957,20 @@ msgstr "Неуспешно врзување на Л(ева) порта"
 msgid "Failed to connect R port"
 msgstr "Неуспешно врзување на Д(есна) порта"
 
-#: src/settings/plugin_settings.c:532
+#: src/settings/plugin_settings.c:530
 #, fuzzy
 msgid "Stereo?"
 msgstr "Стерео влез"
 
-#: src/settings/plugin_settings.c:532
+#: src/settings/plugin_settings.c:530
 msgid "Are the outputs stereo?"
 msgstr "Дали излезите се стерео?"
 
-#: src/settings/plugin_settings.c:570
+#: src/settings/plugin_settings.c:567
+msgid "Auto-route?"
+msgstr ""
+
+#: src/settings/plugin_settings.c:569
 msgid ""
 "This plugin contains multiple audio outputs. Would you like to auto-route "
 "each output to a separate FX track?"
@@ -6139,17 +5978,17 @@ msgstr ""
 "Овој приклучок содржи повеќе аудио излези. Дали би сакале да го префрлите "
 "секој излез на посебна ефектна патека?"
 
-#: src/settings/plugin_settings.c:635
+#: src/settings/plugin_settings.c:637
 #, fuzzy
 msgid "Failed to serialize plugin settings"
 msgstr "Неуспешно создавање на приклучок %s"
 
-#: src/settings/plugin_settings.c:645
+#: src/settings/plugin_settings.c:647
 #, fuzzy
 msgid "Failed to write plugin settings file"
 msgstr "Неуспешен запис на аудио датотека"
 
-#: src/settings/chord_preset.c:102 src/settings/chord_preset_pack.c:129
+#: src/settings/chord_preset.c:102 src/settings/chord_preset_pack.c:116
 msgid "_Rename"
 msgstr "_Преименувај"
 
@@ -6272,73 +6111,73 @@ msgstr "Одкажувам...\n"
 msgid "Reset to factory settings successful\n"
 msgstr "Враќањето на фабрички поставки е успешно\n"
 
-#: src/project/project_init_flow_manager.c:263
+#: src/project/project_init_flow_manager.c:261
 msgid "Failed to deserialize v1 project file"
 msgstr "Неможност да се одсеријализира верзијата 1 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:275
+#: src/project/project_init_flow_manager.c:273
 #, fuzzy
 msgid "Failed to serialize v1 project file"
 msgstr "Неможност да се одсеријализира верзијата 1 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:306
+#: src/project/project_init_flow_manager.c:304
 msgid "Failed to deserialize v2/3 project file"
 msgstr "Неможност да се одсеријализира верзијата 2 / 3 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:343
+#: src/project/project_init_flow_manager.c:341
 #, fuzzy
 msgid "Failed to serialize v3 project file"
 msgstr "Неможност да се одсеријализира верзијата 2 / 3 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:375
+#: src/project/project_init_flow_manager.c:373
 #, fuzzy
 msgid "Failed to deserialize v4 project file"
 msgstr "Неможност да се одсеријализира верзијата 1 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:396
+#: src/project/project_init_flow_manager.c:394
 #, fuzzy
 msgid "Failed to serialize v4 project file"
 msgstr "Неможност да се одсеријализира верзијата 1 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:426
+#: src/project/project_init_flow_manager.c:424
 #, fuzzy
 msgid "Failed to deserialize v5 project file"
 msgstr "Неможност да се одсеријализира верзијата 1 од проектната датотека"
 
-#: src/project/project_init_flow_manager.c:434
+#: src/project/project_init_flow_manager.c:432
 #, fuzzy
 msgid "Failed to convert v5 YAML project file to JSON"
 msgstr "Неможност да се декомпримира проектната датотека при %s"
 
-#: src/project/project_init_flow_manager.c:741
+#: src/project/project_init_flow_manager.c:739
 #, fuzzy
 msgid "Failed to get existing text"
 msgstr "Неможност да се добави постоечкиот yaml"
 
-#: src/project/project_init_flow_manager.c:766
+#: src/project/project_init_flow_manager.c:764
 msgid "Invalid project: missing version"
 msgstr "Невалиден проект: недостапна верзија"
 
-#: src/project/project_init_flow_manager.c:785
+#: src/project/project_init_flow_manager.c:783
 #, fuzzy
 msgid "Failed to upgrade YAML project schema"
 msgstr "Неможност да се зачува проектот"
 
-#: src/project/project_init_flow_manager.c:799
+#: src/project/project_init_flow_manager.c:797
 #, fuzzy
 msgid "Failed to upgrade project schema to JSON"
 msgstr "Неможност да се зачува проектот"
 
-#: src/project/project_init_flow_manager.c:812
+#: src/project/project_init_flow_manager.c:810
 #, c-format
 msgid "Failed to read JSON: [code: %<PRIu32>, pos: %zu] %s"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:829
+#: src/project/project_init_flow_manager.c:827
 msgid "Failed to deserialize project YAML"
 msgstr "Неможност да се одсеријализира проектниот YAML"
 
-#: src/project/project_init_flow_manager.c:851
+#: src/project/project_init_flow_manager.c:849
 #, c-format
 msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
@@ -6347,17 +6186,17 @@ msgstr ""
 "Неможност да се вчита проектот: Препознаен е корумпиран проект (недостасува "
 "FINISHED датотека при '%s')."
 
-#: src/project/project_init_flow_manager.c:970
+#: src/project/project_init_flow_manager.c:968
 #, fuzzy
 msgid "Failed to initialize the audio file pool"
 msgstr "Неуспешен запис на аудио датотека"
 
-#: src/project/project_init_flow_manager.c:1081
+#: src/project/project_init_flow_manager.c:1079
 #, fuzzy
 msgid "Project Upgraded"
 msgstr "Проектот е зачуван."
 
-#: src/project/project_init_flow_manager.c:1082
+#: src/project/project_init_flow_manager.c:1080
 #, fuzzy, c-format
 msgid ""
 "This project has been automatically upgraded to v1.%d. Saving this project "
@@ -6368,11 +6207,11 @@ msgstr ""
 "Зачувувањето на овој проект ќе го препише преку стариот. Ако сакаш да ги "
 "зачуваш обата, користи 'Зачувај како...'."
 
-#: src/project/project_init_flow_manager.c:1156
+#: src/project/project_init_flow_manager.c:1154
 msgid "Open Backup?"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1158
+#: src/project/project_init_flow_manager.c:1156
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -6383,974 +6222,13 @@ msgstr ""
 "  %s.\n"
 "Да ја користам поновата копија?"
 
-#: src/project/project_init_flow_manager.c:1161
+#: src/project/project_init_flow_manager.c:1159
 msgid "Open Backup"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1162
+#: src/project/project_init_flow_manager.c:1160
 msgid "Ignore"
 msgstr ""
-
-#: src/project/project_init_flow_manager.c:1220
-msgid "Failed to load project. Will create a new one instead."
-msgstr "Неможност да се вчита проектот. Ќе се создаде нов."
-
-#: resources/ui/chord_selector_window.ui:20
-msgid "Root Note"
-msgstr "Нота-корен"
-
-#: resources/ui/chord_selector_window.ui:37
-#: resources/ui/chord_selector_window.ui:358
-#: resources/ui/scale_selector_window.ui:38
-msgid "C"
-msgstr "C (Ц)"
-
-#: resources/ui/chord_selector_window.ui:47
-#: resources/ui/chord_selector_window.ui:368
-#: resources/ui/scale_selector_window.ui:48
-msgid "D♭"
-msgstr "D♭ (дес)"
-
-#: resources/ui/chord_selector_window.ui:57
-#: resources/ui/chord_selector_window.ui:378
-#: resources/ui/scale_selector_window.ui:58
-msgid "D"
-msgstr "D (Д)"
-
-#: resources/ui/chord_selector_window.ui:67
-#: resources/ui/chord_selector_window.ui:388
-#: resources/ui/scale_selector_window.ui:68
-msgid "E♭"
-msgstr "E♭ (ес)"
-
-#: resources/ui/chord_selector_window.ui:77
-#: resources/ui/chord_selector_window.ui:398
-#: resources/ui/scale_selector_window.ui:78
-msgid "E"
-msgstr "Е"
-
-#: resources/ui/chord_selector_window.ui:87
-#: resources/ui/chord_selector_window.ui:408
-#: resources/ui/scale_selector_window.ui:88
-msgid "F"
-msgstr "F (Ф)"
-
-#: resources/ui/chord_selector_window.ui:97
-#: resources/ui/chord_selector_window.ui:418
-#: resources/ui/scale_selector_window.ui:98
-msgid "F♯"
-msgstr "F♯ (фис)"
-
-#: resources/ui/chord_selector_window.ui:107
-#: resources/ui/chord_selector_window.ui:428
-#: resources/ui/scale_selector_window.ui:108
-msgid "G"
-msgstr "G (Г)"
-
-#: resources/ui/chord_selector_window.ui:117
-#: resources/ui/chord_selector_window.ui:438
-#: resources/ui/scale_selector_window.ui:118
-msgid "A♭"
-msgstr "A♭ (аес)"
-
-#: resources/ui/chord_selector_window.ui:127
-#: resources/ui/chord_selector_window.ui:448
-#: resources/ui/scale_selector_window.ui:128
-msgid "A"
-msgstr "А"
-
-#: resources/ui/chord_selector_window.ui:137
-#: resources/ui/chord_selector_window.ui:458
-#: resources/ui/scale_selector_window.ui:138
-msgid "B♭"
-msgstr "B♭ (бес)"
-
-#: resources/ui/chord_selector_window.ui:147
-#: resources/ui/chord_selector_window.ui:468
-#: resources/ui/scale_selector_window.ui:148
-msgid "B"
-msgstr "B (Б)"
-
-#: resources/ui/chord_selector_window.ui:173
-msgid "maj"
-msgstr "дур"
-
-#: resources/ui/chord_selector_window.ui:183
-msgid "min"
-msgstr "мол"
-
-#: resources/ui/chord_selector_window.ui:193
-msgid "dim"
-msgstr "спуштено (dim)"
-
-#: resources/ui/chord_selector_window.ui:203
-msgid "sus4"
-msgstr "задржано4 (sus4)"
-
-#: resources/ui/chord_selector_window.ui:213
-msgid "sus2"
-msgstr "задржано2 (sus2)"
-
-#: resources/ui/chord_selector_window.ui:223
-msgid "aug"
-msgstr "надградено (aug)"
-
-#: resources/ui/chord_selector_window.ui:233
-msgid "Accent"
-msgstr "Акцент"
-
-#: resources/ui/chord_selector_window.ui:251
-msgid "7"
-msgstr "7"
-
-#: resources/ui/chord_selector_window.ui:261
-msgid "j7"
-msgstr "ј7"
-
-#: resources/ui/chord_selector_window.ui:341
-msgid "Bass Note"
-msgstr "Бас нота"
-
-#: resources/ui/chord_selector_window.ui:494
-msgid "In scale"
-msgstr "Во скала"
-
-#: resources/ui/chord_selector_window.ui:506
-#: resources/ui/scale_selector_window.ui:193
-msgid "Creator"
-msgstr "Создател"
-
-#: resources/ui/chord_selector_window.ui:599
-msgid "Diatonic"
-msgstr "Диатоника"
-
-#: resources/ui/chord_selector_window.ui:609
-#: resources/ui/scale_selector_window.ui:203
-msgid "TODO keyboard"
-msgstr "Тастатура за ОБВРСКИ"
-
-#: resources/ui/chord_selector_window.ui:624
-msgid "TODO"
-msgstr "ОБВРСКИ"
-
-#: resources/ui/chord_selector_window.ui:629
-msgid "Circle of Fifths"
-msgstr "Круг на петки"
-
-#: resources/ui/file_auditioner_controls.ui:15
-msgid "Play/Pause"
-msgstr "Пушти / Пауза"
-
-#: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:32
-msgid "Stop"
-msgstr "Стој"
-
-#: resources/ui/active_hardware_popover.ui:11
-msgid "Ports found"
-msgstr "Пронајдени порти"
-
-#: resources/ui/active_hardware_popover.ui:48
-msgid "Rescan"
-msgstr "Пре-сканирај"
-
-#: resources/ui/active_hardware_popover.ui:51
-msgid "Scan again for MIDI controllers"
-msgstr "Повторно сканирај за МИДИ контролери"
-
-#: resources/ui/main_window.ui:37 resources/ui/view_toolbar.ui:41
-msgid "Toggle Left Panel"
-msgstr "Прикажи лева плоча"
-
-#: resources/ui/main_window.ui:51 resources/ui/view_toolbar.ui:59
-msgid "Toggle Right Panel"
-msgstr "Прикажи десна плоча"
-
-#: resources/ui/fader_buttons.ui:99
-msgid "Channel settings"
-msgstr "Поставки на канал"
-
-#: resources/ui/help_toolbar.ui:40
-msgid "News"
-msgstr "Вести"
-
-#: resources/ui/snap_box.ui:13
-msgid "Snap to grid"
-msgstr "Прилепи на мрежа"
-
-#: resources/ui/snap_box.ui:25
-msgid "Keep offset"
-msgstr "Задржи изместување"
-
-#: resources/ui/snap_box.ui:37
-msgid "Snap to events"
-msgstr "Прилепи на настани"
-
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
-msgid "Note length"
-msgstr "Нотна должина"
-
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
-msgid "t"
-msgstr "т"
-
-#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
-msgid "Triplet"
-msgstr "Триплет"
-
-#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
-msgid "Dotted"
-msgstr "по точки"
-
-#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
-msgid "Adaptive length"
-msgstr "Прилагодлива должина"
-
-#: resources/ui/snap_grid_popover.ui:125
-msgid "Snap"
-msgstr "Прилепување"
-
-#: resources/ui/snap_grid_popover.ui:201
-msgid "Link"
-msgstr "Врзување"
-
-#: resources/ui/snap_grid_popover.ui:202
-msgid "Link length to snap setting"
-msgstr "Врзи должина со поставките за прилепување"
-
-#: resources/ui/snap_grid_popover.ui:213
-msgid "Use last created object's length"
-msgstr "Користи ја должината на последно-создадениот објект"
-
-#: resources/ui/panel_file_browser.ui:29
-msgid "Bookmarks"
-msgstr "Обележувачи"
-
-#: resources/ui/first_run_window.ui:6
-#, fuzzy
-msgid "Set Up Zrythm"
-msgstr "Намести го Zrythm"
-
-#: resources/ui/transport_controls.ui:7
-msgid "Return to cue point on stop"
-msgstr "Врати кон појдовната точка при застанување"
-
-#: resources/ui/transport_controls.ui:22
-msgid "Play"
-msgstr "Пушти"
-
-#: resources/ui/transport_controls.ui:42
-msgid "Backward"
-msgstr "Наназад"
-
-#: resources/ui/transport_controls.ui:52
-msgid "Forward"
-msgstr "Нанапред"
-
-#: resources/ui/transport_controls.ui:62
-msgid "Loop"
-msgstr "Јамка (врти)"
-
-#: resources/ui/event_viewer.ui:9
-msgid "Event Viewer"
-msgstr "Прегледник на настани"
-
-#: resources/ui/plugin_browser.ui:28
-msgid "Collection"
-msgstr "Збир"
-
-#: resources/ui/plugin_browser.ui:53
-#, fuzzy
-msgid "Add Collection"
-msgstr "Додај во збир"
-
-#: resources/ui/plugin_browser.ui:60
-#, fuzzy
-msgid "Rename Collection"
-msgstr "Збир"
-
-#: resources/ui/plugin_browser.ui:67
-#, fuzzy
-msgid "Delete Collection"
-msgstr "Избриши врска"
-
-#: resources/ui/plugin_browser.ui:87
-msgid "Author"
-msgstr "Автор"
-
-#: resources/ui/plugin_browser.ui:125
-msgid "Category"
-msgstr "Категорија"
-
-#: resources/ui/plugin_browser.ui:163
-msgid "Protocol"
-msgstr "Протокол"
-
-#: resources/ui/plugin_browser.ui:265
-msgid "Sort alphabetically"
-msgstr "Подреди по азбучен ред"
-
-#: resources/ui/plugin_browser.ui:271
-msgid "Sort by recently used"
-msgstr "Подреди по последно користење"
-
-#: resources/ui/plugin_browser.ui:277
-msgid "Sort by most used"
-msgstr "Подреди по најчесто користење"
-
-#: resources/ui/header.ui:22 resources/gtk/help-overlay.ui:105
-msgid "Project"
-msgstr "Проект"
-
-#: resources/ui/header.ui:33
-msgid "View"
-msgstr "Поглед"
-
-#: resources/ui/header.ui:44
-msgid "Help"
-msgstr "Помош"
-
-#: resources/ui/header.ui:59
-msgid "MIDI in activity"
-msgstr "МИДИ во активност"
-
-#: resources/ui/header.ui:91
-#, fuzzy
-msgid "Live Waveform Indicator"
-msgstr "Прикажувач на бранови форми во живо"
-
-#: resources/ui/header.ui:104
-msgid "Spectrum Analyzer"
-msgstr ""
-
-#: resources/ui/header.ui:116
-msgid "Peak Meter"
-msgstr ""
-
-#: resources/ui/editor_toolbar.ui:128
-msgid "Toggle ghost note visibility"
-msgstr "Видливост на привидни ноти"
-
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
-msgid "Toggle event viewer"
-msgstr "Прикажи прегледник на настани"
-
-#: resources/ui/editor_toolbar.ui:166 resources/ui/editor_toolbar.ui:215
-msgid "Flip"
-msgstr "Преврти"
-
-#: resources/ui/editor_toolbar.ui:168 resources/ui/editor_toolbar.ui:217
-msgid "Horizontal"
-msgstr "Хоризонтално"
-
-#: resources/ui/editor_toolbar.ui:174 resources/ui/editor_toolbar.ui:223
-msgid "Vertical"
-msgstr "Вертикално"
-
-#: resources/ui/create_project_dialog.ui:22
-msgid "Parent directory"
-msgstr "Матична папка"
-
-#: resources/ui/fishbowl_window.ui:6
-msgid "Fishbowl"
-msgstr "Аквариум"
-
-#: resources/ui/quantize_dialog.ui:5
-msgid "Quantize Options"
-msgstr "Избор за поредување (квантизација)"
-
-#: resources/ui/quantize_dialog.ui:26
-msgid "Quantize to"
-msgstr "Пореди на"
-
-#: resources/ui/quantize_dialog.ui:55
-msgid "Adjust"
-msgstr "Прилагоди"
-
-#: resources/ui/quantize_dialog.ui:82
-msgid "Amount"
-msgstr "Количество"
-
-#: resources/ui/quantize_dialog.ui:102
-msgid "Swing"
-msgstr "Замавнување"
-
-#: resources/ui/quantize_dialog.ui:117
-msgid "Randomization"
-msgstr "Случајност (рандомизација)"
-
-#: resources/ui/quantize_dialog.ui:140
-msgid "_Quantize"
-msgstr "_Пореди"
-
-#: resources/ui/scale_selector_window.ui:19
-msgid "Root Key"
-msgstr "Клуч"
-
-#: resources/ui/scale_selector_window.ui:158 resources/ui/inspector_chord.ui:18
-msgid "Scale"
-msgstr "Скала"
-
-#: resources/ui/scale_selector_window.ui:175
-msgid "Scale - Other"
-msgstr "Скала - други"
-
-#: resources/ui/bot_bar.ui:65 resources/ui/view_toolbar.ui:47
-msgid "Toggle Bottom Panel"
-msgstr "Прикажи долна плоча"
-
-#: resources/ui/project_assistant.ui:6
-msgid "Select a Project"
-msgstr "Избери проект"
-
-#: resources/ui/project_assistant.ui:60
-msgid "Create New"
-msgstr "Создади нов"
-
-#: resources/ui/project_assistant.ui:107
-msgid "Open from _Path"
-msgstr "Отвори од _Патека"
-
-#: resources/ui/modulator_inner.ui:14
-msgid "Show/hide UI"
-msgstr "Прикажи / скриј лице"
-
-#: resources/ui/automation_track.ui:8
-msgid "Control this automation track is for"
-msgstr "Контрола на оваа автомациона лента е за"
-
-#: resources/ui/automation_track.ui:19
-msgid "Mute automation track"
-msgstr "Занеми автомациона лента"
-
-#: resources/ui/automation_track.ui:53
-msgid "RW"
-msgstr "Читање и запишување на автомација"
-
-#: resources/ui/automation_track.ui:56
-msgid "Write automation"
-msgstr "Запишувај автомација"
-
-#: resources/ui/automation_track.ui:67
-msgid "Read automation"
-msgstr "Читај автомација"
-
-#: resources/ui/automation_track.ui:81
-msgid "0.0"
-msgstr "0,0"
-
-#: resources/ui/automation_track.ui:95
-msgid "Remove automation track"
-msgstr "Одстрани автомациона лента"
-
-#: resources/ui/automation_track.ui:107
-msgid "Add automation track"
-msgstr "Додај автомациона лента"
-
-#: resources/ui/chord_pad_panel.ui:53
-msgid "Transpose"
-msgstr "Премести"
-
-#: resources/ui/inspector_chord.ui:29
-msgid "Enforce scale"
-msgstr "Присили примена на скала"
-
-#: resources/ui/export_dialog.ui:6
-msgid "Export As..."
-msgstr "Извади како..."
-
-#: resources/ui/export_dialog.ui:40 resources/ui/export_dialog.ui:181
-msgid "Metadata"
-msgstr "Метаподатоци"
-
-#: resources/ui/export_dialog.ui:43 resources/ui/export_dialog.ui:184
-#: build/data/org.zrythm.Zrythm.gschema.xml:939
-#: build/data/org.zrythm.Zrythm.gschema.xml:988
-msgid "Title"
-msgstr "Наслов"
-
-#: resources/ui/export_dialog.ui:48 resources/ui/export_dialog.ui:189
-#: build/data/org.zrythm.Zrythm.gschema.xml:934
-#: build/data/org.zrythm.Zrythm.gschema.xml:983
-msgid "Artist"
-msgstr "Изведувач"
-
-#: resources/ui/export_dialog.ui:53 resources/ui/export_dialog.ui:194
-#: build/data/org.zrythm.Zrythm.gschema.xml:929
-#: build/data/org.zrythm.Zrythm.gschema.xml:978
-msgid "Genre"
-msgstr "Жанр"
-
-#: resources/ui/export_dialog.ui:63 resources/ui/export_dialog.ui:204
-#: build/data/org.zrythm.Zrythm.gschema.xml:949
-#: build/data/org.zrythm.Zrythm.gschema.xml:999
-msgid "Format"
-msgstr "Форма"
-
-#: resources/ui/export_dialog.ui:68
-msgid "Bit Depth"
-msgstr "Битова длабочина"
-
-#: resources/ui/export_dialog.ui:73
-#: build/data/org.zrythm.Zrythm.gschema.xml:959
-msgid "Dither"
-msgstr "тивок шум (dither)"
-
-#: resources/ui/export_dialog.ui:85 resources/ui/export_dialog.ui:229
-msgid "Filename Pattern"
-msgstr "Шема на име на датотека"
-
-#: resources/ui/export_dialog.ui:90 resources/ui/export_dialog.ui:234
-msgid "Mixdown or Stems"
-msgstr "Умиксано или во изворни аудио стебла"
-
-#: resources/ui/export_dialog.ui:91 resources/ui/export_dialog.ui:235
-msgid ""
-"Whether to export the selected tracks as a single mixdown file or each track "
-"in its own file."
-msgstr ""
-"Дали да се изведат одбраните ленти како умиксана датотека, или секоја лента "
-"во посебна датотека."
-
-#: resources/ui/export_dialog.ui:106 resources/ui/export_dialog.ui:250
-#: build/data/org.zrythm.Zrythm.gschema.xml:944
-#: build/data/org.zrythm.Zrythm.gschema.xml:993
-msgid "Time range"
-msgstr "Временски опсег"
-
-#: resources/ui/export_dialog.ui:107 resources/ui/export_dialog.ui:251
-msgid "Only events inside this time range will be exported."
-msgstr "Ќе се извезат само настаните во овој временски опсег."
-
-#: resources/ui/export_dialog.ui:112 resources/ui/export_dialog.ui:256
-msgid "Custom time range"
-msgstr "Прилагоден временски опсег"
-
-#: resources/ui/export_dialog.ui:130 resources/ui/export_dialog.ui:274
-msgid "Track Selection"
-msgstr "Избор на ленти"
-
-#: resources/ui/export_dialog.ui:155 resources/ui/export_dialog.ui:299
-msgid "Output"
-msgstr "Излез"
-
-#: resources/ui/export_dialog.ui:217
-msgid "Export Lanes as Tracks"
-msgstr "Извези патеки како ленти"
-
-#: resources/ui/port_selector_dialog.ui:10
-msgid "Select a port..."
-msgstr "Избери порта..."
-
-#: resources/ui/port_selector_dialog.ui:94
-#: resources/ui/automatable_selector.ui:32
-msgid "Port"
-msgstr "Порта"
-
-#: resources/ui/inspector_master.ui:18 resources/ui/inspector_ap.ui:18
-#: resources/ui/inspector_midi.ui:18
-msgid "region_name"
-msgstr "име_на_регион"
-
-#: resources/ui/inspector_master.ui:19 resources/ui/inspector_ap.ui:19
-#: resources/ui/inspector_midi.ui:19
-msgid "Enter region name..."
-msgstr "Внеси име на регион..."
-
-#: resources/ui/inspector_master.ui:82 resources/ui/inspector_ap.ui:82
-#: resources/ui/inspector_midi.ui:82
-msgid "Muted"
-msgstr "Занемено"
-
-#: resources/ui/view_toolbar.ui:53
-msgid "Toggle Top Panel"
-msgstr "Прикажи горна плоча"
-
-#: resources/ui/automatable_selector.ui:13
-#, fuzzy
-msgid "Filters"
-msgstr "Филтер"
-
-#: resources/ui/automatable_selector.ui:63
-#, fuzzy
-msgid "Info"
-msgstr "Инфо за порта"
-
-#: resources/ui/automatable_selector.ui:68
-msgid "label"
-msgstr "етикета"
-
-#: resources/ui/string_entry_dialog.ui:5
-msgid "Please enter a value"
-msgstr "Ве молиме внесете вредност"
-
-#: resources/ui/range_action_buttons.ui:20
-msgid "Remove range"
-msgstr "Одстрани опсег"
-
-#: resources/ui/timeline_toolbar.ui:38
-#: build/data/org.zrythm.Zrythm.gschema.xml:402
-msgid "Musical mode"
-msgstr "Музички модус"
-
-#: resources/ui/timeline_toolbar.ui:77
-msgid "Merge selections"
-msgstr "Спои ги избраните"
-
-#: resources/ui/modulator_view.ui:43
-msgid "No modulators"
-msgstr "Без изменувачи (модулатори)"
-
-#: resources/ui/modulator_view.ui:44
-msgid "Drag and drop a modulator plugin from the plugin browser"
-msgstr ""
-"Влечи и остави приклучок-изменувач (модулатор) од прелистувачот на приклучоци"
-
-#: resources/ui/log_viewer.ui:17
-msgid "Log Level"
-msgstr "Ниво на записник"
-
-#: resources/ui/log_viewer.ui:40
-msgid "Save As..."
-msgstr "Зачувај како..."
-
-#: resources/ui/midi_editor_space.ui:63
-msgid "Pitch Wheel"
-msgstr "Тркало на нотни висини"
-
-#: resources/ui/midi_editor_space.ui:64
-msgid "Mod Wheel"
-msgstr "Тркало на изменувачи (модулатори)"
-
-#: resources/ui/midi_editor_space.ui:65
-msgid "Aftertouch"
-msgstr "Допир одпосле"
-
-#: resources/ui/quantize_box.ui:12 resources/gtk/help-overlay.ui:320
-msgid "Quick Quantize"
-msgstr "Брзо подредување (квантизација)"
-
-#: resources/ui/quantize_box.ui:22
-msgid "Full Quantize..."
-msgstr "Целосно подредување (квантизација) ..."
-
-#: resources/ui/bounce_dialog.ui:10
-msgid "Bounce Options"
-msgstr "Опции за уснимување"
-
-#: resources/ui/bounce_dialog.ui:21
-#: build/data/org.zrythm.Zrythm.gschema.xml:335
-msgid "Bounce with parents"
-msgstr "Усними заедно со родители"
-
-#: resources/ui/bounce_dialog.ui:40
-msgid "Tail"
-msgstr "Остаток (опашка)"
-
-#: resources/ui/bounce_dialog.ui:62
-msgid "ms"
-msgstr "мс"
-
-#: resources/ui/bounce_dialog.ui:82
-#: build/data/org.zrythm.Zrythm.gschema.xml:340
-msgid "Disable after bounce"
-msgstr "Оневозможи по уснимувањето"
-
-#: resources/ui/bounce_dialog.ui:93 resources/ui/bind_cc_dialog.ui:36
-#: resources/ui/generic_progress_dialog.ui:52
-msgid "Cancel"
-msgstr "Одкажи"
-
-#: resources/ui/chord_key.ui:7
-msgid "Amin 7"
-msgstr "А мол 7"
-
-#: resources/ui/chord_pack_browser.ui:28
-msgid "Packs"
-msgstr "Пакувања"
-
-#: resources/ui/playhead_scroll_buttons.ui:13
-msgid "Scroll when playhead reaches the edge"
-msgstr "Помести приказ кога позиционата глава ќе го премине работ"
-
-#: resources/ui/playhead_scroll_buttons.ui:26
-msgid "Follow playhead"
-msgstr "Следи ја позиционата глава"
-
-#: resources/ui/clip_editor.ui:9
-msgid "No clip selected"
-msgstr "Не е одбран исечок"
-
-#: resources/ui/clip_editor.ui:10
-msgid "Select a clip from the timeline"
-msgstr "Избери исечок од временската линија"
-
-#: resources/ui/bind_cc_dialog.ui:5
-msgid "Bind MIDI CC"
-msgstr "Поврзи МИДИ CC"
-
-#: resources/ui/bind_cc_dialog.ui:16
-msgid "Press a key or move a knob on your MIDI device"
-msgstr "Притисни копче или придвижи потенциометар на твојот МИДИ уред"
-
-#: resources/ui/bind_cc_dialog.ui:23
-msgid "Waiting for input..."
-msgstr "Чекам влез..."
-
-#: resources/ui/clip_editor_inner.ui:29
-msgid "Select a region..."
-msgstr "Избери регион..."
-
-#: resources/ui/splash.ui:10
-msgid "Splash"
-msgstr "Прскање"
-
-#: resources/ui/splash.ui:25
-msgid "Initializing..."
-msgstr "Иницијализација..."
-
-#: resources/ui/tracklist_header.ui:25
-msgid "Track filters & visibility"
-msgstr "Лентови филтри и видливост"
-
-#: resources/ui/tracklist_header.ui:52
-#, fuzzy
-msgid "Tracklist Settings"
-msgstr "Избор на ленти"
-
-#: resources/gtk/help-overlay.ui:29
-msgid "Global Shortcuts"
-msgstr "Општи кратенки"
-
-#: resources/gtk/help-overlay.ui:33
-#: build/data/org.zrythm.Zrythm.gschema.xml:1073
-#: build/data/org.zrythm.Zrythm.gschema.xml:1122
-#: build/data/org.zrythm.Zrythm.gschema.xml:1136
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
-#: build/data/org.zrythm.Zrythm.gschema.xml:1288
-#: build/data/org.zrythm.Zrythm.gschema.xml:1303
-#: build/data/org.zrythm.Zrythm.gschema.xml:1357
-msgid "General"
-msgstr "Општо"
-
-#: resources/gtk/help-overlay.ui:42
-#, fuzzy
-msgid "Keyboard shortcuts"
-msgstr "Тастатурни кратенки"
-
-#: resources/gtk/help-overlay.ui:48
-#, fuzzy
-msgid "Toggle fullscreen"
-msgstr "Влези / излези од приказ на цел екран"
-
-#: resources/gtk/help-overlay.ui:54
-msgid "Quit"
-msgstr "Излези"
-
-#: resources/gtk/help-overlay.ui:63
-msgid "Panels"
-msgstr "Плочи"
-
-#: resources/gtk/help-overlay.ui:66
-msgid "Toggle left panel"
-msgstr "Прикажи лева плоча"
-
-#: resources/gtk/help-overlay.ui:72
-msgid "Toggle right panel"
-msgstr "Прикажи десна плоча"
-
-#: resources/gtk/help-overlay.ui:78
-msgid "Toggle bottom panel"
-msgstr "Прикажи долна плоча"
-
-#: resources/gtk/help-overlay.ui:87
-msgid "Focus"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:90
-msgid "Cycle focus"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:96
-msgid "Cycle focus backwards"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:109
-#, fuzzy
-msgid "New"
-msgstr "Вести"
-
-#: resources/gtk/help-overlay.ui:115
-msgid "Open"
-msgstr "Отвори"
-
-#: resources/gtk/help-overlay.ui:127
-#, fuzzy
-msgid "Save as..."
-msgstr "Зачувај како..."
-
-#: resources/gtk/help-overlay.ui:133
-#, fuzzy
-msgid "Export as..."
-msgstr "Извади како..."
-
-#: resources/gtk/help-overlay.ui:141
-#, fuzzy
-msgid "Clipboard"
-msgstr "Почеток на исечок"
-
-#: resources/gtk/help-overlay.ui:145
-msgid "Copy selection to clipboard"
-msgstr "Копирај го избраното во површината за исечоци"
-
-#: resources/gtk/help-overlay.ui:151
-msgid "Cut selection to clipboard"
-msgstr "Исечи го избраното во површината за исечоци"
-
-#: resources/gtk/help-overlay.ui:157
-msgid "Paste from clipboard"
-msgstr "Залепи од површина за исечоци"
-
-#: resources/gtk/help-overlay.ui:165
-msgid "Undo and Redo"
-msgstr "Поништување и повторување"
-
-#: resources/gtk/help-overlay.ui:169
-msgid "Undo previous command"
-msgstr "Поништи ја предходната команда"
-
-#: resources/gtk/help-overlay.ui:175
-msgid "Redo previous command"
-msgstr "Повтори ја предходната команда"
-
-#: resources/gtk/help-overlay.ui:183 resources/gtk/help-overlay.ui:334
-#, fuzzy
-msgid "Transport"
-msgstr "Повторување во управување"
-
-#: resources/gtk/help-overlay.ui:187
-#, fuzzy
-msgid "Go to start marker"
-msgstr "почеток на јамка (рел.)"
-
-#: resources/gtk/help-overlay.ui:193
-msgid "Go to end marker"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:199
-#, fuzzy
-msgid "Go to previous marker"
-msgstr "Поништи ја предходната команда"
-
-#: resources/gtk/help-overlay.ui:205
-msgid "Go to next marker"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:211 resources/gtk/help-overlay.ui:338
-#, fuzzy
-msgid "Play/Stop"
-msgstr "Стој"
-
-#: resources/gtk/help-overlay.ui:223
-#, fuzzy
-msgid "Arranger Shortcuts"
-msgstr "Тастатурни кратенки"
-
-#: resources/gtk/help-overlay.ui:226
-#, fuzzy
-msgid "Tools"
-msgstr "Алатки"
-
-#: resources/gtk/help-overlay.ui:229
-msgid "Select/Stretch tool"
-msgstr "Алатка за избирање / истегнување"
-
-#: resources/gtk/help-overlay.ui:235
-msgid "Pencil tool"
-msgstr "Алатка - молив"
-
-#: resources/gtk/help-overlay.ui:241
-msgid "Eraser tool"
-msgstr "Алатка за бришење"
-
-#: resources/gtk/help-overlay.ui:247
-msgid "Ramp tool"
-msgstr "Алатка - рампа"
-
-#: resources/gtk/help-overlay.ui:253
-msgid "Audition tool"
-msgstr "Алатка за преслушување"
-
-#: resources/gtk/help-overlay.ui:262
-msgid "Zooming"
-msgstr "Зумирање"
-
-#: resources/gtk/help-overlay.ui:266
-msgid "Zoom in"
-msgstr "Зумирај (доближи)"
-
-#: resources/gtk/help-overlay.ui:272
-msgid "Zoom out"
-msgstr "Одзумирај (оддалечи)"
-
-#: resources/gtk/help-overlay.ui:278
-msgid "Best fit"
-msgstr "Најприлагодено"
-
-#: resources/gtk/help-overlay.ui:284
-msgid "Original size"
-msgstr "Оригинална величина"
-
-#: resources/gtk/help-overlay.ui:292
-msgid "Selections"
-msgstr "Избирања"
-
-#: resources/gtk/help-overlay.ui:302
-msgid "Unselect all"
-msgstr "Поништи избор"
-
-#: resources/gtk/help-overlay.ui:316
-msgid "Quantizing"
-msgstr "Поредување (квантизација)"
-
-#: resources/gtk/help-overlay.ui:326
-msgid "Quantize"
-msgstr "Пореди (квантизирај)"
-
-#: resources/gtk/help-overlay.ui:344
-#, fuzzy
-msgid "Record-play"
-msgstr "Снимај"
-
-#: resources/gtk/help-overlay.ui:352
-#, fuzzy
-msgid "Object Actions"
-msgstr "Име на објект"
-
-#: resources/gtk/help-overlay.ui:356
-#, fuzzy
-msgid "Mute selection"
-msgstr "Спои ги избраните"
-
-#: resources/gtk/help-overlay.ui:362
-#, fuzzy
-msgid "Nudge selection left"
-msgstr "Спои ги избраните"
-
-#: resources/gtk/help-overlay.ui:368
-#, fuzzy
-msgid "Nudge selection right"
-msgstr "Помести десно"
-
-#: resources/gtk/help-overlay.ui:374
-#, fuzzy
-msgid "Delete selection"
-msgstr "Избриши врска"
-
-#: resources/gtk/help-overlay.ui:380
-#, fuzzy
-msgid "Rename selected object"
-msgstr "Неможност да се преименуваат одбраните објект(и)"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
@@ -7496,9 +6374,17 @@ msgid "A list of output devices to route the right monitor output to."
 msgstr ""
 "Список на излезни уреди до кои ќе се насочи излезот на десниот монитор."
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:335
+msgid "Bounce with parents"
+msgstr "Усними заедно со родители"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:336
 msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr "Дали да се усними со родителските ленти (директни излези)."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:340
+msgid "Disable after bounce"
+msgstr "Оневозможи по уснимувањето"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:341
 msgid "Disable track after bouncing."
@@ -7614,6 +6500,10 @@ msgstr "Последна избрана гласност"
 #: build/data/org.zrythm.Zrythm.gschema.xml:398
 msgid "Last set velocity on a MIDI note."
 msgstr "Последна избрана гласност на МИДИ нота."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:402
+msgid "Musical mode"
+msgstr "Музички модус"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:403
 msgid ""
@@ -8419,11 +7309,21 @@ msgstr "Големина на сцени"
 msgid "Scenes panel size when detached."
 msgstr "Големина на плочата за сцени кога е одкачена."
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:929
+#: build/data/org.zrythm.Zrythm.gschema.xml:978
+msgid "Genre"
+msgstr "Жанр"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:930
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr ""
 "Кој жанр да се користи при извоз, ако таквиот запис е поддржан од видот на "
 "датотеката."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:934
+#: build/data/org.zrythm.Zrythm.gschema.xml:983
+msgid "Artist"
+msgstr "Изведувач"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:935
 msgid "Artist to use when exporting, if the file type supports it."
@@ -8431,16 +7331,31 @@ msgstr ""
 "Кои автори да се користат при извоз, ако таквиот запис е поддржан од видот "
 "на датотеката."
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:939
+#: build/data/org.zrythm.Zrythm.gschema.xml:988
+msgid "Title"
+msgstr "Наслов"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:940
 msgid "Title to use when exporting, if the file type supports it."
 msgstr ""
 "Кој наслов да се користи при извоз, ако таквиот запис е поддржан од видот на "
 "датотеката."
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:944
+#: build/data/org.zrythm.Zrythm.gschema.xml:993
+msgid "Time range"
+msgstr "Временски опсег"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Time range to export."
 msgstr "Кој временски опсег да се користи при извоз."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:949
+#: build/data/org.zrythm.Zrythm.gschema.xml:999
+msgid "Format"
+msgstr "Форма"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
 msgid "Format to export to."
@@ -8455,6 +7370,10 @@ msgstr "Урнек на име на датотека"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1005
 msgid "Filename pattern for exported files."
 msgstr "Урнек на име за извезени датотеки."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:959
+msgid "Dither"
+msgstr "тивок шум (dither)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
 msgid "Add low level noise to reduce errors on lower bit depths."
@@ -8569,6 +7488,16 @@ msgstr "Предснимање"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "Number of bars to pre-roll when recording."
 msgstr "Број на целини за предснимување."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1073
+#: build/data/org.zrythm.Zrythm.gschema.xml:1122
+#: build/data/org.zrythm.Zrythm.gschema.xml:1136
+#: build/data/org.zrythm.Zrythm.gschema.xml:1150
+#: build/data/org.zrythm.Zrythm.gschema.xml:1288
+#: build/data/org.zrythm.Zrythm.gschema.xml:1303
+#: build/data/org.zrythm.Zrythm.gschema.xml:1357
+msgid "General"
+msgstr "Општо"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1078
 msgid "Audio backend"
@@ -8876,14 +7805,10 @@ msgstr "Стандардна скрипта"
 msgid "Default script to use in the scripting window."
 msgstr "Стандардна скрипта која ќе се користи во прозорецот за скриптирање."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:6
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
-msgid "Zrythm"
-msgstr "Zrythm"
-
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
-msgid "The Zrythm contributors"
-msgstr "Придонесувачи на Zrythm"
+#, fuzzy
+msgid "The Zrythm project"
+msgstr "Зачувај го проектот"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
 msgid "Digital audio workstation"
@@ -8901,141 +7826,1085 @@ msgstr ""
 "алатки, неограничени можности за автоматизација, моќни функции за миксање, "
 "акордска помош, и поддршка за различни форми на приклучоци и датотеки."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:17
-msgid ""
-"Zrythm can be extended with user scripts written in Scheme or ECMAScript."
-msgstr ""
-"Функционалностите на Zrythm може да се прошират преку кориснички скрипти "
-"напишани во Scheme или ECMAScript."
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:34
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:33
 msgid "Main window with plugins"
 msgstr "Главниот прозорец со приклучоци"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:40
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
 msgstr "ДАРс"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:54
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
 msgid "Changed:"
 msgstr "Измени:"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 #, fuzzy
-msgid "Various optimizations"
-msgstr "Мали подобрувања"
+msgid "Re-generate built-in plugins with latest faust"
+msgstr "Повторно создај ги здружените приклучоци со последниот фауст"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Generate the about dialog from appdata XML"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
-msgid "Fixed:"
-msgstr "Поправено:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
-msgid "Fix RtAudio device names not being fetched correctly"
+msgid "Update some information in the about dialog and in the appdata XML"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-msgid "Fix hardware menu button not disposing its child when deleted"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid ""
-"Fix unnecessary pausing and attack part of samples being clipped in the file "
-"browser (#3323)"
+"GTK: Don't force GL renderer on Windows (revert change in previous release)"
 msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
-#, fuzzy
-msgid "Removed:"
-msgstr "Одстрани"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-msgid "Drop pcre dependency (only pcre2 needed now)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+msgid "Added:"
+msgstr "Додадено:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Add primary menu to the header bar"
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid "Port MIDI function dialog rows to new libadwaita widgets"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid "Port plugin/file browsers to AdwToolbarView"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#, fuzzy
+msgid "Change some global keyboard shortcuts"
+msgstr "Тастатурни кратенки"
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
-msgid "Support ctrl + numpad -/+ for zooming in/out"
+msgid "Move visualizers to bottom bar"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid ""
-"Update Spanish, French, Japanese, German, Portuguese (Brasil), Interlingua, "
-"Russian, Catalan translations"
+"Merge header bar toggles and secondary global toolbar into the main toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid ""
+"Redesign/merge first-run screen, welcome dialog, project selector and "
+"project creator into a new greeter window"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Only set header bar color on main project window"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Mac: don't try to force window on top"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#, fuzzy
+msgid "Change some icons"
+msgstr "Промени икона"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Don't style window close button"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+msgid "Use AdwToolbarView for main project window"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-msgid "Added:"
-msgstr "Додадено:"
+msgid "Add gradient to progress bars and padding to progress bar captions"
+msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-msgid "Allow setting custom paths via the UI for all plugin formats (#4138)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+msgid "GTK: Force old GL renderer on Windows"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
-msgid "User manual: mention how to enable timeline loop range (#4145)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-msgid ""
-"Go to previous point when pressing transport backward button twice quickly "
-"during playback (#3355)"
-msgstr ""
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
+msgstr "Поправено:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
-msgid "Remember tracklist width per project (#4091)"
+msgid "Fix error when copy-pasting audio regions after a BPM change (#4993)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-msgid "Add audio function to copy left channel to right channel (##4075)"
+msgid ""
+"Zrythm is now fully REUSE 3.0 compliant (fixed license issues reported by "
+"`reuse lint`)"
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#, fuzzy
+msgid "Removed:"
+msgstr "Одстрани"
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
-msgid "Draw each audio channel individually in audio regions"
+msgid "Remove Zrythm logo from header bar"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
-msgid ""
-"Change (previously broken) panel visibility toggle shortcuts to Shift+F10~12 "
-"(#4131)"
+msgid "Remove some buttons that used to be in the main and secondary toolbars"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-msgid ""
-"Fix attempting to go to previous marker during playback not working when cue "
-"point is at the current marker"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+msgid "Remove scripting interface button (out of scope for v1)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-msgid ""
-"Fix various timing issues during audio processing that caused occasional "
-"errors (#3346)"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+msgid "Remove dependency on breeze icons"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-msgid "Don't whitelist any plugins on Wayland"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+msgid "Support editing the curve for multiple automation points (#4991)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+msgid "Add outline to object-stretch cursors"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+msgid "Update Swedish translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+msgid "Update shortcuts window (#4110)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid ""
-"Fix strange behavior when attempting to delete a directory bookmark (#4948)"
+"Send normal note offs instead of \"all notes off\" at region loop and end "
+"boundaries (#4036)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-msgid "Fix plugin moving/copying being broken"
+msgid "Use lowercase for FLAC extension when exporting FLAC files"
 msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+msgid "Port MIDI function dialog to AdwToolbarView"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+msgid "Fix clipboard paste being broken"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+msgid ""
+"Fix chord index not being saved with chord objects in project files (#4995)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+#, fuzzy
+msgid "Fix error when closing the project while a chord object is selected"
+msgstr ""
+"Поправи ја грешката при зачувување на проект кој содржи приклучок без излези"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+msgid "Fix error when copy-moving objects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+msgid "Fix incorrect MIDI pitchbend handling (#3318, #4000, #4997)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+msgid ""
+"Fix MIDI channel pressure handling when automating from its automation lane"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+msgid "Remove musical mode toggle from timeline toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+msgid "Remove option to overlay text value for automation points"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+msgid "Allow toggling bypass on multiple plugins (#4853)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
+msgid "Make track sends available to modulator outputs (#4819)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
+msgid "Add button to show instrument UI in mixer channels (#4422)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
+msgid "Show markers in editor ruler (#4777)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
+#, fuzzy
+msgid "Allow changing plugin load behavior (#4407)"
+msgstr "Неуспешна промена на боја"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
+msgid "Display bridge status in plugin slots"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
+msgid "Add option to auto-select tracks when selecting regions (#4201)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+msgid "Display how many new plugins were detected on each run"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
+msgid "MPMC queue: switch to C11 atomics implementation"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
+#, fuzzy
+msgid "Various optimizations"
+msgstr "Мали подобрувања"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
+msgid "Skip engine pause/resume when engine is already stopped"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
+msgid "Make fader buttons smaller"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
+msgid "Show \"Unimplemented\" message when clicking channel settings button"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
+msgid "Make stretch mode a separate button in the toolbox"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
+msgid "Graphviz dependency is now disabled by default"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
+msgid "Modernize some preferences rows using new libadwaita widgets"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
+msgid "Show more precise positions in event viewer"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
+msgid "Add outline to some cursors"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
+msgid ""
+"Fix DnD from the plugin browser being broken when a plugin is selected in "
+"the mixer (#4974)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
+msgid "Fix specified plugin bridge mode being ignored in some cases"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
+msgid ""
+"Ignore carla parameters that are not found in input ports on project load "
+"(fixes error being thrown when this happens)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
+msgid "Fix stretch mode icon (#3991)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
+msgid ""
+"Fix original objects disappearing when copy-moving their newly created "
+"objects offscreen (#3303)"
+msgstr ""
+
+#~ msgid "Setting up main window"
+#~ msgstr "Нагодувања на главниот прозорец"
+
+#~ msgid "Waiting for project"
+#~ msgstr "Чекам проект"
+
+#~ msgid "Failed to load project"
+#~ msgstr "Неуспешно вчитување на проект"
+
+#~ msgid "Open Project"
+#~ msgstr "Отвори проект"
+
+#~ msgid "Log viewer"
+#~ msgstr "Прегледник на записник"
+
+#~ msgid "Scripting interface"
+#~ msgstr "Околина за скриптирање"
+
+#, c-format
+#~ msgid "About %s"
+#~ msgstr "За %s"
+
+#~ msgid "About Zrythm"
+#~ msgstr "За Zrythm"
+
+#~ msgid "Chat (Matrix)"
+#~ msgstr "Муабет (Матрикс)"
+
+#~ msgid "Manual"
+#~ msgstr "Упатство"
+
+#~ msgid "Keyboard Shortcuts"
+#~ msgstr "Тастатурни кратенки"
+
+#~ msgid "Donate"
+#~ msgstr "Донирај"
+
+#~ msgid "Report a Bug"
+#~ msgstr "Пријави грешка"
+
+#~ msgid "Toggle Status Bar"
+#~ msgstr "(Вк/иск)лучи ја статусната лента"
+
+#~ msgid "Fullscreen"
+#~ msgstr "На цел екран"
+
+#~ msgid "New Project"
+#~ msgstr "Нов проект"
+
+#~ msgid "Save As"
+#~ msgstr "Зачувај како"
+
+#~ msgid "Export Graph"
+#~ msgstr "Извади графикон"
+
+#~ msgid "Cut"
+#~ msgstr "Исечи"
+
+#~ msgid "Copy"
+#~ msgstr "Копирај"
+
+#~ msgid "Paste"
+#~ msgstr "Залепи"
+
+#~ msgid "Clear selection"
+#~ msgstr "Поништи избрано"
+
+#~ msgid "Select all"
+#~ msgstr "Избери сѐ"
+
+#~ msgid "Loop selection"
+#~ msgstr "Повторувај го избраното"
+
+#~ msgid "Saved"
+#~ msgstr "Зачувано"
+
+#~ msgid "Project Progress"
+#~ msgstr "Проектен напредок"
+
+#~ msgid "Create New Project"
+#~ msgstr "Создај нов проект"
+
+#~ msgid "Exporting..."
+#~ msgstr "Извоз..."
+
+#~ msgid "Opens the containing directory"
+#~ msgstr "Ја отвора содржателната папка"
+
+#~ msgid "What did you do?"
+#~ msgstr "Што направи?"
+
+#~ msgid ""
+#~ "Please enter as many details as possible (such as steps to reproduce)"
+#~ msgstr ""
+#~ "Ве молиме внесете што е можно повеќе детали (како, на пр., чекори за "
+#~ "репродукција)"
+
+#~ msgid "Error details"
+#~ msgstr "Детали за грешка"
+
+#~ msgid "Backtrace"
+#~ msgstr "Позадински записник"
+
+#~ msgid "Log"
+#~ msgstr "Записник"
+
+#~ msgid "System info"
+#~ msgstr "Инфо од системот"
+
+#~ msgid "_Close"
+#~ msgstr "_Затвори"
+
+#, fuzzy
+#~ msgid "Submit on _GitLab"
+#~ msgstr "Поднеси на _SourceHut"
+
+#~ msgid "Preview and send _automatically (privately/recommended)"
+#~ msgstr "Прегледај и испрати _автоматски (приватно и препорачано)"
+
+#~ msgid "_Open Selected"
+#~ msgstr "_Отвори го избраното"
+
+#~ msgid "_Create"
+#~ msgstr "_Создај"
+
+#~ msgid "No project selected"
+#~ msgstr "Не е избран проект"
+
+#~ msgid "Failed to load project. Will create a new one instead."
+#~ msgstr "Неможност да се вчита проектот. Ќе се создаде нов."
+
+#~ msgid "Root Note"
+#~ msgstr "Нота-корен"
+
+#~ msgid "C"
+#~ msgstr "C (Ц)"
+
+#~ msgid "D♭"
+#~ msgstr "D♭ (дес)"
+
+#~ msgid "D"
+#~ msgstr "D (Д)"
+
+#~ msgid "E♭"
+#~ msgstr "E♭ (ес)"
+
+#~ msgid "E"
+#~ msgstr "Е"
+
+#~ msgid "F"
+#~ msgstr "F (Ф)"
+
+#~ msgid "F♯"
+#~ msgstr "F♯ (фис)"
+
+#~ msgid "G"
+#~ msgstr "G (Г)"
+
+#~ msgid "A♭"
+#~ msgstr "A♭ (аес)"
+
+#~ msgid "A"
+#~ msgstr "А"
+
+#~ msgid "B♭"
+#~ msgstr "B♭ (бес)"
+
+#~ msgid "B"
+#~ msgstr "B (Б)"
+
+#~ msgid "maj"
+#~ msgstr "дур"
+
+#~ msgid "min"
+#~ msgstr "мол"
+
+#~ msgid "dim"
+#~ msgstr "спуштено (dim)"
+
+#~ msgid "sus4"
+#~ msgstr "задржано4 (sus4)"
+
+#~ msgid "sus2"
+#~ msgstr "задржано2 (sus2)"
+
+#~ msgid "aug"
+#~ msgstr "надградено (aug)"
+
+#~ msgid "Accent"
+#~ msgstr "Акцент"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "j7"
+#~ msgstr "ј7"
+
+#~ msgid "Bass Note"
+#~ msgstr "Бас нота"
+
+#~ msgid "In scale"
+#~ msgstr "Во скала"
+
+#~ msgid "Creator"
+#~ msgstr "Создател"
+
+#~ msgid "Diatonic"
+#~ msgstr "Диатоника"
+
+#~ msgid "TODO keyboard"
+#~ msgstr "Тастатура за ОБВРСКИ"
+
+#~ msgid "TODO"
+#~ msgstr "ОБВРСКИ"
+
+#~ msgid "Circle of Fifths"
+#~ msgstr "Круг на петки"
+
+#~ msgid "Play/Pause"
+#~ msgstr "Пушти / Пауза"
+
+#~ msgid "Stop"
+#~ msgstr "Стој"
+
+#~ msgid "Ports found"
+#~ msgstr "Пронајдени порти"
+
+#~ msgid "Rescan"
+#~ msgstr "Пре-сканирај"
+
+#~ msgid "Scan again for MIDI controllers"
+#~ msgstr "Повторно сканирај за МИДИ контролери"
+
+#~ msgid "Toggle Left Panel"
+#~ msgstr "Прикажи лева плоча"
+
+#~ msgid "Toggle Right Panel"
+#~ msgstr "Прикажи десна плоча"
+
+#~ msgid "Channel settings"
+#~ msgstr "Поставки на канал"
+
+#~ msgid "News"
+#~ msgstr "Вести"
+
+#~ msgid "Snap to grid"
+#~ msgstr "Прилепи на мрежа"
+
+#~ msgid "Keep offset"
+#~ msgstr "Задржи изместување"
+
+#~ msgid "Snap to events"
+#~ msgstr "Прилепи на настани"
+
+#~ msgid "Note length"
+#~ msgstr "Нотна должина"
+
+#~ msgid "t"
+#~ msgstr "т"
+
+#~ msgid "Triplet"
+#~ msgstr "Триплет"
+
+#~ msgid "Dotted"
+#~ msgstr "по точки"
+
+#~ msgid "Adaptive length"
+#~ msgstr "Прилагодлива должина"
+
+#~ msgid "Snap"
+#~ msgstr "Прилепување"
+
+#~ msgid "Link"
+#~ msgstr "Врзување"
+
+#~ msgid "Link length to snap setting"
+#~ msgstr "Врзи должина со поставките за прилепување"
+
+#~ msgid "Use last created object's length"
+#~ msgstr "Користи ја должината на последно-создадениот објект"
+
+#~ msgid "Bookmarks"
+#~ msgstr "Обележувачи"
+
+#, fuzzy
+#~ msgid "Set Up Zrythm"
+#~ msgstr "Намести го Zrythm"
+
+#~ msgid "Return to cue point on stop"
+#~ msgstr "Врати кон појдовната точка при застанување"
+
+#~ msgid "Play"
+#~ msgstr "Пушти"
+
+#~ msgid "Backward"
+#~ msgstr "Наназад"
+
+#~ msgid "Forward"
+#~ msgstr "Нанапред"
+
+#~ msgid "Loop"
+#~ msgstr "Јамка (врти)"
+
+#~ msgid "Event Viewer"
+#~ msgstr "Прегледник на настани"
+
+#~ msgid "Collection"
+#~ msgstr "Збир"
+
+#, fuzzy
+#~ msgid "Add Collection"
+#~ msgstr "Додај во збир"
+
+#, fuzzy
+#~ msgid "Rename Collection"
+#~ msgstr "Збир"
+
+#, fuzzy
+#~ msgid "Delete Collection"
+#~ msgstr "Избриши врска"
+
+#~ msgid "Author"
+#~ msgstr "Автор"
+
+#~ msgid "Category"
+#~ msgstr "Категорија"
+
+#~ msgid "Protocol"
+#~ msgstr "Протокол"
+
+#~ msgid "Sort alphabetically"
+#~ msgstr "Подреди по азбучен ред"
+
+#~ msgid "Sort by recently used"
+#~ msgstr "Подреди по последно користење"
+
+#~ msgid "Sort by most used"
+#~ msgstr "Подреди по најчесто користење"
+
+#~ msgid "Project"
+#~ msgstr "Проект"
+
+#~ msgid "View"
+#~ msgstr "Поглед"
+
+#~ msgid "Help"
+#~ msgstr "Помош"
+
+#~ msgid "MIDI in activity"
+#~ msgstr "МИДИ во активност"
+
+#, fuzzy
+#~ msgid "Live Waveform Indicator"
+#~ msgstr "Прикажувач на бранови форми во живо"
+
+#~ msgid "Toggle ghost note visibility"
+#~ msgstr "Видливост на привидни ноти"
+
+#~ msgid "Toggle event viewer"
+#~ msgstr "Прикажи прегледник на настани"
+
+#~ msgid "Flip"
+#~ msgstr "Преврти"
+
+#~ msgid "Horizontal"
+#~ msgstr "Хоризонтално"
+
+#~ msgid "Vertical"
+#~ msgstr "Вертикално"
+
+#~ msgid "Parent directory"
+#~ msgstr "Матична папка"
+
+#~ msgid "Fishbowl"
+#~ msgstr "Аквариум"
+
+#~ msgid "Quantize Options"
+#~ msgstr "Избор за поредување (квантизација)"
+
+#~ msgid "Quantize to"
+#~ msgstr "Пореди на"
+
+#~ msgid "Adjust"
+#~ msgstr "Прилагоди"
+
+#~ msgid "Amount"
+#~ msgstr "Количество"
+
+#~ msgid "Swing"
+#~ msgstr "Замавнување"
+
+#~ msgid "Randomization"
+#~ msgstr "Случајност (рандомизација)"
+
+#~ msgid "_Quantize"
+#~ msgstr "_Пореди"
+
+#~ msgid "Root Key"
+#~ msgstr "Клуч"
+
+#~ msgid "Scale"
+#~ msgstr "Скала"
+
+#~ msgid "Scale - Other"
+#~ msgstr "Скала - други"
+
+#~ msgid "Toggle Bottom Panel"
+#~ msgstr "Прикажи долна плоча"
+
+#~ msgid "Select a Project"
+#~ msgstr "Избери проект"
+
+#~ msgid "Create New"
+#~ msgstr "Создади нов"
+
+#~ msgid "Open from _Path"
+#~ msgstr "Отвори од _Патека"
+
+#~ msgid "Show/hide UI"
+#~ msgstr "Прикажи / скриј лице"
+
+#~ msgid "Control this automation track is for"
+#~ msgstr "Контрола на оваа автомациона лента е за"
+
+#~ msgid "Mute automation track"
+#~ msgstr "Занеми автомациона лента"
+
+#~ msgid "RW"
+#~ msgstr "Читање и запишување на автомација"
+
+#~ msgid "Write automation"
+#~ msgstr "Запишувај автомација"
+
+#~ msgid "Read automation"
+#~ msgstr "Читај автомација"
+
+#~ msgid "0.0"
+#~ msgstr "0,0"
+
+#~ msgid "Remove automation track"
+#~ msgstr "Одстрани автомациона лента"
+
+#~ msgid "Add automation track"
+#~ msgstr "Додај автомациона лента"
+
+#~ msgid "Transpose"
+#~ msgstr "Премести"
+
+#~ msgid "Enforce scale"
+#~ msgstr "Присили примена на скала"
+
+#~ msgid "Export As..."
+#~ msgstr "Извади како..."
+
+#~ msgid "Metadata"
+#~ msgstr "Метаподатоци"
+
+#~ msgid "Bit Depth"
+#~ msgstr "Битова длабочина"
+
+#~ msgid "Filename Pattern"
+#~ msgstr "Шема на име на датотека"
+
+#~ msgid "Mixdown or Stems"
+#~ msgstr "Умиксано или во изворни аудио стебла"
+
+#~ msgid ""
+#~ "Whether to export the selected tracks as a single mixdown file or each "
+#~ "track in its own file."
+#~ msgstr ""
+#~ "Дали да се изведат одбраните ленти како умиксана датотека, или секоја "
+#~ "лента во посебна датотека."
+
+#~ msgid "Only events inside this time range will be exported."
+#~ msgstr "Ќе се извезат само настаните во овој временски опсег."
+
+#~ msgid "Custom time range"
+#~ msgstr "Прилагоден временски опсег"
+
+#~ msgid "Track Selection"
+#~ msgstr "Избор на ленти"
+
+#~ msgid "Output"
+#~ msgstr "Излез"
+
+#~ msgid "Export Lanes as Tracks"
+#~ msgstr "Извези патеки како ленти"
+
+#~ msgid "Select a port..."
+#~ msgstr "Избери порта..."
+
+#~ msgid "Port"
+#~ msgstr "Порта"
+
+#~ msgid "region_name"
+#~ msgstr "име_на_регион"
+
+#~ msgid "Enter region name..."
+#~ msgstr "Внеси име на регион..."
+
+#~ msgid "Muted"
+#~ msgstr "Занемено"
+
+#~ msgid "Toggle Top Panel"
+#~ msgstr "Прикажи горна плоча"
+
+#, fuzzy
+#~ msgid "Filters"
+#~ msgstr "Филтер"
+
+#, fuzzy
+#~ msgid "Info"
+#~ msgstr "Инфо за порта"
+
+#~ msgid "label"
+#~ msgstr "етикета"
+
+#~ msgid "Please enter a value"
+#~ msgstr "Ве молиме внесете вредност"
+
+#~ msgid "Remove range"
+#~ msgstr "Одстрани опсег"
+
+#~ msgid "Merge selections"
+#~ msgstr "Спои ги избраните"
+
+#~ msgid "No modulators"
+#~ msgstr "Без изменувачи (модулатори)"
+
+#~ msgid "Drag and drop a modulator plugin from the plugin browser"
+#~ msgstr ""
+#~ "Влечи и остави приклучок-изменувач (модулатор) од прелистувачот на "
+#~ "приклучоци"
+
+#~ msgid "Log Level"
+#~ msgstr "Ниво на записник"
+
+#~ msgid "Save As..."
+#~ msgstr "Зачувај како..."
+
+#~ msgid "Pitch Wheel"
+#~ msgstr "Тркало на нотни висини"
+
+#~ msgid "Mod Wheel"
+#~ msgstr "Тркало на изменувачи (модулатори)"
+
+#~ msgid "Aftertouch"
+#~ msgstr "Допир одпосле"
+
+#~ msgid "Quick Quantize"
+#~ msgstr "Брзо подредување (квантизација)"
+
+#~ msgid "Full Quantize..."
+#~ msgstr "Целосно подредување (квантизација) ..."
+
+#~ msgid "Bounce Options"
+#~ msgstr "Опции за уснимување"
+
+#~ msgid "Tail"
+#~ msgstr "Остаток (опашка)"
+
+#~ msgid "ms"
+#~ msgstr "мс"
+
+#~ msgid "Cancel"
+#~ msgstr "Одкажи"
+
+#~ msgid "Amin 7"
+#~ msgstr "А мол 7"
+
+#~ msgid "Packs"
+#~ msgstr "Пакувања"
+
+#~ msgid "Scroll when playhead reaches the edge"
+#~ msgstr "Помести приказ кога позиционата глава ќе го премине работ"
+
+#~ msgid "Follow playhead"
+#~ msgstr "Следи ја позиционата глава"
+
+#~ msgid "No clip selected"
+#~ msgstr "Не е одбран исечок"
+
+#~ msgid "Select a clip from the timeline"
+#~ msgstr "Избери исечок од временската линија"
+
+#~ msgid "Bind MIDI CC"
+#~ msgstr "Поврзи МИДИ CC"
+
+#~ msgid "Press a key or move a knob on your MIDI device"
+#~ msgstr "Притисни копче или придвижи потенциометар на твојот МИДИ уред"
+
+#~ msgid "Waiting for input..."
+#~ msgstr "Чекам влез..."
+
+#~ msgid "Select a region..."
+#~ msgstr "Избери регион..."
+
+#~ msgid "Splash"
+#~ msgstr "Прскање"
+
+#~ msgid "Track filters & visibility"
+#~ msgstr "Лентови филтри и видливост"
+
+#, fuzzy
+#~ msgid "Tracklist Settings"
+#~ msgstr "Избор на ленти"
+
+#~ msgid "Global Shortcuts"
+#~ msgstr "Општи кратенки"
+
+#, fuzzy
+#~ msgid "Toggle fullscreen"
+#~ msgstr "Влези / излези од приказ на цел екран"
+
+#~ msgid "Quit"
+#~ msgstr "Излези"
+
+#~ msgid "Panels"
+#~ msgstr "Плочи"
+
+#~ msgid "Toggle left panel"
+#~ msgstr "Прикажи лева плоча"
+
+#~ msgid "Toggle right panel"
+#~ msgstr "Прикажи десна плоча"
+
+#~ msgid "Toggle bottom panel"
+#~ msgstr "Прикажи долна плоча"
+
+#, fuzzy
+#~ msgid "New"
+#~ msgstr "Вести"
+
+#~ msgid "Open"
+#~ msgstr "Отвори"
+
+#, fuzzy
+#~ msgid "Save as..."
+#~ msgstr "Зачувај како..."
+
+#, fuzzy
+#~ msgid "Export as..."
+#~ msgstr "Извади како..."
+
+#, fuzzy
+#~ msgid "Clipboard"
+#~ msgstr "Почеток на исечок"
+
+#~ msgid "Copy selection to clipboard"
+#~ msgstr "Копирај го избраното во површината за исечоци"
+
+#~ msgid "Cut selection to clipboard"
+#~ msgstr "Исечи го избраното во површината за исечоци"
+
+#~ msgid "Paste from clipboard"
+#~ msgstr "Залепи од површина за исечоци"
+
+#~ msgid "Undo and Redo"
+#~ msgstr "Поништување и повторување"
+
+#~ msgid "Undo previous command"
+#~ msgstr "Поништи ја предходната команда"
+
+#~ msgid "Redo previous command"
+#~ msgstr "Повтори ја предходната команда"
+
+#, fuzzy
+#~ msgid "Transport"
+#~ msgstr "Повторување во управување"
+
+#, fuzzy
+#~ msgid "Go to start marker"
+#~ msgstr "почеток на јамка (рел.)"
+
+#, fuzzy
+#~ msgid "Go to previous marker"
+#~ msgstr "Поништи ја предходната команда"
+
+#, fuzzy
+#~ msgid "Play/Stop"
+#~ msgstr "Стој"
+
+#, fuzzy
+#~ msgid "Arranger Shortcuts"
+#~ msgstr "Тастатурни кратенки"
+
+#, fuzzy
+#~ msgid "Tools"
+#~ msgstr "Алатки"
+
+#~ msgid "Select/Stretch tool"
+#~ msgstr "Алатка за избирање / истегнување"
+
+#~ msgid "Pencil tool"
+#~ msgstr "Алатка - молив"
+
+#~ msgid "Eraser tool"
+#~ msgstr "Алатка за бришење"
+
+#~ msgid "Ramp tool"
+#~ msgstr "Алатка - рампа"
+
+#~ msgid "Audition tool"
+#~ msgstr "Алатка за преслушување"
+
+#~ msgid "Zooming"
+#~ msgstr "Зумирање"
+
+#~ msgid "Zoom in"
+#~ msgstr "Зумирај (доближи)"
+
+#~ msgid "Zoom out"
+#~ msgstr "Одзумирај (оддалечи)"
+
+#~ msgid "Best fit"
+#~ msgstr "Најприлагодено"
+
+#~ msgid "Original size"
+#~ msgstr "Оригинална величина"
+
+#~ msgid "Selections"
+#~ msgstr "Избирања"
+
+#~ msgid "Unselect all"
+#~ msgstr "Поништи избор"
+
+#~ msgid "Quantizing"
+#~ msgstr "Поредување (квантизација)"
+
+#~ msgid "Quantize"
+#~ msgstr "Пореди (квантизирај)"
+
+#, fuzzy
+#~ msgid "Record-play"
+#~ msgstr "Снимај"
+
+#, fuzzy
+#~ msgid "Object Actions"
+#~ msgstr "Име на објект"
+
+#, fuzzy
+#~ msgid "Mute selection"
+#~ msgstr "Спои ги избраните"
+
+#, fuzzy
+#~ msgid "Nudge selection left"
+#~ msgstr "Спои ги избраните"
+
+#, fuzzy
+#~ msgid "Nudge selection right"
+#~ msgstr "Помести десно"
+
+#, fuzzy
+#~ msgid "Delete selection"
+#~ msgstr "Избриши врска"
+
+#, fuzzy
+#~ msgid "Rename selected object"
+#~ msgstr "Неможност да се преименуваат одбраните објект(и)"
+
+#~ msgid "The Zrythm contributors"
+#~ msgstr "Придонесувачи на Zrythm"
+
+#~ msgid ""
+#~ "Zrythm can be extended with user scripts written in Scheme or ECMAScript."
+#~ msgstr ""
+#~ "Функционалностите на Zrythm може да се прошират преку кориснички скрипти "
+#~ "напишани во Scheme или ECMAScript."
 
 #~ msgid "Create new project"
 #~ msgstr "Создај нов проект"
-
-#~ msgid "Open a project"
-#~ msgstr "Отвори проект"
-
-#~ msgid "Save the project"
-#~ msgstr "Зачувај го проектот"
 
 #~ msgid "Copy and Paste"
 #~ msgstr "Копирање и лепење"
@@ -9322,20 +9191,12 @@ msgstr ""
 #~ "Create standard project directories when creating a new blank project"
 #~ msgstr "Создади стандардни проекти папки при создавање на нов празен проект"
 
-#~ msgid "Re-generate bundled plugins with latest faust"
-#~ msgstr "Повторно создај ги здружените приклучоци со последниот фауст"
-
 #~ msgid "Be more specific in some undoable action strings"
 #~ msgstr ""
 #~ "Биди поспецифичен во некои акциони текстови кои не можат да се поништат"
 
 #~ msgid "Don't block when showing error messages"
 #~ msgstr "Не блокирај при прикажување на пораки за грешки"
-
-#~ msgid "Fix error when saving a project with a plugin without outputs"
-#~ msgstr ""
-#~ "Поправи ја грешката при зачувување на проект кој содржи приклучок без "
-#~ "излези"
 
 #, c-format
 #~ msgid "Failed to clone track: %s"
