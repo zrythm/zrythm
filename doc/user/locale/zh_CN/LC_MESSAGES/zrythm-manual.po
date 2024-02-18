@@ -13,9 +13,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
-"PO-Revision-Date: 2023-11-05 06:19+0000\n"
-"Last-Translator: David Jiang <david.jiang2024@gmail.com>\n"
+"POT-Creation-Date: 2024-02-18 12:38+0900\n"
+"PO-Revision-Date: 2024-02-03 20:45+0000\n"
+"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
 "Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
@@ -390,11 +390,11 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
-msgstr ""
+msgstr "自定义 packs 可以右键重命名或删除"
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
-msgstr ""
+msgstr "重命名或删除自定义和弦预设 pack"
 
 #: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
@@ -402,7 +402,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:91
 msgid "Saving Presets"
-msgstr ""
+msgstr "保存预设中"
 
 #: ../../chords-and-scales/chord-pad.rst:93
 msgid ""
@@ -614,7 +614,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:13
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "连接 MIDI 和 音频设备"
 
 #: ../../configuration/device-setup.rst:15
 msgid ""
@@ -625,7 +625,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
-msgstr ""
+msgstr "JACK/PipeWire"
 
 #: ../../configuration/device-setup.rst:25
 msgid ""
@@ -635,8 +635,9 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:33
+#, fuzzy
 msgid "Device connections in Qjackctl"
-msgstr ""
+msgstr "在 Qjackctl 连接设备"
 
 #: ../../configuration/device-setup.rst:35
 msgid ""
@@ -1271,7 +1272,7 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:72
 #, fuzzy
 msgid "Zrythm freezes"
-msgstr "zrythm"
+msgstr "Zrythm freezes"
 
 #: ../../contributing/reporting-bugs.rst:75
 msgid "OS and Zrythm Version Information"
@@ -4383,7 +4384,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:66
 msgid "Mono"
-msgstr ""
+msgstr "单声道"
 
 #: ../../glossary/intro.rst:103
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -4545,65 +4546,81 @@ msgid ""
 "Theodotou in the United Kingdom.*"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:11
+#: ../../invoking-from-command-line/intro.rst:12
 msgid "Command Line"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:13
+#: ../../invoking-from-command-line/intro.rst:14
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
 msgstr "zrythm"
 
-#: ../../invoking-from-command-line/intro.rst:18
+#: ../../invoking-from-command-line/intro.rst:19
 msgid "Zrythm executable."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:24
+#: ../../invoking-from-command-line/intro.rst:25
 msgid "Print a list of available options."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:28
+#: ../../invoking-from-command-line/intro.rst:29
 msgid "Pretty-print the output (where applicable)."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:32
+#: ../../invoking-from-command-line/intro.rst:33
 msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 msgid "Reset user settings to their default values."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:43
+#: ../../invoking-from-command-line/intro.rst:44
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:48
+#: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:53
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Override the audio backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid "BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
+msgid "Override the MIDI backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:62
+msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:66
 msgid "Print version information."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:68
 msgid "Prints the Zrythm version."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:71
 msgid "zrythm_launch"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -5240,6 +5257,7 @@ msgid "Sets the settings to use when recording."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Play"
 msgstr "播放"
 
@@ -5250,6 +5268,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:49
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop"
 msgstr "停止"
 
@@ -5432,16 +5451,8 @@ msgstr ""
 msgid "File auditioning controls"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
-msgid "|icon_media-playback-start| Play"
-msgstr ""
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
-msgid "|icon_media-playback-stop| Stop"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:100
@@ -8408,7 +8419,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
-msgstr "聊天"
+msgstr "交流讨论"
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Join the Zrythm chatroom on Matrix."

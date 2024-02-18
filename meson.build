@@ -25,6 +25,7 @@ project (
 gnome = import ('gnome')
 fs = import ('fs')
 cmake = import ('cmake')
+i18n = import('i18n')
 cmake_opts = cmake.subproject_options ()
 cmake_opts.add_cmake_defines ({
   'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
@@ -523,6 +524,7 @@ test_cflags = [
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
   '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
   '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
+  '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
 
 # not supported on windows

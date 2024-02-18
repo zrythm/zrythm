@@ -1,13 +1,6 @@
 # SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-i18n = import('i18n')
-
-# define GETTEXT_PACKAGE
-add_project_arguments (
-  '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
-  language:'c',
-  )
 languages_for_gettext = []
 foreach l_key, l_mapping : locales
   if l_key != 'en'

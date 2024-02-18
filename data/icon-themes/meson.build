@@ -26,5 +26,5 @@ meson.add_install_script (
 # install app icon
 install_data (
   'zrythm-dark/scalable/apps/zrythm.svg',
-  install_dir:
-    datadir / 'icons/hicolor/scalable/apps')
+  rename: 'org.zrythm.Zrythm.svg',
+  install_dir: datadir / 'icons/hicolor/scalable/apps')

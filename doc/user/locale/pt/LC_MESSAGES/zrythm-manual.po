@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:38+0900\n"
 "PO-Revision-Date: 2023-01-10 23:59+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -5184,11 +5184,11 @@ msgstr ""
 "*Zrythm e o logotipo Zrythm são marcas registadas de Alexandros Theodotou no "
 "Reino Unido.*"
 
-#: ../../invoking-from-command-line/intro.rst:11
+#: ../../invoking-from-command-line/intro.rst:12
 msgid "Command Line"
 msgstr "Linha de comando"
 
-#: ../../invoking-from-command-line/intro.rst:13
+#: ../../invoking-from-command-line/intro.rst:14
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
@@ -5196,25 +5196,25 @@ msgstr ""
 "Zrythm vem com algumas utilidades abaixo que podem ser utilizadas do :term:"
 "`CLI`."
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
 msgstr "zrythm"
 
-#: ../../invoking-from-command-line/intro.rst:18
+#: ../../invoking-from-command-line/intro.rst:19
 msgid "Zrythm executable."
 msgstr "Executável Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:24
+#: ../../invoking-from-command-line/intro.rst:25
 #, fuzzy
 msgid "Print a list of available options."
 msgstr "Imprime uma lista de opções disponíveis."
 
-#: ../../invoking-from-command-line/intro.rst:28
+#: ../../invoking-from-command-line/intro.rst:29
 #, fuzzy
 msgid "Pretty-print the output (where applicable)."
 msgstr "Imprima bem a saída (quando aplicável)."
 
-#: ../../invoking-from-command-line/intro.rst:32
+#: ../../invoking-from-command-line/intro.rst:33
 #, fuzzy
 msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
@@ -5223,13 +5223,13 @@ msgstr ""
 "Imprime todas as configurações do utilizador. Pode ser combinado com :option:"
 "`--pretty` para obter uma saída bem impressa, como a seguir."
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 #, fuzzy
 msgid "Reset user settings to their default values."
 msgstr ""
 "Redefine as configurações do utilizador para os valores predefinidos deles."
 
-#: ../../invoking-from-command-line/intro.rst:43
+#: ../../invoking-from-command-line/intro.rst:44
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
@@ -5238,24 +5238,41 @@ msgstr ""
 "Só afeta as definições impressas com :option:`-p`. Isso *não* afetará "
 "nenhuns ficheiros no :term:`Zrythm user path`."
 
-#: ../../invoking-from-command-line/intro.rst:48
+#: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
 msgstr "Isto limpará TODAS as suas configurações de utilizador."
 
-#: ../../invoking-from-command-line/intro.rst:53
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Override the audio backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid "BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
+#, fuzzy
+msgid "Override the MIDI backend to use."
+msgstr "O backend MIDI a ser usado para o motor de áudio."
+
+#: ../../invoking-from-command-line/intro.rst:62
+msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:66
 #, fuzzy
 msgid "Print version information."
 msgstr "Informações de backend"
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:68
 msgid "Prints the Zrythm version."
 msgstr "Imprime a versão do Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:71
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -6023,6 +6040,7 @@ msgstr ""
 "Fontes de entrada de áudio à esquerda e à direita utilizadas na gravação."
 
 #: ../../playback-and-recording/transport-controls.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Play"
 msgstr "Reproduzir"
 
@@ -6035,6 +6053,7 @@ msgstr ""
 "Cabeça de Reprodução moverá-se para o Ponto de Sinalização."
 
 #: ../../playback-and-recording/transport-controls.rst:49
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop"
 msgstr "Parar"
 
@@ -6231,16 +6250,8 @@ msgstr ""
 msgid "File auditioning controls"
 msgstr "Controles adicionais"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
-msgid "|icon_media-playback-start| Play"
-msgstr ""
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
-msgid "|icon_media-playback-stop| Stop"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:100
@@ -11787,9 +11798,6 @@ msgstr ""
 
 #~ msgid "MIDI Backend"
 #~ msgstr "Backend MIDI"
-
-#~ msgid "The MIDI backend to use for the audio engine."
-#~ msgstr "O backend MIDI a ser usado para o motor de áudio."
 
 #~ msgid "MIDI devices to auto-connect to when Zrythm starts."
 #~ msgstr "Aparelhos MIDI para ligar automaticamente quando o Zrythm inicia."

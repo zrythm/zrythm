@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-22 21:07+0900\n"
+"POT-Creation-Date: 2024-02-18 12:38+0900\n"
 "PO-Revision-Date: 2023-12-13 20:45+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -5118,11 +5118,11 @@ msgstr ""
 "* ZrythmおよびZrythmのロゴは、英国におけるAlexandrosTheodotouの登録商標です。"
 "*"
 
-#: ../../invoking-from-command-line/intro.rst:11
+#: ../../invoking-from-command-line/intro.rst:12
 msgid "Command Line"
 msgstr "コマンドライン"
 
-#: ../../invoking-from-command-line/intro.rst:13
+#: ../../invoking-from-command-line/intro.rst:14
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
@@ -5130,23 +5130,23 @@ msgstr ""
 "Zrythm には、以下に示すいくつかのユーティリティが付属しており、このユーティリ"
 "ティは :term:`CLI` から使用できます。"
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
 msgstr "zrythm"
 
-#: ../../invoking-from-command-line/intro.rst:18
+#: ../../invoking-from-command-line/intro.rst:19
 msgid "Zrythm executable."
 msgstr "Zrythmの実行ファイル。"
 
-#: ../../invoking-from-command-line/intro.rst:24
+#: ../../invoking-from-command-line/intro.rst:25
 msgid "Print a list of available options."
 msgstr "使用可能なオプションの一覧を出力します。"
 
-#: ../../invoking-from-command-line/intro.rst:28
+#: ../../invoking-from-command-line/intro.rst:29
 msgid "Pretty-print the output (where applicable)."
 msgstr "出力をプリティープリントする（該当する場合）。"
 
-#: ../../invoking-from-command-line/intro.rst:32
+#: ../../invoking-from-command-line/intro.rst:33
 #, fuzzy
 msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
@@ -5155,11 +5155,11 @@ msgstr ""
 "すべてのユーザ設定を出力します。 :option:`--pretty` と組み合わせることで、以"
 "下のようなきれいな出力を得ることができます。"
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 msgid "Reset user settings to their default values."
 msgstr "ユーザー設定を初期値に戻します。"
 
-#: ../../invoking-from-command-line/intro.rst:43
+#: ../../invoking-from-command-line/intro.rst:44
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
@@ -5168,24 +5168,41 @@ msgstr ""
 ":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user "
 "path` 内のファイルには*影響しません*。"
 
-#: ../../invoking-from-command-line/intro.rst:48
+#: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
 msgstr "これにより、すべてのユーザー設定がクリアされます。"
 
-#: ../../invoking-from-command-line/intro.rst:53
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Override the audio backend to use."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid "BACKEND is one of: alsa, dummy, jack, pa, pulse, rtaudio, sdl"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
+#, fuzzy
+msgid "Override the MIDI backend to use."
+msgstr "オーディオエンジンに使用する MIDI バックエンド。"
+
+#: ../../invoking-from-command-line/intro.rst:62
+msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:66
 #, fuzzy
 msgid "Print version information."
 msgstr "バックエンド情報"
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:68
 msgid "Prints the Zrythm version."
 msgstr "Zrythmのバージョンを出力します。"
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:71
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -5935,6 +5952,7 @@ msgid "Sets the settings to use when recording."
 msgstr "録音時に使用する設定をセットします。"
 
 #: ../../playback-and-recording/transport-controls.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Play"
 msgstr "再生"
 
@@ -5948,6 +5966,7 @@ msgstr ""
 "キューポイントに移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:49
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop"
 msgstr "停止"
 
@@ -6143,17 +6162,9 @@ msgstr ""
 msgid "File auditioning controls"
 msgstr "ファイルの試聴コントロール"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
-msgid "|icon_media-playback-start| Play"
-msgstr "|icon_media-playback-start| 再生"
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
 msgstr "選択したファイルの再生を開始する。"
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
-msgid "|icon_media-playback-stop| Stop"
-msgstr "|icon_media-playback-stop| 再生停止"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:100
 msgid "Stop playback of the selected file."
@@ -9870,6 +9881,12 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "|icon_media-playback-start| Play"
+#~ msgstr "|icon_media-playback-start| 再生"
+
+#~ msgid "|icon_media-playback-stop| Stop"
+#~ msgstr "|icon_media-playback-stop| 再生停止"
+
 #~ msgid "Editor Shortcuts"
 #~ msgstr "編集画面のショートカット"
 
@@ -11673,9 +11690,6 @@ msgstr ""
 
 #~ msgid "MIDI Backend"
 #~ msgstr "MIDIバックエンド"
-
-#~ msgid "The MIDI backend to use for the audio engine."
-#~ msgstr "オーディオエンジンに使用する MIDI バックエンド。"
 
 #~ msgid "MIDI devices to auto-connect to when Zrythm starts."
 #~ msgstr "Zrythmの起動時に自動接続するMIDIデバイス。"

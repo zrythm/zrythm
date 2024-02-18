@@ -1,5 +1,6 @@
 .. SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
-   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+.. SPDX-FileCopyrightText: © 2024 Ikem Krueger
+.. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
