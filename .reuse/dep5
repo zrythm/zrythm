@@ -200,6 +200,19 @@ License: CC-BY-SA-4.0
 Comment: From fontaudio
 
 Files:
+  data/cursors/cursors.svg
+Copyright: 2024 Miró Allard <miro.allard@pm.me>
+License: CC-BY-SA-4.0
+Comment: Custom created cursors, based on https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/adwaita.svg.
+
+Files:
+  data/cursors/rendersvgs.py
+Copyright: Lee Braiden
+License: GPL-2.0-only
+  The file has been modified (export one set of svgs instead of multpile sets of pngs).
+Comment: From https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/renderpngs.py
+
+Files:
   */zrythm-dark/*/articulation-legato.svg
   */zrythm-dark/*/articulation-staccato.svg
   */zrythm-dark/*/articulation-staccato2.svg
