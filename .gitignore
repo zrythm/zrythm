@@ -168,8 +168,12 @@ subprojects/**/*
 !subprojects/*.wrap
 subprojects/*sass*.wrap
 
-#VS Code config
+# VS Code config
 .vscode
 
 # Python related files
 venv
+
+# GNOME Builder
+.buildconfig
+*.syscap

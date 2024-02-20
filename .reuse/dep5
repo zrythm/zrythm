@@ -917,3 +917,10 @@ Files:
   ext/kissfft/kissfft_i32.hh
 Copyright: Mark Borgerding
 License: BSD-3-Clause
+
+Files:
+  build-aux/flatpak/org.zrythm.Zrythm.json
+Copyright: Flathub and Zrythm contributors
+License: AGPL-3.0-or-later
+Comment:
+  Adapted from https://github.com/flathub/org.zrythm.Zrythm.

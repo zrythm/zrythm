@@ -972,7 +972,14 @@ fftw3_deps = [
   dependency (
     'fftw3', version: '>=3.3.5', static: all_static),
   ]
-if get_option ('fftw3_threads_separate')
+if flatpak_build
+  # for some reason this doesn't work in GNOME builder with flatpak below when
+  # dirs: and static: are passed so handle it separately here...
+  fftw3_deps += [
+    cc.find_library ('fftw3_threads', required: true),
+    cc.find_library ('fftw3f_threads', required: true),
+    ]
+elif get_option ('fftw3_threads_separate')
   search_paths = []
   if not os_windows
     search_paths = [
@@ -1024,8 +1031,7 @@ if get_option ('fftw3_threads_separate')
   endif
 endif
 if os_windows or get_option ('fftw3f_separate')
-  # msys2 provides a separate fftw3f entry in
-  # pkg-config
+  # msys2 provides a separate fftw3f entry in pkg-config
   fftw3_deps += dependency (
     'fftw3f', static: all_static)
 endif
@@ -1036,13 +1042,10 @@ fftw3_funcs = [
 foreach func : fftw3_funcs
   if not cc.has_function (func, dependencies: fftw3_deps)
     error (
-      func + ' missing. ' +
-      'If linking fails, on some systems you ' +
-      'may have to point zrythm to the ' +
-      'library that provides it directly, eg., ' +
-      'LDFLAGS="$LDFLAGS ' +
-      '/usr/lib/libfftw3_threads.so ' +
-      '/usr/lib/libfftw3f_threads.so')
+      func + ' missing. If linking fails, on some systems you may have to ' +
+      'point Zrythm to the library that provides it directly, eg., ' +
+      'LDFLAGS="$LDFLAGS /usr/lib/libfftw3_threads.so ' +
+      '/usr/lib/libfftw3f_threads.so"')
   endif
 endforeach
 
