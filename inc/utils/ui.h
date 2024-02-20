@@ -385,58 +385,55 @@ ui_set_pointer_cursor (GtkWidget * widget);
     GTK_WIDGET (widget), "edit-select-stretch", 3, 1);
 
 #define ui_set_pencil_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "pencil", 3, 18);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-cursor", 2, 3);
 
 #define ui_set_brush_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "gnome-icon-library-brush-symbolic", 3, 18);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "brush-cursor", 2, 3);
 
 #define ui_set_cut_clip_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "gnome-icon-library-cut-symbolic", 9, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cut-cursor", 9, 7);
 
 #define ui_set_eraser_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "gnome-icon-library-eraser-symbolic", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "eraser-cursor", 4, 2);
 
 #define ui_set_line_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-line", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "ramp-cursor", 2, 3);
 
 #define ui_set_speaker_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "audio-volume-high", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "audition-cursor", 10, 12);
 
 #define ui_set_hand_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cursor-move", 10, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "move-cursor", 12, 11);
 
 #define ui_set_left_resize_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-left", 0, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "w-resize-cursor", 14, 11);
 
 #define ui_set_left_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-stretch-left", 0, 10);
+    GTK_WIDGET (widget), "w-stretch-cursor", 14, 11);
 
 #define ui_set_left_resize_loop_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-loop-left", 0, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "w-loop-cursor", 14, 11);
 
 #define ui_set_right_resize_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-right", 15, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "e-resize-cursor", 10, 11);
 
 #define ui_set_right_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-stretch-right", 15, 10);
+    GTK_WIDGET (widget), "e-stretch-cursor", 10, 11);
 
 #define ui_set_right_resize_loop_cursor(widget) \
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "e-loop-cursor", 10, 11);
+
+#define ui_set_time_select_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-loop-right", 15, 10);
+    GTK_WIDGET (widget), "time-select-cursor", 10, 12);
 
 #define ui_set_fade_in_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-in", 11, 11);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-in-cursor", 3, 1);
 
 #define ui_set_fade_out_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-out", 11, 11);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-out-cursor", 3, 1);
 
 /**
  * Sets cursor from icon name.

@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -275,7 +276,7 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
       SET_CURSOR_FROM_NAME ("n-resize");
       break;
     case ARRANGER_CURSOR_RANGE:
-      SET_CURSOR_FROM_NAME ("text");
+      SET_X_CURSOR (time_select);
       break;
     case ARRANGER_CURSOR_FADE_IN:
       SET_X_CURSOR (fade_in);

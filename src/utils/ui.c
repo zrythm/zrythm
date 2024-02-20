@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -91,7 +92,7 @@ ui_set_cursor_from_icon_name (
   cairo_surface_write_to_png (
     surface, "/tmp/test.png");
 #endif
-  GdkTexture * texture = z_gdk_texture_new_from_icon_name (name, 18, 18, 1);
+  GdkTexture * texture = z_gdk_texture_new_from_icon_name (name, 24, 24, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
     {
       g_warning ("no texture for %s", name);
@@ -126,7 +127,7 @@ ui_set_cursor_from_name (GtkWidget * widget, const char * name)
 void
 ui_set_pointer_cursor (GtkWidget * widget)
 {
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-select", 3, 1);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "select-cursor", 3, 1);
 }
 
 AdwDialog *
