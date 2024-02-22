@@ -1563,6 +1563,53 @@ drag_end (
   set_cursor (self);
 }
 
+/**
+ * Taken from ArrangerWidget. Same logic. FIXME make this code common somewhere.
+ */
+static void
+auto_scroll (RulerWidget * self)
+{
+  /* figure out if we should scroll */
+  bool scroll_h = false;
+  switch (self->action)
+    {
+    case UI_OVERLAY_ACTION_MOVING:
+      scroll_h = true;
+      break;
+    default:
+      break;
+    }
+
+  if (!scroll_h)
+    return;
+
+  EditorSettings * settings = ruler_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
+  int h_scroll_speed = 20;
+  int border_distance = 5;
+  int scroll_width = gtk_widget_get_width (GTK_WIDGET (self));
+  int h_delta = 0;
+  int adj_x = settings->scroll_start_x;
+  int x = (int) self->hover_x;
+  if (x + border_distance >= adj_x + scroll_width)
+    {
+      h_delta = h_scroll_speed;
+    }
+  else if (x - border_distance <= adj_x)
+    {
+      h_delta = -h_scroll_speed;
+    }
+
+  if (!scroll_h)
+    h_delta = 0;
+
+  if (settings->scroll_start_x + h_delta < 0)
+    {
+      h_delta -= settings->scroll_start_x + h_delta;
+    }
+  editor_settings_append_scroll (settings, h_delta, 0, F_VALIDATE);
+}
+
 static void
 on_motion (
   GtkEventControllerMotion * motion_controller,
@@ -1592,8 +1639,7 @@ on_motion (
   else
     self->alt_held = 0;
 
-  /* drag-update didn't work so do the drag-update
-   * here */
+  /* drag-update didn't work so do the drag-update here */
   if (self->dragging && event_type != GDK_LEAVE_NOTIFY)
     {
       if (ACTION_IS (STARTING_MOVING))
@@ -1664,6 +1710,8 @@ on_motion (
         {
           editor_ruler_on_drag_update (self, total_offset_x, total_offset_y);
         }
+
+      auto_scroll (self);
 
       self->last_offset_x = total_offset_x;
       self->last_offset_y = total_offset_y;

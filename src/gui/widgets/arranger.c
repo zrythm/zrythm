@@ -4934,8 +4934,7 @@ on_scroll (
       int scroll_y_before = settings->scroll_start_y;
       editor_settings_append_scroll (settings, scroll_x, scroll_y, F_VALIDATE);
 
-      /* also adjust the drag offsets (in case we are currently
-       * dragging */
+      /* also adjust the drag offsets (in case we are currently dragging */
       scroll_x = settings->scroll_start_x - scroll_x_before;
       scroll_y = settings->scroll_start_y - scroll_y_before;
       self->offset_x_from_scroll += scroll_x;

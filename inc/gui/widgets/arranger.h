@@ -121,7 +121,9 @@ typedef struct _ArrangerWidget
   double last_offset_y;
 
   /** Whether there is an offset from a user scroll that should
-   * be added to the offset while dragging. */
+   * be added to the offset while dragging.
+   * FIXME: This is probably not needed - see ruler implementation on_motion()
+   * on how to avoid these. */
   double offset_x_from_scroll;
   double offset_y_from_scroll;
 
