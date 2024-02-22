@@ -228,7 +228,7 @@ Comment: Custom created cursors, based on https://gitlab.gnome.org/GNOME/adwaita
 Files:
   */zrythm-dark/*/move-cursor.svg
   */zrythm-dark/*/time-select-cursor.svg
-Copyright: 2024 GNOME Project <miro.allard@pm.me>
+Copyright: GNOME Project
 License: CC-BY-SA-3.0
 Comment: From https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/adwaita.svg.
 
