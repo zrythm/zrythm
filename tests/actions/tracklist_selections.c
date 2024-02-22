@@ -1106,8 +1106,7 @@ test_multi_track_duplicate (void)
 
   int start_pos = TRACKLIST->num_tracks;
 
-  /* create midi track, audio fx track and audio
-   * track */
+  /* create midi track, audio fx track and audio track */
   track_create_with_action (
     TRACK_TYPE_MIDI, NULL, NULL, NULL, start_pos, 1, -1, NULL, NULL);
   track_create_with_action (

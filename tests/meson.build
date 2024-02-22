@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 if get_option ('tests')
@@ -295,6 +295,7 @@ if get_option ('tests')
     'dsp/marker_track': { 'parallel': true },
     'dsp/metronome': { 'parallel': true },
     'dsp/midi_event': { 'parallel': true },
+    'dsp/midi_function': { 'parallel': true },
     'dsp/midi_mapping': { 'parallel': true },
     'dsp/midi_note': { 'parallel': true },
     'dsp/midi_region': { 'parallel': false },

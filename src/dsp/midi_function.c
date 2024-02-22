@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "dsp/engine.h"
 #include "dsp/midi_function.h"
@@ -96,7 +98,8 @@ midi_function_apply (
               mn_ticks_from_start / total_ticks, &curve_opts,
               opts.start_vel > opts.end_vel);
             mn->vel->vel =
-              opts.start_vel + (midi_byte_t) (vel_interval * vel_multiplier);
+              (midi_byte_t) ((double) MIN (opts.start_vel, opts.end_vel)
+                             + (vel_interval * vel_multiplier));
           }
       }
       break;
@@ -270,7 +273,10 @@ midi_function_apply (
     }
 
   /* set last action */
-  g_settings_set_int (S_UI, "midi-function", type);
+  if (ZRYTHM_HAVE_UI)
+    {
+      g_settings_set_int (S_UI, "midi-function", type);
+    }
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
 

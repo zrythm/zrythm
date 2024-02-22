@@ -169,8 +169,7 @@ curve_algorithm_set_g_settings_mapping (
   gpointer             user_data);
 
 /**
- * Returns the Y value on a curve specified by
- * \ref algo.
+ * Returns the Y value on a curve specified by \ref algo.
  *
  * @param x X-coordinate, normalized.
  * @param opts Curve options.
