@@ -24,17 +24,6 @@ $focus_transition: outline-color 200ms $ease-out-quad,
                    outline-offset 200ms $ease-out-quad;
 $focus_border_color:  gtkalpha($accent_color, 0.5);
 
-panelresizer > widget > separator,
-paned > separator
-{
-  &:hover {
-    color: $hover_color;
-    //background-color: gtkalpha(white, 0.08);
-  }
-  min-height: 4px;
-  min-width: 4px;
-}
-
 .plugin-browser separator,
 .file-browser separator
 {
