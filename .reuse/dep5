@@ -201,8 +201,8 @@ Files:
   data/cursors/rendersvgs.py
 Copyright: Lee Braiden
 License: GPL-2.0-only
-  The file has been modified (export one set of svgs instead of multpile sets of pngs).
 Comment: From https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/renderpngs.py
+  The file has been modified (export one set of svgs instead of multpile sets of pngs).
 
 Files:
   */zrythm-dark/*/audition-cursor.svg
