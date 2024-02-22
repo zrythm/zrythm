@@ -13,6 +13,6 @@ Exec=@BIN_DIR@/zrythm_launch
 Icon=zrythm
 Type=Application
 StartupNotify=true
-Categories=AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack;
+Categories=AudioVideoEditing;Recorder;Music;AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack;
 MimeType=application/x-zrythm-project;
 StartupWMClass=zrythm
