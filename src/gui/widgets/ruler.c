@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -1402,7 +1403,7 @@ set_cursor (RulerWidget * self)
               else
                 {
                   /* set cursor to range selection */
-                  ui_set_cursor_from_name (GTK_WIDGET (self), "text");
+                  ui_set_time_select_cursor (self);
                 }
             }
         }

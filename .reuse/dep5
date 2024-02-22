@@ -23,18 +23,10 @@ Files:
   */zrythm-dark/*/dim.svg
   */zrythm-dark/*/draw-cross.svg
   */zrythm-dark/*/expose-to-jack.svg
-  */zrythm-dark/*/fade-in.svg
-  */zrythm-dark/*/fade-out.svg
   */zrythm-dark/*/jack-timebase-master.svg
   */zrythm-dark/*/jack-transport-client.svg
   */zrythm-dark/*/listen.svg
   */zrythm-dark/*/mute.svg
-  */zrythm-dark/*/object-resize-left.svg
-  */zrythm-dark/*/object-resize-loop-left.svg
-  */zrythm-dark/*/object-resize-loop-right.svg
-  */zrythm-dark/*/object-resize-right.svg
-  */zrythm-dark/*/object-stretch-left.svg
-  */zrythm-dark/*/object-stretch-right.svg
   */zrythm-dark/*/phase-invert.svg
   */zrythm-dark/*/power.svg
   */zrythm-dark/*/remove.svg
@@ -198,6 +190,47 @@ Copyright: fontaudio <https://github.com/fefanto/fontaudio>
 License: CC-BY-SA-4.0
   The files have been modified (color changes).
 Comment: From fontaudio
+
+Files:
+  data/cursors/cursors.svg
+Copyright: 2024 Miró Allard <miro.allard@pm.me>
+License: CC-BY-SA-4.0
+Comment: Custom created cursors, based on https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/adwaita.svg.
+
+Files:
+  data/cursors/rendersvgs.py
+Copyright: Lee Braiden
+License: GPL-2.0-only
+Comment: From https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/renderpngs.py
+  The file has been modified (export one set of svgs instead of multpile sets of pngs).
+
+Files:
+  */zrythm-dark/*/audition-cursor.svg
+  */zrythm-dark/*/brush-cursor.svg
+  */zrythm-dark/*/cut-cursor.svg
+  */zrythm-dark/*/e-loop-cursor.svg
+  */zrythm-dark/*/e-resize-cursor.svg
+  */zrythm-dark/*/e-stretch-cursor.svg
+  */zrythm-dark/*/edit-cursor.svg
+  */zrythm-dark/*/eraser-cursor.svg
+  */zrythm-dark/*/fade-in-cursor.svg
+  */zrythm-dark/*/fade-out-cursor.svg
+  */zrythm-dark/*/ramp-cursor.svg
+  */zrythm-dark/*/select-cursor.svg
+  */zrythm-dark/*/w-loop-cursor.svg
+  */zrythm-dark/*/w-resize-cursor.svg
+  */zrythm-dark/*/w-stretch-cursor.svg
+  */zrythm-dark/*/cursors.svg
+Copyright: 2024 Miró Allard <miro.allard@pm.me>
+License: CC-BY-SA-4.0
+Comment: Custom created cursors, based on https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/adwaita.svg.
+
+Files:
+  */zrythm-dark/*/move-cursor.svg
+  */zrythm-dark/*/time-select-cursor.svg
+Copyright: GNOME Project
+License: CC-BY-SA-3.0
+Comment: From https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/blob/master/src/cursors/adwaita.svg.
 
 Files:
   */zrythm-dark/*/articulation-legato.svg
@@ -610,7 +643,7 @@ License: CC0-1.0
 Comment:
   Screenshots and other images used in the user manual
 
-Files: 
+Files:
   resources/ui/*.blp
   resources/gtk/*.blp
   resources/ui/*.ui
