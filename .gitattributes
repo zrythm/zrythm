@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: FSFAP
 
 # add vendored paths
@@ -6,13 +6,7 @@ ext/** linguist-vendored
 doc/dev/m.css/** linguist-vendored
 data/fonts/** linguist-vendored
 data/plugins/generated/** linguist-generated
-resources/theme/Matcha-dark-sea/** linguist-vendored
-resources/icons/breeze-icons/** linguist-vendored
-resources/icons/ext/** linguist-vendored
-resources/icons/fatcow/** linguist-vendored
-resources/icons/font-awesome/** linguist-vendored
-resources/icons/fork-awesome/** linguist-vendored
-resources/icons/gnome-builder/** linguist-vendored
+resources/icons/** linguist-vendored
 git-packaging-hooks/** linguist-vendored
 src/audio/vamp-ports/*.h linguist-vendored
 src/audio/vamp-ports/*.cpp linguist-vendored

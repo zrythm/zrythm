@@ -807,31 +807,6 @@ Copyright: 2017 Michael Aprimo
 License: MIT
 
 Files:
-  resources/icons/fatcow/*/*.jpg
-  resources/icons/fatcow/*/*.png
-Copyright: 2009-2014 FatCow Web Hosting
-License: CC-BY-3.0-US
-  The files have been modified (color changes).
-Comment: https://www.fatcow.com
-
-Files:
-  resources/icons/ext/iconfinder_category_103432.svg
-  resources/icons/ext/iconfinder_category_103432_edited.svg
-Copyright: PICOL <http://www.picol.org>
-License: CC-BY-SA-3.0
-  The files have been modified (color changes).
-Comment:
-  Icon by http://www.picol.org/ found on https://www.iconfinder.com/icons/103432/category_icon on 23 June 2019
-
-Files:
-  resources/icons/ext/iconfinder_cpu_2561419.svg
-Copyright: Cole Bemis
-License: MIT
-  The files have been modified (color changes).
-Comment:
-  Taken from https://www.iconfinder.com/icons/2561419/cpu_icon under the MIT license
-
-Files:
   inc/plugins/lv2/lv2_external_ui.h
 Copyright: Filipe Coelho (aka falkTX) <falktx@falktx.com>
 License: CC0-1.0
@@ -882,13 +857,10 @@ Files:
   ext/README
   git-packaging-hooks/README
   po/POTFILES
-  resources/icons/ext/README
-  resources/icons/fatcow/README
   resources/icons/font-awesome/README
   resources/icons/fork-awesome/README
   resources/icons/gnome-builder/README
   resources/icons/jam-icons/README
-  resources/theme/Matcha-dark-sea/README
   subprojects/*.wrap
   tests/lv2plugins/eg-amp.lv2/README.txt
   tests/lv2plugins/eg-fifths.lv2/README.txt

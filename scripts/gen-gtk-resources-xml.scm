@@ -98,7 +98,7 @@ Args:
              (lambda (f)
                (string-suffix? ".ui" f))))
 
-         ;; add icons except breeze
+         ;; add icons
          (for-each
            (lambda (dir)
              (for-each
@@ -118,7 +118,7 @@ Args:
                    (or
                      (string-suffix? ".svg" f)
                      (string-suffix? ".png" f))))))
-           '("arena" "gnome-builder" "gnome-icon-library" "ext"
+           '("arena" "gnome-builder" "gnome-icon-library"
              "fork-awesome" "font-awesome"
              "fluentui" "jam-icons" "box-icons" "iconpark"
              "iconoir" "material-design" "untitled-ui" "css.gg"
