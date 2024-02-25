@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-18 12:38+0900\n"
-"PO-Revision-Date: 2024-01-03 20:45+0000\n"
+"PO-Revision-Date: 2024-02-25 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1019,6 +1020,8 @@ msgid ""
 "Custom shortcuts are currently unsupported and are scheduled to be "
 "implemented in version 2."
 msgstr ""
+"Les dreceres personalitzades no estan encara implementades, ho estaran a la "
+"versió 2."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:8
 msgid "UI Scaling and Wayland"
@@ -1448,6 +1451,7 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:51
 msgid "Pixelated and misaligned timebase master and transport client icons"
 msgstr ""
+"Icones de client de transport i de base de temps pixelades i desalineades"
 
 #: ../../contributing/reporting-bugs.rst:53
 msgid ""
@@ -1488,7 +1492,7 @@ msgstr "Pista MIDI"
 
 #: ../../contributing/reporting-bugs.rst:68
 msgid "Create a region starting at bar 1 and ending at bar 5"
-msgstr ""
+msgstr "Crea una regió començant a bar 1 i acabant a bar 5"
 
 #: ../../contributing/reporting-bugs.rst:69
 msgid "Add a note inside the region starting at bar 2 and ending at bar 4"
