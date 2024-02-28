@@ -10,7 +10,7 @@ Comment=highly automated and intuitive digital audio workstation
 Keywords=daw;audio;midi;music;
 Exec=@BIN_DIR@/zrythm_launch
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-Icon=zrythm
+Icon=org.zrythm.Zrythm
 Type=Application
 StartupNotify=true
 Categories=AudioVideoEditing;Recorder;Music;AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack;
