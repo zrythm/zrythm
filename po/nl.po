@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-02-18 12:54+0900\n"
+"POT-Creation-Date: 2024-02-29 19:34+0900\n"
 "PO-Revision-Date: 2022-04-21 05:09+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/zrythm/nl/"
@@ -563,11 +563,11 @@ msgid "-6dB"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:570
+#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:571
 msgid "Linear"
 msgstr ""
 
-#: inc/dsp/pan.h:61 src/utils/ui.c:571
+#: inc/dsp/pan.h:61 src/utils/ui.c:572
 msgid "Square Root"
 msgstr ""
 
@@ -2424,7 +2424,7 @@ msgstr ""
 msgid "Edit in external app"
 msgstr ""
 
-#: src/dsp/clip.c:691 src/utils/ui.c:163 src/utils/dialogs.c:40
+#: src/dsp/clip.c:691 src/utils/ui.c:164 src/utils/dialogs.c:40
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:83
 #: src/gui/widgets/dialogs/bug_report_dialog.c:49
 #: src/gui/widgets/dialogs/bug_report_dialog.c:265
@@ -2471,13 +2471,13 @@ msgstr ""
 msgid "Please enter a positive decimal number"
 msgstr ""
 
-#: src/dsp/automation_point.c:226 src/gui/widgets/balance_control.c:291
+#: src/dsp/automation_point.c:228 src/gui/widgets/balance_control.c:291
 #: src/gui/widgets/balance_control.c:297 src/gui/widgets/item_factory.c:296
 #: src/gui/widgets/item_factory.c:316 src/gui/widgets/bot_bar.c:308
 msgid "Invalid Value"
 msgstr ""
 
-#: src/dsp/automation_point.c:226
+#: src/dsp/automation_point.c:228
 #, c-format
 msgid "Please enter a number between %f and %f"
 msgstr ""
@@ -2755,18 +2755,18 @@ msgstr ""
 msgid "soxr_process() error: %s"
 msgstr ""
 
-#: src/utils/ui.c:572
+#: src/utils/ui.c:573
 msgid "Sine (Equal Power)"
 msgstr ""
 
-#: src/utils/ui.c:854
+#: src/utils/ui.c:855
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr ""
 
-#: src/utils/ui.c:860
+#: src/utils/ui.c:861
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2777,11 +2777,11 @@ msgid ""
 "3. Restart %s"
 msgstr ""
 
-#: src/utils/ui.c:885
+#: src/utils/ui.c:886
 msgid "Experimental Feature"
 msgstr ""
 
-#: src/utils/ui.c:886
+#: src/utils/ui.c:887
 msgid ""
 "BPM and time signature automation is an experimental feature. Using it may "
 "corrupt your project."
@@ -3446,7 +3446,7 @@ msgstr ""
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2294
+#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2295
 msgid "Marker name"
 msgstr ""
 
@@ -3654,134 +3654,134 @@ msgstr ""
 msgid "Load preset"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1331
+#: src/gui/widgets/arranger.c:1332
 msgid "Create Object"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1334
+#: src/gui/widgets/arranger.c:1335
 msgid "Create"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1632 src/gui/widgets/arranger.c:1648
-#: src/gui/widgets/arranger.c:1689 src/gui/widgets/arranger.c:1748
-#: src/gui/widgets/arranger.c:1766
+#: src/gui/widgets/arranger.c:1633 src/gui/widgets/arranger.c:1649
+#: src/gui/widgets/arranger.c:1690 src/gui/widgets/arranger.c:1749
+#: src/gui/widgets/arranger.c:1767
 msgid "Failed to move selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1705 src/gui/widgets/arranger.c:3892
+#: src/gui/widgets/arranger.c:1706 src/gui/widgets/arranger.c:3893
 msgid "Failed to move chords"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2015 src/gui/widgets/timeline_arranger.c:309
+#: src/gui/widgets/arranger.c:2016 src/gui/widgets/timeline_arranger.c:309
 msgid "Failed to create region"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2321
+#: src/gui/widgets/arranger.c:2322
 msgid "Automation value"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2341 src/gui/widgets/arranger.c:2362
+#: src/gui/widgets/arranger.c:2342 src/gui/widgets/arranger.c:2363
 msgid "Cannot Resize"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2342
+#: src/gui/widgets/arranger.c:2343
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2363
+#: src/gui/widgets/arranger.c:2364
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3499
+#: src/gui/widgets/arranger.c:3500
 msgid "Failed to delete selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3520 src/gui/widgets/arranger.c:4042
+#: src/gui/widgets/arranger.c:3521 src/gui/widgets/arranger.c:4043
 msgid "Failed to edit selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3563
+#: src/gui/widgets/arranger.c:3564
 msgid "Failed to move automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3583
+#: src/gui/widgets/arranger.c:3584
 msgid "Failed to duplicate automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3603 src/gui/widgets/arranger.c:3929
-#: src/gui/widgets/arranger.c:4312
+#: src/gui/widgets/arranger.c:3604 src/gui/widgets/arranger.c:3930
+#: src/gui/widgets/arranger.c:4313
 msgid "Failed to create objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3620
+#: src/gui/widgets/arranger.c:3621
 msgid "Failed to fill automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3647 src/gui/widgets/arranger.c:3685
-#: src/gui/widgets/arranger.c:3702 src/gui/widgets/timeline_arranger.c:852
+#: src/gui/widgets/arranger.c:3648 src/gui/widgets/arranger.c:3686
+#: src/gui/widgets/arranger.c:3703 src/gui/widgets/timeline_arranger.c:852
 msgid "Failed to edit selections"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3730 src/gui/widgets/arranger.c:3749
+#: src/gui/widgets/arranger.c:3731 src/gui/widgets/arranger.c:3750
 msgid "Failed to resize objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3757 src/gui/widgets/arranger.c:3796
+#: src/gui/widgets/arranger.c:3758 src/gui/widgets/arranger.c:3797
 msgid "Failed to move MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3814
+#: src/gui/widgets/arranger.c:3815
 msgid "Failed to duplicate MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3833
+#: src/gui/widgets/arranger.c:3834
 msgid "Failed to create MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3910
+#: src/gui/widgets/arranger.c:3911
 msgid "Failed to duplicate chords"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4216
+#: src/gui/widgets/arranger.c:3991 src/gui/widgets/arranger.c:4217
 msgid "Failed resizing selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4068
+#: src/gui/widgets/arranger.c:4069
 msgid "Failed to edit timeline objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4087 src/gui/widgets/arranger.c:4106
+#: src/gui/widgets/arranger.c:4088 src/gui/widgets/arranger.c:4107
 msgid "Failed to resize timeline objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4123
+#: src/gui/widgets/arranger.c:4124
 msgid "Failed to resize selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4142
+#: src/gui/widgets/arranger.c:4143
 msgid "Failed setting fade in position"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4160 src/gui/widgets/arranger.c:4183
-#: src/gui/widgets/arranger.c:4199
+#: src/gui/widgets/arranger.c:4161 src/gui/widgets/arranger.c:4184
+#: src/gui/widgets/arranger.c:4200
 msgid "Failed resizing selections"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4264
+#: src/gui/widgets/arranger.c:4265
 msgid "Failed to move objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4294
+#: src/gui/widgets/arranger.c:4295
 msgid "Failed to link or copy selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4345
+#: src/gui/widgets/arranger.c:4346
 msgid "Failed to split selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4354
+#: src/gui/widgets/arranger.c:4355
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -4160,18 +4160,18 @@ msgstr ""
 msgid "MIDI Out"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1341 src/gui/widgets/bot_bar.c:160
+#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:160
 msgid "BBT"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:162
+#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:162
 #: src/gui/widgets/dialogs/midi_function_dialog.c:148
 #: src/gui/widgets/dialogs/midi_function_dialog.c:213
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Time"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:163
+#: src/gui/widgets/ruler.c:1344 src/gui/widgets/bot_bar.c:163
 msgid "Display"
 msgstr ""
 
@@ -7480,295 +7480,287 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Changed:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Re-generate built-in plugins with latest faust"
+msgid "Redesign plugin info label"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
+msgid ""
+"Build: port UI files to blueprint format and generate UI files via blueprint-"
+"compiler"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-msgid "Generate the about dialog from appdata XML"
+msgid "Redesign channel views in the mixer"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-msgid "Update some information in the about dialog and in the appdata XML"
+msgid "Update some icons"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-msgid ""
-"GTK: Don't force GL renderer on Windows (revert change in previous release)"
+msgid "Redesign faders"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid "Link transport control buttons together"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Drop borders from meters and change color gradient"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Unit tests: require less RAM"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Port various dialogs to AdwDialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Bump libadwaita requirement to &gt;= 1.5"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid "Use raised top bar style for main window (#5023)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
-msgid "Added:"
+msgid ""
+"CSS theme: Specify named colors `@window_bg_color` and `@dialog_bg_color` "
+"instead of coloring specific widget backgrounds"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid "Debugging: don't set signal handlers when running from valgrind"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
-msgid "Add primary menu to the header bar"
+msgid "Update Chinese (Simplified), Japanese, Hindi, Catalan translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Install Zrythm icon as org.zrythm.Zrythm.svg instead of zrythm.svg"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid ""
+"User manual: document `--audio-backend` and `--midi-backend` CLI options"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-msgid "Port MIDI function dialog rows to new libadwaita widgets"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
-msgid "Port plugin/file browsers to AdwToolbarView"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
+msgid "Fixed:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-msgid "Change some global keyboard shortcuts"
+msgid ""
+"Fix error when sending a bug report for a project with many actions on the "
+"undo stack (#5016)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
-msgid "Move visualizers to bottom bar"
+msgid "Fix spectrum analyzer not rendering correctly with ngl renderer (#5008)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid ""
-"Merge header bar toggles and secondary global toolbar into the main toolbar"
+"Fix cancel button when exporting stems only cancelling export for the "
+"current stem"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid ""
+"Fix device selection dropdown crashing in preferences when opened from the "
+"greeter"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+msgid "Re-generate built-in plugins with latest faust"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Generate the about dialog from appdata XML"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+msgid "Update some information in the about dialog and in the appdata XML"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+msgid ""
+"GTK: Don't force GL renderer on Windows (revert change in previous release)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+msgid "Added:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+msgid "Add primary menu to the header bar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+msgid "Port MIDI function dialog rows to new libadwaita widgets"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+msgid "Port plugin/file browsers to AdwToolbarView"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+msgid "Change some global keyboard shortcuts"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+msgid "Move visualizers to bottom bar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+msgid ""
+"Merge header bar toggles and secondary global toolbar into the main toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid ""
 "Redesign/merge first-run screen, welcome dialog, project selector and "
 "project creator into a new greeter window"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Only set header bar color on main project window"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Mac: don't try to force window on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Change some icons"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Don't style window close button"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 msgid "Use AdwToolbarView for main project window"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Add gradient to progress bars and padding to progress bar captions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "GTK: Force old GL renderer on Windows"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Fix error when copy-pasting audio regions after a BPM change (#4993)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid ""
 "Zrythm is now fully REUSE 3.0 compliant (fixed license issues reported by "
 "`reuse lint`)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Removed:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Remove Zrythm logo from header bar"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid "Remove some buttons that used to be in the main and secondary toolbars"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Remove scripting interface button (out of scope for v1)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid "Remove dependency on breeze icons"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Support editing the curve for multiple automation points (#4991)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Add outline to object-stretch cursors"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
 msgid "Update Swedish translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Update shortcuts window (#4110)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid ""
 "Send normal note offs instead of \"all notes off\" at region loop and end "
 "boundaries (#4036)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
 msgid "Use lowercase for FLAC extension when exporting FLAC files"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Port MIDI function dialog to AdwToolbarView"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 msgid "Fix clipboard paste being broken"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid ""
 "Fix chord index not being saved with chord objects in project files (#4995)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
 msgid "Fix error when closing the project while a chord object is selected"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
 msgid "Fix error when copy-moving objects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
 msgid "Fix incorrect MIDI pitchbend handling (#3318, #4000, #4997)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
 msgid ""
 "Fix MIDI channel pressure handling when automating from its automation lane"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
 msgid "Remove musical mode toggle from timeline toolbar"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
 msgid "Remove option to overlay text value for automation points"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
-msgid "Allow toggling bypass on multiple plugins (#4853)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
-msgid "Make track sends available to modulator outputs (#4819)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid "Add button to show instrument UI in mixer channels (#4422)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Show markers in editor ruler (#4777)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
-msgid "Allow changing plugin load behavior (#4407)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
-msgid "Display bridge status in plugin slots"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
-msgid "Add option to auto-select tracks when selecting regions (#4201)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-msgid "Display how many new plugins were detected on each run"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "MPMC queue: switch to C11 atomics implementation"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
-msgid "Various optimizations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
-msgid "Skip engine pause/resume when engine is already stopped"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
-msgid "Make fader buttons smaller"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid "Show \"Unimplemented\" message when clicking channel settings button"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Make stretch mode a separate button in the toolbox"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
-msgid "Graphviz dependency is now disabled by default"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Modernize some preferences rows using new libadwaita widgets"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
-msgid "Show more precise positions in event viewer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid "Add outline to some cursors"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
-msgid ""
-"Fix DnD from the plugin browser being broken when a plugin is selected in "
-"the mixer (#4974)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
-msgid "Fix specified plugin bridge mode being ignored in some cases"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
-msgid ""
-"Ignore carla parameters that are not found in input ports on project load "
-"(fixes error being thrown when this happens)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
-msgid "Fix stretch mode icon (#3991)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
-msgid ""
-"Fix original objects disappearing when copy-moving their newly created "
-"objects offscreen (#3303)"
 msgstr ""
 
 #, fuzzy
