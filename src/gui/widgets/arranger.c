@@ -985,8 +985,8 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
 }
 
 /**
- * Gets the float value at the given Y coordinate
- * relative to the automation arranger.
+ * Gets the float value at the given Y coordinate relative to the automation
+ * arranger.
  */
 static float
 get_fvalue_at_y (ArrangerWidget * self, double y)

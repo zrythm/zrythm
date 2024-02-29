@@ -36,7 +36,7 @@ typedef struct _AutomationPointWidget AutomationPointWidget;
  */
 typedef struct AutomationPointDrawSettings
 {
-  float        fvalue;
+  float        normalized_val;
   CurveOptions curve_opts;
   GdkRectangle draw_rect;
 } AutomationPointDrawSettings;

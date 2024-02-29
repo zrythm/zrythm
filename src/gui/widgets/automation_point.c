@@ -37,7 +37,7 @@ automation_point_settings_changed (
   bool same =
     gdk_rectangle_equal (&last_settings->draw_rect, draw_rect)
     && curve_options_are_equal (&last_settings->curve_opts, &self->curve_opts)
-    && math_floats_equal (last_settings->fvalue, self->fvalue);
+    && math_floats_equal (last_settings->normalized_val, self->normalized_val);
 
   return !same;
 }
@@ -107,7 +107,9 @@ automation_point_draw (
   gdk_cairo_set_source_rgba (cr, &color);
   cairo_set_line_width (cr, 2);
 
-  int upslope = next_ap && ap->fvalue < next_ap->fvalue;
+  /* fvalue can be equal in non-float automation even though there is a curve -
+   * fvalue is used during processing. use the normalized value instead */
+  bool upslope = next_ap && ap->normalized_val < next_ap->normalized_val;
   (void) next_obj;
 
   if (next_ap)
@@ -247,7 +249,7 @@ automation_point_draw (
   gtk_snapshot_append_node (snapshot, cr_node);
   gtk_snapshot_restore (snapshot);
 
-  ap->last_settings.fvalue = ap->fvalue;
+  ap->last_settings.normalized_val = ap->normalized_val;
   ap->last_settings.curve_opts = ap->curve_opts;
   ap->last_settings.draw_rect = draw_rect;
   ap->cairo_node = cr_node;

@@ -449,13 +449,11 @@ arranger_object_set_full_rectangle (
           {
             ArrangerObject * next_obj = (ArrangerObject *) next_ap;
 
-            /* get relative position from the
-             * start AP to the next ap. */
+            /* get relative position from the start AP to the next ap. */
             position_from_ticks (&tmp, next_obj->pos.ticks - self->pos.ticks);
 
-            /* width is the relative position in px
-             * plus half an AP_WIDGET_POINT_SIZE for
-             * each side */
+            /* width is the relative position in px plus half an
+             * AP_WIDGET_POINT_SIZE for each side */
             self->full_rect.width =
               AP_WIDGET_POINT_SIZE + ui_pos_to_px_editor (&tmp, 0);
 
@@ -469,9 +467,8 @@ arranger_object_set_full_rectangle (
 
             /* make sure y is not negative */
 
-            /* height is the relative relative diff in
-             * px between the two points plus half an
-             * AP_WIDGET_POINT_SIZE for each side */
+            /* height is the relative relative diff in px between the two points
+             * plus half an AP_WIDGET_POINT_SIZE for each side */
             self->full_rect.height =
               (cur_y > next_y ? cur_y - next_y : next_y - cur_y)
               + AP_WIDGET_POINT_SIZE;
@@ -745,20 +742,6 @@ arranger_object_set_full_rectangle (
     }
 }
 
-/**
- * Gets the draw rectangle based on the given
- * full rectangle of the arranger object.
- *
- * @param parent_rect The current arranger
- *   rectangle.
- * @param full_rect The object's full rectangle.
- *   This will usually be ArrangerObject->full_rect,
- *   unless drawing in a lane (for Region's).
- * @param draw_rect The rectangle will be set
- *   here.
- *
- * @return Whether the draw rect is visible.
- */
 int
 arranger_object_get_draw_rectangle (
   ArrangerObject * self,

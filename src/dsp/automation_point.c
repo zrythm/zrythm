@@ -130,7 +130,9 @@ automation_point_curves_up (AutomationPoint * self)
   if (!next_ap)
     return false;
 
-  if (next_ap->fvalue > self->fvalue)
+  /* fvalue can be equal in non-float automation even though there is a curve.
+   * use the normalized value instead */
+  if (next_ap->normalized_val > self->normalized_val)
     return true;
   else
     return false;

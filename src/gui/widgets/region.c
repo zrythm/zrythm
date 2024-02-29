@@ -755,7 +755,7 @@ handle_loop (
           (float) ap_loop_part_rect.width, (float) ap_loop_part_rect.height));
       gtk_snapshot_pop (snapshot); // stroke
 
-      ap->last_settings_tl.fvalue = ap->fvalue;
+      ap->last_settings_tl.normalized_val = ap->normalized_val;
       ap->last_settings_tl.curve_opts = ap->curve_opts;
       ap->last_settings_tl.draw_rect = ap_loop_part_rect;
 
