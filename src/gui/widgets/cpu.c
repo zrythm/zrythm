@@ -170,9 +170,12 @@ refresh_cpu_load (CpuWidget * self)
 #if defined(__linux__)
 
   /* ======= non libgtop ====== */
-  FILE * fp;
-
-  fp = fopen ("/proc/stat", "r");
+  FILE * fp = fopen ("/proc/stat", "r");
+  if (!fp)
+    {
+      g_warning ("failed to open /proc/stat");
+      return G_SOURCE_REMOVE;
+    }
   fscanf (fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
   fclose (fp);
 

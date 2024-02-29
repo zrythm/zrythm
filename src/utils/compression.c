@@ -32,7 +32,7 @@ compression_compress_to_base64_str (const char * src, GError ** error)
       return NULL;
     }
 
-  char * b64 = g_base64_encode (dest, dest_size);
+  char * b64 = g_base64_encode ((const unsigned char *) dest, dest_size);
 
   free (dest);
 
@@ -43,7 +43,7 @@ char *
 compression_decompress_from_base64_str (const char * b64, GError ** error)
 {
   size_t src_size;
-  char * src = g_base64_decode (b64, &src_size);
+  char * src = (char *) g_base64_decode (b64, &src_size);
 #if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
   unsigned long long const frame_content_size =
     ZSTD_getDecompressedSize (src, src_size);

@@ -736,6 +736,7 @@ test_strict_cflags += [
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
+  '-Werror=pointer-sign',
   '-Werror=override-init',
   '-Werror=bool-compare',
   '-Werror=tautological-compare',
