@@ -11,6 +11,8 @@ i18n.gettext (
   meson.project_name(),
   languages: languages_for_gettext,
   args: [
+    '--package-name=Zrythm',
+    '--package-version=' + meson.project_version (),
     '--directory=' + meson_src_root,
     '--msgid-bugs-address=' + cdata.get ('ISSUE_TRACKER_URL'),
     '--add-comments',
