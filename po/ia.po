@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2024-01-10 20:45+0000\n"
+"PO-Revision-Date: 2024-02-25 20:45+0000\n"
 "Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
 "Language-Team: Interlingua <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/ia/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:189
@@ -2034,7 +2034,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #: resources/ui/first_run_assistant.ui:107
 msgid ""
