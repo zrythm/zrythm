@@ -50,7 +50,6 @@ typedef struct _EditorToolbarWidget
   GtkBox *       chord_highlight_box;
 
   GtkToggleButton * ghost_notes_btn;
-  GtkSeparator *    sep_after_ghost_notes;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
   ZoomButtonsWidget *           zoom_buttons;
