@@ -437,13 +437,6 @@ get_position_ptr (ArrangerObject * self, ArrangerObjectPositionType pos_type)
   g_return_val_if_reached (NULL);
 }
 
-/**
- * Returns if the given Position is valid.
- *
- * @param pos The position to set to.
- * @param pos_type The type of Position to set in
- *   the ArrangerObject.
- */
 bool
 arranger_object_is_position_valid (
   const ArrangerObject * const self,
@@ -456,21 +449,34 @@ arranger_object_is_position_valid (
     case ARRANGER_OBJECT_POSITION_TYPE_START:
       if (arranger_object_type_has_length (self->type))
         {
-          is_valid = position_is_before (pos, &self->end_pos);
+          if (!position_is_before (pos, &self->end_pos))
+            return false;
 
           if (!arranger_object_owned_by_region (self))
             {
-              is_valid =
-                is_valid && position_is_after_or_equal (pos, &POSITION_START);
+              if (!position_is_after_or_equal (pos, &POSITION_START))
+                return false;
             }
+
+          if (arranger_object_can_fade (self))
+            {
+              int      frames_diff = pos->frames - self->pos.frames;
+              Position expected_fade_out = self->fade_out_pos;
+              position_add_frames (&expected_fade_out, -frames_diff);
+              if (position_is_before_or_equal (
+                    &expected_fade_out, &self->fade_in_pos))
+                return false;
+            }
+
+          return true;
         }
       else if (arranger_object_type_has_global_pos (self->type))
         {
-          is_valid = position_is_after_or_equal (pos, &POSITION_START);
+          return position_is_after_or_equal (pos, &POSITION_START);
         }
       else
         {
-          is_valid = true;
+          return true;
         }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_START:
@@ -512,6 +518,16 @@ arranger_object_is_position_valid (
     case ARRANGER_OBJECT_POSITION_TYPE_END:
       {
         is_valid = position_is_after (pos, &self->pos);
+
+        if (arranger_object_can_fade (self))
+          {
+            int      frames_diff = pos->frames - self->end_pos.frames;
+            Position expected_fade_out = self->fade_out_pos;
+            position_add_frames (&expected_fade_out, frames_diff);
+            if (position_is_before_or_equal (
+                  &expected_fade_out, &self->fade_in_pos))
+              return false;
+          }
       }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_FADE_IN:
@@ -521,7 +537,8 @@ arranger_object_is_position_valid (
           &local_end_pos, self->end_pos.frames - self->pos.frames);
         is_valid =
           position_is_after_or_equal (pos, &POSITION_START) && pos->frames >= 0
-          && position_is_before (pos, &local_end_pos);
+          && position_is_before (pos, &local_end_pos)
+          && position_is_before (pos, &self->fade_out_pos);
       }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT:
@@ -531,7 +548,8 @@ arranger_object_is_position_valid (
           &local_end_pos, self->end_pos.frames - self->pos.frames);
         is_valid =
           position_is_after_or_equal (pos, &POSITION_START)
-          && position_is_before_or_equal (pos, &local_end_pos);
+          && position_is_before_or_equal (pos, &local_end_pos)
+          && position_is_after (pos, &self->fade_in_pos);
       }
       break;
     default:
@@ -540,9 +558,7 @@ arranger_object_is_position_valid (
 
 #if 0
   g_debug (
-    "%s position with ticks %f",
-    is_valid ? "Valid" : "Invalid",
-    pos->ticks);
+    "%s position with ticks %f", is_valid ? "Valid" : "Invalid", pos->ticks);
 #endif
 
   return is_valid;

@@ -170,12 +170,18 @@ typedef struct ArrangerObject
    */
   Position loop_end_pos;
 
-  /** Fade in position, relative to the object's
-   * start. */
+  /**
+   * Fade in position, relative to the object's start.
+   *
+   * Must always be before Arranger_object.fade_out_pos.
+   */
   Position fade_in_pos;
 
-  /** Fade out position, relative to the object's
-   * start. */
+  /**
+   * Fade out position, relative to the object's start.
+   *
+   * Must always be after ArrangerObject.fade_in_pos.
+   */
   Position fade_out_pos;
 
   /** Fade in curve options. */
@@ -595,8 +601,7 @@ arranger_object_loop_end_pos_setter (ArrangerObject * self, const Position * pos
  * Returns if the given Position is valid.
  *
  * @param pos The position to set to.
- * @param pos_type The type of Position to set in
- *   the ArrangerObject.
+ * @param pos_type The type of Position to set in the ArrangerObject.
  */
 HOT NONNULL WARN_UNUSED_RESULT bool
 arranger_object_is_position_valid (
