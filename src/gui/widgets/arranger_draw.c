@@ -536,6 +536,7 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
     }
 
   /* draw fades */
+  /* TODO draw top line like in the timeline */
   signed_frame_t obj_length_frames = arranger_object_get_length_in_frames (obj);
   GdkRGBA        base_color = {
            .red = 0.3f, .green = 0.3f, .blue = 0.3f, .alpha = 0.f
@@ -587,7 +588,7 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
         &GRAPHENE_RECT_INIT (
           (float) i, (float) from_y, (float) width, (float) draw_height));
 
-      if (curr_frames >= (signed_frame_t) clip->num_frames)
+      if (curr_frames >= obj_length_frames)
         break;
     }
 

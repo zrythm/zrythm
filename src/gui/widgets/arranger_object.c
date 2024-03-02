@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/automation_region.h"
@@ -861,4 +861,26 @@ arranger_object_should_orig_be_visible (
     {
       return false;
     }
+}
+
+bool
+arranger_object_is_hovered (ArrangerObject * self, ArrangerWidget * arranger)
+{
+  if (!arranger)
+    {
+      arranger = arranger_object_get_arranger (self);
+    }
+  return arranger->hovered_object == self;
+}
+
+bool
+arranger_object_is_hovered_or_start_object (
+  ArrangerObject * self,
+  ArrangerWidget * arranger)
+{
+  if (!arranger)
+    {
+      arranger = arranger_object_get_arranger (self);
+    }
+  return arranger->hovered_object == self || arranger->start_object == self;
 }

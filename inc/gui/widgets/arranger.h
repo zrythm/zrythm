@@ -164,19 +164,16 @@ typedef struct _ArrangerWidget
   Position fade_pos_at_start;
 
   /**
-   * The object that was clicked in this drag
-   * cycle, if any.
+   * The object that was clicked in this drag cycle, if any.
    *
-   * This is the ArrangerObject that was clicked,
-   * even though there could be more selected.
+   * This is the ArrangerObject that was clicked, even though there could be
+   * more selected.
    *
-   * This is also used when changing values via the
-   * event viewer.
+   * This is also used when changing values via the event viewer.
    *
    * FIXME this sometimes stores project objects (that should
    * not be free'd) and sometimes clones (eg,
-   * arranger_object_edit_begin/finish()).
-   * Only allow one type.
+   * arranger_object_edit_begin/finish()). Only allow one type.
    */
   ArrangerObject * start_object;
 

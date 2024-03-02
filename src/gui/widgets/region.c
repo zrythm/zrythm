@@ -820,6 +820,8 @@ draw_fade_part (
   Track *          track = arranger_object_get_track (obj);
   g_return_if_fail (track);
 
+  const float top_line_width = 4.f;
+
   /* set color */
   GdkRGBA color = { 0.2f, 0.2f, 0.2f, 0.6f };
 
@@ -846,6 +848,16 @@ draw_fade_part (
   if (vis_fade_in_px - vis_start_px > 0)
     {
       double local_px_diff = (double) (fade_in_px - start_px);
+
+      /* draw a white line on top of the fade area */
+      if (arranger_object_is_hovered_or_start_object (obj, NULL))
+        {
+          gtk_snapshot_append_color (
+            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            &GRAPHENE_RECT_INIT (
+              (float) vis_start_px, 0.f,
+              (float) vis_fade_in_px - (float) vis_start_px, top_line_width));
+        }
 
       /* create cairo node if necessary */
       cairo_t * cr = NULL;
@@ -927,6 +939,17 @@ draw_fade_part (
   if (visible_end_px - visible_fade_out_px > 0)
     {
       double local_px_diff = (double) (end_px - fade_out_px);
+
+      /* draw a white line on top of the fade area */
+      if (arranger_object_is_hovered_or_start_object (obj, NULL))
+        {
+          gtk_snapshot_append_color (
+            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            &GRAPHENE_RECT_INIT (
+              (float) visible_fade_out_px, 0.f,
+              (float) visible_end_px - (float) visible_fade_out_px,
+              top_line_width));
+        }
 
       /* create cairo node if necessary */
       cairo_t * cr = NULL;

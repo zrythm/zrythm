@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -180,6 +180,24 @@ arranger_object_draw (
  */
 NONNULL_ARGS (1)
 OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
+  ArrangerObject * self,
+  ArrangerWidget * arranger);
+
+/**
+ * Whether the object is currently hovered.
+ *
+ * @param arranger Owner arranger. Should be passed to speed up calculation.
+ */
+bool
+arranger_object_is_hovered (ArrangerObject * self, ArrangerWidget * arranger);
+
+/**
+ * Whether hovered or the start object of the current action in the arranger.
+ *
+ * @param arranger Owner arranger. Should be passed to speed up calculation.
+ */
+bool
+arranger_object_is_hovered_or_start_object (
   ArrangerObject * self,
   ArrangerWidget * arranger);
 
