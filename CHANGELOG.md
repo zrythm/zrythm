@@ -6,6 +6,29 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.5.1] - 2024-03-02
+### Added
+- Build: Add flatpak manifest for building in GNOME Builder
+- Source: Add editor config file
+- Add more relevant categories in desktop file
+- Auto-scroll when dragging towards edges of the ruler (#5043)
+- Show fade in/out line indicator in audio regions in timeline on hover
+
+### Changed
+- Replace most cursors used in arrangers (#5029)
+- Update Interlingua, Catalan translations
+- Build: set gettext package name and version
+
+### Fixed
+- Fix diminuendo (crescendo MIDI function with downward slope) (#4999)
+- Fix wrong icon name in desktop file
+- Fix automation points for non-float parameters being drawn at wrong positions (#4177)
+- Fix missing `document-edit` icon
+- Fix incorrectly allowing audio region fade in/out to crossfade (#4975)
+
+### Removed
+- Remove styling of panel resize separators (#5046)
+
 ## [1.0.0-beta.6.4.1] - 2024-02-18
 ### Changed
 - Redesign plugin info label
