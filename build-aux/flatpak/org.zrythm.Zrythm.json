@@ -3,7 +3,7 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
-  "command": "zrythm_launch",
+  "command": "zrythm",
   "finish-args": [
     "--share=ipc",
     "--socket=wayland",
