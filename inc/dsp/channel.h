@@ -83,13 +83,11 @@ typedef struct Channel
   ChannelSend * sends[STRIP_SIZE];
 
   /**
-   * External MIDI inputs that are currently
-   * connected to this channel as official inputs,
-   * unless all_midi_ins is enabled.
+   * External MIDI inputs that are currently connected to this channel as
+   * official inputs, unless all_midi_ins is enabled.
    *
-   * These should be serialized every time and
-   * connected to when the project gets loaded
-   * if \ref Channel.all_midi_ins is not enabled.
+   * These should be serialized every time and connected to when the project
+   * gets loaded if \ref Channel.all_midi_ins is not enabled.
    *
    * If all_midi_ins is enabled, these are ignored.
    */
@@ -101,54 +99,43 @@ typedef struct Channel
   bool all_midi_ins;
 
   /**
-   * External audio L inputs that are currently
-   * connected to this channel as official inputs,
-   * unless all_stereo_l_ins is enabled.
+   * External audio L inputs that are currently connected to this channel as
+   * official inputs, unless all_stereo_l_ins is enabled.
    *
-   * These should be serialized every time and
-   * if all_stereo_l_ins is not enabled, connected to
-   * when the project gets loaded.
+   * These should be serialized every time and if all_stereo_l_ins is not
+   * enabled, connected to when the project gets loaded.
    *
-   * If all_stereo_l_ins is enabled, these are
-   * ignored.
+   * If all_stereo_l_ins is enabled, these are ignored.
    */
   ExtPort * ext_stereo_l_ins[EXT_PORTS_MAX];
   int       num_ext_stereo_l_ins;
 
-  /** If true, the channel will connect to all
-   * stereo L ins found. */
+  /** If true, the channel will connect to all stereo L ins found. */
   bool all_stereo_l_ins;
 
   /**
-   * External audio R inputs that are currently
-   * connected to this channel as official inputs,
-   * unless all_stereo_r_ins is enabled.
+   * External audio R inputs that are currently connected to this channel as
+   * official inputs, unless all_stereo_r_ins is enabled.
    *
-   * These should be serialized every time and
-   * if all_stereo_r_ins is not enabled, connected to
-   * when the project gets loaded.
+   * These should be serialized every time and if all_stereo_r_ins is not
+   * enabled, connected to when the project gets loaded.
    *
-   * If all_stereo_r_ins is enabled, these are
-   * ignored.
+   * If all_stereo_r_ins is enabled, these are ignored.
    */
   ExtPort * ext_stereo_r_ins[EXT_PORTS_MAX];
   int       num_ext_stereo_r_ins;
 
-  /** If true, the channel will connect to all
-   * stereo R ins found. */
+  /** If true, the channel will connect to all stereo R ins found. */
   bool all_stereo_r_ins;
 
   /**
-   * 1 or 0 flags for each channel to enable it or
-   * disable it.
+   * 1 or 0 flags for each channel to enable it or disable it.
    *
-   * If all_midi_channels is enabled, this is
-   * ignored.
+   * If all_midi_channels is enabled, this is ignored.
    */
   int midi_channels[16];
 
-  /** If true, the channel will accept MIDI messages
-   * from all MIDI channels.
+  /** If true, the channel will accept MIDI messages from all MIDI channels.
    */
   bool all_midi_channels;
 
@@ -163,22 +150,19 @@ typedef struct Channel
   Fader * prefader;
 
   /**
-   * MIDI output for sending MIDI signals to other
-   * destinations, such as other channels when
-   * directly routed (eg MIDI track to ins track).
+   * MIDI output for sending MIDI signals to other destinations, such as other
+   * channels when directly routed (eg MIDI track to ins track).
    */
   Port * midi_out;
 
   /*
-   * Ports for direct (track-to-track) routing with
-   * the exception of master, which will route the
-   * output to monitor in.
+   * Ports for direct (track-to-track) routing with the exception of master,
+   * which will route the output to monitor in.
    */
   StereoPorts * stereo_out;
 
   /**
-   * Whether or not output_pos corresponds to
-   * a Track or not.
+   * Whether or not output_pos corresponds to a Track or not.
    *
    * If not, the channel is routed to the engine.
    */
@@ -190,8 +174,7 @@ typedef struct Channel
   /** Track associated with this channel. */
   int track_pos;
 
-  /** Channel widget width - reserved for future
-   * use. */
+  /** Channel widget width - reserved for future use. */
   int width;
 
   /** This must be set to CHANNEL_MAGIC. */
@@ -203,42 +186,6 @@ typedef struct Channel
   /** Pointer to owner track. */
   Track * track;
 } Channel;
-
-static const cyaml_schema_field_t channel_fields_schema[] = {
-  YAML_FIELD_INT (Channel, schema_version),
-  YAML_FIELD_SEQUENCE_FIXED (Channel, midi_fx, plugin_schema, STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (Channel, inserts, plugin_schema, STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (Channel, sends, channel_send_schema, STRIP_SIZE),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, instrument, plugin_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Channel, prefader, fader_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Channel, fader, fader_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, midi_out, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, stereo_out, stereo_ports_fields_schema),
-  YAML_FIELD_UINT (Channel, has_output),
-  YAML_FIELD_UINT (Channel, output_name_hash),
-  YAML_FIELD_INT (Channel, track_pos),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (Channel, ext_midi_ins, ext_port_schema),
-  YAML_FIELD_INT (Channel, all_midi_ins),
-  YAML_FIELD_SEQUENCE_FIXED (Channel, midi_channels, int_schema, 16),
-  YAML_FIELD_INT (Channel, all_midi_channels),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel,
-    ext_stereo_l_ins,
-    ext_port_schema),
-  YAML_FIELD_INT (Channel, all_stereo_l_ins),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel,
-    ext_stereo_r_ins,
-    ext_port_schema),
-  YAML_FIELD_INT (Channel, all_stereo_r_ins),
-  YAML_FIELD_INT (Channel, width),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t channel_schema = {
-  YAML_VALUE_PTR (Channel, channel_fields_schema),
-};
 
 NONNULL void
 channel_init_loaded (Channel * channel, Track * track);

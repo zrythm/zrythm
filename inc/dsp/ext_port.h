@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXT_PORT_H__
@@ -216,6 +216,9 @@ ext_port_matches_backend (ExtPort * self);
 MALLOC
 NONNULL char *
 ext_port_get_id (ExtPort * ext_port);
+
+NONNULL bool
+ext_ports_equal (const ExtPort * a, const ExtPort * b);
 
 /**
  * Returns a user-friendly display name (eg, to be used in dropdowns).

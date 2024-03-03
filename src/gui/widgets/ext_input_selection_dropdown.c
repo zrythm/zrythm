@@ -174,6 +174,28 @@ on_bind (
   g_free (str);
 }
 
+static void
+preselect_current_port (GtkDropDown * dropdown, ExtPort * ch_port)
+{
+  GListModel * model = gtk_drop_down_get_model (dropdown);
+  guint        n_items = g_list_model_get_n_items (model);
+  bool         found = false;
+  for (size_t i = 2; i < n_items; i++)
+    {
+      WrappedObjectWithChangeSignal * wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_object (model, i));
+      ExtPort * port = (ExtPort *) wobj->obj;
+      if (ext_ports_equal (port, ch_port))
+        {
+          gtk_drop_down_set_selected (dropdown, i);
+          found = true;
+          break;
+        }
+    }
+  if (!found)
+    gtk_drop_down_set_selected (dropdown, 2);
+}
+
 void
 ext_input_selection_dropdown_widget_refresh (
   GtkDropDown * dropdown,
@@ -286,7 +308,7 @@ ext_input_selection_dropdown_widget_refresh (
       else if (ch->num_ext_midi_ins == 0)
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        gtk_drop_down_set_selected (dropdown, 2);
+        preselect_current_port (dropdown, ch->ext_midi_ins[0]);
     }
   else if (left)
     {
@@ -295,7 +317,7 @@ ext_input_selection_dropdown_widget_refresh (
       else if (ch->num_ext_stereo_l_ins == 0)
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        gtk_drop_down_set_selected (dropdown, 2);
+        preselect_current_port (dropdown, ch->ext_stereo_l_ins[0]);
     }
   else
     {
@@ -304,7 +326,7 @@ ext_input_selection_dropdown_widget_refresh (
       else if (ch->num_ext_stereo_r_ins == 0)
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        gtk_drop_down_set_selected (dropdown, 2);
+        preselect_current_port (dropdown, ch->ext_stereo_r_ins[0]);
     }
 
   /* --- add signal --- */

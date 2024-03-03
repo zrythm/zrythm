@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -73,6 +73,12 @@ ext_port_get_id (ExtPort * self)
 {
   return g_strdup_printf (
     "%s/%s", ext_port_type_strings[self->type].str, self->full_name);
+}
+
+bool
+ext_ports_equal (const ExtPort * a, const ExtPort * b)
+{
+  return a->type == b->type && string_is_equal (a->full_name, b->full_name);
 }
 
 char *
