@@ -169,25 +169,6 @@ typedef struct ExtPort
   Port * port;
 } ExtPort;
 
-static const cyaml_schema_field_t ext_port_fields_schema[] = {
-  YAML_FIELD_INT (ExtPort, schema_version),
-  YAML_FIELD_STRING_PTR (ExtPort, full_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, short_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias1),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias2),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, rtaudio_dev_name),
-  YAML_FIELD_INT (ExtPort, num_aliases),
-  YAML_FIELD_INT (ExtPort, is_midi),
-  YAML_FIELD_ENUM (ExtPort, type, ext_port_type_strings),
-  YAML_FIELD_UINT (ExtPort, rtaudio_channel_idx),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t ext_port_schema = {
-  YAML_VALUE_PTR (ExtPort, ext_port_fields_schema),
-};
-
 /**
  * Inits the ExtPort after loading a project.
  */

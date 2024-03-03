@@ -92,33 +92,6 @@ typedef struct HardwareProcessor
 
 } HardwareProcessor;
 
-static const cyaml_schema_field_t hardware_processor_fields_schema[] = {
-  YAML_FIELD_INT (HardwareProcessor, schema_version),
-  YAML_FIELD_INT (HardwareProcessor, is_input),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor,
-    ext_audio_ports,
-    ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor,
-    ext_midi_ports,
-    ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor,
-    audio_ports,
-    port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor,
-    midi_ports,
-    port_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t hardware_processor_schema = {
-  YAML_VALUE_PTR (HardwareProcessor, hardware_processor_fields_schema),
-};
-
 COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
   HardwareProcessor * self,
   AudioEngine *       engine);

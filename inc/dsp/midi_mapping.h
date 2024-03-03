@@ -59,29 +59,6 @@ typedef struct MidiMapping
   WrappedObjectWithChangeSignal * gobj;
 } MidiMapping;
 
-static const cyaml_schema_field_t midi_mapping_fields_schema[] = {
-  YAML_FIELD_INT (MidiMapping, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (MidiMapping, key, uint8_t_schema, 3),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (MidiMapping, device_port, ext_port_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (MidiMapping, dest_id, port_identifier_fields_schema),
-  YAML_FIELD_INT (MidiMapping, enabled),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t midi_mapping_schema = {
-  YAML_VALUE_PTR (MidiMapping, midi_mapping_fields_schema),
-};
-
-#if 0
-static const cyaml_schema_value_t
-  midi_mapping_schema_default =
-{
-  YAML_VALUE_DEFAULT (
-    MidiMapping, midi_mapping_fields_schema),
-};
-#endif
-
 /**
  * All MIDI mappings in Zrythm.
  */
@@ -93,20 +70,6 @@ typedef struct MidiMappings
   size_t         mappings_size;
   int            num_mappings;
 } MidiMappings;
-
-static const cyaml_schema_field_t midi_mappings_fields_schema[] = {
-  YAML_FIELD_INT (MidiMappings, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    MidiMappings,
-    mappings,
-    midi_mapping_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t midi_mappings_schema = {
-  YAML_VALUE_PTR (MidiMappings, midi_mappings_fields_schema),
-};
 
 /**
  * Initializes the MidiMappings after a Project
