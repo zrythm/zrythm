@@ -35,6 +35,8 @@ template $MidiEditorSpaceWidget : Gtk.Widget {
       Gtk.Box midi_vel_chooser_box {
         orientation: vertical;
         Gtk.ComboBoxText midi_modifier_chooser {
+          /* not implemented yet, also see #5053 */
+          visible: false;
           items [
             _("Velocity"),
             _("Pitch Wheel"),
