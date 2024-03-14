@@ -77,18 +77,14 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_pop (snapshot);
 
   /* draw filled in bar */
-  GdkRGBA      fg_color;
+  GdkRGBA fg_color;
   gtk_widget_get_color (widget, &fg_color);
   double       intensity = fader_val;
   const double intensity_inv = 1.0 - intensity;
-  double       r =
-    intensity_inv * self->end_color.red + intensity * fg_color.red;
-  double g =
-    intensity_inv * self->end_color.green + intensity * fg_color.green;
-  double b =
-    intensity_inv * self->end_color.blue + intensity * fg_color.blue;
-  double a =
-    intensity_inv * self->end_color.alpha + intensity * fg_color.alpha;
+  double r = intensity_inv * self->end_color.red + intensity * fg_color.red;
+  double g = intensity_inv * self->end_color.green + intensity * fg_color.green;
+  double b = intensity_inv * self->end_color.blue + intensity * fg_color.blue;
+  double a = intensity_inv * self->end_color.alpha + intensity * fg_color.alpha;
 
   if (!self->hover)
     a = 0.9f;
@@ -504,7 +500,7 @@ fader_widget_setup (FaderWidget * self, Fader * fader, int height)
   self->fader = fader;
 
   /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self), 20, height);
+  gtk_widget_set_size_request (GTK_WIDGET (self), 36, height);
 }
 
 static void
