@@ -2590,14 +2590,13 @@ on_drag_begin_handle_hit_object (
   /* clone the arranger selections at this point */
   self->sel_at_start = arranger_selections_clone (orig_selections);
 
-  /* if the action is stretching, set the
-   * "before_length" on each region */
+  /* if the action is stretching, set the "before_length" on each region */
   if (
     orig_selections->type == ARRANGER_SELECTIONS_TYPE_TIMELINE
     && ACTION_IS (STRETCHING_R))
     {
-      TimelineSelections * sel = (TimelineSelections *) orig_selections;
-      transport_prepare_audio_regions_for_stretch (TRANSPORT, sel);
+      transport_prepare_audio_regions_for_stretch (
+        TRANSPORT, (TimelineSelections *) orig_selections);
     }
 
   return true;
@@ -3183,12 +3182,9 @@ drag_update (
       self->action = UI_OVERLAY_ACTION_STARTING_ERASING;
     }
 
-  /* set action to selecting if starting
-   * selection. this
-   * is because drag_update never gets called if
-   * it's just
-   * a click, so we can check at drag_end and see if
-   * anything was selected */
+  /* set action to selecting if starting selection. this is because drag_update
+   * never gets called if it's just a click, so we can check at drag_end and see
+   * if anything was selected */
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_STARTING_SELECTION:

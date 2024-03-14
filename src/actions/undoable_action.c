@@ -202,8 +202,7 @@ do_or_undo (UndoableAction * self, bool perform, GError ** error)
   EngineState state;
   if (undoable_action_needs_pause (self))
     {
-      /* stop engine and give it some time to stop
-       * running */
+      /* stop engine and give it some time to stop running */
       engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
     }
 
@@ -415,32 +414,24 @@ undoable_action_save_or_load_port_connections (
   PortConnectionsManager ** before,
   PortConnectionsManager ** after)
 {
-  /* if first do and keeping track of connections,
-   * clone the new connections */
+  /* if first do and keeping track of connections, clone the new connections */
   if (_do && *before != NULL && *after == NULL)
     {
-      g_debug (
-        "updating and caching port connections "
-        "after doing action");
+      g_debug ("updating and caching port connections after doing action");
       *after = port_connections_manager_clone (PORT_CONNECTIONS_MGR);
     }
   else if (_do && *after != NULL)
     {
-      g_debug (
-        "resetting port connections from "
-        "cached after");
+      g_debug ("resetting port connections from cached after");
       port_connections_manager_reset (PORT_CONNECTIONS_MGR, *after);
       g_return_if_fail (
         PORT_CONNECTIONS_MGR->num_connections == (*after)->num_connections);
     }
-  /* else if undoing and have connections from
-   * before */
+  /* else if undoing and have connections from before */
   else if (!_do && *before != NULL)
     {
       /* reset the connections */
-      g_debug (
-        "resetting port connections from "
-        "cached before");
+      g_debug ("resetting port connections from cached before");
       port_connections_manager_reset (PORT_CONNECTIONS_MGR, *before);
       g_return_if_fail (
         PORT_CONNECTIONS_MGR->num_connections == (*before)->num_connections);

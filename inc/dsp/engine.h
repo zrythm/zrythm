@@ -370,7 +370,7 @@ typedef struct AudioEngine
   /** JACK client. */
   jack_client_t * client;
 #else
-  void *   client;
+  void * client;
 #endif
 
   /**
@@ -548,10 +548,10 @@ typedef struct AudioEngine
    * ALSA MIDI events from above. */
   // ZixSem             alsa_midi_events_sem;
 #else
-  void *   playback_handle;
-  void *   seq_handle;
-  void *   hw_params;
-  void *   sw_params;
+  void * playback_handle;
+  void * seq_handle;
+  void * hw_params;
+  void * sw_params;
 #endif
 
   /** ALSA audio buffer. */
@@ -569,7 +569,7 @@ typedef struct AudioEngine
 #ifdef HAVE_PORT_AUDIO
   PaStream * pa_stream;
 #else
-  void *   pa_stream;
+  void * pa_stream;
 #endif
 
   /**
@@ -588,10 +588,10 @@ typedef struct AudioEngine
   WindowsMmeDevice * mme_out_devs[1024];
   int                num_mme_out_devs;
 #else
-  void *   mme_in_devs[1024];
-  int      num_mme_in_devs;
-  void *   mme_out_devs[1024];
-  int      num_mme_out_devs;
+  void * mme_in_devs[1024];
+  int    num_mme_in_devs;
+  void * mme_out_devs[1024];
+  int    num_mme_out_devs;
 #endif
 
 #ifdef HAVE_SDL
@@ -603,7 +603,7 @@ typedef struct AudioEngine
 #ifdef HAVE_RTAUDIO
   rtaudio_t rtaudio;
 #else
-  void *   rtaudio;
+  void * rtaudio;
 #endif
 
 #ifdef HAVE_PULSEAUDIO
@@ -611,9 +611,9 @@ typedef struct AudioEngine
   pa_context *           pulse_context;
   pa_stream *            pulse_stream;
 #else
-  void *   pulse_mainloop;
-  void *   pulse_context;
-  void *   pulse_stream;
+  void * pulse_mainloop;
+  void * pulse_context;
+  void * pulse_stream;
 #endif
   gboolean pulse_notified_underflow;
 

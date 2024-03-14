@@ -1081,14 +1081,17 @@ arranger_selections_action_perform_quantize (
     arranger_selections_action_new_quantize, error, sel, opts, error);
 }
 
+/**
+ * Find all corresponding objects in the project and call
+ * region_update_link_group().
+ */
 static void
 update_region_link_groups (GPtrArray * objs_arr)
 {
   /* handle children of linked regions */
   for (size_t i = 0; i < objs_arr->len; i++)
     {
-      /* get the actual object from the
-       * project */
+      /* get the actual object from the project */
       ArrangerObject * obj = arranger_object_find (
         (ArrangerObject *) g_ptr_array_index (objs_arr, i));
       g_return_if_fail (obj);
@@ -1867,8 +1870,7 @@ do_or_undo_create_or_delete (
             (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           own_obj->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
-          /* if doing in a create action or undoing
-           * in a delete action */
+          /* if doing in a create action or undoing in a delete action */
           if ((_do && create) || (!_do && !create))
             {
               /* clone the clone */

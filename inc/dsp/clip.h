@@ -247,15 +247,13 @@ audio_clip_get_path_in_pool_from_name (
 /**
  * Gets the path of the given clip from the pool.
  *
- * @param is_backup Whether writing to a backup
- *   project.
+ * @param is_backup Whether writing to a backup project.
  */
 NONNULL char *
 audio_clip_get_path_in_pool (AudioClip * self, bool is_backup);
 
 /**
- * Returns whether the clip is used inside the
- * project.
+ * Returns whether the clip is used inside the project.
  *
  * @param check_undo_stack If true, this checks both
  *   project regions and the undo stack. If false,

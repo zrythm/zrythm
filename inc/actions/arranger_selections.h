@@ -164,8 +164,8 @@ typedef struct ArrangerSelectionsAction
   ArrangerSelections * sel;
 
   /**
-   * A clone of the ArrangerSelections after the change (used
-   * in the EDIT action and quantize).
+   * A clone of the ArrangerSelections after the change (used in the EDIT action
+   * and quantize).
    */
   ArrangerSelections * sel_after;
 
@@ -213,8 +213,7 @@ typedef struct ArrangerSelectionsAction
   int num_split_objs;
 
   /**
-   * If this is 1, the first "do" call does
-   * nothing in some cases.
+   * If this is true, the first "do" call does nothing in some cases.
    *
    * Set internally and either used or ignored.
    */

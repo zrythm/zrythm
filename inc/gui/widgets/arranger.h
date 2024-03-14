@@ -185,11 +185,10 @@ typedef struct _ArrangerWidget
   int start_object_was_selected;
 
   /**
-   * A clone of the ArrangerSelections on drag
-   * begin.
+   * A clone of the ArrangerSelections on drag begin.
    *
-   * When autofilling velocities, this is used to
-   * store the affected objects before editing.
+   * When autofilling velocities, this is used to store the affected objects
+   * before editing.
    *
    * This must contain clones only.
    */

@@ -206,12 +206,10 @@ typedef struct ArrangerObject
   int texth;
 
   /**
-   * A copy ArrangerObject corresponding to this,
-   * such as when ctrl+dragging.
+   * A copy ArrangerObject corresponding to this, such as when ctrl+dragging.
    *
-   * This will be the clone object saved in the
-   * cloned arranger selections in each arranger
-   * during actions, and would get drawn separately.
+   * This will be the clone object saved in the cloned arranger selections in
+   * each arranger during actions, and would get drawn separately.
    */
   ArrangerObject * transient;
 
@@ -243,9 +241,8 @@ typedef struct ArrangerObject
   /**
    * Whether deleted with delete tool.
    *
-   * This is used to simply hide these objects
-   * until the action finishes so that they can
-   * be cloned for the actions.
+   * This is used to simply hide these objects until the action finishes so that
+   * they can be cloned for the actions.
    */
   bool deleted_temporarily;
 

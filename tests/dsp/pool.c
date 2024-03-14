@@ -20,10 +20,8 @@
 static void
 test_remove_unused (void)
 {
-  /* on first iteration, run the whole logic
-   * on second iteration, just check that no files
-   * in the main project are removed when saving
-   * a backup */
+  /* on first iteration, run the whole logic on second iteration, just check
+   * that no files in the main project are removed when saving a backup */
   for (int i = 0; i < 2; i++)
     {
       test_helper_zrythm_init ();

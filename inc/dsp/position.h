@@ -31,13 +31,13 @@
 #define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
 #define TICKS_PER_NINETYSIXTH_NOTE_DBL 40.0
 #define position_add_sixteenths(_pos, _s) \
-  position_add_ticks ((_pos), (_s) *TICKS_PER_SIXTEENTH_NOTE)
+  position_add_ticks ((_pos), (_s) * TICKS_PER_SIXTEENTH_NOTE)
 #define position_add_beats(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_beat > 0); \
-  position_add_ticks ((_pos), (_b) *TRANSPORT->ticks_per_beat)
+  position_add_ticks ((_pos), (_b) * TRANSPORT->ticks_per_beat)
 #define position_add_bars(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0); \
-  position_add_ticks ((_pos), (_b) *TRANSPORT->ticks_per_bar)
+  position_add_ticks ((_pos), (_b) * TRANSPORT->ticks_per_bar)
 #define position_snap_simple(pos, sg) position_snap (NULL, pos, NULL, NULL, sg)
 
 #define POSITION_MAX_BAR 160000

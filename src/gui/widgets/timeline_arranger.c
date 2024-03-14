@@ -704,8 +704,7 @@ timeline_arranger_widget_snap_regions_r (
 {
   ArrangerObject * start_r_obj = self->start_object;
 
-  /* get delta with first clicked region's end
-   * pos */
+  /* get delta with first clicked region's end pos */
   double delta;
   if (ACTION_IS (RESIZING_R_FADE))
     {
@@ -722,9 +721,8 @@ timeline_arranger_widget_snap_regions_r (
         position_to_ticks (pos) - position_to_ticks (&start_r_obj->end_pos);
     }
 
-  /* new end pos for each region, calculated by
-   * adding delta to the region's original end
-   * pos */
+  /* new end pos for each region, calculated by adding delta to the region's
+   * original end pos */
   Position new_pos;
 
   ZRegion *        region;
