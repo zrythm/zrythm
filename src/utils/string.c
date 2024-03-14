@@ -447,14 +447,6 @@ string_array_sort_and_remove_duplicates (char ** str_arr)
   g_return_val_if_reached (NULL);
 }
 
-/**
- * Copies the string src to the buffer in \ref dest
- * after reallocating the buffer in \ref dest to
- * the length of \ref src.
- *
- * If \ref src is NULL, the string at \ref dest is
- * free'd and the pointer is set to NULL.
- */
 void
 string_copy_w_realloc (char ** dest, const char * src)
 {

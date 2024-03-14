@@ -680,24 +680,6 @@ AdwComboRow *
 ui_gen_midi_backends_combo_row (bool with_signal);
 
 /**
- * Sets up a pan algorithm combo box.
- */
-void
-ui_setup_pan_algo_combo_box (GtkComboBox * cb);
-
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_pan_law_combo_box (GtkComboBox * cb);
-
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_buffer_size_combo_box (GtkComboBox * cb);
-
-/**
  * Sets up a combo row for selecting the audio device name.
  *
  * @param with_signal Add a signal to change the backend in

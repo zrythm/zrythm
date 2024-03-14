@@ -536,82 +536,6 @@ ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf)
 \
   return GTK_TREE_MODEL (store);
 
-#if 0
-/**
- * Creates and returns a language model for combo
- * boxes.
- */
-static GtkTreeModel *
-ui_create_language_model ()
-{
-  int values[NUM_LL_LANGUAGES];
-  const char * labels[NUM_LL_LANGUAGES];
-  for (int i = 0; i < NUM_LL_LANGUAGES; i++)
-    {
-      values[i] = i;
-      labels[i] =
-        localization_get_string_w_code (i);
-    }
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-#endif
-
-static GtkTreeModel *
-ui_create_pan_algo_model (void)
-{
-
-  const int values[3] = {
-    PAN_ALGORITHM_LINEAR,
-    PAN_ALGORITHM_SQUARE_ROOT,
-    PAN_ALGORITHM_SINE_LAW,
-  };
-  const gchar * labels[3] = {
-    /* TRANSLATORS: Pan algorithm */
-    _ ("Linear"),
-    _ ("Square Root"),
-    _ ("Sine (Equal Power)"),
-  };
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-
-static GtkTreeModel *
-ui_create_pan_law_model (void)
-{
-
-  const int values[3] = {
-    PAN_LAW_0DB,
-    PAN_LAW_MINUS_3DB,
-    PAN_LAW_MINUS_6DB,
-  };
-  const gchar * labels[3] = {
-    /* TRANSLATORS: Pan algorithm */
-    "0dB",
-    "-3dB",
-    "-6dB",
-  };
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-
-static GtkTreeModel *
-ui_create_buffer_size_model (void)
-{
-  const int values[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
-    AUDIO_ENGINE_BUFFER_SIZE_16,   AUDIO_ENGINE_BUFFER_SIZE_32,
-    AUDIO_ENGINE_BUFFER_SIZE_64,   AUDIO_ENGINE_BUFFER_SIZE_128,
-    AUDIO_ENGINE_BUFFER_SIZE_256,  AUDIO_ENGINE_BUFFER_SIZE_512,
-    AUDIO_ENGINE_BUFFER_SIZE_1024, AUDIO_ENGINE_BUFFER_SIZE_2048,
-    AUDIO_ENGINE_BUFFER_SIZE_4096,
-  };
-  const gchar * labels[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
-    "16", "32", "64", "128", "256", "512", "1024", "2048", "4096",
-  };
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -816,30 +740,6 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 }
 
 /**
- * Sets up a pan algorithm combo box.
- */
-void
-ui_setup_pan_algo_combo_box (GtkComboBox * cb)
-{
-  z_gtk_configure_simple_combo_box (cb, ui_create_pan_algo_model ());
-
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb), g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
-}
-
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_pan_law_combo_box (GtkComboBox * cb)
-{
-  z_gtk_configure_simple_combo_box (cb, ui_create_pan_law_model ());
-
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb), g_settings_get_enum (S_P_DSP_PAN, "pan-law"));
-}
-
-/**
  * Returns the "a locale for the language you have
  * selected..." text based on the given language.
  *
@@ -889,19 +789,6 @@ ui_show_warning_for_tempo_track_experimental_feature (void)
            "project."));
       shown = true;
     }
-}
-
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_buffer_size_combo_box (GtkComboBox * cb)
-{
-  z_gtk_configure_simple_combo_box (cb, ui_create_buffer_size_model ());
-
-  char id[40];
-  sprintf (id, "%d", g_settings_get_enum (S_P_GENERAL_ENGINE, "buffer-size"));
-  gtk_combo_box_set_active_id (GTK_COMBO_BOX (cb), id);
 }
 
 static void
