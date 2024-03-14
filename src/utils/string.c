@@ -469,7 +469,7 @@ string_copy_w_realloc (char ** dest, const char * src)
     {
       if (*dest)
         {
-          free (*dest);
+          g_free (*dest);
           *dest = NULL;
         }
     }

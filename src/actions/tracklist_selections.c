@@ -1688,6 +1688,7 @@ do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
             self->new_txt = cur_name;
 
             need_tracklist_cache_update = true;
+            need_recalc_graph = true;
           }
           break;
         case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:

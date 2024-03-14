@@ -1297,6 +1297,11 @@ engine_realloc_port_buffers (AudioEngine * self, nframes_t nframes)
 static void
 clear_output_buffers (AudioEngine * self, nframes_t nframes)
 {
+  /* if graph setup in progress, monitor buffers may be re-allocated so avoid
+   * accessing them */
+  if (G_UNLIKELY (g_atomic_int_get (&self->router->graph_setup_in_progress)))
+    return;
+
   /* clear the monitor output (used by rtaudio) */
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);

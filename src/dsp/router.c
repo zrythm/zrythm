@@ -168,7 +168,9 @@ router_recalc_graph (Router * self, bool soft)
   if (!self->graph && !soft)
     {
       self->graph = graph_new (self);
+      g_atomic_int_set (&self->graph_setup_in_progress, 1);
       graph_setup (self->graph, 1, 1);
+      g_atomic_int_set (&self->graph_setup_in_progress, 0);
       graph_start (self->graph);
       return;
     }
@@ -187,7 +189,9 @@ router_recalc_graph (Router * self, bool soft)
         {
           g_usleep (100);
         }
+      g_atomic_int_set (&self->graph_setup_in_progress, 1);
       graph_setup (self->graph, 1, 1);
+      g_atomic_int_set (&self->graph_setup_in_progress, 0);
       g_atomic_int_set (&AUDIO_ENGINE->run, (guint) running);
     }
 

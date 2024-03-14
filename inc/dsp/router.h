@@ -78,6 +78,10 @@ typedef struct Router
 {
   Graph * graph;
 
+  /** An atomic variable to check if the graph is currently being setup (so that
+   * we can avoid accessing buffers changed by this). */
+  int graph_setup_in_progress;
+
   /** Time info for this processing cycle. */
   EngineProcessTimeInfo time_nfo;
 

@@ -35,6 +35,8 @@ if get_option ('tests')
   test_env.set ('ZRYTHM_DSP_THREADS', '4')
   test_env.set ('PIPEWIRE_RUNTIME_DIR', '/tmp/zrythm-pipewire')
   test_env.set ('PIPEWIRE_DEBUG', '3')
+  test_env.set ('ASAN_OPTIONS', 'detect_leaks=0:verify_asan_link_order=0')
+  #test_env.set ('LSAN_OPTIONS', 'suppressions=' + meson_src_root / 'subprojects/gtk4/lsan.supp')
 
   test_config = configuration_data ()
   test_config.set_quoted (

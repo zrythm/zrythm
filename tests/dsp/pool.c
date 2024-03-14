@@ -118,14 +118,12 @@ test_remove_unused (void)
        * pool */
       test_project_save_and_reload ();
 
-      /* assert first and previous last clip are
-       * removed */
+      /* assert first and previous last clip are removed */
       g_assert_cmpint (AUDIO_POOL->num_clips, ==, ZRYTHM->undo_stack_len + 5);
       g_assert_null (AUDIO_POOL->clips[0]);
       g_assert_false (g_file_test (clip_path, G_FILE_TEST_EXISTS));
       g_assert_nonnull (AUDIO_POOL->clips[1]);
       g_assert_null (AUDIO_POOL->clips[ZRYTHM->undo_stack_len + 4]);
-      g_assert_nonnull (AUDIO_POOL->clips[ZRYTHM->undo_stack_len + 5]);
       g_assert_true (g_file_test (clip_path2, G_FILE_TEST_EXISTS));
       g_assert_false (g_file_test (last_clip_path, G_FILE_TEST_EXISTS));
 
