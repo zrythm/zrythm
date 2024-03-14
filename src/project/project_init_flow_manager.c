@@ -744,9 +744,11 @@ continue_load_from_file_after_open_backup_response (
   struct yyjson_read_err json_read_err;
   yyjson_doc *           doc = yyjson_read_opts (
     text, strlen (text), YYJSON_READ_NOFLAG, NULL, &json_read_err);
+  bool json_read_success = doc != NULL;
+  object_free_w_func_and_null (yyjson_doc_free, doc);
   bool upgraded = false;
   int  yaml_schema_ver = -1;
-  if (!doc)
+  if (!json_read_success)
     {
       /* failed to read JSON - check if YAML */
       int schema_ver = string_get_regex_group_as_int (
@@ -813,7 +815,7 @@ continue_load_from_file_after_open_backup_response (
           project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
           return;
         }
-    }
+    } /* endif !json_read_success */
 
   gint64    time_before = g_get_monotonic_time ();
   Project * self = project_deserialize_from_json_str (text, &err);
