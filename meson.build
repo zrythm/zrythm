@@ -883,7 +883,7 @@ graphene_dep = dependency (
   include_type: 'system')
 
 gtk_dep = dependency (
-  'gtk4', version: '>=' + '4.13', #gtk_req,
+  'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
   default_options: [
     'build-demos=false', 'build-examples=false',
