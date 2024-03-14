@@ -58,6 +58,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <property name="orientation">1</property>
                 <child>
                   <object class="GtkComboBoxText" id="midi_modifier_chooser">
+                    <property name="visible">false</property>
                     <items>
                       <item translatable="true">Velocity</item>
                       <item translatable="true">Pitch Wheel</item>
