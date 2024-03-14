@@ -217,7 +217,7 @@ typedef struct ArrangerSelectionsAction
    *
    * Set internally and either used or ignored.
    */
-  int first_run;
+  bool first_run;
 
   /** QuantizeOptions clone, if quantizing. */
   QuantizeOptions * opts;
@@ -468,18 +468,17 @@ WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_merge (ArrangerSelections * sel, GError ** error);
 
 /**
- * Creates a new action for resizing
- * ArrangerObject's.
+ * Creates a new action for resizing ArrangerObject's.
  *
- * @param ticks How many ticks to add to the resizing
- *   edge.
+ * @param sel_after Optional selections after resizing (if already resized).
+ * @param ticks How many ticks to add to the resizing edge.
  */
 WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_resize (
-  ArrangerSelections *               sel,
+  ArrangerSelections *               sel_before,
+  ArrangerSelections *               sel_after,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
-  const bool                         already_resized,
   GError **                          error);
 
 /**
@@ -649,10 +648,10 @@ arranger_selections_action_perform_merge (
 
 bool
 arranger_selections_action_perform_resize (
-  ArrangerSelections *               sel,
+  ArrangerSelections *               sel_before,
+  ArrangerSelections *               sel_after,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
-  const bool                         already_resized,
   GError **                          error);
 
 bool

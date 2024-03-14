@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -2811,10 +2811,11 @@ test_resize_loop_l (void)
   arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   const double move_ticks = 100.0;
   arranger_selections_action_perform_resize (
-    (ArrangerSelections *) TL_SELECTIONS,
-    ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP, -move_ticks, F_NOT_ALREADY_EDITED,
-    NULL);
+    (ArrangerSelections *) TL_SELECTIONS, NULL,
+    ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP, -move_ticks, NULL);
 
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
   Position new_pos;
 
   /* test start pos */
@@ -3159,6 +3160,64 @@ test_move_region_from_lane_3_to_lane_1 (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_stretch (void)
+{
+  rebootstrap_timeline ();
+
+  Track * track = tracklist_find_track_by_name (TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane = track->lanes[3];
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  ZRegion *        region = lane->regions[0];
+  ArrangerObject * r_obj = (ArrangerObject *) region;
+  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+
+  AudioClip * orig_clip = audio_region_get_clip (region);
+  size_t  total_frames = (size_t) orig_clip->num_frames * orig_clip->channels;
+  float * orig_frames = object_new_n (total_frames, float);
+  dsp_copy (orig_frames, orig_clip->frames, total_frames);
+
+  const double move_ticks = 100.0;
+  arranger_selections_action_perform_resize (
+    (ArrangerSelections *) TL_SELECTIONS, NULL,
+    ARRANGER_SELECTIONS_ACTION_STRETCH_R, move_ticks, NULL);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  /* test that the original audio is back */
+  track = tracklist_find_track_by_name (TRACKLIST, AUDIO_TRACK_NAME);
+  lane = track->lanes[3];
+  region = lane->regions[0];
+  r_obj = (ArrangerObject *) region;
+  AudioClip * after_clip = audio_region_get_clip (region);
+  size_t      total_after_frames =
+    (size_t) after_clip->num_frames * after_clip->channels;
+  g_assert_cmpuint (total_after_frames, ==, total_frames);
+  g_assert_true (audio_frames_equal (
+    after_clip->frames, orig_frames, total_frames, 0.0001f));
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  /* test that the original audio is back */
+  track = tracklist_find_track_by_name (TRACKLIST, AUDIO_TRACK_NAME);
+  lane = track->lanes[3];
+  region = lane->regions[0];
+  r_obj = (ArrangerObject *) region;
+  after_clip = audio_region_get_clip (region);
+  total_after_frames = (size_t) after_clip->num_frames * after_clip->channels;
+  g_assert_cmpuint (total_after_frames, ==, total_frames);
+  g_assert_true (audio_frames_equal (
+    after_clip->frames, orig_frames, total_frames, 0.0001f));
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  free (orig_frames);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -3166,6 +3225,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test resize loop l", (GTestFunc) test_resize_loop_l);
+  g_test_add_func (TEST_PREFIX "test stretch", (GTestFunc) test_stretch);
   g_test_add_func (
     TEST_PREFIX "test copy paste audio after bpm change",
     (GTestFunc) test_copy_paste_audio_after_bpm_change);
@@ -3196,8 +3258,6 @@ main (int argc, char * argv[])
     TEST_PREFIX "test move timeline", (GTestFunc) test_move_timeline);
   g_test_add_func (
     TEST_PREFIX "test delete midi notes", (GTestFunc) test_delete_midi_notes);
-  g_test_add_func (
-    TEST_PREFIX "test resize loop l", (GTestFunc) test_resize_loop_l);
   g_test_add_func (
     TEST_PREFIX "test split and merge audio unlooped",
     (GTestFunc) test_split_and_merge_audio_unlooped);

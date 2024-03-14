@@ -132,6 +132,8 @@ test_prepare_common (void)
   /* resize audio region */
   arranger_object_select (
     (ArrangerObject *) audio_region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ArrangerSelections * sel_before =
+    arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
   double audio_region_size_ticks =
     arranger_object_get_length_in_ticks ((ArrangerObject *) audio_region);
   double missing_ticks = (end.ticks - start.ticks) - audio_region_size_ticks;
@@ -140,9 +142,8 @@ test_prepare_common (void)
     missing_ticks, false, NULL);
   g_assert_true (success);
   arranger_selections_action_perform_resize (
-    (ArrangerSelections *) TL_SELECTIONS,
-    ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, missing_ticks, F_ALREADY_EDITED,
-    NULL);
+    sel_before, (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, missing_ticks, NULL);
   g_assert_cmppos (&end, &audio_region->base.end_pos);
 
   /* set transport positions */
@@ -150,6 +151,8 @@ test_prepare_common (void)
   position_set_to_bar (&TRANSPORT->playhead_pos, PLAYHEAD_BEFORE);
   position_set_to_bar (&TRANSPORT->loop_start_pos, LOOP_START_BEFORE);
   position_set_to_bar (&TRANSPORT->loop_end_pos, LOOP_END_BEFORE);
+
+  arranger_selections_free (sel_before);
 }
 
 static void

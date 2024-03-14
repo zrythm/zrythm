@@ -2267,6 +2267,9 @@ clone_region (const ZRegion * region)
   /* clone bounce options */
   new_region->bounce = region->bounce;
 
+  /* before length */
+  /*new_region->before_length = region->before_length;*/
+
   return (ArrangerObject *) new_region;
 }
 

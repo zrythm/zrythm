@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
@@ -710,24 +710,17 @@ arranger_selections_action_new_merge (ArrangerSelections * sel, GError ** error)
   return ua;
 }
 
-/**
- * Creates a new action for resizing
- * ArrangerObject's.
- *
- * @param ticks How many ticks to add to the resizing
- *   edge.
- */
 UndoableAction *
 arranger_selections_action_new_resize (
-  ArrangerSelections *               sel,
+  ArrangerSelections *               sel_before,
+  ArrangerSelections *               sel_after,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
-  const bool                         already_resized,
   GError **                          error)
 {
   /* validate */
   bool have_unresizable = arranger_selections_contains_object_with_property (
-    sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
+    sel_before, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
   if (have_unresizable)
     {
       g_set_error (
@@ -739,7 +732,7 @@ arranger_selections_action_new_resize (
     }
 
   bool have_looped = arranger_selections_contains_object_with_property (
-    sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED, true);
+    sel_before, ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED, true);
   if (
     have_looped
     && (type == ARRANGER_SELECTIONS_ACTION_RESIZE_L || type == ARRANGER_SELECTIONS_ACTION_RESIZE_R || type == ARRANGER_SELECTIONS_ACTION_STRETCH_L || type == ARRANGER_SELECTIONS_ACTION_STRETCH_R))
@@ -747,14 +740,13 @@ arranger_selections_action_new_resize (
       g_set_error (
         error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
         Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
-        _ ("Cannot perform %s resize - selections "
-           "contain looped objects"),
+        _ ("Cannot perform %s resize - selections contain looped objects"),
         arranger_selections_action_resize_type_strings[type].str);
       return NULL;
     }
 
   bool have_unloopable = arranger_selections_contains_object_with_property (
-    sel, ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP, false);
+    sel_before, ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP, false);
   if (
     have_unloopable
     && (type == ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP || type == ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP))
@@ -768,16 +760,18 @@ arranger_selections_action_new_resize (
       return NULL;
     }
 
-  ArrangerSelectionsAction * self = _create_action (sel);
+  ArrangerSelectionsAction * self = _create_action (sel_before);
   self->type = AS_ACTION_RESIZE;
 
   self->resize_type = type;
   self->ticks = ticks;
 
-  if (!already_resized)
+  if (sel_after)
     {
-      self->first_run = 0;
+      set_selections (self, sel_after, true, true);
     }
+
+  self->first_run = true;
 
   UndoableAction * ua = (UndoableAction *) self;
   return ua;
@@ -1060,15 +1054,15 @@ arranger_selections_action_perform_merge (
 
 bool
 arranger_selections_action_perform_resize (
-  ArrangerSelections *               sel,
+  ArrangerSelections *               sel_before,
+  ArrangerSelections *               sel_after,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
-  const bool                         already_resized,
   GError **                          error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_resize, error, sel, type, ticks,
-    already_resized, error);
+    arranger_selections_action_new_resize, error, sel_before, sel_after, type,
+    ticks, error);
 }
 
 bool
@@ -2618,24 +2612,40 @@ do_or_undo_merge (ArrangerSelectionsAction * self, const bool _do, GError ** err
 static int
 do_or_undo_resize (ArrangerSelectionsAction * self, const int _do, GError ** error)
 {
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_arr);
+  GPtrArray * objs_before_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (self->sel, objs_before_arr);
+
+  bool sel_after_existed = self->sel_after != NULL;
+  if (!self->sel_after)
+    {
+      /* create the "after" selections here if not already given (e.g., when the
+       * objects are already edited) */
+      set_selections (self, self->sel, true, true);
+    }
+
+  GPtrArray * objs_after_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (self->sel_after, objs_after_arr);
 
   double ticks = _do ? self->ticks : -self->ticks;
 
-  if (!self->first_run)
+  /* if objects are already edited and this is the first run nothing needs to be
+   * done */
+  if (!sel_after_existed || !self->first_run)
     {
-      for (size_t i = 0; i < objs_arr->len; i++)
+      for (size_t i = 0; i < objs_before_arr->len; i++)
         {
-          ArrangerObject * own_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          own_obj->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          ArrangerObject * own_obj_before =
+            (ArrangerObject *) g_ptr_array_index (objs_before_arr, i);
+          own_obj_before->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          ArrangerObject * own_obj_after =
+            (ArrangerObject *) g_ptr_array_index (objs_after_arr, i);
+          own_obj_after->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
           /* find the actual object */
-          ArrangerObject * obj = arranger_object_find (own_obj);
+          ArrangerObject * obj =
+            arranger_object_find (_do ? own_obj_before : own_obj_after);
           g_return_val_if_fail (obj, -1);
 
-          /* resize */
           ArrangerObjectResizeType type = -1;
           int                      left = 0;
           switch (self->resize_type)
@@ -2671,38 +2681,62 @@ do_or_undo_resize (ArrangerSelectionsAction * self, const int _do, GError ** err
             default:
               g_warn_if_reached ();
             }
+
+          /* on first do, resize both the project object and our own "after"
+           * object */
+          if (_do && self->first_run)
+            {
+              GError * err = NULL;
+              bool     success =
+                arranger_object_resize (obj, left, type, ticks, false, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, "Failed to resize object");
+                  return -1;
+                }
+
+              success = arranger_object_resize (
+                own_obj_after, left, type, ticks, false, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, "Failed to resize object");
+                  return -1;
+                }
+            } /* endif do and first run */
+
+          /* remove the project object and add a clone of our corresponding
+           * object */
+          arranger_object_remove_from_project (obj);
+          obj = NULL;
+          ArrangerObject * new_obj =
+            arranger_object_clone (_do ? own_obj_after : own_obj_before);
           GError * err = NULL;
-          bool     success =
-            arranger_object_resize (obj, left, type, ticks, false, &err);
+          bool     success = arranger_object_insert_to_project (new_obj, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to resize object");
+                error, err, "Failed to add object to project");
               return -1;
             }
 
-          /* also resize the clone so we can find
-           * the actual object next time */
-          success =
-            arranger_object_resize (own_obj, left, type, ticks, false, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to resize object");
-              return -1;
-            }
-        }
+          /* select it */
+          arranger_object_select (
+            new_obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+        } /* endforeach object */
     }
 
-  update_region_link_groups (objs_arr);
+  update_region_link_groups (_do ? objs_after_arr : objs_before_arr);
 
-  g_ptr_array_unref (objs_arr);
+  g_ptr_array_unref (objs_before_arr);
+  g_ptr_array_unref (objs_after_arr);
 
   ArrangerSelections * sel = get_actual_arranger_selections (self);
   EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, sel);
   EVENTS_PUSH (ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel);
 
-  self->first_run = 0;
+  self->first_run = false;
 
   return 0;
 }

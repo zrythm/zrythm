@@ -886,11 +886,18 @@ project_deserialize_from_json_str (const char * json, GError ** error)
   midi_mappings_deserialize_from_json (
     doc, midi_mappings_obj, self->midi_mappings, error);
   yyjson_val * undo_manager_obj = yyjson_obj_iter_get (&it, "undoManager");
-  if (undo_manager_obj)
+  /* skip undo history from versions previous to 1.10 because of a change in how
+   * stretching changes are stored */
+  if (
+    (self->format_major == 1 && self->format_minor >= 10)
+    || self->format_major > 1)
     {
-      self->undo_manager = object_new (UndoManager);
-      undo_manager_deserialize_from_json (
-        doc, undo_manager_obj, self->undo_manager, error);
+      if (undo_manager_obj)
+        {
+          self->undo_manager = object_new (UndoManager);
+          undo_manager_deserialize_from_json (
+            doc, undo_manager_obj, self->undo_manager, error);
+        }
     }
   self->last_selection =
     (SelectionType) yyjson_get_int (yyjson_obj_iter_get (&it, "lastSelection"));

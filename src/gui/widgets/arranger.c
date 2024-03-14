@@ -3719,9 +3719,9 @@ on_drag_end_midi (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, F_ALREADY_EDITED,
-          &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed to resize objects"));
@@ -3738,9 +3738,9 @@ on_drag_end_midi (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, F_ALREADY_EDITED,
-          &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed to resize objects"));
@@ -3976,11 +3976,11 @@ on_drag_end_audio (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
-          sel,
+          (ArrangerSelections *) self->sel_at_start, sel,
           is_fade_in
                 ? ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE
                 : ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
-          ticks_diff, F_ALREADY_EDITED, &err);
+          ticks_diff, &err);
         arranger_selections_free (sel);
         if (!ret)
           {
@@ -4074,9 +4074,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
           GError * err = NULL;
           bool     ret = arranger_selections_action_perform_resize (
+            (ArrangerSelections *) self->sel_at_start,
             (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, F_ALREADY_EDITED,
-            &err);
+            ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4093,9 +4093,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_STRETCH_L, ticks_diff, F_ALREADY_EDITED,
-          &err);
+          ARRANGER_SELECTIONS_ACTION_STRETCH_L, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4112,9 +4112,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed to resize selection"));
@@ -4129,9 +4129,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4149,9 +4149,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
           GError * err = NULL;
           bool     ret = arranger_selections_action_perform_resize (
+            (ArrangerSelections *) self->sel_at_start,
             (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, F_ALREADY_EDITED,
-            &err);
+            ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, &err);
           if (!ret)
             {
               HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
@@ -4172,9 +4172,9 @@ on_drag_end_timeline (ArrangerWidget * self)
           }
 
         success = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_STRETCH_R, ticks_diff, F_ALREADY_EDITED,
-          &err);
+          ARRANGER_SELECTIONS_ACTION_STRETCH_R, ticks_diff, &err);
         if (!success)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
@@ -4188,9 +4188,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
@@ -4205,9 +4205,9 @@ on_drag_end_timeline (ArrangerWidget * self)
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
+          (ArrangerSelections *) self->sel_at_start,
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE, ticks_diff, &err);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed resizing selection"));
