@@ -67,4 +67,4 @@ build:
 test:
   stage: test
   script:
-    - ninja -C build test || cat build/meson-logs/testlog.txt
+    - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
