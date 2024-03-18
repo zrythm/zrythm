@@ -6,6 +6,21 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.6.1] - 2024-03-19
+### Changed
+- Change how object resizing works: revert original object(s) on undo (fixes undoing audio stretching not reverting the original audio, #4955)
+- Bump required libadwaita/gtk versions to latest stable releases
+- Revert to previous fader style (#5054)
+
+### Fixed
+- Fix track inputs switching to wrong input in the inspector after selecting a different track
+- Fix some issues reported by ASAN
+- Fix memory leak when loading project files
+- Fix home VST2 path being used when scanning DSSI plugins (#5058)
+
+### Removed
+- Hide MIDI modifier chooser (out of scope for v1, #5053)
+
 ## [1.0.0-beta.6.5.1] - 2024-03-02
 ### Added
 - Build: Add flatpak manifest for building in GNOME Builder
