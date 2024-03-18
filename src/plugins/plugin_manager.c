@@ -701,9 +701,9 @@ get_dssi_paths (PluginManager * self)
       g_strv_builder_add (builder, "/app/extensions/Plugins/dssi");
 #  else /* non-flatpak UNIX */
       {
-        char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
-        g_strv_builder_add (builder, home_vst);
-        g_free (home_vst);
+        char * home_dssi = g_build_filename (g_get_home_dir (), ".dssi", NULL);
+        g_strv_builder_add (builder, home_dssi);
+        g_free (home_dssi);
       }
       g_strv_builder_add_many (
         builder, "/usr/lib/dssi", "/usr/local/lib/dssi", NULL);
