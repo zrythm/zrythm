@@ -59,7 +59,7 @@ Zrythm executable.
 
   Override the MIDI backend to use.
 
-  BACKEND is one of: dummy, rtmidi, windows_mme
+  BACKEND is one of: dummy, jack, rtmidi, windows_mme
 
 .. cmdoption:: -v, --version
 
