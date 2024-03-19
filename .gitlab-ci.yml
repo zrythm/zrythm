@@ -19,6 +19,7 @@ stages:
   - check
   - build
   - test
+  - deploy
 
 default:
   cache:
@@ -67,3 +68,12 @@ test:
   stage: test
   script:
     - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
+
+update_manual:
+  stage: deploy
+  only:
+    - master
+    - tags
+  script:
+    - ninja -C build manual_bundle
+    - rsync -av --no-group --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
