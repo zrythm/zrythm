@@ -75,5 +75,5 @@ update_manual:
     - master
     - tags
   script:
-    - ninja -C build manual_bundle
+    - ninja -C build manual_bundle &> manual_bundle_results.txt
     - rsync -av --no-group --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
