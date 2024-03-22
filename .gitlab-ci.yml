@@ -76,7 +76,7 @@ update_manual:
     - tags
   script:
     - ninja -C build manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
-    - rsync -av --no-group --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
+    - rsync -av --no-group --omit-dir-times --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
