@@ -98,9 +98,8 @@ typedef struct Graph
   gint         n_terminal_nodes;
   GraphNode ** terminal_nodes;
 
-  /** Remaining unprocessed terminal nodes in this
-   * cycle. */
-  volatile gint terminal_refcnt;
+  /** Remaining unprocessed terminal nodes in this cycle. */
+  gint terminal_refcnt;
 
   /** Synchronization with main process callback. */
   ZixSem callback_start;
@@ -114,13 +113,13 @@ typedef struct Graph
   MPMCQueue * trigger_queue;
 
   /** Number of entries in trigger queue. */
-  volatile guint trigger_queue_size;
+  guint trigger_queue_size;
 
   /** flag to exit, terminate all process-threads */
-  volatile gint terminate;
+  gint terminate;
 
   /** Number of threads waiting for work. */
-  volatile guint idle_thread_cnt;
+  guint idle_thread_cnt;
 
   /** Chain used to setup in the background.
    * This is applied and cleared by graph_rechain()

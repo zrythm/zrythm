@@ -20,7 +20,7 @@ typedef struct MidiMapping_v1
   midi_byte_t       key[3];
   ExtPort_v1 *      device_port;
   PortIdentifier_v1 dest_id;
-  volatile int      enabled;
+  int               enabled;
 } MidiMapping_v1;
 
 typedef struct MidiMappings_v1

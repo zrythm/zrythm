@@ -53,7 +53,7 @@ typedef struct MidiMapping
   Port * dest;
 
   /** Whether this binding is enabled. */
-  volatile int enabled;
+  int enabled;
 
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;

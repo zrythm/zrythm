@@ -47,7 +47,7 @@ typedef struct Stack
    * This is an index and not a count.
    * Eg., if there is 1 element, this will be 0.
    */
-  volatile gint top;
+  gint top;
 } Stack;
 
 static const cyaml_schema_field_t stack_fields_schema[] = {

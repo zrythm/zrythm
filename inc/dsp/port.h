@@ -395,9 +395,8 @@ typedef struct Port
    */
   bool write_ring_buffers;
 
-  /** Whether the port has midi events not yet processed by
-   * the UI. */
-  volatile int has_midi_events;
+  /** Whether the port has midi events not yet processed by the UI. */
+  int has_midi_events;
 
   /** Used by the UI to detect when unprocessed MIDI events
    * exist. */

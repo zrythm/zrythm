@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -19,10 +16,10 @@
 
 typedef struct Stack_v1
 {
-  int           schema_version;
-  void **       elements;
-  int           max_length;
-  volatile gint top;
+  int     schema_version;
+  void ** elements;
+  int     max_length;
+  gint    top;
 } Stack_v1_v1;
 
 static const cyaml_schema_field_t stack_fields_schema_v1[] = {

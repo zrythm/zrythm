@@ -117,7 +117,7 @@ typedef struct GraphNode
   int          n_childnodes;
 
   /** Incoming node count. */
-  volatile gint refcount;
+  gint refcount;
 
   /** Initial incoming node count. */
   gint init_refcount;

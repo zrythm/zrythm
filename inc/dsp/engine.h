@@ -513,7 +513,7 @@ typedef struct AudioEngine
   ZixSem port_operation_lock;
 
   /** Ok to process or not. */
-  volatile gint run;
+  gint run;
 
   /** To be set to true when preparing to export. */
   bool preparing_to_export;
@@ -522,7 +522,7 @@ typedef struct AudioEngine
   gint exporting;
 
   /** Send note off MIDI everywhere. */
-  volatile gint panic;
+  gint panic;
 
   // ZixSem             alsa_callback_start;
 
@@ -560,7 +560,7 @@ typedef struct AudioEngine
   /* ------------------------------- */
 
   /** Flag used when processing in some backends. */
-  volatile gint filled_stereo_out_bufs;
+  gint filled_stereo_out_bufs;
 
   /** Flag used to check if we are inside
    * engine_process_prepare(). */
@@ -760,7 +760,7 @@ typedef struct AudioEngine
   /* --- end events --- */
 
   /** Whether the cycle is currently running. */
-  volatile gint cycle_running;
+  gint cycle_running;
 
   /** Whether the engine is already pre-set up. */
   bool pre_setup;

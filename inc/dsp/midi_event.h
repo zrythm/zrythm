@@ -61,25 +61,26 @@ typedef struct Port       Port;
 
 /**
  * Container for passing midi events through ports.
- * This should be passed in the data field of MIDI Ports
+ *
+ * This should be passed in the data field of MIDI Ports.
  */
 typedef struct MidiEvents
 {
   /** Event count. */
-  volatile int num_events;
+  int num_events;
 
   /** Events to use in this cycle. */
   MidiEvent events[MAX_MIDI_EVENTS];
 
   /**
-   * For queueing events from the GUI or from hardware,
-   * since they run in different threads.
+   * For queueing events from the GUI or from hardware, since they run in
+   * different threads.
    *
-   * Engine will copy them to the unqueued MIDI events when
-   * ready to be processed.
+   * Engine will copy them to the unqueued MIDI events when ready to be
+   * processed.
    */
-  MidiEvent    queued_events[MAX_MIDI_EVENTS];
-  volatile int num_queued_events;
+  MidiEvent queued_events[MAX_MIDI_EVENTS];
+  int       num_queued_events;
 
   /** Semaphore for exclusive read/write. */
   ZixSem access_sem;
