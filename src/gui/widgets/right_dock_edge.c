@@ -106,7 +106,9 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->monitor_section_box = box;
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->monitor_section));
-  ADD_TAB (GTK_WIDGET (box), "speaker", _ ("Monitor Section"));
+  ADD_TAB (
+    GTK_WIDGET (box), "gnome-icon-library-speakers-symbolic",
+    _ ("Monitor Section"));
 
   /* add chord preset browser */
   self->chord_pack_browser = chord_pack_browser_widget_new ();
