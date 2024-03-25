@@ -237,10 +237,18 @@ modulator-view two-col-expander-box
 
 /* curve the bottom edges of the fader section
  * in the inspector */
-.inspector .fader-controls-expander buttonbox
+.inspector
 {
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  .fader-controls-expander buttonbox {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  expander-box >button,
+  two-col-expander-box>button {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
 }
 
 /* make mono switch smaller */
@@ -250,16 +258,7 @@ modulator-view two-col-expander-box
   padding-right: 4px;
 }
 
-.inspector expander-box >button,
-.inspector two-col-expander-box>button
-{
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-}
-
 channel {
-  //border-radius: 5px;
-
   grid {
     padding-left: 3px;
     padding-right: 3px;
@@ -302,13 +301,13 @@ channel {
   border-right: 0px;
 }
 
-/* make the header box on the right match the style of the notebook */
+// make the header box on the right match the style of the notebook
 .header > box {
   border-top: 1px;
   border-bottom: 1px;
   border-right: 1px;
   border-style: solid;
-  /* from matcha theme */
+  // from matcha theme
   border-color: rgba(0, 0, 0, 0.2);
 
   > box {
