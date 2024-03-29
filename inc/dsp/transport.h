@@ -141,57 +141,11 @@ typedef enum TransportRecordingMode
   RECORDING_MODE_TAKES_MUTED,
 } TransportRecordingMode;
 
-#if 0
-typedef struct TimeSignature
-{
-  int           schema_version;
-
-  /**
-   * The top part (beats_per_par) is the number of
-   * beat units
-   * (the bottom part) there will be per bar.
-   *
-   * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
-   * 2/8 = 2 (top) 1/8th (bot) notes per bar.
-   */
-  int           beats_per_bar;
-
-  /**
-   * Bottom part of the time signature.
-   *
-   * Power of 2.
-   */
-  int           beat_unit;
-} TimeSignature;
-
-static const cyaml_schema_field_t
-time_signature_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    TimeSignature, schema_version),
-  YAML_FIELD_INT (
-    TimeSignature, beats_per_bar),
-  YAML_FIELD_INT (
-    TimeSignature, beat_unit),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-time_signature_schema =
-{
-  YAML_VALUE_PTR (
-    TimeSignature, time_signature_fields_schema),
-};
-#endif
-
 /**
  * The transport.
  */
 typedef struct Transport
 {
-  int schema_version;
-
   /** Total bars in the song. */
   int total_bars;
 
@@ -322,33 +276,6 @@ typedef struct Transport
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine;
 } Transport;
-
-static const cyaml_schema_field_t transport_fields_schema[] = {
-  YAML_FIELD_INT (Transport, schema_version),
-  YAML_FIELD_INT (Transport, total_bars),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, playhead_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, cue_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, loop_start_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, loop_end_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, punch_in_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, punch_out_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, range_1, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (Transport, range_2, position_fields_schema),
-  YAML_FIELD_INT (Transport, has_range),
-  YAML_FIELD_INT (Transport, position),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, roll, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, stop, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, backward, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, forward, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, loop_toggle, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, rec_toggle, port_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t transport_schema = {
-  YAML_VALUE_PTR (Transport, transport_fields_schema),
-};
 
 /**
  * Initialize transport

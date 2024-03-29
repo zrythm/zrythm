@@ -45,8 +45,6 @@
 static void
 init_common (Transport * self)
 {
-  self->schema_version = TRANSPORT_SCHEMA_VERSION;
-
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
 
@@ -116,7 +114,6 @@ transport_new (AudioEngine * engine)
 
   Transport * self = object_new (Transport);
   self->audio_engine = engine;
-  self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
   engine->transport = self;
 
@@ -208,7 +205,6 @@ Transport *
 transport_clone (const Transport * src)
 {
   Transport * self = object_new (Transport);
-  self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
   self->total_bars = src->total_bars;
   self->has_range = src->has_range;
