@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format off
 
 #include <math.h>
 
@@ -33,28 +35,31 @@
 
 #define RESIZE_HANDLE_WIDTH 4
 
+/**
+ * @param is_loop_range True for loop range, false for time range.
+ */
 static void
-on_drag_begin_range_hit (RulerWidget * self, double x, Position * cur_pos)
+on_drag_begin_range_hit (
+  RulerWidget * self,
+  double        x,
+  Position *    cur_pos,
+  bool          is_loop_range)
 {
-  /*Position range_start, range_end;*/
-  /*transport_get_range_pos (*/
-  /*TRANSPORT, true, &range_start);*/
-  /*transport_get_range_pos (*/
-  /*TRANSPORT, false, &range_end);*/
-  /*double range_start_px =*/
-  /*ui_pos_to_px_timeline (&range_start, true);*/
-  /*double range_end_px =*/
-  /*ui_pos_to_px_timeline (&range_end, true);*/
-
   /* check if resize l or resize r */
   bool resize_l = false;
   bool resize_r = false;
 
-  if (ruler_widget_is_range_hit (self, RW_RANGE_START, x, 0))
+  if (
+    is_loop_range
+      ? ruler_widget_is_loop_range_hit (self, RW_RANGE_START, x, 0)
+      : ruler_widget_is_range_hit (self, RW_RANGE_START, x, 0))
     {
       resize_l = true;
     }
-  if (ruler_widget_is_range_hit (self, RW_RANGE_END, x, 0))
+  if (
+    is_loop_range
+      ? ruler_widget_is_loop_range_hit (self, RW_RANGE_END, x, 0)
+      : ruler_widget_is_range_hit (self, RW_RANGE_END, x, 0))
     {
       resize_r = true;
     }
@@ -73,8 +78,18 @@ on_drag_begin_range_hit (RulerWidget * self, double x, Position * cur_pos)
       self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
     }
 
-  position_set_to_pos (&self->range1_start_pos, &TRANSPORT->range_1);
-  position_set_to_pos (&self->range2_start_pos, &TRANSPORT->range_2);
+  position_set_to_pos (
+    &self->range1_start_pos,
+    is_loop_range ? &TRANSPORT->loop_start_pos : &TRANSPORT->range_1);
+  position_set_to_pos (
+    &self->range2_start_pos,
+    is_loop_range ? &TRANSPORT->loop_end_pos : &TRANSPORT->range_2);
+
+  if (is_loop_range)
+    {
+      /* change range1_first because it affects later calculations */
+      self->range1_first = true;
+    }
 }
 
 void
@@ -111,12 +126,34 @@ timeline_ruler_on_drag_begin_no_marker_hit (
         {
           position_snap (&pos, &pos, NULL, NULL, SNAP_GRID_TIMELINE);
         }
-      transport_move_playhead (
-        TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
-      self->drag_start_pos = pos;
-      self->last_set_pos = pos;
+
       self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_PLAYHEAD;
+      if (self->ctrl_held)
+        {
+          /* check if range is hit */
+          Position cur_pos;
+          ui_px_to_pos_timeline (start_x, &cur_pos, true);
+          bool range_hit =
+            position_is_after_or_equal (&cur_pos, &TRANSPORT->loop_start_pos)
+            && position_is_before_or_equal (&cur_pos, &TRANSPORT->loop_end_pos);
+
+          g_message ("loop range hit %d", range_hit);
+
+          /* if within existing range */
+          if (range_hit)
+            {
+              on_drag_begin_range_hit (self, start_x, &cur_pos, true);
+              self->target = RW_TARGET_LOOP_RANGE;
+            }
+        }
+      else
+        {
+          transport_move_playhead (
+            TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+        }
+      self->drag_start_pos = pos;
+      self->last_set_pos = pos;
     }
   else /* if upper 1/4th */
     {
@@ -140,12 +177,11 @@ timeline_ruler_on_drag_begin_no_marker_hit (
       /* if within existing range */
       if (TRANSPORT->has_range && range_hit)
         {
-          on_drag_begin_range_hit (self, start_x, &cur_pos);
+          on_drag_begin_range_hit (self, start_x, &cur_pos, false);
         }
       else
         {
-          /* set range if project doesn't have
-           * range or range is not hit*/
+          /* set range if project doesn't have range or range is not hit*/
           transport_set_has_range (TRANSPORT, true);
           self->action = UI_OVERLAY_ACTION_RESIZING_R;
           ui_px_to_pos_timeline (start_x, &TRANSPORT->range_1, true);
@@ -257,6 +293,54 @@ timeline_ruler_on_drag_update (
               position_add_ticks (&TRANSPORT->range_1, ticks_length);
             }
           EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
+        }
+      else if (self->target == RW_TARGET_LOOP_RANGE)
+        {
+          Position diff_pos;
+          ui_px_to_pos_timeline (fabs (offset_x), &diff_pos, 0);
+          double ticks_diff = position_to_ticks (&diff_pos);
+          if (offset_x < 0)
+            {
+              /*g_message ("offset %f", offset_x);*/
+              ticks_diff = -ticks_diff;
+            }
+          double r1_ticks = position_to_ticks ((&TRANSPORT->loop_start_pos));
+          double r2_ticks = position_to_ticks ((&TRANSPORT->loop_end_pos));
+          {
+            double r1_start_ticks =
+              position_to_ticks ((&self->range1_start_pos));
+            double r2_start_ticks =
+              position_to_ticks ((&self->range2_start_pos));
+            /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks
+             * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
+            if (r1_start_ticks + ticks_diff < 0.0)
+              {
+                ticks_diff -= (ticks_diff + r1_start_ticks);
+              }
+            if (r2_start_ticks + ticks_diff < 0.0)
+              {
+                ticks_diff -= (ticks_diff + r2_start_ticks);
+              }
+          }
+          double ticks_length =
+            self->range1_first ? r2_ticks - r1_ticks : r1_ticks - r2_ticks;
+
+          if (self->range1_first)
+            {
+              position_set_to_pos (
+                &TRANSPORT->loop_start_pos, &self->range1_start_pos);
+              position_add_ticks (&TRANSPORT->loop_start_pos, ticks_diff);
+              if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+                {
+                  position_snap (
+                    &self->range1_start_pos, &TRANSPORT->loop_start_pos, NULL,
+                    NULL, SNAP_GRID_TIMELINE);
+                }
+              position_set_to_pos (
+                &TRANSPORT->loop_end_pos, &TRANSPORT->loop_start_pos);
+              position_add_ticks (&TRANSPORT->loop_end_pos, ticks_length);
+            }
+          EVENTS_PUSH (ET_TIMELINE_LOOP_MARKER_POS_CHANGED, NULL);
         }
       else /* not range */
         {

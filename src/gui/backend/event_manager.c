@@ -448,8 +448,7 @@ on_arranger_object_changed (ArrangerObject * obj)
   switch (obj->type)
     {
     case ARRANGER_OBJECT_TYPE_REGION:
-      /* redraw editor ruler if region
-       * positions were changed */
+      /* redraw editor ruler if region positions were changed */
       timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
       break;
     default:
@@ -661,11 +660,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       tracklist_widget_soft_refresh (MW_TRACKLIST);
       break;
     case ET_RULER_SIZE_CHANGED:
-      {
-#if 0
-        RulerWidget * ruler = Z_RULER_WIDGET (ev->arg);
-#endif
-      }
       break;
     case ET_CLIP_MARKER_POS_CHANGED:
       break;

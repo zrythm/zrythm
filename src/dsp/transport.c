@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -926,9 +926,6 @@ transport_set_has_range (Transport * self, bool has_range)
   EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
 }
 
-/**
- * Stores the position of the range in \ref pos.
- */
 void
 transport_get_range_pos (Transport * self, bool first, Position * pos)
 {
@@ -959,21 +956,37 @@ transport_get_range_pos (Transport * self, bool first, Position * pos)
     }
 }
 
-/**
- * Set the range1 or range2 position.
- *
- * @param range1 True to set range1, false to set
- *   range2.
- */
 void
-transport_set_range (
+transport_get_loop_range_pos (Transport * self, bool first, Position * pos)
+{
+  if (first)
+    {
+      position_set_to_pos (pos, &self->loop_start_pos);
+    }
+  else
+    {
+      position_set_to_pos (pos, &self->loop_end_pos);
+    }
+}
+
+static void
+set_range (
   Transport *      self,
+  bool             for_loop,
   bool             range1,
   const Position * start_pos,
   const Position * pos,
   bool             snap)
 {
-  Position * pos_to_set = range1 ? &self->range_1 : &self->range_2;
+  Position * pos_to_set;
+  if (for_loop)
+    {
+      pos_to_set = range1 ? &self->loop_start_pos : &self->loop_end_pos;
+    }
+  else
+    {
+      pos_to_set = range1 ? &self->range_1 : &self->range_2;
+    }
 
   Position init_pos;
   position_init (&init_pos);
@@ -990,6 +1003,28 @@ transport_set_range (
     {
       position_snap (start_pos, pos_to_set, NULL, NULL, SNAP_GRID_TIMELINE);
     }
+}
+
+void
+transport_set_range (
+  Transport *      self,
+  bool             range1,
+  const Position * start_pos,
+  const Position * pos,
+  bool             snap)
+{
+  set_range (self, false, range1, start_pos, pos, snap);
+}
+
+void
+transport_set_loop_range (
+  Transport *      self,
+  bool             start,
+  const Position * start_pos,
+  const Position * pos,
+  bool             snap)
+{
+  set_range (self, true, start, start_pos, pos, snap);
 }
 
 bool

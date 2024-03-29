@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -75,7 +77,8 @@ typedef enum RWTarget
   RW_TARGET_PUNCH_IN,
   RW_TARGET_PUNCH_OUT,
   RW_TARGET_CLIP_START,
-  RW_TARGET_RANGE, ///< for timeline only
+  RW_TARGET_RANGE,      ///< for timeline only
+  RW_TARGET_LOOP_RANGE, ///< for timeline only
 } RWTarget;
 
 typedef enum RulerWidgetType
@@ -144,6 +147,8 @@ typedef struct _RulerWidget
   /** Whether alt is currently held down. */
   bool alt_held;
 
+  bool ctrl_held;
+
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
@@ -152,8 +157,7 @@ typedef struct _RulerWidget
   /** Set to 1 to redraw. */
   int redraw;
 
-  /** Whether range1 was before range2 at drag
-   * start. */
+  /** Whether range1 was before range2 at drag start. */
   int range1_first;
 
   /** Set to 1 between drag begin and drag end. */
@@ -162,7 +166,7 @@ typedef struct _RulerWidget
   /**
    * Set on drag begin.
    *
-   * Useful for moving range.
+   * Useful for moving range (or loop range).
    */
   Position range1_start_pos;
   Position range2_start_pos;
@@ -231,6 +235,16 @@ ruler_widget_get_sec_interval (RulerWidget * self);
 
 bool
 ruler_widget_is_range_hit (
+  RulerWidget *        self,
+  RulerWidgetRangeType type,
+  double               x,
+  double               y);
+
+/**
+ * Whether the loop range is hit.
+ */
+bool
+ruler_widget_is_loop_range_hit (
   RulerWidget *        self,
   RulerWidgetRangeType type,
   double               x,

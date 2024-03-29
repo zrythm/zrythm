@@ -225,9 +225,7 @@ plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms)
         {
           /* disable plugin, instantiation failed */
           HANDLE_ERROR (
-            err,
-            _ ("Instantiation failed for "
-               "plugin '%s'. Disabling..."),
+            err, _ ("Instantiation failed for plugin '%s'. Disabling..."),
             self->setting->descr->name);
           self->instantiation_failed = true;
         }

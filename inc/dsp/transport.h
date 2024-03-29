@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -287,9 +287,8 @@ transport_new (AudioEngine * engine);
  * Initialize loaded transport.
  *
  * @param engine Owner engine, if any.
- * @param tempo_track Tempo track, used to
- *   initialize the caches. Only needed on the
- *   active project transport.
+ * @param tempo_track Tempo track, used to initialize the caches. Only needed on
+ * the active project transport.
  */
 void
 transport_init_loaded (
@@ -520,6 +519,12 @@ void
 transport_get_range_pos (Transport * self, bool first, Position * pos);
 
 /**
+ * Stores the position of the range in \ref pos.
+ */
+void
+transport_get_loop_range_pos (Transport * self, bool first, Position * pos);
+
+/**
  * Sets if the project has range and updates UI.
  */
 void
@@ -535,6 +540,19 @@ void
 transport_set_range (
   Transport *      self,
   bool             range1,
+  const Position * start_pos,
+  const Position * pos,
+  bool             snap);
+
+/**
+ * Set the loop range.
+ *
+ * @param start True to set start pos, false to set end pos.
+ */
+void
+transport_set_loop_range (
+  Transport *      self,
+  bool             start,
   const Position * start_pos,
   const Position * pos,
   bool             snap);

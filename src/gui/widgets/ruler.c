@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -993,9 +993,8 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   graphene_rect_t visible_rect;
   z_gdk_rectangle_to_graphene_rect_t (&visible_rect, &visible_rect_gdk);
 
-  /* engine is run only set after everything is set
-   * up so this is a good way to decide if we
-   * should  draw or not */
+  /* engine is run only set after everything is set up so this is a good way to
+   * decide if we should  draw or not */
   if (
     !PROJECT || !AUDIO_ENGINE || !g_atomic_int_get (&AUDIO_ENGINE->run)
     || self->px_per_bar < 2.0)
@@ -1046,8 +1045,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   const int line_width = 2;
 
-  /* if transport loop start is within the
-   * screen */
+  /* if transport loop start is within the screen */
   if (
     start_px + 2.0 > visible_rect_gdk.x
     && start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
@@ -1268,6 +1266,35 @@ get_range_rect (RulerWidget * self, RulerWidgetRangeType type, GdkRectangle * re
     gtk_widget_get_height (GTK_WIDGET (self)) / RW_RANGE_HEIGHT_DIVISOR;
 }
 
+static void
+get_loop_range_rect (
+  RulerWidget *        self,
+  RulerWidgetRangeType type,
+  GdkRectangle *       rect)
+{
+  Position tmp;
+  transport_get_loop_range_pos (
+    TRANSPORT, type == RW_RANGE_END ? false : true, &tmp);
+  rect->x = ui_pos_to_px_timeline (&tmp, true);
+  if (type == RW_RANGE_END)
+    {
+      rect->x -= RW_CUE_MARKER_WIDTH;
+    }
+  rect->y = 0;
+  if (type == RW_RANGE_FULL)
+    {
+      transport_get_loop_range_pos (TRANSPORT, false, &tmp);
+      double px = ui_pos_to_px_timeline (&tmp, true);
+      rect->width = (int) px;
+    }
+  else
+    {
+      rect->width = RW_CUE_MARKER_WIDTH;
+    }
+  rect->height =
+    gtk_widget_get_height (GTK_WIDGET (self)) / RW_RANGE_HEIGHT_DIVISOR;
+}
+
 bool
 ruler_widget_is_range_hit (
   RulerWidget *        self,
@@ -1290,6 +1317,20 @@ ruler_widget_is_range_hit (
     }
 }
 
+bool
+ruler_widget_is_loop_range_hit (
+  RulerWidget *        self,
+  RulerWidgetRangeType type,
+  double               x,
+  double               y)
+{
+  GdkRectangle rect;
+  memset (&rect, 0, sizeof (GdkRectangle));
+  get_loop_range_rect (self, type, &rect);
+
+  return x >= rect.x && x <= rect.x + rect.width;
+}
+
 static gboolean
 on_click_pressed (
   GtkGestureClick * gesture,
@@ -1304,6 +1345,8 @@ on_click_pressed (
     self->shift_held = 1;
   if (state & GDK_ALT_MASK)
     self->alt_held = true;
+  if (state & GDK_CONTROL_MASK)
+    self->ctrl_held = true;
 
   if (n_press == 2)
     {
@@ -1392,6 +1435,13 @@ set_cursor (RulerWidget * self)
               /* set cursor to normal */
               /*g_debug ("lower 3/4ths - setting default");*/
               ui_set_cursor_from_name (GTK_WIDGET (self), "default");
+              if (
+                self->ctrl_held
+                && ruler_widget_is_loop_range_hit (self, RW_RANGE_FULL, x, y))
+                {
+                  /* set cursor to movable */
+                  ui_set_hand_cursor (self);
+                }
             }
           else /* upper 1/4th */
             {
@@ -1630,14 +1680,9 @@ on_motion (
   self->hover_y = y;
   self->hovering = event_type != GDK_LEAVE_NOTIFY;
 
-  if (state & GDK_SHIFT_MASK)
-    self->shift_held = 1;
-  else
-    self->shift_held = 0;
-  if (state & GDK_ALT_MASK)
-    self->alt_held = 1;
-  else
-    self->alt_held = 0;
+  self->shift_held = state & GDK_SHIFT_MASK;
+  self->alt_held = state & GDK_ALT_MASK;
+  self->ctrl_held = state & GDK_CONTROL_MASK;
 
   /* drag-update didn't work so do the drag-update here */
   if (self->dragging && event_type != GDK_LEAVE_NOTIFY)
