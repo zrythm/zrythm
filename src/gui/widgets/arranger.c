@@ -213,9 +213,6 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
     case ARRANGER_CURSOR_SELECT:
       SET_X_CURSOR (pointer);
       break;
-    case ARRANGER_CURSOR_SELECT_STRETCH:
-      SET_X_CURSOR (pointer_stretch);
-      break;
     case ARRANGER_CURSOR_EDIT:
       SET_X_CURSOR (pencil);
       break;
@@ -1553,7 +1550,6 @@ arranger_widget_on_key_press (
     {
       self->ctrl_held = 1;
     }
-
   if (z_gtk_keyval_is_shift (keyval))
     {
       self->shift_held = 1;
@@ -1888,6 +1884,8 @@ click_pressed (
     self->shift_held = 1;
   if (state & GDK_CONTROL_MASK)
     self->ctrl_held = 1;
+  if (state & GDK_ALT_MASK)
+    self->alt_held = 1;
 
   PROJECT->last_selection =
     self->type == ARRANGER_WIDGET_TYPE_TIMELINE
@@ -2184,8 +2182,7 @@ set_earliest_obj (ArrangerWidget * self)
 }
 
 /**
- * Checks for the first object hit, sets the
- * appropriate action and selects it.
+ * Checks for the first object hit, sets the appropriate action and selects it.
  *
  * @return If an object was handled or not.
  */
@@ -2220,7 +2217,8 @@ on_drag_begin_handle_hit_object (
   bool is_resize_l = arranger_object_is_resize_l (obj, wx);
   bool is_resize_r = arranger_object_is_resize_r (obj, wx);
   bool is_resize_up = arranger_object_is_resize_up (obj, wx, wy);
-  bool is_resize_loop = arranger_object_is_resize_loop (obj, wy);
+  bool is_resize_loop =
+    arranger_object_is_resize_loop (obj, wy, self->ctrl_held);
   bool show_cut_lines =
     arranger_object_should_show_cut_lines (obj, self->alt_held);
   bool is_rename = arranger_object_is_rename (obj, wx, wy);
@@ -2230,8 +2228,7 @@ on_drag_begin_handle_hit_object (
   /* select object if unselected */
   switch (P_TOOL)
     {
-    case TOOL_SELECT_NORMAL:
-    case TOOL_SELECT_STRETCH:
+    case TOOL_SELECT:
     case TOOL_EDIT:
       if (!is_selected)
         {
@@ -2300,8 +2297,7 @@ on_drag_begin_handle_hit_object (
           return true;
         }
     }
-  /* if double click on scale, open scale
-   * selector */
+  /* if double click on scale, open scale selector */
   else if (obj->type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
     {
       if (self->n_press == 2 && !self->ctrl_held)
@@ -2416,8 +2412,7 @@ on_drag_begin_handle_hit_object (
         case TOOL_AUDITION:
           SET_ACTION (AUDITIONING);
           break;
-        case TOOL_SELECT_NORMAL:
-        case TOOL_SELECT_STRETCH:
+        case TOOL_SELECT:
           if (show_cut_lines)
             SET_ACTION (CUTTING);
           else if (is_fade_in_point)
@@ -2428,27 +2423,19 @@ on_drag_begin_handle_hit_object (
             SET_ACTION (RESIZING_L_LOOP);
           else if (is_resize_l)
             {
-              if (P_TOOL == TOOL_SELECT_NORMAL)
-                {
-                  SET_ACTION (RESIZING_L);
-                }
-              else if (P_TOOL == TOOL_SELECT_STRETCH)
-                {
-                  SET_ACTION (STRETCHING_L);
-                }
+              self->action =
+                self->ctrl_held
+                  ? UI_OVERLAY_ACTION_STRETCHING_L
+                  : UI_OVERLAY_ACTION_RESIZING_L;
             }
           else if (is_resize_r && is_resize_loop)
             SET_ACTION (RESIZING_R_LOOP);
           else if (is_resize_r)
             {
-              if (P_TOOL == TOOL_SELECT_NORMAL)
-                {
-                  SET_ACTION (RESIZING_R);
-                }
-              else if (P_TOOL == TOOL_SELECT_STRETCH)
-                {
-                  SET_ACTION (STRETCHING_R);
-                }
+              self->action =
+                self->ctrl_held
+                  ? UI_OVERLAY_ACTION_STRETCHING_R
+                  : UI_OVERLAY_ACTION_RESIZING_R;
             }
           else if (is_rename)
             SET_ACTION (RENAMING);
@@ -2484,9 +2471,8 @@ on_drag_begin_handle_hit_object (
         case TOOL_AUDITION:
           SET_ACTION (AUDITIONING);
           break;
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
           if ((is_resize_l) && !drum_mode)
             SET_ACTION (RESIZING_L);
           else if (is_resize_r && !drum_mode)
@@ -2504,9 +2490,8 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
           if (is_resize_up)
             SET_ACTION (RESIZING_UP);
           else
@@ -2519,9 +2504,8 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
         case TOOL_RAMP:
           SET_ACTION (STARTING_MOVING);
           if (is_resize_up)
@@ -2536,9 +2520,8 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
           SET_ACTION (STARTING_MOVING);
           break;
         default:
@@ -2548,9 +2531,8 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
           SET_ACTION (STARTING_MOVING);
           break;
         default:
@@ -2560,9 +2542,8 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_MARKER:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
         case TOOL_EDIT:
-        case TOOL_SELECT_STRETCH:
           SET_ACTION (STARTING_MOVING);
           break;
         default:
@@ -2697,8 +2678,7 @@ drag_begin (
         {
           switch (P_TOOL)
             {
-            case TOOL_SELECT_NORMAL:
-            case TOOL_SELECT_STRETCH:
+            case TOOL_SELECT:
               if (self->drag_start_btn == GDK_BUTTON_MIDDLE || self->alt_held)
                 {
                   self->action = UI_OVERLAY_ACTION_STARTING_PANNING;
@@ -2781,8 +2761,7 @@ drag_begin (
         {
           switch (P_TOOL)
             {
-            case TOOL_SELECT_NORMAL:
-            case TOOL_SELECT_STRETCH:
+            case TOOL_SELECT:
             case TOOL_EDIT:
               arranger_widget_create_item (self, start_x, start_y, false);
               break;
@@ -3124,14 +3103,9 @@ drag_update (
   /* state mask needs to be updated */
   GdkModifierType state = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (gesture));
-  if (state & GDK_SHIFT_MASK)
-    self->shift_held = 1;
-  else
-    self->shift_held = 0;
-  if (state & GDK_CONTROL_MASK)
-    self->ctrl_held = 1;
-  else
-    self->ctrl_held = 0;
+  self->shift_held = state & GDK_SHIFT_MASK;
+  self->ctrl_held = state & GDK_CONTROL_MASK;
+  self->alt_held = state & GDK_ALT_MASK;
 
   arranger_widget_print_action (self);
 
@@ -3175,7 +3149,7 @@ drag_update (
 
   /* if right clicking, start erasing action */
   if (
-    self->drag_start_btn == GDK_BUTTON_SECONDARY && P_TOOL == TOOL_SELECT_NORMAL
+    self->drag_start_btn == GDK_BUTTON_SECONDARY && P_TOOL == TOOL_SELECT
     && self->action != UI_OVERLAY_ACTION_STARTING_ERASING
     && self->action != UI_OVERLAY_ACTION_ERASING)
     {
@@ -4496,6 +4470,7 @@ drag_end (
 
   self->shift_held = 0;
   self->ctrl_held = 0;
+  self->alt_held = 0;
 
   if (self->sel_at_start)
     {
@@ -5000,14 +4975,8 @@ on_motion (
   self->hover_x = x;
   self->hover_y = y;
 
-  GdkModifierType state = gtk_event_controller_get_current_event_state (
-    GTK_EVENT_CONTROLLER (motion_controller));
-  if (state)
-    {
-      /*self->alt_held = state & GDK_ALT_MASK;*/
-      /*self->ctrl_held = state & GDK_CONTROL_MASK;*/
-      /*self->shift_held = state & GDK_SHIFT_MASK;*/
-    }
+  /*GdkModifierType state = gtk_event_controller_get_current_event_state (*/
+  /*GTK_EVENT_CONTROLLER (motion_controller));*/
 
   /* highlight hovered object */
   ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
@@ -5086,13 +5055,10 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (P_TOOL == TOOL_SELECT_NORMAL || P_TOOL == TOOL_SELECT_STRETCH)
+      if (P_TOOL == TOOL_SELECT)
         {
           /* gain line */
           if (audio_arranger_widget_is_cursor_gain (
@@ -5200,13 +5166,10 @@ get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (tool == TOOL_SELECT_NORMAL || tool == TOOL_SELECT_STRETCH)
+      if (tool == TOOL_SELECT)
         {
           ArrangerObject * vel_obj = arranger_widget_get_hit_arranger_object (
             (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_VELOCITY,
@@ -5293,9 +5256,6 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   int is_hit =
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT, self->hover_x,
@@ -5307,7 +5267,7 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_NONE:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
           {
             if (is_hit)
               {
@@ -5316,12 +5276,9 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
             else
               {
                 /* set cursor to normal */
-                return ARRANGER_CURSOR_SELECT;
+                return ac;
               }
           }
-          break;
-        case TOOL_SELECT_STRETCH:
-          ac = ARRANGER_CURSOR_SELECT_STRETCH;
           break;
         case TOOL_EDIT:
           ac = ARRANGER_CURSOR_EDIT;
@@ -5382,9 +5339,6 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   ArrangerObject * hit_obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
     self->hover_x, self->hover_y);
@@ -5394,7 +5348,7 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_NONE:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT:
           {
             if (hit_obj)
               {
@@ -5415,9 +5369,6 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
                 return ac;
               }
           }
-          break;
-        case TOOL_SELECT_STRETCH:
-          ac = ARRANGER_CURSOR_SELECT_STRETCH;
           break;
         case TOOL_EDIT:
           ac = ARRANGER_CURSOR_EDIT;
@@ -5490,9 +5441,6 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   ArrangerObject * r_obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_REGION, self->hover_x,
     self->hover_y);
@@ -5522,8 +5470,7 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_NONE:
       switch (P_TOOL)
         {
-        case TOOL_SELECT_NORMAL:
-        case TOOL_SELECT_STRETCH:
+        case TOOL_SELECT:
           {
             if (is_hit)
               {
@@ -5543,8 +5490,8 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
                       arranger_object_is_fade_out (r_obj, wx, wy, 0, 1);
                     int is_resize_l = arranger_object_is_resize_l (r_obj, wx);
                     int is_resize_r = arranger_object_is_resize_r (r_obj, wx);
-                    int is_resize_loop =
-                      arranger_object_is_resize_loop (r_obj, wy);
+                    int is_resize_loop = arranger_object_is_resize_loop (
+                      r_obj, wy, self->ctrl_held);
                     bool is_rename = arranger_object_is_rename (r_obj, wx, wy);
                     if (is_fade_in_point)
                       return ARRANGER_CURSOR_FADE_IN;
@@ -5556,21 +5503,17 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
                       }
                     else if (is_resize_l)
                       {
-                        if (P_TOOL == TOOL_SELECT_NORMAL)
-                          return ARRANGER_CURSOR_RESIZING_L;
-                        else if (P_TOOL == TOOL_SELECT_STRETCH)
-                          {
-                            return ARRANGER_CURSOR_STRETCHING_L;
-                          }
+                        return self->ctrl_held
+                                 ? ARRANGER_CURSOR_STRETCHING_L
+                                 : ARRANGER_CURSOR_RESIZING_L;
                       }
                     else if (is_resize_r && is_resize_loop)
                       return ARRANGER_CURSOR_RESIZING_R_LOOP;
                     else if (is_resize_r)
                       {
-                        if (P_TOOL == TOOL_SELECT_NORMAL)
-                          return ARRANGER_CURSOR_RESIZING_R;
-                        else if (P_TOOL == TOOL_SELECT_STRETCH)
-                          return ARRANGER_CURSOR_STRETCHING_R;
+                        return self->ctrl_held
+                                 ? ARRANGER_CURSOR_STRETCHING_R
+                                 : ARRANGER_CURSOR_RESIZING_R;
                       }
                     else if (is_fade_in_outer_region)
                       return ARRANGER_CURSOR_FADE_IN;
@@ -5717,9 +5660,6 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    ac = ARRANGER_CURSOR_SELECT_STRETCH;
-
   ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, self->hover_x,
     self->hover_y);
@@ -5730,9 +5670,7 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (
-        tool == TOOL_SELECT_NORMAL || tool == TOOL_SELECT_STRETCH
-        || tool == TOOL_EDIT)
+      if (tool == TOOL_SELECT || tool == TOOL_EDIT)
         {
           int is_resize_l = 0, is_resize_r = 0;
 
@@ -6268,8 +6206,8 @@ arranger_widget_class_init (ArrangerWidgetClass * _klass)
     wklass, GDK_KEY_space, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func,
     "s", "record-play", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func, "s",
-    "select-or-stretch-mode", NULL);
+    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func, "s", "select-mode",
+    NULL);
   gtk_widget_class_add_binding (
     wklass, GDK_KEY_2, 0, z_gtk_simple_action_shortcut_func, "s", "edit-mode",
     NULL);

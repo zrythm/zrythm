@@ -226,14 +226,11 @@ arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y)
   return 0;
 }
 
-/**
- * Returns if the current position is for resizing
- * loop.
- *
- * @param y Y in local coordinates.
- */
 bool
-arranger_object_is_resize_loop (ArrangerObject * self, const int y)
+arranger_object_is_resize_loop (
+  ArrangerObject * self,
+  const int        y,
+  bool             ctrl_pressed)
 {
   if (
     !arranger_object_type_has_length (self->type)
@@ -243,7 +240,7 @@ arranger_object_is_resize_loop (ArrangerObject * self, const int y)
   if (self->type == ARRANGER_OBJECT_TYPE_REGION)
     {
       ZRegion * r = (ZRegion *) self;
-      if (r->id.type == REGION_TYPE_AUDIO && P_TOOL != TOOL_SELECT_STRETCH)
+      if (r->id.type == REGION_TYPE_AUDIO && !ctrl_pressed)
         {
           return 1;
         }
@@ -296,16 +293,6 @@ arranger_object_is_rename (ArrangerObject * self, const int x, const int y)
   return false;
 }
 
-/**
- * Returns if arranger_object widgets should show
- * cut lines.
- *
- * To be used to set the arranger_object's
- * "show_cut".
- *
- * @param alt_pressed Whether alt is currently
- *   pressed.
- */
 bool
 arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed)
 {
@@ -314,8 +301,7 @@ arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed)
 
   switch (P_TOOL)
     {
-    case TOOL_SELECT_NORMAL:
-    case TOOL_SELECT_STRETCH:
+    case TOOL_SELECT:
       if (alt_pressed)
         return 1;
       else

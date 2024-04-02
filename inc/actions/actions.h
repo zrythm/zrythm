@@ -55,8 +55,6 @@ activate_scripting_interface (
 
 DECLARE_SIMPLE (activate_audition_mode);
 DECLARE_SIMPLE (activate_select_mode);
-DECLARE_SIMPLE (activate_stretch_mode);
-DECLARE_SIMPLE (activate_select_or_stretch_mode);
 DECLARE_SIMPLE (activate_edit_mode);
 DECLARE_SIMPLE (activate_cut_mode);
 DECLARE_SIMPLE (activate_eraser_mode);

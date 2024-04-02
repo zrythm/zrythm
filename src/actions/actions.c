@@ -359,22 +359,7 @@ DEFINE_SIMPLE (activate_audition_mode)
 
 DEFINE_SIMPLE (activate_select_mode)
 {
-  P_TOOL = TOOL_SELECT_NORMAL;
-  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
-}
-
-DEFINE_SIMPLE (activate_stretch_mode)
-{
-  P_TOOL = TOOL_SELECT_STRETCH;
-  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
-}
-
-DEFINE_SIMPLE (activate_select_or_stretch_mode)
-{
-  if (P_TOOL == TOOL_SELECT_NORMAL)
-    P_TOOL = TOOL_SELECT_STRETCH;
-  else
-    P_TOOL = TOOL_SELECT_NORMAL;
+  P_TOOL = TOOL_SELECT;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
 }
 

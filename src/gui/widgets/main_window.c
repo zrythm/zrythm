@@ -591,8 +591,6 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* modes */
     { "select-mode", activate_select_mode },
-    { "stretch-mode", activate_stretch_mode },
-    { "select-or-stretch-mode", activate_select_or_stretch_mode },
     { "edit-mode", activate_edit_mode },
     { "cut-mode", activate_cut_mode },
     { "eraser-mode", activate_eraser_mode },

@@ -89,13 +89,15 @@ bool
 arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y);
 
 /**
- * Returns if the current position is for resizing
- * loop.
+ * Returns if the current position is for resizing loop.
  *
  * @param y Y in local coordinates.
  */
 bool
-arranger_object_is_resize_loop (ArrangerObject * self, const int y);
+arranger_object_is_resize_loop (
+  ArrangerObject * self,
+  const int        y,
+  bool             ctrl_pressed);
 
 /**
  * Returns if the current position is for renaming
@@ -108,14 +110,11 @@ NONNULL bool
 arranger_object_is_rename (ArrangerObject * self, const int x, const int y);
 
 /**
- * Returns if arranger_object widgets should show
- * cut lines.
+ * Returns if arranger_object widgets should show cut lines.
  *
- * To be used to set the arranger_object's
- * "show_cut".
+ * To be used to set the arranger_object's "show_cut".
  *
- * @param alt_pressed Whether alt is currently
- *   pressed.
+ * @param alt_pressed Whether alt is currently pressed.
  */
 bool
 arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed);
@@ -135,16 +134,14 @@ arranger_object_set_full_rectangle (
   ArrangerWidget * arranger);
 
 /**
- * Gets the draw rectangle based on the given
- * full rectangle of the arranger object.
+ * Gets the draw rectangle based on the given full rectangle of the arranger
+ * object.
  *
- * @param parent_rect The current arranger
- *   rectangle.
+ * @param parent_rect The current arranger rectangle.
  * @param full_rect The object's full rectangle.
- *   This will usually be ArrangerObject->full_rect,
- *   unless drawing in a lane (for Region's).
- * @param draw_rect The rectangle will be set
- *   here.
+ *   This will usually be ArrangerObject->full_rect, unless drawing in a
+ *   lane (for Region's).
+ * @param draw_rect The rectangle will be set here.
  *
  * @return Whether the draw rect is visible.
  */

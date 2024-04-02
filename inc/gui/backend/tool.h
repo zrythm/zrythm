@@ -1,12 +1,10 @@
-/*
- * SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// clang-format off
+// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
- *
  */
 
 #ifndef __GUI_BACKEND_TOOL_H__
@@ -16,8 +14,7 @@
 
 typedef enum Tool
 {
-  TOOL_SELECT_NORMAL,
-  TOOL_SELECT_STRETCH,
+  TOOL_SELECT,
   TOOL_EDIT,
   TOOL_CUT,
   TOOL_ERASER,

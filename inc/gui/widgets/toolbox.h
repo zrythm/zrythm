@@ -27,7 +27,6 @@ typedef struct _ToolboxWidget
 {
   GtkBox            parent_instance;
   GtkToggleButton * select_mode;
-  GtkToggleButton * stretch_mode;
   GtkToggleButton * edit_mode;
   GtkToggleButton * cut_mode;
   GtkToggleButton * erase_mode;
@@ -36,7 +35,6 @@ typedef struct _ToolboxWidget
   GtkImage *        select_img;
 
   gulong select_handler_id;
-  gulong stretch_handler_id;
   gulong edit_handler_id;
   gulong cut_handler_id;
   gulong erase_handler_id;

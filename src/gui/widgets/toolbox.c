@@ -25,9 +25,7 @@ on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
 {
   g_message ("toggling");
   if (tb == self->select_mode)
-    P_TOOL = TOOL_SELECT_NORMAL;
-  else if (tb == self->stretch_mode)
-    P_TOOL = TOOL_SELECT_STRETCH;
+    P_TOOL = TOOL_SELECT;
   else if (tb == self->edit_mode)
     P_TOOL = TOOL_EDIT;
   else if (tb == self->cut_mode)
@@ -54,7 +52,6 @@ toolbox_widget_refresh (ToolboxWidget * self)
 
   /* block signal handlers */
   BLOCK_SIGNAL_HANDLER (select);
-  BLOCK_SIGNAL_HANDLER (stretch);
   BLOCK_SIGNAL_HANDLER (edit);
   BLOCK_SIGNAL_HANDLER (cut);
   BLOCK_SIGNAL_HANDLER (erase);
@@ -65,7 +62,6 @@ toolbox_widget_refresh (ToolboxWidget * self)
 
   /* set all inactive */
   gtk_toggle_button_set_active (self->select_mode, 0);
-  gtk_toggle_button_set_active (self->stretch_mode, 0);
   gtk_toggle_button_set_active (self->edit_mode, 0);
   gtk_toggle_button_set_active (self->cut_mode, 0);
   gtk_toggle_button_set_active (self->erase_mode, 0);
@@ -75,11 +71,8 @@ toolbox_widget_refresh (ToolboxWidget * self)
   /* set toggled states */
   switch (P_TOOL)
     {
-    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT:
       gtk_toggle_button_set_active (self->select_mode, true);
-      break;
-    case TOOL_SELECT_STRETCH:
-      gtk_toggle_button_set_active (self->stretch_mode, true);
       break;
     case TOOL_EDIT:
       gtk_toggle_button_set_active (self->edit_mode, 1);
@@ -104,7 +97,6 @@ toolbox_widget_refresh (ToolboxWidget * self)
 
   /* unblock signal handlers */
   UNBLOCK_SIGNAL_HANDLER (select);
-  UNBLOCK_SIGNAL_HANDLER (stretch);
   UNBLOCK_SIGNAL_HANDLER (edit);
   UNBLOCK_SIGNAL_HANDLER (cut);
   UNBLOCK_SIGNAL_HANDLER (erase);
@@ -126,7 +118,6 @@ toolbox_widget_class_init (ToolboxWidgetClass * _klass)
   gtk_widget_class_bind_template_child (klass, ToolboxWidget, x)
 
   BIND_CHILD (select_mode);
-  BIND_CHILD (stretch_mode);
   BIND_CHILD (edit_mode);
   BIND_CHILD (cut_mode);
   BIND_CHILD (erase_mode);
@@ -168,7 +159,6 @@ toolbox_widget_init (ToolboxWidget * self)
 
   /* connect click handlers */
   CONNECT_CLICK_HANDLER (select);
-  CONNECT_CLICK_HANDLER (stretch);
   CONNECT_CLICK_HANDLER (edit);
   CONNECT_CLICK_HANDLER (cut);
   CONNECT_CLICK_HANDLER (erase);
@@ -181,7 +171,6 @@ toolbox_widget_init (ToolboxWidget * self)
 
   /* connect notify signals */
   CONNECT_NOTIFY_SIGNALS (select);
-  CONNECT_NOTIFY_SIGNALS (stretch);
   CONNECT_NOTIFY_SIGNALS (edit);
   CONNECT_NOTIFY_SIGNALS (cut);
   CONNECT_NOTIFY_SIGNALS (erase);
@@ -197,7 +186,6 @@ toolbox_widget_init (ToolboxWidget * self)
     GTK_WIDGET (self->x##_mode), action, tooltip_text);
 
   SET_TOOLTIP (select, "app.select-mode");
-  SET_TOOLTIP (stretch, "app.stretch-mode");
   SET_TOOLTIP (edit, "app.edit-mode");
   SET_TOOLTIP (cut, "app.cut-mode");
   SET_TOOLTIP (erase, "app.eraser-mode");
