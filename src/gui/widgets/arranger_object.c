@@ -52,13 +52,16 @@ bool
 arranger_object_is_resize_l (ArrangerObject * self, const int x)
 {
   if (!arranger_object_type_has_length (self->type))
-    return 0;
+    return false;
+
+  if (self->full_rect.width < UI_RESIZE_CURSOR_SPACE * 3)
+    return false;
 
   if (x < UI_RESIZE_CURSOR_SPACE)
     {
-      return 1;
+      return true;
     }
-  return 0;
+  return false;
 }
 
 /**
@@ -71,7 +74,10 @@ bool
 arranger_object_is_resize_r (ArrangerObject * self, const int x)
 {
   if (!arranger_object_type_has_length (self->type))
-    return 0;
+    return false;
+
+  if (self->full_rect.width < UI_RESIZE_CURSOR_SPACE * 3)
+    return false;
 
   long     size_frames = self->end_pos.frames - self->pos.frames;
   Position pos;
@@ -81,9 +87,9 @@ arranger_object_is_resize_r (ArrangerObject * self, const int x)
 
   if (x > width_px - UI_RESIZE_CURSOR_SPACE)
     {
-      return 1;
+      return true;
     }
-  return 0;
+  return false;
 }
 
 /**
@@ -282,8 +288,7 @@ arranger_object_is_rename (ArrangerObject * self, const int x, const int y)
     return false;
 
   GdkRectangle rect = self->last_name_rect;
-  /* make the clickable height area a little
-   * smaller */
+  /* make the clickable height area a little smaller */
   rect.height = MAX (1, rect.height - 4);
   if (ui_is_point_in_rect_hit (&rect, true, true, x, y, 0, 0))
     {
@@ -707,10 +712,7 @@ arranger_object_set_full_rectangle (
       g_message ("Object:");
       arranger_object_print (self);
       g_warning (
-        "The full rectangle of widget %p has "
-        "negative dimensions: (%d,%d) w: %d h: %d. "
-        "This should not happen. A rendering error "
-        "is expected to occur.",
+        "The full rectangle of widget %p has negative dimensions: (%d,%d) w: %d h: %d. This should not happen. A rendering error is expected to occur.",
         self, self->full_rect.x, self->full_rect.y, self->full_rect.width,
         self->full_rect.height);
     }
