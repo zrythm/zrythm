@@ -66,7 +66,7 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
   "gnome-icon-library-flag-outline-thick-symbolic"
 #define TRACK_ICON_NAME_MIDI "instrument"
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
-#define TRACK_ICON_NAME_MODULATOR "modulator"
+#define TRACK_ICON_NAME_MODULATOR "gnome-icon-library-encoder-knob-symbolic"
 #define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
 #define TRACK_ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
 #define TRACK_ICON_NAME_MONITOR_AUDIO "audition"

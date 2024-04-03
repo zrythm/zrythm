@@ -213,7 +213,9 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 
   ADD_TAB (self->clip_editor_box, "piano-roll", _ ("Editor view"));
   ADD_TAB (self->mixer_box, "mixer", _ ("Mixer view"));
-  ADD_TAB (self->modulator_view_box, "modulator", _ ("Modulators"));
+  ADD_TAB (
+    self->modulator_view_box, "gnome-icon-library-encoder-knob-symbolic",
+    _ ("Modulators"));
   ADD_TAB (self->chord_pad_panel_box, "chord-pad", _ ("Chord pad"));
 
 #undef ADD_TAB

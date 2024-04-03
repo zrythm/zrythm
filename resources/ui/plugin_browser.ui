@@ -223,7 +223,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="toggle_effects">
-                        <property name="icon-name">audio-insert</property>
+                        <property name="icon-name">gnome-icon-library-sound-wave-symbolic</property>
                         <property name="tooltip-text" translatable="true">Effects</property>
                         <property name="hexpand">true</property>
                         <signal name="toggled" handler="toggles_changed"/>
@@ -231,7 +231,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="toggle_modulators">
-                        <property name="icon-name">modulator</property>
+                        <property name="icon-name">gnome-icon-library-encoder-knob-symbolic</property>
                         <property name="tooltip-text" translatable="true">Modulators</property>
                         <property name="hexpand">true</property>
                         <signal name="toggled" handler="toggles_changed"/>

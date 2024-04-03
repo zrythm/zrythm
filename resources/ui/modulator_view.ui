@@ -46,7 +46,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <property name="hexpand">true</property>
                             <property name="title" translatable="true">No modulators</property>
                             <property name="description" translatable="true">Drag and drop a modulator plugin from the plugin browser</property>
-                            <property name="icon-name">modulator</property>
+                            <property name="icon-name">gnome-icon-library-encoder-knob-symbolic</property>
                           </object>
                         </child>
                         <child>

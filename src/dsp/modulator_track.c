@@ -34,7 +34,7 @@ modulator_track_init (Track * self)
   self->main_height = TRACK_DEF_HEIGHT / 2;
 
   gdk_rgba_parse (&self->color, "#222222");
-  self->icon_name = g_strdup ("modulator");
+  self->icon_name = g_strdup ("gnome-icon-library-encoder-knob-symbolic");
 
   const int max_macros = 8;
   self->num_visible_modulator_macros = max_macros;

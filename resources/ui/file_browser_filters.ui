@@ -30,7 +30,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
       <object class="GtkToggleButton" id="toggle_presets">
         <property name="tooltip-text" translatable="true">Presets</property>
         <property name="hexpand">true</property>
-        <property name="icon-name">modulator</property>
+        <property name="icon-name">gnome-icon-library-encoder-knob-symbolic</property>
         <signal name="toggled" handler="toggles_changed"/>
       </object>
     </child>

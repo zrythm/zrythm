@@ -39,7 +39,8 @@ modulator_widget_new (Plugin * modulator)
 
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self), modulator->setting->descr->name);
-  expander_box_widget_set_icon_name (Z_EXPANDER_BOX_WIDGET (self), "modulator");
+  expander_box_widget_set_icon_name (
+    Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-encoder-knob-symbolic");
 
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->inner));
