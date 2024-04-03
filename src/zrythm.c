@@ -273,6 +273,12 @@ zrythm_get_system_info (void)
   g_string_append_printf (
     gstr, "GTK version: %u.%u.%u\n", gtk_get_major_version (),
     gtk_get_minor_version (), gtk_get_micro_version ());
+  g_string_append_printf (
+    gstr, "libadwaita version: %u.%u.%u\n", adw_get_major_version (),
+    adw_get_minor_version (), adw_get_micro_version ());
+  g_string_append_printf (
+    gstr, "libpanel version: %u.%u.%u\n", panel_get_major_version (),
+    panel_get_minor_version (), panel_get_micro_version ());
 
   char * str = g_string_free (gstr, false);
 
