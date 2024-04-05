@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2023-12-13 20:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2024-04-05 20:45+0000\n"
+"Last-Translator: Deleted User <noreply+82786@weblate.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -399,7 +400,7 @@ msgstr "トラックの編集"
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
-msgstr ""
+msgstr "カスタムパックは右クリックで名前の変更、削除ができます。"
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
