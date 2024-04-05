@@ -7,13 +7,14 @@
 # benjamin <itsbenx@outlook.com>, 2022.
 # Sabri Ünal <libreajans@gmail.com>, 2022.
 # NukeSource <dede48076@gmail.com>, 2024.
+# Semih <semihbrn10@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2024-03-17 20:45+0000\n"
-"Last-Translator: NukeSource <dede48076@gmail.com>\n"
+"PO-Revision-Date: 2024-03-29 20:45+0000\n"
+"Last-Translator: Semih <semihbrn10@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -25,15 +26,15 @@ msgstr ""
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
-msgstr ""
+msgstr "Eklerden önce"
 
 #: inc/dsp/exporter.h:128
 msgid "Pre-fader"
-msgstr ""
+msgstr "Pre-fader"
 
 #: inc/dsp/exporter.h:129
 msgid "Post fader"
-msgstr ""
+msgstr "Fader sonrası"
 
 #: inc/dsp/track.h:163 src/gui/widgets/track_properties_expander.c:94
 #: src/gui/widgets/popovers/automatable_selector_popover.c:326
@@ -49,7 +50,7 @@ msgstr "Ses"
 #: inc/dsp/track.h:165 src/gui/widgets/route_target_selector.c:87
 #: src/project/project_init_flow_manager.c:574
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: inc/dsp/track.h:166 src/dsp/region.c:477
 msgid "Chord"
@@ -96,25 +97,24 @@ msgid "Folder"
 msgstr "Klasör"
 
 #: inc/dsp/snap_grid.h:52
-#, fuzzy
 msgid "bar"
-msgstr "1 bar"
+msgstr "bar"
 
 #: inc/dsp/snap_grid.h:53
 msgid "beat"
-msgstr ""
+msgstr "beat"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"
-msgstr ""
+msgstr "normal"
 
 #: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:437
 msgid "dotted"
-msgstr ""
+msgstr "noktalı"
 
 #: inc/dsp/snap_grid.h:75 src/gui/widgets/digital_meter.c:440
 msgid "triplet"
-msgstr ""
+msgstr "üçlü"
 
 #: inc/dsp/engine.h:170
 msgid "1,024"
@@ -212,11 +212,11 @@ msgstr "Ters çevir"
 
 #: inc/dsp/audio_function.h:59
 msgid "Pitch shift"
-msgstr ""
+msgstr "Perde kaydırma"
 
 #: inc/dsp/audio_function.h:59
 msgid "Copy L to R"
-msgstr ""
+msgstr "L'den R'ye kopyala"
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
@@ -240,12 +240,10 @@ msgid "Crescendo"
 msgstr "Artış"
 
 #: inc/dsp/midi_function.h:43
-#, fuzzy
 msgid "Flam"
 msgstr "Flam"
 
 #: inc/dsp/midi_function.h:44 inc/dsp/automation_function.h:35
-#, fuzzy
 msgid "Flip H"
 msgstr "Çevir H"
 
