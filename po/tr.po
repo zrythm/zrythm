@@ -6,13 +6,14 @@
 # Oğuz Ersen <oguzersen@protonmail.com>, 2021, 2022.
 # benjamin <itsbenx@outlook.com>, 2022.
 # Sabri Ünal <libreajans@gmail.com>, 2022.
+# NukeSource <dede48076@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2022-05-02 00:23+0000\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"PO-Revision-Date: 2024-03-17 20:45+0000\n"
+"Last-Translator: NukeSource <dede48076@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -317,11 +318,11 @@ msgstr ""
 
 #: inc/dsp/scale.h:130
 msgid "Major"
-msgstr ""
+msgstr "Majör"
 
 #: inc/dsp/scale.h:131
 msgid "Minor"
-msgstr ""
+msgstr "Minör"
 
 #: inc/dsp/scale.h:132
 msgid "Ionian"
