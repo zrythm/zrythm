@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2024-02-25 20:45+0000\n"
+"PO-Revision-Date: 2024-03-19 20:45+0000\n"
 "Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
 "Language-Team: Interlingua <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/ia/>\n"
@@ -47,7 +47,7 @@ msgstr "R_ader selection"
 
 #: inc/utils/gtk.h:79
 msgid "Select A_ll"
-msgstr ""
+msgstr "Se_liger toto"
 
 #: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:129
 msgid "Duplicate"
@@ -96,7 +96,7 @@ msgstr "Audio FX"
 
 #: inc/audio/track.h:164
 msgid "Audio Group"
-msgstr ""
+msgstr "Gruppo de audio"
 
 #: inc/audio/track.h:165 src/audio/region.c:388
 msgid "MIDI"
@@ -445,19 +445,19 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:836
 msgid "Audio in"
-msgstr ""
+msgstr "Entrata de audio"
 
 #: src/plugins/carla_native_plugin.c:846
 msgid "Audio out"
-msgstr ""
+msgstr "Sortita de audio"
 
 #: src/plugins/carla_native_plugin.c:856
 msgid "MIDI in"
-msgstr ""
+msgstr "Entrata de MIDI"
 
 #: src/plugins/carla_native_plugin.c:866
 msgid "MIDI out"
-msgstr ""
+msgstr "Sortita de MIDI"
 
 #: src/plugins/plugin_manager.c:501
 msgid "Error loading LV2 bundle dir: "
@@ -492,11 +492,11 @@ msgstr ""
 
 #: src/plugins/plugin.c:132
 msgid "Enabled"
-msgstr ""
+msgstr "Activate"
 
 #: src/plugins/plugin_gtk.c:80 src/plugins/lv2/lv2_gtk.c:102
 msgid "Save State"
-msgstr ""
+msgstr "Salveguardar stato"
 
 #: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:105
 #: src/plugins/lv2/lv2_gtk.c:353 src/utils/dialogs.c:42 src/utils/dialogs.c:72
@@ -504,12 +504,12 @@ msgstr ""
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr ""
+msgstr "_Cancellar"
 
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:106
 #: src/actions/actions.c:764
 msgid "_Save"
-msgstr ""
+msgstr "_Salveguardar"
 
 #: src/plugins/lv2_plugin.c:2427
 msgid "Unnamed bank"
@@ -517,7 +517,7 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:252
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (Optional):"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "_Prefix plugin name"
@@ -530,7 +530,7 @@ msgstr ""
 #: src/plugins/lv2/lv2_gtk.c:354 src/utils/dialogs.c:70
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2/lv2_gtk.c:568
 msgid "Unknown widget type for value"
@@ -542,7 +542,7 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:1247
 msgid "Close"
-msgstr ""
+msgstr "Clauder"
 
 #: src/gui/widgets/create_project_dialog.c:111
 msgid "Create New Project"
@@ -550,7 +550,7 @@ msgstr ""
 
 #: src/gui/widgets/create_project_dialog.c:125
 msgid "Untitled Project"
-msgstr ""
+msgstr "Projecto sin titulo"
 
 #: src/gui/widgets/fader_controls_grid.c:78
 msgid "Peak"
@@ -558,15 +558,15 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "INPUTS"
-msgstr ""
+msgstr "ENTRATAS"
 
 #: src/gui/widgets/port_connections_popover.c:103
 msgid "OUTPUTS"
-msgstr ""
+msgstr "SORTITAS"
 
 #: src/gui/widgets/port_connections_popover.c:201
 msgid "Add"
-msgstr ""
+msgstr "Adder"
 
 #: src/gui/widgets/quantize_dialog.c:122
 msgid "note length"
@@ -574,7 +574,7 @@ msgstr ""
 
 #: src/gui/widgets/quantize_dialog.c:131
 msgid "note type"
-msgstr ""
+msgstr "typo de nota"
 
 #: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:332
 #: src/gui/widgets/fader.c:337 resources/ui/bind_cc_dialog.ui:27
@@ -599,11 +599,11 @@ msgstr ""
 
 #: src/gui/widgets/inspector_port.c:339
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: src/gui/widgets/inspector_port.c:340
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: src/gui/widgets/inspector_port.c:460
 msgid "Expose port to JACK"
@@ -615,7 +615,7 @@ msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:110
 msgid "Track Name"
-msgstr ""
+msgstr "Nomine de tracia"
 
 #: src/gui/widgets/track_properties_expander.c:122
 msgid "Direct Out"
@@ -623,23 +623,23 @@ msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:147
 msgid "Track Properties"
-msgstr ""
+msgstr "Proprietates del tracia"
 
 #: src/gui/widgets/track_input_expander.c:291
 msgid "All MIDI Inputs"
-msgstr ""
+msgstr "Tote le entratas MIDI"
 
 #: src/gui/widgets/track_input_expander.c:295
 msgid "All Audio Inputs"
-msgstr ""
+msgstr "Tote le entratas de audio"
 
 #: src/gui/widgets/track_input_expander.c:335
 msgid "No inputs"
-msgstr ""
+msgstr "Nulle entrata"
 
 #: src/gui/widgets/track_input_expander.c:338
 msgid "MIDI inputs for recording"
-msgstr ""
+msgstr "Entratas MIDI pro registration"
 
 #: src/gui/widgets/track_input_expander.c:346
 msgid "No left input"
@@ -652,21 +652,21 @@ msgstr ""
 #: src/gui/widgets/track_input_expander.c:350
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "Entrata de audio (%s) pro registration"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:352
 msgid "L"
-msgstr ""
+msgstr "S"
 
 #: src/gui/widgets/track_input_expander.c:352
 #: resources/ui/automation_track.ui:100
 msgid "R"
-msgstr ""
+msgstr "D"
 
 #: src/gui/widgets/track_input_expander.c:422
 msgid "All Channels"
-msgstr ""
+msgstr "Tote le canales"
 
 #: src/gui/widgets/track_input_expander.c:431
 #, c-format
@@ -683,12 +683,12 @@ msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:632
 msgid "Inputs"
-msgstr ""
+msgstr "Entratas"
 
 #: src/gui/widgets/midi_controller_mb.c:47
 #: src/gui/widgets/midi_controller_mb.c:123
 msgid "Select..."
-msgstr ""
+msgstr "Seliger..."
 
 #: src/gui/widgets/midi_controller_mb.c:126
 msgid "Click to enable MIDI controllers to be connected automatically"
@@ -708,7 +708,7 @@ msgstr ""
 
 #: src/gui/widgets/bind_cc_dialog.c:95
 msgid "Not a control change event"
-msgstr ""
+msgstr "Non es un evento de cambiamento de controlo"
 
 #: src/gui/widgets/project_assistant.c:266
 #: src/gui/widgets/plugin_properties_expander.c:134
@@ -716,16 +716,16 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:72
 #: resources/ui/port_info_dialog.ui:72
 msgid "Name"
-msgstr ""
+msgstr "Nomine"
 
 #: src/gui/widgets/project_assistant.c:276
 #: resources/ui/first_run_assistant.ui:144
 msgid "Path"
-msgstr ""
+msgstr "Percurso"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
-msgstr ""
+msgstr "Ultime modification"
 
 #: src/gui/widgets/project_assistant.c:530
 msgid "Blank project"
@@ -746,7 +746,7 @@ msgstr ""
 #: src/gui/widgets/left_dock_edge.c:200
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilitate"
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
@@ -759,32 +759,32 @@ msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:53
 msgid "No port selected"
-msgstr ""
+msgstr "Necun porto seligite"
 
 #: src/gui/widgets/port_selector_popover.c:85
 msgid "These ports cannot be connected"
-msgstr ""
+msgstr "Iste portos non pote connecter se"
 
 #: src/gui/widgets/port_selector_popover.c:319
 msgid "Track Ports"
-msgstr ""
+msgstr "Portos del pista"
 
 #: src/gui/widgets/channel_send_selector.c:159
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
-msgstr ""
+msgstr "Necun"
 
 #: src/gui/widgets/channel_send_selector.c:296
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
-msgstr ""
+msgstr "position de initio"
 
 #: src/gui/widgets/editor_selection_info.c:85
 #: src/gui/widgets/timeline_selection_info.c:430
@@ -805,13 +805,13 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:1114
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Tempo/BPM"
 
 #: src/gui/widgets/digital_meter.c:1128 src/gui/widgets/event_viewer.c:600
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
 #: src/gui/widgets/digital_meter.c:1158
 msgid "Time Signature - Beats per bar / Beat unit"
@@ -820,7 +820,7 @@ msgstr ""
 #: src/gui/widgets/drag_dest_box.c:265
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Typo de file non supportate %s"
 
 #: src/gui/widgets/drag_dest_box.c:293
 msgid "No file found"
@@ -828,24 +828,24 @@ msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:472
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "Adder tracia _MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:484
 msgid "Add Audio Track"
-msgstr ""
+msgstr "Adder un tracia de audio"
 
 #: src/gui/widgets/drag_dest_box.c:516
 msgid "Add FX Track"
-msgstr ""
+msgstr "Adder tracia FX"
 
 #: src/gui/widgets/drag_dest_box.c:546
 msgid "Add Group Track"
-msgstr ""
+msgstr "Adder tracia de gruppo"
 
 #: src/gui/widgets/instrument_track.c:219 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:51
 msgid "Record"
-msgstr ""
+msgstr "Registrar"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
@@ -900,11 +900,11 @@ msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:137
 msgid "both"
-msgstr ""
+msgstr "ambes"
 
 #: src/gui/widgets/piano_roll_keys.c:153
 msgid "scale"
-msgstr ""
+msgstr "scala"
 
 #: src/gui/widgets/piano_roll_keys.c:169
 msgid "chord"
@@ -912,7 +912,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:229
 msgid "Add to project"
-msgstr ""
+msgstr "Adder al projecto"
 
 #: src/gui/widgets/plugin_browser.c:234
 msgid "Add to project (carla)"
@@ -985,7 +985,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:455 build/data/org.zrythm.Zrythm.gschema.xml:444
 msgid "Buffer size"
-msgstr ""
+msgstr "Dimension de buffer"
 
 #: src/gui/widgets/bot_bar.c:459
 msgid "Sample rate"
@@ -993,7 +993,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:533
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:537
 msgid "time sig."
@@ -1002,7 +1002,7 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:64
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "initio"
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:71
 #: resources/ui/quantize_dialog.ui:156
@@ -1026,11 +1026,11 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:380
 #: src/gui/widgets/timeline_selection_info.c:405
 msgid "position"
-msgstr ""
+msgstr "position"
 
 #: src/gui/widgets/timeline_arranger.c:524
 msgid "Custom Marker"
-msgstr ""
+msgstr "Marcator personalisate"
 
 #: src/gui/widgets/timeline_arranger.c:1283
 msgid "Fade preset"
@@ -1072,7 +1072,7 @@ msgstr ""
 #: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:787
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Preferentias"
 
 #: src/gui/widgets/header.c:101
 msgid "Log viewer"
@@ -1105,12 +1105,12 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:119
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:569
 msgid "Undo"
-msgstr ""
+msgstr "Disfacer"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:121
 #: resources/ui/home_toolbar.ui:48
 msgid "Redo"
-msgstr ""
+msgstr "Refacer"
 
 #: src/gui/widgets/home_toolbar.c:123
 msgid "Cut"
@@ -1126,7 +1126,7 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:131
 msgid "Delete"
-msgstr ""
+msgstr "Deler"
 
 #: src/gui/widgets/home_toolbar.c:133
 msgid "Clear Selection"
@@ -1147,7 +1147,7 @@ msgstr ""
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr ""
+msgstr "Navigator de files"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
@@ -1167,7 +1167,7 @@ msgstr ""
 #: resources/ui/port_info_dialog.ui:161 resources/ui/panel_file_browser.ui:84
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
-msgstr ""
+msgstr "Typo"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
@@ -1203,7 +1203,7 @@ msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:66
 msgid "No control selected"
-msgstr ""
+msgstr "Necun controlo seligite"
 
 #: src/gui/widgets/automatable_selector_popover.c:273
 #, c-format
@@ -1226,11 +1226,11 @@ msgstr ""
 
 #: src/gui/widgets/preferences.c:396 resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
-msgstr ""
+msgstr "Selige un dossier"
 
 #: src/gui/widgets/preferences.c:397
 msgid "Select a file"
-msgstr ""
+msgstr "Selige un file"
 
 #: src/gui/widgets/preferences.c:767
 msgid "Some changes will only take effect after you restart Zrythm"
@@ -1250,16 +1250,16 @@ msgstr ""
 
 #: src/gui/widgets/port_connection_row.c:97
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "Activar/disactivar le connexion"
 
 #: src/gui/widgets/port_connection_row.c:138
 msgid "Delete connection"
-msgstr ""
+msgstr "Deler le connexion"
 
 #: src/gui/widgets/balance_control.c:323 src/gui/widgets/fader.c:328
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
-msgstr ""
+msgstr "Reinitialisar"
 
 #: src/gui/widgets/live_waveform.c:210
 msgid "Live waveform indicator"
@@ -1294,7 +1294,7 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
 msgid "Start"
-msgstr ""
+msgstr "Initiar"
 
 #: src/gui/widgets/event_viewer.c:474
 msgid "Clip start"
@@ -1314,17 +1314,17 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:526
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #: src/gui/widgets/event_viewer.c:537
 msgid "Pitch"
-msgstr ""
+msgstr "Tono"
 
 #: src/gui/widgets/event_viewer.c:548 resources/ui/midi_editor_space.ui:134
 #: resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "Velocitate"
 
 #: src/gui/widgets/event_viewer.c:619
 msgid "Index"
@@ -1332,7 +1332,7 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:641
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: src/gui/widgets/event_viewer.c:652
 msgid "Curviness"
@@ -1340,35 +1340,35 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:172 src/gui/widgets/ports_expander.c:374
 msgid "Controls"
-msgstr ""
+msgstr "Controlos"
 
 #: src/gui/widgets/ports_expander.c:175
 msgid "Control Outs"
-msgstr ""
+msgstr "Sortitas de controlo"
 
 #: src/gui/widgets/ports_expander.c:178
 msgid "Audio Ins"
-msgstr ""
+msgstr "Entratas de audio"
 
 #: src/gui/widgets/ports_expander.c:181
 msgid "Audio Outs"
-msgstr ""
+msgstr "Sortitas de audio"
 
 #: src/gui/widgets/ports_expander.c:184
 msgid "MIDI Ins"
-msgstr ""
+msgstr "Entratas MIDI"
 
 #: src/gui/widgets/ports_expander.c:187
 msgid "MIDI Outs"
-msgstr ""
+msgstr "Sortitas MIDI"
 
 #: src/gui/widgets/ports_expander.c:190
 msgid "CV Ins"
-msgstr ""
+msgstr "Entratas CV"
 
 #: src/gui/widgets/ports_expander.c:193
 msgid "CV Outs"
-msgstr ""
+msgstr "Sortitas CV"
 
 #: src/gui/widgets/ports_expander.c:388
 msgid "Stereo In"
@@ -1376,11 +1376,11 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:395
 msgid "MIDI In"
-msgstr ""
+msgstr "Entrata MIDI"
 
 #: src/gui/widgets/ports_expander.c:403
 msgid "MIDI Out"
-msgstr ""
+msgstr "Sortita MIDI"
 
 #: src/gui/widgets/route_target_selector_popover.c:161
 msgid "Group"
@@ -1402,7 +1402,7 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "Salveguardar"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
@@ -1426,19 +1426,19 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom avante"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom retro"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "Dimension original"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr ""
+msgstr "Melior adjustamento"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -1471,11 +1471,11 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1500
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Deler le tracia"
 
 #: src/gui/widgets/track.c:1503
 msgid "_Delete Tracks"
-msgstr ""
+msgstr "_Deler le tracias"
 
 #: src/gui/widgets/track.c:1514
 msgid "_Duplicate Track"
@@ -1491,11 +1491,11 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1544
 msgid "Hide Track"
-msgstr ""
+msgstr "Celar le tracia"
 
 #: src/gui/widgets/track.c:1545
 msgid "Hide Tracks"
-msgstr ""
+msgstr "Celar le tracias"
 
 #: src/gui/widgets/track.c:1553
 msgid "Pin/Unpin Track"
@@ -1516,7 +1516,7 @@ msgstr ""
 #: src/gui/widgets/track.c:1637 src/gui/widgets/track.c:1697
 #, c-format
 msgid "MIDI Channel %d"
-msgstr ""
+msgstr "Canal MIDI %d"
 
 #: src/gui/widgets/track.c:1677
 #, c-format
@@ -1530,7 +1530,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
 msgid "%.1f to %.1f"
-msgstr ""
+msgstr "%.1f a %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
@@ -1550,11 +1550,11 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:89
 msgid "Exported"
-msgstr ""
+msgstr "Exportate"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:163
 msgid "Export Progress"
-msgstr ""
+msgstr "Progresso del exportation"
 
 #: src/gui/backend/event_manager.c:1521
 msgid "Trial limit has been reached. Zrythm will now go silent"
@@ -3089,7 +3089,7 @@ msgstr ""
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 #: build/data/org.zrythm.Zrythm.gschema.xml:583
 msgid "Projects"
-msgstr ""
+msgstr "Projectos"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "Autosave interval"
@@ -3624,7 +3624,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:603
 msgid "User interface language"
-msgstr ""
+msgstr "Lingua del interfacie de usator"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "The language to use for the user interface."
