@@ -11,7 +11,7 @@
 # Liu Tao <lyuutau@outlook.com>, 2021.
 # poi <erbaotao@outlook.com>, 2022.
 # Eric <alchemillatruth@purelymail.com>, 2022.
-# 刘韬 <lyuutau@outlook.com>, 2022.
+# 刘韬 <lyuutau@outlook.com>, 2022, 2024.
 # Cris Q <qygw@outlook.com>, 2022.
 # Hugel <qihu@nfschina.com>, 2022.
 # Eric <hamburger1024@firemail.cc>, 2022.
@@ -28,8 +28,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2024-02-03 20:45+0000\n"
-"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
+"PO-Revision-Date: 2024-04-01 20:45+0000\n"
+"Last-Translator: 刘韬 <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -632,27 +632,27 @@ msgstr "剪切"
 
 #: inc/utils/gtk.h:48
 msgid "_Copy"
-msgstr "复制"
+msgstr "复制(_C)"
 
 #: inc/utils/gtk.h:51
 msgid "_Paste"
-msgstr "粘贴"
+msgstr "粘贴(_P)"
 
 #: inc/utils/gtk.h:54 src/actions/actions.c:1798 src/actions/actions.c:3316
 #: src/actions/actions.c:3368 src/actions/actions.c:3514
 #: src/actions/actions.c:3636 src/actions/actions.c:3903
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
-msgstr "删除"
+msgstr "删除(_D)"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:58
 msgid "Cle_ar Selection"
-msgstr "清空选项"
+msgstr "清空选项(_A)"
 
 #: inc/utils/gtk.h:61
 msgid "Select A_ll"
-msgstr "全选"
+msgstr "全选(_L)"
 
 #: inc/utils/gtk.h:64
 msgid "Duplicate"
@@ -822,9 +822,8 @@ msgid "Loading Project"
 msgstr "加载项目"
 
 #: src/zrythm_app.c:427
-#, fuzzy
 msgid "Initializing"
-msgstr "正在初始化..."
+msgstr "正在初始化"
 
 #: src/zrythm_app.c:427
 msgid "Initializing settings"
@@ -938,7 +937,7 @@ msgstr "覆盖要使用的音频后端"
 
 #: src/zrythm_app.c:1447
 msgid "Override the MIDI backend to use"
-msgstr "覆盖要使用的MIDI后端"
+msgstr "覆盖要使用的 MIDI 后端"
 
 #: src/zrythm_app.c:1449
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -1076,12 +1075,12 @@ msgstr "任何未保存的对当前项目的更改都将丢失。是否继续？
 #: src/plugins/lv2/lv2_gtk.c:61 src/plugins/lv2/lv2_gtk.c:244
 #: src/settings/plugin_settings.c:571
 msgid "_Cancel"
-msgstr "取消（_C）"
+msgstr "取消(_C)"
 
 #: src/actions/actions.c:723 src/actions/actions.c:784
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
-msgstr "丢弃"
+msgstr "丢弃(_D)"
 
 #: src/actions/actions.c:724 src/actions/actions.c:785
 #: src/gui/widgets/main_window.c:154
@@ -1089,7 +1088,7 @@ msgstr "丢弃"
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
-msgstr "保存（_S）"
+msgstr "保存(_S)"
 
 #: src/actions/actions.c:779 src/gui/widgets/main_window.c:148
 msgid "Save Changes?"
@@ -1262,7 +1261,7 @@ msgstr "无效时间范围"
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
-msgstr "必须先选择时间线或编辑器。当前的选择是 %s 。"
+msgstr "必须先选择时间线或编辑器。当前的选择是 %s"
 
 #: src/actions/actions.c:2146
 msgid "Failed to mute selections"
@@ -3723,7 +3722,7 @@ msgstr "加载预设"
 
 #: src/gui/widgets/plugin_properties_expander.c:80
 msgid "_Load"
-msgstr ""
+msgstr "加载(_L)"
 
 #: src/gui/widgets/plugin_properties_expander.c:117 src/plugins/plugin.c:451
 #: src/plugins/plugin_gtk.c:155
@@ -3764,9 +3763,8 @@ msgid "Create Object"
 msgstr "创建项目"
 
 #: src/gui/widgets/arranger.c:1335
-#, fuzzy
 msgid "Create"
-msgstr "创建(_C)"
+msgstr "创建"
 
 #: src/gui/widgets/arranger.c:1633 src/gui/widgets/arranger.c:1649
 #: src/gui/widgets/arranger.c:1690 src/gui/widgets/arranger.c:1749
@@ -5034,13 +5032,12 @@ msgstr ""
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
 #: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
 msgid "_Yes"
-msgstr ""
+msgstr "是(_Y)"
 
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:35
 #: src/settings/plugin_settings.c:533 src/settings/plugin_settings.c:571
-#, fuzzy
 msgid "_No"
-msgstr "否"
+msgstr "否(_N)"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:71
 msgid "MIDI region exported."
