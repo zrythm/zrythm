@@ -2,13 +2,15 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Roosa Huovinen <roosa.h@proton.me>, 2024.
+# Weblate Translation Memory <noreply-mt-weblate-translation-memory@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
 "PO-Revision-Date: 2024-03-17 20:45+0000\n"
-"Last-Translator: Roosa Huovinen <roosa.h@proton.me>\n"
+"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
+"memory@weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/zrythm/zrythm/fi/"
 ">\n"
 "Language: fi\n"
@@ -5261,7 +5263,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:399
 msgid "Export"
-msgstr ""
+msgstr "Vie"
 
 #: resources/ui/plugin_browser.ui:27
 msgid "Collection"
