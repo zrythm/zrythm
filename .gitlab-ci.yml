@@ -20,6 +20,7 @@ stages:
   - build
   - test
   - deploy
+  - cleanup
 
 default:
   cache:
@@ -32,7 +33,7 @@ default:
         - subprojects/libpanel
         - subprojects/yyjson
         - subprojects/libcyaml
-    - key: $CI_COMMIT_TIMESTAMP
+    - key: "$CI_PIPELINE_ID"
       paths:
         - build
   tags:
@@ -83,3 +84,9 @@ update_manual:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - source ./venv/bin/activate
+
+cleanup-cache:
+  stage: cleanup
+  script:
+    - rm -rf "$CI_CACHE_PATH/$CI_PROJECT_PATH/$CI_PIPELINE_ID"-*
+  when: always
