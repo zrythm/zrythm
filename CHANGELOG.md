@@ -6,6 +6,19 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.7.1] - 2024-04-06
+### Added
+- Implement ctrl-drag to move the loop range in the timeline (#4815)
+- Print libadwaita/libpanel versions in debug info
+
+### Changed
+- Remove unneeded `volatile` keywords from some variables
+- Monitor section tab: use speaker icon from GNOME icon library
+- Stretch objects with Ctrl modifier instead of having a separate stretch mode (#5036)
+- Change modulator icon to a knob (#5073)
+- Don't allow resizing if the hovered object is too narrow (#5070)
+- Update Russian, Interlingua, Catalan, Afrikaans, Finnish, Turkish, Polish, Chinese (Simplified), Japanese translations
+
 ## [1.0.0-beta.6.6.1] - 2024-03-19
 ### Changed
 - Change how object resizing works: revert original object(s) on undo (fixes undoing audio stretching not reverting the original audio, #4955)
