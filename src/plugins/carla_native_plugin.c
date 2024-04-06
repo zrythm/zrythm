@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -789,6 +789,33 @@ carla_native_plugin_process (
       events[num_events_written].data[1] = ev->raw_buffer[1];
       events[num_events_written].data[2] = ev->raw_buffer[2];
       num_events_written++;
+
+      /* temporary workaround until https://github.com/falkTX/Carla/issues/1876
+       * is fixed only handle channel 1 otherwise the carla internal ring buffer
+       * gets full */
+      if (
+        self->plugin->setting->descr->protocol == Z_PLUGIN_PROTOCOL_VST3
+        && midi_is_all_notes_off (ev->raw_buffer)
+        && midi_get_channel_1_to_16 (ev->raw_buffer) == 1)
+        {
+          for (midi_byte_t j = 0; j < 128; j++)
+            {
+              if (num_events_written == MAX_EVENTS)
+                {
+                  g_warning ("written %d events", MAX_EVENTS);
+                  break;
+                }
+              events[num_events_written].time =
+                ev->time - time_nfo->local_offset;
+              events[num_events_written].size = 3;
+              events[num_events_written].data[0] =
+                (midi_byte_t) (MIDI_CH1_NOTE_OFF
+                               | (midi_get_channel_0_to_15 (ev->raw_buffer)));
+              events[num_events_written].data[1] = j; // pitch
+              events[num_events_written].data[2] = 0; // vel
+              num_events_written++;
+            }
+        }
 
       if (num_events_written == MAX_EVENTS)
         {
