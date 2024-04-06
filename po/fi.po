@@ -1,26 +1,30 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# Roosa Huovinen <roosa.h@proton.me>, 2024.
+# Weblate Translation Memory <noreply-mt-weblate-translation-memory@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-03-17 20:45+0000\n"
+"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
+"memory@weblate.org>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/zrythm/zrythm/fi/"
+">\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
 #: inc/audio/engine.h:361
 msgid "Dummy"
-msgstr ""
+msgstr "Tyhjä"
 
 #: inc/schemas/gui/backend/arranger_object.h:52
 #: inc/gui/backend/arranger_object.h:99 inc/audio/transport.h:72
@@ -30,69 +34,69 @@ msgstr ""
 #: src/gui/widgets/route_target_selector.c:57
 #: src/gui/widgets/route_target_selector_popover.c:154
 msgid "None"
-msgstr ""
+msgstr "Ei mitään"
 
 #: inc/schemas/gui/backend/arranger_object.h:54
 #: inc/gui/backend/arranger_object.h:101
 #: resources/ui/chord_selector_window.ui:489
 msgid "All"
-msgstr ""
+msgstr "Kaikki"
 
 #: inc/schemas/gui/backend/arranger_object.h:56
 #: inc/gui/backend/arranger_object.h:103 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
-msgstr ""
+msgstr "Alue"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:105
 msgid "Midi Note"
-msgstr ""
+msgstr "Midi-nuotti"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:107
 msgid "Chord Object"
-msgstr ""
+msgstr "Sointuolio"
 
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
 msgid "Scale Object"
-msgstr ""
+msgstr "Asteikko-olio"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:198
 msgid "Marker"
-msgstr ""
+msgstr "Merkki"
 
 #: inc/schemas/gui/backend/arranger_object.h:66
 #: inc/gui/backend/arranger_object.h:113
 msgid "Automation Point"
-msgstr ""
+msgstr "Automaatiopiste"
 
 #: inc/schemas/gui/backend/arranger_object.h:68
 #: inc/gui/backend/arranger_object.h:115 src/gui/widgets/event_viewer.c:675
 #: resources/ui/midi_editor_space.ui:82
 msgid "Velocity"
-msgstr ""
+msgstr "Voimakkuus"
 
 #: inc/schemas/audio/curve.h:44 inc/audio/curve.h:112 src/audio/curve.c:70
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "Eksponentti"
 
 #: inc/schemas/audio/curve.h:46 inc/audio/curve.h:114 src/audio/curve.c:73
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipsi"
 
 #: inc/schemas/audio/curve.h:48 inc/audio/curve.h:116 src/audio/curve.c:373
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/schemas/audio/curve.h:50 inc/audio/curve.h:118 src/audio/curve.c:79
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Pulssi"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1954
@@ -102,63 +106,63 @@ msgstr ""
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
 msgid "Off"
-msgstr ""
+msgstr "Pois"
 
 #: inc/schemas/audio/region.h:51 inc/audio/region.h:91
 #: src/gui/widgets/bot_bar.c:518 src/gui/widgets/port_connections_tree.c:255
 #: src/gui/widgets/cc_bindings_tree.c:192 src/gui/widgets/item_factory.c:433
 #: src/audio/automation_track.c:201
 msgid "On"
-msgstr ""
+msgstr "Päällä"
 
 #: inc/utils/ui.h:76
 msgid "High"
-msgstr ""
+msgstr "Korkea"
 
 #: inc/utils/ui.h:77
 msgid "Normal"
-msgstr ""
+msgstr "Normaali"
 
 #: inc/utils/ui.h:78
 msgid "Low"
-msgstr ""
+msgstr "Matala"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Erittäin matala"
 
 #: inc/utils/gtk.h:55
 msgid "MIDI learn"
-msgstr ""
+msgstr "MIDI-oppiminen"
 
 #: inc/utils/gtk.h:59
 msgid "Cu_t"
-msgstr ""
+msgstr "_Leikkaa"
 
 #: inc/utils/gtk.h:63
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopioi"
 
 #: inc/utils/gtk.h:67
 msgid "_Paste"
-msgstr ""
+msgstr "_Liitä"
 
 #: inc/utils/gtk.h:71
 msgid "_Delete"
-msgstr ""
+msgstr "_Poista"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:76
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "Tyhjennä valinta"
 
 #: inc/utils/gtk.h:81
 msgid "Select A_ll"
-msgstr ""
+msgstr "Valitse kaikki"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:176
 msgid "Duplicate"
-msgstr ""
+msgstr "Monista"
 
 #: inc/utils/gtk.h:90 src/gui/widgets/channel.c:719
 #: src/gui/widgets/monitor_section.c:56 src/gui/widgets/monitor_section.c:371
@@ -166,28 +170,28 @@ msgstr ""
 #: resources/ui/fader_buttons.ui:46
 #: build/data/org.zrythm.Zrythm.gschema.xml:321
 msgid "Mute"
-msgstr ""
+msgstr "Hiljennä"
 
 #: inc/utils/gtk.h:94 src/gui/widgets/channel.c:729
 #: src/gui/widgets/track.c:1220 src/gui/widgets/track.c:1808
 msgid "Unmute"
-msgstr ""
+msgstr "Poista mykistys"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Käännä"
 
 #: inc/audio/audio_function.h:71
 msgid "Normalize peak"
-msgstr ""
+msgstr "Normalisoi huippu"
 
 #: inc/audio/audio_function.h:72
 msgid "Normalize RMS"
-msgstr ""
+msgstr "Normalisoi RMS"
 
 #: inc/audio/audio_function.h:73
 msgid "Normalize LUFS"
-msgstr ""
+msgstr "Normalisoi LUFS"
 
 #: inc/audio/audio_function.h:74
 msgid "Linear fade in"
@@ -195,164 +199,164 @@ msgstr ""
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr ""
+msgstr "Lineaarinen loppuhäivytys"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
-msgstr ""
+msgstr "Askella vasemmalle"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:188
 msgid "Nudge right"
-msgstr ""
+msgstr "Askella oikealle"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Takaperin"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Ulkoinen ohjelma"
 
 #: inc/audio/audio_function.h:82
 msgid "Guile script"
-msgstr ""
+msgstr "Guile-skripti"
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
-msgstr ""
+msgstr "Oma lisäosa"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Virheellinen"
 
 #: inc/audio/transport.h:73
 msgid "1 bar"
-msgstr ""
+msgstr "1 tahti"
 
 #: inc/audio/transport.h:74
 msgid "2 bars"
-msgstr ""
+msgstr "2 tahtia"
 
 #: inc/audio/transport.h:75
 msgid "4 bars"
-msgstr ""
+msgstr "4 tahtia"
 
 #: inc/audio/track.h:194 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
 #: build/data/org.zrythm.Zrythm.gschema.xml:595
 msgid "Instrument"
-msgstr ""
+msgstr "Soitin"
 
 #: inc/audio/track.h:195 src/gui/widgets/bot_bar.c:503 src/audio/region.c:509
 #: resources/ui/file_browser_filters.ui:10
 #: build/data/org.zrythm.Zrythm.gschema.xml:1052
 msgid "Audio"
-msgstr ""
+msgstr "Ääni"
 
 #: inc/audio/track.h:196 src/project.c:769
 #: src/gui/widgets/route_target_selector_popover.c:165
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: inc/audio/track.h:197 src/gui/widgets/event_viewer.c:724
 #: src/audio/region.c:515
 msgid "Chord"
-msgstr ""
+msgstr "Sointu"
 
 #: inc/audio/track.h:199 src/gui/widgets/automatable_selector_popover.c:394
 #: src/audio/tempo_track.c:124
 msgid "Tempo"
-msgstr ""
+msgstr "Nopeus"
 
 #: inc/audio/track.h:200
 msgid "Modulator"
-msgstr ""
+msgstr "Modulaattori"
 
 #: inc/audio/track.h:201
 msgid "Audio FX"
-msgstr ""
+msgstr "Ääniefekti"
 
 #: inc/audio/track.h:202
 msgid "Audio Group"
-msgstr ""
+msgstr "Ääniryhmä"
 
 #: inc/audio/track.h:203 src/audio/region.c:506
 #: resources/ui/file_browser_filters.ui:17
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:204
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI-efekti"
 
 #: inc/audio/track.h:205
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI-ryhmä"
 
 #: inc/audio/track.h:206
 msgid "Folder"
-msgstr ""
+msgstr "Kansio"
 
 #: inc/audio/curve.h:120 src/audio/curve.c:82 src/audio/curve.c:368
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritminen"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
-msgstr ""
+msgstr "1,024"
 
 #: inc/audio/engine.h:205
 msgid "2,048"
-msgstr ""
+msgstr "2,048"
 
 #: inc/audio/engine.h:206
 msgid "4,096"
-msgstr ""
+msgstr "4,096"
 
 #: inc/audio/engine.h:233
 msgid "22,050"
-msgstr ""
+msgstr "22,050"
 
 #: inc/audio/engine.h:234
 msgid "32,000"
-msgstr ""
+msgstr "32,000"
 
 #: inc/audio/engine.h:235
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:236
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:237
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:238
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:239
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #: inc/audio/engine.h:295
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Tyhjä (libsoundio)"
 
 #: inc/audio/engine.h:362
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "ALSA-sekvensseri (ei toimi)"
 
 #: inc/audio/engine.h:363
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "ALSA-sekvensseri (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:107
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:113
 msgid "Flam"
@@ -368,15 +372,15 @@ msgstr ""
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:134
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:140
 msgid "Portato"
-msgstr ""
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:146
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:152
 msgid "Strum"
@@ -397,28 +401,28 @@ msgstr ""
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/utils/ui.c:883 src/audio/curve.c:353
 msgid "Linear"
-msgstr ""
+msgstr "Lineaarinen"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:884
 msgid "Square Root"
-msgstr ""
+msgstr "Neliöjuuri"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Sini"
 
 #: src/project.c:895
 #, c-format
@@ -436,6 +440,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Uudempi varmuuskopio löytyi:\n"
+"  %s.\n"
+"Käytä uudempaa varmuuskopiota?"
 
 #: src/project.c:983
 msgid "Backup found"
@@ -458,34 +465,34 @@ msgstr ""
 
 #: src/project.c:1612
 msgid "Failed to compress project file"
-msgstr ""
+msgstr "Projektitiedoston pakkaaminen epäonnistui"
 
 #: src/project.c:1658
 msgid "Backup saved."
-msgstr ""
+msgstr "Varmuuskopio tallennettu."
 
 #: src/project.c:1668
 msgid "Project saved."
-msgstr ""
+msgstr "Projekti tallennettu."
 
 #: src/zrythm_app.c:139
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Virhe - Backtrace:\n"
 
 #: src/zrythm_app.c:143
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Virhe: %s - Backtrace:\n"
 
 #: src/zrythm_app.c:159
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s on kaatunut. "
 
 #: src/zrythm_app.c:203
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr ""
+msgstr "Haluatko, että %s tarkistaa päivitykset käynnistyksen yhteydessä?"
 
 #: src/zrythm_app.c:210
 msgid "Check for Updates"
@@ -498,6 +505,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"Zrythmistä on julkaistu uusi versio: <b>%s</b>\n"
+"\n"
+"Nykyinen versiosi on %s"
 
 #: src/zrythm_app.c:372
 msgid "Setting up main window"
@@ -514,7 +524,7 @@ msgstr ""
 
 #: src/zrythm_app.c:458
 msgid "Initializing settings"
-msgstr ""
+msgstr "Alustetaan asetuksia"
 
 #: src/zrythm_app.c:465
 #, c-format
@@ -523,15 +533,15 @@ msgstr ""
 
 #: src/zrythm_app.c:475
 msgid "Initializing logging system"
-msgstr ""
+msgstr "Alustetaan kirjausjärjestelmää"
 
 #: src/zrythm_app.c:485
 msgid "Initializing caches"
-msgstr ""
+msgstr "Alustetaan välimuistia"
 
 #: src/zrythm_app.c:489
 msgid "Initializing file manager"
-msgstr ""
+msgstr "Alustetaan tiedostonhallintaa"
 
 #: src/zrythm_app.c:496
 msgid "Scanning plugins"
@@ -546,7 +556,7 @@ msgid "Waiting for project"
 msgstr ""
 
 #: src/zrythm_app.c:1016
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -560,6 +570,17 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s-%s-%s\n"
+"%s\n"
+"\n"
+"%s ei sisällä TAKUUTA!\n"
+"\n"
+"Tämä on vapaa ohjelmisto, ja sen välittäminen on täysin tervetullutta\n"
+"tietyin ehdoin. Katso lisätietoja tiedostosta 'KOPIOINTI'.\n"
+"\n"
+"Kommentoi ja ilmoita virheistä osoitteeseen %s.\n"
+"Tue tätä projektia osoitteessa https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:1500
 #, c-format
@@ -569,6 +590,7 @@ msgstr ""
 #: src/zrythm_app.c:1521
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
+"Ulostulotiedostoa ei määritetty. Ilmoita tiedosto vivulla `--output=FILE`."
 
 #: src/zrythm_app.c:1587
 #, c-format
@@ -582,11 +604,11 @@ msgstr ""
 #: src/zrythm_app.c:1626
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "libguile tarvitaan tätä vaihtoehtoa varten\n"
 
 #: src/zrythm_app.c:1791
 msgid "Print version information"
-msgstr ""
+msgstr "Tulosta versiotiedot"
 
 #: src/zrythm_app.c:1796
 msgid "Convert ZPJ-FILE to YAML"
@@ -598,19 +620,19 @@ msgstr ""
 
 #: src/zrythm_app.c:1806
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Luo projekti SCRIPT-tiedostosta"
 
 #: src/zrythm_app.c:1810
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Tulosta tuloste käyttäjäystävällisellä tavalla"
 
 #: src/zrythm_app.c:1814
 msgid "Print current settings"
-msgstr ""
+msgstr "Tulosta nykyiset asetukset"
 
 #: src/zrythm_app.c:1818
 msgid "Reset to factory settings"
-msgstr ""
+msgstr "Palauta tehdasasetukset"
 
 #: src/zrythm_app.c:1821
 msgid "Override the audio backend to use"
@@ -622,11 +644,11 @@ msgstr ""
 
 #: src/zrythm_app.c:1829
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Lyhenne vivuille --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1861
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJEKTITIEDOSTO]"
 
 #: src/zrythm_app.c:1866
 #, c-format
@@ -643,66 +665,67 @@ msgstr ""
 #: src/zrythm_app.c:1878
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "Suorita %s ja anna valinnaisesti projektitiedosto."
 
 #: src/plugins/carla_native_plugin.c:369 src/plugins/lv2_plugin.c:3752
 msgid "Default bank"
-msgstr ""
+msgstr "Oletuspankki"
 
 #: src/plugins/carla_native_plugin.c:374 src/plugins/lv2_plugin.c:3757
 msgid "Init"
-msgstr ""
+msgstr "Init"
 
 #: src/plugins/carla_native_plugin.c:857
 msgid "Audio in"
-msgstr ""
+msgstr "Audio sisään"
 
 #: src/plugins/carla_native_plugin.c:867
 msgid "Audio out"
-msgstr ""
+msgstr "Audio ulos"
 
 #. TRANSLATORS: either leave this
 #. * untranslated or make sure the translated text
 #. * is max 7 characters
 #: src/plugins/carla_native_plugin.c:877 src/gui/widgets/header.c:126
 msgid "MIDI in"
-msgstr ""
+msgstr "MIDI sisään"
 
 #: src/plugins/carla_native_plugin.c:889
 msgid "MIDI out"
-msgstr ""
+msgstr "MIDI ulos"
 
 #: src/plugins/carla_native_plugin.c:901
 msgid "CV in"
-msgstr ""
+msgstr "CV sisään"
 
 #: src/plugins/carla_native_plugin.c:911
 msgid "CV out"
-msgstr ""
+msgstr "CV ulos"
 
 #: src/plugins/carla_native_plugin.c:1310
 #, c-format
 msgid "Error adding carla plugin: %s"
-msgstr ""
+msgstr "Virhe carla-lisäosan lisäämisessä: %s"
 
 #: src/plugins/carla_native_plugin.c:1346
 msgid "Failed to load Carla state"
-msgstr ""
+msgstr "Carlan tilan lataaminen epäonnistui"
 
 #: src/plugins/carla_native_plugin.c:1361
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
+"Carla-lisäosan lisääminen epäonnistui: kahvaa/kuvaajaa ei alustettu oikein"
 
 #: src/plugins/carla_native_plugin.c:1746
 #, c-format
 msgid "State file %s doesn't exist"
-msgstr ""
+msgstr "Tilatiedostoa %s ei ole olemassa."
 
 #: src/plugins/plugin_manager.c:395
 msgid "Error loading LV2 bundle dir: "
-msgstr ""
+msgstr "Virhe ladattaessa LV2-paketin hakemistoa: "
 
 #: src/plugins/plugin_manager.c:1096
 #, c-format
@@ -719,7 +742,7 @@ msgstr ""
 
 #: src/plugins/plugin_manager.c:1244
 msgid "Scanned LV2 plugin"
-msgstr ""
+msgstr "Skannattu LV2-lisäosa"
 
 #: src/plugins/plugin_manager.c:1255
 #, c-format
@@ -728,7 +751,7 @@ msgstr ""
 
 #: src/plugins/plugin_manager.c:1343
 msgid "Scanned AU plugin"
-msgstr ""
+msgstr "Skannattu AU-lisäosa"
 
 #: src/plugins/plugin_manager.c:1350
 #, c-format
@@ -738,36 +761,36 @@ msgstr ""
 #: src/plugins/plugin.c:256
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr ""
+msgstr "Lisäosan '%s' lisääminen epäonnistui. Poistetaan käytöstä..."
 
 #: src/plugins/plugin.c:300
 msgid "Enabled"
-msgstr ""
+msgstr "Käytössä"
 
 #: src/plugins/plugin.c:302
 msgid "Enables or disables the plugin"
-msgstr ""
+msgstr "Kytkee lisäosan päälle ja pois"
 
 #: src/plugins/plugin.c:325 src/gui/widgets/track_input_expander.c:728
 msgid "Gain"
-msgstr ""
+msgstr "Vahvistus"
 
 #: src/plugins/plugin.c:326
 msgid "Plugin gain"
-msgstr ""
+msgstr "Lisäosan vahvistus"
 
 #: src/plugins/plugin.c:528 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:160
 msgid "Failed to apply preset"
-msgstr ""
+msgstr "Esiasetuksen asettaminen epäonnistui"
 
 #: src/plugins/plugin.c:603
 msgid "Failed to get Carla plugin"
-msgstr ""
+msgstr "Carla-lisäosan haku epäonnistui"
 
 #: src/plugins/plugin.c:619
 msgid "Failed to get LV2 plugin"
-msgstr ""
+msgstr "LV2-lisäosan hakeminen epäonnistui"
 
 #: src/plugins/plugin.c:1131
 #, c-format
@@ -780,11 +803,11 @@ msgstr ""
 
 #: src/plugins/plugin.c:1710
 msgid "Carla plugin instantiation failed"
-msgstr ""
+msgstr "Carla-lisäosan lisääminen epäonnistui"
 
 #: src/plugins/plugin.c:1738
 msgid "LV2 plugin instantiation failed"
-msgstr ""
+msgstr "LV2-lisäosan lisääminen epäonnistui"
 
 #: src/plugins/plugin.c:1976
 #, c-format
@@ -795,15 +818,20 @@ msgid ""
 "mode, and report this to the author:\n"
 "  %s <%s>"
 msgstr ""
+"%s <%s> on vanhentunut käyttöliittymä:\n"
+"  %s\n"
+"Jos käyttöliittymä ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja "
+"ilmoita tästä kehittäjälle:\n"
+"  %s <%s>"
 
 #: src/plugins/plugin.c:2286
 #, c-format
 msgid "Failed to create plugin clone for %s"
-msgstr ""
+msgstr "Lisäosan kopioiminen %s:lle epäonnistui"
 
 #: src/plugins/plugin_gtk.c:101 src/plugins/lv2/lv2_gtk.c:75
 msgid "Save State"
-msgstr ""
+msgstr "Tallenna tila"
 
 #: src/plugins/plugin_gtk.c:104 src/plugins/plugin_gtk.c:324
 #: src/plugins/lv2/lv2_gtk.c:78 src/plugins/lv2/lv2_gtk.c:268
@@ -817,16 +845,16 @@ msgstr ""
 #: resources/ui/port_selector_popover.ui:123
 #: resources/ui/quantize_dialog.ui:149
 msgid "_Cancel"
-msgstr ""
+msgstr "_Peruuta"
 
 #: src/plugins/plugin_gtk.c:105 src/plugins/plugin_gtk.c:325
 #: src/plugins/lv2/lv2_gtk.c:79 src/actions/actions.c:729
 msgid "_Save"
-msgstr ""
+msgstr "_Tallenna"
 
 #: src/plugins/plugin_gtk.c:320
 msgid "Save Preset"
-msgstr ""
+msgstr "Tallenna esiasetus"
 
 #: src/plugins/plugin_gtk.c:367
 msgid "_Prefix plugin name"
@@ -834,52 +862,52 @@ msgstr ""
 
 #: src/plugins/plugin_gtk.c:379
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (valinnainen):"
 
 #: src/plugins/plugin_gtk.c:1363
 msgid "Open File"
-msgstr ""
+msgstr "Avaa tiedosto"
 
 #: src/plugins/plugin_gtk.c:1533
 msgid "Close"
-msgstr ""
+msgstr "Sulje"
 
 #: src/plugins/plugin_gtk.c:1641
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Tuntematon widget-tyyppi arvolle"
 
 #: src/plugins/plugin_gtk.c:1667
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Tuntematon widget-tyyppi arvolle\n"
 
 #: src/plugins/lv2_plugin.c:1979
 #, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr ""
+msgstr "LV2-lisäosan hakeminen URI:stä <%s> epäonnistui"
 
 #: src/plugins/lv2_plugin.c:2283
 #, c-format
 msgid "Could not find UI by URI <%s>"
-msgstr ""
+msgstr "Käyttöliittymää ei löytynyt URI:lla <%s>"
 
 #: src/plugins/lv2_plugin.c:2636
 msgid "Failed to make temporary dir"
-msgstr ""
+msgstr "Tilapäishakemiston luominen epäonnistui"
 
 #: src/plugins/lv2_plugin.c:2682
 #, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr ""
+msgstr "Esiasetusta ei löytynyt URI:lla <%s>"
 
 #: src/plugins/lv2_plugin.c:2703
 #, c-format
 msgid "Failed to load state from %s"
-msgstr ""
+msgstr "Tilan lataaminen %s:stä epäonnistui"
 
 #: src/plugins/lv2_plugin.c:2737
 #, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr ""
+msgstr "Lisäosaa ei löytynyt URI:lla <%s>"
 
 #: src/plugins/lv2_plugin.c:2761
 #, c-format
@@ -899,52 +927,56 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s <%s> sisältää viittauksen %s, mikä voi aiheuttaa ongelmia.\n"
+"Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita "
+"tästä lisäosan jakelijalle ja/tai kehittäjälle:\n"
+"%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2831
 msgid "Failed to create or init ports and parameters"
-msgstr ""
+msgstr "Porttien ja parametrien luominen tai käyttöönotto epäonnistui."
 
 #: src/plugins/lv2_plugin.c:2861
 #, c-format
 msgid "Required feature %s is not supported"
-msgstr ""
+msgstr "Vaadittua ominaisuutta %s ei tueta."
 
 #: src/plugins/lv2_plugin.c:2955
 msgid "Failed checking whether lv2 plugin UI is external"
-msgstr ""
+msgstr "LV2-lisäosan käyttöliittymän ulkoisuuden tarkistaminen epäonnistui"
 
 #: src/plugins/lv2_plugin.c:3125
 #, c-format
 msgid "Required option %s is not supported"
-msgstr ""
+msgstr "Vaadittua vaihtoehtoa %s ei tueta."
 
 #: src/plugins/lv2_plugin.c:3187
 msgid "lilv_plugin_instantiate() failed"
-msgstr ""
+msgstr "lilv_plugin_instantiate() epäonnistui"
 
 #: src/plugins/lv2_plugin.c:3796
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Nimetön pankki"
 
 #: src/plugins/lv2/lv2_state.c:456
 msgid "Failed to apply LV2 preset"
-msgstr ""
+msgstr "LV2-esiasetuksen käyttö epäonnistui"
 
 #: src/plugins/lv2/lv2_gtk.c:263
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Poista esiasetus?"
 
 #: src/plugins/lv2/lv2_gtk.c:269
 #: src/gui/widgets/dialogs/bug_report_dialog.c:352 src/utils/dialogs.c:70
 #: src/audio/clip.c:674 resources/ui/string_entry_dialog.ui:55
 #: resources/ui/port_selector_popover.ui:131
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2/lv2_gtk.c:575
 #, c-format
 msgid "Failed to open LV2 UI for %s"
-msgstr ""
+msgstr "LV2-käyttöliittymän avaaminen ei onnistunut %s:lle."
 
 #: src/gui/widgets/editor_ruler.c:289
 msgid "Failed to edit position"
@@ -956,32 +988,32 @@ msgstr ""
 
 #: src/gui/widgets/fader_controls_grid.c:98
 msgid "Peak"
-msgstr ""
+msgstr "Huippu"
 
 #: src/gui/widgets/port_connections_popover.c:71
 msgid "INPUTS"
-msgstr ""
+msgstr "TULOT"
 
 #: src/gui/widgets/port_connections_popover.c:101
 msgid "OUTPUTS"
-msgstr ""
+msgstr "LÄHDÖT"
 
 #: src/gui/widgets/port_connections_popover.c:196
 #: src/gui/widgets/plugin_browser.c:489 src/gui/widgets/track.c:1281
 msgid "Add"
-msgstr ""
+msgstr "Lisää"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:569 src/gui/widgets/plugin_browser.c:619
 #: src/gui/widgets/balance_control.c:331 src/gui/widgets/modulator_macro.c:176
 #: src/gui/widgets/fader.c:323 resources/ui/first_run_assistant.ui:76
 msgid "Reset"
-msgstr ""
+msgstr "Nollaa"
 
 #: src/gui/widgets/inspector_port.c:172 src/gui/widgets/midi_arranger.c:521
 #: src/gui/widgets/modulator_inner.c:184 src/gui/widgets/modulator_macro.c:189
 msgid "View info"
-msgstr ""
+msgstr "Näytä tiedot"
 
 #: src/gui/widgets/inspector_port.c:328
 #, c-format
@@ -990,11 +1022,11 @@ msgstr ""
 
 #: src/gui/widgets/inspector_port.c:382
 msgid "Incoming signals"
-msgstr ""
+msgstr "Saapuvat signaalit"
 
 #: src/gui/widgets/inspector_port.c:383
 msgid "Outgoing signals"
-msgstr ""
+msgstr "Lähtevät signaalit"
 
 #: src/gui/widgets/inspector_port.c:397
 msgid "Current val"
@@ -1002,24 +1034,24 @@ msgstr ""
 
 #: src/gui/widgets/inspector_port.c:399 src/gui/widgets/cc_bindings_tree.c:221
 msgid "Min"
-msgstr ""
+msgstr "Minimi"
 
 #: src/gui/widgets/inspector_port.c:400 src/gui/widgets/cc_bindings_tree.c:231
 msgid "Max"
-msgstr ""
+msgstr "Maksimi"
 
 #: src/gui/widgets/inspector_port.c:525
 msgid "Expose port to JACK"
-msgstr ""
+msgstr "Paljasta portti JACKille"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr ""
+msgstr "Lokin tarkastelu"
 
 #: src/gui/widgets/track_properties_expander.c:109
 #: src/gui/widgets/track_visibility_tree.c:162
 msgid "Track Name"
-msgstr ""
+msgstr "Raidan nimi"
 
 #: src/gui/widgets/track_properties_expander.c:121
 msgid "Direct Out"
@@ -1027,128 +1059,128 @@ msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:146
 msgid "Track Properties"
-msgstr ""
+msgstr "Raidan ominaisuudet"
 
 #: src/gui/widgets/channel.c:641 src/gui/widgets/track.c:1678
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Poista raita"
 
 #: src/gui/widgets/channel.c:643 src/gui/widgets/track.c:1681
 msgid "_Delete Tracks"
-msgstr ""
+msgstr "_Poista raidat"
 
 #: src/gui/widgets/channel.c:653 src/gui/widgets/track.c:1693
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "_Monista raita"
 
 #: src/gui/widgets/channel.c:655 src/gui/widgets/track.c:1696
 msgid "_Duplicate Tracks"
-msgstr ""
+msgstr "_Monista raidat"
 
 #: src/gui/widgets/channel.c:667 src/gui/widgets/track.c:1720
 msgid "Hide Track"
-msgstr ""
+msgstr "Piilota raita"
 
 #: src/gui/widgets/channel.c:668 src/gui/widgets/track.c:1721
 msgid "Hide Tracks"
-msgstr ""
+msgstr "Piilota raidat"
 
 #: src/gui/widgets/channel.c:676 src/gui/widgets/track.c:1730
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "Raidan kiinnitys"
 
 #: src/gui/widgets/channel.c:677 src/gui/widgets/track.c:1731
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "Raidan kiinnitys"
 
 #: src/gui/widgets/channel.c:683 resources/ui/port_selector_popover.ui:26
 msgid "Track"
-msgstr ""
+msgstr "Raita"
 
 #: src/gui/widgets/channel.c:698 src/gui/widgets/track.c:1202
 #: src/gui/widgets/track.c:1777 resources/ui/fader_buttons.ui:34
 msgid "Solo"
-msgstr ""
+msgstr "Soolo"
 
 #: src/gui/widgets/channel.c:708 src/gui/widgets/track.c:1787
 msgid "Unsolo"
-msgstr ""
+msgstr "Poista soolous"
 
 #: src/gui/widgets/channel.c:740 src/gui/widgets/monitor_section.c:63
 #: src/gui/widgets/track.c:1235 src/gui/widgets/track.c:1819
 #: resources/ui/fader_buttons.ui:58
 msgid "Listen"
-msgstr ""
+msgstr "Kuuntele"
 
 #: src/gui/widgets/channel.c:750 src/gui/widgets/track.c:1231
 #: src/gui/widgets/track.c:1829
 msgid "Unlisten"
-msgstr ""
+msgstr "Älä kuuntele"
 
 #: src/gui/widgets/channel.c:757
 #: src/gui/widgets/automatable_selector_popover.c:434
 #: src/gui/widgets/track.c:1836
 msgid "Channel"
-msgstr ""
+msgstr "Kanava"
 
 #: src/gui/widgets/channel.c:767 src/gui/widgets/bot_bar.c:539
 #: src/gui/widgets/track.c:1887 src/gui/widgets/dialogs/export_dialog.c:1319
 msgid "Disable"
-msgstr ""
+msgstr "Poista käytöstä"
 
 #: src/gui/widgets/channel.c:775 src/gui/widgets/bot_bar.c:539
 #: src/gui/widgets/track.c:1895 src/gui/widgets/dialogs/export_dialog.c:1309
 msgid "Enable"
-msgstr ""
+msgstr "Ota käyttöön"
 
 #: src/gui/widgets/channel.c:782 src/gui/widgets/track.c:1902
 msgid "Change color..."
-msgstr ""
+msgstr "Vaihda väriä..."
 
 #: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
-msgstr ""
+msgstr "Kaikki MIDI-tulot"
 
 #: src/gui/widgets/track_input_expander.c:298
 msgid "All Audio Inputs"
-msgstr ""
+msgstr "Kaikki audiotulot"
 
 #: src/gui/widgets/track_input_expander.c:345
 #: src/gui/widgets/modulator_macro.c:72
 msgid "No inputs"
-msgstr ""
+msgstr "Ei sisääntuloja"
 
 #: src/gui/widgets/track_input_expander.c:348
 msgid "MIDI inputs for recording"
-msgstr ""
+msgstr "MIDI-tulot tallentamista varten"
 
 #: src/gui/widgets/track_input_expander.c:356
 msgid "No left input"
-msgstr ""
+msgstr "Ei vasenta sisääntuloa"
 
 #: src/gui/widgets/track_input_expander.c:357
 msgid "No right input"
-msgstr ""
+msgstr "Ei oikeaa sisääntuloa"
 
 #: src/gui/widgets/track_input_expander.c:360
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "Äänitulo (%s) äänitykselle"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/monitor_section.ui:153
 msgid "L"
-msgstr ""
+msgstr "L"
 
 #: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/monitor_section.ui:174 resources/ui/automation_track.ui:64
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:440
 msgid "All Channels"
-msgstr ""
+msgstr "Kaikki kanavat"
 
 #: src/gui/widgets/track_input_expander.c:449
 #, c-format
@@ -1166,11 +1198,11 @@ msgstr ""
 #: src/gui/widgets/track_input_expander.c:696
 #: src/gui/widgets/monitor_section.c:356
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: src/gui/widgets/track_input_expander.c:741
 msgid "Inputs"
-msgstr ""
+msgstr "Tulot"
 
 #: src/gui/widgets/first_run_assistant.c:227
 msgid "Backend combination not supported"
@@ -1186,7 +1218,7 @@ msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:412
 msgid "Select a directory"
-msgstr ""
+msgstr "Valitse hakemisto"
 
 #: src/gui/widgets/project_assistant.c:351
 #: src/gui/widgets/plugin_properties_expander.c:235
@@ -1194,20 +1226,20 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:19
 #: resources/ui/port_info_dialog.ui:18
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: src/gui/widgets/project_assistant.c:361
 #: resources/ui/first_run_assistant.ui:55
 msgid "Path"
-msgstr ""
+msgstr "Polku"
 
 #: src/gui/widgets/project_assistant.c:371
 msgid "Last Modified"
-msgstr ""
+msgstr "Viimeksi muokattu"
 
 #: src/gui/widgets/project_assistant.c:736
 msgid "Blank project"
-msgstr ""
+msgstr "Tyhjä projekti"
 
 #: src/gui/widgets/left_dock_edge.c:203
 msgid "Track inspector"
@@ -1220,7 +1252,7 @@ msgstr ""
 #: src/gui/widgets/left_dock_edge.c:259 src/utils/gtk.c:1238
 #: resources/ui/chord_selector_window.ui:478
 msgid "Visibility"
-msgstr ""
+msgstr "Näkyvyys"
 
 #: src/gui/widgets/plugin_strip_expander.c:189
 msgid "Inserts"
@@ -1228,15 +1260,15 @@ msgstr ""
 
 #: src/gui/widgets/midi_arranger.c:549
 msgid "Selection"
-msgstr ""
+msgstr "Valinta"
 
 #: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1224
 msgid "Failed to delete plugins"
-msgstr ""
+msgstr "Lisäosien poistaminen epäonnistui"
 
 #: src/gui/widgets/port_selector_popover.c:58
 msgid "No port selected"
-msgstr ""
+msgstr "Porttia ei ole valittu"
 
 #: src/gui/widgets/port_selector_popover.c:89
 #, c-format
@@ -1245,11 +1277,11 @@ msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
-msgstr ""
+msgstr "Näitä portteja ei voi kytkeä"
 
 #: src/gui/widgets/port_selector_popover.c:377
 msgid "Track Ports"
-msgstr ""
+msgstr "Raidan portit"
 
 #: src/gui/widgets/channel_send_selector.c:152
 msgid "Failed to disconnect send"
@@ -1266,16 +1298,16 @@ msgstr ""
 #: resources/ui/bind_cc_dialog.ui:43 resources/ui/create_project_dialog.ui:53
 #: resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
-msgstr ""
+msgstr "aloituskohta"
 
 #: src/gui/widgets/editor_selection_info.c:85
 #: src/gui/widgets/timeline_selection_info.c:430
 msgid "No object selected"
-msgstr ""
+msgstr "Kohdetta ei ole valittu."
 
 #: src/gui/widgets/channel_send.c:219
 msgid "Failed to change send amount"
@@ -1283,24 +1315,24 @@ msgstr ""
 
 #: src/gui/widgets/bot_dock_edge.c:215 src/utils/gtk.c:1235
 msgid "Editor"
-msgstr ""
+msgstr "Editori"
 
 #: src/gui/widgets/bot_dock_edge.c:215
 msgid "Editor view"
-msgstr ""
+msgstr "Editorinäkymä"
 
 #: src/gui/widgets/bot_dock_edge.c:219 src/utils/gtk.c:1226
 msgid "Mixer"
-msgstr ""
+msgstr "Mikseri"
 
 #: src/gui/widgets/bot_dock_edge.c:219
 msgid "Mixer view"
-msgstr ""
+msgstr "Mikserinäkymä"
 
 #: src/gui/widgets/bot_dock_edge.c:223 src/utils/gtk.c:1229
 #: src/audio/modulator_track.c:80
 msgid "Modulators"
-msgstr ""
+msgstr "Modulaattorit"
 
 #: src/gui/widgets/bot_dock_edge.c:227 src/utils/gtk.c:1232
 msgid "Chord Pad"
@@ -1316,11 +1348,11 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:410
 msgid "normal"
-msgstr ""
+msgstr "normaali"
 
 #: src/gui/widgets/digital_meter.c:413
 msgid "dotted"
-msgstr ""
+msgstr "pisteellinen"
 
 #: src/gui/widgets/digital_meter.c:416
 msgid "triplet"
@@ -1328,62 +1360,62 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:697 src/gui/widgets/digital_meter.c:714
 msgid "Failed to change time signature"
-msgstr ""
+msgstr "Tahtilajin vaihtaminen epäonnistui"
 
 #: src/gui/widgets/digital_meter.c:1257
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Tempo/BPM"
 
 #: src/gui/widgets/digital_meter.c:1271 src/gui/widgets/event_viewer.c:737
 #: src/gui/widgets/event_viewer.c:772 resources/ui/inspector_master.ui:51
 #: resources/ui/inspector_ap.ui:51 resources/ui/inspector_midi.ui:51
 msgid "Position"
-msgstr ""
+msgstr "Kohta"
 
 #: src/gui/widgets/digital_meter.c:1301
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr ""
+msgstr "Tahtilaji - Iskua tahdissa / Iskuyksikkö"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
 #: src/audio/tracklist.c:1508 src/audio/track.c:3833 src/actions/actions.c:3344
 msgid "Failed to create track"
-msgstr ""
+msgstr "Raidan lisääminen epäonnistui"
 
 #: src/gui/widgets/drag_dest_box.c:376 src/audio/audio_function.c:151
 msgid "Failed to create plugin"
-msgstr ""
+msgstr "Pluginin lisääminen epäonnistui"
 
 #: src/gui/widgets/drag_dest_box.c:416
 msgid "Failed to move or copy plugin"
-msgstr ""
+msgstr "Pluginin siirtäminen tai kopioiminen epäonnistui"
 
 #: src/gui/widgets/drag_dest_box.c:454
 msgid "Failed to move or copy track"
-msgstr ""
+msgstr "Raidan siirtäminen tai kopioiminen epäonnistui"
 
 #: src/gui/widgets/drag_dest_box.c:475
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "Lisää _MIDI-raita"
 
 #: src/gui/widgets/drag_dest_box.c:481
 msgid "Add Audio Track"
-msgstr ""
+msgstr "Lisää ääniraita"
 
 #: src/gui/widgets/drag_dest_box.c:499
 msgid "Add FX Track"
-msgstr ""
+msgstr "Lisää efektiraita"
 
 #: src/gui/widgets/drag_dest_box.c:516
 msgid "Add Group Track"
-msgstr ""
+msgstr "Lisää ryhmäraita"
 
 #: src/gui/widgets/drag_dest_box.c:521
 msgid "Add Folder Track"
-msgstr ""
+msgstr "Lisää kansiorata"
 
 #: src/gui/widgets/channel_slot.c:198
 msgid "No instrument"
-msgstr ""
+msgstr "Ei instrumenttia"
 
 #: src/gui/widgets/channel_slot.c:203
 #, c-format
@@ -1392,26 +1424,26 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:327
 msgid "Failed to move or copy plugins"
-msgstr ""
+msgstr "Pluginien siirtäminen tai kopioiminen epäonnistui"
 
 #: src/gui/widgets/channel_slot.c:356 src/audio/sample_processor.c:639
 #: src/actions/tracklist_selections.c:824
 #, c-format
 msgid "Failed to create plugin %s"
-msgstr ""
+msgstr "Pluginin %s lisääminen epäonnistui"
 
 #: src/gui/widgets/channel_slot.c:372
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "Pluginia %s ei voi lisätä tähän paikkaan"
 
 #: src/gui/widgets/channel_slot.c:724
 msgid "Bypass"
-msgstr ""
+msgstr "Ohita"
 
 #: src/gui/widgets/channel_slot.c:731
 msgid "Inspect"
-msgstr ""
+msgstr "Tutki"
 
 #: src/gui/widgets/channel_slot.c:736 resources/ui/port_selector_popover.ui:60
 msgid "Plugin"
@@ -1420,106 +1452,110 @@ msgstr ""
 #: src/gui/widgets/channel_slot.c:767 src/gui/widgets/timeline_arranger.c:1108
 #: src/gui/widgets/track.c:1738 resources/ui/header.ui:35
 msgid "Edit"
-msgstr ""
+msgstr "Muokkaa"
 
 #: src/gui/widgets/channel_slot.c:786
 msgid "Select"
-msgstr ""
+msgstr "Valitse"
 
 #: src/gui/widgets/channel_slot.c:1090
 msgid "empty slot"
-msgstr ""
+msgstr "tyhjä paikka"
 
 #: src/gui/widgets/arranger.c:1804 src/gui/widgets/arranger.c:1826
 #: src/gui/widgets/arranger.c:1874 src/gui/widgets/arranger.c:1943
 #: src/gui/widgets/arranger.c:1964
 msgid "Failed to move selection"
-msgstr ""
+msgstr "Valinnan siirtäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:1895 src/gui/widgets/arranger.c:4305
 msgid "Failed to move chords"
-msgstr ""
+msgstr "Sointujen siirtäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:2491 src/gui/widgets/track.c:1639
 #: resources/ui/string_entry_dialog.ui:23
 msgid "Marker name"
-msgstr ""
+msgstr "Merkin nimi"
 
 #: src/gui/widgets/arranger.c:2537
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
+"Kokoa ei voi muuttaa, koska valinta sisältää objekteja, joilla ei ole "
+"pituutta."
 
 #: src/gui/widgets/arranger.c:2565
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
+"Kokoa ei voi muuttaa, koska valinta sisältää sekä silmukoituja että ei-"
+"silmukoitavia kohteita"
 
 #: src/gui/widgets/arranger.c:3798
 msgid "Failed to delete selection"
-msgstr ""
+msgstr "Valinnan poistaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:3827 src/gui/widgets/arranger.c:4496
 msgid "Failed to edit selection"
-msgstr ""
+msgstr "Valinnan muokkaaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:3882
 msgid "Failed to move automation"
-msgstr ""
+msgstr "Automaation siirtäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:3911
 msgid "Failed to duplicate automation"
-msgstr ""
+msgstr "Automaation kopiointi epäonnistui"
 
 #: src/gui/widgets/arranger.c:3935 src/gui/widgets/arranger.c:4350
 #: src/gui/widgets/arranger.c:4827
 msgid "Failed to create objects"
-msgstr ""
+msgstr "Objektien luominen epäonnistui"
 
 #: src/gui/widgets/arranger.c:3957
 msgid "Failed to fill automation"
-msgstr ""
+msgstr "Automaation täyttäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4043
 #: src/gui/widgets/arranger.c:4066 src/gui/widgets/timeline_arranger.c:993
 msgid "Failed to edit selections"
-msgstr ""
+msgstr "Valintojen muokkaaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4101 src/gui/widgets/arranger.c:4127
 msgid "Failed to resize objects"
-msgstr ""
+msgstr "Objektien koon muuttaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4139 src/gui/widgets/arranger.c:4189
 msgid "Failed to move MIDI notes"
-msgstr ""
+msgstr "MIDI-nuottien siirtäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4215
 msgid "Failed to duplicate MIDI notes"
-msgstr ""
+msgstr "MIDI-nuottien kopiointi epäonnistui"
 
 #: src/gui/widgets/arranger.c:4238
 msgid "Failed to create MIDI notes"
-msgstr ""
+msgstr "MIDI-nuottien luominen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4327
 msgid "Failed to duplicate chords"
-msgstr ""
+msgstr "Sointujen kopiointi epäonnistui"
 
 #: src/gui/widgets/arranger.c:4425 src/gui/widgets/arranger.c:4716
 msgid "Failed resizing selection"
-msgstr ""
+msgstr "Valinnan koon muuttaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4532
 msgid "Failed to edit timeline objects"
-msgstr ""
+msgstr "Aikajanan objektien muokkaaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4555 src/gui/widgets/arranger.c:4578
 msgid "Failed to resize timeline objects"
-msgstr ""
+msgstr "Aikajanan objektien koon muuttaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4601
 msgid "Failed to resize selection"
-msgstr ""
+msgstr "Valinnan koon muuttaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4623
 msgid "Failed setting fade in position"
@@ -1528,11 +1564,11 @@ msgstr ""
 #: src/gui/widgets/arranger.c:4647 src/gui/widgets/arranger.c:4672
 #: src/gui/widgets/arranger.c:4694
 msgid "Failed resizing selections"
-msgstr ""
+msgstr "Valintojen koon muuttaminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4761
 msgid "Failed to move objects"
-msgstr ""
+msgstr "Kohteiden siirtäminen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4803
 msgid "Failed to link or move selection"
@@ -1540,32 +1576,32 @@ msgstr ""
 
 #: src/gui/widgets/arranger.c:4863
 msgid "Failed to split selection"
-msgstr ""
+msgstr "Valinnan pilkkominen epäonnistui"
 
 #: src/gui/widgets/arranger.c:4875
 #, c-format
 msgid "%s name"
-msgstr ""
+msgstr "%s nimi"
 
 #: src/gui/widgets/piano_roll_keys.c:188
 msgid "bass"
-msgstr ""
+msgstr "basso"
 
 #: src/gui/widgets/piano_roll_keys.c:210
 msgid "both"
-msgstr ""
+msgstr "molemmat"
 
 #: src/gui/widgets/piano_roll_keys.c:228
 msgid "scale"
-msgstr ""
+msgstr "asteikko"
 
 #: src/gui/widgets/piano_roll_keys.c:246
 msgid "chord"
-msgstr ""
+msgstr "sointu"
 
 #: src/gui/widgets/plugin_browser.c:473
 msgid "Rename"
-msgstr ""
+msgstr "Nimeä uudelleen"
 
 #: src/gui/widgets/plugin_browser.c:479
 #: src/gui/widgets/panel_file_browser.c:132
@@ -1573,11 +1609,11 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:178 src/gui/widgets/cc_bindings_tree.c:69
 #: resources/ui/modulator_inner.ui:24
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 #: src/gui/widgets/bot_bar.c:56 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
-msgstr ""
+msgstr "Toistokohta"
 
 #: src/gui/widgets/bot_bar.c:58
 msgid "Playhead [Jack Timebase Master]"
@@ -1589,7 +1625,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:165
 msgid "Input"
-msgstr ""
+msgstr "Tulo"
 
 #. TRANSLATORS: tap tempo
 #: src/gui/widgets/bot_bar.c:170
@@ -1602,7 +1638,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:214
 msgid "Become JACK Transport master"
-msgstr ""
+msgstr "Toimi JACK Transport -masterina"
 
 #: src/gui/widgets/bot_bar.c:217
 msgid "Sync to JACK Transport"
@@ -1610,11 +1646,11 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:220
 msgid "Unlink JACK Transport"
-msgstr ""
+msgstr "Irrota JACK Transportista"
 
 #: src/gui/widgets/bot_bar.c:264
 msgid "playhead"
-msgstr ""
+msgstr "toistokohta"
 
 #: src/gui/widgets/bot_bar.c:299
 msgid "JACK Transport client"
@@ -1634,11 +1670,11 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:422
 msgid "This feature is not available at the moment"
-msgstr ""
+msgstr "Tämä ominaisuus ei ole tällä hetkellä käytettävissä"
 
 #: src/gui/widgets/bot_bar.c:515
 msgid "Status"
-msgstr ""
+msgstr "Tila"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
@@ -1649,7 +1685,7 @@ msgstr ""
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:529
 msgid "change"
-msgstr ""
+msgstr "vaihda"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:532
@@ -1658,29 +1694,29 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:572
 msgid "Metronome"
-msgstr ""
+msgstr "Metronomi"
 
 #: src/gui/widgets/bot_bar.c:573
 msgid "Metronome options"
-msgstr ""
+msgstr "Metronomin asetukset"
 
 #. volume
 #: src/gui/widgets/bot_bar.c:584 resources/ui/file_auditioner_controls.ui:28
 msgid "Volume"
-msgstr ""
+msgstr "Äänenvoimakkuus"
 
 #. countin
 #: src/gui/widgets/bot_bar.c:606
 msgid "Count-in"
-msgstr ""
+msgstr "Lähtölaskenta"
 
 #: src/gui/widgets/bot_bar.c:699
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:703
 msgid "time sig."
-msgstr ""
+msgstr "tahtilaji"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:78
 #: resources/ui/quantize_dialog.ui:62
@@ -1690,7 +1726,7 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:85
 #: resources/ui/quantize_dialog.ui:70
 msgid "end"
-msgstr ""
+msgstr "loppu"
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
@@ -1709,7 +1745,7 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:380
 #: src/gui/widgets/timeline_selection_info.c:405
 msgid "position"
-msgstr ""
+msgstr "kohta"
 
 #: src/gui/widgets/transport_controls.c:409
 msgid "Punch in/out"
@@ -1717,19 +1753,19 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:412
 msgid "Start on MIDI input"
-msgstr ""
+msgstr "Käynnistä MIDI-syötteestä"
 
 #: src/gui/widgets/transport_controls.c:415
 msgid "Options"
-msgstr ""
+msgstr "Asetukset"
 
 #: src/gui/widgets/transport_controls.c:420
 msgid "Overwrite events"
-msgstr ""
+msgstr "Ylikirjoita tapahtumat"
 
 #: src/gui/widgets/transport_controls.c:423
 msgid "Merge events"
-msgstr ""
+msgstr "Yhdistä tapahtumat"
 
 #: src/gui/widgets/transport_controls.c:426
 msgid "Create takes"
@@ -1742,7 +1778,7 @@ msgstr ""
 #: src/gui/widgets/transport_controls.c:432
 #: build/data/org.zrythm.Zrythm.gschema.xml:901
 msgid "Recording mode"
-msgstr ""
+msgstr "Tallennustila"
 
 #: src/gui/widgets/transport_controls.c:449
 msgid "Preroll"
@@ -1750,15 +1786,15 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:488 resources/ui/fader_buttons.ui:22
 msgid "Record"
-msgstr ""
+msgstr "Taltioi"
 
 #: src/gui/widgets/transport_controls.c:489
 msgid "Record options"
-msgstr ""
+msgstr "Taltiointiasetukset"
 
 #: src/gui/widgets/timeline_arranger.c:433
 msgid "Custom Marker"
-msgstr ""
+msgstr "Oma merkki"
 
 #: src/gui/widgets/timeline_arranger.c:949
 msgid "Fade Preset"
@@ -1770,7 +1806,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1128
 msgid "Detect BPM"
-msgstr ""
+msgstr "Tunnista BPM"
 
 #: src/gui/widgets/timeline_arranger.c:1183
 msgid "Region Functions"
@@ -1778,7 +1814,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1187
 msgid "Audio Regions"
-msgstr ""
+msgstr "Äänialueet"
 
 #: src/gui/widgets/timeline_arranger.c:1217
 msgid "Export as MIDI file"
@@ -1786,7 +1822,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1223
 msgid "MIDI Regions"
-msgstr ""
+msgstr "MIDI-alueet"
 
 #: src/gui/widgets/timeline_arranger.c:1230 src/gui/widgets/track.c:1748
 msgid "Quick bounce"
@@ -1798,12 +1834,12 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1449
 msgid "Failed to create selections"
-msgstr ""
+msgstr "Valintojen luominen epäonnistui"
 
 #: src/gui/widgets/automation_arranger.c:251
 #: build/data/org.zrythm.Zrythm.gschema.xml:1070
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Käyräalgoritmi"
 
 #: src/gui/widgets/header.c:136
 #, c-format
@@ -1818,7 +1854,7 @@ msgstr ""
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
-msgstr ""
+msgstr "Asetukset"
 
 #: src/gui/widgets/header.c:143
 msgid "Log viewer"
@@ -1830,7 +1866,7 @@ msgstr ""
 
 #: src/gui/widgets/panel_file_browser.c:274 src/gui/widgets/file_browser.c:72
 msgid "No file selected"
-msgstr ""
+msgstr "Ei tiedostoa valittuna"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1859,25 +1895,25 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_tree.c:268
 msgid "Source"
-msgstr ""
+msgstr "Lähde"
 
 #: src/gui/widgets/port_connections_tree.c:286
 #: src/gui/widgets/cc_bindings_tree.c:214 src/gui/widgets/item_factory.c:502
 msgid "Destination"
-msgstr ""
+msgstr "Kohde"
 
 #: src/gui/widgets/port_connections_tree.c:304
 msgid "Multiplier"
-msgstr ""
+msgstr "Kerroin"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:212
 msgid "Redo"
-msgstr ""
+msgstr "Tee uudelleen"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:209
 #: build/data/org.zrythm.Zrythm.gschema.xml:1080
 msgid "Undo"
-msgstr ""
+msgstr "Kumoa"
 
 #: src/gui/widgets/home_toolbar.c:170
 msgid "Cut"
@@ -1913,16 +1949,16 @@ msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:99 src/utils/gtk.c:1247
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Plugin-selain"
 
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1250
 msgid "File Browser"
-msgstr ""
+msgstr "Tiedostoselain"
 
 #: src/gui/widgets/right_dock_edge.c:168
 msgid "Monitor Section"
-msgstr ""
+msgstr "Kuuntele valintaa"
 
 #: src/gui/widgets/right_dock_edge.c:191
 msgid "Show file browser"
@@ -1930,48 +1966,48 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:104
 msgid "Load Preset"
-msgstr ""
+msgstr "Lataa esiasetus"
 
 #: src/gui/widgets/plugin_properties_expander.c:110
 msgid "_Load"
-msgstr ""
+msgstr "_Lataa"
 
 #: src/gui/widgets/plugin_properties_expander.c:222
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Pluginin asetukset"
 
 #: src/gui/widgets/plugin_properties_expander.c:251
 #: src/gui/widgets/event_viewer.c:558 resources/ui/chord_selector_window.ui:157
 #: resources/ui/arranger_object_info_dialog.ui:55
 #: resources/ui/port_info_dialog.ui:111
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
 #: src/gui/widgets/plugin_properties_expander.c:267
 msgid "Banks"
-msgstr ""
+msgstr "Pankit"
 
 #: src/gui/widgets/plugin_properties_expander.c:283
 #: resources/ui/file_browser_filters.ui:24
 msgid "Presets"
-msgstr ""
+msgstr "Esiasetukset"
 
 #: src/gui/widgets/plugin_properties_expander.c:313
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 #: src/gui/widgets/plugin_properties_expander.c:317
 msgid "Save preset"
-msgstr ""
+msgstr "Tallenna esiasetus"
 
 #: src/gui/widgets/plugin_properties_expander.c:320
 msgid "Load"
-msgstr ""
+msgstr "Lataa"
 
 #: src/gui/widgets/plugin_properties_expander.c:324
 msgid "Load preset"
-msgstr ""
+msgstr "Lataa esiasetus"
 
 #: src/gui/widgets/route_target_selector.c:88
 msgid "Cannot be routed"
@@ -1995,11 +2031,11 @@ msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:109
 msgid "No control selected"
-msgstr ""
+msgstr "Ohjainta ei ole valittu"
 
 #: src/gui/widgets/automatable_selector_popover.c:405
 msgid "Macros"
-msgstr ""
+msgstr "Makrot"
 
 #: src/gui/widgets/automatable_selector_popover.c:416
 #, c-format
@@ -2060,7 +2096,7 @@ msgstr ""
 #: src/gui/widgets/snap_grid.c:62
 #, c-format
 msgid "%s - Last object"
-msgstr ""
+msgstr "%s - Viimeinen objekti"
 
 #: src/gui/widgets/snap_grid.c:126
 msgid "Snap/Grid options"
@@ -2068,16 +2104,16 @@ msgstr ""
 
 #: src/gui/widgets/preferences.c:498
 msgid "Select a folder"
-msgstr ""
+msgstr "Valitse kansio"
 
 #: src/gui/widgets/preferences.c:499
 msgid "Select a file"
-msgstr ""
+msgstr "Valitse tiedosto"
 
 #: src/gui/widgets/preferences.c:965
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
-msgstr ""
+msgstr "Osa muutoksista tulee voimaan vasta %s:n uudelleenkäynnistyksen jälkeen"
 
 #: src/gui/widgets/monitor_section.c:49 src/gui/widgets/track.c:1240
 #: src/utils/gtk.c:1253
@@ -2086,7 +2122,7 @@ msgstr ""
 
 #: src/gui/widgets/monitor_section.c:70 src/gui/widgets/monitor_section.c:364
 msgid "Dim"
-msgstr ""
+msgstr "Vaimenna"
 
 #: src/gui/widgets/monitor_section.c:86
 #, c-format
@@ -2095,7 +2131,7 @@ msgstr ""
 
 #: src/gui/widgets/monitor_section.c:92
 msgid "Currently muted tracks"
-msgstr ""
+msgstr "Tällä hetkellä mykistetyt raidat"
 
 #: src/gui/widgets/monitor_section.c:95
 #, c-format
@@ -2104,7 +2140,7 @@ msgstr ""
 
 #: src/gui/widgets/monitor_section.c:101
 msgid "Currently soloed tracks"
-msgstr ""
+msgstr "Tällä hetkellä soolotut raidat"
 
 #: src/gui/widgets/monitor_section.c:104
 #, c-format
@@ -2113,99 +2149,99 @@ msgstr ""
 
 #: src/gui/widgets/monitor_section.c:110
 msgid "Currently listened tracks"
-msgstr ""
+msgstr "Tällä hetkellä kuunnellut raidat"
 
 #: src/gui/widgets/monitor_section.c:147
 msgid "Failed to unsolo all tracks"
-msgstr ""
+msgstr "Kaikkien raitojen soolouksen poistaminen epäonnistui"
 
 #: src/gui/widgets/monitor_section.c:185
 msgid "Failed to unmute all tracks"
-msgstr ""
+msgstr "Kaikkien raitojen mykistyksen poistaminen epäonnistui"
 
 #: src/gui/widgets/monitor_section.c:223
 msgid "Failed to unlisten all tracks"
-msgstr ""
+msgstr "Kaikkien raitojen kuuntelun poistaminen epäonnistui"
 
 #: src/gui/widgets/monitor_section.c:416
 msgid "Unsolo all tracks"
-msgstr ""
+msgstr "Poista kaikkien raitojen soolous"
 
 #: src/gui/widgets/monitor_section.c:419
 msgid "Unmute all tracks"
-msgstr ""
+msgstr "Poista kaikkien raitojen mykistys"
 
 #: src/gui/widgets/monitor_section.c:422
 msgid "Unlisten all tracks"
-msgstr ""
+msgstr "Lopeta kaikkien raitojen kuuntelu"
 
 #: src/gui/widgets/monitor_section.c:469
 msgid "Soloing"
-msgstr ""
+msgstr "Soolous"
 
 #: src/gui/widgets/monitor_section.c:473
 msgid "Muting"
-msgstr ""
+msgstr "Mykistys"
 
 #: src/gui/widgets/monitor_section.c:477
 msgid "Listening"
-msgstr ""
+msgstr "Kuunnellaan"
 
 #: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Skriptirajapinta"
 
 #: src/gui/widgets/active_hardware_mb.c:56
 #: src/gui/widgets/active_hardware_mb.c:158
 msgid "Select..."
-msgstr ""
+msgstr "Valitse..."
 
 #: src/gui/widgets/active_hardware_mb.c:127
 msgid "Click to enable inputs"
-msgstr ""
+msgstr "Ota tulot käyttöön napsauttamalla"
 
 #: src/gui/widgets/active_hardware_mb.c:128
 msgid "Click to enable outputs"
-msgstr ""
+msgstr "Ota lähdöt käyttöön napsauttamalla"
 
 #: src/gui/widgets/folder_channel.c:162
 msgid "Failed to move or copy track(s)"
-msgstr ""
+msgstr "Raidan tai raitojen siirtäminen tai kopioiminen epäonnistui"
 
 #: src/gui/widgets/file_auditioner_controls.c:275
 #: build/data/org.zrythm.Zrythm.gschema.xml:570
 msgid "Autoplay"
-msgstr ""
+msgstr "Automaattitoisto"
 
 #: src/gui/widgets/file_auditioner_controls.c:277
 #: build/data/org.zrythm.Zrythm.gschema.xml:575
 msgid "Show unsupported files"
-msgstr ""
+msgstr "Näytä ei-tuetut tiedostot"
 
 #: src/gui/widgets/file_auditioner_controls.c:280
 #: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "Show hidden files"
-msgstr ""
+msgstr "Näytä piilotetut tiedostot"
 
 #: src/gui/widgets/port_connection_row.c:58
 msgid "Failed to enable connection"
-msgstr ""
+msgstr "Yhteyden kytkentä epäonnistui"
 
 #: src/gui/widgets/port_connection_row.c:81
 msgid "Failed to disconnect"
-msgstr ""
+msgstr "Yhteyden katkaisu epäonnistui"
 
 #: src/gui/widgets/port_connection_row.c:137
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "Kytke/katkaise yhteys"
 
 #: src/gui/widgets/port_connection_row.c:182
 msgid "Delete connection"
-msgstr ""
+msgstr "Poista yhteys"
 
 #: src/gui/widgets/balance_control.c:310
 msgid "Failed to change balance"
-msgstr ""
+msgstr "Balanssin muuttaminen epäonnistui"
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2213,7 +2249,7 @@ msgstr ""
 
 #: src/gui/widgets/ruler.c:1627
 msgid "Display"
-msgstr ""
+msgstr "Näytä"
 
 #: src/gui/widgets/clip_editor_inner.c:334
 msgid "Select a region..."
@@ -2226,11 +2262,11 @@ msgstr ""
 
 #: src/gui/widgets/scale_selector_window.c:74
 msgid "Failed to edit scale"
-msgstr ""
+msgstr "Asteikon muokkaaminen epäonnistui"
 
 #: src/gui/widgets/event_viewer.c:571 src/gui/widgets/event_viewer.c:688
 msgid "Start"
-msgstr ""
+msgstr "Aloita"
 
 #: src/gui/widgets/event_viewer.c:585
 msgid "Clip start"
@@ -2238,23 +2274,23 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:599
 msgid "Loop start"
-msgstr ""
+msgstr "Silmukan aloitus"
 
 #: src/gui/widgets/event_viewer.c:613
 msgid "Loop end"
-msgstr ""
+msgstr "Silmukan loppu"
 
 #: src/gui/widgets/event_viewer.c:627 src/gui/widgets/event_viewer.c:702
 msgid "End"
-msgstr ""
+msgstr "Loppu"
 
 #: src/gui/widgets/event_viewer.c:649
 msgid "Note"
-msgstr ""
+msgstr "Nuotti"
 
 #: src/gui/widgets/event_viewer.c:662
 msgid "Pitch"
-msgstr ""
+msgstr "Sävelkorkeus"
 
 #: src/gui/widgets/event_viewer.c:759
 msgid "Index"
@@ -2262,11 +2298,11 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:786
 msgid "Value"
-msgstr ""
+msgstr "Arvo"
 
 #: src/gui/widgets/event_viewer.c:799
 msgid "Curviness"
-msgstr ""
+msgstr "Kaarevuus"
 
 #: src/gui/widgets/event_viewer.c:820
 msgid "Selection start"
@@ -2278,7 +2314,7 @@ msgstr ""
 
 #: src/gui/widgets/cc_bindings_tree.c:199
 msgid "Device"
-msgstr ""
+msgstr "Laite"
 
 #: src/gui/widgets/cc_bindings_tree.c:209 src/gui/widgets/item_factory.c:477
 msgid "Note/Control"
@@ -2286,56 +2322,56 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:174 src/gui/widgets/ports_expander.c:420
 msgid "Controls"
-msgstr ""
+msgstr "Ohjaimet"
 
 #: src/gui/widgets/ports_expander.c:177
 msgid "Control Outs"
-msgstr ""
+msgstr "Ohjauslähdöt"
 
 #: src/gui/widgets/ports_expander.c:180
 msgid "Audio Ins"
-msgstr ""
+msgstr "Äänitulot"
 
 #: src/gui/widgets/ports_expander.c:183
 msgid "Audio Outs"
-msgstr ""
+msgstr "Äänilähdöt"
 
 #: src/gui/widgets/ports_expander.c:186
 msgid "MIDI Ins"
-msgstr ""
+msgstr "MIDI-tulot"
 
 #: src/gui/widgets/ports_expander.c:189
 msgid "MIDI Outs"
-msgstr ""
+msgstr "MIDI-lähdöt"
 
 #: src/gui/widgets/ports_expander.c:192
 msgid "CV Ins"
-msgstr ""
+msgstr "CV-tulot"
 
 #: src/gui/widgets/ports_expander.c:195
 msgid "CV Outs"
-msgstr ""
+msgstr "CV-lähdöt"
 
 #: src/gui/widgets/ports_expander.c:363
 msgid "Ungrouped"
-msgstr ""
+msgstr "Ei ryhmää"
 
 #: src/gui/widgets/ports_expander.c:434
 msgid "Stereo In"
-msgstr ""
+msgstr "Stereotulo"
 
 #: src/gui/widgets/ports_expander.c:441
 msgid "MIDI In"
-msgstr ""
+msgstr "MIDI-tulo"
 
 #: src/gui/widgets/ports_expander.c:449
 msgid "MIDI Out"
-msgstr ""
+msgstr "MIDI-lähtö"
 
 #: src/gui/widgets/route_target_selector_popover.c:173
 #: resources/ui/port_info_dialog.ui:42
 msgid "Group"
-msgstr ""
+msgstr "Ryhmä"
 
 #: src/gui/widgets/route_target_selector_popover.c:243
 #: src/gui/widgets/route_target_selector_popover.c:459
@@ -2381,19 +2417,19 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "Lähennä"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "Loitonna"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "Alkuperäinen koko"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr ""
+msgstr "Paras sovitus"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2421,43 +2457,43 @@ msgstr ""
 
 #: src/gui/widgets/item_factory.c:236
 msgid "Add to project (native generic UI)"
-msgstr ""
+msgstr "Lisää projektiin (natiivi yleinen käyttöliittymä)"
 
 #: src/gui/widgets/item_factory.c:250
 msgid "Add to project"
-msgstr ""
+msgstr "Lisää projektiin"
 
 #: src/gui/widgets/item_factory.c:267
 msgid "Add to project (bridged UI)"
-msgstr ""
+msgstr "Lisää projektiin (sillattu käyttöliittymä)"
 
 #: src/gui/widgets/item_factory.c:280
 msgid "Add to project (bridged full)"
-msgstr ""
+msgstr "Lisää projektiin (täysi siltaus)"
 
 #: src/gui/widgets/item_factory.c:289
 msgid "Use _Generic UI"
-msgstr ""
+msgstr "Käytä geneeristä käyttöliittymää"
 
 #: src/gui/widgets/item_factory.c:329
 msgid "Add to collection"
-msgstr ""
+msgstr "Lisää kokoelmaan"
 
 #: src/gui/widgets/item_factory.c:370
 msgid "Remove from collection"
-msgstr ""
+msgstr "Poista kokoelmasta"
 
 #: src/gui/widgets/item_factory.c:398
 msgid "Add Bookmark"
-msgstr ""
+msgstr "&Lisää kirjanmerkki"
 
 #: src/gui/widgets/file_chooser_button.c:68
 msgid "Select path"
-msgstr ""
+msgstr "Valitse polku"
 
 #: src/gui/widgets/editor_toolbar.c:157
 msgid "Plugin Effect"
-msgstr ""
+msgstr "Plugin-efekti"
 
 #: src/gui/widgets/editor_toolbar.c:171 src/gui/widgets/editor_toolbar.c:189
 #: src/gui/widgets/editor_toolbar.c:207
@@ -2468,7 +2504,7 @@ msgstr ""
 #: src/gui/widgets/editor_toolbar.c:304
 #, c-format
 msgid "Apply %s"
-msgstr ""
+msgstr "Käytä %s"
 
 #: src/gui/widgets/editor_toolbar.c:249 src/gui/widgets/editor_toolbar.c:284
 #: src/gui/widgets/editor_toolbar.c:308
@@ -2478,19 +2514,19 @@ msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:355
 msgid "No Highlight"
-msgstr ""
+msgstr "Ei korostusta"
 
 #: src/gui/widgets/editor_toolbar.c:362
 msgid "Highlight Chord"
-msgstr ""
+msgstr "Korosta sointu"
 
 #: src/gui/widgets/editor_toolbar.c:369
 msgid "Highlight Scale"
-msgstr ""
+msgstr "Korosta asteikko"
 
 #: src/gui/widgets/editor_toolbar.c:376
 msgid "Highlight Both"
-msgstr ""
+msgstr "Korosta molemmat"
 
 #: src/gui/widgets/file_browser.c:130
 #, c-format
@@ -2507,63 +2543,63 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1209
 msgid "Hide instrument UI"
-msgstr ""
+msgstr "Piilota instrumentin käyttöliittymä"
 
 #: src/gui/widgets/track.c:1213
 msgid "Show instrument UI"
-msgstr ""
+msgstr "Näytä instrumentin käyttöliittymä"
 
 #: src/gui/widgets/track.c:1244 resources/ui/fader_buttons.ui:10
 msgid "Mono compatibility"
-msgstr ""
+msgstr "Mono-yhteensopivuus"
 
 #: src/gui/widgets/track.c:1250
 msgid "Disarm"
-msgstr ""
+msgstr "Poista taltioinnista"
 
 #: src/gui/widgets/track.c:1254
 msgid "Arm for recording"
-msgstr ""
+msgstr "Aseta taltioitavaksi"
 
 #: src/gui/widgets/track.c:1261
 msgid "Hide lanes"
-msgstr ""
+msgstr "Piilota kaistat"
 
 #: src/gui/widgets/track.c:1265
 msgid "Show lanes"
-msgstr ""
+msgstr "Näytä kaistat"
 
 #: src/gui/widgets/track.c:1272
 msgid "Hide automation"
-msgstr ""
+msgstr "Piilota automaatio"
 
 #: src/gui/widgets/track.c:1276
 msgid "Show automation"
-msgstr ""
+msgstr "Näytä automaatio"
 
 #: src/gui/widgets/track.c:1285 resources/ui/project_assistant.ui:54
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 #: src/gui/widgets/track.c:1289
 msgid "Freeze/unfreeze"
-msgstr ""
+msgstr "Jäädytys/jäädytyksen poistaminen"
 
 #: src/gui/widgets/track.c:1293
 msgid "Lock/unlock"
-msgstr ""
+msgstr "Lukitse/avaa"
 
 #: src/gui/widgets/track.c:1297
 msgid "Fold"
-msgstr ""
+msgstr "Niputa"
 
 #: src/gui/widgets/track.c:1301
 msgid "Unfold"
-msgstr ""
+msgstr "Avaa niputus"
 
 #: src/gui/widgets/track.c:1711
 msgid "Add Region"
-msgstr ""
+msgstr "Lisää alue"
 
 #: src/gui/widgets/track.c:1761 resources/ui/bounce_dialog.ui:102
 msgid "Bounce"
@@ -2579,7 +2615,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1909
 msgid "Rename lane..."
-msgstr ""
+msgstr "Nimeä kaista uudelleen..."
 
 #: src/gui/widgets/track.c:1927
 msgid "Passthrough input"
@@ -2588,11 +2624,11 @@ msgstr ""
 #: src/gui/widgets/track.c:1937 src/gui/widgets/track.c:1957
 #, c-format
 msgid "MIDI Channel %d"
-msgstr ""
+msgstr "MIDI-kanava %d"
 
 #: src/gui/widgets/main_notebook.c:140 src/utils/gtk.c:1257
 msgid "Timeline"
-msgstr ""
+msgstr "Aikajana"
 
 #: src/gui/widgets/main_notebook.c:144
 msgid "Connections"
@@ -2628,27 +2664,27 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:130
 msgid "Untitled Project"
-msgstr ""
+msgstr "Nimetön projekti"
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:165
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "Valitse projektille juurihakemisto"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
 msgid "Failed to quantize editor selections"
-msgstr ""
+msgstr "Editorin valintojen kvantisointi epäonnistui"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:100
 msgid "Failed to quantize timeline selections"
-msgstr ""
+msgstr "Aikajanan valintojen kvantisointi epäonnistui"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:135
 msgid "note length"
-msgstr ""
+msgstr "nuotin pituus"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:144
 msgid "note type"
-msgstr ""
+msgstr "nuotin tyyppi"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:55
 msgid "Failed to bind mapping"
@@ -2660,23 +2696,23 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:56
 msgid "Select MIDI file"
-msgstr ""
+msgstr "Valitse MIDI-tiedosto"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:59
 msgid "_Export"
-msgstr ""
+msgstr "_Vie"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:70
 msgid "Base region"
-msgstr ""
+msgstr "Perusalue"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:74
 msgid "Full region"
-msgstr ""
+msgstr "Koko alue"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:81
 msgid "Region Content"
-msgstr ""
+msgstr "Alueen sisältö"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:95
 msgid "Format 0"
@@ -2701,7 +2737,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/port_info.c:72
 msgid "N/A"
-msgstr ""
+msgstr "Ei saatavilla"
 
 #: src/gui/widgets/dialogs/port_info.c:152
 msgid "Port info"
@@ -2709,7 +2745,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:85
 msgid "Enter group name"
-msgstr ""
+msgstr "Anna ryhmän nimi"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:94
 msgid "Group name"
@@ -2717,25 +2753,25 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:97
 msgid "New Group"
-msgstr ""
+msgstr "Uusi ryhmä"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:103
 msgid "Move tracks under group"
-msgstr ""
+msgstr "Siirrä raidat ryhmän alle"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
 #: src/actions/actions.c:1692
 msgid "Failed to create audio group track"
-msgstr ""
+msgstr "Ääniryhmän raidan luominen epäonnistui"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:148
 #: src/actions/actions.c:1706
 msgid "Failed to create MIDI group track"
-msgstr ""
+msgstr "MIDI-ryhmäraidan luominen epäonnistui"
 
 #: src/gui/widgets/dialogs/about_dialog.c:79
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr ""
+msgstr "pitkälle automatisoitu ja intuitiivinen äänityöasema"
 
 #: src/gui/widgets/dialogs/about_dialog.c:83
 msgid "Website"
@@ -2747,7 +2783,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:83
 msgid "Exported"
-msgstr ""
+msgstr "Viety"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:86
 msgid "Export Progress"
@@ -2755,7 +2791,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:96
 msgid "Open Directory"
-msgstr ""
+msgstr "Avaa kansio"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:99
 msgid "Opens the containing directory"
@@ -2790,7 +2826,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:350
 msgid "Send Automatically"
-msgstr ""
+msgstr "Lähetä automaattisesti"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:375
 #, c-format
@@ -2798,6 +2834,8 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"Lähetä painamalla OK. Lähetettävät tiedot voi nähdä alta. Painamalla OK "
+"hyväksyt %sTietosuojakäytäntömme%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:392
 msgid "<b>Data</b>"
@@ -2805,7 +2843,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:446
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>Log-tiedosto</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:487
 msgid "<b>Screenshot</b>"
@@ -2817,7 +2855,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:546
 msgid "Sending data..."
-msgstr ""
+msgstr "Lähetetään tietoja..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:549
 msgid "Failed"
@@ -2829,7 +2867,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:581
 msgid "Sent successfully"
-msgstr ""
+msgstr "Lähetys onnistui"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:654
 #, c-format
@@ -2852,21 +2890,23 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:86
 msgid "Track color"
-msgstr ""
+msgstr "Raidan väri"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:143
 msgid "Failed to change color"
-msgstr ""
+msgstr "Värin vaihtaminen epäonnistui"
 
 #: src/gui/widgets/dialogs/export_dialog.c:237
 msgid "none"
-msgstr ""
+msgstr "ei mitään"
 
 #: src/gui/widgets/dialogs/export_dialog.c:315
 msgid ""
 "\n"
 "1 more file..."
 msgstr ""
+"\n"
+"1 tiedosto lisää..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:320
 #, c-format
@@ -2877,7 +2917,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:427
 msgid "The following files will be created:"
-msgstr ""
+msgstr "Seuraavat tiedostot luodaan:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:430
 msgid "in the directory:"
@@ -2893,7 +2933,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:853
 msgid "No tracks to export"
-msgstr ""
+msgstr "Ei raitoja vietäväksi"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
@@ -2914,7 +2954,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:169
 msgid "_Select"
-msgstr ""
+msgstr "_Valitse"
 
 #: src/gui/widgets/dialogs/changelog_dialog.c:47
 #, c-format
@@ -2924,30 +2964,30 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "Koti"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
 msgid "Desktop"
-msgstr ""
+msgstr "Työpöytä"
 
 #: src/gui/backend/arranger_selections.c:2646
 msgid "Failed to paste selections"
-msgstr ""
+msgstr "Valintojen liittäminen epäonnistui"
 
 #: src/gui/backend/arranger_object.c:3352
 #, c-format
 msgid "Invalid object name %s"
-msgstr ""
+msgstr "Viallinen objektin nimi %s"
 
 #: src/gui/backend/arranger_object.c:3391
 msgid "Failed to rename object"
-msgstr ""
+msgstr "Objektin uudelleennimeäminen epäonnistui"
 
 #: src/gui/backend/event_manager.c:547
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
-msgstr ""
+msgstr "Lisäosa '%s' on kaatunut ja poistettu käytöstä."
 
 #: src/gui/backend/event_manager.c:1811
 #, c-format
@@ -2957,11 +2997,11 @@ msgstr ""
 #: src/gui/backend/tracklist_selections.c:699
 #, c-format
 msgid "Failed to clone track '%s'"
-msgstr ""
+msgstr "Raidan '%s' monistaminen epäonnistui"
 
 #: src/gui/backend/mixer_selections.c:617
 msgid "Failed to paste plugins"
-msgstr ""
+msgstr "Pluginien liittäminen epäonnistui"
 
 #: src/utils/log.c:772
 #, c-format
@@ -2972,11 +3012,11 @@ msgstr ""
 
 #: src/utils/gtk.c:1241
 msgid "Track Inspector"
-msgstr ""
+msgstr "Raidan tarkastelu"
 
 #: src/utils/gtk.c:1244
 msgid "Plugin Inspector"
-msgstr ""
+msgstr "Pluginin tarkastelu"
 
 #: src/utils/gtk.c:1260
 msgid "MIDI CC Bindings"
@@ -2984,7 +3024,7 @@ msgstr ""
 
 #: src/utils/gtk.c:1263
 msgid "Port Connections"
-msgstr ""
+msgstr "Porttien kytkennät"
 
 #: src/utils/dialogs.c:45
 msgid "_Open"
@@ -2996,7 +3036,7 @@ msgstr ""
 
 #: src/utils/dialogs.c:81
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr ""
+msgstr "Lisäosa on jo olemassa valitussa paikassa. Korvataanko se?"
 
 #: src/utils/dialogs.c:106
 msgid "Error instantiating plugin. Please see log for details."
@@ -3035,7 +3075,7 @@ msgstr ""
 #: src/settings/settings.c:163
 #, c-format
 msgid "Schema %s%s%s"
-msgstr ""
+msgstr "Skeema %s%s%s"
 
 #: src/settings/settings.c:174
 #, c-format
@@ -3045,7 +3085,7 @@ msgstr ""
 #: src/settings/settings.c:213
 #, c-format
 msgid "skipping %s"
-msgstr ""
+msgstr "ohitetaan %s"
 
 #: src/settings/settings.c:224
 #, c-format
@@ -3055,17 +3095,17 @@ msgstr ""
 #: src/settings/settings.c:269
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
-msgstr ""
+msgstr "Skeemaa %s ei löydy. %s ei todennäköisesti ole asennettu"
 
 #: src/settings/settings.c:284
 #, c-format
 msgid "Failed to view schema %s"
-msgstr ""
+msgstr "Skeeman %s tarkastelu epäonnistui"
 
 #: src/settings/settings.c:291
 #, c-format
 msgid "Failed to reset schema %s"
-msgstr ""
+msgstr "Skeeman %s nollaaminen epäonnistui"
 
 #: src/settings/settings.c:324
 #, c-format
@@ -3077,29 +3117,30 @@ msgstr ""
 #: src/settings/settings.c:331
 #, c-format
 msgid "Aborting...\n"
-msgstr ""
+msgstr "Perutaan...\n"
 
 #: src/settings/settings.c:342
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr ""
+msgstr "Tehdasasetusten palautus onnistui\n"
 
 #: src/audio/tracklist.c:1335
 msgid "No file was found"
-msgstr ""
+msgstr "Tiedostoa ei löytynyt"
 
 #: src/audio/tracklist.c:1365
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Ei-tuettu tiedostotyyppi %s"
 
 #: src/audio/tracklist.c:1384
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr ""
+"Olemassa oleville raidoille voi pudottaa vain yhden tiedoston kerrallaan"
 
 #: src/audio/tracklist.c:1397
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr ""
+msgstr "MIDI-tiedostoja voi pudottaa vain MIDI-/instrumenttiraidoille."
 
 #: src/audio/tracklist.c:1410
 #, c-format
@@ -3107,10 +3148,12 @@ msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
+"Tämä MIDI-tiedosto sisältää %d raitaa. Sitä ei voi pudottaa olemassa olevaan "
+"raitaan"
 
 #: src/audio/tracklist.c:1424
 msgid "Can only drop audio files on audio tracks"
-msgstr ""
+msgstr "Ääniraidoille voi pudottaa vain äänitiedostoja"
 
 #: src/audio/tracklist.c:1479
 msgid "Failed to create arranger objects"
@@ -3119,6 +3162,8 @@ msgstr ""
 #: src/audio/tracklist.c:1549
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr ""
+"Raitojen siirtäminen kansion sisään kopioimisen tai siirtämisen jälkeen "
+"epäonnistui"
 
 #: src/audio/tracklist.c:1622
 msgid "Failed to copy tracks inside"
@@ -3131,15 +3176,15 @@ msgstr ""
 #: src/audio/tracklist.c:1691 src/audio/tracklist.c:1833
 #: src/actions/tracklist_selections.c:374
 msgid "Failed to clone track"
-msgstr ""
+msgstr "Raidan monistaminen epäonnistui"
 
 #: src/audio/tracklist.c:1716
 msgid "Failed to copy tracks"
-msgstr ""
+msgstr "Raitojen kopiointi epäonnistui"
 
 #: src/audio/tracklist.c:1743
 msgid "Cannot drag folder into itself"
-msgstr ""
+msgstr "Kansiota ei voi siirtää itsensä sisään"
 
 #: src/audio/tracklist.c:1762 src/audio/tracklist.c:1812
 msgid "Failed to move track inside folder"
@@ -3147,11 +3192,11 @@ msgstr ""
 
 #: src/audio/tracklist.c:1858
 msgid "Failed to move tracks"
-msgstr ""
+msgstr "Raitojen siirtäminen epäonnistui"
 
 #: src/audio/chord_track.c:59 resources/ui/inspector_chord.ui:7
 msgid "Chords"
-msgstr ""
+msgstr "Soinnut"
 
 #: src/audio/automation_track.c:204
 msgid "Rec"
@@ -3167,7 +3212,7 @@ msgstr ""
 
 #: src/audio/channel.c:1938 src/actions/mixer_selections_action.c:499
 msgid "Failed to clone plugin"
-msgstr ""
+msgstr "Pluginin monistaminen epäonnistui"
 
 #: src/audio/channel_send.c:106
 #, c-format
@@ -3201,7 +3246,7 @@ msgstr ""
 
 #: src/audio/channel_send.c:497 src/audio/channel_send.c:559
 msgid "Ports cannot be connected"
-msgstr ""
+msgstr "Portteja ei voi yhdistää"
 
 #: src/audio/channel_send.c:683
 msgid "Pre-fader send"
@@ -3218,27 +3263,27 @@ msgstr ""
 
 #: src/audio/marker_track.c:61
 msgid "Markers"
-msgstr ""
+msgstr "Markkerit"
 
 #: src/audio/modulator_macro_processor.c:110
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "Makro %d"
 
 #: src/audio/modulator_macro_processor.c:129
 #, c-format
 msgid "Macro CV In %d"
-msgstr ""
+msgstr "Makro CV-tulo %d"
 
 #: src/audio/modulator_macro_processor.c:140
 #, c-format
 msgid "Macro CV Out %d"
-msgstr ""
+msgstr "Makro CV-lähtö %d"
 
 #: src/audio/exporter.c:139
 #, c-format
 msgid "Format %s not supported yet"
-msgstr ""
+msgstr "Tiedostomuotoa %s ei vielä tueta"
 
 #: src/audio/exporter.c:236
 msgid "SF INFO invalid"
@@ -3253,7 +3298,7 @@ msgstr ""
 
 #: src/audio/exporter.c:820 src/audio/exporter.c:829 src/actions/actions.c:1636
 msgid "Failed to create audio track"
-msgstr ""
+msgstr "Ääniraidan luominen epäonnistui"
 
 #: src/audio/supported_file.c:311
 msgid "Failed opening file"
@@ -3273,27 +3318,27 @@ msgstr ""
 #: src/audio/engine_pa.c:273
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr ""
+msgstr "PortAudio-virhe: %s"
 
 #: src/audio/region.c:512 build/data/org.zrythm.Zrythm.gschema.xml:1066
 msgid "Automation"
-msgstr ""
+msgstr "Automaatio"
 
 #: src/audio/tempo_track.c:57
 msgid "BPM"
-msgstr ""
+msgstr "BPM (iskua minuutissa)"
 
 #: src/audio/tempo_track.c:72
 msgid "Beats per bar"
-msgstr ""
+msgstr "Iskua tahdissa"
 
 #: src/audio/tempo_track.c:93
 msgid "Beat unit"
-msgstr ""
+msgstr "Iskuyksikkö"
 
 #: src/audio/tempo_track.c:227
 msgid "Failed to change BPM"
-msgstr ""
+msgstr "BPM:n muuttaminen epäonnistui"
 
 #: src/audio/engine.c:543
 #, c-format
@@ -3335,41 +3380,43 @@ msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
 msgstr ""
+"Puskurin alivuoto on tapahtunut. Yritä kasvattaa puskurin kokoa asetuksissa "
+"välttääksesi äänen pätkiminen."
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr ""
+msgstr "PulseAudio-virhe: Pääsilmukan luominen epäonnistui"
 
 #: src/audio/engine_pulse.c:263
 #, c-format
 msgid "PulseAudio Error: %s"
-msgstr ""
+msgstr "PulseAudio Virhe: %s"
 
 #: src/audio/engine_pulse.c:282
 msgid "PulseAudio Error: Failed to connect"
-msgstr ""
+msgstr "PulseAudio-virhe: Yhteyden muodostaminen epäonnistui"
 
 #: src/audio/curve.c:358
 msgid "Exponential"
-msgstr ""
+msgstr "Eksponentiaalinen"
 
 #: src/audio/curve.c:363
 msgid "Elliptic"
-msgstr ""
+msgstr "Elliptinen"
 
 #: src/audio/track_lane.c:85
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "Kaista %d"
 
 #: src/audio/track_lane.c:117
 msgid "Failed to rename lane"
-msgstr ""
+msgstr "Kaistan uudelleennimeäminen epäonnistui"
 
 #: src/audio/audio_function.c:161 src/audio/track.c:2271 src/audio/track.c:3363
 #: src/actions/mixer_selections_action.c:627
 msgid "Failed to instantiate plugin"
-msgstr ""
+msgstr "Pluginin lisääminen epäonnistui"
 
 #: src/audio/audio_function.c:398
 msgid "Invalid positions - skipping function"
@@ -3377,21 +3424,21 @@ msgstr ""
 
 #: src/audio/audio_function.c:552
 msgid "Failed to apply plugin"
-msgstr ""
+msgstr "Pluginin käyttöönotto epäonnistui"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
 msgid "ALSA Error: %s"
-msgstr ""
+msgstr "ALSA-virhe: %s"
 
 #: src/audio/sample_processor.c:649
 #, c-format
 msgid "Failed to instantiate plugin %s"
-msgstr ""
+msgstr "Pluginin %s lisääminen epäonnistui"
 
 #: src/audio/recording_manager.c:171
 msgid "Failed to create recorded regions"
-msgstr ""
+msgstr "Taltioitujen alueiden lisääminen epäonnistui"
 
 #: src/audio/track.c:389
 msgid "Track record"
@@ -3399,48 +3446,48 @@ msgstr ""
 
 #: src/audio/track.c:534
 msgid "Failed to clone channel"
-msgstr ""
+msgstr "Kanavan monistaminen epäonnistui"
 
 #: src/audio/track.c:965
 msgid "Cannot set track muted"
-msgstr ""
+msgstr "Raitaa ei voi mykistää"
 
 #: src/audio/track.c:1014
 msgid "Cannot set track folded"
-msgstr ""
+msgstr "Raitaa ei voi niputtaa"
 
 #: src/audio/track.c:1556
 msgid "Cannot set track soloed"
-msgstr ""
+msgstr "Raitaa ei voi soolota"
 
 #: src/audio/track.c:1608
 msgid "Cannot set track listened"
-msgstr ""
+msgstr "Raitaa ei voi asettaa kuunteluun"
 
 #: src/audio/track.c:3054
 msgid "Failed to rename track"
-msgstr ""
+msgstr "Raidan uudelleennimeäminen epäonnistui"
 
 #: src/audio/track.c:3413 src/audio/track.c:3461
 msgid "Cannot set track comment"
-msgstr ""
+msgstr "Raidan kommenttia ei voi asettaa"
 
 #: src/audio/track.c:3501
 msgid "Cannot set track icon"
-msgstr ""
+msgstr "Raidan kuvaketta ei voi asettaa"
 
 #: src/audio/track.c:3736
 msgid "Cannot set track enabled"
-msgstr ""
+msgstr "Raitaa ei voi ottaa käyttöön"
 
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
 msgid "Unimplemented"
-msgstr ""
+msgstr "Toteuttamaton"
 
 #: src/audio/clip.c:670
 msgid "Edit in external app"
-msgstr ""
+msgstr "Muokkaa ulkoisessa sovelluksessa"
 
 #: src/audio/clip.c:695
 #, c-format
@@ -3449,7 +3496,7 @@ msgstr ""
 
 #: src/audio/clip.c:711
 msgid "Launch"
-msgstr ""
+msgstr "Käynnistä"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
@@ -3553,36 +3600,36 @@ msgstr ""
 
 #: src/audio/fader.c:666
 msgid "Failed to set MIDI mode"
-msgstr ""
+msgstr "MIDI-tilan asettaminen epäonnistui"
 
 #: src/audio/engine_jack.c:396
 msgid "XRUN occurred - check your JACK configuration"
-msgstr ""
+msgstr "Tapahtui XRUN - tarkista JACK-konfiguraatiosi"
 
 #: src/audio/engine_jack.c:460
 msgid "JACK has shut down"
-msgstr ""
+msgstr "JACK on sammunut"
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:653
 msgid "Overall operation failed"
-msgstr ""
+msgstr "Kokonaisoperaatio epäonnistui"
 
 #: src/audio/engine_jack.c:659
 msgid "The operation contained an invalid or unsupported option"
-msgstr ""
+msgstr "Toiminto sisälsi virheellisen tai ei-tuetun vaihtoehdon"
 
 #: src/audio/engine_jack.c:666
 msgid "The desired client name was not unique"
-msgstr ""
+msgstr "Haluttu asiakkaan nimi ei ollut yksilöllinen"
 
 #: src/audio/engine_jack.c:672
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "Yhteyden muodostaminen JACK-palvelimeen epäonnistui"
 
 #: src/audio/engine_jack.c:678
 msgid "Communication error with the JACK server"
-msgstr ""
+msgstr "Yhteysvirhe JACK-palvelimen kanssa"
 
 #: src/audio/engine_jack.c:684
 msgid "Requested client does not exist"
@@ -3598,7 +3645,7 @@ msgstr ""
 
 #: src/audio/engine_jack.c:702
 msgid "Unable to access shared memory"
-msgstr ""
+msgstr "Jaettua muistia ei voi käyttää"
 
 #: src/audio/engine_jack.c:708
 msgid "Client's protocol version does not match"
@@ -3614,7 +3661,7 @@ msgstr ""
 
 #: src/actions/port_action.c:181
 msgid "Set control value"
-msgstr ""
+msgstr "Aseta ohjausarvo"
 
 #: src/actions/arranger_selections.c:416
 msgid "Arranger selections contain an undeletable object"
@@ -3627,26 +3674,28 @@ msgstr ""
 #: src/actions/arranger_selections.c:571 src/actions/actions.c:2463
 #: src/actions/actions.c:2508
 msgid "Failed to apply automation function"
-msgstr ""
+msgstr "Automaatiotoiminnon käyttäminen epäonnistui"
 
 #: src/actions/arranger_selections.c:614 src/actions/arranger_selections.c:630
 #: src/actions/actions.c:2911
 msgid "Failed to apply audio function"
-msgstr ""
+msgstr "Äänitoiminnon käyttäminen epäonnistui"
 
 #: src/actions/arranger_selections.c:763
 msgid "Attempted to resize unresizable objects"
-msgstr ""
+msgstr "Yritettiin muuttaa kokoa objektille, jonka kokoa ei voi muuttaa"
 
 #: src/actions/arranger_selections.c:790
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr ""
+"%s koon muuttaminen ei onnistu - valinnat sisältävät silmukoituja objekteja."
 
 #: src/actions/arranger_selections.c:812
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
+"%s kokoa ei voi muuttaa - valinnat sisältävät ei-silmukoitavia objekteja"
 
 #: src/actions/arranger_selections.c:3139
 msgid "Create timeline selections"
@@ -3757,6 +3806,7 @@ msgstr ""
 #: src/actions/actions.c:611
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
+"Kaikki tallentamattomat muutokset nykyiseen projektiin menetetään. Jatka?"
 
 #: src/actions/actions.c:655
 msgid "Loading is disabled in the trial version"
@@ -3768,23 +3818,23 @@ msgstr ""
 
 #: src/actions/actions.c:724
 msgid "Save Project"
-msgstr ""
+msgstr "Tallenna projekti"
 
 #: src/actions/actions.c:800
 msgid "Export routing graph"
-msgstr ""
+msgstr "Vie reitityskaavio"
 
 #: src/actions/actions.c:802
 msgid "Image (PNG)"
-msgstr ""
+msgstr "Kuva (PNG)"
 
 #: src/actions/actions.c:803
 msgid "Image (SVG)"
-msgstr ""
+msgstr "Kuva (SVG)"
 
 #: src/actions/actions.c:804
 msgid "Dot graph"
-msgstr ""
+msgstr "Dot-kaavio"
 
 #: src/actions/actions.c:812
 #, c-format
@@ -3795,36 +3845,36 @@ msgstr ""
 
 #: src/actions/actions.c:866
 msgid "Graph exported"
-msgstr ""
+msgstr "Kaavio viety"
 
 #: src/actions/actions.c:889 src/guile/actions/undo_manager.c:65
 msgid "Failed to undo"
-msgstr ""
+msgstr "Kumoaminen epäonnistui"
 
 #: src/actions/actions.c:919 src/actions/undo_manager.c:276
 msgid "Failed to redo action"
-msgstr ""
+msgstr "Toiminnon uudelleen tekeminen epäonnistui"
 
 #: src/actions/actions.c:925 src/actions/undo_manager.c:216
 msgid "Failed to undo action"
-msgstr ""
+msgstr "Toiminnon kumoaminen epäonnistui"
 
 #: src/actions/actions.c:951 src/guile/actions/undo_manager.c:87
 msgid "Failed to redo"
-msgstr ""
+msgstr "Uudelleen tekeminen epäonnistui"
 
 #: src/actions/actions.c:992 src/actions/actions.c:1011
 #: src/actions/actions.c:1198
 msgid "Failed to delete selections"
-msgstr ""
+msgstr "Valintojen poistaminen epäonnistui"
 
 #: src/actions/actions.c:1167
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "Ei voi liittää yhteensopimattomia tietoja."
 
 #: src/actions/actions.c:1259
 msgid "Failed to duplicate selections"
-msgstr ""
+msgstr "Valintojen monistaminen epäonnistui"
 
 #: src/actions/actions.c:1506
 msgid "Failed to unbind"
@@ -3833,11 +3883,11 @@ msgstr ""
 #: src/actions/actions.c:1551 src/actions/actions.c:2036
 #: src/actions/actions.c:2072
 msgid "Failed to quantize"
-msgstr ""
+msgstr "Kvantisointi epäonnistui"
 
 #: src/actions/actions.c:1650
 msgid "Failed to create MIDI track"
-msgstr ""
+msgstr "MIDI-raidan lisääminen epäonnistui"
 
 #: src/actions/actions.c:1664
 msgid "Failed to create audio FX track"
@@ -3853,86 +3903,86 @@ msgstr ""
 
 #: src/actions/actions.c:1736
 msgid "Failed to duplicate tracks"
-msgstr ""
+msgstr "Raitojen monistaminen epäonnistui"
 
 #: src/actions/actions.c:1784
 msgid "Cannot delete tracks: selection contains an undeletable track"
-msgstr ""
+msgstr "Raitoja ei voi poistaa: valinta sisältää raidan, jota ei voi poistaa"
 
 #: src/actions/actions.c:1798
 msgid "Failed to delete tracks"
-msgstr ""
+msgstr "Raitojen poistaminen epäonnistui"
 
 #: src/actions/actions.c:1836
 msgid "Failed to pin/unpin tracks"
-msgstr ""
+msgstr "Raitojen kiinnityksen muuttaminen epäonnistui"
 
 #: src/actions/actions.c:1849
 msgid "Failed to solo tracks"
-msgstr ""
+msgstr "Raitojen sooloaminen epäonnistui"
 
 #: src/actions/actions.c:1862
 msgid "Failed to unsolo tracks"
-msgstr ""
+msgstr "Raitojen soolouksen poisto epäonnistui"
 
 #: src/actions/actions.c:1875
 msgid "Failed to mute tracks"
-msgstr ""
+msgstr "Raitojen mykistys epäonnistui"
 
 #: src/actions/actions.c:1888
 msgid "Failed to unmute tracks"
-msgstr ""
+msgstr "Raitojen mykistyksen poistaminen epäonnistui"
 
 #: src/actions/actions.c:1901
 msgid "Failed to listen tracks"
-msgstr ""
+msgstr "Raitojen kuunteleminen epäonnistui"
 
 #: src/actions/actions.c:1914
 msgid "Failed to unlisten tracks"
-msgstr ""
+msgstr "Raitojen kuuntelun poistaminen epäonnistui"
 
 #: src/actions/actions.c:1927
 msgid "Failed to enable tracks"
-msgstr ""
+msgstr "Raitojen käyttöönotto epäonnistui"
 
 #: src/actions/actions.c:1940
 msgid "Failed to disable tracks"
-msgstr ""
+msgstr "Raitojen poistaminen käytöstä epäonnistui"
 
 #: src/actions/actions.c:2091
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
-msgstr ""
+msgstr "Valitse ensin joko aikajana tai editori. Nykyinen valinta on %s."
 
 #: src/actions/actions.c:2168
 msgid "Failed to mute selections"
-msgstr ""
+msgstr "Valintojen mykistäminen epäonnistui"
 
 #: src/actions/actions.c:2182
 msgid "No regions selected"
-msgstr ""
+msgstr "Alueita ei ole valittu"
 
 #: src/actions/actions.c:2190
 msgid "Selections must be on the same lane"
-msgstr ""
+msgstr "Valintojen on oltava samalla kaistalla"
 
 #: src/actions/actions.c:2198
 msgid "Cannot merge looped regions"
-msgstr ""
+msgstr "Silmukoituja alueita ei voi yhdistää"
 
 #: src/actions/actions.c:2215
 msgid "Failed to merge selections"
-msgstr ""
+msgstr "Valintojen yhdistäminen epäonnistui"
 
 #: src/actions/actions.c:2332
 msgid "Failed to insert silence"
-msgstr ""
+msgstr "Hiljaisuuden lisääminen epäonnistui"
 
 #: src/actions/actions.c:2355
 msgid "Failed to remove range"
-msgstr ""
+msgstr "Alueen poistaminen epäonnistui"
 
 #: src/actions/actions.c:2711
 msgid "Region name"
@@ -3940,11 +3990,11 @@ msgstr ""
 
 #: src/actions/actions.c:2750
 msgid "Please enter a BPM"
-msgstr ""
+msgstr "Syötä BPM"
 
 #: src/actions/actions.c:2826
 msgid "Failed to move selections"
-msgstr ""
+msgstr "Valintojen siirtäminen epäonnistui"
 
 #: src/actions/actions.c:2846
 #, c-format
@@ -3957,7 +4007,7 @@ msgstr ""
 
 #: src/actions/actions.c:3051
 msgid "Failed to set curve algorithm"
-msgstr ""
+msgstr "Käyräalgoritmin asettaminen epäonnistui"
 
 #: src/actions/actions.c:3112
 msgid "Failed to edit fades"
@@ -3975,7 +4025,7 @@ msgstr ""
 
 #: src/actions/actions.c:3287
 msgid "Cannot delete standard bookmark"
-msgstr ""
+msgstr "Vakiokirjanmerkkiä ei voi poistaa"
 
 #: src/actions/actions.c:3299
 msgid "Are you sure you want to remove this bookmark?"
@@ -3983,7 +4033,7 @@ msgstr ""
 
 #: src/actions/actions.c:3503 src/actions/actions.c:3534
 msgid "Collection name"
-msgstr ""
+msgstr "Kokoelman nimi"
 
 #: src/actions/actions.c:3562
 #, c-format
@@ -3997,23 +4047,23 @@ msgstr ""
 
 #: src/actions/port_connection_action.c:204
 msgid "Connect ports"
-msgstr ""
+msgstr "Yhdistä portit"
 
 #: src/actions/port_connection_action.c:207
 msgid "Disconnect ports"
-msgstr ""
+msgstr "Irrota portit"
 
 #: src/actions/port_connection_action.c:210
 msgid "Enable port connection"
-msgstr ""
+msgstr "Kytke porttiyhteys"
 
 #: src/actions/port_connection_action.c:213
 msgid "Disable port connection"
-msgstr ""
+msgstr "Kytke porttiyhteys pois päältä"
 
 #: src/actions/port_connection_action.c:216
 msgid "Change port connection"
-msgstr ""
+msgstr "Vaihda porttiyhteys"
 
 #: src/actions/transport_action.c:298
 msgid "Change BPM"
@@ -4046,15 +4096,15 @@ msgstr ""
 
 #: src/actions/channel_send_action.c:363
 msgid "Connect stereo"
-msgstr ""
+msgstr "Yhdistä stereo"
 
 #: src/actions/channel_send_action.c:365
 msgid "Connect MIDI"
-msgstr ""
+msgstr "Yhdistä MIDI"
 
 #: src/actions/channel_send_action.c:367
 msgid "Disconnect"
-msgstr ""
+msgstr "Katkaise yhteys"
 
 #: src/actions/channel_send_action.c:369
 msgid "Change amount"
@@ -4062,7 +4112,7 @@ msgstr ""
 
 #: src/actions/channel_send_action.c:371
 msgid "Change ports"
-msgstr ""
+msgstr "Vaihda portteja"
 
 #: src/actions/channel_send_action.c:374
 msgid "Channel send connection"
@@ -4070,16 +4120,16 @@ msgstr ""
 
 #: src/actions/mixer_selections_action.c:193
 msgid "Failed to clone mixer selections"
-msgstr ""
+msgstr "Mikserin valintojen kloonaus epäonnistui"
 
 #: src/actions/mixer_selections_action.c:614
 msgid "Could not create plugin"
-msgstr ""
+msgstr "Pluginia ei voitu luoda"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
 msgid "Failed to revert deleted plugin"
-msgstr ""
+msgstr "Poistetun pluginin palauttaminen epäonnistui"
 
 #: src/actions/mixer_selections_action.c:1364
 #, c-format
@@ -4093,7 +4143,7 @@ msgstr ""
 
 #: src/actions/mixer_selections_action.c:1378
 msgid "Delete Plugin"
-msgstr ""
+msgstr "Poista lisäosa"
 
 #: src/actions/mixer_selections_action.c:1383
 #, c-format
@@ -4132,11 +4182,11 @@ msgstr ""
 
 #: src/actions/range_action.c:718 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
-msgstr ""
+msgstr "Lisää hiljaisuus"
 
 #: src/actions/range_action.c:721
 msgid "Delete range"
-msgstr ""
+msgstr "Poista alue"
 
 #: src/actions/tracklist_selections.c:295
 #, c-format
@@ -4145,15 +4195,15 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:333
 msgid "No tracks selected"
-msgstr ""
+msgstr "Raitoja ei ole valittu"
 
 #: src/actions/tracklist_selections.c:353
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Raitaluettelon valintojen kloonaus epäonnistui"
 
 #: src/actions/tracklist_selections.c:404
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Raitaluettelon valintoja kloonaus epäonnistui: "
 
 #: src/actions/tracklist_selections.c:765
 #, c-format
@@ -4163,12 +4213,12 @@ msgstr ""
 #: src/actions/tracklist_selections.c:835
 #, c-format
 msgid "Error instantiating plugin %s"
-msgstr ""
+msgstr "Virhe lisätessä pluginia %s"
 
 #: src/actions/tracklist_selections.c:919
 #, c-format
 msgid "Failed saving file %s"
-msgstr ""
+msgstr "Tiedoston %s tallentaminen epäonnistui"
 
 #: src/actions/tracklist_selections.c:1016
 #, c-format
@@ -4187,7 +4237,7 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:2196
 msgid "Copy Track"
-msgstr ""
+msgstr "Kopioi raita"
 
 #: src/actions/tracklist_selections.c:2204
 #, c-format
@@ -4211,52 +4261,52 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:2232
 msgid "Delete Track"
-msgstr ""
+msgstr "Poista raita"
 
 #: src/actions/tracklist_selections.c:2237
 #, c-format
 msgid "Delete %d Tracks"
-msgstr ""
+msgstr "Poista %d raitaa"
 
 #: src/actions/tracklist_selections.c:2250
 msgid "Solo Track"
-msgstr ""
+msgstr "Sooloa raita"
 
 #: src/actions/tracklist_selections.c:2253
 msgid "Unsolo Track"
-msgstr ""
+msgstr "Poista raidan soolous"
 
 #: src/actions/tracklist_selections.c:2257
 msgid "Mute Track"
-msgstr ""
+msgstr "Mykistä raita"
 
 #: src/actions/tracklist_selections.c:2260
 msgid "Unmute Track"
-msgstr ""
+msgstr "Poista raidan mykistys"
 
 #: src/actions/tracklist_selections.c:2264
 msgid "Listen Track"
-msgstr ""
+msgstr "Kuuntele raitaa"
 
 #: src/actions/tracklist_selections.c:2267
 msgid "Unlisten Track"
-msgstr ""
+msgstr "Poista raita kuuntelusta"
 
 #: src/actions/tracklist_selections.c:2271
 msgid "Enable Track"
-msgstr ""
+msgstr "Ota raita käyttöön"
 
 #: src/actions/tracklist_selections.c:2274
 msgid "Disable Track"
-msgstr ""
+msgstr "Poista raita käytöstä"
 
 #: src/actions/tracklist_selections.c:2278
 msgid "Fold Track"
-msgstr ""
+msgstr "Niputa raita"
 
 #: src/actions/tracklist_selections.c:2281
 msgid "Unfold Track"
-msgstr ""
+msgstr "Avaa raidan niputus"
 
 #: src/actions/tracklist_selections.c:2284
 msgid "Change Fader"
@@ -4273,24 +4323,24 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:2293
 msgid "Rename track"
-msgstr ""
+msgstr "Nimeä raita uudelleen"
 
 #: src/actions/tracklist_selections.c:2296
 msgid "Rename lane"
-msgstr ""
+msgstr "Nimeä kaista uudelleen"
 
 #: src/actions/tracklist_selections.c:2299
 #: src/actions/tracklist_selections.c:2365
 msgid "Change color"
-msgstr ""
+msgstr "Vaihda väri"
 
 #: src/actions/tracklist_selections.c:2302
 msgid "Change icon"
-msgstr ""
+msgstr "Vaihda kuvake"
 
 #: src/actions/tracklist_selections.c:2305
 msgid "Change comment"
-msgstr ""
+msgstr "Muuta kommenttia"
 
 #: src/actions/tracklist_selections.c:2308
 #: src/actions/tracklist_selections.c:2368
@@ -4300,52 +4350,52 @@ msgstr ""
 #: src/actions/tracklist_selections.c:2321
 #, c-format
 msgid "Solo %d Tracks"
-msgstr ""
+msgstr "Sooloa %d raitaa"
 
 #: src/actions/tracklist_selections.c:2325
 #, c-format
 msgid "Unsolo %d Tracks"
-msgstr ""
+msgstr "Poista %d raidan soolous"
 
 #: src/actions/tracklist_selections.c:2330
 #, c-format
 msgid "Mute %d Tracks"
-msgstr ""
+msgstr "Mykistä %d raitaa"
 
 #: src/actions/tracklist_selections.c:2334
 #, c-format
 msgid "Unmute %d Tracks"
-msgstr ""
+msgstr "Poista %d raidan mykistys"
 
 #: src/actions/tracklist_selections.c:2339
 #, c-format
 msgid "Listen %d Tracks"
-msgstr ""
+msgstr "Kuuntele %d raitaa"
 
 #: src/actions/tracklist_selections.c:2343
 #, c-format
 msgid "Unlisten %d Tracks"
-msgstr ""
+msgstr "Poista %d raitaa kuuntelusta"
 
 #: src/actions/tracklist_selections.c:2348
 #, c-format
 msgid "Enable %d Tracks"
-msgstr ""
+msgstr "Ota käyttöön %d raitaa"
 
 #: src/actions/tracklist_selections.c:2352
 #, c-format
 msgid "Disable %d Tracks"
-msgstr ""
+msgstr "Poista käytöstä %d raitaa"
 
 #: src/actions/tracklist_selections.c:2357
 #, c-format
 msgid "Fold %d Tracks"
-msgstr ""
+msgstr "Niputa %d raitaa"
 
 #: src/actions/tracklist_selections.c:2361
 #, c-format
 msgid "Unfold %d Tracks"
-msgstr ""
+msgstr "Avaa %d raidan niputus"
 
 #: src/actions/tracklist_selections.c:2384
 msgid "Move Track inside"
@@ -4353,7 +4403,7 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:2388
 msgid "Move Track"
-msgstr ""
+msgstr "Siirrä raita"
 
 #: src/actions/tracklist_selections.c:2398
 #, c-format
@@ -4363,41 +4413,41 @@ msgstr ""
 #: src/actions/tracklist_selections.c:2405
 #, c-format
 msgid "Move %d Tracks"
-msgstr ""
+msgstr "Siirrä %d raitaa"
 
 #: src/actions/tracklist_selections.c:2414
 msgid "Pin Track"
-msgstr ""
+msgstr "Kiinnitä raita"
 
 #: src/actions/tracklist_selections.c:2419
 #, c-format
 msgid "Pin %d Tracks"
-msgstr ""
+msgstr "Kiinnitä %d raitaa"
 
 #: src/actions/tracklist_selections.c:2426
 msgid "Unpin Track"
-msgstr ""
+msgstr "Poista raidan kiinnitys"
 
 #: src/actions/tracklist_selections.c:2431
 #, c-format
 msgid "Unpin %d Tracks"
-msgstr ""
+msgstr "Poista %d raidan kiinnitys"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
-msgstr ""
+msgstr "Toiminnon suorittaminen epäonnistui"
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
-msgstr ""
+msgstr "Skriptin suoritus onnistui"
 
 #: src/guile/guile.c:43
 msgid "Script execution failed"
-msgstr ""
+msgstr "Skriptin suoritus epäonnistui"
 
 #: src/guile/actions/port_connection_action.c:50
 msgid "Failed to connect ports"
-msgstr ""
+msgstr "Porttien yhdistäminen epäonnistui"
 
 #: src/guile/actions/channel_send_action.c:46
 msgid "Failed to create audio send"
@@ -4415,7 +4465,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1110
 #: build/data/org.zrythm.Zrythm.gschema.xml:1164
 msgid "General"
-msgstr ""
+msgstr "Yleiset"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -4559,7 +4609,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:15
 msgid "Language"
-msgstr ""
+msgstr "Kieli"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid ""
@@ -4712,7 +4762,7 @@ msgstr ""
 
 #: resources/ui/scale_selector_window.ui:178
 msgid "Chromatic"
-msgstr ""
+msgstr "Kromaattinen"
 
 #: resources/ui/scale_selector_window.ui:188
 msgid "Ionian (Major)"
@@ -4724,7 +4774,7 @@ msgstr ""
 
 #: resources/ui/scale_selector_window.ui:208
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Harmoninen molli"
 
 #: resources/ui/scale_selector_window.ui:237
 #: resources/ui/chord_selector_window.ui:510
@@ -4739,7 +4789,7 @@ msgstr ""
 #: resources/ui/scale_selector_window.ui:255
 #: resources/ui/chord_selector_window.ui:618 resources/ui/export_dialog.ui:131
 msgid "Custom"
-msgstr ""
+msgstr "Mukautettu"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
@@ -4748,7 +4798,7 @@ msgstr ""
 #: resources/ui/timeline_toolbar.ui:33
 #: build/data/org.zrythm.Zrythm.gschema.xml:397
 msgid "Musical mode"
-msgstr ""
+msgstr "Musiikkitila"
 
 #: resources/ui/timeline_toolbar.ui:63
 msgid "Merge selections"
@@ -4776,7 +4826,7 @@ msgstr ""
 
 #: resources/ui/bug_report_dialog.ui:6
 msgid "Error"
-msgstr ""
+msgstr "Virhe"
 
 #: resources/ui/bug_report_dialog.ui:31
 msgid "What did you do?"
@@ -4907,7 +4957,7 @@ msgstr ""
 
 #: resources/ui/arranger_object_info_dialog.ui:43
 msgid "Owner"
-msgstr ""
+msgstr "Omistaja"
 
 #: resources/ui/arranger_object_info_dialog.ui:90
 msgid "Arranger Object Info"
@@ -4915,11 +4965,11 @@ msgstr ""
 
 #: resources/ui/scripting_window.ui:37
 msgid "Execute"
-msgstr ""
+msgstr "Suorita"
 
 #: resources/ui/scripting_window.ui:60
 msgid "The result will be printed here"
-msgstr ""
+msgstr "Tulos näytetään tässä"
 
 #: resources/ui/chord_key.ui:7
 msgid "Amin 7"
@@ -4938,12 +4988,12 @@ msgstr ""
 #: resources/ui/inspector_master.ui:40 resources/ui/inspector_ap.ui:40
 #: resources/ui/inspector_midi.ui:40
 msgid "Color"
-msgstr ""
+msgstr "Väri"
 
 #: resources/ui/inspector_master.ui:71 resources/ui/inspector_ap.ui:71
 #: resources/ui/inspector_midi.ui:71 resources/ui/snap_grid_popover.ui:239
 msgid "Length"
-msgstr ""
+msgstr "Pituus"
 
 #: resources/ui/inspector_master.ui:82 resources/ui/inspector_ap.ui:82
 #: resources/ui/inspector_midi.ui:82
@@ -4956,7 +5006,7 @@ msgstr ""
 
 #: resources/ui/port_info_dialog.ui:78
 msgid "Range"
-msgstr ""
+msgstr "Väli"
 
 #: resources/ui/port_info_dialog.ui:90
 msgid "Flags"
@@ -5167,7 +5217,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:99
 msgid "Stems"
-msgstr ""
+msgstr "Stemmat"
 
 #: resources/ui/export_dialog.ui:117
 msgid "Song"
@@ -5180,27 +5230,27 @@ msgstr ""
 #: resources/ui/export_dialog.ui:180
 #: build/data/org.zrythm.Zrythm.gschema.xml:826
 msgid "Title"
-msgstr ""
+msgstr "Otsikko"
 
 #: resources/ui/export_dialog.ui:189
 #: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: resources/ui/export_dialog.ui:208
 #: build/data/org.zrythm.Zrythm.gschema.xml:816
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: resources/ui/export_dialog.ui:235
 #: build/data/org.zrythm.Zrythm.gschema.xml:836
 msgid "Format"
-msgstr ""
+msgstr "Tiedostomuoto"
 
 #: resources/ui/export_dialog.ui:246
 #: build/data/org.zrythm.Zrythm.gschema.xml:856
 msgid "Bit depth"
-msgstr ""
+msgstr "Bittisyvyys"
 
 #: resources/ui/export_dialog.ui:263
 #: build/data/org.zrythm.Zrythm.gschema.xml:846
@@ -5213,7 +5263,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:399
 msgid "Export"
-msgstr ""
+msgstr "Vie"
 
 #: resources/ui/plugin_browser.ui:27
 msgid "Collection"
@@ -5257,7 +5307,7 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:116 resources/ui/snap_grid_popover.ui:199
 msgid "Adaptive"
-msgstr ""
+msgstr "Adaptiivinen"
 
 #: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
 msgid "Adaptive length"
@@ -5277,7 +5327,7 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:224
 msgid "Last object"
-msgstr ""
+msgstr "Viimeinen kohde"
 
 #: resources/ui/snap_grid_popover.ui:225
 msgid "Use last created object's length"
@@ -5301,11 +5351,11 @@ msgstr ""
 
 #: data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Digitaalinen äänityöasema"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
@@ -5313,7 +5363,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:248
 msgid "Recent project list"
-msgstr ""
+msgstr "Viimeiset projektit"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "A list of recent projects to be referenced on startup."
@@ -5658,19 +5708,19 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid "Selected ruler display type (BBT/time)."
-msgstr ""
+msgstr "Valittu viivoittimen näyttötyyppi (BBT/aika)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Selected editing tool"
-msgstr ""
+msgstr "Valittu muokkaustyökalu"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:483
 msgid "Selected editing tool."
-msgstr ""
+msgstr "Valittu muokkaustyökalu."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Last used MIDI function"
-msgstr ""
+msgstr "Viimeksi käytetty MIDI-toiminto"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid ""
@@ -5680,7 +5730,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Last used automation function"
-msgstr ""
+msgstr "Viimeksi käytetty automaatiotoiminto"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid ""
@@ -5690,7 +5740,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "Last used audio function"
-msgstr ""
+msgstr "Viimeksi käytetty äänitoiminto"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid ""
@@ -5700,34 +5750,36 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Playhead scroll edges (timeline)"
-msgstr ""
+msgstr "Toistopään vieritysreunat (aikajana)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
-msgstr ""
+msgstr "Vieritetäänkö, kun toistopää saavuttaa näkyvän reunan (aikajana)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid "Follow playhead (timeline)"
-msgstr ""
+msgstr "Seuraa toistopäätä (aikajana)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:508
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
+"Seurataanko toistopäätä. Kun tämä on päällä, toistopää pysyy keskellä "
+"näkyvää aluetta (aikajana)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Playhead scroll edges (editor)"
-msgstr ""
+msgstr "Toistopään vieritysreunat (editori)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
-msgstr ""
+msgstr "Vieritetäänkö, kun toistopää saavuttaa näkyvän reunan (editori)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:517
 msgid "Follow playhead (editor)"
-msgstr ""
+msgstr "Seuraa toistopäätä (editori)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
 msgid ""
@@ -6552,7 +6604,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Default script"
-msgstr ""
+msgstr "Oletusskripti"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1169
 msgid "The default script to use in the scripting window."

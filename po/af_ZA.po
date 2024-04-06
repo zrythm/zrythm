@@ -4,13 +4,14 @@
 # Automatically generated, 2020.
 #
 # Tertius Lourens <mrteexd@outlook.com>, 2020.
+# Neil van der Merwe <neilvdmerwe09@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2021-01-01 00:11+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2024-03-16 20:45+0000\n"
+"Last-Translator: Neil van der Merwe <neilvdmerwe09@gmail.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "af/>\n"
 "Language: af_ZA\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -77,7 +78,7 @@ msgstr "Oudio Groep"
 #: inc/dsp/track.h:172 src/dsp/region.c:468
 #: src/gui/widgets/popovers/automatable_selector_popover.c:342
 msgid "MIDI"
-msgstr "Nootdata"
+msgstr "MIDI"
 
 #: inc/dsp/track.h:173
 #: src/gui/widgets/popovers/automatable_selector_popover.c:323
@@ -2989,7 +2990,7 @@ msgstr ""
 #: src/utils/gtk.c:1012 src/gui/widgets/right_dock_edge.c:102
 #: src/gui/widgets/right_dock_edge.c:127
 msgid "File Browser"
-msgstr ""
+msgstr "Lêer Blaaier"
 
 #: src/utils/gtk.c:1014 src/gui/widgets/right_dock_edge.c:116
 msgid "Chord Preset Browser"
@@ -3269,9 +3270,8 @@ msgid "Undo"
 msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:109
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Poort verbindings"
+msgstr "Monitor Seksie"
 
 #: src/gui/widgets/preferences.c:156
 msgid "All preferences have been successfully reset to initial values"
@@ -3761,7 +3761,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:986
 msgid "Piano Roll"
-msgstr ""
+msgstr "Klavier Rol"
 
 #: src/gui/widgets/track.c:997
 msgid "Show used lanes"
@@ -7813,7 +7813,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1356
 msgid "Scripting"
-msgstr ""
+msgstr "Skriptering"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1361
 #, fuzzy

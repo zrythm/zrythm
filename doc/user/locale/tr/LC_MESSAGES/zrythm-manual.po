@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-02-29 19:34+0900\n"
-"PO-Revision-Date: 2022-05-02 00:24+0000\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"PO-Revision-Date: 2024-03-29 20:45+0000\n"
+"Last-Translator: Semih <semihbrn10@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/tr/>\n"
 "Language: tr\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/tr/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1983,7 +1984,6 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:131
-#, fuzzy
 msgid "Flam"
 msgstr "Flam"
 
@@ -7778,7 +7778,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:56
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:71
 msgid "MIDI FX"
