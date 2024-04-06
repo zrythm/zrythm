@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-02-29 19:34+0900\n"
+"POT-Creation-Date: 2024-04-06 09:30+0900\n"
 "PO-Revision-Date: 2023-02-04 05:21+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/"
@@ -568,12 +568,11 @@ msgstr ""
 msgid "-6dB"
 msgstr ""
 
-#. TRANSLATORS: Pan algorithm
-#: inc/dsp/pan.h:60 src/dsp/curve.c:346 src/utils/ui.c:571
+#: inc/dsp/pan.h:60 src/dsp/curve.c:346
 msgid "Linear"
 msgstr ""
 
-#: inc/dsp/pan.h:61 src/utils/ui.c:572
+#: inc/dsp/pan.h:61
 msgid "Square Root"
 msgstr ""
 
@@ -621,9 +620,9 @@ msgstr "복사하기(_C)"
 msgid "_Paste"
 msgstr "붙여넣기(_P)"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1798 src/actions/actions.c:3316
-#: src/actions/actions.c:3368 src/actions/actions.c:3514
-#: src/actions/actions.c:3636 src/actions/actions.c:3903
+#: inc/utils/gtk.h:54 src/actions/actions.c:1783 src/actions/actions.c:3301
+#: src/actions/actions.c:3353 src/actions/actions.c:3499
+#: src/actions/actions.c:3621 src/actions/actions.c:3888
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "삭제하기(_D)"
@@ -714,8 +713,8 @@ msgstr ""
 msgid "Failed to decompress project file at %s"
 msgstr ""
 
-#: src/project.c:630 src/actions/actions.c:702 src/actions/actions.c:763
-#: src/actions/actions.c:817 src/actions/actions.c:836
+#: src/project.c:630 src/actions/actions.c:687 src/actions/actions.c:748
+#: src/actions/actions.c:802 src/actions/actions.c:821
 #: src/gui/widgets/main_window.c:120
 #: src/project/project_init_flow_manager.c:675
 #, fuzzy
@@ -947,11 +946,11 @@ msgstr ""
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/undo_manager.c:188 src/actions/actions.c:997
+#: src/actions/undo_manager.c:188 src/actions/actions.c:982
 msgid "Failed to undo action"
 msgstr ""
 
-#: src/actions/undo_manager.c:238 src/actions/actions.c:993
+#: src/actions/undo_manager.c:238 src/actions/actions.c:978
 msgid "Failed to redo action"
 msgstr ""
 
@@ -1016,18 +1015,18 @@ msgstr ""
 "<a href=\"%s\">GNU Guile</a>을 사용한 스크립팅 확장성은 %s 설치에서 활성화되"
 "지 않습니다."
 
-#: src/actions/actions.c:719
+#: src/actions/actions.c:704
 msgid "Discard Changes?"
 msgstr ""
 
-#: src/actions/actions.c:720
+#: src/actions/actions.c:705
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "현재 프로젝트에 저장하지 않은 변경 사항은 손실됩니다. 계속하나요?"
 
-#: src/actions/actions.c:723 src/actions/actions.c:784
-#: src/actions/actions.c:1797 src/actions/actions.c:3315
-#: src/actions/actions.c:3367 src/actions/actions.c:3513
-#: src/actions/actions.c:3635 src/actions/actions.c:3902 src/dsp/clip.c:692
+#: src/actions/actions.c:708 src/actions/actions.c:769
+#: src/actions/actions.c:1782 src/actions/actions.c:3300
+#: src/actions/actions.c:3352 src/actions/actions.c:3498
+#: src/actions/actions.c:3620 src/actions/actions.c:3887 src/dsp/clip.c:692
 #: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
 #: src/gui/widgets/plugin_properties_expander.c:79
@@ -1045,12 +1044,12 @@ msgstr "현재 프로젝트에 저장하지 않은 변경 사항은 손실됩니
 msgid "_Cancel"
 msgstr "취소(_C)"
 
-#: src/actions/actions.c:723 src/actions/actions.c:784
+#: src/actions/actions.c:708 src/actions/actions.c:769
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr ""
 
-#: src/actions/actions.c:724 src/actions/actions.c:785
+#: src/actions/actions.c:709 src/actions/actions.c:770
 #: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
@@ -1058,38 +1057,38 @@ msgstr ""
 msgid "_Save"
 msgstr "저장(_S)"
 
-#: src/actions/actions.c:779 src/gui/widgets/main_window.c:148
+#: src/actions/actions.c:764 src/gui/widgets/main_window.c:148
 #, fuzzy
 msgid "Save Changes?"
 msgstr "상태 저장"
 
-#: src/actions/actions.c:780
+#: src/actions/actions.c:765
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
 
-#: src/actions/actions.c:855
+#: src/actions/actions.c:840
 msgid "Save Project"
 msgstr "프로젝트 저장"
 
-#: src/actions/actions.c:888
+#: src/actions/actions.c:873
 msgid "Export routing graph"
 msgstr "라우팅 그래프 내보내기"
 
-#: src/actions/actions.c:889
+#: src/actions/actions.c:874
 msgid "Image (PNG)"
 msgstr "이미지 (PNG)"
 
-#: src/actions/actions.c:889
+#: src/actions/actions.c:874
 msgid "Image (SVG)"
 msgstr "이미지 (SVG)"
 
-#: src/actions/actions.c:889
+#: src/actions/actions.c:874
 msgid "Dot graph"
 msgstr "점 그래프"
 
-#: src/actions/actions.c:894
+#: src/actions/actions.c:879
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1098,83 +1097,83 @@ msgstr ""
 "그래프를 <a href=\"%s\">%s</a>(으)로 내보냄 \n"
 "내보낼 형식 선택"
 
-#: src/actions/actions.c:941
+#: src/actions/actions.c:926
 msgid "Graph exported"
 msgstr "내보낸 그래프"
 
-#: src/actions/actions.c:969 src/guile/actions/undo_manager.c:53
+#: src/actions/actions.c:954 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
 msgstr "실행 취소 실패"
 
-#: src/actions/actions.c:1032 src/guile/actions/undo_manager.c:76
+#: src/actions/actions.c:1017 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
 msgstr "재실행 실패"
 
-#: src/actions/actions.c:1069 src/actions/actions.c:1082
-#: src/actions/actions.c:1304
+#: src/actions/actions.c:1054 src/actions/actions.c:1067
+#: src/actions/actions.c:1289
 msgid "Failed to delete selections"
 msgstr "선택 항목 삭제 실패"
 
-#: src/actions/actions.c:1120
+#: src/actions/actions.c:1105
 msgid "Selections copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1141
+#: src/actions/actions.c:1126
 msgid "Plugins copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1159
+#: src/actions/actions.c:1144
 msgid "Tracks copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1176
+#: src/actions/actions.c:1161
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "%s 재설정 실패"
 
-#: src/actions/actions.c:1191
+#: src/actions/actions.c:1176
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1256
+#: src/actions/actions.c:1241
 msgid "Can't paste incompatible data"
 msgstr "호환되지 않는 데이터를 붙여넣을 수 없음"
 
-#: src/actions/actions.c:1329
+#: src/actions/actions.c:1314
 msgid "Failed to duplicate selections"
 msgstr "선택 항목 복제 실패"
 
-#: src/actions/actions.c:1543
+#: src/actions/actions.c:1528
 msgid "Failed to unbind"
 msgstr "바인딩 해제 실패"
 
-#: src/actions/actions.c:1577 src/actions/actions.c:2036
-#: src/actions/actions.c:2063
+#: src/actions/actions.c:1562 src/actions/actions.c:2021
+#: src/actions/actions.c:2048
 msgid "Failed to quantize"
 msgstr "양자화 실패"
 
-#: src/actions/actions.c:1647 src/dsp/track.c:3455
+#: src/actions/actions.c:1632 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
 msgid "Failed to create track"
 msgstr "트랙 만들기 실패"
 
-#: src/actions/actions.c:1699
+#: src/actions/actions.c:1684
 msgid "Failed to duplicate tracks"
 msgstr "트랙 복제 실패"
 
-#: src/actions/actions.c:1774 src/actions/actions.c:1820
+#: src/actions/actions.c:1759 src/actions/actions.c:1805
 msgid "Failed to delete tracks"
 msgstr "트랙 삭제 실패"
 
-#: src/actions/actions.c:1792
+#: src/actions/actions.c:1777
 #, fuzzy
 msgid "Delete Tracks?"
 msgstr "트랙 삭제"
 
-#: src/actions/actions.c:1793
+#: src/actions/actions.c:1778
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1182,172 +1181,172 @@ msgstr ""
 "선택한 트랙에 인스턴스화되지 않은 플러그인이 포함되어 있습니다. 삭제하면 되돌"
 "릴 수 없으며 실행 취소 내역이 지워집니다. 삭제를 계속하겠습니까?"
 
-#: src/actions/actions.c:1852
+#: src/actions/actions.c:1837
 msgid "Failed to pin/unpin tracks"
 msgstr "트랙 고정/고정 해제 실패"
 
-#: src/actions/actions.c:1863
+#: src/actions/actions.c:1848
 msgid "Failed to solo tracks"
 msgstr "트랙 솔로 실패"
 
-#: src/actions/actions.c:1874
+#: src/actions/actions.c:1859
 msgid "Failed to unsolo tracks"
 msgstr "트랙 솔로 해제 실패"
 
-#: src/actions/actions.c:1885
+#: src/actions/actions.c:1870
 msgid "Failed to mute tracks"
 msgstr "트랙 음소거 실패"
 
-#: src/actions/actions.c:1896
+#: src/actions/actions.c:1881
 msgid "Failed to unmute tracks"
 msgstr "트랙 음소거 해제 실패"
 
-#: src/actions/actions.c:1907
+#: src/actions/actions.c:1892
 msgid "Failed to listen tracks"
 msgstr "트랙 듣기 실패"
 
-#: src/actions/actions.c:1918
+#: src/actions/actions.c:1903
 msgid "Failed to unlisten tracks"
 msgstr "트랙 듣기 해제 실패"
 
-#: src/actions/actions.c:1929
+#: src/actions/actions.c:1914
 msgid "Failed to enable tracks"
 msgstr "트랙 활성화 실패"
 
-#: src/actions/actions.c:1940
+#: src/actions/actions.c:1925
 msgid "Failed to disable tracks"
 msgstr "트랙 비활성화 실패"
 
-#: src/actions/actions.c:2078
+#: src/actions/actions.c:2063
 #, fuzzy
 msgid "Invalid Selection For Quantize"
 msgstr "잘못된 이름"
 
-#: src/actions/actions.c:2079
+#: src/actions/actions.c:2064
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr "타임라인 또는 편집기를 먼저 선택해야 합니다. 현재 선택은 %s"
 
-#: src/actions/actions.c:2146
+#: src/actions/actions.c:2131
 msgid "Failed to mute selections"
 msgstr "선택 항목 음소거 실패"
 
-#: src/actions/actions.c:2159
+#: src/actions/actions.c:2144
 msgid "No regions selected"
 msgstr "선택한 지역 없음"
 
-#: src/actions/actions.c:2165
+#: src/actions/actions.c:2150
 msgid "Selections must be on the same lane"
 msgstr "선택 항목은 동일한 레인에 있어야 함"
 
-#: src/actions/actions.c:2170
+#: src/actions/actions.c:2155
 msgid "Cannot merge looped regions"
 msgstr "루프 영역을 병합할 수 없음"
 
-#: src/actions/actions.c:2184
+#: src/actions/actions.c:2169
 msgid "Failed to merge selections"
 msgstr "선택 항목 병합 실패"
 
-#: src/actions/actions.c:2262
+#: src/actions/actions.c:2247
 msgid "Failed to insert silence"
 msgstr "무음 삽입 실패"
 
-#: src/actions/actions.c:2279
+#: src/actions/actions.c:2264
 msgid "Failed to remove range"
 msgstr "범위 제거 실패"
 
-#: src/actions/actions.c:2355 src/actions/arranger_selections.c:538
+#: src/actions/actions.c:2340 src/actions/arranger_selections.c:538
 #: src/gui/widgets/dialogs/midi_function_dialog.c:246
 msgid "Failed to apply MIDI function"
 msgstr "MIDI 기능 적용 실패"
 
-#: src/actions/actions.c:2387 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2372 src/actions/arranger_selections.c:570
 msgid "Failed to apply automation function"
 msgstr "자동화 기능 적용 실패"
 
-#: src/actions/actions.c:2427 src/actions/actions.c:2980
+#: src/actions/actions.c:2412 src/actions/actions.c:2965
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr "오디오 기능 적용 실패"
 
-#: src/actions/actions.c:2443
+#: src/actions/actions.c:2428
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "유효한 이름을 입력하세요."
 
-#: src/actions/actions.c:2581
+#: src/actions/actions.c:2566
 #, fuzzy
 msgid "Pitch Ratio"
 msgstr "피치"
 
-#: src/actions/actions.c:2662
+#: src/actions/actions.c:2647
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "트랙 이름"
 
-#: src/actions/actions.c:2681
+#: src/actions/actions.c:2666
 msgid "Object name"
 msgstr "객체 이름"
 
-#: src/actions/actions.c:2712
+#: src/actions/actions.c:2697
 msgid "An object cannot be created at the selected location."
 msgstr "선택한 위치에 객체를 생성할 수 없습니다."
 
-#: src/actions/actions.c:2746
+#: src/actions/actions.c:2731
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:2774
+#: src/actions/actions.c:2759
 #, fuzzy
 msgid "Region Color"
 msgstr "영역 내용"
 
-#: src/actions/actions.c:2806
+#: src/actions/actions.c:2791
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:2845
+#: src/actions/actions.c:2830
 msgid "Please enter a BPM"
 msgstr "BPM 입력"
 
 #. TODO
-#: src/actions/actions.c:2853 src/dsp/scale.c:517
+#: src/actions/actions.c:2838 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:316 src/gui/widgets/tracklist.c:360
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr "구현되지 않음"
 
-#: src/actions/actions.c:2853
+#: src/actions/actions.c:2838
 #, fuzzy
 msgid "Tap BPM not implemented yet"
 msgstr "작업이 구현되지 않음"
 
-#: src/actions/actions.c:2908
+#: src/actions/actions.c:2893
 msgid "Failed to move selections"
 msgstr "선택 항목 이동 실패"
 
-#: src/actions/actions.c:2924
+#: src/actions/actions.c:2909
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "감지된 BPM: %.2f"
 
-#: src/actions/actions.c:2926
+#: src/actions/actions.c:2911
 msgid "Candidates:"
 msgstr "후보:"
 
-#: src/actions/actions.c:3087
+#: src/actions/actions.c:3072
 msgid "Failed to set curve algorithm"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:3136
+#: src/actions/actions.c:3121
 msgid "Failed to edit fades"
 msgstr "페이드 편집 실패"
 
-#: src/actions/actions.c:3198
+#: src/actions/actions.c:3183
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1355,61 +1354,61 @@ msgstr ""
 "커스텀 사전 설정 팩을 찾을 수 없습니다. 화음 사전 설정 탐색기에서 먼저 사전 "
 "설정 팩을 만드세요."
 
-#: src/actions/actions.c:3269
+#: src/actions/actions.c:3254
 #, fuzzy
 msgid "Failed to create pack"
 msgstr "트랙 만들기 실패"
 
-#: src/actions/actions.c:3281 src/actions/actions.c:3336
+#: src/actions/actions.c:3266 src/actions/actions.c:3321
 msgid "Preset Pack Name"
 msgstr "사전 설정 팩 이름"
 
-#: src/actions/actions.c:3312 src/actions/actions.c:3364
-#: src/actions/actions.c:3632 src/actions/actions.c:3895
+#: src/actions/actions.c:3297 src/actions/actions.c:3349
+#: src/actions/actions.c:3617 src/actions/actions.c:3880
 #, fuzzy
 msgid "Delete?"
 msgstr "삭제하기(_D)"
 
-#: src/actions/actions.c:3313
+#: src/actions/actions.c:3298
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr "이 화음 사전 설정 팩을 제거하겠습니까?"
 
-#: src/actions/actions.c:3365
+#: src/actions/actions.c:3350
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
 msgstr "이 화음 사전 설정 팩을 제거하겠습니까?"
 
-#: src/actions/actions.c:3388
+#: src/actions/actions.c:3373
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
 msgstr "사전 설정 이름"
 
-#: src/actions/actions.c:3408 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3393 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 msgid "Failed to change balance"
 msgstr ""
 
-#: src/actions/actions.c:3430
+#: src/actions/actions.c:3415
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "플러그인 %s 만들기 실패"
 
-#: src/actions/actions.c:3464
+#: src/actions/actions.c:3449
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "색상 변경 실패"
 
-#: src/actions/actions.c:3487 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3472 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr "플러그인 삭제 실패"
 
-#: src/actions/actions.c:3509
+#: src/actions/actions.c:3494
 #, fuzzy
 msgid "Delete Plugins?"
 msgstr "플러그인 삭제"
 
-#: src/actions/actions.c:3510
+#: src/actions/actions.c:3495
 #, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
@@ -1418,36 +1417,36 @@ msgstr ""
 "선택 항목에 인스턴스화되지 않은 플러그인이 포함되어 있습니다. 삭제하면 되돌"
 "릴 수 없으며 실행 취소 내역이 지워집니다. 삭제를 계속하겠습니까?"
 
-#: src/actions/actions.c:3561
+#: src/actions/actions.c:3546
 #, c-format
 msgid "Failed to reset %s"
 msgstr "%s 재설정 실패"
 
-#: src/actions/actions.c:3586
+#: src/actions/actions.c:3571
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "%s에서 %s 연결 해제 실패"
 
-#: src/actions/actions.c:3627
+#: src/actions/actions.c:3612
 msgid "Cannot delete standard bookmark"
 msgstr "표준 북마크를 삭제할 수 없음"
 
-#: src/actions/actions.c:3633
+#: src/actions/actions.c:3618
 #, fuzzy
 msgid "Are you sure you want to delete this bookmark?"
 msgstr "이 북마크를 삭제하겠습니까?"
 
-#: src/actions/actions.c:3826 src/actions/actions.c:3857
+#: src/actions/actions.c:3811 src/actions/actions.c:3842
 msgid "Collection name"
 msgstr "컬렉션 이름"
 
-#: src/actions/actions.c:3898
+#: src/actions/actions.c:3883
 #, fuzzy, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr "이 컬렉션에는 %d 개의 플러그인이 포함되어 있습니다. 삭제하겠습니까?"
 
-#: src/actions/actions.c:4077
+#: src/actions/actions.c:4062
 msgid "Failed to change direct output"
 msgstr "직접 출력 변경 실패"
 
@@ -1514,222 +1513,222 @@ msgstr "파일 %s 저장 실패"
 msgid "Failed to create track at %d"
 msgstr "%d에 트랙 만들기 실패"
 
-#: src/actions/tracklist_selections.c:1828
+#: src/actions/tracklist_selections.c:1829
 msgid "Copy Track inside"
 msgstr "내부에 트랙 복사"
 
-#: src/actions/tracklist_selections.c:1830
+#: src/actions/tracklist_selections.c:1831
 msgid "Copy Track"
 msgstr "트랙 복사"
 
-#: src/actions/tracklist_selections.c:1836
+#: src/actions/tracklist_selections.c:1837
 #, c-format
 msgid "Copy %d Tracks inside"
 msgstr "내부에 %d 트랙 복사"
 
-#: src/actions/tracklist_selections.c:1839
+#: src/actions/tracklist_selections.c:1840
 #, c-format
 msgid "Copy %d Tracks"
 msgstr "%d 트랙 복사"
 
-#: src/actions/tracklist_selections.c:1846
+#: src/actions/tracklist_selections.c:1847
 #, c-format
 msgid "Create %s Track"
 msgstr "%s 트랙 만들기"
 
-#: src/actions/tracklist_selections.c:1851
+#: src/actions/tracklist_selections.c:1852
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d %s 트랙 만들기"
 
-#: src/actions/tracklist_selections.c:1857
+#: src/actions/tracklist_selections.c:1858
 msgid "Delete Track"
 msgstr "트랙 삭제"
 
-#: src/actions/tracklist_selections.c:1862
+#: src/actions/tracklist_selections.c:1863
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "%d 트랙 삭제"
 
-#: src/actions/tracklist_selections.c:1873
+#: src/actions/tracklist_selections.c:1874
 msgid "Solo Track"
 msgstr "솔로 트랙"
 
-#: src/actions/tracklist_selections.c:1875
+#: src/actions/tracklist_selections.c:1876
 msgid "Unsolo Track"
 msgstr "솔로 해제 트랙"
 
-#: src/actions/tracklist_selections.c:1878
+#: src/actions/tracklist_selections.c:1879
 msgid "Solo Lane"
 msgstr "솔로 레인"
 
-#: src/actions/tracklist_selections.c:1880
+#: src/actions/tracklist_selections.c:1881
 msgid "Unsolo Lane"
 msgstr "솔로 해제 레인"
 
-#: src/actions/tracklist_selections.c:1883
+#: src/actions/tracklist_selections.c:1884
 msgid "Mute Track"
 msgstr "음소거 트랙"
 
-#: src/actions/tracklist_selections.c:1885
+#: src/actions/tracklist_selections.c:1886
 msgid "Unmute Track"
 msgstr "음소거 해제 트랙"
 
-#: src/actions/tracklist_selections.c:1888
+#: src/actions/tracklist_selections.c:1889
 msgid "Mute Lane"
 msgstr "음소거 레인"
 
-#: src/actions/tracklist_selections.c:1890
+#: src/actions/tracklist_selections.c:1891
 msgid "Unmute Lane"
 msgstr "음소거 해제 레인"
 
-#: src/actions/tracklist_selections.c:1893
+#: src/actions/tracklist_selections.c:1894
 msgid "Listen Track"
 msgstr "트랙 듣기"
 
-#: src/actions/tracklist_selections.c:1895
+#: src/actions/tracklist_selections.c:1896
 msgid "Unlisten Track"
 msgstr "트랙 듣기 해제"
 
-#: src/actions/tracklist_selections.c:1898
+#: src/actions/tracklist_selections.c:1899
 msgid "Enable Track"
 msgstr "트랙 활성화"
 
-#: src/actions/tracklist_selections.c:1900
+#: src/actions/tracklist_selections.c:1901
 msgid "Disable Track"
 msgstr "트랙 비활성화"
 
-#: src/actions/tracklist_selections.c:1903
+#: src/actions/tracklist_selections.c:1904
 msgid "Fold Track"
 msgstr "트랙 접기"
 
-#: src/actions/tracklist_selections.c:1905
+#: src/actions/tracklist_selections.c:1906
 msgid "Unfold Track"
 msgstr "트랙 펼치기"
 
-#: src/actions/tracklist_selections.c:1908
+#: src/actions/tracklist_selections.c:1909
 #, c-format
 msgid "Change Fader from %.1f to %.1f"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1912
+#: src/actions/tracklist_selections.c:1913
 #, c-format
 msgid "Change Pan from %.1f to %.1f"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1915
-#: src/actions/tracklist_selections.c:1973
+#: src/actions/tracklist_selections.c:1916
+#: src/actions/tracklist_selections.c:1974
 msgid "Change direct out"
 msgstr "직접 변경"
 
-#: src/actions/tracklist_selections.c:1917
+#: src/actions/tracklist_selections.c:1918
 msgid "Rename track"
 msgstr "트랙 이름 바꾸기"
 
-#: src/actions/tracklist_selections.c:1919
+#: src/actions/tracklist_selections.c:1920
 msgid "Rename lane"
 msgstr "레인 이름 바꾸기"
 
-#: src/actions/tracklist_selections.c:1921
-#: src/actions/tracklist_selections.c:1969
+#: src/actions/tracklist_selections.c:1922
+#: src/actions/tracklist_selections.c:1970
 msgid "Change color"
 msgstr "색상 변경"
 
-#: src/actions/tracklist_selections.c:1923
+#: src/actions/tracklist_selections.c:1924
 msgid "Change icon"
 msgstr "아이콘 변경"
 
-#: src/actions/tracklist_selections.c:1925
+#: src/actions/tracklist_selections.c:1926
 msgid "Change comment"
 msgstr "댓글 변경"
 
-#: src/actions/tracklist_selections.c:1927
-#: src/actions/tracklist_selections.c:1971
+#: src/actions/tracklist_selections.c:1928
+#: src/actions/tracklist_selections.c:1972
 msgid "Change MIDI fader mode"
 msgstr "MIDI 페이더 모드 변경"
 
-#: src/actions/tracklist_selections.c:1938
+#: src/actions/tracklist_selections.c:1939
 #, c-format
 msgid "Solo %d Tracks"
 msgstr "%d 트랙 솔로"
 
-#: src/actions/tracklist_selections.c:1941
+#: src/actions/tracklist_selections.c:1942
 #, c-format
 msgid "Unsolo %d Tracks"
 msgstr "%d 트랙 솔로 해제"
 
-#: src/actions/tracklist_selections.c:1944
+#: src/actions/tracklist_selections.c:1945
 #, c-format
 msgid "Mute %d Tracks"
 msgstr "%d 트랙 음소거"
 
-#: src/actions/tracklist_selections.c:1947
+#: src/actions/tracklist_selections.c:1948
 #, c-format
 msgid "Unmute %d Tracks"
 msgstr "%d 트랙 음소거 해제"
 
-#: src/actions/tracklist_selections.c:1951
+#: src/actions/tracklist_selections.c:1952
 #, c-format
 msgid "Listen %d Tracks"
 msgstr "%d 트랙 듣기"
 
-#: src/actions/tracklist_selections.c:1954
+#: src/actions/tracklist_selections.c:1955
 #, c-format
 msgid "Unlisten %d Tracks"
 msgstr "%d 트랙 듣기 해제"
 
-#: src/actions/tracklist_selections.c:1958
+#: src/actions/tracklist_selections.c:1959
 #, c-format
 msgid "Enable %d Tracks"
 msgstr "%d 트랙 활성화"
 
-#: src/actions/tracklist_selections.c:1961
+#: src/actions/tracklist_selections.c:1962
 #, c-format
 msgid "Disable %d Tracks"
 msgstr "%d 트랙 비활성화"
 
-#: src/actions/tracklist_selections.c:1964
+#: src/actions/tracklist_selections.c:1965
 #, c-format
 msgid "Fold %d Tracks"
 msgstr "%d 트랙 접기"
 
-#: src/actions/tracklist_selections.c:1967
+#: src/actions/tracklist_selections.c:1968
 #, c-format
 msgid "Unfold %d Tracks"
 msgstr "%d 트랙 펼치기"
 
-#: src/actions/tracklist_selections.c:1984
+#: src/actions/tracklist_selections.c:1985
 msgid "Move Track inside"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1988
+#: src/actions/tracklist_selections.c:1989
 msgid "Move Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1996
+#: src/actions/tracklist_selections.c:1997
 #, c-format
 msgid "Move %d Tracks inside"
 msgstr "내부로 %d 트랙 이동"
 
-#: src/actions/tracklist_selections.c:2001
+#: src/actions/tracklist_selections.c:2002
 #, c-format
 msgid "Move %d Tracks"
 msgstr "%d 트랙 이동"
 
-#: src/actions/tracklist_selections.c:2008
+#: src/actions/tracklist_selections.c:2009
 msgid "Pin Track"
 msgstr "고정 트랙"
 
-#: src/actions/tracklist_selections.c:2013
+#: src/actions/tracklist_selections.c:2014
 #, c-format
 msgid "Pin %d Tracks"
 msgstr "고정 %d 트랙"
 
-#: src/actions/tracklist_selections.c:2018
+#: src/actions/tracklist_selections.c:2019
 msgid "Unpin Track"
 msgstr "고정 해제 트랙"
 
-#: src/actions/tracklist_selections.c:2023
+#: src/actions/tracklist_selections.c:2024
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "고정 해제 %d 트랙"
@@ -1761,84 +1760,84 @@ msgstr "편곡자 선택에 삭제할 수 없는 객체가 포함되어 있음"
 msgid "Cannot rename selected object(s)"
 msgstr "선택한 객체의 이름을 바꿀 수 없음"
 
-#: src/actions/arranger_selections.c:736
+#: src/actions/arranger_selections.c:729
 msgid "Attempted to resize unresizable objects"
 msgstr "크기를 조정할 수 없는 객체의 크기를 조정하려고 했음"
 
-#: src/actions/arranger_selections.c:750
+#: src/actions/arranger_selections.c:743
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr "%s 크기 조정을 수행할 수 없음 - 선택 항목에 루프 객체가 포함되어 있음"
 
-#: src/actions/arranger_selections.c:765
+#: src/actions/arranger_selections.c:757
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 "%s 크기 조정을 수행할 수 없음 - 선택 항목에 루프할 수 없는 객체가 포함되어 있"
 "음"
 
-#: src/actions/arranger_selections.c:2910
+#: src/actions/arranger_selections.c:2946
 msgid "Create timeline selections"
 msgstr "타임라인 선택 만들기"
 
-#: src/actions/arranger_selections.c:2912
+#: src/actions/arranger_selections.c:2948
 msgid "Create audio selections"
 msgstr "오디오 선택 만들기"
 
-#: src/actions/arranger_selections.c:2914
+#: src/actions/arranger_selections.c:2950
 msgid "Create automation selections"
 msgstr "자동화 선택 만들기"
 
-#: src/actions/arranger_selections.c:2916
+#: src/actions/arranger_selections.c:2952
 msgid "Create chord selections"
 msgstr "화음 선택 만들기"
 
-#: src/actions/arranger_selections.c:2918
+#: src/actions/arranger_selections.c:2954
 msgid "Create MIDI selections"
 msgstr "MIDI 선택 만들기"
 
-#: src/actions/arranger_selections.c:2923
+#: src/actions/arranger_selections.c:2959
 msgid "Delete arranger selections"
 msgstr "편곡자 선택 삭제"
 
-#: src/actions/arranger_selections.c:2925
+#: src/actions/arranger_selections.c:2961
 msgid "Duplicate arranger selections"
 msgstr "편곡자 선택 복제"
 
-#: src/actions/arranger_selections.c:2927
+#: src/actions/arranger_selections.c:2963
 msgid "Move arranger selections"
 msgstr "편곡자 선택 이동"
 
-#: src/actions/arranger_selections.c:2929
+#: src/actions/arranger_selections.c:2965
 msgid "Link arranger selections"
 msgstr "편곡자 선택 링크"
 
-#: src/actions/arranger_selections.c:2931
+#: src/actions/arranger_selections.c:2967
 msgid "Record arranger selections"
 msgstr "편곡자 선택 녹음"
 
-#: src/actions/arranger_selections.c:2933
+#: src/actions/arranger_selections.c:2969
 msgid "Edit arranger selections"
 msgstr "편곡자 선택 편집"
 
-#: src/actions/arranger_selections.c:2935
+#: src/actions/arranger_selections.c:2971
 msgid "Automation fill"
 msgstr "자동화 채우기"
 
-#: src/actions/arranger_selections.c:2937
+#: src/actions/arranger_selections.c:2973
 msgid "Split arranger selections"
 msgstr "편곡자 선택 분할"
 
-#: src/actions/arranger_selections.c:2939
+#: src/actions/arranger_selections.c:2975
 msgid "Merge arranger selections"
 msgstr "편곡자 선택 병합"
 
-#: src/actions/arranger_selections.c:2945
+#: src/actions/arranger_selections.c:2981
 #, fuzzy, c-format
 msgid "Resize arranger selections - %s"
 msgstr "편곡자 선택 크기 조정"
 
-#: src/actions/arranger_selections.c:2948
+#: src/actions/arranger_selections.c:2984
 msgid "Quantize arranger selections"
 msgstr "편곡자 선택 양자화"
 
@@ -1980,8 +1979,8 @@ msgstr "%d 플러그인 복사"
 msgid "Change Load Behavior for %s"
 msgstr ""
 
-#: src/dsp/modulator_track.c:58 src/utils/gtk.c:998
-#: src/gui/widgets/bot_dock_edge.c:216
+#: src/dsp/modulator_track.c:58 src/utils/gtk.c:974
+#: src/gui/widgets/bot_dock_edge.c:218
 #: src/gui/widgets/popovers/automatable_selector_popover.c:329
 msgid "Modulators"
 msgstr "변조기"
@@ -2839,11 +2838,7 @@ msgstr "채널 보내기 작업을 수행하지 못했습니다: %s"
 msgid "soxr_process() error: %s"
 msgstr ""
 
-#: src/utils/ui.c:573
-msgid "Sine (Equal Power)"
-msgstr "사인 (동일한 성능)"
-
-#: src/utils/ui.c:855
+#: src/utils/ui.c:755
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -2851,7 +2846,7 @@ msgid ""
 msgstr ""
 "선택한 현지 언어 (%s)을 사용할 수 없습니다. 먼저 설치하고 %s을(를) 다시 시작"
 
-#: src/utils/ui.c:861
+#: src/utils/ui.c:761
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2868,11 +2863,11 @@ msgstr ""
 "2. <b>locale-gen</b>을 루트로 실행 \n"
 "3. %s 재시작"
 
-#: src/utils/ui.c:886
+#: src/utils/ui.c:786
 msgid "Experimental Feature"
 msgstr ""
 
-#: src/utils/ui.c:887
+#: src/utils/ui.c:787
 msgid ""
 "BPM and time signature automation is an experimental feature. Using it may "
 "corrupt your project."
@@ -2914,57 +2909,57 @@ msgstr "오류: %s"
 #. FIXME the names should be fetched from the
 #. * tab labels instead of repeating the names
 #. * here
-#: src/utils/gtk.c:996
+#: src/utils/gtk.c:972
 msgid "Mixer"
 msgstr "믹서"
 
-#: src/utils/gtk.c:1000
+#: src/utils/gtk.c:976
 msgid "Chord Pad"
 msgstr "화음 패드"
 
-#: src/utils/gtk.c:1001
+#: src/utils/gtk.c:977
 msgid "Editor"
 msgstr "편집기"
 
-#: src/utils/gtk.c:1003 src/gui/widgets/left_dock_edge.c:176
+#: src/utils/gtk.c:979 src/gui/widgets/left_dock_edge.c:176
 msgid "Track Inspector"
 msgstr "트랙 검사기"
 
-#: src/utils/gtk.c:1006 src/gui/widgets/left_dock_edge.c:186
+#: src/utils/gtk.c:982 src/gui/widgets/left_dock_edge.c:186
 msgid "Plugin Inspector"
 msgstr "플러그인 검사기"
 
-#: src/utils/gtk.c:1009 src/gui/widgets/right_dock_edge.c:93
+#: src/utils/gtk.c:985 src/gui/widgets/right_dock_edge.c:93
 msgid "Plugin Browser"
 msgstr "플러그인 탐색기"
 
-#: src/utils/gtk.c:1012 src/gui/widgets/right_dock_edge.c:102
-#: src/gui/widgets/right_dock_edge.c:127
+#: src/utils/gtk.c:988 src/gui/widgets/right_dock_edge.c:102
+#: src/gui/widgets/right_dock_edge.c:129
 msgid "File Browser"
 msgstr "파일 탐색기"
 
-#: src/utils/gtk.c:1014 src/gui/widgets/right_dock_edge.c:116
+#: src/utils/gtk.c:990 src/gui/widgets/right_dock_edge.c:118
 msgid "Chord Preset Browser"
 msgstr "화음 사전 설정 탐색기"
 
-#: src/utils/gtk.c:1017 src/gui/widgets/track.c:348
+#: src/utils/gtk.c:993 src/gui/widgets/track.c:348
 #: src/gui/widgets/monitor_section.c:29
 msgid "Monitor"
 msgstr "모니터"
 
-#: src/utils/gtk.c:1019 src/gui/widgets/main_notebook.c:108
+#: src/utils/gtk.c:995 src/gui/widgets/main_notebook.c:108
 msgid "Timeline"
 msgstr "타임라인"
 
-#: src/utils/gtk.c:1022 src/gui/widgets/main_notebook.c:113
+#: src/utils/gtk.c:998 src/gui/widgets/main_notebook.c:113
 msgid "MIDI CC Bindings"
 msgstr "MIDI CC 바인딩"
 
-#: src/utils/gtk.c:1025 src/gui/widgets/main_notebook.c:111
+#: src/utils/gtk.c:1001 src/gui/widgets/main_notebook.c:111
 msgid "Port Connections"
 msgstr "포트 연결"
 
-#: src/utils/gtk.c:1027
+#: src/utils/gtk.c:1003
 msgid "Scenes"
 msgstr "장면"
 
@@ -3025,21 +3020,21 @@ msgstr "플러그인 탐색기"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1022
+#: src/gui/backend/event_manager.c:1016
 #, fuzzy, c-format
 msgid "%d new plugins detected"
 msgstr "선택한 지역 없음"
 
-#: src/gui/backend/event_manager.c:1095
+#: src/gui/backend/event_manager.c:1089
 #, fuzzy
 msgid "Plugin collections updated."
 msgstr "플러그인 탐색기 컬렉션"
 
-#: src/gui/backend/event_manager.c:1137
+#: src/gui/backend/event_manager.c:1131
 msgid "Plugin preset saved."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1140
+#: src/gui/backend/event_manager.c:1134
 msgid "Plugin preset loaded."
 msgstr ""
 
@@ -3052,20 +3047,20 @@ msgstr "재실행 실패"
 msgid "Failed to paste selections"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:1666
+#: src/gui/backend/arranger_object.c:1682
 msgid "Failed to edit object"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:3042
+#: src/gui/backend/arranger_object.c:3061
 #, c-format
 msgid "Invalid object name %s"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:3068
+#: src/gui/backend/arranger_object.c:3087
 msgid "Failed to rename object"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:254
+#: src/gui/widgets/inspector_port.c:108 src/gui/widgets/fader.c:351
 #: src/gui/widgets/preferences.c:339 src/gui/widgets/modulator_inner.c:130
 #: src/gui/widgets/modulator_macro.c:129 src/gui/widgets/balance_control.c:253
 msgid "Reset"
@@ -3074,7 +3069,7 @@ msgstr ""
 #: src/gui/widgets/inspector_port.c:117 src/gui/widgets/modulator_inner.c:138
 #: src/gui/widgets/modulator_macro.c:137
 #: src/gui/widgets/automation_arranger.c:198
-#: src/gui/widgets/timeline_arranger.c:980 src/gui/widgets/midi_arranger.c:435
+#: src/gui/widgets/timeline_arranger.c:978 src/gui/widgets/midi_arranger.c:435
 msgid "View info"
 msgstr ""
 
@@ -3178,18 +3173,18 @@ msgstr ""
 msgid "Destination"
 msgstr ""
 
-#: src/gui/widgets/fader.c:299 src/gui/widgets/item_factory.c:296
+#: src/gui/widgets/fader.c:396 src/gui/widgets/item_factory.c:296
 #: src/gui/widgets/item_factory.c:316
 msgid "Invalid value"
 msgstr "잘못된 값"
 
-#: src/gui/widgets/fader.c:332
+#: src/gui/widgets/fader.c:429
 #, fuzzy
 msgid "Fader Value"
 msgstr "페이더 볼륨"
 
 #. set name and icon
-#: src/gui/widgets/fader.c:430 src/gui/widgets/fader_controls_expander.c:39
+#: src/gui/widgets/fader.c:527 src/gui/widgets/fader_controls_expander.c:39
 msgid "Fader"
 msgstr ""
 
@@ -3213,7 +3208,7 @@ msgstr "다시 하기"
 msgid "Undo"
 msgstr "실행 취소"
 
-#: src/gui/widgets/right_dock_edge.c:109
+#: src/gui/widgets/right_dock_edge.c:111
 msgid "Monitor Section"
 msgstr "모니터 섹션"
 
@@ -3452,7 +3447,7 @@ msgstr "파일이 선택되지 않음"
 msgid "Search..."
 msgstr "검색..."
 
-#: src/gui/widgets/drag_dest_box.c:262 src/gui/widgets/timeline_arranger.c:1354
+#: src/gui/widgets/drag_dest_box.c:262 src/gui/widgets/timeline_arranger.c:1352
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
 #, fuzzy
 msgid "Failed to import files"
@@ -3551,7 +3546,7 @@ msgstr ""
 msgid "Unfold"
 msgstr "펼치기"
 
-#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2295
+#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2292
 msgid "Marker name"
 msgstr ""
 
@@ -3600,8 +3595,8 @@ msgid "Rename..."
 msgstr ""
 
 #: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:201
-#: src/gui/widgets/channel_slot.c:623 src/gui/widgets/timeline_arranger.c:983
-#: src/gui/widgets/timeline_arranger.c:1142
+#: src/gui/widgets/channel_slot.c:623 src/gui/widgets/timeline_arranger.c:981
+#: src/gui/widgets/timeline_arranger.c:1140
 msgid "Edit"
 msgstr ""
 
@@ -3628,7 +3623,7 @@ msgstr "선택"
 msgid "Quick bounce"
 msgstr ""
 
-#: src/gui/widgets/track.c:799 src/gui/widgets/timeline_arranger.c:1128
+#: src/gui/widgets/track.c:799 src/gui/widgets/timeline_arranger.c:1126
 msgid "Bounce..."
 msgstr ""
 
@@ -3729,7 +3724,7 @@ msgstr ""
 msgid "_Load"
 msgstr ""
 
-#: src/gui/widgets/plugin_properties_expander.c:117 src/plugins/plugin.c:451
+#: src/gui/widgets/plugin_properties_expander.c:117 src/plugins/plugin.c:449
 #: src/plugins/plugin_gtk.c:155
 msgid "Failed to apply preset"
 msgstr ""
@@ -3762,138 +3757,138 @@ msgstr ""
 msgid "Load preset"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1332
+#: src/gui/widgets/arranger.c:1329
 #, fuzzy
 msgid "Create Object"
 msgstr "객체 만들기"
 
-#: src/gui/widgets/arranger.c:1335
+#: src/gui/widgets/arranger.c:1332
 #, fuzzy
 msgid "Create"
 msgstr "만들기(_C)"
 
-#: src/gui/widgets/arranger.c:1633 src/gui/widgets/arranger.c:1649
-#: src/gui/widgets/arranger.c:1690 src/gui/widgets/arranger.c:1749
-#: src/gui/widgets/arranger.c:1767
+#: src/gui/widgets/arranger.c:1629 src/gui/widgets/arranger.c:1645
+#: src/gui/widgets/arranger.c:1686 src/gui/widgets/arranger.c:1745
+#: src/gui/widgets/arranger.c:1763
 msgid "Failed to move selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:1706 src/gui/widgets/arranger.c:3893
+#: src/gui/widgets/arranger.c:1702 src/gui/widgets/arranger.c:3863
 msgid "Failed to move chords"
 msgstr "화음 이동 실패"
 
-#: src/gui/widgets/arranger.c:2016 src/gui/widgets/timeline_arranger.c:309
+#: src/gui/widgets/arranger.c:2014 src/gui/widgets/timeline_arranger.c:309
 #, fuzzy
 msgid "Failed to create region"
 msgstr "플러그인 만들기 실패"
 
-#: src/gui/widgets/arranger.c:2322
+#: src/gui/widgets/arranger.c:2318
 msgid "Automation value"
 msgstr "자동화 값"
 
-#: src/gui/widgets/arranger.c:2342 src/gui/widgets/arranger.c:2363
+#: src/gui/widgets/arranger.c:2338 src/gui/widgets/arranger.c:2359
 #, fuzzy
 msgid "Cannot Resize"
 msgstr "라우팅할 수 없음"
 
-#: src/gui/widgets/arranger.c:2343
+#: src/gui/widgets/arranger.c:2339
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2364
+#: src/gui/widgets/arranger.c:2360
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3500
+#: src/gui/widgets/arranger.c:3470
 msgid "Failed to delete selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3521 src/gui/widgets/arranger.c:4043
+#: src/gui/widgets/arranger.c:3491 src/gui/widgets/arranger.c:4013
 msgid "Failed to edit selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3564
+#: src/gui/widgets/arranger.c:3534
 msgid "Failed to move automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3584
+#: src/gui/widgets/arranger.c:3554
 msgid "Failed to duplicate automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3604 src/gui/widgets/arranger.c:3930
-#: src/gui/widgets/arranger.c:4313
+#: src/gui/widgets/arranger.c:3574 src/gui/widgets/arranger.c:3900
+#: src/gui/widgets/arranger.c:4283
 msgid "Failed to create objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3621
+#: src/gui/widgets/arranger.c:3591
 msgid "Failed to fill automation"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3648 src/gui/widgets/arranger.c:3686
-#: src/gui/widgets/arranger.c:3703 src/gui/widgets/timeline_arranger.c:852
+#: src/gui/widgets/arranger.c:3618 src/gui/widgets/arranger.c:3656
+#: src/gui/widgets/arranger.c:3673 src/gui/widgets/timeline_arranger.c:850
 msgid "Failed to edit selections"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3731 src/gui/widgets/arranger.c:3750
+#: src/gui/widgets/arranger.c:3701 src/gui/widgets/arranger.c:3720
 msgid "Failed to resize objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3758 src/gui/widgets/arranger.c:3797
+#: src/gui/widgets/arranger.c:3728 src/gui/widgets/arranger.c:3767
 msgid "Failed to move MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3815
+#: src/gui/widgets/arranger.c:3785
 msgid "Failed to duplicate MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3834
+#: src/gui/widgets/arranger.c:3804
 msgid "Failed to create MIDI notes"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3911
+#: src/gui/widgets/arranger.c:3881
 msgid "Failed to duplicate chords"
 msgstr "화음 복제 실패"
 
-#: src/gui/widgets/arranger.c:3991 src/gui/widgets/arranger.c:4217
+#: src/gui/widgets/arranger.c:3961 src/gui/widgets/arranger.c:4187
 msgid "Failed resizing selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4069
+#: src/gui/widgets/arranger.c:4039
 msgid "Failed to edit timeline objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4088 src/gui/widgets/arranger.c:4107
+#: src/gui/widgets/arranger.c:4058 src/gui/widgets/arranger.c:4077
 msgid "Failed to resize timeline objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4124
+#: src/gui/widgets/arranger.c:4094
 msgid "Failed to resize selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4143
+#: src/gui/widgets/arranger.c:4113
 msgid "Failed setting fade in position"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4161 src/gui/widgets/arranger.c:4184
-#: src/gui/widgets/arranger.c:4200
+#: src/gui/widgets/arranger.c:4131 src/gui/widgets/arranger.c:4154
+#: src/gui/widgets/arranger.c:4170
 msgid "Failed resizing selections"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4265
+#: src/gui/widgets/arranger.c:4235
 msgid "Failed to move objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4295
+#: src/gui/widgets/arranger.c:4265
 msgid "Failed to link or copy selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4346
+#: src/gui/widgets/arranger.c:4316
 msgid "Failed to split selection"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4355
+#: src/gui/widgets/arranger.c:4325
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -4037,7 +4032,7 @@ msgstr "편집기 보기"
 msgid "Mixer view"
 msgstr "믹서 보기"
 
-#: src/gui/widgets/bot_dock_edge.c:217
+#: src/gui/widgets/bot_dock_edge.c:219
 msgid "Chord pad"
 msgstr "화음 패드"
 
@@ -4063,24 +4058,24 @@ msgstr "음계"
 msgid "Device Inputs"
 msgstr "입력"
 
-#: src/gui/widgets/ext_input_selection_dropdown.c:240
+#: src/gui/widgets/ext_input_selection_dropdown.c:262
 msgid "All MIDI Inputs"
 msgstr "모든 MIDI 입력"
 
-#: src/gui/widgets/ext_input_selection_dropdown.c:241
+#: src/gui/widgets/ext_input_selection_dropdown.c:263
 #, fuzzy
 msgid "No Inputs"
 msgstr "입력"
 
-#: src/gui/widgets/ext_input_selection_dropdown.c:245
+#: src/gui/widgets/ext_input_selection_dropdown.c:267
 msgid "All Audio Inputs"
 msgstr "모든 오디오 입력"
 
-#: src/gui/widgets/ext_input_selection_dropdown.c:247
+#: src/gui/widgets/ext_input_selection_dropdown.c:269
 msgid "No left input"
 msgstr "왼쪽 입력 없음"
 
-#: src/gui/widgets/ext_input_selection_dropdown.c:247
+#: src/gui/widgets/ext_input_selection_dropdown.c:269
 msgid "No right input"
 msgstr "오른쪽 입력 없음"
 
@@ -4116,7 +4111,7 @@ msgid "Mono"
 msgstr "모노"
 
 #. add gain port
-#: src/gui/widgets/track_input_expander.c:220 src/plugins/plugin.c:287
+#: src/gui/widgets/track_input_expander.c:220 src/plugins/plugin.c:285
 msgid "Gain"
 msgstr "게인"
 
@@ -4275,18 +4270,18 @@ msgstr ""
 msgid "MIDI Out"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1342 src/gui/widgets/bot_bar.c:160
+#: src/gui/widgets/ruler.c:1385 src/gui/widgets/bot_bar.c:160
 msgid "BBT"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1343 src/gui/widgets/bot_bar.c:162
+#: src/gui/widgets/ruler.c:1386 src/gui/widgets/bot_bar.c:162
 #: src/gui/widgets/dialogs/midi_function_dialog.c:148
 #: src/gui/widgets/dialogs/midi_function_dialog.c:213
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Time"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1344 src/gui/widgets/bot_bar.c:163
+#: src/gui/widgets/ruler.c:1387 src/gui/widgets/bot_bar.c:163
 msgid "Display"
 msgstr ""
 
@@ -4504,79 +4499,79 @@ msgstr ""
 msgid "Custom Marker"
 msgstr "커스텀 마커"
 
-#: src/gui/widgets/timeline_arranger.c:809
+#: src/gui/widgets/timeline_arranger.c:807
 msgid "Fade Preset"
 msgstr "페이드 사전 설정"
 
-#: src/gui/widgets/timeline_arranger.c:873
+#: src/gui/widgets/timeline_arranger.c:871
 msgid "Musical Mode"
 msgstr "뮤지컬 모드"
 
-#: src/gui/widgets/timeline_arranger.c:970 src/plugins/collection.c:166
+#: src/gui/widgets/timeline_arranger.c:968 src/plugins/collection.c:166
 msgid "Rename"
 msgstr "이름 바꾸기"
 
-#: src/gui/widgets/timeline_arranger.c:975
+#: src/gui/widgets/timeline_arranger.c:973
 #, fuzzy
 msgid "Loop Selection"
 msgstr "루프 선택"
 
-#: src/gui/widgets/timeline_arranger.c:999
+#: src/gui/widgets/timeline_arranger.c:997
 #, fuzzy
 msgid "Change Color..."
 msgstr "색상 변경"
 
-#: src/gui/widgets/timeline_arranger.c:1003
+#: src/gui/widgets/timeline_arranger.c:1001
 #, fuzzy
 msgid "Reset Color"
 msgstr "%s 색상"
 
-#: src/gui/widgets/timeline_arranger.c:1016
+#: src/gui/widgets/timeline_arranger.c:1014
 msgid "Detect BPM"
 msgstr "BPM 감지"
 
-#: src/gui/widgets/timeline_arranger.c:1057
+#: src/gui/widgets/timeline_arranger.c:1055
 #, fuzzy
 msgid "Functions"
 msgstr "영역 기능"
 
-#: src/gui/widgets/timeline_arranger.c:1060
+#: src/gui/widgets/timeline_arranger.c:1058
 msgid "Audio Regions"
 msgstr "오디오 영역"
 
-#: src/gui/widgets/timeline_arranger.c:1069
+#: src/gui/widgets/timeline_arranger.c:1067
 msgid "Export as MIDI file..."
 msgstr "MIDI 파일로 내보내기..."
 
-#: src/gui/widgets/timeline_arranger.c:1073
+#: src/gui/widgets/timeline_arranger.c:1071
 msgid "MIDI Regions"
 msgstr "MIDI 영역"
 
-#: src/gui/widgets/timeline_arranger.c:1114
+#: src/gui/widgets/timeline_arranger.c:1112
 #, fuzzy
 msgid "Move to Lane"
 msgstr "솔로 레인"
 
-#: src/gui/widgets/timeline_arranger.c:1117
+#: src/gui/widgets/timeline_arranger.c:1115
 #, fuzzy
 msgid "Automation Region"
 msgstr "자동화 지점"
 
-#: src/gui/widgets/timeline_arranger.c:1124
+#: src/gui/widgets/timeline_arranger.c:1122
 msgid "Quick Bounce"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1132
+#: src/gui/widgets/timeline_arranger.c:1130
 #, fuzzy
 msgid "Bounce to Audio"
 msgstr "바운스 테일"
 
-#: src/gui/widgets/timeline_arranger.c:1299
+#: src/gui/widgets/timeline_arranger.c:1297
 #, fuzzy
 msgid "Failed to add region to track"
 msgstr "트랙 만들기 실패"
 
-#: src/gui/widgets/timeline_arranger.c:1308
+#: src/gui/widgets/timeline_arranger.c:1306
 msgid "Failed to create selections"
 msgstr "선택 항목 만들기 실패"
 
@@ -5676,46 +5671,46 @@ msgstr "초기화"
 msgid "Unnamed bank"
 msgstr "이름 없는 뱅크"
 
-#: src/plugins/plugin.c:229
+#: src/plugins/plugin.c:228
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "플러그인 '%s'에 대한 인스턴스화에 실패했습니다. 비활성화 중..."
 
 #. add enabled port
-#: src/plugins/plugin.c:268
+#: src/plugins/plugin.c:266
 msgid "Enabled"
 msgstr "활성화"
 
-#: src/plugins/plugin.c:270
+#: src/plugins/plugin.c:268
 msgid "Enables or disables the plugin"
 msgstr "플러그인 활성화 또는 비활성화"
 
-#: src/plugins/plugin.c:289
+#: src/plugins/plugin.c:287
 msgid "Plugin gain"
 msgstr "플러그인 게인"
 
-#: src/plugins/plugin.c:516
+#: src/plugins/plugin.c:514
 msgid "Failed to get Carla plugin"
 msgstr "Carla 플러그인 가져오기 실패"
 
-#: src/plugins/plugin.c:530
+#: src/plugins/plugin.c:528
 msgid "Failed to get LV2 plugin"
 msgstr "LV2 플러그인 가져오기 실패"
 
-#: src/plugins/plugin.c:1490
+#: src/plugins/plugin.c:1488
 msgid "Carla plugin instantiation failed"
 msgstr "Carla 플러그인 인스턴스화 실패"
 
-#: src/plugins/plugin.c:1500 src/plugins/plugin.c:2069
+#: src/plugins/plugin.c:1498 src/plugins/plugin.c:2067
 #, fuzzy
 msgid "Failed saving Carla plugin state"
 msgstr "Carla 플러그인 가져오기 실패"
 
-#: src/plugins/plugin.c:1521
+#: src/plugins/plugin.c:1519
 msgid "LV2 plugin instantiation failed"
 msgstr "LV2 플러그인 인스턴스화 실패"
 
-#: src/plugins/plugin.c:1776
+#: src/plugins/plugin.c:1774
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -5730,11 +5725,11 @@ msgstr ""
 "보고하세요: \n"
 "  %s <%s>"
 
-#: src/plugins/plugin.c:1784
+#: src/plugins/plugin.c:1782
 msgid "Deprecated UI Type"
 msgstr ""
 
-#: src/plugins/plugin.c:2093
+#: src/plugins/plugin.c:2091
 #, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "%s에 대한 플러그인 복제 만들기 실패"
@@ -6091,47 +6086,47 @@ msgstr "연결 활성화 실패"
 msgid "Failed to get existing text"
 msgstr "무음 삽입 실패"
 
-#: src/project/project_init_flow_manager.c:764
+#: src/project/project_init_flow_manager.c:766
 msgid "Invalid project: missing version"
 msgstr "잘못된 프로젝트: 누락된 버전"
 
-#: src/project/project_init_flow_manager.c:783
+#: src/project/project_init_flow_manager.c:785
 #, fuzzy
 msgid "Failed to upgrade YAML project schema"
 msgstr "다이렉트 아웃 설정 실패"
 
-#: src/project/project_init_flow_manager.c:797
+#: src/project/project_init_flow_manager.c:799
 #, fuzzy
 msgid "Failed to upgrade project schema to JSON"
 msgstr "다이렉트 아웃 설정 실패"
 
-#: src/project/project_init_flow_manager.c:810
+#: src/project/project_init_flow_manager.c:812
 #, c-format
 msgid "Failed to read JSON: [code: %<PRIu32>, pos: %zu] %s"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:827
+#: src/project/project_init_flow_manager.c:829
 msgid "Failed to deserialize project YAML"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:849
+#: src/project/project_init_flow_manager.c:851
 #, c-format
 msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
 "'%s')."
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:968
+#: src/project/project_init_flow_manager.c:970
 #, fuzzy
 msgid "Failed to initialize the audio file pool"
 msgstr "오디오 보내기 만들기 실패"
 
-#: src/project/project_init_flow_manager.c:1079
+#: src/project/project_init_flow_manager.c:1081
 #, fuzzy
 msgid "Project Upgraded"
 msgstr "프로젝트 진행"
 
-#: src/project/project_init_flow_manager.c:1080
+#: src/project/project_init_flow_manager.c:1082
 #, c-format
 msgid ""
 "This project has been automatically upgraded to v1.%d. Saving this project "
@@ -6139,11 +6134,11 @@ msgid ""
 "As...'."
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1154
+#: src/project/project_init_flow_manager.c:1156
 msgid "Open Backup?"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1156
+#: src/project/project_init_flow_manager.c:1158
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -6151,11 +6146,11 @@ msgid ""
 "Use the newer backup?"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1159
+#: src/project/project_init_flow_manager.c:1161
 msgid "Open Backup"
 msgstr ""
 
-#: src/project/project_init_flow_manager.c:1160
+#: src/project/project_init_flow_manager.c:1162
 msgid "Ignore"
 msgstr ""
 
@@ -7712,297 +7707,253 @@ msgid "DAW"
 msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Changed:"
 msgstr "변경됨:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Redesign plugin info label"
+msgid ""
+"Change how object resizing works: revert original object(s) on undo (fixes "
+"undoing audio stretching not reverting the original audio, #4955)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Bump required libadwaita/gtk versions to latest stable releases"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Revert to previous fader style (#5054)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+msgid "Fixed:"
+msgstr "수정됨:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid ""
+"Fix track inputs switching to wrong input in the inspector after selecting a "
+"different track"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Fix some issues reported by ASAN"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#, fuzzy
+msgid "Fix memory leak when loading project files"
+msgstr "매크로 노브를 마우스 오른쪽 버튼으로 클릭할 때 오류 수정"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Fix home VST2 path being used when scanning DSSI plugins (#5058)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#, fuzzy
+msgid "Removed:"
+msgstr "삭제"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Hide MIDI modifier chooser (out of scope for v1, #5053)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+msgid "Added:"
+msgstr "추가됨:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid "Build: Add flatpak manifest for building in GNOME Builder"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Source: Add editor config file"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Add more relevant categories in desktop file"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+msgid "Auto-scroll when dragging towards edges of the ruler (#5043)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Show fade in/out line indicator in audio regions in timeline on hover"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+msgid "Replace most cursors used in arrangers (#5029)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#, fuzzy
+msgid "Update Interlingua, Catalan translations"
+msgstr "프랑스어, 일본어 번역 업데이트"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+msgid "Build: set gettext package name and version"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Fix diminuendo (crescendo MIDI function with downward slope) (#4999)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid "Fix wrong icon name in desktop file"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+msgid ""
+"Fix automation points for non-float parameters being drawn at wrong "
+"positions (#4177)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+msgid "Fix missing `document-edit` icon"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#, fuzzy
+msgid "Fix incorrectly allowing audio region fade in/out to crossfade (#4975)"
+msgstr ""
+"접을 수 있는 트랙 안에 있을 때 마스터 트랙을 삭제/복제하는 잘못된 문제 수정"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+msgid "Remove styling of panel resize separators (#5046)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+msgid "Redesign plugin info label"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid ""
 "Build: port UI files to blueprint format and generate UI files via blueprint-"
 "compiler"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Redesign channel views in the mixer"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 #, fuzzy
 msgid "Update some icons"
 msgstr "아이콘 변경"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Redesign faders"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 msgid "Link transport control buttons together"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Drop borders from meters and change color gradient"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Unit tests: require less RAM"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Port various dialogs to AdwDialog"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Bump libadwaita requirement to &gt;= 1.5"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Use raised top bar style for main window (#5023)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid ""
 "CSS theme: Specify named colors `@window_bg_color` and `@dialog_bg_color` "
 "instead of coloring specific widget backgrounds"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Debugging: don't set signal handlers when running from valgrind"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 #, fuzzy
 msgid "Update Chinese (Simplified), Japanese, Hindi, Catalan translations"
 msgstr ""
 "스페인어, 러시아어, 프랑스어, 카탈로니아어, 중국어(간체), 중국어(번체) 번역 "
 "업데이트"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid "Install Zrythm icon as org.zrythm.Zrythm.svg instead of zrythm.svg"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid ""
 "User manual: document `--audio-backend` and `--midi-backend` CLI options"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Fixed:"
-msgstr "수정됨:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Fix error when sending a bug report for a project with many actions on the "
 "undo stack (#5016)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Fix spectrum analyzer not rendering correctly with ngl renderer (#5008)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 #, fuzzy
 msgid ""
 "Fix cancel button when exporting stems only cancelling export for the "
 "current stem"
 msgstr "스냅 유지 오프셋이 활성화된 상태에서 영역을 절단할 때 오류 수정"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid ""
 "Fix device selection dropdown crashing in preferences when opened from the "
 "greeter"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Re-generate built-in plugins with latest faust"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
 msgid "Generate the about dialog from appdata XML"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-msgid "Update some information in the about dialog and in the appdata XML"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-msgid ""
-"GTK: Don't force GL renderer on Windows (revert change in previous release)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
-msgid "Added:"
-msgstr "추가됨:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-msgid "Add primary menu to the header bar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
-msgid "Port MIDI function dialog rows to new libadwaita widgets"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
-msgid "Port plugin/file browsers to AdwToolbarView"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
-msgid "Change some global keyboard shortcuts"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-msgid "Move visualizers to bottom bar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
-msgid ""
-"Merge header bar toggles and secondary global toolbar into the main toolbar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-msgid ""
-"Redesign/merge first-run screen, welcome dialog, project selector and "
-"project creator into a new greeter window"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
-msgid "Only set header bar color on main project window"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
-msgid "Mac: don't try to force window on top"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
-#, fuzzy
-msgid "Change some icons"
-msgstr "아이콘 변경"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
-msgid "Don't style window close button"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-msgid "Use AdwToolbarView for main project window"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
-msgid "Add gradient to progress bars and padding to progress bar captions"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
-msgid "GTK: Force old GL renderer on Windows"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
-msgid "Fix error when copy-pasting audio regions after a BPM change (#4993)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid ""
-"Zrythm is now fully REUSE 3.0 compliant (fixed license issues reported by "
-"`reuse lint`)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
-#, fuzzy
-msgid "Removed:"
-msgstr "삭제"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
-msgid "Remove Zrythm logo from header bar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid "Remove some buttons that used to be in the main and secondary toolbars"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Remove scripting interface button (out of scope for v1)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid "Remove dependency on breeze icons"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
-msgid "Support editing the curve for multiple automation points (#4991)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Add outline to object-stretch cursors"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
-#, fuzzy
-msgid "Update Swedish translations"
-msgstr "프랑스어, 일본어 번역 업데이트"
-
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:143
-msgid "Update shortcuts window (#4110)"
+msgid "Update some information in the about dialog and in the appdata XML"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid ""
-"Send normal note offs instead of \"all notes off\" at region loop and end "
-"boundaries (#4036)"
+"GTK: Don't force GL renderer on Windows (revert change in previous release)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-msgid "Use lowercase for FLAC extension when exporting FLAC files"
-msgstr ""
+#~ msgid "Sine (Equal Power)"
+#~ msgstr "사인 (동일한 성능)"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
-msgid "Port MIDI function dialog to AdwToolbarView"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
-msgid "Fix clipboard paste being broken"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
-msgid ""
-"Fix chord index not being saved with chord objects in project files (#4995)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
 #, fuzzy
-msgid "Fix error when closing the project while a chord object is selected"
-msgstr "큰 오디오 클립을 분할할 때 오류 수정"
+#~ msgid "Change some icons"
+#~ msgstr "아이콘 변경"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid "Fix error when copy-moving objects"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Fix incorrect MIDI pitchbend handling (#3318, #4000, #4997)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
-msgid ""
-"Fix MIDI channel pressure handling when automating from its automation lane"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "Remove musical mode toggle from timeline toolbar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid "Remove option to overlay text value for automation points"
-msgstr ""
+#, fuzzy
+#~ msgid "Fix error when closing the project while a chord object is selected"
+#~ msgstr "큰 오디오 클립을 분할할 때 오류 수정"
 
 #, fuzzy
 #~ msgid "Allow changing plugin load behavior (#4407)"
@@ -8326,10 +8277,6 @@ msgstr ""
 #~ msgstr "마지막으로 사용한 자동화 기능"
 
 #, fuzzy
-#~ msgid "Add more error checking when loading projects"
-#~ msgstr "매크로 노브를 마우스 오른쪽 버튼으로 클릭할 때 오류 수정"
-
-#, fuzzy
 #~ msgid "Please enter a valid ratio."
 #~ msgstr "유효한 이름을 입력하세요."
 
@@ -8476,12 +8423,6 @@ msgstr ""
 
 #~ msgid "Beat unit change"
 #~ msgstr "비트 단위 변경"
-
-#, fuzzy
-#~ msgid "Fix incorrectly allowing to set a track's output to itself"
-#~ msgstr ""
-#~ "접을 수 있는 트랙 안에 있을 때 마스터 트랙을 삭제/복제하는 잘못된 문제 수"
-#~ "정"
 
 #, fuzzy
 #~ msgid ""

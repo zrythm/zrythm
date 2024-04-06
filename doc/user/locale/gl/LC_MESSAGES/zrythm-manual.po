@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-29 19:34+0900\n"
+"POT-Creation-Date: 2024-04-02 12:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5695,7 +5695,7 @@ msgid "Override the MIDI backend to use."
 msgstr "O backend de MIDI a utilizar para o motor de audio."
 
 #: ../../invoking-from-command-line/intro.rst:62
-msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgid "BACKEND is one of: dummy, jack, rtmidi, windows_mme"
 msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:66

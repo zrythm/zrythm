@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-29 19:34+0900\n"
+"POT-Creation-Date: 2024-04-02 12:45+0900\n"
 "PO-Revision-Date: 2023-12-09 20:45+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -5696,7 +5696,7 @@ msgid "Override the MIDI backend to use."
 msgstr "Le dorsal MIDI à utiliser pour le moteur audio."
 
 #: ../../invoking-from-command-line/intro.rst:62
-msgid "BACKEND is one of: dummy, rtmidi, windows_mme"
+msgid "BACKEND is one of: dummy, jack, rtmidi, windows_mme"
 msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:66
