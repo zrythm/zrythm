@@ -1727,8 +1727,7 @@ on_motion (
               ruler_widget_px_to_pos (
                 self, self->hover_x, &cursor_pos, F_PADDING);
 
-              /* get px diff so we can calculate the new
-               * adjustment later */
+              /* get px diff so we can calculate the new adjustment later */
               double diff = self->hover_x - (double) settings->scroll_start_x;
 
               double scroll_multiplier = 1.0 - 0.02 * offset_y;
@@ -1910,6 +1909,38 @@ ruler_widget_pos_to_px (RulerWidget * self, Position * pos, int use_padding)
     }
 }
 
+void
+ruler_widget_handle_horizontal_zoom (RulerWidget * self, double * x_pos, double dy)
+{
+  /* get current adjustment so we can get the difference from the cursor */
+  EditorSettings * settings = ruler_widget_get_editor_settings (self);
+
+  /* get position of cursor */
+  Position cursor_pos;
+  ruler_widget_px_to_pos (self, *x_pos, &cursor_pos, F_PADDING);
+  /*position_print (&cursor_pos);*/
+
+  /* get px diff so we can calculate the new adjustment later */
+  double diff = *x_pos - (double) settings->scroll_start_x;
+
+  double scroll_multiplier = (dy > 0) ? (1.0 / 1.3) : 1.3;
+  ruler_widget_set_zoom_level (
+    self, ruler_widget_get_zoom_level (self) * scroll_multiplier);
+
+  int new_x = ruler_widget_pos_to_px (self, &cursor_pos, F_PADDING);
+
+  editor_settings_set_scroll_start_x (settings, new_x - (int) diff, F_VALIDATE);
+
+  /* refresh relevant widgets */
+  if (self->type == TYPE (TIMELINE))
+    {
+      arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+    }
+
+  /* also update hover x */
+  *x_pos = new_x;
+}
+
 static gboolean
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
@@ -1919,56 +1950,30 @@ on_scroll (
 {
   RulerWidget * self = Z_RULER_WIDGET (user_data);
 
-  double x = self->hover_x;
-
   GdkModifierType modifier_type = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  g_debug (
+    "scrolled to %.1f (d %d), %.1f (d %d)", self->hover_x, (int) dx,
+    self->hover_y, (int) dy);
 
   bool ctrl_held = modifier_type & GDK_CONTROL_MASK;
   bool shift_held = modifier_type & GDK_SHIFT_MASK;
   if (ctrl_held)
     {
-
       if (!shift_held)
         {
-          EditorSettings * settings = ruler_widget_get_editor_settings (self);
-          g_return_val_if_fail (settings, false);
-
-          /* get position of cursor */
-          Position cursor_pos;
-          ruler_widget_px_to_pos (self, x, &cursor_pos, F_PADDING);
-
-          /* scroll down, zoom out */
-          if (dy > 0)
-            {
-              ruler_widget_set_zoom_level (
-                self, ruler_widget_get_zoom_level (self) / 1.3);
-            }
-          else /* scroll up, zoom in */
-            {
-              ruler_widget_set_zoom_level (
-                self, ruler_widget_get_zoom_level (self) * 1.3);
-            }
-
-          int new_x = ruler_widget_pos_to_px (self, &cursor_pos, F_PADDING);
-
-          /* refresh relevant widgets */
-          if (self->type == TYPE (TIMELINE))
-            {
-              arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
-            }
-
-          /* also update hover x since we're using it here */
-          self->hover_x = new_x;
+          ruler_widget_handle_horizontal_zoom (self, &self->hover_x, dy);
         }
     }
   else /* else if not ctrl held */
     {
       /* scroll normally */
-      if (modifier_type & GDK_SHIFT_MASK)
+      const bool horizontal_scroll = ((int) dx) != 0;
+      if ((modifier_type & GDK_SHIFT_MASK) || horizontal_scroll)
         {
           const int        scroll_amt = RW_SCROLL_SPEED;
-          int              scroll_x = (int) dy;
+          int              scroll_x = horizontal_scroll ? (int) dx : (int) dy;
           EditorSettings * settings = ruler_widget_get_editor_settings (self);
           editor_settings_append_scroll (
             settings, scroll_x * scroll_amt, 0, F_VALIDATE);

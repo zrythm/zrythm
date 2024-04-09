@@ -46,8 +46,7 @@ typedef struct Position       Position;
 typedef struct EditorSettings EditorSettings;
 
 /**
- * Pixels to draw between each beat, before being
- * adjusted for zoom.
+ * Pixels to draw between each beat, before being adjusted for zoom.
  *
  * Used by the ruler and timeline.
  */
@@ -199,13 +198,35 @@ typedef struct _RulerWidget
 } RulerWidget;
 
 /**
- * Sets zoom level and disables/enables buttons
- * accordingly.
+ * Sets zoom level and disables/enables buttons accordingly.
  *
  * @return Whether the zoom level was set.
  */
 bool
 ruler_widget_set_zoom_level (RulerWidget * self, double zoom_level);
+
+/**
+ * Gets the zoom level associated with this RulerWidget from the backend.
+ */
+double
+ruler_widget_get_zoom_level (RulerWidget * self);
+
+/**
+ * Handle horizontal zoom.
+ *
+ * To be called from a scroll handler where needed (e.g., in arranger or ruler
+ * when zooming in via scroll).
+ *
+ * @param[in,out] x_pos Current horizontal hover position of the cursor in the
+ * expanded ruler. This variable will get updated with the newly calculated
+ * position after zoom is applied.
+ * @param dy Scroll level (received from the handler args).
+ */
+void
+ruler_widget_handle_horizontal_zoom (
+  RulerWidget * self,
+  double *      x_pos,
+  double        dy);
 
 /**
  * Returns the beat interval for drawing vertical
@@ -249,13 +270,6 @@ ruler_widget_is_loop_range_hit (
   RulerWidgetRangeType type,
   double               x,
   double               y);
-
-/**
- * Gets the zoom level associated with this
- * RulerWidget from the backend.
- */
-double
-ruler_widget_get_zoom_level (RulerWidget * self);
 
 void
 ruler_widget_px_to_pos (

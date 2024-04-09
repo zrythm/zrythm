@@ -4799,10 +4799,9 @@ on_scroll (
     }
 #endif
 
-  double x = self->hover_x;
-  double y = self->hover_y;
-
-  g_debug ("scrolled to %.1f (d %d), %.1f (d %d)", x, (int) dx, y, (int) dy);
+  g_debug (
+    "scrolled to %.1f (d %d), %.1f (d %d)", self->hover_x, (int) dx,
+    self->hover_y, (int) dy);
 
   EVENTS_PUSH (ET_ARRANGER_SCROLLED, self);
 
@@ -4826,46 +4825,15 @@ on_scroll (
                 MW_TRACKLIST, scroll_controller, dy);
             }
 
-          /* TODO also update hover y since we're using it
-           * here */
+          /* TODO also update hover y since we're using it here */
           /*self->hover_y = new_y;*/
         }
-      /* else if just control pressed handle horizontal
-       * zoom */
+      /* else if just control pressed handle horizontal zoom */
       else
         {
           RulerWidget * ruler = arranger_widget_get_ruler (self);
 
-          /* get current adjustment so we can get the
-           * difference from the cursor */
-          EditorSettings * settings = arranger_widget_get_editor_settings (self);
-
-          /* get position of cursor */
-          Position cursor_pos;
-          arranger_widget_px_to_pos (self, x, &cursor_pos, F_PADDING);
-          /*position_print (&cursor_pos);*/
-
-          /* get px diff so we can calculate the new
-           * adjustment later */
-          double diff = x - (double) settings->scroll_start_x;
-
-          double scroll_multiplier = (dy > 0) ? (1.0 / 1.3) : 1.3;
-          ruler_widget_set_zoom_level (
-            ruler, ruler_widget_get_zoom_level (ruler) * scroll_multiplier);
-
-          int new_x = arranger_widget_pos_to_px (self, &cursor_pos, F_PADDING);
-
-          editor_settings_set_scroll_start_x (
-            settings, new_x - (int) diff, F_VALIDATE);
-
-          /* refresh relevant widgets */
-          if (self->type == TYPE (TIMELINE))
-            {
-              arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
-            }
-
-          /* also update hover x since we're using it here */
-          self->hover_x = new_x;
+          ruler_widget_handle_horizontal_zoom (ruler, &self->hover_x, dy);
         }
     }
   else /* else if not ctrl held */
