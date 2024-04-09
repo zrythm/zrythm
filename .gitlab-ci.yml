@@ -25,7 +25,7 @@ stages:
 default:
   cache:
     # this number must be bumped every time these subprojects are updated
-    - key: configured-cache-6
+    - key: configured-cache-5
       paths:
         - venv
         - subprojects/gtk4
@@ -33,7 +33,6 @@ default:
         - subprojects/libpanel
         - subprojects/yyjson
         - subprojects/libcyaml
-        - doc/dev/doxygen-awesome-css
     - key: "$CI_PIPELINE_ID"
       paths:
         - build
@@ -41,8 +40,6 @@ default:
     - archlinux
   before_script:
     - source ./venv/bin/activate
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
 
 configure:
   stage: setup
@@ -104,6 +101,8 @@ update_dev_docs:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - source ./venv/bin/activate
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
 
 cleanup-cache:
   stage: cleanup
