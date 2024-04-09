@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
@@ -11,6 +11,7 @@
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/chord_pad.h"
 #include "gui/widgets/chord_selector_window.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -91,11 +92,8 @@ on_edit_chord_pressed (GtkButton * btn, gpointer user_data)
 {
   ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
-  ChordSelectorWindowWidget * chord_selector =
-    chord_selector_window_widget_new (self->chord_idx);
-
-  g_debug ("presenting chord selector window");
-  gtk_window_present (GTK_WINDOW (chord_selector));
+  chord_selector_window_widget_present (
+    self->chord_idx, GTK_WIDGET (MAIN_WINDOW));
 }
 
 static void

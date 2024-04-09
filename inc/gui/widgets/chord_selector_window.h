@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -10,7 +12,7 @@
 #ifndef __GUI_WIDGETS_CHORD_SELECTOR_WINDOW_H__
 #define __GUI_WIDGETS_CHORD_SELECTOR_WINDOW_H__
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #define CHORD_SELECTOR_WINDOW_WIDGET_TYPE \
   (chord_selector_window_widget_get_type ())
@@ -19,7 +21,7 @@ G_DECLARE_FINAL_TYPE (
   chord_selector_window_widget,
   Z,
   CHORD_SELECTOR_WINDOW_WIDGET,
-  GtkDialog)
+  AdwDialog)
 
 /**
  * @addtogroup widgets
@@ -31,12 +33,12 @@ typedef struct ChordObject ChordObject;
 typedef struct ScaleObject ScaleObject;
 
 /**
- * A GtkPopover to create a ChordDescriptor for use
- * in the ChordTrack's ChordObject's.
+ * A GtkPopover to create a ChordDescriptor for use in the ChordTrack's
+ * ChordObject's.
  */
 typedef struct _ChordSelectorWindowWidget
 {
-  GtkDialog parent_instance;
+  AdwDialog parent_instance;
 
   GtkNotebook * notebook;
 
@@ -130,9 +132,11 @@ typedef struct _ChordSelectorWindowWidget
 
 /**
  * Creates the popover.
+ *
+ * @param parent The parent widget to show the dialog on.
  */
-ChordSelectorWindowWidget *
-chord_selector_window_widget_new (const int chord_idx);
+void
+chord_selector_window_widget_present (const int chord_idx, GtkWidget * parent);
 
 /**
  * @}

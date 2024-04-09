@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/chord_object.h"
@@ -37,10 +39,8 @@ get_chord_descr (ChordKeyWidget * self)
 static void
 on_choose_chord_btn_clicked (GtkButton * btn, ChordKeyWidget * self)
 {
-  ChordSelectorWindowWidget * chord_selector =
-    chord_selector_window_widget_new (self->chord_idx);
-
-  gtk_window_present (GTK_WINDOW (chord_selector));
+  chord_selector_window_widget_present (
+    self->chord_idx, GTK_WIDGET (MAIN_WINDOW));
 }
 
 static void

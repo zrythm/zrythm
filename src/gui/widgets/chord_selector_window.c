@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/chord_object.h"
@@ -22,10 +24,10 @@
 G_DEFINE_TYPE (
   ChordSelectorWindowWidget,
   chord_selector_window_widget,
-  GTK_TYPE_DIALOG)
+  ADW_TYPE_DIALOG)
 
-static gboolean
-on_close_request (GtkWindow * window, ChordSelectorWindowWidget * self)
+static void
+on_closed (AdwDialog * dialog, ChordSelectorWindowWidget * self)
 {
   chord_descriptor_update_notes (self->descr_clone);
 
@@ -44,8 +46,6 @@ on_close_request (GtkWindow * window, ChordSelectorWindowWidget * self)
     }
 
   chord_descriptor_free (self->descr_clone);
-
-  return false;
 }
 
 /**
@@ -460,14 +460,11 @@ on_group_changed (GtkCheckButton * check_btn, ChordSelectorWindowWidget * self)
     }
 }
 
-/**
- * Creates the popover.
- */
-ChordSelectorWindowWidget *
-chord_selector_window_widget_new (const int chord_idx)
+void
+chord_selector_window_widget_present (const int chord_idx, GtkWidget * parent)
 {
-  ChordSelectorWindowWidget * self = g_object_new (
-    CHORD_SELECTOR_WINDOW_WIDGET_TYPE, "icon-name", "zrythm", NULL);
+  ChordSelectorWindowWidget * self =
+    g_object_new (CHORD_SELECTOR_WINDOW_WIDGET_TYPE, NULL);
 
   self->chord_idx = chord_idx;
   const ChordDescriptor * descr = CHORD_EDITOR->chords[chord_idx];
@@ -486,12 +483,10 @@ chord_selector_window_widget_new (const int chord_idx)
 #endif
   self->scale = chord_track_get_scale_at_pos (P_CHORD_TRACK, PLAYHEAD);
 
-  gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
+  adw_dialog_present (ADW_DIALOG (self), parent);
 
   setup_creator_tab (self);
   setup_diatonic_tab (self);
-
-  return self;
 }
 
 static void
@@ -646,6 +641,5 @@ chord_selector_window_widget_init (ChordSelectorWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self->creator_visibility_in_scale), "toggled",
     G_CALLBACK (on_group_changed), self);
-  g_signal_connect (
-    G_OBJECT (self), "close-request", G_CALLBACK (on_close_request), self);
+  g_signal_connect (G_OBJECT (self), "closed", G_CALLBACK (on_closed), self);
 }
