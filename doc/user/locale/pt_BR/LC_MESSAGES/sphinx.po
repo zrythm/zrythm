@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2024-01-09 20:45+0000\n"
-"Last-Translator: Murilo Gama <murilovsky2030@gmail.com>\n"
+"PO-Revision-Date: 2024-04-06 15:10+0000\n"
+"Last-Translator: Jose Delvani <delvani.eletricista@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual-sphinx/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -26,7 +26,7 @@ msgstr "Próximo"
 
 #: ../../_templates/page.html:73
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: ../../_templates/page.html:76
 msgid "Home"
@@ -35,17 +35,17 @@ msgstr "Principal"
 #: ../../_templates/page.html:88
 #, python-format
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr ""
+msgstr "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 #, python-format
 msgid "Copyright &#169; %(copyright)s"
-msgstr ""
+msgstr "Copyright &#169; %(copyright)s"
 
 #: ../../_templates/page.html:99
 #, python-format
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "Última atualização em %(last_updated)s."
 
 #: ../../_templates/page.html:105
 msgid ""
@@ -55,11 +55,16 @@ msgid ""
 "\">@pradyunsg</a>'s\n"
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
+"Construído com <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
+"              and\n"
+"              <a class=\"muted-link\" href=\"https://pradyunsg.me\""
+">@pradyunsg</a>'s\n"
+"              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr ""
+msgstr "Mostrar fonte"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
-msgstr ""
+msgstr "Conteúdo"

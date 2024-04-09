@@ -12,13 +12,14 @@
 # Gabriel fresan <gabrielfrsan@proton.me>, 2022.
 # Filipe Motta <luiz_filipe_motta@hotmail.com>, 2023.
 # Murilo Gama <murilovsky2030@gmail.com>, 2023, 2024.
+# Jose Delvani <delvani.eletricista@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-06 09:30+0900\n"
-"PO-Revision-Date: 2024-01-09 20:45+0000\n"
-"Last-Translator: Murilo Gama <murilovsky2030@gmail.com>\n"
+"PO-Revision-Date: 2024-04-06 15:10+0000\n"
+"Last-Translator: Jose Delvani <delvani.eletricista@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -5013,7 +5014,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:77
 msgid "Welcome"
-msgstr "Boas vindas"
+msgstr "Bem-vindo"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:79
 msgid "Welcome to the Zrythm DAW"
