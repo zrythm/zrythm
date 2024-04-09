@@ -238,6 +238,16 @@ rtaudio_device_close (RtAudioDevice * self, int free_device)
 }
 
 void
+rtaudio_device_print_dev_info (rtaudio_device_info_t * nfo)
+{
+  g_message (
+    "ID: %u\toutput channels: %u\t input channels: %u\tduplex channels: %u\tis default out: %d\tis default in: %d\tpreferred samplerate: %u\tname: %s",
+    nfo->id, nfo->output_channels, nfo->input_channels, nfo->duplex_channels,
+    nfo->is_default_output, nfo->is_default_input, nfo->preferred_sample_rate,
+    nfo->name);
+}
+
+void
 rtaudio_device_free (RtAudioDevice * self)
 {
   if (self->audio_ring)

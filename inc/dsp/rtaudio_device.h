@@ -111,6 +111,9 @@ int
 rtaudio_device_stop (RtAudioDevice * self);
 
 void
+rtaudio_device_print_dev_info (rtaudio_device_info_t * nfo);
+
+void
 rtaudio_device_free (RtAudioDevice * self);
 
 /**

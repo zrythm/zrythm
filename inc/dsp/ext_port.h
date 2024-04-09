@@ -116,7 +116,7 @@ typedef struct ExtPort
   /** RtAudio device name. */
   char * rtaudio_dev_name;
 
-  /** RtAudio device index. */
+  /** RtAudio device ID (NOT index!!!). */
   unsigned int rtaudio_id;
 
   /** Whether the channel is input. */

@@ -214,7 +214,7 @@ To get a coverage report see
 # Profiling
 
 ## perf
-To profile with gprof (recommended), set optimization to 2 and debug to true
+To profile with perf (recommended), set optimization to 2 and debug to true
 and run:
 
     perf record --event=cache-references,cache-misses,cycles,instructions,branches,faults,migrations,cpu-clock --stat build/src/zrythm --dummy

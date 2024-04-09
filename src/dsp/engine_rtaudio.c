@@ -178,6 +178,7 @@ engine_rtaudio_setup (AudioEngine * self)
   self->rtaudio = engine_rtaudio_create_rtaudio (self, self->audio_backend);
   if (!self->rtaudio)
     {
+      g_warning ("failed to create rtaudio");
       return -1;
     }
 

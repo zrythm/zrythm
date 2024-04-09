@@ -561,8 +561,7 @@ get_ext_ports_from_rtmidi (PortFlow flow, GPtrArray * ports)
   if (flow == FLOW_OUTPUT)
     {
       unsigned int num_ports = engine_rtmidi_get_num_in_ports (AUDIO_ENGINE);
-      unsigned int i;
-      for (i = 0; i < num_ports; i++)
+      for (unsigned int i = 0; i < num_ports; i++)
         {
           ExtPort * ext_port = ext_port_from_rtmidi (i);
           g_ptr_array_add (ports, ext_port);
@@ -578,25 +577,28 @@ get_ext_ports_from_rtmidi (PortFlow flow, GPtrArray * ports)
 #ifdef HAVE_RTAUDIO
 /**
  * Creates an ExtPort from a RtAudio port.
+ *
+ * @param device_name Device name (from RtAudio).
  */
 static ExtPort *
 ext_port_from_rtaudio (
   unsigned int id,
   unsigned int channel_idx,
+  const char * device_name,
   bool         is_input,
   bool         is_duplex)
 {
+  g_return_val_if_fail (device_name, NULL);
   ExtPort * self = _create ();
 
-  RtAudioDevice * dev = rtaudio_device_new (1, NULL, id, channel_idx, NULL);
   self->rtaudio_id = id;
   self->rtaudio_channel_idx = channel_idx;
   self->rtaudio_is_input = is_input;
   self->rtaudio_is_duplex = is_duplex;
-  self->rtaudio_dev_name = g_strdup (dev->name);
-  self->full_name = g_strdup_printf ("%s (in %d)", dev->name, channel_idx);
+  self->rtaudio_dev_name = g_strdup (device_name);
+  self->full_name =
+    g_strdup_printf ("%s (in %d)", self->rtaudio_dev_name, channel_idx);
   self->type = EXT_PORT_TYPE_RTAUDIO;
-  rtaudio_device_free (dev);
 
   return self;
 }
@@ -604,9 +606,8 @@ ext_port_from_rtaudio (
 static void
 get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
 {
-  /* note: this is an output port from the graph
-   * side that will be used as an input port on
-   * the zrythm side */
+  /* note: this is an output port from the graph side that will be used as an
+   * input port on the zrythm side */
   if (flow == FLOW_OUTPUT)
     {
       bool      reuse_rtaudio = true;
@@ -623,27 +624,22 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
           return;
         }
       int num_devs = rtaudio_device_count (rtaudio);
-      for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
+      g_debug ("%d rtaudio devices found", num_devs);
+      for (int i = 0; i < num_devs; i++)
         {
-          rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (rtaudio, i);
+          unsigned int          dev_id = rtaudio_get_device_id (rtaudio, i);
+          rtaudio_device_info_t dev_nfo =
+            rtaudio_get_device_info (rtaudio, dev_id);
+          /*rtaudio_device_print_dev_info (&dev_nfo);*/
           if (dev_nfo.input_channels > 0)
             {
               for (unsigned int j = 0; j < dev_nfo.input_channels; j++)
                 {
-                  ExtPort * ext_port = ext_port_from_rtaudio (i, j, true, false);
+                  ExtPort * ext_port = ext_port_from_rtaudio (
+                    dev_id, j, dev_nfo.name, true, false);
                   g_ptr_array_add (ports, ext_port);
                 }
-#  if 0
-              for (unsigned int j = 0;
-                   j < dev_nfo.duplex_channels; j++)
-                {
-                  arr[*size] =
-                    ext_port_from_rtaudio (
-                      i, j, false, true);
-                  (*size)++;
-                  g_message ("\n\n found duplex device");
-                }
-#  endif
+              /* TODO? duplex channels */
             }
           else
             {
@@ -671,28 +667,20 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
           return;
         }
       int num_devs = rtaudio_device_count (rtaudio);
-      for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
+      for (int i = 0; i < num_devs; i++)
         {
-          rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (rtaudio, i);
+          unsigned int          dev_id = rtaudio_get_device_id (rtaudio, i);
+          rtaudio_device_info_t dev_nfo =
+            rtaudio_get_device_info (rtaudio, dev_id);
           if (dev_nfo.output_channels > 0)
             {
               for (unsigned int j = 0; j < dev_nfo.output_channels; j++)
                 {
-                  ExtPort * ext_port =
-                    ext_port_from_rtaudio (i, j, false, false);
+                  ExtPort * ext_port = ext_port_from_rtaudio (
+                    dev_id, j, dev_nfo.name, false, false);
                   g_ptr_array_add (ports, ext_port);
                 }
-#  if 0
-              for (unsigned int j = 0;
-                   j < dev_nfo.duplex_channels; j++)
-                {
-                  arr[*size] =
-                    ext_port_from_rtaudio (
-                      i, j, false, true);
-                  (*size)++;
-                  g_message ("\n\n found duplex device");
-                }
-#  endif
+              /* TODO? duplex channels */
             }
           else
             {
