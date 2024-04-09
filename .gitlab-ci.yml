@@ -86,6 +86,22 @@ update_manual:
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - source ./venv/bin/activate
 
+update_dev_docs:
+  stage: deploy
+  only:
+    - master
+    - tags
+  script:
+    - ninja -C build gen-dev-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times build/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
+  before_script:
+    - eval $(ssh-agent -s)
+    #- ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - source ./venv/bin/activate
+
 cleanup-cache:
   stage: cleanup
   script:
