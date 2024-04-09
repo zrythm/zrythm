@@ -256,18 +256,22 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
     {
       ExtPort * ext_port = self->ext_audio_ports[i];
       char *    id = ext_port_get_id (ext_port);
+#if 0
       g_debug (
         "[%s] audio: %s",
         self->is_input ? "HW processor input" : "HW processor output", id);
+#endif
       g_free (id);
     }
   for (int i = 0; i < self->num_ext_midi_ports; i++)
     {
       ExtPort * ext_port = self->ext_midi_ports[i];
       char *    id = ext_port_get_id (ext_port);
+#if 0
       g_debug (
         "[%s] MIDI: %s",
         self->is_input ? "HW processor input" : "HW processor output", id);
+#endif
       g_free (id);
 
       /* attempt to reconnect the if the port
@@ -376,9 +380,14 @@ hardware_processor_activate (HardwareProcessor * self, bool activate)
 
   if (activate && !self->rescan_timeout_id)
     {
+      /* TODO: do the following on another thread - this blocks the UI
+       * until then, the rescan is done when temporarily pausing the engine (so
+       * on a user action) */
+#if 0
       /* add timer to keep rescanning */
       self->rescan_timeout_id = g_timeout_add_seconds (
         7, (GSourceFunc) hardware_processor_rescan_ext_ports, self);
+#endif
     }
   else if (!activate && self->rescan_timeout_id)
     {

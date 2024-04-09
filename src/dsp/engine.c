@@ -1020,9 +1020,7 @@ engine_wait_for_pause (
         }
     }
 
-  g_message (
-    "setting run to 0 and waiting for cycle to "
-    "finish...");
+  g_message ("setting run to 0 and waiting for cycle to finish...");
 
   g_atomic_int_set (&self->run, 0);
   while (g_atomic_int_get (&self->cycle_running))
@@ -1031,6 +1029,10 @@ engine_wait_for_pause (
     }
 
   g_message ("cycle finished");
+
+  /* scan for new ports here for now (TODO move this to a new thread that runs
+   * periodically) */
+  hardware_processor_rescan_ext_ports (self->hw_in_processor);
 
   g_atomic_int_set (&MONITOR_FADER->fading_out, 0);
 
