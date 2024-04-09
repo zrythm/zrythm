@@ -19,7 +19,7 @@ error_handle_prv (GError * err, const char * format, ...)
     {
       char * tmp = g_strdup_vprintf (format, args);
       char * str =
-        g_strdup_printf (_ ("%s\n---Backtrace---\n%s"), tmp, err->message);
+        g_strdup_printf ("%s\n- %s: -\n%s", tmp, _ ("Details"), err->message);
       g_free (tmp);
       if (ZRYTHM_HAVE_UI)
         {
