@@ -1633,6 +1633,64 @@ create_empty_track (TrackType type)
     }
 }
 
+static void
+open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_data)
+{
+  GError *     err = NULL;
+  GListModel * file_list =
+    gtk_file_dialog_open_multiple_finish (dialog, res, &err);
+  if (!file_list)
+    {
+      g_message ("Failed to retrieve file list: %s", err->message);
+      g_error_free (err);
+      return;
+    }
+
+  GStrvBuilder * uris_builder = g_strv_builder_new ();
+  const guint    num_files = g_list_model_get_n_items (file_list);
+  for (guint i = 0; i < num_files; i++)
+    {
+      GFile * file = G_FILE (g_list_model_get_item (file_list, i));
+      char *  path = g_file_get_path (file);
+      g_return_if_fail (path);
+      g_object_unref (file);
+      g_message ("Preparing to import file: %s...", path);
+      g_free (path);
+      char * uri = g_file_get_uri (file);
+      g_strv_builder_add (uris_builder, uri);
+    }
+
+  char ** uris = g_strv_builder_end (uris_builder);
+  if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+    {
+      err = NULL;
+      bool success = tracklist_import_files (
+        TRACKLIST, uris, NULL, NULL, NULL, -1, NULL, NULL, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to import files"));
+        }
+    }
+  g_strfreev (uris);
+}
+
+DEFINE_SIMPLE (activate_import_file)
+{
+  GtkFileDialog * dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_set_title (dialog, _ ("Select File(s)"));
+  gtk_file_dialog_set_modal (dialog, true);
+  GtkFileFilter * filter = gtk_file_filter_new ();
+  /* note: this handles MIDI as well (audio/midi, audio/x-midi) */
+  gtk_file_filter_add_mime_type (filter, "audio/*");
+  GListStore * list_store = g_list_store_new (GTK_TYPE_FILE_FILTER);
+  g_list_store_append (list_store, filter);
+  gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (list_store));
+  g_object_unref (list_store);
+  gtk_file_dialog_open_multiple (
+    dialog, GTK_WINDOW (MAIN_WINDOW), NULL,
+    (GAsyncReadyCallback) open_files_ready_cb, NULL);
+}
+
 DEFINE_SIMPLE (activate_create_audio_track)
 {
   create_empty_track (TRACK_TYPE_AUDIO);
@@ -1681,7 +1739,7 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
     TRACKLIST_SELECTIONS->tracks[0]->pos + 1, &err);
   if (!ret)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to duplicate tracks"));
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to duplicate tracks"));
     }
 }
 
@@ -1756,7 +1814,7 @@ on_delete_tracks_response (
         }
       else
         {
-          HANDLE_ERROR (err, "%s", _ ("Failed to delete tracks"));
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to delete tracks"));
         }
     }
 }
@@ -1802,7 +1860,7 @@ activate_delete_selected_tracks (
     }
   else
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to delete tracks"));
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to delete tracks"));
     }
 }
 

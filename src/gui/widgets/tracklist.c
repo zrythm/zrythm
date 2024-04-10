@@ -70,6 +70,10 @@ tracklist_widget_generate_add_track_menu (void)
     _ ("Add Audio Track"), NULL, "app.create-audio-track");
   g_menu_append_item (menu, menuitem);
 
+  menuitem =
+    z_gtk_create_menu_item (_ ("Import File..."), NULL, "app.import-file");
+  g_menu_append_item (menu, menuitem);
+
   GMenu * bus_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
     _ (track_type_to_string (TRACK_TYPE_AUDIO_BUS)), NULL,

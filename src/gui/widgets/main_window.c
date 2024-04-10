@@ -580,6 +580,7 @@ main_window_widget_init (MainWindowWidget * self)
      change_state_musical_mode },
 
  /* track actions */
+    { "import-file", activate_import_file },
     { "create-audio-track", activate_create_audio_track },
     { "create-audio-bus-track", activate_create_audio_bus_track },
     { "create-midi-bus-track", activate_create_midi_bus_track },

@@ -182,6 +182,7 @@ activate_snap_keep_offset (
   GVariant *      variant,
   gpointer        user_data);
 
+DECLARE_SIMPLE (activate_import_file);
 DECLARE_SIMPLE (activate_create_audio_track);
 DECLARE_SIMPLE (activate_create_midi_track);
 DECLARE_SIMPLE (activate_create_audio_bus_track);
