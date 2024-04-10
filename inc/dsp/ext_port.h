@@ -150,8 +150,8 @@ typedef struct ExtPort
   /** Pointer to owner hardware processor, if any. */
   HardwareProcessor * hw_processor;
 
-  /** Whether the port is active and receiving
-   * events (for use by hw processor). */
+  /** Whether the port is active and receiving events (for use by hw processor).
+   */
   bool active;
 
   /**
@@ -279,10 +279,8 @@ ext_port_get_enabled (ExtPort * self);
 /**
  * Collects external ports of the given type.
  *
- * @param flow The signal flow. Note that this is
- *   inverse to what Zrythm sees. E.g., to get
- *   MIDI inputs like MIDI keyboards, pass
- *   \ref FLOW_OUTPUT here.
+ * @param flow The signal flow. Note that this is inverse to what Zrythm sees.
+ * E.g., to get MIDI inputs like MIDI keyboards, pass \ref FLOW_OUTPUT here.
  * @param hw Hardware or not.
  */
 void

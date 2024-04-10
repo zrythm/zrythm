@@ -695,15 +695,6 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
 }
 #endif
 
-/**
- * Collects external ports of the given type.
- *
- * @param flow The signal flow. Note that this is
- *   inverse to what Zrythm sees. E.g., to get
- *   MIDI inputs like MIDI keyboards, pass
- *   \ref FLOW_OUTPUT here.
- * @param hw Hardware or not.
- */
 void
 ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports)
 {
@@ -821,6 +812,7 @@ ext_port_clone (ExtPort * ext_port)
     newport->alias2 = g_strdup (ext_port->alias2);
   newport->num_aliases = ext_port->num_aliases;
   newport->type = ext_port->type;
+  newport->is_midi = ext_port->is_midi;
 
   return newport;
 }
