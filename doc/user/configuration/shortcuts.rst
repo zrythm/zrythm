@@ -15,7 +15,7 @@ Global Shortcuts
    :align: center
 
 Arranger Shortcuts
-----------------
+------------------
 
 .. image:: /_static/img/arranger-shortcuts.png
    :align: center

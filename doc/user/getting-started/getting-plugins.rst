@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -24,15 +24,14 @@ GNU/Linux systems.
   software plugins here
   <https://github.com/webprofusion/OpenAudio>`_.
 
-For users of Debian-based distributions such as Ubuntu and
-Linux Mint we recommend using
+For users of Debian-based distributions (such as Ubuntu and
+Linux Mint) we recommend using
 the `KXstudio repositories <https://kx.studio/>`_, as
 there are many plugins that can easily be installed via apt.
 
-For users of Arch Linux-based distributions such as
-Manjaro we recommend installing the
-`lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/>`_
-group.
+For users of Arch Linux-based distributions we recommend installing the `pro-audio group`_.
+
+.. _pro-audio group: https://archlinux.org/groups/x86_64/pro-audio/
 
 Recommended Plugin Bundles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

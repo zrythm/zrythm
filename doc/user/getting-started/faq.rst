@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 
    This file incorporates work by the Audacity Team covered by
@@ -80,10 +80,21 @@ When will v1 be released?
 -------------------------
 
 When all bugfixes and feature implementations under the
-`Version 1 release candidate milestone <https://gitlab.zrythm.org/zrythm/zrythm/-/issues?milestone_title=v1.rc>`_ are completed.
+`Version 1 milestone <https://gitlab.zrythm.org/zrythm/zrythm/-/issues?milestone_title=v1>`_ are completed.
 
 Usage
 +++++
+
+How do I add external plugins?
+------------------------------
+
+See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and
+:ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`.
+
+How do I import an audio/MIDI file?
+-----------------------------------
+
+See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`.
 
 Can I use ASIO?
 ---------------
@@ -112,14 +123,3 @@ support) and make Zrythm use those.
    (private or commercial) use. For the same reasons, the
    Zrythm team cannot distribute builds of Zrythm including
    ASIO support.
-
-How do I add external plugins?
-------------------------------
-
-See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and
-:ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`.
-
-How do I import an audio/MIDI file?
------------------------------------
-
-See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`.

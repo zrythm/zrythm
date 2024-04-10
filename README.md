@@ -1,5 +1,5 @@
 <!---
-SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
@@ -61,49 +61,6 @@ written in Scheme or ECMAScript.
 For a full list of features, see the
 [Features page](https://www.zrythm.org/en/features.html)
 on our website.
-
-## Current state
-
-Zrythm is currently in beta. The project format is
-stable and we are working towards a v1 release.
-
-### Audio backends
-
-|  Backend  |  Status  |
-| ---- | ---- |
-|  JACK  |  Supported and recommended |
-|  JACK (via PipeWire)  |  Supported  |
-|  PulseAudio (RtAudio)  |  Supported  |
-|  PulseAudio |  Has known issues |
-|  SDL2 |  Has known issues |
-|  ALSA (RtAudio) |  Supported |
-|  ALSA |  Broken |
-|  WASAPI (RtAudio) |  Supported |
-|  CoreAudio (RtAudio) |  Supported |
-
-### MIDI backends
-
-|  Backend  |  Status  |
-| ---- | ---- |
-|  JACK MIDI |  Supported and recommended |
-|  JACK MIDI (via PipeWire) |  Supported |
-|  WindowsMME |  Has known issues  |
-|  ALSA Sequencer (RtMidi) |  Supported |
-|  WindowsMME (RtMidi) |  Supported |
-|  CoreMIDI (RtMidi) |  Supported |
-
-### Platforms
-
-|  Platform  |  x86_64/AMD64/x64  | AArch64/ARM64/ARMv8 | ARMv7 | PowerPC64 | i386 | i686 |
-| ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-|  GNU/Linux  |  ○ | ○ | △| △ | △ | △ |
-|  FreeBSD  |  ○ | △ | △ | △ | △ | △ |
-|  Windows  |  ○ | × | × | × | × | × |
-|  MacOS  |  ○ | ○ | × | × | × | × |
-
-○: Supported
-△: Untested
-×: Not supported
 
 ## Building and Installation
 See [INSTALL.rst](INSTALL.rst) for build

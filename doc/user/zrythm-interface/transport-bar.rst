@@ -56,3 +56,14 @@ This widget displays the current CPU % usage at the
 top and the current DSP % usage at the bottom. If
 the DSP % exceeds 100 (all bars filled), audio will
 start clipping.
+
+Live Indicators
+---------------
+
+The following live indicators are displayed on the right.
+
+MIDI In
+  Shows the :term:`MIDI` activity of auto-connected
+  MIDI devices.
+Oscilloscope
+  Shows the audio waveform from the master output.

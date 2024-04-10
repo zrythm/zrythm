@@ -6,31 +6,120 @@
 System Requirements
 ===================
 
-Hardware
---------
-- x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or aarch64 (ARMv8)
-
-Operating System
+Platform Support
 ----------------
-- GNU/Linux, FreeBSD, Windows or MacOS
+
+Zrythm aims to support all platforms, however due to lack of resources we
+focus on the most used ones. See the matrix below for support status of each
+platform.
+
+○: Supported
+△: Untested
+×: Not supported
+
+.. list-table:: Platform support matrix
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Platform
+     - x86_64/AMD64/x64
+     - AArch64/ARM64/ARMv8
+     - ARMv7
+     - PowerPC64
+     - i386
+     - i686
+   * - GNU/Linux
+     - ○
+     - ○
+     - △
+     - △
+     - △
+     - △
+   * - FreeBSD
+     - ○
+     - △
+     - △
+     - △
+     - △
+     - △
+   * - Windows
+     - ○
+     - ×
+     - ×
+     - ×
+     - ×
+     - ×
+   * - MacOS
+     - ○
+     - ○
+     - ×
+     - ×
+     - ×
+     - ×
+
+Backend Support
+---------------
+
+○: Supported
+△: Has known issues
+×: Broken
+
+.. list-table:: Audio backends
+   :header-rows: 1
+
+   * - Backend
+     - Status
+   * - JACK
+     - ○
+   * - JACK (via PipeWire)
+     - ○
+   * - PulseAudio (RtAudio)
+     - ○
+   * - PulseAudio
+     - △
+   * - SDL2
+     - △
+   * - ALSA (RtAudio)
+     - ○
+   * - ALSA
+     - ×
+   * - WASAPI (RtAudio)
+     - ○
+   * - CoreAudio (RtAudio)
+     - ○
+
+.. list-table:: MIDI backends
+   :header-rows: 1
+
+   * - Backend
+     - Status
+   * - JACK MIDI
+     - ○
+   * - JACK MIDI (via PipeWire)
+     - ○
+   * - WindowsMME
+     - △
+   * - ALSA Sequencer (RtMidi)
+     - ○
+   * - WindowsMME (RtMidi)
+     - ○
+   * - CoreMIDI (RtMidi)
+     - ○
 
 Recommendations
 ---------------
 
 CPU
-  For smooth operation, we recommend using a CPU
-  with at least 2GHz clock speed and at least 4
-  cores in total.
+  For smooth operation, we recommend using a CPU with at least 2GHz clock
+  speed and at least 4 cores in total.
 Monitor
-  It is recommended to have at least 16 inches of
-  monitor space to work efficiently with Zrythm.
+  It is recommended to have at least 16 inches of monitor space to work
+  efficiently with Zrythm.
 Audio interface
-  An audio interface offers low latency and better
-  quality than integrated sound cards (especially if
-  recording audio).
+  An audio interface offers low latency and better quality than integrated
+  sound cards (especially if recording audio).
 MIDI keyboard
-  For quickly trying out melodies, recording and
-  controlling knobs and buttons.
+  A MIDI keyboard is useful for quickly trying out melodies, recording, and controlling knobs and buttons.
 
 JACK
 ----
@@ -44,18 +133,11 @@ so we will skip this part.
 
 Memory Locking
 --------------
-Zrythm requires memory locking privileges for
-reliable, dropout-free operation. In short, if
-data is not locked into memory, it can be swapped
-by the kernel, causing xruns when attempting to
-access the data.
+Zrythm requires memory locking privileges for reliable, dropout-free operation. In short, if data is not locked into memory, it can be swapped by the kernel, causing xruns when attempting to access the data.
 
 Realtime Scheduling
 -------------------
-Zrythm requires realtime scheduling privileges for
-reliable, dropout-free operation. Realtime (RT)
-scheduling is a feature that enables applications to
-meet timing deadlines more reliably.
+Zrythm requires realtime scheduling privileges for reliable, dropout-free operation. Realtime (RT) scheduling is a feature that enables applications to meet timing deadlines more reliably.
 
 GNU/Linux
 +++++++++
