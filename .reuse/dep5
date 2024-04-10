@@ -636,7 +636,11 @@ Files:
   doc/user/_static/img/velocity-editor.png
   doc/user/_static/img/zoom-buttons.png
   doc/user/_static/img/zrythm-in-qjackctl.png
-Copyright: 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+  doc/user/_static/img/left-panel-toggle.png
+  doc/user/_static/img/main-menu.png
+  doc/user/_static/img/panel-tabs.png
+  doc/user/_static/img/timeline-detaching.png
+Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:
   Screenshots and other images used in the user manual
