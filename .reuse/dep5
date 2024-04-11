@@ -640,6 +640,12 @@ Files:
   doc/user/_static/img/main-menu.png
   doc/user/_static/img/panel-tabs.png
   doc/user/_static/img/timeline-detaching.png
+  doc/user/_static/img/compressor-plugin-window.png
+  doc/user/_static/img/drop-plugin-to-modulators-tab.png
+  doc/user/_static/img/ot-simian-plugin-window.png
+  doc/user/_static/img/plugin-browser-right-click.png
+  doc/user/_static/img/plugin-collections.png
+  doc/user/_static/img/use-backup.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:

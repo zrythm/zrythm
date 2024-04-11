@@ -137,6 +137,7 @@ for icon in os.listdir ('@MESON_DOC_USER_BUILD_DIR@/_static/img'):
 
 rst_epilog = """
 .. _issue_tracker: @ISSUE_TRACKER_URL@
+.. _LV2: https://lv2plug.in/
 """
 
 # Theme options are theme-specific and customize the

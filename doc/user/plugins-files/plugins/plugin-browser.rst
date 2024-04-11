@@ -63,6 +63,25 @@ Keyword Search
 Plugins can also be searched by keywords using the
 provided search bar.
 
+Collections
+-----------
+
+Plugins can be saved inside custom collections. Collections can be created and modified
+in the :guilabel:`Collection` tab by using the provided toolbar buttons.
+
+.. figure:: /_static/img/plugin-collections.png
+   :align: center
+
+   Plugin collections
+
+Plugins can be added to a collection by right-clicking them and selecting
+a collection to add them too. A collection must be created beforehand.
+
+.. figure:: /_static/img/plugin-browser-right-click.png
+   :align: center
+
+   Option to add the plugin to *My collection*
+
 .. _instantiating-plugins:
 
 Instantiating Plugins
@@ -76,23 +95,33 @@ You can drag and drop the selected plugin into empty space in the
 Tracklist or into empty space in the Mixer to
 create a new track using that plugin.
 
-.. image:: /_static/img/drop-plugin-to-mixer.png
+.. figure:: /_static/img/drop-plugin-to-tracklist.png
    :align: center
 
-.. image:: /_static/img/drop-plugin-to-tracklist.png
+   Dropping a plugin into the tracklist
+
+.. figure:: /_static/img/drop-plugin-to-mixer.png
    :align: center
+
+   Dropping a plugin into the mixer
 
 Alternatively, you can drag the plugin on a mixer slot
 to add it there or replace the previous plugin.
 
-.. image:: /_static/img/drop-plugin-to-slot.png
+.. figure:: /_static/img/drop-plugin-to-slot.png
    :align: center
+
+   Dropping a plugin into a slot
+
+.. tip:: Dragging also works in plugin slots in the inspector.
 
 If the plugin is a
 modulator, you can drop it into the Modulators tab.
 
-.. image:: /_static/img/drag-to-modulators-tab.png
+.. figure:: /_static/img/drop-plugin-to-modulators-tab.png
    :align: center
+
+   Dropping a modulator plugin into the project modulators section
 
 Double Click/Enter
 ~~~~~~~~~~~~~~~~~~

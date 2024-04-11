@@ -3,7 +3,6 @@
 
 copy_files = [
   'intro.rst',
-  'project-management-and-compatibility.rst',
   'project-structure.rst',
   'saving-loading.rst',
   ]

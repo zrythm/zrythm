@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -15,8 +15,7 @@ Glossary
     the system MIDI ports and :term:`JACK`.
 
   AU
-    A proprietary plugin standard, mainly used on
-    MacOS. We recommend using :term:`LV2` instead.
+    A plugin standard developed by Apple, mainly used on MacOS.
 
   Balance
     Balance (or :term:`Stereo` balance) is the
@@ -67,6 +66,10 @@ Glossary
     :abbr:`DSP (Digital Signal Processing)` means
     audio signal processing.
 
+  DSSI
+    :abbr:`DSSI (Disposable Soft Synth Interface)` is a plugin standard for
+    instrument plugins, that has been superseded by :term:`LV2`.
+
   Free software
     Free/libre software means users control the
     program, as opposed to proprietary software,
@@ -80,12 +83,19 @@ Glossary
     de facto standard sound server for professional
     audio on GNU/Linux.
 
+  LADSPA
+    :abbr:`LADSPA (Linux Audio Developers Simple Plugin API)` is an old
+    plugin standard for effect plugins that has been superseded by
+    :term:`LV2`.
+
   LV2
     :abbr:`LV2 (LADSPA Version 2)` is an extensible,
     cross-platform open standard for audio
     plugins. LV2 has a simple core interface, which
     is accompanied by extensions that add more
     advanced functionality.
+
+    .. seealso: `LV2`_
 
   MIDI
     :abbr:`MIDI (Musical Instrument Digital Interface)`
@@ -139,8 +149,7 @@ Glossary
     :ref:`regions`.
 
   SFZ
-    SFZ is a file format for sample-based
-    virtual instruments.
+    SFZ is a file format for sample-based virtual instruments.
 
   SF2
     SF2 is the successor of :term:`SFZ`.
@@ -150,15 +159,13 @@ Glossary
     also :term:`Mono`).
 
   VST2
-    A proprietary plugin standard and the predecessor
-    of VST3. We do not recommend using this standard.
+    A proprietary plugin standard and the predecessor of VST3. We do not
+    recommend using this standard.
 
   VST3
     VST3 is a plugin standard that supersedes
     :term:`VST2`. It is better to use VST3 than VST2,
     because it is released as :term:`Free software`.
-    However, we recommend using the :term:`LV2`
-    standard instead.
 
   XRUN
     A buffer overrun or underrun. This means that

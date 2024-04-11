@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -126,3 +126,10 @@ will automatically delete unused files during save.
 
 .. note:: These files will be copied to backups as
    well.
+
+Project Compatibility
+---------------------
+
+Project format is not expected to change in a breaking way. When we make
+changes to the project format, Zrythm will auto-convert old projects to the
+new format.

@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -9,11 +9,9 @@ Plugin Window
 Custom UIs
 ----------
 When Plugin UIs are opened, a window such as the following
-will be displayed, if the plugin ships with its own UI. This
-window may contain additions by Zrythm (such as
-`File` and `Presets` menus).
+will be displayed, if the plugin ships with its own UI.
 
-.. image:: /_static/img/della_plugin_window.png
+.. image:: /_static/img/ot-simian-plugin-window.png
    :align: center
 
 Generic UIs
@@ -21,38 +19,27 @@ Generic UIs
 If the plugin does not ship with its own UI, the following
 generic UI will be generated for it.
 
-.. image:: /_static/img/haas_plugin_window.png
+.. image:: /_static/img/compressor-plugin-window.png
    :align: center
 
 Bridging
 --------
-Most plugins are instantiated in the same process as Zrythm.
-This has the advantage that :term:`DSP` is very fast, however,
-some plugin UIs are not compatible with Zrythm and need to be
-bridged (ie, run as separate processes).
 
-.. note:: When it is possible to bridge only the UI,
-  Zrythm will do so, and this will not have any
-  performance implications on DSP. If bridging the whole
-  plugin is required, this will have some performance
-  implications, since it is required to communicate
-  with the plugin in another process.
+By default, plugins are instantiated in a separate process from Zrythm so that Zrythm
+doesn't crash if a plugin misbehaves (Zrythm calls this *bridging*). However, this has the side effect that
+:term:`DSP` is not as fast as it could be (although fast enough in most
+cases), because there is cross-process communication.
 
-This process is transparent to the user and only
-mentioned for reference.
-
-Opening Plugins in Bridged Mode
--------------------------------
-Sometimes, you may need to manually tell Zrythm
+Sometimes, you may want to manually tell Zrythm
 to open plugins in a specific way. You can find the
 options available for each plugin by right clicking
 on the plugin in the :ref:`plugin-browser`.
 
-.. figure:: /_static/img/open-plugin-bridged.png
+.. figure:: /_static/img/plugin-browser-right-click.png
    :align: center
 
-   Opening ZynAddSubFX in bridged mode
+   Opening Compressor in normal (unbridged) mode
 
-Zrythm will remember the last setting used for each
-plugin and automatically apply it when you choose to
-instantiate that plugin from the plugin browser.
+.. tip:: Zrythm will remember the last setting used for each
+   plugin and automatically apply it when you choose to
+   instantiate that plugin from the plugin browser in the future.

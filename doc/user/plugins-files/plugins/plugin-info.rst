@@ -10,8 +10,7 @@ There are various :term:`plugin <Plugin>`
 formats supported by Zrythm, covered in
 :ref:`scanning-plugins`.
 
-.. note:: In Zrythm, :term:`SFZ`/:term:`SF2` are also
-   used as plugins.
+.. hint:: In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins.
 
 .. _plugin-types:
 
