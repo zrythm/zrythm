@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-06 09:30+0900\n"
-"PO-Revision-Date: 2024-03-29 20:45+0000\n"
+"PO-Revision-Date: 2024-04-09 20:45+0000\n"
 "Last-Translator: Semih <semihbrn10@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
@@ -2950,7 +2950,7 @@ msgstr ""
 #: src/utils/gtk.c:988 src/gui/widgets/right_dock_edge.c:102
 #: src/gui/widgets/right_dock_edge.c:129
 msgid "File Browser"
-msgstr ""
+msgstr "Dosya Tarayıcı"
 
 #: src/utils/gtk.c:990 src/gui/widgets/right_dock_edge.c:118
 msgid "Chord Preset Browser"
@@ -3223,9 +3223,8 @@ msgid "Undo"
 msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:111
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Bağlantıyı sil"
+msgstr "İzleme Bölümü"
 
 #: src/gui/widgets/preferences.c:156
 msgid "All preferences have been successfully reset to initial values"
@@ -3705,7 +3704,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:986
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piyano Rulosu"
 
 #: src/gui/widgets/track.c:997
 #, fuzzy
@@ -7674,7 +7673,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1356
 msgid "Scripting"
-msgstr ""
+msgstr "Scripting"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1361
 msgid "Default script"
