@@ -22,9 +22,6 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
  * @{
  */
 
-#define MIDI_MAPPING_SCHEMA_VERSION 1
-#define MIDI_MAPPINGS_SCHEMA_VERSION 1
-
 #define MIDI_MAPPINGS (PROJECT->midi_mappings)
 
 /**
@@ -32,13 +29,10 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
  */
 typedef struct MidiMapping
 {
-  int schema_version;
-
   /** Raw MIDI signal. */
   midi_byte_t key[3];
 
-  /** The device that this connection will be mapped
-   * for. */
+  /** The device that this connection will be mapped for. */
   ExtPort * device_port;
 
   /** Destination. */
@@ -47,8 +41,7 @@ typedef struct MidiMapping
   /**
    * Destination pointer, for convenience.
    *
-   * @note This pointer is not owned by this
-   *   instance.
+   * @note This pointer is not owned by this instance.
    */
   Port * dest;
 
@@ -64,8 +57,6 @@ typedef struct MidiMapping
  */
 typedef struct MidiMappings
 {
-  int schema_version;
-
   MidiMapping ** mappings;
   size_t         mappings_size;
   int            num_mappings;

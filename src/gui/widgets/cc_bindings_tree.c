@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/midi_mapping_action.h"
@@ -18,25 +18,6 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (CcBindingsTreeWidget, cc_bindings_tree_widget, GTK_TYPE_BOX)
-
-enum
-{
-  COL_ENABLED,
-  COL_CONTROL,
-  COL_PATH,
-
-  /* not an actual column, index of the mapping */
-  COL_MIDI_MAPPING,
-
-  /* TODO add the following in the future */
-#if 0
-  COL_DEVICE,
-  COL_MIN,
-  COL_MAX,
-#endif
-
-  NUM_COLS
-};
 
 #if 0
 static void
@@ -149,18 +130,6 @@ generate_column_view (CcBindingsTreeWidget * self)
     self->column_view, self->item_factories, ITEM_FACTORY_TOGGLE, Z_F_EDITABLE,
     Z_F_RESIZABLE, NULL, _ ("On"));
 
-#if 0
-  /* column for device */
-  renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("Device"), renderer,
-      "text", COL_DEVICE,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-#endif
-
   /* column for control */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories, ITEM_FACTORY_TEXT,
@@ -170,28 +139,6 @@ generate_column_view (CcBindingsTreeWidget * self)
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories, ITEM_FACTORY_TEXT,
     Z_F_NOT_EDITABLE, Z_F_RESIZABLE, NULL, _ ("Destination"));
-
-#if 0
-  /* column for min */
-  renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("Min"), renderer,
-      "text", COL_PATH,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-
-  /* column for max */
-  renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("Max"), renderer,
-      "text", COL_PATH,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-#endif
 
   /* connect right click handler */
   GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -229,9 +176,21 @@ cc_bindings_tree_widget_class_init (CcBindingsTreeWidgetClass * klass)
 static void
 cc_bindings_tree_widget_init (CcBindingsTreeWidget * self)
 {
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+
   self->scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->scroll));
   gtk_widget_set_hexpand (GTK_WIDGET (self->scroll), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self->scroll), true);
 
   generate_column_view (self);
+
+  self->toolbar = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2));
+  self->delete_btn =
+    GTK_BUTTON (gtk_button_new_from_icon_name ("box-icons-trash"));
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->delete_btn), "app.delete-midi-cc-bindings");
+  gtk_box_append (self->toolbar, GTK_WIDGET (self->delete_btn));
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->toolbar));
 }

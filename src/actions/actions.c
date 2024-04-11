@@ -36,11 +36,14 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/cc_bindings.h"
+#include "gui/widgets/cc_bindings_tree.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/chord_arranger.h"
@@ -1513,19 +1516,42 @@ activate_bind_midi_cc (
 }
 
 void
-activate_delete_cc_binding (
+activate_delete_midi_cc_bindings (
   GSimpleAction * simple_action,
   GVariant *      _variant,
   gpointer        user_data)
 {
-  /* get index */
-  int idx = (int) g_variant_get_int32 (_variant);
-
-  GError * err = NULL;
-  bool     ret = midi_mapping_action_perform_unbind (idx, &err);
-  if (!ret)
+  GtkSelectionModel * sel_model =
+    gtk_column_view_get_model (MW_CC_BINDINGS->bindings_tree->column_view);
+  guint       n_items = g_list_model_get_n_items (G_LIST_MODEL (sel_model));
+  GPtrArray * mappings = g_ptr_array_new ();
+  for (guint i = 0; i < n_items; i++)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to unbind"));
+      if (gtk_selection_model_is_selected (sel_model, i))
+        {
+          WrappedObjectWithChangeSignal * wobj =
+            g_list_model_get_item (G_LIST_MODEL (sel_model), i);
+          MidiMapping * mm = (MidiMapping *) wobj->obj;
+          g_ptr_array_add (mappings, mm);
+        }
+    }
+
+  for (size_t i = 0; i < mappings->len; i++)
+    {
+      MidiMapping * mm = g_ptr_array_index (mappings, i);
+      int           idx = midi_mapping_get_index (MIDI_MAPPINGS, mm);
+      GError *      err = NULL;
+      bool          ret = midi_mapping_action_perform_unbind (idx, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to unbind"));
+          return;
+        }
+      else
+        {
+          UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
+          ua->num_actions = i + 1;
+        }
     }
 }
 

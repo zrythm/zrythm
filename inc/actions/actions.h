@@ -309,11 +309,7 @@ activate_bind_midi_cc (
   GVariant *      _variant,
   gpointer        user_data);
 
-void
-activate_delete_cc_binding (
-  GSimpleAction * simple_action,
-  GVariant *      _variant,
-  gpointer        user_data);
+DECLARE_SIMPLE (activate_delete_midi_cc_bindings);
 
 DECLARE_SIMPLE (activate_toggle_timeline_event_viewer);
 DECLARE_SIMPLE (activate_toggle_editor_event_viewer);

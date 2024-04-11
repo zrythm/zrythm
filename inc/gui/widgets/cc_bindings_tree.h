@@ -1,8 +1,7 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// clang-format off
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -38,9 +37,11 @@ typedef struct _CcBindingsTreeWidget
   /* The column view */
   GtkColumnView * column_view;
 
-  /** Array of ItemFactory pointers for each
-   * column. */
+  /** Array of ItemFactory pointers for each column. */
   GPtrArray * item_factories;
+
+  GtkBox *    toolbar;
+  GtkButton * delete_btn;
 } CcBindingsTreeWidget;
 
 /**

@@ -728,7 +728,9 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* cc bindings */
     { "bind-midi-cc", activate_bind_midi_cc, "s" },
-    { "delete-cc-binding", activate_delete_cc_binding, "i" },
+    {
+     "delete-midi-cc-bindings", activate_delete_midi_cc_bindings,
+     },
 
  /* port actions */
     { "reset-stereo-balance", activate_reset_stereo_balance, "s" },

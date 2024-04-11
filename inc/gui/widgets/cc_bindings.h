@@ -31,6 +31,8 @@ G_DECLARE_FINAL_TYPE (
   CC_BINDINGS_WIDGET,
   GtkBox)
 
+#define MW_CC_BINDINGS (MW_MAIN_NOTEBOOK->cc_bindings)
+
 /**
  * Left dock widget.
  */

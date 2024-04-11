@@ -18,7 +18,6 @@ create_midi_mapping (void)
 {
   MidiMapping * self = object_new (MidiMapping);
 
-  self->schema_version = MIDI_MAPPING_SCHEMA_VERSION;
   self->gobj = wrapped_object_with_change_signal_new (
     self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
 
@@ -289,7 +288,6 @@ MidiMappings *
 midi_mappings_new (void)
 {
   MidiMappings * self = object_new (MidiMappings);
-  self->schema_version = MIDI_MAPPINGS_SCHEMA_VERSION;
 
   self->mappings_size = 4;
   self->mappings = object_new_n (self->mappings_size, MidiMapping);
@@ -329,7 +327,6 @@ MidiMappings *
 midi_mappings_clone (const MidiMappings * src)
 {
   MidiMappings * self = object_new (MidiMappings);
-  self->schema_version = MIDI_MAPPINGS_SCHEMA_VERSION;
 
   self->mappings = object_new_n ((size_t) src->num_mappings, MidiMapping);
   for (int i = 0; i < src->num_mappings; i++)
