@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-11 12:14+0900\n"
+"POT-Creation-Date: 2024-04-12 07:18+0900\n"
 "PO-Revision-Date: 2024-04-05 20:45+0000\n"
 "Last-Translator: Deleted User <noreply+82786@weblate.org>\n"
 "Language: ja\n"
@@ -67,10 +67,11 @@ msgid "User path"
 msgstr "ユーザーパス"
 
 #: ../../appendix/files-and-directories.rst:11
+#, fuzzy
 msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
-"directory for saving your user data. See :term:`Zrythm user path` for "
-"details."
+"directory for saving your user data. See :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
 "Zrythmを初めて起動するときには、ユーザーデータを保存するディレクトリの選択も"
 "求められます。詳しくは :term:`Zrythm user path` をご覧ください。"
@@ -197,8 +198,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Zrythm provides ways to override some of these files with user-specified "
-"files in the :term:`Zrythm user path`. See :ref:`theming/intro:Theming` for "
-"details."
+"files in the :ref:`Zrythm user path <configuration/preferences:Zrythm User "
+"Path>`. See :ref:`theming/intro:Theming` for details."
 msgstr ""
 "Zrythmは、これらのファイルの一部を :term:`Zrythm user path` のユーザー指定"
 "ファイルでオーバーライドする方法を提供します。詳細については、 :doc:`../ "
@@ -213,9 +214,11 @@ msgid "Cached Plugin Descriptors"
 msgstr "キャッシュされたプラグインの記述子"
 
 #: ../../appendix/files-and-directories.rst:81
+#, fuzzy
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
-"`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
+"`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "高速スキャンのためのプラグイン記述子キャッシュ。これは、 :term:`Zrythm user "
 "path` の下にある `cached_plugin_descriptors.yaml` というファイルにあります。"
@@ -225,28 +228,52 @@ msgid "Plugin Collections"
 msgstr "プラグインコレクション"
 
 #: ../../appendix/files-and-directories.rst:88
+#, fuzzy
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
-"`plugin_collections.yaml` under the :term:`Zrythm user path`."
+"`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 msgstr ""
 "このファイルには、プラグインコレクションが含まれています。これは :term:"
 "`Zrythm user path` の下の :file:`plugin_collections.yaml` にあります。"
 
 #: ../../appendix/files-and-directories.rst:94
-msgid "Log File"
-msgstr "ログファイル"
+msgid "Plugin Settings"
+msgstr "プラグイン設定"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
+"Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
+"plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
+"ref:`bridge mode <plugins-files/plugins/plugin-window:Opening Plugins in "
+"Bridged Mode>` to use and whether to use a :ref:`generic UI <plugins-files/"
+"plugins/plugin-window:Generic UIs>`."
+msgstr ""
+
+#: ../../appendix/files-and-directories.rst:103
+msgid ""
+"This file is generated and maintained automatically by Zrythm and users are "
+"not expected to edit it."
+msgstr ""
+
+#: ../../appendix/files-and-directories.rst:107
+msgid "Log File"
+msgstr "ログファイル"
+
+#: ../../appendix/files-and-directories.rst:108
+#, fuzzy
+msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
-"subdirectory under the :term:`Zrythm user path`. The filename will contain "
-"the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
+"subdirectory under the :ref:`Zrythm user path <configuration/preferences:"
+"Zrythm User Path>`. The filename will contain the current date and time, for "
+"example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 "Zrythmは、実行するたびに、 :term:`Zrythm user path` の下の :file:`log` サブ"
 "ディレクトリ内のログファイルに書き込みます。ファイル名には、現在の日付と時刻"
 "が含まれます（例 :file:`log_2020-06-26_15-34-19.log` ）。"
 
-#: ../../appendix/files-and-directories.rst:101
+#: ../../appendix/files-and-directories.rst:114
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr "このログファイルは、クラッシュやその他の問題のデバッグに役立ちます。"
 
@@ -565,79 +592,6 @@ msgstr "スケールの強調表示"
 msgid "Scale and chord highlighting"
 msgstr "スケールとコードの強調表示"
 
-#: ../../configuration/additional-settings.rst:7
-msgid "Additional Settings"
-msgstr "その他の設定"
-
-#: ../../configuration/additional-settings.rst:10
-msgid "GSettings"
-msgstr "GSettings"
-
-#: ../../configuration/additional-settings.rst:11
-msgid ""
-"Zrythm stores most of its configuration using the GSettings mechanism, which "
-"comes with the ``gsettings`` command for changing settings from the command "
-"line, or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
-"DconfEditor>`_."
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:18
-#, fuzzy
-msgid ""
-"Normally, you shouldn't need to access any of these settings as most of them "
-"are found inside Zrythm's UI, and it is not recommended to edit them as "
-"Zrythm validates some settings before it saves them or uses some settings "
-"internally."
-msgstr ""
-"通常、これらの設定のほとんどは Zrythm の UI 内に存在するので、これらの設定に"
-"アクセスする必要はないし、Zrythmはこれらの設定を保存する前にチェックしている"
-"が、手動で編集することが可能です。"
-
-#: ../../configuration/additional-settings.rst:26
-msgid "Viewing the Current Settings"
-msgstr "現設定を表示"
-
-#: ../../configuration/additional-settings.rst:28
-msgid "See :option:`zrythm --print-settings`."
-msgstr ":option:`zrythm --print-settings` を参照してください。"
-
-#: ../../configuration/additional-settings.rst:31
-#: ../../configuration/preferences.rst:106
-msgid "Reset to Factory Settings"
-msgstr "初期設定にリセット"
-
-#: ../../configuration/additional-settings.rst:33
-msgid ""
-"See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
-"Reset to Factory Settings`."
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:37
-msgid "Plugin Settings"
-msgstr "プラグイン設定"
-
-#: ../../configuration/additional-settings.rst:38
-msgid ""
-"Located at :file:`plugin-settings.yaml` under the :term:`Zrythm user path`, "
-"this is a collection of per-plugin settings, such as whether to open the "
-"plugin with :term:`Carla`, the :ref:`bridge mode <plugins-files/plugins/"
-"plugin-window:Opening Plugins in Bridged Mode>` to use and whether to use a :"
-"ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:46
-msgid ""
-"Zrythm will remember the last setting used for each plugin and automatically "
-"apply it when you choose to instantiate that plugin from the :doc:`plugin "
-"browser <../plugins-files/plugins/plugin-browser>`."
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:51
-msgid ""
-"This file is generated and maintained automatically by Zrythm and users are "
-"not expected to edit it."
-msgstr ""
-
 #: ../../configuration/device-setup.rst:7
 msgid "Devices"
 msgstr "デバイス"
@@ -740,17 +694,11 @@ msgid "MIDI CC bindings"
 msgstr "MIDI CC バインディング"
 
 #: ../../configuration/device-setup.rst:88
-#, fuzzy
 msgid ""
-"Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
-"`Delete`."
+"Bindings can be enabled/disabled by clicking the checkbox on each row, or "
+"deleted by selecting one or more rows and pressing the :guilabel:`Delete` "
+"button in the toolbar at the bottom."
 msgstr ""
-"トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除する"
-"ことができます。"
-
-#: ../../configuration/device-setup.rst:94
-msgid "Deleting a binding"
-msgstr "バインディングの削除"
 
 #: ../../configuration/intro.rst:9
 msgid "Configuration"
@@ -766,7 +714,7 @@ msgstr "設定"
 #, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings that "
-"can be accessed by clicking the gear icon or with :kbd:`Control-Shift-p`"
+"can be accessed by clicking the gear icon or with :kbd:`Control-,`"
 msgstr ""
 "Zrythm には、歯車アイコンをクリックするか、``Ctrl+Shift+P`` をクリックしてア"
 "クセスできるすべてのグローバル設定を含む環境設定ダイアログがあります。"
@@ -779,46 +727,97 @@ msgstr "設定ダイアログを表示します。"
 #: ../../configuration/preferences.rst:22
 msgid ""
 "Preferences are grouped by sections, such as :guilabel:`General` and :"
-"guilabel:`Plugins`, and each item in the preferences contains a tooltip that "
-"explains what it does."
+"guilabel:`Plugins`, and each item in the preferences contains a description "
+"that explains what it does (when not self-explanatory)."
 msgstr ""
 
 #: ../../configuration/preferences.rst:27
-msgid "Zrythm must be restarted for changes to take effect."
+msgid "Zrythm must be restarted for some changes to take effect."
 msgstr ""
 
-#: ../../configuration/preferences.rst:31
+#: ../../configuration/preferences.rst:29
+#, fuzzy
+msgid ""
+"Zrythm stores these preferences using the GSettings mechanism, which comes "
+"with the ``gsettings`` command for changing settings from the command line, "
+"or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
+msgstr ""
+"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-tool."
+"html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_　のGUIツールがあるGSettingsを使用し、設定を保存しています。"
+
+#: ../../configuration/preferences.rst:35
+#, fuzzy
+msgid ""
+"Normally, you shouldn't need to access any of these settings this way and it "
+"is not recommended to edit them this way as Zrythm validates some settings "
+"before it saves them (Zrythm also uses some settings internally), but this "
+"can be useful for debugging problems."
+msgstr ""
+"通常、これらの設定のほとんどは Zrythm の UI 内に存在するので、これらの設定に"
+"アクセスする必要はないし、Zrythmはこれらの設定を保存する前にチェックしている"
+"が、手動で編集することが可能です。"
+
+#: ../../configuration/preferences.rst:42
 msgid "Searching"
 msgstr "検索"
 
-#: ../../configuration/preferences.rst:33
+#: ../../configuration/preferences.rst:44
 msgid ""
 "The preferences are searchable. You can simply start typing a keyword and "
 "results will appear automatically. Clicking on one of the results will "
 "navigate to the corresponding item in the preferences."
 msgstr ""
 
-#: ../../configuration/preferences.rst:42
+#: ../../configuration/preferences.rst:53
 #, fuzzy
 msgid "Searching the user preferences"
 msgstr "ファイルブラウザの設定"
 
-#: ../../configuration/preferences.rst:45
+#: ../../configuration/preferences.rst:56
 #, fuzzy
 msgid "Notable Preferences"
 msgstr "設定"
 
-#: ../../configuration/preferences.rst:47
+#: ../../configuration/preferences.rst:58
 msgid ""
 "Below is a list of notable preference items with some comments about them."
 msgstr ""
 
-#: ../../configuration/preferences.rst:51
+#: ../../configuration/preferences.rst:61
+#, fuzzy
+msgid "Zrythm User Path"
+msgstr "Zrythm ユーザー パス"
+
+#: ../../configuration/preferences.rst:63
+#, fuzzy
+msgid ""
+"This is the path where Zrythm will save user data, such as projects, "
+"temporary files, presets and exported audio. The default is :file:`zrythm` "
+"under"
+msgstr ""
+"プロジェクト、一時ファイル、プリセット、エクスポートされたオーディオなど、"
+"Zrythmがユーザーデータを保存するパス。デフォルトは下記の下の :file:`zrythm` "
+"です。"
+
+#: ../../configuration/preferences.rst:66
+msgid ""
+":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification <https://"
+"specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
+"freedesktop-compliant systems (or if :envvar:`XDG_DATA_HOME` is defined), or"
+msgstr ""
+
+#: ../../configuration/preferences.rst:71
+msgid "``%LOCALAPPDATA%`` on Windows"
+msgstr ""
+
+#: ../../configuration/preferences.rst:74
 #, fuzzy
 msgid "Backend Selection"
 msgstr "選択を行う"
 
-#: ../../configuration/preferences.rst:53
+#: ../../configuration/preferences.rst:76
 msgid ""
 "The audio/MIDI backend in under :menuselection:`General --> Engine` controls "
 "which audio engine implementation Zrythm will use to receive input from and "
@@ -826,78 +825,91 @@ msgid ""
 "combination on all systems."
 msgstr ""
 
-#: ../../configuration/preferences.rst:61
+#: ../../configuration/preferences.rst:84
 msgid "Input Devices/Controllers"
 msgstr ""
 
-#: ../../configuration/preferences.rst:63
+#: ../../configuration/preferences.rst:86
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
 "must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
 "guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
 msgstr ""
 
-#: ../../configuration/preferences.rst:69
+#: ../../configuration/preferences.rst:92
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
 
-#: ../../configuration/preferences.rst:73
+#: ../../configuration/preferences.rst:95
 #, fuzzy
 msgid "Undo Stack Length"
 msgstr "元に戻すスタックの長さ"
 
-#: ../../configuration/preferences.rst:75
+#: ../../configuration/preferences.rst:97
 msgid ""
 "The size of the undo stack, found under :menuselection:`Editing --> Undo` "
 "controls how far back you can undo user actions in a given project. For "
 "example, if set to 128, you can go back 128 (undoable) user actions."
 msgstr ""
 
-#: ../../configuration/preferences.rst:81
+#: ../../configuration/preferences.rst:103
 msgid ""
 "The undo history is saved inside Zrythm projects, so you can still undo even "
 "after you load the project in a new instance of Zrythm."
 msgstr ""
 
-#: ../../configuration/preferences.rst:85
+#: ../../configuration/preferences.rst:107
+msgid ""
+"Consider this functionality temporary/short-term. Do not rely long-term on "
+"this functionality as Zrythm may drop the undo history when upgrading "
+"projects to newer versions (due to compatibility reasons, or to fix bugs)."
+msgstr ""
+
+#: ../../configuration/preferences.rst:109
 msgid ""
 "Setting this to a very large number will increase the size of project files "
 "and it may take longer to save/load projects. We recommend leaving it to the "
 "default value."
 msgstr ""
 
-#: ../../configuration/preferences.rst:91
+#: ../../configuration/preferences.rst:115
 #, fuzzy
 msgid "Backup Saving"
 msgstr "バックアップ"
 
-#: ../../configuration/preferences.rst:93
+#: ../../configuration/preferences.rst:117
 msgid ""
 "Zrythm can save backups automatically while working on a project. You can "
 "specify the interval to do this, in minutes, under :menuselection:`Projects "
 "--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 
-#: ../../configuration/preferences.rst:100
+#: ../../configuration/preferences.rst:124
 #, fuzzy
 msgid "User Interface Language"
 msgstr "ユーザー インターフェイス言語"
 
-#: ../../configuration/preferences.rst:102
+#: ../../configuration/preferences.rst:126
 msgid ""
 "The language of the user interface can be changed under :menuselection:`UI --"
 "> General`."
 msgstr ""
 
-#: ../../configuration/preferences.rst:108
+#: ../../configuration/preferences.rst:130
+msgid "Reset to Factory Settings"
+msgstr "初期設定にリセット"
+
+#: ../../configuration/preferences.rst:132
 msgid ""
 "There is an option to reset Zrythm to its default settings under :"
 "menuselection:`General --> Other`."
 msgstr ""
 
-#: ../../configuration/preferences.rst:111
+#: ../../configuration/preferences.rst:135
 #, fuzzy
-msgid "This behaves similarly to :option:`zrythm --reset-to-factory`."
+msgid ""
+"This behaves similarly to :option:`zrythm --reset-to-factory` on the command "
+"line."
 msgstr ":option:`zrythm --reset-to-factory` を参照してください。"
 
 #: ../../configuration/shortcuts.rst:7
@@ -930,72 +942,6 @@ msgstr "カスタムなショートカット・キー"
 msgid ""
 "Custom shortcuts are currently unsupported and are scheduled to be "
 "implemented in version 2."
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:8
-msgid "UI Scaling and Wayland"
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:11
-#, fuzzy
-msgid "About Wayland"
-msgstr "Flatpak"
-
-#: ../../configuration/ui-scaling-and-wayland.rst:12
-msgid ""
-"Zrythm currently forces X11 (i.e., XWayland) when running on Wayland because "
-"almost all plugins on GNU/Linux are built against X11 and some plugin UIs "
-"crash when running under Wayland directly."
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:17
-msgid ""
-"You can avoid these crashes by :ref:`bridging<plugins-files/plugins/plugin-"
-"window:Bridging>` plugins."
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:19
-msgid ""
-"If you are fine with this and prefer Zrythm to use pure Wayland you can use "
-"the :envvar:`GDK_BACKEND` environment variable. You can either pass this "
-"variable when running Zrythm from the terminal,"
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:29
-msgid "or you can edit the Desktop Entry for Zrythm."
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:37
-#, fuzzy
-msgid ""
-"`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland.html>`_"
-msgstr ""
-"`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-overview."
-"html>`_"
-
-#: ../../configuration/ui-scaling-and-wayland.rst:40
-#, fuzzy
-msgid "UI Scaling"
-msgstr "AUスキャン"
-
-#: ../../configuration/ui-scaling-and-wayland.rst:41
-msgid ""
-"If you are using Wayland and your window manager already has the correct "
-"scaling settings, you may be able to get the user interface scaled correctly "
-"by having Zrythm running entirely in Wayland using :envvar:`GDK_BACKEND`."
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:46
-msgid ""
-"On Xorg, you can scale the interface by setting the :envvar:`GDK_SCALE` "
-"environment variable:"
-msgstr ""
-
-#: ../../configuration/ui-scaling-and-wayland.rst:54
-msgid ""
-"GTK3/4 does not support fractional scaling currently, so fractional factors "
-"will be ignored. This environment variable is also ignored in Mutter Wayland "
-"sessions."
 msgstr ""
 
 #: ../../contributing/intro.rst:7 ../../contributing/overview.rst:7
@@ -3348,7 +3294,7 @@ msgid ""
 "`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:135
+#: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:145
 msgid "Region"
 msgstr "リージョン"
 
@@ -4509,8 +4455,9 @@ msgstr "初期設定"
 #, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a dialog that lets you configure "
-"the basic settings that Zrythm will use. These include the :term:`Zrythm "
-"user path` and the language of the user interface."
+"the basic settings that Zrythm will use. These include the :ref:`Zrythm user "
+"path <configuration/preferences:Zrythm User Path>` and the language of the "
+"user interface."
 msgstr ""
 "最初に Zrythm を起動すると、Zrythm が使用する基本的な設定を行うウィザードが表"
 "示されます。これには :term:`Zrythm user path` 、ユーザーインターフェースの言"
@@ -4545,8 +4492,10 @@ msgid "Path"
 msgstr "パス"
 
 #: ../../getting-started/running-zrythm.rst:34
-msgid "This is the :term:`Zrythm user path`."
-msgstr "これは :term:`Zrythm user path` です。"
+msgid ""
+"This is the :ref:`Zrythm user path <configuration/preferences:Zrythm User "
+"Path>`."
+msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:36
 msgid "More settings are available in the :ref:`preferences`."
@@ -4731,7 +4680,7 @@ msgstr "states"
 
 #: ../../getting-started/system-requirements.rst:72
 #: ../../getting-started/system-requirements.rst:125
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:77
 msgid "JACK"
 msgstr "JACK"
 
@@ -4932,18 +4881,14 @@ msgid "AU"
 msgstr "AU"
 
 #: ../../glossary/intro.rst:18
-msgid ""
-"A proprietary plugin standard, mainly used on MacOS. We recommend using :"
-"term:`LV2` instead."
+msgid "A plugin standard developed by Apple, mainly used on MacOS."
 msgstr ""
-"プロプライエタリなプラグインの規格で、主にMacOSで使われています。代わりに :"
-"term:`LV2` を使うことをお勧めします。"
 
-#: ../../glossary/intro.rst:20
+#: ../../glossary/intro.rst:19
 msgid "Balance"
 msgstr "バランス"
 
-#: ../../glossary/intro.rst:22
+#: ../../glossary/intro.rst:21
 msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo "
 "audio signal."
@@ -4951,39 +4896,39 @@ msgstr ""
 "バランス（または :term:`Stereo` バランス）とは、ステレオオーディオ信号の左右"
 "のバランスのことです。"
 
-#: ../../glossary/intro.rst:24
+#: ../../glossary/intro.rst:23
 msgid "Bounce"
 msgstr "バウンス"
 
-#: ../../glossary/intro.rst:26
+#: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
 msgstr "バウンスとは、オーディオに書き出すことを意味します。"
 
-#: ../../glossary/intro.rst:27
+#: ../../glossary/intro.rst:26
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:10
 msgid "BPM"
 msgstr "BPM"
 
-#: ../../glossary/intro.rst:29
+#: ../../glossary/intro.rst:28
 msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
 msgstr ":abbr:`BPM (Beats Per Minute)` は、曲のテンポを表します。"
 
-#: ../../glossary/intro.rst:31
+#: ../../glossary/intro.rst:30
 msgid "Carla"
 msgstr "Carla"
 
-#: ../../glossary/intro.rst:33
+#: ../../glossary/intro.rst:32
 msgid ""
 "A `plugin host <https://kx.studio/Applications:Carla>`_ that provides a "
 "library Zrythm uses to load some plugins. Plugins loaded through Carla can "
 "be bridged to separate processes."
 msgstr ""
 
-#: ../../glossary/intro.rst:38
+#: ../../glossary/intro.rst:37
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:40
+#: ../../glossary/intro.rst:39
 #, fuzzy
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with "
@@ -4992,19 +4937,19 @@ msgstr ""
 ":abbr:`CLI (Command Line Interface)` は、ユーザがターミナルでコマンドを入力す"
 "る際に対話するインターフェースです。"
 
-#: ../../glossary/intro.rst:43
+#: ../../glossary/intro.rst:42
 msgid "Clip"
 msgstr "クリップ"
 
-#: ../../glossary/intro.rst:45
+#: ../../glossary/intro.rst:44
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ":ref:`リージョン <regions>` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:47 ../../routing/ports.rst:48
+#: ../../glossary/intro.rst:46 ../../routing/ports.rst:48
 msgid "Control"
 msgstr "コントロール"
 
-#: ../../glossary/intro.rst:49
+#: ../../glossary/intro.rst:48
 #, fuzzy
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable control "
@@ -5015,11 +4960,11 @@ msgstr ""
 "に影響を与えるユーザーが変更可能なコントロール値を持ちます。例えば、ゲインコ"
 "ントロールなどです。 :term:`parameter` と互換的に使用される。"
 
-#: ../../glossary/intro.rst:54 ../../routing/ports.rst:52
+#: ../../glossary/intro.rst:53 ../../routing/ports.rst:52
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:56
+#: ../../glossary/intro.rst:55
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -5027,11 +4972,11 @@ msgstr ""
 "ソフトウェア環境では、 :abbr:`CV (Control Voltage)` はオーディオレート制御"
 "データを表します。"
 
-#: ../../glossary/intro.rst:59
+#: ../../glossary/intro.rst:58
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:60
 #, fuzzy
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
@@ -5040,11 +4985,11 @@ msgstr ""
 ":abbr:`DAW (デジタルオーディオワークステーション)` は、音楽を構成、録音、編"
 "集、アレンジ、ミックス、マスターに使用されるソフトウェアです。"
 
-#: ../../glossary/intro.rst:64
+#: ../../glossary/intro.rst:63
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../glossary/intro.rst:66
+#: ../../glossary/intro.rst:65
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -5052,11 +4997,21 @@ msgstr ""
 ":term:`DAW` の文脈では、 :abbr:`DSP (Digital Signal Processing)` はオーディオ"
 "信号処理を意味します。"
 
-#: ../../glossary/intro.rst:69
+#: ../../glossary/intro.rst:68
+msgid "DSSI"
+msgstr ""
+
+#: ../../glossary/intro.rst:70
+msgid ""
+":abbr:`DSSI (Disposable Soft Synth Interface)` is a plugin standard for "
+"instrument plugins, that has been superseded by :term:`LV2`."
+msgstr ""
+
+#: ../../glossary/intro.rst:72
 msgid "Free software"
 msgstr "自由なソフトウェア"
 
-#: ../../glossary/intro.rst:71
+#: ../../glossary/intro.rst:74
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -5065,7 +5020,7 @@ msgstr ""
 "エタリなソフトウェアとは対照的に、ユーザーがプログラムをコントロールすること"
 "を意味します。"
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:79
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers low "
 "latency for users and provides a simple API for developers. It is the de "
@@ -5075,11 +5030,22 @@ msgstr ""
 "発者にシンプルな API を提供するサウンドサーバです。これは GNU/Linux 上のプロ"
 "用オーディオのための事実上の標準的なサウンドサーバです。"
 
-#: ../../glossary/intro.rst:82
+#: ../../glossary/intro.rst:85
+#, fuzzy
+msgid "LADSPA"
+msgstr "DSP"
+
+#: ../../glossary/intro.rst:87
+msgid ""
+":abbr:`LADSPA (Linux Audio Developers Simple Plugin API)` is an old plugin "
+"standard for effect plugins that has been superseded by :term:`LV2`."
+msgstr ""
+
+#: ../../glossary/intro.rst:90
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:84
+#: ../../glossary/intro.rst:92
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -5089,7 +5055,7 @@ msgstr ""
 "スプラットフォームオープンスタンダードです。LV2にはシンプルなコアインター"
 "フェースがあり、より高度な機能を追加する拡張機能が付属しています。"
 
-#: ../../glossary/intro.rst:89
+#: ../../glossary/intro.rst:99
 #: ../../plugins-files/audio-midi-files/file-browser.rst:65
 #: ../../plugins-files/audio-midi-files/overview.rst:59
 #: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
@@ -5100,7 +5066,7 @@ msgstr ""
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:91
+#: ../../glossary/intro.rst:101
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical standard "
 "for communication between musical instruments and computers."
@@ -5108,38 +5074,38 @@ msgstr ""
 "abbr:`MIDI (Musical Instrument Digital Interface)` は、楽器とコンピュータ間の"
 "通信のための技術規格です。"
 
-#: ../../glossary/intro.rst:94
+#: ../../glossary/intro.rst:104
 msgid "MIDI note"
 msgstr "MIDIノート"
 
-#: ../../glossary/intro.rst:96
+#: ../../glossary/intro.rst:106
 msgid ""
 ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 ":term:`MIDI` ノートは仮想（またはハードウェア）楽器をトリガーするために使用さ"
 "れます。"
 
-#: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:66
+#: ../../glossary/intro.rst:111 ../../routing/monitor-section.rst:66
 msgid "Mono"
 msgstr "モノ"
 
-#: ../../glossary/intro.rst:103
+#: ../../glossary/intro.rst:113
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "単一チャンネルのオーディオ信号 (:term:`Stereo` も参照)。"
 
-#: ../../glossary/intro.rst:105
+#: ../../glossary/intro.rst:115
 msgid "Pan law"
 msgstr "パン・ロー"
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:117
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../glossary/intro.rst:108
+#: ../../glossary/intro.rst:118
 msgid "Panning"
 msgstr "パンニング"
 
-#: ../../glossary/intro.rst:110
+#: ../../glossary/intro.rst:120
 #, fuzzy
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or "
@@ -5148,29 +5114,29 @@ msgstr ""
 "パンニングとは、 :term:`mono` 信号を新しいステレオやマルチチャンネルの音場に"
 "分配することです。"
 
-#: ../../glossary/intro.rst:113
+#: ../../glossary/intro.rst:123
 msgid "Parameter"
 msgstr "パラメータ"
 
-#: ../../glossary/intro.rst:115
+#: ../../glossary/intro.rst:125
 msgid "Used interchangeably with :term:`Control`."
 msgstr ":term:`Control` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:116
+#: ../../glossary/intro.rst:126
 msgid "Plugin"
 msgstr "プラグイン"
 
-#: ../../glossary/intro.rst:118
+#: ../../glossary/intro.rst:128
 msgid ""
 "A plugin is an external module that provides audio processing capabilities "
 "to Zrythm, such as an :term:`SFZ` instrument or an :term:`LV2` reverb plugin."
 msgstr ""
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:132
 msgid "Project"
 msgstr "プロジェクト"
 
-#: ../../glossary/intro.rst:124
+#: ../../glossary/intro.rst:134
 #, fuzzy
 msgid ""
 "A project refers to a work session. It is saved as a directory containing a "
@@ -5181,15 +5147,15 @@ msgstr ""
 "クトリとして、他の補助ファイルと共に保存されます。詳細については、:"
 "ref:'Projects' を参照してください。"
 
-#: ../../glossary/intro.rst:128
+#: ../../glossary/intro.rst:138
 msgid "Range"
 msgstr "選択範囲 (Range)"
 
-#: ../../glossary/intro.rst:130
+#: ../../glossary/intro.rst:140
 msgid "A Range is a selection of time between two positions."
 msgstr "選択範囲 (Range)は、2つの位置間の範囲の選択です。"
 
-#: ../../glossary/intro.rst:137
+#: ../../glossary/intro.rst:147
 #, fuzzy
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
@@ -5198,35 +5164,35 @@ msgstr ""
 "リージョン(または :term:`clip` )は、MIDI ノート、オーディオ、その他のイベント"
 "のコンテナです。 :ref:`regions` を参照してください。"
 
-#: ../../glossary/intro.rst:140
+#: ../../glossary/intro.rst:150
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:142
+#: ../../glossary/intro.rst:152
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr "SFZ は、サンプルベースの仮想楽器用のファイルフォーマットです。"
 
-#: ../../glossary/intro.rst:144
+#: ../../glossary/intro.rst:153
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:146
+#: ../../glossary/intro.rst:155
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "SF2は :term:`SFZ` の後継である。"
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:156
 msgid "Stereo"
 msgstr "ステレオ"
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:158
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr "2 チャンネルのオーディオ信号(左と右) ( :term:`mono` も参照)。"
 
-#: ../../glossary/intro.rst:151
+#: ../../glossary/intro.rst:160
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:153
+#: ../../glossary/intro.rst:162
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -5234,22 +5200,21 @@ msgstr ""
 "プロプライエタリのプラグイン標準と VST3 の前身。この標準を使用することはお勧"
 "めしません。"
 
-#: ../../glossary/intro.rst:155
+#: ../../glossary/intro.rst:164
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:157
+#: ../../glossary/intro.rst:166
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to use "
-"VST3 than VST2, because it is released as :term:`Free software`. However, we "
-"recommend using the :term:`LV2` standard instead."
+"VST3 than VST2, because it is released as :term:`Free software`."
 msgstr ""
 
-#: ../../glossary/intro.rst:162
+#: ../../glossary/intro.rst:169
 msgid "XRUN"
 msgstr "XRUN"
 
-#: ../../glossary/intro.rst:164
+#: ../../glossary/intro.rst:171
 msgid ""
 "A buffer overrun or underrun. This means that Zrythm was either not fast "
 "enough to deliver data to the backend or not fast enough to process incoming "
@@ -5258,30 +5223,6 @@ msgid ""
 "sound card cannot process incoming buffers fast enough (overrun). Some sound "
 "cards cannot cope with small buffer sizes, so the buffer length should be "
 "increased to ease the work done by the sound card."
-msgstr ""
-
-#: ../../glossary/intro.rst:176
-msgid "Zrythm user path"
-msgstr "Zrythm ユーザー パス"
-
-#: ../../glossary/intro.rst:178
-msgid ""
-"The path where Zrythm will save user data, such as projects, temporary "
-"files, presets and exported audio. The default is :file:`zrythm` under"
-msgstr ""
-"プロジェクト、一時ファイル、プリセット、エクスポートされたオーディオなど、"
-"Zrythmがユーザーデータを保存するパス。デフォルトは下記の下の :file:`zrythm` "
-"です。"
-
-#: ../../glossary/intro.rst:183
-msgid ""
-":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification <https://"
-"specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
-"freedesktop-compliant systems (or if :envvar:`XDG_DATA_HOME` is defined), or"
-msgstr ""
-
-#: ../../glossary/intro.rst:188
-msgid "``%LOCALAPPDATA%`` on Windows"
 msgstr ""
 
 #: ../../index.rst:9
@@ -5345,7 +5286,8 @@ msgstr "ユーザー設定を初期値に戻します。"
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
-"affect any files in the :term:`Zrythm user path`."
+"affect any files in the :ref:`Zrythm user path <configuration/preferences:"
+"Zrythm User Path>`."
 msgstr ""
 ":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user "
 "path` 内のファイルには*影響しません*。"
@@ -6056,7 +5998,6 @@ msgstr ""
 "controls` で `録音` を有効にする必要はありません。"
 
 #: ../../playback-and-recording/transport-controls.rst:9
-#: ../../zrythm-interface/transport-bar.rst:25
 msgid "Transport Controls"
 msgstr "トランスポート コントロール"
 
@@ -6602,7 +6543,7 @@ msgstr ""
 "タが表示されます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:34
-#: ../../plugins-files/plugins/plugin-info.rst:52
+#: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Plugin Ports"
 msgstr "プラグインポート"
 
@@ -6760,19 +6701,45 @@ msgstr ""
 msgid "Plugins can also be searched by keywords using the provided search bar."
 msgstr ""
 
+#: ../../plugins-files/plugins/plugin-browser.rst:67
+msgid "Collections"
+msgstr "コレクション"
+
 #: ../../plugins-files/plugins/plugin-browser.rst:69
+msgid ""
+"Plugins can be saved inside custom collections. Collections can be created "
+"and modified in the :guilabel:`Collection` tab by using the provided toolbar "
+"buttons."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:75
+#, fuzzy
+msgid "Plugin collections"
+msgstr "プラグインコレクション"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:77
+msgid ""
+"Plugins can be added to a collection by right-clicking them and selecting a "
+"collection to add them too. A collection must be created beforehand."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:83
+msgid "Option to add the plugin to *My collection*"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:88
 msgid "Instantiating Plugins"
 msgstr "プラグインのインスタンス化"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:70
+#: ../../plugins-files/plugins/plugin-browser.rst:89
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "プラグインをインスタンス化する方法はいくつかあります。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:73
+#: ../../plugins-files/plugins/plugin-browser.rst:92
 msgid "Drag-n-Drop"
 msgstr "ドラッグアンドドロップ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:75
+#: ../../plugins-files/plugins/plugin-browser.rst:94
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
@@ -6781,7 +6748,16 @@ msgstr ""
 "るか、ミキサーの空きスペースにドロップして、そのプラグインを使用して新しいト"
 "ラックを作成できます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:101
+msgid "Dropping a plugin into the tracklist"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:106
+#, fuzzy
+msgid "Dropping a plugin into the mixer"
+msgstr "ブリッジモードでプラグインを開く"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:108
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
@@ -6789,16 +6765,31 @@ msgstr ""
 "または、ミキサースロットにプラグインをドラッグして追加したり、前のプラグイン"
 "を置き換えたりすることもできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:91
+#: ../../plugins-files/plugins/plugin-browser.rst:114
+#, fuzzy
+msgid "Dropping a plugin into a slot"
+msgstr "ブリッジモードでプラグインを開く"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:116
+msgid "Dragging also works in plugin slots in the inspector."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:118
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "プラグインがモジュレーターの場合は、モジュレータータブにドロップできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:98
+#: ../../plugins-files/plugins/plugin-browser.rst:124
+#, fuzzy
+msgid "Dropping a modulator plugin into the project modulators section"
+msgstr ""
+"プラグインがモジュレーターの場合は、モジュレータータブにドロップできます。"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:127
 msgid "Double Click/Enter"
 msgstr "ダブルクリック/リターン"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:100
+#: ../../plugins-files/plugins/plugin-browser.rst:129
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -6824,19 +6815,19 @@ msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
 msgstr ""
 "Zrythmでは、:term:`SFZ` / :term:`SF2` もプラグインとして使用されています。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:19
+#: ../../plugins-files/plugins/plugin-info.rst:18
 msgid "Plugin Types"
 msgstr "プラグインの種類"
 
-#: ../../plugins-files/plugins/plugin-info.rst:21
+#: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
 msgstr "プラグインは、次のカテゴリに分類されます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:26
+#: ../../plugins-files/plugins/plugin-info.rst:25
 msgid "|icon_instrument| Instrument"
 msgstr "|icon_instrument| インストゥルメント"
 
-#: ../../plugins-files/plugins/plugin-info.rst:24
+#: ../../plugins-files/plugins/plugin-info.rst:23
 #, fuzzy
 msgid ""
 "These plugins will create an :ref:`Instrument Track <tracks/track-types:"
@@ -6845,11 +6836,11 @@ msgstr ""
 "これらのプラグインは、プロジェクトに追加されたときにインストゥルメントトラッ"
 "クを作成します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:32
+#: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
 msgstr "|icon_audio-insert| エフェクト"
 
-#: ../../plugins-files/plugins/plugin-info.rst:29
+#: ../../plugins-files/plugins/plugin-info.rst:28
 #, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels in "
@@ -6860,11 +6851,11 @@ msgstr ""
 "ることができ、または新しいバストラックを作成するためにインスタンス化すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:36
+#: ../../plugins-files/plugins/plugin-info.rst:35
 msgid "|icon_modulator| Modulator"
 msgstr "|icon_modulator| モジュレータ"
 
-#: ../../plugins-files/plugins/plugin-info.rst:35
+#: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other "
 "plugin or track parameters."
@@ -6872,18 +6863,18 @@ msgstr ""
 "これらのプラグインは :term:`CV` 信号を出力し、他のプラグインやトラックパラ"
 "メータを変調するために使用することができます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:42
+#: ../../plugins-files/plugins/plugin-info.rst:41
 msgid "|icon_signal-midi| MIDI Effect"
 msgstr "|icon_signal-midi| MIDI エフェクト"
 
-#: ../../plugins-files/plugins/plugin-info.rst:39
+#: ../../plugins-files/plugins/plugin-info.rst:38
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the "
 "MIDI signal chain of an :ref:`Instrument <tracks/track-types:Instrument "
 "Track>` or :ref:`MIDI Track <tracks/track-types:MIDI Track>`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:45
+#: ../../plugins-files/plugins/plugin-info.rst:44
 #, fuzzy
 msgid ""
 "Zrythm looks inside the plugin's metadata to determine what type the plugin "
@@ -6894,13 +6885,13 @@ msgstr ""
 "します。それだけでは不十分な場合、Zrythmはプラグインのオーディオ、MIDI、コン"
 "トロール、CV入出力ポートの数に基づいて判断します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:53
+#: ../../plugins-files/plugins/plugin-info.rst:52
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, :term:"
 "`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:57
+#: ../../plugins-files/plugins/plugin-info.rst:56
 #, fuzzy
 msgid ""
 "Zrythm first creates all plugins with the following special control ports. "
@@ -6908,23 +6899,23 @@ msgid ""
 msgstr ""
 "上記のポートが作成された後、Zrythmはプラグインの残りのポートを追加します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:63
+#: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Enabled"
 msgstr "有効"
 
-#: ../../plugins-files/plugins/plugin-info.rst:63
+#: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Controls whether the plugin is active or bypassed."
 msgstr "プラグインがアクティブかバイパス状態かを制御します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:67
+#: ../../plugins-files/plugins/plugin-info.rst:66
 msgid "Gain"
 msgstr "ゲイン"
 
-#: ../../plugins-files/plugins/plugin-info.rst:66
+#: ../../plugins-files/plugins/plugin-info.rst:65
 msgid "Increases the output volume of the plugin (if applicable)."
 msgstr "プラグインの出力ボリュームを上げます (該当する場合)。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:70
+#: ../../plugins-files/plugins/plugin-info.rst:69
 #, fuzzy
 msgid ""
 "All of the plugin's ports will be shown in the plugin's :ref:`inspector page "
@@ -6945,65 +6936,38 @@ msgstr "カスタムUI"
 #, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI. This window may contain "
-"additions by Zrythm (such as `File` and `Presets` menus)."
+"displayed, if the plugin ships with its own UI."
 msgstr ""
 "プラグイン UI が表示されると、プラグインが独自の UI がある場合、次のような"
 "ウィンドウが表示されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:20
+#: ../../plugins-files/plugins/plugin-window.rst:18
 msgid "Generic UIs"
 msgstr "汎用UI"
 
-#: ../../plugins-files/plugins/plugin-window.rst:21
+#: ../../plugins-files/plugins/plugin-window.rst:19
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
 msgstr "プラグインが独自の UI を持たない場合は、次の汎用 UI が生成されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:28
+#: ../../plugins-files/plugins/plugin-window.rst:26
 msgid "Bridging"
 msgstr "ブリッジ"
 
-#: ../../plugins-files/plugins/plugin-window.rst:29
+#: ../../plugins-files/plugins/plugin-window.rst:28
 msgid ""
-"Most plugins are instantiated in the same process as Zrythm. This has the "
-"advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
-"compatible with Zrythm and need to be bridged (ie, run as separate "
-"processes)."
+"By default, plugins are instantiated in a separate process from Zrythm so "
+"that Zrythm doesn't crash if a plugin misbehaves (Zrythm calls this "
+"*bridging*). However, this has the side effect that :term:`DSP` is not as "
+"fast as it could be (although fast enough in most cases), because there is "
+"cross-process communication."
 msgstr ""
-"ほとんどのプラグインは Zrythm と同じプロセスでインスタンス化されます。これ"
-"は、 :term:`DSP` が非常に高速であるという利点を持っていますが、いくつかのプラ"
-"グインのUIはZrythmと互換性がなく、ブリッジする必要があります(すなわち、別々の"
-"プロセスとして実行されます)。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:34
+#: ../../plugins-files/plugins/plugin-window.rst:33
 #, fuzzy
 msgid ""
-"When it is possible to bridge only the UI, Zrythm will do so, and this will "
-"not have any performance implications on DSP. If bridging the whole plugin "
-"is required, this will have some performance implications, since it is "
-"required to communicate with the plugin in another process."
-msgstr ""
-"UI のみをブリッジすることが可能な場合、Zrythm はそうすると、DSP にパフォーマ"
-"ンスに影響を与えないだろう。プラグイン全体をブリッジングする必要がある場合、"
-"別のプロセスでプラグインと通信する必要があるため、これはパフォーマンスに影響"
-"を与えます。"
-
-#: ../../plugins-files/plugins/plugin-window.rst:41
-msgid ""
-"This process is transparent to the user and only mentioned for reference."
-msgstr ""
-"このプロセスはユーザーにとって透明であり、参考までにしか言及されていません。"
-
-#: ../../plugins-files/plugins/plugin-window.rst:45
-msgid "Opening Plugins in Bridged Mode"
-msgstr "ブリッジモードでプラグインを開く"
-
-#: ../../plugins-files/plugins/plugin-window.rst:46
-#, fuzzy
-msgid ""
-"Sometimes, you may need to manually tell Zrythm to open plugins in a "
+"Sometimes, you may want to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right "
 "clicking on the plugin in the :ref:`plugin-browser`."
 msgstr ""
@@ -7011,10 +6975,17 @@ msgstr ""
 "要があります。各プラグインで利用可能なオプションは、 :ref:`plugin-browser` で"
 "プラグインを右クリックして見つけることができます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:54
+#: ../../plugins-files/plugins/plugin-window.rst:41
 #, fuzzy
-msgid "Opening ZynAddSubFX in bridged mode"
+msgid "Opening Compressor in normal (unbridged) mode"
 msgstr "ブリッジモードでプラグインを開く"
+
+#: ../../plugins-files/plugins/plugin-window.rst:43
+msgid ""
+"Zrythm will remember the last setting used for each plugin and automatically "
+"apply it when you choose to instantiate that plugin from the plugin browser "
+"in the future."
+msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:9
 msgid "Scanning for Plugins"
@@ -7025,16 +6996,17 @@ msgstr "プラグインのスキャン"
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
 "until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
-"term:`VST3`, LADSPA, DSSI and :term:`AU` plugins."
+"term:`VST3`, :term:`LADSPA`, :term:`DSSI` and :term:`AU` plugins."
 msgstr ""
 "Zrythmは起動時にプラグインをスキャンし、閉じられるまでそれらのプラグインを覚"
 "えています。Zrythm は LV2 と VST の両方のプラグインを対応していますが、LV2 は"
 "推奨される標準です。"
 
 #: ../../plugins-files/plugins/scanning.rst:15
+#, fuzzy
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
-"scanned as instrument plugins."
+"treated as instrument plugins."
 msgstr ""
 ":term:`SFZ` と :term:`SF2` のインストゥルメントもサポートされており、インス"
 "トゥルメントプラグインとしてスキャンされます。"
@@ -7042,8 +7014,8 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by passing the :envvar:"
-"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable when running Zrythm."
+"Plugin scanning can be disabled by setting the :envvar:"
+"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
 msgstr ""
 "プラグインのスキャンは、Zrythmの実行時に :envvar:`NO_SCAN_PLUGINS` を渡すこと"
 "で無効にできます。"
@@ -7076,8 +7048,9 @@ msgstr "プラグインのスキャン"
 #: ../../plugins-files/plugins/scanning.rst:37
 #, fuzzy
 msgid ""
-"Zrythm will remember scanned VST plugins and save this information in :file:"
-"`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`."
+"Zrythm will remember scanned plugins and save this information in :ref:`the "
+"cached plugin descriptors file <appendix/files-and-directories:Cached Plugin "
+"Descriptors>`."
 msgstr ""
 "VST プラグインのスキャンには時間がかかるため、Zrythm はスキャンされた VST プ"
 "ラグインを記憶し、この情報を ``<<ZRYTHM パス>>/cached_vst_descriptors.yaml`` "
@@ -7085,7 +7058,7 @@ msgstr ""
 "たプラグインの再スキャンを強制するには、このファイルを削除または編集すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:40
+#: ../../plugins-files/plugins/scanning.rst:39
 #, fuzzy
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
@@ -7097,14 +7070,16 @@ msgstr ""
 "たプラグインの再スキャンを強制するには、このファイルを削除または編集すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:44
+#: ../../plugins-files/plugins/scanning.rst:43
 msgid "AU Scan"
 msgstr "AUスキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:45
+#: ../../plugins-files/plugins/scanning.rst:44
+#, fuzzy
 msgid ""
-"On MacOS, :term:`AU` plugins will be scanned at their standard location at :"
-"file:`/Library/Audio/Plug-Ins/Components`."
+"On MacOS, :term:`AU` plugins will be scanned at their standard locations at :"
+"file:`/Library/Audio/Plug-Ins/Components` for system plugins and :file:`~/"
+"Library/Audio/Plug-Ins/Components` for user plugins."
 msgstr ""
 "MacOSでは、 :term:`AU` プラグインは :file:`/Library/Audio/Plug-Ins/"
 "Components` にある標準の場所でスキャンされます。"
@@ -7136,9 +7111,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
-"While Zrythm allows the user to use plugins not packaged as Flatpaks using "
-"the environment variables above, this is not recommended and we do not offer "
-"support if it causes issues."
+"While Zrythm allows the user to use plugins not packaged as Flatpaks, this "
+"is not recommended and we do not offer support if it causes issues."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:65
@@ -7150,17 +7124,6 @@ msgstr ""
 #: ../../projects/intro.rst:9
 msgid "Projects"
 msgstr "プロジェクト"
-
-#: ../../projects/project-management-and-compatibility.rst:7
-msgid "Project Management and Compatibility"
-msgstr "プロジェクト管理と互換性"
-
-#: ../../projects/project-management-and-compatibility.rst:9
-msgid ""
-"Zrythm projects created after the beta release are expected to be compatible "
-"with later releases. If we discover an issue that requires changing the "
-"project format, Zrythm will offer an option to upgrade older projects."
-msgstr ""
 
 #: ../../projects/project-structure.rst:7
 msgid "Project Structure"
@@ -7233,6 +7196,18 @@ msgstr ""
 msgid "These files will be copied to backups as well."
 msgstr ""
 
+#: ../../projects/project-structure.rst:131
+#, fuzzy
+msgid "Project Compatibility"
+msgstr "プロジェクト管理と互換性"
+
+#: ../../projects/project-structure.rst:133
+msgid ""
+"Project format is not expected to change in a breaking way. When we make "
+"changes to the project format, Zrythm will auto-convert old projects to the "
+"new format."
+msgstr ""
+
 #: ../../projects/saving-loading.rst:9
 msgid "Saving & Loading"
 msgstr "保存と読み込み"
@@ -7252,70 +7227,47 @@ msgstr ""
 
 #: ../../projects/saving-loading.rst:23
 #, fuzzy
-msgid ""
-"When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
-"load that project."
+msgid "When you select a project, Zrythm will load it."
 msgstr ""
 "プロジェクトを選択して :guilabel:`適用` をクリックすると、Zrythm はそのプロ"
 "ジェクトを読み込みます。"
 
-#: ../../projects/saving-loading.rst:27
-msgid "To load a project from a path, click :guilabel:`Open from Path`."
+#: ../../projects/saving-loading.rst:25
+msgid "To load a project from a path, click :guilabel:`Open From Path...`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:31
+#: ../../projects/saving-loading.rst:28
 msgid "Creating Projects"
 msgstr "プロジェクトの作成"
 
-#: ../../projects/saving-loading.rst:33
+#: ../../projects/saving-loading.rst:30
 msgid ""
-"To create a new project, select the :guilabel:`Create New` tab and choose a "
-"template for creating the new project, then click :guilabel:`Create`."
+"To create a new project, click :guilabel:`Create New Project...` and choose "
+"a title, parent directory and template, then click :guilabel:`Create "
+"Project`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:41
+#: ../../projects/saving-loading.rst:37
 #, fuzzy
-msgid "Project template selection"
-msgstr "プロジェクトの選択"
+msgid "New project creation"
+msgstr "一般的なプロジェクト設定。"
 
-#: ../../projects/saving-loading.rst:43
+#: ../../projects/saving-loading.rst:39
 #, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
-"copying a project directory under :file:`templates` in the :term:`Zrythm "
-"user path`."
+"copying a project directory under :file:`templates` in the :ref:`Zrythm user "
+"path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "空白のテンプレートを使用できますが、Zrythm インストール パスの ``テンプレート"
 "``ディレクトリにプロジェクト フォルダをコピーして、独自のテンプレートを作成で"
 "きます。"
 
-#: ../../projects/saving-loading.rst:48
-#, fuzzy
-msgid ""
-"After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
-"directory to save the project in and a title for the project."
-msgstr ""
-"テンプレート (または空白) が選択され、:zbutton:``適用``をクリックすると、"
-"Zrythm はプロジェクトを保存する親ディレクトリとプロジェクトのタイトルを求める"
-"メッセージを表示します。"
-
-#: ../../projects/saving-loading.rst:55
-#, fuzzy
-msgid "New project creation"
-msgstr "一般的なプロジェクト設定。"
-
-#: ../../projects/saving-loading.rst:57
-#, fuzzy
-msgid ""
-"Once you click :guilabel:`OK`, the new project will be set up and you will "
-"be ready to go."
-msgstr "承認すると、新しいプロジェクトが初期化され、準備が整います。"
-
-#: ../../projects/saving-loading.rst:61
+#: ../../projects/saving-loading.rst:42
 msgid "Saving Projects"
 msgstr "プロジェクトの保存"
 
-#: ../../projects/saving-loading.rst:63
+#: ../../projects/saving-loading.rst:44
 #, fuzzy
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
@@ -7325,15 +7277,16 @@ msgstr ""
 "保存は期待どおりに機能します。:zbutton:``Save As ...``はプロジェクトを新しい"
 "場所に保存し、:zbutton:`Save`はプロジェクトを以前の場所に保存します。"
 
-#: ../../projects/saving-loading.rst:67
-msgid "When saving projects, Zrythm expects you to give it a directory"
+#: ../../projects/saving-loading.rst:48
+#, fuzzy
+msgid "When saving projects, Zrythm expects you to give it a directory."
 msgstr "プロジェクトを保存する際、Zrythm はディレクトリを求めます。"
 
-#: ../../projects/saving-loading.rst:71
+#: ../../projects/saving-loading.rst:51
 msgid "Automatic Backups"
 msgstr "自動バックアップ"
 
-#: ../../projects/saving-loading.rst:73
+#: ../../projects/saving-loading.rst:53
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -7345,7 +7298,11 @@ msgstr ""
 "ジェクトの新しいバックアップがあるかどうかを知らせ、代わりに読み込むかどうか"
 "の選択を求めます。"
 
-#: ../../projects/saving-loading.rst:82
+#: ../../projects/saving-loading.rst:61
+msgid "Prompt asking whether to open the found backup"
+msgstr ""
+
+#: ../../projects/saving-loading.rst:64
 msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
@@ -9558,11 +9515,6 @@ msgstr ""
 "プラグインのすべてのポートが :ref:`Inspector Page <plugins-files/plugins/"
 "inspector-page:Inspector Page>` に表示されます"
 
-#: ../../zrythm-interface/left-panel.rst:21
-#, fuzzy
-msgid ":ref:`Track Visibility <track-visibility>`"
-msgstr ":ref:`track-visibility` を参照してください。"
-
 #: ../../zrythm-interface/main-panel.rst:9
 #, fuzzy
 msgid "Main Panel"
@@ -9588,17 +9540,12 @@ msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/main-panel.rst:20
-msgid ":ref:`Connections <routing/connections:Managing Connections>`"
+msgid ":ref:`Port Connections <routing/connections:Managing Connections>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:21
-msgid ":ref:`Bindings <configuration/device-setup:MIDI Bindings>`"
+msgid ":ref:`MIDI CC Bindings <configuration/device-setup:MIDI Bindings>`"
 msgstr ""
-
-#: ../../zrythm-interface/main-panel.rst:22
-#, fuzzy
-msgid "Scenes *(not implemented yet)*"
-msgstr "これはまだ実装されていません。"
 
 #: ../../zrythm-interface/main-toolbar.rst:9
 msgid "Main Toolbar"
@@ -9854,8 +9801,9 @@ msgstr ""
 "す。"
 
 #: ../../zrythm-interface/right-panel.rst:19
-msgid ":ref:`Plugin Browsers <plugin-browser>`"
-msgstr ""
+#, fuzzy
+msgid ":ref:`Plugin Browser <plugin-browser>`"
+msgstr "ファイルブラウザについては :ref:`file-browser` で解説されています。"
 
 #: ../../zrythm-interface/right-panel.rst:20
 #, fuzzy
@@ -9871,7 +9819,7 @@ msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:24
-msgid "Write and point to correct chord preset browser section."
+msgid "Write and point to correct chord preset browser sections."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:9
@@ -9879,44 +9827,23 @@ msgid "Transport Bar"
 msgstr "トランスポートバー"
 
 #: ../../zrythm-interface/transport-bar.rst:11
-#, fuzzy
 msgid ""
-"The transport bar contains information about the audio engine, transport "
-"controls and CPU/DSP usage."
+"The transport bar contains information about the audio engine, :ref:`the BPM "
+"and time signature <playback-and-recording/bpm-and-time-signatures:BPM and "
+"Time Signatures>`, :ref:`transport controls <playback-and-recording/"
+"transport-controls:Transport Controls>`. and various indicators."
 msgstr ""
-"トランスポートバーには、オーディオエンジンに関する情報とトランスポートコント"
-"ロールが含まれています。"
 
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:19
 #, fuzzy
 msgid "Transport bar"
 msgstr "トランスポートバー"
 
-#: ../../zrythm-interface/transport-bar.rst:20
-msgid "BPM and Time Signature"
-msgstr "BPMと拍子記号"
-
-#: ../../zrythm-interface/transport-bar.rst:21
-msgid ""
-"BPM and Time Signature are covered in :ref:`playback-and-recording/bpm-and-"
-"time-signatures:BPM and Time Signatures`."
-msgstr ""
-"BPMと拍子記号については、 :ref:`playback-and-recording/bpm-and-time-"
-"signatures:BPM and Time Signatures` を参照してください。"
-
-#: ../../zrythm-interface/transport-bar.rst:26
-msgid ""
-"Transport controls are covered in :ref:`playback-and-recording/transport-"
-"controls:Transport Controls`."
-msgstr ""
-"トランスポートコントロールについては、 :ref:`playback-and-recording/"
-"transport-controls:Transport Controls` を参照してください。"
-
-#: ../../zrythm-interface/transport-bar.rst:30
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Backend Information"
 msgstr "バックエンド情報"
 
-#: ../../zrythm-interface/transport-bar.rst:31
+#: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
 "Information about the currently selected backend and options is visible in "
 "the bottom left corner."
@@ -9924,63 +9851,185 @@ msgstr ""
 "現在選択されているバックエンドとオプションに関する情報は、左下に表示されま"
 "す。"
 
-#: ../../zrythm-interface/transport-bar.rst:37
+#: ../../zrythm-interface/transport-bar.rst:29
 #, fuzzy
 msgid "Backend info"
 msgstr "バックエンド情報"
 
-#: ../../zrythm-interface/transport-bar.rst:39
+#: ../../zrythm-interface/transport-bar.rst:31
 msgid ""
 "If the backend supports it, the buffer size can be changed live by clicking "
 "the :guilabel:`change` button."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:43
+#: ../../zrythm-interface/transport-bar.rst:35
 msgid ""
 "If the backend supports it, the engine can be temporarily disabled by "
 "clicking the :guilabel:`Disable` button."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:48
-msgid "CPU/DSP Usage"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid "CPU/DSP usage"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:55
-#, python-format
-msgid ""
-"This widget displays the current CPU % usage at the top and the current DSP "
-"% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
-"will start clipping."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:61
+#: ../../zrythm-interface/transport-bar.rst:40
 #, fuzzy
-msgid "Live Indicators"
+msgid "Indicators"
 msgstr "ファイルとディレクトリ"
 
-#: ../../zrythm-interface/transport-bar.rst:63
-msgid "The following live indicators are displayed on the right."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:66
+#: ../../zrythm-interface/transport-bar.rst:42
 msgid "MIDI In"
 msgstr "MIDI入力"
 
-#: ../../zrythm-interface/transport-bar.rst:66
+#: ../../zrythm-interface/transport-bar.rst:43
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:70
+#: ../../zrythm-interface/transport-bar.rst:44
 msgid "Oscilloscope"
 msgstr "オシロスコープ"
 
-#: ../../zrythm-interface/transport-bar.rst:69
-msgid "Shows the audio waveform from the master output."
+#: ../../zrythm-interface/transport-bar.rst:45
+msgid "Shows the real-time audio waveform from the master output."
 msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:46
+msgid "Spectrum Analyzer"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:47
+msgid "Shows the real-time audio spectrum of the master output."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:53
+msgid "CPU/DSP Usage"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:49
+#, python-format
+msgid ""
+"Displays the current CPU % usage at the top and the current DSP % usage at "
+"the bottom. If the DSP % exceeds 100 (all bars filled), audio will start "
+"clipping."
+msgstr ""
+
+#~ msgid "Additional Settings"
+#~ msgstr "その他の設定"
+
+#~ msgid "GSettings"
+#~ msgstr "GSettings"
+
+#~ msgid "Viewing the Current Settings"
+#~ msgstr "現設定を表示"
+
+#~ msgid "See :option:`zrythm --print-settings`."
+#~ msgstr ":option:`zrythm --print-settings` を参照してください。"
+
+#~ msgid ""
+#~ "Bindings can be deleted by right-clicking on a row and selecting :"
+#~ "guilabel:`Delete`."
+#~ msgstr ""
+#~ "トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除す"
+#~ "ることができます。"
+
+#~ msgid "Deleting a binding"
+#~ msgstr "バインディングの削除"
+
+#~ msgid "About Wayland"
+#~ msgstr "Flatpak"
+
+#~ msgid ""
+#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland."
+#~ "html>`_"
+#~ msgstr ""
+#~ "`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-"
+#~ "overview.html>`_"
+
+#~ msgid "UI Scaling"
+#~ msgstr "AUスキャン"
+
+#~ msgid "This is the :term:`Zrythm user path`."
+#~ msgstr "これは :term:`Zrythm user path` です。"
+
+#~ msgid ""
+#~ "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
+#~ "term:`LV2` instead."
+#~ msgstr ""
+#~ "プロプライエタリなプラグインの規格で、主にMacOSで使われています。代わり"
+#~ "に :term:`LV2` を使うことをお勧めします。"
+
+#~ msgid ""
+#~ "Most plugins are instantiated in the same process as Zrythm. This has the "
+#~ "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
+#~ "compatible with Zrythm and need to be bridged (ie, run as separate "
+#~ "processes)."
+#~ msgstr ""
+#~ "ほとんどのプラグインは Zrythm と同じプロセスでインスタンス化されます。これ"
+#~ "は、 :term:`DSP` が非常に高速であるという利点を持っていますが、いくつかの"
+#~ "プラグインのUIはZrythmと互換性がなく、ブリッジする必要があります(すなわ"
+#~ "ち、別々のプロセスとして実行されます)。"
+
+#~ msgid ""
+#~ "When it is possible to bridge only the UI, Zrythm will do so, and this "
+#~ "will not have any performance implications on DSP. If bridging the whole "
+#~ "plugin is required, this will have some performance implications, since "
+#~ "it is required to communicate with the plugin in another process."
+#~ msgstr ""
+#~ "UI のみをブリッジすることが可能な場合、Zrythm はそうすると、DSP にパフォー"
+#~ "マンスに影響を与えないだろう。プラグイン全体をブリッジングする必要がある場"
+#~ "合、別のプロセスでプラグインと通信する必要があるため、これはパフォーマンス"
+#~ "に影響を与えます。"
+
+#~ msgid ""
+#~ "This process is transparent to the user and only mentioned for reference."
+#~ msgstr ""
+#~ "このプロセスはユーザーにとって透明であり、参考までにしか言及されていませ"
+#~ "ん。"
+
+#~ msgid "Opening ZynAddSubFX in bridged mode"
+#~ msgstr "ブリッジモードでプラグインを開く"
+
+#~ msgid "Project template selection"
+#~ msgstr "プロジェクトの選択"
+
+#~ msgid ""
+#~ "After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
+#~ "directory to save the project in and a title for the project."
+#~ msgstr ""
+#~ "テンプレート (または空白) が選択され、:zbutton:``適用``をクリックすると、"
+#~ "Zrythm はプロジェクトを保存する親ディレクトリとプロジェクトのタイトルを求"
+#~ "めるメッセージを表示します。"
+
+#~ msgid ""
+#~ "Once you click :guilabel:`OK`, the new project will be set up and you "
+#~ "will be ready to go."
+#~ msgstr "承認すると、新しいプロジェクトが初期化され、準備が整います。"
+
+#~ msgid ":ref:`Track Visibility <track-visibility>`"
+#~ msgstr ":ref:`track-visibility` を参照してください。"
+
+#~ msgid "Scenes *(not implemented yet)*"
+#~ msgstr "これはまだ実装されていません。"
+
+#~ msgid ""
+#~ "The transport bar contains information about the audio engine, transport "
+#~ "controls and CPU/DSP usage."
+#~ msgstr ""
+#~ "トランスポートバーには、オーディオエンジンに関する情報とトランスポートコン"
+#~ "トロールが含まれています。"
+
+#~ msgid "BPM and Time Signature"
+#~ msgstr "BPMと拍子記号"
+
+#~ msgid ""
+#~ "BPM and Time Signature are covered in :ref:`playback-and-recording/bpm-"
+#~ "and-time-signatures:BPM and Time Signatures`."
+#~ msgstr ""
+#~ "BPMと拍子記号については、 :ref:`playback-and-recording/bpm-and-time-"
+#~ "signatures:BPM and Time Signatures` を参照してください。"
+
+#~ msgid ""
+#~ "Transport controls are covered in :ref:`playback-and-recording/transport-"
+#~ "controls:Transport Controls`."
+#~ msgstr ""
+#~ "トランスポートコントロールについては、 :ref:`playback-and-recording/"
+#~ "transport-controls:Transport Controls` を参照してください。"
 
 #~ msgid "Hardware"
 #~ msgstr "ハードウェア"
@@ -10881,17 +10930,6 @@ msgstr ""
 #~ "表示します。"
 
 #~ msgid ""
-#~ "Zrythm stores most of its configuration using the GSettings mechanism, "
-#~ "which comes with the `gsettings <https://developer.gnome.org/gio/stable/"
-#~ "gsettings-tool.html>`_ command for changing settings from the command "
-#~ "line, or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
-#~ "DconfEditor>`_."
-#~ msgstr ""
-#~ "Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-"
-#~ "tool.html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/"
-#~ "DconfEditor>`_　のGUIツールがあるGSettingsを使用し、設定を保存しています。"
-
-#~ msgid ""
 #~ "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 #~ msgstr ""
 #~ "設定によっては、:term:`a2jmidid` を使用してMIDIデバイスをJACKにブリッジす"
@@ -11415,9 +11453,6 @@ msgstr ""
 
 #~ msgid "This is a work in progress."
 #~ msgstr "これはTODOです。"
-
-#~ msgid "Collections"
-#~ msgstr "コレクション"
 
 #~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
 #~ msgstr "Zrythm は OGG、FLAC、WAV、および MP3 をサポートしています。"

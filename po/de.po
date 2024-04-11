@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-04-11 12:14+0900\n"
+"POT-Creation-Date: 2024-04-12 07:23+0900\n"
 "PO-Revision-Date: 2023-12-22 20:45+0000\n"
 "Last-Translator: Arnold <as103@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
@@ -308,7 +308,7 @@ msgid "Off"
 msgstr "Aus"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
-#: src/gui/widgets/cc_bindings_tree.c:150
+#: src/gui/widgets/cc_bindings_tree.c:131
 #: src/gui/widgets/port_connections_tree.c:194
 #: src/gui/widgets/item_factory.c:591 src/gui/widgets/bot_bar.c:421
 msgid "On"
@@ -633,9 +633,9 @@ msgstr "C_Kopieren"
 msgid "_Paste"
 msgstr "Einfügen _P"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1841 src/actions/actions.c:3359
-#: src/actions/actions.c:3411 src/actions/actions.c:3557
-#: src/actions/actions.c:3679 src/actions/actions.c:3946
+#: inc/utils/gtk.h:54 src/actions/actions.c:1867 src/actions/actions.c:3385
+#: src/actions/actions.c:3437 src/actions/actions.c:3583
+#: src/actions/actions.c:3705 src/actions/actions.c:3972
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "Löschen _D"
@@ -727,8 +727,8 @@ msgstr "Datei kann nicht gelesen werden: %s"
 msgid "Failed to decompress project file at %s"
 msgstr "Fehler beim Dekomprimieren der Projektdatei %s"
 
-#: src/project.c:630 src/actions/actions.c:687 src/actions/actions.c:748
-#: src/actions/actions.c:802 src/actions/actions.c:821
+#: src/project.c:630 src/actions/actions.c:690 src/actions/actions.c:751
+#: src/actions/actions.c:805 src/actions/actions.c:824
 #: src/gui/widgets/main_window.c:120
 #: src/project/project_init_flow_manager.c:675
 msgid "Failed to save project"
@@ -988,11 +988,11 @@ msgstr "Stille einfügen"
 msgid "Delete range"
 msgstr "Bereich löschen"
 
-#: src/actions/undo_manager.c:188 src/actions/actions.c:982
+#: src/actions/undo_manager.c:188 src/actions/actions.c:985
 msgid "Failed to undo action"
 msgstr "Aktion konnte nicht rückgängig gemacht werden"
 
-#: src/actions/undo_manager.c:238 src/actions/actions.c:978
+#: src/actions/undo_manager.c:238 src/actions/actions.c:981
 msgid "Failed to redo action"
 msgstr "Aktion konnte nicht wiederholt werden"
 
@@ -1044,11 +1044,11 @@ msgstr "MIDI-Mapping aufheben"
 msgid "Set control value"
 msgstr "Wert für Steuerelement einstellen"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:345
 msgid "Guile Disabled"
 msgstr "Guile deaktiviert"
 
-#: src/actions/actions.c:345
+#: src/actions/actions.c:348
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1057,20 +1057,20 @@ msgstr ""
 "Die Skripting-Erweiterbarkeit mit <a href=\"%s\"> GNU Guile </a> ist in "
 "Ihrer %s -Installation nicht aktiviert."
 
-#: src/actions/actions.c:704
+#: src/actions/actions.c:707
 msgid "Discard Changes?"
 msgstr "Nicht gespeicherte Änderungen verwerfen?"
 
-#: src/actions/actions.c:705
+#: src/actions/actions.c:708
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Alle nicht gespeicherten Änderungen im aktuellen Projekt gehen verloren. "
 "Fortfahren?"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
-#: src/actions/actions.c:1840 src/actions/actions.c:3358
-#: src/actions/actions.c:3410 src/actions/actions.c:3556
-#: src/actions/actions.c:3678 src/actions/actions.c:3945 src/dsp/clip.c:692
+#: src/actions/actions.c:711 src/actions/actions.c:772
+#: src/actions/actions.c:1866 src/actions/actions.c:3384
+#: src/actions/actions.c:3436 src/actions/actions.c:3582
+#: src/actions/actions.c:3704 src/actions/actions.c:3971 src/dsp/clip.c:692
 #: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
 #: src/gui/widgets/plugin_properties_expander.c:79
@@ -1088,12 +1088,12 @@ msgstr ""
 msgid "_Cancel"
 msgstr "C_Abbrechen"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
+#: src/actions/actions.c:711 src/actions/actions.c:772
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr "D_Verwerfen"
 
-#: src/actions/actions.c:709 src/actions/actions.c:770
+#: src/actions/actions.c:712 src/actions/actions.c:773
 #: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
@@ -1101,11 +1101,11 @@ msgstr "D_Verwerfen"
 msgid "_Save"
 msgstr "_Speichern"
 
-#: src/actions/actions.c:764 src/gui/widgets/main_window.c:148
+#: src/actions/actions.c:767 src/gui/widgets/main_window.c:148
 msgid "Save Changes?"
 msgstr "Änderungen speichern?"
 
-#: src/actions/actions.c:765
+#: src/actions/actions.c:768
 #, fuzzy
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
@@ -1115,27 +1115,27 @@ msgstr ""
 "Wenn Sie das Projekt verlassen ohne es zu speichern, gehen die nicht "
 "gespeicherten Änderungen verloren."
 
-#: src/actions/actions.c:840
+#: src/actions/actions.c:843
 msgid "Save Project"
 msgstr "Projekt speichern"
 
-#: src/actions/actions.c:873
+#: src/actions/actions.c:876
 msgid "Export routing graph"
 msgstr "Routing-Diagramm exportieren"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (PNG)"
 msgstr "BILD (PNG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (SVG)"
 msgstr "Bild (SVG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Dot graph"
 msgstr "Punktdiagramm"
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:882
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1144,97 +1144,97 @@ msgstr ""
 "Das Diagramm wird nach <a href=\"%s\"> %s </a> exportiert\n"
 "Bitte wählen Sie ein Export-Format aus"
 
-#: src/actions/actions.c:926
+#: src/actions/actions.c:929
 msgid "Graph exported"
 msgstr "Graph exportiert"
 
-#: src/actions/actions.c:954 src/guile/actions/undo_manager.c:53
+#: src/actions/actions.c:957 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
 msgstr "Rückgängig machen fehlgeschlagen"
 
-#: src/actions/actions.c:1017 src/guile/actions/undo_manager.c:76
+#: src/actions/actions.c:1020 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
 msgstr "Fehler beim Wiederholen"
 
-#: src/actions/actions.c:1054 src/actions/actions.c:1067
-#: src/actions/actions.c:1289
+#: src/actions/actions.c:1057 src/actions/actions.c:1070
+#: src/actions/actions.c:1292
 msgid "Failed to delete selections"
 msgstr "Auswahl konnte nicht gelöscht werden"
 
-#: src/actions/actions.c:1105
+#: src/actions/actions.c:1108
 #, fuzzy
 msgid "Selections copied to clipboard"
 msgstr "Auswahl ausschneiden und in die Zwischenablage verschieben"
 
-#: src/actions/actions.c:1126
+#: src/actions/actions.c:1129
 #, fuzzy
 msgid "Plugins copied to clipboard"
 msgstr "Auswahl ausschneiden und in die Zwischenablage verschieben"
 
-#: src/actions/actions.c:1144
+#: src/actions/actions.c:1147
 #, fuzzy
 msgid "Tracks copied to clipboard"
 msgstr "Aus der Zwischenablage einfügen"
 
-#: src/actions/actions.c:1161
+#: src/actions/actions.c:1164
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "Spuren konnten nicht abgehört werden"
 
-#: src/actions/actions.c:1176
+#: src/actions/actions.c:1179
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1241
+#: src/actions/actions.c:1244
 msgid "Can't paste incompatible data"
 msgstr "Inkompatible Daten können nicht eingefügt werden"
 
-#: src/actions/actions.c:1314
+#: src/actions/actions.c:1317
 msgid "Failed to duplicate selections"
 msgstr "Auswahl konnte nicht dupliziert werden"
 
-#: src/actions/actions.c:1528
+#: src/actions/actions.c:1547
 msgid "Failed to unbind"
 msgstr "Bindung konnte nicht getrennt werden"
 
-#: src/actions/actions.c:1562 src/actions/actions.c:2079
-#: src/actions/actions.c:2106
+#: src/actions/actions.c:1588 src/actions/actions.c:2105
+#: src/actions/actions.c:2132
 msgid "Failed to quantize"
 msgstr "Fehler beim Quantisieren"
 
-#: src/actions/actions.c:1632 src/dsp/track.c:3455
+#: src/actions/actions.c:1658 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
 msgid "Failed to create track"
 msgstr "Spur konnte nicht erstellt werden"
 
-#: src/actions/actions.c:1671 src/gui/widgets/drag_dest_box.c:262
+#: src/actions/actions.c:1697 src/gui/widgets/drag_dest_box.c:262
 #: src/gui/widgets/timeline_arranger.c:1352
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
 #, fuzzy
 msgid "Failed to import files"
 msgstr "Fehler beim Schreiben der Datei: %s"
 
-#: src/actions/actions.c:1680
+#: src/actions/actions.c:1706
 #, fuzzy
 msgid "Select File(s)"
 msgstr "Eine Datei auswählen"
 
-#: src/actions/actions.c:1742
+#: src/actions/actions.c:1768
 msgid "Failed to duplicate tracks"
 msgstr "Spuren konnten nicht dupliziert werden"
 
-#: src/actions/actions.c:1817 src/actions/actions.c:1863
+#: src/actions/actions.c:1843 src/actions/actions.c:1889
 msgid "Failed to delete tracks"
 msgstr "Spuren konnten nicht gelöscht werden"
 
-#: src/actions/actions.c:1835
+#: src/actions/actions.c:1861
 msgid "Delete Tracks?"
 msgstr "Spuren löschen?"
 
-#: src/actions/actions.c:1836
+#: src/actions/actions.c:1862
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1243,48 +1243,48 @@ msgstr ""
 "nicht rückgängig gemacht werden und der Aktionsverlauf wird geleert. Mit "
 "Löschen fortfahren?"
 
-#: src/actions/actions.c:1895
+#: src/actions/actions.c:1921
 msgid "Failed to pin/unpin tracks"
 msgstr "Spuren konnten nicht fixiert/gelöst werden"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1932
 msgid "Failed to solo tracks"
 msgstr "Spuren konnten nicht solo gesetzt werden"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1943
 msgid "Failed to unsolo tracks"
 msgstr "Solo der Spuren konnte nicht aufgehoben werden"
 
-#: src/actions/actions.c:1928
+#: src/actions/actions.c:1954
 msgid "Failed to mute tracks"
 msgstr "Spuren konnten nicht stumm geschaltet werden"
 
-#: src/actions/actions.c:1939
+#: src/actions/actions.c:1965
 msgid "Failed to unmute tracks"
 msgstr "Stummschaltung der Spuren konnte nicht aufgehoben werden"
 
-#: src/actions/actions.c:1950
+#: src/actions/actions.c:1976
 #, fuzzy
 msgid "Failed to listen tracks"
 msgstr "Spuren konnten nicht abgehört werden"
 
-#: src/actions/actions.c:1961
+#: src/actions/actions.c:1987
 msgid "Failed to unlisten tracks"
 msgstr "Abhören der Spuren konnte nicht deaktiviert werden"
 
-#: src/actions/actions.c:1972
+#: src/actions/actions.c:1998
 msgid "Failed to enable tracks"
 msgstr "Spuren konnten nicht aktiviert werden"
 
-#: src/actions/actions.c:1983
+#: src/actions/actions.c:2009
 msgid "Failed to disable tracks"
 msgstr "Spuren konnten nicht deaktiviert werden"
 
-#: src/actions/actions.c:2121
+#: src/actions/actions.c:2147
 msgid "Invalid Selection For Quantize"
 msgstr "Ungültige Auswahl für Quantisierung"
 
-#: src/actions/actions.c:2122
+#: src/actions/actions.c:2148
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
@@ -1293,120 +1293,120 @@ msgstr ""
 "Sie müssen zuerst entweder die Zeitachse oder den Editor auswählen. Die "
 "aktuelle Auswahl ist %s"
 
-#: src/actions/actions.c:2189
+#: src/actions/actions.c:2215
 msgid "Failed to mute selections"
 msgstr "Auswahl konnte nicht stumm geschaltet werden"
 
-#: src/actions/actions.c:2202
+#: src/actions/actions.c:2228
 msgid "No regions selected"
 msgstr "Keine Regionen ausgewählt"
 
-#: src/actions/actions.c:2208
+#: src/actions/actions.c:2234
 msgid "Selections must be on the same lane"
 msgstr "Auswahl muss auf derselben Bahn liegen"
 
-#: src/actions/actions.c:2213
+#: src/actions/actions.c:2239
 msgid "Cannot merge looped regions"
 msgstr "Geloopte Regionen können nicht zusammengeführt werden"
 
-#: src/actions/actions.c:2227
+#: src/actions/actions.c:2253
 msgid "Failed to merge selections"
 msgstr "Auswahl konnte nicht zusammengeführt werden"
 
-#: src/actions/actions.c:2305
+#: src/actions/actions.c:2331
 msgid "Failed to insert silence"
 msgstr "Es konnte keine Stille eingefügt werden"
 
-#: src/actions/actions.c:2322
+#: src/actions/actions.c:2348
 msgid "Failed to remove range"
 msgstr "Bereich konnte nicht entfernt werden"
 
-#: src/actions/actions.c:2398 src/actions/arranger_selections.c:538
+#: src/actions/actions.c:2424 src/actions/arranger_selections.c:538
 #: src/gui/widgets/dialogs/midi_function_dialog.c:246
 msgid "Failed to apply MIDI function"
 msgstr "MIDI-Funktion konnte nicht angewendet werden"
 
-#: src/actions/actions.c:2430 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2456 src/actions/arranger_selections.c:570
 msgid "Failed to apply automation function"
 msgstr "Automatisierungsfunktion konnte nicht angewendet werden"
 
-#: src/actions/actions.c:2470 src/actions/actions.c:3023
+#: src/actions/actions.c:2496 src/actions/actions.c:3049
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr "Audiofunktion konnte nicht angewendet werden"
 
-#: src/actions/actions.c:2486
+#: src/actions/actions.c:2512
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "Bitte geben Sie einen gültigen Namen ein."
 
-#: src/actions/actions.c:2624
+#: src/actions/actions.c:2650
 msgid "Pitch Ratio"
 msgstr "Verhältnis Tonhöhe"
 
-#: src/actions/actions.c:2705
+#: src/actions/actions.c:2731
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "Spurname"
 
-#: src/actions/actions.c:2724
+#: src/actions/actions.c:2750
 msgid "Object name"
 msgstr "Objektname"
 
-#: src/actions/actions.c:2755
+#: src/actions/actions.c:2781
 msgid "An object cannot be created at the selected location."
 msgstr "An der ausgewählten Position kann kein Objekt erstellt werden."
 
-#: src/actions/actions.c:2789
+#: src/actions/actions.c:2815
 msgid "Failed to set region color"
 msgstr "Farbe der Region konnte nicht gesetzt werden"
 
-#: src/actions/actions.c:2817
+#: src/actions/actions.c:2843
 msgid "Region Color"
 msgstr "Farbe der Region"
 
-#: src/actions/actions.c:2849
+#: src/actions/actions.c:2875
 msgid "Failed to reset region color"
 msgstr "Farbe der Region konnte nicht zurückgesetzt werden"
 
-#: src/actions/actions.c:2888
+#: src/actions/actions.c:2914
 msgid "Please enter a BPM"
 msgstr "Bitte geben Sie das Tempo in Schlägen pro Minute ein"
 
 #. TODO
-#: src/actions/actions.c:2896 src/dsp/scale.c:517
+#: src/actions/actions.c:2922 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr "Nicht implementiert"
 
-#: src/actions/actions.c:2896
+#: src/actions/actions.c:2922
 #, fuzzy
 msgid "Tap BPM not implemented yet"
 msgstr "Nicht implementiert"
 
-#: src/actions/actions.c:2951
+#: src/actions/actions.c:2977
 msgid "Failed to move selections"
 msgstr "Auswahl konnte nicht verschoben werden"
 
-#: src/actions/actions.c:2967
+#: src/actions/actions.c:2993
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "Erkanntes Tempo: %.2f Schläge pro Minute"
 
-#: src/actions/actions.c:2969
+#: src/actions/actions.c:2995
 msgid "Candidates:"
 msgstr "Kandidaten:"
 
-#: src/actions/actions.c:3130
+#: src/actions/actions.c:3156
 msgid "Failed to set curve algorithm"
 msgstr "Curve-Algorithmus konnte nicht gesetzt werden"
 
-#: src/actions/actions.c:3179
+#: src/actions/actions.c:3205
 msgid "Failed to edit fades"
 msgstr "Fades konnten nicht editiert werden"
 
-#: src/actions/actions.c:3241
+#: src/actions/actions.c:3267
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1414,60 +1414,60 @@ msgstr ""
 "Keine eigenen Vorlagenpakete gefunden. Bitte erstellenn Sie ein "
 "Vorlagenpaket im Akkordvorlagen-Browser."
 
-#: src/actions/actions.c:3312
+#: src/actions/actions.c:3338
 msgid "Failed to create pack"
 msgstr "Paket konnte nicht erstellt werden"
 
-#: src/actions/actions.c:3324 src/actions/actions.c:3379
+#: src/actions/actions.c:3350 src/actions/actions.c:3405
 msgid "Preset Pack Name"
 msgstr "Preset-Paket-Name"
 
-#: src/actions/actions.c:3355 src/actions/actions.c:3407
-#: src/actions/actions.c:3675 src/actions/actions.c:3938
+#: src/actions/actions.c:3381 src/actions/actions.c:3433
+#: src/actions/actions.c:3701 src/actions/actions.c:3964
 msgid "Delete?"
 msgstr "Löschen?"
 
-#: src/actions/actions.c:3356
+#: src/actions/actions.c:3382
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr ""
 "Sind Sie sicher, dass Sie dieses Akkord-Preset-Paket entfernen möchten?"
 
-#: src/actions/actions.c:3408
+#: src/actions/actions.c:3434
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
 msgstr ""
 "Sind Sie sicher, dass Sie dieses Akkord-Preset-Paket entfernen möchten?"
 
-#: src/actions/actions.c:3431
+#: src/actions/actions.c:3457
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
 msgstr "Preset-Name"
 
-#: src/actions/actions.c:3451 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3477 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 msgid "Failed to change balance"
 msgstr "Balance konnte nicht geändert werden"
 
-#: src/actions/actions.c:3473
+#: src/actions/actions.c:3499
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "Plugin %s konnte nicht erstellt werden"
 
-#: src/actions/actions.c:3507
+#: src/actions/actions.c:3533
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "Farbe konnte nicht geändert werden"
 
-#: src/actions/actions.c:3530 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3556 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr "Plugins konnten nicht gelöscht werden"
 
-#: src/actions/actions.c:3552
+#: src/actions/actions.c:3578
 msgid "Delete Plugins?"
 msgstr "Plugin löschen?"
 
-#: src/actions/actions.c:3553
+#: src/actions/actions.c:3579
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
@@ -1476,30 +1476,30 @@ msgstr ""
 "nicht rückgängig gemacht werden und der Aktionsverlauf wird geleert. Mit dem "
 "Löschen fortfahren?"
 
-#: src/actions/actions.c:3604
+#: src/actions/actions.c:3630
 #, c-format
 msgid "Failed to reset %s"
 msgstr "%s konnte nicht zurückgesetzt werden"
 
-#: src/actions/actions.c:3629
+#: src/actions/actions.c:3655
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "%s konnte nicht von %s getrennt werden"
 
-#: src/actions/actions.c:3670
+#: src/actions/actions.c:3696
 msgid "Cannot delete standard bookmark"
 msgstr "Standard-Lesezeichen kann nicht gelöscht werden"
 
-#: src/actions/actions.c:3676
+#: src/actions/actions.c:3702
 #, fuzzy
 msgid "Are you sure you want to delete this bookmark?"
 msgstr "Sind Sie sicher, dass Sie dieses Lesezeichen entfernen möchten?"
 
-#: src/actions/actions.c:3869 src/actions/actions.c:3900
+#: src/actions/actions.c:3895 src/actions/actions.c:3926
 msgid "Collection name"
 msgstr "Name der Sammlung"
 
-#: src/actions/actions.c:3941
+#: src/actions/actions.c:3967
 #, fuzzy, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
@@ -1507,7 +1507,7 @@ msgstr ""
 "Diese Sammlung enthält %d Plugins. Sind Sie sicher, dass Sie sie entfernen "
 "möchten?"
 
-#: src/actions/actions.c:4120
+#: src/actions/actions.c:4146
 msgid "Failed to change direct output"
 msgstr "Direktausgang konnte nicht geändert werden"
 
@@ -3084,7 +3084,7 @@ msgstr "Start"
 msgid "Desktop"
 msgstr "Desktop"
 
-#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:51
+#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:32
 #: src/gui/widgets/port_connections_tree.c:131 src/plugins/collection.c:170
 msgid "Delete"
 msgstr "Löschen"
@@ -3182,11 +3182,11 @@ msgstr "Ausgehende Signale"
 msgid "Current val"
 msgstr "Aktueller Wert"
 
-#: src/gui/widgets/inspector_port.c:326 src/gui/widgets/cc_bindings_tree.c:179
+#: src/gui/widgets/inspector_port.c:326
 msgid "Min"
 msgstr "Min"
 
-#: src/gui/widgets/inspector_port.c:327 src/gui/widgets/cc_bindings_tree.c:189
+#: src/gui/widgets/inspector_port.c:327
 msgid "Max"
 msgstr "Max"
 
@@ -3253,15 +3253,11 @@ msgstr "Bounce-Stufen-Auswahl"
 msgid "Select path"
 msgstr "Pfad auswählen"
 
-#: src/gui/widgets/cc_bindings_tree.c:157
-msgid "Device"
-msgstr "Gerät"
-
-#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:634
+#: src/gui/widgets/cc_bindings_tree.c:136 src/gui/widgets/item_factory.c:634
 msgid "Note/Control"
 msgstr "Note/Steuerelement"
 
-#: src/gui/widgets/cc_bindings_tree.c:172
+#: src/gui/widgets/cc_bindings_tree.c:141
 #: src/gui/widgets/port_connections_tree.c:211
 #: src/gui/widgets/item_factory.c:649
 msgid "Destination"
@@ -4614,7 +4610,7 @@ msgstr "Send konnte nicht abgetrennt werden"
 msgid "Failed to connect send"
 msgstr "Send konnte nicht verbunden werden"
 
-#: src/gui/widgets/main_notebook.c:116
+#: src/gui/widgets/main_notebook.c:117
 #, fuzzy
 msgid "Scenes (Live View)"
 msgstr "Szenen (Live-Ansicht)"
@@ -8248,6 +8244,9 @@ msgid ""
 "Fix device selection dropdown crashing in preferences when opened from the "
 "greeter"
 msgstr ""
+
+#~ msgid "Device"
+#~ msgstr "Gerät"
 
 #, c-format
 #~ msgid ""

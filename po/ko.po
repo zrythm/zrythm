@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-04-11 12:14+0900\n"
+"POT-Creation-Date: 2024-04-12 07:23+0900\n"
 "PO-Revision-Date: 2023-02-04 05:21+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/"
@@ -301,7 +301,7 @@ msgid "Off"
 msgstr "끔"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
-#: src/gui/widgets/cc_bindings_tree.c:150
+#: src/gui/widgets/cc_bindings_tree.c:131
 #: src/gui/widgets/port_connections_tree.c:194
 #: src/gui/widgets/item_factory.c:591 src/gui/widgets/bot_bar.c:421
 msgid "On"
@@ -620,9 +620,9 @@ msgstr "복사하기(_C)"
 msgid "_Paste"
 msgstr "붙여넣기(_P)"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1841 src/actions/actions.c:3359
-#: src/actions/actions.c:3411 src/actions/actions.c:3557
-#: src/actions/actions.c:3679 src/actions/actions.c:3946
+#: inc/utils/gtk.h:54 src/actions/actions.c:1867 src/actions/actions.c:3385
+#: src/actions/actions.c:3437 src/actions/actions.c:3583
+#: src/actions/actions.c:3705 src/actions/actions.c:3972
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "삭제하기(_D)"
@@ -713,8 +713,8 @@ msgstr ""
 msgid "Failed to decompress project file at %s"
 msgstr ""
 
-#: src/project.c:630 src/actions/actions.c:687 src/actions/actions.c:748
-#: src/actions/actions.c:802 src/actions/actions.c:821
+#: src/project.c:630 src/actions/actions.c:690 src/actions/actions.c:751
+#: src/actions/actions.c:805 src/actions/actions.c:824
 #: src/gui/widgets/main_window.c:120
 #: src/project/project_init_flow_manager.c:675
 #, fuzzy
@@ -946,11 +946,11 @@ msgstr ""
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/undo_manager.c:188 src/actions/actions.c:982
+#: src/actions/undo_manager.c:188 src/actions/actions.c:985
 msgid "Failed to undo action"
 msgstr ""
 
-#: src/actions/undo_manager.c:238 src/actions/actions.c:978
+#: src/actions/undo_manager.c:238 src/actions/actions.c:981
 msgid "Failed to redo action"
 msgstr ""
 
@@ -1002,11 +1002,11 @@ msgstr "MIDI 매핑 해제"
 msgid "Set control value"
 msgstr "제어 값 설정"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:345
 msgid "Guile Disabled"
 msgstr ""
 
-#: src/actions/actions.c:345
+#: src/actions/actions.c:348
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1015,18 +1015,18 @@ msgstr ""
 "<a href=\"%s\">GNU Guile</a>을 사용한 스크립팅 확장성은 %s 설치에서 활성화되"
 "지 않습니다."
 
-#: src/actions/actions.c:704
+#: src/actions/actions.c:707
 msgid "Discard Changes?"
 msgstr ""
 
-#: src/actions/actions.c:705
+#: src/actions/actions.c:708
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "현재 프로젝트에 저장하지 않은 변경 사항은 손실됩니다. 계속하나요?"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
-#: src/actions/actions.c:1840 src/actions/actions.c:3358
-#: src/actions/actions.c:3410 src/actions/actions.c:3556
-#: src/actions/actions.c:3678 src/actions/actions.c:3945 src/dsp/clip.c:692
+#: src/actions/actions.c:711 src/actions/actions.c:772
+#: src/actions/actions.c:1866 src/actions/actions.c:3384
+#: src/actions/actions.c:3436 src/actions/actions.c:3582
+#: src/actions/actions.c:3704 src/actions/actions.c:3971 src/dsp/clip.c:692
 #: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
 #: src/gui/widgets/plugin_properties_expander.c:79
@@ -1044,12 +1044,12 @@ msgstr "현재 프로젝트에 저장하지 않은 변경 사항은 손실됩니
 msgid "_Cancel"
 msgstr "취소(_C)"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
+#: src/actions/actions.c:711 src/actions/actions.c:772
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr ""
 
-#: src/actions/actions.c:709 src/actions/actions.c:770
+#: src/actions/actions.c:712 src/actions/actions.c:773
 #: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
@@ -1057,38 +1057,38 @@ msgstr ""
 msgid "_Save"
 msgstr "저장(_S)"
 
-#: src/actions/actions.c:764 src/gui/widgets/main_window.c:148
+#: src/actions/actions.c:767 src/gui/widgets/main_window.c:148
 #, fuzzy
 msgid "Save Changes?"
 msgstr "상태 저장"
 
-#: src/actions/actions.c:765
+#: src/actions/actions.c:768
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
 
-#: src/actions/actions.c:840
+#: src/actions/actions.c:843
 msgid "Save Project"
 msgstr "프로젝트 저장"
 
-#: src/actions/actions.c:873
+#: src/actions/actions.c:876
 msgid "Export routing graph"
 msgstr "라우팅 그래프 내보내기"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (PNG)"
 msgstr "이미지 (PNG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (SVG)"
 msgstr "이미지 (SVG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Dot graph"
 msgstr "점 그래프"
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:882
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1097,95 +1097,95 @@ msgstr ""
 "그래프를 <a href=\"%s\">%s</a>(으)로 내보냄 \n"
 "내보낼 형식 선택"
 
-#: src/actions/actions.c:926
+#: src/actions/actions.c:929
 msgid "Graph exported"
 msgstr "내보낸 그래프"
 
-#: src/actions/actions.c:954 src/guile/actions/undo_manager.c:53
+#: src/actions/actions.c:957 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
 msgstr "실행 취소 실패"
 
-#: src/actions/actions.c:1017 src/guile/actions/undo_manager.c:76
+#: src/actions/actions.c:1020 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
 msgstr "재실행 실패"
 
-#: src/actions/actions.c:1054 src/actions/actions.c:1067
-#: src/actions/actions.c:1289
+#: src/actions/actions.c:1057 src/actions/actions.c:1070
+#: src/actions/actions.c:1292
 msgid "Failed to delete selections"
 msgstr "선택 항목 삭제 실패"
 
-#: src/actions/actions.c:1105
+#: src/actions/actions.c:1108
 msgid "Selections copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1126
+#: src/actions/actions.c:1129
 msgid "Plugins copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1144
+#: src/actions/actions.c:1147
 msgid "Tracks copied to clipboard"
 msgstr ""
 
-#: src/actions/actions.c:1161
+#: src/actions/actions.c:1164
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "%s 재설정 실패"
 
-#: src/actions/actions.c:1176
+#: src/actions/actions.c:1179
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1241
+#: src/actions/actions.c:1244
 msgid "Can't paste incompatible data"
 msgstr "호환되지 않는 데이터를 붙여넣을 수 없음"
 
-#: src/actions/actions.c:1314
+#: src/actions/actions.c:1317
 msgid "Failed to duplicate selections"
 msgstr "선택 항목 복제 실패"
 
-#: src/actions/actions.c:1528
+#: src/actions/actions.c:1547
 msgid "Failed to unbind"
 msgstr "바인딩 해제 실패"
 
-#: src/actions/actions.c:1562 src/actions/actions.c:2079
-#: src/actions/actions.c:2106
+#: src/actions/actions.c:1588 src/actions/actions.c:2105
+#: src/actions/actions.c:2132
 msgid "Failed to quantize"
 msgstr "양자화 실패"
 
-#: src/actions/actions.c:1632 src/dsp/track.c:3455
+#: src/actions/actions.c:1658 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
 msgid "Failed to create track"
 msgstr "트랙 만들기 실패"
 
-#: src/actions/actions.c:1671 src/gui/widgets/drag_dest_box.c:262
+#: src/actions/actions.c:1697 src/gui/widgets/drag_dest_box.c:262
 #: src/gui/widgets/timeline_arranger.c:1352
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
 #, fuzzy
 msgid "Failed to import files"
 msgstr "페이드 편집 실패"
 
-#: src/actions/actions.c:1680
+#: src/actions/actions.c:1706
 #, fuzzy
 msgid "Select File(s)"
 msgstr "MIDI 파일 선택"
 
-#: src/actions/actions.c:1742
+#: src/actions/actions.c:1768
 msgid "Failed to duplicate tracks"
 msgstr "트랙 복제 실패"
 
-#: src/actions/actions.c:1817 src/actions/actions.c:1863
+#: src/actions/actions.c:1843 src/actions/actions.c:1889
 msgid "Failed to delete tracks"
 msgstr "트랙 삭제 실패"
 
-#: src/actions/actions.c:1835
+#: src/actions/actions.c:1861
 #, fuzzy
 msgid "Delete Tracks?"
 msgstr "트랙 삭제"
 
-#: src/actions/actions.c:1836
+#: src/actions/actions.c:1862
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1193,172 +1193,172 @@ msgstr ""
 "선택한 트랙에 인스턴스화되지 않은 플러그인이 포함되어 있습니다. 삭제하면 되돌"
 "릴 수 없으며 실행 취소 내역이 지워집니다. 삭제를 계속하겠습니까?"
 
-#: src/actions/actions.c:1895
+#: src/actions/actions.c:1921
 msgid "Failed to pin/unpin tracks"
 msgstr "트랙 고정/고정 해제 실패"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1932
 msgid "Failed to solo tracks"
 msgstr "트랙 솔로 실패"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1943
 msgid "Failed to unsolo tracks"
 msgstr "트랙 솔로 해제 실패"
 
-#: src/actions/actions.c:1928
+#: src/actions/actions.c:1954
 msgid "Failed to mute tracks"
 msgstr "트랙 음소거 실패"
 
-#: src/actions/actions.c:1939
+#: src/actions/actions.c:1965
 msgid "Failed to unmute tracks"
 msgstr "트랙 음소거 해제 실패"
 
-#: src/actions/actions.c:1950
+#: src/actions/actions.c:1976
 msgid "Failed to listen tracks"
 msgstr "트랙 듣기 실패"
 
-#: src/actions/actions.c:1961
+#: src/actions/actions.c:1987
 msgid "Failed to unlisten tracks"
 msgstr "트랙 듣기 해제 실패"
 
-#: src/actions/actions.c:1972
+#: src/actions/actions.c:1998
 msgid "Failed to enable tracks"
 msgstr "트랙 활성화 실패"
 
-#: src/actions/actions.c:1983
+#: src/actions/actions.c:2009
 msgid "Failed to disable tracks"
 msgstr "트랙 비활성화 실패"
 
-#: src/actions/actions.c:2121
+#: src/actions/actions.c:2147
 #, fuzzy
 msgid "Invalid Selection For Quantize"
 msgstr "잘못된 이름"
 
-#: src/actions/actions.c:2122
+#: src/actions/actions.c:2148
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr "타임라인 또는 편집기를 먼저 선택해야 합니다. 현재 선택은 %s"
 
-#: src/actions/actions.c:2189
+#: src/actions/actions.c:2215
 msgid "Failed to mute selections"
 msgstr "선택 항목 음소거 실패"
 
-#: src/actions/actions.c:2202
+#: src/actions/actions.c:2228
 msgid "No regions selected"
 msgstr "선택한 지역 없음"
 
-#: src/actions/actions.c:2208
+#: src/actions/actions.c:2234
 msgid "Selections must be on the same lane"
 msgstr "선택 항목은 동일한 레인에 있어야 함"
 
-#: src/actions/actions.c:2213
+#: src/actions/actions.c:2239
 msgid "Cannot merge looped regions"
 msgstr "루프 영역을 병합할 수 없음"
 
-#: src/actions/actions.c:2227
+#: src/actions/actions.c:2253
 msgid "Failed to merge selections"
 msgstr "선택 항목 병합 실패"
 
-#: src/actions/actions.c:2305
+#: src/actions/actions.c:2331
 msgid "Failed to insert silence"
 msgstr "무음 삽입 실패"
 
-#: src/actions/actions.c:2322
+#: src/actions/actions.c:2348
 msgid "Failed to remove range"
 msgstr "범위 제거 실패"
 
-#: src/actions/actions.c:2398 src/actions/arranger_selections.c:538
+#: src/actions/actions.c:2424 src/actions/arranger_selections.c:538
 #: src/gui/widgets/dialogs/midi_function_dialog.c:246
 msgid "Failed to apply MIDI function"
 msgstr "MIDI 기능 적용 실패"
 
-#: src/actions/actions.c:2430 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2456 src/actions/arranger_selections.c:570
 msgid "Failed to apply automation function"
 msgstr "자동화 기능 적용 실패"
 
-#: src/actions/actions.c:2470 src/actions/actions.c:3023
+#: src/actions/actions.c:2496 src/actions/actions.c:3049
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr "오디오 기능 적용 실패"
 
-#: src/actions/actions.c:2486
+#: src/actions/actions.c:2512
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "유효한 이름을 입력하세요."
 
-#: src/actions/actions.c:2624
+#: src/actions/actions.c:2650
 #, fuzzy
 msgid "Pitch Ratio"
 msgstr "피치"
 
-#: src/actions/actions.c:2705
+#: src/actions/actions.c:2731
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "트랙 이름"
 
-#: src/actions/actions.c:2724
+#: src/actions/actions.c:2750
 msgid "Object name"
 msgstr "객체 이름"
 
-#: src/actions/actions.c:2755
+#: src/actions/actions.c:2781
 msgid "An object cannot be created at the selected location."
 msgstr "선택한 위치에 객체를 생성할 수 없습니다."
 
-#: src/actions/actions.c:2789
+#: src/actions/actions.c:2815
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:2817
+#: src/actions/actions.c:2843
 #, fuzzy
 msgid "Region Color"
 msgstr "영역 내용"
 
-#: src/actions/actions.c:2849
+#: src/actions/actions.c:2875
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:2888
+#: src/actions/actions.c:2914
 msgid "Please enter a BPM"
 msgstr "BPM 입력"
 
 #. TODO
-#: src/actions/actions.c:2896 src/dsp/scale.c:517
+#: src/actions/actions.c:2922 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr "구현되지 않음"
 
-#: src/actions/actions.c:2896
+#: src/actions/actions.c:2922
 #, fuzzy
 msgid "Tap BPM not implemented yet"
 msgstr "작업이 구현되지 않음"
 
-#: src/actions/actions.c:2951
+#: src/actions/actions.c:2977
 msgid "Failed to move selections"
 msgstr "선택 항목 이동 실패"
 
-#: src/actions/actions.c:2967
+#: src/actions/actions.c:2993
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "감지된 BPM: %.2f"
 
-#: src/actions/actions.c:2969
+#: src/actions/actions.c:2995
 msgid "Candidates:"
 msgstr "후보:"
 
-#: src/actions/actions.c:3130
+#: src/actions/actions.c:3156
 msgid "Failed to set curve algorithm"
 msgstr "곡선 알고리즘 설정 실패"
 
-#: src/actions/actions.c:3179
+#: src/actions/actions.c:3205
 msgid "Failed to edit fades"
 msgstr "페이드 편집 실패"
 
-#: src/actions/actions.c:3241
+#: src/actions/actions.c:3267
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1366,61 +1366,61 @@ msgstr ""
 "커스텀 사전 설정 팩을 찾을 수 없습니다. 화음 사전 설정 탐색기에서 먼저 사전 "
 "설정 팩을 만드세요."
 
-#: src/actions/actions.c:3312
+#: src/actions/actions.c:3338
 #, fuzzy
 msgid "Failed to create pack"
 msgstr "트랙 만들기 실패"
 
-#: src/actions/actions.c:3324 src/actions/actions.c:3379
+#: src/actions/actions.c:3350 src/actions/actions.c:3405
 msgid "Preset Pack Name"
 msgstr "사전 설정 팩 이름"
 
-#: src/actions/actions.c:3355 src/actions/actions.c:3407
-#: src/actions/actions.c:3675 src/actions/actions.c:3938
+#: src/actions/actions.c:3381 src/actions/actions.c:3433
+#: src/actions/actions.c:3701 src/actions/actions.c:3964
 #, fuzzy
 msgid "Delete?"
 msgstr "삭제하기(_D)"
 
-#: src/actions/actions.c:3356
+#: src/actions/actions.c:3382
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr "이 화음 사전 설정 팩을 제거하겠습니까?"
 
-#: src/actions/actions.c:3408
+#: src/actions/actions.c:3434
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
 msgstr "이 화음 사전 설정 팩을 제거하겠습니까?"
 
-#: src/actions/actions.c:3431
+#: src/actions/actions.c:3457
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
 msgstr "사전 설정 이름"
 
-#: src/actions/actions.c:3451 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3477 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 msgid "Failed to change balance"
 msgstr ""
 
-#: src/actions/actions.c:3473
+#: src/actions/actions.c:3499
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "플러그인 %s 만들기 실패"
 
-#: src/actions/actions.c:3507
+#: src/actions/actions.c:3533
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "색상 변경 실패"
 
-#: src/actions/actions.c:3530 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3556 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr "플러그인 삭제 실패"
 
-#: src/actions/actions.c:3552
+#: src/actions/actions.c:3578
 #, fuzzy
 msgid "Delete Plugins?"
 msgstr "플러그인 삭제"
 
-#: src/actions/actions.c:3553
+#: src/actions/actions.c:3579
 #, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
@@ -1429,36 +1429,36 @@ msgstr ""
 "선택 항목에 인스턴스화되지 않은 플러그인이 포함되어 있습니다. 삭제하면 되돌"
 "릴 수 없으며 실행 취소 내역이 지워집니다. 삭제를 계속하겠습니까?"
 
-#: src/actions/actions.c:3604
+#: src/actions/actions.c:3630
 #, c-format
 msgid "Failed to reset %s"
 msgstr "%s 재설정 실패"
 
-#: src/actions/actions.c:3629
+#: src/actions/actions.c:3655
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "%s에서 %s 연결 해제 실패"
 
-#: src/actions/actions.c:3670
+#: src/actions/actions.c:3696
 msgid "Cannot delete standard bookmark"
 msgstr "표준 북마크를 삭제할 수 없음"
 
-#: src/actions/actions.c:3676
+#: src/actions/actions.c:3702
 #, fuzzy
 msgid "Are you sure you want to delete this bookmark?"
 msgstr "이 북마크를 삭제하겠습니까?"
 
-#: src/actions/actions.c:3869 src/actions/actions.c:3900
+#: src/actions/actions.c:3895 src/actions/actions.c:3926
 msgid "Collection name"
 msgstr "컬렉션 이름"
 
-#: src/actions/actions.c:3941
+#: src/actions/actions.c:3967
 #, fuzzy, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr "이 컬렉션에는 %d 개의 플러그인이 포함되어 있습니다. 삭제하겠습니까?"
 
-#: src/actions/actions.c:4120
+#: src/actions/actions.c:4146
 msgid "Failed to change direct output"
 msgstr "직접 출력 변경 실패"
 
@@ -3002,7 +3002,7 @@ msgstr "홈"
 msgid "Desktop"
 msgstr ""
 
-#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:51
+#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:32
 #: src/gui/widgets/port_connections_tree.c:131 src/plugins/collection.c:170
 msgid "Delete"
 msgstr ""
@@ -3096,11 +3096,11 @@ msgstr ""
 msgid "Current val"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:326 src/gui/widgets/cc_bindings_tree.c:179
+#: src/gui/widgets/inspector_port.c:326
 msgid "Min"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:327 src/gui/widgets/cc_bindings_tree.c:189
+#: src/gui/widgets/inspector_port.c:327
 msgid "Max"
 msgstr ""
 
@@ -3165,15 +3165,11 @@ msgstr ""
 msgid "Select path"
 msgstr ""
 
-#: src/gui/widgets/cc_bindings_tree.c:157
-msgid "Device"
-msgstr ""
-
-#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:634
+#: src/gui/widgets/cc_bindings_tree.c:136 src/gui/widgets/item_factory.c:634
 msgid "Note/Control"
 msgstr ""
 
-#: src/gui/widgets/cc_bindings_tree.c:172
+#: src/gui/widgets/cc_bindings_tree.c:141
 #: src/gui/widgets/port_connections_tree.c:211
 #: src/gui/widgets/item_factory.c:649
 msgid "Destination"
@@ -4486,7 +4482,7 @@ msgstr "보내기 연결 해제 실패"
 msgid "Failed to connect send"
 msgstr "보내기 연결 실패"
 
-#: src/gui/widgets/main_notebook.c:116
+#: src/gui/widgets/main_notebook.c:117
 msgid "Scenes (Live View)"
 msgstr "장면 (라이브 보기)"
 

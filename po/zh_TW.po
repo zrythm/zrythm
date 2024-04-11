@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-04-11 12:14+0900\n"
+"POT-Creation-Date: 2024-04-12 07:23+0900\n"
 "PO-Revision-Date: 2022-08-28 15:52+0000\n"
 "Last-Translator: StarAtt <tea55688@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -306,7 +306,7 @@ msgid "Off"
 msgstr "Off"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
-#: src/gui/widgets/cc_bindings_tree.c:150
+#: src/gui/widgets/cc_bindings_tree.c:131
 #: src/gui/widgets/port_connections_tree.c:194
 #: src/gui/widgets/item_factory.c:591 src/gui/widgets/bot_bar.c:421
 msgid "On"
@@ -633,9 +633,9 @@ msgstr "複製"
 msgid "_Paste"
 msgstr "貼上"
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1841 src/actions/actions.c:3359
-#: src/actions/actions.c:3411 src/actions/actions.c:3557
-#: src/actions/actions.c:3679 src/actions/actions.c:3946
+#: inc/utils/gtk.h:54 src/actions/actions.c:1867 src/actions/actions.c:3385
+#: src/actions/actions.c:3437 src/actions/actions.c:3583
+#: src/actions/actions.c:3705 src/actions/actions.c:3972
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr "刪除"
@@ -726,8 +726,8 @@ msgstr "無法開啟檔案: %s"
 msgid "Failed to decompress project file at %s"
 msgstr "專案無法解壓縮: %s"
 
-#: src/project.c:630 src/actions/actions.c:687 src/actions/actions.c:748
-#: src/actions/actions.c:802 src/actions/actions.c:821
+#: src/project.c:630 src/actions/actions.c:690 src/actions/actions.c:751
+#: src/actions/actions.c:805 src/actions/actions.c:824
 #: src/gui/widgets/main_window.c:120
 #: src/project/project_init_flow_manager.c:675
 #, fuzzy
@@ -976,12 +976,12 @@ msgstr "插入靜音"
 msgid "Delete range"
 msgstr "刪除範圍"
 
-#: src/actions/undo_manager.c:188 src/actions/actions.c:982
+#: src/actions/undo_manager.c:188 src/actions/actions.c:985
 #, fuzzy
 msgid "Failed to undo action"
 msgstr "無法撤銷操作"
 
-#: src/actions/undo_manager.c:238 src/actions/actions.c:978
+#: src/actions/undo_manager.c:238 src/actions/actions.c:981
 msgid "Failed to redo action"
 msgstr "無法重做操作"
 
@@ -1037,30 +1037,30 @@ msgstr ""
 msgid "Set control value"
 msgstr "設置控制值"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:345
 #, fuzzy
 msgid "Guile Disabled"
 msgstr "停用"
 
-#: src/actions/actions.c:345
+#: src/actions/actions.c:348
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:704
+#: src/actions/actions.c:707
 msgid "Discard Changes?"
 msgstr ""
 
-#: src/actions/actions.c:705
+#: src/actions/actions.c:708
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "專案尚未儲存，確定要繼續？"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
-#: src/actions/actions.c:1840 src/actions/actions.c:3358
-#: src/actions/actions.c:3410 src/actions/actions.c:3556
-#: src/actions/actions.c:3678 src/actions/actions.c:3945 src/dsp/clip.c:692
+#: src/actions/actions.c:711 src/actions/actions.c:772
+#: src/actions/actions.c:1866 src/actions/actions.c:3384
+#: src/actions/actions.c:3436 src/actions/actions.c:3582
+#: src/actions/actions.c:3704 src/actions/actions.c:3971 src/dsp/clip.c:692
 #: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
 #: src/gui/widgets/plugin_properties_expander.c:79
@@ -1078,12 +1078,12 @@ msgstr "專案尚未儲存，確定要繼續？"
 msgid "_Cancel"
 msgstr "取消"
 
-#: src/actions/actions.c:708 src/actions/actions.c:769
+#: src/actions/actions.c:711 src/actions/actions.c:772
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
 msgstr ""
 
-#: src/actions/actions.c:709 src/actions/actions.c:770
+#: src/actions/actions.c:712 src/actions/actions.c:773
 #: src/gui/widgets/main_window.c:154
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:130
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:298
@@ -1091,104 +1091,104 @@ msgstr ""
 msgid "_Save"
 msgstr "儲存"
 
-#: src/actions/actions.c:764 src/gui/widgets/main_window.c:148
+#: src/actions/actions.c:767 src/gui/widgets/main_window.c:148
 #, fuzzy
 msgid "Save Changes?"
 msgstr "儲存專案"
 
-#: src/actions/actions.c:765
+#: src/actions/actions.c:768
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
 
-#: src/actions/actions.c:840
+#: src/actions/actions.c:843
 msgid "Save Project"
 msgstr "儲存專案"
 
-#: src/actions/actions.c:873
+#: src/actions/actions.c:876
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (PNG)"
 msgstr "圖片 (PNG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Image (SVG)"
 msgstr "圖片 (SVG)"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:877
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:882
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:926
+#: src/actions/actions.c:929
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:954 src/guile/actions/undo_manager.c:53
+#: src/actions/actions.c:957 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
 msgstr "無法還原"
 
-#: src/actions/actions.c:1017 src/guile/actions/undo_manager.c:76
+#: src/actions/actions.c:1020 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
 msgstr "無法重做"
 
-#: src/actions/actions.c:1054 src/actions/actions.c:1067
-#: src/actions/actions.c:1289
+#: src/actions/actions.c:1057 src/actions/actions.c:1070
+#: src/actions/actions.c:1292
 msgid "Failed to delete selections"
 msgstr "無法刪除已選取的內容"
 
-#: src/actions/actions.c:1105
+#: src/actions/actions.c:1108
 #, fuzzy
 msgid "Selections copied to clipboard"
 msgstr "剪下到剪貼簿"
 
-#: src/actions/actions.c:1126
+#: src/actions/actions.c:1129
 #, fuzzy
 msgid "Plugins copied to clipboard"
 msgstr "剪下到剪貼簿"
 
-#: src/actions/actions.c:1144
+#: src/actions/actions.c:1147
 #, fuzzy
 msgid "Tracks copied to clipboard"
 msgstr "從剪貼簿貼上"
 
-#: src/actions/actions.c:1161
+#: src/actions/actions.c:1164
 #, fuzzy, c-format
 msgid "Failed to paste data: %s"
 msgstr "無法開啟檔案: %s"
 
-#: src/actions/actions.c:1176
+#: src/actions/actions.c:1179
 #, c-format
 msgid "invalid clipboard data received: %s"
 msgstr ""
 
-#: src/actions/actions.c:1241
+#: src/actions/actions.c:1244
 msgid "Can't paste incompatible data"
 msgstr "無法貼上不相容的數據"
 
-#: src/actions/actions.c:1314
+#: src/actions/actions.c:1317
 msgid "Failed to duplicate selections"
 msgstr "無法複製已選取的內容"
 
-#: src/actions/actions.c:1528
+#: src/actions/actions.c:1547
 msgid "Failed to unbind"
 msgstr "無法解除绑定"
 
-#: src/actions/actions.c:1562 src/actions/actions.c:2079
-#: src/actions/actions.c:2106
+#: src/actions/actions.c:1588 src/actions/actions.c:2105
+#: src/actions/actions.c:2132
 msgid "Failed to quantize"
 msgstr "量化失敗"
 
-#: src/actions/actions.c:1632 src/dsp/track.c:3455
+#: src/actions/actions.c:1658 src/dsp/track.c:3455
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
@@ -1196,32 +1196,32 @@ msgstr "量化失敗"
 msgid "Failed to create track"
 msgstr "無法存檔: %s"
 
-#: src/actions/actions.c:1671 src/gui/widgets/drag_dest_box.c:262
+#: src/actions/actions.c:1697 src/gui/widgets/drag_dest_box.c:262
 #: src/gui/widgets/timeline_arranger.c:1352
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
 #, fuzzy
 msgid "Failed to import files"
 msgstr "無法存檔: %s"
 
-#: src/actions/actions.c:1680
+#: src/actions/actions.c:1706
 #, fuzzy
 msgid "Select File(s)"
 msgstr "選擇一個檔案"
 
-#: src/actions/actions.c:1742
+#: src/actions/actions.c:1768
 msgid "Failed to duplicate tracks"
 msgstr "無法複製音軌"
 
-#: src/actions/actions.c:1817 src/actions/actions.c:1863
+#: src/actions/actions.c:1843 src/actions/actions.c:1889
 msgid "Failed to delete tracks"
 msgstr "無法刪除音軌"
 
-#: src/actions/actions.c:1835
+#: src/actions/actions.c:1861
 #, fuzzy
 msgid "Delete Tracks?"
 msgstr "刪除所選音軌"
 
-#: src/actions/actions.c:1836
+#: src/actions/actions.c:1862
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1229,245 +1229,245 @@ msgstr ""
 "所選音軌包含未經證實（Uninstantiated）的外掛程式。刪除它們將無法還原，並且將"
 "清除還原歷史記錄。是否繼續刪除？"
 
-#: src/actions/actions.c:1895
+#: src/actions/actions.c:1921
 msgid "Failed to pin/unpin tracks"
 msgstr "無法固定/取消固定音軌"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1932
 msgid "Failed to solo tracks"
 msgstr "未能獨奏音軌"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1943
 msgid "Failed to unsolo tracks"
 msgstr "無法取消獨奏音軌"
 
-#: src/actions/actions.c:1928
+#: src/actions/actions.c:1954
 msgid "Failed to mute tracks"
 msgstr "無法將音軌靜音"
 
-#: src/actions/actions.c:1939
+#: src/actions/actions.c:1965
 msgid "Failed to unmute tracks"
 msgstr "無法將音軌取消靜音"
 
-#: src/actions/actions.c:1950
+#: src/actions/actions.c:1976
 msgid "Failed to listen tracks"
 msgstr "無法收聽音軌"
 
-#: src/actions/actions.c:1961
+#: src/actions/actions.c:1987
 msgid "Failed to unlisten tracks"
 msgstr "無法取消收聽音軌"
 
-#: src/actions/actions.c:1972
+#: src/actions/actions.c:1998
 msgid "Failed to enable tracks"
 msgstr "未能啟用音軌"
 
-#: src/actions/actions.c:1983
+#: src/actions/actions.c:2009
 msgid "Failed to disable tracks"
 msgstr "未能禁用音軌"
 
-#: src/actions/actions.c:2121
+#: src/actions/actions.c:2147
 #, fuzzy
 msgid "Invalid Selection For Quantize"
 msgstr "無法刪除範圍"
 
-#: src/actions/actions.c:2122
+#: src/actions/actions.c:2148
 #, fuzzy, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr "必須先選擇時間線或編輯器。目前選擇是 %s"
 
-#: src/actions/actions.c:2189
+#: src/actions/actions.c:2215
 msgid "Failed to mute selections"
 msgstr "無法將所選內容靜音"
 
-#: src/actions/actions.c:2202
+#: src/actions/actions.c:2228
 #, fuzzy
 msgid "No regions selected"
 msgstr "未選擇區域"
 
-#: src/actions/actions.c:2208
+#: src/actions/actions.c:2234
 #, fuzzy
 msgid "Selections must be on the same lane"
 msgstr "所選內容必須位於同一軌道上"
 
-#: src/actions/actions.c:2213
+#: src/actions/actions.c:2239
 #, fuzzy
 msgid "Cannot merge looped regions"
 msgstr "無法合併循環區域"
 
-#: src/actions/actions.c:2227
+#: src/actions/actions.c:2253
 msgid "Failed to merge selections"
 msgstr "無法合併所選內容"
 
-#: src/actions/actions.c:2305
+#: src/actions/actions.c:2331
 #, fuzzy
 msgid "Failed to insert silence"
 msgstr "無法插入靜音"
 
-#: src/actions/actions.c:2322
+#: src/actions/actions.c:2348
 #, fuzzy
 msgid "Failed to remove range"
 msgstr "無法刪除範圍"
 
-#: src/actions/actions.c:2398 src/actions/arranger_selections.c:538
+#: src/actions/actions.c:2424 src/actions/arranger_selections.c:538
 #: src/gui/widgets/dialogs/midi_function_dialog.c:246
 #, fuzzy
 msgid "Failed to apply MIDI function"
 msgstr "無法應用 MIDI 功能"
 
-#: src/actions/actions.c:2430 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2456 src/actions/arranger_selections.c:570
 #, fuzzy
 msgid "Failed to apply automation function"
 msgstr "未能應用自動化功能"
 
-#: src/actions/actions.c:2470 src/actions/actions.c:3023
+#: src/actions/actions.c:2496 src/actions/actions.c:3049
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr "無法應用音訊功能"
 
-#: src/actions/actions.c:2486
+#: src/actions/actions.c:2512
 #, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr "請輸入名稱"
 
-#: src/actions/actions.c:2624
+#: src/actions/actions.c:2650
 #, fuzzy
 msgid "Pitch Ratio"
 msgstr "音高"
 
-#: src/actions/actions.c:2705
+#: src/actions/actions.c:2731
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr "音軌名稱"
 
-#: src/actions/actions.c:2724
+#: src/actions/actions.c:2750
 #, fuzzy
 msgid "Object name"
 msgstr "物件名稱"
 
-#: src/actions/actions.c:2755
+#: src/actions/actions.c:2781
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2789
+#: src/actions/actions.c:2815
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "無法設置曲線演算法"
 
-#: src/actions/actions.c:2817
+#: src/actions/actions.c:2843
 #, fuzzy
 msgid "Region Color"
 msgstr "片段的顏色"
 
-#: src/actions/actions.c:2849
+#: src/actions/actions.c:2875
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "無法存檔: %s"
 
-#: src/actions/actions.c:2888
+#: src/actions/actions.c:2914
 msgid "Please enter a BPM"
 msgstr "請輸入BPM"
 
 #. TODO
-#: src/actions/actions.c:2896 src/dsp/scale.c:517
+#: src/actions/actions.c:2922 src/dsp/scale.c:517
 #: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr ""
 
-#: src/actions/actions.c:2896
+#: src/actions/actions.c:2922
 msgid "Tap BPM not implemented yet"
 msgstr ""
 
-#: src/actions/actions.c:2951
+#: src/actions/actions.c:2977
 msgid "Failed to move selections"
 msgstr "無法移動已選取的內容"
 
-#: src/actions/actions.c:2967
+#: src/actions/actions.c:2993
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "偵測到的 BPM： %.2f"
 
-#: src/actions/actions.c:2969
+#: src/actions/actions.c:2995
 msgid "Candidates:"
 msgstr "候選："
 
-#: src/actions/actions.c:3130
+#: src/actions/actions.c:3156
 msgid "Failed to set curve algorithm"
 msgstr "無法設置曲線演算法"
 
-#: src/actions/actions.c:3179
+#: src/actions/actions.c:3205
 #, fuzzy
 msgid "Failed to edit fades"
 msgstr "編輯淡入淡出失敗"
 
-#: src/actions/actions.c:3241
+#: src/actions/actions.c:3267
 #, fuzzy
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr "未找到自定義預設包。請先從和弦預設瀏覽器創建預設包。"
 
-#: src/actions/actions.c:3312
+#: src/actions/actions.c:3338
 #, fuzzy
 msgid "Failed to create pack"
 msgstr "無法存檔: %s"
 
-#: src/actions/actions.c:3324 src/actions/actions.c:3379
+#: src/actions/actions.c:3350 src/actions/actions.c:3405
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "預設包名稱"
 
-#: src/actions/actions.c:3355 src/actions/actions.c:3407
-#: src/actions/actions.c:3675 src/actions/actions.c:3938
+#: src/actions/actions.c:3381 src/actions/actions.c:3433
+#: src/actions/actions.c:3701 src/actions/actions.c:3964
 #, fuzzy
 msgid "Delete?"
 msgstr "刪除"
 
-#: src/actions/actions.c:3356
+#: src/actions/actions.c:3382
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr "您確定要刪除此和弦預設包嗎？"
 
-#: src/actions/actions.c:3408
+#: src/actions/actions.c:3434
 #, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
 msgstr "您確定要刪除此和弦預設包嗎？"
 
-#: src/actions/actions.c:3431
+#: src/actions/actions.c:3457
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 #, fuzzy
 msgid "Preset Name"
 msgstr "預設名稱"
 
-#: src/actions/actions.c:3451 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3477 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 #, fuzzy
 msgid "Failed to change balance"
 msgstr "無法開啟檔案: %s"
 
-#: src/actions/actions.c:3473
+#: src/actions/actions.c:3499
 #, fuzzy
 msgid "Failed to change plugin states"
 msgstr "無法建立外掛程式%s"
 
-#: src/actions/actions.c:3507
+#: src/actions/actions.c:3533
 #, fuzzy
 msgid "Failed to change load behavior"
 msgstr "無法開啟檔案: %s"
 
-#: src/actions/actions.c:3530 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3556 src/gui/widgets/modulator_inner.c:71
 #, fuzzy
 msgid "Failed to delete plugins"
 msgstr "無法刪除外掛程式"
 
-#: src/actions/actions.c:3552
+#: src/actions/actions.c:3578
 #, fuzzy
 msgid "Delete Plugins?"
 msgstr "刪除外掛"
 
-#: src/actions/actions.c:3553
+#: src/actions/actions.c:3579
 #, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
@@ -1476,37 +1476,37 @@ msgstr ""
 "所選內容包含未經證實（Uninstantiated）的外掛程式。刪除它們將無法還原，並且將"
 "清除還原歷史記錄。是否繼續刪除？"
 
-#: src/actions/actions.c:3604
+#: src/actions/actions.c:3630
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "重置失敗 %s"
 
-#: src/actions/actions.c:3629
+#: src/actions/actions.c:3655
 #, fuzzy, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "無法斷開 %s 與 %s 的連接"
 
-#: src/actions/actions.c:3670
+#: src/actions/actions.c:3696
 #, fuzzy
 msgid "Cannot delete standard bookmark"
 msgstr "無法刪除標準書籤"
 
-#: src/actions/actions.c:3676
+#: src/actions/actions.c:3702
 #, fuzzy
 msgid "Are you sure you want to delete this bookmark?"
 msgstr "是否確實要刪除此書籤？"
 
-#: src/actions/actions.c:3869 src/actions/actions.c:3900
+#: src/actions/actions.c:3895 src/actions/actions.c:3926
 msgid "Collection name"
 msgstr "收藏名稱"
 
-#: src/actions/actions.c:3941
+#: src/actions/actions.c:3967
 #, fuzzy, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr "此收藏包含 %d 外掛程式。是否確定要將其刪除？"
 
-#: src/actions/actions.c:4120
+#: src/actions/actions.c:4146
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "無法更改直接輸出"
@@ -3092,7 +3092,7 @@ msgstr "主頁"
 msgid "Desktop"
 msgstr ""
 
-#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:51
+#: src/gui/backend/file_manager.c:450 src/gui/widgets/cc_bindings_tree.c:32
 #: src/gui/widgets/port_connections_tree.c:131 src/plugins/collection.c:170
 msgid "Delete"
 msgstr "刪除"
@@ -3192,11 +3192,11 @@ msgstr "輸出訊號"
 msgid "Current val"
 msgstr "當前的值"
 
-#: src/gui/widgets/inspector_port.c:326 src/gui/widgets/cc_bindings_tree.c:179
+#: src/gui/widgets/inspector_port.c:326
 msgid "Min"
 msgstr "最小值"
 
-#: src/gui/widgets/inspector_port.c:327 src/gui/widgets/cc_bindings_tree.c:189
+#: src/gui/widgets/inspector_port.c:327
 msgid "Max"
 msgstr "最大值"
 
@@ -3263,16 +3263,12 @@ msgstr ""
 msgid "Select path"
 msgstr "全選"
 
-#: src/gui/widgets/cc_bindings_tree.c:157
-msgid "Device"
-msgstr "裝置"
-
-#: src/gui/widgets/cc_bindings_tree.c:167 src/gui/widgets/item_factory.c:634
+#: src/gui/widgets/cc_bindings_tree.c:136 src/gui/widgets/item_factory.c:634
 #, fuzzy
 msgid "Note/Control"
 msgstr "控制"
 
-#: src/gui/widgets/cc_bindings_tree.c:172
+#: src/gui/widgets/cc_bindings_tree.c:141
 #: src/gui/widgets/port_connections_tree.c:211
 #: src/gui/widgets/item_factory.c:649
 msgid "Destination"
@@ -4665,7 +4661,7 @@ msgstr "無法開啟檔案: %s"
 msgid "Failed to connect send"
 msgstr "無法開啟檔案: %s"
 
-#: src/gui/widgets/main_notebook.c:116
+#: src/gui/widgets/main_notebook.c:117
 msgid "Scenes (Live View)"
 msgstr ""
 
@@ -8219,6 +8215,9 @@ msgid ""
 "Fix device selection dropdown crashing in preferences when opened from the "
 "greeter"
 msgstr ""
+
+#~ msgid "Device"
+#~ msgstr "裝置"
 
 #, fuzzy
 #~ msgid "Change some global keyboard shortcuts"
