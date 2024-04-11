@@ -939,15 +939,6 @@ preferences_widget_class_init (PreferencesWidgetClass * _klass)
 static void
 preferences_widget_init (PreferencesWidget * self)
 {
-#if 0
-  self->group_notebook =
-    GTK_NOTEBOOK (gtk_notebook_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->group_notebook), true);
-  gtk_box_append (
-    GTK_BOX (
-      gtk_dialog_get_content_area (
-        GTK_DIALOG (self))),
-    GTK_WIDGET (self->group_notebook));
-#endif
+  adw_preferences_dialog_set_search_enabled (
+    ADW_PREFERENCES_DIALOG (self), true);
 }
