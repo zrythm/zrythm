@@ -16,10 +16,10 @@ Right Panel
 The right panel consists of the following views,
 each explained in its own section.
 
-* :ref:`Plugin Browsers <plugin-browser>`
+* :ref:`Plugin Browser <plugin-browser>`
 * :ref:`File Browser <file-browser>`
 * :ref:`Monitor Section <routing/monitor-section:Monitor Section>`
 * :ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`
 
 .. todo:: Write and point to correct chord preset
-   browser section.
+   browser sections.

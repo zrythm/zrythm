@@ -43,7 +43,7 @@ for creating the new project, then click
 .. tip:: A blank template is available, and you can
   create your own templates by copying a project
   directory under :file:`templates` in the
-  :term:`Zrythm user path`.
+  :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
 
 After clicking :guilabel:`Create`, Zrythm will ask
 you for a parent directory to save the project in

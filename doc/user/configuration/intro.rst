@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -13,6 +13,4 @@ Configuration
 
    preferences
    device-setup
-   ui-scaling-and-wayland
    shortcuts
-   additional-settings

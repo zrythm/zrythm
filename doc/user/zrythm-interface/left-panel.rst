@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -18,4 +18,3 @@ explained in its own section.
 
 * :ref:`Track Inspector <track-inspector>`
 * :ref:`Plugin Inspector <plugins-files/plugins/inspector-page:Inspector Page>`
-* :ref:`Track Visibility <track-visibility>`

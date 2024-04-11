@@ -35,7 +35,7 @@ Plugin Cache
 ------------
 
 Zrythm will remember scanned VST plugins and save this information in
-:file:`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`.
+:file:`cached_plugin_descriptors.yaml` in the :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
 
 New plugins will be scanned on each start-up, and you can delete or edit this
 file to force a re-scan of previously scanned plugins.

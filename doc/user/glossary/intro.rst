@@ -173,16 +173,3 @@ Glossary
     small buffer sizes, so the buffer length should
     be increased to ease the work done by the sound
     card.
-
-  Zrythm user path
-    The path where Zrythm will save user data,
-    such as projects, temporary files, presets and
-    exported audio.
-    The default is :file:`zrythm` under
-
-    * :envvar:`XDG_DATA_HOME` (see the
-      `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_)
-      on freedesktop-compliant systems (or if
-      :envvar:`XDG_DATA_HOME` is defined), or
-
-    * ``%LOCALAPPDATA%`` on Windows

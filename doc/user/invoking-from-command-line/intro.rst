@@ -44,7 +44,7 @@ Zrythm executable.
   .. note:: Only affects the
     settings printed with :option:`zrythm -p`. This will
     *not* affect any files in the
-    :term:`Zrythm user path`.
+    :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
 
   .. warning:: This will clear ALL your user
     settings.

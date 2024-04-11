@@ -14,7 +14,7 @@ Initial Configuration
 When you first run Zrythm, it will display a dialog
 that lets you configure the basic settings that
 Zrythm will use. These include the
-:term:`Zrythm user path` and the language of the
+:ref:`Zrythm user path <configuration/preferences:Zrythm User Path>` and the language of the
 user interface.
 
 .. figure:: /_static/img/initial-configuration-dialog.png
@@ -31,7 +31,7 @@ Language
   .. note:: You must have a locale enabled for the
     language you want to use.
 Path
-  This is the :term:`Zrythm user path`.
+  This is the :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
 
 .. tip:: More settings are
    available in the :ref:`preferences`.

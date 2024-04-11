@@ -52,3 +52,7 @@ on the plugin in the :ref:`plugin-browser`.
    :align: center
 
    Opening ZynAddSubFX in bridged mode
+
+Zrythm will remember the last setting used for each
+plugin and automatically apply it when you choose to
+instantiate that plugin from the plugin browser.

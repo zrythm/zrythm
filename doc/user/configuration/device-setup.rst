@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -80,15 +80,11 @@ mappings (bindings) can be found under the
 :guilabel:`Bindings` tab in the
 :ref:`main panel <zrythm-interface/main-panel:Main Panel>`.
 
-.. figure:: /_static/img/midi-bindings.png
+.. figure:: /_static/img/midi-bindings-delete.png
    :align: center
 
    MIDI CC bindings
 
-Bindings can be deleted by right-clicking on a
-row and selecting :guilabel:`Delete`.
-
-.. figure:: /_static/img/midi-bindings-delete.png
-   :align: center
-
-   Deleting a binding
+Bindings can be enabled/disabled by clicking the checkbox on each row, or
+deleted by selecting one or more rows and pressing the :guilabel:`Delete`
+button in the toolbar at the bottom.

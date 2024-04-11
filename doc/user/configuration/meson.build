@@ -2,12 +2,10 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
-  'additional-settings.rst',
   'device-setup.rst',
   'intro.rst',
   'preferences.rst',
   'shortcuts.rst',
-  'ui-scaling-and-wayland.rst',
   ]
 
 foreach f : copy_files

@@ -10,7 +10,7 @@ User path
 ---------
 When Zrythm is launched for the first time, it will
 also ask you to select a directory for saving your
-user data. See :term:`Zrythm user path` for details.
+user data. See :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>` for details.
 
 Installed Files
 ---------------
@@ -71,7 +71,7 @@ normally be installed under
 
 .. hint:: Zrythm provides ways to override some of
    these files with user-specified files in the
-   :term:`Zrythm user path`. See
+   :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`. See
    :ref:`theming/intro:Theming` for details.
 
 User Files
@@ -81,20 +81,33 @@ Cached Plugin Descriptors
 Plugin descriptor cache for faster scanning.
 This is found at
 :file:`cached_plugin_descriptors.yaml` under the
-:term:`Zrythm user path`.
+:ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
 
 Plugin Collections
 ~~~~~~~~~~~~~~~~~~
 This file contains your plugin collections.
 It is found at
 :file:`plugin_collections.yaml` under the
-:term:`Zrythm user path`.
+:ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`.
+
+Plugin Settings
+~~~~~~~~~~~~~~~
+Located at :file:`plugin-settings.yaml` under the
+:ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`, this is a collection of
+per-plugin settings, such as whether to open the
+plugin with :term:`Carla`, the
+:ref:`bridge mode <plugins-files/plugins/plugin-window:Opening Plugins in Bridged Mode>`
+to use and whether to use a
+:ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`.
+
+.. note:: This file is generated and maintained automatically by Zrythm and
+   users are not expected to edit it.
 
 Log File
 --------
 Zrythm will write to a log file on each run inside
 the :file:`log` subdirectory under the
-:term:`Zrythm user path`. The filename will contain
+:ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`. The filename will contain
 the current date and time, for example
 :file:`log_2020-06-26_15-34-19.log`.
 

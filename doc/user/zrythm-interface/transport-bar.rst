@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -8,23 +8,15 @@
 Transport Bar
 =============
 
-The transport bar contains information about the
-audio engine, transport controls and CPU/DSP usage.
+The transport bar contains information about the audio engine,
+:ref:`the BPM and time signature <playback-and-recording/bpm-and-time-signatures:BPM and Time Signatures>`,
+:ref:`transport controls <playback-and-recording/transport-controls:Transport Controls>`.
+and various indicators.
 
 .. figure:: /_static/img/transport-bar.png
    :align: center
 
    Transport bar
-
-BPM and Time Signature
-----------------------
-BPM and Time Signature are covered in
-:ref:`playback-and-recording/bpm-and-time-signatures:BPM and Time Signatures`.
-
-Transport Controls
-------------------
-Transport controls are covered in
-:ref:`playback-and-recording/transport-controls:Transport Controls`.
 
 Backend Information
 -------------------
@@ -44,26 +36,17 @@ If the backend supports it, the engine can be
 temporarily disabled by clicking the
 :guilabel:`Disable` button.
 
-CPU/DSP Usage
--------------
-
-.. figure:: /_static/img/cpu-dsp-usage.png
-   :align: center
-
-   CPU/DSP usage
-
-This widget displays the current CPU % usage at the
-top and the current DSP % usage at the bottom. If
-the DSP % exceeds 100 (all bars filled), audio will
-start clipping.
-
-Live Indicators
----------------
-
-The following live indicators are displayed on the right.
+Indicators
+----------
 
 MIDI In
-  Shows the :term:`MIDI` activity of auto-connected
-  MIDI devices.
+  Shows the :term:`MIDI` activity of auto-connected MIDI devices.
 Oscilloscope
-  Shows the audio waveform from the master output.
+  Shows the real-time audio waveform from the master output.
+Spectrum Analyzer
+  Shows the real-time audio spectrum of the master output.
+CPU/DSP Usage
+  Displays the current CPU % usage at the
+  top and the current DSP % usage at the bottom. If
+  the DSP % exceeds 100 (all bars filled), audio will
+  start clipping.
