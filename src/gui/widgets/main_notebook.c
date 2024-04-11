@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
@@ -111,9 +111,11 @@ main_notebook_widget_init (MainNotebookWidget * self)
     _ ("Port Connections"));
   ADD_TAB (
     GTK_WIDGET (self->cc_bindings_box), "signal-midi", _ ("MIDI CC Bindings"));
+#if 0
   ADD_TAB (
     GTK_WIDGET (self->scenes_box), "carousel-horizontal",
     _ ("Scenes (Live View)"));
+#endif
 
   /* setup CC bindings */
   self->cc_bindings = cc_bindings_widget_new ();
