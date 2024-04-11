@@ -21,13 +21,13 @@
 # Juan <benitesjn@gmail.com>, 2023.
 # Daniel “Gula” GoodAir <danielcebeats97@gmail.com>, 2023.
 # Guss Gaviria <gustarom@gmail.com>, 2023.
-# gallegonovato <fran-carro@hotmail.es>, 2023.
+# gallegonovato <fran-carro@hotmail.es>, 2023, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-11 12:14+0900\n"
-"PO-Revision-Date: 2023-12-02 20:45+0000\n"
+"PO-Revision-Date: 2024-04-11 20:45+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -4915,7 +4915,6 @@ msgid "Select Project"
 msgstr "Seleccione un proyecto"
 
 #: src/gui/widgets/greeter.c:508
-#, fuzzy
 msgid "Open a Project"
 msgstr "Abrir un proyecto"
 
