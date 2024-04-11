@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-beta.6.6.1\n"
+"Project-Id-Version: Zrythm 1.0.0-beta.6.7.1\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-04-06 09:30+0900\n"
+"POT-Creation-Date: 2024-04-11 12:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,9 +611,9 @@ msgstr ""
 msgid "_Paste"
 msgstr ""
 
-#: inc/utils/gtk.h:54 src/actions/actions.c:1783 src/actions/actions.c:3301
-#: src/actions/actions.c:3353 src/actions/actions.c:3499
-#: src/actions/actions.c:3621 src/actions/actions.c:3888
+#: inc/utils/gtk.h:54 src/actions/actions.c:1841 src/actions/actions.c:3359
+#: src/actions/actions.c:3411 src/actions/actions.c:3557
+#: src/actions/actions.c:3679 src/actions/actions.c:3946
 #: src/settings/chord_preset.c:107 src/settings/chord_preset_pack.c:121
 msgid "_Delete"
 msgstr ""
@@ -1004,13 +1004,13 @@ msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 
 #: src/actions/actions.c:708 src/actions/actions.c:769
-#: src/actions/actions.c:1782 src/actions/actions.c:3300
-#: src/actions/actions.c:3352 src/actions/actions.c:3498
-#: src/actions/actions.c:3620 src/actions/actions.c:3887 src/dsp/clip.c:692
+#: src/actions/actions.c:1840 src/actions/actions.c:3358
+#: src/actions/actions.c:3410 src/actions/actions.c:3556
+#: src/actions/actions.c:3678 src/actions/actions.c:3945 src/dsp/clip.c:692
 #: src/utils/dialogs.c:25 src/gui/widgets/main_window.c:153
 #: src/gui/widgets/preferences.c:173
 #: src/gui/widgets/plugin_properties_expander.c:79
-#: src/gui/widgets/tracklist.c:334
+#: src/gui/widgets/tracklist.c:338
 #: src/gui/widgets/dialogs/midi_function_dialog.c:312
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:231
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:112
@@ -1125,8 +1125,8 @@ msgstr ""
 msgid "Failed to unbind"
 msgstr ""
 
-#: src/actions/actions.c:1562 src/actions/actions.c:2021
-#: src/actions/actions.c:2048
+#: src/actions/actions.c:1562 src/actions/actions.c:2079
+#: src/actions/actions.c:2106
 msgid "Failed to quantize"
 msgstr ""
 
@@ -1137,270 +1137,280 @@ msgstr ""
 msgid "Failed to create track"
 msgstr ""
 
-#: src/actions/actions.c:1684
+#: src/actions/actions.c:1671 src/gui/widgets/drag_dest_box.c:262
+#: src/gui/widgets/timeline_arranger.c:1352
+#: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
+msgid "Failed to import files"
+msgstr ""
+
+#: src/actions/actions.c:1680
+msgid "Select File(s)"
+msgstr ""
+
+#: src/actions/actions.c:1742
 msgid "Failed to duplicate tracks"
 msgstr ""
 
-#: src/actions/actions.c:1759 src/actions/actions.c:1805
+#: src/actions/actions.c:1817 src/actions/actions.c:1863
 msgid "Failed to delete tracks"
 msgstr ""
 
-#: src/actions/actions.c:1777
+#: src/actions/actions.c:1835
 msgid "Delete Tracks?"
 msgstr ""
 
-#: src/actions/actions.c:1778
+#: src/actions/actions.c:1836
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1837
+#: src/actions/actions.c:1895
 msgid "Failed to pin/unpin tracks"
 msgstr ""
 
-#: src/actions/actions.c:1848
+#: src/actions/actions.c:1906
 msgid "Failed to solo tracks"
 msgstr ""
 
-#: src/actions/actions.c:1859
+#: src/actions/actions.c:1917
 msgid "Failed to unsolo tracks"
 msgstr ""
 
-#: src/actions/actions.c:1870
+#: src/actions/actions.c:1928
 msgid "Failed to mute tracks"
 msgstr ""
 
-#: src/actions/actions.c:1881
+#: src/actions/actions.c:1939
 msgid "Failed to unmute tracks"
 msgstr ""
 
-#: src/actions/actions.c:1892
+#: src/actions/actions.c:1950
 msgid "Failed to listen tracks"
 msgstr ""
 
-#: src/actions/actions.c:1903
+#: src/actions/actions.c:1961
 msgid "Failed to unlisten tracks"
 msgstr ""
 
-#: src/actions/actions.c:1914
+#: src/actions/actions.c:1972
 msgid "Failed to enable tracks"
 msgstr ""
 
-#: src/actions/actions.c:1925
+#: src/actions/actions.c:1983
 msgid "Failed to disable tracks"
 msgstr ""
 
-#: src/actions/actions.c:2063
+#: src/actions/actions.c:2121
 msgid "Invalid Selection For Quantize"
 msgstr ""
 
-#: src/actions/actions.c:2064
+#: src/actions/actions.c:2122
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2131
+#: src/actions/actions.c:2189
 msgid "Failed to mute selections"
 msgstr ""
 
-#: src/actions/actions.c:2144
+#: src/actions/actions.c:2202
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2150
+#: src/actions/actions.c:2208
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2155
+#: src/actions/actions.c:2213
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2169
+#: src/actions/actions.c:2227
 msgid "Failed to merge selections"
 msgstr ""
 
-#: src/actions/actions.c:2247
+#: src/actions/actions.c:2305
 msgid "Failed to insert silence"
 msgstr ""
 
-#: src/actions/actions.c:2264
+#: src/actions/actions.c:2322
 msgid "Failed to remove range"
 msgstr ""
 
-#: src/actions/actions.c:2340 src/actions/arranger_selections.c:538
+#: src/actions/actions.c:2398 src/actions/arranger_selections.c:538
 #: src/gui/widgets/dialogs/midi_function_dialog.c:246
 msgid "Failed to apply MIDI function"
 msgstr ""
 
-#: src/actions/actions.c:2372 src/actions/arranger_selections.c:570
+#: src/actions/actions.c:2430 src/actions/arranger_selections.c:570
 msgid "Failed to apply automation function"
 msgstr ""
 
-#: src/actions/actions.c:2412 src/actions/actions.c:2965
+#: src/actions/actions.c:2470 src/actions/actions.c:3023
 #: src/actions/arranger_selections.c:607 src/actions/arranger_selections.c:618
 msgid "Failed to apply audio function"
 msgstr ""
 
-#: src/actions/actions.c:2428
+#: src/actions/actions.c:2486
 msgid "Please enter a ratio between 0.0001 and 100."
 msgstr ""
 
-#: src/actions/actions.c:2566
+#: src/actions/actions.c:2624
 msgid "Pitch Ratio"
 msgstr ""
 
-#: src/actions/actions.c:2647
+#: src/actions/actions.c:2705
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
 msgstr ""
 
-#: src/actions/actions.c:2666
+#: src/actions/actions.c:2724
 msgid "Object name"
 msgstr ""
 
-#: src/actions/actions.c:2697
+#: src/actions/actions.c:2755
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2731
+#: src/actions/actions.c:2789
 msgid "Failed to set region color"
 msgstr ""
 
-#: src/actions/actions.c:2759
+#: src/actions/actions.c:2817
 msgid "Region Color"
 msgstr ""
 
-#: src/actions/actions.c:2791
+#: src/actions/actions.c:2849
 msgid "Failed to reset region color"
 msgstr ""
 
-#: src/actions/actions.c:2830
+#: src/actions/actions.c:2888
 msgid "Please enter a BPM"
 msgstr ""
 
 #. TODO
-#: src/actions/actions.c:2838 src/dsp/scale.c:517
-#: src/gui/widgets/tracklist.c:316 src/gui/widgets/tracklist.c:360
+#: src/actions/actions.c:2896 src/dsp/scale.c:517
+#: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
 msgstr ""
 
-#: src/actions/actions.c:2838
+#: src/actions/actions.c:2896
 msgid "Tap BPM not implemented yet"
 msgstr ""
 
-#: src/actions/actions.c:2893
+#: src/actions/actions.c:2951
 msgid "Failed to move selections"
 msgstr ""
 
-#: src/actions/actions.c:2909
+#: src/actions/actions.c:2967
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2911
+#: src/actions/actions.c:2969
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:3072
+#: src/actions/actions.c:3130
 msgid "Failed to set curve algorithm"
 msgstr ""
 
-#: src/actions/actions.c:3121
+#: src/actions/actions.c:3179
 msgid "Failed to edit fades"
 msgstr ""
 
-#: src/actions/actions.c:3183
+#: src/actions/actions.c:3241
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3254
+#: src/actions/actions.c:3312
 msgid "Failed to create pack"
 msgstr ""
 
-#: src/actions/actions.c:3266 src/actions/actions.c:3321
+#: src/actions/actions.c:3324 src/actions/actions.c:3379
 msgid "Preset Pack Name"
 msgstr ""
 
-#: src/actions/actions.c:3297 src/actions/actions.c:3349
-#: src/actions/actions.c:3617 src/actions/actions.c:3880
+#: src/actions/actions.c:3355 src/actions/actions.c:3407
+#: src/actions/actions.c:3675 src/actions/actions.c:3938
 msgid "Delete?"
 msgstr ""
 
-#: src/actions/actions.c:3298
+#: src/actions/actions.c:3356
 msgid "Are you sure you want to delete this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3350
+#: src/actions/actions.c:3408
 msgid "Are you sure you want to delete this chord preset?"
 msgstr ""
 
-#: src/actions/actions.c:3373
+#: src/actions/actions.c:3431
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
 msgstr ""
 
-#: src/actions/actions.c:3393 src/gui/widgets/balance_control.c:238
+#: src/actions/actions.c:3451 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:311 src/gui/widgets/balance_control.c:347
 msgid "Failed to change balance"
 msgstr ""
 
-#: src/actions/actions.c:3415
+#: src/actions/actions.c:3473
 msgid "Failed to change plugin states"
 msgstr ""
 
-#: src/actions/actions.c:3449
+#: src/actions/actions.c:3507
 msgid "Failed to change load behavior"
 msgstr ""
 
-#: src/actions/actions.c:3472 src/gui/widgets/modulator_inner.c:71
+#: src/actions/actions.c:3530 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
 msgstr ""
 
-#: src/actions/actions.c:3494
+#: src/actions/actions.c:3552
 msgid "Delete Plugins?"
 msgstr ""
 
-#: src/actions/actions.c:3495
+#: src/actions/actions.c:3553
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
 msgstr ""
 
-#: src/actions/actions.c:3546
+#: src/actions/actions.c:3604
 #, c-format
 msgid "Failed to reset %s"
 msgstr ""
 
-#: src/actions/actions.c:3571
+#: src/actions/actions.c:3629
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr ""
 
-#: src/actions/actions.c:3612
+#: src/actions/actions.c:3670
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3618
+#: src/actions/actions.c:3676
 msgid "Are you sure you want to delete this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3811 src/actions/actions.c:3842
+#: src/actions/actions.c:3869 src/actions/actions.c:3900
 msgid "Collection name"
 msgstr ""
 
-#: src/actions/actions.c:3883
+#: src/actions/actions.c:3941
 #, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4062
+#: src/actions/actions.c:4120
 msgid "Failed to change direct output"
 msgstr ""
 
@@ -2656,7 +2666,7 @@ msgstr ""
 msgid "Macro CV Out %d"
 msgstr ""
 
-#: src/dsp/channel.c:1155 src/plugins/carla_native_plugin.c:1087
+#: src/dsp/channel.c:1155 src/plugins/carla_native_plugin.c:1114
 msgid "MIDI out"
 msgstr ""
 
@@ -2777,11 +2787,7 @@ msgid ""
 msgstr ""
 
 #: src/utils/error.c:22
-#, c-format
-msgid ""
-"%s\n"
-"---Backtrace---\n"
-"%s"
+msgid "Details"
 msgstr ""
 
 #: src/utils/audio.c:38
@@ -3331,11 +3337,6 @@ msgstr ""
 #: src/gui/widgets/panel_file_browser.c:461
 #: src/gui/widgets/plugin_browser.c:1011
 msgid "Search..."
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:262 src/gui/widgets/timeline_arranger.c:1352
-#: src/gui/widgets/dialogs/file_import_progress_dialog.c:119
-msgid "Failed to import files"
 msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:323 src/gui/widgets/track.c:1858
@@ -4643,43 +4644,47 @@ msgstr ""
 msgid "Add Audio Track"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:82
+#: src/gui/widgets/tracklist.c:74
+msgid "Import File..."
+msgstr ""
+
+#: src/gui/widgets/tracklist.c:86
 msgid "Add FX Track"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:94
+#: src/gui/widgets/tracklist.c:98
 msgid "Add Group Track"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:97
+#: src/gui/widgets/tracklist.c:101
 msgid "Add Folder Track"
 msgstr ""
 
 #. TODO
-#: src/gui/widgets/tracklist.c:316 src/gui/widgets/tracklist.c:360
-#: src/gui/widgets/tracklist.c:377
+#: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
+#: src/gui/widgets/tracklist.c:381
 msgid "Operation unimplemented"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:329
+#: src/gui/widgets/tracklist.c:333
 msgid "Create New Instrument Track?"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:330
+#: src/gui/widgets/tracklist.c:334
 msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:335
+#: src/gui/widgets/tracklist.c:339
 msgid "Create _Instrument Track"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:368
+#: src/gui/widgets/tracklist.c:372
 msgid "Unsupported"
 msgstr ""
 
-#: src/gui/widgets/tracklist.c:368 src/gui/widgets/tracklist.c:383
+#: src/gui/widgets/tracklist.c:372 src/gui/widgets/tracklist.c:387
 msgid "Dragged item is not supported"
 msgstr ""
 
@@ -5598,46 +5603,46 @@ msgstr ""
 msgid "Preset %u"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1022
+#: src/plugins/carla_native_plugin.c:1049
 msgid "Audio in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1070
+#: src/plugins/carla_native_plugin.c:1097
 msgid "Audio out"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1078
+#: src/plugins/carla_native_plugin.c:1105
 msgid "MIDI in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1096
+#: src/plugins/carla_native_plugin.c:1123
 msgid "CV in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1104
+#: src/plugins/carla_native_plugin.c:1131
 msgid "CV out"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1661
+#: src/plugins/carla_native_plugin.c:1688
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1831
+#: src/plugins/carla_native_plugin.c:1858
 msgid "Failed to load Carla state"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1842
+#: src/plugins/carla_native_plugin.c:1869
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2213
+#: src/plugins/carla_native_plugin.c:2240
 msgid "Plugin doesn't have a state directory"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2229
+#: src/plugins/carla_native_plugin.c:2256
 #, c-format
 msgid "State file %s doesn't exist"
 msgstr ""
@@ -7435,229 +7440,245 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
-msgid "Changed:"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+msgid "Implement ctrl-drag to move the loop range in the timeline (#4815)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Print libadwaita/libpanel versions in debug info"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+msgid "Changed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid "Remove unneeded `volatile` keywords from some variables"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Monitor section tab: use speaker icon from GNOME icon library"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid ""
+"Stretch objects with Ctrl modifier instead of having a separate stretch mode "
+"(#5036)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Change modulator icon to a knob (#5073)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Don't allow resizing if the hovered object is too narrow (#5070)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid ""
+"Update Russian, Interlingua, Catalan, Afrikaans, Finnish, Turkish, Polish, "
+"Chinese (Simplified), Japanese translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid ""
 "Change how object resizing works: revert original object(s) on undo (fixes "
 "undoing audio stretching not reverting the original audio, #4955)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Bump required libadwaita/gtk versions to latest stable releases"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Revert to previous fader style (#5054)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
 msgid "Fixed:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid ""
 "Fix track inputs switching to wrong input in the inspector after selecting a "
 "different track"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
 msgid "Fix some issues reported by ASAN"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
 msgid "Fix memory leak when loading project files"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Fix home VST2 path being used when scanning DSSI plugins (#5058)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Removed:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid "Hide MIDI modifier chooser (out of scope for v1, #5053)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
-msgid "Added:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Build: Add flatpak manifest for building in GNOME Builder"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Source: Add editor config file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "Add more relevant categories in desktop file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid "Auto-scroll when dragging towards edges of the ruler (#5043)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Show fade in/out line indicator in audio regions in timeline on hover"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Replace most cursors used in arrangers (#5029)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Update Interlingua, Catalan translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Build: set gettext package name and version"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Fix diminuendo (crescendo MIDI function with downward slope) (#4999)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Fix wrong icon name in desktop file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid ""
 "Fix automation points for non-float parameters being drawn at wrong "
 "positions (#4177)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 msgid "Fix missing `document-edit` icon"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Fix incorrectly allowing audio region fade in/out to crossfade (#4975)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Remove styling of panel resize separators (#5046)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid "Redesign plugin info label"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid ""
 "Build: port UI files to blueprint format and generate UI files via blueprint-"
 "compiler"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid "Redesign channel views in the mixer"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Update some icons"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
 msgid "Redesign faders"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Link transport control buttons together"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Drop borders from meters and change color gradient"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Unit tests: require less RAM"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid "Port various dialogs to AdwDialog"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Bump libadwaita requirement to &gt;= 1.5"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Use raised top bar style for main window (#5023)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "CSS theme: Specify named colors `@window_bg_color` and `@dialog_bg_color` "
 "instead of coloring specific widget backgrounds"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Debugging: don't set signal handlers when running from valgrind"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Update Chinese (Simplified), Japanese, Hindi, Catalan translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
 msgid "Install Zrythm icon as org.zrythm.Zrythm.svg instead of zrythm.svg"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid ""
 "User manual: document `--audio-backend` and `--midi-backend` CLI options"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
 msgid ""
 "Fix error when sending a bug report for a project with many actions on the "
 "undo stack (#5016)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Fix spectrum analyzer not rendering correctly with ngl renderer (#5008)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid ""
 "Fix cancel button when exporting stems only cancelling export for the "
 "current stem"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 msgid ""
 "Fix device selection dropdown crashing in preferences when opened from the "
 "greeter"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid "Re-generate built-in plugins with latest faust"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Port the last remaining GtkMessageDialog to AdwMessageDialog"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
-msgid "Generate the about dialog from appdata XML"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
-msgid "Update some information in the about dialog and in the appdata XML"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
-msgid ""
-"GTK: Don't force GL renderer on Windows (revert change in previous release)"
 msgstr ""

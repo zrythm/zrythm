@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-02 12:45+0900\n"
+"POT-Creation-Date: 2024-04-11 12:14+0900\n"
 "PO-Revision-Date: 2023-01-10 23:59+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -146,7 +146,7 @@ msgstr ""
 "exemplo, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` para o coreano."
 
 #: ../../appendix/files-and-directories.rst:48
-#: ../../getting-started/getting-plugins.rst:101
+#: ../../getting-started/getting-plugins.rst:100
 msgid "Samples"
 msgstr "Amostras"
 
@@ -318,7 +318,7 @@ msgstr ""
 "<.. /.. /editing/clip-editor/chord-editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
-#: ../../getting-started/getting-plugins.rst:86
+#: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:68
 msgid "Presets"
 msgstr "Predefinições"
@@ -788,7 +788,7 @@ msgstr "Configuração"
 
 #: ../../configuration/preferences.rst:11
 #: ../../plugins-files/audio-midi-files/file-browser.rst:117
-#: ../../zrythm-interface/main-toolbar.rst:111
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Preferences"
 msgstr "Preferências"
 
@@ -930,6 +930,7 @@ msgid "This behaves similarly to :option:`zrythm --reset-to-factory`."
 msgstr "Veja :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/shortcuts.rst:7
+#: ../../zrythm-interface/main-toolbar.rst:63
 msgid "Shortcuts"
 msgstr "Atalhos"
 
@@ -4199,7 +4200,7 @@ msgstr ""
 msgid "Frequently Asked Questions"
 msgstr ""
 
-#: ../../getting-started/faq.rst:18 ../../zrythm-interface/main-toolbar.rst:84
+#: ../../getting-started/faq.rst:18
 msgid "About"
 msgstr ""
 
@@ -4242,9 +4243,9 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:82
 msgid ""
-"When all bugfixes and feature implementations under the `Version 1 release "
-"candidate milestone <https://gitlab.zrythm.org/zrythm/zrythm/-/issues?"
-"milestone_title=v1.rc>`_ are completed."
+"When all bugfixes and feature implementations under the `Version 1 milestone "
+"<https://gitlab.zrythm.org/zrythm/zrythm/-/issues?milestone_title=v1>`_ are "
+"completed."
 msgstr ""
 
 #: ../../getting-started/faq.rst:86
@@ -4253,30 +4254,48 @@ msgid "Usage"
 msgstr "Intervalo"
 
 #: ../../getting-started/faq.rst:89
-msgid "Can I use ASIO?"
+msgid "How do I add external plugins?"
 msgstr ""
 
 #: ../../getting-started/faq.rst:91
+msgid ""
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
+"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+msgstr ""
+
+#: ../../getting-started/faq.rst:95
+msgid "How do I import an audio/MIDI file?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:97
+msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
+msgstr ""
+
+#: ../../getting-started/faq.rst:100
+msgid "Can I use ASIO?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:102
 msgid ""
 "*Short answer: Yes, but you have to do it yourself and you may not "
 "distribute the build to anyone else.*"
 msgstr ""
 
-#: ../../getting-started/faq.rst:94
+#: ../../getting-started/faq.rst:105
 msgid ""
 "The ASIO technology was developed by German company Steinberg and is "
 "protected by a licensing agreement which prevents redistribution of its "
 "source code."
 msgstr ""
 
-#: ../../getting-started/faq.rst:98
+#: ../../getting-started/faq.rst:109
 msgid ""
 "Zrythm contains code under AGPL/GPL which requires all source code "
 "(including source code of used libraries) to be disclosed, and therefore it "
 "is illegal to provide builds with ASIO support."
 msgstr ""
 
-#: ../../getting-started/faq.rst:103
+#: ../../getting-started/faq.rst:114
 msgid ""
 "However, Zrythm supports the JACK and RtAudio backends, which optionally "
 "support ASIO. As we cannot distribute these libraries with ASIO support "
@@ -4284,31 +4303,13 @@ msgid ""
 "them from source with ASIO support) and make Zrythm use those."
 msgstr ""
 
-#: ../../getting-started/faq.rst:109
+#: ../../getting-started/faq.rst:120
 msgid ""
 "Zrythm with ASIO support is NON-DISTRIBUTABLE. You may NOT copy or "
 "distribute builds including ASIO support to anyone else. The build is "
 "strictly for your own personal (private or commercial) use. For the same "
 "reasons, the Zrythm team cannot distribute builds of Zrythm including ASIO "
 "support."
-msgstr ""
-
-#: ../../getting-started/faq.rst:117
-msgid "How do I add external plugins?"
-msgstr ""
-
-#: ../../getting-started/faq.rst:119
-msgid ""
-"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
-"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
-msgstr ""
-
-#: ../../getting-started/faq.rst:123
-msgid "How do I import an audio/MIDI file?"
-msgstr ""
-
-#: ../../getting-started/faq.rst:125
-msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:9
@@ -4347,8 +4348,9 @@ msgstr ""
 "livre aqui <https://github.com/webprofusion/OpenAudio>`_."
 
 #: ../../getting-started/getting-plugins.rst:27
+#, fuzzy
 msgid ""
-"For users of Debian-based distributions such as Ubuntu and Linux Mint we "
+"For users of Debian-based distributions (such as Ubuntu and Linux Mint) we "
 "recommend using the `KXstudio repositories <https://kx.studio/>`_, as there "
 "are many plugins that can easily be installed via apt."
 msgstr ""
@@ -4359,26 +4361,25 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:32
 #, fuzzy
 msgid ""
-"For users of Arch Linux-based distributions such as Manjaro we recommend "
-"installing the `lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/"
-">`_ group."
+"For users of Arch Linux-based distributions we recommend installing the `pro-"
+"audio group`_."
 msgstr ""
 "Para utilizadores de distribuições baseadas no Arch Linux como o Manjaro, "
 "recomendamos instalar o grupo `lv2-plugins <https://www.archlinux.org/groups/"
 "x86_64/lv2-plugins/>`_."
 
-#: ../../getting-started/getting-plugins.rst:38
+#: ../../getting-started/getting-plugins.rst:37
 msgid "Recommended Plugin Bundles"
 msgstr "Pacotes de suplementos recomendados"
 
-#: ../../getting-started/getting-plugins.rst:40
+#: ../../getting-started/getting-plugins.rst:39
 #, fuzzy
 msgid "`DISTRHO Ports`_ provides a good variety of synths and effects."
 msgstr ""
 "`DISTRHO Portos <https://distrho.sourceforge.io/ports.php>`_ fornece uma boa "
 "variedade de sintetizadores e efeitos."
 
-#: ../../getting-started/getting-plugins.rst:43
+#: ../../getting-started/getting-plugins.rst:42
 #, fuzzy
 msgid ""
 "`ZAM Plugins <https://www.zamaudio.com/?p=976>`_ is an effects pack that "
@@ -4389,13 +4390,13 @@ msgstr ""
 "contém todos os efeitos básicos como delay, reverb, compressão, equalizador, "
 "saturação."
 
-#: ../../getting-started/getting-plugins.rst:48
+#: ../../getting-started/getting-plugins.rst:47
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr "`LSP <https://lsp-plug.in/>`_ tem muitos suplementos de efeitos úteis."
 
-#: ../../getting-started/getting-plugins.rst:51
+#: ../../getting-started/getting-plugins.rst:50
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various MIDI "
 "effect and meter plugins."
@@ -4403,29 +4404,29 @@ msgstr ""
 "`Suplementos X42 <http://x42-plugins.com/x42/>`_, tem muitos suplementos de "
 "efeitos e medidores de MIDI."
 
-#: ../../getting-started/getting-plugins.rst:55
+#: ../../getting-started/getting-plugins.rst:54
 msgid "Synths"
 msgstr "Sintetizadores"
 
-#: ../../getting-started/getting-plugins.rst:57
+#: ../../getting-started/getting-plugins.rst:56
 #, fuzzy
 msgid ""
 "`Helm <https://tytel.org/helm/>`_ is an easy to use subtractive synthesizer."
 msgstr ""
 "`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo excelente."
 
-#: ../../getting-started/getting-plugins.rst:60
+#: ../../getting-started/getting-plugins.rst:59
 msgid ""
 "Vitalium from `DISTRHO Ports`_ is a very powerful wavetable synthesizer."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:63
+#: ../../getting-started/getting-plugins.rst:62
 msgid ""
 "`Surge <https://surge-synthesizer.github.io/>`_ is a subtractive hybrid "
 "synthesizer with a unique interface."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:67
+#: ../../getting-started/getting-plugins.rst:66
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer that "
 "is closely modeled on the Yamaha DX7."
@@ -4433,7 +4434,7 @@ msgstr ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed é um sintetizador FM que é "
 "intimamente modelado no Yamaha DX7."
 
-#: ../../getting-started/getting-plugins.rst:71
+#: ../../getting-started/getting-plugins.rst:70
 #, fuzzy
 msgid ""
 "`ZynFusion <https://zynaddsubfx.sourceforge.io/zyn-fusion.html>`_ is a "
@@ -4444,11 +4445,11 @@ msgstr ""
 "poderoso sintetizador aditivo/subtrativo que pode sintetizar uma grande "
 "variedade de sons."
 
-#: ../../getting-started/getting-plugins.rst:76
+#: ../../getting-started/getting-plugins.rst:75
 msgid "Percussion Generators"
 msgstr "Geradores de Percussão"
 
-#: ../../getting-started/getting-plugins.rst:78
+#: ../../getting-started/getting-plugins.rst:77
 #, fuzzy
 msgid ""
 "`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ is a kick drum "
@@ -4457,28 +4458,28 @@ msgstr ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ é um sintetizador de tambor "
 "de pontapé que também pode sintetizar outros tipos de percussão."
 
-#: ../../getting-started/getting-plugins.rst:82
+#: ../../getting-started/getting-plugins.rst:81
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 "Veja :ref:`scanning-plugins` para caminhos onde os suplementos serão "
 "procurados."
 
-#: ../../getting-started/getting-plugins.rst:87
+#: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
 msgstr ""
 "'Freesound'_ tem predefinições disponíveis para descarregar para suplementos "
 "específicos."
 
-#: ../../getting-started/getting-plugins.rst:90
+#: ../../getting-started/getting-plugins.rst:89
 #, fuzzy
 msgid "In the future, we will be offering preset packs for download."
 msgstr "No futuro, iremos oferecer pacotes de predefinições para descarregar."
 
-#: ../../getting-started/getting-plugins.rst:94
+#: ../../getting-started/getting-plugins.rst:93
 msgid "SFZ/SF2 Instruments"
 msgstr "Instrumentos SFZ/SF2"
 
-#: ../../getting-started/getting-plugins.rst:96
+#: ../../getting-started/getting-plugins.rst:95
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
@@ -4486,14 +4487,14 @@ msgstr ""
 "Encontra uma lista de instrumentos SFZ sob licenças livres em `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 
-#: ../../getting-started/getting-plugins.rst:103
+#: ../../getting-started/getting-plugins.rst:102
 #, fuzzy
 msgid "We recommend using `Freesound`_ for collecting CC-licensed samples."
 msgstr ""
 "Recomendamos usar 'Freesound <https://freesound.org/>'_ para coletar "
 "amostras licenciadas pelo CC."
 
-#: ../../getting-started/getting-plugins.rst:106
+#: ../../getting-started/getting-plugins.rst:105
 msgid "We will also be offering sample packs for download in the future."
 msgstr "Também iremos oferecer pacotes de amostras para descarregar no futuro."
 
@@ -4529,6 +4530,7 @@ msgid "The installers also include bundled plugins."
 msgstr "Os instaladores também incluem suplementos empacotados."
 
 #: ../../getting-started/installation.rst:28
+#: ../../getting-started/system-requirements.rst:45
 msgid "Windows"
 msgstr "Windows"
 
@@ -4684,33 +4686,223 @@ msgid "System Requirements"
 msgstr "Requisitos do Sistema"
 
 #: ../../getting-started/system-requirements.rst:10
-msgid "Hardware"
-msgstr "Hardware"
-
-#: ../../getting-started/system-requirements.rst:11
 #, fuzzy
+msgid "Platform Support"
+msgstr "Suporte para MP3."
+
+#: ../../getting-started/system-requirements.rst:12
 msgid ""
-"x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
-"aarch64 (ARMv8)"
-msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) ou aarch64 (ARMv8)"
+"Zrythm aims to support all platforms, however due to lack of resources we "
+"focus on the most used ones. See the matrix below for support status of each "
+"platform."
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:14
-msgid "Operating System"
-msgstr "Sistema Operacional"
+#: ../../getting-started/system-requirements.rst:16
+msgid "○: Supported △: Untested ×: Not supported"
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:15
-msgid "GNU/Linux, FreeBSD, Windows or MacOS"
-msgstr "GNU/Linux, FreeBSD, Windows ou MacOS"
+#: ../../getting-started/system-requirements.rst:20
+msgid "Platform support matrix"
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:18
+#: ../../getting-started/system-requirements.rst:24
+#, fuzzy
+msgid "Platform"
+msgstr "Fórum"
+
+#: ../../getting-started/system-requirements.rst:25
+msgid "x86_64/AMD64/x64"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:26
+msgid "AArch64/ARM64/ARMv8"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:27
+msgid "ARMv7"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:28
+msgid "PowerPC64"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:29
+msgid "i386"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:30
+msgid "i686"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:31
+#: ../../getting-started/system-requirements.rst:143
+msgid "GNU/Linux"
+msgstr "GNU/Linux"
+
+#: ../../getting-started/system-requirements.rst:32
+#: ../../getting-started/system-requirements.rst:33
+#: ../../getting-started/system-requirements.rst:39
+#: ../../getting-started/system-requirements.rst:46
+#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:54
+#: ../../getting-started/system-requirements.rst:73
+#: ../../getting-started/system-requirements.rst:75
+#: ../../getting-started/system-requirements.rst:77
+#: ../../getting-started/system-requirements.rst:83
+#: ../../getting-started/system-requirements.rst:87
+#: ../../getting-started/system-requirements.rst:89
+#: ../../getting-started/system-requirements.rst:97
+#: ../../getting-started/system-requirements.rst:99
+#: ../../getting-started/system-requirements.rst:103
+#: ../../getting-started/system-requirements.rst:105
+#: ../../getting-started/system-requirements.rst:107
+msgid "○"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:34
+#: ../../getting-started/system-requirements.rst:35
+#: ../../getting-started/system-requirements.rst:36
+#: ../../getting-started/system-requirements.rst:37
+#: ../../getting-started/system-requirements.rst:40
+#: ../../getting-started/system-requirements.rst:41
+#: ../../getting-started/system-requirements.rst:42
+#: ../../getting-started/system-requirements.rst:43
+#: ../../getting-started/system-requirements.rst:44
+#: ../../getting-started/system-requirements.rst:79
+#: ../../getting-started/system-requirements.rst:81
+#: ../../getting-started/system-requirements.rst:101
+msgid "△"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:38
+#: ../../getting-started/system-requirements.rst:148
+msgid "FreeBSD"
+msgstr "FreeBSD"
+
+#: ../../getting-started/system-requirements.rst:47
+#: ../../getting-started/system-requirements.rst:48
+#: ../../getting-started/system-requirements.rst:49
+#: ../../getting-started/system-requirements.rst:50
+#: ../../getting-started/system-requirements.rst:51
+#: ../../getting-started/system-requirements.rst:55
+#: ../../getting-started/system-requirements.rst:56
+#: ../../getting-started/system-requirements.rst:57
+#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:85
+msgid "×"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:52
+msgid "MacOS"
+msgstr "MacOS"
+
+#: ../../getting-started/system-requirements.rst:61
+#, fuzzy
+msgid "Backend Support"
+msgstr "Suporte JACK"
+
+#: ../../getting-started/system-requirements.rst:63
+msgid "○: Supported △: Has known issues ×: Broken"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:67
+#, fuzzy
+msgid "Audio backends"
+msgstr "Backend áudio"
+
+#: ../../getting-started/system-requirements.rst:70
+#: ../../getting-started/system-requirements.rst:94
+#, fuzzy
+msgid "Backend"
+msgstr "Backend MIDI"
+
+#: ../../getting-started/system-requirements.rst:71
+#: ../../getting-started/system-requirements.rst:95
+#, fuzzy
+msgid "Status"
+msgstr "estados"
+
+#: ../../getting-started/system-requirements.rst:72
+#: ../../getting-started/system-requirements.rst:125
+#: ../../glossary/intro.rst:74
+msgid "JACK"
+msgstr "JACK"
+
+#: ../../getting-started/system-requirements.rst:74
+msgid "JACK (via PipeWire)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:76
+msgid "PulseAudio (RtAudio)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:78
+#, fuzzy
+msgid "PulseAudio"
+msgstr "Pulso"
+
+#: ../../getting-started/system-requirements.rst:80
+msgid "SDL2"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:82
+#, fuzzy
+msgid "ALSA (RtAudio)"
+msgstr "Faixa de Bus (Áudio)"
+
+#: ../../getting-started/system-requirements.rst:84
+msgid "ALSA"
+msgstr "ALSA"
+
+#: ../../getting-started/system-requirements.rst:86
+#, fuzzy
+msgid "WASAPI (RtAudio)"
+msgstr "Faixa de Bus (Áudio)"
+
+#: ../../getting-started/system-requirements.rst:88
+msgid "CoreAudio (RtAudio)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:91
+#, fuzzy
+msgid "MIDI backends"
+msgstr "Backend MIDI"
+
+#: ../../getting-started/system-requirements.rst:96
+#, fuzzy
+msgid "JACK MIDI"
+msgstr "Faixa de Bus (MIDI)"
+
+#: ../../getting-started/system-requirements.rst:98
+msgid "JACK MIDI (via PipeWire)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:100
+#, fuzzy
+msgid "WindowsMME"
+msgstr "Windows"
+
+#: ../../getting-started/system-requirements.rst:102
+msgid "ALSA Sequencer (RtMidi)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:104
+msgid "WindowsMME (RtMidi)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:106
+msgid "CoreMIDI (RtMidi)"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:110
 msgid "Recommendations"
 msgstr "Recomendações"
 
-#: ../../getting-started/system-requirements.rst:22
+#: ../../getting-started/system-requirements.rst:113
 msgid "CPU"
 msgstr "CPU"
 
-#: ../../getting-started/system-requirements.rst:21
+#: ../../getting-started/system-requirements.rst:113
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
@@ -4718,12 +4910,12 @@ msgstr ""
 "Para uma operação suave, recomendados utilizar uma CPU com pelo menos 2GHz e "
 "pelo menos 4 núcleos no total."
 
-#: ../../getting-started/system-requirements.rst:25
+#: ../../getting-started/system-requirements.rst:116
 #: ../../tracks/track-controls.rst:38
 msgid "Monitor"
 msgstr "Monitor"
 
-#: ../../getting-started/system-requirements.rst:25
+#: ../../getting-started/system-requirements.rst:116
 msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
@@ -4731,11 +4923,11 @@ msgstr ""
 "É recomendado ter pelo menos 16 polegadas (ca. 41 cm) de espaço de monitor "
 "para trabalhar eficientemente com a Zrythm."
 
-#: ../../getting-started/system-requirements.rst:29
+#: ../../getting-started/system-requirements.rst:119
 msgid "Audio interface"
 msgstr "Interface de áudio"
 
-#: ../../getting-started/system-requirements.rst:28
+#: ../../getting-started/system-requirements.rst:119
 msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
@@ -4743,21 +4935,18 @@ msgstr ""
 "Uma interface de áudio é recomendada, pois oferece baixa latência e melhor "
 "qualidade (especialmente se estiver a gravar áudio)."
 
-#: ../../getting-started/system-requirements.rst:33
+#: ../../getting-started/system-requirements.rst:122
 msgid "MIDI keyboard"
 msgstr "Teclado MIDI"
 
-#: ../../getting-started/system-requirements.rst:32
+#: ../../getting-started/system-requirements.rst:122
 #, fuzzy
 msgid ""
-"For quickly trying out melodies, recording and controlling knobs and buttons."
+"A MIDI keyboard is useful for quickly trying out melodies, recording, and "
+"controlling knobs and buttons."
 msgstr "Para experimentar rapidamente com melodias ou gravações."
 
-#: ../../getting-started/system-requirements.rst:36 ../../glossary/intro.rst:74
-msgid "JACK"
-msgstr "JACK"
-
-#: ../../getting-started/system-requirements.rst:37
+#: ../../getting-started/system-requirements.rst:126
 #, python-format
 msgid ""
 "When using the :term:`JACK` backend, JACK needs to be set up and configured "
@@ -4768,54 +4957,46 @@ msgid ""
 "html>`_, so we will skip this part."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:46
+#: ../../getting-started/system-requirements.rst:135
 msgid "Memory Locking"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:47
+#: ../../getting-started/system-requirements.rst:136
 msgid ""
 "Zrythm requires memory locking privileges for reliable, dropout-free "
 "operation. In short, if data is not locked into memory, it can be swapped by "
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:54
+#: ../../getting-started/system-requirements.rst:139
 msgid "Realtime Scheduling"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:55
+#: ../../getting-started/system-requirements.rst:140
 msgid ""
 "Zrythm requires realtime scheduling privileges for reliable, dropout-free "
 "operation. Realtime (RT) scheduling is a feature that enables applications "
 "to meet timing deadlines more reliably."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:61
-msgid "GNU/Linux"
-msgstr "GNU/Linux"
-
-#: ../../getting-started/system-requirements.rst:62
+#: ../../getting-started/system-requirements.rst:144
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:66
-msgid "FreeBSD"
-msgstr "FreeBSD"
-
-#: ../../getting-started/system-requirements.rst:67
+#: ../../getting-started/system-requirements.rst:149
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:72
+#: ../../getting-started/system-requirements.rst:154
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:73
+#: ../../getting-started/system-requirements.rst:155
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."
@@ -7960,7 +8141,6 @@ msgid "To use it from ECMAScript, use:"
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:7
-#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Scripting Interface"
 msgstr "Interface de script"
 
@@ -8826,6 +9006,7 @@ msgid "Only available on instrument tracks."
 msgstr ""
 
 #: ../../tracks/track-controls.rst:55
+#: ../../zrythm-interface/main-toolbar.rst:60
 #, fuzzy
 msgid "Other"
 msgstr "Dither"
@@ -9556,96 +9737,85 @@ msgstr ""
 "A barra de ferramentas principal contém ações globais, tais como gravar e "
 "carregar um projeto ou abrir a janela de preferências."
 
+#: ../../zrythm-interface/main-toolbar.rst:16
+#, fuzzy
+msgid "Main toolbar"
+msgstr "Barra de ferramentas principal"
+
 #: ../../zrythm-interface/main-toolbar.rst:18
 msgid ""
 "The name of the project is displayed at the center, with the project path "
-"being shown below it."
+"shown below it."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:22
-msgid "Global Menus"
-msgstr "Menus Globais"
-
-#: ../../zrythm-interface/main-toolbar.rst:23
-#, fuzzy
-msgid "The main toolbar contains the following global menus."
-msgstr "A barra de ferramentas principal também contém os widgets seguintes."
-
-#: ../../zrythm-interface/main-toolbar.rst:26
-msgid "Edit Menu"
-msgstr "Menu Editar"
+msgid "Main Menu"
+msgstr "Menu Principal"
 
 #: ../../zrythm-interface/main-toolbar.rst:27
-msgid ""
-"The Edit menu has various buttons and controls that are used often during "
-"editing and arranging."
-msgstr ""
-"O menu Editar contém vários botões e controles que são usados frequentemente "
-"durante a edição e arranjo."
+#, fuzzy
+msgid "Main menu"
+msgstr "Menu Principal"
 
-#: ../../zrythm-interface/main-toolbar.rst:30
-msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr "O capítulo :ref:`editing` explica estes controles em detalhes."
+#: ../../zrythm-interface/main-toolbar.rst:29
+#, fuzzy
+msgid "The main menu in the toolbar includes the following actions."
+msgstr "Os cilindros de piano contém os seguintes controles adicionais."
 
-#: ../../zrythm-interface/main-toolbar.rst:34
-msgid "Project Menu"
-msgstr "Menu Projeto"
-
-#: ../../zrythm-interface/main-toolbar.rst:35
-msgid ""
-"The Project menu contains various project-related actions such as saving, "
-"loading and exporting MIDI or audio."
-msgstr ""
-"O menu Projeto contém várias ações relacionadas ao projeto, como gravar, "
-"carregar e exportar MIDI ou áudio."
-
-#: ../../zrythm-interface/main-toolbar.rst:40
+#: ../../zrythm-interface/main-toolbar.rst:32
 #, fuzzy
 msgid "Project Management"
 msgstr "Menu Projeto"
 
-#: ../../zrythm-interface/main-toolbar.rst:41
-msgid "New Project"
-msgstr "Novo projeto"
+#: ../../zrythm-interface/main-toolbar.rst:33
+#, fuzzy
+msgid "Open a Project"
+msgstr "Carregar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:42
+#: ../../zrythm-interface/main-toolbar.rst:34
+#, fuzzy
+msgid "Open an existing project."
+msgstr "Criação de projetos"
+
+#: ../../zrythm-interface/main-toolbar.rst:35
+#, fuzzy
+msgid "Create New Project"
+msgstr "Criar um projeto."
+
+#: ../../zrythm-interface/main-toolbar.rst:36
 msgid "Create a new project."
 msgstr "Criar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:43
+#: ../../zrythm-interface/main-toolbar.rst:37
 msgid "Save"
 msgstr "Gravar"
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:38
 msgid "Save the current project at its current location."
 msgstr "Grave o projeto atual na localização atual dele."
 
-#: ../../zrythm-interface/main-toolbar.rst:45
+#: ../../zrythm-interface/main-toolbar.rst:40
 msgid "Save As"
 msgstr "Gravar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:46
+#: ../../zrythm-interface/main-toolbar.rst:40
 msgid "Save the current project at a new location."
 msgstr "Grave o projeto atual numa localização nova."
 
-#: ../../zrythm-interface/main-toolbar.rst:48
-msgid "Load"
-msgstr "Carregar"
+#: ../../zrythm-interface/main-toolbar.rst:42
+msgid "For more information about projects, see the :ref:`projects` chapter."
+msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projects`."
 
-#: ../../zrythm-interface/main-toolbar.rst:48
-msgid "Load a project."
-msgstr "Carregar um projeto."
-
-#: ../../zrythm-interface/main-toolbar.rst:51
+#: ../../zrythm-interface/main-toolbar.rst:46
 #, fuzzy
 msgid "Export"
 msgstr "exportações"
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Export As"
 msgstr "Exportar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
@@ -9653,11 +9823,11 @@ msgstr ""
 "Exportar o projeto como áudio ou MIDI. Veja :ref:`export-audio-and-midi` "
 "para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:57
+#: ../../zrythm-interface/main-toolbar.rst:52
 msgid "Export Graph"
 msgstr "Exportar gráfico"
 
-#: ../../zrythm-interface/main-toolbar.rst:56
+#: ../../zrythm-interface/main-toolbar.rst:51
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
@@ -9665,221 +9835,125 @@ msgstr ""
 "Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja :ref:"
 "`export-routing-graph` para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:59
-msgid "For more information about projects, see the :ref:`projects` chapter."
-msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projects`."
+#: ../../zrythm-interface/main-toolbar.rst:55
+msgid "View"
+msgstr "Visualização"
 
-#: ../../zrythm-interface/main-toolbar.rst:63
-msgid "View Menu"
-msgstr "Menu vista"
-
-#: ../../zrythm-interface/main-toolbar.rst:64
-#, fuzzy
-msgid ""
-"The View menu contains controls to change the appearance of Zrythm and its "
-"various areas."
-msgstr ""
-"O menu Vista contém controles para alterar a aparência do Zrythm e as "
-"diversas áreas dele, como a ampliação."
-
-#: ../../zrythm-interface/main-toolbar.rst:67
-msgid "Toggle Status Bar"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:68
-#, fuzzy
-msgid "Toggles the visibility of the status bar."
-msgstr "Alterna a visibilidade das pistas."
-
-#: ../../zrythm-interface/main-toolbar.rst:69
+#: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Fullscreen"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:70
-msgid "Toggles fullscreen mode."
+#: ../../zrythm-interface/main-toolbar.rst:57
+msgid "Toggle fullscreen mode."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:72
-#, fuzzy
-msgid "Toggle Left/Right/Bottom/Main Panels"
-msgstr "Alternar painéis esquerdo/direito/inferior"
-
-#: ../../zrythm-interface/main-toolbar.rst:72
-#, fuzzy
-msgid "Toggles the visibility of the selected panel."
-msgstr "Alterna a visibilidade das pistas."
-
-#: ../../zrythm-interface/main-toolbar.rst:75
-msgid "Help Menu"
-msgstr "Menu Ajuda"
-
-#: ../../zrythm-interface/main-toolbar.rst:76
-msgid ""
-"The Help menu contains links for reporting bugs, donating, chatting and "
-"other useful links."
-msgstr ""
-"O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras "
-"ligações úteis."
-
-#: ../../zrythm-interface/main-toolbar.rst:80
-msgid ""
-"View information about the running instance of Zrythm, such as version "
-"information, authors and copyright."
+#: ../../zrythm-interface/main-toolbar.rst:62
+msgid "Show the :ref:`preferences dialog <preferences>`."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:86
-msgid "Chat"
-msgstr "Conversação"
-
-#: ../../zrythm-interface/main-toolbar.rst:87
-msgid "Join the Zrythm chatroom on Matrix."
-msgstr "Junte-se à sala de chat Zrythm na Matrix."
-
-#: ../../zrythm-interface/main-toolbar.rst:88
-msgid "Manual"
-msgstr "Manual"
-
-#: ../../zrythm-interface/main-toolbar.rst:89
-msgid "View the user manual."
-msgstr "Veja o manual do utilizador."
-
-#: ../../zrythm-interface/main-toolbar.rst:90
-msgid "News"
-msgstr "Novidades"
-
-#: ../../zrythm-interface/main-toolbar.rst:91
-msgid "Show the latest changelog."
-msgstr "Mostrar o último changelog."
-
-#: ../../zrythm-interface/main-toolbar.rst:92
-msgid "Keyboard Shortcuts"
-msgstr "Atalhos de teclado"
-
-#: ../../zrythm-interface/main-toolbar.rst:93
+#: ../../zrythm-interface/main-toolbar.rst:64
 msgid "Show all the available keyboard shortcuts."
 msgstr "Mostrar todos os atalhos de teclado disponíveis."
 
-#: ../../zrythm-interface/main-toolbar.rst:94
-msgid "Donate"
-msgstr "Doação"
-
-#: ../../zrythm-interface/main-toolbar.rst:95
-msgid "Donate to Zrythm through LiberaPay."
-msgstr "Faça uma doação para Zrythm por meio do LiberaPay."
-
-#: ../../zrythm-interface/main-toolbar.rst:97
-msgid "Report a Bug"
-msgstr "Reportar um erro"
-
-#: ../../zrythm-interface/main-toolbar.rst:97
-msgid "Opens the page to report a new bug."
-msgstr "Abre a página para reportar um novo bug."
-
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:67
 #, fuzzy
-msgid "Additional Buttons"
-msgstr "Configurações adicionais"
+msgid "About Zrythm"
+msgstr "zrythm"
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:66
 #, fuzzy
-msgid "The main toolbar also contains the following buttons."
-msgstr "A barra de ferramentas principal também contém os widgets seguintes."
-
-#: ../../zrythm-interface/main-toolbar.rst:107
-#, fuzzy
-msgid "Shows the :ref:`scripting interface <scripting>`."
-msgstr "Mostra a interface de scripting."
-
-#: ../../zrythm-interface/main-toolbar.rst:108
-msgid "Log Viewer"
-msgstr "Visualizador de registos"
-
-#: ../../zrythm-interface/main-toolbar.rst:109
-msgid "Displays the log, which gets updated real-time."
-msgstr "Exibe o log, que é atualizado em tempo real."
-
-#: ../../zrythm-interface/main-toolbar.rst:111
-msgid "Shows the :ref:`preferences dialog <preferences>`."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:114
-#, fuzzy
-msgid "Live Indicators"
-msgstr "Ficheiros e Diretórios"
-
-#: ../../zrythm-interface/main-toolbar.rst:116
-msgid "The following live indicators are displayed on the right."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:120
-msgid "MIDI In"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:120
-msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:124
-msgid "Oscilloscope"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:123
-msgid "Shows the audio waveform from the master output."
-msgstr ""
+msgid "Display information about Zrythm."
+msgstr "Exibe informações sobre cada objeto de acorde."
 
 #: ../../zrythm-interface/overview.rst:9
 msgid "The Zrythm interface is split into various sub-modules."
 msgstr "A interface do Zrythm está dividida em vários submódulos."
 
-#: ../../zrythm-interface/overview.rst:14
+#: ../../zrythm-interface/overview.rst:15
+#, fuzzy
+msgid "Annotated user interface"
+msgstr "Interface principal"
+
+#: ../../zrythm-interface/overview.rst:17
 msgid "Each sub-module is explained in its own section."
 msgstr "Cada sub-módulo é explicado na própria secção dele."
 
-#: ../../zrythm-interface/overview.rst:16
+#: ../../zrythm-interface/overview.rst:19
 #, fuzzy
 msgid ":ref:`main-toolbar` (1)"
 msgstr ":ref:`main-toolbar` (2)"
 
-#: ../../zrythm-interface/overview.rst:17
+#: ../../zrythm-interface/overview.rst:20
 #, fuzzy
 msgid ":ref:`main-panel` (2)"
 msgstr ":ref:`timeline` (1)"
 
-#: ../../zrythm-interface/overview.rst:18
+#: ../../zrythm-interface/overview.rst:21
 msgid ":ref:`left-panel` (3)"
 msgstr ":ref:`left-panel` (3)"
 
-#: ../../zrythm-interface/overview.rst:19
+#: ../../zrythm-interface/overview.rst:22
 msgid ":ref:`bottom-panel` (4)"
 msgstr ":ref:`bottom-panel` (4)"
 
-#: ../../zrythm-interface/overview.rst:20
+#: ../../zrythm-interface/overview.rst:23
 #, fuzzy
 msgid ":ref:`right-panel` (5)"
 msgstr ":ref:`right-panel` (6)"
 
-#: ../../zrythm-interface/overview.rst:21
+#: ../../zrythm-interface/overview.rst:24
 #, fuzzy
 msgid ":ref:`transport-bar` (6)"
 msgstr ":ref:`transport-bar` (5)"
 
-#: ../../zrythm-interface/overview.rst:23
+#: ../../zrythm-interface/overview.rst:27
+#, fuzzy
+msgid "Managing Panels"
+msgstr "Arranjador da cronologia"
+
+#: ../../zrythm-interface/overview.rst:29
+msgid ""
+"The left, right and bottom panels can be toggled using their corresponding "
+"toggle buttons in the :ref:`main toolbar <main-toolbar>` and :ref:`transport "
+"bar <transport-bar>`."
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:35
+#, fuzzy
+msgid "Left panel toggle"
+msgstr "Painel esquerdo"
+
+#: ../../zrythm-interface/overview.rst:37
 msgid ""
 "Panels contain multiple *views*, each of which is made visible by clicking "
 "on its corresponding tab."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:27
+#: ../../zrythm-interface/overview.rst:43
+msgid "Panel tabs"
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:46
 msgid "Detaching Views"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:28
+#: ../../zrythm-interface/overview.rst:47
 msgid ""
 "Views in each panel are detachable. To detach a view into its own separate "
-"window, click and drag its tab outside the main window of Zrythm."
+"window, click and drag its tab icon to the 3rd button that appears in the "
+"middle of the panel."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:36
+#: ../../zrythm-interface/overview.rst:52
+msgid "Detaching the timeline view"
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:54
+#, fuzzy
+msgid "The view will be detached into a new window."
+msgstr "Isto será brevemente adicionado na IU."
+
+#: ../../zrythm-interface/overview.rst:59
 msgid "Detached timeline view"
 msgstr ""
 
@@ -10002,6 +10076,159 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#: ../../zrythm-interface/transport-bar.rst:61
+#, fuzzy
+msgid "Live Indicators"
+msgstr "Ficheiros e Diretórios"
+
+#: ../../zrythm-interface/transport-bar.rst:63
+msgid "The following live indicators are displayed on the right."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:66
+msgid "MIDI In"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:66
+msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:70
+msgid "Oscilloscope"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:69
+msgid "Shows the audio waveform from the master output."
+msgstr ""
+
+#~ msgid "Hardware"
+#~ msgstr "Hardware"
+
+#~ msgid ""
+#~ "x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
+#~ "aarch64 (ARMv8)"
+#~ msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) ou aarch64 (ARMv8)"
+
+#~ msgid "Operating System"
+#~ msgstr "Sistema Operacional"
+
+#~ msgid "GNU/Linux, FreeBSD, Windows or MacOS"
+#~ msgstr "GNU/Linux, FreeBSD, Windows ou MacOS"
+
+#~ msgid "Global Menus"
+#~ msgstr "Menus Globais"
+
+#~ msgid "The main toolbar contains the following global menus."
+#~ msgstr ""
+#~ "A barra de ferramentas principal também contém os widgets seguintes."
+
+#~ msgid "Edit Menu"
+#~ msgstr "Menu Editar"
+
+#~ msgid ""
+#~ "The Edit menu has various buttons and controls that are used often during "
+#~ "editing and arranging."
+#~ msgstr ""
+#~ "O menu Editar contém vários botões e controles que são usados "
+#~ "frequentemente durante a edição e arranjo."
+
+#~ msgid "The :ref:`editing` chapter explains these controls in detail."
+#~ msgstr "O capítulo :ref:`editing` explica estes controles em detalhes."
+
+#~ msgid "Project Menu"
+#~ msgstr "Menu Projeto"
+
+#~ msgid ""
+#~ "The Project menu contains various project-related actions such as saving, "
+#~ "loading and exporting MIDI or audio."
+#~ msgstr ""
+#~ "O menu Projeto contém várias ações relacionadas ao projeto, como gravar, "
+#~ "carregar e exportar MIDI ou áudio."
+
+#~ msgid "New Project"
+#~ msgstr "Novo projeto"
+
+#~ msgid "Load"
+#~ msgstr "Carregar"
+
+#~ msgid "View Menu"
+#~ msgstr "Menu vista"
+
+#~ msgid ""
+#~ "The View menu contains controls to change the appearance of Zrythm and "
+#~ "its various areas."
+#~ msgstr ""
+#~ "O menu Vista contém controles para alterar a aparência do Zrythm e as "
+#~ "diversas áreas dele, como a ampliação."
+
+#~ msgid "Toggles the visibility of the status bar."
+#~ msgstr "Alterna a visibilidade das pistas."
+
+#~ msgid "Toggle Left/Right/Bottom/Main Panels"
+#~ msgstr "Alternar painéis esquerdo/direito/inferior"
+
+#~ msgid "Toggles the visibility of the selected panel."
+#~ msgstr "Alterna a visibilidade das pistas."
+
+#~ msgid "Help Menu"
+#~ msgstr "Menu Ajuda"
+
+#~ msgid ""
+#~ "The Help menu contains links for reporting bugs, donating, chatting and "
+#~ "other useful links."
+#~ msgstr ""
+#~ "O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras "
+#~ "ligações úteis."
+
+#~ msgid "Chat"
+#~ msgstr "Conversação"
+
+#~ msgid "Join the Zrythm chatroom on Matrix."
+#~ msgstr "Junte-se à sala de chat Zrythm na Matrix."
+
+#~ msgid "Manual"
+#~ msgstr "Manual"
+
+#~ msgid "View the user manual."
+#~ msgstr "Veja o manual do utilizador."
+
+#~ msgid "News"
+#~ msgstr "Novidades"
+
+#~ msgid "Show the latest changelog."
+#~ msgstr "Mostrar o último changelog."
+
+#~ msgid "Keyboard Shortcuts"
+#~ msgstr "Atalhos de teclado"
+
+#~ msgid "Donate"
+#~ msgstr "Doação"
+
+#~ msgid "Donate to Zrythm through LiberaPay."
+#~ msgstr "Faça uma doação para Zrythm por meio do LiberaPay."
+
+#~ msgid "Report a Bug"
+#~ msgstr "Reportar um erro"
+
+#~ msgid "Opens the page to report a new bug."
+#~ msgstr "Abre a página para reportar um novo bug."
+
+#~ msgid "Additional Buttons"
+#~ msgstr "Configurações adicionais"
+
+#~ msgid "The main toolbar also contains the following buttons."
+#~ msgstr ""
+#~ "A barra de ferramentas principal também contém os widgets seguintes."
+
+#~ msgid "Shows the :ref:`scripting interface <scripting>`."
+#~ msgstr "Mostra a interface de scripting."
+
+#~ msgid "Log Viewer"
+#~ msgstr "Visualizador de registos"
+
+#~ msgid "Displays the log, which gets updated real-time."
+#~ msgstr "Exibe o log, que é atualizado em tempo real."
+
 #~ msgid "Editor Shortcuts"
 #~ msgstr "Atalhos do Editor"
 
@@ -10092,9 +10319,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Zrythm irá procurar por suplementos VST nos caminhos especificados em :"
 #~ "ref:`vst-paths`."
-
-#~ msgid "MacOS"
-#~ msgstr "MacOS"
 
 #~ msgid ""
 #~ "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -10392,9 +10616,6 @@ msgstr ""
 #~ msgstr ""
 #~ "O visualizador de eventos no editor de acordes é similar ao visualizador "
 #~ "de eventos da linha do tempo discutido em :ref:`timeline-event-viewer`."
-
-#~ msgid "It displays information about each chord object."
-#~ msgstr "Exibe informações sobre cada objeto de acorde."
 
 #~ msgid ""
 #~ "The event viewer in the piano roll is similar to the timeline event "
@@ -10813,9 +11034,6 @@ msgstr ""
 #~ "comando ou a ferramenta de GUI opcional `dconf-editor <https://wiki.gnome."
 #~ "org/Apps/DconfEditor>`_."
 
-#~ msgid "This will be added to the UI soon."
-#~ msgstr "Isto será brevemente adicionado na IU."
-
 #~ msgid ""
 #~ "Zrythm will auto-connect to the devices specified in :ref:`configuration/"
 #~ "preferences:Engine` and make these devices available in the :ref:`track "
@@ -10853,9 +11071,6 @@ msgstr ""
 
 #~ msgid "Audio engine settings."
 #~ msgstr "Configurações do mecanismo de áudio."
-
-#~ msgid "Audio backend"
-#~ msgstr "Backend áudio"
 
 #~ msgid ""
 #~ "The audio backend to use. The available backends are JACK, RtAudio and "
@@ -11342,9 +11557,6 @@ msgstr ""
 #~ msgid "MIDI - .mid"
 #~ msgstr "MIDI - .mid"
 
-#~ msgid "MP3 support."
-#~ msgstr "Suporte para MP3."
-
 #~ msgid "This is a work in progress."
 #~ msgstr "Este é um trabalho em progresso."
 
@@ -11470,9 +11682,6 @@ msgstr ""
 
 #~ msgid "An example backup project"
 #~ msgstr "Um exemplo de projeto de backup"
-
-#~ msgid "states"
-#~ msgstr "estados"
 
 #~ msgid "Contains plugin states at the time of save (for LV2)"
 #~ msgstr "Contém estados de suplementos no momento da gravação (para LV2)"
@@ -11758,9 +11967,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Um exemplo de configuração parece-se assim (em Catia dentro de Cadence)"
 
-#~ msgid "ALSA"
-#~ msgstr "ALSA"
-
 #~ msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
 #~ msgstr ""
 #~ "Uma ferramenta como o Catia pode ser usada para conectar aparelhos MIDI "
@@ -11795,9 +12001,6 @@ msgstr ""
 
 #~ msgid "The backend to use for the audio engine."
 #~ msgstr "O backend a usar para o motor de áudio."
-
-#~ msgid "MIDI Backend"
-#~ msgstr "Backend MIDI"
 
 #~ msgid "MIDI devices to auto-connect to when Zrythm starts."
 #~ msgstr "Aparelhos MIDI para ligar automaticamente quando o Zrythm inicia."
@@ -12355,9 +12558,6 @@ msgstr ""
 #~ "uma opção para abrir o diretório em que o ficheiro foi gravado, usando o "
 #~ "seu programa padrão de navegação de ficheiros."
 
-#~ msgid "Forum"
-#~ msgstr "Fórum"
-
 #~ msgid ""
 #~ "For French speaking users, Zrythm is fully translated and available in "
 #~ "`LibraZik <https://librazik.tuxfamily.org/>`_."
@@ -12710,9 +12910,6 @@ msgstr ""
 #~ msgid "Supports the free LV2 plugin format, with added support for VST."
 #~ msgstr ""
 #~ "Suporta o formato livre do plugin LV2, com suporte adicional para o VST."
-
-#~ msgid "JACK support"
-#~ msgstr "Suporte JACK"
 
 #~ msgid "JACK aware, with support for JACK transport."
 #~ msgstr "Consciente de JACK, com apoio para o transporte JACK."
@@ -13142,12 +13339,6 @@ msgstr ""
 #~ msgid "These are similar to :ref:`audio-track-sends`."
 #~ msgstr "Estes são semelhantes a :ref:'audio-track-sends'."
 
-#~ msgid "Bus Track (Audio)"
-#~ msgstr "Faixa de Bus (Áudio)"
-
-#~ msgid "Bus Track (MIDI)"
-#~ msgstr "Faixa de Bus (MIDI)"
-
 #~ msgid ""
 #~ "MIDI bus tracks can be used for MIDI effects by sending MIDI signals to "
 #~ "them with MIDI sends."
@@ -13310,9 +13501,6 @@ msgstr ""
 #~ msgid "Edit"
 #~ msgstr "Editar"
 
-#~ msgid "Main Menu"
-#~ msgstr "Menu Principal"
-
 #~ msgid ""
 #~ "The Mixer tab contains the Mixer, where all the visible Channels in the "
 #~ "project are shown."
@@ -13339,9 +13527,6 @@ msgstr ""
 
 #~ msgid "Clicking this will show the About dialog"
 #~ msgstr "Ao clicar neste botão a caixa de diálogo Sobre aparecerá"
-
-#~ msgid "View"
-#~ msgstr "Visualização"
 
 #~ msgid "Help"
 #~ msgstr "Ajuda"
