@@ -6,6 +6,24 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.6.7.30] - 2024-04-12
+### Added
+- Add context menu to import files (#4751)
+
+### Changed
+- Don't rescan hardware ports periodically (instead do it when the engine gets paused on user actions)
+- Port chord selector dialog to AdwDialog and hide tabs with unimplemented functionality (#5071)
+- Update Portuguese (Brazil), Turkish, Spanish translations
+- Update various sections in the user manual
+- Hide Scenes tab in the main panel
+
+### Fixed
+- Added a temporary workaround to VST3 plugins not accepting all notes off (#5062)
+- Fix not being able to select RtAudio device ports in preferences (#5033)
+- Fix `is_midi` flag not being copied when cloning hardware ports (may fix issue with MIDI controllers not working)
+- Re-enable search in the preferences
+- Fix being unable to delete MIDI CC bindings
+
 ## [1.0.0-beta.6.7.1] - 2024-04-06
 ### Added
 - Implement ctrl-drag to move the loop range in the timeline (#4815)
