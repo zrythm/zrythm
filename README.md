@@ -24,8 +24,7 @@ Zrythm is
 [free software](https://www.gnu.org/philosophy/free-sw.html)
 written in C using the
 [GTK4](https://docs.gtk.org/gtk4/overview.html)
-toolkit and can be extended with user scripts
-written in Scheme or ECMAScript.
+toolkit.
 
 ## Features
 
@@ -36,7 +35,7 @@ written in Scheme or ECMAScript.
 - Piano roll (MIDI editor) with chord integration, drum mode and a lollipop velocity editor
 - Audio editor with part editing (including in external app) and adjustable gain/fades
 - Event viewers (list editors) with editable object parameters
-- Built-in and scriptable per-context object functions
+- Per-context object functions
 - Audio/MIDI/automation recording with options to punch in/out, record on MIDI input and create takes
 - Device-bindable parameters for external control
 - Wide variety of track types for every purpose
@@ -52,7 +51,6 @@ written in Scheme or ECMAScript.
 - Chord pad with built-in and user presets, including the ability to generate chords from scales
 - Automatic project backups
 - Undoable user actions with serializable undo history
-- User scripting capabilities via Guile API
 - Hardware-accelerated UI
 - SIMD-optimized DSP
 - Cross-platform, cross-audio/MIDI backend and cross-architecture
