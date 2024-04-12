@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -13,9 +13,9 @@ Zrythm aims to support all platforms, however due to lack of resources we
 focus on the most used ones. See the matrix below for support status of each
 platform.
 
-○: Supported
-△: Untested
-×: Not supported
+o: Supported
+^: Untested
+x: Not supported
 
 .. list-table:: Platform support matrix
    :header-rows: 1
@@ -29,40 +29,40 @@ platform.
      - i386
      - i686
    * - GNU/Linux
-     - ○
-     - ○
-     - △
-     - △
-     - △
-     - △
+     - o
+     - o
+     - ^
+     - ^
+     - ^
+     - ^
    * - FreeBSD
-     - ○
-     - △
-     - △
-     - △
-     - △
-     - △
+     - o
+     - ^
+     - ^
+     - ^
+     - ^
+     - ^
    * - Windows
-     - ○
-     - ×
-     - ×
-     - ×
-     - ×
-     - ×
+     - o
+     - x
+     - x
+     - x
+     - x
+     - x
    * - MacOS
-     - ○
-     - ○
-     - ×
-     - ×
-     - ×
-     - ×
+     - o
+     - o
+     - x
+     - x
+     - x
+     - x
 
 Backend Support
 ---------------
 
-○: Supported
-△: Has known issues
-×: Broken
+o: Supported
+^: Has known issues
+x: Broken
 
 .. list-table:: Audio backends
    :header-rows: 1
@@ -70,23 +70,23 @@ Backend Support
    * - Backend
      - Status
    * - JACK
-     - ○
+     - o
    * - JACK (via PipeWire)
-     - ○
+     - o
    * - PulseAudio (RtAudio)
-     - ○
+     - o
    * - PulseAudio
-     - △
+     - ^
    * - SDL2
-     - △
+     - ^
    * - ALSA (RtAudio)
-     - ○
+     - o
    * - ALSA
-     - ×
+     - x
    * - WASAPI (RtAudio)
-     - ○
+     - o
    * - CoreAudio (RtAudio)
-     - ○
+     - o
 
 .. list-table:: MIDI backends
    :header-rows: 1
@@ -94,17 +94,17 @@ Backend Support
    * - Backend
      - Status
    * - JACK MIDI
-     - ○
+     - o
    * - JACK MIDI (via PipeWire)
-     - ○
+     - o
    * - WindowsMME
-     - △
+     - ^
    * - ALSA Sequencer (RtMidi)
-     - ○
+     - o
    * - WindowsMME (RtMidi)
-     - ○
+     - o
    * - CoreMIDI (RtMidi)
-     - ○
+     - o
 
 Recommendations
 ---------------
