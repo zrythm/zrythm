@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -11,7 +11,7 @@ Inspector Page
 When a plugin is selected in the Mixer, or when using
 :menuselection:`right click --> Inspect`
 on an instrument, its page will appear in the
-inspector as follows.
+inspector.
 
 .. figure:: /_static/img/plugin-inspector.png
    :align: center
@@ -32,7 +32,9 @@ as well as preset and bank selectors.
 
 Plugin Ports
 ------------
-These are the ports that the plugin has.
+These are the :ref:`ports that the plugin owns <plugins-files/plugins/plugin-info:Plugin Ports>`.
+Depending on the type of plugin, there may
+be different categories of ports being shown.
 
 .. image:: /_static/img/plugin-ports.png
    :align: center
@@ -41,13 +43,10 @@ Control input ports can be changed by clicking and
 dragging, and can also be automated using
 automation tracks.
 
-Ports can be routed to other ports anywhere
-within Zrythm by double clicking on them.
+Ports can be routed to other ports anywhere within Zrythm by double clicking
+on them.
 
-Ports are explained in more detail in :ref:`ports`.
-
-.. note:: Depending on the type of plugin, there may
-   be different categories of ports being shown.
+.. seealso:: Ports are explained in more detail in :ref:`ports`.
 
 Display
 ~~~~~~~
@@ -55,5 +54,3 @@ The number in the top right of each port name will
 display the current number of connections to/from
 this port. See
 :ref:`routing/connections:Connections` for details.
-
-.. seealso:: :ref:`plugins-files/plugins/plugin-info:Plugin Ports`

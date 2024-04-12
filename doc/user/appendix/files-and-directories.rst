@@ -96,7 +96,7 @@ Located at :file:`plugin-settings.yaml` under the
 :ref:`Zrythm user path <configuration/preferences:Zrythm User Path>`, this is a collection of
 per-plugin settings, such as whether to open the
 plugin with :term:`Carla`, the
-:ref:`bridge mode <plugins-files/plugins/plugin-window:Opening Plugins in Bridged Mode>`
+:ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>`
 to use and whether to use a
 :ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`.
 

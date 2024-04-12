@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -12,21 +12,20 @@ The File Browser makes it easy to navigate
 through files on your computer or through
 your custom collections.
 
-.. image:: /_static/img/file-browser.png
+.. figure:: /_static/img/file-browser.png
    :align: center
+
+   Built-in file browser
 
 Bookmarks
 ---------
 The Bookmarks section contains a list of bookmarked
 directories. Double-clicking on a directory will
-show its contents in the file list below.
+show its contents in the file list at the bottom.
 
-Standard Bookmarks
-~~~~~~~~~~~~~~~~~~
-Zrythm provides standard bookmarks for
-:file:`Home` and :file:`Desktop`, which correspond
-to the home and desktop directories of the current
-user.
+Predefined Bookmarks
+~~~~~~~~~~~~~~~~~~~~
+Zrythm provides a predefined bookmark for the user's :file:`Home` directory.
 
 Custom Bookmarks
 ~~~~~~~~~~~~~~~~
@@ -50,7 +49,7 @@ Filtering
 Filter Buttons
 ~~~~~~~~~~~~~~
 Similarly to the
-:doc:`plugin browser <../plugins/plugin-browser>`,
+:ref:`plugin browser <plugins-files/plugins/plugin-browser:Plugin Browser>`,
 files can be filtered based on their type.
 
 .. figure:: /_static/img/file-filter-buttons.png
@@ -65,23 +64,12 @@ Audio
 MIDI
   Only show MIDI files.
 Presets
-  Only show preset files.
+  Only show preset files (currently unused/unimplemented).
 
-.. todo:: Preset filtering is not implemented yet.
+Searching
+~~~~~~~~~
 
-Showing Unsupported Files
-~~~~~~~~~~~~~~~~~~~~~~~~~
-By default, only supported files will be shown in
-the file list. To also show unsupported files,
-enable :guilabel:`Show unsupported files` in the
-:ref:`file browser preferences <plugins-files/audio-midi-files/file-browser:Preferences>`.
-
-Showing Hidden Files
-~~~~~~~~~~~~~~~~~~~~
-By default, only files that are not hidden will be
-shown in the file list. To also show hidden files,
-enable :guilabel:`Show hidden files` in the
-:ref:`file browser preferences <plugins-files/audio-midi-files/file-browser:Preferences>`.
+Files can be filtered by a search term from the provided search box.
 
 Auditioning
 -----------
@@ -104,25 +92,24 @@ Volume
 Instrument
 ~~~~~~~~~~
 The selected instrument will be used for playing
-back MIDI files. In the above example, the `Helm`
+back MIDI files. In the above example, the `amsynth`
 instrument is selected.
-
-Autoplay
-~~~~~~~~
-Auto-play (automatically playing back the selected
-file when the selection changes) can be enabled in
-the preferences below.
 
 Preferences
 -----------
 
-Clicking the cog icon will bring up the preferences
-for the file browser.
+Clicking the cog button on the right side of the auditioning controls will
+bring up the file browser preferences screen. The following settings are
+available.
 
-.. figure:: /_static/img/file-browser-preferences.png
-   :align: center
-
-   File browser preferences
+Autoplay
+  Automatically play back the selected file when the selection changes
+Show Unsupported Files
+  By default, only supported files will be shown in
+  the file list. Enabling this option will also show unsupported files.
+Show Hidden Files
+  By default, only files that are not hidden will be
+  shown in the file list. Enabling this option will also show hidden files.
 
 File Info
 ---------
@@ -136,21 +123,51 @@ is always shown at the bottom of the file panel.
 
 Importing Files
 ---------------
-Files are imported into the project by either
-double-clicking or dragging and dropping into the
-timeline.
 
-.. figure:: /_static/img/file-drag-n-drop.png
+There are various ways to import MIDI and audio files into a project.
+
+Drag and Drop From a File Browser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can drag one or more files from your system's file browser or from the
+built-in file browser into a track (if applicable), into empty space in the timeline or
+into empty space in the tracklist or mixer.
+
+Droping onto an existing track will
+import the file on that track (if possible), and dropping onto empty space
+will create one or more new tracks (depending on the number of dropped files, or number of tracks contained in Type 1 MIDI files).
+
+.. hint:: You can adjust the location where the dropped file will
+   be inserted in the project by dropping at an appropriate spot
+
+.. figure:: /_static/img/file-drop-in-track.png
    :align: center
 
-   Drag-n-dropping an audio file into a new track
+   Dropping one or more audio files into an existing audio track
 
-Pop-up File Browser
--------------------
-An additional file browser with similar
-functionalities is available by clicking the
-:guilabel:`Popup File Browser` button near the bottom
-right of the main window.
-
-.. image:: /_static/img/popup-file-browser.png
+.. figure:: /_static/img/file-drop-below-track.png
    :align: center
+
+   Dropping a file at a specific location in a new track
+
+.. figure:: /_static/img/file-drop-in-tracklist.png
+   :align: center
+
+   Dropping a file at empty space in the tracklist
+
+Activating a File From the Built-in File Browser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A file (row) can be activated by selecting a row and pressing the return key
+or double-clicking it.
+
+Tracklist/Mixer Context Menu
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Files can also be imported by right-clicking in empty space in the tracklist
+or mixer and selecting :guilabel:`Import File...`
+
+.. figure:: /_static/img/right-click-import-file.png
+   :align: center
+
+   Importing a file via the tracklist context menu

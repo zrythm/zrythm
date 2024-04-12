@@ -646,6 +646,10 @@ Files:
   doc/user/_static/img/plugin-browser-right-click.png
   doc/user/_static/img/plugin-collections.png
   doc/user/_static/img/use-backup.png
+  doc/user/_static/img/file-drop-below-track.png
+  doc/user/_static/img/file-drop-in-track.png
+  doc/user/_static/img/file-drop-in-tracklist.png
+  doc/user/_static/img/right-click-import-file.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:
