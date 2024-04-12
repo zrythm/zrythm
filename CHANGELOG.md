@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.6.7.30] - 2024-04-12
+## [1.0.0-beta.6.7.32] - 2024-04-12
 ### Added
 - Add context menu to import files (#4751)
 
