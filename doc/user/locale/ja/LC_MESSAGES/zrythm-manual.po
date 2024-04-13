@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-12 07:18+0900\n"
-"PO-Revision-Date: 2024-04-05 20:45+0000\n"
-"Last-Translator: Deleted User <noreply+82786@weblate.org>\n"
+"PO-Revision-Date: 2024-04-12 20:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -540,7 +541,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:162
 msgid "Inversions"
-msgstr ""
+msgstr "インバージョン"
 
 #: ../../chords-and-scales/chord-pad.rst:164
 msgid ""
@@ -827,7 +828,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:84
 msgid "Input Devices/Controllers"
-msgstr ""
+msgstr "入力デバイス/コントローラ"
 
 #: ../../configuration/preferences.rst:86
 msgid ""
@@ -4405,7 +4406,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:41
 msgid "Distribution Repositories"
-msgstr ""
+msgstr "配布リポジトリ"
 
 #: ../../getting-started/installation.rst:42
 #, fuzzy
@@ -4568,27 +4569,27 @@ msgstr "波形"
 
 #: ../../getting-started/system-requirements.rst:25
 msgid "x86_64/AMD64/x64"
-msgstr ""
+msgstr "x86_64/AMD64/x64"
 
 #: ../../getting-started/system-requirements.rst:26
 msgid "AArch64/ARM64/ARMv8"
-msgstr ""
+msgstr "AArch64/ARM64/ARMv8"
 
 #: ../../getting-started/system-requirements.rst:27
 msgid "ARMv7"
-msgstr ""
+msgstr "ARMv7"
 
 #: ../../getting-started/system-requirements.rst:28
 msgid "PowerPC64"
-msgstr ""
+msgstr "PowerPC64"
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "i386"
-msgstr ""
+msgstr "i386"
 
 #: ../../getting-started/system-requirements.rst:30
 msgid "i686"
-msgstr ""
+msgstr "i686"
 
 #: ../../getting-started/system-requirements.rst:31
 #: ../../getting-started/system-requirements.rst:143
@@ -4700,7 +4701,7 @@ msgstr "パルス"
 
 #: ../../getting-started/system-requirements.rst:80
 msgid "SDL2"
-msgstr ""
+msgstr "SDL2"
 
 #: ../../getting-started/system-requirements.rst:82
 #, fuzzy
@@ -4828,7 +4829,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:139
 msgid "Realtime Scheduling"
-msgstr ""
+msgstr "リアルタイムスケジューリング"
 
 #: ../../getting-started/system-requirements.rst:140
 msgid ""
@@ -4999,7 +5000,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:68
 msgid "DSSI"
-msgstr ""
+msgstr "DSSI"
 
 #: ../../glossary/intro.rst:70
 msgid ""
@@ -9047,7 +9048,7 @@ msgstr "コード・リージョン、音階"
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "フォルダ"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
@@ -9467,15 +9468,15 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ":ref:`Editor <editors>`"
-msgstr ""
+msgstr ":ref:`エディタ <editors>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:20
 msgid ":ref:`Mixer <mixing>`"
-msgstr ""
+msgstr ":ref:`ミキサー <mixing>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:21
 msgid ":ref:`Modulators <modulators/intro:Modulators>`"
-msgstr ""
+msgstr ":ref:`モジュレータ <modulators/intro:Modulators>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:22
 msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
