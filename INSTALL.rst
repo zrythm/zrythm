@@ -22,8 +22,8 @@ and the following
 `sassc (Expat) <https://github.com/sass/sassc>`_
   CSS compilation
 
-`blueprint-compiler (LGPLv3+) <https://gitlab.gnome.org/jwestman/blueprint-compiler>`_
-  UI file compilation
+.. `blueprint-compiler (LGPLv3+) <https://gitlab.gnome.org/jwestman/blueprint-compiler>`_
+..   UI file compilation
 
 If your meson version is too old, you can either
 install meson from
@@ -106,7 +106,7 @@ Recommended
 +++++++++++
 
 `boost (Boost) <https://www.boost.org/>`_
-  C++ utilities required for bundled plugins
+  C++ utilities required for building the bundled plugins
 
 `jack (LGPLv2.1+) <https://jackaudio.org/>`_
   Low latency audio/MIDI backend
@@ -114,23 +114,26 @@ Recommended
 `lsp-dsp-lib (LGPLv3+) <https://github.com/sadko4u/lsp-dsp-lib>`_
   SIMD-optimized signal processing
 
-`libguile (GPLv3+) <https://www.gnu.org/software/guile/>`_
-  Scripting support
-
-Optional
-++++++++
-
-`graphviz (EPLv1.0) <http://graphviz.org/>`_
-  Process graph export
-
 `rtaudio (Expat) <http://www.music.mcgill.ca/~gary/rtaudio/>`_
   Various audio backends
 
 `rtmidi (Expat) <https://www.music.mcgill.ca/~gary/rtmidi/>`_
   Various MIDI backends
 
+Optional
+++++++++
+
+`graphviz (EPLv1.0) <http://graphviz.org/>`_
+  Process graph export (only used for debugging)
+
+Experimental
+++++++++++++
+
 `SDL2 (zlib) <https://www.libsdl.org/>`_
   Audio backend
+
+`libguile (GPLv3+) <https://www.gnu.org/software/guile/>`_
+  Scripting support
 
 Configuration
 -------------
