@@ -290,6 +290,7 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
 
   g_signal_connect (
     G_OBJECT (self->e), "clicked", G_CALLBACK (on_e_clicked), self);
+  gtk_widget_set_visible (GTK_WIDGET (self->e), false);
 
   /* add right click menus */
   GtkGestureClick * mp;

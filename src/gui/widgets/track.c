@@ -1818,8 +1818,10 @@ track_widget_new (Track * track)
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
       add_button (self, true, TRACK_ICON_NAME_SHOW_UI);
       add_button (self, false, TRACK_ICON_NAME_SWAP_PHASE);
+#if 0
       add_button (self, false, TRACK_ICON_NAME_LOCK);
       add_button (self, false, TRACK_ICON_NAME_FREEZE);
+#endif
       add_button (self, false, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, false, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
@@ -1827,7 +1829,9 @@ track_widget_new (Track * track)
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
+#if 0
       add_button (self, 0, TRACK_ICON_NAME_LOCK);
+#endif
       add_button (self, 0, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
@@ -1888,7 +1892,9 @@ track_widget_new (Track * track)
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
       add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (self, 0, TRACK_ICON_NAME_MONITOR_AUDIO);
+#if 0
       add_button (self, 0, TRACK_ICON_NAME_LOCK);
+#endif
       add_button (self, 0, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
