@@ -12,11 +12,10 @@ Tracks
    :maxdepth: 1
 
    overview
-   track-controls
    track-lanes
    automation
    inspector-page
    track-types
    creating-tracks
    track-operations
-   track-visibility
+   track-visibility-filtering

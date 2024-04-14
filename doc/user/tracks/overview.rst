@@ -13,7 +13,7 @@ events such as :ref:`regions <regions>`.
 .. figure:: /_static/img/track.png
    :align: center
 
-   Track in tracklist
+   A track in the tracklist
 
 Most types of tracks have a corresponding channel
 that appears in the :ref:`Mixer <mixer>`. See
@@ -22,7 +22,7 @@ that appears in the :ref:`Mixer <mixer>`. See
 .. figure:: /_static/img/channel.png
    :align: center
 
-   Channel in mixer
+   A channel in the mixer
 
 There are various kinds of tracks suited for
 different purposes, explained in the following
@@ -44,15 +44,15 @@ which contain chords and markers respectively.
   MIDI tracks for MIDI plugins, such as a
   MIDI arpegiator.
 
-  This is different from what many
-  other :term:`DAWs <DAW>` do, so please keep
-  this in mind.
+  This may be different from what most other :term:`DAWs <DAW>` do.
 
 Track Interface
 ---------------
 
-.. image:: /_static/img/track-interface.png
+.. figure:: /_static/img/track-interface.png
    :align: center
+
+   Track interface
 
 Each track has a color, an icon (corresponding to its type)
 a name and various buttons. Tracks that can have
@@ -62,23 +62,3 @@ will have an option to display automation tracks as above.
 
 If the track produces output, it will have a meter on its
 right-hand side showing the current level.
-
-Track Icon
-~~~~~~~~~~
-The icon can be changed by clicking on the icon in
-the tracklist.
-
-.. todo:: Add pic and explain how to add custom
-   icons.
-
-Context Menu
-------------
-
-Each tracks has a context menu with additional options
-depending on its type.
-
-.. image:: /_static/img/track-context-menu-duplicate-track.png
-   :align: center
-
-The section :ref:`track-operations` explains the
-various track operations available.

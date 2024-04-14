@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019-2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -24,8 +24,9 @@ cusp icon.
 
    Automation track for Fader Volume
 
-You can choose which parameter you want to
-automate in each automation lane.
+You can choose which parameter you want to automate in each automation lane
+by clicking on the parameter name.
+A popover will appear that allows you to find an automatable parameter to automate.
 
 .. figure:: /_static/img/automatable-selector.png
    :align: center
@@ -50,6 +51,19 @@ regions and then creating automation events inside
 the automation editor. See
 :ref:`editing/clip-editors/automation-editor:Automation Editor`
 for details.
+
+Showing/Hiding Lanes
+--------------------
+
+New lanes can be shown by clicking on the :guilabel:`+` button.
+This will display a new automation lane assigned to the next available
+automatable parameter.
+
+.. tip:: Previously shown automation lanes will be given priority.
+
+Existing lanes can be hidden using the :guilabel:`-` button.
+
+.. seealso:: :ref:`tracks/track-operations:Automation Section`
 
 Behavior
 --------

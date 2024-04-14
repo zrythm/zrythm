@@ -39,8 +39,4 @@ Audio Clip at the current Playhead position.
 Creating Tracks by Duplicating
 ------------------------------
 
-Most Tracks can be duplicated by right clicking
-inside the Track and selecting :zbutton:`Duplicate`.
-
-.. image:: /_static/img/track-context-menu-duplicate-track.png
-   :align: center
+Most Tracks can be duplicated via the :guilabel:`Duplicate` context menu option.

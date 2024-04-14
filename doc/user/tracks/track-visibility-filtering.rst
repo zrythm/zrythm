@@ -5,8 +5,8 @@
 
 .. _track-visibility:
 
-Track Visibility
-================
+Track Visibility and Filtering
+==============================
 
 The track visibility tab in the :ref:`left-panel` allows
 toggling the visibility of tracks.

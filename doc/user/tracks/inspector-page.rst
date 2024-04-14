@@ -12,8 +12,10 @@ Each track will display its page in the inspector when
 selected. Depending on the track, the properties shown
 will be different.
 
-.. image:: /_static/img/track-inspector.png
+.. figure:: /_static/img/track-inspector.png
    :align: center
+
+   The track inspector
 
 Track Properties
 ----------------
@@ -123,7 +125,7 @@ will send the signal after the fader is applied.
 
 Fader
 -----
-Fader section to control the volume and stereo balance.
+The fader section is used to control the volume and stereo balance of a channel.
 
 .. image:: /_static/img/track-fader.png
    :align: center
@@ -142,20 +144,36 @@ Peak
 RMS
   Root Mean Square of the signal value
 
-The controls available for controlling the signal
-flow are covered in
-:ref:`tracks/track-controls:Signal Flow`.
+.. tip:: MIDI faders use MIDI volume CC (currently unimplemented - they let the signal pass through unchanged).
 
-.. tip:: MIDI faders use MIDI volume CC.
+The following controls are available for controlling the signal
+flow:
 
-.. note:: The MIDI fader is a TODO feature -
-   currently, it lets the signal pass through
-   unchanged.
+Record
+  Arm the track for recording.
+Mute
+  Mute the track, meaning no signal will be sent to
+  its direct out.
 
-Channel Settings
-~~~~~~~~~~~~~~~~
+  .. warning:: The track will still be processed, so if
+     you are looking to decrease :term:`DSP` usage,
+     try disabling plugins instead.
 
-.. todo:: Implement.
+Solo
+  Solo the track. If any track is soloed, only the
+  soloed tracks will produce sounds.
+Listen
+  Similar to solo, except it dims the volume of other
+  tracks instead of muting them. The dim amount can
+  be controlled in the
+  :ref:`Monitor section <routing/monitor-section:Monitor Section>`.
+Monitor
+  Listen to incoming signal when recording.
+
+  .. note:: This is only available on audio tracks.
+
+.. Channel Settings
+.. ~~~~~~~~~~~~~~~~
 
 Comments
 --------
