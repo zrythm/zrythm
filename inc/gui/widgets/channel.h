@@ -164,6 +164,13 @@ void
 channel_widget_refresh_instrument_ui_toggle (ChannelWidget * self);
 
 /**
+ * Generates a context menu for either ChannelWidget
+ * or FolderChannelWidget.
+ */
+GMenu *
+channel_widget_generate_context_menu_for_track (Track * track);
+
+/**
  * Displays the widget.
  */
 void
