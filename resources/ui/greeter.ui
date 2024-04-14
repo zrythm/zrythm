@@ -38,7 +38,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                   <object class="AdwStatusPage">
                                     <property name="icon-name">zrythm</property>
                                     <property name="title" translatable="true">Welcome</property>
-                                    <property name="description" translatable="true">Welcome to the Zrythm digital audio workstation. Please scroll to proceed.</property>
+                                    <property name="description" translatable="true">Welcome to the Zrythm digital audio workstation. Swipe (click and drag) to the left to proceed.</property>
                                     <property name="vexpand">true</property>
                                     <property name="hexpand">true</property>
                                   </object>
