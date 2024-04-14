@@ -2,126 +2,127 @@ using Gtk 4.0;
 using Adw 1;
 
 template $EditorToolbarWidget : Widget {
-  ScrolledWindow scroll {
-    vscrollbar-policy: never;
+  styles [
+    "toolbar",
+  ]
 
+  CenterBox {
+    hexpand: true;
+
+    [start]
+    ScrolledWindow scroll {
+      vscrollbar-policy: never;
+      hexpand: true;
+
+      Box {
+        $SnapGridWidget snap_grid {
+        }
+
+        Separator {
+          styles [
+            "spacer",
+          ]
+
+          orientation: vertical;
+        }
+
+        Box chord_highlight_box {
+          DropDown chord_highlighting {
+          }
+        }
+
+        Separator sep_after_chord_highlight {
+          styles [
+            "spacer",
+          ]
+
+          orientation: vertical;
+        }
+
+        $QuantizeBoxWidget quantize_box {
+        }
+
+        Separator {
+          styles [
+            "spacer",
+          ]
+
+          orientation: vertical;
+        }
+
+        Stack functions_btn_stack {
+          hhomogeneous: false;
+
+          StackPage {
+            name: "midi-page";
+            child:
+            Adw.SplitButton midi_functions_btn {
+            }
+
+            ;
+          }
+
+          StackPage {
+            name: "audio-page";
+            child:
+            Adw.SplitButton audio_functions_btn {
+            }
+
+            ;
+          }
+
+          StackPage {
+            name: "automation-page";
+            child:
+            Adw.SplitButton automation_functions_btn {
+            }
+
+            ;
+          }
+
+          StackPage {
+            name: "empty-page";
+            child:
+            Box {
+            }
+
+            ;
+          }
+        }
+
+        Separator {
+          styles [
+            "spacer",
+          ]
+
+          orientation: vertical;
+        }
+
+        $PlayheadScrollButtonsWidget playhead_scroll {
+        }
+
+        Separator {
+          styles [
+            "spacer",
+          ]
+
+          orientation: vertical;
+        }
+
+        ToggleButton ghost_notes_btn {
+          action-name: "app.toggle-ghost-notes";
+          icon-name: "gnome-icon-library-theater-symbolic";
+          tooltip-text: _("Toggle ghost note visibility");
+        }
+      }
+    }
+
+    [end]
     Box {
-      styles [
-        "toolbar",
-      ]
-
-      $SnapGridWidget snap_grid {
-      }
-
-      Separator {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
-      Box chord_highlight_box {
-        DropDown chord_highlighting {
-        }
-      }
-
-      Separator sep_after_chord_highlight {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
-      $QuantizeBoxWidget quantize_box {
-      }
-
-      Separator {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
-      Stack functions_btn_stack {
-        hhomogeneous: false;
-
-        StackPage {
-          name: "midi-page";
-          child: 
-          Adw.SplitButton midi_functions_btn {
-          }
-
-          ;
-        }
-
-        StackPage {
-          name: "audio-page";
-          child: 
-          Adw.SplitButton audio_functions_btn {
-          }
-
-          ;
-        }
-
-        StackPage {
-          name: "automation-page";
-          child: 
-          Adw.SplitButton automation_functions_btn {
-          }
-
-          ;
-        }
-
-        StackPage {
-          name: "empty-page";
-          child: 
-          Box {
-          }
-
-          ;
-        }
-      }
-
-      Separator {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
-      $PlayheadScrollButtonsWidget playhead_scroll {
-      }
-
-      Separator {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
       $ZoomButtonsWidget zoom_buttons {
       }
 
       Separator {
-        styles [
-          "spacer",
-        ]
-
-        orientation: vertical;
-      }
-
-      ToggleButton ghost_notes_btn {
-        action-name: "app.toggle-ghost-notes";
-        icon-name: "gnome-icon-library-theater-symbolic";
-        tooltip-text: _("Toggle ghost note visibility");
-      }
-
-      Separator sep_after_ghost_notes {
         styles [
           "spacer",
         ]

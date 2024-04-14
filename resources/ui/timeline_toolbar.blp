@@ -7,92 +7,95 @@ template $TimelineToolbarWidget : Box {
     "timeline-toolbar",
   ]
 
-  $SnapGridWidget snap_grid {
-  }
+  CenterBox {
+    hexpand: true;
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+    [start]
+    Box {
 
-    orientation: vertical;
-  }
+      $SnapGridWidget snap_grid {
+      }
 
-  $QuantizeBoxWidget quantize_box {
-  }
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+        orientation: vertical;
+      }
 
-    orientation: vertical;
-  }
+      $QuantizeBoxWidget quantize_box {
+      }
 
-  ToggleButton musical_mode_toggle {
-    action-name: "app.toggle-musical-mode";
-    icon-name: "musical-mode";
-    tooltip-text: _("Musical mode");
-  }
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+        orientation: vertical;
+      }
 
-    orientation: vertical;
-  }
+      ToggleButton musical_mode_toggle {
+        action-name: "app.toggle-musical-mode";
+        icon-name: "musical-mode";
+        tooltip-text: _("Musical mode");
+      }
 
-  $RangeActionButtonsWidget range_action_buttons {
-  }
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+        orientation: vertical;
+      }
 
-    orientation: vertical;
-  }
+      $RangeActionButtonsWidget range_action_buttons {
+      }
 
-  $PlayheadScrollButtonsWidget playhead_scroll_buttons {
-  }
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+        orientation: vertical;
+      }
 
-    orientation: vertical;
-  }
+      $PlayheadScrollButtonsWidget playhead_scroll_buttons {
+      }
 
-  Button merge_btn {
-    action-name: "app.merge-selection";
-    icon-name: "iconpark-merge-cells";
-    tooltip-text: _("Merge selections");
-  }
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+        orientation: vertical;
+      }
 
-    orientation: vertical;
-  }
+      Button merge_btn {
+        action-name: "app.merge-selection";
+        icon-name: "iconpark-merge-cells";
+        tooltip-text: _("Merge selections");
+      }
+    }
 
-  $ZoomButtonsWidget zoom_buttons {
-  }
+    [end]
+    Box {
+      $ZoomButtonsWidget zoom_buttons {
+      }
 
-  Separator {
-    styles [
-      "spacer",
-    ]
+      Separator {
+        styles [
+          "spacer",
+        ]
 
-    orientation: vertical;
-  }
+        orientation: vertical;
+      }
 
-  Button event_viewer_toggle {
-    action-name: "app.toggle-timeline-event-viewer";
-    icon-name: "event-viewer";
-    tooltip-text: _("Toggle event viewer");
+      Button event_viewer_toggle {
+        action-name: "app.toggle-timeline-event-viewer";
+        icon-name: "event-viewer";
+        tooltip-text: _("Toggle event viewer");
+      }
+    }
   }
 }

@@ -154,7 +154,6 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
   gtk_widget_set_visible (GTK_WIDGET (self->chord_highlight_box), false);
   gtk_widget_set_visible (GTK_WIDGET (self->sep_after_chord_highlight), false);
   gtk_widget_set_visible (GTK_WIDGET (self->ghost_notes_btn), false);
-  gtk_widget_set_visible (GTK_WIDGET (self->sep_after_ghost_notes), false);
 
   switch (region->id.type)
     {
@@ -179,7 +178,6 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
         gtk_widget_set_visible (
           GTK_WIDGET (self->sep_after_chord_highlight), true);
         gtk_widget_set_visible (GTK_WIDGET (self->ghost_notes_btn), true);
-        gtk_widget_set_visible (GTK_WIDGET (self->sep_after_ghost_notes), true);
       }
       break;
     case REGION_TYPE_AUTOMATION:
@@ -331,7 +329,6 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (chord_highlight_box);
   BIND_CHILD (sep_after_chord_highlight);
   BIND_CHILD (ghost_notes_btn);
-  BIND_CHILD (sep_after_ghost_notes);
   BIND_CHILD (snap_grid);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
