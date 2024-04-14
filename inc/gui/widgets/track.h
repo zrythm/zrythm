@@ -23,6 +23,7 @@ typedef struct CustomButtonWidget   CustomButtonWidget;
 typedef struct _MeterWidget         MeterWidget;
 typedef struct Track                Track;
 typedef struct _TrackCanvasWidget   TrackCanvasWidget;
+TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
 
 /**
  * @addtogroup widgets
@@ -264,7 +265,8 @@ typedef struct _TrackWidget
   GtkPopoverMenu * popover_menu;
 
   /** Popover for changing the track name. */
-  GtkPopover * track_name_popover;
+  GtkPopover *         track_name_popover;
+  FaderButtonsWidget * fader_buttons_for_popover;
 } TrackWidget;
 
 const char *

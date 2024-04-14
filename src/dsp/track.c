@@ -359,9 +359,7 @@ track_type_has_channel (TrackType type)
 bool
 track_type_is_deletable (TrackType type)
 {
-  return type != TRACK_TYPE_MASTER && type != TRACK_TYPE_TEMPO
-         && type != TRACK_TYPE_CHORD && type != TRACK_TYPE_MODULATOR
-         && type != TRACK_TYPE_MARKER;
+  return track_type_is_copyable (type);
 }
 
 /**
@@ -3637,6 +3635,133 @@ track_set_caches (Track * self, CacheTypes types)
               | CACHE_TYPE_AUTOMATION_LANE_PORTS);
         }
     }
+}
+
+GMenu *
+track_generate_edit_context_menu (Track * track, int num_selected)
+{
+  GMenu *     edit_submenu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  if (track_type_is_copyable (track->type))
+    {
+      char * str;
+      /* delete track */
+      if (num_selected == 1)
+        str = g_strdup (_ ("_Delete Track"));
+      else
+        str = g_strdup (_ ("_Delete Tracks"));
+      menuitem = g_menu_item_new (str, "app.delete-selected-tracks");
+      g_menu_item_set_attribute (
+        menuitem, "verb-icon", "s",
+        "gnome-icon-library-user-trash-full-symbolic");
+      g_free (str);
+      g_menu_append_item (edit_submenu, menuitem);
+
+      /* duplicate track */
+      if (num_selected == 1)
+        str = g_strdup (_ ("Duplicate Track"));
+      else
+        str = g_strdup (_ ("Duplicate Tracks"));
+      menuitem = g_menu_item_new (str, "app.duplicate-selected-tracks");
+      g_menu_item_set_attribute (
+        menuitem, "verb-icon", "s", "gnome-icon-library-copy-symbolic");
+      g_free (str);
+      g_menu_append_item (edit_submenu, menuitem);
+    }
+
+    /* add regions TODO */
+#if 0
+  if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      menuitem = g_menu_item_new (
+        _("Add Region"), "app.add-region");
+      g_menu_item_set_attribute (menuitem, "verb-icon", "s", "add");
+      g_menu_append_item (edit_submenu, menuitem);
+    }
+#endif
+
+  menuitem = g_menu_item_new (
+    num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"),
+    "app.hide-selected-tracks");
+  g_menu_item_set_attribute (
+    menuitem, "verb-icon", "s", "gnome-icon-library-eye-not-looking-symbolic");
+  g_menu_append_item (edit_submenu, menuitem);
+
+  menuitem = g_menu_item_new (
+    num_selected == 1 ? _ ("Pin/Unpin Track") : _ ("Pin/Unpin Tracks"),
+    "app.pin-selected-tracks");
+  g_menu_item_set_attribute (
+    menuitem, "verb-icon", "s", "gnome-icon-library-pin-symbolic");
+  g_menu_append_item (edit_submenu, menuitem);
+
+  menuitem = g_menu_item_new (_ ("Change Color..."), "app.change-track-color");
+  g_menu_item_set_attribute (
+    menuitem, "verb-icon", "s", "gnome-icon-library-color-picker-symbolic");
+  g_menu_append_item (edit_submenu, menuitem);
+
+  if (num_selected == 1)
+    {
+      menuitem = g_menu_item_new (_ ("Rename..."), "app.rename-track");
+      g_menu_item_set_attribute (
+        menuitem, "verb-icon", "s", "gnome-icon-library-text-insert-symbolic");
+      g_menu_append_item (edit_submenu, menuitem);
+    }
+
+  return edit_submenu;
+}
+
+GMenu *
+track_generate_channel_context_menu (Track * track)
+{
+  GMenu *     channel_submenu = g_menu_new ();
+  GMenuItem * menuitem = g_menu_item_new (NULL, NULL);
+  g_menu_item_set_attribute (menuitem, "custom", "s", "fader-buttons");
+  g_menu_append_item (channel_submenu, menuitem);
+
+  GMenu * direct_out_submenu = g_menu_new ();
+
+  if (track_type_can_have_direct_out (track->type))
+    {
+      /* add "route to new group" */
+      menuitem = z_gtk_create_menu_item (
+        _ ("New direct out"), NULL, "app.selected-tracks-direct-out-new");
+      g_menu_append_item (direct_out_submenu, menuitem);
+    }
+
+  /* direct out targets */
+  GMenu * target_submenu = g_menu_new ();
+  bool    have_groups = false;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * cur_tr = TRACKLIST->tracks[i];
+
+      if (
+        !TRACK_CAN_BE_GROUP_TARGET (cur_tr)
+        || track->out_signal_type != cur_tr->in_signal_type || track == cur_tr)
+        continue;
+
+      char tmp[600];
+      sprintf (tmp, "app.selected-tracks-direct-out-to");
+      menuitem = z_gtk_create_menu_item (cur_tr->name, NULL, tmp);
+      g_menu_item_set_action_and_target_value (
+        menuitem, tmp, g_variant_new_int32 (cur_tr->pos));
+      g_menu_append_item (target_submenu, menuitem);
+      have_groups = true;
+    }
+  if (have_groups)
+    {
+      g_menu_append_section (
+        direct_out_submenu, _ ("Route Target"), G_MENU_MODEL (target_submenu));
+    }
+
+  if (track_type_can_have_direct_out (track->type))
+    {
+      g_menu_append_submenu (
+        channel_submenu, _ ("Direct Output"), G_MENU_MODEL (direct_out_submenu));
+    }
+
+  return channel_submenu;
 }
 
 /**

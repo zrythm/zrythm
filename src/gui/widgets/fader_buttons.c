@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/track.h"
@@ -240,6 +240,15 @@ on_e_clicked (GtkButton * self, gpointer user_data)
 {
   ui_show_error_message (
     _ ("Unimplemented"), _ ("This feature is not implemented yet"));
+}
+
+FaderButtonsWidget *
+fader_buttons_widget_new (Track * track)
+{
+  FaderButtonsWidget * self = g_object_new (FADER_BUTTONS_WIDGET_TYPE, NULL);
+
+  fader_buttons_widget_refresh (self, track);
+  return self;
 }
 
 static void

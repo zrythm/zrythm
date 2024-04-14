@@ -1393,13 +1393,10 @@ track_remove_plugin (
   bool           recalc_graph);
 
 /**
- * Disconnects the track from the processing
- * chain.
+ * Disconnects the track from the processing chain.
  *
- * This should be called immediately when the
- * track is getting deleted, and track_free
- * should be designed to be called later after
- * an arbitrary delay.
+ * This should be called immediately when the track is getting deleted, and
+ * track_free should be designed to be called later after an arbitrary delay.
  *
  * @param remove_pl Remove the Plugin from the
  *   Channel. Useful when deleting the channel.
@@ -1477,6 +1474,16 @@ track_create_for_plugin_at_idx_w_action (
  */
 #define track_create_empty_with_action(type, error) \
   track_create_empty_at_idx_with_action (type, TRACKLIST->num_tracks, error)
+
+GMenu *
+track_generate_edit_context_menu (Track * track, int num_selected);
+
+/**
+ * Generates a menu to be used for channel-related items, eg,
+ * fader buttons, direct out, etc.
+ */
+GMenu *
+track_generate_channel_context_menu (Track * track);
 
 /**
  * Wrapper for each track type.

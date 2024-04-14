@@ -14,6 +14,7 @@
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/expander_box.h"

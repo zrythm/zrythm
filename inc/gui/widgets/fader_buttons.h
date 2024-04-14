@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -66,6 +68,9 @@ fader_buttons_widget_unblock_signal_handlers (FaderButtonsWidget * self);
 
 void
 fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track);
+
+FaderButtonsWidget *
+fader_buttons_widget_new (Track * track);
 
 /**
  * @}

@@ -32,6 +32,7 @@
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
@@ -692,63 +693,13 @@ show_context_menu (TrackWidget * self, double x, double y)
     {
       char * str;
 
-      GMenu * edit_submenu = g_menu_new ();
-
-      if (
-        track->type != TRACK_TYPE_MASTER && track->type != TRACK_TYPE_CHORD
-        && track->type != TRACK_TYPE_MARKER && track->type != TRACK_TYPE_TEMPO)
-        {
-          /* delete track */
-          if (num_selected == 1)
-            str = g_strdup (_ ("_Delete Track"));
-          else
-            str = g_strdup (_ ("_Delete Tracks"));
-          menuitem = z_gtk_create_menu_item (
-            str, "edit-delete", "app.delete-selected-tracks");
-          g_free (str);
-          g_menu_append_item (edit_submenu, menuitem);
-
-          /* duplicate track */
-          if (num_selected == 1)
-            str = g_strdup (_ ("_Duplicate Track"));
-          else
-            str = g_strdup (_ ("_Duplicate Tracks"));
-          menuitem = z_gtk_create_menu_item (
-            str, "edit-copy", "app.duplicate-selected-tracks");
-          g_free (str);
-          g_menu_append_item (edit_submenu, menuitem);
-        }
-
-      /* add regions */
-      if (track->type == TRACK_TYPE_INSTRUMENT)
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Add Region"), "list-add", "app.add-region");
-          g_menu_append_item (edit_submenu, menuitem);
-        }
-
-      menuitem = z_gtk_create_menu_item (
-        num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"), "view-hidden",
-        "app.hide-selected-tracks");
-      g_menu_append_item (edit_submenu, menuitem);
-
-      menuitem = z_gtk_create_menu_item (
-        num_selected == 1 ? _ ("Pin/Unpin Track") : _ ("Pin/Unpin Tracks"),
-        "window-pin", "app.pin-selected-tracks");
-      g_menu_append_item (edit_submenu, menuitem);
-
-      menuitem = z_gtk_create_menu_item (
-        _ ("Change color..."), "color-fill", "app.change-track-color");
-      g_menu_append_item (edit_submenu, menuitem);
-
-      if (num_selected == 1)
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Rename..."), "color-fill", "app.rename-track");
-          g_menu_append_item (edit_submenu, menuitem);
-        }
-
-      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      GMenu * edit_submenu =
+        track_generate_edit_context_menu (track, num_selected);
+      GMenuItem * edit_submenu_item =
+        g_menu_item_new_section (_ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_item_set_attribute (
+        edit_submenu_item, "display-hint", "s", "horizontal-buttons");
+      g_menu_append_item (menu, edit_submenu_item);
 
       GMenu * select_submenu = g_menu_new ();
 
@@ -803,105 +754,12 @@ show_context_menu (TrackWidget * self, double x, double y)
     }
 
   /* add solo/mute/listen */
-  if (track_type_has_channel (track->type))
+  if (track_type_has_channel (track->type) || track->type == TRACK_TYPE_FOLDER)
     {
-      GMenu * channel_submenu = g_menu_new ();
-
-      /*Channel * ch = track_get_channel (track);*/
-
-      if (tracklist_selections_contains_soloed_track (
-            TRACKLIST_SELECTIONS, F_NO_SOLO))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Solo"), TRACK_ICON_NAME_SOLO, "app.solo-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-      if (
-        tracklist_selections_contains_soloed_track (TRACKLIST_SELECTIONS, F_SOLO))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Unsolo"), "unsolo", "app.unsolo-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-
-      if (tracklist_selections_contains_muted_track (
-            TRACKLIST_SELECTIONS, F_NO_MUTE))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Mute"), TRACK_ICON_NAME_MUTE, "app.mute-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-      if (
-        tracklist_selections_contains_muted_track (TRACKLIST_SELECTIONS, F_MUTE))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Unmute"), "unmute", "app.unmute-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-
-      if (tracklist_selections_contains_listened_track (
-            TRACKLIST_SELECTIONS, F_NO_LISTEN))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Listen"), TRACK_ICON_NAME_LISTEN, "app.listen-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-      if (tracklist_selections_contains_listened_track (
-            TRACKLIST_SELECTIONS, F_LISTEN))
-        {
-          menuitem = z_gtk_create_menu_item (
-            _ ("Unlisten"), "unlisten", "app.unlisten-selected-tracks");
-          g_menu_append_item (channel_submenu, menuitem);
-        }
-
-      GMenu * direct_out_submenu = g_menu_new ();
-
-      if (track_type_can_have_direct_out (track->type))
-        {
-          /* add "route to new group" */
-          menuitem = z_gtk_create_menu_item (
-            _ ("New direct out"), NULL, "app.selected-tracks-direct-out-new");
-          g_menu_append_item (direct_out_submenu, menuitem);
-        }
-
-      /* direct out targets */
-      GMenu * target_submenu = g_menu_new ();
-      bool    have_groups = false;
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
-        {
-          Track * cur_tr = TRACKLIST->tracks[i];
-
-          if (
-            !TRACK_CAN_BE_GROUP_TARGET (cur_tr)
-            || track->out_signal_type != cur_tr->in_signal_type
-            || track == cur_tr)
-            continue;
-
-          char tmp[600];
-          sprintf (tmp, "app.selected-tracks-direct-out-to");
-          menuitem = z_gtk_create_menu_item (cur_tr->name, NULL, tmp);
-          g_menu_item_set_action_and_target_value (
-            menuitem, tmp, g_variant_new_int32 (cur_tr->pos));
-          g_menu_append_item (target_submenu, menuitem);
-          have_groups = true;
-        }
-      if (have_groups)
-        {
-          g_menu_append_section (
-            direct_out_submenu, _ ("Route Target"),
-            G_MENU_MODEL (target_submenu));
-        }
-
-      if (track_type_can_have_direct_out (track->type))
-        {
-          g_menu_append_submenu (
-            channel_submenu, _ ("Direct Output"),
-            G_MENU_MODEL (direct_out_submenu));
-        }
-
-      g_menu_append_section (
-        menu, _ ("Channel"), G_MENU_MODEL (channel_submenu));
-
+      GMenu *     channel_submenu = track_generate_channel_context_menu (track);
+      GMenuItem * channel_submenu_item =
+        g_menu_item_new_section (_ ("Channel"), G_MENU_MODEL (channel_submenu));
+      g_menu_append_item (menu, channel_submenu_item);
     } /* endif track has channel */
 
   /* add enable/disable */
@@ -1007,6 +865,12 @@ show_context_menu (TrackWidget * self, double x, double y)
     }
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
+  if (self->fader_buttons_for_popover)
+    {
+      gtk_popover_menu_add_child (
+        self->popover_menu, GTK_WIDGET (self->fader_buttons_for_popover),
+        "fader-buttons");
+    }
 }
 
 static void
@@ -2040,6 +1904,9 @@ track_widget_new (Track * track)
 
   if (track_type_has_channel (track->type))
     {
+      self->fader_buttons_for_popover =
+        g_object_ref (fader_buttons_widget_new (track));
+
       switch (track->out_signal_type)
         {
         case TYPE_EVENT:

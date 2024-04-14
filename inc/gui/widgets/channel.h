@@ -127,7 +127,8 @@ typedef struct _ChannelWidget
   bool setup;
 
   /** Popover to be reused for context menus. */
-  GtkPopoverMenu * popover_menu;
+  GtkPopoverMenu *     popover_menu;
+  FaderButtonsWidget * fader_buttons_for_popover;
 } ChannelWidget;
 
 /**
