@@ -52,6 +52,9 @@ typedef struct _GreeterWidget
   /* -- welcome/config pages -- */
 
   AdwCarousel *   welcome_carousel;
+  guint           welcome_carousel_page_idx;
+  GtkButton *     welcome_carousel_prev_btn;
+  GtkButton *     welcome_carousel_next_btn;
   GtkButton *     continue_to_config_btn;
   AdwStatusPage * read_manual_status_page;
   AdwStatusPage * donate_status_page;

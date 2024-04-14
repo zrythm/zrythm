@@ -592,6 +592,46 @@ greeter_widget_select_project (
     }
 }
 
+static void
+carousel_nav_activate_func (
+  GreeterWidget * self,
+  const char *    action_name,
+  GVariant *      param)
+{
+  if (string_is_equal (action_name, "win.carousel-prev"))
+    {
+      GtkWidget * widget = adw_carousel_get_nth_page (
+        self->welcome_carousel, self->welcome_carousel_page_idx - 1);
+      adw_carousel_scroll_to (self->welcome_carousel, widget, true);
+    }
+  else if (string_is_equal (action_name, "win.carousel-next"))
+    {
+      GtkWidget * widget = adw_carousel_get_nth_page (
+        self->welcome_carousel, self->welcome_carousel_page_idx + 1);
+      adw_carousel_scroll_to (self->welcome_carousel, widget, true);
+    }
+}
+
+static void
+on_carousel_page_changed (
+  AdwCarousel *   carousel,
+  guint           index,
+  GreeterWidget * self)
+{
+  guint n_pages = adw_carousel_get_n_pages (carousel);
+  bool  show_prev = index > 0;
+  bool  show_next = index != n_pages - 1;
+  gtk_widget_action_set_enabled (
+    GTK_WIDGET (self), "win.carousel-prev", show_prev);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->welcome_carousel_prev_btn), show_prev);
+  gtk_widget_action_set_enabled (
+    GTK_WIDGET (self), "win.carousel-next", show_next);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->welcome_carousel_next_btn), show_next);
+  self->welcome_carousel_page_idx = index;
+}
+
 GreeterWidget *
 greeter_widget_new (
   ZrythmApp * app,
@@ -816,6 +856,13 @@ greeter_widget_init (GreeterWidget * self)
     self->create_project_confirm_btn, "clicked",
     G_CALLBACK (on_create_project_confirm_clicked), self);
 
+  self->welcome_carousel_page_idx = 0;
+  gtk_widget_action_set_enabled (GTK_WIDGET (self), "win.carousel-prev", false);
+  gtk_widget_set_visible (GTK_WIDGET (self->welcome_carousel_prev_btn), false);
+  g_signal_connect (
+    self->welcome_carousel, "page-changed",
+    G_CALLBACK (on_carousel_page_changed), self);
+
   /* close on escape */
   z_gtk_window_make_escapable (GTK_WINDOW (self));
 }
@@ -834,6 +881,8 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
 
   BIND_CHILD (stack);
   BIND_CHILD (welcome_carousel);
+  BIND_CHILD (welcome_carousel_prev_btn);
+  BIND_CHILD (welcome_carousel_next_btn);
   BIND_CHILD (continue_to_config_btn);
   BIND_CHILD (read_manual_status_page);
   BIND_CHILD (donate_status_page);
@@ -863,4 +912,11 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
+
+  gtk_widget_class_install_action (
+    wklass, "win.carousel-prev", NULL,
+    (GtkWidgetActionActivateFunc) carousel_nav_activate_func);
+  gtk_widget_class_install_action (
+    wklass, "win.carousel-next", NULL,
+    (GtkWidgetActionActivateFunc) carousel_nav_activate_func);
 }

@@ -24,56 +24,83 @@ template $GreeterWidget : Adw.Window {
             content:
             Gtk.Box {
               orientation: vertical;
-              Adw.Carousel welcome_carousel {
-                hexpand: true;
-                vexpand: true;
-                Adw.StatusPage {
-                  icon-name: "zrythm";
-                  title: _("Welcome");
-                  description: _("Welcome to the Zrythm digital audio workstation. Swipe (click and drag) to the left to proceed.");
-                  vexpand: true;
-                  hexpand: true;
+              Gtk.Overlay welcome_carousel_overlay {
+                valign: center;
+                [overlay]
+                Gtk.Button welcome_carousel_prev_btn {
+                  margin-start: 12;
+                  height-request: 36;
+                  width-request: 36;
+                  icon-name: "gnome-icon-library-left-large-symbolic";
+                  halign: start;
+                  valign: center;
+                  action-name: "win.carousel-prev";
+                  tooltip-text: _("Previous");
+                  styles [ "circular" ]
                 }
-                Adw.StatusPage read_manual_status_page {
-                  icon-name: "gnome-icon-library-open-book-symbolic";
-                  title: _("Read the Manual");
-                  vexpand: true;
-                  hexpand: true;
+                [overlay]
+                Gtk.Button welcome_carousel_next_btn {
+                  margin-end: 12;
+                  height-request: 36;
+                  width-request: 36;
+                  icon-name: "gnome-icon-library-right-large-symbolic";
+                  halign: end;
+                  valign: center;
+                  action-name: "win.carousel-next";
+                  tooltip-text: _("Next");
+                  styles [ "circular" ]
                 }
-                Adw.StatusPage donate_status_page {
-                  icon-name: "gnome-icon-library-credit-card-symbolic";
-                  title: _("Donate");
+                Adw.Carousel welcome_carousel {
+                  hexpand: true;
                   vexpand: true;
-                  hexpand: true;
-                }
-                Adw.StatusPage about_flatpak_status_page {
-                  icon-name: "gnome-icon-library-flatpak-symbolic";
-                  title: _("About Flatpak");
-                  vexpand: true;
-                  hexpand: true;
-                }
-                /*
-                Adw.StatusPage legal_info_status_page {
-                  icon-name: "font-awesome-balance-scale-right-weighted";
-                  title: _("Legal Info");
-                  vexpand: true;
-                  hexpand: true;
-                }
-                */
-                Adw.StatusPage {
-                  title: _("All Ready!");
-                  hexpand: true;
-                  child:
-                  Gtk.Button continue_to_config_btn {
-                    label: _("_Proceed to Configuration");
-                    can-shrink: true;
-                    use-underline: true;
-                    halign: center;
-                    styles [
-                      "suggested-action",
-                      "pill",
-                    ]
-                  };
+                  Adw.StatusPage {
+                    icon-name: "zrythm";
+                    title: _("Welcome");
+                    description: _("Welcome to the Zrythm digital audio workstation. Move to the next page to proceed.");
+                    vexpand: true;
+                    hexpand: true;
+                  }
+                  Adw.StatusPage read_manual_status_page {
+                    icon-name: "gnome-icon-library-open-book-symbolic";
+                    title: _("Read the Manual");
+                    vexpand: true;
+                    hexpand: true;
+                  }
+                  Adw.StatusPage donate_status_page {
+                    icon-name: "gnome-icon-library-credit-card-symbolic";
+                    title: _("Donate");
+                    vexpand: true;
+                    hexpand: true;
+                  }
+                  Adw.StatusPage about_flatpak_status_page {
+                    icon-name: "gnome-icon-library-flatpak-symbolic";
+                    title: _("About Flatpak");
+                    vexpand: true;
+                    hexpand: true;
+                  }
+                  /*
+                  Adw.StatusPage legal_info_status_page {
+                    icon-name: "font-awesome-balance-scale-right-weighted";
+                    title: _("Legal Info");
+                    vexpand: true;
+                    hexpand: true;
+                  }
+                  */
+                  Adw.StatusPage {
+                    title: _("All Ready!");
+                    hexpand: true;
+                    child:
+                    Gtk.Button continue_to_config_btn {
+                      label: _("_Proceed to Configuration");
+                      can-shrink: true;
+                      use-underline: true;
+                      halign: center;
+                      styles [
+                        "suggested-action",
+                        "pill",
+                      ]
+                    };
+                  }
                 }
               }
               Adw.CarouselIndicatorDots {

@@ -31,58 +31,93 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           <object class="GtkBox">
                             <property name="orientation">1</property>
                             <child>
-                              <object class="AdwCarousel" id="welcome_carousel">
-                                <property name="hexpand">true</property>
-                                <property name="vexpand">true</property>
-                                <child>
-                                  <object class="AdwStatusPage">
-                                    <property name="icon-name">zrythm</property>
-                                    <property name="title" translatable="true">Welcome</property>
-                                    <property name="description" translatable="true">Welcome to the Zrythm digital audio workstation. Swipe (click and drag) to the left to proceed.</property>
-                                    <property name="vexpand">true</property>
-                                    <property name="hexpand">true</property>
+                              <object class="GtkOverlay" id="welcome_carousel_overlay">
+                                <property name="valign">3</property>
+                                <child type="overlay">
+                                  <object class="GtkButton" id="welcome_carousel_prev_btn">
+                                    <property name="margin-start">12</property>
+                                    <property name="height-request">36</property>
+                                    <property name="width-request">36</property>
+                                    <property name="icon-name">gnome-icon-library-left-large-symbolic</property>
+                                    <property name="halign">1</property>
+                                    <property name="valign">3</property>
+                                    <property name="action-name">win.carousel-prev</property>
+                                    <property name="tooltip-text" translatable="true">Previous</property>
+                                    <style>
+                                      <class name="circular"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child type="overlay">
+                                  <object class="GtkButton" id="welcome_carousel_next_btn">
+                                    <property name="margin-end">12</property>
+                                    <property name="height-request">36</property>
+                                    <property name="width-request">36</property>
+                                    <property name="icon-name">gnome-icon-library-right-large-symbolic</property>
+                                    <property name="halign">2</property>
+                                    <property name="valign">3</property>
+                                    <property name="action-name">win.carousel-next</property>
+                                    <property name="tooltip-text" translatable="true">Next</property>
+                                    <style>
+                                      <class name="circular"/>
+                                    </style>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="AdwStatusPage" id="read_manual_status_page">
-                                    <property name="icon-name">gnome-icon-library-open-book-symbolic</property>
-                                    <property name="title" translatable="true">Read the Manual</property>
+                                  <object class="AdwCarousel" id="welcome_carousel">
+                                    <property name="hexpand">true</property>
                                     <property name="vexpand">true</property>
-                                    <property name="hexpand">true</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwStatusPage" id="donate_status_page">
-                                    <property name="icon-name">gnome-icon-library-credit-card-symbolic</property>
-                                    <property name="title" translatable="true">Donate</property>
-                                    <property name="vexpand">true</property>
-                                    <property name="hexpand">true</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwStatusPage" id="about_flatpak_status_page">
-                                    <property name="icon-name">gnome-icon-library-flatpak-symbolic</property>
-                                    <property name="title" translatable="true">About Flatpak</property>
-                                    <property name="vexpand">true</property>
-                                    <property name="hexpand">true</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwStatusPage">
-                                    <property name="title" translatable="true">All Ready!</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="child">
-                                      <object class="GtkButton" id="continue_to_config_btn">
-                                        <property name="label" translatable="true">_Proceed to Configuration</property>
-                                        <property name="can-shrink">true</property>
-                                        <property name="use-underline">true</property>
-                                        <property name="halign">3</property>
-                                        <style>
-                                          <class name="suggested-action"/>
-                                          <class name="pill"/>
-                                        </style>
+                                    <child>
+                                      <object class="AdwStatusPage">
+                                        <property name="icon-name">zrythm</property>
+                                        <property name="title" translatable="true">Welcome</property>
+                                        <property name="description" translatable="true">Welcome to the Zrythm digital audio workstation. Move to the next page to proceed.</property>
+                                        <property name="vexpand">true</property>
+                                        <property name="hexpand">true</property>
                                       </object>
-                                    </property>
+                                    </child>
+                                    <child>
+                                      <object class="AdwStatusPage" id="read_manual_status_page">
+                                        <property name="icon-name">gnome-icon-library-open-book-symbolic</property>
+                                        <property name="title" translatable="true">Read the Manual</property>
+                                        <property name="vexpand">true</property>
+                                        <property name="hexpand">true</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwStatusPage" id="donate_status_page">
+                                        <property name="icon-name">gnome-icon-library-credit-card-symbolic</property>
+                                        <property name="title" translatable="true">Donate</property>
+                                        <property name="vexpand">true</property>
+                                        <property name="hexpand">true</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwStatusPage" id="about_flatpak_status_page">
+                                        <property name="icon-name">gnome-icon-library-flatpak-symbolic</property>
+                                        <property name="title" translatable="true">About Flatpak</property>
+                                        <property name="vexpand">true</property>
+                                        <property name="hexpand">true</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwStatusPage">
+                                        <property name="title" translatable="true">All Ready!</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="child">
+                                          <object class="GtkButton" id="continue_to_config_btn">
+                                            <property name="label" translatable="true">_Proceed to Configuration</property>
+                                            <property name="can-shrink">true</property>
+                                            <property name="use-underline">true</property>
+                                            <property name="halign">3</property>
+                                            <style>
+                                              <class name="suggested-action"/>
+                                              <class name="pill"/>
+                                            </style>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
