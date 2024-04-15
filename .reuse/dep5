@@ -654,6 +654,7 @@ Files:
   doc/user/_static/img/track-context-menu.png
   doc/user/_static/img/moving-tracks-inside-folder.png
   doc/user/_static/img/tracklist-add-track.png
+  doc/user/_static/img/tracklist-settings.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:

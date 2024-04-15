@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -12,11 +12,9 @@ Track Selection
 ---------------
 
 Tracks are selected by clicking on them, either in the tracklist or in the mixer.
-There is also an option to auto-select tracks when a track object is selected in the timeline.
-
-.. todo:: Explain this option.
-
 Multiple tracks can be selected by pressing and holding :kbd:`Control` while clicking them.
+
+.. seealso:: There is also :ref:`an option to auto-select tracks when a track object is selected in the timeline <tracks/tracklist:Tracklist Settings>`.
 
 Moving/Copying Tracks
 ---------------------
@@ -50,11 +48,6 @@ Track Name
 The track name can be changed by double-clicking on it in the track view, in the track inspector, or in the channel.
 It can also be changed via the :guilabel:`Rename` context menu option.
 
-Show/Hide Plugin UI
--------------------
-
-:ref:`Instrument tracks <tracks/track-types:Instrument Track>` contain a button (screen icon) to show or hide the instrument UI.
-
 .. Lock
     Prevent any edits on the track while locked.
 
@@ -83,12 +76,12 @@ Duplicate
 Hide
   Hides the selected tracks.
 
-  .. seealso:: See :ref:`tracks/track-visibility-filtering:Track Visibility and Filtering` for more information about track visibility.
+  .. seealso:: See :ref:`tracks/tracklist:Track Visibility and Filtering` for more information about track visibility.
 
 Pin/Unpin
   Pins the selected tracks.
 
-  .. seealso:: See :ref:`editing/timeline/overview:Tracklist` for details.
+  .. seealso:: See :ref:`tracks/tracklist:Tracklist` for details.
 
 Change Color
   Changes the color of the selected track.

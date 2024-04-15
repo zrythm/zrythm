@@ -10,7 +10,7 @@ copy_files = [
   'overview.rst',
   'track-lanes.rst',
   'track-operations.rst',
-  'track-visibility-filtering.rst',
+  'tracklist.rst',
   ]
 
 foreach f : copy_files

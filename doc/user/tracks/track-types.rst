@@ -207,6 +207,12 @@ and `before` the Inserts section.
 Instrument tracks are similar to MIDI tracks, except
 that they produce audio instead of :term:`MIDI`.
 
+Show/Hide Plugin UI
+~~~~~~~~~~~~~~~~~~~
+
+Instrument tracks contain a button (computer screen icon) that allows
+showing/hiding the instrument plugin's UI.
+
 Marker Track
 ------------
 
