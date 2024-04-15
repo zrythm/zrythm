@@ -650,6 +650,8 @@ Files:
   doc/user/_static/img/file-drop-in-track.png
   doc/user/_static/img/file-drop-in-tracklist.png
   doc/user/_static/img/right-click-import-file.png
+  doc/user/_static/img/moving-tracks.png
+  doc/user/_static/img/track-context-menu.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:
