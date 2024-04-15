@@ -46,6 +46,7 @@ version = release[:-4]
 extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.graphviz',
     'sphinx.ext.todo',
     'sphinx_copybutton',
     'sphinxcontrib.rsvgconverter',

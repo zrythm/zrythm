@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -169,10 +169,22 @@ Folder tracks are used to organize tracks.
 
    Folder track with a MIDI FX track as a child
 
-To move tracks inside folder tracks, simply select
-the tracks you want and drag-and-drop them inside
-the folder track.
+Moving/Copying Tracks Into a Foldable Track
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To move (or copy by holding :kbd:`Control`) tracks inside folder (or foldable) tracks, simply select the tracks you want and drag-and-drop them inside the folder track.
+While dragging one or more tracks into a folder track, a line is shown
+to indicate where the tracks will be dropped.
+Dropping the tracks in the middle of a Folder track (orange line shown in the middle) will insert the tracks into the folder track as children.
 
+.. figure:: /_static/img/moving-tracks-inside-folder.png
+   :align: center
+
+   Moving tracks inside a folder track
+
+.. note:: Dropping the tracks above (or below) the folder track will cause the tracks to simply be moved above (or below) the folder track and *NOT* inside it.
+
+Folding/Unfolding
+~~~~~~~~~~~~~~~~~
 Clicking the folder button will hide and expand the
 folder track's children.
 
@@ -198,7 +210,7 @@ that they produce audio instead of :term:`MIDI`.
 Marker Track
 ------------
 
-The marker track holds song markers - either custom
+The marker track holds :ref:`song markers <playback-and-recording/loop-points-and-markers:Custom Markers>` - either custom
 or pre-defined ones - that
 make it easier to jump to or to export specific
 sections of the song. Each project can only
@@ -213,10 +225,8 @@ have one marker track and it cannot be deleted
 Master Track
 ------------
 
-The master track is a special type of
-Audio Group Track that Zrythm uses
-to route the resulting audio signal after
-all the processing is done to the
+The master track is a special type of Audio Group Track that Zrythm uses
+to route the resulting audio signal after all the processing is done to the
 audio backend.
 
 .. figure:: /_static/img/master-track.png
@@ -296,3 +306,5 @@ automating the BPM and time signature.
    :align: center
 
    Tempo track with BPM automation
+
+.. warning:: BPM and time signature automation is currently experimental. **Projects using this functionality may break.** Only use it at your own risk.

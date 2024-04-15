@@ -6,37 +6,35 @@
 Creating Tracks
 ===============
 
-Blank Tracks
+Empty Tracks
 ------------
 
-To add an empty track, right click on empty space in the
-Tracklist and select the type of track you want to add.
+To add an empty track, click the :guilabel:`+` button in the tracklist
+(or right click on empty space)
+and select the type of track you want to add.
 
-.. image:: /_static/img/tracklist-context-menu.png
+.. figure:: /_static/img/tracklist-add-track.png
    :align: center
 
-Creating Tracks From Plugins
-----------------------------
+   Adding a new empty track
 
-Plugins can be clicked and dragged from the Plugin Browser
-and dropped into empty space in the Tracklist or Mixer to
-instantiate them. If the plugin is an instrument plugin,
-an instrument Track will be created. If the plugin is
-an effect, a bus Track will be created.
+Instantiating Plugins
+---------------------
 
-See :ref:`instantiating-plugins` for how to instantiate
-plugins.
+:ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:Instantiating Plugins>` will cause new tracks to be created (unless the plugin was dropped in a particular location).
+If the plugin is an instrument plugin,
+an instrument track will be created. If the plugin is
+an effect, a bus track will be created.
 
-Creating Audio Tracks From Audio Files
---------------------------------------
+.. tip:: Instrument tracks can be created this way.
 
-Likewise, to create an Audio Track from an audio file
-(WAV, FLAC, etc.), you can drag an audio file from the
-File Browser into empty space in the Tracklist or Mixer.
-This will create an Audio Track containing a single
-Audio Clip at the current Playhead position.
+Importing Files
+---------------
 
-Creating Tracks by Duplicating
-------------------------------
+Likewise, :ref:`importing audio/MIDI files <plugins-files/audio-midi-files/file-browser:Importing Files>`
+will create audio and/or MIDI tracks containing that file.
+
+Duplicating/Cloning
+-------------------
 
 Most Tracks can be duplicated via the :guilabel:`Duplicate` context menu option.

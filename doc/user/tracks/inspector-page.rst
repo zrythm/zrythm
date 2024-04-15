@@ -38,9 +38,8 @@ Direct Out
      Routing an instrument to an audio group
 
 Instrument
-  The instrument plugin from this track. This is
-  only applicable to
-  :ref:`Instrument tracks <tracks/track-types:Instrument Track>`.
+  The instrument plugin from this track (only applicable to
+  :ref:`instrument tracks <tracks/track-types:Instrument Track>`).
 
 .. _track-inputs:
 
@@ -54,8 +53,10 @@ selection section. This is mainly used for
 MIDI Inputs
 ~~~~~~~~~~~
 
-.. image:: /_static/img/track-inputs.png
+.. figure:: /_static/img/track-inputs.png
    :align: center
+
+   MIDI inputs on an instrument track
 
 Input Device
   Device to read MIDI input from
@@ -66,8 +67,10 @@ MIDI Channels
 Audio Inputs
 ~~~~~~~~~~~~
 
-.. image:: /_static/img/audio-track-inputs.png
+.. figure:: /_static/img/audio-track-inputs.png
    :align: center
+
+   Audio inputs on an audio track
 
 Left Input
   Left audio input port to listen to
@@ -84,8 +87,10 @@ MIDI FX/Inserts
 These are slots for dropping audio or MIDI effects that will
 be applied to the signal as it passes through the track.
 
-.. image:: /_static/img/midi-fx-inserts.png
+.. figure:: /_static/img/midi-fx-inserts.png
    :align: center
+
+   MIDI FX and insert slots
 
 MIDI FX are processed after the input and piano roll events
 and before the instruments in instrument tracks, or
@@ -97,10 +102,6 @@ Inserts are processed in order. For instrument tracks,
 the inserts will be added onto the signal coming from
 the instrument, and for other tracks they will be added
 on the incoming signal.
-
-The signal flow is summarized below.
-
-``[track input] -> [MIDI FX, if any] -> [instrument, if any] -> [inserts, if any] -> [track output]``
 
 .. _track-sends:
 
@@ -136,13 +137,8 @@ default positions with
 :menuselection:`Right click --> Reset`.
 
 The meter displays the amplitude of the signal in dBFS as
-it is processed live. The following values are displayed
+it is processed live. The peak value of the signal is also displayed
 next to the meter for additional reference.
-
-Peak
-  Peak signal value
-RMS
-  Root Mean Square of the signal value
 
 .. tip:: MIDI faders use MIDI volume CC (currently unimplemented - they let the signal pass through unchanged).
 
@@ -157,7 +153,7 @@ Mute
 
   .. warning:: The track will still be processed, so if
      you are looking to decrease :term:`DSP` usage,
-     try disabling plugins instead.
+     try :ref:`disabling the track <tracks/track-operations:Channel Section>` (or individual plugins) instead.
 
 Solo
   Solo the track. If any track is soloed, only the
@@ -168,9 +164,7 @@ Listen
   be controlled in the
   :ref:`Monitor section <routing/monitor-section:Monitor Section>`.
 Monitor
-  Listen to incoming signal when recording.
-
-  .. note:: This is only available on audio tracks.
+  Listen to incoming signal when recording (only available on audio tracks).
 
 .. Channel Settings
 .. ~~~~~~~~~~~~~~~~

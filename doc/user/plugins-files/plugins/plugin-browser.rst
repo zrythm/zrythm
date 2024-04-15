@@ -82,8 +82,6 @@ a collection to add them too. A collection must be created beforehand.
 
    Option to add the plugin to *My collection*
 
-.. _instantiating-plugins:
-
 Instantiating Plugins
 ---------------------
 There are a couple of ways to instantiate plugins:

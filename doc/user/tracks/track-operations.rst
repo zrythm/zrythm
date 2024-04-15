@@ -8,8 +8,6 @@
 Track Operations
 ================
 
-.. tip:: All Track operations are undoable.
-
 Track Selection
 ---------------
 
@@ -32,8 +30,6 @@ cloned (copied) instead of moved.
    :align: center
 
    Moving a track above the "Audio FX Track"
-
-Tracks can also be copied via the :guilabel:`Duplicate` option in the context menu.
 
 Changing Track Icon/Color/Name
 ------------------------------

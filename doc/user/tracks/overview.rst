@@ -6,6 +6,9 @@
 Overview
 ========
 
+Track Overview
+--------------
+
 Tracks are the main building blocks of projects.
 Tracks appear in the tracklist and contain various
 events such as :ref:`regions <regions>`.
@@ -62,3 +65,25 @@ will have an option to display automation tracks as above.
 
 If the track produces output, it will have a meter on its
 right-hand side showing the current level.
+
+Signal Flow
+-----------
+
+The signal flow for an instrument track is displayed below. Each element is explained later in this chapter.
+
+.. graphviz::
+   :align: center
+   :caption: Signal flow for an instrument track (red = MIDI signal, blue = audio signal)
+
+   digraph {
+     "Track input" -> "MIDI FX 1" -> "(other MIDI FX in order)" -> "MIDI FX 9" -> "Instrument plugin" [color=red];
+     "Piano roll" -> "MIDI FX 1" [color=red];
+     "Instrument plugin" -> "Insert 1" -> "(other inserts in order)" -> "Insert 9" [color=blue];
+     "Insert 9" -> "Pre-fader (internal)" [color=blue];
+     "Pre-fader (internal)" -> "Pre-fader sends" -> "(pre-fader send targets)" [color=blue];
+     "Pre-fader (internal)" -> "Fader" [color=blue];
+     "Fader" -> "Post-fader sends" -> "(post-fader send targets)" [color=blue];
+     "Fader" -> "Track output" [color=blue];
+   }
+
+.. seealso:: See the :ref:`Routing chapter <routing/intro:Routing>` for more info on how Zrythm handles signals.
