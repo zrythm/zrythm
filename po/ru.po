@@ -18,13 +18,14 @@
 # Vin <k3kelm4vw@mozmail.com>, 2023.
 # Yury Verpatov <inaunius@gmail.com>, 2023.
 # Макар Разин <makarrazin14@gmail.com>, 2024.
+# Yurt Page <yurtpage@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-12 07:23+0900\n"
-"PO-Revision-Date: 2024-03-02 20:45+0000\n"
-"Last-Translator: Макар Разин <makarrazin14@gmail.com>\n"
+"PO-Revision-Date: 2024-04-13 20:45+0000\n"
+"Last-Translator: Yurt Page <yurtpage@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -114,7 +115,7 @@ msgstr "1 такт (1 bar)"
 
 #: inc/dsp/snap_grid.h:53
 msgid "beat"
-msgstr ""
+msgstr "доля"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"

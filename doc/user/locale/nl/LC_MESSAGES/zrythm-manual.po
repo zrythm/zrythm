@@ -33,15 +33,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-12 07:18+0900\n"
-"PO-Revision-Date: 2023-06-06 04:48+0000\n"
-"Last-Translator: Ewan Arends <ewan.arends10@gmail.com>\n"
-"Language: nl\n"
+"PO-Revision-Date: 2024-04-13 20:45+0000\n"
+"Last-Translator: Antoon Stessels <antoon.stessels@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/user-manual/"
 "nl/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -65,27 +66,28 @@ msgstr ""
 
 #: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Zet op 1 om het scannen naar plugins uit te schakelen."
 
 #: ../../appendix/environment.rst:23
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr ""
+msgstr "Voorbeeld: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:28
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
+"Aantal te gebruiken DSP-draden. Gebruikt als standaard aantal CPU-kernen - 1."
 
 #: ../../appendix/environment.rst:33
 msgid "Set to 1 to show extra information useful for developers."
-msgstr ""
+msgstr "Zet op 1 om extra informatie te tonen die nuttig is voor ontwikkelaars."
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr ""
+msgstr "Bestanden en mappen"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
-msgstr ""
+msgstr "Gebruikersparcours"
 
 #: ../../appendix/files-and-directories.rst:11
 msgid ""
@@ -93,18 +95,23 @@ msgid ""
 "directory for saving your user data. See :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
+"Wanneer Zrythm voor de eerste keer wordt opgestart, zal het u vragen om een "
+"map te selecteren voor het opslaan van uw gebruikersdata. Zie :ref:`Zrythm "
+"user path <configuration/preferences:Zrythm User Path>` voor meer details."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "Geïnstalleerde bestanden"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
 msgstr ""
+"Wanneer Zrythm wordt geïnstalleerd, installeert het standaard de volgende "
+"bestanden."
 
 #: ../../appendix/files-and-directories.rst:21
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Bureaubladinvoer"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -149,17 +156,19 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:100
 msgid "Samples"
-msgstr ""
+msgstr "Samples"
 
 #: ../../appendix/files-and-directories.rst:49
 msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
+"Standaard audiosamples gebruikt door Zrythm (zoals de metronoom). "
+"Gebruikelijk geïnstalleerd onder :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
-msgstr ""
+msgstr "Lettertypen"
 
 #: ../../appendix/files-and-directories.rst:55
 msgid ""
@@ -167,6 +176,9 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"Tenzij uw distributie pakketten voorziet voor de vereiste lettertypes, "
+"zullen lettertypen die vereist zijn door Zrythm geïnstalleerd worden onder "
+":file:`/usr/share/fonts/zrythm`."
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
