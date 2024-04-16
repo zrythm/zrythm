@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
-"POT-Creation-Date: 2024-04-12 07:23+0900\n"
+"POT-Creation-Date: 2024-04-16 17:41+0900\n"
 "PO-Revision-Date: 2024-02-05 20:45+0000\n"
 "Last-Translator: Lighthigh57 <shuntan125@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -293,7 +293,7 @@ msgstr "2小節"
 msgid "4 bars"
 msgstr "4小節"
 
-#: inc/dsp/region.h:62 src/gui/widgets/track.c:968
+#: inc/dsp/region.h:62 src/gui/widgets/track.c:826
 msgid "Inherit"
 msgstr "継承"
 
@@ -657,14 +657,13 @@ msgstr "すべてを選択 (_A)"
 msgid "Duplicate"
 msgstr "複製"
 
-#: inc/utils/gtk.h:67 src/gui/widgets/track.c:332 src/gui/widgets/track.c:831
+#: inc/utils/gtk.h:67 src/gui/widgets/track.c:333
 #: src/gui/widgets/monitor_section.c:35 src/gui/widgets/monitor_section.c:272
-#: src/gui/widgets/channel.c:650 build/data/org.zrythm.Zrythm.gschema.xml:316
+#: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Mute"
 msgstr "無音"
 
-#: inc/utils/gtk.h:70 src/gui/widgets/track.c:328 src/gui/widgets/track.c:838
-#: src/gui/widgets/channel.c:657
+#: inc/utils/gtk.h:70 src/gui/widgets/track.c:329
 msgid "Unmute"
 msgstr "ミュートを解除"
 
@@ -1215,7 +1214,7 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 msgid "Failed to quantize"
 msgstr "プラグインを有効/無効にする"
 
-#: src/actions/actions.c:1658 src/dsp/track.c:3455
+#: src/actions/actions.c:1658 src/dsp/track.c:3453
 #: src/gui/widgets/panel_file_browser.c:357 src/settings/plugin_settings.c:320
 #: src/settings/plugin_settings.c:333 src/settings/plugin_settings.c:396
 #: src/settings/plugin_settings.c:493
@@ -1573,7 +1572,7 @@ msgstr "削除できないオブジェクトが選択されています"
 msgid "Failed getting contents for %s"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1910
+#: src/actions/tracklist_selections.c:289 src/dsp/track.c:1908
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "ファイルの書き込みに失敗しました: %s"
@@ -1878,85 +1877,85 @@ msgstr "削除できないオブジェクトが選択されています"
 msgid "Cannot rename selected object(s)"
 msgstr ""
 
-#: src/actions/arranger_selections.c:729
+#: src/actions/arranger_selections.c:731
 msgid "Attempted to resize unresizable objects"
 msgstr "サイズ変更できないオブジェクトのサイズを変更しようとしました"
 
-#: src/actions/arranger_selections.c:743
+#: src/actions/arranger_selections.c:745
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr ""
 "%s サイズ変更できません - 選択にループされたオブジェクトが含まれています"
 
-#: src/actions/arranger_selections.c:757
+#: src/actions/arranger_selections.c:759
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 "%s サイズ変更を実行できません - 選択にループ不可能なオブジェクトが含まれてい"
 "ます"
 
-#: src/actions/arranger_selections.c:2946
+#: src/actions/arranger_selections.c:2948
 msgid "Create timeline selections"
 msgstr "タイムラインオブジェクトの作成"
 
-#: src/actions/arranger_selections.c:2948
+#: src/actions/arranger_selections.c:2950
 msgid "Create audio selections"
 msgstr "オーディオセレクションを作成"
 
-#: src/actions/arranger_selections.c:2950
+#: src/actions/arranger_selections.c:2952
 msgid "Create automation selections"
 msgstr "オートメーションセレクションの作成"
 
-#: src/actions/arranger_selections.c:2952
+#: src/actions/arranger_selections.c:2954
 msgid "Create chord selections"
 msgstr "コードセレクションを作成"
 
-#: src/actions/arranger_selections.c:2954
+#: src/actions/arranger_selections.c:2956
 msgid "Create MIDI selections"
 msgstr "MIDI セレクションを作成"
 
-#: src/actions/arranger_selections.c:2959
+#: src/actions/arranger_selections.c:2961
 msgid "Delete arranger selections"
 msgstr "アレンジャーのオブジェクトを削除する"
 
-#: src/actions/arranger_selections.c:2961
+#: src/actions/arranger_selections.c:2963
 msgid "Duplicate arranger selections"
 msgstr "アレンジャーのオブジェクトを複製"
 
-#: src/actions/arranger_selections.c:2963
+#: src/actions/arranger_selections.c:2965
 msgid "Move arranger selections"
 msgstr "アレンジャーのオブジェクトを移動"
 
-#: src/actions/arranger_selections.c:2965
+#: src/actions/arranger_selections.c:2967
 msgid "Link arranger selections"
 msgstr "アレンジャーのオブジェクトをリンク"
 
-#: src/actions/arranger_selections.c:2967
+#: src/actions/arranger_selections.c:2969
 msgid "Record arranger selections"
 msgstr "アレンジャーのオブジェクトを録音"
 
-#: src/actions/arranger_selections.c:2969
+#: src/actions/arranger_selections.c:2971
 msgid "Edit arranger selections"
 msgstr "アレンジャーのオブジェクトを編集"
 
-#: src/actions/arranger_selections.c:2971
+#: src/actions/arranger_selections.c:2973
 msgid "Automation fill"
 msgstr "オートメーションを Fill"
 
-#: src/actions/arranger_selections.c:2973
+#: src/actions/arranger_selections.c:2975
 msgid "Split arranger selections"
 msgstr "アレンジャーのオブジェクトを分割"
 
-#: src/actions/arranger_selections.c:2975
+#: src/actions/arranger_selections.c:2977
 msgid "Merge arranger selections"
 msgstr "アレンジャーのオブジェクトを結合する"
 
-#: src/actions/arranger_selections.c:2981
+#: src/actions/arranger_selections.c:2983
 #, fuzzy, c-format
 msgid "Resize arranger selections - %s"
 msgstr "アレンジャーのオブジェクトのサイズを変更"
 
-#: src/actions/arranger_selections.c:2984
+#: src/actions/arranger_selections.c:2986
 msgid "Quantize arranger selections"
 msgstr "アレンジャーオブジェクトをクオンタイズ"
 
@@ -2018,7 +2017,7 @@ msgid "Could not create plugin"
 msgstr "プラグインを初期化できませんでした"
 
 #: src/actions/mixer_selections_action.c:497 src/dsp/audio_function.c:140
-#: src/dsp/track.c:2026 src/dsp/track.c:3013
+#: src/dsp/track.c:2024 src/dsp/track.c:3011
 #, fuzzy
 msgid "Failed to instantiate plugin"
 msgstr "プラグインを有効/無効にする"
@@ -2410,56 +2409,118 @@ msgstr ""
 msgid "Track record"
 msgstr "トラックの録音"
 
-#: src/dsp/track.c:427
+#: src/dsp/track.c:425
 #, fuzzy
 msgid "Failed to clone modulator plugin"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
-#: src/dsp/track.c:451
+#: src/dsp/track.c:449
 #, fuzzy
 msgid "Failed to clone channel"
 msgstr "スキーマ %s を表示できませんでした"
 
-#: src/dsp/track.c:808
+#: src/dsp/track.c:806
 #, fuzzy
 msgid "Cannot set track muted"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:849
+#: src/dsp/track.c:847
 #, fuzzy
 msgid "Cannot set track folded"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:1328
+#: src/dsp/track.c:1326
 #, fuzzy
 msgid "Cannot set track soloed"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:1375
+#: src/dsp/track.c:1373
 #, fuzzy
 msgid "Cannot set track listened"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:2713 src/settings/plugin_settings.c:374
+#: src/dsp/track.c:2711 src/settings/plugin_settings.c:374
 #: src/settings/plugin_settings.c:410
 #, fuzzy
 msgid "Failed to rename track"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/dsp/track.c:3055 src/dsp/track.c:3097
+#: src/dsp/track.c:3053 src/dsp/track.c:3095
 #, fuzzy
 msgid "Cannot set track comment"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:3131
+#: src/dsp/track.c:3129
 #, fuzzy
 msgid "Cannot set track icon"
 msgstr "ルーティングできません"
 
-#: src/dsp/track.c:3353
+#: src/dsp/track.c:3351
 #, fuzzy
 msgid "Cannot set track enabled"
 msgstr "ルーティングできません"
+
+#: src/dsp/track.c:3651
+msgid "_Delete Track"
+msgstr "トラックを削除(_D)"
+
+#: src/dsp/track.c:3653
+msgid "_Delete Tracks"
+msgstr "トラックを削除(_D)"
+
+#: src/dsp/track.c:3663
+#, fuzzy
+msgid "Duplicate Track"
+msgstr "トラックを複製(_D)"
+
+#: src/dsp/track.c:3665
+#, fuzzy
+msgid "Duplicate Tracks"
+msgstr "トラックを複製(_D)"
+
+#: src/dsp/track.c:3678
+msgid "Add Region"
+msgstr "リージョンを追加"
+
+#: src/dsp/track.c:3685
+msgid "Hide Track"
+msgstr "トラックを非表示にする"
+
+#: src/dsp/track.c:3685
+msgid "Hide Tracks"
+msgstr "トラックを非表示にする"
+
+#: src/dsp/track.c:3692
+msgid "Pin/Unpin Track"
+msgstr "トラックを固定/固定解除"
+
+#: src/dsp/track.c:3692
+msgid "Pin/Unpin Tracks"
+msgstr "トラックを固定/固定解除"
+
+#: src/dsp/track.c:3698 src/gui/widgets/timeline_arranger.c:997
+#, fuzzy
+msgid "Change Color..."
+msgstr "色を変更する..."
+
+#: src/dsp/track.c:3705
+#, fuzzy
+msgid "Rename..."
+msgstr "名前を変更する"
+
+#: src/dsp/track.c:3728
+#, fuzzy
+msgid "New direct out"
+msgstr "ダイレクトアウトを変更"
+
+#: src/dsp/track.c:3755
+msgid "Route Target"
+msgstr ""
+
+#: src/dsp/track.c:3761
+#, fuzzy
+msgid "Direct Output"
+msgstr "ダイレクトアウト"
 
 #: src/dsp/automation_track.c:151
 msgid "Rec"
@@ -2473,7 +2534,7 @@ msgstr "タッチ"
 msgid "Latch"
 msgstr "ラッチ"
 
-#: src/dsp/region.c:474 src/gui/widgets/track.c:1006
+#: src/dsp/region.c:474 src/gui/widgets/track.c:864
 #: build/data/org.zrythm.Zrythm.gschema.xml:1259
 msgid "Automation"
 msgstr "オートメーション"
@@ -3110,7 +3171,7 @@ msgstr "ファイルブラウザ"
 msgid "Chord Preset Browser"
 msgstr "コードプリセットブラウザ"
 
-#: src/utils/gtk.c:993 src/gui/widgets/track.c:348
+#: src/utils/gtk.c:993 src/gui/widgets/track.c:349
 #: src/gui/widgets/monitor_section.c:29
 msgid "Monitor"
 msgstr "モニター"
@@ -3212,12 +3273,12 @@ msgstr "プラグインブラウザのフィルタ"
 msgid "Plugin preset loaded."
 msgstr "プラグインブラウザのタブ"
 
-#: src/gui/backend/arranger_selections.c:2320
+#: src/gui/backend/arranger_selections.c:2311
 #, fuzzy
 msgid "Failed to add region"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/gui/backend/arranger_selections.c:2353
+#: src/gui/backend/arranger_selections.c:2344
 #, fuzzy
 msgid "Failed to paste selections"
 msgstr "貼り付けできません"
@@ -3464,7 +3525,7 @@ msgstr "一部の変更は%sの再起動後にのみ有効になります"
 msgid "Preferences"
 msgstr "設定"
 
-#: src/gui/widgets/folder_channel.c:144
+#: src/gui/widgets/folder_channel.c:145
 #, fuzzy
 msgid "Failed to move or copy track(s)"
 msgstr "ファイルを開けませんでした：%s"
@@ -3638,7 +3699,7 @@ msgstr "ファイルが選択されていません"
 msgid "Search..."
 msgstr "検索..."
 
-#: src/gui/widgets/drag_dest_box.c:323 src/gui/widgets/track.c:1858
+#: src/gui/widgets/drag_dest_box.c:323 src/gui/widgets/track.c:1722
 #, fuzzy
 msgid "Failed to move or copy plugin"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
@@ -3648,252 +3709,186 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 msgid "Failed to move or copy track"
 msgstr "ファイルを開けませんでした：%s"
 
-#: src/gui/widgets/track.c:311 src/gui/widgets/track.c:816
-#: src/gui/widgets/channel.c:635
+#: src/gui/widgets/track.c:312
 msgid "Solo"
 msgstr "ソロ"
 
-#: src/gui/widgets/track.c:317
+#: src/gui/widgets/track.c:318
 msgid "Hide instrument UI"
 msgstr "インストゥルメントのUI を非表示にする"
 
-#: src/gui/widgets/track.c:321
+#: src/gui/widgets/track.c:322
 msgid "Show instrument UI"
 msgstr "インストゥルメントのUIを表示"
 
-#: src/gui/widgets/track.c:339 src/gui/widgets/track.c:853
-#: src/gui/widgets/channel.c:672
+#: src/gui/widgets/track.c:340
 msgid "Unlisten"
 msgstr "試聴を解除"
 
-#: src/gui/widgets/track.c:343 src/gui/widgets/track.c:846
-#: src/gui/widgets/monitor_section.c:41 src/gui/widgets/channel.c:665
+#: src/gui/widgets/track.c:344 src/gui/widgets/monitor_section.c:41
 msgid "Listen"
 msgstr "聴く"
 
-#: src/gui/widgets/track.c:352
+#: src/gui/widgets/track.c:353
 msgid "Mono compatibility"
 msgstr "モノ互換性"
 
-#: src/gui/widgets/track.c:356
+#: src/gui/widgets/track.c:357
 msgid "Swap phase"
 msgstr ""
 
-#: src/gui/widgets/track.c:362
+#: src/gui/widgets/track.c:363
 msgid "Disarm"
 msgstr "解除"
 
-#: src/gui/widgets/track.c:366
+#: src/gui/widgets/track.c:367
 msgid "Arm for recording"
 msgstr "録音用アーム"
 
-#: src/gui/widgets/track.c:373
+#: src/gui/widgets/track.c:374
 msgid "Hide lanes"
 msgstr "レーンを非表示にする"
 
-#: src/gui/widgets/track.c:377
+#: src/gui/widgets/track.c:378
 msgid "Show lanes"
 msgstr "レーンを表示する"
 
-#: src/gui/widgets/track.c:384
+#: src/gui/widgets/track.c:385
 #, fuzzy
 msgid "Change automatable"
 msgstr "名称を変更"
 
-#: src/gui/widgets/track.c:390
+#: src/gui/widgets/track.c:391
 msgid "Hide automation"
 msgstr "オートメーションを非表示にする"
 
-#: src/gui/widgets/track.c:394
+#: src/gui/widgets/track.c:395
 msgid "Show automation"
 msgstr "オートメーションを表示"
 
-#: src/gui/widgets/track.c:400
+#: src/gui/widgets/track.c:401
 #: src/gui/widgets/popovers/port_connections_popover.c:144
 msgid "Add"
 msgstr "追加"
 
-#: src/gui/widgets/track.c:404
+#: src/gui/widgets/track.c:405
 msgid "Remove"
 msgstr "削除"
 
-#: src/gui/widgets/track.c:408
+#: src/gui/widgets/track.c:409
 msgid "Freeze/unfreeze"
 msgstr "フリーズ/フリーズ解除"
 
-#: src/gui/widgets/track.c:412
+#: src/gui/widgets/track.c:413
 msgid "Lock/unlock"
 msgstr "ロック/ロック解除"
 
-#: src/gui/widgets/track.c:416
+#: src/gui/widgets/track.c:417
 msgid "Fold"
 msgstr "折りたたむ"
 
-#: src/gui/widgets/track.c:420
+#: src/gui/widgets/track.c:421
 msgid "Unfold"
 msgstr "展開する"
 
-#: src/gui/widgets/track.c:669 src/gui/widgets/arranger.c:2292
+#: src/gui/widgets/track.c:670 src/gui/widgets/arranger.c:2292
 msgid "Marker name"
 msgstr "目印の名称"
 
-#: src/gui/widgets/track.c:703 src/gui/widgets/channel.c:596
-msgid "_Delete Track"
-msgstr "トラックを削除(_D)"
-
-#: src/gui/widgets/track.c:705 src/gui/widgets/channel.c:598
-msgid "_Delete Tracks"
-msgstr "トラックを削除(_D)"
-
-#: src/gui/widgets/track.c:713 src/gui/widgets/channel.c:605
-msgid "_Duplicate Track"
-msgstr "トラックを複製(_D)"
-
-#: src/gui/widgets/track.c:715 src/gui/widgets/channel.c:607
-msgid "_Duplicate Tracks"
-msgstr "トラックを複製(_D)"
-
-#: src/gui/widgets/track.c:726
-msgid "Add Region"
-msgstr "リージョンを追加"
-
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
-msgid "Hide Track"
-msgstr "トラックを非表示にする"
-
-#: src/gui/widgets/track.c:731 src/gui/widgets/channel.c:614
-msgid "Hide Tracks"
-msgstr "トラックを非表示にする"
-
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
-msgid "Pin/Unpin Track"
-msgstr "トラックを固定/固定解除"
-
-#: src/gui/widgets/track.c:736 src/gui/widgets/channel.c:619
-msgid "Pin/Unpin Tracks"
-msgstr "トラックを固定/固定解除"
-
-#: src/gui/widgets/track.c:741 src/gui/widgets/channel.c:696
-msgid "Change color..."
-msgstr "色を変更する..."
-
-#: src/gui/widgets/track.c:747
-#, fuzzy
-msgid "Rename..."
-msgstr "名前を変更する"
-
-#: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:201
+#: src/gui/widgets/track.c:699 src/gui/widgets/automation_arranger.c:201
 #: src/gui/widgets/channel_slot.c:623 src/gui/widgets/timeline_arranger.c:981
-#: src/gui/widgets/timeline_arranger.c:1140
+#: src/gui/widgets/timeline_arranger.c:1140 src/gui/widgets/channel.c:591
 msgid "Edit"
 msgstr "編集"
 
-#: src/gui/widgets/track.c:757
+#: src/gui/widgets/track.c:708
 #, fuzzy
 msgid "Append Track Objects to Selection"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/track.c:769
+#: src/gui/widgets/track.c:720
 #, fuzzy
 msgid "Append Lane Objects to Selection"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/track.c:780
+#: src/gui/widgets/track.c:731
 #, fuzzy
 msgid "Append Lane Automation Regions to Selection"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/track.c:786 src/gui/widgets/piano_roll_keys.c:519
+#: src/gui/widgets/track.c:737 src/gui/widgets/piano_roll_keys.c:519
 #: src/gui/widgets/midi_arranger.c:456
 #, fuzzy
 msgid "Selection"
 msgstr "選択範囲"
 
-#: src/gui/widgets/track.c:794
+#: src/gui/widgets/track.c:745
 msgid "Quick bounce"
 msgstr "クイックバウンス"
 
-#: src/gui/widgets/track.c:799 src/gui/widgets/timeline_arranger.c:1126
+#: src/gui/widgets/track.c:750 src/gui/widgets/timeline_arranger.c:1126
 msgid "Bounce..."
 msgstr "バウンス..."
 
-#: src/gui/widgets/track.c:802
+#: src/gui/widgets/track.c:753
 msgid "Bounce"
 msgstr "バウンス"
 
-#: src/gui/widgets/track.c:823 src/gui/widgets/channel.c:642
-msgid "Unsolo"
-msgstr "ソロを解除"
-
-#: src/gui/widgets/track.c:863
-#, fuzzy
-msgid "New direct out"
-msgstr "ダイレクトアウトを変更"
-
-#: src/gui/widgets/track.c:891
-msgid "Route Target"
-msgstr ""
-
-#: src/gui/widgets/track.c:898
-#, fuzzy
-msgid "Direct Output"
-msgstr "ダイレクトアウト"
-
-#: src/gui/widgets/track.c:903 src/gui/widgets/channel.c:677
+#: src/gui/widgets/track.c:761 src/gui/widgets/channel.c:604
 #: src/gui/widgets/popovers/automatable_selector_popover.c:169
 #: src/gui/widgets/popovers/automatable_selector_popover.c:385
 msgid "Channel"
 msgstr "チャンネル"
 
-#: src/gui/widgets/track.c:912 src/gui/widgets/bot_bar.c:434
-#: src/gui/widgets/channel.c:685
+#: src/gui/widgets/track.c:770 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:613
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/gui/widgets/track.c:918 src/gui/widgets/bot_bar.c:434
-#: src/gui/widgets/channel.c:691
+#: src/gui/widgets/track.c:776 src/gui/widgets/bot_bar.c:434
+#: src/gui/widgets/channel.c:619
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/gui/widgets/track.c:925
+#: src/gui/widgets/track.c:783
 #, fuzzy
 msgid "Rename lane..."
 msgstr "トラック名を変更"
 
-#: src/gui/widgets/track.c:941
+#: src/gui/widgets/track.c:799
 msgid "Passthrough input"
 msgstr "パススルー入力"
 
-#: src/gui/widgets/track.c:949 src/gui/widgets/track.c:970
+#: src/gui/widgets/track.c:807 src/gui/widgets/track.c:828
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI チャンネル %d"
 
-#: src/gui/widgets/track.c:957
+#: src/gui/widgets/track.c:815
 #, fuzzy
 msgid "Track MIDI Channel"
 msgstr "トラックのMIDI Ch"
 
-#: src/gui/widgets/track.c:981
+#: src/gui/widgets/track.c:839
 #, fuzzy
 msgid "Lane MIDI Channel"
 msgstr "MIDI チャンネル %d"
 
-#: src/gui/widgets/track.c:986
+#: src/gui/widgets/track.c:844
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
-#: src/gui/widgets/track.c:997
+#: src/gui/widgets/track.c:855
 #, fuzzy
 msgid "Show used lanes"
 msgstr "レーンを表示する"
 
-#: src/gui/widgets/track.c:1001
+#: src/gui/widgets/track.c:859
 #, fuzzy
 msgid "Hide unused lanes"
 msgstr "レーンを非表示にする"
 
-#: src/gui/widgets/track.c:1822
+#: src/gui/widgets/track.c:1686
 #, fuzzy
 msgid "Operation not implemented"
 msgstr "未実装"
@@ -4012,7 +4007,7 @@ msgstr ""
 msgid "Failed to delete selection"
 msgstr "ファイルの書き込みに失敗しました: %s"
 
-#: src/gui/widgets/arranger.c:3491 src/gui/widgets/arranger.c:4013
+#: src/gui/widgets/arranger.c:3491 src/gui/widgets/arranger.c:4024
 #, fuzzy
 msgid "Failed to edit selection"
 msgstr "ファイルの書き込みに失敗しました: %s"
@@ -4028,7 +4023,7 @@ msgid "Failed to duplicate automation"
 msgstr "自動操作イベントを複製"
 
 #: src/gui/widgets/arranger.c:3574 src/gui/widgets/arranger.c:3900
-#: src/gui/widgets/arranger.c:4283
+#: src/gui/widgets/arranger.c:4294
 #, fuzzy
 msgid "Failed to create objects"
 msgstr "ファイルの書き込みに失敗しました: %s"
@@ -4069,53 +4064,53 @@ msgstr "ファイルの書き込みに失敗しました: %s"
 msgid "Failed to duplicate chords"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/gui/widgets/arranger.c:3961 src/gui/widgets/arranger.c:4187
+#: src/gui/widgets/arranger.c:3972 src/gui/widgets/arranger.c:4198
 #, fuzzy
 msgid "Failed resizing selection"
 msgstr "値の読み取りに失敗しました"
 
-#: src/gui/widgets/arranger.c:4039
+#: src/gui/widgets/arranger.c:4050
 #, fuzzy
 msgid "Failed to edit timeline objects"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/gui/widgets/arranger.c:4058 src/gui/widgets/arranger.c:4077
+#: src/gui/widgets/arranger.c:4069 src/gui/widgets/arranger.c:4088
 #, fuzzy
 msgid "Failed to resize timeline objects"
 msgstr "ファイルの書き込みに失敗しました: %s"
 
-#: src/gui/widgets/arranger.c:4094
+#: src/gui/widgets/arranger.c:4105
 #, fuzzy
 msgid "Failed to resize selection"
 msgstr "ファイルの書き込みに失敗しました: %s"
 
-#: src/gui/widgets/arranger.c:4113
+#: src/gui/widgets/arranger.c:4124
 #, fuzzy
 msgid "Failed setting fade in position"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/arranger.c:4131 src/gui/widgets/arranger.c:4154
-#: src/gui/widgets/arranger.c:4170
+#: src/gui/widgets/arranger.c:4142 src/gui/widgets/arranger.c:4165
+#: src/gui/widgets/arranger.c:4181
 #, fuzzy
 msgid "Failed resizing selections"
 msgstr "アレンジャーオブジェクトをクオンタイズ"
 
-#: src/gui/widgets/arranger.c:4235
+#: src/gui/widgets/arranger.c:4246
 #, fuzzy
 msgid "Failed to move objects"
 msgstr "ファイルを開けませんでした：%s"
 
-#: src/gui/widgets/arranger.c:4265
+#: src/gui/widgets/arranger.c:4276
 #, fuzzy
 msgid "Failed to link or copy selection"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/arranger.c:4316
+#: src/gui/widgets/arranger.c:4327
 #, fuzzy
 msgid "Failed to split selection"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/gui/widgets/arranger.c:4325
+#: src/gui/widgets/arranger.c:4336
 #, c-format
 msgid "%s name"
 msgstr "%s名前"
@@ -4599,31 +4594,31 @@ msgstr "関数を選択"
 msgid "Plugin Effect"
 msgstr "プラグインインスペクター"
 
-#: src/gui/widgets/editor_toolbar.c:167 src/gui/widgets/editor_toolbar.c:192
-#: src/gui/widgets/editor_toolbar.c:209
+#: src/gui/widgets/editor_toolbar.c:166 src/gui/widgets/editor_toolbar.c:190
+#: src/gui/widgets/editor_toolbar.c:207
 #, c-format
 msgid "Apply %s"
 msgstr "%sを適用"
 
-#: src/gui/widgets/editor_toolbar.c:169 src/gui/widgets/editor_toolbar.c:194
-#: src/gui/widgets/editor_toolbar.c:211
+#: src/gui/widgets/editor_toolbar.c:168 src/gui/widgets/editor_toolbar.c:192
+#: src/gui/widgets/editor_toolbar.c:209
 #, c-format
 msgid "Apply %s with previous settings"
 msgstr "以前の設定で %s を適用する"
 
-#: src/gui/widgets/editor_toolbar.c:243
+#: src/gui/widgets/editor_toolbar.c:241
 msgid "No Highlight"
 msgstr "ハイライトなし"
 
-#: src/gui/widgets/editor_toolbar.c:244
+#: src/gui/widgets/editor_toolbar.c:242
 msgid "Highlight Chord"
 msgstr "和音をハイライト"
 
-#: src/gui/widgets/editor_toolbar.c:245
+#: src/gui/widgets/editor_toolbar.c:243
 msgid "Highlight Scale"
 msgstr "音階をハイライト"
 
-#: src/gui/widgets/editor_toolbar.c:246
+#: src/gui/widgets/editor_toolbar.c:244
 msgid "Highlight Both"
 msgstr "両方をハイライト"
 
@@ -4769,11 +4764,6 @@ msgstr "名前を変更する"
 #: src/gui/widgets/timeline_arranger.c:973
 msgid "Loop Selection"
 msgstr "ループ選択"
-
-#: src/gui/widgets/timeline_arranger.c:997
-#, fuzzy
-msgid "Change Color..."
-msgstr "色を変更する..."
 
 #: src/gui/widgets/timeline_arranger.c:1001
 #, fuzzy
@@ -4956,7 +4946,7 @@ msgstr "%sが見つかりません。"
 msgid "Project loading failed"
 msgstr "プロジェクトが保存されました。"
 
-#: src/gui/widgets/greeter.c:287 src/gui/widgets/greeter.c:615
+#: src/gui/widgets/greeter.c:287 src/gui/widgets/greeter.c:655
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:6
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:38
 msgid "Zrythm"
@@ -4981,7 +4971,7 @@ msgstr "プロジェクトを開く"
 msgid "Blank project"
 msgstr "空白のプロジェクト"
 
-#: src/gui/widgets/greeter.c:654
+#: src/gui/widgets/greeter.c:694
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:26
 #, c-format
 msgid ""
@@ -4991,7 +4981,7 @@ msgstr ""
 "初めてZrythmを使用する場合は、%suser manual%s の 'Getting Started' のセクショ"
 "ンを確認することをお勧めします。"
 
-#: src/gui/widgets/greeter.c:662
+#: src/gui/widgets/greeter.c:702
 #, fuzzy, c-format
 msgid ""
 "Zrythm relies on donations and purchases to sustain development. If you "
@@ -5001,51 +4991,51 @@ msgstr ""
 "アを気に入っていただけたなら、%s寄付%sあるいは%sインストーラの購入%s をご検討"
 "ください。"
 
-#: src/gui/widgets/greeter.c:678
+#: src/gui/widgets/greeter.c:718
 #, fuzzy
 msgid "Only plugins installed via Flatpak are supported."
 msgstr "Flatpakにインストールされているプラグインのみ対応しています。"
 
-#: src/gui/widgets/greeter.c:686
+#: src/gui/widgets/greeter.c:726
 #, fuzzy, c-format
 msgid ""
 "Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s, "
 "registered in the UK and other countries."
 msgstr "ZrythmおよびZrythmのロゴは%sAlexandros Theodotouの商標です%s。"
 
-#: src/gui/widgets/greeter.c:706
+#: src/gui/widgets/greeter.c:746
 msgid "Initial Configuration"
 msgstr "初期設定"
 
-#: src/gui/widgets/greeter.c:714 src/gui/widgets/dialogs/scripting_dialog.c:92
+#: src/gui/widgets/greeter.c:754 src/gui/widgets/dialogs/scripting_dialog.c:92
 msgid "Language"
 msgstr "言語"
 
-#: src/gui/widgets/greeter.c:715
+#: src/gui/widgets/greeter.c:755
 #, fuzzy
 msgid "Preferred language"
 msgstr "プリフェーダーバランス"
 
-#: src/gui/widgets/greeter.c:727
+#: src/gui/widgets/greeter.c:767
 msgid "User path"
 msgstr "ユーザーパス"
 
-#: src/gui/widgets/greeter.c:728
+#: src/gui/widgets/greeter.c:768
 msgid "Location to save user files"
 msgstr "ユーザーファイルの保存場所"
 
-#: src/gui/widgets/greeter.c:730
+#: src/gui/widgets/greeter.c:770
 msgid "Select a directory"
 msgstr "ディレクトリを選択"
 
-#: src/gui/widgets/greeter.c:745
+#: src/gui/widgets/greeter.c:785
 #, c-format
 msgid ""
 "You can create your own templates by copying a project directory under "
 "“templates” in the <a href=\"%s\">Zrythm user path</a>."
 msgstr ""
 
-#: src/gui/widgets/greeter.c:794
+#: src/gui/widgets/greeter.c:834
 msgid "Select parent directory to save the project in"
 msgstr "プロジェクトを保存する親ディレクトリを選択してください"
 
@@ -5144,7 +5134,7 @@ msgstr "ダイレクトアウト"
 msgid "Track Properties"
 msgstr "トラックの属性"
 
-#: src/gui/widgets/channel.c:623
+#: src/gui/widgets/channel.c:596
 #: src/gui/widgets/popovers/automatable_selector_popover.c:346
 msgid "Track"
 msgstr "トラック"
@@ -8153,253 +8143,230 @@ msgid "DAW"
 msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Implement ctrl-drag to move the loop range in the timeline (#4815)"
+msgid "Add context menu to import files (#4751)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Print libadwaita/libpanel versions in debug info"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 #, fuzzy
 msgid "Changed:"
 msgstr "変更する"
 
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid ""
+"Don't rescan hardware ports periodically (instead do it when the engine gets "
+"paused on user actions)"
+msgstr ""
+
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
-msgid "Remove unneeded `volatile` keywords from some variables"
+msgid ""
+"Port chord selector dialog to AdwDialog and hide tabs with unimplemented "
+"functionality (#5071)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-msgid "Monitor section tab: use speaker icon from GNOME icon library"
+msgid "Update Portuguese (Brazil), Turkish, Spanish translations"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Update various sections in the user manual"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Hide Scenes tab in the main panel"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid ""
+"Added a temporary workaround to VST3 plugins not accepting all notes off "
+"(#5062)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid ""
+"Fix not being able to select RtAudio device ports in preferences (#5033)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid ""
+"Fix `is_midi` flag not being copied when cloning hardware ports (may fix "
+"issue with MIDI controllers not working)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid "Re-enable search in the preferences"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid "Fix being unable to delete MIDI CC bindings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+msgid "Implement ctrl-drag to move the loop range in the timeline (#4815)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Print libadwaita/libpanel versions in debug info"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+msgid "Remove unneeded `volatile` keywords from some variables"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+msgid "Monitor section tab: use speaker icon from GNOME icon library"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid ""
 "Stretch objects with Ctrl modifier instead of having a separate stretch mode "
 "(#5036)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
 msgid "Change modulator icon to a knob (#5073)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 msgid "Don't allow resizing if the hovered object is too narrow (#5070)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid ""
 "Update Russian, Interlingua, Catalan, Afrikaans, Finnish, Turkish, Polish, "
 "Chinese (Simplified), Japanese translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid ""
 "Change how object resizing works: revert original object(s) on undo (fixes "
 "undoing audio stretching not reverting the original audio, #4955)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Bump required libadwaita/gtk versions to latest stable releases"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Revert to previous fader style (#5054)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track inputs switching to wrong input in the inspector after selecting a "
 "different track"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Fix some issues reported by ASAN"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 #, fuzzy
 msgid "Fix memory leak when loading project files"
 msgstr "プラグインをインスタンス化する際は、常にプラグイン UI を表示する"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix home VST2 path being used when scanning DSSI plugins (#5058)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
 #, fuzzy
 msgid "Removed:"
 msgstr "削除"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Hide MIDI modifier chooser (out of scope for v1, #5053)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Build: Add flatpak manifest for building in GNOME Builder"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid "Source: Add editor config file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Add more relevant categories in desktop file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Auto-scroll when dragging towards edges of the ruler (#5043)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid "Show fade in/out line indicator in audio regions in timeline on hover"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid "Replace most cursors used in arrangers (#5029)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Update Interlingua, Catalan translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
 msgid "Build: set gettext package name and version"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid "Fix diminuendo (crescendo MIDI function with downward slope) (#4999)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix wrong icon name in desktop file"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid ""
 "Fix automation points for non-float parameters being drawn at wrong "
 "positions (#4177)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Fix missing `document-edit` icon"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Fix incorrectly allowing audio region fade in/out to crossfade (#4975)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid "Remove styling of panel resize separators (#5046)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid "Redesign plugin info label"
-msgstr ""
+#~ msgid "Change color..."
+#~ msgstr "色を変更する..."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid ""
-"Build: port UI files to blueprint format and generate UI files via blueprint-"
-"compiler"
-msgstr ""
+#~ msgid "Unsolo"
+#~ msgstr "ソロを解除"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid "Redesign channel views in the mixer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 #, fuzzy
-msgid "Update some icons"
-msgstr "アイコンを変更する"
+#~ msgid "Update some icons"
+#~ msgstr "アイコンを変更する"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
-msgid "Redesign faders"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
-msgid "Link transport control buttons together"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-msgid "Drop borders from meters and change color gradient"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
-msgid "Unit tests: require less RAM"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
-msgid "Port various dialogs to AdwDialog"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
-msgid "Bump libadwaita requirement to &gt;= 1.5"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
-msgid "Use raised top bar style for main window (#5023)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
-msgid ""
-"CSS theme: Specify named colors `@window_bg_color` and `@dialog_bg_color` "
-"instead of coloring specific widget backgrounds"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid "Debugging: don't set signal handlers when running from valgrind"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Update Chinese (Simplified), Japanese, Hindi, Catalan translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
-msgid "Install Zrythm icon as org.zrythm.Zrythm.svg instead of zrythm.svg"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
-msgid ""
-"User manual: document `--audio-backend` and `--midi-backend` CLI options"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid ""
-"Fix error when sending a bug report for a project with many actions on the "
-"undo stack (#5016)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Fix spectrum analyzer not rendering correctly with ngl renderer (#5008)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 #, fuzzy
-msgid ""
-"Fix cancel button when exporting stems only cancelling export for the "
-"current stem"
-msgstr "オーディオエディター内で右クリックすると発生するエラーの修正"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
-msgid ""
-"Fix device selection dropdown crashing in preferences when opened from the "
-"greeter"
-msgstr ""
+#~ msgid ""
+#~ "Fix cancel button when exporting stems only cancelling export for the "
+#~ "current stem"
+#~ msgstr "オーディオエディター内で右クリックすると発生するエラーの修正"
 
 #~ msgid "Device"
 #~ msgstr "デバイス"

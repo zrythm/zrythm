@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-12 07:18+0900\n"
+"POT-Creation-Date: 2024-04-16 17:40+0900\n"
 "PO-Revision-Date: 2023-10-06 20:45+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language: ko\n"
@@ -230,9 +230,9 @@ msgid ""
 "Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
 "plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
-"ref:`bridge mode <plugins-files/plugins/plugin-window:Opening Plugins in "
-"Bridged Mode>` to use and whether to use a :ref:`generic UI <plugins-files/"
-"plugins/plugin-window:Generic UIs>`."
+"ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use and "
+"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
+"Generic UIs>`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:103
@@ -277,12 +277,8 @@ msgstr "메뉴 작업"
 msgid "Troubleshooting"
 msgstr "문제 해결"
 
-#: ../../appendix/troubleshooting.rst:11
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/piano-roll.rst:149
-#: ../../exporting/audio-and-midi.rst:39
-#: ../../plugins-files/audio-midi-files/file-browser.rst:70
-#: ../../tracks/inspector-page.rst:158 ../../tracks/overview.rst:71
+#: ../../appendix/troubleshooting.rst:11 ../../editing/automation-editor.rst:42
+#: ../../editing/editor-toolbars.rst:256 ../../exporting/audio-and-midi.rst:39
 #: ../../zrythm-interface/right-panel.rst:24
 msgid "Todo"
 msgstr "할 것"
@@ -295,13 +291,11 @@ msgstr "이 페이지를 작성하세요."
 msgid "Chord Pad"
 msgstr "화음 패드"
 
-#: ../../chords-and-scales/chord-pad.rst:10
-#: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
-#: ../../editing/timeline/overview.rst:7
+#: ../../chords-and-scales/chord-pad.rst:10 ../../editing/timeline.rst:10
 #: ../../playback-and-recording/overview.rst:7
 #: ../../plugins-files/audio-midi-files/overview.rst:7
 #: ../../scripting/overview.rst:7 ../../tracks/overview.rst:7
-#: ../../zrythm-interface/overview.rst:7
+#: ../../tracks/tracklist.rst:10 ../../zrythm-interface/overview.rst:7
 msgid "Overview"
 msgstr "개요"
 
@@ -314,16 +308,17 @@ msgstr ""
 "각 건반에 대해 1개)가 있습니다. 코드 패드는 하단 패널에서 찾을 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:19
+#, fuzzy
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
-"clip-editors/chord-editor:Chord Editor>`."
+"chord-editor:Chord Editor>`."
 msgstr ""
 "이 12개의 코드는 :ref:`코드 편집기 <editing/clip-editors/chord-editor:Chord "
 "Editor>`의 코드에 연결됩니다."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:85
-#: ../../plugins-files/audio-midi-files/file-browser.rst:68
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
 msgstr "사전 설정"
 
@@ -353,7 +348,7 @@ msgid "Chord preset browser"
 msgstr "코드 사전 설정 탐색기"
 
 #: ../../chords-and-scales/chord-pad.rst:42
-#: ../../plugins-files/audio-midi-files/file-browser.rst:48
+#: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
 msgstr "필터링"
 
@@ -366,7 +361,7 @@ msgstr ""
 "터링됩니다."
 
 #: ../../chords-and-scales/chord-pad.rst:48
-#: ../../plugins-files/audio-midi-files/file-browser.rst:87
+#: ../../plugins-files/audio-midi-files/file-browser.rst:75
 msgid "Auditioning"
 msgstr "오디션"
 
@@ -583,6 +578,7 @@ msgid "Scale highlighting"
 msgstr "스케일 강조하기"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:40
+#: ../../editing/editor-toolbars.rst:216
 msgid "Scale and chord highlighting"
 msgstr "스케일 및 코드 강조하기"
 
@@ -694,7 +690,7 @@ msgid "Configuration"
 msgstr ""
 
 #: ../../configuration/preferences.rst:11
-#: ../../plugins-files/audio-midi-files/file-browser.rst:117
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Preferences"
 msgstr ""
@@ -745,6 +741,7 @@ msgstr ""
 "일부 설정의 유효성을 검사하므로 편집하지 않는 것이 좋습니다."
 
 #: ../../configuration/preferences.rst:42
+#: ../../plugins-files/audio-midi-files/file-browser.rst:70
 msgid "Searching"
 msgstr ""
 
@@ -1474,823 +1471,211 @@ msgstr ""
 msgid "Other Contributors"
 msgstr "다른 기여자"
 
-#: ../../editing/clip-editors/audio-editor.rst:9
-#: ../../editing/clip-editors/toolbar.rst:54
+#: ../../editing/audio-editor.rst:9
 msgid "Audio Editor"
 msgstr "오디오 편집기"
 
-#: ../../editing/clip-editors/audio-editor.rst:10
+#: ../../editing/audio-editor.rst:10
 msgid "The audio editor is displayed when an audio region is selected."
 msgstr "오디오 영역을 선택하면 오디오 편집기가 표시됩니다."
 
-#: ../../editing/clip-editors/audio-editor.rst:16
+#: ../../editing/audio-editor.rst:16
 #, fuzzy
 msgid "Audio editor"
 msgstr "오디오 편집기"
 
-#: ../../editing/clip-editors/audio-editor.rst:19
-msgid "Audio Arranger"
-msgstr "오디오 편곡기"
-
-#: ../../editing/clip-editors/audio-editor.rst:20
-msgid "The audio arranger refers to the arranger section of the audio editor."
-msgstr "오디오 편곡기는 오디오 편집기의 편곡기 섹션을 나타냅니다."
-
-#: ../../editing/clip-editors/audio-editor.rst:26
-#, fuzzy
-msgid "Audio arranger"
-msgstr "오디오 편곡기"
-
-#: ../../editing/clip-editors/audio-editor.rst:28
-msgid "The arranger shows the following indicators and controls."
+#: ../../editing/audio-editor.rst:18
+msgid "The arranger displays the following:"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:31
+#: ../../editing/audio-editor.rst:20
 msgid "Waveform"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:32
+#: ../../editing/audio-editor.rst:21
 msgid "Fades"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:33
+#: ../../editing/audio-editor.rst:22
 msgid "Amplitude line"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:34
+#: ../../editing/audio-editor.rst:23
 #, fuzzy
 msgid "Part selection"
 msgstr "번역"
 
-#: ../../editing/clip-editors/audio-editor.rst:37
+#: ../../editing/audio-editor.rst:26
 msgid "Changing the Amplitude"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:39
+#: ../../editing/audio-editor.rst:28
 msgid ""
 "The amplitude of the clip can be changed by clicking and dragging the orange "
 "horizontal line up or down."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:43
+#: ../../editing/audio-editor.rst:32
 msgid "Changing Fades"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:45
+#: ../../editing/audio-editor.rst:34
 msgid ""
 "Fade in/out positions can be changed by clicking and dragging near the top "
 "where the fade in ends or where the fade out starts."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:49
+#: ../../editing/audio-editor.rst:38
 msgid "The cursor will change to a resize left/right cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:52
+#: ../../editing/audio-editor.rst:41
 msgid ""
 "Fade curviness can be changed by clicking and dragging the body of fades "
 "upwards or downwards."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:55
+#: ../../editing/audio-editor.rst:44
 msgid "The cursor will change to a resize up cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:59
+#: ../../editing/audio-editor.rst:48
 msgid "Selecting Parts"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:61
+#: ../../editing/audio-editor.rst:50
 msgid ""
 "Audio parts can be selected by clicking and dragging in the bottom half of "
 "the arranger."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:64
+#: ../../editing/audio-editor.rst:53
 msgid "The cursor will change to a range selection cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:68
-msgid "Audio Functions"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:70
-msgid ""
-"Audio functions are logic that can be applied to transform the selected "
-"audio part."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:73
-#: ../../editing/clip-editors/automation-editor.rst:64
-#: ../../editing/clip-editors/piano-roll.rst:124
-msgid "The following functions are available."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:75
-msgid "Invert"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:76
-msgid "Invert the polarity of the audio."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:77
-msgid "Normalize Peak"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:78
-msgid "Normalize the audio so that its peak is 0dB."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:79
-msgid "Linear Fade In"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:80
-msgid "Fade the audio from silence to full amplitude."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:81
-msgid "Linear Fade Out"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:82
-msgid "Fade the audio from full amplitude to silence."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:83
-msgid "Nudge"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:84
-msgid "Shift the audio by 1 sample backward or forward."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:85
-msgid "Reverse"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:86
-msgid "Reverse the audio (play back backwards)."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:111
-msgid "External Program"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:88
-msgid ""
-"Run an external program (such as `Audacity <https://www.audacityteam.org/"
-">`_) to edit the audio."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:95
-msgid "Edit the selected audio in an external app"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:97
-msgid ""
-"The selected program will be run with the path to a temporary file as an "
-"argument. Normally, the application will open that file, otherwise you will "
-"have to open it manually."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:102
-msgid "You can select and copy the path in the dialog."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:105
-msgid ""
-"Once you've made your changes to the file, close the external app and press "
-"OK. Zrythm will then apply your changes to the selected audio part."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:109
-msgid ""
-"The length of the audio must stay exactly the same, otherwise this operation "
-"will fail."
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:115
-msgid "Guile Script"
-msgstr ""
-
-#: ../../editing/clip-editors/audio-editor.rst:114
-msgid "Not available yet."
-msgstr ""
-
-#: ../../editing/clip-editors/automation-editor.rst:9
-#: ../../editing/clip-editors/toolbar.rst:46
+#: ../../editing/automation-editor.rst:9
 msgid "Automation Editor"
 msgstr "자동화 편집기"
 
-#: ../../editing/clip-editors/automation-editor.rst:10
+#: ../../editing/automation-editor.rst:10
 msgid ""
 "The automation editor is displayed when an automation region is selected."
 msgstr "자동화 영역을 선택하면 자동화 편집기가 표시됩니다."
 
-#: ../../editing/clip-editors/automation-editor.rst:16
+#: ../../editing/automation-editor.rst:16
 #, fuzzy
 msgid "Automation editor"
 msgstr "자동화 편집기"
 
-#: ../../editing/clip-editors/automation-editor.rst:19
-msgid "Automation Arranger"
-msgstr "자동화 편곡기"
-
-#: ../../editing/clip-editors/automation-editor.rst:20
-msgid ""
-"The automation arranger refers to the arranger section of the automation "
-"editor."
-msgstr "자동화 편곡기는 자동화 편집기의 편곡기 섹션을 말합니다."
-
-#: ../../editing/clip-editors/automation-editor.rst:26
-#, fuzzy
-msgid "Automation arranger"
-msgstr "자동화 편곡기"
-
-#: ../../editing/clip-editors/automation-editor.rst:28
+#: ../../editing/automation-editor.rst:18
 msgid ""
 "The automation arranger contains automation points drawn as circles and "
 "curves connecting them. During playback, Zrythm will interpolate the value "
 "of the control being automated based on the curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:33
-msgid ""
-"Editing inside the automation arranger generally follows :ref:`edit-tools` "
-"and :ref:`common-operations`, with the added feature that curves can be "
-"dragged up or down to change their `curviness`."
+#: ../../editing/automation-editor.rst:23
+msgid "Curves can be dragged up or down to change their `curviness`."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:42
+#: ../../editing/automation-editor.rst:28
 msgid "Curves"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:43
+#: ../../editing/automation-editor.rst:29
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. The "
 "following curve algorithms are available."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:46
+#: ../../editing/automation-editor.rst:32
 msgid "Exponent"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:47
+#: ../../editing/automation-editor.rst:33
 msgid "Exponential curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:48
+#: ../../editing/automation-editor.rst:34
 msgid "Superellipse"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/automation-editor.rst:35
 msgid "Elliptical curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:51
-#: ../../editing/timeline/arranger.rst:277
+#: ../../editing/automation-editor.rst:37 ../../editing/timeline.rst:310
 msgid "Vital"
 msgstr "바이탈"
 
-#: ../../editing/clip-editors/automation-editor.rst:51
+#: ../../editing/automation-editor.rst:37
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:54
+#: ../../editing/automation-editor.rst:40
 msgid "Pulse"
 msgstr "파동"
 
-#: ../../editing/clip-editors/automation-editor.rst:54
+#: ../../editing/automation-editor.rst:40
 msgid "Pulse wave."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:56
+#: ../../editing/automation-editor.rst:42
 msgid "Create table with illustrations."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:59
-#, fuzzy
-msgid "Automation Functions"
-msgstr "자동화 편집기"
-
-#: ../../editing/clip-editors/automation-editor.rst:61
-msgid ""
-"Automation functions are logic that can be applied to transform the selected "
-"automation points/curves."
-msgstr ""
-
-#: ../../editing/clip-editors/automation-editor.rst:69
-#: ../../editing/clip-editors/piano-roll.rst:134
-msgid "Flip"
-msgstr "뒤집기"
-
-#: ../../editing/clip-editors/automation-editor.rst:67
-msgid "Reverse/flip the selected automation horizontally or vertically."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:9
-#: ../../editing/clip-editors/toolbar.rst:62
+#: ../../editing/chord-editor.rst:9
 msgid "Chord Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:10
+#: ../../editing/chord-editor.rst:10
 msgid "The chord editor is displayed when a chord region is selected."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:16
+#: ../../editing/chord-editor.rst:16
 msgid "Chord editor"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:18
+#: ../../editing/chord-editor.rst:18
 msgid ""
 "The chord editor has a list of chords on the left side that can be changed, "
-"and an arranger on the right side for creating chord progressions."
+"and an arranger on the right side for creating chord progressions from chord "
+"objects. Chord objects signify the start of a chord (they do not have "
+"length)."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:23
+#: ../../editing/chord-editor.rst:24
 msgid "Chords"
 msgstr "화음"
 
-#: ../../editing/clip-editors/chord-editor.rst:24
+#: ../../editing/chord-editor.rst:25
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:30
+#: ../../editing/chord-editor.rst:31
 msgid "Chords inside the chord editor"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:32
+#: ../../editing/chord-editor.rst:33
 msgid ""
 "These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
 "scales/chord-pad:Chord Pad>`."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:35
+#: ../../editing/chord-editor.rst:36
 msgid "The controls available are similar to those in the chord pad."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:39
-msgid "Chord Arranger"
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:40
-msgid "The chord arranger refers to the arranger section of the chord editor."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:46
-#, fuzzy
-msgid "Chord arranger"
-msgstr "오디오 편곡기"
-
-#: ../../editing/clip-editors/chord-editor.rst:48
-msgid ""
-"The chord editor contains `chord objects` that signify the start of a chord."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:51
-msgid "Chord objects do not have a length."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:53
-msgid ""
-"Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
-"operations`."
-msgstr ""
-
-#: ../../editing/clip-editors/intro.rst:9
-msgid "Editors"
-msgstr ""
-
-#: ../../editing/clip-editors/overview.rst:8
-msgid ""
-"When regions are selected in the timeline, their contents will be shown "
-"inside the Editor tab in the :ref:`bottom-panel`. Although there are some "
-"common elements shared amongst each type of editor, the editor section will "
-"differ depending on the type of region selected."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:9
-#: ../../editing/clip-editors/toolbar.rst:30
-msgid "Piano Roll"
-msgstr "피아노 롤"
-
-#: ../../editing/clip-editors/piano-roll.rst:11
-#, fuzzy
-msgid ""
-"The piano roll is the main editor for editing MIDI regions, and is displayed "
-"when a MIDI region is selected."
-msgstr "자동화 영역을 선택하면 자동화 편집기가 표시됩니다."
-
-#: ../../editing/clip-editors/piano-roll.rst:18
-msgid "Piano roll"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:21
-msgid "Additional Controls"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:22
-msgid "The piano roll contains the following additional controls."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:28
-msgid "Piano roll controls"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:39
-msgid "Drum View"
-msgstr "드럼 보기"
-
-#: ../../editing/clip-editors/piano-roll.rst:31
-msgid ""
-"Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
-"drawn as a diamond and the piano roll keys display the name of each drum."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:39
-msgid "Drum mode"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:43
-msgid "Listen to notes"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:42
-msgid "Play back each note as you drag it inside the piano roll."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:48
-msgid "Piano Roll Keys"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:49
-msgid "These are the keys corresponding to each key found on a piano."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:55
-msgid "Piano roll keys"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:57
-msgid ""
-"Clicking on each key allows you to listen to it, much like pressing a key on "
-"a real piano."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:60
-msgid ""
-"A label for each key is shown on the left side of the black/white keys, in "
-"addition to any highlighting (if selected). See :ref:`chord-highlighting` "
-"for more information."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:65
-msgid ""
-"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
-"`Shift` and scrolling."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:70
-msgid "MIDI Arranger"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:71
-msgid "The MIDI arranger refers to the arranger section of the piano roll."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:77
-msgid "MIDI arranger with notes"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:79
-msgid ""
-"The MIDI arranger contains MIDI notes drawn as rectangles from their start "
-"position to their end position. Zrythm will send a MIDI note on signal when "
-"the start position of a note is reached, and a note off signal when the end "
-"position of a note is reached."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:85
-msgid ""
-"Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
-"`common-operations`."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:89
-msgid "Velocity Editor"
-msgstr "속도 편집기"
-
-#: ../../editing/clip-editors/piano-roll.rst:90
-msgid ""
-"There is another arranger at the bottom of the MIDI arranger for editing the "
-"velocity of each note."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:96
-msgid ""
-"Velocity refers to the force with which a note is played. Each instrument "
-"handles various velocities for the same note differently, but generally a "
-"higher velocity will result in a louder or `stronger` note. Velocities are "
-"useful for adding expression to melodies."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:102
-msgid ""
-"The velocity of each note is drawn as a bar, where higher means a larger "
-"value. Clicking and dragging the tip of each velocity bar allows you to "
-"change it."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:106
-msgid ""
-"You can also edit multiple velocities at once by selecting multiple MIDI "
-"notes before editing a velocity bar."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:110
-msgid ""
-"The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
-"velocities."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:116
-msgid "Using the ramp tool on MIDI note velocities"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:119
-msgid "MIDI Functions"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:121
-msgid ""
-"MIDI functions are logic that can be applied to transform the selected MIDI "
-"notes."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:127
-msgid "Crescendo"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:127
-msgid ""
-"Gradually increase the velocities of the selected notes from low to high. "
-"Used to create a climax."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:131
-msgid "Flam"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:130
-msgid ""
-"Create additional MIDI notes right after the start position of each selected "
-"note. This is usually used on snares."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:134
-msgid "Reverse/flip the selected notes horizontally or vertically."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:137
-msgid "Legato"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:137
-msgid "Connect all selected notes so that they play smoothly."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:140
-msgid "Portato"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:140
-msgid "Similar to legato, but leaves some space between the notes."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:142
-msgid "Staccato"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:143
-msgid "Make the selected notes short and punctuated."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:147
-msgid "Strum Up/Down"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:145
-msgid ""
-"Shift the position and velocity of notes that start at the same position "
-"(chords) to simulate strumming, like when playing guitar."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:149
-msgid "Add illustrations."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:151
-msgid "Some of these are not implemented yet."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:153
-msgid ""
-"In the future, it will be possible to implement custom functions using user "
-"scripts."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:9
-msgid "Editor Ruler"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:10
-msgid ""
-"The editor ruler is similar to the timeline ruler explained in :ref:"
-"`timeline-ruler`, with some differences."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:17
-msgid "Editor ruler"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:19
-msgid ""
-"The ruler will display more or less information depending on the current "
-"zoom level. It will also display the following markers and indicators."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:24
-#: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:55
-msgid "Markers"
-msgstr "표시"
-
-#: ../../editing/clip-editors/ruler.rst:28
-msgid "Clip Start"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:27
-msgid ""
-"Controls the position where the clip will start playback from. Displayed as "
-"a blue, right-pointing arrow."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:31
-#: ../../playback-and-recording/overview.rst:13
-msgid "Playhead"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:31
-msgid ""
-"Current position of the playhead. Displayed as a grey, down-facing arrow."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../playback-and-recording/loop-points-and-markers.rst:12
-msgid "Loop Points"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:34
-msgid ""
-"These control the range where the clip will loop after it reaches the loop "
-"end point. Displayed as 2 green arrows."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:38
-msgid "You can move these markers by clicking and dragging."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:40
-msgid ""
-"Clicking and dragging on empty space will allow you to reposition the "
-"playhead."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:44
-#: ../../editing/timeline/arranger.rst:33
-msgid "Regions"
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:46
-msgid ""
-"All regions in the same track as the active region will be shown inside the "
-"ruler. The active region will be displayed in a more prominent color."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:53
-msgid "Regions in the editor ruler"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:9
-msgid "Editor Toolbar"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:10
-msgid ""
-"The editor toolbar contains controls and buttons for actions specific to the "
-"current editor."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:16
-msgid "Piano roll toolbar"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:19
-msgid "Common sections"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:21
-msgid "All editor toolbars include the following sections."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:23
-#: ../../editing/timeline/toolbar.rst:19
-msgid ""
-":ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid "
-"Options>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:24
-#: ../../editing/timeline/toolbar.rst:20
-msgid ":ref:`Quantization options <editing/quantization:Quantization>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:25
-#: ../../editing/timeline/toolbar.rst:23
-msgid ""
-":ref:`Playhead tracking options <editing/common-operations:Playhead "
-"Tracking>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:26
-#: ../../editing/timeline/toolbar.rst:25
-msgid ":ref:`Zoom options <editing/common-operations:Zooming>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:27
-#: ../../editing/timeline/toolbar.rst:26
-msgid ":ref:`Event viewer options <editing/event-viewers:Event Viewers>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:32
-msgid "The piano roll toolbar includes the following additional sections."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:35
-msgid ""
-":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
-"Highlighting>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:36
-msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:37
-msgid "Default velocity options"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:40
-msgid "Default Velocity"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:42
-msgid "This is the velocity that will be used when creating new MIDI notes."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:48
-msgid ""
-"The automation editor toolbar includes the following additional sections."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:51
-msgid ""
-":ref:`Automation functions <editing/clip-editors/automation-editor:"
-"Automation Functions>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:56
-msgid "The audio editor toolbar includes the following additional sections."
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:59
-msgid ""
-":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
-msgstr ""
-
-#: ../../editing/clip-editors/toolbar.rst:64
-msgid "`The chord editor toolbar includes no additional sections.`"
-msgstr ""
-
-#: ../../editing/common-operations.rst:9
+#: ../../editing/common-operations.rst:7
 msgid "Common Operations"
 msgstr ""
 
-#: ../../editing/common-operations.rst:11
-msgid "These operations are common to most editors."
+#: ../../editing/common-operations.rst:9
+msgid ""
+"Editing refers to any work done in the timeline arranger and the editors. "
+"The following operations are common to most editors."
 msgstr ""
 
 #: ../../editing/common-operations.rst:14
@@ -2300,17 +1685,18 @@ msgstr ""
 #: ../../editing/common-operations.rst:15
 msgid ""
 "Most actions in Zrythm are undoable, which means that you can go back to the "
-"state before that action was made, or you can come back to a state that you "
-"undo'ed from."
+"state before that action was made, or you can come back to a state that "
+"you've undone from."
 msgstr ""
 
 #: ../../editing/common-operations.rst:20
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will be "
 "deleted (Zrythm goes back into the state where the MIDI note did not exist). "
-"Pressing the :guilabel:`Redo` button will create the note again, and you can "
-"go back between :guilabel:`Undo` and :guilabel:`Redo` as many times as you "
-"want."
+"Pressing the :guilabel:`Redo` button in the :ref:`main toolbar <zrythm-"
+"interface/main-toolbar:Main Toolbar>` will create the note again, and you "
+"can go back between :guilabel:`Undo` and :guilabel:`Redo` as many times as "
+"you want."
 msgstr ""
 
 #: ../../editing/common-operations.rst:28
@@ -2331,310 +1717,367 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:40
 msgid ""
-"If you Undo and then perform a new action, the Redo history will be deleted."
+"If you undo and then perform a new action, the :guilabel:`Redo` history will "
+"be cleared."
 msgstr ""
 
-#: ../../editing/common-operations.rst:44
+#: ../../editing/common-operations.rst:43
 msgid "Object Operations"
 msgstr ""
 
-#: ../../editing/common-operations.rst:46
+#: ../../editing/common-operations.rst:45
+msgid ""
+"The following operations are generally available in each editor toolbar and/"
+"or in context menus. Some operations (like panning) are only possible via "
+"mouse and keyboard input. We recommend learning and using the shortcuts and "
+"gestures for better productivity."
+msgstr ""
+
+#: ../../editing/common-operations.rst:50
 msgid "Cut"
 msgstr "잘라내기"
 
-#: ../../editing/common-operations.rst:47
+#: ../../editing/common-operations.rst:51
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so that "
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:53
+#: ../../editing/common-operations.rst:57
 msgid "Copy"
 msgstr "복사"
 
-#: ../../editing/common-operations.rst:54
+#: ../../editing/common-operations.rst:58
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :kbd:`Control-c`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:60
+#: ../../editing/common-operations.rst:64
 msgid "Paste"
 msgstr "붙여넣기"
 
-#: ../../editing/common-operations.rst:61
+#: ../../editing/common-operations.rst:65
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :kbd:`Control-v`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:67
+#: ../../editing/common-operations.rst:71 ../../tracks/track-operations.rst:74
 msgid "Duplicate"
 msgstr "복제하기"
 
-#: ../../editing/common-operations.rst:68
+#: ../../editing/common-operations.rst:72
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :kbd:`Control-d`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:75
+#: ../../editing/common-operations.rst:79
 msgid "Duplicating a region"
 msgstr ""
 
-#: ../../editing/common-operations.rst:78
+#: ../../editing/common-operations.rst:82 ../../tracks/track-operations.rst:72
 msgid "Delete"
 msgstr ""
 
-#: ../../editing/common-operations.rst:79
-msgid "Delete the selected objects. You can also press :kbd:`Delete`."
-msgstr ""
-
-#: ../../editing/common-operations.rst:84
-msgid "Selections"
-msgstr ""
-
-#: ../../editing/common-operations.rst:86
-msgid "Clear Selection"
+#: ../../editing/common-operations.rst:83
+msgid ""
+"Delete the selected objects. The shortcut for deleting is :kbd:`Delete`."
 msgstr ""
 
 #: ../../editing/common-operations.rst:87
-msgid "Clear current selection (unselect all objects)."
+msgid "Selections"
+msgstr ""
+
+#: ../../editing/common-operations.rst:89
+msgid "Clear Selection"
 msgstr ""
 
 #: ../../editing/common-operations.rst:90
+msgid "Clear current selection (unselect all objects)."
+msgstr ""
+
+#: ../../editing/common-operations.rst:93
 msgid "Select All"
 msgstr ""
 
-#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:94
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:95
+#: ../../editing/common-operations.rst:98
 msgid "Loop Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:96
+#: ../../editing/common-operations.rst:99
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:100
+#: ../../editing/common-operations.rst:103
+#: ../../editing/editor-toolbars.rst:116
 msgid "Zooming"
 msgstr ""
 
-#: ../../editing/common-operations.rst:102
+#: ../../editing/common-operations.rst:105
 msgid ""
-"The timeline arranger and each arranger in the editor include zooming "
-"functionality that can also be accessed from their corresponding toolbars."
+"The timeline arranger and each arranger in the editor include horizontal "
+"(and sometimes vertical) zooming functionality."
 msgstr ""
 
-#: ../../editing/common-operations.rst:109
-msgid "Zoom buttons"
-msgstr ""
-
-#: ../../editing/common-operations.rst:111
-msgid "Zoom In"
-msgstr ""
-
-#: ../../editing/common-operations.rst:112
-msgid "Zoom in at the location of the playhead"
+#: ../../editing/common-operations.rst:108
+msgid ""
+"Zooming in/out horizontally can be conveniently performed by moving the "
+"cursor to the desired location and holding down :kbd:`Control` while "
+"scrolling up with a mouse wheel to zoom in or scrolling down to zoom out."
 msgstr ""
 
 #: ../../editing/common-operations.rst:113
-msgid "Zoom Out"
+msgid ""
+"Holding down :kbd:`Control-Shift` while scrolling will zoom in/out "
+"vertically instead (in editors that support vertical zooming)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:114
-msgid "Zoom out"
-msgstr ""
-
-#: ../../editing/common-operations.rst:115
-msgid "Original Size"
-msgstr ""
-
-#: ../../editing/common-operations.rst:116
-msgid "Zoom back to the default zoom level"
+#: ../../editing/common-operations.rst:117 ../../glossary/intro.rst:118
+msgid "Panning"
 msgstr ""
 
 #: ../../editing/common-operations.rst:119
-msgid "Best Fit"
+msgid ""
+"Pressing and holding :kbd:`Alt`, then clicking and dragging in an editor (or "
+"ruler) allows panning (moving) the view based on the location initially "
+"clicked. Panning is also possible by clicking and dragging using the middle "
+"button on a mouse/pointer device (without using the :kbd:`Alt` button)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:118
+#: ../../editing/common-operations.rst:123
 msgid ""
-"Zoom in or out as much as required to show all of the events in the arranger"
+"Zrythm also supports two-finger scroll on mousepads (like on laptops) to pan "
+"views."
 msgstr ""
 
-#: ../../editing/common-operations.rst:121
-msgid ""
-"Zooming in/out can also be conveniently performed by moving the cursor to "
-"the desired location and holding down :kbd:`Control` while scrolling up with "
-"the mouse wheel to zoom in or scrolling down to zoom out."
+#: ../../editing/common-operations.rst:126
+msgid "Common Key Modifiers and Shortcuts"
 msgstr ""
 
 #: ../../editing/common-operations.rst:128
-msgid "Playhead Tracking"
-msgstr ""
-
-#: ../../editing/common-operations.rst:130
 msgid ""
-"Zrythm includes functionality for forcing the playhead to remain inside the "
-"visibile area during playback."
+"Generally, :kbd:`Shift` is used to bypass snapping, and :kbd:`Escape` will "
+"cancel a currently in-progress action."
 msgstr ""
 
-#: ../../editing/common-operations.rst:137
-msgid ""
-"Toggles for controlling playhead tracking, found in each arranger toolbar"
-msgstr ""
-
-#: ../../editing/common-operations.rst:141
-msgid "Scroll when Playhead Reaches Edge"
-msgstr ""
-
-#: ../../editing/common-operations.rst:141
-msgid ""
-"Automatically  scroll the visible area when the playhead moves outside it"
-msgstr ""
-
-#: ../../editing/common-operations.rst:146
-msgid "Follow Playhead"
-msgstr ""
-
-#: ../../editing/common-operations.rst:144
-msgid "Keep the visible area centered at the position of the playhead"
-msgstr ""
-
-#: ../../editing/edit-tools.rst:9
+#: ../../editing/edit-tools.rst:7
 msgid "Edit Tools"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:11
+#: ../../editing/edit-tools.rst:9
 msgid ""
 "When working in each editor or arranger, you will most likely be using the "
 "cursor tools provided by Zrythm to create, edit and delete objects. Each "
 "cursor signifies a separate tool, and Zrythm offers the following tools."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:21
-msgid "Select/Stretch Tool"
-msgstr "선택/늘이기 도구"
+#: ../../editing/edit-tools.rst:19
+#, fuzzy
+msgid "Select Tool"
+msgstr "자르기 도구"
 
-#: ../../editing/edit-tools.rst:22
-msgid "This can be toggled to switch between Select and Stretch."
-msgstr ""
-
-#: ../../editing/edit-tools.rst:25
+#: ../../editing/edit-tools.rst:20
 msgid ""
-"In Select mode, you can make object selections and create, move, clone and "
+"In *select* mode, you can make object selections and create, move, clone and "
 "resize objects. This is the most common mode and the most common operations "
 "can be accomplished by just using this."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:30
-msgid ""
-"Stretch mode is similar to the Select mode, with the exception that when you "
-"resize objects, their contents will be stretched to fit the new size."
-msgstr ""
-
-#: ../../editing/edit-tools.rst:35
+#: ../../editing/edit-tools.rst:26
 msgid "Creating Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:36
+#: ../../editing/edit-tools.rst:27
 msgid ""
 "Using the select (default) tool, all objects are created by double clicking "
 "inside their corresponding arranger and dragging, then releasing when you "
 "are satisfied with the position/size."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:44
+#: ../../editing/edit-tools.rst:35
 msgid "Creating a region"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:47
+#: ../../editing/edit-tools.rst:38
 msgid "Selecting Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:48
+#: ../../editing/edit-tools.rst:39
 msgid ""
 "To select objects, you can either click on them, click in empty space and "
 "keep dragging to make a selection, or :kbd:`Control`-click to add/remove "
 "objects to/from the selection."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:53
+#: ../../editing/edit-tools.rst:44
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:59
+#: ../../editing/edit-tools.rst:50
 msgid "Selecting objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:62
+#: ../../editing/edit-tools.rst:53
 msgid "Moving Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:63
+#: ../../editing/edit-tools.rst:54
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move regions "
 "to other tracks if the track types are compatible."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:70
+#: ../../editing/edit-tools.rst:61
 msgid "Moving a region"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:73
+#: ../../editing/edit-tools.rst:64
 msgid "Cloning (Copy-Moving) Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:75
+#: ../../editing/edit-tools.rst:66
 msgid ""
 "Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
 "move the objects to the new location."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:82
+#: ../../editing/edit-tools.rst:73
 msgid "Copy-moving a region"
 msgstr ""
 
+#: ../../editing/edit-tools.rst:76
+msgid "Linking (Link-Moving) Objects"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:77
+msgid ""
+"Regions can be linked by holding down :kbd:`Alt` while moving. Changes made "
+"in a linked region will be propagated to all other regions in the same link "
+"group."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:80
+msgid ""
+"This is useful for re-using the exact same regions across a song without "
+"having to re-copy the regions when new changes are made."
+msgstr ""
+
 #: ../../editing/edit-tools.rst:85
+msgid "Link-moving a MIDI region"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:87
+msgid "Linked regions will display a link icon in their top-right edge."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:92
+#, fuzzy
+msgid "Linked regions"
+msgstr "MIDI 영역"
+
+#: ../../editing/edit-tools.rst:95
 msgid "Resizing Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:86
+#: ../../editing/edit-tools.rst:96
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized by "
 "clicking and dragging their edges."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:89
-msgid ""
-"On objects that can be repeated, such as regions, moving the cursor on the "
-"bottom half of the object will allow you to resize the object by repeating "
-"it, instead of just resizing it."
-msgstr ""
-
-#: ../../editing/edit-tools.rst:94
-msgid ""
-"When resizing, already repeated objects can only be repeated. To resize them "
-"instead of repeat them, their length must be changed or their clip markers "
-"must be moved so that they are not repeated anymore."
-msgstr ""
-
 #: ../../editing/edit-tools.rst:102
+#, fuzzy
+msgid "Resizing a region"
+msgstr "MIDI 영역"
+
+#: ../../editing/edit-tools.rst:105
+#, fuzzy
+msgid "Repeating Objects"
+msgstr "버그 신고"
+
+#: ../../editing/edit-tools.rst:107
+msgid ""
+"Regions can be repeated (looped) by moving the cursor on the bottom half of "
+"the object, then clicking and dragging."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:113
+#, fuzzy
+msgid "Repeating a region"
+msgstr "자동화 편집기"
+
+#: ../../editing/edit-tools.rst:115
+msgid ""
+"Regions that are repeated will display dashed lines at points where looping "
+"occurs, and a loop icon in their top right corner."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:121
+#, fuzzy
+msgid "A repeated region"
+msgstr "오디오 그룹"
+
+#: ../../editing/edit-tools.rst:123
+msgid ""
+"The position where the region will initially start playback (the *clip start "
+"position*) and the start/end loop points, can be :ref:`adjusted in the clip "
+"editor <editing/timeline:Editor Ruler Indicators>`."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:125
+msgid ""
+"If the region is already repeated, it cannot be resized anymore until its "
+"loop points match exactly the region's start and end points."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:130
+msgid "Stretching Objects"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:132
+msgid ""
+"To stretch one or more regions, hold :kbd:`Control` while hovering the "
+"cursor at a top edge of a region, then click and drag."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:135
+msgid "Only *non-repeated* objects can be stretched."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:140
 msgid "Cutting Objects"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:103
+#: ../../editing/edit-tools.rst:141
 msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:107
+#: ../../editing/edit-tools.rst:146
+#, fuzzy
+msgid "Cutting a region"
+msgstr "자동화 편집기"
+
+#: ../../editing/edit-tools.rst:149
+msgid "Erasing Objects"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:150
+msgid ""
+"Clicking and holding the right mouse button while hovering over objects in "
+"*select* mode will delete them."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:153
 msgid "Edit Tool"
 msgstr "편집 도구"
 
-#: ../../editing/edit-tools.rst:108
+#: ../../editing/edit-tools.rst:154
 msgid ""
 "This tool is used to quickly create or delete objects. While you can still "
 "create objects using the Select tool by double clicking and dragging, with "
@@ -2642,352 +2085,1011 @@ msgid ""
 "more efficient when creating a large number of objects."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:114
+#: ../../editing/edit-tools.rst:161
+#, fuzzy
+msgid "Brush Mode"
+msgstr "뮤지컬 모드"
+
+#: ../../editing/edit-tools.rst:163
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create multiple "
 "objects in a row (where applicable) with a length specified by the snap "
 "settings corresponding to each editor."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:120
+#: ../../editing/edit-tools.rst:171
+msgid "Bulk-creating MIDI notes"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:174
 msgid "Cut Tool"
 msgstr "자르기 도구"
 
-#: ../../editing/edit-tools.rst:121
+#: ../../editing/edit-tools.rst:175
 msgid ""
 "The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
 "clicking."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:126
+#: ../../editing/edit-tools.rst:180
 msgid "Erase Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:127
+#: ../../editing/edit-tools.rst:181
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or click "
 "and drag to make a selection, deleting all objects inside it."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:134
+#: ../../editing/edit-tools.rst:188
 msgid "Ramp Tool"
 msgstr "램프 도구"
 
-#: ../../editing/edit-tools.rst:135
+#: ../../editing/edit-tools.rst:189
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. You "
 "can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:142
+#: ../../editing/edit-tools.rst:196
 msgid "Using the ramp tool on velocities"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:145
+#: ../../editing/edit-tools.rst:199
 msgid "Audition Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:147
+#: ../../editing/edit-tools.rst:201
 msgid ""
 "The Audition tool is used to listen to specific parts of the song quickly. "
 "After enabling the audition tool, click anywhere to start playback from the "
 "position of the cursor and release the mouse button to stop."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:156
+#: ../../editing/edit-tools.rst:210
 msgid "Using the audition tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:158
-msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
+#: ../../editing/editor-toolbars.rst:7
+#, fuzzy
+msgid "Toolbar Options"
+msgstr "옵션"
+
+#: ../../editing/editor-toolbars.rst:9
+msgid ""
+"Each editor (including the timeline) has a toolbar at the top with various "
+"options to ease editing."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:161
-msgid "Pressing :kbd:`Escape` will cancel any current action."
+#: ../../editing/editor-toolbars.rst:15
+msgid "Timeline toolbar"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:7
+#: ../../editing/editor-toolbars.rst:18
+msgid "Snapping and Grid Options"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:20
+msgid "This menu button allows adjusting snapping and grid display options."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:25
+msgid "Snap/Grid options"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:27
+msgid "Each option is explained below."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:29
+#, fuzzy
+msgid "Position Snap"
+msgstr "위치"
+
+#: ../../editing/editor-toolbars.rst:30
+msgid "Turn snapping on or off."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:31
+#, fuzzy
+msgid "Adaptive Snap"
+msgstr "적응형"
+
+#: ../../editing/editor-toolbars.rst:32
+msgid ""
+"Automatically adjust snapping behavior to the current zoom level, based on "
+"the selected note type."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:33
+#, fuzzy
+msgid "Snap to"
+msgstr "램프 도구"
+
+#: ../../editing/editor-toolbars.rst:34
+msgid ""
+"Note size/length to snap to. This is only visible if :guilabel:`Adaptive "
+"Snap` is turned off."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:40
+msgid "Note Type"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:36
+msgid "Normal"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:37
+msgid "Snap to the selected (or automatically determined) note length."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:38
+msgid "Triplet"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:39
+msgid "Snap to 2/3rds of the selected note length."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:40
+#, fuzzy
+msgid "Dotted"
+msgstr "기부"
+
+#: ../../editing/editor-toolbars.rst:41
+msgid "Snap to 3/2nds (1.5 times) the selected note length."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:42
+msgid "Keep Offset"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:43
+msgid ""
+"When snapping, keep the offset of objects from the nearest snap point on "
+"their left."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:52
+msgid "Default Object Length"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:45
+msgid ""
+"The length to use when creating new objects. The following options are "
+"available."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:47
+msgid "Link to Snap"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:48
+msgid "Use the same note length as the snap length above."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:49
+msgid "Last Object"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:50
+msgid "Use the length of the last created object."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:52
+#, fuzzy
+msgid "Custom"
+msgstr "잘라내기"
+
+#: ../../editing/editor-toolbars.rst:52
+msgid "Specify a custom length."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:55
+msgid "Quantization"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:57
+msgid ""
+"Objects can be quantized to specified positions by using the Quantize and "
+"Quick-Quantize actions."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:64
+msgid "Quantize"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:65
+msgid ""
+"Clicking the Quantize button will open up a popup that will let you specify "
+"the settings to quantize the current selection with."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:72
+msgid "Quantize to"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:73
+msgid "Select the note length and type to quantize to."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:75
+msgid "Adjust"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:75
+msgid ""
+"Select if you want to quantize the start positions, the end positions (on "
+"objects that have length), or both."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:79
+msgid "Amount"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:78
+msgid ""
+"Select the amount to quantize by. 100% will quantize to the given options "
+"fully, while 0% will perform no quantization."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:81
+msgid "Swing"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:82
+msgid "Select a swing amount."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:86
+msgid "Randomization"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:84
+msgid ""
+"This will randomize the resulting positions by the given amount of ticks, "
+"and is useful for adding a \"human feel\" to quantized events."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:88
+msgid ""
+"Clicking Quantize will perform the quantization and save the settings for "
+"quick quantization with Quick-Quantize."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:92
+msgid "Quick-Quantize"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:93
+msgid "This will perform quantization based on the last known settings."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:97
+msgid "Playhead Tracking"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:99
+msgid ""
+"Zrythm includes functionality for forcing the playhead to remain inside the "
+"visibile area during playback."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:106
+msgid "Playhead tracking controls"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:109
+msgid "Scroll when Playhead Reaches Edge"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:109
+msgid ""
+"Automatically  scroll the visible area when the playhead moves outside it"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:113
+msgid "Follow Playhead"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:112
+msgid "Keep the visible area centered at the position of the playhead"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:117
+msgid ""
+"The timeline and each editor include horizontal (and sometimes vertical) "
+"zooming functionality."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:123
+msgid "Zoom buttons"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:125
+msgid "Zoom In"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:126
+msgid "Zoom in at the location of the playhead"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:127
+msgid "Zoom Out"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:128
+msgid "Zoom out"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:129
+msgid "Original Size"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:130
+msgid "Zoom back to the default zoom level"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:133
+msgid "Best Fit"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:132
+msgid ""
+"Zoom in or out as much as required to show all of the events in the arranger"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:136
 msgid "Event Viewers"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:9
+#: ../../editing/editor-toolbars.rst:138
 msgid ""
-"An event viewer (or `list editor`) displays all events in the corresponding "
-"arranger as a list."
+"Clicking the :guilabel:`Toggle Event Viewer` button will display an event "
+"viewer (or `list editor`) that shows all events in the corresponding editor "
+"as a list."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:15
+#: ../../editing/editor-toolbars.rst:144
 msgid "Timeline event viewer"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:17
-msgid ""
-"The event viewer can be shown by clicking the :guilabel:`Toggle event "
-"viewer` button in the corresponding arranger toolbar."
-msgstr ""
-
-#: ../../editing/event-viewers.rst:22
+#: ../../editing/editor-toolbars.rst:147
 msgid "Sorting"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:24
+#: ../../editing/editor-toolbars.rst:149
 msgid ""
 "Columns in the header row can be clicked to sort the events in ascending or "
 "descending order."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:28 ../../editing/intro.rst:9
+#: ../../editing/editor-toolbars.rst:153 ../../editing/intro.rst:9
 msgid "Editing"
 msgstr "편집"
 
-#: ../../editing/event-viewers.rst:30
+#: ../../editing/editor-toolbars.rst:155
 msgid ""
 "Some values can be changed by clicking in the corresponding field to enter "
 "edit mode, then pressing :kbd:`Enter` when done."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:37
+#: ../../editing/editor-toolbars.rst:162
 msgid "Edit mode"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:40
+#: ../../editing/editor-toolbars.rst:165
 msgid "Object Selection"
 msgstr ""
 
-#: ../../editing/event-viewers.rst:42
+#: ../../editing/editor-toolbars.rst:167
 msgid ""
 "The object selection in the event viewer is linked to the arranger. This "
 "means that selecting objects inside the event viewer will also select them "
 "inside the arranger and vice-versa."
 msgstr ""
 
-#: ../../editing/overview.rst:9
+#: ../../editing/editor-toolbars.rst:173
+#, fuzzy
+msgid "Timeline Controls"
+msgstr "타임라인"
+
+#: ../../editing/editor-toolbars.rst:175
+msgid "The following controls are only available in the timeline toolbar."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:178
+#, fuzzy
+msgid "Range Operations"
+msgstr "번역"
+
+#: ../../editing/editor-toolbars.rst:180
+msgid "Range actions are performed on the selected :term:`range <Range>`."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:182
+msgid "Insert Silence"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:183
 msgid ""
-"Editing refers to any work done in the timeline arranger and the editors."
+"Insert empty space at the selected range and push all events in the range "
+"forward."
 msgstr ""
 
-#: ../../editing/overview.rst:12
+#: ../../editing/editor-toolbars.rst:185
+msgid "Remove Range"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:185
 msgid ""
-"While each editor has its own toolbar to assist with various operations, "
-"there is a global :guilabel:`Edit` section in the top toolbar that has "
-"common features shared by each editor."
+"Remove all objects inside the selected range and move events after the range "
+"backwards."
 msgstr ""
 
-#: ../../editing/quantization.rst:9
-msgid "Quantization"
+#: ../../editing/editor-toolbars.rst:188
+msgid "Object Merging"
 msgstr ""
 
-#: ../../editing/quantization.rst:11
+#: ../../editing/editor-toolbars.rst:190
 msgid ""
-"Objects can be quantized to specified positions by using the Quantize and "
-"Quick-Quantize actions."
+"Clicking this button will merge the selected regions. This button is "
+"deactivated when merging the currently selected regions is not possible."
 msgstr ""
 
-#: ../../editing/quantization.rst:18
-msgid "Quantize"
+#: ../../editing/editor-toolbars.rst:192
+msgid "The shortcut for object merging is :kbd:`Control-j`."
 msgstr ""
 
-#: ../../editing/quantization.rst:19
+#: ../../editing/editor-toolbars.rst:195
+#, fuzzy
+msgid "Piano Roll Controls"
+msgstr "피아노 롤 통합"
+
+#: ../../editing/editor-toolbars.rst:197
 msgid ""
-"Clicking the Quantize button will open up a popup that will let you specify "
-"the settings to quantize the current selection with."
+"The following controls are only available in the piano roll (MIDI editor)."
 msgstr ""
 
-#: ../../editing/quantization.rst:26
-msgid "Quantize to"
+#: ../../editing/editor-toolbars.rst:202
+msgid "Piano roll toolbar"
 msgstr ""
 
-#: ../../editing/quantization.rst:27
-msgid "Select the note length and type to quantize to."
-msgstr ""
+#: ../../editing/editor-toolbars.rst:205
+#, fuzzy
+msgid "Chord/Scale Highlighting"
+msgstr "스케일 강조하기"
 
-#: ../../editing/quantization.rst:29
-msgid "Adjust"
-msgstr ""
-
-#: ../../editing/quantization.rst:29
+#: ../../editing/editor-toolbars.rst:207
+#, fuzzy
 msgid ""
-"Select if you want to quantize the start positions, the end positions (on "
-"objects that have length), or both."
+"The highlighting option can be used to highlight notes corresponding to the "
+"scale, chord, or both at ther start position."
 msgstr ""
+"피아노 롤 내부의 강조 표시를 사용하여 재생 헤드 위치에서 음계, 코드 또는 둘 "
+"다에 해당하는 음표를 강조 표시할 수 있습니다."
 
-#: ../../editing/quantization.rst:33
-msgid "Amount"
-msgstr ""
-
-#: ../../editing/quantization.rst:32
+#: ../../editing/editor-toolbars.rst:210
 msgid ""
-"Select the amount to quantize by. 100% will quantize to the given options "
-"fully, while 0% will perform no quantization."
+"The position of the playhead will determine highlighting of the piano roll "
+"keys on the left side of the piano roll."
 msgstr ""
 
-#: ../../editing/quantization.rst:35
-msgid "Swing"
+#: ../../editing/editor-toolbars.rst:218
+msgid "Separate colors are used, in order of priority based on the following:"
 msgstr ""
 
-#: ../../editing/quantization.rst:36
-msgid "Select a swing amount."
+#: ../../editing/editor-toolbars.rst:220
+msgid "The note is the current chord's (if any) bass note"
 msgstr ""
 
-#: ../../editing/quantization.rst:40
-msgid "Randomization"
-msgstr ""
-
-#: ../../editing/quantization.rst:38
+#: ../../editing/editor-toolbars.rst:221
 msgid ""
-"This will randomize the resulting positions by the given amount of ticks, "
-"and is useful for adding a \"human feel\" to quantized events."
+"The note is both inside the current chord (if any) and the current scale (if "
+"any)"
 msgstr ""
 
-#: ../../editing/quantization.rst:42
+#: ../../editing/editor-toolbars.rst:222
+msgid "The note is inside the current chord (if any)"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:223
+msgid "The note is inside the current scale (if any)"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:224
 msgid ""
-"Clicking Quantize will perform the quantization and save the settings for "
-"quick quantization with Quick-Quantize."
+"The note is neither in the current chord or scale, or there is no current "
+"chord or scale"
 msgstr ""
 
-#: ../../editing/quantization.rst:46
-msgid "Quick-Quantize"
-msgstr ""
-
-#: ../../editing/quantization.rst:47
-msgid "This will perform quantization based on the last known settings."
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:9
-msgid "Snapping and Grid Options"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:12
-msgid "Snap Toolbar"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:13
+#: ../../editing/editor-toolbars.rst:226
 msgid ""
-"Zrythm will snap according to the options currently specified by the snap "
-"toolbar buttons in each panel."
+"See the :ref:`Chord Track <tracks/track-types:Chord Track>`, :ref:`Chord "
+"Editor <editing/chord-editor:Chord Editor>` and :ref:`Chord Pad <chords-and-"
+"scales/chord-pad:Chord Pad>` for details."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:19
-msgid "Snap toolbar"
+#: ../../editing/editor-toolbars.rst:229
+msgid "MIDI Functions"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:21
-msgid "Snap to Grid"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:22
-msgid "Turn snapping on/off"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:27
-msgid "Keep Offset"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:24
+#: ../../editing/editor-toolbars.rst:231
 msgid ""
-"When snapping, keep the offset of objects from the nearest snap point on "
-"their left"
+"MIDI functions are logic that can be applied to transform the selected MIDI "
+"notes. The following functions are available."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:27
-#: ../../editing/snapping-grid-options.rst:33
-msgid "Requires Snap to Grid to be toggled on"
+#: ../../editing/editor-toolbars.rst:234
+msgid "Crescendo"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:33
-msgid "Snap to Events"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:30
-msgid "When snapping, snap to the start/end positions other objects"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:36
-msgid "Snap/Grid Options"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:38
+#: ../../editing/editor-toolbars.rst:234
 msgid ""
-"The Snap/Grid options control allows fine-tuning snapping behavior inside "
-"arrangers."
+"Gradually increase the velocities of the selected notes from low to high. "
+"Used to create a climax."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:44
-msgid "Snap/Grid options"
+#: ../../editing/editor-toolbars.rst:238
+msgid "Flam"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:47
-msgid "Snap"
-msgstr ""
-
-#: ../../editing/snapping-grid-options.rst:48
+#: ../../editing/editor-toolbars.rst:237
 msgid ""
-"The Snap section controls the snapping behavior of the start position of "
-"objects."
+"Create additional MIDI notes right after the start position of each selected "
+"note. This is usually used on snares."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:51
-msgid "Note Length"
+#: ../../editing/editor-toolbars.rst:241 ../../editing/editor-toolbars.rst:287
+msgid "Flip"
+msgstr "뒤집기"
+
+#: ../../editing/editor-toolbars.rst:241
+msgid "Reverse/flip the selected notes horizontally or vertically."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:52
-msgid "Note length to snap to"
+#: ../../editing/editor-toolbars.rst:244
+msgid "Legato"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:54
-msgid "Triplet (t)"
+#: ../../editing/editor-toolbars.rst:244
+msgid "Connect all selected notes so that they play smoothly."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:54
-msgid "Use triplet note (2/3rds of the selected note length)"
+#: ../../editing/editor-toolbars.rst:247
+msgid "Portato"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:57
-msgid "Dotted (.)"
+#: ../../editing/editor-toolbars.rst:247
+msgid "Similar to legato, but leaves some space between the notes."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:57
-msgid "Use dotted note (3/2nds, or 1.5 times the selected note length)"
+#: ../../editing/editor-toolbars.rst:249
+msgid "Staccato"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:60
-msgid "Adaptive"
-msgstr "적응형"
-
-#: ../../editing/snapping-grid-options.rst:60
-msgid "Adapt snapping to the current zoom level"
+#: ../../editing/editor-toolbars.rst:250
+msgid "Make the selected notes short and punctuated."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:63
-msgid "Length"
-msgstr "길이"
-
-#: ../../editing/snapping-grid-options.rst:64
-msgid "The Length section controls the default length of objects."
+#: ../../editing/editor-toolbars.rst:254
+msgid "Strum Up/Down"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:67
-msgid "Link"
+#: ../../editing/editor-toolbars.rst:252
+msgid ""
+"Shift the position and velocity of notes that start at the same position "
+"(chords) to simulate strumming, like when playing guitar."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:68
-msgid "Use the same options as Snap"
+#: ../../editing/editor-toolbars.rst:256
+msgid "Add illustrations."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:71
-msgid "Last Object"
+#: ../../editing/editor-toolbars.rst:258
+msgid ""
+"In the future, it will be possible to implement custom functions using user "
+"scripts."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:70
-msgid "Use the length of the last created object"
+#: ../../editing/editor-toolbars.rst:262
+msgid "Ghost Notes"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:9
-msgid "Timeline Arranger"
+#: ../../editing/editor-toolbars.rst:264
+msgid ""
+"By default, Zrythm will only display MIDI notes in the selected region. "
+"Clicking the mask buton will *ghost* (display with less opacity) MIDI notes "
+"from other regions in the same track."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:11
+#: ../../editing/editor-toolbars.rst:270
+msgid "Ghosted notes on the right"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:272
+msgid ""
+"Clicking on a ghosted note will automatically switch the active/selected "
+"region to the clicked MIDI note's parent region."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:276
+#, fuzzy
+msgid "Automation Editor Controls"
+msgstr "자동화 편집기"
+
+#: ../../editing/editor-toolbars.rst:279
+#, fuzzy
+msgid "Automation Functions"
+msgstr "자동화 편집기"
+
+#: ../../editing/editor-toolbars.rst:281
+msgid ""
+"Automation functions are logic that can be applied to transform the selected "
+"automation points/curves. The following functions are available."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:286
+msgid "Reverse/flip the selected automation horizontally or vertically."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:290
+#, fuzzy
+msgid "Audio Editor Controls"
+msgstr "오디오 편집기"
+
+#: ../../editing/editor-toolbars.rst:293
+msgid "Audio Functions"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:295
+msgid ""
+"Audio functions are logic that can be applied to transform the selected "
+"audio part. The following functions are available."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:299
+msgid "Invert"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:300
+msgid "Invert the polarity of the audio."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:301
+msgid "Normalize Peak"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:302
+msgid "Normalize the audio so that its peak is 0dB."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:303
+msgid "Linear Fade In"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:304
+msgid "Fade the audio from silence to full amplitude."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:305
+msgid "Linear Fade Out"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:306
+msgid "Fade the audio from full amplitude to silence."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:307
+msgid "Nudge"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:308
+msgid "Shift the audio by 1 sample backward or forward."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:309
+msgid "Reverse"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:310
+msgid "Reverse the audio (play back backwards)."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:336
+msgid "External Program"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:312
+msgid ""
+"Run an external program (such as `Audacity <https://www.audacityteam.org/"
+">`_) to edit the audio."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:319
+msgid "Edit the selected audio in an external app"
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:321
+msgid ""
+"The selected program will be run with the path to a temporary file as an "
+"argument. Normally, the application will open that file, otherwise you will "
+"have to open it manually."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:326
+msgid "You can select and copy the path in the dialog."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:329
+msgid ""
+"Once you've made your changes to the file, close the external app and press "
+"OK. Zrythm will then apply your changes to the selected audio part."
+msgstr ""
+
+#: ../../editing/editor-toolbars.rst:333
+msgid ""
+"The length of the audio must stay exactly the same, otherwise this operation "
+"will fail."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:9
+msgid "Piano Roll"
+msgstr "피아노 롤"
+
+#: ../../editing/piano-roll.rst:11
+#, fuzzy
+msgid ""
+"The piano roll is the main editor for editing MIDI regions, and is displayed "
+"when a MIDI region is selected."
+msgstr "자동화 영역을 선택하면 자동화 편집기가 표시됩니다."
+
+#: ../../editing/piano-roll.rst:18
+msgid "Piano roll"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:21
+msgid "Additional Controls"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:22
+msgid "The piano roll contains the following additional controls."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:28
+msgid "Piano roll controls"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:39
+msgid "Drum View"
+msgstr "드럼 보기"
+
+#: ../../editing/piano-roll.rst:31
+msgid ""
+"Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
+"drawn as a diamond and the piano roll keys display the name of each drum."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:39
+msgid "Drum mode"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:43
+msgid "Listen to notes"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:42
+msgid "Play back each note as you drag it inside the piano roll."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:48
+msgid "Piano Roll Keys"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:49
+msgid "These are the keys corresponding to each key found on a piano."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:55
+msgid "Piano roll keys"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:57
+msgid ""
+"Clicking on each key allows you to listen to it, much like pressing a key on "
+"a real piano."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:60
+msgid ""
+"A label for each key is shown on the left side of the black/white keys, in "
+"addition to any highlighting (if selected). See :ref:`chord-highlighting` "
+"for more information."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:65
+msgid ""
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
+"`Shift` and scrolling."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:70
+msgid "MIDI Arranger"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:71
+msgid "The MIDI arranger refers to the arranger section of the piano roll."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:77
+msgid "MIDI arranger with notes"
+msgstr ""
+
+#: ../../editing/piano-roll.rst:79
+msgid ""
+"The MIDI arranger contains MIDI notes drawn as rectangles from their start "
+"position to their end position. Zrythm will send a MIDI note on signal when "
+"the start position of a note is reached, and a note off signal when the end "
+"position of a note is reached."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:86
+msgid "Velocity Editor"
+msgstr "속도 편집기"
+
+#: ../../editing/piano-roll.rst:87
+msgid ""
+"There is another arranger at the bottom of the MIDI arranger for editing the "
+"velocity of each note."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:93
+msgid ""
+"Velocity refers to the force with which a note is played. Each instrument "
+"handles various velocities for the same note differently, but generally a "
+"higher velocity will result in a louder or `stronger` note. Velocities are "
+"useful for adding expression to melodies."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:99
+msgid ""
+"The velocity of each note is drawn as a bar, where higher means a larger "
+"value. Clicking and dragging the tip of each velocity bar allows you to "
+"change it."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:103
+msgid ""
+"You can also edit multiple velocities at once by selecting multiple MIDI "
+"notes before editing a velocity bar."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:107
+msgid ""
+"The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
+"velocities."
+msgstr ""
+
+#: ../../editing/piano-roll.rst:113
+msgid "Using the ramp tool on MIDI note velocities"
+msgstr ""
+
+#: ../../editing/timeline.rst:7
+msgid "Timeline"
+msgstr "타임라인"
+
+#: ../../editing/timeline.rst:12
+msgid ""
+"Editing in the timeline is the most common workflow inside Zrythm. The "
+"timeline section consists of the :ref:`tracklist <tracks/tracklist:"
+"Tracklist>` on the left and the ruler/arranger on the right, along with a "
+"timeline-specific toolbar at the top."
+msgstr ""
+
+#: ../../editing/timeline.rst:22
+msgid "Minimap"
+msgstr ""
+
+#: ../../editing/timeline.rst:23
+msgid ""
+"The timeline minimap is a little box that represents the current visible "
+"area of the timeline. It can be moved around and resized to change the "
+"visible area."
+msgstr ""
+
+#: ../../editing/timeline.rst:31
+#, fuzzy
+msgid "Ruler"
+msgstr "파동"
+
+#: ../../editing/timeline.rst:33
+msgid "The ruler is mainly used to control looping and playback."
+msgstr ""
+
+#: ../../editing/timeline.rst:39
+msgid ""
+"The ruler will display more or less information depending on the current "
+"zoom level. It will also display the following markers/indicators discussed "
+"in :ref:`loop-points-and-markers`."
+msgstr ""
+
+#: ../../editing/timeline.rst:44
+msgid "Cue point"
+msgstr ""
+
+#: ../../editing/timeline.rst:45
+msgid "Displayed as a blue, right-pointing arrow."
+msgstr ""
+
+#: ../../editing/timeline.rst:46
+msgid "Playhead position"
+msgstr ""
+
+#: ../../editing/timeline.rst:47
+msgid "Shown as a grey, down-facing arrow."
+msgstr ""
+
+#: ../../editing/timeline.rst:52
+msgid "Loop points"
+msgstr ""
+
+#: ../../editing/timeline.rst:49
+msgid ""
+"Shown as 2 green arrows, and the area between them is shown in bright green "
+"if loop is enabled, or grey if disabled. Can be dragged to reposition."
+msgstr ""
+
+#: ../../editing/timeline.rst:52
+msgid ""
+"Looping can be enabled/disabled using the loop button in the :ref:`transport "
+"controls <playback-and-recording/transport-controls:Controls>`."
+msgstr ""
+
+#: ../../editing/timeline.rst:54
+msgid ""
+"Clicking and dragging on empty space in the bottom half of the ruler will "
+"allow you to reposition the playhead."
+msgstr ""
+
+#: ../../editing/timeline.rst:58
+msgid "You can :kbd:`Control`-click and drag the loop region to move it."
+msgstr ""
+
+#: ../../editing/timeline.rst:61
+msgid "Setting the Cue Point"
+msgstr ""
+
+#: ../../editing/timeline.rst:62
+msgid ""
+"Double click inside the ruler to set the cue point. This will be used to "
+"return to when playback is stopped."
+msgstr ""
+
+#: ../../editing/timeline.rst:66
+#, fuzzy
+msgid "Range Selection"
+msgstr "번역"
+
+#: ../../editing/timeline.rst:67
+msgid ""
+"Clicking and dragging in the top half of the ruler will create a :term:"
+"`range <Range>` selection. If an existing range exists, you can click an "
+"drag it to move it."
+msgstr ""
+
+#: ../../editing/timeline.rst:75
+#, fuzzy
+msgid "Range selection"
+msgstr "번역"
+
+#: ../../editing/timeline.rst:78
+#, fuzzy
+msgid "Arranger"
+msgstr "오디오 편곡기"
+
+#: ../../editing/timeline.rst:80
 msgid ""
 "The timeline arranger is the main area where the song is composed. It "
 "consists of a collection of events, such as regions, positioned against "
@@ -2995,546 +3097,393 @@ msgid ""
 "editing when clicked."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:20
+#: ../../editing/timeline.rst:89
 msgid ""
 "The timeline arranger is split into a top arranger that remains fixed on top "
 "and a bottom arranger below it. This way you can pin tracks you want to "
 "always be visible at the top."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:26
+#: ../../editing/timeline.rst:95
 msgid "Arranger Objects"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:27
+#: ../../editing/timeline.rst:96
 msgid "The following arranger objects can exist inside the timeline."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:34
+#: ../../editing/timeline.rst:102
+msgid "Regions"
+msgstr ""
+
+#: ../../editing/timeline.rst:103
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
 "MIDI notes and audio clips - see below) that can be edited in an :ref:"
-"`editor <editors>`. Regions can be repeated, like below."
+"`editor <editing/timeline:Editing Region Contents>`. Regions can be "
+"repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:145
+#: ../../editing/timeline.rst:112 ../../glossary/intro.rst:145
 msgid "Region"
 msgstr "리전"
 
-#: ../../editing/timeline/arranger.rst:45
+#: ../../editing/timeline.rst:114
 msgid "The following types of regions exist."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:48
+#: ../../editing/timeline.rst:117
 msgid "Audio Regions"
 msgstr "오디오 영역"
 
-#: ../../editing/timeline/arranger.rst:49
+#: ../../editing/timeline.rst:118
 msgid "Audio regions contain audio clips from audio files."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:54
+#: ../../editing/timeline.rst:123
 #, fuzzy
 msgid "Audio region"
 msgstr "오디오 그룹"
 
-#: ../../editing/timeline/arranger.rst:56
+#: ../../editing/timeline.rst:125
 msgid "Audio regions belong to track lanes and appear inside Audio tracks."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:62
+#: ../../editing/timeline.rst:131
 msgid "Audio track with audio region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:64
+#: ../../editing/timeline.rst:133
 msgid ""
-"Double-clicking an audio region will bring up the :doc:`Audio Editor <../../"
-"editing/clip-editors/audio-editor>`."
+"Double-clicking an audio region will bring up the :ref:`audio editor "
+"<editing/audio-editor:Audio Editor>`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:68
+#: ../../editing/timeline.rst:137
 msgid "MIDI Regions"
 msgstr "MIDI 영역"
 
-#: ../../editing/timeline/arranger.rst:69
+#: ../../editing/timeline.rst:138
 msgid "MIDI regions contain :term:`MIDI` notes."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:74
+#: ../../editing/timeline.rst:143
 msgid "MIDI region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:76
+#: ../../editing/timeline.rst:145
 msgid ""
 "MIDI regions belong to track lanes and appear inside MIDI or Instrument "
 "tracks."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:82
+#: ../../editing/timeline.rst:151
 msgid "MIDI track with MIDI region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:84
+#: ../../editing/timeline.rst:153
 msgid ""
-"Double-clicking a MIDI region will bring up the :doc:`Piano Roll <../../"
-"editing/clip-editors/piano-roll>`."
+"Double-clicking a MIDI region will bring up the :ref:`piano roll <editing/"
+"piano-roll:Piano Roll>`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:88
+#: ../../editing/timeline.rst:157
 msgid "Automation Regions"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:89
+#: ../../editing/timeline.rst:158
 msgid "Automation regions contain automation events."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:94
+#: ../../editing/timeline.rst:163
 #, fuzzy
 msgid "Automation region"
 msgstr "자동화 편집기"
 
-#: ../../editing/timeline/arranger.rst:96
+#: ../../editing/timeline.rst:165
 msgid "Automation regions appear inside automation lanes."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:101
+#: ../../editing/timeline.rst:170
 msgid "Automation lane with automation region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:103
+#: ../../editing/timeline.rst:172
 msgid ""
-"Double-clicking an automation region will bring up the :doc:`Automation "
-"Editor <../../editing/clip-editors/automation-editor>`."
+"Double-clicking an automation region will bring up the :ref:`automation "
+"editor <editing/automation-editor:Automation Editor>`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:108
+#: ../../editing/timeline.rst:177
 msgid "Chord regions"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:109
+#: ../../editing/timeline.rst:179
 msgid "Chord regions contain sequences of chords."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:114
+#: ../../editing/timeline.rst:184
 msgid "Chord region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:116
+#: ../../editing/timeline.rst:186
 msgid "Chord regions appear inside the chord track."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:121
+#: ../../editing/timeline.rst:191
 msgid "Chord track with chord region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:123
+#: ../../editing/timeline.rst:193
+#, fuzzy
 msgid ""
-"Double-clicking a chord region will bring up the :doc:`Chord Editor <../../"
-"editing/clip-editors/chord-editor>`."
+"Double-clicking a chord region will bring up the :ref:`chord editor <editing/"
+"chord-editor:Chord Editor>`."
 msgstr ""
+"이 12개의 코드는 :ref:`코드 편집기 <editing/clip-editors/chord-editor:Chord "
+"Editor>`의 코드에 연결됩니다."
 
-#: ../../editing/timeline/arranger.rst:128
+#: ../../editing/timeline.rst:197 ../../tracks/track-types.rst:55
+msgid "Markers"
+msgstr "표시"
+
+#: ../../editing/timeline.rst:198
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:51
+#: ../../editing/timeline.rst:205 ../../tracks/track-types.rst:51
 msgid "Marker"
 msgstr "마커"
 
-#: ../../editing/timeline/arranger.rst:137
+#: ../../editing/timeline.rst:207
 msgid "Markers appear inside the marker track."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:142
+#: ../../editing/timeline.rst:212
 msgid "Marker track with marker"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:144
+#: ../../editing/timeline.rst:214
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:149
+#: ../../editing/timeline.rst:219
 msgid "Scales"
 msgstr "음계"
 
-#: ../../editing/timeline/arranger.rst:150
+#: ../../editing/timeline.rst:220
 msgid ""
 "Scales are used to indicate the start of a section using a specific musical "
 "scale."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:156
+#: ../../editing/timeline.rst:226
 msgid "Scale"
 msgstr "음계"
 
-#: ../../editing/timeline/arranger.rst:158
+#: ../../editing/timeline.rst:228
 msgid "Scales appear inside the Chord track."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:163
+#: ../../editing/timeline.rst:233
 msgid "Chord track with scale"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:166
+#: ../../editing/timeline.rst:236
 msgid "Editing Regions"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:167
+#: ../../editing/timeline.rst:237
 msgid "The following operations apply to regions."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:170
-msgid "Looping"
-msgstr "루프"
-
-#: ../../editing/timeline/arranger.rst:171
-msgid ""
-"Regions can be repeated, and hence they have :ref:`editable loop points and "
-"a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
-"`Editor ruler <../../editing/clip-editors/ruler>` to modify the looping "
-"(repeating) behavior."
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:177
-msgid ""
-"Regions can also be looped inside the timeline, by moving the cursor to the "
-"bottom-left or bottom-right edge of the region, then clicking and dragging."
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:185
-msgid "Looping (loop-resizing) a region"
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:187
-msgid ""
-"If the region is already repeated, it cannot be resized anymore until its "
-"loop points match exactly the region's start and end points."
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:192
-msgid "Link-Moving"
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:193
-msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:199
-msgid "Link-moving a MIDI region"
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:201
-msgid ""
-"You can verify that a link exists on a region by the link icon that shows in "
-"the top right."
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:207
-msgid "Linked MIDI regions"
-msgstr ""
-
-#: ../../editing/timeline/arranger.rst:210
+#: ../../editing/timeline.rst:240
 msgid "Renaming"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:211
+#: ../../editing/timeline.rst:241
 msgid "Regions can be renamed by selecting them and pressing :kbd:`F2`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:217
+#: ../../editing/timeline.rst:247
 msgid "Renaming a region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:220
+#: ../../editing/timeline.rst:250
 msgid "Adjusting Fades"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:221
+#: ../../editing/timeline.rst:251
 msgid ""
 "Audio regions can have fades. Fades are gradual increases or decreases in "
 "the level of the audio signal, and their positions can be adjusted by "
 "clicking and dragging the top left/right corners of the region."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:230
+#: ../../editing/timeline.rst:260
 msgid "Adjusting fade out point (click & drag)"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:235
+#: ../../editing/timeline.rst:265
 msgid "Adjusting fade out point (drop)"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:237
+#: ../../editing/timeline.rst:267
 msgid ""
 "Clicking and dragging the grey part up or down will adjust the curviness of "
 "the fade."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:243
+#: ../../editing/timeline.rst:273
 msgid "Adjusting curviness"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:245
+#: ../../editing/timeline.rst:275
 msgid ""
 "The type of fade algorithm used can also be changed by right-clicking on the "
 "fade and selecting :menuselection:`Fade preset`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:252
+#: ../../editing/timeline.rst:282
 msgid "Fade context menu"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:254
+#: ../../editing/timeline.rst:285
+msgid "Fade Types"
+msgstr ""
+
+#: ../../editing/timeline.rst:287
 msgid "The various types of fade algorithms available are illustrated below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:257
+#: ../../editing/timeline.rst:290
 msgid "Fade algorithms"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:262
+#: ../../editing/timeline.rst:295
 msgid "Linear"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:267
+#: ../../editing/timeline.rst:300
 msgid "Exponential"
 msgstr "지수 함수"
 
-#: ../../editing/timeline/arranger.rst:272
+#: ../../editing/timeline.rst:305
 msgid "Elliptic (Superellipse)"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:279
+#: ../../editing/timeline.rst:312
 msgid ""
 "All audio regions have some additional, built-in fade in and fade out that "
 "cannot be disabled. This is used to avoid clipping and should be unnoticable."
 msgstr ""
 
-#: ../../editing/timeline/intro.rst:9
-msgid "Timeline"
-msgstr "타임라인"
+#: ../../editing/timeline.rst:318
+msgid "Editing Region Contents"
+msgstr ""
 
-#: ../../editing/timeline/overview.rst:8
+#: ../../editing/timeline.rst:321
+msgid "Displaying Region Contents"
+msgstr ""
+
+#: ../../editing/timeline.rst:323
 msgid ""
-"Editing in the timeline is the most common workflow inside Zrythm. The "
-"timeline section consists of the tracklist on the left and the ruler/"
-"arranger on the right, along with a timeline-specific toolbar at the top."
+"When regions are selected in the timeline, their contents will be shown "
+"inside the Editor tab in the :ref:`bottom-panel`. Although there are some "
+"common elements shared amongst each type of editor, the editor section will "
+"differ depending on the type of region selected."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:20
-msgid "Tracklist"
+#: ../../editing/timeline.rst:333
+msgid "Editor Ruler"
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:22
-msgid ""
-"The Tracklist contains all of the Tracks in the project. It is split into "
-"the top (pinned) Tracklist and the bottom (main) Tracklist."
+#: ../../editing/timeline.rst:334
+msgid "The editor ruler is similar to the timeline ruler."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:29
-msgid ""
-"At the top of the tracklist, the number of visible tracks over the number of "
-"total tracks is shown, as well as a search box for searching tracks by name "
-"(not operational at the moment)."
+#: ../../editing/timeline.rst:339
+msgid "Editor ruler"
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:34
-msgid ""
-"You can pin tracks to make them stick to the top, and this is useful for "
-"chord progressions and markers, so you can always see them."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:38
-msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:41
-msgid "For more details about track operations, see the :ref:`tracks` section."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:45
-msgid "Minimap"
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:46
-msgid ""
-"The timeline minimap is a little box that represents the current visible "
-"area of the timeline. It can be moved around and resized to change the "
-"visible area."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:53
-msgid ""
-"The rest of the timeline elements are explained in the following sections."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:9
-msgid "Timeline Ruler"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:11
-msgid "The ruler is mainly used to control looping and playback."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:17
+#: ../../editing/timeline.rst:341
 msgid ""
 "The ruler will display more or less information depending on the current "
-"zoom level. It will also display the following markers/indicators discussed "
-"in :ref:`loop-points-and-markers`."
+"zoom level. It will also display the following indicators."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:22
-msgid "Cue point"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:23
-msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:24
-msgid "Playhead position"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:25
-msgid "Shown as a grey, down-facing arrow."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:30
-msgid "Loop points"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:27
-msgid ""
-"Shown as 2 green arrows, and the area between them is shown in bright green "
-"if loop is enabled, or grey if disabled. Can be dragged to reposition."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:30
-msgid ""
-"Looping can be enabled/disabled using the loop button in the :ref:`transport "
-"controls <playback-and-recording/transport-controls:Controls>`."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:32
-msgid ""
-"Clicking and dragging on empty space in the bottom half of the ruler will "
-"allow you to reposition the playhead."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:37
-msgid "Setting the Cue Point"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:38
-msgid ""
-"Double click inside the ruler to set the cue point. This will be used to "
-"return to when playback is stopped."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:42
+#: ../../editing/timeline.rst:346
 #, fuzzy
-msgid "Range Selection"
-msgstr "번역"
+msgid "Editor Ruler Indicators"
+msgstr "변조기"
 
-#: ../../editing/timeline/ruler.rst:43
-msgid ""
-"Clicking and dragging in the top half of the ruler will create a :term:"
-"`range <Range>` selection. If an existing range exists, you can click an "
-"drag it to move it."
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:51
+#: ../../editing/timeline.rst:348
 #, fuzzy
-msgid "Range selection"
-msgstr "번역"
+msgid "Song Markers"
+msgstr "표시"
 
-#: ../../editing/timeline/toolbar.rst:7
-msgid "Toolbar"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:9
-msgid "The timeline has its own toolbar for timeline-specific operations."
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:15
-msgid "Timeline toolbar"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:17
-msgid "It includes the following sections:"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:21
-msgid "Audio region options"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:22
-#, fuzzy
-msgid "Range actions"
-msgstr "번역"
-
-#: ../../editing/timeline/toolbar.rst:24
-msgid "Object merge options"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:29
-msgid "Audio Region Options"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:32
-msgid "Musical Mode"
-msgstr "뮤지컬 모드"
-
-#: ../../editing/timeline/toolbar.rst:33
+#: ../../editing/timeline.rst:349
 msgid ""
-"When this is on, audio regions will be automatically time-stretched to match "
-"the new BPM, each time the BPM changes. If this is off, changing the BPM "
-"will cause audio regions to be repeated accordingly to match the new BPM "
-"without being time-stretched."
+"Markers created in the :ref:`Marker track <tracks/track-types:Marker Track>` "
+"will be displayed here as read-only."
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:40
-#, fuzzy
-msgid "Range Actions"
-msgstr "번역"
-
-#: ../../editing/timeline/toolbar.rst:42
-msgid "Range actions are performed on the selected :term:`Range`."
+#: ../../editing/timeline.rst:351
+msgid "Clip Start"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:46
-msgid "Insert Silence"
-msgstr ""
-
-#: ../../editing/timeline/toolbar.rst:46
+#: ../../editing/timeline.rst:351
 msgid ""
-"Inserts silence at the selected range and pushes all events in the range "
-"forward"
+"Controls the position where the clip will start playback from. Displayed as "
+"a red, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:50
-msgid "Remove Range"
+#: ../../editing/timeline.rst:354 ../../playback-and-recording/overview.rst:13
+msgid "Playhead"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:49
+#: ../../editing/timeline.rst:354
 msgid ""
-"Deletes all events in the range and moves events after the range backwards"
+"Current position of the playhead. Displayed as a grey, down-facing arrow."
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:53
-msgid "Object Merging"
+#: ../../editing/timeline.rst:359
+#: ../../playback-and-recording/loop-points-and-markers.rst:12
+msgid "Loop Points"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:58
-msgid "Merge Selections"
+#: ../../editing/timeline.rst:357
+msgid ""
+"These control the range where the clip will loop after it reaches the loop "
+"end point. Displayed as 2 green arrows."
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:56
-msgid "Merge the selected objects into a single object, if possible"
+#: ../../editing/timeline.rst:361
+msgid "You can move these markers by clicking and dragging."
+msgstr ""
+
+#: ../../editing/timeline.rst:363
+msgid ""
+"Clicking and dragging on empty space will allow you to reposition the "
+"playhead."
+msgstr ""
+
+#: ../../editing/timeline.rst:367
+msgid "Regions in the Editor Ruler"
+msgstr ""
+
+#: ../../editing/timeline.rst:369
+msgid ""
+"All regions in the same track as the active region will be shown inside the "
+"ruler. The active region will be displayed in a more prominent color."
+msgstr ""
+
+#: ../../editing/timeline.rst:376
+msgid "Regions in the editor ruler"
 msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:9
@@ -3581,7 +3530,7 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:39 ../../tracks/inspector-page.rst:158
+#: ../../exporting/audio-and-midi.rst:39
 msgid "Implement."
 msgstr ""
 
@@ -4107,7 +4056,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:16
-msgid "○: Supported △: Untested ×: Not supported"
+msgid "o: Supported ^: Untested x: Not supported"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:20
@@ -4164,8 +4113,9 @@ msgstr "GNU/리눅스"
 #: ../../getting-started/system-requirements.rst:103
 #: ../../getting-started/system-requirements.rst:105
 #: ../../getting-started/system-requirements.rst:107
-msgid "○"
-msgstr ""
+#, fuzzy
+msgid "o"
+msgstr "아니오"
 
 #: ../../getting-started/system-requirements.rst:34
 #: ../../getting-started/system-requirements.rst:35
@@ -4179,7 +4129,7 @@ msgstr ""
 #: ../../getting-started/system-requirements.rst:79
 #: ../../getting-started/system-requirements.rst:81
 #: ../../getting-started/system-requirements.rst:101
-msgid "△"
+msgid "^"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:38
@@ -4197,7 +4147,7 @@ msgstr ""
 #: ../../getting-started/system-requirements.rst:57
 #: ../../getting-started/system-requirements.rst:58
 #: ../../getting-started/system-requirements.rst:85
-msgid "×"
+msgid "x"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:52
@@ -4209,7 +4159,7 @@ msgid "Backend Support"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:63
-msgid "○: Supported △: Has known issues ×: Broken"
+msgid "o: Supported ^: Has known issues x: Broken"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:67
@@ -4314,7 +4264,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:116
-#: ../../tracks/track-controls.rst:38
+#: ../../tracks/inspector-page.rst:167
 msgid "Monitor"
 msgstr "모니터"
 
@@ -4569,8 +4519,8 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:99
-#: ../../plugins-files/audio-midi-files/file-browser.rst:65
-#: ../../plugins-files/audio-midi-files/overview.rst:59
+#: ../../plugins-files/audio-midi-files/file-browser.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:24
 #: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
 #: ../../tracks/track-types.rst:47 ../../tracks/track-types.rst:66
 #: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
@@ -4608,10 +4558,6 @@ msgstr ""
 
 #: ../../glossary/intro.rst:117
 msgid "TODO"
-msgstr ""
-
-#: ../../glossary/intro.rst:118
-msgid "Panning"
 msgstr ""
 
 #: ../../glossary/intro.rst:120
@@ -5115,54 +5061,54 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:20
-#: ../../playback-and-recording/loop-points-and-markers.rst:33
+#: ../../playback-and-recording/loop-points-and-markers.rst:32
 msgid ""
-"This only applies to the timeline ruler, covered in :ref:`timeline-ruler`."
+"This only applies to the :ref:`timeline ruler <editing/timeline:Ruler>`."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:24
+#: ../../playback-and-recording/loop-points-and-markers.rst:23
 msgid "Cue Point"
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:29
+#: ../../playback-and-recording/loop-points-and-markers.rst:28
 msgid ""
 "The cue point is where the playhead will move to when Play is clicked while "
 "playing or when Stop is clicked while paused."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:37
+#: ../../playback-and-recording/loop-points-and-markers.rst:35
 msgid "Song Start & End Markers"
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:42
+#: ../../playback-and-recording/loop-points-and-markers.rst:40
 msgid ""
 "The song start marker signifies the position in the timeline where the Song "
 "will start. This is mainly used for exporting the mixdown into audio."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:47
+#: ../../playback-and-recording/loop-points-and-markers.rst:45
 msgid ""
 "The song end marker signifies the position in the timeline where the Song "
 "will end. Likewise, it is mainly used for exporting the mixdown into audio."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:52
+#: ../../playback-and-recording/loop-points-and-markers.rst:50
 msgid ""
 "These markers are part of the :ref:`Marker Track <tracks/track-types:Marker "
 "Track>`."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:56
+#: ../../playback-and-recording/loop-points-and-markers.rst:54
 msgid "Custom Markers"
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:57
+#: ../../playback-and-recording/loop-points-and-markers.rst:55
 msgid ""
 "Custom Markers can also be created inside the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`."
 msgstr ""
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:63
+#: ../../playback-and-recording/loop-points-and-markers.rst:61
 msgid ""
 "These can be used to jump to when moving forwards or backwards, and are also "
 "generally useful visually to see where each part of the song begins and ends."
@@ -5245,7 +5191,7 @@ msgid "Recording audio"
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:42
-#: ../../tracks/inspector-page.rst:46
+#: ../../tracks/inspector-page.rst:47
 msgid "Inputs"
 msgstr "입력"
 
@@ -5430,7 +5376,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:40
-#: ../../tracks/track-controls.rst:17
+#: ../../tracks/inspector-page.rst:148
 msgid "Record"
 msgstr "녹음"
 
@@ -5447,7 +5393,7 @@ msgid "Sets the settings to use when recording."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:46
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
+#: ../../plugins-files/audio-midi-files/file-browser.rst:85
 msgid "Play"
 msgstr "재생"
 
@@ -5458,7 +5404,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:49
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
+#: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid "Stop"
 msgstr ""
 
@@ -5525,63 +5471,69 @@ msgid ""
 "through your custom collections."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+#, fuzzy
+msgid "Built-in file browser"
+msgstr "파일 탐색기"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:21
 msgid "Bookmarks"
 msgstr "북마크"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:20
+#: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid ""
 "The Bookmarks section contains a list of bookmarked directories. Double-"
-"clicking on a directory will show its contents in the file list below."
+"clicking on a directory will show its contents in the file list at the "
+"bottom."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:25
-msgid "Standard Bookmarks"
-msgstr ""
+#: ../../plugins-files/audio-midi-files/file-browser.rst:27
+#, fuzzy
+msgid "Predefined Bookmarks"
+msgstr "북마크"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:26
+#: ../../plugins-files/audio-midi-files/file-browser.rst:28
 msgid ""
-"Zrythm provides standard bookmarks for :file:`Home` and :file:`Desktop`, "
-"which correspond to the home and desktop directories of the current user."
+"Zrythm provides a predefined bookmark for the user's :file:`Home` directory."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:32
+#: ../../plugins-files/audio-midi-files/file-browser.rst:31
 msgid "Custom Bookmarks"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:33
+#: ../../plugins-files/audio-midi-files/file-browser.rst:32
 msgid ""
 "Custom bookmarks can be added by right-clicking on a directory in the file "
 "list and selecting :guilabel:`Add Bookmark`."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:40
+#: ../../plugins-files/audio-midi-files/file-browser.rst:39
 msgid ""
 "Similarly, custom bookmarks can be removed by right-clicking on the bookmark "
 "and selecting :guilabel:`Delete`."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#: ../../plugins-files/audio-midi-files/file-browser.rst:50
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "Filter Buttons"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:52
+#: ../../plugins-files/audio-midi-files/file-browser.rst:51
 msgid ""
-"Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files "
-"can be filtered based on their type."
+"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-browser:"
+"Plugin Browser>`, files can be filtered based on their type."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:59
+#: ../../plugins-files/audio-midi-files/file-browser.rst:58
 msgid "Filtering by audio files"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:61
+#: ../../plugins-files/audio-midi-files/file-browser.rst:60
 msgid "The following toggles are available."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:63
-#: ../../plugins-files/audio-midi-files/overview.rst:19
+#: ../../plugins-files/audio-midi-files/file-browser.rst:62
+#: ../../plugins-files/audio-midi-files/overview.rst:15
 #: ../../routing/ports.rst:42 ../../tracks/track-types.rst:21
 #: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
@@ -5591,139 +5543,176 @@ msgstr ""
 msgid "Audio"
 msgstr "오디오"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:64
+#: ../../plugins-files/audio-midi-files/file-browser.rst:63
 msgid "Only show audio files."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:66
+#: ../../plugins-files/audio-midi-files/file-browser.rst:65
 msgid "Only show MIDI files."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:68
-msgid "Only show preset files."
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+msgid "Only show preset files (currently unused/unimplemented)."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:70
-msgid "Preset filtering is not implemented yet."
+#: ../../plugins-files/audio-midi-files/file-browser.rst:72
+msgid "Files can be filtered by a search term from the provided search box."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:73
-msgid "Showing Unsupported Files"
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:74
-msgid ""
-"By default, only supported files will be shown in the file list. To also "
-"show unsupported files, enable :guilabel:`Show unsupported files` in the :"
-"ref:`file browser preferences <plugins-files/audio-midi-files/file-browser:"
-"Preferences>`."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:80
-msgid "Showing Hidden Files"
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:81
-msgid ""
-"By default, only files that are not hidden will be shown in the file list. "
-"To also show hidden files, enable :guilabel:`Show hidden files` in the :ref:"
-"`file browser preferences <plugins-files/audio-midi-files/file-browser:"
-"Preferences>`."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:88
+#: ../../plugins-files/audio-midi-files/file-browser.rst:76
 msgid ""
 "Audio and MIDI files can be auditioned by making use of the auditioning "
 "controls at the bottom of the file list."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:95
+#: ../../plugins-files/audio-midi-files/file-browser.rst:83
 msgid "File auditioning controls"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:98
+#: ../../plugins-files/audio-midi-files/file-browser.rst:86
 msgid "Trigger playback of the selected file."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:100
+#: ../../plugins-files/audio-midi-files/file-browser.rst:88
 msgid "Stop playback of the selected file."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:102
+#: ../../plugins-files/audio-midi-files/file-browser.rst:90
 msgid "Volume"
 msgstr "볼륨"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:102
+#: ../../plugins-files/audio-midi-files/file-browser.rst:90
 msgid "Control the loudness of the output audio."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:105
-#: ../../tracks/inspector-page.rst:41 ../../tracks/track-types.rst:46
+#: ../../plugins-files/audio-midi-files/file-browser.rst:93
+#: ../../tracks/inspector-page.rst:42 ../../tracks/track-types.rst:46
 msgid "Instrument"
 msgstr "악기"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:106
+#: ../../plugins-files/audio-midi-files/file-browser.rst:94
 msgid ""
 "The selected instrument will be used for playing back MIDI files. In the "
-"above example, the `Helm` instrument is selected."
+"above example, the `amsynth` instrument is selected."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:111
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid ""
+"Clicking the cog button on the right side of the auditioning controls will "
+"bring up the file browser preferences screen. The following settings are "
+"available."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:105
 msgid "Autoplay"
 msgstr "자동 재생"
 
+#: ../../plugins-files/audio-midi-files/file-browser.rst:106
+msgid "Automatically play back the selected file when the selection changes"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:108
+msgid "Show Unsupported Files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:108
+msgid ""
+"By default, only supported files will be shown in the file list. Enabling "
+"this option will also show unsupported files."
+msgstr ""
+
 #: ../../plugins-files/audio-midi-files/file-browser.rst:112
+msgid "Show Hidden Files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:111
 msgid ""
-"Auto-play (automatically playing back the selected file when the selection "
-"changes) can be enabled in the preferences below."
+"By default, only files that are not hidden will be shown in the file list. "
+"Enabling this option will also show hidden files."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:119
-msgid ""
-"Clicking the cog icon will bring up the preferences for the file browser."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:125
-msgid "File browser preferences"
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:128
+#: ../../plugins-files/audio-midi-files/file-browser.rst:115
 msgid "File Info"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:129
+#: ../../plugins-files/audio-midi-files/file-browser.rst:116
 msgid ""
 "Information, such as metadata, for the selected file is always shown at the "
 "bottom of the file panel."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:135
+#: ../../plugins-files/audio-midi-files/file-browser.rst:122
 msgid "Information about the selected audio file"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:138
+#: ../../plugins-files/audio-midi-files/file-browser.rst:125
+#: ../../tracks/creating-tracks.rst:32
 msgid "Importing Files"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:139
+#: ../../plugins-files/audio-midi-files/file-browser.rst:127
+msgid "There are various ways to import MIDI and audio files into a project."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:130
+msgid "Drag and Drop From a File Browser"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:132
 msgid ""
-"Files are imported into the project by either double-clicking or dragging "
-"and dropping into the timeline."
+"You can drag one or more files from your system's file browser or from the "
+"built-in file browser into a track (if applicable), into empty space in the "
+"timeline or into empty space in the tracklist or mixer."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:136
+msgid ""
+"Droping onto an existing track will import the file on that track (if "
+"possible), and dropping onto empty space will create one or more new tracks "
+"(depending on the number of dropped files, or number of tracks contained in "
+"Type 1 MIDI files)."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:140
+msgid ""
+"You can adjust the location where the dropped file will be inserted in the "
+"project by dropping at an appropriate spot"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:146
-msgid "Drag-n-dropping an audio file into a new track"
+msgid "Dropping one or more audio files into an existing audio track"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:149
-msgid "Pop-up File Browser"
+#: ../../plugins-files/audio-midi-files/file-browser.rst:151
+msgid "Dropping a file at a specific location in a new track"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:150
+#: ../../plugins-files/audio-midi-files/file-browser.rst:156
+msgid "Dropping a file at empty space in the tracklist"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:159
+msgid "Activating a File From the Built-in File Browser"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:161
 msgid ""
-"An additional file browser with similar functionalities is available by "
-"clicking the :guilabel:`Popup File Browser` button near the bottom right of "
-"the main window."
+"A file (row) can be activated by selecting a row and pressing the return key "
+"or double-clicking it."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:165
+msgid "Tracklist/Mixer Context Menu"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:167
+msgid ""
+"Files can also be imported by right-clicking in empty space in the tracklist "
+"or mixer and selecting :guilabel:`Import File...`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:173
+msgid "Importing a file via the tracklist context menu"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/intro.rst:7
@@ -5731,119 +5720,67 @@ msgid "Audio & MIDI Files"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:9
-msgid ""
-"Zrythm can import MIDI and audio files into the project. The files can be "
-"imported by dragging and dropping from your computer or from the :doc:`file "
-"browser <file-browser>` into a track."
+msgid "Zrythm allows importing the following MIDI and audio file formats."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:16
+#: ../../plugins-files/audio-midi-files/overview.rst:12
 msgid "Supported Formats"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:20
-msgid "The following file formats are supported."
+#: ../../plugins-files/audio-midi-files/overview.rst:16
+msgid "The following file formats are supported:"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:23
+#: ../../plugins-files/audio-midi-files/overview.rst:18
 msgid "OGG (Vorbis and OPUS)"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:23
-msgid ""
-"An open and patent-free container format mostly used for lossy audio files."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:26
+#: ../../plugins-files/audio-midi-files/overview.rst:19
 msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:26
-msgid ""
-"An open and royalty-free audio coding format for lossless compression of "
-"digital audio."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:29
+#: ../../plugins-files/audio-midi-files/overview.rst:20
 msgid ":abbr:`WAV (Waveform Audio File Format)`"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:29
-msgid "An audio file format for storing audio bistreams (uncompressed audio)."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:34
+#: ../../plugins-files/audio-midi-files/overview.rst:21
 msgid "MP3"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:32
-msgid ""
-"An (originally patented) coding format for compressed audio. Although the "
-"patents have expired, we recommend using OGG instead."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:36
-msgid "OPUS support requires specific project samplerates to work properly."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:39
-msgid ""
-"A software patent is a 20-year monopoly on the use of a feature in a "
-"computer program. When a company has a patent on nested menus, a video "
-"format, or pinch-to-zoom, then no one else can implement that feature for 20 "
-"years unless they get permission from the patent holder."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:47
-msgid ""
-"Computer programs typically contain hundreds or thousands of features, and "
-"many features that users expect, are patented."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:51
-msgid ""
-"The End Software Patents campaign is against software monopolies, and for "
-"software development."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:54
-msgid "Learn more at `EndSoftPatents`_."
-msgstr ""
-
-#: ../../plugins-files/audio-midi-files/overview.rst:60
+#: ../../plugins-files/audio-midi-files/overview.rst:25
 msgid ""
 "Zrythm supports :abbr:`SMF (Standard MIDI File)` files of type 0 and type 1. "
 "Each type is explained below for reference."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:29
 msgid "Type 0"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:65
+#: ../../plugins-files/audio-midi-files/overview.rst:30
 msgid "An entire performance merged into a single track."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:67
+#: ../../plugins-files/audio-midi-files/overview.rst:32
 msgid "Type 1"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:67
+#: ../../plugins-files/audio-midi-files/overview.rst:32
 msgid ""
 "An entire performance in one or more tracks that are performed simultaneously"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:71
+#: ../../plugins-files/audio-midi-files/overview.rst:36
 msgid "Type 2"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:70
+#: ../../plugins-files/audio-midi-files/overview.rst:35
 msgid ""
 "Multiple arrangements, each having its own track and intended to be played "
 "in sequence"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:73
+#: ../../plugins-files/audio-midi-files/overview.rst:38
 msgid "Type 2 SMF files are rarely used and are not supported."
 msgstr ""
 
@@ -5858,8 +5795,7 @@ msgstr ""
 #: ../../plugins-files/plugins/inspector-page.rst:11
 msgid ""
 "When a plugin is selected in the Mixer, or when using :menuselection:`right "
-"click --> Inspect` on an instrument, its page will appear in the inspector "
-"as follows."
+"click --> Inspect` on an instrument, its page will appear in the inspector."
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
@@ -5888,44 +5824,37 @@ msgid "Plugin Ports"
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:35
-msgid "These are the ports that the plugin has."
+msgid ""
+"These are the :ref:`ports that the plugin owns <plugins-files/plugins/plugin-"
+"info:Plugin Ports>`. Depending on the type of plugin, there may be different "
+"categories of ports being shown."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:40
+#: ../../plugins-files/plugins/inspector-page.rst:42
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
 "automated using automation tracks."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:44
+#: ../../plugins-files/plugins/inspector-page.rst:46
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:47
+#: ../../plugins-files/plugins/inspector-page.rst:49
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:49
-msgid ""
-"Depending on the type of plugin, there may be different categories of ports "
-"being shown."
-msgstr ""
-
-#: ../../plugins-files/plugins/inspector-page.rst:53
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid "Display"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:54
+#: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :ref:`routing/connections:"
 "Connections` for details."
-msgstr ""
-
-#: ../../plugins-files/plugins/inspector-page.rst:59
-msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:9
@@ -6049,59 +5978,60 @@ msgstr ""
 msgid "Option to add the plugin to *My collection*"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:88
+#: ../../plugins-files/plugins/plugin-browser.rst:86
+#: ../../tracks/creating-tracks.rst:22
 msgid "Instantiating Plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:89
+#: ../../plugins-files/plugins/plugin-browser.rst:87
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:92
+#: ../../plugins-files/plugins/plugin-browser.rst:90
 msgid "Drag-n-Drop"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:94
+#: ../../plugins-files/plugins/plugin-browser.rst:92
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:101
+#: ../../plugins-files/plugins/plugin-browser.rst:99
 msgid "Dropping a plugin into the tracklist"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:106
+#: ../../plugins-files/plugins/plugin-browser.rst:104
 msgid "Dropping a plugin into the mixer"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:108
+#: ../../plugins-files/plugins/plugin-browser.rst:106
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:114
+#: ../../plugins-files/plugins/plugin-browser.rst:112
 msgid "Dropping a plugin into a slot"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:116
+#: ../../plugins-files/plugins/plugin-browser.rst:114
 msgid "Dragging also works in plugin slots in the inspector."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:118
+#: ../../plugins-files/plugins/plugin-browser.rst:116
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:124
+#: ../../plugins-files/plugins/plugin-browser.rst:122
 msgid "Dropping a modulator plugin into the project modulators section"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:127
+#: ../../plugins-files/plugins/plugin-browser.rst:125
 msgid "Double Click/Enter"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:129
+#: ../../plugins-files/plugins/plugin-browser.rst:127
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -6774,7 +6704,7 @@ msgstr "희미함"
 msgid "Dim the output to the dim level"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:72 ../../tracks/track-controls.rst:25
+#: ../../routing/monitor-section.rst:72 ../../tracks/inspector-page.rst:156
 msgid "Mute"
 msgstr "음소거"
 
@@ -7329,58 +7259,83 @@ msgstr ""
 
 #: ../../tracks/automation.rst:27
 msgid ""
-"You can choose which parameter you want to automate in each automation lane."
+"You can choose which parameter you want to automate in each automation lane "
+"by clicking on the parameter name. A popover will appear that allows you to "
+"find an automatable parameter to automate."
 msgstr ""
 
-#: ../../tracks/automation.rst:33
+#: ../../tracks/automation.rst:34
 msgid "Selecting an automatable control"
 msgstr ""
 
-#: ../../tracks/automation.rst:36
+#: ../../tracks/automation.rst:37
 msgid "Playback Mode"
 msgstr ""
 
-#: ../../tracks/automation.rst:38
+#: ../../tracks/automation.rst:39
 msgid ""
 "Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
 "`Off` toggles in the track lane."
 msgstr ""
 
-#: ../../tracks/automation.rst:41
+#: ../../tracks/automation.rst:42
 msgid ""
 "Touch/latch modes can also be used to record automation live (see the :ref:"
 "`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 
-#: ../../tracks/automation.rst:47
+#: ../../tracks/automation.rst:48
 msgid "Editing Automation"
 msgstr ""
 
-#: ../../tracks/automation.rst:48
+#: ../../tracks/automation.rst:49
 msgid ""
 "Editing automation involves creating automation regions and then creating "
-"automation events inside the automation editor. See :ref:`editing/clip-"
-"editors/automation-editor:Automation Editor` for details."
+"automation events inside the :ref:`automation editor <editing/automation-"
+"editor:Automation Editor>`."
 msgstr ""
 
-#: ../../tracks/automation.rst:55
-msgid "Behavior"
+#: ../../tracks/automation.rst:54
+msgid "Showing/Hiding Lanes"
 msgstr ""
 
 #: ../../tracks/automation.rst:56
+msgid ""
+"New lanes can be shown by clicking on the :guilabel:`+` button. This will "
+"display a new automation lane assigned to the next available automatable "
+"parameter."
+msgstr ""
+
+#: ../../tracks/automation.rst:60
+msgid "Previously shown automation lanes will be given priority."
+msgstr ""
+
+#: ../../tracks/automation.rst:62
+msgid "Existing lanes can be hidden using the :guilabel:`-` button."
+msgstr ""
+
+#: ../../tracks/automation.rst:64
+msgid ":ref:`tracks/track-operations:Automation Section`"
+msgstr ""
+
+#: ../../tracks/automation.rst:67
+msgid "Behavior"
+msgstr ""
+
+#: ../../tracks/automation.rst:68
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:61
+#: ../../tracks/automation.rst:73
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:65
+#: ../../tracks/automation.rst:77
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
@@ -7389,51 +7344,50 @@ msgid "Creating Tracks"
 msgstr ""
 
 #: ../../tracks/creating-tracks.rst:10
-msgid "Blank Tracks"
+msgid "Empty Tracks"
 msgstr ""
 
 #: ../../tracks/creating-tracks.rst:12
+#, fuzzy
 msgid ""
-"To add an empty track, right click on empty space in the Tracklist and "
-"select the type of track you want to add."
+"To add an empty track, click the :guilabel:`+` button in the tracklist (or "
+"right click on empty space) and select the type of track you want to add."
 msgstr ""
+"사전 설정을 불러오려면 코드 패드 상단에 있는 :guilabel:`사전 설정 불러오기` "
+"버튼을 클릭한 다음 사용할 사전 설정을 선택하세요."
 
 #: ../../tracks/creating-tracks.rst:19
-msgid "Creating Tracks From Plugins"
+msgid "Adding a new empty track"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:21
+#: ../../tracks/creating-tracks.rst:24
 msgid ""
-"Plugins can be clicked and dragged from the Plugin Browser and dropped into "
-"empty space in the Tracklist or Mixer to instantiate them. If the plugin is "
-"an instrument plugin, an instrument Track will be created. If the plugin is "
-"an effect, a bus Track will be created."
+":ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:"
+"Instantiating Plugins>` will cause new tracks to be created (unless the "
+"plugin was dropped in a particular location). If the plugin is an instrument "
+"plugin, an instrument track will be created. If the plugin is an effect, a "
+"bus track will be created."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:27
-msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
+#: ../../tracks/creating-tracks.rst:29
+msgid "Instrument tracks can be created this way."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:31
-msgid "Creating Audio Tracks From Audio Files"
-msgstr ""
-
-#: ../../tracks/creating-tracks.rst:33
+#: ../../tracks/creating-tracks.rst:34
 msgid ""
-"Likewise, to create an Audio Track from an audio file (WAV, FLAC, etc.), you "
-"can drag an audio file from the File Browser into empty space in the "
-"Tracklist or Mixer. This will create an Audio Track containing a single "
-"Audio Clip at the current Playhead position."
+"Likewise, :ref:`importing audio/MIDI files <plugins-files/audio-midi-files/"
+"file-browser:Importing Files>` will create audio and/or MIDI tracks "
+"containing that file."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:38
+msgid "Duplicating/Cloning"
 msgstr ""
 
 #: ../../tracks/creating-tracks.rst:40
-msgid "Creating Tracks by Duplicating"
-msgstr ""
-
-#: ../../tracks/creating-tracks.rst:42
 msgid ""
-"Most Tracks can be duplicated by right clicking inside the Track and "
-"selecting :zbutton:`Duplicate`."
+"Most Tracks can be duplicated via the :guilabel:`Duplicate` context menu "
+"option."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:9
@@ -7446,151 +7400,158 @@ msgid ""
 "on the track, the properties shown will be different."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:19
+#: ../../tracks/inspector-page.rst:18
+#, fuzzy
+msgid "The track inspector"
+msgstr "트랙 검사기"
+
+#: ../../tracks/inspector-page.rst:21
 msgid "Track Properties"
 msgstr "트랙 속성"
 
-#: ../../tracks/inspector-page.rst:21
+#: ../../tracks/inspector-page.rst:23
 msgid "Track properties are basic properties that the track has."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:28
+#: ../../tracks/inspector-page.rst:30 ../../tracks/track-operations.rst:46
 msgid "Track Name"
 msgstr "트랙 이름"
 
-#: ../../tracks/inspector-page.rst:28
+#: ../../tracks/inspector-page.rst:30
 msgid "Name of the track. Can be changed by double clicking."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:36
+#: ../../tracks/inspector-page.rst:38
 msgid "Direct Out"
 msgstr "다이렉트 아웃"
 
-#: ../../tracks/inspector-page.rst:31
+#: ../../tracks/inspector-page.rst:33
 msgid "The track that this track routes its output to."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:36
+#: ../../tracks/inspector-page.rst:38
 msgid "Routing an instrument to an audio group"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:39
+#: ../../tracks/inspector-page.rst:41
 msgid ""
-"The instrument plugin from this track. This is only applicable to :ref:"
-"`Instrument tracks <tracks/track-types:Instrument Track>`."
+"The instrument plugin from this track (only applicable to :ref:`instrument "
+"tracks <tracks/track-types:Instrument Track>`)."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:48
+#: ../../tracks/inspector-page.rst:49
 msgid ""
 "If the track takes input, there will be an input selection section. This is "
 "mainly used for :ref:`playback-and-recording/recording:Recording`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:53
+#: ../../tracks/inspector-page.rst:54
 msgid "MIDI Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:58
-msgid "Input Device"
-msgstr ""
-
 #: ../../tracks/inspector-page.rst:59
-msgid "Device to read MIDI input from"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:62
-msgid "MIDI Channels"
+msgid "MIDI inputs on an instrument track"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:61
-msgid "MIDI channels to listen to (other channels will be ignored)"
+msgid "Input Device"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:62
+msgid "Device to read MIDI input from"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:65
+msgid "MIDI Channels"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:64
+msgid "MIDI channels to listen to (other channels will be ignored)"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:68
 msgid "Audio Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:70
-msgid "Left Input"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:71
-msgid "Left audio input port to listen to"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:72
-msgid "Right Input"
-msgstr ""
-
 #: ../../tracks/inspector-page.rst:73
-msgid "Right audio input port to listen to"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:74
-msgid "Mono toggle"
+msgid "Audio inputs on an audio track"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:75
-msgid "Duplicate the left signal on both channels"
+msgid "Left Input"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:76
+msgid "Left audio input port to listen to"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:77
-msgid "Gain knob"
+msgid "Right Input"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:77
-msgid "Adjust input gain"
+#: ../../tracks/inspector-page.rst:78
+msgid "Right audio input port to listen to"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:79
+msgid "Mono toggle"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:80
-msgid "MIDI FX/Inserts"
+msgid "Duplicate the left signal on both channels"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:82
+msgid "Gain knob"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:82
+msgid "Adjust input gain"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:85
+msgid "MIDI FX/Inserts"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:87
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied to "
 "the signal as it passes through the track."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:88
+#: ../../tracks/inspector-page.rst:93
+msgid "MIDI FX and insert slots"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:95
 msgid ""
 "MIDI FX are processed after the input and piano roll events and before the "
 "instruments in instrument tracks, or before the inserts in MIDI tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:92
+#: ../../tracks/inspector-page.rst:99
 msgid "Only MIDI and Instrument tracks support MIDI FX."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:94
+#: ../../tracks/inspector-page.rst:101
 msgid ""
 "Inserts are processed in order. For instrument tracks, the inserts will be "
 "added onto the signal coming from the instrument, and for other tracks they "
 "will be added on the incoming signal."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:99
-msgid "The signal flow is summarized below."
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:101
-msgid ""
-"``[track input] -> [MIDI FX, if any] -> [instrument, if any] -> [inserts, if "
-"any] -> [track output]``"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:106
+#: ../../tracks/inspector-page.rst:109
 msgid "Aux Sends"
 msgstr "Aux 보내기"
 
-#: ../../tracks/inspector-page.rst:108
+#: ../../tracks/inspector-page.rst:111
 msgid ""
 "These are `aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other "
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:118
+#: ../../tracks/inspector-page.rst:121
 msgid ""
 "The first 6 slots are for pre-fader sends and the last 3 slots are for post-"
 "fader sends. The pre-fader slots will send the signal before the fader is "
@@ -7598,73 +7559,111 @@ msgid ""
 "applied."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:125
+#: ../../tracks/inspector-page.rst:128
 msgid "Fader"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:126
-msgid "Fader section to control the volume and stereo balance."
+#: ../../tracks/inspector-page.rst:129
+msgid ""
+"The fader section is used to control the volume and stereo balance of a "
+"channel."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:131
+#: ../../tracks/inspector-page.rst:134
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
 "respective widgets. You can reset them to their default positions with :"
 "menuselection:`Right click --> Reset`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:136
+#: ../../tracks/inspector-page.rst:139
 msgid ""
 "The meter displays the amplitude of the signal in dBFS as it is processed "
-"live. The following values are displayed next to the meter for additional "
-"reference."
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:140
-msgid "Peak"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:141
-msgid "Peak signal value"
+"live. The peak value of the signal is also displayed next to the meter for "
+"additional reference."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:143
-msgid "RMS"
-msgstr ""
-
-#: ../../tracks/inspector-page.rst:143
-msgid "Root Mean Square of the signal value"
+msgid ""
+"MIDI faders use MIDI volume CC (currently unimplemented - they let the "
+"signal pass through unchanged)."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:145
-msgid ""
-"The controls available for controlling the signal flow are covered in :ref:"
-"`tracks/track-controls:Signal Flow`."
+msgid "The following controls are available for controlling the signal flow:"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:149
-msgid "MIDI faders use MIDI volume CC."
+msgid "Arm the track for recording."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:151
+msgid "Mute the track, meaning no signal will be sent to its direct out."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:154
 msgid ""
-"The MIDI fader is a TODO feature - currently, it lets the signal pass "
-"through unchanged."
+"The track will still be processed, so if you are looking to decrease :term:"
+"`DSP` usage, try :ref:`disabling the track <tracks/track-operations:Channel "
+"Section>` (or individual plugins) instead."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:156
-msgid "Channel Settings"
+#: ../../tracks/inspector-page.rst:159
+msgid "Solo"
+msgstr "솔로"
+
+#: ../../tracks/inspector-page.rst:159
+msgid ""
+"Solo the track. If any track is soloed, only the soloed tracks will produce "
+"sounds."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:161
+#: ../../tracks/inspector-page.rst:164
+msgid "Listen"
+msgstr "듣기"
+
+#: ../../tracks/inspector-page.rst:162
+msgid ""
+"Similar to solo, except it dims the volume of other tracks instead of muting "
+"them. The dim amount can be controlled in the :ref:`Monitor section <routing/"
+"monitor-section:Monitor Section>`."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:167
+msgid ""
+"Listen to incoming signal when recording (only available on audio tracks)."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:170
+msgid "Signal Flow"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:172
+msgid ""
+"To give a better picture of how the signal flows across the different parts "
+"of a track, the signal flow for an instrument track is displayed below."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:175
+msgid ""
+"See the :ref:`Routing chapter <routing/intro:Routing>` for more info on how "
+"Zrythm handles signals."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:177
+msgid ""
+"Signal flow for an instrument track (red = MIDI signal, blue = audio signal)"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:197
 msgid "Comments"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:162
+#: ../../tracks/inspector-page.rst:198
 msgid "User comments. This feature is useful for keeping notes about tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:168
+#: ../../tracks/inspector-page.rst:204
 msgid "Clicking the pencil button will bring up a popup to edit the comment."
 msgstr ""
 
@@ -7672,27 +7671,32 @@ msgstr ""
 msgid "Tracks"
 msgstr ""
 
-#: ../../tracks/overview.rst:9
+#: ../../tracks/overview.rst:10
+#, fuzzy
+msgid "Track Overview"
+msgstr "트랙 속성"
+
+#: ../../tracks/overview.rst:12
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
 
-#: ../../tracks/overview.rst:16
-msgid "Track in tracklist"
+#: ../../tracks/overview.rst:19
+msgid "A track in the tracklist"
 msgstr ""
 
-#: ../../tracks/overview.rst:18
+#: ../../tracks/overview.rst:21
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
 "`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 
-#: ../../tracks/overview.rst:25
-msgid "Channel in mixer"
+#: ../../tracks/overview.rst:28
+msgid "A channel in the mixer"
 msgstr ""
 
-#: ../../tracks/overview.rst:27
+#: ../../tracks/overview.rst:30
 msgid ""
 "There are various kinds of tracks suited for different purposes, explained "
 "in the following sections. Some tracks are special, like the :ref:`Chord "
@@ -7700,7 +7704,7 @@ msgid ""
 "track-types:Marker Track>`, which contain chords and markers respectively."
 msgstr ""
 
-#: ../../tracks/overview.rst:35
+#: ../../tracks/overview.rst:38
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), FX/"
 "bus tracks are used for effects/sends, and folder tracks (coming soon) are  "
@@ -7708,23 +7712,26 @@ msgid ""
 "operations."
 msgstr ""
 
-#: ../../tracks/overview.rst:42
+#: ../../tracks/overview.rst:45
 msgid ""
 "Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI arpegiator."
 msgstr ""
 
-#: ../../tracks/overview.rst:47
-msgid ""
-"This is different from what many other :term:`DAWs <DAW>` do, so please keep "
-"this in mind."
+#: ../../tracks/overview.rst:50
+msgid "This may be different from what most other :term:`DAWs <DAW>` do."
 msgstr ""
 
-#: ../../tracks/overview.rst:52
+#: ../../tracks/overview.rst:53
 msgid "Track Interface"
 msgstr ""
 
-#: ../../tracks/overview.rst:57
+#: ../../tracks/overview.rst:58
+#, fuzzy
+msgid "Track interface"
+msgstr "트랙 이름"
+
+#: ../../tracks/overview.rst:60
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will "
@@ -7732,157 +7739,10 @@ msgid ""
 "automation will have an option to display automation tracks as above."
 msgstr ""
 
-#: ../../tracks/overview.rst:63
+#: ../../tracks/overview.rst:66
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side "
 "showing the current level."
-msgstr ""
-
-#: ../../tracks/overview.rst:67
-msgid "Track Icon"
-msgstr ""
-
-#: ../../tracks/overview.rst:68
-msgid "The icon can be changed by clicking on the icon in the tracklist."
-msgstr ""
-
-#: ../../tracks/overview.rst:71
-msgid "Add pic and explain how to add custom icons."
-msgstr ""
-
-#: ../../tracks/overview.rst:75
-msgid "Context Menu"
-msgstr ""
-
-#: ../../tracks/overview.rst:77
-msgid ""
-"Each tracks has a context menu with additional options depending on its type."
-msgstr ""
-
-#: ../../tracks/overview.rst:83
-msgid ""
-"The section :ref:`track-operations` explains the various track operations "
-"available."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:7
-msgid "Track Controls"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:9
-msgid ""
-"Tracks have various controls available in the track views inside the "
-"tracklist and in their corresponding channels inside the mixer. Each "
-"available control is explained below."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:15
-msgid "Signal Flow"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:18
-msgid "Arm the track for recording."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:20
-msgid "Mute the track, meaning no signal will be sent to its direct out."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:23
-msgid ""
-"The track will still be processed, so if you are looking to decrease :term:"
-"`DSP` usage, try disabling plugins instead."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:28
-msgid "Solo"
-msgstr "솔로"
-
-#: ../../tracks/track-controls.rst:28
-msgid ""
-"Solo the track. If any track is soloed, only the soloed tracks will produce "
-"sounds."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:33
-msgid "Listen"
-msgstr "듣기"
-
-#: ../../tracks/track-controls.rst:31
-msgid ""
-"Similar to solo, except it dims the volume of other tracks instead of muting "
-"them. The dim amount can be controlled in the :ref:`Monitor Section <routing/"
-"monitor-section:Monitor Section>`."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:36
-msgid "Listen to incoming signal when recording."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:38
-msgid "This is only used on audio tracks."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:41
-msgid "Visibility"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:44
-msgid "Show Lanes"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:44
-msgid ""
-"Toggle the visibility of :ref:`track lanes <tracks/track-lanes:Track Lanes>`."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:47
-msgid "Show Automation"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:47
-msgid ""
-"Toggle the visibility of :ref:`automation tracks <tracks/automation:"
-"Automation Tracks>`."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:52
-msgid "Show UI"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:50
-msgid "Show or hide the UI of the instrument plugin."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:52
-msgid "Only available on instrument tracks."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:55
-#: ../../zrythm-interface/main-toolbar.rst:60
-msgid "Other"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:60
-msgid "Lock"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:58
-msgid "Prevent any edits on the track while locked."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:60 ../../tracks/track-controls.rst:67
-msgid "Not implemented yet."
-msgstr ""
-
-#: ../../tracks/track-controls.rst:68
-msgid "Freeze"
-msgstr ""
-
-#: ../../tracks/track-controls.rst:63
-msgid ""
-"Bounce the track to an audio file internally and prevent edits while frozen. "
-"This is intended to reduce :term:`DSP` load on DSP-hungry tracks."
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:7
@@ -7940,38 +7800,251 @@ msgid "Track Operations"
 msgstr ""
 
 #: ../../tracks/track-operations.rst:12
-msgid "Moving Tracks"
-msgstr ""
+#, fuzzy
+msgid "Track Selection"
+msgstr "번역"
 
-#: ../../tracks/track-operations.rst:13
+#: ../../tracks/track-operations.rst:14
 msgid ""
-"Tracks can be moved by clicking and dragging inside empty space in the "
-"Track, and dropping it at another location. The drop locations will be "
-"highlighted as you move the Track."
+"Tracks are selected by clicking on them, either in the tracklist or in the "
+"mixer. Multiple tracks can be selected by pressing and holding :kbd:"
+"`Control` while clicking them."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:19
-msgid "Copying Tracks"
+#: ../../tracks/track-operations.rst:17
+msgid ""
+"There is also :ref:`an option to auto-select tracks when a track object is "
+"selected in the timeline <tracks/tracklist:Tracklist Settings>`."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:20
+msgid "Moving/Copying Tracks"
 msgstr ""
 
 #: ../../tracks/track-operations.rst:21
 msgid ""
-"Tracks can be copied/cloned by clicking and dragging the selected tracks "
-"while holding :kbd:`Control`."
+"Tracks can be moved by clicking on one of the selected tracks and dragging "
+"and dropping them to another location. The drop locations will be "
+"highlighted as you move the Track."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:25
-msgid "Deleting Tracks"
-msgstr ""
-
-#: ../../tracks/track-operations.rst:27
+#: ../../tracks/track-operations.rst:24
 msgid ""
-"Tracks can be deleted by right-clicking them and selecting :guilabel:"
-"`Delete`."
+"Holding down :kbd:`Control` while dropping will cause the tracks to be "
+"cloned (copied) instead of moved."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:31
-msgid "All Track operations are undoable."
+#: ../../tracks/track-operations.rst:30
+msgid "Moving a track above the \"Audio FX Track\""
+msgstr ""
+
+#: ../../tracks/track-operations.rst:33
+msgid "Changing Track Icon/Color/Name"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:36
+msgid "Track Icon"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:38
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:41
+#, fuzzy
+msgid "Track Color"
+msgstr "트랙 검사기"
+
+#: ../../tracks/track-operations.rst:43
+msgid ""
+"The track color can be changed by clicking on the color box on the left side "
+"of the track view, or via the :guilabel:`Change Color` context menu option."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:48
+msgid ""
+"The track name can be changed by double-clicking on it in the track view, in "
+"the track inspector, or in the channel. It can also be changed via the :"
+"guilabel:`Rename` context menu option."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:60
+#, fuzzy
+msgid "Context Menu Options"
+msgstr "메뉴 작업"
+
+#: ../../tracks/track-operations.rst:62
+msgid ""
+"Each track has a context menu with options that vary depending on its type. "
+"The context menu can be activated by right-clicking on one or more tracks."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:67
+#, fuzzy
+msgid "Track context menu"
+msgstr "트랙 이름"
+
+#: ../../tracks/track-operations.rst:70
+#, fuzzy
+msgid "Edit Section"
+msgstr "번역"
+
+#: ../../tracks/track-operations.rst:73
+msgid "Deletes the selected tracks."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:75
+msgid "Duplicates the selected tracks."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:79
+msgid "Hide"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:77
+msgid "Hides the selected tracks."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:79
+msgid ""
+"See :ref:`tracks/tracklist:Track Visibility and Filtering` for more "
+"information about track visibility."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:84
+msgid "Pin/Unpin"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:82
+msgid "Pins the selected tracks."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:84
+msgid "See :ref:`tracks/tracklist:Tracklist` for details."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:86
+msgid "Change Color"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:87
+msgid "Changes the color of the selected track."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:89
+#, fuzzy
+msgid "Rename"
+msgstr "트랙 이름"
+
+#: ../../tracks/track-operations.rst:89
+msgid "Changes the name of the selected track."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:92
+#, fuzzy
+msgid "Selection Section"
+msgstr "번역"
+
+#: ../../tracks/track-operations.rst:97
+msgid "Append Track Objects to Selection"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:95
+msgid "Appends all track objects to the currently selected timeline objects."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:97
+msgid "This is useful for performing operations on all track objects."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:100
+#, fuzzy
+msgid "Bounce Section"
+msgstr "번역"
+
+#: ../../tracks/track-operations.rst:102
+msgid "Quick Bounce"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:103
+msgid "Bounce with last known settings."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:105
+msgid "Bounce..."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:105
+msgid "Show the Bounce dialog with bounce settings."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:108
+#, fuzzy
+msgid "Channel Section"
+msgstr "번역"
+
+#: ../../tracks/track-operations.rst:110
+msgid "[Fader Controls]"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:111
+msgid "See :ref:`tracks/inspector-page:Fader`."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:112
+#, fuzzy
+msgid "Direct Output"
+msgstr "다이렉트 아웃"
+
+#: ../../tracks/track-operations.rst:113
+msgid ""
+"Allows changing the direct output of the selected tracks to either an "
+"existing track or to a newly-created group track."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:115
+#, fuzzy
+msgid "Disable"
+msgstr "음계"
+
+#: ../../tracks/track-operations.rst:115
+msgid "Disables the selected tracks. Disabled tracks will not be processed."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:118
+#, fuzzy
+msgid "Piano Roll Section"
+msgstr "피아노 롤 통합"
+
+#: ../../tracks/track-operations.rst:121
+#, fuzzy
+msgid "Track MIDI Channel"
+msgstr "트랙 레인"
+
+#: ../../tracks/track-operations.rst:121
+msgid ""
+"The MIDI channel that MIDI events from the piano roll will be assigned to."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:124
+#, fuzzy
+msgid "Automation Section"
+msgstr "자동화 편집기"
+
+#: ../../tracks/track-operations.rst:126
+msgid "Show Used Lanes"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:127
+msgid "Show all lanes that contain automation."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:130
+msgid "Hide Unused Lanes"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:129
+msgid "Hide all lanes that do not contain automation."
 msgstr ""
 
 #: ../../tracks/track-types.rst:7
@@ -8125,7 +8198,7 @@ msgstr ""
 msgid "Audio Group track"
 msgstr "오디오 그룹"
 
-#: ../../tracks/track-types.rst:133 ../../tracks/track-types.rst:287
+#: ../../tracks/track-types.rst:133 ../../tracks/track-types.rst:303
 msgid "Group tracks are foldable."
 msgstr ""
 
@@ -8152,8 +8225,8 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:151
 msgid ""
-"For editing chords inside chord regions, see :ref:`editing/clip-editors/"
-"chord-editor:Chord Editor`."
+"For editing chords inside chord regions, see :ref:`editing/chord-editor:"
+"Chord Editor`."
 msgstr ""
 
 #: ../../tracks/track-types.rst:155
@@ -8179,174 +8252,295 @@ msgstr ""
 msgid "Folder track with a MIDI FX track as a child"
 msgstr ""
 
-#: ../../tracks/track-types.rst:172
-msgid ""
-"To move tracks inside folder tracks, simply select the tracks you want and "
-"drag-and-drop them inside the folder track."
+#: ../../tracks/track-types.rst:173
+msgid "Moving/Copying Tracks Into a Foldable Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:176
+#: ../../tracks/track-types.rst:174
+msgid ""
+"To move (or copy by holding :kbd:`Control`) tracks inside folder (or "
+"foldable) tracks, simply select the tracks you want and drag-and-drop them "
+"inside the folder track. While dragging one or more tracks into a folder "
+"track, a line is shown to indicate where the tracks will be dropped. "
+"Dropping the tracks in the middle of a Folder track (orange line shown in "
+"the middle) will insert the tracks into the folder track as children."
+msgstr ""
+
+#: ../../tracks/track-types.rst:182
+msgid "Moving tracks inside a folder track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:184
+msgid ""
+"Dropping the tracks above (or below) the folder track will cause the tracks "
+"to simply be moved above (or below) the folder track and *NOT* inside it."
+msgstr ""
+
+#: ../../tracks/track-types.rst:187
+msgid "Folding/Unfolding"
+msgstr ""
+
+#: ../../tracks/track-types.rst:188
 msgid ""
 "Clicking the folder button will hide and expand the folder track's children."
 msgstr ""
 
-#: ../../tracks/track-types.rst:179
+#: ../../tracks/track-types.rst:191
 msgid "Audio/MIDI group tracks are also foldable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:182
+#: ../../tracks/track-types.rst:194
 msgid "Instrument Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:184
+#: ../../tracks/track-types.rst:196
 msgid ""
 "The instrument track is used for synths and other instruments. Instrument "
 "tracks contain a special `instrument slot` in the mixer that will get "
 "processed `after` the MIDI FX section and `before` the Inserts section."
 msgstr ""
 
-#: ../../tracks/track-types.rst:193
+#: ../../tracks/track-types.rst:205
 msgid "Instrument track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:195
+#: ../../tracks/track-types.rst:207
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce audio "
 "instead of :term:`MIDI`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:199
+#: ../../tracks/track-types.rst:211
+msgid "Show/Hide Plugin UI"
+msgstr ""
+
+#: ../../tracks/track-types.rst:213
+msgid ""
+"Instrument tracks contain a button (computer screen icon) that allows "
+"showing/hiding the instrument plugin's UI."
+msgstr ""
+
+#: ../../tracks/track-types.rst:217
 msgid "Marker Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:201
+#: ../../tracks/track-types.rst:219
 msgid ""
-"The marker track holds song markers - either custom or pre-defined ones - "
+"The marker track holds :ref:`song markers <playback-and-recording/loop-"
+"points-and-markers:Custom Markers>` - either custom or pre-defined ones - "
 "that make it easier to jump to or to export specific sections of the song. "
 "Each project can only have one marker track and it cannot be deleted (but "
 "can be hidden)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:211
+#: ../../tracks/track-types.rst:229
 msgid "Marker track with 2 markers"
 msgstr ""
 
-#: ../../tracks/track-types.rst:214
+#: ../../tracks/track-types.rst:232
 msgid "Master Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:216
+#: ../../tracks/track-types.rst:234
 msgid ""
 "The master track is a special type of Audio Group Track that Zrythm uses to "
 "route the resulting audio signal after all the processing is done to the "
 "audio backend."
 msgstr ""
 
-#: ../../tracks/track-types.rst:225
+#: ../../tracks/track-types.rst:241
 msgid "Master track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:228
+#: ../../tracks/track-types.rst:244
 msgid "Modulator Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:230
+#: ../../tracks/track-types.rst:246
 msgid ""
 "The modulator track is a special track that is used for global modulators "
 "like LFOs and macro knobs that can be assigned to any automatable control "
 "inside Zrythm."
 msgstr ""
 
-#: ../../tracks/track-types.rst:238
+#: ../../tracks/track-types.rst:254
 msgid "Modulator track with automation for macro knob 1"
 msgstr ""
 
-#: ../../tracks/track-types.rst:240
+#: ../../tracks/track-types.rst:256
 msgid "For more details, see :ref:`modulators/intro:Modulators`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:244
+#: ../../tracks/track-types.rst:260
 msgid "MIDI Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:246
+#: ../../tracks/track-types.rst:262
 msgid ""
 "A MIDI track contains MIDI regions and its purpose is playing back MIDI "
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:251
+#: ../../tracks/track-types.rst:267
 msgid ""
 "MIDI tracks, unlike instrument tracks, produce MIDI output and so their "
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:255
+#: ../../tracks/track-types.rst:271
 msgid ""
 "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
 
-#: ../../tracks/track-types.rst:261
+#: ../../tracks/track-types.rst:277
 msgid "MIDI track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:264
+#: ../../tracks/track-types.rst:280
 msgid "MIDI FX Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:266
+#: ../../tracks/track-types.rst:282
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to them "
 "using :ref:`track-sends`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:273
+#: ../../tracks/track-types.rst:289
 msgid "MIDI FX track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:276
+#: ../../tracks/track-types.rst:292
 msgid "MIDI Group Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:278
+#: ../../tracks/track-types.rst:294
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
 "signals instead of audio signals."
 msgstr ""
 
-#: ../../tracks/track-types.rst:285
+#: ../../tracks/track-types.rst:301
 msgid "MIDI Group track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:290
+#: ../../tracks/track-types.rst:306
 msgid "Tempo Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:292
+#: ../../tracks/track-types.rst:308
 msgid ""
 "The tempo track is a special track that allows automating the BPM and time "
 "signature."
 msgstr ""
 
-#: ../../tracks/track-types.rst:298
+#: ../../tracks/track-types.rst:314
 msgid "Tempo track with BPM automation"
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:9
-msgid "Track Visibility"
+#: ../../tracks/track-types.rst:316
+msgid ""
+"BPM and time signature automation is currently experimental. **Projects "
+"using this functionality may break.** Only use it at your own risk."
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:11
-msgid ""
-"The track visibility tab in the :ref:`left-panel` allows toggling the "
-"visibility of tracks."
+#: ../../tracks/tracklist.rst:7
+msgid "Tracklist"
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:17
+#: ../../tracks/tracklist.rst:12
 msgid ""
-"Tracks can also be quickly hidden with :menuselection:`Right click --> Hide`."
+"The tracklist contains all of the Tracks in the project. It is split into "
+"the top part showing pinned tracks (in the case below the Chord and Marker "
+"tracks), and the bottom part showing unpinned tracks."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:19
+msgid "The project tracklist"
+msgstr ""
+
+#: ../../tracks/tracklist.rst:21
+msgid ""
+"At the top of the tracklist, the number of visible tracks over the number of "
+"total tracks is shown (in the screenshot above, this means 7 visible tracks "
+"out of 9 total tracks)."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:25
+msgid "Pinning Tracks"
+msgstr ""
+
+#: ../../tracks/tracklist.rst:26
+msgid ""
+"You can pin tracks to make them stick to the top, regarldess how far you "
+"scroll down in the tracklist. This is useful to do with chords and markers "
+"so you can always see where you are musically/structurally in your project. "
+"Tracks are pinned by selecting :guilabel:`Pin/Unpin Track` in their context "
+"menu."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:32
+msgid "Zrythm pins the Chord and Marker tracks by default."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:35
+msgid "Track Visibility and Filtering"
+msgstr ""
+
+#: ../../tracks/tracklist.rst:37
+msgid ""
+"The track visibility button in the top of the tracklist allows changing the "
+"visible state of tracks. It is also possible to filter the tracks currently "
+"shown in the tracklist."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:43
+msgid "Track visibility and filtering options"
+msgstr ""
+
+#: ../../tracks/tracklist.rst:45
+msgid ""
+"Tracks can be filtered by name, track type and active status. There is also "
+"a visibility table for toggling the visible state of individual tracks."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:48
+msgid ""
+"Tracks can also be quickly hidden with the :guilabel:`Hide` option in their "
+"context menu."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:51
+#, fuzzy
+msgid "Tracklist Settings"
+msgstr "플러그인 설정"
+
+#: ../../tracks/tracklist.rst:53
+msgid "These are global behavior settings that apply to all tracks."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:58
+#, fuzzy
+msgid "Tracklist settings"
+msgstr "플러그인 설정"
+
+#: ../../tracks/tracklist.rst:60
+msgid "Auto-arm for Recording"
+msgstr ""
+
+#: ../../tracks/tracklist.rst:61
+msgid "Arm tracks for recording when clicked/selected."
+msgstr ""
+
+#: ../../tracks/tracklist.rst:64
+#, fuzzy
+msgid "Auto-select"
+msgstr "번역"
+
+#: ../../tracks/tracklist.rst:63
+msgid "Select tracks when their regions are clicked/selected."
 msgstr ""
 
 #: ../../user-media/intro.rst:7
@@ -8401,7 +8595,7 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:19
-msgid ":ref:`Editor <editors>`"
+msgid ":ref:`Editor <editing/timeline:Editing Region Contents>`"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:20
@@ -8458,7 +8652,7 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:19
-msgid ":ref:`Timeline <editing-timeline>`"
+msgid ":ref:`Timeline <editing/timeline:Timeline>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:20
@@ -8580,6 +8774,10 @@ msgstr "전체화면"
 #, fuzzy
 msgid "Toggle fullscreen mode."
 msgstr "전체화면"
+
+#: ../../zrythm-interface/main-toolbar.rst:60
+msgid "Other"
+msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Show the :ref:`preferences dialog <preferences>`."
@@ -8799,6 +8997,36 @@ msgid ""
 "clipping."
 msgstr ""
 
+#~ msgid "Audio Arranger"
+#~ msgstr "오디오 편곡기"
+
+#~ msgid ""
+#~ "The audio arranger refers to the arranger section of the audio editor."
+#~ msgstr "오디오 편곡기는 오디오 편집기의 편곡기 섹션을 나타냅니다."
+
+#~ msgid "Automation Arranger"
+#~ msgstr "자동화 편곡기"
+
+#~ msgid ""
+#~ "The automation arranger refers to the arranger section of the automation "
+#~ "editor."
+#~ msgstr "자동화 편곡기는 자동화 편집기의 편곡기 섹션을 말합니다."
+
+#~ msgid "Automation arranger"
+#~ msgstr "자동화 편곡기"
+
+#~ msgid "Select/Stretch Tool"
+#~ msgstr "선택/늘이기 도구"
+
+#~ msgid "Length"
+#~ msgstr "길이"
+
+#~ msgid "Looping"
+#~ msgstr "루프"
+
+#~ msgid "Range actions"
+#~ msgstr "번역"
+
 #~ msgid "Additional Settings"
 #~ msgstr "추가 설정"
 
@@ -8829,9 +9057,6 @@ msgstr ""
 
 #~ msgid "Manual"
 #~ msgstr "설명서"
-
-#~ msgid "Donate"
-#~ msgstr "기부"
 
 #~ msgid "Report a Bug"
 #~ msgstr "버그 신고"
