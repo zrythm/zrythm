@@ -3920,8 +3920,7 @@ on_drag_end_audio (ArrangerWidget * self)
     {
     case UI_OVERLAY_ACTION_RESIZING_R:
       {
-        /* if start range selection is after
-         * end, fix it */
+        /* if start range selection is after end, fix it */
         if (
           AUDIO_SELECTIONS->has_selection
           && position_is_after (
@@ -3947,15 +3946,27 @@ on_drag_end_audio (ArrangerWidget * self)
         ArrangerSelections * sel =
           arranger_selections_new (ARRANGER_SELECTIONS_TYPE_TIMELINE);
         arranger_selections_add_object (sel, obj);
+        ArrangerSelections * sel_at_start = arranger_selections_clone (sel);
+        ArrangerObject *     obj_at_start =
+          arranger_selections_get_first_object (sel_at_start);
+        if (is_fade_in)
+          {
+            obj_at_start->fade_in_pos = self->fade_pos_at_start;
+          }
+        else
+          {
+            obj_at_start->fade_out_pos = self->fade_pos_at_start;
+          }
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_resize (
-          (ArrangerSelections *) self->sel_at_start, sel,
+          sel_at_start, sel,
           is_fade_in
                 ? ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE
                 : ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
           ticks_diff, &err);
         arranger_selections_free (sel);
+        arranger_selections_free (sel_at_start);
         if (!ret)
           {
             HANDLE_ERROR (err, "%s", _ ("Failed resizing selection"));

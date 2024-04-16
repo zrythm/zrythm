@@ -1815,15 +1815,6 @@ arranger_selections_contains_unrenamable_object (const ArrangerSelections * self
   return arranger_selections_contains_undeletable_object (self);
 }
 
-/**
- * Checks whether an object matches the given
- * parameters.
- *
- * If a parameter should be checked, the has_*
- * argument must be true and the corresponding
- * argument must have the value to be checked
- * against.
- */
 bool
 arranger_selections_contains_object_with_property (
   ArrangerSelections *       self,
@@ -2360,7 +2351,7 @@ arranger_selections_paste_to_pos (
 /**
  * Appends all objects in the given array.
  */
-NONNULL void
+void
 arranger_selections_get_all_objects (
   const ArrangerSelections * self,
   GPtrArray *                arr)

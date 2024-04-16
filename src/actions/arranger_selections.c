@@ -718,6 +718,8 @@ arranger_selections_action_new_resize (
   const double                       ticks,
   GError **                          error)
 {
+  g_return_val_if_fail (sel_before, NULL);
+
   /* validate */
   bool have_unresizable = arranger_selections_contains_object_with_property (
     sel_before, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
