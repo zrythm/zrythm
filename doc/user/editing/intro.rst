@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -11,11 +11,11 @@ Editing
 .. toctree::
    :maxdepth: 2
 
-   overview
-   edit-tools
    common-operations
-   snapping-grid-options
-   quantization
-   event-viewers
-   timeline/intro
-   clip-editors/intro
+   edit-tools
+   editor-toolbars
+   timeline
+   piano-roll
+   audio-editor
+   automation-editor
+   chord-editor

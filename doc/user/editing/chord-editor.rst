@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 .. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -17,7 +17,8 @@ selected.
 
 The chord editor has a list of chords on the left
 side that can be changed, and an arranger on the
-right side for creating chord progressions.
+right side for creating chord progressions from chord objects.
+Chord objects signify the start of a chord (they do not have length).
 
 Chords
 ------
@@ -34,22 +35,3 @@ These chords correspond to each chord in the
 
 The controls available are similar to those in
 the chord pad.
-
-Chord Arranger
---------------
-The chord arranger refers to the arranger section
-of the chord editor.
-
-.. figure:: /_static/img/chord-arranger.png
-   :align: center
-
-   Chord arranger
-
-The chord editor contains `chord objects` that
-signify the start of a chord.
-
-.. note:: Chord objects do not have a length.
-
-Editing in the chord arranger follows
-:ref:`edit-tools` and
-:ref:`common-operations`.

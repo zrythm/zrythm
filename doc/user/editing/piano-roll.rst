@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -82,9 +82,6 @@ will send a MIDI note on signal when the start position
 of a note is reached, and a note off signal when the end
 position of a note is reached.
 
-Editing inside the MIDI arranger is covered in
-:ref:`edit-tools` and :ref:`common-operations`.
-
 Velocity Editor
 ---------------
 There is another arranger at the bottom of the MIDI arranger
@@ -115,40 +112,3 @@ The :ref:`ramp-mode` can also be used in the velocity editor to
 
    Using the ramp tool on MIDI note velocities
 
-MIDI Functions
---------------
-
-MIDI functions are logic that can be applied
-to transform the selected MIDI notes.
-
-The following functions are available.
-
-Crescendo
-  Gradually increase the velocities of the selected
-  notes from low to high. Used to create a climax.
-Flam
-  Create additional MIDI notes right after the start
-  position of each selected note. This is usually
-  used on snares.
-Flip
-  Reverse/flip the selected notes horizontally or
-  vertically.
-Legato
-  Connect all selected notes so that they play
-  smoothly.
-Portato
-  Similar to legato, but leaves some space between
-  the notes.
-Staccato
-  Make the selected notes short and punctuated.
-Strum Up/Down
-  Shift the position and velocity of notes that
-  start at the same position (chords) to simulate
-  strumming, like when playing guitar.
-
-.. todo:: Add illustrations.
-
-.. note:: Some of these are not implemented yet.
-
-In the future, it will be possible to implement
-custom functions using user scripts.

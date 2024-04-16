@@ -16,7 +16,7 @@ Bottom Panel
 The bottom panel consists of the following views,
 each explained in its own section.
 
-* :ref:`Editor <editors>`
+* :ref:`Editor <editing/timeline:Editing Region Contents>`
 * :ref:`Mixer <mixing>`
 * :ref:`Modulators <modulators/intro:Modulators>`
 * :ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`

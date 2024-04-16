@@ -1,9 +1,7 @@
-.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
-   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
-   This is part of the Zrythm Manual.
+.. SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+.. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
-
-.. _edit-tools:
 
 Edit Tools
 ==========
@@ -17,19 +15,12 @@ following tools.
 .. image:: /_static/img/toolbox.png
    :align: center
 
-Select/Stretch Tool
-~~~~~~~~~~~~~~~~~~~
-This can be toggled to switch between Select and
-Stretch.
-
-In Select mode, you can make object selections and
+Select Tool
+~~~~~~~~~~~
+In *select* mode, you can make object selections and
 create, move, clone and resize objects. This is the
 most common mode and the most common operations can
 be accomplished by just using this.
-
-Stretch mode is similar to the Select mode, with the
-exception that when you resize objects, their contents
-will be stretched to fit the new size.
 
 Creating Objects
 ++++++++++++++++
@@ -81,27 +72,82 @@ location.
 
    Copy-moving a region
 
+Linking (Link-Moving) Objects
++++++++++++++++++++++++++++++
+Regions can be linked by holding down :kbd:`Alt` while moving.
+Changes made in a linked region will be propagated to all other regions in the same link group.
+
+.. tip:: This is useful for re-using the exact same regions across a song without having to re-copy the regions when new changes are made.
+
+.. figure:: /_static/img/link-moving-regions.png
+   :align: center
+
+   Link-moving a MIDI region
+
+Linked regions will display a link icon in their top-right edge.
+
+.. figure:: /_static/img/linked-regions.png
+   :align: center
+
+   Linked regions
+
 Resizing Objects
 ++++++++++++++++
 Objects that have length, such as regions and MIDI notes,
 can be resized by clicking and dragging their edges.
 
-On objects that can be repeated, such as regions, moving
-the cursor on the bottom half of the object will allow you
-to resize the object by repeating it, instead of just
-resizing it.
+.. figure:: /_static/img/resizing-objects.png
+   :align: center
 
-.. note:: When resizing, already repeated objects can only be
-   repeated. To resize them instead of repeat them,
-   their length must be changed or their clip markers must be
-   moved so that they are not repeated anymore.
+   Resizing a region
+
+Repeating Objects
++++++++++++++++++
+
+Regions can be repeated (looped) by moving the cursor
+on the bottom half of the object, then clicking and dragging.
+
+.. figure:: /_static/img/repeating-objects.png
+   :align: center
+
+   Repeating a region
+
+Regions that are repeated will display dashed lines at points where looping
+occurs, and a loop icon in their top right corner.
+
+.. figure:: /_static/img/repeated-object.png
+   :align: center
+
+   A repeated region
+
+The position where the region will initially start playback (the *clip start position*) and the start/end loop points, can be :ref:`adjusted in the clip editor <editing/timeline:Editor Ruler Indicators>`.
+
+.. warning:: If the region is already repeated, it
+   cannot be resized anymore until its loop points
+   match exactly the region's start and end points.
+
+Stretching Objects
+++++++++++++++++++
+
+To stretch one or more regions, hold :kbd:`Control` while hovering the cursor
+at a top edge of a region, then click and drag.
+
+.. note:: Only *non-repeated* objects can be stretched.
 
 .. _cutting-objects:
 
 Cutting Objects
 +++++++++++++++
-You can :kbd:`Alt`-click inside objects to break
-them up.
+You can :kbd:`Alt`-click inside objects to break them up.
+
+.. figure:: /_static/img/cutting-objects.png
+   :align: center
+
+   Cutting a region
+
+Erasing Objects
++++++++++++++++
+Clicking and holding the right mouse button while hovering over objects in *select* mode will delete them.
 
 Edit Tool
 ~~~~~~~~~
@@ -111,10 +157,18 @@ double clicking and dragging, with the Edit tool this is
 accomplished by single clicking and dragging, which is
 more efficient when creating a large number of objects.
 
+Brush Mode
+++++++++++
+
 Holding down :kbd:`Control` while clicking will allow
 you to create multiple objects in a row (where applicable)
 with a length specified by the snap settings corresponding
 to each editor.
+
+.. figure:: /_static/img/edit-brush-mode.png
+   :align: center
+
+   Bulk-creating MIDI notes
 
 Cut Tool
 ~~~~~~~~
@@ -154,9 +208,3 @@ mouse button to stop.
    :align: center
 
    Using the audition tool
-
-.. tip:: Where applicable, hold :kbd:`Shift` to
-   bypass snapping.
-
-.. tip:: Pressing :kbd:`Escape` will cancel any
-   current action.

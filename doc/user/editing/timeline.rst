@@ -1,12 +1,81 @@
-.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2022-2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
-.. _timeline-arranger:
+Timeline
+========
 
-Timeline Arranger
-=================
+Overview
+--------
+
+Editing in the timeline is the most common workflow
+inside Zrythm. The timeline section consists of the
+:ref:`tracklist <tracks/tracklist:Tracklist>` on the left and the ruler/arranger on the
+right, along with a timeline-specific toolbar at the
+top.
+
+.. image:: /_static/img/timeline.png
+   :align: center
+
+Minimap
+-------
+The timeline minimap is a little box that represents the
+current visible area of the timeline. It can be moved around
+and resized to change the visible area.
+
+.. image:: /_static/img/timeline-minimap.png
+   :align: center
+
+Ruler
+-----
+
+The ruler is mainly used to control looping and
+playback.
+
+.. image:: /_static/img/ruler.png
+   :align: center
+
+The ruler will display more or less information
+depending on the current zoom level. It will also
+display the following markers/indicators discussed in
+:ref:`loop-points-and-markers`.
+
+Cue point
+  Displayed as a blue, right-pointing arrow.
+Playhead position
+  Shown as a grey, down-facing arrow.
+Loop points
+  Shown as 2 green arrows, and the area between them is shown in bright green
+  if loop is enabled, or grey if disabled. Can be dragged to reposition.
+
+  .. tip:: Looping can be enabled/disabled using the loop button in the :ref:`transport controls <playback-and-recording/transport-controls:Controls>`.
+
+Clicking and dragging on empty space in the
+bottom half of the ruler will allow
+you to reposition the playhead.
+
+.. tip:: You can :kbd:`Control`-click and drag the loop region to move it.
+
+Setting the Cue Point
+~~~~~~~~~~~~~~~~~~~~~
+Double click inside the ruler to set the cue point. This
+will be used to return to when playback is stopped.
+
+Range Selection
+~~~~~~~~~~~~~~~
+Clicking and dragging in the top half of the ruler
+will create a :term:`range <Range>` selection. If
+an existing range exists, you can click an drag it
+to move it.
+
+.. figure:: /_static/img/ranges.png
+   :align: center
+
+   Range selection
+
+Arranger
+--------
 
 The timeline arranger is the main area where the
 song is composed. It consists of a collection of
@@ -23,18 +92,18 @@ below it. This way you can pin tracks you want to
 always be visible at the top.
 
 Arranger Objects
-----------------
+~~~~~~~~~~~~~~~~
 The following arranger objects can exist inside
 the timeline.
 
 .. _regions:
 
 Regions
-~~~~~~~
++++++++
 Regions (or :term:`clips <Clip>`) are containers
 for events or data (such as MIDI notes and audio
 clips - see below) that can be edited in an
-:ref:`editor <editors>`. Regions can be repeated,
+:ref:`editor <editing/timeline:Editing Region Contents>`. Regions can be repeated,
 like below.
 
 .. figure:: /_static/img/region.png
@@ -45,7 +114,7 @@ like below.
 The following types of regions exist.
 
 Audio Regions
-+++++++++++++
+^^^^^^^^^^^^^
 Audio regions contain audio clips from audio files.
 
 .. figure:: /_static/img/audio-region.png
@@ -62,10 +131,10 @@ Audio tracks.
    Audio track with audio region
 
 Double-clicking an audio region will bring up the
-:doc:`Audio Editor <../../editing/clip-editors/audio-editor>`.
+:ref:`audio editor <editing/audio-editor:Audio Editor>`.
 
 MIDI Regions
-++++++++++++
+^^^^^^^^^^^^
 MIDI regions contain :term:`MIDI` notes.
 
 .. figure:: /_static/img/midi-region.png
@@ -82,10 +151,10 @@ MIDI or Instrument tracks.
    MIDI track with MIDI region
 
 Double-clicking a MIDI region will bring up the
-:doc:`Piano Roll <../../editing/clip-editors/piano-roll>`.
+:ref:`piano roll <editing/piano-roll:Piano Roll>`.
 
 Automation Regions
-++++++++++++++++++
+^^^^^^^^^^^^^^^^^^
 Automation regions contain automation events.
 
 .. figure:: /_static/img/automation-region.png
@@ -102,10 +171,11 @@ Automation regions appear inside automation lanes.
 
 Double-clicking an automation region will bring up
 the
-:doc:`Automation Editor <../../editing/clip-editors/automation-editor>`.
+:ref:`automation editor <editing/automation-editor:Automation Editor>`.
 
 Chord regions
-+++++++++++++
+^^^^^^^^^^^^^
+
 Chord regions contain sequences of chords.
 
 .. figure:: /_static/img/chord-region.png
@@ -121,10 +191,10 @@ Chord regions appear inside the chord track.
    Chord track with chord region
 
 Double-clicking a chord region will bring up the
-:doc:`Chord Editor <../../editing/clip-editors/chord-editor>`.
+:ref:`chord editor <editing/chord-editor:Chord Editor>`.
 
 Markers
-~~~~~~~
+^^^^^^^
 Markers are used to mark the start of a logical
 section inside the song, such as `Chorus` or
 `Intro`.
@@ -146,7 +216,7 @@ start and end of the song that are used for
 exporting the song and cannot be deleted.
 
 Scales
-~~~~~~
+^^^^^^
 Scales are used to indicate the
 start of a section using a specific musical scale.
 
@@ -163,51 +233,11 @@ Scales appear inside the Chord track.
    Chord track with scale
 
 Editing Regions
----------------
+~~~~~~~~~~~~~~~
 The following operations apply to regions.
 
-Looping
-~~~~~~~
-Regions can be repeated, and hence they have
-:ref:`editable loop points and a clip start position <editing/clip-editors/ruler:Markers>`
-in the
-:doc:`Editor ruler <../../editing/clip-editors/ruler>`
-to modify the looping (repeating) behavior.
-
-Regions can also be looped inside the timeline,
-by moving the cursor to the bottom-left or
-bottom-right edge of the region, then clicking
-and dragging.
-
-.. figure:: /_static/img/looping-regions.png
-   :align: center
-
-   Looping (loop-resizing) a region
-
-.. note:: If the region is already repeated, it
-   cannot be resized anymore until its loop points
-   match exactly the region's start and end points.
-
-Link-Moving
-~~~~~~~~~~~
-Linked regions can be created by holding down
-:kbd:`Alt` while moving.
-
-.. figure:: /_static/img/link-moving-regions.png
-   :align: center
-
-   Link-moving a MIDI region
-
-You can verify that a link exists on a region by
-the link icon that shows in the top right.
-
-.. figure:: /_static/img/linked-regions.png
-   :align: center
-
-   Linked MIDI regions
-
 Renaming
-~~~~~~~~
+++++++++
 Regions can be renamed by selecting them and
 pressing :kbd:`F2`.
 
@@ -217,7 +247,7 @@ pressing :kbd:`F2`.
    Renaming a region
 
 Adjusting Fades
-~~~~~~~~~~~~~~~
++++++++++++++++
 Audio regions can have fades.
 Fades are gradual increases or
 decreases in the level of the audio signal, and
@@ -251,6 +281,9 @@ by right-clicking on the fade and selecting
 
    Fade context menu
 
+Fade Types
+^^^^^^^^^^
+
 The various types of fade algorithms available are
 illustrated below.
 
@@ -281,3 +314,63 @@ illustrated below.
    disabled. This is used to avoid clipping and
    should be unnoticable.
 
+Editing Region Contents
+-----------------------
+
+Displaying Region Contents
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When regions are selected in the timeline, their contents
+will be shown inside the Editor tab in the :ref:`bottom-panel`.
+Although there are some common elements shared amongst each
+type of editor, the editor section will differ depending on
+the type of region selected.
+
+.. image:: /_static/img/editor-tab.png
+   :align: center
+
+Editor Ruler
+~~~~~~~~~~~~
+The editor ruler is similar to the timeline ruler.
+
+.. figure:: /_static/img/editor-ruler.png
+   :align: center
+
+   Editor ruler
+
+The ruler will display more or less information
+depending on the current zoom level. It will also
+display the following indicators.
+
+Editor Ruler Indicators
++++++++++++++++++++++++
+
+Song Markers
+  Markers created in the :ref:`Marker track <tracks/track-types:Marker Track>` will be displayed here as read-only.
+Clip Start
+  Controls the position where the clip will start
+  playback from. Displayed as a red, right-pointing arrow.
+Playhead
+  Current position of the playhead. Displayed as a
+  grey, down-facing arrow.
+Loop Points
+  These control the range where the clip will loop
+  after it reaches the loop end point. Displayed
+  as 2 green arrows.
+
+You can move these markers by clicking and dragging.
+
+Clicking and dragging on empty space will allow you
+to reposition the playhead.
+
+Regions in the Editor Ruler
++++++++++++++++++++++++++++
+
+All regions in the same track as the active region
+will be shown inside the ruler. The active region
+will be displayed in a more prominent color.
+
+.. figure:: /_static/img/editor-ruler-regions.png
+   :align: center
+
+   Regions in the editor ruler

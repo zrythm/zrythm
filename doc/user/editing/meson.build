@@ -1,14 +1,16 @@
-# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
+  'audio-editor.rst',
+  'automation-editor.rst',
+  'chord-editor.rst',
   'common-operations.rst',
   'edit-tools.rst',
-  'event-viewers.rst',
+  'editor-toolbars.rst',
   'intro.rst',
-  'overview.rst',
-  'quantization.rst',
-  'snapping-grid-options.rst',
+  'piano-roll.rst',
+  'timeline.rst',
   ]
 
 foreach f : copy_files
@@ -17,6 +19,3 @@ foreach f : copy_files
     input: f,
     output: '@PLAINNAME@')
 endforeach
-
-subdir ('clip-editors')
-subdir ('timeline')

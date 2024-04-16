@@ -655,6 +655,13 @@ Files:
   doc/user/_static/img/moving-tracks-inside-folder.png
   doc/user/_static/img/tracklist-add-track.png
   doc/user/_static/img/tracklist-settings.png
+  doc/user/_static/img/cutting-objects.png
+  doc/user/_static/img/edit-brush-mode.png
+  doc/user/_static/img/ghosted-notes.png
+  doc/user/_static/img/piano-roll-toolbar.png
+  doc/user/_static/img/repeated-object.png
+  doc/user/_static/img/repeating-objects.png
+  doc/user/_static/img/resizing-objects.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:

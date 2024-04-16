@@ -17,7 +17,7 @@ The chord pad can be found in the bottom panel.
    :align: center
 
 These 12 chords are linked to the chords in the
-:ref:`Chord Editor <editing/clip-editors/chord-editor:Chord Editor>`.
+:ref:`Chord Editor <editing/chord-editor:Chord Editor>`.
 
 Presets
 -------

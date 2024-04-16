@@ -17,8 +17,7 @@ Loop Points
 The loop points indicate the area that will be looped
 during playback, if looping is enabled.
 
-.. note:: This only applies to the timeline ruler, covered
-  in :ref:`timeline-ruler`.
+.. note:: This only applies to the :ref:`timeline ruler <editing/timeline:Ruler>`.
 
 Cue Point
 ---------
@@ -30,8 +29,7 @@ The cue point is where the playhead will move
 to when Play is clicked while playing or when
 Stop is clicked while paused.
 
-.. note:: This only applies to the timeline ruler, covered
-  in :ref:`timeline-ruler`.
+.. note:: This only applies to the :ref:`timeline ruler <editing/timeline:Ruler>`.
 
 Song Start & End Markers
 ------------------------

@@ -16,7 +16,7 @@ Main Panel
 The main panel consists of the following views, each
 explained in its own section.
 
-* :ref:`Timeline <editing-timeline>`
+* :ref:`Timeline <editing/timeline:Timeline>`
 * :ref:`Port Connections <routing/connections:Managing Connections>`
 * :ref:`MIDI CC Bindings <configuration/device-setup:MIDI Bindings>`
 

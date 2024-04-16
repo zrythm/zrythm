@@ -48,9 +48,7 @@ Editing Automation
 ------------------
 Editing automation involves creating automation
 regions and then creating automation events inside
-the automation editor. See
-:ref:`editing/clip-editors/automation-editor:Automation Editor`
-for details.
+the :ref:`automation editor <editing/automation-editor:Automation Editor>`.
 
 Showing/Hiding Lanes
 --------------------

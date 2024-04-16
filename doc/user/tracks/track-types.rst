@@ -149,7 +149,7 @@ For more information about chords, see the section
 :ref:`chords-and-scales/intro:Chords and Scales`.
 
 For editing chords inside chord regions, see
-:ref:`editing/clip-editors/chord-editor:Chord Editor`.
+:ref:`editing/chord-editor:Chord Editor`.
 
 Live Audition
 ~~~~~~~~~~~~~
