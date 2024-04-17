@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 .. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -9,8 +9,6 @@ Appendix
 .. toctree::
    :maxdepth: 4
 
-   menu-actions
    environment
    files-and-directories
-   troubleshooting
    gnu-free-documentation-license

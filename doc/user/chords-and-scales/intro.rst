@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -12,4 +12,3 @@ Chords and Scales
    :maxdepth: 4
 
    chord-pad
-   piano-roll-integration

@@ -60,7 +60,7 @@ much like pressing a key on a real piano.
 A label for each key is shown on the left side of the
 black/white keys, in addition to any highlighting
 (if selected).
-See :ref:`chord-highlighting` for more information.
+See :ref:`editing/editor-toolbars:Chord/Scale Highlighting` for more information.
 
 .. tip:: The vertical zoom level can be changed by
    holding down :kbd:`Ctrl` and :kbd:`Shift` and

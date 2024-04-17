@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
@@ -6,9 +6,7 @@ copy_files = [
   'files-and-directories.rst',
   'gnu-free-documentation-license.rst',
   'intro.rst',
-  'menu-actions.rst',
   'meson.build',
-  'troubleshooting.rst',
   ]
 
 foreach f : copy_files

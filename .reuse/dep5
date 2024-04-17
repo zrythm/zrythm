@@ -662,6 +662,10 @@ Files:
   doc/user/_static/img/repeated-object.png
   doc/user/_static/img/repeating-objects.png
   doc/user/_static/img/resizing-objects.png
+  doc/user/_static/img/gitlab-clicking-create-issue.png
+  doc/user/_static/img/gitlab-filling-in-new-issue.png
+  doc/user/_static/img/gitlab-issues.png
+  doc/user/_static/img/gitlab-new-issue-selecting-template.png
 Copyright: 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment:

@@ -28,7 +28,7 @@ many icons, some customized and some borrowed from
 other themes. If you would like to contribute
 artwork such as icons you can start by creating your own
 themes and icons as discussed in
-:ref:`icon-themes` and :ref:`css`.
+:ref:`theming/overview:Icon Themes` and :ref:`theming/overview:CSS`.
 
 Testing
 -------

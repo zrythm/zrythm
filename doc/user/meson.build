@@ -58,7 +58,6 @@ subdir ('routing')
 subdir ('scripting')
 subdir ('theming')
 subdir ('tracks')
-subdir ('user-media')
 subdir ('zrythm-interface')
 
 conf_py = configure_file (

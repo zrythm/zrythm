@@ -49,7 +49,6 @@ Welcome to the Zrythm manual.
    invoking-from-command-line/intro
    theming/intro
    contributing/intro
-   user-media/intro
    glossary/intro
    credits/intro
    appendix/intro

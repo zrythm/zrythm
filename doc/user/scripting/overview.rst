@@ -1,10 +1,23 @@
-.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
 Overview
 ========
+
+Deprecation Notice
+------------------
+
+.. important:: Zrythm used to offer scripting capabilities using GNU Guile.
+   This functionality has been disabled and is considered deprecated.
+   We will be migrating to a different framework for scripting - likely libpeas-based.
+   Ideas and suggestions are welcome.
+
+   This chapter is left as reference of what was possible and will be replaced in the future.
+
+Previous Scripting Capabilities
+-------------------------------
 
 Zrythm offers a scripting interface implemented
 using
@@ -17,8 +30,6 @@ languages:
 - `Scheme <https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_
 
 .. - `Emacs Lisp <https://en.wikipedia.org/wiki/Emacs_Lisp>`_
-
-.. warning:: The Guile API is experimental.
 
 .. note:: The Guile API is not available on Windows.
    See `this ticket <https://github.com/msys2/MINGW-packages/issues/3298>`_

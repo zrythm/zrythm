@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
    This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -36,7 +36,9 @@ are available, with the exception of MP3.
 Dither
 ~~~~~~
 
-.. todo:: Implement.
+Apply low-level noise to the audio to remove quantization distortion that occurs when reducing the bit depth.
+
+.. tip:: Dithering is typically applied as the final step of mastering.
 
 Bit Depth
 ~~~~~~~~~

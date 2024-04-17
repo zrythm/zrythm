@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
@@ -65,7 +65,7 @@ Managing Connections
 
 Connections can be managed in the
 Connections tab in the
-:ref:`Main Panel <zrythm-interface/main-panel:Main Panel>`.
+:ref:`main manel <zrythm-interface/main-panel:Main Panel>`.
 
 .. figure:: /_static/img/connections-tab.png
    :align: center
@@ -102,3 +102,5 @@ now Zrythm allows you to export the whole routing
 graph as an image, so you can view it externally.
 
 See :ref:`export-routing-graph` for details.
+
+.. warning:: This functionality is experimental.

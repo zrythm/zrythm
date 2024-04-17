@@ -6,6 +6,8 @@ Authors:
    * Main author of developer docs
  Ryan Gonzalez
    * PulseAudio backend
+ Miró Allard
+   * User interface improvements
  Robert Panovics
    * Looped MIDI file export
  Sascha Bast
@@ -23,5 +25,5 @@ See git commit history for contact info.
 
 ----
 
-SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou
+SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou
 SPDX-License-Identifier: FSFAP

@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
-  'css.rst',
-  'icon-themes.rst',
   'intro.rst',
   'overview.rst',
   ]

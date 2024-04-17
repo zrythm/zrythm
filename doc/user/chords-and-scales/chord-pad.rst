@@ -166,3 +166,14 @@ to invert the chord. Each inversion towards the right
 moves the lowest note in the chord one octave higher,
 and each inversion towards the left moves the highest
 note in the chord one octave below.
+
+Piano Roll Integration
+----------------------
+
+Highlighting
+~~~~~~~~~~~~
+
+You can use highlighting inside the piano roll
+to highlight the notes corresponding to the scale,
+chord, or both at the position of the playhead.
+See :ref:`editing/editor-toolbars:Chord/Scale Highlighting` for more information.

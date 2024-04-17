@@ -95,6 +95,52 @@ The log file can be found in
 Please provide at least the last 100 lines. You may be asked
 to provide the full log file (please compress it first).
 
+How to Report an Issue on GitLab
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note:: You must first register an account with us (if you don't already have one).
+   You will be asked to login (or create an account) when you try to create an issue.
+
+First, go to our `issue tracker <issue_tracker_>`_. You will see the following page.
+
+.. figure:: /_static/img/gitlab-issues.png
+   :align: center
+
+   List of Zrythm issues
+
+Click on :guilabel:`New Issue`. You will see the following page where you can fill in details about the issue you are facing.
+Click on :guilabel:`Choose a template...` under :guilabel:`Description` and select what best describes your issue (e.g., a bug).
+
+.. figure:: /_static/img/gitlab-new-issue-selecting-template.png
+   :align: center
+
+   Selecting an issue template
+
+Then, enter the required details to help us understand, reproduce and fix the issue.
+
+.. figure:: /_static/img/gitlab-filling-in-new-issue.png
+   :align: center
+
+   Filling in details according to the template
+
+When you are done, click the :guilabel:`Create Issue` button to submit the issue to us.
+
+.. figure:: /_static/img/gitlab-clicking-create-issue.png
+   :align: center
+
+   Submitting an issue
+
+Existing Issues
++++++++++++++++
+
+Please make sure to first search our issue tracker for any similar issues before making a new one (having multiple tickets about the same issue wastes our time).
+
+If you find the issue you are having in an existing ticket, please read it and comment on it with additional information, if you have any. If you have nothing to add but want us to fix the issue faster, you may add a reaction (like a thumbs up) to let us know it's important.
+
+If you are not sure if your issue is a duplicate, please submit it anyway.
+
+.. tip:: We generally work on issues we consider high-priority first, however if you want something fixed quickly and are willing to pay feel free to contact us with your proposal.
+
 Soft Errors
 -----------
 
@@ -191,7 +237,8 @@ uninstall it afterwards).
 .. image:: /_static/img/drmingw-install-confirmation.png
    :align: center
 
-Then, run Zrythm and make it crash. When Zrythm crashes, you
+Then, run :file:`C:\Program Files\Zrythm\bin\zrythm_debug_gdb.exe`
+and make it crash. When Zrythm crashes, you
 will see a Dr. Mingw window appear on the screen with error
 details.
 
@@ -204,7 +251,7 @@ Please send us this error file.
 .. image:: /_static/img/drmingw-saveas.png
    :align: center
 
-When you are done, you may uninstall Dr. Mingw with the
+When you are done, if you wish, you may uninstall Dr. Mingw with the
 following command:
 
 .. code-block:: bash
