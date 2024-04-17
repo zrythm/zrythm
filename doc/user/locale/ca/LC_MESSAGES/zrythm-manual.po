@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-16 17:40+0900\n"
+"POT-Creation-Date: 2024-04-17 21:18+0900\n"
 "PO-Revision-Date: 2024-03-08 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: ca\n"
@@ -296,24 +296,6 @@ msgstr "Llicència de documentació lliure de GNU"
 msgid "Appendix"
 msgstr "Apèndix"
 
-#: ../../appendix/menu-actions.rst:7
-msgid "Menu Actions"
-msgstr "Accions del menú"
-
-#: ../../appendix/troubleshooting.rst:9
-msgid "Troubleshooting"
-msgstr "Solució de problemes"
-
-#: ../../appendix/troubleshooting.rst:11 ../../editing/automation-editor.rst:42
-#: ../../editing/editor-toolbars.rst:256 ../../exporting/audio-and-midi.rst:39
-#: ../../zrythm-interface/right-panel.rst:24
-msgid "Todo"
-msgstr "Pendent"
-
-#: ../../appendix/troubleshooting.rst:11
-msgid "Write this page."
-msgstr "Escriure aquesta pàgina."
-
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
 msgstr "Pad d'acords"
@@ -321,8 +303,9 @@ msgstr "Pad d'acords"
 #: ../../chords-and-scales/chord-pad.rst:10 ../../editing/timeline.rst:10
 #: ../../playback-and-recording/overview.rst:7
 #: ../../plugins-files/audio-midi-files/overview.rst:7
-#: ../../scripting/overview.rst:7 ../../tracks/overview.rst:7
-#: ../../tracks/tracklist.rst:10 ../../zrythm-interface/overview.rst:7
+#: ../../scripting/overview.rst:7 ../../theming/overview.rst:10
+#: ../../tracks/overview.rst:7 ../../tracks/tracklist.rst:10
+#: ../../zrythm-interface/overview.rst:7
 msgid "Overview"
 msgstr "Resum"
 
@@ -583,43 +566,29 @@ msgstr ""
 "amunt, i cada inversió cap a l'esquerra mou la nota més alta de l'acord una "
 "octava per sota."
 
-#: ../../chords-and-scales/intro.rst:9
-msgid "Chords and Scales"
-msgstr "Acords i escales"
-
-#: ../../chords-and-scales/piano-roll-integration.rst:7
+#: ../../chords-and-scales/chord-pad.rst:171
 msgid "Piano Roll Integration"
 msgstr "Integració del rotlle de pianola"
 
-#: ../../chords-and-scales/piano-roll-integration.rst:12
+#: ../../chords-and-scales/chord-pad.rst:174
 msgid "Highlighting"
 msgstr "Ressaltat"
 
-#: ../../chords-and-scales/piano-roll-integration.rst:14
+#: ../../chords-and-scales/chord-pad.rst:176
+#, fuzzy
 msgid ""
 "You can use highlighting inside the piano roll to highlight the notes "
-"corresponding to the scale, chord, or both at the position of the playhead."
+"corresponding to the scale, chord, or both at the position of the playhead. "
+"See :ref:`editing/editor-toolbars:Chord/Scale Highlighting` for more "
+"information."
 msgstr ""
 "Pots utilitzar el ressaltat dins el rotlle de pianola per a ressaltar les "
 "notes corresponents a l'escala, l'acord o ambdues a la posició del capçal de "
 "reproducció."
 
-#: ../../chords-and-scales/piano-roll-integration.rst:22
-msgid "No highlighting"
-msgstr "Cap ressaltat"
-
-#: ../../chords-and-scales/piano-roll-integration.rst:28
-msgid "Chord highlighting"
-msgstr "Ressaltat d'acords"
-
-#: ../../chords-and-scales/piano-roll-integration.rst:34
-msgid "Scale highlighting"
-msgstr "Ressaltat d'escala"
-
-#: ../../chords-and-scales/piano-roll-integration.rst:40
-#: ../../editing/editor-toolbars.rst:216
-msgid "Scale and chord highlighting"
-msgstr "Ressaltat d'escala i acords"
+#: ../../chords-and-scales/intro.rst:9
+msgid "Chords and Scales"
+msgstr "Acords i escales"
 
 #: ../../configuration/device-setup.rst:7
 msgid "Devices"
@@ -1075,11 +1044,13 @@ msgid "Artwork and Themes"
 msgstr "Obres d'art i temes"
 
 #: ../../contributing/overview.rst:26
+#, fuzzy
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`icon-themes` and :ref:`css`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
+"CSS`."
 msgstr ""
 "Zrythm és utilitzable CSS i també fa ús de moltes icones, algunes "
 "personalitzades i algunes manllevades d'altres temes. Si vols contribuir amb "
@@ -1483,10 +1454,96 @@ msgstr ""
 "registre complet (comprimeix-lo primer)."
 
 #: ../../contributing/reporting-bugs.rst:99
+msgid "How to Report an Issue on GitLab"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:101
+msgid ""
+"You must first register an account with us (if you don't already have one). "
+"You will be asked to login (or create an account) when you try to create an "
+"issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:104
+msgid ""
+"First, go to our `issue tracker <issue_tracker_>`_. You will see the "
+"following page."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:109
+msgid "List of Zrythm issues"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:111
+msgid ""
+"Click on :guilabel:`New Issue`. You will see the following page where you "
+"can fill in details about the issue you are facing. Click on :guilabel:"
+"`Choose a template...` under :guilabel:`Description` and select what best "
+"describes your issue (e.g., a bug)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:117
+#, fuzzy
+msgid "Selecting an issue template"
+msgstr "Selecció d'un control automatitzat"
+
+#: ../../contributing/reporting-bugs.rst:119
+msgid ""
+"Then, enter the required details to help us understand, reproduce and fix "
+"the issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:124
+msgid "Filling in details according to the template"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:126
+msgid ""
+"When you are done, click the :guilabel:`Create Issue` button to submit the "
+"issue to us."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:131
+msgid "Submitting an issue"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:134
+#, fuzzy
+msgid "Existing Issues"
+msgstr "Importar fitxers"
+
+#: ../../contributing/reporting-bugs.rst:136
+msgid ""
+"Please make sure to first search our issue tracker for any similar issues "
+"before making a new one (having multiple tickets about the same issue wastes "
+"our time)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:138
+msgid ""
+"If you find the issue you are having in an existing ticket, please read it "
+"and comment on it with additional information, if you have any. If you have "
+"nothing to add but want us to fix the issue faster, you may add a reaction "
+"(like a thumbs up) to let us know it's important."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:140
+msgid ""
+"If you are not sure if your issue is a duplicate, please submit it anyway."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:142
+msgid ""
+"We generally work on issues we consider high-priority first, however if you "
+"want something fixed quickly and are willing to pay feel free to contact us "
+"with your proposal."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:145
 msgid "Soft Errors"
 msgstr "Errors lleus"
 
-#: ../../contributing/reporting-bugs.rst:101
+#: ../../contributing/reporting-bugs.rst:147
 msgid ""
 "In this case Zrythm will display a bug report dialog. Please follow the "
 "instructions in this dialog to report the issue."
@@ -1494,12 +1551,12 @@ msgstr ""
 "En aquest cas, Zrythm mostrarà un diàleg d'informe d'error. Si us plau, "
 "segueix les instruccions d'aquest diàleg per a informar del problema."
 
-#: ../../contributing/reporting-bugs.rst:105
+#: ../../contributing/reporting-bugs.rst:151
 #, fuzzy
 msgid "Crashes"
 msgstr "Corbes"
 
-#: ../../contributing/reporting-bugs.rst:107
+#: ../../contributing/reporting-bugs.rst:153
 msgid ""
 "If Zrythm crashed, then a bug report dialog may not be shown or the log file "
 "may not contain enough information to help us fix the issue. In this case, "
@@ -1510,12 +1567,12 @@ msgstr ""
 "solucionar el problema. En aquest cas, si us plau, segueix els passos "
 "següents per a generar un abocament de nucli o una traça inversa."
 
-#: ../../contributing/reporting-bugs.rst:113
+#: ../../contributing/reporting-bugs.rst:159
 #, fuzzy
 msgid "Generating Core Dumps on GNU/Linux"
 msgstr "Generació d'acords a partir d'escala"
 
-#: ../../contributing/reporting-bugs.rst:115
+#: ../../contributing/reporting-bugs.rst:161
 msgid ""
 "You will need to type some commands into a terminal. Also, please make sure "
 "you have ``systemd-coredump`` or the equivalent package installed on your "
@@ -1524,7 +1581,7 @@ msgstr ""
 "Hauràs d'escriure algunes ordres en un terminal. A més, assegura't de tenir "
 "instal·lat ``systemd-coredump`` o el paquet equivalent a la teva distribució."
 
-#: ../../contributing/reporting-bugs.rst:119
+#: ../../contributing/reporting-bugs.rst:165
 msgid ""
 "The following steps apply to systemd users (the vast majority of GNU/Linux "
 "users). For non-systemd users, you can usually obtain the core file in the "
@@ -1536,16 +1593,16 @@ msgstr ""
 "poden obtenir el fitxer principal al directori actual després d'executar les "
 "2 primeres ordres a continuació i executar Zrythm fins que es bloquegi."
 
-#: ../../contributing/reporting-bugs.rst:125
+#: ../../contributing/reporting-bugs.rst:171
 msgid "First, enable core dumps:"
 msgstr "Primer, habilita els abocaments de nuclis:"
 
-#: ../../contributing/reporting-bugs.rst:131
+#: ../../contributing/reporting-bugs.rst:177
 msgid "Tell Linux to add the PID (Process ID) to the core dump:"
 msgstr ""
 "Digues a Linux que afegeixi el PID (ID de procés) a l'abocador principal:"
 
-#: ../../contributing/reporting-bugs.rst:137
+#: ../../contributing/reporting-bugs.rst:183
 msgid ""
 "Run Zrythm and make it crash. An intermediate core dump file should now be "
 "generated in :file:`/var/lib/systemd/coredump`. Use ``coredumpctl`` to "
@@ -1555,17 +1612,17 @@ msgstr ""
 "d'abocament del nucli intermedi a :file:`/var/lib/systemd/coredump`. "
 "Utilitza ``coredumpctl`` per a verificar:"
 
-#: ../../contributing/reporting-bugs.rst:145
+#: ../../contributing/reporting-bugs.rst:191
 msgid "You should see something like the following:"
 msgstr "Hauries de veure alguna cosa com el següent:"
 
-#: ../../contributing/reporting-bugs.rst:152
+#: ../../contributing/reporting-bugs.rst:198
 msgid "Note that under `COREFILE` it says `present`, so a core file exists."
 msgstr ""
 "Tingues en compte que a `COREFILE` diu `present`, de manera que existeix un "
 "fitxer principal."
 
-#: ../../contributing/reporting-bugs.rst:155
+#: ../../contributing/reporting-bugs.rst:201
 msgid ""
 "Now we can finally export the core dump file to a location of our choice (in "
 "this case in my :file:`Downloads` directory)  by passing the PID to "
@@ -1575,17 +1632,17 @@ msgstr ""
 "que escollis (en aquest cas al meu directori :file:`Downloads`) passant el "
 "PID a ``coredumpctl``:"
 
-#: ../../contributing/reporting-bugs.rst:163
+#: ../../contributing/reporting-bugs.rst:209
 msgid "Change the file path given to ``--output`` to your desired location."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:166
+#: ../../contributing/reporting-bugs.rst:212
 msgid ""
 "Please send us the core dump file (in the example above it can be found at :"
 "file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:170
+#: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
 "without debugging - Stack Overflow <https://stackoverflow.com/"
@@ -1593,7 +1650,7 @@ msgid ""
 "instruction-error-without-debu/40223712#40223712>`_"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:171
+#: ../../contributing/reporting-bugs.rst:217
 msgid ""
 "`linux - How do I analyze a program's core dump file with GDB when it has "
 "command-line parameters? - Stack Overflow <https://stackoverflow.com/"
@@ -1601,41 +1658,43 @@ msgid ""
 "it-has-command-line-pa>`_"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:174
+#: ../../contributing/reporting-bugs.rst:220
 msgid "Getting a Backtrace on Windows"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:176
+#: ../../contributing/reporting-bugs.rst:222
 msgid ""
 "Open the Command Prompt app as an administrator by searching for `cmd` in "
 "the start menu, then right clicking on the app and selecting `Run as "
 "Administrator`. Then, type the following and press enter/return:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:188
+#: ../../contributing/reporting-bugs.rst:234
 msgid ""
 "This will install DrMingw as the default debugger (you can uninstall it "
 "afterwards)."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:194
+#: ../../contributing/reporting-bugs.rst:240
 msgid ""
-"Then, run Zrythm and make it crash. When Zrythm crashes, you will see a Dr. "
-"Mingw window appear on the screen with error details."
+"Then, run :file:`C:\\Program Files\\Zrythm\\bin\\zrythm_debug_gdb.exe` and "
+"make it crash. When Zrythm crashes, you will see a Dr. Mingw window appear "
+"on the screen with error details."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:201
+#: ../../contributing/reporting-bugs.rst:248
 msgid ""
 "Click File -> Save As... and save the error file somewhere. Please send us "
 "this error file."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:207
+#: ../../contributing/reporting-bugs.rst:254
 msgid ""
-"When you are done, you may uninstall Dr. Mingw with the following command:"
+"When you are done, if you wish, you may uninstall Dr. Mingw with the "
+"following command:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:217
+#: ../../contributing/reporting-bugs.rst:264
 msgid "A confirmation dialog will appear:"
 msgstr "Apareixerà un quadre de diàleg de confirmació:"
 
@@ -1848,6 +1907,11 @@ msgstr "Pulsació"
 #: ../../editing/automation-editor.rst:40
 msgid "Pulse wave."
 msgstr "Ona de pulsació."
+
+#: ../../editing/automation-editor.rst:42 ../../editing/editor-toolbars.rst:256
+#: ../../zrythm-interface/right-panel.rst:24
+msgid "Todo"
+msgstr "Pendent"
 
 #: ../../editing/automation-editor.rst:42
 msgid "Create table with illustrations."
@@ -2958,6 +3022,10 @@ msgid ""
 "keys on the left side of the piano roll."
 msgstr ""
 
+#: ../../editing/editor-toolbars.rst:216
+msgid "Scale and chord highlighting"
+msgstr "Ressaltat d'escala i acords"
+
 #: ../../editing/editor-toolbars.rst:218
 msgid "Separate colors are used, in order of priority based on the following:"
 msgstr ""
@@ -3318,10 +3386,11 @@ msgstr ""
 "piano real."
 
 #: ../../editing/piano-roll.rst:60
+#, fuzzy
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
-"addition to any highlighting (if selected). See :ref:`chord-highlighting` "
-"for more information."
+"addition to any highlighting (if selected). See :ref:`editing/editor-"
+"toolbars:Chord/Scale Highlighting` for more information."
 msgstr ""
 "Es mostra una etiqueta a la part esquerra de cada tecla (blanques i negres), "
 "a més de qualsevol ressaltat (si està seleccionat). Consulta :ref:`chord-"
@@ -4073,14 +4142,20 @@ msgid "Dither"
 msgstr "Dither"
 
 #: ../../exporting/audio-and-midi.rst:39
-msgid "Implement."
-msgstr "Implementa."
+msgid ""
+"Apply low-level noise to the audio to remove quantization distortion that "
+"occurs when reducing the bit depth."
+msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:42
+#: ../../exporting/audio-and-midi.rst:41
+msgid "Dithering is typically applied as the final step of mastering."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"
 msgstr "Profunditat de bits"
 
-#: ../../exporting/audio-and-midi.rst:43
+#: ../../exporting/audio-and-midi.rst:45
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher the "
 "bit depth the larger the file will be, but it will have better quality."
@@ -4089,11 +4164,11 @@ msgstr ""
 "més gran sigui la profunditat de bits, més gran serà el fitxer, però tindrà "
 "millor qualitat."
 
-#: ../../exporting/audio-and-midi.rst:49
+#: ../../exporting/audio-and-midi.rst:51
 msgid "Time Range"
 msgstr "Interval de temps"
 
-#: ../../exporting/audio-and-midi.rst:50
+#: ../../exporting/audio-and-midi.rst:52
 msgid ""
 "The time range to export. You can choose to export the whole song (defined "
 "by the start/end markers), the current loop range or a custom time range."
@@ -4102,19 +4177,19 @@ msgstr ""
 "(definida pels marcadors d'inici/final), el bucle actual o un interval de "
 "temps personalitzat."
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:57
 msgid "Filename Pattern"
 msgstr "Patró de nom de fitxer"
 
-#: ../../exporting/audio-and-midi.rst:56
+#: ../../exporting/audio-and-midi.rst:58
 msgid "The pattern to use as the name of the file."
 msgstr "El patró que s'utilitzarà com a nom del fitxer."
 
-#: ../../exporting/audio-and-midi.rst:59
+#: ../../exporting/audio-and-midi.rst:61
 msgid "Mixdown"
 msgstr "Mescla"
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:62
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be included "
 "in the resulting file. This is the option to use when exporting your song."
@@ -4123,19 +4198,19 @@ msgstr ""
 "fitxer resultant. Aquesta és l'opció que s'ha d'utilitzar en exportar la "
 "cançó."
 
-#: ../../exporting/audio-and-midi.rst:67
+#: ../../exporting/audio-and-midi.rst:69
 msgid "Export options for mixdown"
 msgstr "Opcions d'exportació per a la mescla"
 
-#: ../../exporting/audio-and-midi.rst:72
+#: ../../exporting/audio-and-midi.rst:74
 msgid "Exported file"
 msgstr "Fitxer exportat"
 
-#: ../../exporting/audio-and-midi.rst:75
+#: ../../exporting/audio-and-midi.rst:77
 msgid "Stems"
 msgstr "Pliques"
 
-#: ../../exporting/audio-and-midi.rst:76
+#: ../../exporting/audio-and-midi.rst:78
 msgid ""
 "Exporting stems means that each selected track will be exported in its own "
 "file. This is useful when you want to share the components of your song "
@@ -4147,11 +4222,11 @@ msgstr ""
 "cançó per separat. Per exemple, pots :term:`rebotar <Bounce>` els tambors i "
 "el baix com a fitxers d'àudio separats."
 
-#: ../../exporting/audio-and-midi.rst:86
+#: ../../exporting/audio-and-midi.rst:88
 msgid "Export options for stems"
 msgstr "Opcions d'exportació per a les pliques"
 
-#: ../../exporting/audio-and-midi.rst:91
+#: ../../exporting/audio-and-midi.rst:93
 msgid "Exported files"
 msgstr "Fitxers exportats"
 
@@ -4172,22 +4247,28 @@ msgstr ""
 "la depuració i també ajuda a visualitzar els interns de Zrythm."
 
 #: ../../exporting/routing-graph.rst:14
+#, fuzzy
 msgid ""
-"Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
-"interface/main-toolbar` will show the following selection. The routing graph "
-"can be exported as either a PNG image or a .dot graph."
+"To export the routing graph, Select the :guilabel:`Export Graph` option in "
+"the hamburger menu in the :doc:`../zrythm-interface/main-toolbar`. The "
+"routing graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
 "Fent clic al botó :guilabel:`Export Graph` al :doc:`../zrythm-interface/main-"
 "toolbar` es mostrarà la següent selecció. El gràfic d'encaminament es pot "
 "exportar com una imatge PNG o un gràfic .dot."
 
-#: ../../exporting/routing-graph.rst:23
+#: ../../exporting/routing-graph.rst:22
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the "
 "resulting image will be extremely large."
 msgstr ""
 "Per a projectes grans, pot trigar un temps a generar el gràfic PNG i la "
 "imatge resultant serà extremadament gran."
+
+#: ../../exporting/routing-graph.rst:26 ../../routing/connections.rst:106
+#, fuzzy
+msgid "This functionality is experimental."
+msgstr "L'API de Guile és experimental."
 
 #: ../../getting-started/faq.rst:15
 msgid "Frequently Asked Questions"
@@ -5430,7 +5511,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Benvinguts al manual de Zrythm."
 
-#: ../../index.rst:28 ../../index.rst:72
+#: ../../index.rst:28 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"
@@ -7668,8 +7749,9 @@ msgid "Managing Connections"
 msgstr "Gestió de connexions"
 
 #: ../../routing/connections.rst:66
+#, fuzzy
 msgid ""
-"Connections can be managed in the Connections tab in the :ref:`Main Panel "
+"Connections can be managed in the Connections tab in the :ref:`main manel "
 "<zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
 "Les connexions es poden gestionar a la pestanya Connexions del :ref:`Quadre "
@@ -8227,7 +8309,29 @@ msgstr "Mostrar totes les pistes"
 msgid "Scripting"
 msgstr "Crear scripts"
 
-#: ../../scripting/overview.rst:9
+#: ../../scripting/overview.rst:10
+msgid "Deprecation Notice"
+msgstr ""
+
+#: ../../scripting/overview.rst:12
+msgid ""
+"Zrythm used to offer scripting capabilities using GNU Guile. This "
+"functionality has been disabled and is considered deprecated. We will be "
+"migrating to a different framework for scripting - likely libpeas-based. "
+"Ideas and suggestions are welcome."
+msgstr ""
+
+#: ../../scripting/overview.rst:17
+msgid ""
+"This chapter is left as reference of what was possible and will be replaced "
+"in the future."
+msgstr ""
+
+#: ../../scripting/overview.rst:20
+msgid "Previous Scripting Capabilities"
+msgstr ""
+
+#: ../../scripting/overview.rst:22
 msgid ""
 "Zrythm offers a scripting interface implemented using `GNU Guile <https://"
 "www.gnu.org/software/guile/>`_ that supports multiple scripting languages. "
@@ -8237,20 +8341,16 @@ msgstr ""
 "www.gnu.org/software/guile/>`_ que admet diversos llenguatges de script. "
 "Actualment, Zrythm admet els següents llenguatges de script:"
 
-#: ../../scripting/overview.rst:16
+#: ../../scripting/overview.rst:29
 msgid "`ECMAScript <https://en.wikipedia.org/wiki/ECMAScript>`_"
 msgstr "`ECMAScript <https://en.wikipedia.org/wiki/ECMAScript>`_"
 
-#: ../../scripting/overview.rst:17
+#: ../../scripting/overview.rst:30
 msgid ""
 "`Scheme <https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_"
 msgstr "`Scheme <https://ca.wikipedia.org/wiki/Scheme`_"
 
-#: ../../scripting/overview.rst:21
-msgid "The Guile API is experimental."
-msgstr "L'API de Guile és experimental."
-
-#: ../../scripting/overview.rst:23
+#: ../../scripting/overview.rst:34
 msgid ""
 "The Guile API is not available on Windows. See `this ticket <https://github."
 "com/msys2/MINGW-packages/issues/3298>`_ for details."
@@ -8258,7 +8358,7 @@ msgstr ""
 "L'API Guile no està disponible al Windows. Consulta `aquesta incidència "
 "<https://github.com/msys2/MINGW-packages/issues/3298>`_ per a més detalls."
 
-#: ../../scripting/overview.rst:27
+#: ../../scripting/overview.rst:38
 msgid ""
 "The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
 "all available procedures in the API. Each section in the API corresponds to "
@@ -8268,11 +8368,11 @@ msgstr ""
 "tots els procediments disponibles a l'API. Cada secció de l'API correspon a "
 "un mòdul Guile específic."
 
-#: ../../scripting/overview.rst:33
+#: ../../scripting/overview.rst:44
 msgid "Using Modules"
 msgstr "Ús de mòduls"
 
-#: ../../scripting/overview.rst:35
+#: ../../scripting/overview.rst:46
 msgid ""
 "To use the :scheme:`audio position` module from Scheme, use the following "
 "code:"
@@ -8280,7 +8380,7 @@ msgstr ""
 "Per a utilitzar el mòdul :scheme:`audio position` de Scheme, utilitza el "
 "codi següent:"
 
-#: ../../scripting/overview.rst:44
+#: ../../scripting/overview.rst:55
 msgid "To use it from ECMAScript, use:"
 msgstr "Per a utilitzar-lo des d'ECMAScript, utilitza:"
 
@@ -8334,11 +8434,42 @@ msgstr ""
 "L'idioma del script es pot seleccionar mitjançant el menú desplegable "
 "proporcionat. Canviar l'idioma també afectarà el ressaltat del codi."
 
-#: ../../theming/css.rst:9
+#: ../../theming/intro.rst:7 ../../theming/overview.rst:7
+msgid "Theming"
+msgstr "Aparença"
+
+#: ../../theming/overview.rst:12
+msgid ""
+"Zrythm aims to allow extensive theming support, however it is considered "
+"experimental at this stage."
+msgstr ""
+
+#: ../../theming/overview.rst:14
+#, fuzzy
+msgid ""
+"You can override many defaults that Zrythm uses by placing things in your :"
+"ref:`user path <configuration/preferences:Zrythm User Path>`."
+msgstr ""
+"Només afecta els paràmetres impresos amb :option:`-p`. Això *no* afectarà "
+"cap fitxer de :term:`Zrythm user path`."
+
+#: ../../theming/overview.rst:17
+#, fuzzy
+msgid ""
+"The `Zrythm installation directory` refers to where Zrythm was installed in. "
+"This is normally :file:`/opt/zrythm-<your version>` on GNU/Linux and MacOS, "
+"and :file:`C:\\\\Program Files\\\\Zrythm` on Windows."
+msgstr ""
+"El `Zrythm installation directory` es refereix al lloc on s'ha instal·lat "
+"Zrythm. Normalment es tracta de :file:`/usr` a GNU/Linux, :file:`C:\\"
+"\\Program Files\\\\Zrythm` a Windows i :file:`Resources` sota el contingut "
+"de l'aplicació al MacOS."
+
+#: ../../theming/overview.rst:25
 msgid "CSS"
 msgstr "CSS"
 
-#: ../../theming/css.rst:10
+#: ../../theming/overview.rst:27
 msgid ""
 "You can override the GTK theme that Zrythm uses along with much of the color "
 "scheme in a special CSS file. It is a good idea to start by copying the "
@@ -8354,7 +8485,7 @@ msgstr ""
 "zrythm-theme.css` en el camí d'instal·lació a Windows o el contingut de "
 "l'aplicació al MacOS."
 
-#: ../../theming/css.rst:19
+#: ../../theming/overview.rst:36
 msgid ""
 "You should create a file called :file:`theme.css` under the :file:`themes` "
 "directory in your Zrythm directory. For example, if your Zrythm directory "
@@ -8366,25 +8497,16 @@ msgstr ""
 "Zrythm és :file:`/home/me/zrythm`, has de crear un fitxer a :file:`/home/me/"
 "zrythm/themes/theme.css`."
 
-#: ../../theming/css.rst:25
-msgid "Color Scheme"
-msgstr "Esquema de color"
-
-#: ../../theming/css.rst:26
-msgid ""
-"Inside the theme file, you will find lots of colors defined using ``@define-"
-"color``. You can override these with your own colors and Zrythm will use "
-"them where possible."
+#: ../../theming/overview.rst:41
+msgid "This is highly experimental and many things are subject to change."
 msgstr ""
-"Dins el fitxer de tema, trobaràs molts colors definits amb ``@define-"
-"color``. Pots substituir-los amb els teus propis colors i Zrythm els "
-"utilitzarà sempre que sigui possible."
 
-#: ../../theming/css.rst:31
-msgid "Other GTK-Specific Rules"
+#: ../../theming/overview.rst:44
+#, fuzzy
+msgid "GTK-Specific Rules"
 msgstr "Altres regles específiques del GTK"
 
-#: ../../theming/css.rst:32
+#: ../../theming/overview.rst:45
 msgid ""
 "You will find lots of information about changing CSS rules for general GTK "
 "widgets online."
@@ -8392,19 +8514,19 @@ msgstr ""
 "Trobaràs molta informació sobre el canvi de regles CSS per als ginys GTK "
 "generals en línia."
 
-#: ../../theming/css.rst:35
+#: ../../theming/overview.rst:48
 msgid "Here are some links by official GNOME sources:"
 msgstr "Aquests són alguns enllaços de fonts oficials del GNOME:"
 
-#: ../../theming/css.rst:37
+#: ../../theming/overview.rst:50
 msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 
-#: ../../theming/css.rst:38
+#: ../../theming/overview.rst:51
 msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr "`Propietats GTK+ CSS <https://docs.gtk.org/gtk4/css-properties.html>`_"
 
-#: ../../theming/css.rst:39
+#: ../../theming/overview.rst:52
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
@@ -8412,11 +8534,26 @@ msgstr ""
 "`Donar estil a GTK amb CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 
-#: ../../theming/icon-themes.rst:9
+#: ../../theming/overview.rst:55
 msgid "Icon Themes"
 msgstr "Temes de les icones"
 
-#: ../../theming/icon-themes.rst:10
+#: ../../theming/overview.rst:57
+msgid ""
+"Icon theming is deprecated and will not be supported until we figure out a "
+"nice way to do it. The following text still applies to some extent, however "
+"most icons used inside Zrythm are bundled inside the Zrythm executable and "
+"are not themable at the moment."
+msgstr ""
+
+#: ../../theming/overview.rst:60
+msgid ""
+"Moreover, the following functionality is inherited from GTK, however it is "
+"likely that GTK/Freedesktop will change how icon theming works in the "
+"future, so we only mention it for reference."
+msgstr ""
+
+#: ../../theming/overview.rst:63
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
@@ -8424,7 +8561,7 @@ msgstr ""
 "El tema de les icones que utilitza Zrythm és compatible amb el freedesktop, "
 "de manera que es pot substituir fàcilment."
 
-#: ../../theming/icon-themes.rst:13
+#: ../../theming/overview.rst:66
 msgid ""
 "To override the Zrythm icon theme with your own icon theme, you need to "
 "create a directory similar to :file:`share/zrythm/themes/icons/zrythm-dark` "
@@ -8434,7 +8571,7 @@ msgstr ""
 "d'icones, has de crear un directori semblant a :file:`share/zrythm/themes/"
 "icons/zrythm-dark` sota el teu directori d'instal·lació de Zrythm."
 
-#: ../../theming/icon-themes.rst:18
+#: ../../theming/overview.rst:71
 msgid ""
 "For example, if your Zrythm directory is :file:`/home/me/zrythm`, you should "
 "create a directory at :file:`/home/me/zrythm/themes/icons/zrythm-dark` with "
@@ -8444,7 +8581,7 @@ msgstr ""
 "de crear un directori a :file:`/home/me/zrythm/themes/icons/zrythm-dark` amb "
 "un :file:`index.theme` i les icones que vols sobreescriure."
 
-#: ../../theming/icon-themes.rst:24
+#: ../../theming/overview.rst:77
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with and "
 "replacing the icons with your own."
@@ -8452,7 +8589,7 @@ msgstr ""
 "Una manera fàcil de fer-ho és copiant el directori que inclou Zrythm i "
 "substituint les icones per les teves."
 
-#: ../../theming/icon-themes.rst:27
+#: ../../theming/overview.rst:80
 msgid ""
 "A more elegant way to do it is by following the `Freedesktop Icon Theme "
 "Specification <https://specifications.freedesktop.org/icon-theme-spec/latest/"
@@ -8461,34 +8598,6 @@ msgstr ""
 "Una manera més elegant de fer-ho és seguint l'`Especificació del tema "
 "d'icones de Freedesktop <https://specifications.freedesktop.org/icon-theme-"
 "spec/latest/>`_."
-
-#: ../../theming/intro.rst:7 ../../theming/overview.rst:7
-msgid "Theming"
-msgstr "Aparença"
-
-#: ../../theming/overview.rst:8
-msgid ""
-"Zrythm aims to allow extensive theming support. You can override many "
-"defaults that Zrythm uses by placing things in your Zrythm user directory. "
-"This directory can be found in the :ref:`preferences` and will be referred "
-"to as `the Zrythm directory` in this chapter."
-msgstr ""
-"Zrythm té com a objectiu permetre un ampli suport temàtic. Pots substituir "
-"molts valors predeterminats que utilitza Zrythm col·locant les coses al "
-"directori d'usuari de Zrythm. Aquest directori es pot trobar a la :ref:"
-"`preferences` i es denominarà `the Zrythm directory` en aquest capítol."
-
-#: ../../theming/overview.rst:15
-msgid ""
-"The `Zrythm installation directory` refers to where Zrythm was installed in. "
-"This is normally :file:`/usr` on GNU/Linux, :file:`C:\\\\Program Files\\"
-"\\Zrythm` on Windows and :file:`Resources` under the the Application "
-"contents on MacOS."
-msgstr ""
-"El `Zrythm installation directory` es refereix al lloc on s'ha instal·lat "
-"Zrythm. Normalment es tracta de :file:`/usr` a GNU/Linux, :file:`C:\\"
-"\\Program Files\\\\Zrythm` a Windows i :file:`Resources` sota el contingut "
-"de l'aplicació al MacOS."
 
 #: ../../tracks/automation.rst:9
 msgid "Automation"
@@ -10030,45 +10139,6 @@ msgstr "Selecció parcial"
 msgid "Select tracks when their regions are clicked/selected."
 msgstr ""
 
-#: ../../user-media/intro.rst:7
-msgid "User Media"
-msgstr "Multimèdia d'usuaris"
-
-#: ../../user-media/intro.rst:9
-msgid ""
-"This chapter contains references to user-created media not part of Zrythm."
-msgstr ""
-"Aquest capítol conté referències a media creada per l'usuari que no formen "
-"part de Zrythm."
-
-#: ../../user-media/intro.rst:13
-msgid "Mascot Idea"
-msgstr "Idea de mascota"
-
-#: ../../user-media/intro.rst:16
-msgid "Concept"
-msgstr "Concepte"
-
-#: ../../user-media/intro.rst:21
-msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr "Concepte de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-
-#: ../../user-media/intro.rst:24
-msgid "Sketches"
-msgstr "Esbossos"
-
-#: ../../user-media/intro.rst:26
-msgid "User Sketches"
-msgstr "Esbossos d'usuari"
-
-#: ../../user-media/intro.rst:31
-msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr "Esbós de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-
-#: ../../user-media/intro.rst:36
-msgid "Sketch by `@weoxm@koyu.space`_"
-msgstr "Esbós de `@weoxm@koyu.space`_"
-
 #: ../../zrythm-interface/bottom-panel.rst:9
 msgid "Bottom Panel"
 msgstr "Quadre inferior"
@@ -10545,6 +10615,81 @@ msgstr ""
 "Aquest giny mostra el % u d'ús actual de la CPU a la part superior i el % u "
 "d'ús actual del DSP a la part inferior. Si el % e de DSP supera els 100 "
 "(totes les barres s'omplen), l'àudio començarà a escapçar-se."
+
+#~ msgid "Menu Actions"
+#~ msgstr "Accions del menú"
+
+#~ msgid "Troubleshooting"
+#~ msgstr "Solució de problemes"
+
+#~ msgid "Write this page."
+#~ msgstr "Escriure aquesta pàgina."
+
+#~ msgid "No highlighting"
+#~ msgstr "Cap ressaltat"
+
+#~ msgid "Chord highlighting"
+#~ msgstr "Ressaltat d'acords"
+
+#~ msgid "Scale highlighting"
+#~ msgstr "Ressaltat d'escala"
+
+#~ msgid "Implement."
+#~ msgstr "Implementa."
+
+#~ msgid "Color Scheme"
+#~ msgstr "Esquema de color"
+
+#~ msgid ""
+#~ "Inside the theme file, you will find lots of colors defined using "
+#~ "``@define-color``. You can override these with your own colors and Zrythm "
+#~ "will use them where possible."
+#~ msgstr ""
+#~ "Dins el fitxer de tema, trobaràs molts colors definits amb ``@define-"
+#~ "color``. Pots substituir-los amb els teus propis colors i Zrythm els "
+#~ "utilitzarà sempre que sigui possible."
+
+#~ msgid ""
+#~ "Zrythm aims to allow extensive theming support. You can override many "
+#~ "defaults that Zrythm uses by placing things in your Zrythm user "
+#~ "directory. This directory can be found in the :ref:`preferences` and will "
+#~ "be referred to as `the Zrythm directory` in this chapter."
+#~ msgstr ""
+#~ "Zrythm té com a objectiu permetre un ampli suport temàtic. Pots "
+#~ "substituir molts valors predeterminats que utilitza Zrythm col·locant les "
+#~ "coses al directori d'usuari de Zrythm. Aquest directori es pot trobar a "
+#~ "la :ref:`preferences` i es denominarà `the Zrythm directory` en aquest "
+#~ "capítol."
+
+#~ msgid "User Media"
+#~ msgstr "Multimèdia d'usuaris"
+
+#~ msgid ""
+#~ "This chapter contains references to user-created media not part of Zrythm."
+#~ msgstr ""
+#~ "Aquest capítol conté referències a media creada per l'usuari que no "
+#~ "formen part de Zrythm."
+
+#~ msgid "Mascot Idea"
+#~ msgstr "Idea de mascota"
+
+#~ msgid "Concept"
+#~ msgstr "Concepte"
+
+#~ msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+#~ msgstr "Concepte de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+
+#~ msgid "Sketches"
+#~ msgstr "Esbossos"
+
+#~ msgid "User Sketches"
+#~ msgstr "Esbossos d'usuari"
+
+#~ msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+#~ msgstr "Esbós de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+
+#~ msgid "Sketch by `@weoxm@koyu.space`_"
+#~ msgstr "Esbós de `@weoxm@koyu.space`_"
 
 #~ msgid "Audio Arranger"
 #~ msgstr "Arranjador d'àudio"

@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-16 17:40+0900\n"
+"POT-Creation-Date: 2024-04-17 21:18+0900\n"
 "PO-Revision-Date: 2022-08-09 12:29+0000\n"
 "Last-Translator: Q mo <qqmo520316@gmail.com>\n"
 "Language: zh_TW\n"
@@ -261,24 +261,6 @@ msgstr ""
 msgid "Appendix"
 msgstr ""
 
-#: ../../appendix/menu-actions.rst:7
-msgid "Menu Actions"
-msgstr ""
-
-#: ../../appendix/troubleshooting.rst:9
-msgid "Troubleshooting"
-msgstr ""
-
-#: ../../appendix/troubleshooting.rst:11 ../../editing/automation-editor.rst:42
-#: ../../editing/editor-toolbars.rst:256 ../../exporting/audio-and-midi.rst:39
-#: ../../zrythm-interface/right-panel.rst:24
-msgid "Todo"
-msgstr ""
-
-#: ../../appendix/troubleshooting.rst:11
-msgid "Write this page."
-msgstr ""
-
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
 msgstr ""
@@ -286,8 +268,9 @@ msgstr ""
 #: ../../chords-and-scales/chord-pad.rst:10 ../../editing/timeline.rst:10
 #: ../../playback-and-recording/overview.rst:7
 #: ../../plugins-files/audio-midi-files/overview.rst:7
-#: ../../scripting/overview.rst:7 ../../tracks/overview.rst:7
-#: ../../tracks/tracklist.rst:10 ../../zrythm-interface/overview.rst:7
+#: ../../scripting/overview.rst:7 ../../theming/overview.rst:10
+#: ../../tracks/overview.rst:7 ../../tracks/tracklist.rst:10
+#: ../../zrythm-interface/overview.rst:7
 msgid "Overview"
 msgstr ""
 
@@ -499,39 +482,24 @@ msgid ""
 "the chord one octave below."
 msgstr ""
 
-#: ../../chords-and-scales/intro.rst:9
-msgid "Chords and Scales"
-msgstr ""
-
-#: ../../chords-and-scales/piano-roll-integration.rst:7
+#: ../../chords-and-scales/chord-pad.rst:171
 msgid "Piano Roll Integration"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:12
+#: ../../chords-and-scales/chord-pad.rst:174
 msgid "Highlighting"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:14
+#: ../../chords-and-scales/chord-pad.rst:176
 msgid ""
 "You can use highlighting inside the piano roll to highlight the notes "
-"corresponding to the scale, chord, or both at the position of the playhead."
+"corresponding to the scale, chord, or both at the position of the playhead. "
+"See :ref:`editing/editor-toolbars:Chord/Scale Highlighting` for more "
+"information."
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:22
-msgid "No highlighting"
-msgstr ""
-
-#: ../../chords-and-scales/piano-roll-integration.rst:28
-msgid "Chord highlighting"
-msgstr ""
-
-#: ../../chords-and-scales/piano-roll-integration.rst:34
-msgid "Scale highlighting"
-msgstr ""
-
-#: ../../chords-and-scales/piano-roll-integration.rst:40
-#: ../../editing/editor-toolbars.rst:216
-msgid "Scale and chord highlighting"
+#: ../../chords-and-scales/intro.rst:9
+msgid "Chords and Scales"
 msgstr ""
 
 #: ../../configuration/device-setup.rst:7
@@ -902,7 +870,8 @@ msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`icon-themes` and :ref:`css`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
+"CSS`."
 msgstr ""
 
 #: ../../contributing/overview.rst:34
@@ -1230,38 +1199,123 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:99
-msgid "Soft Errors"
+msgid "How to Report an Issue on GitLab"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:101
+msgid ""
+"You must first register an account with us (if you don't already have one). "
+"You will be asked to login (or create an account) when you try to create an "
+"issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:104
+msgid ""
+"First, go to our `issue tracker <issue_tracker_>`_. You will see the "
+"following page."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:109
+msgid "List of Zrythm issues"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:111
+msgid ""
+"Click on :guilabel:`New Issue`. You will see the following page where you "
+"can fill in details about the issue you are facing. Click on :guilabel:"
+"`Choose a template...` under :guilabel:`Description` and select what best "
+"describes your issue (e.g., a bug)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:117
+#, fuzzy
+msgid "Selecting an issue template"
+msgstr "收藏"
+
+#: ../../contributing/reporting-bugs.rst:119
+msgid ""
+"Then, enter the required details to help us understand, reproduce and fix "
+"the issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:124
+msgid "Filling in details according to the template"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:126
+msgid ""
+"When you are done, click the :guilabel:`Create Issue` button to submit the "
+"issue to us."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:131
+msgid "Submitting an issue"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:134
+msgid "Existing Issues"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:136
+msgid ""
+"Please make sure to first search our issue tracker for any similar issues "
+"before making a new one (having multiple tickets about the same issue wastes "
+"our time)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:138
+msgid ""
+"If you find the issue you are having in an existing ticket, please read it "
+"and comment on it with additional information, if you have any. If you have "
+"nothing to add but want us to fix the issue faster, you may add a reaction "
+"(like a thumbs up) to let us know it's important."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:140
+msgid ""
+"If you are not sure if your issue is a duplicate, please submit it anyway."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:142
+msgid ""
+"We generally work on issues we consider high-priority first, however if you "
+"want something fixed quickly and are willing to pay feel free to contact us "
+"with your proposal."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:145
+msgid "Soft Errors"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:147
 msgid ""
 "In this case Zrythm will display a bug report dialog. Please follow the "
 "instructions in this dialog to report the issue."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:105
+#: ../../contributing/reporting-bugs.rst:151
 msgid "Crashes"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:107
+#: ../../contributing/reporting-bugs.rst:153
 msgid ""
 "If Zrythm crashed, then a bug report dialog may not be shown or the log file "
 "may not contain enough information to help us fix the issue. In this case, "
 "please follow the steps below to generate a core dump or a backtrace."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:113
+#: ../../contributing/reporting-bugs.rst:159
 msgid "Generating Core Dumps on GNU/Linux"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:115
+#: ../../contributing/reporting-bugs.rst:161
 msgid ""
 "You will need to type some commands into a terminal. Also, please make sure "
 "you have ``systemd-coredump`` or the equivalent package installed on your "
 "distro."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:119
+#: ../../contributing/reporting-bugs.rst:165
 msgid ""
 "The following steps apply to systemd users (the vast majority of GNU/Linux "
 "users). For non-systemd users, you can usually obtain the core file in the "
@@ -1269,47 +1323,47 @@ msgid ""
 "Zrythm until it crashes."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:125
+#: ../../contributing/reporting-bugs.rst:171
 msgid "First, enable core dumps:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:131
+#: ../../contributing/reporting-bugs.rst:177
 msgid "Tell Linux to add the PID (Process ID) to the core dump:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:137
+#: ../../contributing/reporting-bugs.rst:183
 msgid ""
 "Run Zrythm and make it crash. An intermediate core dump file should now be "
 "generated in :file:`/var/lib/systemd/coredump`. Use ``coredumpctl`` to "
 "verify:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:145
+#: ../../contributing/reporting-bugs.rst:191
 msgid "You should see something like the following:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:152
+#: ../../contributing/reporting-bugs.rst:198
 msgid "Note that under `COREFILE` it says `present`, so a core file exists."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:155
+#: ../../contributing/reporting-bugs.rst:201
 msgid ""
 "Now we can finally export the core dump file to a location of our choice (in "
 "this case in my :file:`Downloads` directory)  by passing the PID to "
 "``coredumpctl``:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:163
+#: ../../contributing/reporting-bugs.rst:209
 msgid "Change the file path given to ``--output`` to your desired location."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:166
+#: ../../contributing/reporting-bugs.rst:212
 msgid ""
 "Please send us the core dump file (in the example above it can be found at :"
 "file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:170
+#: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
 "without debugging - Stack Overflow <https://stackoverflow.com/"
@@ -1317,7 +1371,7 @@ msgid ""
 "instruction-error-without-debu/40223712#40223712>`_"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:171
+#: ../../contributing/reporting-bugs.rst:217
 msgid ""
 "`linux - How do I analyze a program's core dump file with GDB when it has "
 "command-line parameters? - Stack Overflow <https://stackoverflow.com/"
@@ -1325,41 +1379,43 @@ msgid ""
 "it-has-command-line-pa>`_"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:174
+#: ../../contributing/reporting-bugs.rst:220
 msgid "Getting a Backtrace on Windows"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:176
+#: ../../contributing/reporting-bugs.rst:222
 msgid ""
 "Open the Command Prompt app as an administrator by searching for `cmd` in "
 "the start menu, then right clicking on the app and selecting `Run as "
 "Administrator`. Then, type the following and press enter/return:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:188
+#: ../../contributing/reporting-bugs.rst:234
 msgid ""
 "This will install DrMingw as the default debugger (you can uninstall it "
 "afterwards)."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:194
+#: ../../contributing/reporting-bugs.rst:240
 msgid ""
-"Then, run Zrythm and make it crash. When Zrythm crashes, you will see a Dr. "
-"Mingw window appear on the screen with error details."
+"Then, run :file:`C:\\Program Files\\Zrythm\\bin\\zrythm_debug_gdb.exe` and "
+"make it crash. When Zrythm crashes, you will see a Dr. Mingw window appear "
+"on the screen with error details."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:201
+#: ../../contributing/reporting-bugs.rst:248
 msgid ""
 "Click File -> Save As... and save the error file somewhere. Please send us "
 "this error file."
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:207
+#: ../../contributing/reporting-bugs.rst:254
 msgid ""
-"When you are done, you may uninstall Dr. Mingw with the following command:"
+"When you are done, if you wish, you may uninstall Dr. Mingw with the "
+"following command:"
 msgstr ""
 
-#: ../../contributing/reporting-bugs.rst:217
+#: ../../contributing/reporting-bugs.rst:264
 msgid "A confirmation dialog will appear:"
 msgstr ""
 
@@ -1547,6 +1603,11 @@ msgstr ""
 
 #: ../../editing/automation-editor.rst:40
 msgid "Pulse wave."
+msgstr ""
+
+#: ../../editing/automation-editor.rst:42 ../../editing/editor-toolbars.rst:256
+#: ../../zrythm-interface/right-panel.rst:24
+msgid "Todo"
 msgstr ""
 
 #: ../../editing/automation-editor.rst:42
@@ -2511,6 +2572,10 @@ msgid ""
 "keys on the left side of the piano roll."
 msgstr ""
 
+#: ../../editing/editor-toolbars.rst:216
+msgid "Scale and chord highlighting"
+msgstr ""
+
 #: ../../editing/editor-toolbars.rst:218
 msgid "Separate colors are used, in order of priority based on the following:"
 msgstr ""
@@ -2840,8 +2905,8 @@ msgstr ""
 #: ../../editing/piano-roll.rst:60
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
-"addition to any highlighting (if selected). See :ref:`chord-highlighting` "
-"for more information."
+"addition to any highlighting (if selected). See :ref:`editing/editor-"
+"toolbars:Chord/Scale Highlighting` for more information."
 msgstr ""
 
 #: ../../editing/piano-roll.rst:65
@@ -3466,60 +3531,66 @@ msgid "Dither"
 msgstr "編輯器"
 
 #: ../../exporting/audio-and-midi.rst:39
-msgid "Implement."
+msgid ""
+"Apply low-level noise to the audio to remove quantization distortion that "
+"occurs when reducing the bit depth."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:42
+#: ../../exporting/audio-and-midi.rst:41
+msgid "Dithering is typically applied as the final step of mastering."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:43
+#: ../../exporting/audio-and-midi.rst:45
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher the "
 "bit depth the larger the file will be, but it will have better quality."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:49
+#: ../../exporting/audio-and-midi.rst:51
 msgid "Time Range"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:50
+#: ../../exporting/audio-and-midi.rst:52
 msgid ""
 "The time range to export. You can choose to export the whole song (defined "
 "by the start/end markers), the current loop range or a custom time range."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:57
 msgid "Filename Pattern"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:56
+#: ../../exporting/audio-and-midi.rst:58
 msgid "The pattern to use as the name of the file."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:59
+#: ../../exporting/audio-and-midi.rst:61
 msgid "Mixdown"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:62
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be included "
 "in the resulting file. This is the option to use when exporting your song."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:67
+#: ../../exporting/audio-and-midi.rst:69
 msgid "Export options for mixdown"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:72
+#: ../../exporting/audio-and-midi.rst:74
 msgid "Exported file"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:75
+#: ../../exporting/audio-and-midi.rst:77
 msgid "Stems"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:76
+#: ../../exporting/audio-and-midi.rst:78
 msgid ""
 "Exporting stems means that each selected track will be exported in its own "
 "file. This is useful when you want to share the components of your song "
@@ -3527,11 +3598,11 @@ msgid ""
 "bass as separate audio files."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:86
+#: ../../exporting/audio-and-midi.rst:88
 msgid "Export options for stems"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:91
+#: ../../exporting/audio-and-midi.rst:93
 #, fuzzy
 msgid "Exported files"
 msgstr "輸出成"
@@ -3554,15 +3625,19 @@ msgstr ""
 
 #: ../../exporting/routing-graph.rst:14
 msgid ""
-"Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
-"interface/main-toolbar` will show the following selection. The routing graph "
-"can be exported as either a PNG image or a .dot graph."
+"To export the routing graph, Select the :guilabel:`Export Graph` option in "
+"the hamburger menu in the :doc:`../zrythm-interface/main-toolbar`. The "
+"routing graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:23
+#: ../../exporting/routing-graph.rst:22
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the "
 "resulting image will be extremely large."
+msgstr ""
+
+#: ../../exporting/routing-graph.rst:26 ../../routing/connections.rst:106
+msgid "This functionality is experimental."
 msgstr ""
 
 #: ../../getting-started/faq.rst:15
@@ -4620,7 +4695,7 @@ msgstr "zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr ""
 
-#: ../../index.rst:28 ../../index.rst:72
+#: ../../index.rst:28 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"
@@ -6489,7 +6564,7 @@ msgstr "收藏"
 
 #: ../../routing/connections.rst:66
 msgid ""
-"Connections can be managed in the Connections tab in the :ref:`Main Panel "
+"Connections can be managed in the Connections tab in the :ref:`main manel "
 "<zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
 
@@ -6984,50 +7059,68 @@ msgstr ""
 msgid "Scripting"
 msgstr ""
 
-#: ../../scripting/overview.rst:9
+#: ../../scripting/overview.rst:10
+msgid "Deprecation Notice"
+msgstr ""
+
+#: ../../scripting/overview.rst:12
+msgid ""
+"Zrythm used to offer scripting capabilities using GNU Guile. This "
+"functionality has been disabled and is considered deprecated. We will be "
+"migrating to a different framework for scripting - likely libpeas-based. "
+"Ideas and suggestions are welcome."
+msgstr ""
+
+#: ../../scripting/overview.rst:17
+msgid ""
+"This chapter is left as reference of what was possible and will be replaced "
+"in the future."
+msgstr ""
+
+#: ../../scripting/overview.rst:20
+msgid "Previous Scripting Capabilities"
+msgstr ""
+
+#: ../../scripting/overview.rst:22
 msgid ""
 "Zrythm offers a scripting interface implemented using `GNU Guile <https://"
 "www.gnu.org/software/guile/>`_ that supports multiple scripting languages. "
 "Zrythm currently supports the following scripting languages:"
 msgstr ""
 
-#: ../../scripting/overview.rst:16
+#: ../../scripting/overview.rst:29
 msgid "`ECMAScript <https://en.wikipedia.org/wiki/ECMAScript>`_"
 msgstr ""
 
-#: ../../scripting/overview.rst:17
+#: ../../scripting/overview.rst:30
 msgid ""
 "`Scheme <https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_"
 msgstr ""
 
-#: ../../scripting/overview.rst:21
-msgid "The Guile API is experimental."
-msgstr ""
-
-#: ../../scripting/overview.rst:23
+#: ../../scripting/overview.rst:34
 msgid ""
 "The Guile API is not available on Windows. See `this ticket <https://github."
 "com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
-#: ../../scripting/overview.rst:27
+#: ../../scripting/overview.rst:38
 msgid ""
 "The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
 "all available procedures in the API. Each section in the API corresponds to "
 "a specific Guile module."
 msgstr ""
 
-#: ../../scripting/overview.rst:33
+#: ../../scripting/overview.rst:44
 msgid "Using Modules"
 msgstr ""
 
-#: ../../scripting/overview.rst:35
+#: ../../scripting/overview.rst:46
 msgid ""
 "To use the :scheme:`audio position` module from Scheme, use the following "
 "code:"
 msgstr ""
 
-#: ../../scripting/overview.rst:44
+#: ../../scripting/overview.rst:55
 msgid "To use it from ECMAScript, use:"
 msgstr ""
 
@@ -7074,11 +7167,34 @@ msgid ""
 "Changing the language will also affect code highlighting."
 msgstr ""
 
-#: ../../theming/css.rst:9
+#: ../../theming/intro.rst:7 ../../theming/overview.rst:7
+msgid "Theming"
+msgstr ""
+
+#: ../../theming/overview.rst:12
+msgid ""
+"Zrythm aims to allow extensive theming support, however it is considered "
+"experimental at this stage."
+msgstr ""
+
+#: ../../theming/overview.rst:14
+msgid ""
+"You can override many defaults that Zrythm uses by placing things in your :"
+"ref:`user path <configuration/preferences:Zrythm User Path>`."
+msgstr ""
+
+#: ../../theming/overview.rst:17
+msgid ""
+"The `Zrythm installation directory` refers to where Zrythm was installed in. "
+"This is normally :file:`/opt/zrythm-<your version>` on GNU/Linux and MacOS, "
+"and :file:`C:\\\\Program Files\\\\Zrythm` on Windows."
+msgstr ""
+
+#: ../../theming/overview.rst:25
 msgid "CSS"
 msgstr ""
 
-#: ../../theming/css.rst:10
+#: ../../theming/overview.rst:27
 msgid ""
 "You can override the GTK theme that Zrythm uses along with much of the color "
 "scheme in a special CSS file. It is a good idea to start by copying the "
@@ -7088,7 +7204,7 @@ msgid ""
 "contents on MacOS."
 msgstr ""
 
-#: ../../theming/css.rst:19
+#: ../../theming/overview.rst:36
 msgid ""
 "You should create a file called :file:`theme.css` under the :file:`themes` "
 "directory in your Zrythm directory. For example, if your Zrythm directory "
@@ -7096,100 +7212,88 @@ msgid ""
 "zrythm/themes/theme.css`."
 msgstr ""
 
-#: ../../theming/css.rst:25
-msgid "Color Scheme"
+#: ../../theming/overview.rst:41
+msgid "This is highly experimental and many things are subject to change."
 msgstr ""
 
-#: ../../theming/css.rst:26
-msgid ""
-"Inside the theme file, you will find lots of colors defined using ``@define-"
-"color``. You can override these with your own colors and Zrythm will use "
-"them where possible."
+#: ../../theming/overview.rst:44
+msgid "GTK-Specific Rules"
 msgstr ""
 
-#: ../../theming/css.rst:31
-msgid "Other GTK-Specific Rules"
-msgstr ""
-
-#: ../../theming/css.rst:32
+#: ../../theming/overview.rst:45
 msgid ""
 "You will find lots of information about changing CSS rules for general GTK "
 "widgets online."
 msgstr ""
 
-#: ../../theming/css.rst:35
+#: ../../theming/overview.rst:48
 msgid "Here are some links by official GNOME sources:"
 msgstr ""
 
-#: ../../theming/css.rst:37
+#: ../../theming/overview.rst:50
 msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr ""
 
-#: ../../theming/css.rst:38
+#: ../../theming/overview.rst:51
 msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr ""
 
-#: ../../theming/css.rst:39
+#: ../../theming/overview.rst:52
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 msgstr ""
 
-#: ../../theming/icon-themes.rst:9
+#: ../../theming/overview.rst:55
 msgid "Icon Themes"
 msgstr ""
 
-#: ../../theming/icon-themes.rst:10
+#: ../../theming/overview.rst:57
+msgid ""
+"Icon theming is deprecated and will not be supported until we figure out a "
+"nice way to do it. The following text still applies to some extent, however "
+"most icons used inside Zrythm are bundled inside the Zrythm executable and "
+"are not themable at the moment."
+msgstr ""
+
+#: ../../theming/overview.rst:60
+msgid ""
+"Moreover, the following functionality is inherited from GTK, however it is "
+"likely that GTK/Freedesktop will change how icon theming works in the "
+"future, so we only mention it for reference."
+msgstr ""
+
+#: ../../theming/overview.rst:63
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
 msgstr ""
 
-#: ../../theming/icon-themes.rst:13
+#: ../../theming/overview.rst:66
 msgid ""
 "To override the Zrythm icon theme with your own icon theme, you need to "
 "create a directory similar to :file:`share/zrythm/themes/icons/zrythm-dark` "
 "under your Zrythm installation directory."
 msgstr ""
 
-#: ../../theming/icon-themes.rst:18
+#: ../../theming/overview.rst:71
 msgid ""
 "For example, if your Zrythm directory is :file:`/home/me/zrythm`, you should "
 "create a directory at :file:`/home/me/zrythm/themes/icons/zrythm-dark` with "
 "an :file:`index.theme` file and the icons you wish to override."
 msgstr ""
 
-#: ../../theming/icon-themes.rst:24
+#: ../../theming/overview.rst:77
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with and "
 "replacing the icons with your own."
 msgstr ""
 
-#: ../../theming/icon-themes.rst:27
+#: ../../theming/overview.rst:80
 msgid ""
 "A more elegant way to do it is by following the `Freedesktop Icon Theme "
 "Specification <https://specifications.freedesktop.org/icon-theme-spec/latest/"
 ">`_."
-msgstr ""
-
-#: ../../theming/intro.rst:7 ../../theming/overview.rst:7
-msgid "Theming"
-msgstr ""
-
-#: ../../theming/overview.rst:8
-msgid ""
-"Zrythm aims to allow extensive theming support. You can override many "
-"defaults that Zrythm uses by placing things in your Zrythm user directory. "
-"This directory can be found in the :ref:`preferences` and will be referred "
-"to as `the Zrythm directory` in this chapter."
-msgstr ""
-
-#: ../../theming/overview.rst:15
-msgid ""
-"The `Zrythm installation directory` refers to where Zrythm was installed in. "
-"This is normally :file:`/usr` on GNU/Linux, :file:`C:\\\\Program Files\\"
-"\\Zrythm` on Windows and :file:`Resources` under the the Application "
-"contents on MacOS."
 msgstr ""
 
 #: ../../tracks/automation.rst:9
@@ -8509,44 +8613,6 @@ msgstr "收藏"
 msgid "Select tracks when their regions are clicked/selected."
 msgstr ""
 
-#: ../../user-media/intro.rst:7
-msgid "User Media"
-msgstr ""
-
-#: ../../user-media/intro.rst:9
-msgid ""
-"This chapter contains references to user-created media not part of Zrythm."
-msgstr ""
-
-#: ../../user-media/intro.rst:13
-msgid "Mascot Idea"
-msgstr ""
-
-#: ../../user-media/intro.rst:16
-#, fuzzy
-msgid "Concept"
-msgstr "無"
-
-#: ../../user-media/intro.rst:21
-msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr ""
-
-#: ../../user-media/intro.rst:24
-msgid "Sketches"
-msgstr ""
-
-#: ../../user-media/intro.rst:26
-msgid "User Sketches"
-msgstr ""
-
-#: ../../user-media/intro.rst:31
-msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr ""
-
-#: ../../user-media/intro.rst:36
-msgid "Sketch by `@weoxm@koyu.space`_"
-msgstr ""
-
 #: ../../zrythm-interface/bottom-panel.rst:9
 msgid "Bottom Panel"
 msgstr ""
@@ -8965,6 +9031,9 @@ msgid ""
 "the bottom. If the DSP % exceeds 100 (all bars filled), audio will start "
 "clipping."
 msgstr ""
+
+#~ msgid "Concept"
+#~ msgstr "無"
 
 #~ msgid "Editors"
 #~ msgstr "編輯器"
