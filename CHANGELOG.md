@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-rc.0] - 2024-04-17
+### Added
+- Add navigation buttons to the initial greeter window
+
+### Changed
+- Update the whole user manual
+- Update Japanese, Dutch, Russian,  translations
+- INSTALL: update dependencies list
+- Use horizontal icons for some elements in track/channel context menus
+- Remove EXIF data from images used in the user manual and add a CI check
+
+### Fixed
+- Fix crash when changing fade positions in the audio editor
+
 ## [1.0.0-beta.6.7.32] - 2024-04-12
 ### Added
 - Add context menu to import files (#4751)
