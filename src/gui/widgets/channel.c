@@ -588,7 +588,7 @@ channel_widget_generate_context_menu_for_track (Track * track)
       GMenu * edit_submenu =
         track_generate_edit_context_menu (track, num_selected);
       GMenuItem * edit_submenu_item =
-        g_menu_item_new_section (_ ("Edit"), G_MENU_MODEL (edit_submenu));
+        g_menu_item_new_section (NULL, G_MENU_MODEL (edit_submenu));
       g_menu_item_set_attribute (
         edit_submenu_item, "display-hint", "s", "horizontal-buttons");
       g_menu_append_item (menu, edit_submenu_item);
