@@ -1510,7 +1510,7 @@ zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
   if (PROJECT && TRACKLIST && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
     {
       ui_show_error_message_printf (
-        true,
+        _ ("Track Limitation"),
         _ ("This version of Zrythm does not support creating more than %d tracks."),
         TRIAL_MAX_TRACKS);
       return true;
