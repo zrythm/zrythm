@@ -1093,7 +1093,7 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  'carla-host-plugin', version: '>=2.6.0',
+  'carla-host-plugin', version: '>=2.5.8',
   required: true, #get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
@@ -1110,6 +1110,9 @@ if have_carla
     install_dir: zrythm_libdir / 'carla')
   cdata.set('HAVE_CARLA', 1)
   cdata.set_quoted('CARLA_VERSION_STRING', carla_host_plugin_dep.version ())
+  if carla_host_plugin_dep.version().version_compare('>=2.6.0')
+    cdata.set('CARLA_HAVE_CLAP_SUPPORT', 1)
+  endif
 
   # install discovery & bridge for 32-bit vst's on
   # windows

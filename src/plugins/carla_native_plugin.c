@@ -79,7 +79,11 @@ get_plugin_type_from_protocol (ZPluginProtocol protocol)
     case Z_PLUGIN_PROTOCOL_LADSPA:
       return PLUGIN_LADSPA;
     case Z_PLUGIN_PROTOCOL_CLAP:
+#  ifdef CARLA_HAVE_CLAP_SUPPORT
       return PLUGIN_CLAP;
+#  else
+      return 14;
+#  endif
     case Z_PLUGIN_PROTOCOL_JSFX:
       return PLUGIN_JSFX;
     default:

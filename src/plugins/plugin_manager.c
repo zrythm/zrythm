@@ -792,6 +792,11 @@ get_clap_paths (PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
+#  ifndef CARLA_HAVE_CLAP_SUPPORT
+  char ** empty_paths = g_strv_builder_end (builder);
+  return empty_paths;
+#  endif
+
   if (ZRYTHM_TESTING)
     {
       const char * paths_from_settings[] = { "${CLAP_PATH}", NULL };
