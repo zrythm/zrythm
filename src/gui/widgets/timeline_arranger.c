@@ -333,7 +333,7 @@ timeline_arranger_widget_create_scale (
   ScaleObject *    scale = scale_object_new (descr);
   ArrangerObject * scale_obj = (ArrangerObject *) scale;
 
-  /* add it to scale track */
+  /* add it to chord track */
   chord_track_add_scale (track, scale);
 
   /*arranger_object_gen_widget (scale_obj);*/

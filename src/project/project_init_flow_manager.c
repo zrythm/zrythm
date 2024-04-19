@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -536,6 +536,11 @@ create_default (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->chord_track = track;
+
+  /* add a scale */
+  MusicalScale * descr = musical_scale_new (SCALE_AEOLIAN, NOTE_A);
+  ScaleObject *  scale = scale_object_new (descr);
+  chord_track_add_scale (track, scale);
 
   /* tempo */
   g_message ("adding tempo track...");
