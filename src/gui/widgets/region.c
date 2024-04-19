@@ -1252,23 +1252,34 @@ draw_name (
 
   int full_width = full_rect->width;
 
+  char * escaped_name = NULL;
+  if (self->id.link_group >= 0)
+    {
+      escaped_name =
+        g_strdup_printf ("%s #%d", self->escaped_name, self->id.link_group);
+    }
+  else
+    {
+      escaped_name = g_strdup (self->escaped_name);
+    }
+
   /* draw dark bg behind text */
   recreate_pango_layouts (self, MIN (full_width, 800));
   PangoLayout * layout = self->layout;
   if (DEBUGGING)
     {
       char str[200];
-      strcpy (str, self->escaped_name);
+      strcpy (str, escaped_name);
       ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
       if (clip_editor_region == self)
         {
           strcat (str, " (CLIP EDITOR)");
         }
-      pango_layout_set_text (layout, str, -1);
+      pango_layout_set_markup (layout, str, -1);
     }
   else
     {
-      pango_layout_set_text (layout, self->escaped_name, -1);
+      pango_layout_set_markup (layout, escaped_name, -1);
     }
   PangoRectangle pangorect;
 
@@ -1312,6 +1323,8 @@ draw_name (
   obj->last_name_rect.y = 0;
   obj->last_name_rect.width = pangorect.width + REGION_NAME_PADDING_R;
   obj->last_name_rect.height = pangorect.height + REGION_NAME_PADDING_R;
+
+  g_free (escaped_name);
 }
 
 /**
@@ -1497,11 +1510,13 @@ region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
       const int paddingv = 0;
       int       icons_drawn = 0;
 
+#if 0
       /* draw link icon if has linked parent */
       if (self->id.link_group >= 0)
         {
           DRAW_TEXTURE (symbolic_link_texture);
         }
+#endif
 
       /* draw musical mode icon if region is in
        * musical mode */
