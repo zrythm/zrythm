@@ -3,7 +3,7 @@ using Gtk 4.0;
 template $ScaleSelectorWindowWidget : Dialog {
   title: "Scale Selector";
   modal: true;
-  child: 
+  child:
   Notebook {
     focusable: true;
 
@@ -30,7 +30,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_c {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("C");
             }
@@ -40,7 +40,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_cs {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("D♭");
             }
@@ -50,7 +50,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_d {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("D");
             }
@@ -60,7 +60,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_ds {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("E♭");
             }
@@ -70,7 +70,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_e {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("E");
             }
@@ -80,7 +80,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_f {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("F");
             }
@@ -90,7 +90,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_fs {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("F♯");
             }
@@ -100,7 +100,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_g {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("G");
             }
@@ -110,7 +110,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_gs {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("A♭");
             }
@@ -120,7 +120,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_a {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("A");
             }
@@ -130,7 +130,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_as {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("B♭");
             }
@@ -140,7 +140,7 @@ template $ScaleSelectorWindowWidget : Dialog {
 
           FlowBoxChild creator_root_note_b {
             focusable: true;
-            child: 
+            child:
             Label {
               label: _("B");
             }
@@ -183,7 +183,7 @@ template $ScaleSelectorWindowWidget : Dialog {
       }
 
       ;
-      tab: 
+      tab:
       Label {
         label: _("Creator");
       }
@@ -191,22 +191,18 @@ template $ScaleSelectorWindowWidget : Dialog {
       ;
     }
 
+    /*
     NotebookPage {
       position: 2;
-      child: 
+      child:
       Label {
         label: _("TODO keyboard");
-      }
-
-      ;
-      tab: 
+      };
+      tab:
       Label {
         label: _("Custom");
-      }
-
-      ;
+      };
     }
-  }
-
-  ;
+    */
+  };
 }

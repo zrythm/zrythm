@@ -199,21 +199,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             </property>
           </object>
         </child>
-        <child>
-          <object class="GtkNotebookPage">
-            <property name="position">2</property>
-            <property name="child">
-              <object class="GtkLabel">
-                <property name="label" translatable="true">TODO keyboard</property>
-              </object>
-            </property>
-            <property name="tab">
-              <object class="GtkLabel">
-                <property name="label" translatable="true">Custom</property>
-              </object>
-            </property>
-          </object>
-        </child>
       </object>
     </property>
   </template>
