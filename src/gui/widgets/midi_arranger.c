@@ -452,8 +452,7 @@ midi_arranger_widget_gen_context_menu (
   menuitem = CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
   g_menu_append_item (selection_submenu, menuitem);
 
-  g_menu_append_section (
-    menu, _ ("Selection"), G_MENU_MODEL (selection_submenu));
+  g_menu_append_section (menu, NULL, G_MENU_MODEL (selection_submenu));
 
   return menu;
 }

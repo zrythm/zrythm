@@ -515,8 +515,7 @@ on_right_click (
     menuitem, "piano-roll-keys.append-notes-in-pitch",
     g_variant_new_int32 (pitch));
   g_menu_append_item (selection_section, menuitem);
-  g_menu_append_section (
-    menu, _ ("Selection"), G_MENU_MODEL (selection_section));
+  g_menu_append_section (menu, NULL, G_MENU_MODEL (selection_section));
 
   gtk_popover_menu_set_menu_model (self->popover_menu, G_MENU_MODEL (menu));
 

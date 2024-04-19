@@ -696,7 +696,7 @@ show_context_menu (TrackWidget * self, double x, double y)
       GMenu * edit_submenu =
         track_generate_edit_context_menu (track, num_selected);
       GMenuItem * edit_submenu_item =
-        g_menu_item_new_section (_ ("Edit"), G_MENU_MODEL (edit_submenu));
+        g_menu_item_new_section (NULL, G_MENU_MODEL (edit_submenu));
       g_menu_item_set_attribute (
         edit_submenu_item, "display-hint", "s", "horizontal-buttons");
       g_menu_append_item (menu, edit_submenu_item);
@@ -733,8 +733,7 @@ show_context_menu (TrackWidget * self, double x, double y)
           g_menu_append_item (select_submenu, menuitem);
         }
 
-      g_menu_append_section (
-        menu, _ ("Selection"), G_MENU_MODEL (select_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
     }
 
   if (track->out_signal_type == TYPE_AUDIO)
@@ -750,7 +749,7 @@ show_context_menu (TrackWidget * self, double x, double y)
         _ ("Bounce..."), "document-export", "app.bounce-selected-tracks");
       g_menu_append_item (bounce_submenu, menuitem);
 
-      g_menu_append_section (menu, _ ("Bounce"), G_MENU_MODEL (bounce_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (bounce_submenu));
     }
 
   /* add solo/mute/listen */
@@ -758,7 +757,7 @@ show_context_menu (TrackWidget * self, double x, double y)
     {
       GMenu *     channel_submenu = track_generate_channel_context_menu (track);
       GMenuItem * channel_submenu_item =
-        g_menu_item_new_section (_ ("Channel"), G_MENU_MODEL (channel_submenu));
+        g_menu_item_new_section (NULL, G_MENU_MODEL (channel_submenu));
       g_menu_append_item (menu, channel_submenu_item);
     } /* endif track has channel */
 
@@ -840,8 +839,7 @@ show_context_menu (TrackWidget * self, double x, double y)
             G_MENU_MODEL (lane_midi_ch_submenu));
         }
 
-      g_menu_append_section (
-        menu, _ ("Piano Roll"), G_MENU_MODEL (piano_roll_section));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (piano_roll_section));
     }
 
   if (
@@ -852,16 +850,16 @@ show_context_menu (TrackWidget * self, double x, double y)
       GMenu * automation_section = g_menu_new ();
 
       menuitem = z_gtk_create_menu_item (
-        _ ("Show used lanes"), TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
+        _ ("Show Used Automation Lanes"), TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
         "app.show-used-automation-lanes-on-selected-tracks");
       g_menu_append_item (automation_section, menuitem);
       menuitem = z_gtk_create_menu_item (
-        _ ("Hide unused lanes"), TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
+        _ ("Hide Unused Automation Lanes"),
+        TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
         "app.hide-unused-automation-lanes-on-selected-tracks");
       g_menu_append_item (automation_section, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Automation"), G_MENU_MODEL (automation_section));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (automation_section));
     }
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);

@@ -620,7 +620,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
       g_menu_append_item (edit_submenu, menuitem);
     }
 
-  g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+  g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
 
   if (self->type != PLUGIN_SLOT_INSTRUMENT)
     {
@@ -631,7 +631,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
       menuitem = CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
       g_menu_append_item (select_submenu, menuitem);
 
-      g_menu_append_section (menu, _ ("Select"), G_MENU_MODEL (select_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
     }
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);

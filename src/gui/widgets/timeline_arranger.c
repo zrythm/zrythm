@@ -978,7 +978,7 @@ timeline_arranger_widget_gen_context_menu (
       menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, str);
       g_menu_append_item (edit_submenu, menuitem);
 
-      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
 
       if (timeline_selections_contains_only_regions (TL_SELECTIONS))
         {
@@ -1068,7 +1068,7 @@ timeline_arranger_widget_gen_context_menu (
               g_menu_append_item (midi_regions_submenu, menuitem);
 
               g_menu_append_section (
-                menu, _ ("MIDI Regions"), G_MENU_MODEL (midi_regions_submenu));
+                menu, NULL, G_MENU_MODEL (midi_regions_submenu));
             }
 
           if (timeline_selections_contains_only_region_types (
@@ -1126,8 +1126,7 @@ timeline_arranger_widget_gen_context_menu (
             _ ("Bounce..."), NULL, "app.bounce-selections");
           g_menu_append_item (bounce_submenu, menuitem);
 
-          g_menu_append_section (
-            menu, _ ("Bounce to Audio"), G_MENU_MODEL (bounce_submenu));
+          g_menu_append_section (menu, NULL, G_MENU_MODEL (bounce_submenu));
         }
     }
   else /* else if no object clicked */
@@ -1137,7 +1136,7 @@ timeline_arranger_widget_gen_context_menu (
       menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
       g_menu_append_item (edit_submenu, menuitem);
 
-      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
     }
 
   return menu;

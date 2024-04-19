@@ -76,26 +76,21 @@ tracklist_widget_generate_add_track_menu (void)
 
   GMenu * bus_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
-    _ (track_type_to_string (TRACK_TYPE_AUDIO_BUS)), NULL,
-    "app.create-audio-bus-track");
+    _ ("Add Audio FX Track"), NULL, "app.create-audio-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
   menuitem = z_gtk_create_menu_item (
-    _ (track_type_to_string (TRACK_TYPE_MIDI_BUS)), NULL,
-    "app.create-midi-bus-track");
+    _ ("Add MIDI FX Track"), NULL, "app.create-midi-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
-  g_menu_append_section (menu, _ ("Add FX Track"), G_MENU_MODEL (bus_submenu));
+  g_menu_append_section (menu, NULL, G_MENU_MODEL (bus_submenu));
 
   GMenu * group_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
-    _ (track_type_to_string (TRACK_TYPE_AUDIO_GROUP)), NULL,
-    "app.create-audio-group-track");
+    _ ("Add Audio Group Track"), NULL, "app.create-audio-group-track");
   g_menu_append_item (group_submenu, menuitem);
   menuitem = z_gtk_create_menu_item (
-    _ (track_type_to_string (TRACK_TYPE_MIDI_GROUP)), NULL,
-    "app.create-midi-group-track");
+    _ ("Add MIDI Group Track"), NULL, "app.create-midi-group-track");
   g_menu_append_item (group_submenu, menuitem);
-  g_menu_append_section (
-    menu, _ ("Add Group Track"), G_MENU_MODEL (group_submenu));
+  g_menu_append_section (menu, NULL, G_MENU_MODEL (group_submenu));
 
   menuitem = z_gtk_create_menu_item (
     _ ("Add Folder Track"), NULL, "app.create-folder-track");

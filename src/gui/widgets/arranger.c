@@ -1329,7 +1329,7 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
       menuitem = z_gtk_create_menu_item (_ ("Create Object"), NULL, action_name);
       g_menu_append_item (create_submenu, menuitem);
 
-      g_menu_append_section (menu, _ ("Create"), G_MENU_MODEL (create_submenu));
+      g_menu_append_section (menu, NULL, G_MENU_MODEL (create_submenu));
     }
 
   const EditorSettings settings =
