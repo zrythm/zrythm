@@ -39,8 +39,6 @@ typedef struct PortConnection PortConnection;
  */
 typedef struct PortConnectionsManager
 {
-  int schema_version;
-
   /** Connections. */
   PortConnection ** connections;
   int               num_connections;
@@ -64,20 +62,6 @@ typedef struct PortConnectionsManager
    */
   GHashTable * dest_ht;
 } PortConnectionsManager;
-
-static const cyaml_schema_field_t port_connections_manager_fields_schema[] = {
-  YAML_FIELD_INT (PortConnectionsManager, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    PortConnectionsManager,
-    connections,
-    port_connection_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t port_connections_manager_schema = {
-  YAML_VALUE_PTR (PortConnectionsManager, port_connections_manager_fields_schema),
-};
 
 NONNULL void
 port_connections_manager_init_loaded (PortConnectionsManager * self);

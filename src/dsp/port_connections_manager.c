@@ -112,7 +112,6 @@ PortConnectionsManager *
 port_connections_manager_new (void)
 {
   PortConnectionsManager * self = object_new (PortConnectionsManager);
-  self->schema_version = PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION;
 
   self->connections_size = 64;
   self->connections = object_new_n (self->connections_size, PortConnection *);
