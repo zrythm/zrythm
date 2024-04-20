@@ -58,13 +58,6 @@ region_link_group_add_region (RegionLinkGroup * self, ZRegion * region)
   region_identifier_copy (&self->ids[self->num_ids++], &region->id);
 }
 
-/**
- * Remove the region from the link group.
- *
- * @param autoremove_last_region_and_group
- *   Automatically remove the last region left in
- *   the group, and the group itself when empty.
- */
 void
 region_link_group_remove_region (
   RegionLinkGroup * self,
@@ -77,9 +70,8 @@ region_link_group_remove_region (
     && self->group_idx < REGION_LINK_GROUP_MANAGER->num_groups);
 
   g_message (
-    "removing region '%s' from link group %d "
-    "(num ids: %d)",
-    region->name, self->group_idx, self->num_ids);
+    "removing region '%s' from link group %d (num ids: %d)", region->name,
+    self->group_idx, self->num_ids);
   bool found = false;
   for (int i = 0; i < self->num_ids; i++)
     {
@@ -96,10 +88,11 @@ region_link_group_remove_region (
     }
   g_return_if_fail (found);
 
+  g_debug ("num ids after deletion: %d", self->num_ids);
+
   if (autoremove_last_region_and_group)
     {
-      /* if only one region left in group, remove
-       * it */
+      /* if only one region left in group, remove it */
       if (self->num_ids == 1)
         {
           ZRegion * last_region = region_find (&self->ids[0]);

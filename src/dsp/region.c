@@ -562,12 +562,6 @@ region_get_link_group (ZRegion * self)
   return group;
 }
 
-/**
- * Sets the link group to the region.
- *
- * @param group_idx If -1, the region will be
- *   removed from its current link group, if any.
- */
 void
 region_set_link_group (ZRegion * region, int group_idx, bool update_identifier)
 {
@@ -728,10 +722,6 @@ region_find (const RegionIdentifier * const id)
   g_return_val_if_reached (NULL);
 }
 
-/**
- * To be called every time the identifier changes
- * to update the region's children.
- */
 void
 region_update_identifier (ZRegion * self)
 {
@@ -1371,12 +1361,6 @@ region_is_recording (ZRegion * self)
   return false;
 }
 
-/**
- * Disconnects the region and anything using it.
- *
- * Does not free the ZRegion or its children's
- * resources.
- */
 void
 region_disconnect (ZRegion * self)
 {

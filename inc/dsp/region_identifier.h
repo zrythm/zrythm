@@ -29,10 +29,8 @@
 /**
  * Type of Region.
  *
- * Bitfield instead of plain enum so multiple
- * values can be passed to some functions (eg to
- * collect all Regions of the given types in a
- * Track).
+ * Bitfield instead of plain enum so multiple values can be passed to some
+ * functions (eg to collect all Regions of the given types in a Track).
  */
 typedef enum RegionType
 {

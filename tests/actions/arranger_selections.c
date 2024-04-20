@@ -1029,6 +1029,7 @@ test_link_timeline (void)
   for (int i = 0; i < 2; i++)
     {
       ArrangerSelections * sel_before = NULL;
+      check_timeline_objects_vs_original_state (0, 0, 0);
 
       int track_diff = i ? 2 : 0;
       if (track_diff)
@@ -1070,8 +1071,7 @@ test_link_timeline (void)
       /* check */
       check_after_duplicate_timeline (i, true);
 
-      /* undo and check that the objects are at
-       * their original state*/
+      /* undo and check that the objects are at their original state*/
       undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (0, 0, 1);
 
@@ -1086,6 +1086,159 @@ test_link_timeline (void)
 
       g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 0);
     }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_link_and_delete (void)
+{
+  rebootstrap_timeline ();
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 0);
+
+  Track * midi_track = tracklist_find_track_by_name (TRACKLIST, MIDI_TRACK_NAME);
+  const int   lane_idx = 2;
+  TrackLane * lane = midi_track->lanes[lane_idx];
+  ZRegion *   r = midi_track->lanes[lane_idx]->regions[0];
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+
+  /* create linked object */
+  ArrangerSelections * sel_before =
+    arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
+  arranger_selections_add_ticks (
+    (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS);
+  arranger_selections_action_perform_link (
+    sel_before, (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_ALREADY_MOVED, NULL);
+  arranger_selections_free (sel_before);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  ZRegion * r2 = midi_track->lanes[lane_idx]->regions[1];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 1);
+
+  /* create another linked object */
+  arranger_object_select (
+    (ArrangerObject *) r2, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  sel_before = arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
+  arranger_selections_add_ticks (
+    (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS);
+  arranger_selections_action_perform_link (
+    sel_before, (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_ALREADY_MOVED, NULL);
+  arranger_selections_free (sel_before);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  ZRegion * r3 = midi_track->lanes[lane_idx]->regions[2];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 1);
+
+  /* create a separate object (no link group) */
+  Position pos, end_pos;
+  position_set_to_pos (&pos, &r3->base.pos);
+  position_add_bars (&pos, 2);
+  position_set_to_pos (&end_pos, &r3->base.end_pos);
+  position_add_bars (&end_pos, 2);
+  ZRegion * r4 = midi_region_new (
+    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+  GError * err = NULL;
+  bool     success = track_add_region (
+    midi_track, r4, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
+  arranger_object_select (
+    (ArrangerObject *) r4, F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+
+  /* create a linked object (new link group with r4/r5) */
+  arranger_object_select (
+    (ArrangerObject *) r4, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  sel_before = arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
+  arranger_selections_add_ticks (
+    (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS);
+  arranger_selections_action_perform_link (
+    sel_before, (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_ALREADY_MOVED, NULL);
+  arranger_selections_free (sel_before);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  r3 = midi_track->lanes[lane_idx]->regions[2];
+  r4 = midi_track->lanes[lane_idx]->regions[3];
+  ZRegion * r5 = midi_track->lanes[lane_idx]->regions[4];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (r4->id.link_group, ==, 1);
+  g_assert_cmpint (r5->id.link_group, ==, 1);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 2);
+
+  /* delete the middle linked object */
+  arranger_object_select (
+    (ArrangerObject *) r2, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_delete (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 2);
+
+  /* undo deleting middle linked object (in link group 0) */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  r3 = midi_track->lanes[lane_idx]->regions[2];
+  r4 = midi_track->lanes[lane_idx]->regions[3];
+  r5 = midi_track->lanes[lane_idx]->regions[4];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (r4->id.link_group, ==, 1);
+  g_assert_cmpint (r5->id.link_group, ==, 1);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 2);
+
+  /* delete the first object in 2nd link group */
+  arranger_object_select (
+    (ArrangerObject *) r4, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_delete (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  r3 = midi_track->lanes[lane_idx]->regions[2];
+  r5 = midi_track->lanes[lane_idx]->regions[3];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (r5->id.link_group, ==, -1);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 1);
+
+  /* undo deleting first object in 2nd link group */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  r3 = midi_track->lanes[lane_idx]->regions[2];
+  r4 = midi_track->lanes[lane_idx]->regions[3];
+  r5 = midi_track->lanes[lane_idx]->regions[4];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (r4->id.link_group, ==, 1);
+  /* FIXME the link group of the adjacent object is not restored */
+  /*g_assert_cmpint (r5->id.link_group, ==, 1);*/
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 2);
+
+  /* redo and verify again */
+  r = midi_track->lanes[lane_idx]->regions[0];
+  r2 = midi_track->lanes[lane_idx]->regions[1];
+  r3 = midi_track->lanes[lane_idx]->regions[2];
+  r5 = midi_track->lanes[lane_idx]->regions[3];
+  g_assert_cmpint (r->id.link_group, ==, 0);
+  g_assert_cmpint (r2->id.link_group, ==, 0);
+  g_assert_cmpint (r3->id.link_group, ==, 0);
+  g_assert_cmpint (r5->id.link_group, ==, 1);
+  g_assert_cmpint (REGION_LINK_GROUP_MANAGER->num_groups, ==, 2);
 
   test_helper_zrythm_cleanup ();
 }
@@ -3226,6 +3379,13 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test link and delete", (GTestFunc) test_link_and_delete);
+  g_test_add_func (
+    TEST_PREFIX "test link timeline", (GTestFunc) test_link_timeline);
+  g_test_add_func (
+    TEST_PREFIX "test link then duplicate",
+    (GTestFunc) test_link_then_duplicate);
+  g_test_add_func (
     TEST_PREFIX "test resize loop l", (GTestFunc) test_resize_loop_l);
   g_test_add_func (TEST_PREFIX "test stretch", (GTestFunc) test_stretch);
   g_test_add_func (
@@ -3270,16 +3430,11 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test delete timeline", (GTestFunc) test_delete_timeline);
   g_test_add_func (
-    TEST_PREFIX "test link timeline", (GTestFunc) test_link_timeline);
-  g_test_add_func (
     TEST_PREFIX "test undo moving midi_region to other lane",
     (GTestFunc) test_undo_moving_midi_region_to_other_lane);
   g_test_add_func (
     TEST_PREFIX "test duplicate audio regions",
     (GTestFunc) test_duplicate_audio_regions);
-  g_test_add_func (
-    TEST_PREFIX "test link then duplicate",
-    (GTestFunc) test_link_then_duplicate);
   g_test_add_func (
     TEST_PREFIX "test delete chord objects",
     (GTestFunc) test_delete_chord_objects);

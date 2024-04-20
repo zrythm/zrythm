@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -236,19 +236,12 @@ track_lane_update_positions (TrackLane * self, bool from_ticks, bool bpm_change)
     }
 }
 
-/**
- * Adds a ZRegion to the given TrackLane.
- */
 void
 track_lane_add_region (TrackLane * self, ZRegion * region)
 {
   track_lane_insert_region (self, region, self->num_regions);
 }
 
-/**
- * Inserts a ZRegion to the given TrackLane at the
- * given index.
- */
 void
 track_lane_insert_region (TrackLane * self, ZRegion * region, int idx)
 {
@@ -260,12 +253,28 @@ track_lane_insert_region (TrackLane * self, ZRegion * region, int idx)
 
   array_double_size_if_full (
     self->regions, self->num_regions, self->regions_size, ZRegion *);
+
+  /* adjust link groups */
   for (int i = self->num_regions; i > idx; i--)
     {
-      self->regions[i] = self->regions[i - 1];
-      self->regions[i]->id.idx = i;
-      region_update_identifier (self->regions[i]);
+      ZRegion * r = self->regions[i - 1];
+      if (region_has_link_group (r))
+        {
+          RegionLinkGroup * group = region_get_link_group (r);
+          for (int j = 0; j < group->num_ids; j++)
+            {
+              if (region_identifier_is_equal (&r->id, &group->ids[j]))
+                {
+                  group->ids[j].idx++;
+                }
+            }
+        }
+
+      self->regions[i] = r;
+      r->id.idx = i;
+      region_update_identifier (r);
     }
+
   self->num_regions++;
   self->regions[idx] = region;
   region->id.lane_pos = self->pos;
@@ -403,6 +412,24 @@ track_lane_remove_region (TrackLane * self, ZRegion * region)
         && clip_editor_r->id.idx > region->id.idx)
         {
           CLIP_EDITOR->region_id.idx--;
+        }
+    }
+
+  /* prepare for link group adjustment by faking the indeces in the link group
+   * to the expected new ones */
+  for (int i = region->id.idx + 1; i < self->num_regions; i++)
+    {
+      ZRegion * r = self->regions[i];
+      if (region_has_link_group (r))
+        {
+          RegionLinkGroup * group = region_get_link_group (r);
+          for (int j = 0; j < group->num_ids; j++)
+            {
+              if (region_identifier_is_equal (&r->id, &group->ids[j]))
+                {
+                  group->ids[j].idx--;
+                }
+            }
         }
     }
 

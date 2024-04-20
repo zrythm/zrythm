@@ -1653,26 +1653,6 @@ track_setup (Track * track)
 #undef SETUP_TRACK
 }
 
-/**
- * Inserts a ZRegion to the given lane or
- * AutomationTrack of the track, at the given
- * index.
- *
- * The ZRegion must be the main region (see
- * ArrangerObjectInfo).
- *
- * @param at The AutomationTrack of this ZRegion, if
- *   automation region.
- * @param lane_pos The position of the lane to add
- *   to, if applicable.
- * @param idx The index to insert the region at
- *   inside its parent, or -1 to append.
- * @param gen_name Generate a unique region name or
- *   not. This will be 0 if the caller already
- *   generated a unique name.
- *
- * @return Whether successful.
- */
 bool
 track_insert_region (
   Track *           track,
@@ -1700,9 +1680,8 @@ track_insert_region (
 
   g_return_val_if_fail (region->name, false);
   g_message (
-    "inserting region '%s' to track '%s' "
-    "at lane %d (idx %d)",
-    region->name, track->name, lane_pos, idx);
+    "inserting region '%s' to track '%s' at lane %d (idx %d)", region->name,
+    track->name, lane_pos, idx);
 
   int add_lane = 0, add_at = 0, add_chord = 0;
   switch (region->id.type)

@@ -53,8 +53,12 @@ region_link_group_manager_add_group (RegionLinkGroupManager * self)
 RegionLinkGroup *
 region_link_group_manager_get_group (RegionLinkGroupManager * self, int group_id)
 {
-  g_return_val_if_fail (
-    self->num_groups >= 0 && group_id < self->num_groups, NULL);
+  g_return_val_if_fail (self->num_groups >= 0, NULL);
+
+  if (group_id >= self->num_groups)
+    {
+      region_link_group_manager_add_group (self);
+    }
 
   RegionLinkGroup * group = self->groups[group_id];
   g_return_val_if_fail (

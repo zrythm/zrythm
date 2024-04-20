@@ -1410,9 +1410,8 @@ do_or_undo_duplicate_or_link (
   /* clear current selections in the project */
   arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-  /* this is used for automation points to keep track of
-   * which automation point in the project matches which
-   * automation point in the cached selections */
+  /* this is used for automation points to keep track of which automation point
+   * in the project matches which automation point in the cached selections */
   GHashTable * ap_ht = g_hash_table_new (NULL, NULL);
 
   for (int i = (int) objs_arr->len - 1; i >= 0; i--)
@@ -1425,8 +1424,8 @@ do_or_undo_duplicate_or_link (
       own_orig_obj->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
       g_warn_if_fail (IS_ARRANGER_OBJECT (own_obj));
 
-      /* on first run, we need to first move the original
-       * object backwards (the project object too) */
+      /* on first run, we need to first move the original object backwards (the
+       * project object too) */
       if (_do && self->first_run)
         {
           if (own_obj->type == ARRANGER_OBJECT_TYPE_REGION)
@@ -1628,12 +1627,10 @@ do_or_undo_duplicate_or_link (
 
           if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
             {
-              /* if we are linking, create the necessary
-               * links */
+              /* if we are linking, create the necessary links */
               if (link)
                 {
-                  /* add link group to original object if
-                   * necessary */
+                  /* add link group to original object if necessary */
                   ArrangerObject * orig_obj =
                     arranger_object_find (own_orig_obj);
                   ZRegion * orig_r = (ZRegion *) orig_obj;
@@ -1708,11 +1705,9 @@ do_or_undo_duplicate_or_link (
            * delete the links */
           if (link && obj->type == ARRANGER_OBJECT_TYPE_REGION)
             {
-              /* remove link from created object
-               * (this will also automatically
-               * remove the link from the parent
-               * region if it is the only region in
-               * the link group) */
+              /* remove link from created object (this will also automatically
+               * remove the link from the parent region if it is the only region
+               * in the link group) */
               ZRegion * region = (ZRegion *) obj;
               g_warn_if_fail (
                 IS_REGION (region) && region_has_link_group (region));
@@ -1902,8 +1897,7 @@ do_or_undo_create_or_delete (
           /* if removing */
           else
             {
-              /* get the actual object from the
-               * project */
+              /* get the actual object from the project */
               ArrangerObject * obj = arranger_object_find (own_obj);
               g_return_val_if_fail (obj, -1);
 
@@ -1914,11 +1908,6 @@ do_or_undo_create_or_delete (
                   if (region_has_link_group (region))
                     {
                       region_unlink (region);
-
-                      /* unlink remembered link
-                       * groups */
-                      region = (ZRegion *) own_obj;
-                      region_unlink (region);
                     }
                 }
 
@@ -1928,8 +1917,7 @@ do_or_undo_create_or_delete (
         }
     }
 
-  /* if first time creating the object, save the
-   * length for use by SnapGrid */
+  /* if first time creating the object, save the length for use by SnapGrid */
   if (ZRYTHM_HAVE_UI && self->first_run && create && _do && objs_arr->len == 1)
     {
       ArrangerObject * obj = (ArrangerObject *) g_ptr_array_index (objs_arr, 0);

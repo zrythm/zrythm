@@ -3357,8 +3357,7 @@ arranger_object_insert_to_project (ArrangerObject * obj, GError ** error)
             return false;
           }
 
-        /* if region, also set is as the clip
-         * editor region */
+        /* if region, also set is as the clip editor region */
         clip_editor_set_region (CLIP_EDITOR, r, true);
       }
       break;
