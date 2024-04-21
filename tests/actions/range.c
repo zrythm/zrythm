@@ -545,7 +545,7 @@ test_remove_range_w_objects_inside (void)
 
   /* check scale and midi region added */
   g_assert_cmpint (midi_track->lanes[0]->num_regions, ==, 1);
-  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 1);
+  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 2);
 
   test_helper_zrythm_cleanup ();
 }
