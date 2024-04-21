@@ -787,10 +787,6 @@ get_group_icon (const char * schema_str)
     {
       icon_name = "gnome-icon-library-controls-big-symbolic";
     }
-  else if (string_contains_substr (schema_str, "preferences.scripting"))
-    {
-      icon_name = "amarok_scripts";
-    }
   else if (string_contains_substr (schema_str, "preferences.dsp"))
     {
       icon_name = "gnome-icon-library-terminal-symbolic";
@@ -916,12 +912,8 @@ preferences_widget_new (void)
   PreferencesWidget * self =
     g_object_new (PREFERENCES_WIDGET_TYPE, "title", _ ("Preferences"), NULL);
 
-  for (int i = 0; i <= 6; i++)
+  for (int i = 0; i <= 5; i++)
     {
-      /* skip scripting for now - out of scope */
-      if (i == 6)
-        continue;
-
       add_group (self, i);
     }
 

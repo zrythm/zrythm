@@ -10,10 +10,8 @@ if jq.found () and get_option ('want_clang_tidy')
 
   ignore_paths = [
     '../src/plugins/lv2',
-    '../src/guile',
     '../subprojects',
     '../ext',
-    '/usr/include/guile/2.2/libguile',
     ]
   ignore_commands = []
   foreach ignore_path : ignore_paths

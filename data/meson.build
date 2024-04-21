@@ -210,5 +210,4 @@ install_data (
 subdir ('css-themes')
 
 subdir ('plugins')
-subdir ('scripts')
 subdir ('windows')

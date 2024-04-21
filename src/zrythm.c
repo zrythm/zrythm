@@ -187,10 +187,6 @@ zrythm_get_version_with_capabilities (char * buf, bool include_system_info)
     "    +sdl2\n"
 #endif
 
-#ifdef HAVE_GUILE
-    "    +guile\n"
-#endif
-
 #ifdef HAVE_LSP_DSP
     "    +lsp-dsp-lib\n"
 #endif

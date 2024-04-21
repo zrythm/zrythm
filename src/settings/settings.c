@@ -71,7 +71,6 @@ settings_new (void)
   NEW_PREFERENCES_SETTINGS (plugins, paths);
   NEW_PREFERENCES_SETTINGS (projects, general);
   NEW_PREFERENCES_SETTINGS (ui, general);
-  NEW_PREFERENCES_SETTINGS (scripting, general);
 
 #undef PREFERENCES_PREFIX
 
@@ -465,7 +464,6 @@ settings_free (Settings * self)
   FREE_SETTING (preferences_plugins_paths);
   FREE_SETTING (preferences_projects_general);
   FREE_SETTING (preferences_ui_general);
-  FREE_SETTING (preferences_scripting_general);
   FREE_SETTING (monitor);
   FREE_SETTING (ui);
   FREE_SETTING (transport);

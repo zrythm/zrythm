@@ -84,18 +84,13 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
-#include "io/serialization/clipboard.h"
-
-#include "project/project_init_flow_manager.h"
-#ifdef HAVE_GUILE
-#  include "gui/widgets/dialogs/scripting_dialog.h"
-#endif
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
+#include "io/serialization/clipboard.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
@@ -121,6 +116,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include "project/project_init_flow_manager.h"
 
 #define DEFINE_SIMPLE(x) \
   void x (GSimpleAction * action, GVariant * variant, gpointer user_data)
@@ -323,35 +320,6 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
       MAIN_WINDOW->log_has_pending_warnings = false;
       EVENTS_PUSH (ET_LOG_WARNING_STATE_CHANGED, NULL);
     }
-}
-
-/**
- * Show scripting interface.
- */
-void
-activate_scripting_interface (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data)
-{
-  /* see https://todo.sr.ht/~alextee/zrythm-bug/504 for Mac */
-#if defined(HAVE_GUILE) && !defined(__APPLE__)
-  ScriptingDialogWidget * widget = scripting_dialog_widget_new ();
-  gtk_window_set_transient_for (GTK_WINDOW (widget), GTK_WINDOW (MAIN_WINDOW));
-  gtk_window_present (GTK_WINDOW (widget));
-#else
-  AdwMessageDialog * dialog =
-    dialogs_get_basic_ok_message_dialog (GTK_WINDOW (MAIN_WINDOW));
-  adw_message_dialog_format_heading (dialog, "%s", _ ("Guile Disabled"));
-  adw_message_dialog_format_body_markup (
-    dialog,
-    _ ("Scripting extensibility with "
-       "<a href=\"%s\">GNU Guile</a> "
-       "is not enabled in your %s "
-       "installation."),
-    "https://www.gnu.org/software/guile", PROGRAM_NAME);
-  gtk_window_present (GTK_WINDOW (dialog));
-#endif
 }
 
 DEFINE_SIMPLE (activate_audition_mode)

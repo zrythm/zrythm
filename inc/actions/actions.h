@@ -44,15 +44,6 @@ activate_preferences (
 void
 activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
-/**
- * Show preferences window.
- */
-void
-activate_scripting_interface (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
-
 DECLARE_SIMPLE (activate_audition_mode);
 DECLARE_SIMPLE (activate_select_mode);
 DECLARE_SIMPLE (activate_edit_mode);

@@ -73,10 +73,6 @@ conf_py = configure_file (
     'ISSUE_TRACKER_URL': issue_tracker_url,
     })
 
-generated_rst_files = [
-  scripting_examples_rst,
-  ]
-
 # create run targets for each lang/format combination
 # and custom targets for each language for html
 html_manuals = []
@@ -103,9 +99,6 @@ foreach lang, lang_str : locales
       custom_css_target,
       copy_locales_targets,
       ]
-    if can_make_guile_docs
-      deps += copy_guile_docs_target
-    endif
 
     run_target (
       name,
@@ -118,7 +111,6 @@ foreach lang, lang_str : locales
         depend_files: [
           conf_py, rst_files,
           html_templates,
-          generated_rst_files,
           ],
         output: name,
         command: [ command, '@OUTPUT@', ],
@@ -170,7 +162,6 @@ manual_gettext_gen_pot = custom_target (
     meson.current_build_dir (),
     sphinx_builddir,
     ],
-  depends: can_make_guile_docs ? copy_guile_docs_target : [],
   depend_files: rst_files,
   )
 

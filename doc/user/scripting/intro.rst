@@ -12,6 +12,3 @@ Scripting
    :maxdepth: 4
 
    overview
-   scripting-interface
-   examples
-   api/intro

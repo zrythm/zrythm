@@ -60,9 +60,6 @@ if get_option ('tests')
     '-DDEBUG_THREADS=1',
     ]
 
-  test_config_guile = configuration_data()
-  test_config_guile.merge_from (test_config)
-
   # FIXME use kuribu to generate the audio files
   # instead of shipping them in the source code:
   # ./bin/kuribu /path/to/midifile.mid out.wav http://moddevices.com/plugins/mod-devel/arpeggiator http://distrho.sf.net/plugins/Kars
@@ -112,13 +109,6 @@ if get_option ('tests')
       name.to_upper() + '_URI', uri)
     test_config.set_quoted (
       name.to_upper() + '_BUNDLE', plugin_bundle_uri)
-    # Guile
-    test_config_guile.set (
-      'HAVE_' + name.to_upper(), '#t')
-    test_config_guile.set_quoted (
-      name.to_upper() + '_URI', uri)
-    test_config_guile.set_quoted (
-      name.to_upper() + '_BUNDLE', plugin_bundle_uri)
   endforeach
 
   # external LV2
@@ -135,21 +125,6 @@ if get_option ('tests')
         name.to_upper() + '_URI', uri)
       test_config.set_quoted (
         name.to_upper() + '_BUNDLE', plugin_bundle)
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#t')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_URI', uri)
-      test_config_guile.set_quoted (
-        name.to_upper() + '_BUNDLE', plugin_bundle)
-    else
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#f')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_URI', '')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_BUNDLE', '')
     endif
   endforeach
 
@@ -164,12 +139,6 @@ if get_option ('tests')
     test_config.set_quoted (
       name_underscorified + '_URI', uri)
     test_config.set_quoted (
-      name_underscorified + '_BUNDLE_URI',
-      'file://' + bundle + '/')
-    # Guile
-    test_config_guile.set_quoted (
-      name_underscorified + '_URI', uri)
-    test_config_guile.set_quoted (
       name_underscorified + '_BUNDLE_URI',
       'file://' + bundle + '/')
   endforeach
@@ -221,17 +190,6 @@ if get_option ('tests')
         'HAVE_' + name.to_upper(), 1)
       test_config.set_quoted (
         name.to_upper() + '_PATH', path)
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#t')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_PATH', path)
-    else
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#f')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_PATH', '')
     endif
   endforeach
 
@@ -246,28 +204,12 @@ if get_option ('tests')
         'HAVE_' + name.to_upper(), 1)
       test_config.set_quoted (
         name.to_upper() + '_PATH', path)
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#t')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_PATH', path)
-    else
-      # Guile
-      test_config_guile.set (
-        'HAVE_' + name.to_upper(), '#f')
-      test_config_guile.set_quoted (
-        name.to_upper() + '_PATH', '')
     endif
   endforeach
 
   test_config_h = configure_file (
     output: 'zrythm-test-config.h',
     configuration: test_config,
-    )
-  test_config_scm = configure_file (
-    input: 'guile-config.scm.in',
-    output: 'zrythm-test-config.scm',
-    configuration: test_config_guile,
     )
 
   test_link_args = [
@@ -383,36 +325,12 @@ if get_option ('tests')
       }
   endif
 
-  if have_guile
-    foreach f : data_script_filenames
-      tests += {
-        ('guile/script_runner/' + f.substring (0, -4)).underscorify(): {
-          'parallel': true,
-          'args': meson_src_root / 'data/scripts' / f,
-          'different_source': 'guile/script_runner.c',
-          },
-        }
-    endforeach
-    # disable for now until we have a way to load/
-    # pass plugin bundles
-    if false
-      tests += {
-        'guile/project_generator': {
-          'parallel': true },
-        }
-    endif
-  endif
-
   test_link_libs = []
   if os_windows
     # tests fail to link otherwise
     test_link_libs += zrythm_lib.get_static_lib ()
   else
     test_link_libs += zrythm_lib.get_shared_lib ()
-  endif
-
-  if have_guile
-    test_link_libs += guilelib
   endif
 
   foreach name, info : tests
@@ -485,42 +403,6 @@ if get_option ('tests')
             ],
           timeout: timeout)
       endif # endif is_benchmark
-    else
-      # create C executable for Guile runner
-      source = _test[0] + '.scm'
-      exe = executable (
-        test_name,
-        sources: [
-          'guile_runner.c',
-          test_config_h,
-          bundled_plugins_for_tests_tgts,
-          ],
-        c_args : [
-          common_cflags, strict_cflags,
-          test_c_args,
-          ],
-        dependencies : [
-          zrythm_deps,
-          ],
-        export_dynamic : false,
-        link_with: test_link_libs,
-        include_directories : all_inc,
-        )
-
-      if is_benchmark
-        benchmark (
-          test_name, exe,
-          args: source,
-          env: test_env, suite: suites,
-          timeout: timeout)
-      else
-        test (
-          test_name, exe,
-          args: source,
-          env: test_env, suite: suites,
-          is_parallel: is_parallel,
-          timeout: timeout)
-      endif
     endif
   endforeach
 

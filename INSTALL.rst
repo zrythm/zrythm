@@ -132,9 +132,6 @@ Experimental
 `SDL2 (zlib) <https://www.libsdl.org/>`_
   Audio backend
 
-`libguile (GPLv3+) <https://www.gnu.org/software/guile/>`_
-  Scripting support
-
 Configuration
 -------------
 

@@ -48,10 +48,6 @@
 #include "dsp/router.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
-#ifdef HAVE_GUILE
-#  include "guile/guile.h"
-#  include "guile/project_generator.h"
-#endif
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
@@ -921,10 +917,6 @@ zrythm_app_startup (GApplication * app)
   g_message ("Running Zrythm in %s", cur_dir);
   g_free (cur_dir);
 
-#ifdef HAVE_GUILE
-  guile_init (self->argc, self->argv);
-#endif
-
   g_message ("GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
   g_unsetenv ("GTK_THEME");
 
@@ -1267,9 +1259,9 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
   g_message ("done");
 }
 
+#if 0
 /**
- * Checks that the output is not NULL and exits if it
- * is.
+ * Checks that the output is not NULL and exits if it is.
  */
 static void
 verify_output_exists (ZrythmApp * self)
@@ -1279,12 +1271,12 @@ verify_output_exists (ZrythmApp * self)
       char str[600];
       sprintf (
         str, "%s\n",
-        _ ("An output file was not specified. Please "
-           "pass one with `--output=FILE`."));
+        _ ("An output file was not specified. Please pass one with `--output=FILE`."));
       fprintf (stderr, "%s", str);
       exit (EXIT_FAILURE);
     }
 }
+#endif
 
 static bool
 print_settings (ZrythmApp * self)
@@ -1293,22 +1285,6 @@ print_settings (ZrythmApp * self)
   settings_print (self->pretty_print);
 
   exit (EXIT_SUCCESS);
-}
-
-static bool
-gen_project (ZrythmApp * self, const char * filepath)
-{
-  verify_output_exists (self);
-#ifdef HAVE_GUILE
-  ZRYTHM->generating_project = true;
-  ZRYTHM->have_ui = false;
-  int script_res = guile_project_generator_generate_project_from_file (
-    filepath, self->output_file);
-  exit (script_res);
-#else
-  fprintf (stderr, _ ("libguile is required for this option\n"));
-  exit (EXIT_FAILURE);
-#endif
 }
 
 static bool
@@ -1337,12 +1313,6 @@ on_handle_local_options (GApplication * app, GVariantDict * opts, ZrythmApp * se
   if (g_variant_dict_contains (opts, "print-settings"))
     {
       print_settings (self);
-    }
-  else if (g_variant_dict_contains (opts, "gen-project"))
-    {
-      char * filepath = NULL;
-      g_variant_dict_lookup (opts, "gen-project", "^ay", &filepath);
-      gen_project (self, filepath);
     }
   else if (g_variant_dict_contains (opts, "reset-to-factory"))
     {
@@ -1433,8 +1403,6 @@ add_option_entries (ZrythmApp * self)
   GOptionEntry entries[] = {
     { "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      print_version, _ ("Print version information"), NULL },
-    { "gen-project", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
-     _ ("Generate a project from SCRIPT-FILE"), "SCRIPT-FILE" },
     { "pretty", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &self->pretty_print,
      _ ("Print output in user-friendly way"), NULL },
     { "print-settings", 'p', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
@@ -1474,7 +1442,6 @@ add_option_entries (ZrythmApp * self)
   sprintf (
     examples,
     _ ("Examples:\n"
-       "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
        "  -p --pretty                         Pretty-print current settings\n\n"
        "Please report issues to %s\n"),
     ISSUE_TRACKER_URL);
@@ -1482,10 +1449,7 @@ add_option_entries (ZrythmApp * self)
 
   char summary[8000];
   sprintf (
-    summary,
-    _ ("Run %s, optionally passing a project "
-       "file."),
-    PROGRAM_NAME);
+    summary, _ ("Run %s, optionally passing a project file."), PROGRAM_NAME);
   g_application_set_option_context_summary (G_APPLICATION (self), summary);
 }
 
@@ -1607,22 +1571,21 @@ zrythm_app_init (ZrythmApp * self)
     "quartz,win32,*");
 
   const GActionEntry entries[] = {
-    {"prompt_for_project",   on_prompt_for_project       },
+    {"prompt_for_project", on_prompt_for_project},
  /*{ "init_main_window", on_init_main_window },*/
-    { "setup_main_window",   on_setup_main_window        },
-    { "load_project",        on_load_project             },
-    { "about",               activate_about              },
-    { "fullscreen",          activate_fullscreen         },
-    { "chat",                activate_chat               },
-    { "manual",              activate_manual             },
-    { "news",                activate_news               },
-    { "bugreport",           activate_bugreport          },
-    { "donate",              activate_donate             },
-    { "minimize",            activate_minimize           },
-    { "log",                 activate_log                },
-    { "preferences",         activate_preferences        },
-    { "scripting-interface", activate_scripting_interface},
-    { "quit",                activate_quit               },
+    { "setup_main_window", on_setup_main_window },
+    { "load_project",      on_load_project      },
+    { "about",             activate_about       },
+    { "fullscreen",        activate_fullscreen  },
+    { "chat",              activate_chat        },
+    { "manual",            activate_manual      },
+    { "news",              activate_news        },
+    { "bugreport",         activate_bugreport   },
+    { "donate",            activate_donate      },
+    { "minimize",          activate_minimize    },
+    { "log",               activate_log         },
+    { "preferences",       activate_preferences },
+    { "quit",              activate_quit        },
   };
 
   g_action_map_add_action_entries (

@@ -144,48 +144,6 @@
 }
 
 {
-   guile_call_cond
-   Memcheck:Cond
-   ...
-   fun:GC_*
-   ...
-}
-
-{
-   guile_value8
-   Memcheck:Value8
-   ...
-   fun:GC_*
-   ...
-}
-
-{
-   guile_scm_value8
-   Memcheck:Value8
-   ...
-   obj:*libguile*.so*
-   ...
-}
-
-{
-   guile_scm_cond
-   Memcheck:Cond
-   ...
-   obj:*libguile*.so*
-   ...
-}
-
-{
-   guile_scm_value8_startthread
-   Memcheck:Value8
-   ...
-   obj:*/libgc.so*
-   ...
-   fun:start_thread
-   fun:clone
-}
-
-{
    clone_libgc_cond
    Memcheck:Cond
    ...

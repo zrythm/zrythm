@@ -21,23 +21,6 @@ if os_windows
 else
   scripts_conf += { 'GUILE': guile.full_path() }
 endif
-if pandoc.found()
-  scripts_conf += { 'PANDOC_BIN': pandoc.full_path() }
-endif
-if texi2html.found()
-  scripts_conf += {
-    'TEXI2HTML_BIN': texi2html.full_path() }
-endif
-if guile_snarf.found()
-  scripts_conf += {
-    'GUILE_SNARF': guile_snarf.full_path() }
-endif
-if get_option('guile_snarf_docs_path') != ''
-  scripts_conf += {
-    'GUILE_SNARF_DOCS_BIN': get_option (
-      'guile_snarf_docs_path'),
-    'GUILD_BIN': guild.full_path() }
-endif
 
 # configure each guile script to build/scripts
 src_scripts = run_command ('ls').stdout().strip().split('\n')
@@ -48,9 +31,6 @@ foreach script : src_scripts
       input: script,
       configuration: scripts_conf,
       )
-  endif
-  if script.endswith ('guile-gen-docs.scm')
-    guile_gen_docs_scm = res
   endif
 endforeach
 

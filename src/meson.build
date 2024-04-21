@@ -26,7 +26,6 @@ zrythm_srcs += translators_c_h
 subdir('actions')
 subdir('dsp')
 subdir('gui')
-subdir('guile')
 subdir('io')
 subdir('plugins')
 subdir('project')
@@ -47,10 +46,6 @@ zrythm_link_libs = [
   vamp_plugins_lib,
   weakjack_lib,
   ]
-
-if have_guile
-  zrythm_link_libs += guilelib
-endif
 
 # there are problems if added to zrythm_srcs directly
 zrythm_lib_srcs = zrythm_srcs

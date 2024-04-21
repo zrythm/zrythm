@@ -61,11 +61,6 @@ find_program (
 stoat = find_program (['stoat'], required: false)
 python3 = find_program (['python3', 'python'])
 guile = find_program (['guile2.2', 'guile'])
-guild = find_program (['guild2.2', 'guild'], required: false)
-guile_snarf = find_program (
-  ['guile-snarf2.2', 'guile-snarf'], required: false)
-pandoc = find_program (['pandoc'], required: false)
-texi2html = find_program (['texi2html'], required: false)
 ulimit = find_program ('tools/check_have_unlimited_memlock.sh')
 get_lv2_bundle_uri_bin = find_program ('tools/get_lv2_bundle_uri.sh')
 get_vst_path_bin = find_program ('tools/get_vst_path.sh')
@@ -1078,20 +1073,6 @@ if have_graphviz
   cdata.set('HAVE_CGRAPH', 1)
 endif
 
-guile_dep = dependency (
-  'guile-3.0', required: false,
-  static: all_static)
-if not guile_dep.found ()
-  guile_dep = dependency (
-    'guile-2.2',
-    required: get_option ('guile'),
-    static: all_static)
-endif
-have_guile = guile_dep.found () and not get_option ('guile').disabled ()
-if have_guile
-  cdata.set('HAVE_GUILE', 1)
-endif
-
 carla_host_plugin_dep = dependency (
   'carla-host-plugin', version: '>=2.5.8',
   required: true, #get_option ('carla'),
@@ -1281,7 +1262,6 @@ zrythm_deps = [
   soxr_dep,
   libcgraph_dep,
   libgvc_dep,
-  have_guile ? guile_dep : [],
   carla_host_plugin_dep,
   rtaudio_dep,
   rtmidi_dep,
@@ -1622,7 +1602,6 @@ summary ({
   'ALSA': alsa_dep.found (),
   'Carla': have_carla,
   'GraphViz': have_graphviz,
-  'Guile': have_guile,
   'JACK': have_jack,
   'SoundIO': libsoundio_dep.found (),
   'LSP DSP': lsp_dsp_dep.found (),

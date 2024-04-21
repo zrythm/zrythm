@@ -20,7 +20,6 @@ widget_srcs += files([
   'port_selector_dialog.c',
   'quantize_dialog.c',
   'save_chord_preset_dialog.c',
-  'scripting_dialog.c',
   'string_entry_dialog.c',
   'track_icon_chooser_dialog.c',
   'welcome_message_dialog.c',
