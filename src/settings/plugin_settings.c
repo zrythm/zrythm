@@ -5,7 +5,6 @@
 #include "actions/tracklist_selections.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/carla/carla_discovery.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"

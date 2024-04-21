@@ -17,7 +17,7 @@
 #  include "gui/backend/event_manager.h"
 #  include "gui/widgets/main_window.h"
 #  include "plugins/cached_plugin_descriptors.h"
-#  include "plugins/carla/carla_discovery.h"
+#  include "plugins/carla_discovery.h"
 #  include "plugins/carla_native_plugin.h"
 #  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin.h"

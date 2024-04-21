@@ -5,7 +5,7 @@
 
 #include "dsp/fader.h"
 #include "dsp/router.h"
-#include "plugins/carla/carla_discovery.h"
+#include "plugins/carla_discovery.h"
 #include "utils/math.h"
 
 #include <glib.h>

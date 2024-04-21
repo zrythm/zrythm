@@ -7,7 +7,7 @@
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
 #include "dsp/control_port.h"
-#include "plugins/carla/carla_discovery.h"
+#include "plugins/carla_discovery.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"

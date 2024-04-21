@@ -7,7 +7,7 @@
 
 #  include <stdlib.h>
 
-#  include "plugins/carla/carla_discovery.h"
+#  include "plugins/carla_discovery.h"
 #  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin_descriptor.h"
 #  include "plugins/plugin_manager.h"

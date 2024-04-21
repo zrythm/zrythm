@@ -17,7 +17,7 @@
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/string_list_item_factory.h"
-#include "plugins/carla/carla_discovery.h"
+#include "plugins/carla_discovery.h"
 #include "plugins/collections.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"

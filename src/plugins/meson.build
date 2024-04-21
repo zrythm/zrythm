@@ -3,6 +3,7 @@
 
 plugin_srcs = files ([
   'cached_plugin_descriptors.c',
+  'carla_discovery.c',
   'carla_native_plugin.c',
   'collection.c',
   'collections.c',
@@ -15,7 +16,6 @@ plugin_srcs = files ([
   'plugin_preset.c',
   ])
 
-subdir ('carla')
 subdir ('lv2')
 
 zrythm_srcs += plugin_srcs
