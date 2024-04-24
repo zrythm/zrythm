@@ -693,6 +693,7 @@ test_strict_cflags += [
   '-Werror=multistatement-macros',
   '-Werror=switch',
   '-Werror=overflow',
+  '-Werror=sentinel',
   # breaks pango subproject build
   #'-Werror=array-bounds',
   '-Werror=enum-compare',
@@ -1074,7 +1075,7 @@ if have_graphviz
 endif
 
 carla_host_plugin_dep = dependency (
-  'carla-host-plugin', version: '>=2.5.8',
+  'carla-host-plugin', version: '>=2.6.0',
   required: true, #get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
@@ -1090,7 +1091,7 @@ if have_carla
         'carla-discovery-native').full_path(),
     install_dir: zrythm_libdir / 'carla')
   cdata.set('HAVE_CARLA', 1)
-  cdata.set_quoted('CARLA_VERSION_STRING', carla_host_plugin_dep.version ())
+  cdata.set_quoted('Z_CARLA_VERSION_STRING', carla_host_plugin_dep.version ())
   if carla_host_plugin_dep.version().version_compare('>=2.6.0')
     cdata.set('CARLA_HAVE_CLAP_SUPPORT', 1)
   endif

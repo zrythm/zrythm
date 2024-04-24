@@ -78,6 +78,10 @@ plugin_descriptor_serialize_to_json (
   yyjson_mut_obj_add_int (doc, pd_obj, "minBridgeMode", pd->min_bridge_mode);
   yyjson_mut_obj_add_bool (doc, pd_obj, "hasCustomUI", pd->has_custom_ui);
   yyjson_mut_obj_add_uint (doc, pd_obj, "ghash", pd->ghash);
+  if (pd->sha1)
+    {
+      yyjson_mut_obj_add_str (doc, pd_obj, "sha1", pd->sha1);
+    }
   return true;
 }
 
@@ -280,6 +284,11 @@ plugin_descriptor_deserialize_from_json (
     yyjson_obj_iter_get (&it, "minBridgeMode"));
   pd->has_custom_ui = yyjson_get_bool (yyjson_obj_iter_get (&it, "hasCustomUI"));
   pd->ghash = yyjson_get_uint (yyjson_obj_iter_get (&it, "ghash"));
+  yyjson_val * sha1_obj = yyjson_obj_iter_get (&it, "sha1");
+  if (uri_obj)
+    {
+      pd->sha1 = g_strdup (yyjson_get_str (sha1_obj));
+    }
   return true;
 }
 

@@ -19,7 +19,7 @@
  * @{
  */
 
-#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 3
+#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 4
 
 /**
  * Descriptors to be cached.
@@ -69,22 +69,20 @@ void
 cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self);
 
 /**
- * Returns if the plugin at the given path is
- * blacklisted or not.
+ * Returns if the plugin with the given sha1 is blacklisted or not.
  */
-int
+bool
 cached_plugin_descriptors_is_blacklisted (
   CachedPluginDescriptors * self,
-  const char *              abs_path);
+  const char *              sha1);
 
 /**
- * Finds a descriptor matching the given one's
- * unique identifiers.
+ * Finds a descriptor matching the given one's unique identifiers.
  *
- * @param check_valid Whether to check valid
- *   descriptors.
- * @param check_blacklisted Whether to check
- *   blacklisted descriptors.
+ * @param descr The descriptor to check, or NULL to check sha1.
+ * @param sha1 The sha1 to check, or NULL to check @p descr.
+ * @param check_valid Whether to check valid descriptors.
+ * @param check_blacklisted Whether to check blacklisted descriptors.
  *
  * @return The found descriptor or NULL.
  */
@@ -92,6 +90,7 @@ const PluginDescriptor *
 cached_plugin_descriptors_find (
   CachedPluginDescriptors * self,
   const PluginDescriptor *  descr,
+  const char *              sha1,
   bool                      check_valid,
   bool                      check_blacklisted);
 
@@ -113,14 +112,13 @@ cached_plugin_descriptors_get (
 /**
  * Appends a descriptor to the cache.
  *
- * @param serialize 1 to serialize the updated cache
- *   now.
+ * @param serialize Whether serialize the updated cache now.
  */
 void
 cached_plugin_descriptors_blacklist (
   CachedPluginDescriptors * self,
-  const char *              abs_path,
-  int                       _serialize);
+  const char *              sha1,
+  bool                      _serialize);
 
 /**
  * Replaces a descriptor in the cache.

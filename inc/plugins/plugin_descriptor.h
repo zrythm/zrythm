@@ -18,6 +18,8 @@
 
 #include <glib/gi18n.h>
 
+#include <CarlaBackend.h>
+
 typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
@@ -203,11 +205,9 @@ typedef struct PluginDescriptor
   int num_audio_outs;
   /** Number of MIDI output ports. */
   int num_midi_outs;
-  /** Number of input control (plugin param)
-   * ports. */
+  /** Number of input control (plugin param) ports. */
   int num_ctrl_ins;
-  /** Number of output control (plugin param)
-   * ports. */
+  /** Number of output control (plugin param) ports. */
   int num_ctrl_outs;
   /** Number of input CV ports. */
   int num_cv_ins;
@@ -230,10 +230,16 @@ typedef struct PluginDescriptor
 
   bool has_custom_ui;
 
-  /** Hash of the plugin's bundle (.so/.ddl for VST)
-   * used when caching PluginDescriptor's, obtained
-   * using g_file_hash(). */
+  /**
+   * Hash of the plugin's bundle (.so/.ddl for VST) used when caching
+   * PluginDescriptor's, obtained using g_file_hash().
+   *
+   * @deprecated Kept so that older projects still work.
+   */
   unsigned int ghash;
+
+  /** SHA1 of the file (replaces ghash). */
+  char * sha1;
 
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
@@ -262,6 +268,7 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   YAML_FIELD_ENUM (PluginDescriptor, min_bridge_mode, carla_bridge_mode_strings),
   YAML_FIELD_INT (PluginDescriptor, has_custom_ui),
   YAML_FIELD_UINT (PluginDescriptor, ghash),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, sha1),
 
   CYAML_FIELD_END
 };
@@ -309,8 +316,23 @@ plugin_protocol_get_icon_name (ZPluginProtocol prot)
   return icon;
 }
 
+bool
+plugin_protocol_is_supported (ZPluginProtocol protocol);
+
 const char *
 plugin_category_to_string (ZPluginCategory category);
+
+PluginType
+plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol);
+
+ZPluginProtocol
+plugin_descriptor_get_protocol_from_carla_plugin_type (PluginType ptype);
+
+ZPluginCategory
+plugin_descriptor_get_category_from_carla_category_str (const char * category);
+
+ZPluginCategory
+plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat);
 
 /**
  * Clones the plugin descriptor.

@@ -128,27 +128,11 @@ sort_plugin_func (const void * a, const void * b)
   if (r)
     return r;
 
-  /* if equal ignoring case, use opposite of strcmp()
-   * result to get lower before upper */
+  /* if equal ignoring case, use opposite of strcmp() result to get lower before
+   * upper */
   /* aka: return strcmp(b, a); */
   return -strcmp (pa->name, pb->name);
 }
-
-/*static void*/
-/*print_plugins ()*/
-/*{*/
-/*for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)*/
-/*{*/
-/*PluginDescriptor * descr =*/
-/*PLUGIN_MANAGER->plugin_descriptors[i];*/
-
-/*g_message ("[%d] %s (%s - %s)",*/
-/*i,*/
-/*descr->name,*/
-/*descr->uri,*/
-/*descr->category_str);*/
-/*}*/
-/*}*/
 
 /**
  * Returns a cached LilvNode for the given URI.
@@ -195,7 +179,7 @@ add_expanded_paths (GStrvBuilder * builder, char ** paths_from_settings)
 }
 
 static char **
-get_lv2_paths (PluginManager * self)
+plugin_manager_get_lv2_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -293,7 +277,7 @@ create_and_load_lilv_word (PluginManager * self)
   /* load all installed plugins on system */
   self->lv2_path = NULL;
 
-  char ** lv2_plugin_paths = get_lv2_paths (self);
+  char ** lv2_plugin_paths = plugin_manager_get_lv2_paths (self);
   g_return_if_fail (lv2_plugin_paths);
   self->lv2_path = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, lv2_plugin_paths);
   g_return_if_fail (self->lv2_path);
@@ -430,12 +414,14 @@ plugin_manager_new (void)
   /* fetch/create collections */
   self->collections = plugin_collections_new ();
 
+  self->carla_discovery = z_carla_discovery_new (self);
+
   return self;
 }
 
 #ifdef HAVE_CARLA
 static char **
-get_vst2_paths (PluginManager * self)
+plugin_manager_get_vst2_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -500,7 +486,7 @@ get_vst2_paths (PluginManager * self)
 }
 
 static char **
-get_vst3_paths (PluginManager * self)
+plugin_manager_get_vst3_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -564,7 +550,7 @@ get_vst3_paths (PluginManager * self)
 static int
 get_vst3_count (PluginManager * self)
 {
-  char ** paths = get_vst3_paths (self);
+  char ** paths = plugin_manager_get_vst3_paths (self);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -595,7 +581,7 @@ get_vst3_count (PluginManager * self)
 static int
 get_vst2_count (PluginManager * self)
 {
-  char ** paths = get_vst2_paths (self);
+  char ** paths = plugin_manager_get_vst2_paths (self);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -627,7 +613,7 @@ get_vst2_count (PluginManager * self)
  * Gets the SFZ or SF2 paths.
  */
 static char **
-get_sf_paths (PluginManager * self, bool sf2)
+plugin_manager_get_sf_paths (const PluginManager * self, bool sf2)
 {
   char ** paths = NULL;
   if (ZRYTHM_TESTING)
@@ -648,7 +634,8 @@ get_sf_paths (PluginManager * self, bool sf2)
 static int
 get_sf_count (PluginManager * self, ZPluginProtocol prot)
 {
-  char ** paths = get_sf_paths (self, prot == Z_PLUGIN_PROTOCOL_SF2);
+  char ** paths =
+    plugin_manager_get_sf_paths (self, prot == Z_PLUGIN_PROTOCOL_SF2);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -677,7 +664,7 @@ get_sf_count (PluginManager * self, ZPluginProtocol prot)
 }
 
 static char **
-get_dssi_paths (PluginManager * self)
+plugin_manager_get_dssi_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -733,7 +720,7 @@ get_dssi_paths (PluginManager * self)
 }
 
 static char **
-get_ladspa_paths (PluginManager * self)
+plugin_manager_get_ladspa_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -788,7 +775,7 @@ get_ladspa_paths (PluginManager * self)
  * https://github.com/free-audio/clap/blob/b902efa94e7a069dc1576617ebd74d2310746bd4/include/clap/entry.h#L14
  */
 static char **
-get_clap_paths (PluginManager * self)
+plugin_manager_get_clap_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -857,7 +844,7 @@ get_clap_paths (PluginManager * self)
 static int
 get_clap_count (PluginManager * self)
 {
-  char ** paths = get_clap_paths (self);
+  char ** paths = plugin_manager_get_clap_paths (self);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -886,7 +873,7 @@ get_clap_count (PluginManager * self)
 }
 
 static char **
-get_jsfx_paths (PluginManager * self)
+plugin_manager_get_jsfx_paths (const PluginManager * self)
 {
   GStrvBuilder * builder = g_strv_builder_new ();
 
@@ -922,7 +909,7 @@ get_jsfx_paths (PluginManager * self)
 static int
 get_jsfx_count (PluginManager * self)
 {
-  char ** paths = get_jsfx_paths (self);
+  char ** paths = plugin_manager_get_jsfx_paths (self);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -1002,6 +989,104 @@ plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol
   return false;
 }
 
+char **
+plugin_manager_get_paths_for_protocol (
+  const PluginManager * self,
+  const ZPluginProtocol protocol)
+{
+  char ** paths = NULL;
+  switch (protocol)
+    {
+    case Z_PLUGIN_PROTOCOL_VST:
+      paths = plugin_manager_get_vst2_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_VST3:
+      paths = plugin_manager_get_vst3_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_DSSI:
+      paths = plugin_manager_get_dssi_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_LADSPA:
+      paths = plugin_manager_get_ladspa_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_SFZ:
+      paths = plugin_manager_get_sf_paths (self, false);
+      break;
+    case Z_PLUGIN_PROTOCOL_SF2:
+      paths = plugin_manager_get_sf_paths (self, true);
+      break;
+    case Z_PLUGIN_PROTOCOL_CLAP:
+      paths = plugin_manager_get_clap_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_JSFX:
+      paths = plugin_manager_get_jsfx_paths (self);
+      break;
+    case Z_PLUGIN_PROTOCOL_LV2:
+      paths = plugin_manager_get_lv2_paths (self);
+      break;
+    default:
+      break;
+    }
+  g_return_val_if_fail (paths, NULL);
+
+  return paths;
+}
+
+char *
+plugin_manager_get_paths_for_protocol_separated (
+  const PluginManager * self,
+  const ZPluginProtocol protocol)
+{
+  char ** paths = plugin_manager_get_paths_for_protocol (self, protocol);
+  if (paths)
+    {
+      char * paths_separated = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, paths);
+      g_strfreev (paths);
+      return paths_separated;
+    }
+  else
+    {
+      return NULL;
+    }
+}
+
+char *
+plugin_manager_find_plugin_from_rel_path (
+  const PluginManager * self,
+  const ZPluginProtocol protocol,
+  const char *          rel_path)
+{
+  char ** paths = plugin_manager_get_paths_for_protocol (self, protocol);
+  if (!paths)
+    {
+      g_warning ("no paths for %s", rel_path);
+      return g_strdup ("");
+    }
+
+  int    path_idx = 0;
+  char * path;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      char * full_path = g_build_filename (path, rel_path, NULL);
+      if (g_file_test (full_path, G_FILE_TEST_EXISTS))
+        {
+          g_strfreev (paths);
+          return full_path;
+        }
+    }
+  g_strfreev (paths);
+
+  g_warning ("no paths for %s", rel_path);
+  return g_strdup ("");
+}
+
+void
+plugin_manager_add_descriptor (PluginManager * self, PluginDescriptor * descr)
+{
+  g_ptr_array_add (self->plugin_descriptors, descr);
+  add_category_and_author (self, descr->category_str, descr->author);
+}
+
 #ifdef HAVE_CARLA
 /**
  * Used for plugin protocols that are scanned from paths.
@@ -1031,7 +1116,7 @@ scan_carla_descriptors_from_paths (
   switch (protocol)
     {
     case Z_PLUGIN_PROTOCOL_VST:
-      paths = get_vst2_paths (self);
+      paths = plugin_manager_get_vst2_paths (self);
 #  ifdef __APPLE__
       suffix = ".vst";
 #  else
@@ -1039,31 +1124,31 @@ scan_carla_descriptors_from_paths (
 #  endif
       break;
     case Z_PLUGIN_PROTOCOL_VST3:
-      paths = get_vst3_paths (self);
+      paths = plugin_manager_get_vst3_paths (self);
       suffix = ".vst3";
       break;
     case Z_PLUGIN_PROTOCOL_DSSI:
-      paths = get_dssi_paths (self);
+      paths = plugin_manager_get_dssi_paths (self);
       suffix = LIB_SUFFIX;
       break;
     case Z_PLUGIN_PROTOCOL_LADSPA:
-      paths = get_ladspa_paths (self);
+      paths = plugin_manager_get_ladspa_paths (self);
       suffix = LIB_SUFFIX;
       break;
     case Z_PLUGIN_PROTOCOL_SFZ:
-      paths = get_sf_paths (self, false);
+      paths = plugin_manager_get_sf_paths (self, false);
       suffix = ".sfz";
       break;
     case Z_PLUGIN_PROTOCOL_SF2:
-      paths = get_sf_paths (self, true);
+      paths = plugin_manager_get_sf_paths (self, true);
       suffix = ".sf2";
       break;
     case Z_PLUGIN_PROTOCOL_CLAP:
-      paths = get_clap_paths (self);
+      paths = plugin_manager_get_clap_paths (self);
       suffix = ".clap";
       break;
     case Z_PLUGIN_PROTOCOL_JSFX:
-      paths = get_jsfx_paths (self);
+      paths = plugin_manager_get_jsfx_paths (self);
       suffix = ".jsfx";
       break;
     default:
@@ -1266,6 +1351,65 @@ scan_carla_descriptors_from_paths (
 }
 #endif
 
+static gboolean
+call_carla_discovery_idle (PluginManager * self)
+{
+  bool done = z_carla_discovery_idle (self->carla_discovery);
+  if (done)
+    {
+      cached_plugin_descriptors_serialize_to_file (
+        self->cached_plugin_descriptors);
+      if (self->scan_done_cb)
+        {
+          self->scan_done_cb (self->scan_done_cb_data);
+        }
+      return G_SOURCE_REMOVE;
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
+void
+plugin_manager_begin_scan (
+  PluginManager * self,
+  const double    max_progress,
+  double *        progress,
+  GenericCallback cb,
+  void *          user_data)
+{
+  const double       start_progress = progress ? *progress : 0;
+  const unsigned int num_plugin_types =
+    (Z_PLUGIN_PROTOCOL_JSFX - Z_PLUGIN_PROTOCOL_LV2) + 1;
+
+  for (
+    ZPluginProtocol i = Z_PLUGIN_PROTOCOL_LV2; i <= Z_PLUGIN_PROTOCOL_JSFX; i++)
+    {
+      if (!plugin_protocol_is_supported (i))
+        continue;
+
+      z_carla_discovery_start (self->carla_discovery, BINARY_NATIVE, i);
+      /* also scan 32-bit on windows */
+#ifdef _WOE32
+      z_carla_discovery_start (self->carla_discovery, BINARY_WIN32, i);
+#endif
+      if (progress)
+        {
+          *progress =
+            start_progress
+            + ((double) ((i - Z_PLUGIN_PROTOCOL_LV2) + 1) / num_plugin_types)
+                * (max_progress - start_progress);
+          g_return_if_fail (zrythm_app->greeter);
+          greeter_widget_set_progress_and_status (
+            zrythm_app->greeter, _ ("Scanning Plugins"), NULL, *progress);
+        }
+    }
+
+  self->scan_done_cb = cb;
+  self->scan_done_cb_data = user_data;
+
+  g_idle_add ((GSourceFunc) call_carla_discovery_idle, self);
+}
+
 void
 plugin_manager_scan_plugins (
   PluginManager * self,
@@ -1319,7 +1463,7 @@ plugin_manager_scan_plugins (
 
           /* update descriptor in cached */
           const PluginDescriptor * found_descr = cached_plugin_descriptors_find (
-            self->cached_plugin_descriptors, descriptor, F_CHECK_VALID,
+            self->cached_plugin_descriptors, descriptor, NULL, F_CHECK_VALID,
             F_CHECK_BLACKLISTED);
           if (found_descr)
             {
@@ -1549,6 +1693,15 @@ plugin_manager_pick_instrument (PluginManager * self)
 }
 
 void
+plugin_manager_set_currently_scanning_plugin (
+  PluginManager * self,
+  const char *    filename,
+  const char *    sha1)
+{
+  greeter_widget_set_currently_scanned_plugin (zrythm_app->greeter, filename);
+}
+
+void
 plugin_manager_clear_plugins (PluginManager * self)
 {
   g_ptr_array_remove_range (
@@ -1586,6 +1739,8 @@ plugin_manager_free (PluginManager * self)
   object_free_w_func_and_null (
     cached_plugin_descriptors_free, self->cached_plugin_descriptors);
   object_free_w_func_and_null (plugin_collections_free, self->collections);
+
+  object_free_w_func_and_null (z_carla_discovery_free, self->carla_discovery);
 
   object_zero_and_free (self);
 

@@ -264,7 +264,7 @@ zrythm_get_system_info (void)
   g_string_append (gstr, "\n");
 
 #ifdef HAVE_CARLA
-  g_string_append_printf (gstr, "Carla version: %s\n", CARLA_VERSION_STRING);
+  g_string_append_printf (gstr, "Carla version: %s\n", Z_CARLA_VERSION_STRING);
 #endif
   g_string_append_printf (
     gstr, "GTK version: %u.%u.%u\n", gtk_get_major_version (),

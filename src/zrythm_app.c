@@ -414,6 +414,13 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
     project_load_or_create_ready_cb, NULL);
 }
 
+static void
+on_plugin_scan_finished (ZrythmApp * self)
+{
+  g_message ("plugin scan finished");
+  self->init_finished = true;
+}
+
 void *
 zrythm_app_init_thread (ZrythmApp * self)
 {
@@ -468,13 +475,10 @@ zrythm_app_init_thread (ZrythmApp * self)
   file_manager_load_files (FILE_MANAGER);
 
   greeter_widget_set_progress_and_status (
-    self->greeter, _ ("Scanning Plugins"), NULL, 0.10);
-  plugin_manager_scan_plugins (
-    ZRYTHM->plugin_manager, 0.90, &self->greeter->progress);
-
-  self->init_finished = true;
-
-  g_message ("done");
+    self->greeter, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
+  plugin_manager_begin_scan (
+    ZRYTHM->plugin_manager, 0.90, &self->greeter->progress,
+    (GenericCallback) on_plugin_scan_finished, self);
 
   return NULL;
 }

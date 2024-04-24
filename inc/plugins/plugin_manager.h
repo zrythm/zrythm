@@ -13,12 +13,14 @@
 #include "plugins/lv2/lv2_urid.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/symap.h"
+#include "utils/types.h"
 
 #include "zix/sem.h"
 #include <lilv/lilv.h>
 
-typedef struct CachedPluginDescriptors CachedPluginDescriptors;
-typedef struct PluginCollections       PluginCollections;
+TYPEDEF_STRUCT (CachedPluginDescriptors);
+TYPEDEF_STRUCT (PluginCollections);
+TYPEDEF_STRUCT (ZCarlaDiscovery);
 
 /**
  * @addtogroup plugins
@@ -82,6 +84,11 @@ typedef struct PluginManager
 
   char * lv2_path;
 
+  ZCarlaDiscovery * carla_discovery;
+
+  GenericCallback scan_done_cb;
+  void *          scan_done_cb_data;
+
   /** Whether the plugin manager has been set up already. */
   bool setup;
 
@@ -92,6 +99,49 @@ typedef struct PluginManager
 
 PluginManager *
 plugin_manager_new (void);
+
+char **
+plugin_manager_get_paths_for_protocol (
+  const PluginManager * self,
+  const ZPluginProtocol protocol);
+
+char *
+plugin_manager_get_paths_for_protocol_separated (
+  const PluginManager * self,
+  const ZPluginProtocol protocol);
+
+/**
+ * Searches in the known paths for this plugin protocol for the given relative
+ * path of the plugin and returns the absolute path.
+ */
+char *
+plugin_manager_find_plugin_from_rel_path (
+  const PluginManager * self,
+  const ZPluginProtocol protocol,
+  const char *          rel_path);
+
+void
+plugin_manager_begin_scan (
+  PluginManager * self,
+  const double    max_progress,
+  double *        progress,
+  GenericCallback cb,
+  void *          user_data);
+
+/**
+ * Adds a new descriptor.
+ */
+void
+plugin_manager_add_descriptor (PluginManager * self, PluginDescriptor * descr);
+
+/**
+ * Updates the text in the greeter.
+ */
+void
+plugin_manager_set_currently_scanning_plugin (
+  PluginManager * self,
+  const char *    filename,
+  const char *    sha1);
 
 /**
  * Returns a cached LilvNode for the given URI.

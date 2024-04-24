@@ -358,6 +358,16 @@ greeter_widget_set_progress_and_status (
   zix_sem_post (&self->progress_status_lock);
 }
 
+void
+greeter_widget_set_currently_scanned_plugin (
+  GreeterWidget * self,
+  const char *    filename)
+{
+  char * prog_str = g_strdup_printf (_ ("Scanning %s..."), filename);
+  greeter_widget_set_progress_and_status (self, NULL, prog_str, 0.5);
+  g_free (prog_str);
+}
+
 static bool
 on_close_request (GtkWindow * window, GreeterWidget * self)
 {

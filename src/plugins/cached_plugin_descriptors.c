@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/cached_plugin_descriptors.h"
@@ -160,50 +160,27 @@ delete_file (void)
   g_object_unref (file);
 }
 
-/**
- * Returns if the plugin at the given path is
- * blacklisted or not.
- */
-int
+bool
 cached_plugin_descriptors_is_blacklisted (
   CachedPluginDescriptors * self,
-  const char *              abs_path)
+  const char *              sha1)
 {
-  char * traversed_path = io_traverse_path (abs_path);
-
   for (int i = 0; i < self->num_blacklisted; i++)
     {
       PluginDescriptor * descr = self->blacklisted[i];
-      GFile *            file = g_file_new_for_path (descr->path);
-      if (
-        string_is_equal (descr->path, traversed_path)
-        && descr->ghash == g_file_hash (file))
+      if (string_is_equal (descr->sha1, sha1))
         {
-          g_object_unref (file);
-          g_free (traversed_path);
-          return 1;
+          return true;
         }
-      g_object_unref (file);
     }
-  g_free (traversed_path);
-  return 0;
+  return false;
 }
 
-/**
- * Finds a descriptor matching the given one's
- * unique identifiers.
- *
- * @param check_valid Whether to check valid
- *   descriptors.
- * @param check_blacklisted Whether to check
- *   blacklisted descriptors.
- *
- * @return The found descriptor or NULL.
- */
 const PluginDescriptor *
 cached_plugin_descriptors_find (
   CachedPluginDescriptors * self,
   const PluginDescriptor *  descr,
+  const char *              sha1,
   bool                      check_valid,
   bool                      check_blacklisted)
 {
@@ -212,7 +189,9 @@ cached_plugin_descriptors_find (
       for (int i = 0; i < self->num_descriptors; i++)
         {
           PluginDescriptor * cur_descr = self->descriptors[i];
-          if (plugin_descriptor_is_same_plugin (cur_descr, descr))
+          if (
+            (sha1 && string_is_equal (cur_descr->sha1, sha1))
+            || (descr && plugin_descriptor_is_same_plugin (cur_descr, descr)))
             {
               return cur_descr;
             }
@@ -223,7 +202,9 @@ cached_plugin_descriptors_find (
       for (int i = 0; i < self->num_blacklisted; i++)
         {
           PluginDescriptor * cur_descr = self->blacklisted[i];
-          if (plugin_descriptor_is_same_plugin (cur_descr, descr))
+          if (
+            (sha1 && string_is_equal (cur_descr->sha1, sha1))
+            || (descr && plugin_descriptor_is_same_plugin (cur_descr, descr)))
             {
               return cur_descr;
             }
@@ -297,33 +278,21 @@ cached_plugin_descriptors_get (
   return descriptors;
 }
 
-/**
- * Appends a descriptor to the cache.
- *
- * @param serialize 1 to serialize the updated cache
- *   now.
- */
 void
 cached_plugin_descriptors_blacklist (
   CachedPluginDescriptors * self,
-  const char *              abs_path,
-  int                       _serialize)
+  const char *              sha1,
+  bool                      _serialize)
 {
-  g_return_if_fail (abs_path && self);
-
-  char * traversed_path = io_traverse_path (abs_path);
+  g_return_if_fail (sha1 && self);
 
   PluginDescriptor * new_descr = object_new (PluginDescriptor);
-  new_descr->path = g_strdup (traversed_path);
-  GFile * file = g_file_new_for_path (traversed_path);
-  new_descr->ghash = g_file_hash (file);
-  g_object_unref (file);
+  new_descr->sha1 = g_strdup (sha1);
   self->blacklisted[self->num_blacklisted++] = new_descr;
   if (_serialize)
     {
       cached_plugin_descriptors_serialize_to_file (self);
     }
-  g_free (traversed_path);
 }
 
 /**

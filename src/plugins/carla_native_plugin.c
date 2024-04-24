@@ -57,42 +57,6 @@ G_DEFINE_QUARK (
   z - plugins - carla - native - plugin - error - quark,
   z_plugins_carla_native_plugin_error)
 
-static PluginType
-get_plugin_type_from_protocol (ZPluginProtocol protocol)
-{
-  switch (protocol)
-    {
-    case Z_PLUGIN_PROTOCOL_LV2:
-      return PLUGIN_LV2;
-    case Z_PLUGIN_PROTOCOL_AU:
-      return PLUGIN_AU;
-    case Z_PLUGIN_PROTOCOL_VST:
-      return PLUGIN_VST2;
-    case Z_PLUGIN_PROTOCOL_VST3:
-      return PLUGIN_VST3;
-    case Z_PLUGIN_PROTOCOL_SFZ:
-      return PLUGIN_SFZ;
-    case Z_PLUGIN_PROTOCOL_SF2:
-      return PLUGIN_SF2;
-    case Z_PLUGIN_PROTOCOL_DSSI:
-      return PLUGIN_DSSI;
-    case Z_PLUGIN_PROTOCOL_LADSPA:
-      return PLUGIN_LADSPA;
-    case Z_PLUGIN_PROTOCOL_CLAP:
-#  ifdef CARLA_HAVE_CLAP_SUPPORT
-      return PLUGIN_CLAP;
-#  else
-      return 14;
-#  endif
-    case Z_PLUGIN_PROTOCOL_JSFX:
-      return PLUGIN_JSFX;
-    default:
-      g_return_val_if_reached (0);
-    }
-
-  g_return_val_if_reached (0);
-}
-
 void
 carla_native_plugin_init_loaded (CarlaNativePlugin * self)
 {
@@ -649,7 +613,7 @@ carla_native_plugin_has_custom_ui (const PluginDescriptor * descr)
       native_pl->native_plugin_descriptor,
       native_pl->native_plugin_handle);
   PluginType type =
-    get_plugin_type_from_protocol (descr->protocol);
+    z_carla_discovery_get_plugin_type_from_protocol (descr->protocol);
   carla_add_plugin (
     native_pl->host_handle,
     descr->arch == ARCH_64 ?
@@ -1352,8 +1316,9 @@ carla_native_plugin_add_internal_plugin_from_descr (
   /** Number of instances to instantiate (1 normally or 2 for mono plugins). */
   int num_instances = descr->num_audio_ins == 1 ? 2 : 1;
 
-  const PluginType type = get_plugin_type_from_protocol (descr->protocol);
-  int              ret = 0;
+  const PluginType type =
+    plugin_descriptor_get_carla_plugin_type_from_protocol (descr->protocol);
+  int ret = 0;
 
   for (int i = 0; i < num_instances; i++)
     {
@@ -1388,11 +1353,17 @@ carla_native_plugin_add_internal_plugin_from_descr (
             descr->name, 0, NULL, PLUGIN_OPTIONS_NULL);
           break;
         case Z_PLUGIN_PROTOCOL_JSFX:
-          ret = carla_add_plugin (
-            self->host_handle,
-            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type,
-            descr->path, descr->name, descr->name, descr->unique_id, NULL,
-            PLUGIN_OPTIONS_NULL);
+          {
+            /* the URI is a relative path - make it absolute */
+            char * pl_path = plugin_manager_find_plugin_from_rel_path (
+              PLUGIN_MANAGER, descr->protocol, descr->uri);
+            ret = carla_add_plugin (
+              self->host_handle,
+              descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type,
+              pl_path, descr->name, descr->name, descr->unique_id, NULL,
+              PLUGIN_OPTIONS_NULL);
+            g_free (pl_path);
+          }
           break;
         case Z_PLUGIN_PROTOCOL_CLAP:
           ret = carla_add_plugin (
@@ -1601,19 +1572,23 @@ carla_native_plugin_instantiate (
   char * zrythm_libdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
   char * carla_binaries_dir = g_build_filename (zrythm_libdir, "carla", NULL);
   g_message (
-    "setting carla engine option "
-    "[ENGINE_OPTION_PATH_BINARIES] to '%s'",
+    "setting carla engine option [ENGINE_OPTION_PATH_BINARIES] to '%s'",
     carla_binaries_dir);
   carla_set_engine_option (
     self->host_handle, ENGINE_OPTION_PATH_BINARIES, 0, carla_binaries_dir);
   g_free (zrythm_libdir);
   g_free (carla_binaries_dir);
 
-  /* set lv2 path */
-  g_message ("setting carla LV2 path to '%s'", PLUGIN_MANAGER->lv2_path);
-  carla_set_engine_option (
-    self->host_handle, ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
-    PLUGIN_MANAGER->lv2_path);
+  /* set plugin paths */
+  {
+    char * paths = plugin_manager_get_paths_for_protocol_separated (
+      PLUGIN_MANAGER, descr->protocol);
+    PluginType ptype =
+      plugin_descriptor_get_carla_plugin_type_from_protocol (descr->protocol);
+    carla_set_engine_option (
+      self->host_handle, ENGINE_OPTION_PLUGIN_PATH, ptype, paths);
+    g_free (paths);
+  }
 
   /* set UI scale factor */
   carla_set_engine_option (
@@ -1870,9 +1845,7 @@ carla_native_plugin_instantiate (
       g_set_error (
         error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
         Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED, "%s",
-        _ ("Failed to instantiate Carla plugin: "
-           "handle/descriptor not initialized "
-           "properly"));
+        _ ("Failed to instantiate Carla plugin: handle/descriptor not initialized properly"));
       self->plugin->instantiation_failed = true;
       return -1;
     }

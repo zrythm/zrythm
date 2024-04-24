@@ -56,6 +56,152 @@ plugin_protocol_from_str (const char * str)
   g_return_val_if_reached (Z_PLUGIN_PROTOCOL_LV2);
 }
 
+ZPluginProtocol
+plugin_descriptor_get_protocol_from_carla_plugin_type (PluginType ptype)
+{
+  switch (ptype)
+    {
+    case PLUGIN_LV2:
+      return Z_PLUGIN_PROTOCOL_LV2;
+    case PLUGIN_AU:
+      return Z_PLUGIN_PROTOCOL_AU;
+    case PLUGIN_VST2:
+      return Z_PLUGIN_PROTOCOL_VST;
+    case PLUGIN_VST3:
+      return Z_PLUGIN_PROTOCOL_VST3;
+    case PLUGIN_SFZ:
+      return Z_PLUGIN_PROTOCOL_SFZ;
+    case PLUGIN_SF2:
+      return Z_PLUGIN_PROTOCOL_SF2;
+    case PLUGIN_DSSI:
+      return Z_PLUGIN_PROTOCOL_DSSI;
+    case PLUGIN_LADSPA:
+      return Z_PLUGIN_PROTOCOL_LADSPA;
+#ifdef CARLA_HAVE_CLAP_SUPPORT
+    case PLUGIN_CLAP:
+#else
+    case 14:
+#endif
+      return Z_PLUGIN_PROTOCOL_CLAP;
+    case PLUGIN_JSFX:
+      return Z_PLUGIN_PROTOCOL_JSFX;
+    default:
+      g_return_val_if_reached (0);
+    }
+
+  g_return_val_if_reached (0);
+}
+
+PluginType
+plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol)
+{
+  switch (protocol)
+    {
+    case Z_PLUGIN_PROTOCOL_LV2:
+      return PLUGIN_LV2;
+    case Z_PLUGIN_PROTOCOL_AU:
+      return PLUGIN_AU;
+    case Z_PLUGIN_PROTOCOL_VST:
+      return PLUGIN_VST2;
+    case Z_PLUGIN_PROTOCOL_VST3:
+      return PLUGIN_VST3;
+    case Z_PLUGIN_PROTOCOL_SFZ:
+      return PLUGIN_SFZ;
+    case Z_PLUGIN_PROTOCOL_SF2:
+      return PLUGIN_SF2;
+    case Z_PLUGIN_PROTOCOL_DSSI:
+      return PLUGIN_DSSI;
+    case Z_PLUGIN_PROTOCOL_LADSPA:
+      return PLUGIN_LADSPA;
+    case Z_PLUGIN_PROTOCOL_CLAP:
+#ifdef CARLA_HAVE_CLAP_SUPPORT
+      return PLUGIN_CLAP;
+#else
+      return 14;
+#endif
+    case Z_PLUGIN_PROTOCOL_JSFX:
+      return PLUGIN_JSFX;
+    default:
+      g_return_val_if_reached (0);
+    }
+
+  g_return_val_if_reached (0);
+}
+
+ZPluginCategory
+plugin_descriptor_get_category_from_carla_category_str (const char * category)
+{
+#define EQUALS(x) string_is_equal (category, x)
+
+  if (EQUALS ("synth"))
+    return PC_INSTRUMENT;
+  else if (EQUALS ("delay"))
+    return PC_DELAY;
+  else if (EQUALS ("eq"))
+    return PC_EQ;
+  else if (EQUALS ("filter"))
+    return PC_FILTER;
+  else if (EQUALS ("distortion"))
+    return PC_DISTORTION;
+  else if (EQUALS ("dynamics"))
+    return PC_DYNAMICS;
+  else if (EQUALS ("modulator"))
+    return PC_MODULATOR;
+  else if (EQUALS ("utility"))
+    return PC_UTILITY;
+  else
+    return ZPLUGIN_CATEGORY_NONE;
+
+#undef EQUALS
+}
+
+ZPluginCategory
+plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat)
+{
+  switch (carla_cat)
+    {
+    case PLUGIN_CATEGORY_SYNTH:
+      return PC_INSTRUMENT;
+    case PLUGIN_CATEGORY_DELAY:
+      return PC_DELAY;
+    case PLUGIN_CATEGORY_EQ:
+      return PC_EQ;
+    case PLUGIN_CATEGORY_FILTER:
+      return PC_FILTER;
+    case PLUGIN_CATEGORY_DISTORTION:
+      return PC_DISTORTION;
+    case PLUGIN_CATEGORY_DYNAMICS:
+      return PC_DYNAMICS;
+    case PLUGIN_CATEGORY_MODULATOR:
+      return PC_MODULATOR;
+    case PLUGIN_CATEGORY_UTILITY:
+      break;
+    case PLUGIN_CATEGORY_OTHER:
+    case PLUGIN_CATEGORY_NONE:
+    default:
+      break;
+    }
+  return ZPLUGIN_CATEGORY_NONE;
+}
+
+bool
+plugin_protocol_is_supported (ZPluginProtocol protocol)
+{
+#ifndef __APPLE__
+  if (protocol == Z_PLUGIN_PROTOCOL_AU)
+    return false;
+#endif
+#if defined(_WOE32) || defined(__APPLE__)
+  if (i == Z_PLUGIN_PROTOCOL_LADSPA || i == Z_PLUGIN_PROTOCOL_DSSI)
+    return false;
+#endif
+#ifndef CARLA_HAVE_CLAP_SUPPORT
+  if (i == Z_PLUGIN_PROTOCOL_CLAP)
+    return false;
+#endif
+  return true;
+}
+
 /**
  * Clones the plugin descriptor.
  */
@@ -80,6 +226,7 @@ plugin_descriptor_copy (PluginDescriptor * dest, const PluginDescriptor * src)
   dest->arch = src->arch;
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
+  dest->sha1 = g_strdup (src->sha1);
   dest->uri = g_strdup (src->uri);
   dest->min_bridge_mode = src->min_bridge_mode;
   dest->has_custom_ui = src->has_custom_ui;
@@ -375,7 +522,7 @@ plugin_descriptor_is_same_plugin (
 {
   return a->arch == b->arch && a->protocol == b->protocol
          && a->unique_id == b->unique_id && a->ghash == b->ghash
-         && string_is_equal (a->path, b->path) && string_is_equal (a->uri, b->uri);
+         && string_is_equal (a->sha1, b->sha1) && string_is_equal (a->uri, b->uri);
 }
 
 /**
@@ -728,6 +875,7 @@ plugin_descriptor_free (PluginDescriptor * self)
   g_free_and_null (self->website);
   g_free_and_null (self->category_str);
   g_free_and_null (self->path);
+  g_free_and_null (self->sha1);
   g_free_and_null (self->uri);
 
   object_zero_and_free (self);

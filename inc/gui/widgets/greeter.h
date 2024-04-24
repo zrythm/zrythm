@@ -144,6 +144,11 @@ greeter_widget_set_progress_and_status (
   const char *    description,
   const double    perc);
 
+void
+greeter_widget_set_currently_scanned_plugin (
+  GreeterWidget * self,
+  const char *    filename);
+
 /**
  * Proceed to the project selection screen.
  *

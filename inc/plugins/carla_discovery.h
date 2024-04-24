@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -16,10 +18,12 @@
 
 #  include "plugins/plugin_descriptor.h"
 #  include "settings/plugin_settings.h"
+#  include "utils/types.h"
 
 #  include <CarlaUtils.h>
 
-typedef struct PluginDescriptor PluginDescriptor;
+TYPEDEF_STRUCT (PluginDescriptor);
+TYPEDEF_STRUCT (PluginManager);
 
 /**
  * @addtogroup plugins
@@ -27,12 +31,36 @@ typedef struct PluginDescriptor PluginDescriptor;
  * @{
  */
 
+typedef struct ZCarlaDiscovery
+{
+  /**
+   * Array of CarlaPluginDiscoveryHandle.
+   */
+  GPtrArray * handles;
+
+  /** Array of booleans. */
+  GArray * handles_done;
+
+  PluginManager * owner;
+} ZCarlaDiscovery;
+
+ZCarlaDiscovery *
+z_carla_discovery_new (PluginManager * owner);
+
+void
+z_carla_discovery_free (ZCarlaDiscovery * self);
+
+void
+z_carla_discovery_start (
+  ZCarlaDiscovery * self,
+  BinaryType        btype,
+  ZPluginProtocol   protocol);
+
 /**
- * Returns the absolute path to carla-discovery-*
- * as a newly allocated string.
+ * @return Whether done.
  */
-char *
-z_carla_discovery_get_discovery_path (PluginArchitecture arch);
+bool
+z_carla_discovery_idle (ZCarlaDiscovery * self);
 
 /**
  * Runs carla discovery for the given arch with the
