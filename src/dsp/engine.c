@@ -27,9 +27,6 @@
  * ---
  */
 
-/** \file
- * The audio engine of zyrthm. */
-
 #include "zrythm-config.h"
 
 #include <math.h>
