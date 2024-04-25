@@ -409,7 +409,7 @@ descriptor_from_discovery_info (
         }
     }
   descr->uri = g_strdup (uri);
-  descr->unique_id = info->uniqueId;
+  descr->unique_id = (int64_t) info->uniqueId;
   descr->name = g_strdup (meta->name);
   descr->author = g_strdup (meta->maker);
   descr->category =
