@@ -74,48 +74,11 @@ z_carla_discovery_run (
   const char *       arg2);
 
 /**
- * Create a descriptor using carla discovery.
- *
- * @path Path to the plugin bundle.
- * @arch Architecture.
- * @protocol Protocol.
- *
- * @return A newly allocated array of newly
- *   allocated PluginDescriptor's.
- */
-PluginDescriptor **
-z_carla_discovery_create_descriptors_from_file (
-  const char *       path,
-  PluginArchitecture arch,
-  ZPluginProtocol    protocol);
-
-/**
  * Create a descriptor for the given AU plugin.
  */
 PluginDescriptor *
 z_carla_discovery_create_au_descriptor_from_info (
   const CarlaCachedPluginInfo * info);
-
-/**
- * Create a descriptor for the given AU plugin.
- */
-NONNULL PluginDescriptor *
-z_carla_discovery_create_au_descriptor_from_string (
-  const char * all_plugins,
-  int          idx);
-
-/**
- * Parses plugin info into a new NULL-terminated
- * PluginDescriptor array.
- *
- * @param plugin_path Identifier to use for
- *   debugging.
- *
- * @return A newly allocated array of newly allocated
- *   descriptors, or NULL if no descriptors found.
- */
-PluginDescriptor **
-z_carla_discovery_parse_plugin_info (const char * plugin_path, char * results);
 
 /**
  * @}

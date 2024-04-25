@@ -1183,17 +1183,6 @@ zstd_dep = dependency (
     'default_library=static',
     ])
 
-reproc_dep = dependency (
-  # need windows assertion bugfix in 14.2.1
-  'reproc', version: '>=14.2.1', required: false,
-  static: all_static)
-if not reproc_dep.found ()
-  reproc_subproject = cmake.subproject (
-    'reproc', options: cmake_opts)
-  reproc_dep = reproc_subproject.dependency (
-    'reproc')
-endif
-
 lsp_dsp_dep = dependency (
   'lsp-dsp-lib', version: '>=0.5.5',
   static: all_static or get_option ('static_lsp_dsp'),
@@ -1266,7 +1255,6 @@ zrythm_deps = [
   rtmidi_dep,
   sdl_dep,
   zstd_dep,
-  reproc_dep,
   dependency ('threads'),
   pcre2_dep,
   dependency ('rubberband'),

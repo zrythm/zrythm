@@ -289,6 +289,8 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
       return;
     }
 
+    /* TODO */
+#if 0
   const char * cmd[3] = { OPEN_DIR_CMD, LOG->log_filepath, NULL };
 
   int ret = system_run_cmd_w_args (cmd, 4000, false, NULL, false);
@@ -297,6 +299,7 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
       g_warning (
         "an error occurred running %s %s", OPEN_DIR_CMD, LOG->log_filepath);
     }
+#endif
 
 #if 0
   if (GTK_IS_WINDOW (LOG->viewer))

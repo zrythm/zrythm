@@ -212,21 +212,11 @@ _test_create_plugins (
   switch (prot)
     {
     case Z_PLUGIN_PROTOCOL_LV2:
+    case Z_PLUGIN_PROTOCOL_VST:
       setting =
         test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
       g_return_if_fail (setting);
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
-      break;
-    case Z_PLUGIN_PROTOCOL_VST:
-#ifdef HAVE_CARLA
-      {
-        PluginDescriptor ** descriptors =
-          z_carla_discovery_create_descriptors_from_file (
-            pl_bundle, ARCH_64, Z_PLUGIN_PROTOCOL_VST);
-        setting = plugin_setting_new_default (descriptors[0]);
-        free (descriptors);
-      }
-#endif
       break;
     default:
       break;
@@ -1088,21 +1078,11 @@ _test_replace_instrument (
   switch (prot)
     {
     case Z_PLUGIN_PROTOCOL_LV2:
+    case Z_PLUGIN_PROTOCOL_VST:
       setting =
         test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
       g_return_if_fail (setting);
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
-      break;
-    case Z_PLUGIN_PROTOCOL_VST:
-#  ifdef HAVE_CARLA
-      {
-        PluginDescriptor ** descriptors =
-          z_carla_discovery_create_descriptors_from_file (
-            pl_bundle, ARCH_64, Z_PLUGIN_PROTOCOL_VST);
-        setting = plugin_setting_new_default (descriptors[0]);
-        free (descriptors);
-      }
-#  endif
       break;
     default:
       break;

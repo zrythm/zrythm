@@ -49,27 +49,6 @@ char *
 system_get_cmd_output (char ** argv, long ms_timer, bool always_wait);
 
 /**
- * Runs the given command in the background, waits
- * for it to finish and returns its exit code.
- *
- * @param args NULL-terminated array of args.
- * @param[out] out_stdout A pointer to save the newly
- *   allocated stdout output (if non-NULL).
- * @param[out] out_stderr A pointer to save the newly
- *   allocated stderr output (if non-NULL).
- * @param ms_timer A timer in ms to
- *   kill the process, or negative to not
- *   wait.
- */
-int
-system_run_cmd_w_args (
-  const char ** args,
-  int           ms_to_wait,
-  char **       out_stdout,
-  char **       out_stderr,
-  bool          warn_if_fail);
-
-/**
  * @}
  */
 

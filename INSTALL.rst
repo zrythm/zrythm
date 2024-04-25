@@ -78,9 +78,6 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 `pcre2 (3-Clause BSD) <https://www.pcre.org/>`_
   Regex
 
-`reproc (Expat) <https://github.com/DaanDeMeyer/reproc>`_
-  Process launching
-
 `rubberband (GPLv2+) <https://breakfastquay.com/rubberband/>`_
   Time-stretching and pitch-shifting
 
