@@ -79,7 +79,6 @@ audio_srcs = files([
   'router.c',
   'rtaudio_device.c',
   'rtmidi_device.c',
-  'sample_playback.c',
   'sample_processor.c',
   'scale.c',
   'scale_object.c',

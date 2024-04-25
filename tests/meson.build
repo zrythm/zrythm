@@ -155,8 +155,7 @@ if get_option ('tests')
       input: file_prefix + '.ogg',
       output: file_prefix + '_w_reverb.ogg',
       command: [
-        lv2apply, '-i', '@INPUT@',
-        '-o', '@OUTPUT@',
+        lv2apply, '-i', '@INPUT@', '-o', '@OUTPUT@',
         test_config.get_unquoted ('MVERB_URI'),
         ])
     test_config.set_quoted (
@@ -262,8 +261,6 @@ if get_option ('tests')
     'integration/recording': { 'parallel': false },
     'plugins/carla_discovery': { 'parallel': true },
     'plugins/carla_native_plugin': { 'parallel': false },
-    'plugins/lv2_plugin': { 'parallel': false },
-    'plugins/lv2/lv2_state': { 'parallel': false },
     'plugins/plugin': { 'parallel': false },
     'plugins/plugin_manager': { 'parallel': true },
     'project': { 'parallel': false },

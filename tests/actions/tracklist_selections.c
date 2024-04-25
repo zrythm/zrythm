@@ -2545,7 +2545,7 @@ test_copy_after_uninstalling_plugin (void)
   track_select (helm_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* unload bundle */
-  test_plugin_manager_reload_lilv_world_w_path ("/tmp");
+  /*test_plugin_manager_reload_lilv_world_w_path ("/tmp");*/
 
   for (int i = 0; i < 2; i++)
     {

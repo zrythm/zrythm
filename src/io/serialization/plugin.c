@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "io/serialization/plugin.h"
@@ -97,10 +97,6 @@ plugin_setting_serialize_to_json (
   yyjson_mut_obj_add_bool (doc, ps_obj, "openWithCarla", ps->open_with_carla);
   yyjson_mut_obj_add_bool (doc, ps_obj, "forceGenericUI", ps->force_generic_ui);
   yyjson_mut_obj_add_int (doc, ps_obj, "bridgeMode", ps->bridge_mode);
-  if (ps->ui_uri)
-    {
-      yyjson_mut_obj_add_str (doc, ps_obj, "uiURI", ps->ui_uri);
-    }
   return true;
 }
 
@@ -312,7 +308,7 @@ plugin_setting_deserialize_from_json (
   yyjson_val * ui_uri_obj = yyjson_obj_iter_get (&it, "uiURI");
   if (ui_uri_obj)
     {
-      ps->ui_uri = g_strdup (yyjson_get_str (ui_uri_obj));
+      /* not used anymore */
     }
   return true;
 }

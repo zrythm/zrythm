@@ -16,11 +16,9 @@
 #include <stdbool.h>
 
 #include "dsp/port_identifier.h"
-#include "plugins/lv2/lv2_evbuf.h"
 #include "utils/types.h"
 
 #include "zix/sem.h"
-#include <lilv/lilv.h>
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"
@@ -446,36 +444,12 @@ typedef struct Port
    */
   midi_byte_t last_midi_status;
 
-  /* --- ported from Lv2Port --- */
-
-  /** LV2 port. */
-  const LilvPort * lilv_port;
-
-  /** Float for LV2 control ports, declared type for
-   * LV2 parameters. */
-  LV2_URID value_type;
-
-  /** For MIDI ports, otherwise NULL. */
-  LV2_Evbuf * evbuf;
-
   /**
    * Control widget, if applicable.
    *
    * Only used for generic UIs.
    */
   PluginGtkController * widget;
-
-  /**
-   * Minimum buffer size that the port wants, or
-   * 0.
-   *
-   * Used by LV2 plugin ports.
-   */
-  size_t min_buf_size;
-
-  /** Port index in the lilv plugin, if
-   * non-parameter. */
-  int lilv_port_index;
 
   /**
    * Whether the port received a UI event from
@@ -488,22 +462,8 @@ typedef struct Port
    */
   bool received_ui_event;
 
-  /**
-   * The last known control value sent to the UI (if control).
-   *
-   * @note Only used in the original LV2 implementation.
-   *
-   * @see lv2_ui_send_control_val_event_from_plugin_to_ui().
-   */
-  float last_sent_control;
-
   /** Whether this value was set via automation. */
   bool automating;
-
-  /** True for event, false for atom. */
-  bool old_api;
-
-  /* --- end Lv2Port --- */
 
   /**
    * Automation track this port is attached to.

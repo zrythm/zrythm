@@ -35,8 +35,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "plugins/lv2/lv2_gtk.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
@@ -768,7 +766,7 @@ channel_connect_plugins (Channel * self)
           if (!plugin->instantiated && !plugin->instantiation_failed)
             {
               /* TODO handle error */
-              plugin_instantiate (plugin, NULL, NULL);
+              plugin_instantiate (plugin, NULL);
             }
 
           Plugin ** prev_plugins = NULL;
@@ -871,12 +869,12 @@ channel_connect_plugins (Channel * self)
           if (
             prev_pl && !prev_pl->instantiated && !prev_pl->instantiation_failed)
             {
-              plugin_instantiate (prev_pl, NULL, NULL);
+              plugin_instantiate (prev_pl, NULL);
             }
           if (
             next_pl && !next_pl->instantiated && !next_pl->instantiation_failed)
             {
-              plugin_instantiate (next_pl, NULL, NULL);
+              plugin_instantiate (next_pl, NULL);
             }
 
           if (!prev_pl && !next_pl)

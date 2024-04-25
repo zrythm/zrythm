@@ -43,6 +43,9 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 #define IS_PLUGIN(x) (((Plugin *) x)->magic == PLUGIN_MAGIC)
 #define IS_PLUGIN_AND_NONNULL(x) (x && IS_PLUGIN (x))
 
+#define PLUGIN_DEFAULT_BANK_URI "https://lv2.zrythm.org#default-bank"
+#define PLUGIN_INIT_PRESET_URI "https://lv2.zrythm.org#init-preset"
+
 /**
  * Plugin UI refresh rate limits.
  */
@@ -73,11 +76,6 @@ typedef struct Plugin
 
   PluginIdentifier id;
 
-  /**
-   * Pointer back to plugin in its original format.
-   */
-  Lv2Plugin * lv2;
-
   /** Pointer to Carla native plugin. */
   CarlaNativePlugin * carla;
 
@@ -102,15 +100,6 @@ typedef struct Plugin
   Port ** out_ports;
   int     num_out_ports;
   size_t  out_ports_size;
-
-  /**
-   * Ports at their lilv indices.
-   *
-   * These point to ports in \ref Plugin.in_ports and
-   * \ref Plugin.out_ports so should not be freed.
-   */
-  Port ** lilv_ports;
-  int     num_lilv_ports;
 
   /**
    * Control for plugin enabled, for convenience.
@@ -181,12 +170,10 @@ typedef struct Plugin
    */
   int ui_instantiated;
 
-  /** Update frequency of the UI, in Hz (times
-   * per second). */
+  /** Update frequency of the UI, in Hz (times per second). */
   float ui_update_hz;
 
-  /** Scale factor for drawing UIs in scale of the
-   * monitor. */
+  /** Scale factor for drawing UIs in scale of the monitor. */
   float ui_scale_factor;
 
   /**
@@ -218,10 +205,6 @@ typedef struct Plugin
    * NULL.
    */
   GtkWindow * window;
-
-  /** Whether show () has been called on the LV2
-   * external UI. */
-  bool external_ui_visible;
 
   /** The GdkWindow of this widget should be
    * somewhere inside \ref Plugin.window and will
@@ -485,14 +468,6 @@ NONNULL Port *
 plugin_get_port_by_symbol (Plugin * pl, const char * sym);
 
 /**
- * Gets a port by its param URI.
- *
- * Only works for LV2 plugins.
- */
-NONNULL Port *
-plugin_get_port_by_param_uri (Plugin * pl, const char * uri);
-
-/**
  * Returns the escaped name of the plugin.
  */
 NONNULL MALLOC char *
@@ -590,8 +565,7 @@ plugin_prepare_process (Plugin * self);
 /**
  * Instantiates the plugin (e.g. when adding to a channel)
  */
-NONNULL_ARGS (1)
-int plugin_instantiate (Plugin * self, LilvState * state, GError ** error);
+NONNULL_ARGS (1) int plugin_instantiate (Plugin * self, GError ** error);
 
 /**
  * Sets the track name hash on the plugin.

@@ -708,7 +708,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
               return -1;
             }
 
-          int ret = plugin_instantiate (pl, NULL, &err);
+          int ret = plugin_instantiate (pl, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (

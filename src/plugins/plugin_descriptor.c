@@ -7,7 +7,6 @@
 #include "plugins/carla_native_plugin.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
@@ -535,11 +534,6 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
   switch (self->protocol)
     {
     case Z_PLUGIN_PROTOCOL_LV2:
-      {
-        return lv2_plugin_pick_most_preferable_ui (
-          self->uri, NULL, NULL, true, false);
-      }
-      break;
     case Z_PLUGIN_PROTOCOL_VST:
     case Z_PLUGIN_PROTOCOL_VST3:
     case Z_PLUGIN_PROTOCOL_AU:
@@ -568,46 +562,7 @@ plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
 {
   CarlaBridgeMode mode = CARLA_BRIDGE_NONE;
 
-  if (self->protocol == Z_PLUGIN_PROTOCOL_LV2)
-    {
-      /* TODO if the UI and DSP binary is the same
-       * file, bridge the whole plugin */
-      LilvNode *         lv2_uri = lilv_new_uri (LILV_WORLD, self->uri);
-      const LilvPlugin * lilv_plugin =
-        lilv_plugins_get_by_uri (LILV_PLUGINS, lv2_uri);
-      lilv_node_free (lv2_uri);
-      LilvUIs *        uis = lilv_plugin_get_uis (lilv_plugin);
-      const LilvUI *   picked_ui;
-      const LilvNode * picked_ui_type;
-      bool             needs_bridging = lv2_plugin_pick_ui (
-        uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui, &picked_ui_type);
-
-      if (needs_bridging)
-        {
-          const LilvNode * ui_uri = lilv_ui_get_uri (picked_ui);
-          LilvNodes *      ui_required_features = lilv_world_find_nodes (
-            LILV_WORLD, ui_uri, PM_GET_NODE (LV2_CORE__requiredFeature), NULL);
-          if (
-            lilv_nodes_contains (
-              ui_required_features, PM_GET_NODE (LV2_DATA_ACCESS_URI))
-            || lilv_nodes_contains (
-              ui_required_features, PM_GET_NODE (LV2_INSTANCE_ACCESS_URI))
-            || lilv_node_equals (picked_ui_type, PM_GET_NODE (LV2_UI__Qt4UI))
-            || lilv_node_equals (picked_ui_type, PM_GET_NODE (LV2_UI__Qt5UI))
-            || lilv_node_equals (picked_ui_type, PM_GET_NODE (LV2_UI__GtkUI))
-            || lilv_node_equals (picked_ui_type, PM_GET_NODE (LV2_UI__Gtk3UI)))
-            {
-              mode = CARLA_BRIDGE_FULL;
-            }
-          else
-            {
-              mode = CARLA_BRIDGE_UI;
-            }
-          lilv_nodes_free (ui_required_features);
-        }
-      lilv_uis_free (uis);
-    }
-  else if (self->arch == ARCH_32)
+  if (self->arch == ARCH_32)
     {
       mode = CARLA_BRIDGE_FULL;
     }

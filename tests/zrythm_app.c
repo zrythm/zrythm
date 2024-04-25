@@ -14,7 +14,6 @@
 #include "tests/helpers/zrythm.h"
 
 #include "ext/whereami/whereami.h"
-#include <lilv/lilv.h>
 
 static void
 test_version (void)

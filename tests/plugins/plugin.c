@@ -13,8 +13,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
-#include <lilv/lilv.h>
-
 #ifdef HAVE_HELM
 static void
 _test_loading_non_existing_plugin (
@@ -31,9 +29,9 @@ _test_loading_non_existing_plugin (
   g_assert_nonnull (prj_file);
 
   /* unload bundle so plugin can't be found */
-  LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
-  lilv_world_unload_bundle (LILV_WORLD, path);
-  lilv_node_free (path);
+  /*LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);*/
+  /*lilv_world_unload_bundle (LILV_WORLD, path);*/
+  /*lilv_node_free (path);*/
 
   /* reload project and expect messages */
   LOG->use_structured_for_console = false;

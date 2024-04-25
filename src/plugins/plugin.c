@@ -28,9 +28,6 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/lv2/lv2_gtk.h"
-#include "plugins/lv2/lv2_state.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "plugins/plugin_manager.h"
@@ -192,29 +189,13 @@ plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms)
       self->carla->plugin = self;
       carla_native_plugin_init_loaded (self->carla);
     }
-  else
-    {
-#endif
-      switch (self->setting->descr->protocol)
-        {
-        case Z_PLUGIN_PROTOCOL_LV2:
-          self->lv2 = object_new (Lv2Plugin);
-          self->lv2->plugin = self;
-          lv2_plugin_init_loaded (self->lv2);
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
-#ifdef HAVE_CARLA
-    }
 #endif
 
   if (plugin_is_in_active_project (self))
     {
       bool     was_enabled = plugin_is_enabled (self, false);
       GError * err = NULL;
-      int      ret = plugin_instantiate (self, NULL, &err);
+      int      ret = plugin_instantiate (self, &err);
       if (ret == 0)
         {
           plugin_activate (self, true);
@@ -368,19 +349,6 @@ populate_banks (Plugin * self)
     {
       carla_native_plugin_populate_banks (self->carla);
     }
-  else
-    {
-#endif
-      switch (self->setting->descr->protocol)
-        {
-        case Z_PLUGIN_PROTOCOL_LV2:
-          lv2_plugin_populate_banks (self->lv2);
-          break;
-        default:
-          break;
-        }
-#ifdef HAVE_CARLA
-    }
 #endif
 }
 
@@ -425,23 +393,6 @@ plugin_set_selected_preset_from_index (Plugin * self, int idx)
           g_message ("applied preset '%s'", pset->name);
         }
 #endif
-    }
-  else if (self->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-    {
-      /* if init preset */
-      if (self->selected_bank.bank_idx == 0 && idx == 0)
-        {
-          /* TODO init all control ports */
-          applied = true;
-        }
-      else
-        {
-          LilvNode * pset_uri = lilv_new_uri (
-            LILV_WORLD,
-            self->banks[self->selected_bank.bank_idx]->presets[idx]->uri);
-          applied = lv2_state_apply_preset (self->lv2, pset_uri, NULL, &err);
-          lilv_node_free (pset_uri);
-        }
     }
 
   if (!applied)
@@ -514,29 +465,6 @@ plugin_new_from_setting (
             error, err, "%s", _ ("Failed to get Carla plugin"));
           return NULL;
         }
-    }
-  else
-    {
-#endif
-      if (descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-        {
-          GError * err = NULL;
-          lv2_plugin_new_from_uri (self, descr->uri, &err);
-          if (!self->lv2)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s", _ ("Failed to get LV2 plugin"));
-              return NULL;
-            }
-        }
-      else
-        {
-          g_critical (
-            "attempted to load non-LV2 plugin "
-            "without 'open with carla' setting");
-          return NULL;
-        }
-#ifdef HAVE_CARLA
     }
 #endif
 
@@ -1018,23 +946,6 @@ plugin_generate_window_title (Plugin * self)
     /*setting->open_with_carla ? " carla" : "",*/
     bridge_mode);
 
-  switch (self->setting->descr->protocol)
-    {
-    case Z_PLUGIN_PROTOCOL_LV2:
-      if (!self->setting->open_with_carla && self->lv2->preset)
-        {
-          Lv2Plugin *  lv2 = self->lv2;
-          const char * preset_label = lilv_state_get_label (lv2->preset);
-          g_return_val_if_fail (preset_label, NULL);
-          char preset_part[500];
-          sprintf (preset_part, " - %s", preset_label);
-          strcat (title, preset_part);
-        }
-      break;
-    default:
-      break;
-    }
-
   return g_strdup (title);
 }
 
@@ -1074,21 +985,6 @@ plugin_activate (Plugin * pl, bool activate)
       g_return_val_if_fail (ret == 0, ret);
 #endif
     }
-  else
-    {
-      switch (pl->setting->descr->protocol)
-        {
-        case Z_PLUGIN_PROTOCOL_LV2:
-          {
-            int ret = lv2_plugin_activate (pl->lv2, activate);
-            g_return_val_if_fail (ret == 0, ret);
-          }
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
-    }
 
   pl->activated = activate;
   pl->deactivating = false;
@@ -1116,21 +1012,6 @@ plugin_cleanup (Plugin * self)
 #  endif
 #endif
         }
-      else
-        {
-          switch (self->setting->descr->protocol)
-            {
-            case Z_PLUGIN_PROTOCOL_LV2:
-              {
-                int ret = lv2_plugin_cleanup (self->lv2);
-                g_return_val_if_fail (ret == 0, ret);
-              }
-              break;
-            default:
-              g_warn_if_reached ();
-              break;
-            }
-        }
     }
 
   self->instantiated = false;
@@ -1148,20 +1029,11 @@ plugin_cleanup (Plugin * self)
 void
 plugin_update_latency (Plugin * pl)
 {
-#ifdef HAVE_CARLA
   if (pl->setting->open_with_carla)
     {
-      pl->latency = carla_native_plugin_get_latency (pl->carla);
-    }
-  else
-#endif
-    if (
 #ifdef HAVE_CARLA
-      !pl->setting->open_with_carla &&
+      pl->latency = carla_native_plugin_get_latency (pl->carla);
 #endif
-      pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-    {
-      pl->latency = lv2_plugin_get_latency (pl->lv2);
     }
 
   g_message ("%s latency: %d samples", pl->setting->descr->name, pl->latency);
@@ -1453,18 +1325,14 @@ plugin_set_track_name_hash (Plugin * pl, unsigned int track_name_hash)
   plugin_update_identifier (pl);
 }
 
-/**
- * Instantiates the plugin (e.g. when adding to a
- * channel)
- */
 int
-plugin_instantiate (Plugin * self, LilvState * state, GError ** error)
+plugin_instantiate (Plugin * self, GError ** error)
 {
   g_return_val_if_fail (self->setting, -1);
   const PluginDescriptor * descr = self->setting->descr;
   g_return_val_if_fail (descr, -1);
 
-  g_message ("Instantiating plugin '%s' | state %p...", descr->name, state);
+  g_message ("Instantiating plugin '%s'...", descr->name);
 
   set_enabled_and_gain (self);
 
@@ -1501,50 +1369,6 @@ plugin_instantiate (Plugin * self, LilvState * state, GError ** error)
 #else
       g_return_val_if_reached (-1);
 #endif
-    }
-  else
-    {
-      switch (descr->protocol)
-        {
-        case Z_PLUGIN_PROTOCOL_LV2:
-          {
-            self->lv2->plugin = self;
-            GError * err = NULL;
-            int      ret = lv2_plugin_instantiate (
-              self->lv2, self->state_dir ? true : false, NULL, state, &err);
-            if (ret != 0)
-              {
-                PROPAGATE_PREFIXED_ERROR (
-                  error, err, "%s",
-                  _ ("LV2 plugin instantiation "
-                     "failed"));
-                return -1;
-              }
-            else
-              {
-                self->instantiated = true;
-              }
-            g_return_val_if_fail (self->lv2->instance, -1);
-
-            if (!self->state_dir)
-              {
-                /* save the state */
-                g_message (
-                  "state dir does not exist for "
-                  "LV2 plugin %s, creating "
-                  "state...",
-                  descr->name);
-                LilvState * tmp_state =
-                  lv2_state_save_to_file (self->lv2, F_NOT_BACKUP);
-                lilv_state_free (tmp_state);
-              }
-          }
-          break;
-        default:
-          g_warn_if_reached ();
-          return -1;
-          break;
-        }
     }
   g_return_val_if_fail (IS_PORT_AND_NONNULL (self->enabled), -1);
   control_port_set_val_from_normalized (self->enabled, 1.f, 0);
@@ -1618,19 +1442,6 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
   if (plugin->setting->open_with_carla)
     {
       carla_native_plugin_process (plugin->carla, time_nfo);
-    }
-  else
-    {
-#endif
-      switch (plugin->setting->descr->protocol)
-        {
-        case Z_PLUGIN_PROTOCOL_LV2:
-          lv2_plugin_process (plugin->lv2, time_nfo);
-          break;
-        default:
-          break;
-        }
-#ifdef HAVE_CARLA
     }
 #endif
 
@@ -1748,8 +1559,7 @@ plugin_open_ui (Plugin * self)
   plugin_print (self, pl_str, 700);
   g_debug ("opening plugin UI [%s]", pl_str);
 
-  PluginSetting *          setting = self->setting;
-  const PluginDescriptor * descr = setting->descr;
+  PluginSetting * setting = self->setting;
 
   if (self->instantiation_failed)
     {
@@ -1758,30 +1568,6 @@ plugin_open_ui (Plugin * self)
         "open",
         pl_str);
       return;
-    }
-
-  /* show error if LV2 UI type is deprecated */
-  if (
-    descr->protocol == Z_PLUGIN_PROTOCOL_LV2
-    && (!setting->open_with_carla || setting->bridge_mode != CARLA_BRIDGE_FULL))
-    {
-      char * deprecated_uri = lv2_plugin_has_deprecated_ui (descr->uri);
-      if (deprecated_uri)
-        {
-          char msg[1200];
-          sprintf (
-            msg,
-            _ ("%s <%s> has a deprecated UI "
-               "type:\n  %s\n"
-               "If the UI does not load, please try "
-               "instantiating the plugin in full-"
-               "bridged mode, and report this to the "
-               "author:\n  %s <%s>"),
-            descr->name, descr->uri, deprecated_uri, descr->author,
-            descr->website);
-          ui_show_error_message (_ ("Deprecated UI Type"), msg);
-          g_free (deprecated_uri);
-        }
     }
 
   /* if plugin already has a window (either generic
@@ -1809,13 +1595,6 @@ plugin_open_ui (Plugin * self)
 #ifdef HAVE_CARLA
           carla_native_plugin_open_ui (self->carla, 1);
 #endif
-        }
-      else if (descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-        {
-          g_warning ("unsupported");
-          g_return_if_reached ();
-          /*plugin_gtk_create_window (self);*/
-          /*lv2_gtk_open_ui (self->lv2);*/
         }
     }
 }
@@ -2071,11 +1850,6 @@ plugin_clone (Plugin * src, GError ** error)
           g_return_val_if_reached (NULL);
 #endif
         }
-      else
-        {
-          LilvState * state = lv2_state_save_to_file (src->lv2, F_NOT_BACKUP);
-          lilv_state_free (state);
-        }
       g_message ("saved source plugin state to %s", src->state_dir);
     }
 
@@ -2085,7 +1859,7 @@ plugin_clone (Plugin * src, GError ** error)
   self = plugin_new_from_setting (
     src->setting, src->id.track_name_hash, src->id.slot_type, src->id.slot,
     &err);
-  if (!self || (!self->carla && !self->lv2))
+  if (!self || !self->carla)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, _ ("Failed to create plugin clone for %s"), buf);
@@ -2858,30 +2632,6 @@ plugin_get_port_by_symbol (Plugin * pl, const char * sym)
   return NULL;
 }
 
-Port *
-plugin_get_port_by_param_uri (Plugin * pl, const char * uri)
-{
-  g_return_val_if_fail (
-    IS_PLUGIN (pl) && pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2
-      && !pl->setting->open_with_carla,
-    NULL);
-
-  g_return_val_if_fail (pl->lv2, NULL);
-
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * port = pl->in_ports[i];
-
-      if (string_is_equal (port->id.uri, uri))
-        {
-          return port;
-        }
-    }
-
-  g_critical ("failed to find port with parameter URI <%s>", uri);
-  return NULL;
-}
-
 /**
  * Frees given plugin, frees its ports
  * and other internal pointers
@@ -2895,7 +2645,6 @@ plugin_free (Plugin * self)
 
   g_debug ("freeing plugin %s", self->setting->descr->name);
 
-  object_free_w_func_and_null (lv2_plugin_free, self->lv2);
 #ifdef HAVE_CARLA
   object_free_w_func_and_null (carla_native_plugin_free, self->carla);
 #endif
@@ -2910,8 +2659,6 @@ plugin_free (Plugin * self)
       Port * port = self->out_ports[i];
       object_free_w_func_and_null (port_free, port);
     }
-
-  object_zero_and_free (self->lilv_ports);
 
   object_free_w_func_and_null (g_ptr_array_unref, self->ctrl_in_ports);
   object_free_w_func_and_null (g_ptr_array_unref, self->audio_in_ports);

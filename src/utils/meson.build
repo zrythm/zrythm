@@ -22,7 +22,6 @@ util_srcs = [
   'gtk.c',
   'hash.c',
   'io.c',
-  'lilv.c',
   'localization.c',
   'log.c',
   'math.c',
@@ -65,8 +64,7 @@ optimized_utils_lib = static_library (
 
 zrythm_srcs += files (util_srcs)
 
-# use custom lv2apply until upstream merges URID
-# support
+# use custom lv2apply because upstream doesn't have URID support
 lv2apply = executable (
   'zrythm_lv2apply',
   sources: [
@@ -83,5 +81,5 @@ lv2apply = executable (
   include_directories: all_inc,
   c_args: [ common_cflags ],
   link_args: common_ldflags,
-  install: true,
+  install: false,
   )

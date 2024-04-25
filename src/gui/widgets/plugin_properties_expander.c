@@ -13,7 +13,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_properties_expander.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/lv2/lv2_state.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
@@ -101,10 +100,6 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 #else
       g_return_if_reached ();
 #endif
-    }
-  else if (setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-    {
-      applied = lv2_state_apply_preset (self->plugin->lv2, NULL, path, &err);
     }
   g_free (path);
 

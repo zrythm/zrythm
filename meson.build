@@ -211,7 +211,6 @@ FIXME_plugins_inc = include_directories ('inc/plugins')
 ext_inc = include_directories ('ext')
 kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
-suil_inc = include_directories ('inc/plugins/lv2')
 whereami_inc = include_directories ('ext/whereami')
 weakjack_inc = include_directories ('ext/weakjack')
 all_inc = [
@@ -221,7 +220,6 @@ all_inc = [
   ext_inc,
   kissfft_inc,
   midilib_inc,
-  suil_inc,
   whereami_inc,
   weakjack_inc,
   ]
@@ -1270,11 +1268,6 @@ zrythm_deps = [
   zstd_dep,
   reproc_dep,
   dependency ('threads'),
-  lv2_dep,
-  serd_dep,
-  sord_dep,
-  sratom_dep,
-  lilv_dep,
   pcre2_dep,
   dependency ('rubberband'),
   dependency ('epoxy'),

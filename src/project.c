@@ -45,8 +45,6 @@
 #include "gui/widgets/track.h"
 #include "io/serialization/project.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/lv2/lv2_state.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "schemas/project.h"
 #include "settings/settings.h"
@@ -1059,53 +1057,6 @@ project_save (
     }
   g_return_val_if_fail (data->project->tracklist_selections, false);
   data->project->tracklist_selections->free_tracks = true;
-
-#if 0
-  /* write plugin states */
-  GPtrArray * plugins =
-    g_ptr_array_new_full (100, NULL);
-  tracklist_get_plugins (self->tracklist, plugins);
-  for (size_t i = 0; i < plugins->len; i++)
-    {
-      Plugin * pl = g_ptr_array_index (plugins, i);
-
-      if (!pl->instantiated)
-        {
-          g_debug (
-            "skipping uninstantiated plugin %s...",
-            pl->setting->descr->name);
-          continue;
-        }
-
-      /* save state */
-#  ifdef HAVE_CARLA
-      if (pl->setting->open_with_carla)
-        {
-          carla_native_plugin_save_state (
-            pl->carla, is_backup, NULL);
-        }
-      else
-        {
-#  endif
-          switch (pl->setting->descr->protocol)
-            {
-            case PROT_LV2:
-              {
-                LilvState * tmp_state =
-                  lv2_state_save_to_file (
-                    pl->lv2, is_backup);
-                lilv_state_free (tmp_state);
-              }
-              break;
-            default:
-              g_warn_if_reached ();
-              break;
-            }
-#  ifdef HAVE_CARLA
-        }
-#  endif
-    }
-#endif
 
   if (is_backup)
     {

@@ -22,6 +22,9 @@ and the following
 `sassc (Expat) <https://github.com/sass/sassc>`_
   CSS compilation
 
+`lilv (ISC) <https://drobilla.net/software/lilv>`_
+  LV2 plugin hosting library used in tests only
+
 .. `blueprint-compiler (LGPLv3+) <https://gitlab.gnome.org/jwestman/blueprint-compiler>`_
 ..   UI file compilation
 
@@ -71,9 +74,6 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 
 `libsndfile (LGPLv2.1+) <http://libsndfile.github.io/libsndfile/>`_
   Audio file IO
-
-`lilv (ISC) <https://drobilla.net/software/lilv>`_
-  LV2 host support
 
 `pcre2 (3-Clause BSD) <https://www.pcre.org/>`_
   Regex

@@ -16,8 +16,6 @@
 #include "dsp/velocity.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/track.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/midi.h"

@@ -29,7 +29,6 @@
 #include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/track.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"

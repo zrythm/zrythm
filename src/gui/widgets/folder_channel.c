@@ -27,7 +27,6 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/route_target_selector.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/flags.h"

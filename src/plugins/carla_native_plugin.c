@@ -19,7 +19,6 @@
 #  include "plugins/cached_plugin_descriptors.h"
 #  include "plugins/carla_discovery.h"
 #  include "plugins/carla_native_plugin.h"
-#  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin.h"
 #  include "plugins/plugin_manager.h"
 #  include "project.h"
@@ -559,9 +558,9 @@ carla_native_plugin_populate_banks (CarlaNativePlugin * self)
 {
   /* add default bank and preset */
   PluginBank * pl_def_bank = plugin_add_bank_if_not_exists (
-    self->plugin, LV2_ZRYTHM__defaultBank, _ ("Default bank"));
+    self->plugin, PLUGIN_DEFAULT_BANK_URI, _ ("Default bank"));
   PluginPreset * pl_def_preset = plugin_preset_new ();
-  pl_def_preset->uri = g_strdup (LV2_ZRYTHM__initPreset);
+  pl_def_preset->uri = g_strdup (PLUGIN_INIT_PRESET_URI);
   pl_def_preset->name = g_strdup (_ ("Init"));
   plugin_add_preset_to_bank (self->plugin, pl_def_bank, pl_def_preset);
 
@@ -2272,21 +2271,16 @@ carla_native_plugin_close (CarlaNativePlugin * self)
     }
 
   PluginDescriptor * descr = self->plugin->setting->descr;
-  const char *       name = self->plugin->setting->descr->name;
+  const char *       name = descr->name;
   g_debug ("closing plugin %s...", name);
   if (self->native_plugin_descriptor)
     {
       g_debug ("deactivating %s...", name);
       self->native_plugin_descriptor->deactivate (self->native_plugin_handle);
       g_debug ("deactivated %s", name);
-      if (
-        descr->protocol != Z_PLUGIN_PROTOCOL_LV2
-        || lv2_plugin_can_cleanup (descr->uri))
-        {
-          g_debug ("cleaning up %s...", name);
-          self->native_plugin_descriptor->cleanup (self->native_plugin_handle);
-          g_debug ("cleaned up %s", name);
-        }
+      g_debug ("cleaning up %s...", name);
+      self->native_plugin_descriptor->cleanup (self->native_plugin_handle);
+      g_debug ("cleaned up %s", name);
       self->native_plugin_descriptor = NULL;
     }
   if (self->host_handle)

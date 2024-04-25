@@ -13,7 +13,6 @@
 #include "zrythm-test-config.h"
 
 #include "actions/tracklist_selections.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -29,9 +28,6 @@
  *
  * @{
  */
-
-void
-test_plugin_manager_reload_lilv_world_w_path (const char * path);
 
 /**
  * Get a plugin setting clone from the given
@@ -59,20 +55,10 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         with_carla,
   int          num_tracks);
 
-void
-test_plugin_manager_reload_lilv_world_w_path (const char * path)
+static void
+on_scan_finished (bool * scan_done)
 {
-  LilvWorld * world = lilv_world_new ();
-  PLUGIN_MANAGER->lilv_world = world;
-
-  lilv_world_load_specifications (world);
-  lilv_world_load_plugin_classes (world);
-  LilvNode * lv2_path = lilv_new_string (LILV_WORLD, path);
-  lilv_world_set_option (world, LILV_OPTION_LV2_PATH, lv2_path);
-  lilv_world_load_all (world);
-  object_free_w_func_and_null (lilv_node_free, lv2_path);
-  plugin_manager_clear_plugins (PLUGIN_MANAGER);
-  plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
+  *scan_done = true;
 }
 
 /**
@@ -87,41 +73,48 @@ test_plugin_manager_get_plugin_setting (
   const char * pl_uri,
   bool         with_carla)
 {
-  if (pl_uri)
-    {
-      LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
-      g_assert_nonnull (path);
-      lilv_world_load_bundle (LILV_WORLD, path);
-      lilv_node_free (path);
-    }
-  else
-    {
-      char * basename = g_path_get_basename (pl_bundle);
-      char * tmpdir = g_dir_make_tmp ("zrythm_vst_XXXXXX", NULL);
-      char * dest_path = g_build_filename (tmpdir, basename, NULL);
-      if (g_str_has_suffix (pl_bundle, "vst3"))
-        {
-          g_assert_true (io_copy_dir (dest_path, pl_bundle, true, true, NULL));
-        }
-      else
-        {
-          GFile * pl_bundle_file = g_file_new_for_path (pl_bundle);
-          GFile * pl_bundle_file_in_tmp = g_file_new_for_path (dest_path);
-          g_assert_true (g_file_copy (
-            pl_bundle_file, pl_bundle_file_in_tmp, G_FILE_COPY_NONE, NULL, NULL,
-            NULL, NULL));
-          // g_object_unref (pl_bundle_file);
-          // g_object_unref (pl_bundle_file_in_tmp);
-        }
-      g_setenv ("VST3_PATH", tmpdir, true);
-      g_setenv ("VST_PATH", tmpdir, true);
-      g_free (tmpdir);
-      g_free (dest_path);
-      g_free (basename);
-    }
+  {
+    char * basename = g_path_get_basename (pl_bundle);
+    char * tmpdir = g_dir_make_tmp ("zrythm_vst_XXXXXX", NULL);
+    char * dest_path = g_build_filename (tmpdir, basename, NULL);
+    if (g_str_has_suffix (pl_bundle, "vst3"))
+      {
+        g_assert_true (io_copy_dir (dest_path, pl_bundle, true, true, NULL));
+      }
+    else if (pl_uri)
+      {
+        g_assert_true (io_copy_dir (dest_path, &pl_bundle[7], true, true, NULL));
+      }
+    else
+      {
+        GFile * pl_bundle_file = NULL;
+        pl_bundle_file = g_file_new_for_path (pl_bundle);
+        GFile *  pl_bundle_file_in_tmp = g_file_new_for_path (dest_path);
+        GError * err = NULL;
+        g_assert_true (g_file_copy (
+          pl_bundle_file, pl_bundle_file_in_tmp, G_FILE_COPY_NONE, NULL, NULL,
+          NULL, &err));
+        // g_object_unref (pl_bundle_file);
+        // g_object_unref (pl_bundle_file_in_tmp);
+      }
+    g_setenv ("VST3_PATH", tmpdir, true);
+    g_setenv ("LV2_PATH", tmpdir, true);
+    g_setenv ("VST_PATH", tmpdir, true);
+    g_free (tmpdir);
+    g_free (dest_path);
+    g_free (basename);
+  }
 
+  static bool scan_finished = false;
+  scan_finished = false;
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
-  plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
+  plugin_manager_begin_scan (
+    PLUGIN_MANAGER, 1.0, NULL, (GenericCallback) on_scan_finished,
+    &scan_finished);
+  while (!scan_finished)
+    {
+      g_main_context_iteration (NULL, true);
+    }
   g_assert_cmpuint (PLUGIN_MANAGER->plugin_descriptors->len, >, 0);
 
   PluginDescriptor * descr = NULL;
@@ -191,9 +184,8 @@ test_plugin_manager_create_tracks_from_plugin (
   TrackType track_type = TRACK_TYPE_AUDIO_BUS;
   if (is_instrument)
     {
-      /* fix the descriptor (for some reason lilv
-       * reports it as Plugin instead of Instrument if
-       * you don't do lilv_world_load_all) */
+      /* fix the descriptor (for some reason lilv reports it as Plugin instead
+       * of Instrument if you don't do lilv_world_load_all) */
       setting->descr->category = PC_INSTRUMENT;
       g_free (setting->descr->category_str);
       setting->descr->category_str =

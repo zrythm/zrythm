@@ -18,7 +18,6 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/error.h"

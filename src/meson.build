@@ -34,7 +34,6 @@ subdir('settings')
 subdir('utils')
 
 zrythm_link_libs = [
-  lv2_lib,
   widgets_lib,
   midilib,
   kissfft_lib,

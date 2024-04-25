@@ -41,22 +41,11 @@ typedef struct PluginGtkController
   float last_set_control_val;
 } PluginGtkController;
 
-#if 0
-typedef struct PluginGtkPresetMenu
-{
-  GtkMenuItem* item;
-  char*        label;
-  GtkMenu*     menu;
-  GSequence*   banks;
-} PluginGtkPresetMenu;
-#endif
-
 typedef struct PluginGtkPresetRecord
 {
   Plugin * plugin;
   /**
-   * This will be a LilvNode * for LV2 and an
-   * absolute path for carla.
+   * This will be a LilvNode * for LV2 and an absolute path for carla.
    */
   void * preset;
 } PluginGtkPresetRecord;
@@ -102,34 +91,11 @@ plugin_gtk_add_control_row (
   const char *          name,
   PluginGtkController * controller);
 
-#if 0
-void
-plugin_gtk_on_preset_activate (
-  GtkWidget* widget,
-  PluginGtkPresetRecord * record);
-
-void
-plugin_gtk_on_preset_destroy (
-  PluginGtkPresetRecord * record,
-  GClosure* closure);
-#endif
-
 void
 plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin);
 
 gint
 plugin_gtk_menu_cmp (gconstpointer a, gconstpointer b, gpointer data);
-
-#if 0
-PluginGtkPresetMenu*
-plugin_gtk_preset_menu_new (
-  const char* label);
-
-void
-plugin_gtk_rebuild_preset_menu (
-  Plugin *    plugin,
-  GtkWidget * pset_menu);
-#endif
 
 /**
  * Sets up the combo box with all the banks the
@@ -176,9 +142,7 @@ void
 plugin_gtk_generic_set_widget_value (
   Plugin *              pl,
   PluginGtkController * controller,
-  uint32_t              size,
-  LV2_URID              type,
-  const void *          body);
+  float                 control);
 
 #if 0
 void

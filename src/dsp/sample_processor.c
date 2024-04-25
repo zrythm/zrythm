@@ -513,7 +513,7 @@ queue_file_or_chord_preset (
             self->instrument_setting->descr->name);
           return;
         }
-      int ret = plugin_instantiate (pl, NULL, &err);
+      int ret = plugin_instantiate (pl, &err);
       if (ret != 0)
         {
           HANDLE_ERROR (

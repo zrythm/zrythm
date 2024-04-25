@@ -16,7 +16,6 @@
 #  include "dsp/tempo_track.h"
 #  include "dsp/transport.h"
 #  include "gui/widgets/main_window.h"
-#  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin.h"
 #  include "project.h"
 #  include "settings/settings.h"
@@ -31,6 +30,10 @@
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
+
+#  if !defined _WOE32 && defined __GLIBC__
+#    include <dlfcn.h>
+#  endif
 
 #  include <jack/thread.h>
 

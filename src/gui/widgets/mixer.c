@@ -16,7 +16,6 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"

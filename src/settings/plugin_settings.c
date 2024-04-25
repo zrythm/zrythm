@@ -5,7 +5,6 @@
 #include "actions/tracklist_selections.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -59,7 +58,6 @@ plugin_setting_clone (const PluginSetting * src, bool validate)
   *new_setting = *src;
   new_setting->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
   new_setting->descr = plugin_descriptor_clone (src->descr);
-  new_setting->ui_uri = g_strdup (src->ui_uri);
   new_setting->last_instantiated_time = src->last_instantiated_time;
   new_setting->num_instantiations = src->num_instantiations;
 
@@ -95,12 +93,11 @@ plugin_setting_print (const PluginSetting * self)
     "open_with_carla=%d, "
     "force_generic_ui=%d, "
     "bridge_mode=%s, "
-    "ui_uri=%s, "
     "last_instantiated_time=%" G_GINT64_FORMAT
     ", "
     "num_instantiations=%d",
     self->descr->uri, self->open_with_carla, self->force_generic_ui,
-    carla_bridge_mode_strings[self->bridge_mode].str, self->ui_uri,
+    carla_bridge_mode_strings[self->bridge_mode].str,
     self->last_instantiated_time, self->num_instantiations);
 }
 
@@ -223,61 +220,6 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
       self->force_generic_ui = true;
     }
   /*g_debug ("done checking if plugin has custom UI");*/
-
-  /* if setting cannot have a UI URI, clear it */
-  if (
-    descr->protocol != Z_PLUGIN_PROTOCOL_LV2 || self->open_with_carla
-    || self->force_generic_ui)
-    {
-      /*g_debug ("cannot have UI URI");*/
-      g_free_and_null (self->ui_uri);
-    }
-  /* otherwise validate it */
-  else
-    {
-      LilvNode *         lv2_uri = lilv_new_uri (LILV_WORLD, descr->uri);
-      const LilvPlugin * lilv_plugin =
-        lilv_plugins_get_by_uri (LILV_PLUGINS, lv2_uri);
-      lilv_node_free (lv2_uri);
-      if (!lilv_plugin)
-        {
-          g_debug ("failed to load plugin <%s>", descr->uri);
-          g_free_and_null (self->ui_uri);
-          self->force_generic_ui = true;
-        }
-      /* if already have UI uri and not supported,
-       * clear it */
-      else if (
-        self->ui_uri && !lv2_plugin_is_ui_supported (descr->uri, self->ui_uri))
-        {
-          g_debug ("UI URI %s is not supported", self->ui_uri);
-          g_free_and_null (self->ui_uri);
-        }
-
-      /* if no UI URI, pick one */
-      /*g_debug ("picking a UI URI...");*/
-      if (!self->ui_uri && lilv_plugin)
-        {
-          char * picked_ui = NULL;
-          bool   ui_picked = lv2_plugin_pick_most_preferable_ui (
-            descr->uri, &picked_ui, NULL, true, false);
-
-          /* if a suitable UI was found, set the
-           * UI URI */
-          if (ui_picked)
-            {
-              g_debug ("picked %s", self->ui_uri);
-              g_return_if_fail (picked_ui);
-              self->ui_uri = picked_ui;
-            }
-          /* otherwise force generic UI */
-          else
-            {
-              g_debug ("no suitable UI found");
-              self->force_generic_ui = true;
-            }
-        }
-    }
 
   if (print_result)
     {

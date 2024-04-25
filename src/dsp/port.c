@@ -27,7 +27,6 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/channel.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/lv2/lv2_ui.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -83,7 +82,7 @@ port_allocate_bufs (Port * self)
         self->audio_ring = zix_ring_new (
           zix_default_allocator (), sizeof (float) * AUDIO_RING_SIZE);
         object_zero_and_free (self->buf);
-        size_t max = MAX (AUDIO_ENGINE->block_length, self->min_buf_size);
+        size_t max = AUDIO_ENGINE->block_length;
         max = MAX (max, 1);
         self->buf = object_new_n (max, float);
         self->last_buf_sz = max;
@@ -1415,15 +1414,6 @@ port_update_identifier (
           port_identifier_copy (&at->port_id, &self->id);
         }
     }
-
-#if 0
-  if (self->lv2_port)
-    {
-      Lv2Port * port = self->lv2_port;
-      port_identifier_copy (
-        &port->port_id, &self->id);
-    }
-#endif
 }
 
 /**
@@ -1965,14 +1955,7 @@ send_data_to_windows_mme (
 static void
 port_forward_control_change_event (Port * self)
 {
-  /* if lv2 port/parameter */
-  if (self->value_type > 0)
-    {
-      Plugin * pl = port_get_plugin (self, 1);
-      g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl) && pl->lv2);
-      lv2_ui_send_control_val_event_from_plugin_to_ui (pl->lv2, self);
-    }
-  else if (self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
       Plugin * pl = port_get_plugin (self, 1);
       if (pl)
@@ -2964,15 +2947,9 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                 maxf = port->maxf;
                 minf = port->minf;
 
-                /*float deff =*/
-                /*port->lv2_port->lv2_control->deff;*/
-                /*port->lv2_port->control =*/
-                /*deff + (maxf - deff) **/
-                /*src_port->buf[0];*/
                 depth_range = (maxf - minf) / 2.f;
 
-                /* figure out whether to use base
-                 * value or the current value */
+                /* figure out whether to use base value or the current value */
                 if (first_cv)
                   {
                     val_to_use = port->base_value;
@@ -3523,8 +3500,6 @@ port_free (Port * self)
       object_free_w_func_and_null (port_scale_point_free, self->scale_points[i]);
     }
   object_zero_and_free (self->scale_points);
-
-  object_free_w_func_and_null (lv2_evbuf_free, self->evbuf);
 
   port_identifier_free_members (&self->id);
 

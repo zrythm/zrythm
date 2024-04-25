@@ -64,7 +64,6 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -1273,10 +1272,6 @@ engine_realloc_port_buffers (AudioEngine * self, nframes_t nframes)
                 {
                   carla_native_plugin_update_buffer_size_and_sample_rate (
                     pl->carla);
-                }
-              else if (pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
-                {
-                  lv2_plugin_allocate_port_buffers (pl->lv2);
                 }
             }
         }

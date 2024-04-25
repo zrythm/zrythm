@@ -19,7 +19,6 @@
 #include "gui/widgets/string_list_item_factory.h"
 #include "plugins/carla_discovery.h"
 #include "plugins/collections.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"

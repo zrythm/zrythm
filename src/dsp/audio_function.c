@@ -10,8 +10,6 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2/lv2_ui.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -103,6 +101,7 @@ audio_function_get_icon_name_for_type (AudioFunctionType type)
   g_return_val_if_reached (NULL);
 }
 
+#if 0
 /**
  * @param frames Interleaved frames.
  * @param num_frames Number of frames per channel.
@@ -159,12 +158,12 @@ apply_plugin (
   GtkWidget * container = gtk_dialog_get_content_area (GTK_DIALOG (pl->window));
   gtk_box_append (GTK_BOX (container), GTK_WIDGET (pl->vbox));
 
-#if 0
+#  if 0
   /* add menu bar */
   plugin_gtk_build_menu (
     pl, GTK_WIDGET (pl->window),
     GTK_WIDGET (pl->vbox));
-#endif
+#  endif
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
@@ -243,12 +242,12 @@ apply_plugin (
             (signed_frame_t) (i + j) - (signed_frame_t) latency;
           if (actual_j < 0)
             continue;
-#if 0
+#  if 0
           g_message (
             "%ld %f",
             actual_j,
             fabsf (l_out->buf[j]));
-#endif
+#  endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
           frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
@@ -282,12 +281,12 @@ apply_plugin (
           signed_frame_t actual_j =
             (signed_frame_t) (i + j + num_frames) - (signed_frame_t) latency;
           g_return_val_if_fail (actual_j >= 0, -1);
-#if 0
+#  if 0
           g_message (
             "%ld %f",
             actual_j,
             fabsf (l_out->buf[j]));
-#endif
+#  endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
           frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
@@ -304,6 +303,7 @@ apply_plugin (
 
   return 0;
 }
+#endif
 
 bool
 audio_function_apply (
@@ -581,6 +581,7 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_CUSTOM_PLUGIN:
       {
+#if 0
         g_return_val_if_fail (uri, false);
         GError * err = NULL;
         int ret = apply_plugin (uri, dest_frames, num_frames, channels, &err);
@@ -590,6 +591,7 @@ audio_function_apply (
               error, err, "%s", _ ("Failed to apply plugin"));
             return false;
           }
+#endif
       }
       break;
     case AUDIO_FUNCTION_INVALID:

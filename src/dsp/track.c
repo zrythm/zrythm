@@ -1997,7 +1997,7 @@ track_insert_plugin (
   if (!pl->instantiated && !pl->instantiation_failed)
     {
       GError * err = NULL;
-      int      ret = plugin_instantiate (pl, NULL, &err);
+      int      ret = plugin_instantiate (pl, &err);
       if (ret != 0)
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to instantiate plugin"));
@@ -2984,7 +2984,7 @@ track_activate_all_plugins (Track * track, bool activate)
       if (!pl->instantiated && !pl->instantiation_failed)
         {
           GError * err = NULL;
-          int      ret = plugin_instantiate (pl, NULL, &err);
+          int      ret = plugin_instantiate (pl, &err);
           if (ret != 0)
             {
               HANDLE_ERROR (err, "%s", _ ("Failed to instantiate plugin"));

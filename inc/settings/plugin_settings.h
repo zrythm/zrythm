@@ -46,11 +46,6 @@ typedef struct PluginSetting
   /** Requested carla bridge mode. */
   CarlaBridgeMode bridge_mode;
 
-  /** Requested UI URI (if LV2 and non-bridged and
-   * not forcing a generic UI and have a custom
-   * UI */
-  char * ui_uri;
-
   /** Last datetime instantiated (number of microseconds since
    * January 1, 1970 UTC). */
   gint64 last_instantiated_time;
@@ -65,7 +60,6 @@ static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
   YAML_FIELD_INT (PluginSetting, open_with_carla),
   YAML_FIELD_INT (PluginSetting, force_generic_ui),
   YAML_FIELD_ENUM (PluginSetting, bridge_mode, carla_bridge_mode_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting, ui_uri),
   YAML_FIELD_INT_OPT (PluginSetting, last_instantiated_time),
   YAML_FIELD_INT_OPT (PluginSetting, num_instantiations),
 

@@ -250,16 +250,6 @@ _test_create_plugins (
       bool    ret = mixer_selections_action_perform_create (
         PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
       g_assert_true (ret);
-
-      if (
-        string_is_equal (
-          pl_uri, "http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector")
-        && !with_carla)
-        {
-          Plugin * pl =
-            TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->channel->inserts[0];
-          g_assert_true (pl->lv2->want_position);
-        }
     }
 
   plugin_setting_free (setting);

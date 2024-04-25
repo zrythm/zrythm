@@ -16,7 +16,6 @@
 #  include "dsp/rtmidi_device.h"
 #  include "dsp/transport.h"
 #  include "gui/widgets/main_window.h"
-#  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin.h"
 #  include "project.h"
 #  include "settings/settings.h"

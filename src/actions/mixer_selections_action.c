@@ -489,7 +489,7 @@ do_or_undo_create_or_delete (
 
               /* instantiate so that ports are
                * created */
-              int ret = plugin_instantiate (pl, NULL, &err);
+              int ret = plugin_instantiate (pl, &err);
               if (ret != 0)
                 {
                   PROPAGATE_PREFIXED_ERROR_LITERAL (

@@ -11,7 +11,6 @@
 
 #  include "plugins/cached_plugin_descriptors.h"
 #  include "plugins/carla_discovery.h"
-#  include "plugins/lv2_plugin.h"
 #  include "plugins/plugin_descriptor.h"
 #  include "plugins/plugin_manager.h"
 #  include "utils/file.h"
@@ -21,7 +20,6 @@
 #  include "zrythm.h"
 
 #  include <CarlaBackend.h>
-#  include <lv2/instance-access/instance-access.h>
 
 static char *
 z_carla_discovery_get_discovery_path (PluginArchitecture arch)
@@ -447,7 +445,7 @@ z_carla_discovery_plugin_scanned_cb (
   g_return_if_fail (ptr);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
 
-  g_debug ("nfo: %p, sha1: %s", nfo, sha1);
+  /*g_debug ("nfo: %p, sha1: %s", nfo, sha1);*/
 
   if (!nfo && !sha1)
     {
@@ -551,7 +549,7 @@ z_carla_discovery_start (
     z_carla_discovery_plugin_check_cache_cb, self);
   if (!handle)
     {
-      g_warning (
+      g_message (
         "no plugins to scan for %s (given paths: %s)",
         plugin_protocol_strings[protocol].str, paths_separated);
       g_free (paths_separated);
