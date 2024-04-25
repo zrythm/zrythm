@@ -289,34 +289,11 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
       return;
     }
 
-    /* TODO */
-#if 0
-  const char * cmd[3] = { OPEN_DIR_CMD, LOG->log_filepath, NULL };
-
-  int ret = system_run_cmd_w_args (cmd, 4000, false, NULL, false);
-  if (ret)
-    {
-      g_warning (
-        "an error occurred running %s %s", OPEN_DIR_CMD, LOG->log_filepath);
-    }
-#endif
-
-#if 0
-  if (GTK_IS_WINDOW (LOG->viewer))
-    {
-      gtk_window_present (
-        GTK_WINDOW (LOG->viewer));
-    }
-  else
-    {
-      LOG->viewer = log_viewer_widget_new ();
-      gtk_window_set_transient_for (
-        GTK_WINDOW (LOG->viewer),
-        GTK_WINDOW (MAIN_WINDOW));
-      gtk_widget_set_visible (
-        GTK_WIDGET (LOG->viewer), 1);
-    }
-#endif
+  GFile *           file = g_file_new_for_path (LOG->log_filepath);
+  GtkFileLauncher * launcher = gtk_file_launcher_new (file);
+  gtk_file_launcher_launch (launcher, NULL, NULL, NULL, NULL);
+  g_object_unref (file);
+  g_object_unref (launcher);
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
