@@ -34,11 +34,20 @@ z_carla_discovery_get_discovery_path (PluginArchitecture arch)
 #  endif
   );
   strcat (carla_discovery_filename, BIN_SUFFIX);
-  char * zrythm_libdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-  g_debug ("using zrythm_libdir: %s", zrythm_libdir);
-  char * carla_discovery =
-    g_build_filename (zrythm_libdir, "carla", carla_discovery_filename, NULL);
-  g_free (zrythm_libdir);
+  char * carla_discovery;
+  if (ZRYTHM_TESTING)
+    {
+      carla_discovery =
+        g_build_filename (CARLA_BINARIES_DIR, carla_discovery_filename, NULL);
+    }
+  else
+    {
+      char * zrythm_libdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+      g_debug ("using zrythm_libdir: %s", zrythm_libdir);
+      carla_discovery = g_build_filename (
+        zrythm_libdir, "carla", carla_discovery_filename, NULL);
+      g_free (zrythm_libdir);
+    }
   g_return_val_if_fail (file_exists (carla_discovery), NULL);
 
   return carla_discovery;

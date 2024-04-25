@@ -1132,6 +1132,8 @@ if have_carla
   if cc.has_function('carla_get_audio_port_hints', dependencies: carla_host_plugin_dep)
     cdata.set ('CARLA_HAVE_AUDIO_PORT_HINTS', 1)
   endif
+
+  cdata.set_quoted ('CARLA_BINARIES_DIR', carla_bins_dir)
 endif
 
 rtmidi_dep = dependency (
