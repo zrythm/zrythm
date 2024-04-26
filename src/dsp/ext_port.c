@@ -188,6 +188,9 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+            case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
               if (self->type != EXT_PORT_TYPE_RTMIDI)
                 {
                   g_message ("skipping %s (not RtMidi)", self->full_name);
@@ -388,6 +391,9 @@ ext_port_matches_backend (ExtPort * self)
         case MIDI_BACKEND_JACK_RTMIDI:
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+        case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
           if (self->type == EXT_PORT_TYPE_RTMIDI)
             return true;
           else
@@ -748,6 +754,9 @@ ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports)
         case MIDI_BACKEND_JACK_RTMIDI:
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+        case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
           get_ext_ports_from_rtmidi (flow, ports);
           break;
 #endif

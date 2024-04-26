@@ -713,6 +713,11 @@ ui_gen_midi_backends_combo_row (bool with_signal)
     midi_backend_str[MIDI_BACKEND_COREMIDI_RTMIDI],
 #  endif
 #endif /* __APPLE__ */
+#ifdef _WOE32
+#  ifdef HAVE_RTMIDI_6
+#  endif
+    midi_backend_str[MIDI_BACKEND_WINDOWS_UWP_RTMIDI],
+#endif
     NULL,
   };
   GtkStringList * string_list = gtk_string_list_new (labels);

@@ -50,6 +50,14 @@ get_api_from_midi_backend (MidiBackend backend)
         {
           return apis[i];
         }
+#  ifdef HAVE_RTMIDI_6
+      if (
+        backend == MIDI_BACKEND_WINDOWS_UWP_RTMIDI
+        && apis[i] == RTMIDI_API_WINDOWS_UWP)
+        {
+          return apis[i];
+        }
+#  endif
     }
 
   return RTMIDI_API_RTMIDI_DUMMY;

@@ -468,6 +468,9 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
         case MIDI_BACKEND_JACK_RTMIDI:
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+        case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
           /* extract MIDI events from the RtMidi
            * device ring buffer into RtMidi device */
           port_prepare_rtmidi_events (port);

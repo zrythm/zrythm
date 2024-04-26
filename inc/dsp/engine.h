@@ -279,6 +279,7 @@ typedef enum MidiBackend
   MIDI_BACKEND_WINDOWS_MME,
   MIDI_BACKEND_WINDOWS_MME_RTMIDI,
   MIDI_BACKEND_COREMIDI_RTMIDI,
+  MIDI_BACKEND_WINDOWS_UWP_RTMIDI,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
 
@@ -287,7 +288,8 @@ midi_backend_is_rtmidi (MidiBackend backend)
 {
   return backend == MIDI_BACKEND_ALSA_RTMIDI || backend == MIDI_BACKEND_JACK_RTMIDI
          || backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI
-         || backend == MIDI_BACKEND_COREMIDI_RTMIDI;
+         || backend == MIDI_BACKEND_COREMIDI_RTMIDI
+         || backend == MIDI_BACKEND_WINDOWS_UWP_RTMIDI;
 }
 
 static const char * midi_backend_str[] = {
@@ -300,6 +302,7 @@ static const char * midi_backend_str[] = {
   "Windows MME",
   "Windows MME (rtmidi)",
   "CoreMIDI (rtmidi)",
+  "Windows UWP (rtmidi)",
 };
 
 typedef enum AudioEngineJackTransportType

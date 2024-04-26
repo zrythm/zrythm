@@ -1143,6 +1143,9 @@ rtmidi_dep = dependency (
     'default_library=static'])
 if rtmidi_dep.found ()
   cdata.set('HAVE_RTMIDI', 1)
+  if rtmidi_dep.version().version_compare('>=6.0.0')
+    cdata.set('HAVE_RTMIDI_6', 1)
+  endif
 endif
 
 rtaudio_dep = dependency (

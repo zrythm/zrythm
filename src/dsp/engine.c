@@ -538,6 +538,9 @@ setup_dummy_midi:
     case MIDI_BACKEND_JACK_RTMIDI:
     case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
     case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+    case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
       mret = engine_rtmidi_setup (self);
       break;
 #endif

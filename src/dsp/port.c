@@ -2381,6 +2381,9 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+            case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
               port_sum_data_from_rtmidi (
                 port, time_nfo.local_offset, time_nfo.nframes);
               break;
@@ -3064,6 +3067,9 @@ port_set_expose_to_backend (Port * self, int expose)
         case MIDI_BACKEND_JACK_RTMIDI:
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
+#  ifdef HAVE_RTMIDI_6
+        case MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
           expose_to_rtmidi (self, expose);
           break;
 #endif
