@@ -177,3 +177,6 @@ venv
 # GNOME Builder
 .buildconfig
 *.syscap
+
+# KDevelop
+*.kdev4
