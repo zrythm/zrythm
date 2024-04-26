@@ -503,7 +503,6 @@ test_cflags = [
   '-Wno-cast-function-type',
   '-Walloca',
   '-fno-common',
-  '-DLV2_UI__Gtk4UI="https://lv2plug.in/ns/extensions/ui#Gtk4UI"',
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
