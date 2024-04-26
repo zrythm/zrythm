@@ -1158,7 +1158,8 @@ zrythm_app_startup (GApplication * app)
   /* set default css provider */
   gtk_css_provider_load_from_path (css_provider, css_theme_path);
   gtk_style_context_add_provider_for_display (
-    gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider), 800);
+    gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider),
+    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   g_object_unref (css_provider);
   g_message ("set default css provider from path: %s", css_theme_path);
 
