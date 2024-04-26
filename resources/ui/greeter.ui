@@ -202,6 +202,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <property name="ellipsize">3</property>
                             <property name="margin-start">36</property>
                             <property name="margin-end">36</property>
+                            <property name="pulse-step">0.02</property>
                           </object>
                         </child>
                       </object>

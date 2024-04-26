@@ -206,7 +206,8 @@ greeter_tick_cb (
   /*gtk_label_set_text (self->status_title, self->title);*/
   /*gtk_label_set_text (self->status_description, self->description);*/
   gtk_progress_bar_set_text (self->progress_bar, self->description);
-  gtk_progress_bar_set_fraction (self->progress_bar, self->progress);
+  /*gtk_progress_bar_set_fraction (self->progress_bar, self->progress);*/
+  gtk_progress_bar_pulse (self->progress_bar);
   zix_sem_post (&self->progress_status_lock);
 
   return G_SOURCE_CONTINUE;
