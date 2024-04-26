@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Zita Rev1"
 version: "1.0"
-Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Code generated with Faust 2.72.14 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn zita_rev1 -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -107,12 +107,12 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn zita_rev
 #define __export__
 
 // Version as a global string
-#define FAUSTVERSION "2.70.3"
+#define FAUSTVERSION "2.72.14"
 
 // Version as separated [major,minor,patch] values
 #define FAUSTMAJORVERSION 2
-#define FAUSTMINORVERSION 70
-#define FAUSTPATCHVERSION 3
+#define FAUSTMINORVERSION 72
+#define FAUSTPATCHVERSION 14
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -264,6 +264,10 @@ class FAUST_API dsp {
         /**
          * DSP instance computation, to be called with successive in/out audio buffers.
          *
+         * Note that by default inputs and outputs buffers are supposed to be distinct memory zones,
+         * so one cannot safely write compute(count, inputs, inputs).
+         * The -inpl compilation option can be used for that, but only in scalar mode for now.
+         *
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
@@ -272,9 +276,11 @@ class FAUST_API dsp {
         virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) = 0;
     
         /**
-         * DSP instance computation: alternative method to be used by subclasses.
+         * Alternative DSP instance computation method for use by subclasses, incorporating an additional `date_usec` parameter,
+         * which specifies the timestamp of the first sample in the audio buffers.
          *
-         * @param date_usec - the timestamp in microsec given by audio driver.
+         * @param date_usec - the timestamp in microsec given by audio driver. By convention timestamp of -1 means 'no timestamp conversion',
+         * events already have a timestamp expressed in frames.
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
@@ -789,9 +795,11 @@ class zita_rev1 : public dsp {
 	
 	FAUSTFLOAT fHslider0;
 	int fSampleRate;
+	float fConst0;
 	float fConst1;
 	float fRec11_perm[4];
 	FAUSTFLOAT fHslider1;
+	float fConst2;
 	float fConst3;
 	FAUSTFLOAT fHslider2;
 	float fConst4;
@@ -805,6 +813,7 @@ class zita_rev1 : public dsp {
 	float fYec1[65536];
 	int fYec1_idx;
 	int fYec1_idx_save;
+	float fConst6;
 	int iConst7;
 	float fYec2[4096];
 	int fYec2_idx;
@@ -812,11 +821,13 @@ class zita_rev1 : public dsp {
 	int iConst8;
 	float fRec8_perm[4];
 	float fRec15_perm[4];
+	float fConst9;
 	float fConst10;
 	float fRec14_perm[4];
 	float fYec3[65536];
 	int fYec3_idx;
 	int fYec3_idx_save;
+	float fConst11;
 	int iConst12;
 	float fYec4[8192];
 	int fYec4_idx;
@@ -824,11 +835,13 @@ class zita_rev1 : public dsp {
 	int iConst13;
 	float fRec12_perm[4];
 	float fRec19_perm[4];
+	float fConst14;
 	float fConst15;
 	float fRec18_perm[4];
 	float fYec5[65536];
 	int fYec5_idx;
 	int fYec5_idx_save;
+	float fConst16;
 	int iConst17;
 	float fYec6[8192];
 	int fYec6_idx;
@@ -836,11 +849,13 @@ class zita_rev1 : public dsp {
 	int iConst18;
 	float fRec16_perm[4];
 	float fRec23_perm[4];
+	float fConst19;
 	float fConst20;
 	float fRec22_perm[4];
 	float fYec7[65536];
 	int fYec7_idx;
 	int fYec7_idx_save;
+	float fConst21;
 	int iConst22;
 	float fYec8[8192];
 	int fYec8_idx;
@@ -848,6 +863,7 @@ class zita_rev1 : public dsp {
 	int iConst23;
 	float fRec20_perm[4];
 	float fRec27_perm[4];
+	float fConst24;
 	float fConst25;
 	float fRec26_perm[4];
 	float fYec9[16384];
@@ -856,6 +872,7 @@ class zita_rev1 : public dsp {
 	float fYec10[32768];
 	int fYec10_idx;
 	int fYec10_idx_save;
+	float fConst26;
 	int iConst27;
 	float fYec11[4096];
 	int fYec11_idx;
@@ -863,11 +880,13 @@ class zita_rev1 : public dsp {
 	int iConst28;
 	float fRec24_perm[4];
 	float fRec31_perm[4];
+	float fConst29;
 	float fConst30;
 	float fRec30_perm[4];
 	float fYec12[32768];
 	int fYec12_idx;
 	int fYec12_idx_save;
+	float fConst31;
 	int iConst32;
 	float fYec13[8192];
 	int fYec13_idx;
@@ -875,11 +894,13 @@ class zita_rev1 : public dsp {
 	int iConst33;
 	float fRec28_perm[4];
 	float fRec35_perm[4];
+	float fConst34;
 	float fConst35;
 	float fRec34_perm[4];
 	float fYec14[65536];
 	int fYec14_idx;
 	int fYec14_idx_save;
+	float fConst36;
 	int iConst37;
 	float fYec15[8192];
 	int fYec15_idx;
@@ -887,11 +908,13 @@ class zita_rev1 : public dsp {
 	int iConst38;
 	float fRec32_perm[4];
 	float fRec39_perm[4];
+	float fConst39;
 	float fConst40;
 	float fRec38_perm[4];
 	float fYec16[32768];
 	int fYec16_idx;
 	int fYec16_idx_save;
+	float fConst41;
 	int iConst42;
 	float fYec17[4096];
 	int fYec17_idx;
@@ -915,7 +938,7 @@ class zita_rev1 : public dsp {
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/tabulateNd", "Copyright (C) 2023 Bart Brouns <bart@magnetophon.nl>");
-		m->declare("basics.lib/version", "1.12.0");
+		m->declare("basics.lib/version", "1.15.0");
 		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn zita_rev1 -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("delays.lib/name", "Faust Delay Library");
@@ -943,7 +966,7 @@ class zita_rev1 : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.7.0");
+		m->declare("maths.lib/version", "2.8.0");
 		m->declare("name", "Zita Rev1");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "1.3.0");
@@ -973,48 +996,48 @@ class zita_rev1 : public dsp {
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		float fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
+		fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
 		fConst1 = 3.1415927f / fConst0;
-		float fConst2 = std::floor(0.219991f * fConst0 + 0.5f);
+		fConst2 = std::floor(0.219991f * fConst0 + 0.5f);
 		fConst3 = 6.9077554f * (fConst2 / fConst0);
 		fConst4 = 6.2831855f / fConst0;
 		fConst5 = 0.001f * fConst0;
-		float fConst6 = std::floor(0.019123f * fConst0 + 0.5f);
+		fConst6 = std::floor(0.019123f * fConst0 + 0.5f);
 		iConst7 = int(std::min<float>(65536.0f, std::max<float>(0.0f, fConst2 - fConst6)));
 		iConst8 = int(std::min<float>(4096.0f, std::max<float>(0.0f, fConst6 + -1.0f)));
-		float fConst9 = std::floor(0.256891f * fConst0 + 0.5f);
+		fConst9 = std::floor(0.256891f * fConst0 + 0.5f);
 		fConst10 = 6.9077554f * (fConst9 / fConst0);
-		float fConst11 = std::floor(0.027333f * fConst0 + 0.5f);
+		fConst11 = std::floor(0.027333f * fConst0 + 0.5f);
 		iConst12 = int(std::min<float>(65536.0f, std::max<float>(0.0f, fConst9 - fConst11)));
 		iConst13 = int(std::min<float>(8192.0f, std::max<float>(0.0f, fConst11 + -1.0f)));
-		float fConst14 = std::floor(0.192303f * fConst0 + 0.5f);
+		fConst14 = std::floor(0.192303f * fConst0 + 0.5f);
 		fConst15 = 6.9077554f * (fConst14 / fConst0);
-		float fConst16 = std::floor(0.029291f * fConst0 + 0.5f);
+		fConst16 = std::floor(0.029291f * fConst0 + 0.5f);
 		iConst17 = int(std::min<float>(32768.0f, std::max<float>(0.0f, fConst14 - fConst16)));
 		iConst18 = int(std::min<float>(8192.0f, std::max<float>(0.0f, fConst16 + -1.0f)));
-		float fConst19 = std::floor(0.210389f * fConst0 + 0.5f);
+		fConst19 = std::floor(0.210389f * fConst0 + 0.5f);
 		fConst20 = 6.9077554f * (fConst19 / fConst0);
-		float fConst21 = std::floor(0.024421f * fConst0 + 0.5f);
+		fConst21 = std::floor(0.024421f * fConst0 + 0.5f);
 		iConst22 = int(std::min<float>(65536.0f, std::max<float>(0.0f, fConst19 - fConst21)));
 		iConst23 = int(std::min<float>(8192.0f, std::max<float>(0.0f, fConst21 + -1.0f)));
-		float fConst24 = std::floor(0.125f * fConst0 + 0.5f);
+		fConst24 = std::floor(0.125f * fConst0 + 0.5f);
 		fConst25 = 6.9077554f * (fConst24 / fConst0);
-		float fConst26 = std::floor(0.013458f * fConst0 + 0.5f);
+		fConst26 = std::floor(0.013458f * fConst0 + 0.5f);
 		iConst27 = int(std::min<float>(32768.0f, std::max<float>(0.0f, fConst24 - fConst26)));
 		iConst28 = int(std::min<float>(4096.0f, std::max<float>(0.0f, fConst26 + -1.0f)));
-		float fConst29 = std::floor(0.127837f * fConst0 + 0.5f);
+		fConst29 = std::floor(0.127837f * fConst0 + 0.5f);
 		fConst30 = 6.9077554f * (fConst29 / fConst0);
-		float fConst31 = std::floor(0.031604f * fConst0 + 0.5f);
+		fConst31 = std::floor(0.031604f * fConst0 + 0.5f);
 		iConst32 = int(std::min<float>(32768.0f, std::max<float>(0.0f, fConst29 - fConst31)));
 		iConst33 = int(std::min<float>(8192.0f, std::max<float>(0.0f, fConst31 + -1.0f)));
-		float fConst34 = std::floor(0.174713f * fConst0 + 0.5f);
+		fConst34 = std::floor(0.174713f * fConst0 + 0.5f);
 		fConst35 = 6.9077554f * (fConst34 / fConst0);
-		float fConst36 = std::floor(0.022904f * fConst0 + 0.5f);
+		fConst36 = std::floor(0.022904f * fConst0 + 0.5f);
 		iConst37 = int(std::min<float>(32768.0f, std::max<float>(0.0f, fConst34 - fConst36)));
 		iConst38 = int(std::min<float>(8192.0f, std::max<float>(0.0f, fConst36 + -1.0f)));
-		float fConst39 = std::floor(0.153129f * fConst0 + 0.5f);
+		fConst39 = std::floor(0.153129f * fConst0 + 0.5f);
 		fConst40 = 6.9077554f * (fConst39 / fConst0);
-		float fConst41 = std::floor(0.020346f * fConst0 + 0.5f);
+		fConst41 = std::floor(0.020346f * fConst0 + 0.5f);
 		iConst42 = int(std::min<float>(32768.0f, std::max<float>(0.0f, fConst39 - fConst41)));
 		iConst43 = int(std::min<float>(4096.0f, std::max<float>(0.0f, fConst41 + -1.0f)));
 	}

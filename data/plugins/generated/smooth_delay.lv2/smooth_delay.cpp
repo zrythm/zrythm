@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Smooth Delay"
 version: "1.0"
-Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Code generated with Faust 2.72.14 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn smooth_delay -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -107,12 +107,12 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn smooth_d
 #define __export__
 
 // Version as a global string
-#define FAUSTVERSION "2.70.3"
+#define FAUSTVERSION "2.72.14"
 
 // Version as separated [major,minor,patch] values
 #define FAUSTMAJORVERSION 2
-#define FAUSTMINORVERSION 70
-#define FAUSTPATCHVERSION 3
+#define FAUSTMINORVERSION 72
+#define FAUSTPATCHVERSION 14
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -264,6 +264,10 @@ class FAUST_API dsp {
         /**
          * DSP instance computation, to be called with successive in/out audio buffers.
          *
+         * Note that by default inputs and outputs buffers are supposed to be distinct memory zones,
+         * so one cannot safely write compute(count, inputs, inputs).
+         * The -inpl compilation option can be used for that, but only in scalar mode for now.
+         *
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
@@ -272,9 +276,11 @@ class FAUST_API dsp {
         virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) = 0;
     
         /**
-         * DSP instance computation: alternative method to be used by subclasses.
+         * Alternative DSP instance computation method for use by subclasses, incorporating an additional `date_usec` parameter,
+         * which specifies the timestamp of the first sample in the audio buffers.
          *
-         * @param date_usec - the timestamp in microsec given by audio driver.
+         * @param date_usec - the timestamp in microsec given by audio driver. By convention timestamp of -1 means 'no timestamp conversion',
+         * events already have a timestamp expressed in frames.
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
@@ -786,6 +792,7 @@ class smooth_delay : public dsp {
 	
 	FAUSTFLOAT fHslider0;
 	int fSampleRate;
+	float fConst0;
 	float fConst1;
 	FAUSTFLOAT fHslider1;
 	float fConst2;
@@ -811,7 +818,7 @@ class smooth_delay : public dsp {
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/tabulateNd", "Copyright (C) 2023 Bart Brouns <bart@magnetophon.nl>");
-		m->declare("basics.lib/version", "1.12.0");
+		m->declare("basics.lib/version", "1.15.0");
 		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn smooth_delay -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("delays.lib/name", "Faust Delay Library");
@@ -823,7 +830,7 @@ class smooth_delay : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.7.0");
+		m->declare("maths.lib/version", "2.8.0");
 		m->declare("name", "Smooth Delay");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "1.3.0");
@@ -848,7 +855,7 @@ class smooth_delay : public dsp {
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		float fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
+		fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
 		fConst1 = 0.001f * fConst0;
 		fConst2 = 1e+03f / fConst0;
 	}

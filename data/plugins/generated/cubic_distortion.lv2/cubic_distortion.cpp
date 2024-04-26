@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Cubic Distortion"
 version: "1.0"
-Code generated with Faust 2.70.3 (https://faust.grame.fr)
+Code generated with Faust 2.72.14 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn cubic_distortion -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -107,12 +107,12 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -ct 1 -cn cubic_di
 #define __export__
 
 // Version as a global string
-#define FAUSTVERSION "2.70.3"
+#define FAUSTVERSION "2.72.14"
 
 // Version as separated [major,minor,patch] values
 #define FAUSTMAJORVERSION 2
-#define FAUSTMINORVERSION 70
-#define FAUSTPATCHVERSION 3
+#define FAUSTMINORVERSION 72
+#define FAUSTPATCHVERSION 14
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -264,6 +264,10 @@ class FAUST_API dsp {
         /**
          * DSP instance computation, to be called with successive in/out audio buffers.
          *
+         * Note that by default inputs and outputs buffers are supposed to be distinct memory zones,
+         * so one cannot safely write compute(count, inputs, inputs).
+         * The -inpl compilation option can be used for that, but only in scalar mode for now.
+         *
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (eiher float, double or quad)
@@ -272,9 +276,11 @@ class FAUST_API dsp {
         virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) = 0;
     
         /**
-         * DSP instance computation: alternative method to be used by subclasses.
+         * Alternative DSP instance computation method for use by subclasses, incorporating an additional `date_usec` parameter,
+         * which specifies the timestamp of the first sample in the audio buffers.
          *
-         * @param date_usec - the timestamp in microsec given by audio driver.
+         * @param date_usec - the timestamp in microsec given by audio driver. By convention timestamp of -1 means 'no timestamp conversion',
+         * events already have a timestamp expressed in frames.
          * @param count - the number of frames to compute
          * @param inputs - the input audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
          * @param outputs - the output audio buffers as an array of non-interleaved FAUSTFLOAT samples (either float, double or quad)
