@@ -3,7 +3,6 @@
 
 subdir ('kissfft')
 subdir ('midilib')
-subdir ('nanovg')
 subdir ('qm-dsp')
 subdir ('weakjack')
 subdir ('whereami')
