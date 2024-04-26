@@ -191,11 +191,11 @@ plugin_protocol_is_supported (ZPluginProtocol protocol)
     return false;
 #endif
 #if defined(_WOE32) || defined(__APPLE__)
-  if (i == Z_PLUGIN_PROTOCOL_LADSPA || i == Z_PLUGIN_PROTOCOL_DSSI)
+  if (protocol == Z_PLUGIN_PROTOCOL_LADSPA || protocol == Z_PLUGIN_PROTOCOL_DSSI)
     return false;
 #endif
 #ifndef CARLA_HAVE_CLAP_SUPPORT
-  if (i == Z_PLUGIN_PROTOCOL_CLAP)
+  if (protocol == Z_PLUGIN_PROTOCOL_CLAP)
     return false;
 #endif
   return true;
