@@ -176,14 +176,16 @@ cached_plugin_descriptors_is_blacklisted (
   return false;
 }
 
-const PluginDescriptor *
+unsigned int
 cached_plugin_descriptors_find (
   CachedPluginDescriptors * self,
+  GPtrArray *               arr,
   const PluginDescriptor *  descr,
   const char *              sha1,
   bool                      check_valid,
   bool                      check_blacklisted)
 {
+  unsigned int num_found = 0;
   if (check_valid)
     {
       for (int i = 0; i < self->num_descriptors; i++)
@@ -193,7 +195,8 @@ cached_plugin_descriptors_find (
             (sha1 && string_is_equal (cur_descr->sha1, sha1))
             || (descr && plugin_descriptor_is_same_plugin (cur_descr, descr)))
             {
-              return cur_descr;
+              g_ptr_array_add (arr, cur_descr);
+              num_found++;
             }
         }
     }
@@ -206,12 +209,13 @@ cached_plugin_descriptors_find (
             (sha1 && string_is_equal (cur_descr->sha1, sha1))
             || (descr && plugin_descriptor_is_same_plugin (cur_descr, descr)))
             {
-              return cur_descr;
+              g_ptr_array_add (arr, cur_descr);
+              num_found++;
             }
         }
     }
 
-  return NULL;
+  return num_found;
 }
 
 /**

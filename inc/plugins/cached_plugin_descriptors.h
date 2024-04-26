@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * @file
@@ -77,18 +79,22 @@ cached_plugin_descriptors_is_blacklisted (
   const char *              sha1);
 
 /**
- * Finds a descriptor matching the given one's unique identifiers.
+ * Finds descriptors matching the given one's unique identifiers and adds them
+ * to the array.
+ *
+ * @note The elements in the array are owned by @p self and must not be free'd.
  *
  * @param descr The descriptor to check, or NULL to check sha1.
  * @param sha1 The sha1 to check, or NULL to check @p descr.
  * @param check_valid Whether to check valid descriptors.
  * @param check_blacklisted Whether to check blacklisted descriptors.
  *
- * @return The found descriptor or NULL.
+ * @return Number of descriptors found.
  */
-const PluginDescriptor *
-cached_plugin_descriptors_find (
+NONNULL_ARGS (1)
+unsigned int cached_plugin_descriptors_find (
   CachedPluginDescriptors * self,
+  GPtrArray *               arr,
   const PluginDescriptor *  descr,
   const char *              sha1,
   bool                      check_valid,

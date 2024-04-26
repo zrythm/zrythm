@@ -214,20 +214,33 @@ z_carla_discovery_plugin_check_cache_cb (
   g_return_val_if_fail (ptr && filename && sha1, true);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
   g_debug ("check cache for: filename: %s | sha1: %s", filename, sha1);
-  const PluginDescriptor * descr = cached_plugin_descriptors_find (
-    self->owner->cached_plugin_descriptors, NULL, sha1, true, true);
-  if (descr)
+  GPtrArray * found_descriptors = g_ptr_array_new ();
+  cached_plugin_descriptors_find (
+    self->owner->cached_plugin_descriptors, found_descriptors, NULL, sha1, true,
+    true);
+  if (found_descriptors->len > 0)
     {
-      if (!cached_plugin_descriptors_is_blacklisted (
-            self->owner->cached_plugin_descriptors, sha1))
+      GPtrArray * found_non_blacklisted_descriptors = g_ptr_array_new ();
+      cached_plugin_descriptors_find (
+        self->owner->cached_plugin_descriptors,
+        found_non_blacklisted_descriptors, NULL, sha1, true, false);
+      for (size_t i = 0; i < found_non_blacklisted_descriptors->len; i++)
         {
+          const PluginDescriptor * descr =
+            g_ptr_array_index (found_non_blacklisted_descriptors, i);
           PluginDescriptor * descr_clone = plugin_descriptor_clone (descr);
           plugin_manager_add_descriptor (self->owner, descr_clone);
         }
+
+      g_ptr_array_unref (found_descriptors);
+      g_ptr_array_unref (found_non_blacklisted_descriptors);
+
       return true;
     }
 
   plugin_manager_set_currently_scanning_plugin (self->owner, filename, sha1);
+
+  g_ptr_array_unref (found_descriptors);
 
   return false;
 }
