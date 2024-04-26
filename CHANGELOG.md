@@ -6,6 +6,30 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-rc.1] - 2024-04-26
+### Added
+- New Windows UWP (RtMidi) MIDI backend
+
+### Changed
+- Hide "Custom" tab from scale selector
+- Include a scale in the default project (A minor)
+- Display region link group IDs inside regions instead of link symbol
+- Use new Carla discovery API for scanning plugins
+- Use pulse mode in greeter progress bar
+- Regenerate bundled faust plugins
+- Change Zrythm theme priority to APPLICATION instead of USER
+
+### Fixed
+- Fix segfault when max tracks limit is reached on trial version
+- Fix various issues related to linked regions
+- Fix multiple plugins in same CLAP binary not being scanned
+
+### Removed
+- Removed section labels in some context menus
+- Remove libguile dependency
+- Remove lilv dependency (at runtime)
+- Remove reproc dependency
+
 ## [1.0.0-rc.0] - 2024-04-17
 ### Added
 - Add navigation buttons to the initial greeter window
