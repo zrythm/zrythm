@@ -817,5 +817,18 @@ main_window_widget_init (MainWindowWidget * self)
     G_OBJECT (self), "notify::focus-widget",
     G_CALLBACK (on_focus_widget_changed), self);
 
+  g_settings_bind (S_UI, "main-window-width",
+                   self, "default-width",
+                   G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind (S_UI, "main-window-height",
+                   self, "default-height",
+                    G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind (S_UI, "main-window-is-maximized",
+                   self, "maximized",
+                   G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind (S_UI, "main-window-is-fullscreen",
+                   self, "fullscreened",
+                   G_SETTINGS_BIND_DEFAULT);
+
   g_message ("done");
 }

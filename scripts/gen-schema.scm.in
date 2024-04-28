@@ -425,6 +425,22 @@ Args:
              "ui"
              (list
                (make-schema-key
+                 "main-window-width" "i" "640"
+                 "Main window width"
+                 "Main window width.")
+               (make-schema-key
+                 "main-window-height" "i" "480"
+                 "Main window height"
+                 "Main window height.")
+               (make-schema-key
+                 "main-window-is-maximized" "b" "true"
+                 "Main window is maximized"
+                 "Whether the main window is maximized.")
+               (make-schema-key
+                 "main-window-is-fullscreen" "b" "false"
+                 "Main window is fullscreened"
+                 "Whether the main window is fullscreened.")
+               (make-schema-key
                  "bounce-with-parents" "b" "true"
                  "Bounce with parents"
                  "Whether to bounce with parent tracks (direct outputs).")
