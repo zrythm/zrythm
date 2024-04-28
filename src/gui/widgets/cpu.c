@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /** \file
@@ -46,11 +46,9 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
   GdkRGBA active_color;
-  gdk_rgba_parse (&active_color, "#33D17A");
-  /*Z_GDK_RGBA_INIT (0.6, 1.0, 0.0, 1.0);*/
+  gtk_widget_get_color (widget, &active_color);
   GdkRGBA inactive_color = active_color;
   inactive_color.alpha = 0.4f;
-  /*Z_GDK_RGBA_INIT (0.2, 0.4, 0.0, 1.0);*/
   GdkRGBA color = active_color;
 
   graphene_matrix_t color_matrix;

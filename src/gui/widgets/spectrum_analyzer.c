@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -265,9 +265,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /*fftwf_execute (zrythm_app->spectrum_analyzer_plan);*/
 
   GdkRGBA color_green;
-  /*GdkRGBA color_red;*/
-  gdk_rgba_parse (&color_green, "#11FF44");
-  /*gdk_rgba_parse (&color_red, "#ff0F44");*/
+  gtk_widget_get_color (widget, &color_green);
 
   for (int i = 0; i < half; ++i)
     {

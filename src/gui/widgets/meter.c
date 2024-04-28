@@ -228,7 +228,7 @@ meter_widget_new (Port * port, int width)
 {
   MeterWidget * self = g_object_new (METER_WIDGET_TYPE, NULL);
 
-  meter_widget_setup (self, port, false);
+  meter_widget_setup (self, port, true);
 
   return self;
 }

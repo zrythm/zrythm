@@ -35,7 +35,9 @@ draw_lines (
   gint height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* draw */
-  gdk_cairo_set_source_rgba (cr, &self->color_green);
+  GdkRGBA color;
+  gtk_widget_get_color (GTK_WIDGET (self), &color);
+  gdk_cairo_set_source_rgba (cr, &color);
   float        half_height = (float) (height - 1) / 2.0f;
   uint32_t     nframes = AUDIO_ENGINE->block_length;
   float        val;
@@ -239,7 +241,6 @@ finalize (LiveWaveformWidget * self)
 static void
 live_waveform_widget_init (LiveWaveformWidget * self)
 {
-  gdk_rgba_parse (&self->color_green, "#11FF44");
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 

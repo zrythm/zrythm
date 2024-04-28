@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2019, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #ifndef __GUI_WIDGETS_LIVE_WAVEFORM_H__
 #define __GUI_WIDGETS_LIVE_WAVEFORM_H__
@@ -47,9 +49,6 @@ typedef struct _LiveWaveformWidget
 
   /** Current buffer sizes. */
   size_t buf_sz[2];
-
-  /** Used for drawing. */
-  GdkRGBA color_green;
 
   /** Port, if port. */
   Port * port;
