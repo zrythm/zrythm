@@ -260,31 +260,6 @@ typedef struct Plugin
   WrappedObjectWithChangeSignal * gobj;
 } Plugin;
 
-static const cyaml_schema_field_t plugin_fields_schema[] = {
-  YAML_FIELD_INT (Plugin, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (Plugin, id, plugin_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Plugin, setting, plugin_setting_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, in_ports, port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, out_ports, port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, banks, plugin_bank_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin,
-    selected_bank,
-    plugin_preset_identifier_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin,
-    selected_preset,
-    plugin_preset_identifier_fields_schema),
-  YAML_FIELD_INT (Plugin, visible),
-  YAML_FIELD_STRING_PTR_OPTIONAL (Plugin, state_dir),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_schema = {
-  YAML_VALUE_PTR_NULLABLE (Plugin, plugin_fields_schema),
-};
-
 NONNULL_ARGS (1)
 void plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms);
 

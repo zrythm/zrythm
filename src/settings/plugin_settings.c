@@ -5,6 +5,7 @@
 #include "actions/tracklist_selections.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/main_window.h"
+#include "io/serialization/plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -21,7 +22,9 @@
 
 #include <glib/gi18n.h>
 
-#define PLUGIN_SETTINGS_FILENAME "plugin-settings.yaml"
+#define PLUGIN_SETTINGS_JSON_TYPE "Zrythm Plugin Settings"
+#define PLUGIN_SETTINGS_JSON_FILENAME "plugin-settings.json"
+#define PLUGIN_SETTINGS_JSON_FORMAT 6
 
 PluginSetting *
 plugin_setting_new_default (const PluginDescriptor * descr)
@@ -40,7 +43,6 @@ plugin_setting_new_default (const PluginDescriptor * descr)
   else
     {
       self = object_new (PluginSetting);
-      self->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
       self->descr = plugin_descriptor_clone (descr);
       /* bridge all plugins by default */
       self->bridge_mode = CARLA_BRIDGE_FULL;
@@ -56,7 +58,6 @@ plugin_setting_clone (const PluginSetting * src, bool validate)
   PluginSetting * new_setting = object_new (PluginSetting);
 
   *new_setting = *src;
-  new_setting->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
   new_setting->descr = plugin_descriptor_clone (src->descr);
   new_setting->last_instantiated_time = src->last_instantiated_time;
   new_setting->num_instantiations = src->num_instantiations;
@@ -558,13 +559,97 @@ plugin_setting_free_closure (void * self, GClosure * closure)
   plugin_setting_free ((PluginSetting *) self);
 }
 
+static PluginSettings *
+create_new (void)
+{
+  PluginSettings * self = object_new (PluginSettings);
+  self->settings =
+    g_ptr_array_new_full (10, (GDestroyNotify) plugin_setting_free);
+  return self;
+}
+
 static char *
 get_plugin_settings_file_path (void)
 {
   char * zrythm_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return g_build_filename (zrythm_dir, PLUGIN_SETTINGS_FILENAME, NULL);
+  return g_build_filename (zrythm_dir, PLUGIN_SETTINGS_JSON_FILENAME, NULL);
+}
+
+static char *
+serialize_to_json_str (const PluginSettings * self, GError ** error)
+{
+  /* create a mutable doc */
+  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
+  yyjson_mut_val * root = yyjson_mut_obj (doc);
+  if (!root)
+    {
+      g_set_error_literal (error, 0, 0, "Failed to create root obj");
+      return NULL;
+    }
+  yyjson_mut_doc_set_root (doc, root);
+
+  yyjson_mut_obj_add_str (doc, root, "type", PLUGIN_SETTINGS_JSON_TYPE);
+  yyjson_mut_obj_add_int (doc, root, "format", PLUGIN_SETTINGS_JSON_FORMAT);
+  yyjson_mut_val * settings_arr = yyjson_mut_obj_add_arr (doc, root, "settings");
+  for (size_t i = 0; i < self->settings->len; i++)
+    {
+      const PluginSetting * setting = g_ptr_array_index (self->settings, i);
+      yyjson_mut_val * setting_obj = yyjson_mut_arr_add_obj (doc, settings_arr);
+      plugin_setting_serialize_to_json (doc, setting_obj, setting, error);
+    }
+
+  char * json = yyjson_mut_write (doc, YYJSON_WRITE_PRETTY_TWO_SPACES, NULL);
+  g_message ("done writing json to string");
+
+  yyjson_mut_doc_free (doc);
+
+  return json;
+}
+
+static PluginSettings *
+deserialize_from_json_str (const char * json, GError ** error)
+{
+  yyjson_doc * doc =
+    yyjson_read_opts ((char *) json, strlen (json), 0, NULL, NULL);
+  yyjson_val * root = yyjson_doc_get_root (doc);
+  if (!root)
+    {
+      g_set_error_literal (error, 0, 0, "Failed to create root obj");
+      return NULL;
+    }
+
+  yyjson_obj_iter it = yyjson_obj_iter_with (root);
+  if (!yyjson_equals_str (
+        yyjson_obj_iter_get (&it, "type"), PLUGIN_SETTINGS_JSON_TYPE))
+    {
+      g_set_error_literal (error, 0, 0, "Not a valid plugin collections file");
+      return NULL;
+    }
+
+  int format = yyjson_get_int (yyjson_obj_iter_get (&it, "format"));
+  if (format != PLUGIN_SETTINGS_JSON_FORMAT)
+    {
+      g_set_error_literal (error, 0, 0, "Invalid version");
+      return NULL;
+    }
+
+  PluginSettings * self = create_new ();
+
+  yyjson_val *    settings_arr = yyjson_obj_iter_get (&it, "settings");
+  yyjson_arr_iter settings_it = yyjson_arr_iter_with (settings_arr);
+  yyjson_val *    setting_obj = NULL;
+  while ((setting_obj = yyjson_arr_iter_next (&settings_it)))
+    {
+      PluginSetting * setting = object_new (PluginSetting);
+      g_ptr_array_add (self->settings, setting);
+      plugin_setting_deserialize_from_json (doc, setting_obj, setting, error);
+    }
+
+  yyjson_doc_free (doc);
+
+  return self;
 }
 
 void
@@ -572,8 +657,8 @@ plugin_settings_serialize_to_file (PluginSettings * self)
 {
   g_message ("Serializing plugin settings...");
   GError * err = NULL;
-  char *   yaml = yaml_serialize (self, &plugin_settings_schema, &err);
-  if (!yaml)
+  char *   json = serialize_to_json_str (self, &err);
+  if (!json)
     {
       HANDLE_ERROR_LITERAL (err, _ ("Failed to serialize plugin settings"));
       return;
@@ -582,97 +667,60 @@ plugin_settings_serialize_to_file (PluginSettings * self)
   char * path = get_plugin_settings_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message ("Writing plugin settings to %s...", path);
-  bool success = g_file_set_contents (path, yaml, -1, &err);
+  bool success = g_file_set_contents (path, json, -1, &err);
   if (!success)
     {
       HANDLE_ERROR_LITERAL (err, _ ("Failed to write plugin settings file"));
       g_free (path);
-      g_free (yaml);
+      g_free (json);
       return;
     }
   g_free (path);
-  g_free (yaml);
-}
-
-static bool
-is_yaml_our_version (const char * yaml)
-{
-  bool same_version = false;
-  char version_str[120];
-  sprintf (version_str, "schema_version: %d\n", PLUGIN_SETTINGS_SCHEMA_VERSION);
-  same_version = g_str_has_prefix (yaml, version_str);
-  if (!same_version)
-    {
-      sprintf (
-        version_str, "---\nschema_version: %d\n",
-        PLUGIN_SETTINGS_SCHEMA_VERSION);
-      same_version = g_str_has_prefix (yaml, version_str);
-    }
-
-  return same_version;
+  g_free (json);
 }
 
 /**
  * Reads the file and fills up the object.
  */
 PluginSettings *
-plugin_settings_new (void)
+plugin_settings_read_or_new (void)
 {
   GError * err = NULL;
   char *   path = get_plugin_settings_file_path ();
   if (!file_exists (path))
     {
-      g_message (
-        "Plugin settings file at %s does "
-        "not exist",
-        path);
+      g_message ("Plugin settings file at %s does not exist", path);
 return_new_instance:
       g_free (path);
-      PluginSettings * self = object_new (PluginSettings);
-      self->schema_version = PLUGIN_SETTINGS_SCHEMA_VERSION;
+      PluginSettings * self = create_new ();
       return self;
     }
-  char * yaml = NULL;
-  g_file_get_contents (path, &yaml, NULL, &err);
+  char * json = NULL;
+  g_file_get_contents (path, &json, NULL, &err);
   if (err != NULL)
     {
-      g_critical (
-        "Failed to create PluginSettings "
-        "from %s",
-        path);
+      g_critical ("Failed to create PluginSettings from %s", path);
       g_error_free (err);
-      g_free (yaml);
+      g_free (json);
       g_free (path);
       return NULL;
     }
 
-  /* if not same version, purge file and return
-   * a new instance */
-  if (!is_yaml_our_version (yaml))
+  PluginSettings * self = deserialize_from_json_str (json, &err);
+  if (!self)
     {
       g_message (
-        "Found old plugin settings file version. "
-        "Purging file and creating a new one.");
+        "Found invalid plugin settings file (error: %s). "
+        "Purging file and creating a new one.",
+        err->message);
+      g_error_free (err);
       GFile * file = g_file_new_for_path (path);
       g_file_delete (file, NULL, NULL);
       g_object_unref (file);
-      g_free (yaml);
+      g_free (json);
       goto return_new_instance;
     }
-
-  PluginSettings * self =
-    (PluginSettings *) yaml_deserialize (yaml, &plugin_settings_schema, &err);
-  if (!self)
-    {
-      g_warning (
-        "Failed to deserialize "
-        "PluginSettings from %s: \n%s",
-        path, err->message);
-      g_error_free (err);
-      g_free (yaml);
-      goto return_new_instance;
-    }
-  g_free (yaml);
+  g_free (json);
   g_free (path);
 
   return self;
@@ -686,13 +734,10 @@ return_new_instance:
 PluginSetting *
 plugin_settings_find (PluginSettings * self, const PluginDescriptor * descr)
 {
-  for (int i = 0; i < self->num_settings; i++)
+  for (size_t i = 0; i < self->settings->len; i++)
     {
-      PluginSetting *    cur_setting = self->settings[i];
+      PluginSetting *    cur_setting = g_ptr_array_index (self->settings, i);
       PluginDescriptor * cur_descr = cur_setting->descr;
-      g_return_val_if_fail (
-        cur_descr->schema_version >= 0 && cur_setting->schema_version >= 0,
-        NULL);
       if (plugin_descriptor_is_same_plugin (cur_descr, descr))
         {
           return cur_setting;
@@ -732,8 +777,8 @@ plugin_settings_set (
     }
   else
     {
-      self->settings[self->num_settings++] =
-        plugin_setting_clone (setting, F_VALIDATE);
+      g_ptr_array_add (
+        self->settings, plugin_setting_clone (setting, F_VALIDATE));
     }
 
   if (_serialize)
@@ -745,10 +790,7 @@ plugin_settings_set (
 void
 plugin_settings_free (PluginSettings * self)
 {
-  for (int i = 0; i < self->num_settings; i++)
-    {
-      object_free_w_func_and_null (plugin_setting_free, self->settings[i]);
-    }
+  object_free_w_func_and_null (g_ptr_array_unref, self->settings);
 
   object_zero_and_free (self);
 }

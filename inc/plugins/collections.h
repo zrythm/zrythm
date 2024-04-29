@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * @file
@@ -19,40 +21,22 @@
  * @{
  */
 
-#define PLUGIN_COLLECTIONS_SCHEMA_VERSION 1
+#define PLUGIN_COLLECTIONS_SCHEMA_VERSION 2
 
 /**
  * Serializable plugin collections.
  */
 typedef struct PluginCollections
 {
-  /** Version of the file. */
-  int schema_version;
-
   /** Plugin collections. */
-  PluginCollection * collections[9000];
-  int                num_collections;
+  GPtrArray * collections;
 } PluginCollections;
-
-static const cyaml_schema_field_t plugin_collections_fields_schema[] = {
-  YAML_FIELD_INT (PluginCollections, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    PluginCollections,
-    collections,
-    plugin_collection_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_collections_schema = {
-  YAML_VALUE_PTR (PluginCollections, plugin_collections_fields_schema),
-};
 
 /**
  * Reads the file and fills up the object.
  */
 PluginCollections *
-plugin_collections_new (void);
+plugin_collections_read_or_new (void);
 
 void
 plugin_collections_serialize_to_file (PluginCollections * self);

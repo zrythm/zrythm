@@ -235,10 +235,10 @@ plugin_manager_new (void)
     g_ptr_array_new_full (100, (GDestroyNotify) plugin_descriptor_free);
 
   /* init vst/dssi/ladspa */
-  self->cached_plugin_descriptors = cached_plugin_descriptors_new ();
+  self->cached_plugin_descriptors = cached_plugin_descriptors_read_or_new ();
 
   /* fetch/create collections */
-  self->collections = plugin_collections_new ();
+  self->collections = plugin_collections_read_or_new ();
 
   self->carla_discovery = z_carla_discovery_new (self);
 

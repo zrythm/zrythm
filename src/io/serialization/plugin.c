@@ -3,6 +3,7 @@
 
 #include "io/serialization/plugin.h"
 #include "io/serialization/port.h"
+#include "plugins/collection.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_preset.h"
 #include "utils/objects.h"
@@ -202,6 +203,29 @@ plugin_serialize_to_json (
   if (plugin->state_dir)
     {
       yyjson_mut_obj_add_str (doc, plugin_obj, "stateDir", plugin->state_dir);
+    }
+  return true;
+}
+
+bool
+plugin_collection_serialize_to_json (
+  yyjson_mut_doc *         doc,
+  yyjson_mut_val *         col_obj,
+  const PluginCollection * col,
+  GError **                error)
+{
+  yyjson_mut_obj_add_str (doc, col_obj, "name", col->name);
+  if (col->description)
+    {
+      yyjson_mut_obj_add_str (doc, col_obj, "description", col->description);
+    }
+  yyjson_mut_val * descriptors_arr =
+    yyjson_mut_obj_add_arr (doc, col_obj, "descriptors");
+  for (size_t i = 0; i < col->descriptors->len; i++)
+    {
+      const PluginDescriptor * descr = g_ptr_array_index (col->descriptors, i);
+      yyjson_mut_val * descr_obj = yyjson_mut_arr_add_obj (doc, descriptors_arr);
+      plugin_descriptor_serialize_to_json (doc, descr_obj, descr, error);
     }
   return true;
 }
@@ -452,5 +476,32 @@ plugin_deserialize_from_json (
     {
       plugin->state_dir = g_strdup (yyjson_get_str (state_dir_obj));
     }
+  return true;
+}
+
+bool
+plugin_collection_deserialize_from_json (
+  yyjson_doc *       doc,
+  yyjson_val *       col_obj,
+  PluginCollection * col,
+  GError **          error)
+{
+  yyjson_obj_iter it = yyjson_obj_iter_with (col_obj);
+  col->name = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "name")));
+  yyjson_val * description_val = yyjson_obj_iter_get (&it, "description");
+  if (description_val)
+    {
+      col->description = g_strdup (yyjson_get_str (description_val));
+    }
+  yyjson_val *    descriptors_arr = yyjson_obj_iter_get (&it, "descriptors");
+  yyjson_arr_iter descriptors_it = yyjson_arr_iter_with (descriptors_arr);
+  yyjson_val *    descr_obj = NULL;
+  while ((descr_obj = yyjson_arr_iter_next (&descriptors_it)))
+    {
+      PluginDescriptor * descr = plugin_descriptor_new ();
+      g_ptr_array_add (col->descriptors, descr);
+      plugin_descriptor_deserialize_from_json (doc, descr_obj, descr, error);
+    }
+
   return true;
 }

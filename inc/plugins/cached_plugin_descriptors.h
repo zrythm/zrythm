@@ -13,7 +13,6 @@
 #define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 
 #include "plugins/plugin_descriptor.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup plugins
@@ -21,51 +20,25 @@
  * @{
  */
 
-#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 4
+#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 5
 
 /**
  * Descriptors to be cached.
  */
 typedef struct CachedPluginDescriptors
 {
-  /** Version of the file. */
-  int schema_version;
-
   /** Valid descriptors. */
-  PluginDescriptor * descriptors[90000];
-  int                num_descriptors;
+  GPtrArray * descriptors;
 
-  /** Blacklisted paths and hashes, to skip
-   * when scanning */
-  PluginDescriptor * blacklisted[90000];
-  int                num_blacklisted;
+  /** Blacklisted hashes, to skip when scanning. */
+  GPtrArray * blacklisted_sha1s;
 } CachedPluginDescriptors;
-
-static const cyaml_schema_field_t cached_plugin_descriptors_fields_schema[] = {
-  YAML_FIELD_INT (CachedPluginDescriptors, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    CachedPluginDescriptors,
-    descriptors,
-    plugin_descriptor_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    CachedPluginDescriptors,
-    blacklisted,
-    plugin_descriptor_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t cached_plugin_descriptors_schema = {
-  YAML_VALUE_PTR (
-    CachedPluginDescriptors,
-    cached_plugin_descriptors_fields_schema),
-};
 
 /**
  * Reads the file and fills up the object.
  */
 CachedPluginDescriptors *
-cached_plugin_descriptors_new (void);
+cached_plugin_descriptors_read_or_new (void);
 
 void
 cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self);
@@ -101,21 +74,6 @@ unsigned int cached_plugin_descriptors_find (
   bool                      check_blacklisted);
 
 /**
- * Returns the PluginDescriptor's corresponding to
- * the .so/.dll file at the given path, if it
- * exists and the MD5 hash matches.
- *
- * @note The returned array must be free'd but not
- *   the descriptors.
- *
- * @return NULL-terminated array.
- */
-PluginDescriptor **
-cached_plugin_descriptors_get (
-  CachedPluginDescriptors * self,
-  const char *              abs_path);
-
-/**
  * Appends a descriptor to the cache.
  *
  * @param serialize Whether serialize the updated cache now.
@@ -124,21 +82,6 @@ void
 cached_plugin_descriptors_blacklist (
   CachedPluginDescriptors * self,
   const char *              sha1,
-  bool                      _serialize);
-
-/**
- * Replaces a descriptor in the cache.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- * @param new_descr A new descriptor to replace
- *   with. Note that this will be cloned, not used
- *   directly.
- */
-void
-cached_plugin_descriptors_replace (
-  CachedPluginDescriptors * self,
-  const PluginDescriptor *  _new_descr,
   bool                      _serialize);
 
 /**

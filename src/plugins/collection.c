@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "plugins/collection.h"
 #include "utils/arrays.h"
@@ -12,17 +14,11 @@ plugin_collection_init_loaded (PluginCollection * self)
 {
   g_return_if_fail (self);
 
-  self->descriptors_size = (size_t) self->num_descriptors;
-  if (self->descriptors_size == 0)
+  for (size_t i = 0; i < self->descriptors->len; i++)
     {
-      self->descriptors_size = 1;
-      self->descriptors =
-        object_new_n (self->descriptors_size, PluginDescriptor *);
-    }
-  for (int i = 0; i < self->num_descriptors; i++)
-    {
-      self->descriptors[i]->category = plugin_descriptor_string_to_category (
-        self->descriptors[i]->category_str);
+      PluginDescriptor * descr = g_ptr_array_index (self->descriptors, i);
+      descr->category =
+        plugin_descriptor_string_to_category (descr->category_str);
     }
 }
 
@@ -34,10 +30,8 @@ plugin_collection_new (void)
 {
   PluginCollection * self = object_new (PluginCollection);
 
-  self->schema_version = PLUGIN_COLLECTION_SCHEMA_VERSION;
-  self->name = g_strdup ("");
-  self->descriptors_size = 1;
-  self->descriptors = object_new_n (self->descriptors_size, PluginDescriptor *);
+  self->descriptors =
+    g_ptr_array_new_full (1, (GDestroyNotify) plugin_descriptor_free);
 
   return self;
 }
@@ -50,10 +44,10 @@ plugin_collection_clone (const PluginCollection * self)
 {
   PluginCollection * clone = plugin_collection_new ();
 
-  for (int i = 0; i < self->num_descriptors; i++)
+  for (size_t i = 0; i < self->descriptors->len; i++)
     {
-      clone->descriptors[clone->num_descriptors++] =
-        plugin_descriptor_clone (self->descriptors[i]);
+      PluginDescriptor * descr = g_ptr_array_index (self->descriptors, i);
+      g_ptr_array_add (clone->descriptors, plugin_descriptor_clone (descr));
     }
 
   clone->name = g_strdup (self->name);
@@ -90,11 +84,12 @@ plugin_collection_contains_descriptor (
   const PluginDescriptor * descr,
   bool                     match_pointer)
 {
-  for (int i = 0; i < self->num_descriptors; i++)
+  for (size_t i = 0; i < self->descriptors->len; i++)
     {
+      PluginDescriptor * cur_descr = g_ptr_array_index (self->descriptors, i);
       if (
-        (match_pointer && descr == self->descriptors[i])
-        || (!match_pointer && plugin_descriptor_is_same_plugin (descr, self->descriptors[i])))
+        (match_pointer && descr == cur_descr)
+        || (!match_pointer && plugin_descriptor_is_same_plugin (descr, cur_descr)))
         {
           return true;
         }
@@ -122,10 +117,7 @@ plugin_collection_add_descriptor (
       new_descr->ghash = g_file_hash (file);
       g_object_unref (file);
     }
-  array_double_size_if_full (
-    self->descriptors, self->num_descriptors, self->descriptors_size,
-    PluginDescriptor *);
-  self->descriptors[self->num_descriptors++] = new_descr;
+  g_ptr_array_add (self->descriptors, new_descr);
 }
 
 /**
@@ -138,16 +130,12 @@ plugin_collection_remove_descriptor (
   const PluginDescriptor * _descr)
 {
   bool found = false;
-  for (int i = 0; i < self->num_descriptors; i++)
+  for (size_t i = 0; i < self->descriptors->len; i++)
     {
-      PluginDescriptor * descr = self->descriptors[i];
-      if (plugin_descriptor_is_same_plugin (_descr, descr))
+      PluginDescriptor * cur_descr = g_ptr_array_index (self->descriptors, i);
+      if (plugin_descriptor_is_same_plugin (_descr, cur_descr))
         {
-          for (int j = i; j < self->num_descriptors - 1; j++)
-            {
-              self->descriptors[j] = self->descriptors[j + 1];
-            }
-          self->num_descriptors--;
+          g_ptr_array_remove (self->descriptors, cur_descr);
           found = true;
           break;
         }
@@ -179,22 +167,15 @@ plugin_collection_generate_context_menu (const PluginCollection * self)
 void
 plugin_collection_clear (PluginCollection * self)
 {
-  for (int i = 0; i < self->num_descriptors; i++)
-    {
-      plugin_descriptor_free (self->descriptors[i]);
-    }
-  self->num_descriptors = 0;
+  g_ptr_array_remove_range (self->descriptors, 0, self->descriptors->len);
 }
 
 void
 plugin_collection_free (PluginCollection * self)
 {
-  for (int i = 0; i < self->num_descriptors; i++)
-    {
-      object_free_w_func_and_null (plugin_descriptor_free, self->descriptors[i]);
-    }
-  object_zero_and_free (self->descriptors);
-
+  object_free_w_func_and_null (g_ptr_array_unref, self->descriptors);
   g_free_and_null (self->name);
   g_free_and_null (self->description);
+
+  object_zero_and_free (self);
 }

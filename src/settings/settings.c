@@ -92,7 +92,7 @@ settings_new (void)
     self->plugin_settings, "loop", 1);
 #endif
 
-  self->plugin_settings = plugin_settings_new ();
+  self->plugin_settings = plugin_settings_read_or_new ();
   g_return_val_if_fail (self->plugin_settings, NULL);
 
   self->user_shortcuts = user_shortcuts_new ();

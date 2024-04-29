@@ -626,9 +626,10 @@ create_model_for_collections (void)
 
   PluginCollections * collections = PLUGIN_MANAGER->collections;
   g_return_val_if_fail (collections, NULL);
-  for (int i = 0; i < collections->num_collections; i++)
+  for (size_t i = 0; i < collections->collections->len; i++)
     {
-      PluginCollection * collection = collections->collections[i];
+      PluginCollection * collection =
+        g_ptr_array_index (collections->collections, i);
 
       /* add row to model */
       WrappedObjectWithChangeSignal * wobj =

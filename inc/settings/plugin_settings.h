@@ -15,7 +15,6 @@
 #include <stdbool.h>
 
 #include "plugins/plugin_descriptor.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup settings
@@ -23,18 +22,12 @@
  * @{
  */
 
-#define PLUGIN_SETTING_SCHEMA_VERSION 2
-#define PLUGIN_SETTINGS_SCHEMA_VERSION 5
-
 /**
  * A setting for a specific plugin descriptor.
  */
 typedef struct PluginSetting
 {
-  int schema_version;
-
-  /** The descriptor of the plugin this setting is
-   * for. */
+  /** The descriptor of the plugin this setting is for. */
   PluginDescriptor * descr;
 
   /** Whether to instantiate this plugin with carla. */
@@ -54,44 +47,11 @@ typedef struct PluginSetting
   int num_instantiations;
 } PluginSetting;
 
-static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
-  YAML_FIELD_INT (PluginSetting, schema_version),
-  YAML_FIELD_MAPPING_PTR (PluginSetting, descr, plugin_descriptor_fields_schema),
-  YAML_FIELD_INT (PluginSetting, open_with_carla),
-  YAML_FIELD_INT (PluginSetting, force_generic_ui),
-  YAML_FIELD_ENUM (PluginSetting, bridge_mode, carla_bridge_mode_strings),
-  YAML_FIELD_INT_OPT (PluginSetting, last_instantiated_time),
-  YAML_FIELD_INT_OPT (PluginSetting, num_instantiations),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_setting_schema = {
-  YAML_VALUE_PTR (PluginSetting, plugin_setting_fields_schema),
-};
-
 typedef struct PluginSettings
 {
-  int schema_version;
-
   /** Settings. */
-  PluginSetting * settings[90000];
-  int             num_settings;
+  GPtrArray * settings;
 } PluginSettings;
-
-static const cyaml_schema_field_t plugin_settings_fields_schema[] = {
-  YAML_FIELD_INT (PluginSettings, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    PluginSettings,
-    settings,
-    plugin_setting_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_settings_schema = {
-  YAML_VALUE_PTR (PluginSettings, plugin_settings_fields_schema),
-};
 
 /**
  * Creates a plugin setting with the recommended
@@ -153,7 +113,7 @@ plugin_setting_free_closure (void * self, GClosure * closure);
  * Reads the file and fills up the object.
  */
 PluginSettings *
-plugin_settings_new (void);
+plugin_settings_read_or_new (void);
 
 /**
  * Serializes the current settings.

@@ -3906,7 +3906,7 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
     MW_PLUGIN_BROWSER->selected_collections, 0);
 
   int result = GTK_RESPONSE_YES;
-  if (collection->num_descriptors > 0)
+  if (collection->descriptors->len > 0)
     {
       GtkWidget * dialog =
         adw_message_dialog_new (GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"), NULL);
@@ -3914,7 +3914,7 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
         ADW_MESSAGE_DIALOG (dialog),
         _ ("The collection '%s' contains %d plugins. "
            "Are you sure you want to remove it?"),
-        collection->name, collection->num_descriptors);
+        collection->name, collection->descriptors->len);
       adw_message_dialog_add_responses (
         ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
         _ ("_Delete"), NULL);

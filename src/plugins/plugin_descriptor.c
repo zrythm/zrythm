@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -768,9 +768,10 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
   int     num_added = 0;
-  for (int i = 0; i < PLUGIN_MANAGER->collections->num_collections; i++)
+  for (size_t i = 0; i < PLUGIN_MANAGER->collections->collections->len; i++)
     {
-      PluginCollection * coll = PLUGIN_MANAGER->collections->collections[i];
+      PluginCollection * coll =
+        g_ptr_array_index (PLUGIN_MANAGER->collections->collections, i);
       if (plugin_collection_contains_descriptor (coll, self, false))
         {
           continue;
@@ -794,9 +795,10 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* remove from collection */
   GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (int i = 0; i < PLUGIN_MANAGER->collections->num_collections; i++)
+  for (size_t i = 0; i < PLUGIN_MANAGER->collections->collections->len; i++)
     {
-      PluginCollection * coll = PLUGIN_MANAGER->collections->collections[i];
+      PluginCollection * coll =
+        g_ptr_array_index (PLUGIN_MANAGER->collections->collections, i);
       if (!plugin_collection_contains_descriptor (coll, self, false))
         {
           continue;

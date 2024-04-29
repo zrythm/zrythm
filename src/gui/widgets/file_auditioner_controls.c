@@ -14,6 +14,7 @@
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/file_auditioner_controls.h"
 #include "gui/widgets/volume.h"
+#include "io/serialization/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -112,13 +113,18 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
   g_return_if_fail (SAMPLE_PROCESSOR->instrument_setting);
 
   /* save setting */
+  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
+  yyjson_mut_val * root = yyjson_mut_obj (doc);
+  g_return_if_fail (root);
+  yyjson_mut_doc_set_root (doc, root);
   GError * err = NULL;
-  char *   setting_yaml = yaml_serialize (
-    SAMPLE_PROCESSOR->instrument_setting, &plugin_setting_schema, &err);
-  if (setting_yaml)
+  plugin_setting_serialize_to_json (
+    doc, root, SAMPLE_PROCESSOR->instrument_setting, &err);
+  char * setting_json = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, NULL);
+  if (setting_json)
     {
-      g_settings_set_string (S_UI_FILE_BROWSER, "instrument", setting_yaml);
-      g_free (setting_yaml);
+      g_settings_set_string (S_UI_FILE_BROWSER, "instrument", setting_json);
+      g_free (setting_json);
     }
   else
     {

@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// clang-format off
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * @file
@@ -19,15 +21,11 @@
  * @{
  */
 
-#define PLUGIN_COLLECTION_SCHEMA_VERSION 1
-
 /**
  * Plugin collection used in the plugin browser.
  */
 typedef struct PluginCollection
 {
-  int schema_version;
-
   /** Name of the collection. */
   char * name;
 
@@ -35,26 +33,8 @@ typedef struct PluginCollection
   char * description;
 
   /** Plugin descriptors. */
-  PluginDescriptor ** descriptors;
-  int                 num_descriptors;
-  size_t              descriptors_size;
+  GPtrArray * descriptors;
 } PluginCollection;
-
-static const cyaml_schema_field_t plugin_collection_fields_schema[] = {
-  YAML_FIELD_INT (PluginCollection, schema_version),
-  YAML_FIELD_STRING_PTR (PluginCollection, name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginCollection, description),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    PluginCollection,
-    descriptors,
-    plugin_descriptor_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_collection_schema = {
-  YAML_VALUE_PTR (PluginCollection, plugin_collection_fields_schema),
-};
 
 void
 plugin_collection_init_loaded (PluginCollection * self);

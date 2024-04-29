@@ -12,6 +12,7 @@
 #include "dsp/tempo_track.h"
 #include "dsp/tracklist.h"
 #include "io/midi_file.h"
+#include "io/serialization/plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -36,23 +37,32 @@ init_common (SampleProcessor * self)
 
   if (!ZRYTHM_TESTING)
     {
-      char * setting_yaml =
+      char * setting_json =
         g_settings_get_string (S_UI_FILE_BROWSER, "instrument");
       PluginSetting * setting = NULL;
-      if (strlen (setting_yaml) > 0)
+      bool            json_read = false;
+      if (strlen (setting_json) > 0)
         {
-          GError * err = NULL;
-          setting = (PluginSetting *) yaml_deserialize (
-            setting_yaml, &plugin_setting_schema, &err);
-          if (!setting)
+          yyjson_doc * doc = yyjson_read_opts (
+            (char *) setting_json, strlen (setting_json), 0, NULL, NULL);
+          if (doc)
+            {
+              yyjson_val * root = yyjson_doc_get_root (doc);
+              g_return_if_fail (root);
+              setting = object_new (PluginSetting);
+              GError * err = NULL;
+              plugin_setting_deserialize_from_json (doc, root, setting, &err);
+              json_read = true;
+            }
+          else
             {
               g_warning (
-                "failed to deserialize plugin setting schema: %s", err->message);
-              g_error_free (err);
+                "failed to get instrument from JSON:\n%s", setting_json);
+              g_free (setting_json);
             }
-          (void) setting;
         }
-      else
+
+      if (!json_read)
         {
           /* pick first instrument found */
           PluginDescriptor * instrument =

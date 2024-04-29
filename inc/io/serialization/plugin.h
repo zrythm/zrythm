@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -23,6 +23,8 @@ TYPEDEF_STRUCT (PluginPresetIdentifier);
 TYPEDEF_STRUCT (PluginPreset);
 TYPEDEF_STRUCT (PluginBank);
 TYPEDEF_STRUCT (Plugin);
+TYPEDEF_STRUCT (PluginCollection);
+TYPEDEF_STRUCT (PluginCollections);
 
 bool
 plugin_identifier_serialize_to_json (
@@ -74,6 +76,13 @@ plugin_serialize_to_json (
   GError **        error);
 
 bool
+plugin_collection_serialize_to_json (
+  yyjson_mut_doc *         doc,
+  yyjson_mut_val *         col_obj,
+  const PluginCollection * col,
+  GError **                error);
+
+bool
 plugin_identifier_deserialize_from_json (
   yyjson_doc *       doc,
   yyjson_val *       pid_obj,
@@ -121,5 +130,12 @@ plugin_deserialize_from_json (
   yyjson_val * plugin_obj,
   Plugin *     plugin,
   GError **    error);
+
+bool
+plugin_collection_deserialize_from_json (
+  yyjson_doc *       doc,
+  yyjson_val *       col_obj,
+  PluginCollection * col,
+  GError **          error);
 
 #endif // __IO_SERIALIZATION_PLUGIN_H__
