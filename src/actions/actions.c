@@ -133,9 +133,12 @@ actions_set_app_action_enabled (const char * action_name, const bool enabled)
 void
 activate_news (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
+  /* this is not used anymore */
+#if 0
   gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW), "https://mastodon.social/@zrythm",
     GDK_CURRENT_TIME);
+#endif
 }
 
 void
@@ -151,7 +154,9 @@ activate_manual (GSimpleAction * action, GVariant * variant, gpointer user_data)
   char * path =
     g_strdup_printf ("https://manual.zrythm.org/%s/index.html", lang_code);
 #endif
-  gtk_show_uri (GTK_WINDOW (MAIN_WINDOW), path, 0);
+  GtkUriLauncher * launcher = gtk_uri_launcher_new (path);
+  gtk_uri_launcher_launch (launcher, GTK_WINDOW (MAIN_WINDOW), NULL, NULL, NULL);
+  g_object_unref (launcher);
   g_free (path);
 }
 
@@ -217,22 +222,25 @@ DEFINE_SIMPLE (activate_focus_first_widget)
 
 DEFINE_SIMPLE (activate_chat)
 {
-  gtk_show_uri (
-    GTK_WINDOW (MAIN_WINDOW), "https://matrix.to/#/#zrythmdaw:matrix.org", 0);
+  GtkUriLauncher * launcher =
+    gtk_uri_launcher_new ("https://matrix.to/#/#zrythmdaw:matrix.org");
+  gtk_uri_launcher_launch (launcher, GTK_WINDOW (MAIN_WINDOW), NULL, NULL, NULL);
+  g_object_unref (launcher);
 }
 
 DEFINE_SIMPLE (activate_donate)
 {
-  gtk_show_uri (GTK_WINDOW (MAIN_WINDOW), "https://liberapay.com/Zrythm", 0);
+  GtkUriLauncher * launcher =
+    gtk_uri_launcher_new ("https://liberapay.com/Zrythm");
+  gtk_uri_launcher_launch (launcher, GTK_WINDOW (MAIN_WINDOW), NULL, NULL, NULL);
+  g_object_unref (launcher);
 }
 
 DEFINE_SIMPLE (activate_bugreport)
 {
-#ifdef _WOE32
-  ShellExecute (0, (LPCSTR) "open", (LPCSTR) NEW_ISSUE_URL, 0, 0, SW_SHOWNORMAL);
-#else
-  gtk_show_uri (GTK_WINDOW (MAIN_WINDOW), NEW_ISSUE_URL, 0);
-#endif
+  GtkUriLauncher * launcher = gtk_uri_launcher_new (NEW_ISSUE_URL);
+  gtk_uri_launcher_launch (launcher, GTK_WINDOW (MAIN_WINDOW), NULL, NULL, NULL);
+  g_object_unref (launcher);
 }
 
 DEFINE_SIMPLE (activate_about)
