@@ -620,7 +620,6 @@ plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol
     {
     case Z_PLUGIN_PROTOCOL_DUMMY:
     case Z_PLUGIN_PROTOCOL_LV2:
-      return true;
     case Z_PLUGIN_PROTOCOL_LADSPA:
     case Z_PLUGIN_PROTOCOL_VST:
     case Z_PLUGIN_PROTOCOL_VST3:
@@ -754,6 +753,7 @@ plugin_manager_find_plugin_from_rel_path (
 void
 plugin_manager_add_descriptor (PluginManager * self, PluginDescriptor * descr)
 {
+  g_return_if_fail (descr->protocol > Z_PLUGIN_PROTOCOL_DUMMY);
   g_ptr_array_add (self->plugin_descriptors, descr);
   add_category_and_author (self, descr->category_str, descr->author);
 }
