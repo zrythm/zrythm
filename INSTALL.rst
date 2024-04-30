@@ -64,9 +64,6 @@ Required
 `libcurl (X11) <https://curl.se/libcurl/>`_
   Network connections
 
-`libcyaml (ISC) <https://github.com/tlsa/libcyaml/>`_
-  Serialization into YAML
-
 `libpanel (LGPLv3+) <https://gitlab.gnome.org/chergert/libpanel/>`_
   Dock and panel widgets
 
@@ -122,6 +119,9 @@ Optional
 
 `graphviz (EPLv1.0) <http://graphviz.org/>`_
   Process graph export (only used for debugging)
+
+`libcyaml (ISC) <https://github.com/tlsa/libcyaml/>`_
+  Serialization into YAML (only needed to upgrade old projects created before `v1.0.0-beta.5.0`)
 
 Experimental
 ++++++++++++

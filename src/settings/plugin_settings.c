@@ -98,8 +98,8 @@ plugin_setting_print (const PluginSetting * self)
     ", "
     "num_instantiations=%d",
     self->descr->uri, self->open_with_carla, self->force_generic_ui,
-    carla_bridge_mode_strings[self->bridge_mode].str,
-    self->last_instantiated_time, self->num_instantiations);
+    carla_bridge_mode_strings[self->bridge_mode], self->last_instantiated_time,
+    self->num_instantiations);
 }
 
 /**

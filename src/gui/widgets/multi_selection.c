@@ -86,27 +86,18 @@ void
 multi_selection_widget_setup (
   MultiSelectionWidget *        self,
   const char **                 strings,
-  const cyaml_strval_t *        cyaml_strings,
   const int                     num_items,
   MultiSelectionChangedCallback sel_changed_cb,
   const guint *                 selections,
   const int                     num_selections,
   void *                        object)
 {
-  g_return_if_fail (strings || cyaml_strings);
+  g_return_if_fail (strings);
 
-  if (strings)
+  for (int i = 0; i < num_items; i++)
     {
-      /* TODO */
-      g_return_if_reached ();
-    }
-  else
-    {
-      for (int i = 0; i < num_items; i++)
-        {
-          char * str = g_strdup (_ (cyaml_strings[i].str));
-          g_array_append_val (self->item_strings, str);
-        }
+      char * str = g_strdup (_ (strings[i]));
+      g_array_append_val (self->item_strings, str);
     }
 
   if (selections)

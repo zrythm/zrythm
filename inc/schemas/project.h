@@ -12,22 +12,26 @@
 #ifndef __SCHEMAS_PROJECT_H__
 #define __SCHEMAS_PROJECT_H__
 
-#include "schemas/dsp/engine.h"
-#include "schemas/dsp/midi_mapping.h"
-#include "schemas/dsp/port_connections_manager.h"
-#include "schemas/dsp/quantize_options.h"
-#include "schemas/dsp/region_link_group_manager.h"
-#include "schemas/dsp/snap_grid.h"
-#include "schemas/dsp/tracklist.h"
-#include "schemas/gui/backend/audio_selections.h"
-#include "schemas/gui/backend/automation_selections.h"
-#include "schemas/gui/backend/chord_selections.h"
-#include "schemas/gui/backend/clip_editor.h"
-#include "schemas/gui/backend/midi_arranger_selections.h"
-#include "schemas/gui/backend/mixer_selections.h"
-#include "schemas/gui/backend/timeline.h"
-#include "schemas/gui/backend/timeline_selections.h"
-#include "schemas/gui/backend/tracklist_selections.h"
+#include "zrythm-config.h"
+
+#ifdef HAVE_CYAML
+
+#  include "schemas/dsp/engine.h"
+#  include "schemas/dsp/midi_mapping.h"
+#  include "schemas/dsp/port_connections_manager.h"
+#  include "schemas/dsp/quantize_options.h"
+#  include "schemas/dsp/region_link_group_manager.h"
+#  include "schemas/dsp/snap_grid.h"
+#  include "schemas/dsp/tracklist.h"
+#  include "schemas/gui/backend/audio_selections.h"
+#  include "schemas/gui/backend/automation_selections.h"
+#  include "schemas/gui/backend/chord_selections.h"
+#  include "schemas/gui/backend/clip_editor.h"
+#  include "schemas/gui/backend/midi_arranger_selections.h"
+#  include "schemas/gui/backend/mixer_selections.h"
+#  include "schemas/gui/backend/timeline.h"
+#  include "schemas/gui/backend/timeline_selections.h"
+#  include "schemas/gui/backend/tracklist_selections.h"
 
 typedef enum SelectionType_v1
 {
@@ -204,5 +208,7 @@ static const cyaml_schema_value_t project_schema_v5 = {
  */
 char *
 project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error);
+
+#endif /* HAVE_CYAML */
 
 #endif /* __SCHEMAS_PROJECT_H__ */

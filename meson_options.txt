@@ -291,3 +291,7 @@ option (
   type: 'boolean',
   value: true,
   description: 'Whether to build bundled plugins with static libs (libgcc, libstdc++). Distros should turn this off.')
+
+option (
+  'yaml_project_compatibility', type: 'feature', value: 'disabled',
+  description: 'Compatibility with old CYAML-based projects (requires libcyaml).')

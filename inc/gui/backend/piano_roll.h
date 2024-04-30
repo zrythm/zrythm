@@ -16,8 +16,6 @@
 
 #include "gui/backend/editor_settings.h"
 
-#include <cyaml/cyaml.h>
-
 typedef struct Track Track;
 
 /**
@@ -166,8 +164,6 @@ midi_note_descriptor_free (MidiNoteDescriptor * self);
  */
 typedef struct PianoRoll
 {
-  int schema_version;
-
   /** Notes zoom level. */
   float notes_zoom;
 
@@ -204,29 +200,6 @@ typedef struct PianoRoll
 
   EditorSettings editor_settings;
 } PianoRoll;
-
-static const cyaml_strval_t midi_modifier_strings[] = {
-  {"Velocity",     MIDI_MODIFIER_VELOCITY   },
-  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL},
-  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL  },
-  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH },
-};
-
-static const cyaml_schema_field_t piano_roll_fields_schema[] = {
-  YAML_FIELD_INT (PianoRoll, schema_version),
-  YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
-  YAML_FIELD_ENUM (PianoRoll, midi_modifier, midi_modifier_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PianoRoll,
-    editor_settings,
-    editor_settings_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t piano_roll_schema = {
-  YAML_VALUE_PTR (PianoRoll, piano_roll_fields_schema),
-};
 
 /**
  * Returns if the key is black.

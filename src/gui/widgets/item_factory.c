@@ -755,7 +755,7 @@ item_factory_bind_cb (
               else if (string_is_equal (self->column_name, _ ("Type")))
                 {
                   const char * untranslated_type =
-                    arranger_object_stringize_type (arr_obj->type);
+                    arranger_object_get_type_as_string (arr_obj->type);
                   strcpy (str, _ (untranslated_type));
                 }
               else if (string_is_equal (self->column_name, _ ("Velocity")))

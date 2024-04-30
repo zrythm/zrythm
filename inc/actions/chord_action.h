@@ -28,11 +28,6 @@ typedef enum ChordActionType
   CHORD_ACTION_ALL,
 } ChordActionType;
 
-static const cyaml_strval_t chord_action_type_strings[] = {
-  {"Single", CHORD_ACTION_SINGLE},
-  { "All",   CHORD_ACTION_ALL   },
-};
-
 /**
  * Action for chord pad changes.
  */

@@ -52,7 +52,6 @@ quantize_options_update_quantize_points (QuantizeOptions * self)
 void
 quantize_options_init (QuantizeOptions * self, NoteLength note_length)
 {
-  self->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
   self->note_length = note_length;
   self->num_q_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
@@ -189,7 +188,6 @@ QuantizeOptions *
 quantize_options_clone (const QuantizeOptions * src)
 {
   QuantizeOptions * opts = object_new (QuantizeOptions);
-  opts->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
 
   opts->note_length = src->note_length;
   opts->note_type = src->note_type;
@@ -208,7 +206,6 @@ QuantizeOptions *
 quantize_options_new (void)
 {
   QuantizeOptions * opts = object_new (QuantizeOptions);
-  opts->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
 
   return opts;
 }

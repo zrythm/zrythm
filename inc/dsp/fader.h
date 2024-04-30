@@ -83,15 +83,6 @@ typedef enum FaderType
   FADER_TYPE_GENERIC,
 } FaderType;
 
-static const cyaml_strval_t fader_type_strings[] = {
-  {"none",              FADER_TYPE_NONE            },
-  { "monitor",          FADER_TYPE_MONITOR         },
-  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR},
-  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL   },
-  { "midi channel",     FADER_TYPE_MIDI_CHANNEL    },
-  { "generic",          FADER_TYPE_GENERIC         },
-};
-
 typedef enum MidiFaderMode
 {
   /** Multiply velocity of all MIDI note ons. */
@@ -101,18 +92,11 @@ typedef enum MidiFaderMode
   MIDI_FADER_MODE_CC_VOLUME,
 } MidiFaderMode;
 
-static const cyaml_strval_t midi_fader_mode_strings[] = {
-  {"vel_multiplier", MIDI_FADER_MODE_VEL_MULTIPLIER},
-  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME     },
-};
-
 /**
- * A Fader is a processor that is used for volume
- * controls and pan.
+ * A Fader is a processor that is used for volume controls and pan.
  *
- * It does not necessarily have to correspond to
- * a FaderWidget. It can be used as a backend to
- * KnobWidget's.
+ * It does not necessarily have to correspond to a FaderWidget. It can be used
+ * as a backend to KnobWidget's.
  */
 typedef struct Fader
 {
@@ -238,32 +222,6 @@ typedef struct Fader
   /** Cache. */
   bool was_effectively_muted;
 } Fader;
-
-static const cyaml_schema_field_t fader_fields_schema[] = {
-  YAML_FIELD_INT (Fader, schema_version),
-  YAML_FIELD_ENUM (Fader, type, fader_type_strings),
-  YAML_FIELD_FLOAT (Fader, volume),
-  YAML_FIELD_MAPPING_PTR (Fader, amp, port_fields_schema),
-  YAML_FIELD_FLOAT (Fader, phase),
-  YAML_FIELD_MAPPING_PTR (Fader, balance, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Fader, mute, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Fader, solo, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Fader, listen, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Fader, mono_compat_enabled, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Fader, swap_phase, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, midi_in, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, midi_out, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, stereo_in, stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, stereo_out, stereo_ports_fields_schema),
-  YAML_FIELD_ENUM (Fader, midi_mode, midi_fader_mode_strings),
-  YAML_FIELD_INT (Fader, passthrough),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t fader_schema = {
-  YAML_VALUE_PTR (Fader, fader_fields_schema),
-};
 
 /**
  * Inits fader after a project is loaded.

@@ -817,13 +817,20 @@ libsoundio_dep = cc.find_library (
 if (libsoundio_dep.found ())
   cdata.set('HAVE_LIBSOUNDIO', 1)
 endif
+
 cyaml_dep = dependency(
   'libcyaml', version: '>=1.2.0',
+  required: get_option ('yaml_project_compatibility'),
   static: all_static,
   fallback: ['libcyaml', 'zrythm_cyaml_dep'],
   default_options: [
     'default_library=static',
     ])
+have_cyaml = cyaml_dep.found() and not get_option('yaml_project_compatibility').disabled()
+if have_cyaml
+  cdata.set('HAVE_CYAML', 1)
+endif
+
 min_version = '>=1.0.25'
 if get_option ('opus')
   cdata.set('HAVE_OPUS', 1)

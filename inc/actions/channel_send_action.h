@@ -24,15 +24,6 @@ typedef enum ChannelSendActionType
   CHANNEL_SEND_ACTION_DISCONNECT,
 } ChannelSendActionType;
 
-static const cyaml_strval_t channel_send_action_type_strings[] = {
-  {"Connect stereo",     CHANNEL_SEND_ACTION_CONNECT_STEREO   },
-  { "Connect MIDI",      CHANNEL_SEND_ACTION_CONNECT_MIDI     },
-  { "Connect sidechain", CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN},
-  { "Change amount",     CHANNEL_SEND_ACTION_CHANGE_AMOUNT    },
-  { "Change ports",      CHANNEL_SEND_ACTION_CHANGE_PORTS     },
-  { "Disconnect",        CHANNEL_SEND_ACTION_DISCONNECT       },
-};
-
 /**
  * Action for channel send changes.
  */

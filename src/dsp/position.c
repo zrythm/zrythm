@@ -556,7 +556,6 @@ position_from_seconds (Position * position, double secs)
 void
 position_from_ticks (Position * pos, double ticks)
 {
-  pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->ticks = ticks;
   position_update_frames_from_ticks (pos, 0.0);
 
@@ -570,7 +569,6 @@ position_from_ticks (Position * pos, double ticks)
 void
 position_from_frames (Position * pos, const signed_frame_t frames)
 {
-  pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
   position_update_ticks_from_frames (pos, 0.0);
 }
@@ -1018,10 +1016,5 @@ position_get_ticks (const Position * pos)
 bool
 position_validate (const Position * pos)
 {
-  if (!pos->schema_version)
-    {
-      return false;
-    }
-
   return true;
 }

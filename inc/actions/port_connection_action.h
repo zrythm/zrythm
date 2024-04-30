@@ -22,14 +22,6 @@ typedef enum PortConnectionActionType
   PORT_CONNECTION_CHANGE_MULTIPLIER,
 } PortConnectionActionType;
 
-static const cyaml_strval_t port_connection_action_type_strings[] = {
-  {"connect",            PORT_CONNECTION_CONNECT          },
-  { "disconnect",        PORT_CONNECTION_CONNECT          },
-  { "enable",            PORT_CONNECTION_ENABLE           },
-  { "disable",           PORT_CONNECTION_DISABLE          },
-  { "change multiplier", PORT_CONNECTION_CHANGE_MULTIPLIER},
-};
-
 typedef struct PortConnectionAction
 {
   UndoableAction parent_instance;

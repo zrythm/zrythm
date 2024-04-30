@@ -59,19 +59,6 @@ typedef enum UndoableActionType
 
 } UndoableActionType;
 
-static const cyaml_strval_t undoable_action_type_strings[] = {
-  {"Tracklist selections", UA_TRACKLIST_SELECTIONS},
-  { "Channel send",        UA_CHANNEL_SEND        },
-  { "Mixer selections",    UA_MIXER_SELECTIONS    },
-  { "Arranger selections", UA_ARRANGER_SELECTIONS },
-  { "MIDI mapping",        UA_MIDI_MAPPING        },
-  { "Port connection",     UA_PORT_CONNECTION     },
-  { "Port",                UA_PORT                },
-  { "Range",               UA_RANGE               },
-  { "Transport",           UA_TRANSPORT           },
-  { "Chord",               UA_CHORD               },
-};
-
 /**
  * Base struct to be inherited by implementing
  * undoable actions.

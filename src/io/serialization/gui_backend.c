@@ -9,6 +9,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/timeline.h"
 #include "io/serialization/arranger_objects.h"
+#include "io/serialization/chords.h"
 #include "io/serialization/extra.h"
 #include "io/serialization/gui_backend.h"
 #include "utils/objects.h"

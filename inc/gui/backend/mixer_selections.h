@@ -14,7 +14,6 @@
 #include "dsp/channel.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
-#include "utils/yaml.h"
 
 typedef struct Plugin Plugin;
 
@@ -54,29 +53,6 @@ typedef struct MixerSelections
   /** Whether any slot is selected. */
   int has_any;
 } MixerSelections;
-
-static const cyaml_schema_field_t mixer_selections_fields_schema[] = {
-  YAML_FIELD_INT (MixerSelections, schema_version),
-  YAML_FIELD_ENUM (MixerSelections, type, plugin_slot_type_strings),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (MixerSelections, slots, int_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "plugins",
-    CYAML_FLAG_DEFAULT,
-    MixerSelections,
-    plugins,
-    num_slots,
-    &plugin_schema,
-    0,
-    CYAML_UNLIMITED),
-  YAML_FIELD_UINT (MixerSelections, track_name_hash),
-  YAML_FIELD_INT (MixerSelections, has_any),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t mixer_selections_schema = {
-  YAML_VALUE_PTR (MixerSelections, mixer_selections_fields_schema),
-};
 
 void
 mixer_selections_init_loaded (MixerSelections * ms, bool is_project);

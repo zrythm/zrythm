@@ -495,24 +495,6 @@ typedef struct Port
   size_t last_buf_sz;
 } Port;
 
-static const cyaml_schema_field_t port_fields_schema[] = {
-  YAML_FIELD_INT (Port, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (Port, id, port_identifier_fields_schema),
-  YAML_FIELD_INT (Port, exposed_to_backend),
-  YAML_FIELD_FLOAT (Port, control),
-  YAML_FIELD_FLOAT (Port, minf),
-  YAML_FIELD_FLOAT (Port, maxf),
-  YAML_FIELD_FLOAT (Port, zerof),
-  YAML_FIELD_FLOAT (Port, deff),
-  YAML_FIELD_INT (Port, carla_param_id),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t port_schema = {
-  YAML_VALUE_PTR_NULLABLE (Port, port_fields_schema),
-};
-
 /**
  * L & R port, for convenience.
  *
@@ -524,18 +506,6 @@ typedef struct StereoPorts
   Port * l;
   Port * r;
 } StereoPorts;
-
-static const cyaml_schema_field_t stereo_ports_fields_schema[] = {
-  YAML_FIELD_INT (StereoPorts, schema_version),
-  YAML_FIELD_MAPPING_PTR (StereoPorts, l, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (StereoPorts, r, port_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t stereo_ports_schema = {
-  YAML_VALUE_PTR (StereoPorts, stereo_ports_fields_schema),
-};
 
 /**
  * This function finds the Ports corresponding to

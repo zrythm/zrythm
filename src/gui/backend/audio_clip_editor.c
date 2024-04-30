@@ -15,8 +15,6 @@
 void
 audio_clip_editor_init (AudioClipEditor * self)
 {
-  self->schema_version = AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
-
   editor_settings_init (&self->editor_settings);
 }
 
@@ -24,7 +22,6 @@ AudioClipEditor *
 audio_clip_editor_clone (AudioClipEditor * src)
 {
   AudioClipEditor * self = object_new (AudioClipEditor);
-  self->schema_version = AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
   self->editor_settings = src->editor_settings;
 
@@ -35,7 +32,6 @@ AudioClipEditor *
 audio_clip_editor_new (void)
 {
   AudioClipEditor * self = object_new (AudioClipEditor);
-  self->schema_version = AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
   return self;
 }

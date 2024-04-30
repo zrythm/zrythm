@@ -2093,10 +2093,8 @@ do_quantize (const char * variant, bool quick)
     {
       ui_show_message_printf (
         _ ("Invalid Selection For Quantize"),
-        _ ("Must select either the timeline or the "
-           "editor first. The current selection is "
-           "%s"),
-        selection_type_strings[PROJECT->last_selection].str);
+        _ ("Must select either the timeline or the editor first. The current selection is %s"),
+        selection_type_strings[PROJECT->last_selection]);
     }
 }
 
@@ -3231,8 +3229,8 @@ DEFINE_SIMPLE (activate_load_chord_preset)
   z_return_if_fail_cmp (pack_idx, <, num_packs);
   ChordPresetPack * pack =
     chord_preset_pack_manager_get_pack_at (CHORD_PRESET_PACK_MANAGER, pack_idx);
-  z_return_if_fail_cmp (pset_idx, <, pack->num_presets);
-  ChordPreset * pset = pack->presets[pset_idx];
+  z_return_if_fail_cmp (pset_idx, <, (int) pack->presets->len);
+  ChordPreset * pset = g_ptr_array_index (pack->presets, pset_idx);
   chord_editor_apply_preset (CHORD_EDITOR, pset, true);
 }
 

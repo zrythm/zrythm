@@ -19,10 +19,6 @@ typedef enum PortActionType
   PORT_ACTION_SET_CONTROL_VAL,
 } PortActionType;
 
-static const cyaml_strval_t port_action_type_strings[] = {
-  {"Set control val", PORT_ACTION_SET_CONTROL_VAL},
-};
-
 typedef struct PortAction
 {
   UndoableAction parent_instance;

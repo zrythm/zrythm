@@ -344,8 +344,8 @@ ports_expander_widget_setup_plugin (
 
   g_debug (
     "adding ports for plugin %s, type %s flow %s...",
-    pl ? pl->setting->descr->name : "(none)", port_type_strings[type].str,
-    port_flow_strings[flow].str);
+    pl ? pl->setting->descr->name : "(none)", port_type_strings[type],
+    port_flow_strings[flow]);
 
   /* temporary array */
   GPtrArray * port_groups = g_ptr_array_new_with_free_func (free_port_group);

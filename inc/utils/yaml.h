@@ -10,9 +10,13 @@
 #ifndef __UTILS_YAML_H__
 #define __UTILS_YAML_H__
 
-#include <gtk/gtk.h>
+#include "zrythm-config.h"
 
-#include <cyaml/cyaml.h>
+#ifdef HAVE_CYAML
+
+#  include <gtk/gtk.h>
+
+#  include <cyaml/cyaml.h>
 
 /**
  * @addtogroup utils
@@ -23,26 +27,27 @@
 /**
  * Ignores a key and doesn't require it to be present either.
  */
-#define YAML_FIELD_IGNORE_OPT(key) CYAML_FIELD_IGNORE (key, CYAML_FLAG_OPTIONAL)
+#  define YAML_FIELD_IGNORE_OPT(key) \
+    CYAML_FIELD_IGNORE (key, CYAML_FLAG_OPTIONAL)
 
 /**
  * Mapping embedded inside the struct.
  */
-#define YAML_FIELD_MAPPING_EMBEDDED(owner, member, schema) \
-  CYAML_FIELD_MAPPING (#member, CYAML_FLAG_DEFAULT, owner, member, schema)
+#  define YAML_FIELD_MAPPING_EMBEDDED(owner, member, schema) \
+    CYAML_FIELD_MAPPING (#member, CYAML_FLAG_DEFAULT, owner, member, schema)
 
 /**
  * Mapping pointer to a struct.
  */
-#define YAML_FIELD_MAPPING_PTR(owner, member, schema) \
-  CYAML_FIELD_MAPPING_PTR (#member, CYAML_FLAG_POINTER, owner, member, schema)
+#  define YAML_FIELD_MAPPING_PTR(owner, member, schema) \
+    CYAML_FIELD_MAPPING_PTR (#member, CYAML_FLAG_POINTER, owner, member, schema)
 
 /**
  * Mapping pointer to a struct.
  */
-#define YAML_FIELD_MAPPING_PTR_OPTIONAL(owner, member, schema) \
-  CYAML_FIELD_MAPPING_PTR ( \
-    #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, schema)
+#  define YAML_FIELD_MAPPING_PTR_OPTIONAL(owner, member, schema) \
+    CYAML_FIELD_MAPPING_PTR ( \
+      #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, schema)
 
 /**
  * Fixed-width array of pointers with variable count.
@@ -52,10 +57,10 @@
  * int        num_my_structs;
  * @endcode@
  */
-#define YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT(owner, member, schema) \
-  CYAML_FIELD_SEQUENCE_COUNT ( \
-    #member, CYAML_FLAG_DEFAULT, owner, member, num_##member, &schema, 0, \
-    CYAML_UNLIMITED)
+#  define YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT(owner, member, schema) \
+    CYAML_FIELD_SEQUENCE_COUNT ( \
+      #member, CYAML_FLAG_DEFAULT, owner, member, num_##member, &schema, 0, \
+      CYAML_UNLIMITED)
 
 /**
  * Fixed-width array of pointers with fixed count.
@@ -64,9 +69,9 @@
  * MyStruct * my_structs[MAX_STRUCTS_CONST];
  * @endcode@
  */
-#define YAML_FIELD_FIXED_SIZE_PTR_ARRAY(owner, member, schema, size) \
-  CYAML_FIELD_SEQUENCE_FIXED ( \
-    #member, CYAML_FLAG_DEFAULT, owner, member, &schema, size)
+#  define YAML_FIELD_FIXED_SIZE_PTR_ARRAY(owner, member, schema, size) \
+    CYAML_FIELD_SEQUENCE_FIXED ( \
+      #member, CYAML_FLAG_DEFAULT, owner, member, &schema, size)
 
 /**
  * Dynamic-width (reallocated) array of pointers
@@ -78,10 +83,10 @@
  * int                ats_size;
  * @endcode@
  */
-#define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT(owner, member, schema) \
-  CYAML_FIELD_SEQUENCE_COUNT ( \
-    #member, CYAML_FLAG_POINTER, owner, member, num_##member, &schema, 0, \
-    CYAML_UNLIMITED)
+#  define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT(owner, member, schema) \
+    CYAML_FIELD_SEQUENCE_COUNT ( \
+      #member, CYAML_FLAG_POINTER, owner, member, num_##member, &schema, 0, \
+      CYAML_UNLIMITED)
 
 /**
  * Dynamic (allocated) array of pointers
@@ -91,9 +96,10 @@
  * AutomationTrack ** ats;
  * @endcode@
  */
-#define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY(owner, member, schema, fixed_size) \
-  CYAML_FIELD_SEQUENCE_FIXED ( \
-    #member, CYAML_FLAG_POINTER, owner, member, &schema, fixed_size)
+#  define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY( \
+    owner, member, schema, fixed_size) \
+    CYAML_FIELD_SEQUENCE_FIXED ( \
+      #member, CYAML_FLAG_POINTER, owner, member, &schema, fixed_size)
 
 /**
  * Dynamic-width (reallocated) array of structs
@@ -109,10 +115,10 @@
  *   CYAML_VALUE_MAPPING with the flag
  *   CYAML_FLAG_DEFAULT.
  */
-#define YAML_FIELD_DYN_ARRAY_VAR_COUNT(owner, member, schema) \
-  CYAML_FIELD_SEQUENCE_COUNT ( \
-    #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, \
-    num_##member, &schema, 0, CYAML_UNLIMITED)
+#  define YAML_FIELD_DYN_ARRAY_VAR_COUNT(owner, member, schema) \
+    CYAML_FIELD_SEQUENCE_COUNT ( \
+      #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, \
+      num_##member, &schema, 0, CYAML_UNLIMITED)
 
 /**
  * Dynamic-width (reallocated) array of pointers
@@ -124,8 +130,8 @@
  * int                ats_size;
  * @endcode@
  */
-#define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT(owner, member, schema) \
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (owner, member, schema)
+#  define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT(owner, member, schema) \
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (owner, member, schema)
 
 /**
  * Dynamic (allocated) array of pointers
@@ -135,11 +141,11 @@
  * AutomationTrack ** ats;
  * @endcode@
  */
-#define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT( \
-  owner, member, schema, fixed_size) \
-  CYAML_FIELD_SEQUENCE_FIXED ( \
-    #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, &schema, \
-    fixed_size)
+#  define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT( \
+    owner, member, schema, fixed_size) \
+    CYAML_FIELD_SEQUENCE_FIXED ( \
+      #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, \
+      &schema, fixed_size)
 
 /**
  * Dynamic-width (reallocated) array of primitives
@@ -155,59 +161,59 @@
  *   CYAML_VALUE_MAPPING with the flag
  *   CYAML_FLAG_DEFAULT.
  */
-#define YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES(owner, member, schema) \
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (owner, member, schema)
+#  define YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES(owner, member, schema) \
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (owner, member, schema)
 
 /**
  * Fixed sequence of pointers.
  */
-#define YAML_FIELD_SEQUENCE_FIXED(owner, member, schema, size) \
-  CYAML_FIELD_SEQUENCE_FIXED ( \
-    #member, CYAML_FLAG_DEFAULT, owner, member, &schema, size)
+#  define YAML_FIELD_SEQUENCE_FIXED(owner, member, schema, size) \
+    CYAML_FIELD_SEQUENCE_FIXED ( \
+      #member, CYAML_FLAG_DEFAULT, owner, member, &schema, size)
 
-#define YAML_FIELD_INT(owner, member) \
-  CYAML_FIELD_INT (#member, CYAML_FLAG_DEFAULT, owner, member)
+#  define YAML_FIELD_INT(owner, member) \
+    CYAML_FIELD_INT (#member, CYAML_FLAG_DEFAULT, owner, member)
 
-#define YAML_FIELD_INT_OPT(owner, member) \
-  CYAML_FIELD_INT (#member, CYAML_FLAG_OPTIONAL, owner, member)
+#  define YAML_FIELD_INT_OPT(owner, member) \
+    CYAML_FIELD_INT (#member, CYAML_FLAG_OPTIONAL, owner, member)
 
-#define YAML_FIELD_UINT(owner, member) \
-  CYAML_FIELD_UINT (#member, CYAML_FLAG_DEFAULT, owner, member)
+#  define YAML_FIELD_UINT(owner, member) \
+    CYAML_FIELD_UINT (#member, CYAML_FLAG_DEFAULT, owner, member)
 
-#define YAML_FIELD_FLOAT(owner, member) \
-  CYAML_FIELD_FLOAT (#member, CYAML_FLAG_DEFAULT, owner, member)
+#  define YAML_FIELD_FLOAT(owner, member) \
+    CYAML_FIELD_FLOAT (#member, CYAML_FLAG_DEFAULT, owner, member)
 
-#define YAML_FIELD_STRING_PTR(owner, member) \
-  CYAML_FIELD_STRING_PTR ( \
-    #member, CYAML_FLAG_POINTER, owner, member, 0, CYAML_UNLIMITED)
+#  define YAML_FIELD_STRING_PTR(owner, member) \
+    CYAML_FIELD_STRING_PTR ( \
+      #member, CYAML_FLAG_POINTER, owner, member, 0, CYAML_UNLIMITED)
 
-#define YAML_FIELD_STRING_PTR_OPTIONAL(owner, member) \
-  CYAML_FIELD_STRING_PTR ( \
-    #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, 0, \
-    CYAML_UNLIMITED)
+#  define YAML_FIELD_STRING_PTR_OPTIONAL(owner, member) \
+    CYAML_FIELD_STRING_PTR ( \
+      #member, CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, owner, member, 0, \
+      CYAML_UNLIMITED)
 
-#define YAML_FIELD_ENUM(owner, member, strings) \
-  CYAML_FIELD_ENUM ( \
-    #member, CYAML_FLAG_DEFAULT, owner, member, strings, \
-    CYAML_ARRAY_LEN (strings))
+#  define YAML_FIELD_ENUM(owner, member, strings) \
+    CYAML_FIELD_ENUM ( \
+      #member, CYAML_FLAG_DEFAULT, owner, member, strings, \
+      CYAML_ARRAY_LEN (strings))
 
-#define YAML_FIELD_BITFIELD(owner, member, bitvals) \
-  CYAML_FIELD_BITFIELD ( \
-    #member, CYAML_FLAG_DEFAULT, owner, member, bitvals, \
-    CYAML_ARRAY_LEN (bitvals))
+#  define YAML_FIELD_BITFIELD(owner, member, bitvals) \
+    CYAML_FIELD_BITFIELD ( \
+      #member, CYAML_FLAG_DEFAULT, owner, member, bitvals, \
+      CYAML_ARRAY_LEN (bitvals))
 
 /**
  * Schema to be used as a pointer.
  */
-#define YAML_VALUE_PTR(cc, fields_schema) \
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, cc, fields_schema)
+#  define YAML_VALUE_PTR(cc, fields_schema) \
+    CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, cc, fields_schema)
 
 /**
  * Schema to be used as a pointer that can be
  * NULL.
  */
-#define YAML_VALUE_PTR_NULLABLE(cc, fields_schema) \
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER_NULL_STR, cc, fields_schema)
+#  define YAML_VALUE_PTR_NULLABLE(cc, fields_schema) \
+    CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER_NULL_STR, cc, fields_schema)
 
 /**
  * Schema to be used for arrays of structs directly
@@ -215,13 +221,13 @@
  *
  * For every other case, use the PTR above.
  */
-#define YAML_VALUE_DEFAULT(cc, fields_schema) \
-  CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT, cc, fields_schema)
+#  define YAML_VALUE_DEFAULT(cc, fields_schema) \
+    CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT, cc, fields_schema)
 
-#define YAML_BITVAL(_name, _offset) \
-  { \
-    .name = _name, .offset = _offset, .bits = 1 \
-  }
+#  define YAML_BITVAL(_name, _offset) \
+    { \
+      .name = _name, .offset = _offset, .bits = 1 \
+    }
 
 /**
  * Serializes to YAML.
@@ -301,5 +307,7 @@ typedef enum YamlDummyEnum
 /**
  * @}
  */
+
+#endif /* HAVE_CYAML */
 
 #endif

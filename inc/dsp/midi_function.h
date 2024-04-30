@@ -38,17 +38,6 @@ typedef enum MidiFunctionType
   MIDI_FUNCTION_STRUM,
 } MidiFunctionType;
 
-static const cyaml_strval_t midi_function_type_strings[] = {
-  {N_ ("Crescendo"), MIDI_FUNCTION_CRESCENDO      },
-  { N_ ("Flam"),     MIDI_FUNCTION_FLAM           },
-  { N_ ("Flip H"),   MIDI_FUNCTION_FLIP_HORIZONTAL},
-  { N_ ("Flip V"),   MIDI_FUNCTION_FLIP_VERTICAL  },
-  { N_ ("Legato"),   MIDI_FUNCTION_LEGATO         },
-  { N_ ("Portato"),  MIDI_FUNCTION_PORTATO        },
-  { N_ ("Staccato"), MIDI_FUNCTION_STACCATO       },
-  { N_ ("Strum"),    MIDI_FUNCTION_STRUM          },
-};
-
 typedef struct MidiFunctionOpts
 {
   midi_byte_t start_vel;
@@ -67,7 +56,12 @@ typedef struct MidiFunctionOpts
 static inline const char *
 midi_function_type_to_string (MidiFunctionType type)
 {
-  return midi_function_type_strings[type].str;
+  static const char * midi_function_type_strings[] = {
+    N_ ("Crescendo"), N_ ("Flam"),    N_ ("Flip H"),   N_ ("Flip V"),
+    N_ ("Legato"),    N_ ("Portato"), N_ ("Staccato"), N_ ("Strum"),
+  };
+
+  return midi_function_type_strings[type];
 }
 
 /**

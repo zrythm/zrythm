@@ -666,15 +666,6 @@ arranger_object_set_position (
 }
 
 /**
- * Returns the type as a string.
- */
-const char *
-arranger_object_stringize_type (ArrangerObjectType type)
-{
-  return arranger_object_type_strings[type].str;
-}
-
-/**
  * Sets the magic on the arranger object.
  */
 void
@@ -703,7 +694,7 @@ arranger_object_set_magic (ArrangerObject * self)
 void
 arranger_object_print (const ArrangerObject * self)
 {
-  const char * type = arranger_object_stringize_type (self->type);
+  const char * type = arranger_object_get_type_as_string (self->type);
 
   char positions[900];
   char start_pos_str[100];

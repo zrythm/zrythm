@@ -32,8 +32,8 @@ fader_upgrade_from_v1 (Fader_v1 * old)
       : g_strdup ("fader_swap_phase");
   swap_phase->id.flags2 |= PORT_FLAG2_FADER_SWAP_PHASE;
   swap_phase->id.flags |= PORT_FLAG_TOGGLE;
-  GError *  err = NULL;
-  char *    swap_phase_yaml = yaml_serialize (swap_phase, &port_schema, &err);
+  GError * err = NULL;
+  char *   swap_phase_yaml = yaml_serialize (swap_phase, &port_schema_v1, &err);
   Port_v1 * swap_phase_v1 =
     yaml_deserialize (swap_phase_yaml, &port_schema_v1, &err);
   g_free (swap_phase_yaml);

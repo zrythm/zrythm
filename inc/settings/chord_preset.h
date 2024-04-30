@@ -25,15 +25,11 @@ typedef struct ChordPresetPack ChordPresetPack;
  * @{
  */
 
-#define CHORD_PRESET_SCHEMA_VERSION 1
-
 /**
  * A preset of chord descriptors.
  */
 typedef struct ChordPreset
 {
-  int schema_version;
-
   /** Preset name. */
   char * name;
 
@@ -44,20 +40,11 @@ typedef struct ChordPreset
   ChordPresetPack * pack;
 } ChordPreset;
 
-static const cyaml_schema_field_t chord_preset_fields_schema[] = {
-  YAML_FIELD_INT (ChordPreset, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (ChordPreset, descr, chord_descriptor_schema, 12),
-  YAML_FIELD_STRING_PTR (ChordPreset, name),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_preset_schema = {
-  YAML_VALUE_PTR (ChordPreset, chord_preset_fields_schema),
-};
+ChordPreset *
+chord_preset_new (void);
 
 ChordPreset *
-chord_preset_new (const char * name);
+chord_preset_new_from_name (const char * name);
 
 NONNULL ChordPreset *
 chord_preset_clone (const ChordPreset * src);

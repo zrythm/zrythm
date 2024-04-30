@@ -400,7 +400,8 @@ get_obj_type (void * data)
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
   ArrangerObject * obj = (ArrangerObject *) wrapped_obj->obj;
 
-  const char * untranslated_type = arranger_object_stringize_type (obj->type);
+  const char * untranslated_type =
+    arranger_object_get_type_as_string (obj->type);
   return g_strdup (_ (untranslated_type));
 }
 

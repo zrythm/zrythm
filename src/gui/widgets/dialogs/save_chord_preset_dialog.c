@@ -58,7 +58,7 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
         {
           /* save */
           g_debug ("accept: %s, %s", pack->name, entered_name);
-          ChordPreset * pset = chord_preset_new (entered_name);
+          ChordPreset * pset = chord_preset_new_from_name (entered_name);
           for (int i = 0; i < 12; i++)
             {
               ChordDescriptor * descr = CHORD_EDITOR->chords[i];

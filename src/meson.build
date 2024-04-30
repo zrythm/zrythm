@@ -29,7 +29,9 @@ subdir('gui')
 subdir('io')
 subdir('plugins')
 subdir('project')
-subdir('schemas')
+if have_cyaml
+  subdir('schemas')
+endif
 subdir('settings')
 subdir('utils')
 

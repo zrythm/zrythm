@@ -40,6 +40,11 @@ G_DEFINE_QUARK (
   z - actions - arranger - selections - error - quark,
   z_actions_arranger_selections_error)
 
+static const char * arranger_selections_action_resize_type_strings[] = {
+  "Resize L",        "Resize R",        "Resize L (loop)", "Resize R (loop)",
+  "Resize L (fade)", "Resize R (fade)", "Stretch L",       "Stretch R",
+};
+
 static void
 move_obj_by_tracks_and_lanes (
   ArrangerObject * obj,
@@ -743,7 +748,7 @@ arranger_selections_action_new_resize (
         error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
         Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
         _ ("Cannot perform %s resize - selections contain looped objects"),
-        arranger_selections_action_resize_type_strings[type].str);
+        arranger_selections_action_resize_type_strings[type]);
       return NULL;
     }
 
@@ -758,7 +763,7 @@ arranger_selections_action_new_resize (
         Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
         _ ("Cannot perform %s resize - selections "
            "contain unloopable objects"),
-        arranger_selections_action_resize_type_strings[type].str);
+        arranger_selections_action_resize_type_strings[type]);
       return NULL;
     }
 
@@ -2966,7 +2971,7 @@ arranger_selections_action_stringize (ArrangerSelectionsAction * self)
     case AS_ACTION_RESIZE:
       {
         const char * resize_type =
-          arranger_selections_action_resize_type_strings[self->resize_type].str;
+          arranger_selections_action_resize_type_strings[self->resize_type];
         return g_strdup_printf (
           _ ("Resize arranger selections - %s"), resize_type);
       }

@@ -33,8 +33,6 @@ typedef struct AudioClip       AudioClip;
  * @{
  */
 
-#define REGION_SCHEMA_VERSION 1
-
 #define REGION_MAGIC 93075327
 #define IS_REGION(x) (((ZRegion *) x)->magic == REGION_MAGIC)
 #define IS_REGION_AND_NONNULL(x) (x && IS_REGION (x))
@@ -58,10 +56,10 @@ typedef enum RegionMusicalMode
   REGION_MUSICAL_MODE_ON,
 } RegionMusicalMode;
 
-static const cyaml_strval_t region_musical_mode_strings[] = {
-  {N_ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
-  { N_ ("Off"),    REGION_MUSICAL_MODE_OFF    },
-  { N_ ("On"),     REGION_MUSICAL_MODE_ON     },
+static const char * region_musical_mode_strings[] = {
+  N_ ("Inherit"),
+  N_ ("Off"),
+  N_ ("On"),
 };
 
 /**

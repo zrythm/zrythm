@@ -13,7 +13,11 @@
 #ifndef __SCHEMAS_UNDO_UNDO_MANAGER_H__
 #define __SCHEMAS_UNDO_UNDO_MANAGER_H__
 
-#include "schemas/actions/undo_stack.h"
+#include "zrythm-config.h"
+
+#ifdef HAVE_CYAML
+
+#  include "schemas/actions/undo_stack.h"
 
 typedef struct UndoManager_v1
 {
@@ -33,5 +37,7 @@ static const cyaml_schema_field_t undo_manager_fields_schema[] = {
 static const cyaml_schema_value_t undo_manager_schema_v1 = {
   YAML_VALUE_PTR (UndoManager_v1, undo_manager_fields_schema_v1),
 };
+
+#endif /* HAVE_CYAML */
 
 #endif

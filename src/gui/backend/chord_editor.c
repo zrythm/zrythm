@@ -18,8 +18,6 @@
 void
 chord_editor_init (ChordEditor * self)
 {
-  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
-
   self->num_chords = 0;
   for (int i = 0; i < 12; i++)
     {
@@ -35,7 +33,6 @@ ChordEditor *
 chord_editor_clone (ChordEditor * src)
 {
   ChordEditor * self = object_new (ChordEditor);
-  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
 
   for (int i = 0; i < src->num_chords; i++)
     {
@@ -204,7 +201,6 @@ ChordEditor *
 chord_editor_new (void)
 {
   ChordEditor * self = object_new (ChordEditor);
-  self->schema_version = AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
   return self;
 }

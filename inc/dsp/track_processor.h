@@ -42,8 +42,6 @@ TYPEDEF_STRUCT (MPMCQueue);
  */
 typedef struct TrackProcessor
 {
-  int schema_version;
-
   /**
    * L & R audio input ports, if audio.
    */
@@ -164,46 +162,6 @@ typedef struct TrackProcessor
 
   int magic;
 } TrackProcessor;
-
-static const cyaml_schema_field_t track_processor_fields_schema[] = {
-  YAML_FIELD_INT (TrackProcessor, schema_version),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, mono, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, input_gain, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, output_gain, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, midi_in, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, midi_out, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, piano_roll, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    monitor_audio,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    stereo_in,
-    stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    stereo_out,
-    stereo_ports_fields_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (TrackProcessor, midi_cc, port_schema, 128 * 16),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (TrackProcessor, pitch_bend, port_schema, 16),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor,
-    poly_key_pressure,
-    port_schema,
-    16),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor,
-    channel_pressure,
-    port_schema,
-    16),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t track_processor_schema = {
-  YAML_VALUE_PTR (TrackProcessor, track_processor_fields_schema),
-};
 
 /**
  * Inits a TrackProcessor after a project is loaded.

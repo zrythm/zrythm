@@ -13,11 +13,17 @@
 #include <glib/gi18n.h>
 
 ChordPreset *
-chord_preset_new (const char * name)
+chord_preset_new (void)
+{
+  ChordPreset * self = object_new (ChordPreset);
+  return self;
+}
+
+ChordPreset *
+chord_preset_new_from_name (const char * name)
 {
   ChordPreset * self = object_new (ChordPreset);
 
-  self->schema_version = CHORD_PRESET_SCHEMA_VERSION;
   self->name = g_strdup (name);
 
   return self;
@@ -26,7 +32,7 @@ chord_preset_new (const char * name)
 ChordPreset *
 chord_preset_clone (const ChordPreset * src)
 {
-  ChordPreset * self = chord_preset_new (src->name);
+  ChordPreset * self = chord_preset_new_from_name (src->name);
 
   for (int i = 0; i < 12; i++)
     {

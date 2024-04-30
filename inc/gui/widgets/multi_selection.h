@@ -67,7 +67,6 @@ void
 multi_selection_widget_setup (
   MultiSelectionWidget *        self,
   const char **                 strings,
-  const cyaml_strval_t *        cyaml_strings,
   const int                     num_items,
   MultiSelectionChangedCallback sel_changed_cb,
   const guint *                 selections,

@@ -96,9 +96,9 @@ create_model_for_psets (ChordPackBrowserWidget * self)
       const ChordPresetPack * pack =
         chord_preset_pack_manager_get_pack_at (CHORD_PRESET_PACK_MANAGER, i);
 
-      for (int j = 0; j < pack->num_presets; j++)
+      for (size_t j = 0; j < pack->presets->len; j++)
         {
-          ChordPreset * pset = pack->presets[j];
+          ChordPreset * pset = g_ptr_array_index (pack->presets, j);
 
           WrappedObjectWithChangeSignal * wrapped_pset =
             wrapped_object_with_change_signal_new (

@@ -312,10 +312,10 @@ typedef enum AudioEngineJackTransportType
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
 } AudioEngineJackTransportType;
 
-static const cyaml_strval_t jack_transport_type_strings[] = {
-  {"Timebase master",    AUDIO_ENGINE_JACK_TIMEBASE_MASTER },
-  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
-  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT    },
+static const char * jack_transport_type_strings[] = {
+  "Timebase master",
+  "Transport client",
+  "No JACK transport",
 };
 
 typedef struct AudioEnginePositionInfo

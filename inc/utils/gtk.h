@@ -23,12 +23,9 @@
 #  include <gdk/win32/gdkwin32.h>
 #endif
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtksourceview/gtksource.h>
-#pragma GCC diagnostic pop
-
-#include <cyaml/cyaml.h>
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * @addtogroup utils
@@ -647,10 +644,10 @@ void
 z_graphene_rect_print (const graphene_rect_t * rect);
 
 GtkStringList *
-z_gtk_string_list_new_from_cyaml_strvals (
-  const cyaml_strval_t * strvals,
-  size_t                 num_vals,
-  bool                   localized);
+z_gtk_string_list_new_from_string_array (
+  const char ** strvals,
+  size_t        num_vals,
+  bool          localized);
 
 GtkWidget *
 z_gtk_get_first_focusable_child (GtkWidget * parent);

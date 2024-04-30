@@ -30,23 +30,8 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct AutomationEditor
 {
-  int            schema_version;
   EditorSettings editor_settings;
 } AutomationEditor;
-
-static const cyaml_schema_field_t automation_editor_fields_schema[] = {
-  YAML_FIELD_INT (AutomationEditor, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationEditor,
-    editor_settings,
-    editor_settings_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t automation_editor_schema = {
-  YAML_VALUE_PTR (AutomationEditor, automation_editor_fields_schema),
-};
 
 /**
  * Inits the AutomationEditor after a Project has been

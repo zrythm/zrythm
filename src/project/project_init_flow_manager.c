@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "zrythm-config.h"
+
 #include <inttypes.h>
 #include <sys/stat.h>
 
@@ -238,6 +240,7 @@ get_newer_backup (Project * self)
   return result;
 }
 
+#ifdef HAVE_CYAML
 /**
  * Upgrades the given project YAML's schema if needed.
  *
@@ -434,6 +437,7 @@ upgrade_to_json (char ** txt, GError ** error)
     }
   return true;
 }
+#endif
 
 static void
 project_activate (void)
@@ -782,7 +786,11 @@ continue_load_from_file_after_open_backup_response (
           if (schema_ver != 5)
             {
               /* upgrade project */
+#ifdef HAVE_CYAML
               upgraded = upgrade_schema (&text, schema_ver, &err);
+#else
+              upgraded = false;
+#endif
               if (!upgraded)
                 {
                   GError * error = NULL;
@@ -795,8 +803,12 @@ continue_load_from_file_after_open_backup_response (
                 }
             }
 
-          /* upgrade latest yaml to json */
+            /* upgrade latest yaml to json */
+#ifdef HAVE_CYAML
           upgraded = upgrade_to_json (&text, &err);
+#else
+          upgraded = false;
+#endif
           if (!upgraded)
             {
               GError * error = NULL;

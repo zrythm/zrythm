@@ -239,7 +239,6 @@ TrackProcessor *
 track_processor_new (Track * tr)
 {
   TrackProcessor * self = object_new (TrackProcessor);
-  self->schema_version = TRACK_PROCESSOR_SCHEMA_VERSION;
   self->magic = TRACK_PROCESSOR_MAGIC;
   self->track = tr;
 

@@ -226,15 +226,14 @@ plugin_init (
   g_message (
     "%s: %s (%s) track name hash %u slot %d", __func__,
     plugin->setting->descr->name,
-    plugin_protocol_strings[plugin->setting->descr->protocol].str,
-    track_name_hash, slot);
+    plugin_protocol_strings[plugin->setting->descr->protocol], track_name_hash,
+    slot);
 
   g_return_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
 
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
-  plugin->id.schema_version = PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   plugin->id.track_name_hash = track_name_hash;
   plugin->id.slot_type = slot_type;
   plugin->id.slot = slot;
@@ -279,7 +278,6 @@ plugin_init (
   port->carla_param_id = -1;
   plugin->gain = port;
 
-  plugin->selected_bank.schema_version = PLUGIN_BANK_SCHEMA_VERSION;
   plugin->selected_bank.bank_idx = -1;
   plugin->selected_bank.idx = -1;
   plugin_preset_identifier_init (&plugin->selected_preset);
@@ -449,7 +447,7 @@ plugin_new_from_setting (
 
   g_message (
     "%s: %s (%s) slot %d", __func__, descr->name,
-    plugin_protocol_strings[descr->protocol].str, slot);
+    plugin_protocol_strings[descr->protocol], slot);
 
   plugin_init (self, track_name_hash, slot_type, slot);
   g_return_val_if_fail (self->gain && self->enabled, NULL);
@@ -469,11 +467,9 @@ plugin_new_from_setting (
 #endif
 
   /* select the init preset */
-  self->selected_bank.schema_version = PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
   self->selected_bank.bank_idx = 0;
   self->selected_bank.idx = -1;
   plugin_identifier_copy (&self->selected_bank.plugin_id, &self->id);
-  self->selected_preset.schema_version = PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
   self->selected_preset.bank_idx = 0;
   self->selected_preset.idx = 0;
   plugin_identifier_copy (&self->selected_preset.plugin_id, &self->id);
@@ -928,7 +924,7 @@ plugin_generate_window_title (Plugin * self)
     {
       sprintf (
         bridge_mode, " - bridge: %s",
-        carla_bridge_mode_strings[setting->bridge_mode].str);
+        carla_bridge_mode_strings[setting->bridge_mode]);
     }
 
   char slot[100];
@@ -1101,7 +1097,7 @@ plugin_move_automation (
     "moving plugin '%s' automation from "
     "%s to %s -> %s:%d",
     pl->setting->descr->name, prev_track->name, track->name,
-    plugin_slot_type_strings[new_slot_type].str, new_slot);
+    plugin_slot_type_strings[new_slot_type], new_slot);
 
   AutomationTracklist * prev_atl = track_get_automation_tracklist (prev_track);
   g_return_if_fail (prev_atl);
@@ -1500,9 +1496,8 @@ plugin_print (Plugin * self, char * buf, size_t buf_sz)
       Track * track = plugin_is_in_active_project (self) ? self->track : NULL;
       snprintf (
         buf, buf_sz, "%s (%d):%s:%d - %s", track ? track->name : "<no track>",
-        track ? track->pos : -1,
-        plugin_slot_type_strings[self->id.slot_type].str, self->id.slot,
-        self->setting->descr->name);
+        track ? track->pos : -1, plugin_slot_type_strings[self->id.slot_type],
+        self->id.slot, self->setting->descr->name);
     }
 }
 

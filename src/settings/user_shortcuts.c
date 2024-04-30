@@ -20,6 +20,7 @@ user_shortcut_free (UserShortcut * shortcut)
   object_zero_and_free (shortcut);
 }
 
+#if 0
 static char *
 get_user_shortcuts_file_path (void)
 {
@@ -45,6 +46,7 @@ is_yaml_our_version (const char * yaml)
 
   return same_version;
 }
+#endif
 
 /**
  * Reads the file and fills up the object.
@@ -52,6 +54,10 @@ is_yaml_our_version (const char * yaml)
 UserShortcuts *
 user_shortcuts_new (void)
 {
+  UserShortcuts * self = object_new (UserShortcuts);
+  return self;
+
+#if 0
   GError * err = NULL;
   char *   path = get_user_shortcuts_file_path ();
   if (!file_exists (path))
@@ -60,7 +66,6 @@ user_shortcuts_new (void)
 return_new_instance:
       g_free (path);
       UserShortcuts * self = object_new (UserShortcuts);
-      self->schema_version = USER_SHORTCUTS_SCHEMA_VERSION;
       return self;
     }
   char * yaml = NULL;
@@ -103,6 +108,7 @@ return_new_instance:
   g_free (path);
 
   return self;
+#endif
 }
 
 /**

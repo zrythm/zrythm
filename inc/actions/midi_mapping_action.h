@@ -24,13 +24,6 @@ typedef enum MidiMappingActionType
   MIDI_MAPPING_ACTION_DISABLE,
 } MidiMappingActionType;
 
-static const cyaml_strval_t midi_mapping_action_type_strings[] = {
-  {"Bind",     MIDI_MAPPING_ACTION_BIND   },
-  { "Unbind",  MIDI_MAPPING_ACTION_UNBIND },
-  { "Enable",  MIDI_MAPPING_ACTION_ENABLE },
-  { "Disable", MIDI_MAPPING_ACTION_DISABLE},
-};
-
 /**
  * MIDI mapping action.
  */

@@ -192,7 +192,6 @@ snap_grid_init (
   NoteLength   note_length,
   bool         adaptive)
 {
-  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
   self->type = type;
   self->snap_note_length = note_length;
   self->snap_note_type = NOTE_TYPE_NORMAL;
@@ -206,13 +205,18 @@ snap_grid_init (
 static const char *
 get_note_type_str (NoteType type)
 {
-  return note_type_short_strings[type].str;
+  static const char * note_type_short_strings[] = {
+    "",
+    ".",
+    "t",
+  };
+  return note_type_short_strings[type];
 }
 
 static const char *
 get_note_length_str (NoteLength length)
 {
-  return note_length_strings[length].str;
+  return note_length_strings[length];
 }
 
 /**
@@ -287,7 +291,6 @@ SnapGrid *
 snap_grid_clone (SnapGrid * src)
 {
   SnapGrid * self = object_new (SnapGrid);
-  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
 
   self->type = src->type;
   self->snap_note_length = src->snap_note_length;
@@ -308,7 +311,6 @@ SnapGrid *
 snap_grid_new (void)
 {
   SnapGrid * self = object_new (SnapGrid);
-  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
 
   return self;
 }

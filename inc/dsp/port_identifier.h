@@ -15,10 +15,11 @@
 #include "zrythm-config.h"
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include "plugins/plugin_identifier.h"
 #include "utils/string.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup dsp
@@ -42,10 +43,10 @@ typedef enum PortFlow
   FLOW_OUTPUT
 } PortFlow;
 
-static const cyaml_strval_t port_flow_strings[] = {
-  {"unknown", FLOW_UNKNOWN},
-  { "input",  FLOW_INPUT  },
-  { "output", FLOW_OUTPUT },
+static const char * port_flow_strings[] = {
+  "unknown",
+  "input",
+  "output",
 };
 
 /**
@@ -60,12 +61,8 @@ typedef enum PortType
   TYPE_CV
 } PortType;
 
-static const cyaml_strval_t port_type_strings[] = {
-  {"unknown",  TYPE_UNKNOWN},
-  { "control", TYPE_CONTROL},
-  { "audio",   TYPE_AUDIO  },
-  { "event",   TYPE_EVENT  },
-  { "cv",      TYPE_CV     },
+static const char * port_type_strings[] = {
+  "unknown", "control", "audio", "event", "cv",
 };
 
 /**
@@ -87,15 +84,8 @@ typedef enum PortUnit
   PORT_UNIT_US,
 } PortUnit;
 
-static const cyaml_strval_t port_unit_strings[] = {
-  {"none", PORT_UNIT_NONE   },
-  { "Hz",  PORT_UNIT_HZ     },
-  { "MHz", PORT_UNIT_MHZ    },
-  { "dB",  PORT_UNIT_DB     },
-  { "°",  PORT_UNIT_DEGREES},
-  { "s",   PORT_UNIT_SECONDS},
-  { "ms",  PORT_UNIT_MS     },
-  { "μs", PORT_UNIT_US     },
+static const char * port_unit_strings[] = {
+  "none", "Hz", "MHz", "dB", "°", "s", "ms", "μs",
 };
 
 /**
@@ -139,17 +129,12 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
 } PortOwnerType;
 
-static const cyaml_strval_t port_owner_type_strings[] = {
-  {"audio engine",               PORT_OWNER_TYPE_AUDIO_ENGINE             },
-  { "plugin",                    PORT_OWNER_TYPE_PLUGIN                   },
-  { "track",                     PORT_OWNER_TYPE_TRACK                    },
-  { "channel",                   PORT_OWNER_TYPE_CHANNEL                  },
-  { "fader",                     PORT_OWNER_TYPE_FADER                    },
-  { "channel send",              PORT_OWNER_TYPE_CHANNEL_SEND             },
-  { "track processor",           PORT_OWNER_TYPE_TRACK_PROCESSOR          },
-  { "hw",                        PORT_OWNER_TYPE_HW                       },
-  { "transport",                 PORT_OWNER_TYPE_TRANSPORT                },
-  { "modulator macro processor", PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR},
+static const char * port_owner_type_strings[] = {
+  "audio engine",    "plugin",
+  "track",           "channel",
+  "fader",           "channel send",
+  "track processor", "hw",
+  "transport",       "modulator macro processor",
 };
 
 /**
@@ -288,38 +273,15 @@ typedef enum PortFlags
   PORT_FLAG_IS_PROPERTY = 1 << 30,
 } PortFlags;
 
-static const cyaml_bitdef_t port_flags_bitvals[] = {
-  {.name = "stereo_l",             .offset = 0,  .bits = 1},
-  { .name = "stereo_r",            .offset = 1,  .bits = 1},
-  { .name = "piano_roll",          .offset = 2,  .bits = 1},
-  { .name = "sidechain",           .offset = 3,  .bits = 1},
-  { .name = "main_port",           .offset = 4,  .bits = 1},
-  { .name = "manual_press",        .offset = 5,  .bits = 1},
-  { .name = "amplitude",           .offset = 6,  .bits = 1},
-  { .name = "stereo_balance",      .offset = 7,  .bits = 1},
-  { .name = "want_position",       .offset = 8,  .bits = 1},
-  { .name = "trigger",             .offset = 9,  .bits = 1},
-  { .name = "toggle",              .offset = 10, .bits = 1},
-  { .name = "integer",             .offset = 11, .bits = 1},
-  { .name = "freewheel",           .offset = 12, .bits = 1},
-  { .name = "reports_latency",     .offset = 13, .bits = 1},
-  { .name = "not_on_gui",          .offset = 14, .bits = 1},
-  { .name = "plugin_enabled",      .offset = 15, .bits = 1},
-  { .name = "plugin_control",      .offset = 16, .bits = 1},
-  { .name = "fader_mute",          .offset = 17, .bits = 1},
-  { .name = "channel_fader",       .offset = 18, .bits = 1},
-  { .name = "automatable",         .offset = 19, .bits = 1},
-  { .name = "midi_automatable",    .offset = 20, .bits = 1},
-  { .name = "send_receivable",     .offset = 21, .bits = 1},
-  { .name = "bpm",                 .offset = 22, .bits = 1},
-  { .name = "generic_plugin_port", .offset = 23, .bits = 1},
-  { .name = "plugin_gain",         .offset = 24, .bits = 1},
-  { .name = "tp_mono",             .offset = 25, .bits = 1},
-  { .name = "tp_input_gain",       .offset = 26, .bits = 1},
-  { .name = "hw",                  .offset = 27, .bits = 1},
-  { .name = "modulator_macro",     .offset = 28, .bits = 1},
-  { .name = "logarithmic",         .offset = 29, .bits = 1},
-  { .name = "is_property",         .offset = 30, .bits = 1},
+static const char * port_flags_bitvals[] = {
+  "stereo_l",         "stereo_r",        "piano_roll",    "sidechain",
+  "main_port",        "manual_press",    "amplitude",     "stereo_balance",
+  "want_position",    "trigger",         "toggle",        "integer",
+  "freewheel",        "reports_latency", "not_on_gui",    "plugin_enabled",
+  "plugin_control",   "fader_mute",      "channel_fader", "automatable",
+  "midi_automatable", "send_receivable", "bpm",           "generic_plugin_port",
+  "plugin_gain",      "tp_mono",         "tp_input_gain", "hw",
+  "modulator_macro",  "logarithmic",     "is_property",
 };
 
 typedef enum PortFlags2
@@ -412,38 +374,38 @@ typedef enum PortFlags2
   PORT_FLAG2_MIDI_CLOCK = 1 << 30,
 } PortFlags2;
 
-static const cyaml_bitdef_t port_flags2_bitvals[] = {
-  YAML_BITVAL ("transport_roll", 0),
-  YAML_BITVAL ("transport_stop", 1),
-  YAML_BITVAL ("transport_backward", 2),
-  YAML_BITVAL ("transport_forward", 3),
-  YAML_BITVAL ("transport_loop_toggle", 4),
-  YAML_BITVAL ("transport_rec_toggle", 5),
-  YAML_BITVAL ("patch_message", 6),
-  YAML_BITVAL ("enumeration", 7),
-  YAML_BITVAL ("uri_param", 8),
-  YAML_BITVAL ("sequence", 9),
-  YAML_BITVAL ("supports_midi", 10),
-  YAML_BITVAL ("output_gain", 11),
-  YAML_BITVAL ("pitch_bend", 12),
-  YAML_BITVAL ("poly_key_pressure", 13),
-  YAML_BITVAL ("channel_pressure", 14),
-  YAML_BITVAL ("ch_send_enabled", 15),
-  YAML_BITVAL ("ch_send_amount", 16),
-  YAML_BITVAL ("beats_per_bar", 17),
-  YAML_BITVAL ("beat_unit", 18),
-  YAML_BITVAL ("fader_solo", 19),
-  YAML_BITVAL ("fader_listen", 20),
-  YAML_BITVAL ("fader_mono_compat", 21),
-  YAML_BITVAL ("track_recording", 22),
-  YAML_BITVAL ("tp_monitor_audio", 23),
-  YAML_BITVAL ("prefader", 24),
-  YAML_BITVAL ("postfader", 25),
-  YAML_BITVAL ("monitor_fader", 26),
-  YAML_BITVAL ("sample_processor_fader", 27),
-  YAML_BITVAL ("sample_processor_track", 28),
-  YAML_BITVAL ("fader_swap_phase", 29),
-  YAML_BITVAL ("midi_clock", 30),
+static const char * port_flags2_bitvals[] = {
+  "transport_roll",
+  "transport_stop",
+  "transport_backward",
+  "transport_forward",
+  "transport_loop_toggle",
+  "transport_rec_toggle",
+  "patch_message",
+  "enumeration",
+  "uri_param",
+  "sequence",
+  "supports_midi",
+  "output_gain",
+  "pitch_bend",
+  "poly_key_pressure",
+  "channel_pressure",
+  "ch_send_enabled",
+  "ch_send_amount",
+  "beats_per_bar",
+  "beat_unit",
+  "fader_solo",
+  "fader_listen",
+  "fader_mono_compat",
+  "track_recording",
+  "tp_monitor_audio",
+  "prefader",
+  "postfader",
+  "monitor_fader",
+  "sample_processor_fader",
+  "sample_processor_track",
+  "fader_swap_phase",
+  "midi_clock",
 };
 
 /**
@@ -501,38 +463,6 @@ typedef struct PortIdentifier
   /** Index (e.g. in plugin's output ports). */
   int port_index;
 } PortIdentifier;
-
-static const cyaml_schema_field_t port_identifier_fields_schema[] = {
-  YAML_FIELD_INT (PortIdentifier, schema_version),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, label),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, sym),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, uri),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, comment),
-  YAML_FIELD_ENUM (PortIdentifier, owner_type, port_owner_type_strings),
-  YAML_FIELD_ENUM (PortIdentifier, type, port_type_strings),
-  YAML_FIELD_ENUM (PortIdentifier, flow, port_flow_strings),
-  YAML_FIELD_ENUM (PortIdentifier, unit, port_unit_strings),
-  YAML_FIELD_BITFIELD (PortIdentifier, flags, port_flags_bitvals),
-  YAML_FIELD_BITFIELD (PortIdentifier, flags2, port_flags2_bitvals),
-  YAML_FIELD_UINT (PortIdentifier, track_name_hash),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortIdentifier,
-    plugin_id,
-    plugin_identifier_fields_schema),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, port_group),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, ext_port_id),
-  YAML_FIELD_INT (PortIdentifier, port_index),
-
-  CYAML_FIELD_END,
-};
-
-static const cyaml_schema_value_t port_identifier_schema = {
-  YAML_VALUE_PTR (PortIdentifier, port_identifier_fields_schema),
-};
-
-static const cyaml_schema_value_t port_identifier_schema_default = {
-  YAML_VALUE_DEFAULT (PortIdentifier, port_identifier_fields_schema),
-};
 
 void
 port_identifier_init (PortIdentifier * self);

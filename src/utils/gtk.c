@@ -1840,15 +1840,15 @@ z_graphene_rect_print (const graphene_rect_t * rect)
 }
 
 GtkStringList *
-z_gtk_string_list_new_from_cyaml_strvals (
-  const cyaml_strval_t * strvals,
-  size_t                 num_vals,
-  bool                   localized)
+z_gtk_string_list_new_from_string_array (
+  const char ** strvals,
+  size_t        num_vals,
+  bool          localized)
 {
   GtkStringList * strlist = gtk_string_list_new (NULL);
   for (size_t i = 0; i < num_vals; i++)
     {
-      const char * str = strvals[i].str;
+      const char * str = strvals[i];
       if (localized)
         {
           str = _ (str);

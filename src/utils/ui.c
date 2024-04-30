@@ -227,7 +227,6 @@ px_to_pos (double px, Position * pos, bool use_padding, RulerWidget * ruler)
         px = 0.0;
     }
 
-  pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->ticks = px / ruler->px_per_tick;
   position_update_frames_from_ticks (pos, 0.0);
 }

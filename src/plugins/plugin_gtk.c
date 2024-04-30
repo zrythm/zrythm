@@ -205,8 +205,7 @@ plugin_gtk_add_control_row (
       if (id.unit > PORT_UNIT_NONE)
         {
           sprintf (
-            name, "%s <small>(%s)</small>", _name,
-            port_unit_strings[id.unit].str);
+            name, "%s <small>(%s)</small>", _name, port_unit_strings[id.unit]);
         }
 
       preformatted = true;

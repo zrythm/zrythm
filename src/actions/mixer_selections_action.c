@@ -954,9 +954,9 @@ do_or_undo_move_or_copy (
             g_debug (
               "%s: moving plugin from "
               "%s:%s:%d to %s:%s:%d",
-              __func__, from_tr->name,
-              plugin_slot_type_strings[from_slot_type].str, from_slot,
-              to_tr->name, plugin_slot_type_strings[to_slot_type].str, to_slot);
+              __func__, from_tr->name, plugin_slot_type_strings[from_slot_type],
+              from_slot, to_tr->name, plugin_slot_type_strings[to_slot_type],
+              to_slot);
 
             if (
               from_tr != to_tr || from_slot_type != to_slot_type
@@ -971,9 +971,9 @@ do_or_undo_move_or_copy (
             g_debug (
               "%s: copying plugin from "
               "%s:%s:%d to %s:%s:%d",
-              __func__, from_tr->name,
-              plugin_slot_type_strings[from_slot_type].str, from_slot,
-              to_tr->name, plugin_slot_type_strings[to_slot_type].str, to_slot);
+              __func__, from_tr->name, plugin_slot_type_strings[from_slot_type],
+              from_slot, to_tr->name, plugin_slot_type_strings[to_slot_type],
+              to_slot);
 
             track_insert_plugin (
               to_tr, pl, to_slot_type, to_slot, Z_F_INSTANTIATE,
@@ -1071,10 +1071,9 @@ do_or_undo_move_or_copy (
               g_debug (
                 "%s: moving plugin back from "
                 "%s:%s:%d to %s:%s:%d",
-                __func__, to_tr->name,
-                plugin_slot_type_strings[to_slot_type].str, to_slot,
-                from_tr->name, plugin_slot_type_strings[from_slot_type].str,
-                from_slot);
+                __func__, to_tr->name, plugin_slot_type_strings[to_slot_type],
+                to_slot, from_tr->name,
+                plugin_slot_type_strings[from_slot_type], from_slot);
 
               if (
                 from_tr != to_tr || from_slot_type != to_slot_type

@@ -19,6 +19,7 @@
 #include <glib/gi18n.h>
 
 #include <CarlaBackend.h>
+#include <gio/gio.h>
 
 typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
@@ -78,48 +79,50 @@ typedef enum ZPluginCategory
   PC_MIXER,
 } ZPluginCategory;
 
-static const cyaml_strval_t plugin_descriptor_category_strings[] = {
-  {"None",              ZPLUGIN_CATEGORY_NONE},
-  { "Delay",            PC_DELAY             },
-  { "Reverb",           PC_REVERB            },
-  { "Distortion",       PC_DISTORTION        },
-  { "Waveshaper",       PC_WAVESHAPER        },
-  { "Dynamics",         PC_DYNAMICS          },
-  { "Amplifier",        PC_AMPLIFIER         },
-  { "Compressor",       PC_COMPRESSOR        },
-  { "Envelope",         PC_ENVELOPE          },
-  { "Expander",         PC_EXPANDER          },
-  { "Gate",             PC_GATE              },
-  { "Limiter",          PC_LIMITER           },
-  { "Filter",           PC_FILTER            },
-  { "Allpass Filter",   PC_ALLPASS_FILTER    },
-  { "Bandpass Filter",  PC_BANDPASS_FILTER   },
-  { "Comb Filter",      PC_COMB_FILTER       },
-  { "EQ",               PC_EQ                },
-  { "Multi-EQ",         PC_MULTI_EQ          },
-  { "Parametric EQ",    PC_PARA_EQ           },
-  { "Highpass Filter",  PC_HIGHPASS_FILTER   },
-  { "Lowpass Filter",   PC_LOWPASS_FILTER    },
-  { "Generator",        PC_GENERATOR         },
-  { "Constant",         PC_CONSTANT          },
-  { "Instrument",       PC_INSTRUMENT        },
-  { "Oscillator",       PC_OSCILLATOR        },
-  { "MIDI",             PC_MIDI              },
-  { "Modulator",        PC_MODULATOR         },
-  { "Chorus",           PC_CHORUS            },
-  { "Flanger",          PC_FLANGER           },
-  { "Phaser",           PC_PHASER            },
-  { "Simulator",        PC_SIMULATOR         },
-  { "Simulator Reverb", PC_SIMULATOR_REVERB  },
-  { "Spatial",          PC_SPATIAL           },
-  { "Spectral",         PC_SPECTRAL          },
-  { "Pitch",            PC_PITCH             },
-  { "Utility",          PC_UTILITY           },
-  { "Analyzer",         PC_ANALYZER          },
-  { "Converter",        PC_CONVERTER         },
-  { "Function",         PC_FUNCTION          },
-  { "Mixer",            PC_MIXER             },
+#if 0
+static const char * plugin_descriptor_category_strings[] = {
+  "None",
+  "Delay",
+  "Reverb",
+  "Distortion",
+  "Waveshaper",
+  "Dynamics",
+  "Amplifier",
+  "Compressor",
+  "Envelope",
+  "Expander",
+  "Gate",
+  "Limiter",
+  "Filter",
+  "Allpass Filter",
+  "Bandpass Filter",
+  "Comb Filter",
+  "EQ",
+  "Multi-EQ",
+  "Parametric EQ",
+  "Highpass Filter",
+  "Lowpass Filter",
+  "Generator",
+  "Constant",
+  "Instrument",
+  "Oscillator",
+  "MIDI",
+  "Modulator",
+  "Chorus",
+  "Flanger",
+  "Phaser",
+  "Simulator",
+  "Simulator Reverb",
+  "Spatial",
+  "Spectral",
+  "Pitch",
+  "Utility",
+  "Analyzer",
+  "Converter",
+  "Function",
+  "Mixer",
 };
+#endif
 
 /**
  * Plugin protocol.
@@ -140,18 +143,9 @@ typedef enum ZPluginProtocol
   Z_PLUGIN_PROTOCOL_JSFX,
 } ZPluginProtocol;
 
-static const cyaml_strval_t plugin_protocol_strings[] = {
-  {N_ ("Dummy"), Z_PLUGIN_PROTOCOL_DUMMY },
-  { "LV2",       Z_PLUGIN_PROTOCOL_LV2   },
-  { "DSSI",      Z_PLUGIN_PROTOCOL_DSSI  },
-  { "LADSPA",    Z_PLUGIN_PROTOCOL_LADSPA},
-  { "VST",       Z_PLUGIN_PROTOCOL_VST   },
-  { "VST3",      Z_PLUGIN_PROTOCOL_VST3  },
-  { "AU",        Z_PLUGIN_PROTOCOL_AU    },
-  { "SFZ",       Z_PLUGIN_PROTOCOL_SFZ   },
-  { "SF2",       Z_PLUGIN_PROTOCOL_SF2   },
-  { "CLAP",      Z_PLUGIN_PROTOCOL_CLAP  },
-  { "JSFX",      Z_PLUGIN_PROTOCOL_JSFX  },
+static const char * plugin_protocol_strings[] = {
+  "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
+  "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
 };
 
 /**
@@ -163,11 +157,6 @@ typedef enum PluginArchitecture
   ARCH_64
 } PluginArchitecture;
 
-static const cyaml_strval_t plugin_architecture_strings[] = {
-  {"32-bit",  ARCH_32},
-  { "64-bit", ARCH_64},
-};
-
 /**
  * Carla bridge mode.
  */
@@ -178,10 +167,10 @@ typedef enum CarlaBridgeMode
   CARLA_BRIDGE_FULL,
 } CarlaBridgeMode;
 
-static const cyaml_strval_t carla_bridge_mode_strings[] = {
-  {"None",  CARLA_BRIDGE_NONE},
-  { "UI",   CARLA_BRIDGE_UI  },
-  { "Full", CARLA_BRIDGE_FULL},
+static const char * carla_bridge_mode_strings[] = {
+  "None",
+  "UI",
+  "Full",
 };
 
 /***
@@ -244,38 +233,6 @@ typedef struct PluginDescriptor
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
 } PluginDescriptor;
-
-static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
-  YAML_FIELD_INT (PluginDescriptor, schema_version),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, author),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, website),
-  YAML_FIELD_ENUM (PluginDescriptor, category, plugin_descriptor_category_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, category_str),
-  YAML_FIELD_INT (PluginDescriptor, num_audio_ins),
-  YAML_FIELD_INT (PluginDescriptor, num_audio_outs),
-  YAML_FIELD_INT (PluginDescriptor, num_midi_ins),
-  YAML_FIELD_INT (PluginDescriptor, num_midi_outs),
-  YAML_FIELD_INT (PluginDescriptor, num_ctrl_ins),
-  YAML_FIELD_INT (PluginDescriptor, num_ctrl_outs),
-  YAML_FIELD_INT (PluginDescriptor, num_cv_ins),
-  YAML_FIELD_UINT (PluginDescriptor, unique_id),
-  YAML_FIELD_INT (PluginDescriptor, num_cv_outs),
-  YAML_FIELD_ENUM (PluginDescriptor, arch, plugin_architecture_strings),
-  YAML_FIELD_ENUM (PluginDescriptor, protocol, plugin_protocol_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, path),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, uri),
-  YAML_FIELD_ENUM (PluginDescriptor, min_bridge_mode, carla_bridge_mode_strings),
-  YAML_FIELD_INT (PluginDescriptor, has_custom_ui),
-  YAML_FIELD_UINT (PluginDescriptor, ghash),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, sha1),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_descriptor_schema = {
-  YAML_VALUE_PTR (PluginDescriptor, plugin_descriptor_fields_schema),
-};
 
 PluginDescriptor *
 plugin_descriptor_new (void);

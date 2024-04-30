@@ -111,6 +111,7 @@ descriptor_from_discovery_info (
   PluginDescriptor * descr = plugin_descriptor_new ();
   descr->protocol =
     plugin_descriptor_get_protocol_from_carla_plugin_type (info->ptype);
+  g_return_val_if_fail (descr->protocol > Z_PLUGIN_PROTOCOL_DUMMY, NULL);
   const char * path = NULL;
   const char * uri = NULL;
   if (descr->protocol == Z_PLUGIN_PROTOCOL_SFZ)
@@ -291,7 +292,7 @@ z_carla_discovery_start (
     {
       g_message (
         "no plugins to scan for %s (given paths: %s)",
-        plugin_protocol_strings[protocol].str, paths_separated);
+        plugin_protocol_strings[protocol], paths_separated);
       g_free (paths_separated);
       return;
     }

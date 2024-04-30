@@ -2335,7 +2335,7 @@ track_get_region_at_pos (
 const char *
 track_stringize_type (TrackType type)
 {
-  return _ (track_type_strings[type].str);
+  return _ (track_type_strings[type]);
 }
 
 /**
@@ -3125,7 +3125,7 @@ track_type_get_from_string (const char * str)
 {
   for (int i = 0; i <= TRACK_TYPE_MIDI_GROUP; i++)
     {
-      if (string_is_equal (track_type_strings[i].str, str))
+      if (string_is_equal (track_type_strings[i], str))
         {
           return (TrackType) i;
         }

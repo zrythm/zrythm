@@ -218,7 +218,10 @@ chord_descriptor_note_to_string (MusicalNote note)
 const char *
 chord_descriptor_chord_type_to_string (ChordType type)
 {
-  return chord_type_strings[type].str;
+  static const char * chord_type_strings[] = {
+    "Invalid", "Maj", "min", "dim", "sus4", "sus2", "aug", "custom",
+  };
+  return chord_type_strings[type];
 }
 
 /**
@@ -227,7 +230,19 @@ chord_descriptor_chord_type_to_string (ChordType type)
 const char *
 chord_descriptor_chord_accent_to_string (ChordAccent accent)
 {
-  return chord_accent_strings[accent].str;
+  static const char * chord_accent_strings[] = {
+    "None",
+    "7",
+    "j7",
+    "\u266D9",
+    "9",
+    "\u266F9",
+    "11",
+    "\u266D5/\u266F11",
+    "\u266F5/\u266D13",
+    "6/13",
+  };
+  return chord_accent_strings[accent];
 }
 
 /**

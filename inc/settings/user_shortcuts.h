@@ -37,39 +37,10 @@ typedef struct UserShortcut
  */
 typedef struct UserShortcuts
 {
-  /** Version of the file. */
-  int schema_version;
-
   /** Valid descriptors. */
   UserShortcut * shortcuts[900];
   int            num_shortcuts;
 } UserShortcuts;
-
-static const cyaml_schema_field_t user_shortcut_fields_schema[] = {
-  YAML_FIELD_STRING_PTR (UserShortcut, action),
-  YAML_FIELD_STRING_PTR (UserShortcut, primary),
-  YAML_FIELD_STRING_PTR_OPTIONAL (UserShortcut, secondary),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t user_shortcut_schema = {
-  YAML_VALUE_PTR (UserShortcut, user_shortcut_fields_schema),
-};
-
-static const cyaml_schema_field_t user_shortcuts_fields_schema[] = {
-  YAML_FIELD_INT (UserShortcuts, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    UserShortcuts,
-    shortcuts,
-    user_shortcut_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t user_shortcuts_schema = {
-  YAML_VALUE_PTR (UserShortcuts, user_shortcuts_fields_schema),
-};
 
 void
 user_shortcut_free (UserShortcut * shortcut);

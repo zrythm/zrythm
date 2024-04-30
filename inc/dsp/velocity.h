@@ -15,8 +15,6 @@
 #include "dsp/region_identifier.h"
 #include "gui/backend/arranger_object.h"
 
-#include <cyaml/cyaml.h>
-
 typedef struct MidiNote        MidiNote;
 typedef struct _VelocityWidget VelocityWidget;
 

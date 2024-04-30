@@ -17,6 +17,7 @@
 #include "utils/yaml.h"
 
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * @addtogroup dsp
@@ -94,12 +95,9 @@ typedef enum CurveAlgorithm
   NUM_CURVE_ALGORITHMS,
 } CurveAlgorithm;
 
-static const cyaml_strval_t curve_algorithm_strings[] = {
-  {N_ ("Exponent"),      CURVE_ALGORITHM_EXPONENT    },
-  { N_ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE},
-  { N_ ("Vital"),        CURVE_ALGORITHM_VITAL       },
-  { N_ ("Pulse"),        CURVE_ALGORITHM_PULSE       },
-  { N_ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC },
+static const char * curve_algorithm_strings[] = {
+  N_ ("Exponent"), N_ ("Superellipse"), N_ ("Vital"),
+  N_ ("Pulse"),    N_ ("Logarithmic"),
 };
 
 /**
@@ -116,21 +114,6 @@ typedef struct CurveOptions
    * tilts upwards and 0 is a straight line. */
   double curviness;
 } CurveOptions;
-
-static const cyaml_schema_field_t curve_options_fields_schema[] = {
-  YAML_FIELD_INT (CurveOptions, schema_version),
-  YAML_FIELD_ENUM (CurveOptions, algo, curve_algorithm_strings),
-  YAML_FIELD_FLOAT (CurveOptions, curviness),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t curve_options_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    CurveOptions,
-    curve_options_fields_schema),
-};
 
 typedef struct CurveFadePreset
 {

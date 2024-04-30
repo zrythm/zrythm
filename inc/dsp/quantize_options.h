@@ -31,8 +31,6 @@
 
 typedef struct QuantizeOptions
 {
-  int schema_version;
-
   /** See SnapGrid. */
   NoteLength note_length;
 
@@ -68,23 +66,6 @@ typedef struct QuantizeOptions
   Position q_points[MAX_SNAP_POINTS];
   int      num_q_points;
 } QuantizeOptions;
-
-static const cyaml_schema_field_t quantize_options_fields_schema[] = {
-  YAML_FIELD_INT (QuantizeOptions, schema_version),
-  YAML_FIELD_ENUM (QuantizeOptions, note_length, note_length_strings),
-  YAML_FIELD_ENUM (QuantizeOptions, note_type, note_type_strings),
-  YAML_FIELD_FLOAT (QuantizeOptions, amount),
-  YAML_FIELD_INT (QuantizeOptions, adj_start),
-  YAML_FIELD_INT (QuantizeOptions, adj_end),
-  YAML_FIELD_FLOAT (QuantizeOptions, swing),
-  YAML_FIELD_FLOAT (QuantizeOptions, rand_ticks),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t quantize_options_schema = {
-  YAML_VALUE_PTR (QuantizeOptions, quantize_options_fields_schema),
-};
 
 void
 quantize_options_init (QuantizeOptions * self, NoteLength note_length);

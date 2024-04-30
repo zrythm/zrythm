@@ -97,23 +97,6 @@ typedef struct AudioClip
   gint64 last_write;
 } AudioClip;
 
-static const cyaml_schema_field_t audio_clip_fields_schema[] = {
-  YAML_FIELD_INT (AudioClip, schema_version),
-  YAML_FIELD_STRING_PTR (AudioClip, name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (AudioClip, file_hash),
-  YAML_FIELD_FLOAT (AudioClip, bpm),
-  YAML_FIELD_ENUM (AudioClip, bit_depth, bit_depth_strings),
-  YAML_FIELD_INT (AudioClip, use_flac),
-  YAML_FIELD_INT (AudioClip, samplerate),
-  YAML_FIELD_INT (AudioClip, pool_id),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t audio_clip_schema = {
-  YAML_VALUE_PTR_NULLABLE (AudioClip, audio_clip_fields_schema),
-};
-
 static inline bool
 audio_clip_use_flac (BitDepth bd)
 {

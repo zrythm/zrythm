@@ -16,15 +16,14 @@
 #include <stdbool.h>
 
 #include "utils/general.h"
-#include "utils/yaml.h"
+
+#include <gtk/gtk.h>
 
 /**
  * @addtogroup dsp
  *
  * @{
  */
-
-#define REGION_IDENTIFIER_SCHEMA_VERSION 1
 
 /**
  * Type of Region.
@@ -40,11 +39,11 @@ typedef enum RegionType
   REGION_TYPE_CHORD = 1 << 3,
 } RegionType;
 
-static const cyaml_bitdef_t region_type_bitvals[] = {
-  {.name = "midi",        .offset = 0, .bits = 1},
-  { .name = "audio",      .offset = 1, .bits = 1},
-  { .name = "automation", .offset = 2, .bits = 1},
-  { .name = "chord",      .offset = 3, .bits = 1},
+static const char * region_type_bitvals[] = {
+  "midi",
+  "audio",
+  "automation",
+  "chord",
 };
 
 /**
@@ -103,7 +102,7 @@ region_identifier_get_region_type_name (RegionType type)
   g_return_val_if_fail (
     type >= REGION_TYPE_MIDI && type <= REGION_TYPE_CHORD, NULL);
 
-  return region_type_bitvals[utils_get_uint_from_bitfield_val (type)].name;
+  return region_type_bitvals[utils_get_uint_from_bitfield_val (type)];
 }
 
 static inline void

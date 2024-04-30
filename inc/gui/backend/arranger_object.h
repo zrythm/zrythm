@@ -76,16 +76,12 @@ typedef enum ArrangerObjectType
   ARRANGER_OBJECT_TYPE_VELOCITY,
 } ArrangerObjectType;
 
-static const cyaml_strval_t arranger_object_type_strings[] = {
-  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE            },
-  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL             },
-  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION          },
-  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE       },
-  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT    },
-  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT    },
-  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER          },
-  { N_ ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT},
-  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY        },
+static const char * arranger_object_type_strings[] = {
+  N_ ("None"),         N_ ("All"),
+  N_ ("Region"),       N_ ("Midi Note"),
+  N_ ("Chord Object"), N_ ("Scale Object"),
+  N_ ("Marker"),       N_ ("Automation Point"),
+  N_ ("Velocity"),
 };
 
 /**
@@ -99,10 +95,6 @@ typedef enum ArrangerObjectFlags
   ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
 
 } ArrangerObjectFlags;
-
-static const cyaml_bitdef_t arranger_object_flags_bitvals[] = {
-  {.name = "non_project", .offset = 0, .bits = 1},
-};
 
 typedef enum ArrangerObjectPositionType
 {
@@ -627,12 +619,6 @@ arranger_object_set_position (
   const bool                 validate);
 
 /**
- * Returns the type as a string.
- */
-const char *
-arranger_object_stringize_type (ArrangerObjectType type);
-
-/**
  * Copies the identifier from src to dest.
  */
 void
@@ -781,7 +767,7 @@ arranger_object_get_track (const ArrangerObject * const self);
 static inline const char *
 arranger_object_get_type_as_string (ArrangerObjectType type)
 {
-  return arranger_object_type_strings[type].str;
+  return arranger_object_type_strings[type];
 }
 
 void

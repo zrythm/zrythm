@@ -512,9 +512,8 @@ make_control (
       else if (path_type == PATH_TYPE_NONE)
         {
           /* map enums */
-          const char **          strv = NULL;
-          const cyaml_strval_t * cyaml_strv = NULL;
-          size_t                 size = 0;
+          const char ** strv = NULL;
+          size_t        size = 0;
 
 #define SET_STRV_IF_MATCH(a, b, c, arr_name) \
   if (KEY_IS (a, b, c)) \
@@ -530,13 +529,6 @@ make_control (
       size = count; \
     }
 
-#define SET_STRV_FROM_CYAML_IF_MATCH(a, b, c, arr_name) \
-  if (KEY_IS (a, b, c)) \
-    { \
-      cyaml_strv = arr_name; \
-      size = G_N_ELEMENTS (arr_name); \
-    }
-
           SET_STRV_IF_MATCH (
             "General", "Engine", "audio-backend", audio_backend_str);
           SET_STRV_IF_MATCH (
@@ -545,9 +537,9 @@ make_control (
             "General", "Engine", "sample-rate", sample_rate_str);
           SET_STRV_IF_MATCH (
             "General", "Engine", "buffer-size", buffer_size_str);
-          SET_STRV_FROM_CYAML_IF_MATCH (
+          SET_STRV_IF_MATCH (
             "Editing", "Audio", "fade-algorithm", curve_algorithm_strings);
-          SET_STRV_FROM_CYAML_IF_MATCH (
+          SET_STRV_IF_MATCH (
             "Editing", "Automation", "curve-algorithm", curve_algorithm_strings);
           SET_STRV_IF_MATCH_W_COUNT (
             "UI", "General", "language",
@@ -558,17 +550,12 @@ make_control (
 
 #undef SET_STRV_IF_MATCH
 
-          if (strv || cyaml_strv)
+          if (strv)
             {
               GtkStringList * string_list = gtk_string_list_new (NULL);
               for (size_t i = 0; i < size; i++)
                 {
-                  if (cyaml_strv)
-                    {
-                      gtk_string_list_append (
-                        string_list, _ (cyaml_strv[i].str));
-                    }
-                  else if (strv)
+                  if (strv)
                     {
                       gtk_string_list_append (string_list, _ (strv[i]));
                     }

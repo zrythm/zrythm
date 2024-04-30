@@ -268,7 +268,7 @@ track_filter_popover_widget_init (TrackFilterPopoverWidget * self)
   guint                  selections[100];
   int num_selections = get_track_type_selections (selections);
   multi_selection_widget_setup (
-    multi_select, NULL, track_type_strings, TRACK_TYPE_FOLDER + 1,
+    multi_select, track_type_strings, TRACK_TYPE_FOLDER + 1,
     on_track_types_changed, selections, num_selections, self);
   GtkListBoxRow * list_box_row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
   gtk_list_box_row_set_child (list_box_row, GTK_WIDGET (multi_select));

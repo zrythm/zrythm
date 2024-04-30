@@ -1,11 +1,9 @@
-/*
- * SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "io/serialization/chords.h"
 #include "project.h"
 #include "settings/chord_preset_pack.h"
 #include "utils/arrays.h"
@@ -17,15 +15,23 @@
 
 #include <glib/gi18n.h>
 
+#define CHORD_PRESET_PACK_JSON_TYPE "Zrythm Chord Preset Pack"
+#define CHORD_PRESET_PACK_JSON_FORMAT 2
+
+ChordPresetPack *
+chord_preset_pack_new_empty (void)
+{
+  ChordPresetPack * self = object_new (ChordPresetPack);
+  self->presets = g_ptr_array_new_full (12, (GDestroyNotify) chord_preset_free);
+  return self;
+}
+
 ChordPresetPack *
 chord_preset_pack_new (const char * name, bool is_standard)
 {
-  ChordPresetPack * self = object_new (ChordPresetPack);
+  ChordPresetPack * self = chord_preset_pack_new_empty ();
 
-  self->schema_version = CHORD_PRESET_PACK_SCHEMA_VERSION;
   self->name = g_strdup (name);
-  self->presets_size = 12;
-  self->presets = object_new_n (self->presets_size, ChordPreset *);
   self->is_standard = is_standard;
 
   return self;
@@ -38,21 +44,18 @@ chord_preset_pack_new (const char * name, bool is_standard)
 void
 chord_preset_pack_add_preset (ChordPresetPack * self, const ChordPreset * pset)
 {
-  array_double_size_if_full (
-    self->presets, self->num_presets, self->presets_size, ChordPreset *);
-
   ChordPreset * clone = chord_preset_clone (pset);
   clone->pack = self;
 
-  array_append (self->presets, self->num_presets, clone);
+  g_ptr_array_add (self->presets, clone);
 }
 
 bool
 chord_preset_pack_contains_name (const ChordPresetPack * self, const char * name)
 {
-  for (int i = 0; i < self->num_presets; i++)
+  for (size_t i = 0; i < self->presets->len; i++)
     {
-      ChordPreset * pset = self->presets[i];
+      ChordPreset * pset = g_ptr_array_index (self->presets, i);
       if (string_is_equal_ignore_case (pset->name, name))
         return true;
     }
@@ -65,9 +68,9 @@ chord_preset_pack_contains_preset (
   const ChordPresetPack * self,
   const ChordPreset *     pset)
 {
-  for (int i = 0; i < self->num_presets; i++)
+  for (size_t i = 0; i < self->presets->len; i++)
     {
-      ChordPreset * cur_pset = self->presets[i];
+      ChordPreset * cur_pset = g_ptr_array_index (self->presets, i);
       if (pset == cur_pset)
         return true;
     }
@@ -78,9 +81,7 @@ chord_preset_pack_contains_preset (
 void
 chord_preset_pack_delete_preset (ChordPresetPack * self, ChordPreset * pset)
 {
-  array_delete (self->presets, self->num_presets, pset);
-
-  chord_preset_free (pset);
+  g_ptr_array_remove (self->presets, pset);
 
   EVENTS_PUSH (ET_CHORD_PRESET_REMOVED, NULL);
 }
@@ -124,18 +125,97 @@ chord_preset_pack_generate_context_menu (const ChordPresetPack * self)
   return G_MENU_MODEL (menu);
 }
 
+char *
+chord_preset_pack_serialize_to_json_str (
+  const ChordPresetPack * self,
+  GError **               error)
+{
+  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
+  yyjson_mut_val * root = yyjson_mut_obj (doc);
+  if (!root)
+    {
+      g_set_error_literal (error, 0, 0, "Failed to create root obj");
+      return NULL;
+    }
+  yyjson_mut_doc_set_root (doc, root);
+
+  yyjson_mut_obj_add_str (doc, root, "type", CHORD_PRESET_PACK_JSON_TYPE);
+  yyjson_mut_obj_add_int (doc, root, "format", CHORD_PRESET_PACK_JSON_FORMAT);
+  yyjson_mut_obj_add_str (doc, root, "name", self->name);
+  yyjson_mut_val * psets_arr = yyjson_mut_obj_add_arr (doc, root, "presets");
+  for (size_t i = 0; i < self->presets->len; i++)
+    {
+      const ChordPreset * pset = g_ptr_array_index (self->presets, i);
+      yyjson_mut_val *    pset_obj = yyjson_mut_arr_add_obj (doc, psets_arr);
+      chord_preset_serialize_to_json (doc, pset_obj, pset, error);
+    }
+  yyjson_mut_obj_add_bool (doc, root, "isStandard", self->is_standard);
+
+  char * json = yyjson_mut_write (doc, YYJSON_WRITE_PRETTY_TWO_SPACES, NULL);
+  g_message ("done writing json to string");
+
+  yyjson_mut_doc_free (doc);
+
+  return json;
+}
+
+ChordPresetPack *
+chord_preset_pack_deserialize_from_json_str (const char * json, GError ** error)
+{
+  yyjson_doc * doc =
+    yyjson_read_opts ((char *) json, strlen (json), 0, NULL, NULL);
+  yyjson_val * root = yyjson_doc_get_root (doc);
+  if (!root)
+    {
+      g_set_error_literal (error, 0, 0, "Failed to create root obj");
+      return NULL;
+    }
+
+  yyjson_obj_iter it = yyjson_obj_iter_with (root);
+  if (!yyjson_equals_str (
+        yyjson_obj_iter_get (&it, "type"), CHORD_PRESET_PACK_JSON_TYPE))
+    {
+      g_set_error_literal (error, 0, 0, "Not a valid preset pack file");
+      return NULL;
+    }
+
+  int format = yyjson_get_int (yyjson_obj_iter_get (&it, "format"));
+  if (format != CHORD_PRESET_PACK_JSON_FORMAT)
+    {
+      g_set_error_literal (error, 0, 0, "Invalid version");
+      return NULL;
+    }
+
+  ChordPresetPack * self = chord_preset_pack_new_empty ();
+
+  self->name = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "name")));
+  yyjson_val *    presets_arr = yyjson_obj_iter_get (&it, "presets");
+  yyjson_arr_iter presets_it = yyjson_arr_iter_with (presets_arr);
+  yyjson_val *    preset_obj = NULL;
+  while ((preset_obj = yyjson_arr_iter_next (&presets_it)))
+    {
+      ChordPreset * preset = chord_preset_new ();
+      g_ptr_array_add (self->presets, preset);
+      chord_preset_deserialize_from_json (doc, preset_obj, preset, error);
+    }
+  self->is_standard = yyjson_get_bool (yyjson_obj_iter_get (&it, "isStandard"));
+
+  yyjson_doc_free (doc);
+
+  return self;
+}
+
 ChordPresetPack *
 chord_preset_pack_clone (const ChordPresetPack * src)
 {
   ChordPresetPack * self = chord_preset_pack_new (src->name, src->is_standard);
 
-  self->presets = object_realloc_n (
-    self->presets, self->presets_size, MAX (1, (size_t) src->num_presets),
-    ChordPreset *);
-  for (int i = 0; i < src->num_presets; i++)
+  for (size_t i = 0; i < src->presets->len; i++)
     {
-      self->presets[i] = chord_preset_clone (src->presets[i]);
-      self->presets[i]->pack = self;
+      const ChordPreset * src_pset = g_ptr_array_index (src->presets, i);
+      ChordPreset *       new_pset = chord_preset_clone (src_pset);
+      new_pset->pack = self;
+      g_ptr_array_add (self->presets, new_pset);
     }
 
   return self;
@@ -145,12 +225,7 @@ void
 chord_preset_pack_free (ChordPresetPack * self)
 {
   object_free_w_func_and_null (g_free, self->name);
-
-  for (int i = 0; i < self->num_presets; i++)
-    {
-      object_free_w_func_and_null (chord_preset_free, self->presets[i]);
-    }
-  free (self->presets);
+  object_free_w_func_and_null (g_ptr_array_unref, self->presets);
 
   object_zero_and_free (self);
 }

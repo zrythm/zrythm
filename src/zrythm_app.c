@@ -1324,28 +1324,6 @@ on_handle_local_options (GApplication * app, GVariantDict * opts, ZrythmApp * se
       reset_to_factory ();
     }
 
-  if (g_variant_dict_contains (opts, "cyaml-log-level"))
-    {
-      char * log_level = NULL;
-      g_variant_dict_lookup (opts, "cyaml-log-level", "&s", &log_level);
-      if (string_is_equal_ignore_case (log_level, "debug"))
-        {
-          yaml_set_log_level (CYAML_LOG_DEBUG);
-        }
-      else if (string_is_equal_ignore_case (log_level, "info"))
-        {
-          yaml_set_log_level (CYAML_LOG_INFO);
-        }
-      else if (string_is_equal_ignore_case (log_level, "warning"))
-        {
-          yaml_set_log_level (CYAML_LOG_WARNING);
-        }
-      else if (string_is_equal_ignore_case (log_level, "error"))
-        {
-          yaml_set_log_level (CYAML_LOG_ERROR);
-        }
-    }
-
 #ifdef APPIMAGE_BUILD
   {
     char * rpath = NULL;
@@ -1430,8 +1408,6 @@ add_option_entries (ZrythmApp * self)
       "audio backend, if applicable", "SAMPLERATE" },
     { "output", 'o', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
      &self->output_file, "File or directory to output to", "FILE" },
-    { "cyaml-log-level", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING, NULL,
-     "Cyaml log level", "LOG-LEVEL" },
 #ifdef APPIMAGE_BUILD
     { "appimage-runtime-path", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING, NULL,
      "AppImage runtime path", "PATH" },

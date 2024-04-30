@@ -11,6 +11,8 @@
 
 #include <glib.h>
 
+#ifdef HAVE_CYAML
+
 typedef struct float_struct
 {
   float fval;
@@ -55,7 +57,7 @@ test_load_precise_float (void)
     (float_struct *) yaml_deserialize (str1, &float_struct_schema, NULL);
   g_message ("loaded val %g", ret2->fval);
 
-#if 0
+#  if 0
 
   my_struct.fval = 1.55331e-40f;
   ret =
@@ -68,9 +70,9 @@ test_load_precise_float (void)
   float_struct * ret2 =
     float_struct_deserialize (str1);
   (void) ret2;
-#endif
+#  endif
 
-#if 0
+#  if 0
 
   g_message ("FLT_ROUNDS %d", FLT_ROUNDS);
   g_message ("FLT_EVAL_METHOD %d", FLT_EVAL_METHOD);
@@ -107,8 +109,9 @@ test_load_precise_float (void)
   float_struct * ret2 =
     float_struct_deserialize (str1);
   g_warning ("%f", (double) ret2->fval);
-#endif
+#  endif
 }
+#endif
 
 int
 main (int argc, char * argv[])
@@ -117,8 +120,10 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/utils/yaml/"
 
+#ifdef HAVE_CYAML
   g_test_add_func (
     TEST_PREFIX "test load precise float", (GTestFunc) test_load_precise_float);
+#endif
 
   return g_test_run ();
 }

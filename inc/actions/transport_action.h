@@ -30,12 +30,6 @@ typedef enum TransportActionType
   TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
 } TransportActionType;
 
-static const cyaml_strval_t transport_action_type_strings[] = {
-  {"BPM change",            TRANSPORT_ACTION_BPM_CHANGE          },
-  { "beats per bar change", TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE},
-  { "beat unit change",     TRANSPORT_ACTION_BEAT_UNIT_CHANGE    },
-};
-
 /**
  * Transport action.
  */

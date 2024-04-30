@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#include <gtk/gtk.h>
+
 typedef struct SupportedFile SupportedFile;
 
 /**

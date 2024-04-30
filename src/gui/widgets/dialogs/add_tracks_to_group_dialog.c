@@ -111,8 +111,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
         }
       else
         {
-          g_message (
-            "invalid signal type %s", port_type_strings[signal_type].str);
+          g_message ("invalid signal type %s", port_type_strings[signal_type]);
           return NULL;
         }
       break;

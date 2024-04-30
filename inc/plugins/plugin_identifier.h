@@ -15,16 +15,14 @@
 #include "zrythm-config.h"
 
 #include <stdbool.h>
-
-#include "utils/yaml.h"
+#include <stddef.h>
+#include <stdint.h>
 
 /**
  * @addtogroup plugins
  *
  * @{
  */
-
-#define PLUGIN_IDENTIFIER_SCHEMA_VERSION 1
 
 typedef enum PluginSlotType
 {
@@ -37,18 +35,14 @@ typedef enum PluginSlotType
   PLUGIN_SLOT_MODULATOR,
 } PluginSlotType;
 
-static const cyaml_strval_t plugin_slot_type_strings[] = {
-  {"Invalid",     PLUGIN_SLOT_INVALID   },
-  { "Insert",     PLUGIN_SLOT_INSERT    },
-  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
-  { "Instrument", PLUGIN_SLOT_INSTRUMENT},
-  { "Modulator",  PLUGIN_SLOT_MODULATOR },
+static const char * plugin_slot_type_strings[] = {
+  "Invalid", "Insert", "MIDI FX", "Instrument", "Modulator",
 };
 
 static inline const char *
 plugin_slot_type_to_string (PluginSlotType type)
 {
-  return plugin_slot_type_strings[type].str;
+  return plugin_slot_type_strings[type];
 }
 
 /**
@@ -56,8 +50,6 @@ plugin_slot_type_to_string (PluginSlotType type)
  */
 typedef struct PluginIdentifier
 {
-  int schema_version;
-
   PluginSlotType slot_type;
 
   /** Track name hash. */
@@ -72,22 +64,6 @@ typedef struct PluginIdentifier
    */
   int slot;
 } PluginIdentifier;
-
-static const cyaml_schema_field_t plugin_identifier_fields_schema[] = {
-  YAML_FIELD_INT (PluginIdentifier, schema_version),
-  YAML_FIELD_ENUM (PluginIdentifier, slot_type, plugin_slot_type_strings),
-  YAML_FIELD_UINT (PluginIdentifier, track_name_hash),
-  YAML_FIELD_INT (PluginIdentifier, slot),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t plugin_identifier_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    PluginIdentifier,
-    plugin_identifier_fields_schema),
-};
 
 void
 plugin_identifier_init (PluginIdentifier * self);

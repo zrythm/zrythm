@@ -459,7 +459,7 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       self->height_end_pos = self->height_start_pos + texth;
 
       BeatUnit     bu = tempo_track_get_beat_unit_enum (P_TEMPO_TRACK);
-      const char * beat_unit = beat_unit_strings[bu].str;
+      const char * beat_unit = beat_unit_strings[bu];
       int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       if (beats_per_bar < 10)
         {

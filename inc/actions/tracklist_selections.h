@@ -30,18 +30,6 @@ typedef enum TracklistSelectionsActionType
   TRACKLIST_SELECTIONS_ACTION_UNPIN,
 } TracklistSelectionsActionType;
 
-static const cyaml_strval_t tracklist_selections_action_type_strings[] = {
-  {"Copy",         TRACKLIST_SELECTIONS_ACTION_COPY       },
-  { "Copy inside", TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE},
-  { "Create",      TRACKLIST_SELECTIONS_ACTION_CREATE     },
-  { "Delete",      TRACKLIST_SELECTIONS_ACTION_DELETE     },
-  { "Edit",        TRACKLIST_SELECTIONS_ACTION_EDIT       },
-  { "Move",        TRACKLIST_SELECTIONS_ACTION_MOVE       },
-  { "Move inside", TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE},
-  { "Pin",         TRACKLIST_SELECTIONS_ACTION_PIN        },
-  { "Unpin",       TRACKLIST_SELECTIONS_ACTION_UNPIN      },
-};
-
 /**
  * Action type.
  */
@@ -72,25 +60,6 @@ typedef enum EditTracksActionType
 
   EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE,
 } EditTracksActionType;
-
-static const cyaml_strval_t edit_tracks_action_type_strings[] = {
-  {"solo",             EDIT_TRACK_ACTION_TYPE_SOLO           },
-  { "solo lane",       EDIT_TRACK_ACTION_TYPE_SOLO_LANE      },
-  { "mute",            EDIT_TRACK_ACTION_TYPE_MUTE           },
-  { "mute lane",       EDIT_TRACK_ACTION_TYPE_MUTE_LANE      },
-  { "listen",          EDIT_TRACK_ACTION_TYPE_LISTEN         },
-  { "enable",          EDIT_TRACK_ACTION_TYPE_ENABLE         },
-  { "fold",            EDIT_TRACK_ACTION_TYPE_FOLD           },
-  { "volume",          EDIT_TRACK_ACTION_TYPE_VOLUME         },
-  { "pan",             EDIT_TRACK_ACTION_TYPE_PAN            },
-  { "direct out",      EDIT_TRACK_ACTION_TYPE_DIRECT_OUT     },
-  { "Rename",          EDIT_TRACK_ACTION_TYPE_RENAME         },
-  { "Rename lane",     EDIT_TRACK_ACTION_TYPE_RENAME_LANE    },
-  { "Color",           EDIT_TRACK_ACTION_TYPE_COLOR          },
-  { "comment",         EDIT_TRACK_ACTION_TYPE_COMMENT        },
-  { "Icon",            EDIT_TRACK_ACTION_TYPE_ICON           },
-  { "MIDI fader mode", EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE},
-};
 
 /**
  * Tracklist selections (tracks) action.

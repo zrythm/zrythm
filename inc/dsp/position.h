@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
@@ -22,8 +22,6 @@
  *
  * @{
  */
-
-#define POSITION_SCHEMA_VERSION 1
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
@@ -122,13 +120,10 @@ typedef struct Track    Track;
 typedef struct ZRegion  ZRegion;
 
 /**
- * A Position is made up of
- * bars.beats.sixteenths.ticks.
+ * A Position is made up of bars.beats.sixteenths.ticks.
  */
 typedef struct Position
 {
-  int schema_version;
-
   /** Precise total number of ticks. */
   double ticks;
 
@@ -151,23 +146,8 @@ typedef struct Position
   // double precise_frames;
 } Position;
 
-static const cyaml_schema_field_t position_fields_schema[] = {
-  YAML_FIELD_INT (Position, schema_version), YAML_FIELD_FLOAT (Position, ticks),
-  YAML_FIELD_INT (Position, frames),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t position_schema = {
-  YAML_VALUE_PTR (Position, position_fields_schema),
-};
-
 /** Start Position to be used in calculations. */
-static const Position POSITION_START = {
-  .schema_version = POSITION_SCHEMA_VERSION,
-  .ticks = 0.0,
-  .frames = 0
-};
+static const Position POSITION_START = { .ticks = 0.0, .frames = 0 };
 
 static inline int
 position_cmp_func (const void * _a, const void * _b)

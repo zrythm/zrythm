@@ -1,21 +1,25 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <string.h>
+#include "zrythm-config.h"
 
-#include "utils/objects.h"
-#include "utils/yaml.h"
+#ifdef HAVE_CYAML
 
-#include <gtk/gtk.h>
+#  include <string.h>
 
-#include <locale.h>
+#  include "utils/objects.h"
+#  include "utils/yaml.h"
+
+#  include <gtk/gtk.h>
+
+#  include <locale.h>
 
 typedef enum
 {
   Z_YAML_ERROR_FAILED,
 } ZYamlError;
 
-#define Z_YAML_ERROR z_yaml_error_quark ()
+#  define Z_YAML_ERROR z_yaml_error_quark ()
 GQuark
 z_yaml_error_quark (void);
 G_DEFINE_QUARK (z - yaml - error - quark, z_yaml_error)
@@ -158,3 +162,5 @@ yaml_print (void * data, const cyaml_schema_value_t * schema)
       g_error_free (err);
     }
 }
+
+#endif /* HAVE_CYAML */

@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -26,42 +23,23 @@
  * @{
  */
 
-#define CHORD_PRESET_PACK_SCHEMA_VERSION 1
-
 /**
  * Chord preset pack.
  */
 typedef struct ChordPresetPack
 {
-  int schema_version;
-
   /** Pack name. */
   char * name;
 
   /** Presets. */
-  ChordPreset ** presets;
-  int            num_presets;
-  size_t         presets_size;
+  GPtrArray * presets;
 
-  /** Whether this is a standard preset pack (not
-   * user-defined). */
+  /** Whether this is a standard preset pack (not user-defined). */
   bool is_standard;
 } ChordPresetPack;
 
-static const cyaml_schema_field_t chord_preset_pack_fields_schema[] = {
-  YAML_FIELD_INT (ChordPresetPack, schema_version),
-  YAML_FIELD_STRING_PTR (ChordPresetPack, name),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    ChordPresetPack,
-    presets,
-    chord_preset_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_preset_pack_schema = {
-  YAML_VALUE_PTR (ChordPresetPack, chord_preset_pack_fields_schema),
-};
+ChordPresetPack *
+chord_preset_pack_new_empty (void);
 
 ChordPresetPack *
 chord_preset_pack_new (const char * name, bool is_standard);
@@ -73,6 +51,14 @@ bool
 chord_preset_pack_contains_preset (
   const ChordPresetPack * self,
   const ChordPreset *     pset);
+
+char *
+chord_preset_pack_serialize_to_json_str (
+  const ChordPresetPack * self,
+  GError **               error);
+
+ChordPresetPack *
+chord_preset_pack_deserialize_from_json_str (const char * json, GError ** error);
 
 /**
  * @note The given preset is cloned so the caller is

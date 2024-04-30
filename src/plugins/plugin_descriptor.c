@@ -32,14 +32,7 @@ plugin_descriptor_new (void)
 const char *
 plugin_protocol_to_str (ZPluginProtocol prot)
 {
-  for (size_t i = 0; i < G_N_ELEMENTS (plugin_protocol_strings); i++)
-    {
-      if (plugin_protocol_strings[i].val == (int64_t) prot)
-        {
-          return plugin_protocol_strings[i].str;
-        }
-    }
-  g_return_val_if_reached (NULL);
+  return plugin_protocol_strings[prot];
 }
 
 ZPluginProtocol
@@ -47,9 +40,9 @@ plugin_protocol_from_str (const char * str)
 {
   for (size_t i = 0; i < G_N_ELEMENTS (plugin_protocol_strings); i++)
     {
-      if (string_is_equal (plugin_protocol_strings[i].str, str))
+      if (string_is_equal (plugin_protocol_strings[i], str))
         {
-          return (ZPluginProtocol) plugin_protocol_strings[i].val;
+          return (ZPluginProtocol) i;
         }
     }
   g_return_val_if_reached (Z_PLUGIN_PROTOCOL_LV2);

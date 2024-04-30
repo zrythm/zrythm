@@ -14,7 +14,7 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
+#include <glib.h>
 
 typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
@@ -43,17 +43,6 @@ typedef enum ZFileType
   NUM_FILE_TYPES,
 } ZFileType;
 
-static const cyaml_strval_t file_type_strings[] = {
-  {"MIDI",        FILE_TYPE_MIDI      },
-  { "mp3",        FILE_TYPE_MP3       },
-  { "FLAC",       FILE_TYPE_FLAC      },
-  { "ogg",        FILE_TYPE_OGG       },
-  { "wav",        FILE_TYPE_WAV       },
-  { "directory",  FILE_TYPE_DIR       },
-  { "parent dir", FILE_TYPE_PARENT_DIR},
-  { "other",      FILE_TYPE_OTHER     },
-};
-
 /**
  * Metadata for a supported file.
  */
@@ -80,19 +69,6 @@ typedef struct SupportedFile
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
 } SupportedFile;
-
-static const cyaml_schema_field_t supported_file_fields_schema[] = {
-  YAML_FIELD_STRING_PTR (SupportedFile, abs_path),
-  YAML_FIELD_ENUM (SupportedFile, type, file_type_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (SupportedFile, label),
-  YAML_FIELD_INT (SupportedFile, hidden),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t supported_file_schema = {
-  YAML_VALUE_PTR_NULLABLE (SupportedFile, supported_file_fields_schema),
-};
 
 /**
  * Creates a new SupportedFile from the given absolute

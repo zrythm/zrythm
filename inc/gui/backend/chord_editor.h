@@ -35,8 +35,6 @@ typedef struct ChordPreset     ChordPreset;
  */
 typedef struct ChordEditor
 {
-  int schema_version;
-
   /**
    * The chords to show on the left.
    *
@@ -48,24 +46,6 @@ typedef struct ChordEditor
 
   EditorSettings editor_settings;
 } ChordEditor;
-
-static const cyaml_schema_field_t chord_editor_fields_schema[] = {
-  YAML_FIELD_INT (ChordEditor, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    ChordEditor,
-    chords,
-    chord_descriptor_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordEditor,
-    editor_settings,
-    editor_settings_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_editor_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, ChordEditor, chord_editor_fields_schema),
-};
 
 /**
  * Inits the ChordEditor after a Project has been

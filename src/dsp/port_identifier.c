@@ -158,9 +158,9 @@ port_identifier_print_to_str (
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
     self, port_identifier_get_hash (self), self->label, self->sym, self->uri,
-    self->comment, port_owner_type_strings[self->owner_type].str,
-    port_type_strings[self->type].str, port_flow_strings[self->flow].str,
-    self->flags, self->flags2, self->unit, self->port_group, self->ext_port_id,
+    self->comment, port_owner_type_strings[self->owner_type],
+    port_type_strings[self->type], port_flow_strings[self->flow], self->flags,
+    self->flags2, self->unit, self->port_group, self->ext_port_id,
     self->track_name_hash, self->port_index, pl_buf);
 }
 

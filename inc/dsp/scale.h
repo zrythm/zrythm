@@ -125,95 +125,17 @@ typedef enum MusicalScaleType
   NUM_SCALES,
 } MusicalScaleType;
 
-static const cyaml_strval_t musical_scale_type_strings[] = {
-  {N_ ("Chromatic"),              SCALE_CHROMATIC            },
-  { N_ ("Major"),                 SCALE_MAJOR                },
-  { N_ ("Minor"),                 SCALE_MINOR                },
-  { N_ ("Ionian"),                SCALE_IONIAN               },
-  { N_ ("Dorian"),                SCALE_DORIAN               },
-  { N_ ("Phrygian"),              SCALE_PHRYGIAN             },
-  { N_ ("Lydian"),                SCALE_LYDIAN               },
-  { N_ ("Mixolydian"),            SCALE_MIXOLYDIAN           },
-  { N_ ("Aeolian"),               SCALE_AEOLIAN              },
-  { N_ ("Locrian"),               SCALE_LOCRIAN              },
-  { N_ ("Melodic Minor"),         SCALE_MELODIC_MINOR        },
-  { N_ ("Harmonic Minor"),        SCALE_HARMONIC_MINOR       },
-  { N_ ("Whole Tone"),            SCALE_WHOLE_TONE           },
-  { N_ ("Major Pentatonic"),      SCALE_MAJOR_PENTATONIC     },
-  { N_ ("Minor Pentatonic"),      SCALE_MINOR_PENTATONIC     },
-  { N_ ("Octatonic Half Whole"),  SCALE_OCTATONIC_HALF_WHOLE },
-  { N_ ("Octatonic Whole Half"),  SCALE_OCTATONIC_WHOLE_HALF },
-  { N_ ("Acoustic"),              SCALE_ACOUSTIC             },
-  { N_ ("Harmonic Major"),        SCALE_HARMONIC_MAJOR       },
-  { N_ ("Phrygian Dominant"),     SCALE_PHRYGIAN_DOMINANT    },
-  { N_ ("Major Locrian"),         SCALE_MAJOR_LOCRIAN        },
-  { N_ ("Algerian"),              SCALE_ALGERIAN             },
-  { N_ ("Augmented"),             SCALE_AUGMENTED            },
-  { N_ ("Double Harmonic"),       SCALE_DOUBLE_HARMONIC      },
-  { N_ ("Chinese"),               SCALE_CHINESE              },
-  { N_ ("Diminished"),            SCALE_DIMINISHED           },
-  { N_ ("Dominant Diminished"),   SCALE_DOMINANT_DIMINISHED  },
-  { N_ ("Egyptian"),              SCALE_EGYPTIAN             },
-  { N_ ("Eight Tone Spanish"),    SCALE_EIGHT_TONE_SPANISH   },
-  { N_ ("Enigmatic"),             SCALE_ENIGMATIC            },
-  { N_ ("Geez"),                  SCALE_GEEZ                 },
-  { N_ ("Hindu"),                 SCALE_HINDU                },
-  { N_ ("Hirajoshi"),             SCALE_HIRAJOSHI            },
-  { N_ ("Hungarian Gypsy"),       SCALE_HUNGARIAN_GYPSY      },
-  { N_ ("Insen"),                 SCALE_INSEN                },
-  { N_ ("Neapolitan Major"),      SCALE_NEAPOLITAN_MAJOR     },
-  { N_ ("Neapolitan Minor"),      SCALE_NEAPOLITAN_MINOR     },
-  { N_ ("Oriental"),              SCALE_ORIENTAL             },
-  { N_ ("Romanian Minor"),        SCALE_ROMANIAN_MINOR       },
-  { N_ ("Altered"),               SCALE_ALTERED              },
-  { N_ ("Maqam"),                 SCALE_MAQAM                },
-  { N_ ("Yo"),                    SCALE_YO                   },
-  { N_ ("Bebop Locrian"),         SCALE_BEBOP_LOCRIAN        },
-  { N_ ("Bebop Dominant"),        SCALE_BEBOP_DOMINANT       },
-  { N_ ("Bebop Major"),           SCALE_BEBOP_MAJOR          },
-  { N_ ("Super Locrian"),         SCALE_SUPER_LOCRIAN        },
-  { N_ ("Enigmatic Minor"),       SCALE_ENIGMATIC_MINOR      },
-  { N_ ("Composite"),             SCALE_COMPOSITE            },
-  { N_ ("Bhairav"),               SCALE_BHAIRAV              },
-  { N_ ("Hungarian Minor"),       SCALE_HUNGARIAN_MINOR      },
-  { N_ ("Persian"),               SCALE_PERSIAN              },
-  { N_ ("Iwato"),                 SCALE_IWATO                },
-  { N_ ("Kumoi"),                 SCALE_KUMOI                },
-  { N_ ("Pelog"),                 SCALE_PELOG                },
-  { N_ ("Prometheus"),            SCALE_PROMETHEUS           },
-  { N_ ("Prometheus Neapolitan"), SCALE_PROMETHEUS_NEAPOLITAN},
-  { N_ ("Prometheus Liszt"),      SCALE_PROMETHEUS_LISZT     },
-  { N_ ("Balinese"),              SCALE_BALINESE             },
-  { N_ ("RagaTodi"),              SCALE_RAGATODI             },
-  { N_ ("Japanese 1"),            SCALE_JAPANESE1            },
-  { N_ ("Japanese 2"),            SCALE_JAPANESE2            },
-};
-
 /**
  * Musical scale descriptor.
  */
 typedef struct MusicalScale
 {
-  int schema_version;
-
   /** Identification of the scale (e.g. AEOLIAN). */
   MusicalScaleType type;
 
   /** Root key of the scale. */
   MusicalNote root_key;
 } MusicalScale;
-
-static const cyaml_schema_field_t musical_scale_fields_schema[] = {
-  YAML_FIELD_INT (MusicalScale, schema_version),
-  YAML_FIELD_ENUM (MusicalScale, type, musical_scale_type_strings),
-  YAML_FIELD_ENUM (MusicalScale, root_key, musical_note_strings),
-
-  CYAML_FIELD_END,
-};
-
-static const cyaml_schema_value_t musical_scale_schema = {
-  YAML_VALUE_PTR (MusicalScale, musical_scale_fields_schema),
-};
 
 /**
  * Creates new scale using type and root note.

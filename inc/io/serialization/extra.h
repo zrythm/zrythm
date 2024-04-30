@@ -44,13 +44,6 @@ curve_options_serialize_to_json (
   GError **            error);
 
 bool
-chord_descriptor_serialize_to_json (
-  yyjson_mut_doc *        doc,
-  yyjson_mut_val *        descr_obj,
-  const ChordDescriptor * descr,
-  GError **               error);
-
-bool
 stack_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * stack_obj,
@@ -77,13 +70,6 @@ curve_options_deserialize_from_json (
   yyjson_val *   opts_obj,
   CurveOptions * opts,
   GError **      error);
-
-bool
-chord_descriptor_deserialize_from_json (
-  yyjson_doc *      doc,
-  yyjson_val *      descr_obj,
-  ChordDescriptor * descr,
-  GError **         error);
 
 bool
 stack_deserialize_from_json (

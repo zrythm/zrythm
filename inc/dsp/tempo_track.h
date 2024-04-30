@@ -44,11 +44,11 @@ typedef enum BeatUnit
   BEAT_UNIT_16
 } BeatUnit;
 
-static const cyaml_strval_t beat_unit_strings[] = {
-  {"2",   BEAT_UNIT_2 },
-  { "4",  BEAT_UNIT_4 },
-  { "8",  BEAT_UNIT_8 },
-  { "16", BEAT_UNIT_16},
+static const char * beat_unit_strings[] = {
+  "2",
+  "4",
+  "8",
+  "16",
 };
 
 /**

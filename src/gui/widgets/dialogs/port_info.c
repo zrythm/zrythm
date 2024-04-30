@@ -57,7 +57,7 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Type"));
-  gtk_label_set_text (lbl, port_type_strings[id->type].str);
+  gtk_label_set_text (lbl, port_type_strings[id->type]);
   ADD_ROW;
 
   PREPARE_ROW (_ ("Range"));
@@ -84,21 +84,21 @@ set_values (
 
   PREPARE_ROW (_ ("Flags"));
   GtkFlowBox * flags_box = GTK_FLOW_BOX (gtk_flow_box_new ());
-  for (int i = 0; i < (int) CYAML_ARRAY_LEN (port_flags_bitvals); i++)
+  for (size_t i = 0; i < G_N_ELEMENTS (port_flags_bitvals); i++)
     {
       if (!(id->flags & (1 << i)))
         continue;
 
-      GtkWidget * lbl_ = gtk_label_new (port_flags_bitvals[i].name);
+      GtkWidget * lbl_ = gtk_label_new (port_flags_bitvals[i]);
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
-  for (int i = 0; i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals); i++)
+  for (size_t i = 0; i < G_N_ELEMENTS (port_flags2_bitvals); i++)
     {
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
 
-      GtkWidget * lbl_ = gtk_label_new (port_flags2_bitvals[i].name);
+      GtkWidget * lbl_ = gtk_label_new (port_flags2_bitvals[i]);
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }

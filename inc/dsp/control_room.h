@@ -79,17 +79,6 @@ typedef struct ControlRoom
   AudioEngine * audio_engine;
 } ControlRoom;
 
-static const cyaml_schema_field_t control_room_fields_schema[] = {
-  YAML_FIELD_INT (ControlRoom, schema_version),
-  YAML_FIELD_MAPPING_PTR (ControlRoom, monitor_fader, fader_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t control_room_schema = {
-  YAML_VALUE_PTR (ControlRoom, control_room_fields_schema),
-};
-
 /**
  * Inits the control room from a project.
  */

@@ -267,7 +267,6 @@ piano_roll_set_midi_modifier (PianoRoll * self, MidiModifier modifier)
 void
 piano_roll_init (PianoRoll * self)
 {
-  self->schema_version = PIANO_ROLL_SCHEMA_VERSION;
   self->notes_zoom = 3.f;
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
@@ -291,7 +290,6 @@ PianoRoll *
 piano_roll_clone (const PianoRoll * src)
 {
   PianoRoll * self = object_new (PianoRoll);
-  self->schema_version = PIANO_ROLL_SCHEMA_VERSION;
 
   self->notes_zoom = src->notes_zoom;
   self->midi_modifier = src->midi_modifier;
@@ -304,7 +302,6 @@ PianoRoll *
 piano_roll_new (void)
 {
   PianoRoll * self = object_new (PianoRoll);
-  self->schema_version = PIANO_ROLL_SCHEMA_VERSION;
 
   return self;
 }

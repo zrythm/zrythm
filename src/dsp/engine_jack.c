@@ -459,8 +459,7 @@ engine_jack_set_transport_type (
       jack_set_timebase_callback (self->client, 0, timebase_cb, self);
     }
 
-  g_message (
-    "set JACK transport type to %s", jack_transport_type_strings[type].str);
+  g_message ("set JACK transport type to %s", jack_transport_type_strings[type]);
   self->transport_type = type;
 }
 

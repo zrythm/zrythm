@@ -15,6 +15,7 @@
 #include "io/serialization/actions.h"
 #include "io/serialization/arranger_objects.h"
 #include "io/serialization/channel.h"
+#include "io/serialization/chords.h"
 #include "io/serialization/engine.h"
 #include "io/serialization/extra.h"
 #include "io/serialization/gui_backend.h"

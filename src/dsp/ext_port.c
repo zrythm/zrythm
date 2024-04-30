@@ -71,8 +71,12 @@ ext_port_get_buffer (ExtPort * self, nframes_t nframes)
 char *
 ext_port_get_id (ExtPort * self)
 {
+
+  static const char * ext_port_type_strings[] = {
+    "JACK", "ALSA", "Windows MME", "RtMidi", "RtAudio",
+  };
   return g_strdup_printf (
-    "%s/%s", ext_port_type_strings[self->type].str, self->full_name);
+    "%s/%s", ext_port_type_strings[self->type], self->full_name);
 }
 
 bool

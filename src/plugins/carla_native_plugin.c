@@ -1587,7 +1587,7 @@ carla_native_plugin_instantiate (
   g_return_val_if_fail (setting->open_with_carla, -1);
   g_message (
     "%s: using bridge mode %s", __func__,
-    carla_bridge_mode_strings[setting->bridge_mode].str);
+    carla_bridge_mode_strings[setting->bridge_mode]);
 
   /* set bridging on if needed */
   switch (setting->bridge_mode)

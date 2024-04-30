@@ -70,9 +70,9 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
         chord_preset_pack_manager_get_pack_at (CHORD_PRESET_PACK_MANAGER, i);
 
       GMenu * pack_submenu = g_menu_new ();
-      for (int j = 0; j < pack->num_presets; j++)
+      for (size_t j = 0; j < pack->presets->len; j++)
         {
-          ChordPreset * pset = pack->presets[j];
+          ChordPreset * pset = g_ptr_array_index (pack->presets, j);
 
           char action[800];
           sprintf (action, "app.load-chord-preset::%d,%d", i, j);

@@ -22,8 +22,6 @@
  * @{
  */
 
-#define SNAP_GRID_SCHEMA_VERSION 1
-
 #define SNAP_GRID_TIMELINE (PROJECT->snap_grid_timeline)
 #define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor)
 
@@ -48,18 +46,9 @@ typedef enum NoteLength
   NOTE_LENGTH_1_128
 } NoteLength;
 
-static const cyaml_strval_t note_length_strings[] = {
-  {N_ ("bar"),   NOTE_LENGTH_BAR  },
-  { N_ ("beat"), NOTE_LENGTH_BEAT },
-  { "2/1",       NOTE_LENGTH_2_1  },
-  { "1/1",       NOTE_LENGTH_1_1  },
-  { "1/2",       NOTE_LENGTH_1_2  },
-  { "1/4",       NOTE_LENGTH_1_4  },
-  { "1/8",       NOTE_LENGTH_1_8  },
-  { "1/16",      NOTE_LENGTH_1_16 },
-  { "1/32",      NOTE_LENGTH_1_32 },
-  { "1/64",      NOTE_LENGTH_1_64 },
-  { "1/128",     NOTE_LENGTH_1_128},
+static const char * note_length_strings[] = {
+  N_ ("bar"), N_ ("beat"), "2/1",  "1/1",  "1/2",   "1/4",
+  "1/8",      "1/16",      "1/32", "1/64", "1/128",
 };
 
 typedef enum NoteType
@@ -69,20 +58,10 @@ typedef enum NoteType
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
 } NoteType;
 
-static const cyaml_strval_t note_type_strings[] = {
-  {N_ ("normal"),   NOTE_TYPE_NORMAL },
-  { N_ ("dotted"),  NOTE_TYPE_DOTTED },
-  { N_ ("triplet"), NOTE_TYPE_TRIPLET},
-};
-
-/**
- * These are not meant to be serialized, they are
- * only used for convenience.
- */
-static const cyaml_strval_t note_type_short_strings[] = {
-  {"",   NOTE_TYPE_NORMAL },
-  { ".", NOTE_TYPE_DOTTED },
-  { "t", NOTE_TYPE_TRIPLET},
+static const char * note_type_strings[] = {
+  N_ ("normal"),
+  N_ ("dotted"),
+  N_ ("triplet"),
 };
 
 typedef enum NoteLengthType
@@ -97,12 +76,6 @@ typedef enum NoteLengthType
   NOTE_LENGTH_CUSTOM,
 } NoteLengthType;
 
-static const cyaml_strval_t note_length_type_strings[] = {
-  {"link",         NOTE_LENGTH_LINK       },
-  { "last object", NOTE_LENGTH_LAST_OBJECT},
-  { "custom",      NOTE_LENGTH_CUSTOM     },
-};
-
 /**
  * Snap grid type.
  */
@@ -112,14 +85,8 @@ typedef enum SnapGridType
   SNAP_GRID_TYPE_EDITOR,
 } SnapGridType;
 
-static const cyaml_strval_t snap_grid_type_strings[] = {
-  {"timeline", SNAP_GRID_TYPE_TIMELINE},
-  { "editor",  SNAP_GRID_TYPE_EDITOR  },
-};
-
 typedef struct SnapGrid
 {
-  int          schema_version;
   SnapGridType type;
 
   /**
@@ -171,27 +138,6 @@ typedef struct SnapGrid
    */
   NoteLengthType length_type;
 } SnapGrid;
-
-static const cyaml_schema_field_t snap_grid_fields_schema[] = {
-  YAML_FIELD_INT (SnapGrid, schema_version),
-  YAML_FIELD_ENUM (SnapGrid, type, snap_grid_type_strings),
-  YAML_FIELD_ENUM (SnapGrid, snap_note_length, note_length_strings),
-  YAML_FIELD_ENUM (SnapGrid, snap_note_type, note_type_strings),
-  YAML_FIELD_INT (SnapGrid, snap_adaptive),
-  YAML_FIELD_ENUM (SnapGrid, default_note_length, note_length_strings),
-  YAML_FIELD_ENUM (SnapGrid, default_note_type, note_type_strings),
-  YAML_FIELD_INT (SnapGrid, default_adaptive),
-  YAML_FIELD_ENUM (SnapGrid, length_type, note_length_type_strings),
-  YAML_FIELD_INT (SnapGrid, snap_to_grid),
-  YAML_FIELD_INT (SnapGrid, snap_to_grid_keep_offset),
-  YAML_FIELD_INT (SnapGrid, snap_to_events),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t snap_grid_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, SnapGrid, snap_grid_fields_schema),
-};
 
 void
 snap_grid_init (

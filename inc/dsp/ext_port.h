@@ -62,14 +62,6 @@ typedef enum ExtPortType
   EXT_PORT_TYPE_RTAUDIO,
 } ExtPortType;
 
-static const cyaml_strval_t ext_port_type_strings[] = {
-  {"JACK",         EXT_PORT_TYPE_JACK       },
-  { "ALSA",        EXT_PORT_TYPE_ALSA       },
-  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME},
-  { "RtMidi",      EXT_PORT_TYPE_RTMIDI     },
-  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO    },
-};
-
 /**
  * External port.
  */

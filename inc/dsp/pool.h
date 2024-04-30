@@ -59,17 +59,6 @@ typedef struct AudioPool
   size_t clips_size;
 } AudioPool;
 
-static const cyaml_schema_field_t audio_pool_fields_schema[] = {
-  YAML_FIELD_INT (AudioPool, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (AudioPool, clips, audio_clip_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t audio_pool_schema = {
-  YAML_VALUE_PTR (AudioPool, audio_pool_fields_schema),
-};
-
 /**
  * Inits after loading a project.
  */

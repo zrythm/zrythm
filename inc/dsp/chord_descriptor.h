@@ -41,21 +41,6 @@ typedef enum MusicalNote
   NOTE_B
 } MusicalNote;
 
-static const cyaml_strval_t musical_note_strings[] = {
-  {"C",   NOTE_C },
-  { "C#", NOTE_CS},
-  { "D",  NOTE_D },
-  { "D#", NOTE_DS},
-  { "E",  NOTE_E },
-  { "F",  NOTE_F },
-  { "F#", NOTE_FS},
-  { "G",  NOTE_G },
-  { "G#", NOTE_GS},
-  { "A",  NOTE_A },
-  { "A#", NOTE_AS},
-  { "B",  NOTE_B },
-};
-
 /**
  * Chord type.
  */
@@ -71,17 +56,6 @@ typedef enum ChordType
   CHORD_TYPE_CUSTOM,
   NUM_CHORD_TYPES,
 } ChordType;
-
-static const cyaml_strval_t chord_type_strings[] = {
-  {"Invalid", CHORD_TYPE_NONE  },
-  { "Maj",    CHORD_TYPE_MAJ   },
-  { "min",    CHORD_TYPE_MIN   },
-  { "dim",    CHORD_TYPE_DIM   },
-  { "sus4",   CHORD_TYPE_SUS4  },
-  { "sus2",   CHORD_TYPE_SUS2  },
-  { "aug",    CHORD_TYPE_AUG   },
-  { "custom", CHORD_TYPE_CUSTOM},
-};
 
 /**
  * Chord accents.
@@ -112,19 +86,6 @@ typedef enum ChordAccent
   NUM_CHORD_ACCENTS,
 } ChordAccent;
 
-static const cyaml_strval_t chord_accent_strings[] = {
-  {"None",              CHORD_ACC_NONE  },
-  { "7",                CHORD_ACC_7     },
-  { "j7",               CHORD_ACC_j7    },
-  { "\u266D9",          CHORD_ACC_b9    },
-  { "9",                CHORD_ACC_9     },
-  { "\u266F9",          CHORD_ACC_S9    },
-  { "11",               CHORD_ACC_11    },
-  { "\u266D5/\u266F11", CHORD_ACC_b5_S11},
-  { "\u266F5/\u266D13", CHORD_ACC_S5_b13},
-  { "6/13",             CHORD_ACC_6_13  },
-};
-
 /**
  * A ChordDescriptor describes a chord and is not
  * linked to any specific object by itself.
@@ -133,8 +94,6 @@ static const cyaml_strval_t chord_accent_strings[] = {
  */
 typedef struct ChordDescriptor
 {
-  int schema_version;
-
   /** Has bass note or not. */
   bool has_bass;
 
@@ -171,32 +130,6 @@ typedef struct ChordDescriptor
    */
   int inversion;
 } ChordDescriptor;
-
-static const cyaml_schema_field_t chord_descriptor_fields_schema[] = {
-  YAML_FIELD_INT (ChordDescriptor, schema_version),
-  YAML_FIELD_INT (ChordDescriptor, has_bass),
-  YAML_FIELD_ENUM (ChordDescriptor, root_note, musical_note_strings),
-  YAML_FIELD_ENUM (ChordDescriptor, bass_note, musical_note_strings),
-  YAML_FIELD_ENUM (ChordDescriptor, type, chord_type_strings),
-  YAML_FIELD_ENUM (ChordDescriptor, accent, chord_accent_strings),
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "notes",
-    CYAML_FLAG_OPTIONAL,
-    ChordDescriptor,
-    notes,
-    &int_schema,
-    36),
-  YAML_FIELD_INT (ChordDescriptor, inversion),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_descriptor_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordDescriptor,
-    chord_descriptor_fields_schema),
-};
 
 /**
  * Creates a ChordDescriptor.

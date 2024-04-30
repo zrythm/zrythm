@@ -159,20 +159,11 @@ typedef enum TrackType
   TRACK_TYPE_FOLDER,
 } TrackType;
 
-static const cyaml_strval_t track_type_strings[] = {
-  {N_ ("Instrument"),   TRACK_TYPE_INSTRUMENT },
-  { N_ ("Audio"),       TRACK_TYPE_AUDIO      },
-  { N_ ("Master"),      TRACK_TYPE_MASTER     },
-  { N_ ("Chord"),       TRACK_TYPE_CHORD      },
-  { N_ ("Marker"),      TRACK_TYPE_MARKER     },
-  { N_ ("Tempo"),       TRACK_TYPE_TEMPO      },
-  { N_ ("Modulator"),   TRACK_TYPE_MODULATOR  },
-  { N_ ("Audio FX"),    TRACK_TYPE_AUDIO_BUS  },
-  { N_ ("Audio Group"), TRACK_TYPE_AUDIO_GROUP},
-  { N_ ("MIDI"),        TRACK_TYPE_MIDI       },
-  { N_ ("MIDI FX"),     TRACK_TYPE_MIDI_BUS   },
-  { N_ ("MIDI Group"),  TRACK_TYPE_MIDI_GROUP },
-  { N_ ("Folder"),      TRACK_TYPE_FOLDER     },
+static const char * track_type_strings[] = {
+  N_ ("Instrument"),  N_ ("Audio"), N_ ("Master"),    N_ ("Chord"),
+  N_ ("Marker"),      N_ ("Tempo"), N_ ("Modulator"), N_ ("Audio FX"),
+  N_ ("Audio Group"), N_ ("MIDI"),  N_ ("MIDI FX"),   N_ ("MIDI Group"),
+  N_ ("Folder"),
 };
 
 /**
@@ -1419,7 +1410,7 @@ track_set_enabled (
 static inline const char *
 track_type_to_string (TrackType type)
 {
-  return track_type_strings[type].str;
+  return track_type_strings[type];
 }
 
 TrackType
