@@ -130,7 +130,7 @@ Args:
                  "version=\"1.0\" encoding=\"UTF-8\"")
                ;; TODO insert: Copyright 2022 Alexandros Theodotou
                (component
-                 (@ (type "desktop"))
+                 (@ (type "desktop-application"))
                  (id "org.zrythm.Zrythm")
                  ;; The tag 'metadata_license' means
                  ;; the licence of this file, not the
@@ -173,6 +173,9 @@ various plugin and file formats."))
                  (url
                    (@ (type "contact"))
                    "@CONTACT_URL@")
+                 (url
+                   (@ (type "vcs-browser"))
+                   "@MAIN_REPO_URL@")
                  (launchable
                    (@ (type "desktop-id"))
                    ,(string-append app-id
@@ -198,6 +201,15 @@ various plugin and file formats."))
                    "zrythm")
                  (provides
                    (binary "zrythm_launch"))
+                 (branding
+                   (color
+                     (@ (type "primary")
+                        (scheme_preference "light"))
+                     "#FF8B73")
+                   (color
+                     (@ (type "primary")
+                        (scheme_preference "dark"))
+                     "#B12408"))
 
                  (releases
                    ,@(get-releases))
