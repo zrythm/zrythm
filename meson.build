@@ -85,7 +85,8 @@ prog_name = get_option ('program_name')
 prog_name_lowercase = prog_name.to_lower()
 copyright_name = 'The ' + prog_name + ' contributors'
 copyright_years = '2018-2024'
-issue_tracker_url = 'https://gitlab.zrythm.org/zrythm/zrythm/-/issues'
+main_repo_url = 'https://gitlab.zrythm.org/zrythm/zrythm'
+issue_tracker_url = main_repo_url + '/-/issues'
 chatroom_url = 'https://matrix.to/#/#zrythmdaw:matrix.org'
 user_manual_url = 'https://manual.zrythm.org/en/index.html'
 faq_url = 'https://manual.zrythm.org/en/getting-started/faq.html'
@@ -347,6 +348,7 @@ cdata.set (
 cdata.set (
   'MESON_BUILD_ROOT', meson_build_root)
 cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+cdata.set_quoted ('MAIN_REPO_URL', main_repo_url)
 cdata.set_quoted (
   'ISSUE_TRACKER_URL', issue_tracker_url)
 cdata.set_quoted (
@@ -364,10 +366,10 @@ cdata.set_quoted (
   'USER_MANUAL_URL', user_manual_url)
 cdata.set_quoted (
   'LICENSE_URL',
-  'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt')
+  main_repo_url + '/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt')
 cdata.set_quoted (
   'TRADEMARK_POLICY_URL',
-  'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/TRADEMARKS.md')
+  main_repo_url + '/-/raw/master/TRADEMARKS.md')
 cdata.set_quoted (
   'BUG_REPORT_API_ENDPOINT',
   'https://accounts.zrythm.org/api/v1/error-reports/new')

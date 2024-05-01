@@ -7,6 +7,7 @@ scripts_conf = {
   'MESON_SOURCE_ROOT': meson_src_root,
   'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
   'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
+  'MAIN_REPO_URL': main_repo_url,
   'BUG_REPORT_URL': issue_tracker_url,
   'CHATROOM_URL': chatroom_url,
   'FAQ_URL': faq_url,
