@@ -5,7 +5,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: files ('VERSION.txt'),
   license: 'AGPL-3-or-later',
-  meson_version: '>= 0.58.0',
+  meson_version: '>= 1.3.0',
   default_options: [
     # 1: -Wall
     # 2: -Wall -Wextra
