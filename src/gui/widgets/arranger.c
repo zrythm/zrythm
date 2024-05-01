@@ -1889,8 +1889,8 @@ click_pressed (
 
   PROJECT->last_selection =
     self->type == ARRANGER_WIDGET_TYPE_TIMELINE
-      ? SELECTION_TYPE_TIMELINE
-      : SELECTION_TYPE_EDITOR;
+      ? Z_PROJECT_SELECTION_TYPE_TIMELINE
+      : Z_PROJECT_SELECTION_TYPE_EDITOR;
   EVENTS_PUSH (ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
@@ -2611,11 +2611,11 @@ drag_begin (
   /* set last project selection type */
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
     {
-      PROJECT->last_selection = SELECTION_TYPE_TIMELINE;
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_TIMELINE;
     }
   else
     {
-      PROJECT->last_selection = SELECTION_TYPE_EDITOR;
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_EDITOR;
     }
 
   self->drag_start_btn =

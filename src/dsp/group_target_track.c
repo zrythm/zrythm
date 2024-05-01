@@ -56,11 +56,11 @@ update_child_output (
        * output channel */
       switch (track->in_signal_type)
         {
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           port_disconnect (ch->stereo_out->l, track->processor->stereo_in->l);
           port_disconnect (ch->stereo_out->r, track->processor->stereo_in->r);
           break;
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           port_disconnect (ch->midi_out, track->processor->midi_in);
           break;
         default:
@@ -74,13 +74,13 @@ update_child_output (
        * output */
       switch (output->in_signal_type)
         {
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           port_connect (
             ch->stereo_out->l, output->processor->stereo_in->l, F_LOCKED);
           port_connect (
             ch->stereo_out->r, output->processor->stereo_in->r, F_LOCKED);
           break;
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           port_connect (ch->midi_out, output->processor->midi_in, F_LOCKED);
           break;
         default:

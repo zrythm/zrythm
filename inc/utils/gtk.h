@@ -679,6 +679,9 @@ z_gtk_drop_down_factory_setup_common_ellipsized (
   GObject *                  list_item,
   gpointer                   user_data);
 
+const char *
+z_gtk_get_enum_nick (GType type, gint value);
+
 /**
  * @}
  */

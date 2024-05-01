@@ -37,7 +37,7 @@ typedef struct MixerSelections
 {
   int schema_version;
 
-  PluginSlotType type;
+  ZPluginSlotType type;
 
   /** Slots selected. */
   int slots[MIXER_SELECTIONS_MAX_SLOTS];
@@ -101,7 +101,7 @@ NONNULL bool
 mixer_selections_can_be_pasted (
   MixerSelections * self,
   Channel *         ch,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot);
 
 /**
@@ -112,7 +112,7 @@ NONNULL void
 mixer_selections_paste_to_slot (
   MixerSelections * ms,
   Channel *         ch,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot);
 
 /**
@@ -127,7 +127,7 @@ mixer_selections_get_track (const MixerSelections * const self);
 bool
 mixer_selections_contains_slot (
   MixerSelections * ms,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot);
 
 /**
@@ -155,7 +155,7 @@ void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Track *           track,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot,
   bool              clone_pl,
   const bool        fire_events);
@@ -170,7 +170,7 @@ NONNULL void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   bool              publish_events);
 
 /**

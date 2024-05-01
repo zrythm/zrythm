@@ -125,7 +125,7 @@ connect_or_disconnect (
           Track * track = channel_send_get_track (send);
           switch (track->out_signal_type)
             {
-            case TYPE_EVENT:
+            case Z_PORT_TYPE_EVENT:
               {
                 Port *   port = port_find_from_identifier (self->midi_id);
                 GError * err = NULL;
@@ -141,7 +141,7 @@ connect_or_disconnect (
                   }
               }
               break;
-            case TYPE_AUDIO:
+            case Z_PORT_TYPE_AUDIO:
               {
                 Port *   l = port_find_from_identifier (self->l_id);
                 Port *   r = port_find_from_identifier (self->r_id);

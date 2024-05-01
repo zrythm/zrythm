@@ -6,9 +6,21 @@
 #include "dsp/port.h"
 #include "dsp/port_identifier.h"
 #include "plugins/plugin_identifier.h"
+#include "utils/gtk.h"
 #include "utils/hash.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+
+#include "enum-types.h"
+
+const char *
+port_unit_to_str (const ZPortUnit unit)
+{
+  static const char * port_unit_strings[] = {
+    "none", "Hz", "MHz", "dB", "°", "s", "ms", "μs",
+  };
+  return port_unit_strings[unit];
+}
 
 void
 port_identifier_init (PortIdentifier * self)
@@ -17,22 +29,6 @@ port_identifier_init (PortIdentifier * self)
   self->schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
   plugin_identifier_init (&self->plugin_id);
 }
-
-#if 0
-PortIdentifier *
-port_identifier_new (void)
-{
-  PortIdentifier * self =
-    object_new (PortIdentifier);
-  self->schema_version =
-    PORT_IDENTIFIER_SCHEMA_VERSION;
-
-  self->track_pos = -1;
-  plugin_identifier_init (&self->plugin_id);
-
-  return self;
-}
-#endif
 
 /**
  * Port group comparator function where @ref p1 and
@@ -100,7 +96,7 @@ port_identifier_is_equal (const PortIdentifier * src, const PortIdentifier * des
   if (!eq)
     return false;
 
-  if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (dest->owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
     {
       eq = eq && plugin_identifier_is_equal (&dest->plugin_id, &src->plugin_id);
     }
@@ -146,7 +142,7 @@ port_identifier_print_to_str (
 {
   char pl_buf[800];
   strcpy (pl_buf, "{none}");
-  if (self->owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (self->owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
     {
       plugin_identifier_print (&self->plugin_id, pl_buf);
     }
@@ -158,8 +154,10 @@ port_identifier_print_to_str (
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
     self, port_identifier_get_hash (self), self->label, self->sym, self->uri,
-    self->comment, port_owner_type_strings[self->owner_type],
-    port_type_strings[self->type], port_flow_strings[self->flow], self->flags,
+    self->comment,
+    z_gtk_get_enum_nick (Z_TYPE_PORT_OWNER_TYPE, self->owner_type),
+    z_gtk_get_enum_nick (Z_TYPE_PORT_TYPE, self->type),
+    z_gtk_get_enum_nick (Z_TYPE_PORT_FLOW, self->flow), self->flags,
     self->flags2, self->unit, self->port_group, self->ext_port_id,
     self->track_name_hash, self->port_index, pl_buf);
 }

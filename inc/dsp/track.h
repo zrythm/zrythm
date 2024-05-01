@@ -447,13 +447,13 @@ typedef struct Track
    * The input signal type (eg audio bus tracks have
    * audio input signals).
    */
-  PortType in_signal_type;
+  ZPortType in_signal_type;
 
   /**
    * The output signal type (eg midi tracks have
    * MIDI output signals).
    */
-  PortType out_signal_type;
+  ZPortType out_signal_type;
 
   /** User comments. */
   char * comment;
@@ -1303,7 +1303,7 @@ track_set_icon (
  *   selected.
  */
 Plugin *
-track_get_plugin_at_slot (Track * track, PluginSlotType slot_type, int slot);
+track_get_plugin_at_slot (Track * track, ZPluginSlotType slot_type, int slot);
 
 /**
  * Marks the track for bouncing.
@@ -1356,17 +1356,17 @@ track_freeze (Track * self, bool freeze, GError ** error);
  */
 void
 track_insert_plugin (
-  Track *        self,
-  Plugin *       pl,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           instantiate_plugin,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           confirm,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           fire_events);
+  Track *         self,
+  Plugin *        pl,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            instantiate_plugin,
+  bool            replacing_plugin,
+  bool            moving_plugin,
+  bool            confirm,
+  bool            gen_automatables,
+  bool            recalc_graph,
+  bool            fire_events);
 
 /**
  * Wrapper over channel_remove_plugin() and
@@ -1374,14 +1374,14 @@ track_insert_plugin (
  */
 void
 track_remove_plugin (
-  Track *        self,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           deleting_plugin,
-  bool           deleting_track,
-  bool           recalc_graph);
+  Track *         self,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            replacing_plugin,
+  bool            moving_plugin,
+  bool            deleting_plugin,
+  bool            deleting_track,
+  bool            recalc_graph);
 
 /**
  * Disconnects the track from the processing chain.

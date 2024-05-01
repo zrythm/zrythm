@@ -124,11 +124,11 @@ hardware_processor_find_port (HardwareProcessor * self, const char * id)
 }
 
 static Port *
-create_port_for_ext_port (ExtPort * ext_port, PortType type, PortFlow flow)
+create_port_for_ext_port (ExtPort * ext_port, ZPortType type, ZPortFlow flow)
 {
   Port * port = port_new_with_type_and_owner (
-    type, flow, ext_port->full_name, PORT_OWNER_TYPE_HW, ext_port);
-  port->id.flags |= PORT_FLAG_HW;
+    type, flow, ext_port->full_name, Z_PORT_OWNER_TYPE_HW, ext_port);
+  port->id.flags |= Z_PORT_FLAG_HW;
   port->id.ext_port_id = ext_port_get_id (ext_port);
 
   return port;
@@ -146,14 +146,14 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
   g_debug ("rescanning ports...");
 
   /* get correct flow */
-  PortFlow flow =
+  ZPortFlow flow =
     /* these are reversed:
      * input here -> port that outputs in backend */
-    self->is_input ? FLOW_OUTPUT : FLOW_INPUT;
+    self->is_input ? Z_PORT_FLOW_OUTPUT : Z_PORT_FLOW_INPUT;
 
   /* collect audio ports */
   GPtrArray * ports = g_ptr_array_new ();
-  ext_ports_get (TYPE_AUDIO, flow, true, ports);
+  ext_ports_get (Z_PORT_TYPE_AUDIO, flow, true, ports);
 
   /* add missing ports to the list */
   for (size_t i = 0; i < ports->len; i++)
@@ -183,7 +183,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
 
   /* collect midi ports */
   ports = g_ptr_array_new ();
-  ext_ports_get (TYPE_EVENT, flow, true, ports);
+  ext_ports_get (Z_PORT_TYPE_EVENT, flow, true, ports);
 
   /* add missing ports to the list */
   for (size_t i = 0; i < ports->len; i++)
@@ -223,8 +223,8 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
       if (i >= self->num_audio_ports)
         {
           g_return_val_if_fail (self->audio_ports, G_SOURCE_REMOVE);
-          self->audio_ports[i] =
-            create_port_for_ext_port (ext_port, TYPE_AUDIO, FLOW_OUTPUT);
+          self->audio_ports[i] = create_port_for_ext_port (
+            ext_port, Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT);
           self->num_audio_ports++;
         }
 
@@ -236,8 +236,8 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
       g_return_val_if_fail (ext_port, G_SOURCE_REMOVE);
       if (i >= self->num_midi_ports)
         {
-          self->midi_ports[i] =
-            create_port_for_ext_port (ext_port, TYPE_EVENT, FLOW_OUTPUT);
+          self->midi_ports[i] = create_port_for_ext_port (
+            ext_port, Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT);
           self->num_midi_ports++;
         }
 

@@ -37,92 +37,47 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 typedef enum ZPluginCategory
 {
   /** None specified. */
-  ZPLUGIN_CATEGORY_NONE,
-  PC_DELAY,
-  PC_REVERB,
-  PC_DISTORTION,
-  PC_WAVESHAPER,
-  PC_DYNAMICS,
-  PC_AMPLIFIER,
-  PC_COMPRESSOR,
-  PC_ENVELOPE,
-  PC_EXPANDER,
-  PC_GATE,
-  PC_LIMITER,
-  PC_FILTER,
-  PC_ALLPASS_FILTER,
-  PC_BANDPASS_FILTER,
-  PC_COMB_FILTER,
-  PC_EQ,
-  PC_MULTI_EQ,
-  PC_PARA_EQ,
-  PC_HIGHPASS_FILTER,
-  PC_LOWPASS_FILTER,
-  PC_GENERATOR,
-  PC_CONSTANT,
-  PC_INSTRUMENT,
-  PC_OSCILLATOR,
-  PC_MIDI,
-  PC_MODULATOR,
-  PC_CHORUS,
-  PC_FLANGER,
-  PC_PHASER,
-  PC_SIMULATOR,
-  PC_SIMULATOR_REVERB,
-  PC_SPATIAL,
-  PC_SPECTRAL,
-  PC_PITCH,
-  PC_UTILITY,
-  PC_ANALYZER,
-  PC_CONVERTER,
-  PC_FUNCTION,
-  PC_MIXER,
+  Z_PLUGIN_CATEGORY_NONE,
+  Z_PLUGIN_CATEGORY_DELAY,
+  Z_PLUGIN_CATEGORY_REVERB,
+  Z_PLUGIN_CATEGORY_DISTORTION,
+  Z_PLUGIN_CATEGORY_WAVESHAPER,
+  Z_PLUGIN_CATEGORY_DYNAMICS,
+  Z_PLUGIN_CATEGORY_AMPLIFIER,
+  Z_PLUGIN_CATEGORY_COMPRESSOR,
+  Z_PLUGIN_CATEGORY_ENVELOPE,
+  Z_PLUGIN_CATEGORY_EXPANDER,
+  Z_PLUGIN_CATEGORY_GATE,
+  Z_PLUGIN_CATEGORY_LIMITER,
+  Z_PLUGIN_CATEGORY_FILTER,
+  Z_PLUGIN_CATEGORY_ALLPASS_FILTER,
+  Z_PLUGIN_CATEGORY_BANDPASS_FILTER,
+  Z_PLUGIN_CATEGORY_COMB_FILTER,
+  Z_PLUGIN_CATEGORY_EQ,
+  Z_PLUGIN_CATEGORY_MULTI_EQ,
+  Z_PLUGIN_CATEGORY_PARA_EQ,
+  Z_PLUGIN_CATEGORY_HIGHPASS_FILTER,
+  Z_PLUGIN_CATEGORY_LOWPASS_FILTER,
+  Z_PLUGIN_CATEGORY_GENERATOR,
+  Z_PLUGIN_CATEGORY_CONSTANT,
+  Z_PLUGIN_CATEGORY_INSTRUMENT,
+  Z_PLUGIN_CATEGORY_OSCILLATOR,
+  Z_PLUGIN_CATEGORY_MIDI,
+  Z_PLUGIN_CATEGORY_MODULATOR,
+  Z_PLUGIN_CATEGORY_CHORUS,
+  Z_PLUGIN_CATEGORY_FLANGER,
+  Z_PLUGIN_CATEGORY_PHASER,
+  Z_PLUGIN_CATEGORY_SIMULATOR,
+  Z_PLUGIN_CATEGORY_SIMULATOR_REVERB,
+  Z_PLUGIN_CATEGORY_SPATIAL,
+  Z_PLUGIN_CATEGORY_SPECTRAL,
+  Z_PLUGIN_CATEGORY_PITCH,
+  Z_PLUGIN_CATEGORY_UTILITY,
+  Z_PLUGIN_CATEGORY_ANALYZER,
+  Z_PLUGIN_CATEGORY_CONVERTER,
+  Z_PLUGIN_CATEGORY_FUNCTION,
+  Z_PLUGIN_CATEGORY_MIXER,
 } ZPluginCategory;
-
-#if 0
-static const char * plugin_descriptor_category_strings[] = {
-  "None",
-  "Delay",
-  "Reverb",
-  "Distortion",
-  "Waveshaper",
-  "Dynamics",
-  "Amplifier",
-  "Compressor",
-  "Envelope",
-  "Expander",
-  "Gate",
-  "Limiter",
-  "Filter",
-  "Allpass Filter",
-  "Bandpass Filter",
-  "Comb Filter",
-  "EQ",
-  "Multi-EQ",
-  "Parametric EQ",
-  "Highpass Filter",
-  "Lowpass Filter",
-  "Generator",
-  "Constant",
-  "Instrument",
-  "Oscillator",
-  "MIDI",
-  "Modulator",
-  "Chorus",
-  "Flanger",
-  "Phaser",
-  "Simulator",
-  "Simulator Reverb",
-  "Spatial",
-  "Spectral",
-  "Pitch",
-  "Utility",
-  "Analyzer",
-  "Converter",
-  "Function",
-  "Mixer",
-};
-#endif
 
 /**
  * Plugin protocol.
@@ -143,35 +98,24 @@ typedef enum ZPluginProtocol
   Z_PLUGIN_PROTOCOL_JSFX,
 } ZPluginProtocol;
 
-static const char * plugin_protocol_strings[] = {
-  "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
-  "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
-};
-
 /**
  * 32 or 64 bit.
  */
-typedef enum PluginArchitecture
+typedef enum Z_PluginArchitecture
 {
-  ARCH_32,
-  ARCH_64
-} PluginArchitecture;
+  Z_PLUGIN_ARCHITECTURE_32,
+  Z_PLUGIN_ARCHITECTURE_64
+} ZPluginArchitecture;
 
 /**
  * Carla bridge mode.
  */
-typedef enum CarlaBridgeMode
+typedef enum ZCarlaBridgeMode
 {
-  CARLA_BRIDGE_NONE,
-  CARLA_BRIDGE_UI,
-  CARLA_BRIDGE_FULL,
-} CarlaBridgeMode;
-
-static const char * carla_bridge_mode_strings[] = {
-  "None",
-  "UI",
-  "Full",
-};
+  Z_CARLA_BRIDGE_NONE,
+  Z_CARLA_BRIDGE_UI,
+  Z_CARLA_BRIDGE_FULL,
+} ZCarlaBridgeMode;
 
 /***
  * A descriptor to be implemented by all plugins
@@ -203,7 +147,7 @@ typedef struct PluginDescriptor
   /** Number of output CV ports. */
   int num_cv_outs;
   /** Architecture (32/64bit). */
-  PluginArchitecture arch;
+  ZPluginArchitecture arch;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
   ZPluginProtocol protocol;
   /** Path, if not an Lv2Plugin which uses URIs. */
@@ -215,7 +159,7 @@ typedef struct PluginDescriptor
   int64_t unique_id;
 
   /** Minimum required bridge mode. */
-  CarlaBridgeMode min_bridge_mode;
+  ZCarlaBridgeMode min_bridge_mode;
 
   bool has_custom_ui;
 
@@ -374,7 +318,7 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self);
  * Returns the minimum bridge mode required for this
  * plugin.
  */
-NONNULL CarlaBridgeMode
+NONNULL ZCarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self);
 
 /**

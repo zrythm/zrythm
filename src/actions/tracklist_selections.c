@@ -700,7 +700,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
 
           GError * err = NULL;
           pl = plugin_new_from_setting (
-            setting, track_get_name_hash (track), PLUGIN_SLOT_INSERT, 0, &err);
+            setting, track_get_name_hash (track), Z_PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -729,7 +729,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
           bool is_instrument = track->type == TRACK_TYPE_INSTRUMENT;
           channel_add_plugin (
             track->channel,
-            is_instrument ? PLUGIN_SLOT_INSTRUMENT : PLUGIN_SLOT_INSERT,
+            is_instrument ? Z_PLUGIN_SLOT_INSTRUMENT : Z_PLUGIN_SLOT_INSERT,
             is_instrument ? -1 : pl->id.slot, pl, F_CONFIRM, F_NOT_MOVING_PLUGIN,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
@@ -1381,7 +1381,7 @@ do_or_undo_move_or_copy (
                       channel_send_copy_values (track_send, own_send);
                       if (
                         own_conns->len > 0
-                        && track->out_signal_type == TYPE_AUDIO)
+                        && track->out_signal_type == Z_PORT_TYPE_AUDIO)
                         {
                           PortConnection * conn =
                             g_ptr_array_index (own_conns, 0);
@@ -1395,7 +1395,7 @@ do_or_undo_move_or_copy (
                         }
                       else if (
                         own_conns->len > 0
-                        && track->out_signal_type == TYPE_EVENT)
+                        && track->out_signal_type == Z_PORT_TYPE_EVENT)
                         {
                           PortConnection * conn =
                             g_ptr_array_index (own_conns, 0);

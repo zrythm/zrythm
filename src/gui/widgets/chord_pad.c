@@ -36,7 +36,7 @@ send_note_offs (ChordPadWidget * self)
 {
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  if (track && track->in_signal_type == TYPE_EVENT)
+  if (track && track->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 
@@ -61,7 +61,7 @@ on_chord_click_pressed (
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  if (track && track->in_signal_type == TYPE_EVENT)
+  if (track && track->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 

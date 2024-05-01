@@ -116,7 +116,7 @@ channel_widget_tick_cb (
     }
 
   /* TODO */
-  if (track->out_signal_type == TYPE_EVENT)
+  if (track->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       gtk_label_set_text (self->meter_reading, "-∞");
       return G_SOURCE_CONTINUE;
@@ -365,7 +365,7 @@ on_btn_release (
       gint64 cur_time = g_get_monotonic_time ();
       if (cur_time - self->last_plugin_press > 1000)
         {
-          PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
+          PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_TRACKLIST;
         }
 
       GdkModifierType state = gtk_event_controller_get_current_event_state (
@@ -413,13 +413,13 @@ setup_meter (ChannelWidget * self)
   Track * track = channel_get_track (self->channel);
   switch (track->out_signal_type)
     {
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       meter_widget_setup (self->meter_l, self->channel->midi_out, false);
       gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
       break;
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       meter_widget_setup (self->meter_l, self->channel->stereo_out->l, false);
       meter_widget_setup (self->meter_r, self->channel->stereo_out->r, false);
       break;
@@ -435,7 +435,7 @@ void
 channel_widget_update_midi_fx_and_inserts (ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (self->inserts);
-  if (self->channel->track->in_signal_type == TYPE_EVENT)
+  if (self->channel->track->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       plugin_strip_expander_widget_refresh (self->midi_fx);
     }
@@ -768,11 +768,11 @@ channel_widget_new (Channel * channel)
     g_object_ref (fader_buttons_widget_new (track));
 
   plugin_strip_expander_widget_setup (
-    self->inserts, PLUGIN_SLOT_INSERT, PSE_POSITION_CHANNEL, track);
-  if (track->in_signal_type == TYPE_EVENT)
+    self->inserts, Z_PLUGIN_SLOT_INSERT, PSE_POSITION_CHANNEL, track);
+  if (track->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       plugin_strip_expander_widget_setup (
-        self->midi_fx, PLUGIN_SLOT_MIDI_FX, PSE_POSITION_CHANNEL, track);
+        self->midi_fx, Z_PLUGIN_SLOT_MIDI_FX, PSE_POSITION_CHANNEL, track);
     }
   else
     {
@@ -796,7 +796,7 @@ channel_widget_new (Channel * channel)
     /*{*/
       self->instrument_slot =
         channel_slot_widget_new (
-          -1, self->channel, PLUGIN_SLOT_INSTRUMENT,
+          -1, self->channel, Z_PLUGIN_SLOT_INSTRUMENT,
           true);
       gtk_widget_set_visible (
         GTK_WIDGET (self->instrument_slot), true);

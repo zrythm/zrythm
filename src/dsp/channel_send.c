@@ -35,11 +35,11 @@ G_DEFINE_QUARK (
   z - audio - channel - send - error - quark,
   z_audio_channel_send_error)
 
-static PortType
+static ZPortType
 get_signal_type (const ChannelSend * self)
 {
   Track * track = channel_send_get_track (self);
-  g_return_val_if_fail (track, TYPE_AUDIO);
+  g_return_val_if_fail (track, Z_PORT_TYPE_AUDIO);
   return track->out_signal_type;
 }
 
@@ -132,25 +132,27 @@ channel_send_new (unsigned int track_name_hash, int slot, Track * track)
   self->slot = slot;
 
 #define SET_PORT_OWNER(x) \
-  port_set_owner (self->x, PORT_OWNER_TYPE_CHANNEL_SEND, self)
+  port_set_owner (self->x, Z_PORT_OWNER_TYPE_CHANNEL_SEND, self)
 
   char name[600];
   char sym[600];
   sprintf (name, _ ("Channel Send %d enabled"), slot + 1);
-  self->enabled = port_new_with_type (TYPE_CONTROL, FLOW_INPUT, name);
+  self->enabled =
+    port_new_with_type (Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name);
   self->enabled->id.sym = g_strdup_printf ("channel_send_%d_enabled", slot + 1);
-  self->enabled->id.flags |= PORT_FLAG_TOGGLE;
-  self->enabled->id.flags2 |= PORT_FLAG2_CHANNEL_SEND_ENABLED;
+  self->enabled->id.flags |= Z_PORT_FLAG_TOGGLE;
+  self->enabled->id.flags2 |= Z_PORT_FLAG2_CHANNEL_SEND_ENABLED;
   SET_PORT_OWNER (enabled);
   port_set_control_value (
     self->enabled, 0.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   sprintf (name, _ ("Channel Send %d amount"), slot + 1);
-  self->amount = port_new_with_type (TYPE_CONTROL, FLOW_INPUT, name);
+  self->amount =
+    port_new_with_type (Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name);
   self->amount->id.sym = g_strdup_printf ("channel_send_%d_amount", slot + 1);
-  self->amount->id.flags |= PORT_FLAG_AMPLITUDE;
-  self->amount->id.flags |= PORT_FLAG_AUTOMATABLE;
-  self->amount->id.flags2 |= PORT_FLAG2_CHANNEL_SEND_AMOUNT;
+  self->amount->id.flags |= Z_PORT_FLAG_AMPLITUDE;
+  self->amount->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+  self->amount->id.flags2 |= Z_PORT_FLAG2_CHANNEL_SEND_AMOUNT;
   SET_PORT_OWNER (amount);
   port_set_control_value (
     self->amount, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
@@ -158,24 +160,26 @@ channel_send_new (unsigned int track_name_hash, int slot, Track * track)
   sprintf (name, _ ("Channel Send %d audio in"), slot + 1);
   sprintf (sym, "channel_send_%d_audio_in", slot + 1);
   self->stereo_in = stereo_ports_new_generic (
-    F_INPUT, name, sym, PORT_OWNER_TYPE_CHANNEL_SEND, self);
+    F_INPUT, name, sym, Z_PORT_OWNER_TYPE_CHANNEL_SEND, self);
   SET_PORT_OWNER (stereo_in->l);
   SET_PORT_OWNER (stereo_in->r);
 
   sprintf (name, _ ("Channel Send %d MIDI in"), slot + 1);
-  self->midi_in = port_new_with_type (TYPE_EVENT, FLOW_INPUT, name);
+  self->midi_in =
+    port_new_with_type (Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, name);
   self->midi_in->id.sym = g_strdup_printf ("channel_send_%d_midi_in", slot + 1);
   SET_PORT_OWNER (midi_in);
 
   sprintf (name, _ ("Channel Send %d audio out"), slot + 1);
   sprintf (sym, "channel_send_%d_audio_out", slot + 1);
   self->stereo_out = stereo_ports_new_generic (
-    F_NOT_INPUT, name, sym, PORT_OWNER_TYPE_CHANNEL_SEND, self);
+    F_NOT_INPUT, name, sym, Z_PORT_OWNER_TYPE_CHANNEL_SEND, self);
   SET_PORT_OWNER (stereo_out->l);
   SET_PORT_OWNER (stereo_out->r);
 
   sprintf (name, _ ("Channel Send %d MIDI out"), slot + 1);
-  self->midi_out = port_new_with_type (TYPE_EVENT, FLOW_OUTPUT, name);
+  self->midi_out =
+    port_new_with_type (Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, name);
   self->midi_out->id.sym =
     g_strdup_printf ("channel_send_%d_midi_out", slot + 1);
   SET_PORT_OWNER (midi_out);
@@ -231,7 +235,7 @@ channel_send_process (
 
   Track * track = channel_send_get_track (self);
   g_return_if_fail (track);
-  if (track->out_signal_type == TYPE_AUDIO)
+  if (track->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       if (math_floats_equal_epsilon (self->amount->control, 1.f, 0.00001f))
         {
@@ -254,7 +258,7 @@ channel_send_process (
             nframes);
         }
     }
-  else if (track->out_signal_type == TYPE_EVENT)
+  else if (track->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       midi_events_append (
         self->midi_out->midi_events, self->midi_in->midi_events, local_offset,
@@ -285,15 +289,15 @@ channel_send_get_target_track (ChannelSend * self, Track * owner)
   if (channel_send_is_empty (self))
     return NULL;
 
-  PortType         signal_type = get_signal_type (self);
+  ZPortType        signal_type = get_signal_type (self);
   PortConnection * conn = NULL;
   switch (signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       conn = port_connections_manager_get_source_or_dest (
         PORT_CONNECTIONS_MGR, &self->stereo_out->l->id, false);
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       conn = port_connections_manager_get_source_or_dest (
         PORT_CONNECTIONS_MGR, &self->midi_out->id, false);
       break;
@@ -320,8 +324,8 @@ channel_send_get_target_sidechain (ChannelSend * self)
   g_return_val_if_fail (
     !channel_send_is_empty (self) && self->is_sidechain, NULL);
 
-  PortType signal_type = get_signal_type (self);
-  g_return_val_if_fail (signal_type == TYPE_AUDIO, NULL);
+  ZPortType signal_type = get_signal_type (self);
+  g_return_val_if_fail (signal_type == Z_PORT_TYPE_AUDIO, NULL);
 
   PortConnection * conn = port_connections_manager_get_source_or_dest (
     PORT_CONNECTIONS_MGR, &self->stereo_out->l->id, false);
@@ -349,10 +353,10 @@ channel_send_get_target_sidechain (ChannelSend * self)
 void
 channel_send_connect_to_owner (ChannelSend * self)
 {
-  PortType signal_type = get_signal_type (self);
+  ZPortType signal_type = get_signal_type (self);
   switch (signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       for (int i = 0; i < 2; i++)
         {
           Port * self_port = i == 0 ? self->stereo_in->l : self->stereo_in->r;
@@ -378,7 +382,7 @@ channel_send_connect_to_owner (ChannelSend * self)
             F_ENABLE);
         }
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       {
         Port * self_port = self->midi_in;
         Port * src_port = NULL;
@@ -566,14 +570,14 @@ channel_send_disconnect (ChannelSend * self, bool recalc_graph)
   if (channel_send_is_empty (self))
     return;
 
-  PortType signal_type = get_signal_type (self);
+  ZPortType signal_type = get_signal_type (self);
 
   switch (signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       disconnect_audio (self);
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       disconnect_midi (self);
       break;
     default:
@@ -611,9 +615,9 @@ channel_send_get_dest_name (ChannelSend * self, char * buf)
     }
   else
     {
-      PortType type = get_signal_type (self);
-      Port *   search_port =
-        (type == TYPE_AUDIO) ? self->stereo_out->l : self->midi_out;
+      ZPortType type = get_signal_type (self);
+      Port *    search_port =
+        (type == Z_PORT_TYPE_AUDIO) ? self->stereo_out->l : self->midi_out;
       PortConnection * conn = port_connections_manager_get_source_or_dest (
         PORT_CONNECTIONS_MGR, &search_port->id, false);
       g_return_if_fail (conn);
@@ -629,7 +633,7 @@ channel_send_get_dest_name (ChannelSend * self, char * buf)
         {
           switch (dest->id.owner_type)
             {
-            case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+            case Z_PORT_OWNER_TYPE_TRACK_PROCESSOR:
               {
                 Track * track = port_get_track (dest, true);
                 g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -673,9 +677,9 @@ channel_send_is_enabled (const ChannelSend * self)
   if (!enabled)
     return false;
 
-  PortType signal_type = get_signal_type (self);
-  Port *   search_port =
-    (signal_type == TYPE_AUDIO) ? self->stereo_out->l : self->midi_out;
+  ZPortType signal_type = get_signal_type (self);
+  Port *    search_port =
+    (signal_type == Z_PORT_TYPE_AUDIO) ? self->stereo_out->l : self->midi_out;
 
   if (G_LIKELY (router_is_processing_thread (ROUTER)))
     {
@@ -684,7 +688,7 @@ channel_send_is_enabled (const ChannelSend * self)
           Port * dest = search_port->dests[0];
           g_return_val_if_fail (IS_PORT_AND_NONNULL (dest), false);
 
-          if (dest->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+          if (dest->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
             {
               Plugin * pl = plugin_find (&dest->id.plugin_id);
               g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
@@ -708,7 +712,7 @@ channel_send_is_enabled (const ChannelSend * self)
   /* if dest port is a plugin port and plugin
    * instantiation failed, assume that the send
    * is disabled */
-  if (dest->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (dest->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
     {
       Plugin * pl = plugin_find (&dest->id.plugin_id);
       if (pl->instantiation_failed)
@@ -747,8 +751,8 @@ channel_send_validate (ChannelSend * self)
 {
   if (channel_send_is_enabled (self))
     {
-      PortType signal_type = get_signal_type (self);
-      if (signal_type == TYPE_AUDIO)
+      ZPortType signal_type = get_signal_type (self);
+      if (signal_type == Z_PORT_TYPE_AUDIO)
         {
           int num_dests = port_connections_manager_get_sources_or_dests (
             PORT_CONNECTIONS_MGR, NULL, &self->stereo_out->l->id, false);
@@ -757,7 +761,7 @@ channel_send_validate (ChannelSend * self)
             PORT_CONNECTIONS_MGR, NULL, &self->stereo_out->r->id, false);
           g_return_val_if_fail (num_dests == 1, false);
         }
-      else if (signal_type == TYPE_EVENT)
+      else if (signal_type == Z_PORT_TYPE_EVENT)
         {
           int num_dests = port_connections_manager_get_sources_or_dests (
             PORT_CONNECTIONS_MGR, NULL, &self->midi_out->id, false);
@@ -813,8 +817,8 @@ channel_send_append_connection (
   if (channel_send_is_empty (self))
     return 0;
 
-  PortType signal_type = get_signal_type (self);
-  if (signal_type == TYPE_AUDIO)
+  ZPortType signal_type = get_signal_type (self);
+  if (signal_type == Z_PORT_TYPE_AUDIO)
     {
       int num_dests = port_connections_manager_get_sources_or_dests (
         mgr, arr, &self->stereo_out->l->id, false);
@@ -824,7 +828,7 @@ channel_send_append_connection (
       g_return_val_if_fail (num_dests == 1, false);
       return 2;
     }
-  else if (signal_type == TYPE_EVENT)
+  else if (signal_type == Z_PORT_TYPE_EVENT)
     {
       int num_dests = port_connections_manager_get_sources_or_dests (
         mgr, arr, &self->midi_out->id, false);

@@ -96,42 +96,35 @@ typedef enum ProjectPath
 } ProjectPath;
 
 /**
- * Selection type, used for controlling which part
- * of the interface is selected, for copy-paste,
- * displaying info in the inspector, etc.
+ * Selection type, used for controlling which part of the interface is selected,
+ * for copy-paste, displaying info in the inspector, etc.
  */
-typedef enum SelectionType
+typedef enum ZProjectSelectionType
 {
   /** Track selection in tracklist or mixer. */
-  SELECTION_TYPE_TRACKLIST,
+  Z_PROJECT_SELECTION_TYPE_TRACKLIST,
 
   /** Timeline or pinned timeline. */
-  SELECTION_TYPE_TIMELINE,
+  Z_PROJECT_SELECTION_TYPE_TIMELINE,
 
   /** Insert selections in the mixer. */
-  SELECTION_TYPE_INSERT,
+  Z_PROJECT_SELECTION_TYPE_INSERT,
 
   /** MIDI FX selections in the mixer. */
-  SELECTION_TYPE_MIDI_FX,
+  Z_PROJECT_SELECTION_TYPE_MIDI_FX,
 
   /** Instrument slot. */
-  SELECTION_TYPE_INSTRUMENT,
+  Z_PROJECT_SELECTION_TYPE_INSTRUMENT,
 
   /** Modulator slot. */
-  SELECTION_TYPE_MODULATOR,
+  Z_PROJECT_SELECTION_TYPE_MODULATOR,
 
   /** Editor arranger. */
-  SELECTION_TYPE_EDITOR,
-} SelectionType;
-
-static const char * selection_type_strings[] = {
-  "Tracklist",  "Timeline",  "Insert", "MIDI FX",
-  "Instrument", "Modulator", "Editor",
-};
+  Z_PROJECT_SELECTION_TYPE_EDITOR,
+} ZProjectSelectionType;
 
 /**
- * Flag to pass to project_compress() and
- * project_decompress().
+ * Flag to pass to project_compress() and project_decompress().
  */
 typedef enum ProjectCompressionFlag
 {
@@ -275,7 +268,7 @@ typedef struct Project
    *
    * Used in inspector_widget_refresh.
    */
-  SelectionType last_selection;
+  ZProjectSelectionType last_selection;
 
   /** Zrythm version, for serialization */
   char * version;

@@ -68,16 +68,16 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
       {
         switch (node->port->id.owner_type)
           {
-          case PORT_OWNER_TYPE_PLUGIN:
+          case Z_PORT_OWNER_TYPE_PLUGIN:
             {
               Plugin * pl = port_get_plugin (node->port, true);
               parent_node = graph_find_node_from_plugin (node->graph, pl);
             }
             break;
-          case PORT_OWNER_TYPE_TRACK:
+          case Z_PORT_OWNER_TYPE_TRACK:
             {
               Track * tr = port_get_track (node->port, true);
-              if (node->port->id.flags & PORT_FLAG_MODULATOR_MACRO)
+              if (node->port->id.flags & Z_PORT_FLAG_MODULATOR_MACRO)
                 {
                   parent_node = graph_find_node_from_modulator_macro_processor (
                     node->graph,
@@ -90,7 +90,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
             }
             break;
-          case PORT_OWNER_TYPE_CHANNEL_SEND:
+          case Z_PORT_OWNER_TYPE_CHANNEL_SEND:
             {
               Track * tr = port_get_track (node->port, true);
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
@@ -101,14 +101,15 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 graph_find_node_from_channel_send (node->graph, send);
             }
             break;
-          case PORT_OWNER_TYPE_FADER:
+          case Z_PORT_OWNER_TYPE_FADER:
             {
-              if (node->port->id.flags2 & PORT_FLAG2_MONITOR_FADER)
+              if (node->port->id.flags2 & Z_PORT_FLAG2_MONITOR_FADER)
                 {
                   parent_node =
                     graph_find_node_from_fader (node->graph, MONITOR_FADER);
                 }
-              else if (node->port->id.flags2 & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+              else if (
+                node->port->id.flags2 & Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
                 {
                   parent_node = graph_find_node_from_fader (
                     node->graph, SAMPLE_PROCESSOR->fader);
@@ -116,7 +117,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
               else
                 {
                   Track * tr = port_get_track (node->port, true);
-                  if (node->port->id.flags2 & PORT_FLAG2_PREFADER)
+                  if (node->port->id.flags2 & Z_PORT_FLAG2_PREFADER)
                     parent_node = graph_find_node_from_prefader (
                       node->graph, tr->channel->prefader);
                   else
@@ -125,7 +126,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
             }
             break;
-          case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+          case Z_PORT_OWNER_TYPE_TRACK_PROCESSOR:
             {
               Track * tr = port_get_track (node->port, true);
               parent_node = graph_find_node_from_track (node->graph, tr, true);
@@ -168,18 +169,18 @@ create_anode (Agraph_t * aroot_graph, GraphNode * node, GHashTable * anodes)
     case ROUTE_NODE_TYPE_PORT:
       switch (node->port->id.type)
         {
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           agsafeset (
             anode, (char *) "color", (char *) "crimson", (char *) "black");
           break;
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           agsafeset (anode, (char *) "color", (char *) "navy", (char *) "black");
           break;
-        case TYPE_CONTROL:
+        case Z_PORT_TYPE_CONTROL:
           agsafeset (
             anode, (char *) "color", (char *) "darkviolet", (char *) "black");
           break;
-        case TYPE_CV:
+        case Z_PORT_TYPE_CV:
           agsafeset (
             anode, (char *) "color", (char *) "darkgreen", (char *) "black");
           break;
@@ -210,7 +211,7 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
       GraphNode * node = (GraphNode *) value;
 #  if 0
       /* skip control ports */
-      if (node->type == ROUTE_NODE_TYPE_PORT && node->port->id.type == TYPE_CONTROL)
+      if (node->type == ROUTE_NODE_TYPE_PORT && node->port->id.type == Z_PORT_TYPE_CONTROL)
         continue;
 #  endif
       ANode * anode = anode_new ();

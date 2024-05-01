@@ -51,7 +51,7 @@ port_connections_popover_widget_refresh (
   z_gtk_widget_destroy_all_children (GTK_WIDGET (self->ports_box));
 
   /* set title and add ports */
-  if (self->port->id.flow == FLOW_INPUT)
+  if (self->port->id.flow == Z_PORT_FLOW_INPUT)
     {
       if (GTK_IS_LABEL (self->title))
         {
@@ -73,7 +73,7 @@ port_connections_popover_widget_refresh (
         }
       g_ptr_array_unref (srcs);
     }
-  else if (self->port->id.flow == FLOW_OUTPUT)
+  else if (self->port->id.flow == Z_PORT_FLOW_OUTPUT)
     {
       if (GTK_IS_LABEL (self->title))
         {

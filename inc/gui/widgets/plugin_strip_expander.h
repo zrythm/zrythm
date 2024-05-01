@@ -46,7 +46,7 @@ typedef struct _PluginStripExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
-  PluginSlotType              slot_type;
+  ZPluginSlotType             slot_type;
   PluginStripExpanderPosition position;
 
   /** Scrolled window for the vbox inside. */
@@ -86,7 +86,7 @@ plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self);
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  PluginSlotType              type,
+  ZPluginSlotType             type,
   PluginStripExpanderPosition position,
   Track *                     track);
 

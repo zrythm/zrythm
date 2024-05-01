@@ -112,7 +112,9 @@ port_connection_action_do_or_undo (
             }
 
           /* set base value if cv -> control */
-          if (src->id.type == TYPE_CV && dest->id.type == TYPE_CONTROL)
+          if (
+            src->id.type == Z_PORT_TYPE_CV
+            && dest->id.type == Z_PORT_TYPE_CONTROL)
             {
               dest->base_value = dest->control;
             }

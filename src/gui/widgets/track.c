@@ -736,7 +736,7 @@ show_context_menu (TrackWidget * self, double x, double y)
       g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
     }
 
-  if (track->out_signal_type == TYPE_AUDIO)
+  if (track->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       GMenu * bounce_submenu = g_menu_new ();
 
@@ -948,7 +948,7 @@ click_pressed (
     }
   else
     {
-      PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_TRACKLIST;
       EVENTS_PUSH (ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
 
@@ -1913,14 +1913,14 @@ track_widget_new (Track * track)
 
       switch (track->out_signal_type)
         {
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           meter_widget_setup (
             self->meter_l, self->track->channel->midi_out, true);
           gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
           break;
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           meter_widget_setup (
             self->meter_l, self->track->channel->stereo_out->l, true);
           meter_widget_setup (

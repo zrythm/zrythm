@@ -202,10 +202,10 @@ plugin_gtk_add_control_row (
     {
       PortIdentifier id = controller->port->id;
 
-      if (id.unit > PORT_UNIT_NONE)
+      if (id.unit > Z_PORT_UNIT_NONE)
         {
           sprintf (
-            name, "%s <small>(%s)</small>", _name, port_unit_strings[id.unit]);
+            name, "%s <small>(%s)</small>", _name, port_unit_to_str (id.unit));
         }
 
       preformatted = true;
@@ -451,7 +451,7 @@ make_combo (Port * port, float value)
   gtk_combo_box_set_active (GTK_COMBO_BOX (combo), active);
   g_object_unref (list_store);
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (combo, is_input);
 
   GtkCellRenderer * cell = gtk_cell_renderer_text_new ();
@@ -482,7 +482,7 @@ make_log_slider (Port * port, float value)
   GtkWidget * spin = gtk_spin_button_new_with_range (min, max, 0.000001);
   gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (scale, is_input);
   gtk_widget_set_sensitive (spin, is_input);
 
@@ -508,7 +508,7 @@ make_slider (Port * port, float value)
 {
   const float  min = port->minf;
   const float  max = port->maxf;
-  bool         is_integer = port->id.flags & PORT_FLAG_INTEGER;
+  bool         is_integer = port->id.flags & Z_PORT_FLAG_INTEGER;
   const double step = is_integer ? 1.0 : ((double) (max - min) / 100.0);
   GtkWidget *  scale =
     gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, min, max, step);
@@ -516,7 +516,7 @@ make_slider (Port * port, float value)
   GtkWidget * spin = gtk_spin_button_new_with_range (min, max, step);
   gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (scale, is_input);
   gtk_widget_set_sensitive (spin, is_input);
 
@@ -565,7 +565,7 @@ make_toggle (Port * port, float value)
   GtkWidget * check = gtk_switch_new ();
   gtk_widget_set_halign (check, GTK_ALIGN_START);
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (check, is_input);
 
   if (!math_floats_equal (value, 0))
@@ -588,7 +588,7 @@ make_entry (Port * port)
 {
   GtkWidget * entry = gtk_entry_new ();
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (entry, is_input);
   if (is_input)
     {
@@ -605,7 +605,7 @@ make_file_chooser (Port * port)
   GtkWidget * button = GTK_WIDGET (file_chooser_button_widget_new (
     GTK_WINDOW (MAIN_WINDOW), _ ("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN));
 
-  bool is_input = port->id.flow == FLOW_INPUT;
+  bool is_input = port->id.flow == Z_PORT_FLOW_INPUT;
   gtk_widget_set_sensitive (button, is_input);
 
   if (is_input)
@@ -627,15 +627,15 @@ make_controller (Plugin * pl, Port * port, float value)
 {
   PluginGtkController * controller = NULL;
 
-  if (port->id.flags & PORT_FLAG_TOGGLE)
+  if (port->id.flags & Z_PORT_FLAG_TOGGLE)
     {
       controller = make_toggle (port, value);
     }
-  else if (port->id.flags2 & PORT_FLAG2_ENUMERATION)
+  else if (port->id.flags2 & Z_PORT_FLAG2_ENUMERATION)
     {
       controller = make_combo (port, value);
     }
-  else if (port->id.flags & PORT_FLAG_LOGARITHMIC)
+  else if (port->id.flags & Z_PORT_FLAG_LOGARITHMIC)
     {
       controller = make_log_slider (port, value);
     }
@@ -663,7 +663,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      if (port->id.type != TYPE_CONTROL)
+      if (port->id.type != Z_PORT_TYPE_CONTROL)
         continue;
 
       g_array_append_val (controls, port);
@@ -824,7 +824,7 @@ plugin_gtk_update_plugin_ui (Plugin * pl)
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           Port * port = pl->in_ports[i];
-          if (port->id.type != TYPE_CONTROL || !port->widget)
+          if (port->id.type != Z_PORT_TYPE_CONTROL || !port->widget)
             {
               continue;
             }

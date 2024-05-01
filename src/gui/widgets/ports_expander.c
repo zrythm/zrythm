@@ -17,6 +17,8 @@
 #include <adwaita.h>
 #include <glib/gi18n.h>
 
+#include "enum-types.h"
+
 G_DEFINE_TYPE (
   PortsExpanderWidget,
   ports_expander_widget,
@@ -31,62 +33,62 @@ ports_expander_widget_refresh (PortsExpanderWidget * self)
   /* set visibility */
   /* FIXME the port counts used don't take into
    * account invisible (notOnGUI) ports */
-  if (self->owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (self->owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
     {
-      if (self->type == TYPE_CONTROL)
+      if (self->type == Z_PORT_TYPE_CONTROL)
         {
-          if (self->flow == FLOW_INPUT)
+          if (self->flow == Z_PORT_FLOW_INPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_ctrl_ins > 0);
             }
-          else if (self->flow == FLOW_OUTPUT)
+          else if (self->flow == Z_PORT_FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_ctrl_outs > 0);
             }
         }
-      else if (self->type == TYPE_AUDIO)
+      else if (self->type == Z_PORT_TYPE_AUDIO)
         {
-          if (self->flow == FLOW_INPUT)
+          if (self->flow == Z_PORT_FLOW_INPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_audio_ins > 0);
             }
-          else if (self->flow == FLOW_OUTPUT)
+          else if (self->flow == Z_PORT_FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_audio_outs > 0);
             }
         }
-      else if (self->type == TYPE_EVENT)
+      else if (self->type == Z_PORT_TYPE_EVENT)
         {
-          if (self->flow == FLOW_INPUT)
+          if (self->flow == Z_PORT_FLOW_INPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_midi_ins > 0);
             }
-          else if (self->flow == FLOW_OUTPUT)
+          else if (self->flow == Z_PORT_FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_midi_outs > 0);
             }
         }
-      else if (self->type == TYPE_CV)
+      else if (self->type == Z_PORT_TYPE_CV)
         {
-          if (self->flow == FLOW_INPUT)
+          if (self->flow == Z_PORT_FLOW_INPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin && self->plugin->setting->descr->num_cv_ins > 0);
             }
-          else if (self->flow == FLOW_OUTPUT)
+          else if (self->flow == Z_PORT_FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
@@ -94,24 +96,24 @@ ports_expander_widget_refresh (PortsExpanderWidget * self)
             }
         }
     }
-  else if (self->owner_type == PORT_OWNER_TYPE_TRACK)
+  else if (self->owner_type == Z_PORT_OWNER_TYPE_TRACK)
     {
     }
 }
 
 static void
-set_icon_from_port_type (PortsExpanderWidget * self, PortType type)
+set_icon_from_port_type (PortsExpanderWidget * self, ZPortType type)
 {
-  if (type == TYPE_AUDIO)
+  if (type == Z_PORT_TYPE_AUDIO)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self), "signal-audio");
-  else if (type == TYPE_CV)
+  else if (type == Z_PORT_TYPE_CV)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self), "signal-cv");
-  else if (type == TYPE_EVENT)
+  else if (type == Z_PORT_TYPE_EVENT)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self), "audio-midi");
-  else if (type == TYPE_CONTROL)
+  else if (type == Z_PORT_TYPE_CONTROL)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-wrench-wide-symbolic");
 }
@@ -188,13 +190,13 @@ item_factory_teardown_cb (
 void
 ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
-  PortFlow              flow,
-  PortType              type,
+  ZPortFlow             flow,
+  ZPortType             type,
   Plugin *              pl)
 {
   self->flow = flow;
   self->type = type;
-  self->owner_type = PORT_OWNER_TYPE_PLUGIN;
+  self->owner_type = Z_PORT_OWNER_TYPE_PLUGIN;
 
   /* if same plugin, do nothing (already set up) */
   if (self->plugin == pl)
@@ -204,21 +206,21 @@ ports_expander_widget_setup_plugin (
   char fullstr[200];
   strcpy (fullstr, "");
 
-  if (type == TYPE_CONTROL && flow == FLOW_INPUT)
+  if (type == Z_PORT_TYPE_CONTROL && flow == Z_PORT_FLOW_INPUT)
     strcpy (fullstr, _ ("Controls"));
-  else if (type == TYPE_CONTROL && flow == FLOW_OUTPUT)
+  else if (type == Z_PORT_TYPE_CONTROL && flow == Z_PORT_FLOW_OUTPUT)
     strcpy (fullstr, _ ("Control Outs"));
-  else if (type == TYPE_AUDIO && flow == FLOW_INPUT)
+  else if (type == Z_PORT_TYPE_AUDIO && flow == Z_PORT_FLOW_INPUT)
     strcpy (fullstr, _ ("Audio Ins"));
-  else if (type == TYPE_AUDIO && flow == FLOW_OUTPUT)
+  else if (type == Z_PORT_TYPE_AUDIO && flow == Z_PORT_FLOW_OUTPUT)
     strcpy (fullstr, _ ("Audio Outs"));
-  else if (type == TYPE_EVENT && flow == FLOW_INPUT)
+  else if (type == Z_PORT_TYPE_EVENT && flow == Z_PORT_FLOW_INPUT)
     strcpy (fullstr, _ ("MIDI Ins"));
-  else if (type == TYPE_EVENT && flow == FLOW_OUTPUT)
+  else if (type == Z_PORT_TYPE_EVENT && flow == Z_PORT_FLOW_OUTPUT)
     strcpy (fullstr, _ ("MIDI Outs"));
-  else if (type == TYPE_CV && flow == FLOW_INPUT)
+  else if (type == Z_PORT_TYPE_CV && flow == Z_PORT_FLOW_INPUT)
     strcpy (fullstr, _ ("CV Ins"));
-  else if (type == TYPE_CV && flow == FLOW_OUTPUT)
+  else if (type == Z_PORT_TYPE_CV && flow == Z_PORT_FLOW_OUTPUT)
     strcpy (fullstr, _ ("CV Outs"));
 
   expander_box_widget_set_label (Z_EXPANDER_BOX_WIDGET (self), fullstr);
@@ -244,97 +246,105 @@ ports_expander_widget_setup_plugin (
 
   Port *           port;
   PortIdentifier * pi;
-  if (pl && type == TYPE_CONTROL && flow == FLOW_INPUT)
+  if (pl && type == Z_PORT_TYPE_CONTROL && flow == Z_PORT_FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CONTROL || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_CONTROL
+            || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CONTROL && flow == FLOW_OUTPUT)
+  else if (pl && type == Z_PORT_TYPE_CONTROL && flow == Z_PORT_FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CONTROL || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_CONTROL
+            || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CV && flow == FLOW_INPUT)
+  else if (pl && type == Z_PORT_TYPE_CV && flow == Z_PORT_FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CV || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (pi->type != Z_PORT_TYPE_CV || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CV && flow == FLOW_OUTPUT)
+  else if (pl && type == Z_PORT_TYPE_CV && flow == Z_PORT_FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CV || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (pi->type != Z_PORT_TYPE_CV || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_AUDIO && flow == FLOW_INPUT)
+  else if (pl && type == Z_PORT_TYPE_AUDIO && flow == Z_PORT_FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_AUDIO || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_AUDIO || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_AUDIO && flow == FLOW_OUTPUT)
+  else if (pl && type == Z_PORT_TYPE_AUDIO && flow == Z_PORT_FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_AUDIO || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_AUDIO || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_EVENT && flow == FLOW_INPUT)
+  else if (pl && type == Z_PORT_TYPE_EVENT && flow == Z_PORT_FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_EVENT || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_EVENT || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_EVENT && flow == FLOW_OUTPUT)
+  else if (pl && type == Z_PORT_TYPE_EVENT && flow == Z_PORT_FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_EVENT || pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != Z_PORT_TYPE_EVENT || pi->flags & Z_PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
@@ -344,8 +354,9 @@ ports_expander_widget_setup_plugin (
 
   g_debug (
     "adding ports for plugin %s, type %s flow %s...",
-    pl ? pl->setting->descr->name : "(none)", port_type_strings[type],
-    port_flow_strings[flow]);
+    pl ? pl->setting->descr->name : "(none)",
+    z_gtk_get_enum_nick (Z_TYPE_PORT_TYPE, type),
+    z_gtk_get_enum_nick (Z_TYPE_PORT_FLOW, flow));
 
   /* temporary array */
   GPtrArray * port_groups = g_ptr_array_new_with_free_func (free_port_group);
@@ -473,49 +484,49 @@ ports_expander_widget_setup_track (
   Track *                    tr,
   PortsExpanderTrackPortType type)
 {
-  self->owner_type = PORT_OWNER_TYPE_TRACK;
+  self->owner_type = Z_PORT_OWNER_TYPE_TRACK;
   self->track = tr;
 
   /*PortType in_type =*/
   /*self->track->in_signal_type;*/
-  PortType out_type;
+  ZPortType out_type;
   if (tr)
     out_type = self->track->out_signal_type;
   else
-    out_type = TYPE_AUDIO;
+    out_type = Z_PORT_TYPE_AUDIO;
 
   switch (type)
     {
     case PE_TRACK_PORT_TYPE_CONTROLS:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("Controls"));
-      self->flow = FLOW_INPUT;
-      self->type = TYPE_CONTROL;
+      self->flow = Z_PORT_FLOW_INPUT;
+      self->type = Z_PORT_TYPE_CONTROL;
       break;
     case PE_TRACK_PORT_TYPE_SENDS:
       expander_box_widget_set_label (Z_EXPANDER_BOX_WIDGET (self), _ ("Sends"));
-      self->flow = FLOW_OUTPUT;
+      self->flow = Z_PORT_FLOW_OUTPUT;
       self->type = out_type;
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("Stereo In"));
-      self->flow = FLOW_INPUT;
-      self->owner_type = PORT_OWNER_TYPE_TRACK;
+      self->flow = Z_PORT_FLOW_INPUT;
+      self->owner_type = Z_PORT_OWNER_TYPE_TRACK;
       break;
     case PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
-      self->owner_type = PORT_OWNER_TYPE_TRACK;
-      self->flow = FLOW_INPUT;
-      self->type = TYPE_EVENT;
+      self->owner_type = Z_PORT_OWNER_TYPE_TRACK;
+      self->flow = Z_PORT_FLOW_INPUT;
+      self->type = Z_PORT_TYPE_EVENT;
       break;
     case PE_TRACK_PORT_TYPE_MIDI_OUT:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI Out"));
-      self->owner_type = PORT_OWNER_TYPE_TRACK;
-      self->flow = FLOW_OUTPUT;
-      self->type = TYPE_EVENT;
+      self->owner_type = Z_PORT_OWNER_TYPE_TRACK;
+      self->flow = Z_PORT_FLOW_OUTPUT;
+      self->type = Z_PORT_TYPE_EVENT;
       break;
     }
 
@@ -545,14 +556,14 @@ ports_expander_widget_setup_track (
           ADD_SINGLE (tr->channel->fader->mute);
           break;
         case PE_TRACK_PORT_TYPE_SENDS:
-          if (out_type == TYPE_AUDIO)
+          if (out_type == Z_PORT_TYPE_AUDIO)
             {
               ADD_SINGLE (tr->channel->prefader->stereo_out->l);
               ADD_SINGLE (tr->channel->prefader->stereo_out->r);
               ADD_SINGLE (tr->channel->fader->stereo_out->l);
               ADD_SINGLE (tr->channel->fader->stereo_out->r);
             }
-          else if (out_type == TYPE_EVENT)
+          else if (out_type == Z_PORT_TYPE_EVENT)
             {
               ADD_SINGLE (tr->channel->prefader->midi_out);
               ADD_SINGLE (tr->channel->fader->midi_out);

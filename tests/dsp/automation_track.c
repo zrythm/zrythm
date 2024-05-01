@@ -128,7 +128,7 @@ test_curve_value (void)
   /*AutomationTracklist * atl =*/
   /*track_get_automation_tracklist (master);*/
   AutomationTrack * fader_at =
-    channel_get_automation_track (master->channel, PORT_FLAG_CHANNEL_FADER);
+    channel_get_automation_track (master->channel, Z_PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (fader_at);
   if (!fader_at->created)
     fader_at->created = 1;

@@ -22,6 +22,8 @@
 
 #include <glib/gi18n.h>
 
+#include "enum-types.h"
+
 #define PLUGIN_SETTINGS_JSON_TYPE "Zrythm Plugin Settings"
 #define PLUGIN_SETTINGS_JSON_FILENAME "plugin-settings.json"
 #define PLUGIN_SETTINGS_JSON_FORMAT 6
@@ -45,7 +47,7 @@ plugin_setting_new_default (const PluginDescriptor * descr)
       self = object_new (PluginSetting);
       self->descr = plugin_descriptor_clone (descr);
       /* bridge all plugins by default */
-      self->bridge_mode = CARLA_BRIDGE_FULL;
+      self->bridge_mode = Z_CARLA_BRIDGE_FULL;
       plugin_setting_validate (self, false);
     }
 
@@ -98,8 +100,8 @@ plugin_setting_print (const PluginSetting * self)
     ", "
     "num_instantiations=%d",
     self->descr->uri, self->open_with_carla, self->force_generic_ui,
-    carla_bridge_mode_strings[self->bridge_mode], self->last_instantiated_time,
-    self->num_instantiations);
+    z_gtk_get_enum_nick (Z_TYPE_CARLA_BRIDGE_MODE, self->bridge_mode),
+    self->last_instantiated_time, self->num_instantiations);
 }
 
 /**
@@ -170,17 +172,17 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #ifdef HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
   /*g_debug ("%s: recalculating bridge mode...", __func__);*/
-  if (self->bridge_mode == CARLA_BRIDGE_NONE)
+  if (self->bridge_mode == Z_CARLA_BRIDGE_NONE)
     {
       self->bridge_mode = descr->min_bridge_mode;
-      if (self->bridge_mode == CARLA_BRIDGE_NONE)
+      if (self->bridge_mode == Z_CARLA_BRIDGE_NONE)
         {
 #  if 0
           /* bridge if plugin is not whitelisted */
           if (!plugin_descriptor_is_whitelisted (descr))
             {
               self->open_with_carla = true;
-              self->bridge_mode = CARLA_BRIDGE_FULL;
+              self->bridge_mode = Z_CARLA_BRIDGE_FULL;
               /*g_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
@@ -194,9 +196,9 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
   else
     {
       self->open_with_carla = true;
-      CarlaBridgeMode mode = descr->min_bridge_mode;
+      ZCarlaBridgeMode mode = descr->min_bridge_mode;
 
-      if (mode == CARLA_BRIDGE_FULL)
+      if (mode == Z_CARLA_BRIDGE_FULL)
         {
           self->bridge_mode = mode;
         }
@@ -204,9 +206,9 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 
 #  if 0
   /* force bridge mode */
-  if (self->bridge_mode == CARLA_BRIDGE_NONE)
+  if (self->bridge_mode == Z_CARLA_BRIDGE_NONE)
     {
-      self->bridge_mode = CARLA_BRIDGE_FULL;
+      self->bridge_mode = Z_CARLA_BRIDGE_FULL;
     }
 #  endif
 
@@ -322,7 +324,7 @@ activate_finish (
       for (int j = 0; j < pl->num_out_ports; j++)
         {
           Port * cur_port = pl->out_ports[j];
-          if (cur_port->id.type != TYPE_AUDIO)
+          if (cur_port->id.type != Z_PORT_TYPE_AUDIO)
             continue;
 
           g_ptr_array_add (pl_audio_outs, cur_port);

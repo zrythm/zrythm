@@ -28,7 +28,7 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
   /* get amplitude */
   float amp = -1.f;
   float max_amp = -1.f;
-  if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_CV)
+  if (port->id.type == Z_PORT_TYPE_AUDIO || port->id.type == Z_PORT_TYPE_CV)
     {
       g_return_if_fail (port->audio_ring);
       int    num_cycles = 4;
@@ -90,7 +90,7 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
           break;
         }
     }
-  else if (port->id.type == TYPE_EVENT)
+  else if (port->id.type == Z_PORT_TYPE_EVENT)
     {
       bool on = false;
       if (port->write_ring_buffers)
@@ -177,10 +177,10 @@ meter_new_for_port (Port * port)
   self->port = port;
 
   /* master */
-  if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_CV)
+  if (port->id.type == Z_PORT_TYPE_AUDIO || port->id.type == Z_PORT_TYPE_CV)
     {
       bool is_master_fader = false;
-      if (port->id.owner_type == PORT_OWNER_TYPE_TRACK)
+      if (port->id.owner_type == Z_PORT_OWNER_TYPE_TRACK)
         {
           Track * track = port_get_track (port, true);
           if (track->type == TRACK_TYPE_MASTER)
@@ -202,7 +202,7 @@ meter_new_for_port (Port * port)
           peak_dsp_init (self->peak_processor, AUDIO_ENGINE->sample_rate);
         }
     }
-  else if (port->id.type == TYPE_EVENT)
+  else if (port->id.type == Z_PORT_TYPE_EVENT)
     {
     }
 

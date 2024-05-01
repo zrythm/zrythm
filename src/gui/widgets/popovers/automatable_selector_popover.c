@@ -169,8 +169,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
           else if (string_is_equal (_ ("Channel"), str))
             {
               if (
-                port->id.owner_type == PORT_OWNER_TYPE_CHANNEL
-                || port->id.owner_type == PORT_OWNER_TYPE_FADER)
+                port->id.owner_type == Z_PORT_OWNER_TYPE_CHANNEL
+                || port->id.owner_type == Z_PORT_OWNER_TYPE_FADER)
                 {
                   match = true;
                   break;
@@ -316,16 +316,16 @@ bind_type_header_cb (
       Plugin * pl = (Plugin *) wobj->obj;
       switch (pl->id.slot_type)
         {
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           gtk_label_set_text (lbl, _ ("Inserts"));
           break;
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           gtk_label_set_text (lbl, _ ("MIDI FX"));
           break;
-        case PLUGIN_SLOT_INSTRUMENT:
+        case Z_PLUGIN_SLOT_INSTRUMENT:
           gtk_label_set_text (lbl, _ ("Instrument"));
           break;
-        case PLUGIN_SLOT_MODULATOR:
+        case Z_PLUGIN_SLOT_MODULATOR:
           gtk_label_set_text (lbl, _ ("Modulators"));
           break;
         default:

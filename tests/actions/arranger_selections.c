@@ -136,7 +136,7 @@ check_timeline_objects_deleted (int creating)
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 0);
 
@@ -832,7 +832,7 @@ check_after_duplicate_timeline (int new_tracks, bool link)
         track_get_automation_tracklist (P_MASTER_TRACK);
       g_assert_nonnull (atl);
       AutomationTrack * at = channel_get_automation_track (
-        P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+        P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
       g_assert_nonnull (at);
       g_assert_cmpint (at->num_regions, ==, 2);
       obj = (ArrangerObject *) at->regions[0];
@@ -953,7 +953,7 @@ test_duplicate_automation_region (void)
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
 
@@ -1740,7 +1740,7 @@ test_automation_fill (void)
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
 
@@ -2266,7 +2266,7 @@ test_delete_automation_points (void)
   position_set_to_bar (&pos1, 1);
   position_set_to_bar (&pos2, 4);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_CHANNEL_FADER);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (at);
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), at->index, 0);
@@ -3082,7 +3082,7 @@ test_cut_automation_region (void)
   position_set_to_bar (&pos1, 1);
   position_set_to_bar (&pos2, 8);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_CHANNEL_FADER);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (at);
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), at->index, 0);
@@ -3144,7 +3144,7 @@ test_copy_and_move_automation_regions (void)
   position_set_to_bar (&pos1, 2);
   position_set_to_bar (&pos2, 4);
   AutomationTrack * fader_at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_CHANNEL_FADER);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (fader_at);
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), fader_at->index, 0);
@@ -3168,7 +3168,7 @@ test_copy_and_move_automation_regions (void)
   arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
 
   AutomationTrack * mute_at =
-    channel_get_automation_track (audio_track->channel, PORT_FLAG_FADER_MUTE);
+    channel_get_automation_track (audio_track->channel, Z_PORT_FLAG_FADER_MUTE);
   g_assert_nonnull (mute_at);
 
   /* 1st test */

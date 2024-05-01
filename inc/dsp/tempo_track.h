@@ -27,29 +27,22 @@
 #define TEMPO_TRACK_DEFAULT_BEATS_PER_BAR 4
 #define TEMPO_TRACK_MIN_BEATS_PER_BAR 1
 #define TEMPO_TRACK_MAX_BEATS_PER_BAR 16
-#define TEMPO_TRACK_DEFAULT_BEAT_UNIT BEAT_UNIT_4
-#define TEMPO_TRACK_MIN_BEAT_UNIT BEAT_UNIT_2
-#define TEMPO_TRACK_MAX_BEAT_UNIT BEAT_UNIT_16
+#define TEMPO_TRACK_DEFAULT_BEAT_UNIT Z_BEAT_UNIT_4
+#define TEMPO_TRACK_MIN_BEAT_UNIT Z_BEAT_UNIT_2
+#define TEMPO_TRACK_MAX_BEAT_UNIT Z_BEAT_UNIT_16
 
 #define P_TEMPO_TRACK (TRACKLIST->tempo_track)
 
 /**
  * Beat unit.
  */
-typedef enum BeatUnit
+typedef enum ZBeatUnit
 {
-  BEAT_UNIT_2,
-  BEAT_UNIT_4,
-  BEAT_UNIT_8,
-  BEAT_UNIT_16
-} BeatUnit;
-
-static const char * beat_unit_strings[] = {
-  "2",
-  "4",
-  "8",
-  "16",
-};
+  Z_BEAT_UNIT_2,
+  Z_BEAT_UNIT_4,
+  Z_BEAT_UNIT_8,
+  Z_BEAT_UNIT_16
+} ZBeatUnit;
 
 /**
  * Creates the default tempo track.
@@ -109,15 +102,15 @@ void
 tempo_track_set_bpm_from_str (void * _self, const char * str);
 
 int
-tempo_track_beat_unit_enum_to_int (BeatUnit ebeat_unit);
+tempo_track_beat_unit_enum_to_int (ZBeatUnit ebeat_unit);
 
 void
-tempo_track_set_beat_unit_from_enum (Track * self, BeatUnit ebeat_unit);
+tempo_track_set_beat_unit_from_enum (Track * self, ZBeatUnit ebeat_unit);
 
-BeatUnit
+ZBeatUnit
 tempo_track_get_beat_unit_enum (Track * self);
 
-BeatUnit
+ZBeatUnit
 tempo_track_beat_unit_to_enum (int beat_unit);
 
 void

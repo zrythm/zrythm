@@ -23,7 +23,7 @@ typedef struct PluginSetting_v1
   PluginDescriptor_v1 * descr;
   bool                  open_with_carla;
   bool                  force_generic_ui;
-  CarlaBridgeMode_v1    bridge_mode;
+  ZCarlaBridgeMode_v1   bridge_mode;
   char *                ui_uri;
   gint64                last_instantiated_time;
   int                   num_instantiations;

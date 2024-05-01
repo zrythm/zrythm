@@ -129,7 +129,8 @@ test_mono_plugin (void)
   g_return_if_fail (setting);
 
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (audio_track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (audio_track), 0, setting, 1,
+    NULL);
   g_assert_true (ret);
 
   Plugin * pl = audio_track->channel->inserts[0];
@@ -201,7 +202,7 @@ test_crash_handling (void)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
   g_return_if_fail (setting);
-  setting->bridge_mode = CARLA_BRIDGE_FULL;
+  setting->bridge_mode = Z_CARLA_BRIDGE_FULL;
 
   /* create a track from the plugin */
   track_create_for_plugin_at_idx_w_action (

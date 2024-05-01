@@ -36,77 +36,66 @@
 /**
  * Direction of the signal.
  */
-typedef enum PortFlow
+typedef enum Z_PortFlow
 {
-  FLOW_UNKNOWN,
-  FLOW_INPUT,
-  FLOW_OUTPUT
-} PortFlow;
-
-static const char * port_flow_strings[] = {
-  "unknown",
-  "input",
-  "output",
-};
+  Z_PORT_FLOW_UNKNOWN,
+  Z_PORT_FLOW_INPUT,
+  Z_PORT_FLOW_OUTPUT
+} ZPortFlow;
 
 /**
  * Type of signals the Port handles.
  */
-typedef enum PortType
+typedef enum ZPortType
 {
-  TYPE_UNKNOWN,
-  TYPE_CONTROL,
-  TYPE_AUDIO,
-  TYPE_EVENT,
-  TYPE_CV
-} PortType;
-
-static const char * port_type_strings[] = {
-  "unknown", "control", "audio", "event", "cv",
-};
+  Z_PORT_TYPE_UNKNOWN,
+  Z_PORT_TYPE_CONTROL,
+  Z_PORT_TYPE_AUDIO,
+  Z_PORT_TYPE_EVENT,
+  Z_PORT_TYPE_CV
+} ZPortType;
 
 /**
  * Port unit to be displayed in the UI.
  */
-typedef enum PortUnit
+typedef enum ZPortUnit
 {
-  PORT_UNIT_NONE,
-  PORT_UNIT_HZ,
-  PORT_UNIT_MHZ,
-  PORT_UNIT_DB,
-  PORT_UNIT_DEGREES,
-  PORT_UNIT_SECONDS,
+  Z_PORT_UNIT_NONE,
+  Z_PORT_UNIT_HZ,
+  Z_PORT_UNIT_MHZ,
+  Z_PORT_UNIT_DB,
+  Z_PORT_UNIT_DEGREES,
+  Z_PORT_UNIT_SECONDS,
 
   /** Milliseconds. */
-  PORT_UNIT_MS,
+  Z_PORT_UNIT_MS,
 
   /** Microseconds. */
-  PORT_UNIT_US,
-} PortUnit;
+  Z_PORT_UNIT_US,
+} ZPortUnit;
 
-static const char * port_unit_strings[] = {
-  "none", "Hz", "MHz", "dB", "°", "s", "ms", "μs",
-};
+const char *
+port_unit_to_str (const ZPortUnit unit);
 
 /**
  * Type of owner.
  */
-typedef enum PortOwnerType
+typedef enum ZPortOwnerType
 {
-  /* PORT_OWNER_TYPE_NONE, */
-  PORT_OWNER_TYPE_AUDIO_ENGINE,
+  /* Z_PORT_OWNER_TYPE_NONE, */
+  Z_PORT_OWNER_TYPE_AUDIO_ENGINE,
 
   /** Plugin owner. */
-  PORT_OWNER_TYPE_PLUGIN,
+  Z_PORT_OWNER_TYPE_PLUGIN,
 
   /** Track owner. */
-  PORT_OWNER_TYPE_TRACK,
+  Z_PORT_OWNER_TYPE_TRACK,
 
   /** Channel owner. */
-  PORT_OWNER_TYPE_CHANNEL,
+  Z_PORT_OWNER_TYPE_CHANNEL,
 
   /** Fader. */
-  PORT_OWNER_TYPE_FADER,
+  Z_PORT_OWNER_TYPE_FADER,
 
   /**
    * Channel send.
@@ -114,46 +103,38 @@ typedef enum PortOwnerType
    * PortIdentifier.port_index will contain the
    * send index on the port's track's channel.
    */
-  PORT_OWNER_TYPE_CHANNEL_SEND,
+  Z_PORT_OWNER_TYPE_CHANNEL_SEND,
 
   /* TrackProcessor. */
-  PORT_OWNER_TYPE_TRACK_PROCESSOR,
+  Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
 
   /** Port is part of a HardwareProcessor. */
-  PORT_OWNER_TYPE_HW,
+  Z_PORT_OWNER_TYPE_HW,
 
   /** Port is owned by engine transport. */
-  PORT_OWNER_TYPE_TRANSPORT,
+  Z_PORT_OWNER_TYPE_TRANSPORT,
 
   /** Modulator macro processor owner. */
-  PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
-} PortOwnerType;
-
-static const char * port_owner_type_strings[] = {
-  "audio engine",    "plugin",
-  "track",           "channel",
-  "fader",           "channel send",
-  "track processor", "hw",
-  "transport",       "modulator macro processor",
-};
+  Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
+} ZPortOwnerType;
 
 /**
  * Port flags.
  */
-typedef enum PortFlags
+typedef enum ZPortFlags
 {
-  PORT_FLAG_STEREO_L = 1 << 0,
-  PORT_FLAG_STEREO_R = 1 << 1,
-  PORT_FLAG_PIANO_ROLL = 1 << 2,
+  Z_PORT_FLAG_STEREO_L = 1 << 0,
+  Z_PORT_FLAG_STEREO_R = 1 << 1,
+  Z_PORT_FLAG_PIANO_ROLL = 1 << 2,
   /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
-  PORT_FLAG_SIDECHAIN = 1 << 3,
+  Z_PORT_FLAG_SIDECHAIN = 1 << 3,
   /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
    * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
-  PORT_FLAG_MAIN_PORT = 1 << 4,
-  PORT_FLAG_MANUAL_PRESS = 1 << 5,
+  Z_PORT_FLAG_MAIN_PORT = 1 << 4,
+  Z_PORT_FLAG_MANUAL_PRESS = 1 << 5,
 
   /** Amplitude port. */
-  PORT_FLAG_AMPLITUDE = 1 << 6,
+  Z_PORT_FLAG_AMPLITUDE = 1 << 6,
 
   /**
    * Port controls the stereo balance.
@@ -161,7 +142,7 @@ typedef enum PortFlags
    * This is used in channels for the balance
    * control.
    */
-  PORT_FLAG_STEREO_BALANCE = 1 << 7,
+  Z_PORT_FLAG_STEREO_BALANCE = 1 << 7,
 
   /**
    * Whether the port wants to receive position
@@ -169,7 +150,7 @@ typedef enum PortFlags
    *
    * This is only applicable for LV2 Atom ports.
    */
-  PORT_FLAG_WANT_POSITION = 1 << 8,
+  Z_PORT_FLAG_WANT_POSITION = 1 << 8,
 
   /**
    * Trigger ports will be set to 0 at the end of
@@ -178,35 +159,35 @@ typedef enum PortFlags
    * This mostly applies to LV2 Control Input
    * ports.
    */
-  PORT_FLAG_TRIGGER = 1 << 9,
+  Z_PORT_FLAG_TRIGGER = 1 << 9,
 
   /** Whether the port is a toggle (on/off). */
-  PORT_FLAG_TOGGLE = 1 << 10,
+  Z_PORT_FLAG_TOGGLE = 1 << 10,
 
   /** Whether the port is an integer. */
-  PORT_FLAG_INTEGER = 1 << 11,
+  Z_PORT_FLAG_INTEGER = 1 << 11,
 
   /** Whether port is for letting the plugin know
    * that we are in freewheeling (export) mode. */
-  PORT_FLAG_FREEWHEEL = 1 << 12,
+  Z_PORT_FLAG_FREEWHEEL = 1 << 12,
 
   /** Used for plugin ports. */
-  PORT_FLAG_REPORTS_LATENCY = 1 << 13,
+  Z_PORT_FLAG_REPORTS_LATENCY = 1 << 13,
 
   /** Port should not be visible to users. */
-  PORT_FLAG_NOT_ON_GUI = 1 << 14,
+  Z_PORT_FLAG_NOT_ON_GUI = 1 << 14,
 
   /** Port is a switch for plugin enabled. */
-  PORT_FLAG_PLUGIN_ENABLED = 1 << 15,
+  Z_PORT_FLAG_PLUGIN_ENABLED = 1 << 15,
 
   /** Port is a plugin control. */
-  PORT_FLAG_PLUGIN_CONTROL = 1 << 16,
+  Z_PORT_FLAG_PLUGIN_CONTROL = 1 << 16,
 
   /** Port is for fader mute. */
-  PORT_FLAG_FADER_MUTE = 1 << 17,
+  Z_PORT_FLAG_FADER_MUTE = 1 << 17,
 
   /** Port is for channel fader. */
-  PORT_FLAG_CHANNEL_FADER = 1 << 18,
+  Z_PORT_FLAG_CHANNEL_FADER = 1 << 18,
 
   /**
    * Port has an automation track.
@@ -214,19 +195,19 @@ typedef enum PortFlags
    * If this is set, it is assumed that the automation track at
    * \ref PortIdentifier.port_index is for this port.
    */
-  PORT_FLAG_AUTOMATABLE = 1 << 19,
+  Z_PORT_FLAG_AUTOMATABLE = 1 << 19,
 
   /** MIDI automatable control, such as modwheel or
    * pitch bend. */
-  PORT_FLAG_MIDI_AUTOMATABLE = 1 << 20,
+  Z_PORT_FLAG_MIDI_AUTOMATABLE = 1 << 20,
 
   /** Channels can send to this port (ie, this port
    * is a track processor midi/stereo in or a plugin
    * sidechain in). */
-  PORT_FLAG_SEND_RECEIVABLE = 1 << 21,
+  Z_PORT_FLAG_SEND_RECEIVABLE = 1 << 21,
 
   /** This is a BPM port. */
-  PORT_FLAG_BPM = 1 << 22,
+  Z_PORT_FLAG_BPM = 1 << 22,
 
   /**
    * Generic plugin port not belonging to the
@@ -235,19 +216,19 @@ typedef enum PortFlags
    * This is for ports that are added by Zrythm
    * such as Enabled and Gain.
    */
-  PORT_FLAG_GENERIC_PLUGIN_PORT = 1 << 23,
+  Z_PORT_FLAG_GENERIC_PLUGIN_PORT = 1 << 23,
 
   /** This is the plugin gain. */
-  PORT_FLAG_PLUGIN_GAIN = 1 << 24,
+  Z_PORT_FLAG_PLUGIN_GAIN = 1 << 24,
 
   /** Track processor input mono switch. */
-  PORT_FLAG_TP_MONO = 1 << 25,
+  Z_PORT_FLAG_TP_MONO = 1 << 25,
 
   /** Track processor input gain. */
-  PORT_FLAG_TP_INPUT_GAIN = 1 << 26,
+  Z_PORT_FLAG_TP_INPUT_GAIN = 1 << 26,
 
   /** Port is a hardware port. */
-  PORT_FLAG_HW = 1 << 27,
+  Z_PORT_FLAG_HW = 1 << 27,
 
   /**
    * Port is part of a modulator macro processor.
@@ -255,10 +236,10 @@ typedef enum PortFlags
    * Which of the ports it is can be determined
    * by checking flow/type.
    */
-  PORT_FLAG_MODULATOR_MACRO = 1 << 28,
+  Z_PORT_FLAG_MODULATOR_MACRO = 1 << 28,
 
   /** Logarithmic. */
-  PORT_FLAG_LOGARITHMIC = 1 << 29,
+  Z_PORT_FLAG_LOGARITHMIC = 1 << 29,
 
   /**
    * Plugin control is a property (changes are set
@@ -270,143 +251,98 @@ typedef enum PortFlags
    * both).
    *
    * @see http://lv2plug.in/ns/lv2core#Parameter. */
-  PORT_FLAG_IS_PROPERTY = 1 << 30,
-} PortFlags;
+  Z_PORT_FLAG_IS_PROPERTY = 1 << 30,
+} ZPortFlags;
 
-static const char * port_flags_bitvals[] = {
-  "stereo_l",         "stereo_r",        "piano_roll",    "sidechain",
-  "main_port",        "manual_press",    "amplitude",     "stereo_balance",
-  "want_position",    "trigger",         "toggle",        "integer",
-  "freewheel",        "reports_latency", "not_on_gui",    "plugin_enabled",
-  "plugin_control",   "fader_mute",      "channel_fader", "automatable",
-  "midi_automatable", "send_receivable", "bpm",           "generic_plugin_port",
-  "plugin_gain",      "tp_mono",         "tp_input_gain", "hw",
-  "modulator_macro",  "logarithmic",     "is_property",
-};
-
-typedef enum PortFlags2
+typedef enum ZPortFlags2
 {
   /** Transport ports. */
-  PORT_FLAG2_TRANSPORT_ROLL = 1 << 0,
-  PORT_FLAG2_TRANSPORT_STOP = 1 << 1,
-  PORT_FLAG2_TRANSPORT_BACKWARD = 1 << 2,
-  PORT_FLAG2_TRANSPORT_FORWARD = 1 << 3,
-  PORT_FLAG2_TRANSPORT_LOOP_TOGGLE = 1 << 4,
-  PORT_FLAG2_TRANSPORT_REC_TOGGLE = 1 << 5,
+  Z_PORT_FLAG2_TRANSPORT_ROLL = 1 << 0,
+  Z_PORT_FLAG2_TRANSPORT_STOP = 1 << 1,
+  Z_PORT_FLAG2_TRANSPORT_BACKWARD = 1 << 2,
+  Z_PORT_FLAG2_TRANSPORT_FORWARD = 1 << 3,
+  Z_PORT_FLAG2_TRANSPORT_LOOP_TOGGLE = 1 << 4,
+  Z_PORT_FLAG2_TRANSPORT_REC_TOGGLE = 1 << 5,
 
   /** LV2 control atom port supports patch
    * messages. */
-  PORT_FLAG2_SUPPORTS_PATCH_MESSAGE = 1 << 6,
+  Z_PORT_FLAG2_SUPPORTS_PATCH_MESSAGE = 1 << 6,
 
   /** Port's only reasonable values are its scale
    * points. */
-  PORT_FLAG2_ENUMERATION = 1 << 7,
+  Z_PORT_FLAG2_ENUMERATION = 1 << 7,
 
   /** Parameter port's value type is URI. */
-  PORT_FLAG2_URI_PARAM = 1 << 8,
+  Z_PORT_FLAG2_URI_PARAM = 1 << 8,
 
   /** Atom port buffer type is sequence. */
-  PORT_FLAG2_SEQUENCE = 1 << 9,
+  Z_PORT_FLAG2_SEQUENCE = 1 << 9,
 
   /** Atom or event port supports MIDI. */
-  PORT_FLAG2_SUPPORTS_MIDI = 1 << 10,
+  Z_PORT_FLAG2_SUPPORTS_MIDI = 1 << 10,
 
   /** Track processor output gain. */
-  PORT_FLAG2_TP_OUTPUT_GAIN = 1 << 11,
+  Z_PORT_FLAG2_TP_OUTPUT_GAIN = 1 << 11,
 
   /** MIDI pitch bend. */
-  PORT_FLAG2_MIDI_PITCH_BEND = 1 << 12,
+  Z_PORT_FLAG2_MIDI_PITCH_BEND = 1 << 12,
 
   /** MIDI poly key pressure. */
-  PORT_FLAG2_MIDI_POLY_KEY_PRESSURE = 1 << 13,
+  Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE = 1 << 13,
 
   /** MIDI channel pressure. */
-  PORT_FLAG2_MIDI_CHANNEL_PRESSURE = 1 << 14,
+  Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE = 1 << 14,
 
   /** Channel send enabled. */
-  PORT_FLAG2_CHANNEL_SEND_ENABLED = 1 << 15,
+  Z_PORT_FLAG2_CHANNEL_SEND_ENABLED = 1 << 15,
 
   /** Channel send amount. */
-  PORT_FLAG2_CHANNEL_SEND_AMOUNT = 1 << 16,
+  Z_PORT_FLAG2_CHANNEL_SEND_AMOUNT = 1 << 16,
 
   /** Beats per bar. */
-  PORT_FLAG2_BEATS_PER_BAR = 1 << 17,
+  Z_PORT_FLAG2_BEATS_PER_BAR = 1 << 17,
 
   /** Beat unit. */
-  PORT_FLAG2_BEAT_UNIT = 1 << 18,
+  Z_PORT_FLAG2_BEAT_UNIT = 1 << 18,
 
   /** Fader solo. */
-  PORT_FLAG2_FADER_SOLO = 1 << 19,
+  Z_PORT_FLAG2_FADER_SOLO = 1 << 19,
 
   /** Fader listen. */
-  PORT_FLAG2_FADER_LISTEN = 1 << 20,
+  Z_PORT_FLAG2_FADER_LISTEN = 1 << 20,
 
   /** Fader mono compat. */
-  PORT_FLAG2_FADER_MONO_COMPAT = 1 << 21,
+  Z_PORT_FLAG2_FADER_MONO_COMPAT = 1 << 21,
 
   /** Track recording. */
-  PORT_FLAG2_TRACK_RECORDING = 1 << 22,
+  Z_PORT_FLAG2_TRACK_RECORDING = 1 << 22,
 
   /** Track processor monitor audio. */
-  PORT_FLAG2_TP_MONITOR_AUDIO = 1 << 23,
+  Z_PORT_FLAG2_TP_MONITOR_AUDIO = 1 << 23,
 
   /** Port is owned by prefader. */
-  PORT_FLAG2_PREFADER = 1 << 24,
+  Z_PORT_FLAG2_PREFADER = 1 << 24,
 
   /** Port is owned by postfader. */
-  PORT_FLAG2_POSTFADER = 1 << 25,
+  Z_PORT_FLAG2_POSTFADER = 1 << 25,
 
   /** Port is owned by monitor fader. */
-  PORT_FLAG2_MONITOR_FADER = 1 << 26,
+  Z_PORT_FLAG2_MONITOR_FADER = 1 << 26,
 
   /** Port is owned by the sample processor fader. */
-  PORT_FLAG2_SAMPLE_PROCESSOR_FADER = 1 << 27,
+  Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER = 1 << 27,
 
   /** Port is owned by sample processor
    * track/channel (including faders owned by those
    * tracks/channels). */
-  PORT_FLAG2_SAMPLE_PROCESSOR_TRACK = 1 << 28,
+  Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK = 1 << 28,
 
   /** Fader swap phase. */
-  PORT_FLAG2_FADER_SWAP_PHASE = 1 << 29,
+  Z_PORT_FLAG2_FADER_SWAP_PHASE = 1 << 29,
 
   /** MIDI clock. */
-  PORT_FLAG2_MIDI_CLOCK = 1 << 30,
-} PortFlags2;
-
-static const char * port_flags2_bitvals[] = {
-  "transport_roll",
-  "transport_stop",
-  "transport_backward",
-  "transport_forward",
-  "transport_loop_toggle",
-  "transport_rec_toggle",
-  "patch_message",
-  "enumeration",
-  "uri_param",
-  "sequence",
-  "supports_midi",
-  "output_gain",
-  "pitch_bend",
-  "poly_key_pressure",
-  "channel_pressure",
-  "ch_send_enabled",
-  "ch_send_amount",
-  "beats_per_bar",
-  "beat_unit",
-  "fader_solo",
-  "fader_listen",
-  "fader_mono_compat",
-  "track_recording",
-  "tp_monitor_audio",
-  "prefader",
-  "postfader",
-  "monitor_fader",
-  "sample_processor_fader",
-  "sample_processor_track",
-  "fader_swap_phase",
-  "midi_clock",
-};
+  Z_PORT_FLAG2_MIDI_CLOCK = 1 << 30,
+} ZPortFlags2;
 
 /**
  * Struct used to identify Ports in the project.
@@ -435,17 +371,17 @@ typedef struct PortIdentifier
   char * comment;
 
   /** Owner type. */
-  PortOwnerType owner_type;
+  ZPortOwnerType owner_type;
   /** Data type (e.g. AUDIO). */
-  PortType type;
+  ZPortType type;
   /** Flow (IN/OUT). */
-  PortFlow flow;
+  ZPortFlow flow;
   /** Flags (e.g. is side chain). */
-  PortFlags  flags;
-  PortFlags2 flags2;
+  ZPortFlags  flags;
+  ZPortFlags2 flags2;
 
   /** Port unit. */
-  PortUnit unit;
+  ZPortUnit unit;
 
   /** Identifier of plugin. */
   PluginIdentifier plugin_id;
@@ -489,13 +425,13 @@ static inline int
 port_identifier_get_midi_channel (const PortIdentifier * self)
 {
   if (
-    self->flags2 & PORT_FLAG2_MIDI_PITCH_BEND
-    || self->flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
-    || self->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+    self->flags2 & Z_PORT_FLAG2_MIDI_PITCH_BEND
+    || self->flags2 & Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
+    || self->flags2 & Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
     {
       return self->port_index + 1;
     }
-  else if (self->flags & PORT_FLAG_MIDI_AUTOMATABLE)
+  else if (self->flags & Z_PORT_FLAG_MIDI_AUTOMATABLE)
     {
       return self->port_index / 128 + 1;
     }

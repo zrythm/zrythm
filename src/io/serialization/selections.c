@@ -235,7 +235,7 @@ mixer_selections_deserialize_from_json (
 {
   yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
   sel->type =
-    (PluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
+    (ZPluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
   yyjson_val *    slots_arr = yyjson_obj_iter_get (&it, "slots");
   yyjson_arr_iter slot_it = yyjson_arr_iter_with (slots_arr);
   yyjson_val *    slot_obj = NULL;

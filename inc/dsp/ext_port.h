@@ -272,11 +272,12 @@ ext_port_get_enabled (ExtPort * self);
  * Collects external ports of the given type.
  *
  * @param flow The signal flow. Note that this is inverse to what Zrythm sees.
- * E.g., to get MIDI inputs like MIDI keyboards, pass \ref FLOW_OUTPUT here.
+ * E.g., to get MIDI inputs like MIDI keyboards, pass \ref Z_PORT_FLOW_OUTPUT
+ * here.
  * @param hw Hardware or not.
  */
 void
-ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports);
+ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports);
 
 /**
  * Creates a shallow clone of the port.

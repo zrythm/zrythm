@@ -136,11 +136,11 @@ inspector_track_widget_show_tracks (
             {
               gtk_widget_set_visible (GTK_WIDGET (self->inputs), true);
             }
-          if (track->in_signal_type == TYPE_EVENT)
+          if (track->in_signal_type == Z_PORT_TYPE_EVENT)
             {
               gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), true);
               plugin_strip_expander_widget_setup (
-                self->midi_fx, PLUGIN_SLOT_MIDI_FX, PSE_POSITION_INSPECTOR,
+                self->midi_fx, Z_PLUGIN_SLOT_MIDI_FX, PSE_POSITION_INSPECTOR,
                 track);
             }
           track_input_expander_widget_refresh (self->inputs, track);
@@ -150,7 +150,7 @@ inspector_track_widget_show_tracks (
             self->controls, track, PE_TRACK_PORT_TYPE_CONTROLS);
 
           plugin_strip_expander_widget_setup (
-            self->inserts, PLUGIN_SLOT_INSERT, PSE_POSITION_INSPECTOR, track);
+            self->inserts, Z_PLUGIN_SLOT_INSERT, PSE_POSITION_INSPECTOR, track);
 
           fader_controls_expander_widget_setup (self->fader, track);
 

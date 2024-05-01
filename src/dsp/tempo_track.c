@@ -36,39 +36,42 @@ tempo_track_init (Track * self)
 
   /* create bpm port */
   self->bpm_port = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT, _ ("BPM"), PORT_OWNER_TYPE_TRACK, self);
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("BPM"), Z_PORT_OWNER_TYPE_TRACK,
+    self);
   self->bpm_port->id.sym = g_strdup ("bpm");
   self->bpm_port->minf = 60.f;
   self->bpm_port->maxf = 360.f;
   self->bpm_port->deff = 140.f;
   port_set_control_value (self->bpm_port, self->bpm_port->deff, false, false);
-  self->bpm_port->id.flags |= PORT_FLAG_BPM;
-  self->bpm_port->id.flags |= PORT_FLAG_AUTOMATABLE;
+  self->bpm_port->id.flags |= Z_PORT_FLAG_BPM;
+  self->bpm_port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
 
   /* create time sig ports */
   self->beats_per_bar_port = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT, _ ("Beats per bar"), PORT_OWNER_TYPE_TRACK, self);
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("Beats per bar"),
+    Z_PORT_OWNER_TYPE_TRACK, self);
   self->beats_per_bar_port->id.sym = g_strdup ("beats_per_bar");
   self->beats_per_bar_port->minf = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   self->beats_per_bar_port->maxf = TEMPO_TRACK_MAX_BEATS_PER_BAR;
   self->beats_per_bar_port->deff = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   port_set_control_value (
     self->beats_per_bar_port, TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-  self->beats_per_bar_port->id.flags2 |= PORT_FLAG2_BEATS_PER_BAR;
-  self->beats_per_bar_port->id.flags |= PORT_FLAG_AUTOMATABLE;
-  self->beats_per_bar_port->id.flags |= PORT_FLAG_INTEGER;
+  self->beats_per_bar_port->id.flags2 |= Z_PORT_FLAG2_BEATS_PER_BAR;
+  self->beats_per_bar_port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+  self->beats_per_bar_port->id.flags |= Z_PORT_FLAG_INTEGER;
 
   self->beat_unit_port = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT, _ ("Beat unit"), PORT_OWNER_TYPE_TRACK, self);
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("Beat unit"),
+    Z_PORT_OWNER_TYPE_TRACK, self);
   self->beat_unit_port->id.sym = g_strdup ("beat_unit");
   self->beat_unit_port->minf = TEMPO_TRACK_MIN_BEAT_UNIT;
   self->beat_unit_port->maxf = TEMPO_TRACK_MAX_BEAT_UNIT;
   self->beat_unit_port->deff = TEMPO_TRACK_MIN_BEAT_UNIT;
   port_set_control_value (
     self->beat_unit_port, TEMPO_TRACK_DEFAULT_BEAT_UNIT, false, false);
-  self->beat_unit_port->id.flags2 |= PORT_FLAG2_BEAT_UNIT;
-  self->beat_unit_port->id.flags |= PORT_FLAG_AUTOMATABLE;
-  self->beat_unit_port->id.flags |= PORT_FLAG_INTEGER;
+  self->beat_unit_port->id.flags2 |= Z_PORT_FLAG2_BEAT_UNIT;
+  self->beat_unit_port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+  self->beat_unit_port->id.flags |= Z_PORT_FLAG_INTEGER;
 
   /* set invisible */
   self->visible = false;
@@ -198,21 +201,21 @@ tempo_track_set_bpm_from_str (void * _self, const char * str)
 }
 
 int
-tempo_track_beat_unit_enum_to_int (BeatUnit ebeat_unit)
+tempo_track_beat_unit_enum_to_int (ZBeatUnit ebeat_unit)
 {
   int bu = 0;
   switch (ebeat_unit)
     {
-    case BEAT_UNIT_2:
+    case Z_BEAT_UNIT_2:
       bu = 2;
       break;
-    case BEAT_UNIT_4:
+    case Z_BEAT_UNIT_4:
       bu = 4;
       break;
-    case BEAT_UNIT_8:
+    case Z_BEAT_UNIT_8:
       bu = 8;
       break;
-    case BEAT_UNIT_16:
+    case Z_BEAT_UNIT_16:
       bu = 16;
       break;
     default:
@@ -224,7 +227,7 @@ tempo_track_beat_unit_enum_to_int (BeatUnit ebeat_unit)
 }
 
 void
-tempo_track_set_beat_unit_from_enum (Track * self, BeatUnit ebeat_unit)
+tempo_track_set_beat_unit_from_enum (Track * self, ZBeatUnit ebeat_unit)
 {
   g_return_if_fail (
     !engine_get_run (AUDIO_ENGINE)
@@ -235,19 +238,19 @@ tempo_track_set_beat_unit_from_enum (Track * self, BeatUnit ebeat_unit)
   EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
 }
 
-BeatUnit
+ZBeatUnit
 tempo_track_beat_unit_to_enum (int beat_unit)
 {
   switch (beat_unit)
     {
     case 2:
-      return BEAT_UNIT_2;
+      return Z_BEAT_UNIT_2;
     case 4:
-      return BEAT_UNIT_4;
+      return Z_BEAT_UNIT_4;
     case 8:
-      return BEAT_UNIT_8;
+      return Z_BEAT_UNIT_8;
     case 16:
-      return BEAT_UNIT_16;
+      return Z_BEAT_UNIT_16;
       ;
     default:
       break;
@@ -255,7 +258,7 @@ tempo_track_beat_unit_to_enum (int beat_unit)
   g_return_val_if_reached (0);
 }
 
-BeatUnit
+ZBeatUnit
 tempo_track_get_beat_unit_enum (Track * self)
 {
   return tempo_track_beat_unit_to_enum (tempo_track_get_beat_unit (self));
@@ -264,7 +267,7 @@ tempo_track_get_beat_unit_enum (Track * self)
 void
 tempo_track_set_beat_unit (Track * self, int beat_unit)
 {
-  BeatUnit ebu = tempo_track_beat_unit_to_enum (beat_unit);
+  ZBeatUnit ebu = tempo_track_beat_unit_to_enum (beat_unit);
   tempo_track_set_beat_unit_from_enum (self, ebu);
 }
 
@@ -292,8 +295,8 @@ tempo_track_get_beats_per_bar (Track * self)
 int
 tempo_track_get_beat_unit (Track * self)
 {
-  BeatUnit ebu =
-    (BeatUnit) math_round_float_to_signed_32 (self->beat_unit_port->control);
+  ZBeatUnit ebu =
+    (ZBeatUnit) math_round_float_to_signed_32 (self->beat_unit_port->control);
   return tempo_track_beat_unit_enum_to_int (ebu);
 }
 

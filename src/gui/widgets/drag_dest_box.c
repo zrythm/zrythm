@@ -284,7 +284,7 @@ on_dnd_drop (
           PluginSetting * setting = plugin_setting_new_default (pd);
           GError *        err = NULL;
           bool            ret = mixer_selections_action_perform_create (
-            PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
+            Z_PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
             P_MODULATOR_TRACK->num_modulators, setting, 1, &err);
           if (!ret)
             {
@@ -306,13 +306,13 @@ on_dnd_drop (
       if (action == GDK_ACTION_COPY)
         {
           ret = mixer_selections_action_perform_copy (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT, 0, 0,
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT, 0, 0,
             &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ret = mixer_selections_action_perform_move (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT, 0, 0,
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT, 0, 0,
             &err);
         }
       else
@@ -405,7 +405,7 @@ on_click_pressed (
   mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
   tracklist_selections_select_last_visible (TRACKLIST_SELECTIONS);
 
-  PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
+  PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_TRACKLIST;
   EVENTS_PUSH (ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 

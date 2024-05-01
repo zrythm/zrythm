@@ -350,7 +350,7 @@ on_dnd_drop (
               }
             else if (
               plugin_descriptor_is_effect (descr)
-              && this_track->out_signal_type == TYPE_AUDIO)
+              && this_track->out_signal_type == Z_PORT_TYPE_AUDIO)
               {
                 /* TODO append insert if space left */
               }

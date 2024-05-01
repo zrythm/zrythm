@@ -81,7 +81,7 @@ automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at)
 AutomationTrack *
 automation_tracklist_get_plugin_at (
   AutomationTracklist * self,
-  PluginSlotType        slot_type,
+  ZPluginSlotType       slot_type,
   const int             plugin_slot,
   const int             port_index,
   const char *          symbol)
@@ -92,7 +92,7 @@ automation_tracklist_get_plugin_at (
       g_return_val_if_fail (at, NULL);
 
       if (
-        at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN
+        at->port_id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN
         && plugin_slot == at->port_id.plugin_id.slot
         && slot_type == at->port_id.plugin_id.slot_type
         && port_index == at->port_id.port_index
@@ -279,7 +279,7 @@ automation_tracklist_update_track_name_hash (
     {
       AutomationTrack * at = self->ats[i];
       at->port_id.track_name_hash = track_name_hash;
-      if (at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+      if (at->port_id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
         {
           at->port_id.plugin_id.track_name_hash = track_name_hash;
         }

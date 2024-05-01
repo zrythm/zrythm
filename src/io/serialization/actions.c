@@ -856,7 +856,7 @@ mixer_selections_action_deserialize_from_json (
   action->type = (MixerSelectionsActionType) yyjson_get_int (
     yyjson_obj_iter_get (&it, "type"));
   action->slot_type =
-    (PluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "slotType"));
+    (ZPluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "slotType"));
   action->to_slot = yyjson_get_int (yyjson_obj_iter_get (&it, "toSlot"));
   action->to_track_name_hash =
     yyjson_get_uint (yyjson_obj_iter_get (&it, "toTrackNameHash"));

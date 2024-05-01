@@ -51,6 +51,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "enum-types.h"
+
 typedef enum
 {
   Z_PLUGINS_PLUGIN_ERROR_CREATION_FAILED,
@@ -89,16 +91,16 @@ set_stereo_outs_and_midi_in (Plugin * pl)
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * out_port = pl->out_ports[i];
-      if (out_port->id.type == TYPE_AUDIO)
+      if (out_port->id.type == Z_PORT_TYPE_AUDIO)
         {
           if (num_audio_outs == 0)
             {
-              out_port->id.flags |= PORT_FLAG_STEREO_L;
+              out_port->id.flags |= Z_PORT_FLAG_STEREO_L;
               pl->l_out = out_port;
             }
           else if (num_audio_outs == 1)
             {
-              out_port->id.flags |= PORT_FLAG_STEREO_R;
+              out_port->id.flags |= Z_PORT_FLAG_STEREO_R;
               pl->r_out = out_port;
             }
           num_audio_outs++;
@@ -113,7 +115,7 @@ set_stereo_outs_and_midi_in (Plugin * pl)
        * projects before the change to force
        * stereo a few commits after beta 1.1.11 */
       g_warning ("should not happen with carla");
-      pl->l_out->id.flags |= PORT_FLAG_STEREO_R;
+      pl->l_out->id.flags |= Z_PORT_FLAG_STEREO_R;
       pl->r_out = pl->l_out;
     }
 
@@ -126,7 +128,7 @@ set_stereo_outs_and_midi_in (Plugin * pl)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      if (port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+      if (port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
         {
           pl->midi_in_port = port;
           break;
@@ -145,15 +147,15 @@ set_enabled_and_gain (Plugin * self)
   for (int i = 0; i < self->num_in_ports; i++)
     {
       Port * port = self->in_ports[i];
-      if (!(port->id.type == TYPE_CONTROL
-            && port->id.flags & PORT_FLAG_GENERIC_PLUGIN_PORT))
+      if (!(port->id.type == Z_PORT_TYPE_CONTROL
+            && port->id.flags & Z_PORT_FLAG_GENERIC_PLUGIN_PORT))
         continue;
 
-      if (port->id.flags & PORT_FLAG_PLUGIN_ENABLED)
+      if (port->id.flags & Z_PORT_FLAG_PLUGIN_ENABLED)
         {
           self->enabled = port;
         }
-      if (port->id.flags & PORT_FLAG_PLUGIN_GAIN)
+      if (port->id.flags & Z_PORT_FLAG_PLUGIN_GAIN)
         {
           self->gain = port;
         }
@@ -218,16 +220,17 @@ plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms)
 
 static void
 plugin_init (
-  Plugin *       plugin,
-  unsigned int   track_name_hash,
-  PluginSlotType slot_type,
-  int            slot)
+  Plugin *        plugin,
+  unsigned int    track_name_hash,
+  ZPluginSlotType slot_type,
+  int             slot)
 {
   g_message (
     "%s: %s (%s) track name hash %u slot %d", __func__,
     plugin->setting->descr->name,
-    plugin_protocol_strings[plugin->setting->descr->protocol], track_name_hash,
-    slot);
+    z_gtk_get_enum_nick (
+      Z_TYPE_PLUGIN_PROTOCOL, plugin->setting->descr->protocol),
+    track_name_hash, slot);
 
   g_return_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
@@ -243,15 +246,16 @@ plugin_init (
   plugin->out_ports = object_new_n (1, Port *);
 
   /* add enabled port */
-  Port * port = port_new_with_type (TYPE_CONTROL, FLOW_INPUT, _ ("Enabled"));
+  Port * port =
+    port_new_with_type (Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("Enabled"));
   port->id.sym = g_strdup ("enabled");
   port->id.comment = g_strdup (_ ("Enables or disables the plugin"));
   port->id.port_group = g_strdup ("[Zrythm]");
   plugin_add_in_port (plugin, port);
-  port->id.flags |= PORT_FLAG_PLUGIN_ENABLED;
-  port->id.flags |= PORT_FLAG_TOGGLE;
-  port->id.flags |= PORT_FLAG_AUTOMATABLE;
-  port->id.flags |= PORT_FLAG_GENERIC_PLUGIN_PORT;
+  port->id.flags |= Z_PORT_FLAG_PLUGIN_ENABLED;
+  port->id.flags |= Z_PORT_FLAG_TOGGLE;
+  port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+  port->id.flags |= Z_PORT_FLAG_GENERIC_PLUGIN_PORT;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->zerof = 0.f;
@@ -262,13 +266,13 @@ plugin_init (
   plugin->enabled = port;
 
   /* add gain port */
-  port = port_new_with_type (TYPE_CONTROL, FLOW_INPUT, _ ("Gain"));
+  port = port_new_with_type (Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("Gain"));
   port->id.sym = g_strdup ("gain");
   port->id.comment = g_strdup (_ ("Plugin gain"));
   plugin_add_in_port (plugin, port);
-  port->id.flags |= PORT_FLAG_PLUGIN_GAIN;
-  port->id.flags |= PORT_FLAG_AUTOMATABLE;
-  port->id.flags |= PORT_FLAG_GENERIC_PLUGIN_PORT;
+  port->id.flags |= Z_PORT_FLAG_PLUGIN_GAIN;
+  port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+  port->id.flags |= Z_PORT_FLAG_GENERIC_PLUGIN_PORT;
   port->id.port_group = g_strdup ("[Zrythm]");
   port->minf = 0.f;
   port->maxf = 8.f;
@@ -432,7 +436,7 @@ Plugin *
 plugin_new_from_setting (
   PluginSetting * setting,
   unsigned int    track_name_hash,
-  PluginSlotType  slot_type,
+  ZPluginSlotType slot_type,
   int             slot,
   GError **       error)
 {
@@ -447,7 +451,7 @@ plugin_new_from_setting (
 
   g_message (
     "%s: %s (%s) slot %d", __func__, descr->name,
-    plugin_protocol_strings[descr->protocol], slot);
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_PROTOCOL, descr->protocol), slot);
 
   plugin_init (self, track_name_hash, slot_type, slot);
   g_return_val_if_fail (self->gain && self->enabled, NULL);
@@ -502,7 +506,7 @@ plugin_new_dummy (ZPluginCategory cat, unsigned int track_name_hash, int slot)
   self->setting = plugin_setting_new_default (descr);
   plugin_descriptor_free (descr);
 
-  plugin_init (self, track_name_hash, PLUGIN_SLOT_INSERT, slot);
+  plugin_init (self, track_name_hash, Z_PLUGIN_SLOT_INSERT, slot);
 
   return self;
 }
@@ -551,8 +555,8 @@ plugin_remove_ats_from_automation_tracklist (
     {
       AutomationTrack * at = atl->ats[i];
       if (
-        at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN
-        || at->port_id.flags & PORT_FLAG_PLUGIN_CONTROL)
+        at->port_id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN
+        || at->port_id.flags & Z_PORT_FLAG_PLUGIN_CONTROL)
         {
           if (
             at->port_id.plugin_id.slot == pl->id.slot
@@ -586,11 +590,11 @@ plugin_validate (Plugin * self)
 
 typedef struct PluginMoveData
 {
-  Plugin *       pl;
-  Track *        track;
-  PluginSlotType slot_type;
-  int            slot;
-  bool           fire_events;
+  Plugin *        pl;
+  Track *         track;
+  ZPluginSlotType slot_type;
+  int             slot;
+  bool            fire_events;
 } PluginMoveData;
 
 static void
@@ -603,10 +607,10 @@ plugin_move_data_free (void * _data)
 static void
 do_move (PluginMoveData * data)
 {
-  Plugin *       pl = data->pl;
-  int            prev_slot = pl->id.slot;
-  PluginSlotType prev_slot_type = pl->id.slot_type;
-  Track *        prev_track = plugin_get_track (pl);
+  Plugin *        pl = data->pl;
+  int             prev_slot = pl->id.slot;
+  ZPluginSlotType prev_slot_type = pl->id.slot_type;
+  Track *         prev_track = plugin_get_track (pl);
   g_return_if_fail (IS_TRACK_AND_NONNULL (prev_track));
   Channel * prev_ch = plugin_get_channel (pl);
   g_return_if_fail (IS_CHANNEL_AND_NONNULL (prev_ch));
@@ -660,12 +664,12 @@ overwrite_plugin_response_cb (
 
 void
 plugin_move (
-  Plugin *       pl,
-  Track *        track,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           confirm_overwrite,
-  bool           fire_events)
+  Plugin *        pl,
+  Track *         track,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            confirm_overwrite,
+  bool            fire_events)
 {
   PluginMoveData * data = object_new (PluginMoveData);
   data->pl = pl;
@@ -696,10 +700,10 @@ plugin_move (
  */
 void
 plugin_set_track_and_slot (
-  Plugin *       pl,
-  unsigned int   track_name_hash,
-  PluginSlotType slot_type,
-  int            slot)
+  Plugin *        pl,
+  unsigned int    track_name_hash,
+  ZPluginSlotType slot_type,
+  int             slot)
 {
   g_return_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
@@ -712,7 +716,7 @@ plugin_set_track_and_slot (
     {
       Port *           port = pl->in_ports[i];
       PortIdentifier * copy_id = port_identifier_clone (&port->id);
-      port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl);
+      port_set_owner (port, Z_PORT_OWNER_TYPE_PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -725,7 +729,7 @@ plugin_set_track_and_slot (
     {
       Port *           port = pl->out_ports[i];
       PortIdentifier * copy_id = port_identifier_clone (&port->id);
-      port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl);
+      port_set_owner (port, Z_PORT_OWNER_TYPE_PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -778,9 +782,9 @@ plugin_find (const PluginIdentifier * id)
 
   Channel * ch = NULL;
   if (
-    track->type != TRACK_TYPE_MODULATOR || id->slot_type == PLUGIN_SLOT_MIDI_FX
-    || id->slot_type == PLUGIN_SLOT_INSTRUMENT
-    || id->slot_type == PLUGIN_SLOT_INSERT)
+    track->type != TRACK_TYPE_MODULATOR || id->slot_type == Z_PLUGIN_SLOT_MIDI_FX
+    || id->slot_type == Z_PLUGIN_SLOT_INSTRUMENT
+    || id->slot_type == Z_PLUGIN_SLOT_INSERT)
     {
       ch = track->channel;
       g_return_val_if_fail (ch, NULL);
@@ -788,19 +792,19 @@ plugin_find (const PluginIdentifier * id)
   Plugin * ret = NULL;
   switch (id->slot_type)
     {
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->midi_fx[id->slot];
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->instrument;
       break;
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->inserts[id->slot];
       break;
-    case PLUGIN_SLOT_MODULATOR:
+    case Z_PLUGIN_SLOT_MODULATOR:
       g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
       ret = track->modulators[id->slot];
       break;
@@ -832,7 +836,7 @@ plugin_get_port_in_group (Plugin * self, const char * port_group, bool left)
       Port * port = self->in_ports[i];
       if (
         string_is_equal (port->id.port_group, port_group)
-        && port->id.flags & (left ? PORT_FLAG_STEREO_L : PORT_FLAG_STEREO_R))
+        && port->id.flags & (left ? Z_PORT_FLAG_STEREO_L : Z_PORT_FLAG_STEREO_R))
         {
           return port;
         }
@@ -842,7 +846,7 @@ plugin_get_port_in_group (Plugin * self, const char * port_group, bool left)
       Port * port = self->out_ports[i];
       if (
         string_is_equal (port->id.port_group, port_group)
-        && port->id.flags & (left ? PORT_FLAG_STEREO_L : PORT_FLAG_STEREO_R))
+        && port->id.flags & (left ? Z_PORT_FLAG_STEREO_L : Z_PORT_FLAG_STEREO_R))
         {
           return port;
         }
@@ -867,7 +871,7 @@ plugin_get_port_in_same_group (Plugin * self, Port * port)
 
   int     num_ports = 0;
   Port ** ports = NULL;
-  if (port->id.flow == FLOW_INPUT)
+  if (port->id.flow == Z_PORT_FLOW_INPUT)
     {
       num_ports = self->num_in_ports;
       ports = self->in_ports;
@@ -891,11 +895,11 @@ plugin_get_port_in_same_group (Plugin * self, Port * port)
             port->id.port_group,
             cur_port->id.port_group) &&
           ((cur_port->id.flags &
-              PORT_FLAG_STEREO_L &&
-            port->id.flags & PORT_FLAG_STEREO_R) ||
+              Z_PORT_FLAG_STEREO_L &&
+            port->id.flags & Z_PORT_FLAG_STEREO_R) ||
            (cur_port->id.flags &
-              PORT_FLAG_STEREO_R &&
-            port->id.flags & PORT_FLAG_STEREO_L)))
+              Z_PORT_FLAG_STEREO_R &&
+            port->id.flags & Z_PORT_FLAG_STEREO_L)))
         {
           return cur_port;
         }
@@ -920,16 +924,16 @@ plugin_generate_window_title (Plugin * self)
 
   char bridge_mode[100];
   strcpy (bridge_mode, "");
-  if (setting->bridge_mode != CARLA_BRIDGE_NONE)
+  if (setting->bridge_mode != Z_CARLA_BRIDGE_NONE)
     {
       sprintf (
         bridge_mode, " - bridge: %s",
-        carla_bridge_mode_strings[setting->bridge_mode]);
+        z_gtk_get_enum_nick (Z_TYPE_CARLA_BRIDGE_MODE, setting->bridge_mode));
     }
 
   char slot[100];
   sprintf (slot, "#%d", self->id.slot + 1);
-  if (self->id.slot_type == PLUGIN_SLOT_INSTRUMENT)
+  if (self->id.slot_type == Z_PLUGIN_SLOT_INSTRUMENT)
     {
       strcpy (slot, "instrument");
     }
@@ -1049,7 +1053,7 @@ plugin_update_latency (Plugin * pl)
         g_realloc (pl->type##_ports, sizeof (Port *) * pl->type##_ports_size); \
     } \
   port->id.port_index = pl->num_##type##_ports; \
-  port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl); \
+  port_set_owner (port, Z_PORT_OWNER_TYPE_PLUGIN, pl); \
   array_append (pl->type##_ports, pl->num_##type##_ports, port)
 
 /**
@@ -1087,17 +1091,17 @@ plugin_add_out_port (Plugin * pl, Port * port)
  */
 void
 plugin_move_automation (
-  Plugin *       pl,
-  Track *        prev_track,
-  Track *        track,
-  PluginSlotType new_slot_type,
-  int            new_slot)
+  Plugin *        pl,
+  Track *         prev_track,
+  Track *         track,
+  ZPluginSlotType new_slot_type,
+  int             new_slot)
 {
   g_message (
     "moving plugin '%s' automation from "
     "%s to %s -> %s:%d",
     pl->setting->descr->name, prev_track->name, track->name,
-    plugin_slot_type_strings[new_slot_type], new_slot);
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, new_slot_type), new_slot);
 
   AutomationTracklist * prev_atl = track_get_automation_tracklist (prev_track);
   g_return_if_fail (prev_atl);
@@ -1112,7 +1116,7 @@ plugin_move_automation (
       if (!port)
         continue;
       g_return_if_fail (IS_PORT (port));
-      if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (port_pl != pl)
@@ -1257,8 +1261,8 @@ plugin_generate_automation_tracks (Plugin * self, Track * track)
     {
       Port * port = self->in_ports[i];
       if (
-        port->id.type != TYPE_CONTROL
-        || !(port->id.flags & PORT_FLAG_AUTOMATABLE))
+        port->id.type != Z_PORT_TYPE_CONTROL
+        || !(port->id.flags & Z_PORT_FLAG_AUTOMATABLE))
         continue;
 
       AutomationTrack * at = automation_track_new (port);
@@ -1276,8 +1280,8 @@ plugin_get_enabled_port (Plugin * self)
     {
       Port * port = self->in_ports[i];
       if (
-        port->id.flags & PORT_FLAG_PLUGIN_ENABLED
-        && port->id.flags & PORT_FLAG_GENERIC_PLUGIN_PORT)
+        port->id.flags & Z_PORT_FLAG_PLUGIN_ENABLED
+        && port->id.flags & Z_PORT_FLAG_GENERIC_PLUGIN_PORT)
         {
           return port;
         }
@@ -1449,7 +1453,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
     {
       Port * port = g_ptr_array_index (plugin->ctrl_in_ports, i);
       if (
-        port->id.flags & PORT_FLAG_TRIGGER
+        port->id.flags & Z_PORT_FLAG_TRIGGER
         && !math_floats_equal (port->control, 0.f))
         {
           port_set_control_value (port, 0.f, 0, 1);
@@ -1463,7 +1467,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
       for (int i = 0; i < plugin->num_out_ports; i++)
         {
           Port * port = plugin->out_ports[i];
-          if (port->id.type != TYPE_AUDIO)
+          if (port->id.type != Z_PORT_TYPE_AUDIO)
             continue;
 
           /* if close to 0 set it to the denormal prevention val */
@@ -1496,7 +1500,8 @@ plugin_print (Plugin * self, char * buf, size_t buf_sz)
       Track * track = plugin_is_in_active_project (self) ? self->track : NULL;
       snprintf (
         buf, buf_sz, "%s (%d):%s:%d - %s", track ? track->name : "<no track>",
-        track ? track->pos : -1, plugin_slot_type_strings[self->id.slot_type],
+        track ? track->pos : -1,
+        z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, self->id.slot_type),
         self->id.slot, self->setting->descr->name);
     }
 }
@@ -1522,16 +1527,16 @@ plugin_set_caches (Plugin * self)
       Port * port = self->in_ports[i];
       switch (port->id.type)
         {
-        case TYPE_CONTROL:
+        case Z_PORT_TYPE_CONTROL:
           g_ptr_array_add (self->ctrl_in_ports, port);
           break;
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           g_ptr_array_add (self->audio_in_ports, port);
           break;
-        case TYPE_CV:
+        case Z_PORT_TYPE_CV:
           g_ptr_array_add (self->cv_in_ports, port);
           break;
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           g_ptr_array_add (self->midi_in_ports, port);
           break;
         default:
@@ -1880,12 +1885,12 @@ plugin_clone (Plugin * src, GError ** error)
   for (int i = 0; i < src->num_in_ports; i++)
     {
       self->in_ports[i] = port_clone (src->in_ports[i]);
-      port_set_owner (self->in_ports[i], PORT_OWNER_TYPE_PLUGIN, self);
+      port_set_owner (self->in_ports[i], Z_PORT_OWNER_TYPE_PLUGIN, self);
     }
   for (int i = 0; i < src->num_out_ports; i++)
     {
       self->out_ports[i] = port_clone (src->out_ports[i]);
-      port_set_owner (self->out_ports[i], PORT_OWNER_TYPE_PLUGIN, self);
+      port_set_owner (self->out_ports[i], Z_PORT_OWNER_TYPE_PLUGIN, self);
     }
   self->num_in_ports = src->num_in_ports;
   self->num_out_ports = src->num_out_ports;
@@ -1962,11 +1967,11 @@ plugin_process_passthrough (
       Port * in_port = self->in_ports[i];
       switch (in_port->id.type)
         {
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           for (int j = last_audio_idx; j < self->num_out_ports; j++)
             {
               Port * out_port = self->out_ports[j];
-              if (out_port->id.type == TYPE_AUDIO)
+              if (out_port->id.type == Z_PORT_TYPE_AUDIO)
                 {
                   /* copy */
                   dsp_copy (
@@ -1981,13 +1986,13 @@ plugin_process_passthrough (
                 continue;
             }
           break;
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           for (int j = last_midi_idx; j < self->num_out_ports; j++)
             {
               Port * out_port = self->out_ports[j];
               if (
-                out_port->id.type == TYPE_EVENT
-                && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+                out_port->id.type == Z_PORT_TYPE_EVENT
+                && out_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   /* copy */
                   midi_events_append (
@@ -2068,7 +2073,7 @@ plugin_get_event_ports (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           Port * port = pl->in_ports[i];
-          if (port->id.type == TYPE_EVENT)
+          if (port->id.type == Z_PORT_TYPE_EVENT)
             {
               ports[index++] = port;
             }
@@ -2079,7 +2084,7 @@ plugin_get_event_ports (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           Port * port = pl->out_ports[i];
-          if (port->id.type == TYPE_EVENT)
+          if (port->id.type == Z_PORT_TYPE_EVENT)
             {
               ports[index++] = port;
             }
@@ -2109,7 +2114,7 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
   for (i = 0; i < src->num_out_ports; i++)
     {
       Port * port = src->out_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         num_src_audio_outs++;
     }
 
@@ -2117,7 +2122,7 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
   for (i = 0; i < dest->num_in_ports; i++)
     {
       Port * port = dest->in_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         num_dest_audio_ins++;
     }
 
@@ -2128,13 +2133,13 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_connect (out_port, in_port, 1);
                       goto done1;
@@ -2153,13 +2158,13 @@ done1:;
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_connect (out_port, in_port, 1);
                     }
@@ -2177,13 +2182,13 @@ done1:;
         {
           in_port = dest->in_ports[i];
 
-          if (in_port->id.type == TYPE_AUDIO)
+          if (in_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
-                  if (out_port->id.type == TYPE_AUDIO)
+                  if (out_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_connect (out_port, in_port, 1);
                       goto done2;
@@ -2206,12 +2211,12 @@ done2:;
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (; last_index < dest->num_in_ports; last_index++)
                 {
                   in_port = dest->in_ports[last_index];
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_connect (out_port, in_port, 1);
                       last_index++;
@@ -2233,16 +2238,16 @@ done2:;
       out_port = src->out_ports[i];
 
       if (
-        out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+        out_port->id.type == Z_PORT_TYPE_EVENT
+        && out_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
               in_port = dest->in_ports[j];
 
               if (
-                in_port->id.type == TYPE_EVENT
-                && in_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+                in_port->id.type == Z_PORT_TYPE_EVENT
+                && in_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   port_connect (out_port, in_port, 1);
                 }
@@ -2263,24 +2268,24 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
 {
   g_return_if_fail (pl->instantiated || pl->instantiation_failed);
 
-  Track *  track = channel_get_track (ch);
-  PortType type = track->out_signal_type;
+  Track *   track = channel_get_track (ch);
+  ZPortType type = track->out_signal_type;
 
-  if (type == TYPE_EVENT)
+  if (type == Z_PORT_TYPE_EVENT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           Port * out_port = pl->out_ports[i];
           if (
-            out_port->id.type == TYPE_EVENT
-            && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI
-            && out_port->id.flow == FLOW_OUTPUT)
+            out_port->id.type == Z_PORT_TYPE_EVENT
+            && out_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI
+            && out_port->id.flow == Z_PORT_FLOW_OUTPUT)
             {
               port_connect (out_port, ch->midi_out, 1);
             }
         }
     }
-  else if (type == TYPE_AUDIO)
+  else if (type == Z_PORT_TYPE_AUDIO)
     {
       if (pl->l_out && pl->r_out)
         {
@@ -2298,15 +2303,15 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
 void
 plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
 {
-  int      i;
-  Port *   out_port;
-  Track *  track = channel_get_track (ch);
-  PortType type = track->out_signal_type;
+  int       i;
+  Port *    out_port;
+  Track *   track = channel_get_track (ch);
+  ZPortType type = track->out_signal_type;
 
   for (i = 0; i < pl->num_out_ports; i++)
     {
       out_port = pl->out_ports[i];
-      if (type == TYPE_AUDIO && out_port->id.type == TYPE_AUDIO)
+      if (type == Z_PORT_TYPE_AUDIO && out_port->id.type == Z_PORT_TYPE_AUDIO)
         {
           if (ports_connected (out_port, ch->prefader->stereo_in->l))
             port_disconnect (out_port, ch->prefader->stereo_in->l);
@@ -2314,8 +2319,8 @@ plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
             port_disconnect (out_port, ch->prefader->stereo_in->r);
         }
       else if (
-        type == TYPE_EVENT && out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+        type == Z_PORT_TYPE_EVENT && out_port->id.type == Z_PORT_TYPE_EVENT
+        && out_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
         {
           if (ports_connected (out_port, ch->prefader->midi_in))
             port_disconnect (out_port, ch->prefader->midi_in);
@@ -2339,7 +2344,7 @@ plugin_disconnect_from_plugin (Plugin * src, Plugin * dest)
   for (i = 0; i < src->num_out_ports; i++)
     {
       Port * port = src->out_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         num_src_audio_outs++;
     }
 
@@ -2347,7 +2352,7 @@ plugin_disconnect_from_plugin (Plugin * src, Plugin * dest)
   for (i = 0; i < dest->num_in_ports; i++)
     {
       Port * port = dest->in_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         num_dest_audio_ins++;
     }
 
@@ -2358,13 +2363,13 @@ plugin_disconnect_from_plugin (Plugin * src, Plugin * dest)
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_disconnect (out_port, in_port);
                       goto done1;
@@ -2383,13 +2388,13 @@ done1:;
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_disconnect (out_port, in_port);
                     }
@@ -2407,13 +2412,13 @@ done1:;
         {
           in_port = dest->in_ports[i];
 
-          if (in_port->id.type == TYPE_AUDIO)
+          if (in_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (j = 0; j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
-                  if (out_port->id.type == TYPE_AUDIO)
+                  if (out_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_disconnect (out_port, in_port);
                       goto done2;
@@ -2436,12 +2441,12 @@ done2:;
         {
           out_port = src->out_ports[i];
 
-          if (out_port->id.type == TYPE_AUDIO)
+          if (out_port->id.type == Z_PORT_TYPE_AUDIO)
             {
               for (; last_index < dest->num_in_ports; last_index++)
                 {
                   in_port = dest->in_ports[last_index];
-                  if (in_port->id.type == TYPE_AUDIO)
+                  if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                     {
                       port_disconnect (out_port, in_port);
                       last_index++;
@@ -2461,16 +2466,16 @@ done2:;
       out_port = src->out_ports[i];
 
       if (
-        out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+        out_port->id.type == Z_PORT_TYPE_EVENT
+        && out_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
               in_port = dest->in_ports[j];
 
               if (
-                in_port->id.type == TYPE_EVENT
-                && in_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+                in_port->id.type == Z_PORT_TYPE_EVENT
+                && in_port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   port_disconnect (out_port, in_port);
                 }

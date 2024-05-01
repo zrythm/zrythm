@@ -14,12 +14,15 @@
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "enum-types.h"
 
 typedef enum
 {
@@ -84,7 +87,7 @@ clone_ats (
         {
           AutomationTrack * at = atl->ats[i];
           if (
-            at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != Z_PORT_OWNER_TYPE_PLUGIN
             || at->port_id.plugin_id.slot != slot
             || at->port_id.plugin_id.slot_type != ms->type)
             continue;
@@ -113,13 +116,13 @@ mixer_selections_action_new (
   const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
-  PluginSlotType                 slot_type,
+  ZPluginSlotType                slot_type,
   unsigned int                   to_track_name_hash,
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
-  CarlaBridgeMode                new_bridge_mode,
+  ZCarlaBridgeMode               new_bridge_mode,
   GError **                      error)
 {
   MixerSelectionsAction * self = object_new (MixerSelectionsAction);
@@ -212,13 +215,13 @@ mixer_selections_action_perform (
   const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
-  PluginSlotType                 slot_type,
+  ZPluginSlotType                slot_type,
   unsigned int                   to_track_name_hash,
   int                            to_slot,
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
-  CarlaBridgeMode                new_bridge_mode,
+  ZCarlaBridgeMode               new_bridge_mode,
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
@@ -323,19 +326,20 @@ save_existing_plugin (
   MixerSelectionsAction * self,
   MixerSelections *       tmp_ms,
   Track *                 from_tr,
-  PluginSlotType          from_slot_type,
+  ZPluginSlotType         from_slot_type,
   int                     from_slot,
   Track *                 to_tr,
-  PluginSlotType          to_slot_type,
+  ZPluginSlotType         to_slot_type,
   int                     to_slot)
 {
   Plugin * existing_pl = track_get_plugin_at_slot (to_tr, to_slot_type, to_slot);
   g_debug (
     "existing plugin at (%s:%s:%d => %s:%s:%d): %s",
     from_tr ? from_tr->name : "(none)",
-    plugin_slot_type_to_string (from_slot_type), from_slot,
-    to_tr ? to_tr->name : "(none)", plugin_slot_type_to_string (to_slot_type),
-    to_slot, existing_pl ? existing_pl->setting->descr->name : "(none)");
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, from_slot_type), from_slot,
+    to_tr ? to_tr->name : "(none)",
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, to_slot_type), to_slot,
+    existing_pl ? existing_pl->setting->descr->name : "(none)");
   if (
     existing_pl
     && (from_tr != to_tr || from_slot_type != to_slot_type || from_slot != to_slot))
@@ -370,7 +374,7 @@ revert_deleted_plugin (
 
   g_message ("reverting deleted plugin at %s#%d", to_tr->name, to_slot);
 
-  if (self->deleted_ms->type == PLUGIN_SLOT_MODULATOR)
+  if (self->deleted_ms->type == Z_PLUGIN_SLOT_MODULATOR)
     {
       /* modulators are never replaced */
       return 0;
@@ -441,7 +445,7 @@ do_or_undo_create_or_delete (
 
   Channel *         ch = track->channel;
   MixerSelections * own_ms = self->ms_before;
-  PluginSlotType    slot_type = create ? self->slot_type : own_ms->type;
+  ZPluginSlotType   slot_type = create ? self->slot_type : own_ms->type;
   int               loop_times =
     create && self->type != MIXER_SELECTIONS_ACTION_PASTE
                     ? self->num_plugins
@@ -533,7 +537,7 @@ do_or_undo_create_or_delete (
           /* save any plugin about to be deleted */
           save_existing_plugin (
             self, self->deleted_ms, NULL, slot_type, -1,
-            slot_type == PLUGIN_SLOT_MODULATOR ? P_MODULATOR_TRACK : track,
+            slot_type == Z_PLUGIN_SLOT_MODULATOR ? P_MODULATOR_TRACK : track,
             slot_type, slot);
 
           /* add to destination */
@@ -736,11 +740,11 @@ do_or_undo_change_load_behavior (
 
       switch (pl->setting->bridge_mode)
         {
-        case CARLA_BRIDGE_FULL:
+        case Z_CARLA_BRIDGE_FULL:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, NULL);
           break;
-        case CARLA_BRIDGE_UI:
+        case Z_CARLA_BRIDGE_UI:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, NULL);
           break;
@@ -777,12 +781,12 @@ do_or_undo_change_load_behavior (
  */
 static bool
 copy_automation_from_track1_to_track2 (
-  Track *        from_track,
-  Track *        to_track,
-  PluginSlotType slot_type,
-  int            from_slot,
-  int            to_slot,
-  GError **      error)
+  Track *         from_track,
+  Track *         to_track,
+  ZPluginSlotType slot_type,
+  int             from_slot,
+  int             to_slot,
+  GError **       error)
 {
   AutomationTracklist * prev_atl = track_get_automation_tracklist (from_track);
   g_return_val_if_fail (prev_atl, false);
@@ -792,7 +796,7 @@ copy_automation_from_track1_to_track2 (
       AutomationTrack * prev_at = prev_atl->ats[j];
       if (
         prev_at->num_regions == 0
-        || prev_at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
+        || prev_at->port_id.owner_type != Z_PORT_OWNER_TYPE_PLUGIN
         || prev_at->port_id.plugin_id.slot != from_slot
         || prev_at->port_id.plugin_id.slot_type != slot_type)
         {
@@ -807,7 +811,7 @@ copy_automation_from_track1_to_track2 (
           AutomationTrack * at = atl->ats[k];
 
           if (
-            at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != Z_PORT_OWNER_TYPE_PLUGIN
             || at->port_id.plugin_id.slot != to_slot
             || at->port_id.plugin_id.slot_type != slot_type
             || at->port_id.port_index != prev_at->port_id.port_index)
@@ -846,8 +850,8 @@ do_or_undo_move_or_copy (
   GError **               error)
 {
   MixerSelections * own_ms = self->ms_before;
-  PluginSlotType    from_slot_type = own_ms->type;
-  PluginSlotType    to_slot_type = self->slot_type;
+  ZPluginSlotType   from_slot_type = own_ms->type;
+  ZPluginSlotType   to_slot_type = self->slot_type;
   Track *           from_tr = mixer_selections_get_track (own_ms);
   g_return_val_if_fail (from_tr, -1);
   bool move = !copy;
@@ -954,8 +958,10 @@ do_or_undo_move_or_copy (
             g_debug (
               "%s: moving plugin from "
               "%s:%s:%d to %s:%s:%d",
-              __func__, from_tr->name, plugin_slot_type_strings[from_slot_type],
-              from_slot, to_tr->name, plugin_slot_type_strings[to_slot_type],
+              __func__, from_tr->name,
+              z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, from_slot_type),
+              from_slot, to_tr->name,
+              z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, to_slot_type),
               to_slot);
 
             if (
@@ -971,8 +977,10 @@ do_or_undo_move_or_copy (
             g_debug (
               "%s: copying plugin from "
               "%s:%s:%d to %s:%s:%d",
-              __func__, from_tr->name, plugin_slot_type_strings[from_slot_type],
-              from_slot, to_tr->name, plugin_slot_type_strings[to_slot_type],
+              __func__, from_tr->name,
+              z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, from_slot_type),
+              from_slot, to_tr->name,
+              z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, to_slot_type),
               to_slot);
 
             track_insert_plugin (
@@ -1071,9 +1079,11 @@ do_or_undo_move_or_copy (
               g_debug (
                 "%s: moving plugin back from "
                 "%s:%s:%d to %s:%s:%d",
-                __func__, to_tr->name, plugin_slot_type_strings[to_slot_type],
+                __func__, to_tr->name,
+                z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, to_slot_type),
                 to_slot, from_tr->name,
-                plugin_slot_type_strings[from_slot_type], from_slot);
+                z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, from_slot_type),
+                from_slot);
 
               if (
                 from_tr != to_tr || from_slot_type != to_slot_type

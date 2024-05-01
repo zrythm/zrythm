@@ -136,15 +136,15 @@ do_or_undo (TransportAction * self, bool _do, GError ** error)
   switch (self->type)
     {
     case TRANSPORT_ACTION_BPM_CHANGE:
-      change.flag1 = PORT_FLAG_BPM;
+      change.flag1 = Z_PORT_FLAG_BPM;
       change.real_val = _do ? self->bpm_after : self->bpm_before;
       break;
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
-      change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
+      change.flag2 = Z_PORT_FLAG2_BEATS_PER_BAR;
       change.ival = _do ? self->int_after : self->int_before;
       break;
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      change.flag2 = change.flag2 = PORT_FLAG2_BEAT_UNIT;
+      change.flag2 = change.flag2 = Z_PORT_FLAG2_BEAT_UNIT;
       change.beat_unit = tempo_track_beat_unit_to_enum (
         _do ? self->int_after : self->int_before);
       break;

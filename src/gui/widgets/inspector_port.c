@@ -49,9 +49,9 @@ static bool
 get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 {
   if (
-    port->id.owner_type == PORT_OWNER_TYPE_PLUGIN
-    || port->id.owner_type == PORT_OWNER_TYPE_FADER
-    || port->id.owner_type == PORT_OWNER_TYPE_TRACK)
+    port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN
+    || port->id.owner_type == Z_PORT_OWNER_TYPE_FADER
+    || port->id.owner_type == Z_PORT_OWNER_TYPE_TRACK)
     {
       int num_midi_mappings =
         midi_mappings_get_for_port (MIDI_MAPPINGS, port, NULL);
@@ -61,7 +61,7 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
       char         color_prefix[60];
       sprintf (color_prefix, "<span foreground=\"%s\">", self->hex_color);
       char color_suffix[40] = "</span>";
-      if (port->id.flow == FLOW_INPUT)
+      if (port->id.flow == Z_PORT_FLOW_INPUT)
         {
           int num_unlocked_srcs = port_get_num_unlocked_srcs (port);
           sprintf (
@@ -73,7 +73,7 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
           self->last_num_connections = num_unlocked_srcs;
           return true;
         }
-      else if (port->id.flow == FLOW_OUTPUT)
+      else if (port->id.flow == Z_PORT_FLOW_OUTPUT)
         {
           int num_unlocked_dests = port_get_num_unlocked_dests (port);
           sprintf (
@@ -102,7 +102,7 @@ show_context_menu (InspectorPortWidget * self, gdouble x, gdouble y)
 
   char tmp[600];
 
-  if (self->port->id.type == TYPE_CONTROL)
+  if (self->port->id.type == Z_PORT_TYPE_CONTROL)
     {
       sprintf (tmp, "app.reset-control::%p", self->port);
       menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
@@ -177,20 +177,20 @@ get_port_value (InspectorPortWidget * self)
   Port * port = self->port;
   switch (port->id.type)
     {
-    case TYPE_AUDIO:
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_AUDIO:
+    case Z_PORT_TYPE_EVENT:
       {
         float val, max;
         meter_get_value (self->meter, AUDIO_VALUE_FADER, &val, &max);
         return val;
       }
       break;
-    case TYPE_CV:
+    case Z_PORT_TYPE_CV:
       {
         return port->buf[0];
       }
       break;
-    case TYPE_CONTROL:
+    case Z_PORT_TYPE_CONTROL:
       return control_port_real_val_to_normalized (port, port->unsnapped_control);
       break;
     default:
@@ -203,7 +203,7 @@ static float
 get_snapped_port_value (InspectorPortWidget * self)
 {
   Port * port = self->port;
-  if (port->id.type == TYPE_CONTROL)
+  if (port->id.type == Z_PORT_TYPE_CONTROL)
     {
       /* optimization */
       if (
@@ -277,11 +277,11 @@ bar_slider_tick_cb (
    * changed */
   Port * port = self->port;
   int    num_connections = 0;
-  if (port->id.flow == FLOW_INPUT)
+  if (port->id.flow == Z_PORT_FLOW_INPUT)
     {
       num_connections = port_get_num_unlocked_srcs (port);
     }
-  else if (port->id.flow == FLOW_OUTPUT)
+  else if (port->id.flow == Z_PORT_FLOW_OUTPUT)
     {
       num_connections = port_get_num_unlocked_dests (port);
     }
@@ -307,7 +307,7 @@ bar_slider_tick_cb (
             g_markup_printf_escaped ("<i>%s</i>\n", self->port->id.comment);
         }
       const char * src_or_dest_str =
-        self->port->id.flow == FLOW_INPUT
+        self->port->id.flow == Z_PORT_FLOW_INPUT
           ? _ ("Incoming signals")
           : _ ("Outgoing signals");
       sprintf (
@@ -320,7 +320,7 @@ bar_slider_tick_cb (
         "%s: <b>%f</b>",
         full_designation_escaped, comment_escaped ? comment_escaped : "",
         src_or_dest_str,
-        self->port->id.flow == FLOW_INPUT
+        self->port->id.flow == Z_PORT_FLOW_INPUT
           ? self->port->num_srcs
           : self->port->num_dests,
         _ ("Current val"), (double) get_port_value (self), _ ("Min"),
@@ -367,7 +367,7 @@ inspector_port_widget_new (Port * port)
     {
       float minf = port->minf;
       float maxf = port->maxf;
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         {
           /* use fader val for audio */
           maxf = 1.f;
@@ -375,7 +375,7 @@ inspector_port_widget_new (Port * port)
       float zerof = port->zerof;
       int   editable = 0;
       int   is_control = 0;
-      if (port->id.type == TYPE_CONTROL)
+      if (port->id.type == Z_PORT_TYPE_CONTROL)
         {
           editable = 1;
           is_control = 1;
@@ -408,7 +408,8 @@ inspector_port_widget_new (Port * port)
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_EVENT)
+      if (
+        port->id.type == Z_PORT_TYPE_AUDIO || port->id.type == Z_PORT_TYPE_EVENT)
         {
           self->jack = z_gtk_toggle_button_new_with_icon ("expose-to-jack");
           gtk_widget_set_halign (GTK_WIDGET (self->jack), GTK_ALIGN_START);

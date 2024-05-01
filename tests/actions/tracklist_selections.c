@@ -536,7 +536,7 @@ test_track_deletion_with_sends (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      if (port->id.type == TYPE_CV)
+      if (port->id.type == Z_PORT_TYPE_CV)
         {
           /* connect the first out CV port */
           out_port = port;
@@ -549,8 +549,8 @@ test_track_deletion_with_sends (
     {
       Port * port = pl->in_ports[i];
       if (
-        port->id.type == TYPE_CONTROL
-        && port->id.flags & PORT_FLAG_PLUGIN_CONTROL)
+        port->id.type == Z_PORT_TYPE_CONTROL
+        && port->id.flags & Z_PORT_FLAG_PLUGIN_CONTROL)
         {
           /* connect the first in control port */
           in_port = port;
@@ -763,7 +763,7 @@ test_ins_track_deletion_w_automation (void)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
 
   engine_activate (AUDIO_ENGINE, true);
 
@@ -920,7 +920,7 @@ _test_move_tracks (
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      setting->descr->category = PC_INSTRUMENT;
+      setting->descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
   setting->descr->category_str =
@@ -1358,7 +1358,7 @@ test_track_deletion_w_mixer_selections (void)
   Track * pl_track = TRACKLIST->tracks[pl_track_pos];
 
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, pl_track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, pl_track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   g_assert_true (MIXER_SELECTIONS->has_any);
   g_assert_cmpuint (

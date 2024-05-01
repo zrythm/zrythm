@@ -92,12 +92,12 @@ Port *
 fader_create_swap_phase_port (Fader * self, bool passthrough)
 {
   Port * swap_phase = port_new_with_type (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Swap Phase") : _ ("Fader Swap Phase"));
   swap_phase->id.sym =
     passthrough ? g_strdup ("prefader_swap_phase") : g_strdup ("fader_swap_phase");
-  swap_phase->id.flags2 |= PORT_FLAG2_FADER_SWAP_PHASE;
-  swap_phase->id.flags |= PORT_FLAG_TOGGLE;
+  swap_phase->id.flags2 |= Z_PORT_FLAG2_FADER_SWAP_PHASE;
+  swap_phase->id.flags |= Z_PORT_FLAG_TOGGLE;
 
   return swap_phase;
 }
@@ -132,9 +132,9 @@ fader_new (
   self->volume = 0.0f;
   float amp = 1.f;
   self->amp = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"),
-    PORT_OWNER_TYPE_FADER, self);
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->amp->id.sym =
     passthrough ? g_strdup ("prefader_volume") : g_strdup ("fader_volume");
   self->amp->deff = amp;
@@ -142,13 +142,13 @@ fader_new (
   self->amp->maxf = 2.f;
   port_set_control_value (self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
   self->fader_val = math_get_fader_val_from_amp (amp);
-  self->amp->id.flags |= PORT_FLAG_AMPLITUDE;
+  self->amp->id.flags |= Z_PORT_FLAG_AMPLITUDE;
   if (
     (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->amp->id.flags |= PORT_FLAG_AUTOMATABLE;
-      self->amp->id.flags |= PORT_FLAG_CHANNEL_FADER;
+      self->amp->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
+      self->amp->id.flags |= Z_PORT_FLAG_CHANNEL_FADER;
     }
 
   /* set phase */
@@ -157,77 +157,77 @@ fader_new (
   /* set pan */
   float balance = 0.5f;
   self->balance = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"),
-    PORT_OWNER_TYPE_FADER, self);
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->balance->id.sym =
     passthrough ? g_strdup ("prefader_balance") : g_strdup ("fader_balance");
   port_set_control_value (self->balance, balance, 0, 0);
-  self->balance->id.flags |= PORT_FLAG_STEREO_BALANCE;
+  self->balance->id.flags |= Z_PORT_FLAG_STEREO_BALANCE;
   if (
     (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->balance->id.flags |= PORT_FLAG_AUTOMATABLE;
+      self->balance->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
     }
 
   /* set mute */
   self->mute = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
-    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"), PORT_OWNER_TYPE_FADER,
-    self);
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
+    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"),
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->mute->id.sym =
     passthrough ? g_strdup ("prefader_mute") : g_strdup ("fader_mute");
   control_port_set_toggled (self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->mute->id.flags |= PORT_FLAG_FADER_MUTE;
-  self->mute->id.flags |= PORT_FLAG_TOGGLE;
+  self->mute->id.flags |= Z_PORT_FLAG_FADER_MUTE;
+  self->mute->id.flags |= Z_PORT_FLAG_TOGGLE;
   if (
     (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->mute->id.flags |= PORT_FLAG_AUTOMATABLE;
+      self->mute->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
     }
 
   /* set solo */
   self->solo = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
-    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"), PORT_OWNER_TYPE_FADER,
-    self);
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
+    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"),
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->solo->id.sym =
     passthrough ? g_strdup ("prefader_solo") : g_strdup ("fader_solo");
   control_port_set_toggled (self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->solo->id.flags2 |= PORT_FLAG2_FADER_SOLO;
-  self->solo->id.flags |= PORT_FLAG_TOGGLE;
+  self->solo->id.flags2 |= Z_PORT_FLAG2_FADER_SOLO;
+  self->solo->id.flags |= Z_PORT_FLAG_TOGGLE;
 
   /* set listen */
   self->listen = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"),
-    PORT_OWNER_TYPE_FADER, self);
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->listen->id.sym =
     passthrough ? g_strdup ("prefader_listen") : g_strdup ("fader_listen");
   control_port_set_toggled (self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->listen->id.flags2 |= PORT_FLAG2_FADER_LISTEN;
-  self->listen->id.flags |= PORT_FLAG_TOGGLE;
+  self->listen->id.flags2 |= Z_PORT_FLAG2_FADER_LISTEN;
+  self->listen->id.flags |= Z_PORT_FLAG_TOGGLE;
 
   /* set mono compat */
   self->mono_compat_enabled = port_new_with_type_and_owner (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"),
-    PORT_OWNER_TYPE_FADER, self);
+    Z_PORT_OWNER_TYPE_FADER, self);
   self->mono_compat_enabled->id.sym =
     passthrough
       ? g_strdup ("prefader_mono_compat_enabled")
       : g_strdup ("fader_mono_compat_enabled");
   control_port_set_toggled (
     self->mono_compat_enabled, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->mono_compat_enabled->id.flags2 |= PORT_FLAG2_FADER_MONO_COMPAT;
-  self->mono_compat_enabled->id.flags |= PORT_FLAG_TOGGLE;
+  self->mono_compat_enabled->id.flags2 |= Z_PORT_FLAG2_FADER_MONO_COMPAT;
+  self->mono_compat_enabled->id.flags |= Z_PORT_FLAG_TOGGLE;
 
   /* set swap phase */
   self->swap_phase = fader_create_swap_phase_port (self, passthrough);
   control_port_set_toggled (self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  port_set_owner (self->swap_phase, PORT_OWNER_TYPE_FADER, self);
+  port_set_owner (self->swap_phase, Z_PORT_OWNER_TYPE_FADER, self);
 
   if (
     type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MONITOR
@@ -261,11 +261,11 @@ fader_new (
 
       /* stereo in */
       self->stereo_in = stereo_ports_new_generic (
-        F_INPUT, name, sym, PORT_OWNER_TYPE_FADER, self);
+        F_INPUT, name, sym, Z_PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
-      port_set_owner (self->stereo_in->l, PORT_OWNER_TYPE_FADER, self);
-      port_set_owner (self->stereo_in->r, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_in->l, Z_PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_in->r, Z_PORT_OWNER_TYPE_FADER, self);
 
       if (type == FADER_TYPE_AUDIO_CHANNEL)
         {
@@ -293,11 +293,11 @@ fader_new (
 
       /* stereo out */
       self->stereo_out = stereo_ports_new_generic (
-        F_NOT_INPUT, name, sym, PORT_OWNER_TYPE_FADER, self);
+        F_NOT_INPUT, name, sym, Z_PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
-      port_set_owner (self->stereo_out->l, PORT_OWNER_TYPE_FADER, self);
-      port_set_owner (self->stereo_out->r, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_out->l, Z_PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_out->r, Z_PORT_OWNER_TYPE_FADER, self);
     }
 
   if (type == FADER_TYPE_MIDI_CHANNEL)
@@ -316,7 +316,8 @@ fader_new (
           sym = "ch_midi_fader_in";
         }
       self->midi_in = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_INPUT, name, PORT_OWNER_TYPE_FADER, self);
+        Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, name, Z_PORT_OWNER_TYPE_FADER,
+        self);
       self->midi_in->id.sym = g_strdup (sym);
       self->midi_in->midi_events = midi_events_new ();
 
@@ -332,7 +333,8 @@ fader_new (
           sym = "ch_midi_fader_out";
         }
       self->midi_out = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_OUTPUT, name, PORT_OWNER_TYPE_FADER, self);
+        Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, name, Z_PORT_OWNER_TYPE_FADER,
+        self);
       self->midi_out->id.sym = g_strdup (sym);
       self->midi_out->midi_events = midi_events_new ();
     }
@@ -343,25 +345,25 @@ fader_new (
 Fader *
 fader_find_from_port_identifier (const PortIdentifier * id)
 {
-  PortFlags2 flag2 = id->flags2;
-  Track *    tr =
+  ZPortFlags2 flag2 = id->flags2;
+  Track *     tr =
     tracklist_find_track_by_name_hash (TRACKLIST, id->track_name_hash);
-  if (!tr && flag2 & PORT_FLAG2_SAMPLE_PROCESSOR_TRACK)
+  if (!tr && flag2 & Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK)
     {
       tr = tracklist_find_track_by_name_hash (
         SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
     }
-  if (flag2 & PORT_FLAG2_MONITOR_FADER)
+  if (flag2 & Z_PORT_FLAG2_MONITOR_FADER)
     return MONITOR_FADER;
-  else if (flag2 & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+  else if (flag2 & Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
     return SAMPLE_PROCESSOR->fader;
-  else if (flag2 & PORT_FLAG2_PREFADER)
+  else if (flag2 & Z_PORT_FLAG2_PREFADER)
     {
       g_return_val_if_fail (tr, NULL);
       g_return_val_if_fail (tr->channel, NULL);
       return tr->channel->prefader;
     }
-  else if (flag2 & PORT_FLAG2_POSTFADER)
+  else if (flag2 & Z_PORT_FLAG2_POSTFADER)
     {
       g_return_val_if_fail (tr, NULL);
       g_return_val_if_fail (tr->channel, NULL);
@@ -870,7 +872,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
          (self->type == FADER_TYPE_AUDIO_CHANNEL
           || self->type == FADER_TYPE_MIDI_CHANNEL)
          && track
-         /*track->out_signal_type == TYPE_AUDIO &&*/
+         /*track->out_signal_type == Z_PORT_TYPE_AUDIO &&*/
          && track->type != TRACK_TYPE_MASTER
          && !track->bounce);
 
@@ -953,7 +955,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
 
                       if (
                         track_type_has_channel (t->type)
-                        && t->out_signal_type == TYPE_AUDIO
+                        && t->out_signal_type == Z_PORT_TYPE_AUDIO
                         && track_get_listened (t))
                         {
                           Fader * f = track_get_fader (t, true);

@@ -37,7 +37,7 @@ typedef struct _ChannelSlotWidget
 {
   GtkWidget parent_instance;
 
-  PluginSlotType type;
+  ZPluginSlotType type;
 
   /** The Track this belongs to. */
   Track * track;
@@ -94,10 +94,10 @@ channel_slot_widget_new_instrument (void);
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int            slot_index,
-  Track *        track,
-  PluginSlotType type,
-  bool           open_plugin_inspector_on_click);
+  int             slot_index,
+  Track *         track,
+  ZPluginSlotType type,
+  bool            open_plugin_inspector_on_click);
 
 void
 channel_slot_widget_set_instrument (ChannelSlotWidget * self, Track * track);

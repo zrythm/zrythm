@@ -32,8 +32,8 @@ plugin_strip_expander_widget_redraw_slot (
 {
   switch (self->slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       gtk_widget_queue_draw (GTK_WIDGET (self->slots[slot]));
       break;
     default:
@@ -52,14 +52,14 @@ plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self)
     {
       switch (self->slot_type)
         {
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           {
             Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
             gtk_widget_queue_draw (GTK_WIDGET (self->slots[i]));
           }
           break;
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           {
             Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
@@ -81,12 +81,12 @@ on_reveal_changed (
   if (self->position == PSE_POSITION_CHANNEL)
     {
       Channel * ch = track_get_channel (self->track);
-      if (self->slot_type == PLUGIN_SLOT_INSERT)
+      if (self->slot_type == Z_PLUGIN_SLOT_INSERT)
         {
           g_settings_set_boolean (S_UI_MIXER, "inserts-expanded", revealed);
           EVENTS_PUSH (ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED, ch);
         }
-      else if (self->slot_type == PLUGIN_SLOT_MIDI_FX)
+      else if (self->slot_type == Z_PLUGIN_SLOT_MIDI_FX)
         {
           g_settings_set_boolean (S_UI_MIXER, "midi-fx-expanded", revealed);
           EVENTS_PUSH (ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED, ch);
@@ -100,7 +100,7 @@ on_reveal_changed (
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  PluginSlotType              slot_type,
+  ZPluginSlotType             slot_type,
   PluginStripExpanderPosition position,
   Track *                     track)
 {
@@ -111,11 +111,11 @@ plugin_strip_expander_widget_setup (
   bool is_midi = false;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       strcpy (fullstr, _ ("Inserts"));
-      is_midi = track && track->out_signal_type == TYPE_EVENT;
+      is_midi = track && track->out_signal_type == Z_PORT_TYPE_EVENT;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       strcpy (fullstr, "MIDI FX");
       is_midi = true;
       break;
@@ -155,8 +155,8 @@ plugin_strip_expander_widget_setup (
 
           switch (slot_type)
             {
-            case PLUGIN_SLOT_INSERT:
-            case PLUGIN_SLOT_MIDI_FX:
+            case Z_PLUGIN_SLOT_INSERT:
+            case Z_PLUGIN_SLOT_MIDI_FX:
               {
                 ChannelSlotWidget * csw = channel_slot_widget_new (
                   i, track, slot_type, position == PSE_POSITION_CHANNEL);
@@ -184,7 +184,8 @@ plugin_strip_expander_widget_setup (
       break;
     case PSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (GTK_WIDGET (self->scroll), -1, -1);
-      if (slot_type == PLUGIN_SLOT_INSERT || slot_type == PLUGIN_SLOT_MIDI_FX)
+      if (
+        slot_type == Z_PLUGIN_SLOT_INSERT || slot_type == Z_PLUGIN_SLOT_MIDI_FX)
         {
           expander_box_widget_set_reveal_callback (
             Z_EXPANDER_BOX_WIDGET (self),

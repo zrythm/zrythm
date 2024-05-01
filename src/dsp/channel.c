@@ -41,6 +41,7 @@
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -50,6 +51,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "enum-types.h"
 #include <unistd.h>
 
 typedef enum
@@ -326,22 +328,22 @@ disconnect_prev_next (Channel * ch, Plugin * prev_pl, Plugin * pl, Plugin * next
 void
 channel_prepare_process (Channel * self)
 {
-  Plugin * plugin;
-  int      j;
-  Track *  tr = channel_get_track (self);
-  PortType out_type = tr->out_signal_type;
+  Plugin *  plugin;
+  int       j;
+  Track *   tr = channel_get_track (self);
+  ZPortType out_type = tr->out_signal_type;
 
   /* clear buffers */
   track_processor_clear_buffers (tr->processor);
   fader_clear_buffers (self->prefader);
   fader_clear_buffers (self->fader);
 
-  if (out_type == TYPE_AUDIO)
+  if (out_type == Z_PORT_TYPE_AUDIO)
     {
       port_clear_buffer (self->stereo_out->l);
       port_clear_buffer (self->stereo_out->r);
     }
-  else if (out_type == TYPE_EVENT)
+  else if (out_type == Z_PORT_TYPE_EVENT)
     {
       port_clear_buffer (self->midi_out);
     }
@@ -363,7 +365,7 @@ channel_prepare_process (Channel * self)
       channel_send_prepare_process (self->sends[i]);
     }
 
-  if (tr->in_signal_type == TYPE_EVENT)
+  if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
     {
 #ifdef HAVE_RTMIDI
       /* extract the midi events from the ring
@@ -395,14 +397,14 @@ channel_init_loaded (Channel * self, Track * track)
   fader_init_loaded (self->prefader, track, NULL, NULL);
   fader_init_loaded (self->fader, track, NULL, NULL);
 
-  PortType out_type = track->out_signal_type;
+  ZPortType out_type = track->out_signal_type;
 
   switch (out_type)
     {
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       self->midi_out->midi_events = midi_events_new ();
       break;
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       /* make sure master is exposed to backend */
       if (track->type == TRACK_TYPE_MASTER)
         {
@@ -428,14 +430,14 @@ channel_init_loaded (Channel * self, Track * track)
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       pl = self->inserts[i];
-      INIT_PLUGIN (pl, i, PLUGIN_SLOT_INSERT);
+      INIT_PLUGIN (pl, i, Z_PLUGIN_SLOT_INSERT);
       pl = self->midi_fx[i];
-      INIT_PLUGIN (pl, i, PLUGIN_SLOT_MIDI_FX);
+      INIT_PLUGIN (pl, i, Z_PLUGIN_SLOT_MIDI_FX);
     }
   if (self->instrument)
     {
       pl = self->instrument;
-      INIT_PLUGIN (pl, -1, PLUGIN_SLOT_INSTRUMENT);
+      INIT_PLUGIN (pl, -1, Z_PLUGIN_SLOT_INSTRUMENT);
     }
 
 #undef INIT_PLUGIN
@@ -474,21 +476,21 @@ channel_expose_ports_to_backend (Channel * ch)
 
   g_message ("%s: %s", __func__, tr->name);
 
-  if (tr->in_signal_type == TYPE_AUDIO)
+  if (tr->in_signal_type == Z_PORT_TYPE_AUDIO)
     {
       port_set_expose_to_backend (tr->processor->stereo_in->l, true);
       port_set_expose_to_backend (tr->processor->stereo_in->r, true);
     }
-  if (tr->in_signal_type == TYPE_EVENT)
+  if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       port_set_expose_to_backend (tr->processor->midi_in, true);
     }
-  if (tr->out_signal_type == TYPE_AUDIO)
+  if (tr->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       port_set_expose_to_backend (ch->stereo_out->l, true);
       port_set_expose_to_backend (ch->stereo_out->r, true);
     }
-  if (tr->out_signal_type == TYPE_EVENT)
+  if (tr->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       port_set_expose_to_backend (ch->midi_out, true);
     }
@@ -740,24 +742,24 @@ channel_connect_plugins (Channel * self)
    * instrument, inserts */
   for (int i = 0; i < 3; i++)
     {
-      PluginSlotType slot_type;
+      ZPluginSlotType slot_type;
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           Plugin * plugin = NULL;
           int      slot = j;
           if (i == 0)
             {
-              slot_type = PLUGIN_SLOT_MIDI_FX;
+              slot_type = Z_PLUGIN_SLOT_MIDI_FX;
               plugin = self->midi_fx[j];
             }
           else if (i == 1)
             {
-              slot_type = PLUGIN_SLOT_INSTRUMENT;
+              slot_type = Z_PLUGIN_SLOT_INSTRUMENT;
               plugin = self->instrument;
             }
           else
             {
-              slot_type = PLUGIN_SLOT_INSERT;
+              slot_type = Z_PLUGIN_SLOT_INSERT;
               plugin = self->inserts[j];
             }
           if (!plugin)
@@ -772,13 +774,13 @@ channel_connect_plugins (Channel * self)
           Plugin ** prev_plugins = NULL;
           switch (slot_type)
             {
-            case PLUGIN_SLOT_INSERT:
+            case Z_PLUGIN_SLOT_INSERT:
               prev_plugins = self->inserts;
               break;
-            case PLUGIN_SLOT_MIDI_FX:
+            case Z_PLUGIN_SLOT_MIDI_FX:
               prev_plugins = self->midi_fx;
               break;
-            case PLUGIN_SLOT_INSTRUMENT:
+            case Z_PLUGIN_SLOT_INSTRUMENT:
               prev_plugins = self->midi_fx;
               break;
             default:
@@ -787,13 +789,13 @@ channel_connect_plugins (Channel * self)
           Plugin ** next_plugins = NULL;
           switch (slot_type)
             {
-            case PLUGIN_SLOT_INSERT:
+            case Z_PLUGIN_SLOT_INSERT:
               next_plugins = self->inserts;
               break;
-            case PLUGIN_SLOT_MIDI_FX:
+            case Z_PLUGIN_SLOT_MIDI_FX:
               next_plugins = self->midi_fx;
               break;
-            case PLUGIN_SLOT_INSTRUMENT:
+            case Z_PLUGIN_SLOT_INSTRUMENT:
               next_plugins = self->inserts;
               break;
             default:
@@ -802,14 +804,14 @@ channel_connect_plugins (Channel * self)
 
           Plugin * next_pl = NULL;
           for (
-            int k = (slot_type == PLUGIN_SLOT_INSTRUMENT ? 0 : slot + 1);
+            int k = (slot_type == Z_PLUGIN_SLOT_INSTRUMENT ? 0 : slot + 1);
             k < STRIP_SIZE; k++)
             {
               next_pl = next_plugins[k];
               if (next_pl)
                 break;
             }
-          if (!next_pl && slot_type == PLUGIN_SLOT_MIDI_FX)
+          if (!next_pl && slot_type == Z_PLUGIN_SLOT_MIDI_FX)
             {
               if (self->instrument)
                 next_pl = self->instrument;
@@ -827,7 +829,7 @@ channel_connect_plugins (Channel * self)
           Plugin * prev_pl = NULL;
           /* if instrument, find previous MIDI FX
            * (if any) */
-          if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+          if (slot_type == Z_PLUGIN_SLOT_INSTRUMENT)
             {
               for (int k = STRIP_SIZE - 1; k >= 0; k--)
                 {
@@ -851,7 +853,7 @@ channel_connect_plugins (Channel * self)
           /* if still not found and slot is insert,
            * check instrument or MIDI FX where
            * applicable */
-          if (!prev_pl && slot_type == PLUGIN_SLOT_INSERT)
+          if (!prev_pl && slot_type == Z_PLUGIN_SLOT_INSERT)
             {
               if (self->instrument)
                 prev_pl = self->instrument;
@@ -927,7 +929,7 @@ channel_connect (Channel * ch)
         &MONITOR_FADER->stereo_in->r->id, 1.f, F_LOCKED, F_ENABLE);
     }
 
-  if (tr->out_signal_type == TYPE_AUDIO)
+  if (tr->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       /* connect stereo in to stereo out through
        * fader */
@@ -944,7 +946,7 @@ channel_connect (Channel * ch)
         PORT_CONNECTIONS_MGR, &ch->fader->stereo_out->r->id,
         &ch->stereo_out->r->id, 1.f, F_LOCKED, F_ENABLE);
     }
-  else if (tr->out_signal_type == TYPE_EVENT)
+  else if (tr->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR, &ch->prefader->midi_out->id,
@@ -1026,7 +1028,7 @@ channel_append_ports (Channel * self, GPtrArray * ports, bool include_plugins)
   g_ptr_array_add (ports, port)
 
   /* add channel ports */
-  if (self->track->out_signal_type == TYPE_AUDIO)
+  if (self->track->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       _ADD (self->stereo_out->l);
       _ADD (self->stereo_out->r);
@@ -1043,7 +1045,7 @@ channel_append_ports (Channel * self, GPtrArray * ports, bool include_plugins)
       _ADD (self->prefader->stereo_out->l);
       _ADD (self->prefader->stereo_out->r);
     }
-  else if (self->track->out_signal_type == TYPE_EVENT)
+  else if (self->track->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       _ADD (self->midi_out);
 
@@ -1122,13 +1124,13 @@ init_stereo_out_ports (Channel * self, bool loading)
 
   strcat (str, " L");
   Port * l = port_new_with_type_and_owner (
-    TYPE_AUDIO, FLOW_OUTPUT, str, PORT_OWNER_TYPE_CHANNEL, self);
+    Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, str, Z_PORT_OWNER_TYPE_CHANNEL, self);
   l->id.sym = g_strdup ("stereo_out_l");
 
   str[10] = '\0';
   strcat (str, " R");
   Port * r = port_new_with_type_and_owner (
-    TYPE_AUDIO, FLOW_OUTPUT, str, PORT_OWNER_TYPE_CHANNEL, self);
+    Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, str, Z_PORT_OWNER_TYPE_CHANNEL, self);
   r->id.sym = g_strdup ("stereo_out_r");
 
   self->stereo_out = stereo_ports_new_from_existing (l, r);
@@ -1150,7 +1152,8 @@ static void
 init_midi_port (Channel * self, int loading)
 {
   Port * port = port_new_with_type_and_owner (
-    TYPE_EVENT, FLOW_OUTPUT, _ ("MIDI out"), PORT_OWNER_TYPE_CHANNEL, self);
+    Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, _ ("MIDI out"),
+    Z_PORT_OWNER_TYPE_CHANNEL, self);
   port->id.sym = g_strdup ("midi_out");
   self->midi_out = port;
 }
@@ -1177,10 +1180,10 @@ channel_new (Track * track)
   /* create ports */
   switch (track->out_signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       init_stereo_out_ports (self, 0);
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       init_midi_port (self, 0);
       break;
     default:
@@ -1238,18 +1241,18 @@ channel_get_balance_control (void * _channel)
 static inline void
 channel_disconnect_plugin_from_strip (Channel * ch, int pos, Plugin * pl)
 {
-  int            i;
-  PluginSlotType slot_type = pl->id.slot_type;
-  Plugin **      prev_plugins = NULL;
+  int             i;
+  ZPluginSlotType slot_type = pl->id.slot_type;
+  Plugin **       prev_plugins = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       prev_plugins = ch->inserts;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       prev_plugins = ch->midi_fx;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       prev_plugins = ch->midi_fx;
       break;
     default:
@@ -1258,13 +1261,13 @@ channel_disconnect_plugin_from_strip (Channel * ch, int pos, Plugin * pl)
   Plugin ** next_plugins = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       next_plugins = ch->inserts;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       next_plugins = ch->midi_fx;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       next_plugins = ch->inserts;
       break;
     default:
@@ -1278,7 +1281,7 @@ channel_disconnect_plugin_from_strip (Channel * ch, int pos, Plugin * pl)
       if (next_plugin)
         break;
     }
-  if (!next_plugin && slot_type == PLUGIN_SLOT_MIDI_FX)
+  if (!next_plugin && slot_type == Z_PLUGIN_SLOT_MIDI_FX)
     {
       if (ch->instrument)
         next_plugin = ch->instrument;
@@ -1300,7 +1303,7 @@ channel_disconnect_plugin_from_strip (Channel * ch, int pos, Plugin * pl)
       if (prev_plugin)
         break;
     }
-  if (!prev_plugin && slot_type == PLUGIN_SLOT_INSERT)
+  if (!prev_plugin && slot_type == Z_PLUGIN_SLOT_INSERT)
     {
       if (ch->instrument)
         prev_plugin = ch->instrument;
@@ -1350,24 +1353,24 @@ channel_disconnect_plugin_from_strip (Channel * ch, int pos, Plugin * pl)
  */
 void
 channel_remove_plugin (
-  Channel *      channel,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           moving_plugin,
-  bool           deleting_plugin,
-  bool           deleting_channel,
-  bool           recalc_graph)
+  Channel *       channel,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            moving_plugin,
+  bool            deleting_plugin,
+  bool            deleting_channel,
+  bool            recalc_graph)
 {
   Plugin * plugin = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       plugin = channel->inserts[slot];
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       plugin = channel->midi_fx[slot];
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       plugin = channel->instrument;
       break;
     default:
@@ -1381,7 +1384,7 @@ channel_remove_plugin (
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   g_message (
     "Removing %s from %s:%s:%d", plugin->setting->descr->name, track->name,
-    plugin_slot_type_strings[slot_type], slot);
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, slot_type), slot);
 
   /* if moving, the move is already handled in
    * plugin_move_automation() inside
@@ -1411,13 +1414,13 @@ channel_remove_plugin (
 
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       channel->inserts[slot] = NULL;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       channel->midi_fx[slot] = NULL;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       channel->instrument = NULL;
       break;
     default:
@@ -1478,15 +1481,15 @@ channel_remove_plugin (
  */
 bool
 channel_add_plugin (
-  Channel *      self,
-  PluginSlotType slot_type,
-  int            slot,
-  Plugin *       plugin,
-  bool           confirm,
-  bool           moving_plugin,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           pub_events)
+  Channel *       self,
+  ZPluginSlotType slot_type,
+  int             slot,
+  Plugin *        plugin,
+  bool            confirm,
+  bool            moving_plugin,
+  bool            gen_automatables,
+  bool            recalc_graph,
+  bool            pub_events)
 {
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (slot_type, slot), false);
@@ -1499,20 +1502,20 @@ channel_add_plugin (
   Plugin ** plugins = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       plugins = self->inserts;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       plugins = self->midi_fx;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       break;
     default:
       g_return_val_if_reached (0);
     }
 
   Plugin * existing_pl = NULL;
-  if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+  if (slot_type == Z_PLUGIN_SLOT_INSTRUMENT)
     existing_pl = self->instrument;
   else
     existing_pl = plugins[slot];
@@ -1531,10 +1534,11 @@ channel_add_plugin (
     }
 
   g_message (
-    "Inserting %s %s at %s:%s:%d", plugin_slot_type_to_string (slot_type),
+    "Inserting %s %s at %s:%s:%d",
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, slot_type),
     plugin->setting->descr->name, track->name,
-    plugin_slot_type_strings[slot_type], slot);
-  if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, slot_type), slot);
+  if (slot_type == Z_PLUGIN_SLOT_INSTRUMENT)
     {
       self->instrument = plugin;
     }
@@ -1550,13 +1554,13 @@ channel_add_plugin (
   Plugin ** prev_plugins = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       prev_plugins = self->inserts;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       prev_plugins = self->midi_fx;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       prev_plugins = self->midi_fx;
       break;
     default:
@@ -1565,13 +1569,13 @@ channel_add_plugin (
   Plugin ** next_plugins = NULL;
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       next_plugins = self->inserts;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       next_plugins = self->midi_fx;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       next_plugins = self->inserts;
       break;
     default:
@@ -1580,14 +1584,14 @@ channel_add_plugin (
 
   Plugin * next_pl = NULL;
   for (
-    int i = (slot_type == PLUGIN_SLOT_INSTRUMENT ? 0 : slot + 1);
+    int i = (slot_type == Z_PLUGIN_SLOT_INSTRUMENT ? 0 : slot + 1);
     i < STRIP_SIZE; i++)
     {
       next_pl = next_plugins[i];
       if (next_pl)
         break;
     }
-  if (!next_pl && slot_type == PLUGIN_SLOT_MIDI_FX)
+  if (!next_pl && slot_type == Z_PLUGIN_SLOT_MIDI_FX)
     {
       if (self->instrument)
         next_pl = self->instrument;
@@ -1603,7 +1607,7 @@ channel_add_plugin (
     }
 
   Plugin * prev_pl = NULL;
-  if (slot_type != PLUGIN_SLOT_INSTRUMENT)
+  if (slot_type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
       for (int i = slot - 1; i >= 0; i--)
         {
@@ -1612,7 +1616,7 @@ channel_add_plugin (
             break;
         }
     }
-  if (!prev_pl && slot_type == PLUGIN_SLOT_INSERT)
+  if (!prev_pl && slot_type == Z_PLUGIN_SLOT_INSERT)
     {
       if (self->instrument)
         prev_pl = self->instrument;
@@ -1708,7 +1712,7 @@ channel_update_track_name_hash (
  * of the given type for the channel.
  */
 AutomationTrack *
-channel_get_automation_track (Channel * channel, PortFlags port_flags)
+channel_get_automation_track (Channel * channel, ZPortFlags port_flags)
 {
   Track *               track = channel_get_track (channel);
   AutomationTracklist * atl = track_get_automation_tracklist (track);
@@ -1724,17 +1728,17 @@ channel_get_automation_track (Channel * channel, PortFlags port_flags)
 }
 
 Plugin *
-channel_get_plugin_at (const Channel * self, int slot, PluginSlotType slot_type)
+channel_get_plugin_at (const Channel * self, int slot, ZPluginSlotType slot_type)
 {
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       return self->inserts[slot];
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       return self->midi_fx[slot];
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       return self->instrument;
-    case PLUGIN_SLOT_MODULATOR:
+    case Z_PLUGIN_SLOT_MODULATOR:
     default:
       g_return_val_if_reached (NULL);
     }
@@ -1747,7 +1751,7 @@ typedef struct PluginImportData
   const MixerSelections *  sel;
   const PluginDescriptor * descr;
   int                      slot;
-  PluginSlotType           slot_type;
+  ZPluginSlotType          slot_type;
   bool                     copy;
   bool                     ask_if_overwrite;
 } PluginImportData;
@@ -1872,7 +1876,7 @@ channel_handle_plugin_import (
   const MixerSelections *  sel,
   const PluginDescriptor * descr,
   int                      slot,
-  PluginSlotType           slot_type,
+  ZPluginSlotType          slot_type,
   bool                     copy,
   bool                     ask_if_overwrite)
 {
@@ -1975,19 +1979,19 @@ channel_clone (Channel * ch, Track * track, GError ** error)
     {
       if (ch->inserts[i])
         {
-          CLONE_AND_ADD_PL (ch->inserts[i], PLUGIN_SLOT_INSERT, i);
+          CLONE_AND_ADD_PL (ch->inserts[i], Z_PLUGIN_SLOT_INSERT, i);
         }
     }
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       if (ch->midi_fx[i])
         {
-          CLONE_AND_ADD_PL (ch->midi_fx[i], PLUGIN_SLOT_MIDI_FX, i);
+          CLONE_AND_ADD_PL (ch->midi_fx[i], Z_PLUGIN_SLOT_MIDI_FX, i);
         }
     }
   if (ch->instrument)
     {
-      CLONE_AND_ADD_PL (ch->instrument, PLUGIN_SLOT_INSTRUMENT, -1);
+      CLONE_AND_ADD_PL (ch->instrument, Z_PLUGIN_SLOT_INSTRUMENT, -1);
     }
 
 #undef CLONE_AND_ADD_PL
@@ -2018,7 +2022,7 @@ channel_clone (Channel * ch, Track * track, GError ** error)
  * type.
  */
 void
-channel_select_all (Channel * self, PluginSlotType type, bool select)
+channel_select_all (Channel * self, ZPluginSlotType type, bool select)
 {
   mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
   if (!select)
@@ -2026,7 +2030,7 @@ channel_select_all (Channel * self, PluginSlotType type, bool select)
 
   switch (type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       for (int i = 0; i < STRIP_SIZE; i++)
         {
           if (self->inserts[i])
@@ -2035,7 +2039,7 @@ channel_select_all (Channel * self, PluginSlotType type, bool select)
             }
         }
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       for (int i = 0; i < STRIP_SIZE; i++)
         {
           if (self->midi_fx[i])
@@ -2116,20 +2120,20 @@ channel_disconnect (Channel * self, bool remove_pl)
         if (self->inserts[i])
           {
             channel_remove_plugin (
-              self, PLUGIN_SLOT_INSERT, i, F_NOT_MOVING_PLUGIN, remove_pl,
+              self, Z_PLUGIN_SLOT_INSERT, i, F_NOT_MOVING_PLUGIN, remove_pl,
               false, F_NO_RECALC_GRAPH);
           }
         if (self->midi_fx[i])
           {
             channel_remove_plugin (
-              self, PLUGIN_SLOT_MIDI_FX, i, F_NOT_MOVING_PLUGIN, remove_pl,
+              self, Z_PLUGIN_SLOT_MIDI_FX, i, F_NOT_MOVING_PLUGIN, remove_pl,
               false, F_NO_RECALC_GRAPH);
           }
       }
       if (self->instrument)
         {
           channel_remove_plugin (
-            self, PLUGIN_SLOT_INSTRUMENT, 0, F_NOT_MOVING_PLUGIN, remove_pl,
+            self, Z_PLUGIN_SLOT_INSTRUMENT, 0, F_NOT_MOVING_PLUGIN, remove_pl,
             false, F_NO_RECALC_GRAPH);
         }
     }

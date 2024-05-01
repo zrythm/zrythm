@@ -304,7 +304,7 @@ tracklist_insert_track (
       for (size_t i = 0; i < ports->len; i++)
         {
           Port * port = g_ptr_array_index (ports, i);
-          port->id.flags2 |= PORT_FLAG2_SAMPLE_PROCESSOR_TRACK;
+          port->id.flags2 |= Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK;
         }
       object_free_w_func_and_null (g_ptr_array_unref, ports);
     }
@@ -350,7 +350,9 @@ tracklist_insert_track (
     }
 
   /* if audio output route to master */
-  if (track->out_signal_type == TYPE_AUDIO && track->type != TRACK_TYPE_MASTER)
+  if (
+    track->out_signal_type == Z_PORT_TYPE_AUDIO
+    && track->type != TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (
         self->master_track, track_get_name_hash (track), F_CONNECT,

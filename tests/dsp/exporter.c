@@ -499,7 +499,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), 0, setting, 1, NULL);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);

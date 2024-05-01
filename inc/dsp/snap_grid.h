@@ -46,10 +46,10 @@ typedef enum NoteLength
   NOTE_LENGTH_1_128
 } NoteLength;
 
-static const char * note_length_strings[] = {
-  N_ ("bar"), N_ ("beat"), "2/1",  "1/1",  "1/2",   "1/4",
-  "1/8",      "1/16",      "1/32", "1/64", "1/128",
-};
+const char **
+note_length_get_strings (void);
+const char *
+note_length_to_str (NoteLength len);
 
 typedef enum NoteType
 {
@@ -58,11 +58,10 @@ typedef enum NoteType
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
 } NoteType;
 
-static const char * note_type_strings[] = {
-  N_ ("normal"),
-  N_ ("dotted"),
-  N_ ("triplet"),
-};
+const char **
+note_type_get_strings (void);
+const char *
+note_type_to_str (NoteType type);
 
 typedef enum NoteLengthType
 {

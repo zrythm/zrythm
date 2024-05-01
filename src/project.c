@@ -382,10 +382,10 @@ project_get_arranger_for_last_selection (
     clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
     {
-    case SELECTION_TYPE_TIMELINE:
+    case Z_PROJECT_SELECTION_TYPE_TIMELINE:
       return TL_SELECTIONS;
       break;
-    case SELECTION_TYPE_EDITOR:
+    case Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (r)
         {
           switch (r->id.type)
@@ -415,10 +415,10 @@ project_get_arranger_selections_for_last_selection (Project * self)
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
     {
-    case SELECTION_TYPE_TIMELINE:
+    case Z_PROJECT_SELECTION_TYPE_TIMELINE:
       return (ArrangerSelections *) TL_SELECTIONS;
       break;
-    case SELECTION_TYPE_EDITOR:
+    case Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (r)
         {
           switch (r->id.type)

@@ -95,10 +95,11 @@ typedef enum CurveAlgorithm
   NUM_CURVE_ALGORITHMS,
 } CurveAlgorithm;
 
-static const char * curve_algorithm_strings[] = {
-  N_ ("Exponent"), N_ ("Superellipse"), N_ ("Vital"),
-  N_ ("Pulse"),    N_ ("Logarithmic"),
-};
+const char **
+curve_algorithm_get_strings (void);
+
+const char *
+curve_algorithm_to_str (CurveAlgorithm algo);
 
 /**
  * Curve options.

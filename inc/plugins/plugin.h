@@ -295,7 +295,7 @@ NONNULL_ARGS (1)
 Plugin * plugin_new_from_setting (
   PluginSetting * setting,
   unsigned int    track_name_hash,
-  PluginSlotType  slot_type,
+  ZPluginSlotType slot_type,
   int             slot,
   GError **       error);
 
@@ -391,12 +391,12 @@ plugin_activate (Plugin * pl, bool activate);
  */
 NONNULL void
 plugin_move (
-  Plugin *       pl,
-  Track *        track,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           confirm_overwrite,
-  bool           fire_events);
+  Plugin *        pl,
+  Track *         track,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            confirm_overwrite,
+  bool            fire_events);
 
 /**
  * Sets the channel and slot on the plugin and
@@ -404,10 +404,10 @@ plugin_move (
  */
 NONNULL void
 plugin_set_track_and_slot (
-  Plugin *       pl,
-  unsigned int   track_name_hash,
-  PluginSlotType slot_type,
-  int            slot);
+  Plugin *        pl,
+  unsigned int    track_name_hash,
+  ZPluginSlotType slot_type,
+  int             slot);
 
 /**
  * Moves the Plugin's automation from one Channel
@@ -415,11 +415,11 @@ plugin_set_track_and_slot (
  */
 NONNULL void
 plugin_move_automation (
-  Plugin *       pl,
-  Track *        prev_track,
-  Track *        track,
-  PluginSlotType new_slot_type,
-  int            new_slot);
+  Plugin *        pl,
+  Track *         prev_track,
+  Track *         track,
+  ZPluginSlotType new_slot_type,
+  int             new_slot);
 
 NONNULL void
 plugin_append_ports (Plugin * self, GPtrArray * ports);

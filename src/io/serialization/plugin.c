@@ -239,7 +239,7 @@ plugin_identifier_deserialize_from_json (
 {
   yyjson_obj_iter it = yyjson_obj_iter_with (pid_obj);
   pid->slot_type =
-    (PluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "slotType"));
+    (ZPluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "slotType"));
   pid->track_name_hash =
     yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
   pid->slot = yyjson_get_int (yyjson_obj_iter_get (&it, "slot"));
@@ -286,7 +286,7 @@ plugin_descriptor_deserialize_from_json (
   pd->num_cv_ins = yyjson_get_int (yyjson_obj_iter_get (&it, "numCvIns"));
   pd->num_cv_outs = yyjson_get_int (yyjson_obj_iter_get (&it, "numCvOuts"));
   pd->unique_id = yyjson_get_int (yyjson_obj_iter_get (&it, "uniqueId"));
-  pd->arch = (PluginArchitecture) yyjson_get_int (
+  pd->arch = (ZPluginArchitecture) yyjson_get_int (
     yyjson_obj_iter_get (&it, "architecture"));
   pd->protocol =
     (ZPluginProtocol) yyjson_get_int (yyjson_obj_iter_get (&it, "protocol"));
@@ -300,7 +300,7 @@ plugin_descriptor_deserialize_from_json (
     {
       pd->uri = g_strdup (yyjson_get_str (uri_obj));
     }
-  pd->min_bridge_mode = (CarlaBridgeMode) yyjson_get_int (
+  pd->min_bridge_mode = (ZCarlaBridgeMode) yyjson_get_int (
     yyjson_obj_iter_get (&it, "minBridgeMode"));
   pd->has_custom_ui = yyjson_get_bool (yyjson_obj_iter_get (&it, "hasCustomUI"));
   pd->ghash = yyjson_get_uint (yyjson_obj_iter_get (&it, "ghash"));
@@ -328,7 +328,7 @@ plugin_setting_deserialize_from_json (
   ps->force_generic_ui =
     yyjson_get_bool (yyjson_obj_iter_get (&it, "forceGenericUI"));
   ps->bridge_mode =
-    (CarlaBridgeMode) yyjson_get_int (yyjson_obj_iter_get (&it, "bridgeMode"));
+    (ZCarlaBridgeMode) yyjson_get_int (yyjson_obj_iter_get (&it, "bridgeMode"));
   yyjson_val * ui_uri_obj = yyjson_obj_iter_get (&it, "uiURI");
   if (ui_uri_obj)
     {

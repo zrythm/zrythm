@@ -112,7 +112,7 @@ on_project_selection_type_changed (void)
 
   switch (PROJECT->last_selection)
     {
-    case SELECTION_TYPE_TRACKLIST:
+    case Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top), class);
       gtk_widget_remove_css_class (
@@ -120,18 +120,18 @@ on_project_selection_type_changed (void)
       gtk_widget_add_css_class (GTK_WIDGET (MW_MIXER), class);
       gtk_widget_remove_css_class (GTK_WIDGET (MW_MIXER), selectable_class);
       break;
-    case SELECTION_TYPE_TIMELINE:
+    case Z_PROJECT_SELECTION_TYPE_TIMELINE:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), class);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), selectable_class);
       break;
-    case SELECTION_TYPE_INSERT:
-    case SELECTION_TYPE_MIDI_FX:
-    case SELECTION_TYPE_INSTRUMENT:
-    case SELECTION_TYPE_MODULATOR:
+    case Z_PROJECT_SELECTION_TYPE_INSERT:
+    case Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Z_PROJECT_SELECTION_TYPE_INSTRUMENT:
+    case Z_PROJECT_SELECTION_TYPE_MODULATOR:
       break;
-    case SELECTION_TYPE_EDITOR:
+    case Z_PROJECT_SELECTION_TYPE_EDITOR:
       gtk_widget_add_css_class (GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), selectable_class);
@@ -239,7 +239,7 @@ on_automation_value_changed (Port * port)
 {
   PortIdentifier * id = &port->id;
 
-  if (id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+  if (id->flags2 & Z_PORT_FLAG2_CHANNEL_SEND_AMOUNT)
     {
       Track * tr = port_get_track (port, true);
       if (track_is_selected (tr))
@@ -276,11 +276,11 @@ on_plugin_state_changed (Plugin * pl)
       /* redraw slot */
       switch (pl->id.slot_type)
         {
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           plugin_strip_expander_widget_redraw_slot (
             MW_TRACK_INSPECTOR->midi_fx, pl->id.slot);
           break;
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           plugin_strip_expander_widget_redraw_slot (
             MW_TRACK_INSPECTOR->inserts, pl->id.slot);
           plugin_strip_expander_widget_redraw_slot (
@@ -487,17 +487,17 @@ on_plugin_window_visibility_changed (Plugin * pl)
       /* redraw slot */
       switch (pl->id.slot_type)
         {
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           plugin_strip_expander_widget_redraw_slot (
             MW_TRACK_INSPECTOR->midi_fx, pl->id.slot);
           break;
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           plugin_strip_expander_widget_redraw_slot (
             MW_TRACK_INSPECTOR->inserts, pl->id.slot);
           plugin_strip_expander_widget_redraw_slot (
             track->channel->widget->inserts, pl->id.slot);
           break;
-        case PLUGIN_SLOT_INSTRUMENT:
+        case Z_PLUGIN_SLOT_INSTRUMENT:
           track_properties_expander_widget_refresh (
             MW_TRACK_INSPECTOR->track_info, track);
           break;
@@ -649,10 +649,10 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       /* only refresh the inspector if the tracklist selection changed by
        * clicking on a track or on a region */
       if (
-        PROJECT->last_selection == SELECTION_TYPE_TRACKLIST
-        || PROJECT->last_selection == SELECTION_TYPE_INSERT
-        || PROJECT->last_selection == SELECTION_TYPE_MIDI_FX
-        || PROJECT->last_selection == SELECTION_TYPE_TIMELINE)
+        PROJECT->last_selection == Z_PROJECT_SELECTION_TYPE_TRACKLIST
+        || PROJECT->last_selection == Z_PROJECT_SELECTION_TYPE_INSERT
+        || PROJECT->last_selection == Z_PROJECT_SELECTION_TYPE_MIDI_FX
+        || PROJECT->last_selection == Z_PROJECT_SELECTION_TYPE_TIMELINE)
         {
           left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
         }

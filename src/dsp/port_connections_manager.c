@@ -136,7 +136,7 @@ port_connections_manager_predicate_is_send_of (
   Track * track = channel_send_get_track (send);
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
-  if (track->out_signal_type == TYPE_AUDIO)
+  if (track->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       StereoPorts * self_stereo =
         channel_send_is_prefader (send)
@@ -146,7 +146,7 @@ port_connections_manager_predicate_is_send_of (
       return port_identifier_is_equal (conn->src_id, &self_stereo->l->id)
              || port_identifier_is_equal (conn->src_id, &self_stereo->r->id);
     }
-  else if (track->out_signal_type == TYPE_EVENT)
+  else if (track->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       Port * self_port =
         channel_send_is_prefader (send)

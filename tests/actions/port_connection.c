@@ -41,7 +41,7 @@ test_modulator_connection (
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      setting->descr->category = PC_INSTRUMENT;
+      setting->descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
   setting->descr->category_str =
@@ -49,8 +49,8 @@ test_modulator_connection (
 
   /* create a modulator */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK), 0, setting,
-    1, NULL);
+    Z_PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK), 0,
+    setting, 1, NULL);
   plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro = P_MODULATOR_TRACK->modulator_macros[0];
@@ -62,7 +62,7 @@ test_modulator_connection (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (port->id.type == TYPE_CV && port->id.flow == FLOW_OUTPUT)
+      if (port->id.type == Z_PORT_TYPE_CV && port->id.flow == Z_PORT_FLOW_OUTPUT)
         {
           pl_cv_port = port;
           if (pl_control_port)
@@ -70,7 +70,9 @@ test_modulator_connection (
               break;
             }
         }
-      else if (port->id.type == TYPE_CONTROL && port->id.flow == FLOW_INPUT)
+      else if (
+        port->id.type == Z_PORT_TYPE_CONTROL
+        && port->id.flow == Z_PORT_FLOW_INPUT)
         {
           pl_control_port = port;
           if (pl_cv_port)
@@ -126,7 +128,7 @@ _test_port_connection (
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      setting->descr->category = PC_INSTRUMENT;
+      setting->descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
   setting->descr->category_str =
@@ -150,7 +152,7 @@ _test_port_connection (
       Track * last_track =
         tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
       mixer_selections_action_perform_create (
-        PLUGIN_SLOT_INSERT, track_get_name_hash (last_track), 0, setting, 1,
+        Z_PLUGIN_SLOT_INSERT, track_get_name_hash (last_track), 0, setting, 1,
         NULL);
     }
 
@@ -168,8 +170,9 @@ _test_port_connection (
     {
       Port * port = g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == PORT_OWNER_TYPE_PLUGIN
-        && port->id.type == TYPE_CV && port->id.flow == FLOW_OUTPUT)
+        port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN
+        && port->id.type == Z_PORT_TYPE_CV
+        && port->id.flow == Z_PORT_FLOW_OUTPUT)
         {
           if (src_port1)
             {
@@ -194,8 +197,8 @@ _test_port_connection (
     {
       Port * port = g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == PORT_OWNER_TYPE_FADER
-        && port->id.flags & PORT_FLAG_STEREO_BALANCE)
+        port->id.owner_type == Z_PORT_OWNER_TYPE_FADER
+        && port->id.flags & Z_PORT_FLAG_STEREO_BALANCE)
         {
           dest_port = port;
           break;

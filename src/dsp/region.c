@@ -48,6 +48,17 @@
 
 #include <glib/gi18n.h>
 
+const char *
+region_musical_mode_to_str (RegionMusicalMode mode)
+{
+  static const char * region_musical_mode_strings[] = {
+    N_ ("Inherit"),
+    N_ ("Off"),
+    N_ ("On"),
+  };
+  return region_musical_mode_strings[mode];
+}
+
 /**
  * Only to be used by implementing structs.
  */

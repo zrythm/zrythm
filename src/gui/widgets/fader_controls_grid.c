@@ -51,7 +51,7 @@ update_meter_reading (
   Channel * channel = track_get_channel (widget->track);
   g_warn_if_fail (channel);
 
-  if (track->out_signal_type == TYPE_EVENT)
+  if (track->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       gtk_label_set_text (widget->meter_readings, "-∞");
       return G_SOURCE_CONTINUE;
@@ -143,13 +143,13 @@ setup_meter (FaderControlsGridWidget * self)
 
   switch (track->out_signal_type)
     {
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       meter_widget_setup (self->meter_l, ch->midi_out, false);
       gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), false);
       break;
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       meter_widget_setup (self->meter_l, ch->stereo_out->l, false);
       meter_widget_setup (self->meter_r, ch->stereo_out->r, false);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), true);

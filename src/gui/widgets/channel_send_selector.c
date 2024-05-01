@@ -100,7 +100,7 @@ on_selection_changed (
       dest_track = get_track_from_target (target);
       switch (src_track->out_signal_type)
         {
-        case TYPE_EVENT:
+        case Z_PORT_TYPE_EVENT:
           if (
             port_connections_manager_get_sources_or_dests (
               PORT_CONNECTIONS_MGR, NULL, &send->midi_out->id, false)
@@ -127,7 +127,7 @@ on_selection_changed (
                 }
             }
           break;
-        case TYPE_AUDIO:
+        case Z_PORT_TYPE_AUDIO:
           if (
             port_connections_manager_get_sources_or_dests (
               PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->l->id, false)
@@ -281,9 +281,9 @@ setup_view (ChannelSendSelectorWidget * self)
               g_debug ("port %s", port->id.label);
 
               if (
-                !(port->id.flags & PORT_FLAG_SIDECHAIN)
-                || port->id.type != TYPE_AUDIO || !port->id.port_group
-                || !(port->id.flags & PORT_FLAG_STEREO_L))
+                !(port->id.flags & Z_PORT_FLAG_SIDECHAIN)
+                || port->id.type != Z_PORT_TYPE_AUDIO || !port->id.port_group
+                || !(port->id.flags & Z_PORT_FLAG_STEREO_L))
                 {
                   continue;
                 }
@@ -301,8 +301,8 @@ setup_view (ChannelSendSelectorWidget * self)
 
               Port *l = NULL, *r = NULL;
               if (
-                port->id.flags & PORT_FLAG_STEREO_L
-                && other_channel->id.flags & PORT_FLAG_STEREO_R)
+                port->id.flags & Z_PORT_FLAG_STEREO_L
+                && other_channel->id.flags & Z_PORT_FLAG_STEREO_R)
                 {
                   l = port;
                   r = other_channel;

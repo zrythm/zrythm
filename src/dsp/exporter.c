@@ -731,7 +731,7 @@ exporter_prepare_tracks_for_export (
           Track * cur_tr = TRACKLIST->tracks[j];
           if (
             cur_tr->bounce || !track_type_has_channel (cur_tr->type)
-            || cur_tr->out_signal_type != TYPE_AUDIO)
+            || cur_tr->out_signal_type != Z_PORT_TYPE_AUDIO)
             continue;
 
           PortIdentifier * l_src_id = &cur_tr->channel->fader->stereo_out->l->id;

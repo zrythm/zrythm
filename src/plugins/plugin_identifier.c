@@ -31,12 +31,12 @@ plugin_identifier_validate (const PluginIdentifier * self)
  */
 bool
 plugin_identifier_validate_slot_type_slot_combo (
-  PluginSlotType slot_type,
-  int            slot)
+  ZPluginSlotType slot_type,
+  int             slot)
 {
-  return (slot_type == PLUGIN_SLOT_INSTRUMENT && slot == -1)
-         || (slot_type == PLUGIN_SLOT_INVALID && slot == -1)
-         || (slot_type != PLUGIN_SLOT_INSTRUMENT && slot >= 0);
+  return (slot_type == Z_PLUGIN_SLOT_INSTRUMENT && slot == -1)
+         || (slot_type == Z_PLUGIN_SLOT_INVALID && slot == -1)
+         || (slot_type != Z_PLUGIN_SLOT_INSTRUMENT && slot >= 0);
 }
 
 void

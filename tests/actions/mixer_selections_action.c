@@ -88,7 +88,7 @@ _test_copy_plugins (
         }
       ua =
         mixer_selections_action_new_create (
-          PLUGIN_SLOT_INSERT,
+          Z_PLUGIN_SLOT_INSERT,
           new_track->pos, 0, descr, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
 
@@ -96,10 +96,10 @@ _test_copy_plugins (
         MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
       mixer_selections_add_slot (
         MIXER_SELECTIONS, new_track,
-        PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
+        Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
       ua =
         mixer_selections_action_new_copy (
-          MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+          MIXER_SELECTIONS, Z_PLUGIN_SLOT_INSERT,
           -1, 0);
       undo_manager_perform (UNDO_MANAGER, ua);
       undo_manager_undo (UNDO_MANAGER, NULL);
@@ -111,10 +111,10 @@ _test_copy_plugins (
     {
       mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, selected_track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+        MIXER_SELECTIONS, selected_track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
         F_NO_PUBLISH_EVENTS);
       ret = mixer_selections_action_perform_copy (
-        MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+        MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
         track_get_name_hash (new_track), 1, NULL);
       g_assert_true (ret);
     }
@@ -157,7 +157,7 @@ test_midi_fx_slot_deletion (void)
   int     track_pos = TRACKLIST->num_tracks - 1;
   Track * track = TRACKLIST->tracks[track_pos];
   bool    ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MIDI_FX, track_get_name_hash (track), slot, setting, 1, NULL);
+    Z_PLUGIN_SLOT_MIDI_FX, track_get_name_hash (track), slot, setting, 1, NULL);
   g_assert_true (ret);
 
   Plugin * pl = track->channel->midi_fx[slot];
@@ -238,7 +238,7 @@ _test_create_plugins (
       int     track_pos = TRACKLIST->num_tracks - 1;
       Track * track = TRACKLIST->tracks[track_pos];
       bool    ret = mixer_selections_action_perform_create (
-        PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
+        Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
       g_assert_true (ret);
     }
 
@@ -424,10 +424,10 @@ _test_port_and_plugin_track_pos_after_move (
    * undo/redo */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, src_track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (dest_track), 1, NULL);
   g_assert_true (ret);
 
@@ -453,10 +453,10 @@ _test_port_and_plugin_track_pos_after_move (
    * undo/redo */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, src_track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (src_track), 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -469,10 +469,10 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   src_track = TRACKLIST->tracks[src_track_pos];
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, src_track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_new_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT, 0, 0, NULL);
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT, 0, 0, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -606,10 +606,10 @@ test_move_two_plugins_one_slot_up (void)
   /* duplicate the plugin to the 2nd slot */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_copy (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -621,7 +621,7 @@ test_move_two_plugins_one_slot_up (void)
   /* remove slot #0 and undo */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_delete (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
@@ -639,13 +639,13 @@ test_move_two_plugins_one_slot_up (void)
    * slot) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
@@ -663,13 +663,13 @@ test_move_two_plugins_one_slot_up (void)
    * slot) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 2, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
@@ -687,13 +687,13 @@ test_move_two_plugins_one_slot_up (void)
    * slot) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 3, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 3, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
@@ -711,13 +711,13 @@ test_move_two_plugins_one_slot_up (void)
    * slot) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 2, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -730,10 +730,10 @@ test_move_two_plugins_one_slot_up (void)
   /* move 2nd plugin to 1st plugin (replacing it) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
@@ -764,7 +764,7 @@ test_move_two_plugins_one_slot_up (void)
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   g_return_if_fail (setting);
   ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
   g_assert_true (ret);
 
   /* undo and verify that the original plugin is
@@ -794,10 +794,10 @@ test_move_two_plugins_one_slot_up (void)
   /* move 2nd plugin to 1st plugin (replacing it) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 1, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
@@ -855,7 +855,7 @@ test_create_modulator (void)
     test_plugin_manager_get_plugin_setting (AMS_LFO_BUNDLE, AMS_LFO_URI, false);
   g_return_if_fail (setting);
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
+    Z_PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
     P_MODULATOR_TRACK->num_modulators, setting, 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -865,7 +865,7 @@ test_create_modulator (void)
 
   /* create another one */
   ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
+    Z_PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
     P_MODULATOR_TRACK->num_modulators, setting, 1, NULL);
   g_assert_true (ret);
 
@@ -879,7 +879,7 @@ test_create_modulator (void)
   for (int i = 0; i < p1->num_out_ports; i++)
     {
       Port * p = p1->out_ports[i];
-      if (p->id.type != TYPE_CV)
+      if (p->id.type != Z_PORT_TYPE_CV)
         continue;
       cv_out = p;
     }
@@ -897,7 +897,7 @@ test_create_modulator (void)
 
   MixerSelections * sel = mixer_selections_new ();
   mixer_selections_add_slot (
-    sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
+    sel, P_MODULATOR_TRACK, Z_PLUGIN_SLOT_MODULATOR,
     P_MODULATOR_TRACK->num_modulators - 2, F_NO_CLONE, F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_delete (sel, PORT_CONNECTIONS_MGR, NULL);
   g_assert_true (ret);
@@ -939,7 +939,7 @@ test_move_pl_after_duplicating_track (void)
   for (int i = 0; i < lsp->num_in_ports; i++)
     {
       Port * port = lsp->in_ports[i];
-      if (port->id.flags & PORT_FLAG_SIDECHAIN)
+      if (port->id.flags & Z_PORT_FLAG_SIDECHAIN)
         {
           sidechain_port = port;
           break;
@@ -963,10 +963,10 @@ test_move_pl_after_duplicating_track (void)
   /* move lsp plugin to newly created track */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, lsp_track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, lsp_track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_INSERT,
     track_get_name_hash (dest_track), 1, NULL);
   g_assert_true (ret);
 
@@ -989,7 +989,7 @@ test_move_plugin_from_inserts_to_midi_fx (void)
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   g_return_if_fail (setting);
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
   g_assert_true (ret);
   plugin_setting_free (setting);
 
@@ -999,10 +999,10 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   /* move to midi fx */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, track, PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
+    MIXER_SELECTIONS, track, Z_PLUGIN_SLOT_INSERT, 0, F_NO_CLONE,
     F_NO_PUBLISH_EVENTS);
   ret = mixer_selections_action_perform_move (
-    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_MIDI_FX,
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, Z_PLUGIN_SLOT_MIDI_FX,
     track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
   g_assert_nonnull (track->channel->midi_fx[0]);
@@ -1037,14 +1037,16 @@ test_undoing_deletion_of_multiple_inserts (void)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     COMPRESSOR_BUNDLE, COMPRESSOR_URI, false);
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), slot, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), slot, setting, 1,
+    NULL);
   g_assert_true (ret);
 
   slot = 1;
   setting = test_plugin_manager_get_plugin_setting (
     CUBIC_DISTORTION_BUNDLE, CUBIC_DISTORTION_URI, false);
   ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), slot, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), slot, setting, 1,
+    NULL);
   g_assert_true (ret);
 
   Plugin * compressor = ins_track->channel->inserts[0];
@@ -1122,7 +1124,7 @@ _test_replace_instrument (
   for (int i = 0; i < lsp->num_in_ports; i++)
     {
       Port * port = lsp->in_ports[i];
-      if (port->id.flags & PORT_FLAG_SIDECHAIN)
+      if (port->id.flags & Z_PORT_FLAG_SIDECHAIN)
         {
           sidechain_port = port;
           port_identifier_copy (&sidechain_port_id, &port->id);
@@ -1154,7 +1156,7 @@ _test_replace_instrument (
   AutomationTracklist * atl = track_get_automation_tracklist (src_track);
   g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
-  g_assert_true (at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN);
+  g_assert_true (at->port_id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN);
   at->created = true;
   automation_tracklist_set_at_visible (atl, at, true);
 
@@ -1191,7 +1193,7 @@ _test_replace_instrument (
 
   /* replace the instrument with a new instance */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSTRUMENT, track_get_name_hash (src_track), -1, setting, 1,
+    Z_PLUGIN_SLOT_INSTRUMENT, track_get_name_hash (src_track), -1, setting, 1,
     NULL);
   g_assert_true (track_validate (src_track));
 
@@ -1344,7 +1346,7 @@ test_save_modulators (void)
     GEONKICK_BUNDLE, GEONKICK_URI, false);
   g_return_if_fail (setting);
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
+    Z_PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
     P_MODULATOR_TRACK->num_modulators, setting, 1, NULL);
   g_assert_true (ret);
   plugin_setting_free (setting);

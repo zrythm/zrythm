@@ -5,6 +5,8 @@
 
 #include "zrythm-config.h"
 
+#include "enum-types.h"
+
 #ifdef HAVE_CARLA
 
 #  include <stdlib.h>
@@ -14,21 +16,23 @@
 #  include "plugins/plugin_descriptor.h"
 #  include "plugins/plugin_manager.h"
 #  include "utils/file.h"
+#  include "utils/gtk.h"
 #  include "utils/objects.h"
 #  include "utils/string.h"
-#  include "utils/system.h"
 #  include "zrythm.h"
 
 #  include <CarlaBackend.h>
 
 static char *
-z_carla_discovery_get_discovery_path (PluginArchitecture arch)
+z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)
 {
   char carla_discovery_filename[60];
   strcpy (
     carla_discovery_filename,
 #  ifdef _WOE32
-    arch == ARCH_32 ? "carla-discovery-win32" : "carla-discovery-native"
+    arch == Z_PLUGIN_ARCHITECTURE_32
+      ? "carla-discovery-win32"
+      : "carla-discovery-native"
 #  else
     "carla-discovery-native"
 #  endif
@@ -82,7 +86,7 @@ z_carla_discovery_create_au_descriptor_from_info (
   /* get category */
   if (info->hints & PLUGIN_IS_SYNTH)
     {
-      descr->category = PC_INSTRUMENT;
+      descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
     }
   else
     {
@@ -92,7 +96,7 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->category_str = plugin_descriptor_category_to_string (descr->category);
 
   descr->protocol = Z_PLUGIN_PROTOCOL_AU;
-  descr->arch = ARCH_64;
+  descr->arch = Z_PLUGIN_ARCHITECTURE_64;
   descr->path = NULL;
   descr->min_bridge_mode = plugin_descriptor_get_min_bridge_mode (descr);
   descr->has_custom_ui = info->hints & PLUGIN_HAS_CUSTOM_UI;
@@ -142,9 +146,9 @@ descriptor_from_discovery_info (
   descr->author = g_strdup (meta->maker);
   descr->category =
     plugin_descriptor_get_category_from_carla_category (meta->category);
-  if (meta->hints & PLUGIN_IS_SYNTH && descr->category == ZPLUGIN_CATEGORY_NONE)
+  if (meta->hints & PLUGIN_IS_SYNTH && descr->category == Z_PLUGIN_CATEGORY_NONE)
     {
-      descr->category = PC_INSTRUMENT;
+      descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
     }
   descr->category_str = plugin_descriptor_category_to_string (descr->category);
   descr->sha1 = g_strdup (sha1);
@@ -157,9 +161,12 @@ descriptor_from_discovery_info (
   descr->num_midi_outs = (int) io->midiOuts;
   descr->num_ctrl_ins = (int) io->parameterIns;
   descr->num_ctrl_outs = (int) io->parameterOuts;
-  descr->arch = info->btype == BINARY_NATIVE ? ARCH_64 : ARCH_32;
+  descr->arch =
+    info->btype == BINARY_NATIVE
+      ? Z_PLUGIN_ARCHITECTURE_64
+      : Z_PLUGIN_ARCHITECTURE_32;
   descr->has_custom_ui = meta->hints & PLUGIN_HAS_CUSTOM_UI;
-  descr->min_bridge_mode = CARLA_BRIDGE_FULL;
+  descr->min_bridge_mode = Z_CARLA_BRIDGE_FULL;
 
   return descr;
 }
@@ -279,7 +286,7 @@ z_carla_discovery_start (
   ZPluginProtocol   protocol)
 {
   char * discovery_tool = z_carla_discovery_get_discovery_path (
-    btype == BINARY_NATIVE ? ARCH_64 : ARCH_32);
+    btype == BINARY_NATIVE ? Z_PLUGIN_ARCHITECTURE_64 : Z_PLUGIN_ARCHITECTURE_32);
   char * paths_separated =
     plugin_manager_get_paths_for_protocol_separated (self->owner, protocol);
   PluginType ptype =
@@ -292,7 +299,7 @@ z_carla_discovery_start (
     {
       g_message (
         "no plugins to scan for %s (given paths: %s)",
-        plugin_protocol_strings[protocol], paths_separated);
+        z_gtk_get_enum_nick (Z_TYPE_PLUGIN_PROTOCOL, protocol), paths_separated);
       g_free (paths_separated);
       return;
     }

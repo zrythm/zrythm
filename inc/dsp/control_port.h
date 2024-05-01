@@ -29,17 +29,17 @@ typedef struct ControlPortChange
   /**
    * Flag to identify the port the change is for.
    *
-   * @see PORT_FLAG_BPM.
+   * @see Z_PORT_FLAG_BPM.
    */
-  PortFlags flag1;
+  ZPortFlags flag1;
 
   /**
    * Flag to identify the port the change is for.
    *
-   * @see PORT_FLAG2_BEATS_PER_BAR and
-   *   PORT_FLAG2_BEAT_UNIT.
+   * @see Z_PORT_FLAG2_BEATS_PER_BAR and
+   *   Z_PORT_FLAG2_BEAT_UNIT.
    */
-  PortFlags2 flag2;
+  ZPortFlags2 flag2;
 
   /** Real (not normalized) value to set. */
   float real_val;
@@ -47,7 +47,7 @@ typedef struct ControlPortChange
   /** Integer val. */
   int ival;
 
-  BeatUnit beat_unit;
+  ZBeatUnit beat_unit;
 
 } ControlPortChange;
 

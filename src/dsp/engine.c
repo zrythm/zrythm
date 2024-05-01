@@ -821,10 +821,10 @@ init_common (AudioEngine * self)
     self->ev_queue, (size_t) ENGINE_MAX_EVENTS * sizeof (AudioEngineEvent *));
 
   self->midi_clock_out = port_new_with_type_and_owner (
-    TYPE_EVENT, FLOW_OUTPUT, "MIDI Clock Out", PORT_OWNER_TYPE_AUDIO_ENGINE,
-    self);
+    Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, "MIDI Clock Out",
+    Z_PORT_OWNER_TYPE_AUDIO_ENGINE, self);
   self->midi_clock_out->midi_events = midi_events_new ();
-  self->midi_clock_out->id.flags2 |= PORT_FLAG2_MIDI_CLOCK;
+  self->midi_clock_out->id.flags2 |= Z_PORT_FLAG2_MIDI_CLOCK;
 }
 
 bool
@@ -868,20 +868,20 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
     {
       Port *           port = g_ptr_array_index (ports, i);
       PortIdentifier * id = &port->id;
-      if (id->owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE)
+      if (id->owner_type == Z_PORT_OWNER_TYPE_AUDIO_ENGINE)
         port_init_loaded (port, self);
-      else if (id->owner_type == PORT_OWNER_TYPE_HW)
+      else if (id->owner_type == Z_PORT_OWNER_TYPE_HW)
         {
-          if (id->flow == FLOW_OUTPUT)
+          if (id->flow == Z_PORT_FLOW_OUTPUT)
             port_init_loaded (port, self->hw_in_processor);
-          else if (id->flow == FLOW_INPUT)
+          else if (id->flow == Z_PORT_FLOW_INPUT)
             port_init_loaded (port, self->hw_out_processor);
         }
-      else if (id->owner_type == PORT_OWNER_TYPE_FADER)
+      else if (id->owner_type == Z_PORT_OWNER_TYPE_FADER)
         {
-          if (id->flags2 & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+          if (id->flags2 & Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
             port_init_loaded (port, self->sample_processor->fader);
-          else if (id->flags2 & PORT_FLAG2_MONITOR_FADER)
+          else if (id->flags2 & Z_PORT_FLAG2_MONITOR_FADER)
             port_init_loaded (port, self->control_room->monitor_fader);
         }
     }
@@ -917,13 +917,14 @@ engine_new (Project * project)
   self->sample_processor = sample_processor_new (self);
 
   /* init midi editor manual press */
-  self->midi_editor_manual_press =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "MIDI Editor Manual Press");
+  self->midi_editor_manual_press = port_new_with_type (
+    Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, "MIDI Editor Manual Press");
   self->midi_editor_manual_press->id.sym = g_strdup ("midi_editor_manual_press");
-  self->midi_editor_manual_press->id.flags |= PORT_FLAG_MANUAL_PRESS;
+  self->midi_editor_manual_press->id.flags |= Z_PORT_FLAG_MANUAL_PRESS;
 
   /* init midi in */
-  self->midi_in = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "MIDI in");
+  self->midi_in =
+    port_new_with_type (Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, "MIDI in");
   self->midi_in->id.sym = g_strdup ("midi_in");
 
   /* init MIDI queues */
@@ -932,13 +933,16 @@ engine_new (Project * project)
 
   /* create monitor out ports */
   Port *monitor_out_l, *monitor_out_r;
-  monitor_out_l = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out L");
+  monitor_out_l =
+    port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "Monitor Out L");
   monitor_out_l->id.sym = g_strdup ("monitor_out_l");
-  monitor_out_r = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out R");
+  monitor_out_r =
+    port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "Monitor Out R");
   monitor_out_r->id.sym = g_strdup ("monitor_out_r");
   self->monitor_out =
     stereo_ports_new_from_existing (monitor_out_l, monitor_out_r);
-  stereo_ports_set_owner (self->monitor_out, PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+  stereo_ports_set_owner (
+    self->monitor_out, Z_PORT_OWNER_TYPE_AUDIO_ENGINE, self);
 
   self->hw_in_processor = hardware_processor_new (true, self);
   self->hw_out_processor = hardware_processor_new (false, self);

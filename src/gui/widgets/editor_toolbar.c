@@ -84,7 +84,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
           || !plugin_descriptor_is_effect (descr)
           || descr->num_audio_ins != 2
           || descr->num_audio_outs != 2
-          || descr->category == PC_ANALYZER)
+          || descr->category == Z_PLUGIN_CATEGORY_ANALYZER)
         continue;
 
       /* skip if open with carla by default */

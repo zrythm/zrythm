@@ -459,7 +459,7 @@ engine_jack_set_transport_type (
       jack_set_timebase_callback (self->client, 0, timebase_cb, self);
     }
 
-  g_message ("set JACK transport type to %s", jack_transport_type_strings[type]);
+  g_message ("set JACK transport type to %u", type);
   self->transport_type = type;
 }
 
@@ -821,14 +821,14 @@ engine_jack_activate (AudioEngine * self, bool activate)
  * Returns the JACK type string.
  */
 const char *
-engine_jack_get_jack_type (PortType type)
+engine_jack_get_jack_type (ZPortType type)
 {
   switch (type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       return JACK_DEFAULT_AUDIO_TYPE;
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       return JACK_DEFAULT_MIDI_TYPE;
       break;
     default:

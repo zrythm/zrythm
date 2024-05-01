@@ -125,7 +125,7 @@ apply_plugin (
   setting->force_generic_ui = true;
   GError * err = NULL;
   Plugin * pl =
-    plugin_new_from_setting (setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
+    plugin_new_from_setting (setting, 0, Z_PLUGIN_SLOT_INSERT, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to create plugin"));
@@ -183,7 +183,7 @@ apply_plugin (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         {
           if (l_out)
             {
@@ -200,7 +200,7 @@ apply_plugin (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      if (port->id.type == TYPE_AUDIO)
+      if (port->id.type == Z_PORT_TYPE_AUDIO)
         {
           if (l_in)
             {

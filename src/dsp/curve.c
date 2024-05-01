@@ -39,6 +39,24 @@
 
 #include <glib/gi18n.h>
 
+const char **
+curve_algorithm_get_strings (void)
+{
+  static const char * curve_algorithm_strings[] = {
+    N_ ("Exponent"), N_ ("Superellipse"), N_ ("Vital"),
+    N_ ("Pulse"),    N_ ("Logarithmic"),
+  };
+  return curve_algorithm_strings;
+}
+
+const char *
+curve_algorithm_to_str (CurveAlgorithm algo)
+{
+  const char ** strs = curve_algorithm_get_strings ();
+
+  return strs[algo];
+}
+
 void
 curve_opts_init (CurveOptions * opts)
 {

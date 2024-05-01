@@ -56,11 +56,8 @@ typedef enum RegionMusicalMode
   REGION_MUSICAL_MODE_ON,
 } RegionMusicalMode;
 
-static const char * region_musical_mode_strings[] = {
-  N_ ("Inherit"),
-  N_ ("Off"),
-  N_ ("On"),
-};
+const char *
+region_musical_mode_to_str (RegionMusicalMode mode);
 
 /**
  * A region (clip) is an object on the timeline that contains

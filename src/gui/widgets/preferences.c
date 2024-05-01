@@ -538,9 +538,11 @@ make_control (
           SET_STRV_IF_MATCH (
             "General", "Engine", "buffer-size", buffer_size_str);
           SET_STRV_IF_MATCH (
-            "Editing", "Audio", "fade-algorithm", curve_algorithm_strings);
+            "Editing", "Audio", "fade-algorithm",
+            curve_algorithm_get_strings ());
           SET_STRV_IF_MATCH (
-            "Editing", "Automation", "curve-algorithm", curve_algorithm_strings);
+            "Editing", "Automation", "curve-algorithm",
+            curve_algorithm_get_strings ());
           SET_STRV_IF_MATCH_W_COUNT (
             "UI", "General", "language",
             localization_get_language_strings_w_codes (), NUM_LL_LANGUAGES);

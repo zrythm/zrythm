@@ -75,7 +75,7 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
           ChordPreset * pset = g_ptr_array_index (pack->presets, j);
 
           char action[800];
-          sprintf (action, "app.load-chord-preset::%d,%d", i, j);
+          sprintf (action, "app.load-chord-preset::%d,%zu", i, j);
           menuitem =
             z_gtk_create_menu_item (pset->name, "minuet-chords", action);
           g_menu_append_item (pack_submenu, menuitem);

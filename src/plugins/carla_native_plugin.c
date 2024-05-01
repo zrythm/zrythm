@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include "enum-types.h"
+
 #ifdef HAVE_CARLA
 
 #  include <inttypes.h>
@@ -615,7 +617,7 @@ carla_native_plugin_has_custom_ui (const PluginDescriptor * descr)
     z_carla_discovery_get_plugin_type_from_protocol (descr->protocol);
   carla_add_plugin (
     native_pl->host_handle,
-    descr->arch == ARCH_64 ?
+    descr->arch == Z_PLUGIN_ARCHITECTURE_64 ?
       BINARY_NATIVE : BINARY_WIN32,
     type, descr->path, descr->name,
     descr->uri, descr->unique_id, NULL, 0);
@@ -689,7 +691,7 @@ carla_native_plugin_process (
     for (int i = 0; i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
-        if (port->id.type == TYPE_AUDIO)
+        if (port->id.type == Z_PORT_TYPE_AUDIO)
           {
             self->outbufs[audio_ports++] = &port->buf[time_nfo->local_offset];
           }
@@ -705,7 +707,7 @@ carla_native_plugin_process (
     for (int i = 0; i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
-        if (port->id.type == TYPE_CV)
+        if (port->id.type == Z_PORT_TYPE_CV)
           {
             self->outbufs[self->max_variant_audio_outs + cv_ports++] =
               &port->buf[time_nfo->local_offset];
@@ -787,37 +789,37 @@ carla_category_to_zrythm_category (int category)
   switch (category)
     {
     case PLUGIN_CATEGORY_NONE:
-      return ZPLUGIN_CATEGORY_NONE;
+      return Z_PLUGIN_CATEGORY_NONE;
       break;
     case PLUGIN_CATEGORY_SYNTH:
-      return PC_INSTRUMENT;
+      return Z_PLUGIN_CATEGORY_INSTRUMENT;
       break;
     case PLUGIN_CATEGORY_DELAY:
-      return PC_DELAY;
+      return Z_PLUGIN_CATEGORY_DELAY;
       break;
     case PLUGIN_CATEGORY_EQ:
-      return PC_EQ;
+      return Z_PLUGIN_CATEGORY_EQ;
       break;
     case PLUGIN_CATEGORY_FILTER:
-      return PC_FILTER;
+      return Z_PLUGIN_CATEGORY_FILTER;
       break;
     case PLUGIN_CATEGORY_DISTORTION:
-      return PC_DISTORTION;
+      return Z_PLUGIN_CATEGORY_DISTORTION;
       break;
     case PLUGIN_CATEGORY_DYNAMICS:
-      return PC_DYNAMICS;
+      return Z_PLUGIN_CATEGORY_DYNAMICS;
       break;
     case PLUGIN_CATEGORY_MODULATOR:
-      return PC_MODULATOR;
+      return Z_PLUGIN_CATEGORY_MODULATOR;
       break;
     case PLUGIN_CATEGORY_UTILITY:
-      return PC_UTILITY;
+      return Z_PLUGIN_CATEGORY_UTILITY;
       break;
     case PLUGIN_CATEGORY_OTHER:
-      return ZPLUGIN_CATEGORY_NONE;
+      return Z_PLUGIN_CATEGORY_NONE;
       break;
     }
-  g_return_val_if_reached (ZPLUGIN_CATEGORY_NONE);
+  g_return_val_if_reached (Z_PLUGIN_CATEGORY_NONE);
 }
 
 static char *
@@ -950,7 +952,7 @@ set_unit_from_str (Port * port, const char * unit_str)
 {
 #  define SET_UNIT(caps, str) \
     if (string_is_equal (unit_str, str)) \
-    port->id.unit = PORT_UNIT_##caps
+    port->id.unit = Z_PORT_UNIT_##caps
 
   SET_UNIT (HZ, "Hz");
   SET_UNIT (MS, "ms");
@@ -988,7 +990,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("Audio in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_AUDIO, FLOW_INPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_INPUT, name);
           port->id.sym = g_strdup_printf ("audio_in_%d", i);
 #  ifdef CARLA_HAVE_AUDIO_PORT_HINTS
           unsigned int audio_port_hints = carla_get_audio_port_hints (
@@ -998,7 +1001,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
           if (audio_port_hints & AUDIO_PORT_IS_SIDECHAIN)
             {
               g_debug ("%s is sidechain", port->id.sym);
-              port->id.flags |= PORT_FLAG_SIDECHAIN;
+              port->id.flags |= Z_PORT_FLAG_SIDECHAIN;
             }
 #  endif
           plugin_add_in_port (self->plugin, port);
@@ -1011,20 +1014,21 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           Port * port = self->plugin->in_ports[i];
           if (
-            port->id.type == TYPE_AUDIO && port->id.flags & PORT_FLAG_SIDECHAIN
+            port->id.type == Z_PORT_TYPE_AUDIO
+            && port->id.flags & Z_PORT_FLAG_SIDECHAIN
             && port->id.port_group == NULL
-            && !(port->id.flags & PORT_FLAG_STEREO_L)
-            && !(port->id.flags & PORT_FLAG_STEREO_R))
+            && !(port->id.flags & Z_PORT_FLAG_STEREO_L)
+            && !(port->id.flags & Z_PORT_FLAG_STEREO_R))
             {
               port->id.port_group = g_strdup ("[Zrythm] Sidechain Group");
               if (num_default_sidechains_added == 0)
                 {
-                  port->id.flags |= PORT_FLAG_STEREO_L;
+                  port->id.flags |= Z_PORT_FLAG_STEREO_L;
                   num_default_sidechains_added++;
                 }
               else if (num_default_sidechains_added == 1)
                 {
-                  port->id.flags |= PORT_FLAG_STEREO_R;
+                  port->id.flags |= Z_PORT_FLAG_STEREO_R;
                   break;
                 }
             }
@@ -1036,7 +1040,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("Audio out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, name);
           port->id.sym = g_strdup_printf ("audio_out_%d", i);
           plugin_add_out_port (self->plugin, port);
         }
@@ -1044,25 +1049,28 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("MIDI in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_EVENT, FLOW_INPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, name);
           port->id.sym = g_strdup_printf ("midi_in_%d", i);
-          port->id.flags2 |= PORT_FLAG2_SUPPORTS_MIDI;
+          port->id.flags2 |= Z_PORT_FLAG2_SUPPORTS_MIDI;
           plugin_add_in_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_midi_outs; i++)
         {
           strcpy (tmp, _ ("MIDI out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_EVENT, FLOW_OUTPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, name);
           port->id.sym = g_strdup_printf ("midi_out_%d", i);
-          port->id.flags2 |= PORT_FLAG2_SUPPORTS_MIDI;
+          port->id.flags2 |= Z_PORT_FLAG2_SUPPORTS_MIDI;
           plugin_add_out_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_cv_ins; i++)
         {
           strcpy (tmp, _ ("CV in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_CV, FLOW_INPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_CV, Z_PORT_FLOW_INPUT, name);
           port->id.sym = g_strdup_printf ("cv_in_%d", i);
           plugin_add_in_port (self->plugin, port);
         }
@@ -1070,7 +1078,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("CV out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (TYPE_CV, FLOW_OUTPUT, name);
+          Port * port =
+            port_new_with_type (Z_PORT_TYPE_CV, Z_PORT_FLOW_OUTPUT, name);
           port->id.sym = g_strdup_printf ("cv_out_%d", i);
           plugin_add_out_port (self->plugin, port);
         }
@@ -1109,7 +1118,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           const CarlaParameterInfo * param_info =
             carla_get_parameter_info (self->host_handle, 0, i);
-          port = port_new_with_type (TYPE_CONTROL, FLOW_INPUT, param_info->name);
+          port = port_new_with_type (
+            Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, param_info->name);
           if (!IS_PORT_AND_NONNULL (port))
             {
               g_critical (
@@ -1125,7 +1135,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
             {
               port->id.sym = g_strdup_printf ("param_%u", i);
             }
-          port->id.flags |= PORT_FLAG_PLUGIN_CONTROL;
+          port->id.flags |= Z_PORT_FLAG_PLUGIN_CONTROL;
           if (param_info->comment && strlen (param_info->comment) > 0)
             {
               port->id.comment = g_strdup (param_info->comment);
@@ -1148,27 +1158,27 @@ create_ports (CarlaNativePlugin * self, bool loading)
           g_return_if_fail (native_param);
           if (native_param->hints & NATIVE_PARAMETER_IS_LOGARITHMIC)
             {
-              port->id.flags |= PORT_FLAG_LOGARITHMIC;
+              port->id.flags |= Z_PORT_FLAG_LOGARITHMIC;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_AUTOMABLE)
             {
-              port->id.flags |= PORT_FLAG_AUTOMATABLE;
+              port->id.flags |= Z_PORT_FLAG_AUTOMATABLE;
             }
           if (!(native_param->hints & NATIVE_PARAMETER_IS_ENABLED))
             {
-              port->id.flags |= PORT_FLAG_NOT_ON_GUI;
+              port->id.flags |= Z_PORT_FLAG_NOT_ON_GUI;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_BOOLEAN)
             {
-              port->id.flags |= PORT_FLAG_TOGGLE;
+              port->id.flags |= Z_PORT_FLAG_TOGGLE;
             }
           else if (native_param->hints & NATIVE_PARAMETER_USES_SCALEPOINTS)
             {
-              port->id.flags2 |= PORT_FLAG2_ENUMERATION;
+              port->id.flags2 |= Z_PORT_FLAG2_ENUMERATION;
             }
           else if (native_param->hints & NATIVE_PARAMETER_IS_INTEGER)
             {
-              port->id.flags |= PORT_FLAG_INTEGER;
+              port->id.flags |= Z_PORT_FLAG_INTEGER;
             }
 
           /* get scale points */
@@ -1301,15 +1311,15 @@ carla_native_plugin_add_internal_plugin_from_descr (
           g_debug ("uri %s", descr->uri);
           ret = carla_add_plugin (
             self->host_handle,
-            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type, NULL,
-            descr->name, descr->uri, 0, NULL, PLUGIN_OPTIONS_NULL);
+            descr->arch == Z_PLUGIN_ARCHITECTURE_64 ? BINARY_NATIVE : BINARY_WIN32,
+            type, NULL, descr->name, descr->uri, 0, NULL, PLUGIN_OPTIONS_NULL);
           break;
         case Z_PLUGIN_PROTOCOL_VST:
         case Z_PLUGIN_PROTOCOL_VST3:
           ret = carla_add_plugin (
             self->host_handle,
-            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type,
-            descr->path, descr->name, descr->name, descr->unique_id, NULL,
+            descr->arch == Z_PLUGIN_ARCHITECTURE_64 ? BINARY_NATIVE : BINARY_WIN32,
+            type, descr->path, descr->name, descr->name, descr->unique_id, NULL,
             PLUGIN_OPTIONS_NULL);
           break;
         case Z_PLUGIN_PROTOCOL_DSSI:
@@ -1331,8 +1341,10 @@ carla_native_plugin_add_internal_plugin_from_descr (
               PLUGIN_MANAGER, descr->protocol, descr->uri);
             ret = carla_add_plugin (
               self->host_handle,
-              descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type,
-              pl_path, descr->name, descr->name, descr->unique_id, NULL,
+              descr->arch == Z_PLUGIN_ARCHITECTURE_64
+                ? BINARY_NATIVE
+                : BINARY_WIN32,
+              type, pl_path, descr->name, descr->name, descr->unique_id, NULL,
               PLUGIN_OPTIONS_NULL);
             g_free (pl_path);
           }
@@ -1340,8 +1352,9 @@ carla_native_plugin_add_internal_plugin_from_descr (
         case Z_PLUGIN_PROTOCOL_CLAP:
           ret = carla_add_plugin (
             self->host_handle,
-            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32, type,
-            descr->path, descr->name, descr->uri, 0, NULL, PLUGIN_OPTIONS_NULL);
+            descr->arch == Z_PLUGIN_ARCHITECTURE_64 ? BINARY_NATIVE : BINARY_WIN32,
+            type, descr->path, descr->name, descr->uri, 0, NULL,
+            PLUGIN_OPTIONS_NULL);
           break;
         default:
           g_return_val_if_reached (-1);
@@ -1587,17 +1600,17 @@ carla_native_plugin_instantiate (
   g_return_val_if_fail (setting->open_with_carla, -1);
   g_message (
     "%s: using bridge mode %s", __func__,
-    carla_bridge_mode_strings[setting->bridge_mode]);
+    z_gtk_get_enum_nick (Z_TYPE_CARLA_BRIDGE_MODE, setting->bridge_mode));
 
   /* set bridging on if needed */
   switch (setting->bridge_mode)
     {
-    case CARLA_BRIDGE_FULL:
+    case Z_CARLA_BRIDGE_FULL:
       g_message ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         self->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, NULL);
       break;
-    case CARLA_BRIDGE_UI:
+    case Z_CARLA_BRIDGE_UI:
       g_message ("using UI bridge only");
       carla_set_engine_option (
         self->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, NULL);
@@ -1608,8 +1621,8 @@ carla_native_plugin_instantiate (
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting->bridge_mode == CARLA_BRIDGE_FULL
-    || setting->bridge_mode == CARLA_BRIDGE_UI)
+    setting->bridge_mode == Z_CARLA_BRIDGE_FULL
+    || setting->bridge_mode == Z_CARLA_BRIDGE_UI)
     {
       carla_set_engine_option (
         self->host_handle, ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000, NULL);
@@ -2030,8 +2043,8 @@ carla_native_plugin_get_midi_out_port (CarlaNativePlugin * self)
     {
       port = pl->out_ports[i];
       if (
-        port->id.type == TYPE_EVENT
-        && port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
+        port->id.type == Z_PORT_TYPE_EVENT
+        && port->id.flags2 & Z_PORT_FLAG2_SUPPORTS_MIDI)
         return port;
     }
 
@@ -2053,7 +2066,7 @@ carla_native_plugin_get_port_from_param_id (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->in_ports[i];
-      if (port->id.type != TYPE_CONTROL)
+      if (port->id.type != Z_PORT_TYPE_CONTROL)
         continue;
 
       j = port->carla_param_id;

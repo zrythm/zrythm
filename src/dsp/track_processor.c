@@ -119,17 +119,17 @@ init_midi_port (TrackProcessor * self, int in)
   if (in)
     {
       self->midi_in = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_INPUT, "TP MIDI in", PORT_OWNER_TYPE_TRACK_PROCESSOR,
-        self);
+        Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, "TP MIDI in",
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->midi_in->id.sym = g_strdup ("track_processor_midi_in");
       g_warn_if_fail (IS_PORT (self->midi_in));
-      self->midi_in->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
+      self->midi_in->id.flags |= Z_PORT_FLAG_SEND_RECEIVABLE;
     }
   else
     {
       self->midi_out = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out", PORT_OWNER_TYPE_TRACK_PROCESSOR,
-        self);
+        Z_PORT_TYPE_EVENT, Z_PORT_FLOW_OUTPUT, "TP MIDI out",
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->midi_out->id.sym = g_strdup ("track_processor_midi_out");
       g_warn_if_fail (IS_PORT (self->midi_out));
     }
@@ -139,8 +139,8 @@ static void
 init_midi_cc_ports (TrackProcessor * self, int loading)
 {
 #define INIT_MIDI_PORT(x, idx) \
-  x->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE; \
-  x->id.flags |= PORT_FLAG_AUTOMATABLE; \
+  x->id.flags |= Z_PORT_FLAG_MIDI_AUTOMATABLE; \
+  x->id.flags |= Z_PORT_FLAG_AUTOMATABLE; \
   x->id.port_index = idx;
 
   char name[400];
@@ -153,8 +153,8 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
         {
           sprintf (name, "Ch%d %s", channel, midi_get_controller_name (j));
           Port * cc = port_new_with_type_and_owner (
-            TYPE_CONTROL, FLOW_INPUT, name, PORT_OWNER_TYPE_TRACK_PROCESSOR,
-            self);
+            Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name,
+            Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           INIT_MIDI_PORT (cc, i * 128 + j);
           cc->id.sym =
             g_strdup_printf ("midi_controller_ch%d_%d", channel, j + 1);
@@ -163,30 +163,33 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
 
       sprintf (name, "Ch%d Pitch bend", i + 1);
       Port * cc = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, name, PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name,
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_pitch_bend", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->maxf = 8191.f;
       cc->minf = -8192.f;
       cc->deff = 0.f;
       cc->zerof = 0.f;
-      cc->id.flags2 |= PORT_FLAG2_MIDI_PITCH_BEND;
+      cc->id.flags2 |= Z_PORT_FLAG2_MIDI_PITCH_BEND;
       self->pitch_bend[i] = cc;
 
       sprintf (name, "Ch%d Poly key pressure", i + 1);
       cc = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, name, PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name,
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_poly_key_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
-      cc->id.flags2 |= PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
+      cc->id.flags2 |= Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
       self->poly_key_pressure[i] = cc;
 
       sprintf (name, "Ch%d Channel pressure", i + 1);
       cc = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, name, PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, name,
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_channel_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
-      cc->id.flags2 |= PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
+      cc->id.flags2 |= Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
       self->channel_pressure[i] = cc;
     }
 
@@ -210,24 +213,24 @@ init_stereo_out_ports (TrackProcessor * self, bool in)
 {
   Port *         l, *r;
   StereoPorts ** sp = in ? &self->stereo_in : &self->stereo_out;
-  PortFlow       flow = in ? FLOW_INPUT : FLOW_OUTPUT;
+  ZPortFlow      flow = in ? Z_PORT_FLOW_INPUT : Z_PORT_FLOW_OUTPUT;
 
   l = port_new_with_type_and_owner (
-    TYPE_AUDIO, flow, in ? "TP Stereo in L" : "TP Stereo out L",
-    PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+    Z_PORT_TYPE_AUDIO, flow, in ? "TP Stereo in L" : "TP Stereo out L",
+    Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
   l->id.sym = g_strdup ("track_processor_stereo_out_l");
 
   r = port_new_with_type_and_owner (
-    TYPE_AUDIO, flow, in ? "TP Stereo in R" : "TP Stereo out R",
-    PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+    Z_PORT_TYPE_AUDIO, flow, in ? "TP Stereo in R" : "TP Stereo out R",
+    Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
   r->id.sym = g_strdup ("track_processor_stereo_out_r");
 
   *sp = stereo_ports_new_from_existing (l, r);
 
   if (in)
     {
-      l->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
-      r->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
+      l->id.flags |= Z_PORT_FLAG_SEND_RECEIVABLE;
+      r->id.flags |= Z_PORT_FLAG_SEND_RECEIVABLE;
     }
 }
 
@@ -247,7 +250,7 @@ track_processor_new (Track * tr)
 
   switch (tr->in_signal_type)
     {
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       init_midi_port (self, 0);
       init_midi_port (self, 1);
 
@@ -255,36 +258,36 @@ track_processor_new (Track * tr)
       if (track_type_has_piano_roll (tr->type) || tr->type == TRACK_TYPE_CHORD)
         {
           self->piano_roll = port_new_with_type_and_owner (
-            TYPE_EVENT, FLOW_INPUT, "TP Piano Roll",
-            PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+            Z_PORT_TYPE_EVENT, Z_PORT_FLOW_INPUT, "TP Piano Roll",
+            Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           self->piano_roll->id.sym = g_strdup ("track_processor_piano_roll");
-          self->piano_roll->id.flags = PORT_FLAG_PIANO_ROLL;
+          self->piano_roll->id.flags = Z_PORT_FLAG_PIANO_ROLL;
           if (tr->type != TRACK_TYPE_CHORD)
             {
               init_midi_cc_ports (self, false);
             }
         }
       break;
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       init_stereo_out_ports (self, false);
       init_stereo_out_ports (self, true);
       if (tr->type == TRACK_TYPE_AUDIO)
         {
           self->mono = port_new_with_type_and_owner (
-            TYPE_CONTROL, FLOW_INPUT, "TP Mono Toggle",
-            PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+            Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, "TP Mono Toggle",
+            Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           self->mono->id.sym = g_strdup ("track_processor_mono_toggle");
-          self->mono->id.flags |= PORT_FLAG_TOGGLE;
-          self->mono->id.flags |= PORT_FLAG_TP_MONO;
+          self->mono->id.flags |= Z_PORT_FLAG_TOGGLE;
+          self->mono->id.flags |= Z_PORT_FLAG_TP_MONO;
           self->input_gain = port_new_with_type_and_owner (
-            TYPE_CONTROL, FLOW_INPUT, "TP Input Gain",
-            PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+            Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, "TP Input Gain",
+            Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           self->input_gain->id.sym = g_strdup ("track_processor_input_gain");
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
           self->input_gain->deff = 1.f;
-          self->input_gain->id.flags |= PORT_FLAG_TP_INPUT_GAIN;
+          self->input_gain->id.flags |= Z_PORT_FLAG_TP_INPUT_GAIN;
           port_set_control_value (
             self->input_gain, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
         }
@@ -296,23 +299,23 @@ track_processor_new (Track * tr)
   if (tr->type == TRACK_TYPE_AUDIO)
     {
       self->output_gain = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, "TP Output Gain",
-        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, "TP Output Gain",
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->output_gain->id.sym = g_strdup ("track_processor_output_gain");
       self->output_gain->minf = 0.f;
       self->output_gain->maxf = 4.f;
       self->output_gain->zerof = 0.f;
       self->output_gain->deff = 1.f;
-      self->output_gain->id.flags2 |= PORT_FLAG2_TP_OUTPUT_GAIN;
+      self->output_gain->id.flags2 |= Z_PORT_FLAG2_TP_OUTPUT_GAIN;
       port_set_control_value (
         self->output_gain, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
       self->monitor_audio = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, "Monitor audio",
-        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, "Monitor audio",
+        Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->monitor_audio->id.sym = g_strdup ("track_processor_monitor_audio");
-      self->monitor_audio->id.flags |= PORT_FLAG_TOGGLE;
-      self->monitor_audio->id.flags2 |= PORT_FLAG2_TP_MONITOR_AUDIO;
+      self->monitor_audio->id.flags |= Z_PORT_FLAG_TOGGLE;
+      self->monitor_audio->id.flags2 |= Z_PORT_FLAG2_TP_MONITOR_AUDIO;
       port_set_control_value (
         self->monitor_audio, 0.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
     }
@@ -436,7 +439,7 @@ track_processor_disconnect_all (TrackProcessor * self)
 
   switch (track->in_signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       port_disconnect_all (self->mono);
       port_disconnect_all (self->input_gain);
       port_disconnect_all (self->output_gain);
@@ -446,7 +449,7 @@ track_processor_disconnect_all (TrackProcessor * self)
       port_disconnect_all (self->stereo_out->l);
       port_disconnect_all (self->stereo_out->r);
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       port_disconnect_all (self->midi_in);
       port_disconnect_all (self->midi_out);
       if (track_type_has_piano_roll (track->type))
@@ -709,20 +712,20 @@ add_events_from_midi_cc_control_ports (
   while (mpmc_queue_dequeue (self->updated_midi_automatable_ports, (void *) &cc))
     {
       /*port_identifier_print (&cc->id);*/
-      if (cc->id.flags2 & PORT_FLAG2_MIDI_PITCH_BEND)
+      if (cc->id.flags2 & Z_PORT_FLAG2_MIDI_PITCH_BEND)
         {
           midi_events_add_pitchbend (
             self->midi_out->midi_events, cc->midi_channel,
             math_round_float_to_signed_32 (cc->control) + 0x2000, local_offset,
             F_NOT_QUEUED);
         }
-      else if (cc->id.flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
+      else if (cc->id.flags2 & Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
         {
 #if ZRYTHM_TARGET_VER_MAJ > 1
           /* TODO - unsupported in v1 */
 #endif
         }
-      else if (cc->id.flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+      else if (cc->id.flags2 & Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
         {
           midi_events_add_channel_pressure (
             self->midi_out->midi_events, cc->midi_channel,
@@ -827,7 +830,7 @@ track_processor_process (
 
   /* if currently active track on the piano roll,
    * fetch events */
-  if (tr->in_signal_type == TYPE_EVENT && CLIP_EDITOR->has_region)
+  if (tr->in_signal_type == Z_PORT_TYPE_EVENT && CLIP_EDITOR->has_region)
     {
       Track * clip_editor_track = clip_editor_get_track (CLIP_EDITOR);
       if (clip_editor_track == tr)
@@ -856,7 +859,7 @@ track_processor_process (
   /* add inputs to outputs */
   switch (tr->in_signal_type)
     {
-    case TYPE_AUDIO:
+    case Z_PORT_TYPE_AUDIO:
       if (
         tr->type != TRACK_TYPE_AUDIO
         || (tr->type == TRACK_TYPE_AUDIO && control_port_is_toggled (self->monitor_audio)))
@@ -885,7 +888,7 @@ track_processor_process (
             }
         }
       break;
-    case TYPE_EVENT:
+    case Z_PORT_TYPE_EVENT:
       /* change the MIDI channel on the midi input
        * to the channel set on the track */
       if (!tr->passthrough_midi_input)
@@ -992,15 +995,15 @@ track_processor_disconnect_from_prefader (TrackProcessor * self)
   Fader * prefader = tr->channel->prefader;
   switch (tr->in_signal_type)
     {
-    case TYPE_AUDIO:
-      if (tr->out_signal_type == TYPE_AUDIO)
+    case Z_PORT_TYPE_AUDIO:
+      if (tr->out_signal_type == Z_PORT_TYPE_AUDIO)
         {
           port_disconnect (self->stereo_out->l, prefader->stereo_in->l);
           port_disconnect (self->stereo_out->r, prefader->stereo_in->r);
         }
       break;
-    case TYPE_EVENT:
-      if (tr->out_signal_type == TYPE_EVENT)
+    case Z_PORT_TYPE_EVENT:
+      if (tr->out_signal_type == Z_PORT_TYPE_EVENT)
         {
           port_disconnect (self->midi_out, prefader->midi_in);
         }
@@ -1026,12 +1029,16 @@ track_processor_connect_to_prefader (TrackProcessor * self)
   g_return_if_fail (IS_FADER (prefader));
 
   /* connect only if signals match */
-  if (tr->in_signal_type == TYPE_AUDIO && tr->out_signal_type == TYPE_AUDIO)
+  if (
+    tr->in_signal_type == Z_PORT_TYPE_AUDIO
+    && tr->out_signal_type == Z_PORT_TYPE_AUDIO)
     {
       port_connect (self->stereo_out->l, prefader->stereo_in->l, 1);
       port_connect (self->stereo_out->r, prefader->stereo_in->r, 1);
     }
-  if (tr->in_signal_type == TYPE_EVENT && tr->out_signal_type == TYPE_EVENT)
+  if (
+    tr->in_signal_type == Z_PORT_TYPE_EVENT
+    && tr->out_signal_type == Z_PORT_TYPE_EVENT)
     {
       port_connect (self->midi_out, prefader->midi_in, 1);
     }
@@ -1047,16 +1054,16 @@ track_processor_disconnect_from_plugin (TrackProcessor * self, Plugin * pl)
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
-  Port *   in_port;
-  PortType type = tr->in_signal_type;
+  Port *    in_port;
+  ZPortType type = tr->in_signal_type;
 
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       in_port = pl->in_ports[i];
 
-      if (type == TYPE_AUDIO)
+      if (type == Z_PORT_TYPE_AUDIO)
         {
-          if (in_port->id.type != TYPE_AUDIO)
+          if (in_port->id.type != Z_PORT_TYPE_AUDIO)
             continue;
 
           if (ports_connected (self->stereo_out->l, in_port))
@@ -1064,9 +1071,9 @@ track_processor_disconnect_from_plugin (TrackProcessor * self, Plugin * pl)
           if (ports_connected (self->stereo_out->r, in_port))
             port_disconnect (self->stereo_out->r, in_port);
         }
-      else if (type == TYPE_EVENT)
+      else if (type == Z_PORT_TYPE_EVENT)
         {
-          if (in_port->id.type != TYPE_EVENT)
+          if (in_port->id.type != Z_PORT_TYPE_EVENT)
             continue;
 
           if (ports_connected (self->midi_out, in_port))
@@ -1088,26 +1095,28 @@ track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl)
   int    last_index, num_ports_to_connect, i;
   Port * in_port;
 
-  if (tr->in_signal_type == TYPE_EVENT)
+  if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
     {
       /* Connect MIDI port to the plugin */
       for (i = 0; i < pl->num_in_ports; i++)
         {
           in_port = pl->in_ports[i];
-          if (in_port->id.type == TYPE_EVENT && in_port->id.flow == FLOW_INPUT)
+          if (
+            in_port->id.type == Z_PORT_TYPE_EVENT
+            && in_port->id.flow == Z_PORT_FLOW_INPUT)
             {
               port_connect (self->midi_out, in_port, 1);
             }
         }
     }
-  else if (tr->in_signal_type == TYPE_AUDIO)
+  else if (tr->in_signal_type == Z_PORT_TYPE_AUDIO)
     {
       /* get actual port counts */
       int num_pl_audio_ins = 0;
       for (i = 0; i < pl->num_in_ports; i++)
         {
           Port * port = pl->in_ports[i];
-          if (port->id.type == TYPE_AUDIO)
+          if (port->id.type == Z_PORT_TYPE_AUDIO)
             num_pl_audio_ins++;
         }
 
@@ -1127,7 +1136,7 @@ track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl)
           for (; last_index < pl->num_in_ports; last_index++)
             {
               in_port = pl->in_ports[last_index];
-              if (in_port->id.type == TYPE_AUDIO)
+              if (in_port->id.type == Z_PORT_TYPE_AUDIO)
                 {
                   if (i == 0)
                     {

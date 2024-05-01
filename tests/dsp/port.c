@@ -23,10 +23,10 @@ test_port_disconnect (void)
 
   Port * port =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "test-port");
   Port * port2 =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "test-port2");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_INPUT, "test-port2");
   port_connect (port, port2, true);
   g_assert_cmpint (port->num_dests, ==, 1);
   g_assert_cmpint (port2->num_srcs, ==, 1);
@@ -39,7 +39,7 @@ test_port_disconnect (void)
 
   Port * port3 =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "test-port3");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_INPUT, "test-port3");
   port_connect (port, port3, true);
   g_assert_cmpint (port->num_dests, ==, 2);
   g_assert_cmpint (port3->num_srcs, ==, 1);
@@ -83,10 +83,10 @@ test_serialization (void)
 
   Port * port =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "test-port");
   Port * port2 =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "test-port2");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_INPUT, "test-port2");
   port_connect (port, port2, true);
 
   port->multipliers[0] = 2.f;
@@ -95,7 +95,7 @@ test_serialization (void)
 
   Port * port3 =
     port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "test-port3");
+      Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_INPUT, "test-port3");
   port_connect (port, port3, true);
 
   yaml = yaml_serialize (port, &port_schema);
@@ -156,9 +156,12 @@ test_get_hash (void)
 {
   test_helper_zrythm_init ();
 
-  Port * port1 = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "test-port");
-  Port * port2 = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "test-port");
-  Port * port3 = port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "test-port3");
+  Port * port1 =
+    port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "test-port");
+  Port * port2 =
+    port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "test-port");
+  Port * port3 =
+    port_new_with_type (Z_PORT_TYPE_AUDIO, Z_PORT_FLOW_OUTPUT, "test-port3");
 
   unsigned int hash1 = port_get_hash (port1);
   unsigned int hash2 = port_get_hash (port2);

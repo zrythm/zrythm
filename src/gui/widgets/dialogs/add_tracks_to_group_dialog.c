@@ -16,6 +16,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "enum-types.h"
+
 G_DEFINE_TYPE (
   AddTracksToGroupDialogWidget,
   add_tracks_to_group_dialog_widget,
@@ -32,7 +34,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
 {
   /* verify that the out signal type is the same for
    * all selected tracks */
-  PortType signal_type;
+  ZPortType signal_type;
   g_return_val_if_fail (sel->num_tracks > 0, NULL);
   for (int i = 0; i < sel->num_tracks; i++)
     {
@@ -83,7 +85,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
   switch (result)
     {
     case GTK_RESPONSE_OK:
-      if (signal_type == TYPE_AUDIO)
+      if (signal_type == Z_PORT_TYPE_AUDIO)
         {
           GError * err = NULL;
           bool     ret = track_create_empty_at_idx_with_action (
@@ -96,7 +98,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
                    "track"));
             }
         }
-      else if (signal_type == TYPE_EVENT)
+      else if (signal_type == Z_PORT_TYPE_EVENT)
         {
           GError * err = NULL;
           bool     ret = track_create_empty_at_idx_with_action (
@@ -111,7 +113,9 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
         }
       else
         {
-          g_message ("invalid signal type %s", port_type_strings[signal_type]);
+          g_message (
+            "invalid signal type %s",
+            z_gtk_get_enum_nick (Z_TYPE_PORT_TYPE, signal_type));
           return NULL;
         }
       break;

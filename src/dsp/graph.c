@@ -236,7 +236,9 @@ connect_plugin (Graph * self, Plugin * pl, bool drop_unnecessary_ports)
       Port * port = pl->in_ports[i];
       g_return_if_fail (port_get_plugin (port, 1) != NULL);
       GraphNode * port_node = graph_find_node_from_port (self, port);
-      if (drop_unnecessary_ports && !port_node && port->id.type == TYPE_CONTROL)
+      if (
+        drop_unnecessary_ports && !port_node
+        && port->id.type == Z_PORT_TYPE_CONTROL)
         {
           continue;
         }
@@ -312,9 +314,9 @@ graph_destroy (Graph * self)
 static GraphNode *
 add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 {
-  PortOwnerType owner = port->id.owner_type;
+  ZPortOwnerType owner = port->id.owner_type;
 
-  if (owner == PORT_OWNER_TYPE_PLUGIN)
+  if (owner == Z_PORT_OWNER_TYPE_PLUGIN)
     {
       port->plugin = port_get_plugin (port, true);
       g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (port->plugin), NULL);
@@ -377,8 +379,8 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 
   /* skip unnecessary control ports */
   if (
-    drop_if_unnecessary && port->id.type == TYPE_CONTROL
-    && port->id.flags & PORT_FLAG_AUTOMATABLE)
+    drop_if_unnecessary && port->id.type == Z_PORT_TYPE_CONTROL
+    && port->id.flags & Z_PORT_FLAG_AUTOMATABLE)
     {
       AutomationTrack * found_at = port->at;
       g_return_val_if_fail (found_at, NULL);
@@ -391,13 +393,15 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
   /* drop ports without sources and dests */
   if (
     drop_if_unnecessary && port->num_dests == 0 && port->num_srcs == 0
-    && owner != PORT_OWNER_TYPE_PLUGIN && owner != PORT_OWNER_TYPE_FADER
-    && owner != PORT_OWNER_TYPE_TRACK_PROCESSOR && owner != PORT_OWNER_TYPE_TRACK
-    && owner != PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR
-    && owner != PORT_OWNER_TYPE_CHANNEL && owner != PORT_OWNER_TYPE_CHANNEL_SEND
-    && owner != PORT_OWNER_TYPE_AUDIO_ENGINE && owner != PORT_OWNER_TYPE_HW
-    && owner != PORT_OWNER_TYPE_TRANSPORT
-    && !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
+    && owner != Z_PORT_OWNER_TYPE_PLUGIN && owner != Z_PORT_OWNER_TYPE_FADER
+    && owner != Z_PORT_OWNER_TYPE_TRACK_PROCESSOR
+    && owner != Z_PORT_OWNER_TYPE_TRACK
+    && owner != Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR
+    && owner != Z_PORT_OWNER_TYPE_CHANNEL
+    && owner != Z_PORT_OWNER_TYPE_CHANNEL_SEND
+    && owner != Z_PORT_OWNER_TYPE_AUDIO_ENGINE && owner != Z_PORT_OWNER_TYPE_HW
+    && owner != Z_PORT_OWNER_TYPE_TRANSPORT
+    && !(port->id.flags & Z_PORT_FLAG_MANUAL_PRESS))
     {
       return NULL;
     }
@@ -604,7 +608,9 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
         }
 
       /* add sends */
-      if (tr->out_signal_type == TYPE_AUDIO || tr->out_signal_type == TYPE_EVENT)
+      if (
+        tr->out_signal_type == Z_PORT_TYPE_AUDIO
+        || tr->out_signal_type == Z_PORT_TYPE_EVENT)
         {
           for (int j = 0; j < STRIP_SIZE; j++)
             {
@@ -635,14 +641,15 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (port->deleting)
         continue;
-      if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (port_pl->deleting)
             continue;
         }
 
-      if (port->id.flow == FLOW_OUTPUT && port_is_exposed_to_backend (port))
+      if (
+        port->id.flow == Z_PORT_FLOW_OUTPUT && port_is_exposed_to_backend (port))
         {
           g_ptr_array_add (self->external_out_ports, port);
         }
@@ -741,7 +748,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
 
       /* connect the track */
       node = graph_find_node_from_track (self, tr, true);
-      if (tr->in_signal_type == TYPE_AUDIO)
+      if (tr->in_signal_type == Z_PORT_TYPE_AUDIO)
         {
           if (tr->type == TRACK_TYPE_AUDIO)
             {
@@ -769,7 +776,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
-      else if (tr->in_signal_type == TYPE_EVENT)
+      else if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
         {
           if (
             track_type_has_piano_roll (tr->type) || tr->type == TRACK_TYPE_CHORD)
@@ -871,7 +878,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
                         graph_find_node_from_port (self, pl_port);
                       if (
                         drop_unnecessary_ports && !port_node
-                        && port->id.type == TYPE_CONTROL)
+                        && port->id.type == Z_PORT_TYPE_CONTROL)
                         {
                           continue;
                         }
@@ -1029,14 +1036,14 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
           if (node2)
             graph_node_connect (node2, node);
 
-          if (tr->out_signal_type == TYPE_EVENT)
+          if (tr->out_signal_type == Z_PORT_TYPE_EVENT)
             {
               node2 = graph_find_node_from_port (self, send->midi_in);
               graph_node_connect (node2, node);
               node2 = graph_find_node_from_port (self, send->midi_out);
               graph_node_connect (node, node2);
             }
-          else if (tr->out_signal_type == TYPE_AUDIO)
+          else if (tr->out_signal_type == Z_PORT_TYPE_AUDIO)
             {
               node2 = graph_find_node_from_port (self, send->stereo_in->l);
               graph_node_connect (node2, node);
@@ -1055,7 +1062,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       port = g_ptr_array_index (ports, i);
       if (G_UNLIKELY (port->deleting))
         continue;
-      if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (G_UNLIKELY (port_pl->deleting))

@@ -82,16 +82,17 @@ typedef enum PanLaw                    PanLaw;
    && owner##_is_in_active_project (self->owner))
 
 #define port_is_in_active_project(self) \
-  (port_is_owner_active (self, PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_PLUGIN, plugin) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_TRACK, track) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_CHANNEL, track) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_FADER, fader) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
+  (port_is_owner_active (self, Z_PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_PLUGIN, plugin) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_TRACK, track) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_CHANNEL, track) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_FADER, fader) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
    || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, modulator_macro_processor) \
-   || port_is_owner_active (self, PORT_OWNER_TYPE_HW, ext_port))
+     self, Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+     modulator_macro_processor) \
+   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_HW, ext_port))
 
 /**
  * What the internal data is.
@@ -518,7 +519,7 @@ NONNULL void
 port_init_loaded (Port * self, void * owner);
 
 void
-port_set_owner (Port * self, PortOwnerType owner_type, void * owner);
+port_set_owner (Port * self, ZPortOwnerType owner_type, void * owner);
 
 NONNULL Port *
 port_find_from_identifier (const PortIdentifier * const id);
@@ -532,9 +533,9 @@ stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 
 NONNULL_ARGS (1)
 static inline void stereo_ports_set_owner (
-  StereoPorts * sp,
-  PortOwnerType owner_type,
-  void *        owner)
+  StereoPorts *  sp,
+  ZPortOwnerType owner_type,
+  void *         owner)
 {
   port_set_owner (sp->l, owner_type, owner);
   port_set_owner (sp->r, owner_type, owner);
@@ -544,15 +545,15 @@ static inline void stereo_ports_set_owner (
  * Creates port.
  */
 WARN_UNUSED_RESULT NONNULL Port *
-port_new_with_type (PortType type, PortFlow flow, const char * label);
+port_new_with_type (ZPortType type, ZPortFlow flow, const char * label);
 
 WARN_UNUSED_RESULT NONNULL Port *
 port_new_with_type_and_owner (
-  PortType      type,
-  PortFlow      flow,
-  const char *  label,
-  PortOwnerType owner_type,
-  void *        owner);
+  ZPortType      type,
+  ZPortFlow      flow,
+  const char *   label,
+  ZPortOwnerType owner_type,
+  void *         owner);
 
 /**
  * Allocates buffers used during DSP.
@@ -587,11 +588,11 @@ stereo_ports_new_from_existing (Port * l, Port * r);
  */
 StereoPorts *
 stereo_ports_new_generic (
-  int           in,
-  const char *  name,
-  const char *  symbol,
-  PortOwnerType owner_type,
-  void *        owner);
+  int            in,
+  const char *   name,
+  const char *   symbol,
+  ZPortOwnerType owner_type,
+  void *         owner);
 
 /**
  * Connects the internal ports using
@@ -763,7 +764,7 @@ port_is_exposed_to_backend (const Port * self)
 {
   return self->internal_type == INTERNAL_JACK_PORT
          || self->internal_type == INTERNAL_ALSA_SEQ_PORT
-         || self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
+         || self->id.owner_type == Z_PORT_OWNER_TYPE_AUDIO_ENGINE
          || self->exposed_to_backend;
 }
 
@@ -950,7 +951,8 @@ port_restore_from_non_project (Port * self, Port * non_project);
  */
 #define port_clear_buffer(_port) \
   { \
-    if (_port->id.type == TYPE_AUDIO || _port->id.type == TYPE_CV) \
+    if ( \
+      _port->id.type == Z_PORT_TYPE_AUDIO || _port->id.type == Z_PORT_TYPE_CV) \
       { \
         if (_port->buf) \
           { \
@@ -958,7 +960,7 @@ port_restore_from_non_project (Port * self, Port * non_project);
               _port->buf, DENORMAL_PREVENTION_VAL, AUDIO_ENGINE->block_length); \
           } \
       } \
-    else if (_port->id.type == TYPE_EVENT) \
+    else if (_port->id.type == Z_PORT_TYPE_EVENT) \
       { \
         if (_port->midi_events) \
           _port->midi_events->num_events = 0; \

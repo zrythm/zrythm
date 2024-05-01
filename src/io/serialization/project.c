@@ -899,8 +899,8 @@ project_deserialize_from_json_str (const char * json, GError ** error)
             doc, undo_manager_obj, self->undo_manager, error);
         }
     }
-  self->last_selection =
-    (SelectionType) yyjson_get_int (yyjson_obj_iter_get (&it, "lastSelection"));
+  self->last_selection = (ZProjectSelectionType) yyjson_get_int (
+    yyjson_obj_iter_get (&it, "lastSelection"));
 
   yyjson_doc_free (doc);
 

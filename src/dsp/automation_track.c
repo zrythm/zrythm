@@ -72,7 +72,7 @@ automation_track_new (Port * port)
   self->automation_mode = AUTOMATION_MODE_READ;
 
 #if 0
-  if (port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE)
+  if (port->id.flags & Z_PORT_FLAG_MIDI_AUTOMATABLE)
     {
       self->automation_mode =
         AUTOMATION_MODE_RECORD;
@@ -90,7 +90,7 @@ automation_track_validate (AutomationTrack * self)
   g_return_val_if_fail (port_identifier_validate (&self->port_id), false);
 
   unsigned int track_name_hash = self->port_id.track_name_hash;
-  if (self->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (self->port_id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
     {
       g_return_val_if_fail (
         self->port_id.plugin_id.track_name_hash == track_name_hash, false);
@@ -363,7 +363,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
                ? string_is_equal (dest->sym, src->sym)
                : string_is_equal (dest->label, src->label)))
             {
-              if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
+              if (dest->owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
                 {
                   if (!plugin_identifier_is_equal (
                         &dest->plugin_id, &src->plugin_id))
@@ -384,7 +384,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
                        * label but different
                        * symbol) */
                       if (
-                        src->flags ^ PORT_FLAG_GENERIC_PLUGIN_PORT
+                        src->flags ^ Z_PORT_FLAG_GENERIC_PLUGIN_PORT
                         && !string_is_equal (dest->sym, src->sym))
                         {
                           continue;

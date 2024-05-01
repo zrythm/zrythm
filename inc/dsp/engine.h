@@ -312,12 +312,6 @@ typedef enum AudioEngineJackTransportType
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
 } AudioEngineJackTransportType;
 
-static const char * jack_transport_type_strings[] = {
-  "Timebase master",
-  "Transport client",
-  "No JACK transport",
-};
-
 typedef struct AudioEnginePositionInfo
 {
   /** Transport is rolling. */

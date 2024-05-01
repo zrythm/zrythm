@@ -122,7 +122,7 @@ test_loading_plugins_needing_bridging (void)
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
   g_return_if_fail (setting);
   g_assert_true (setting->open_with_carla);
-  g_assert_true (setting->bridge_mode == CARLA_BRIDGE_FULL);
+  g_assert_true (setting->bridge_mode == Z_CARLA_BRIDGE_FULL);
 
   test_project_save_and_reload ();
 #  endif

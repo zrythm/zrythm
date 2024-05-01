@@ -15,34 +15,34 @@
 
 typedef struct PortIdentifier PortIdentifier;
 
-typedef enum PortFlow_v1
+typedef enum ZPortFlow_v1
 {
-  FLOW_UNKNOWN_v1,
-  FLOW_INPUT_v1,
-  FLOW_OUTPUT_v1,
-} PortFlow_v1;
+  Z_PORT_FLOW_UNKNOWN_v1,
+  Z_PORT_FLOW_INPUT_v1,
+  Z_PORT_FLOW_OUTPUT_v1,
+} ZPortFlow_v1;
 
 static const cyaml_strval_t port_flow_strings_v1[] = {
-  {"unknown", FLOW_UNKNOWN_v1},
-  { "input",  FLOW_INPUT_v1  },
-  { "output", FLOW_OUTPUT_v1 },
+  {"unknown", Z_PORT_FLOW_UNKNOWN_v1},
+  { "input",  Z_PORT_FLOW_INPUT_v1  },
+  { "output", Z_PORT_FLOW_OUTPUT_v1 },
 };
 
 typedef enum PortType_v1
 {
   TYPE_UNKNOWN_v1,
-  TYPE_CONTROL_v1,
-  TYPE_AUDIO_v1,
-  TYPE_EVENT_v1,
-  TYPE_CV_v1,
+  Z_PORT_TYPE_CONTROL_v1,
+  Z_PORT_TYPE_AUDIO_v1,
+  Z_PORT_TYPE_EVENT_v1,
+  Z_PORT_TYPE_CV_v1,
 } PortType_v1;
 
 static const cyaml_strval_t port_type_strings_v1[] = {
-  {"unknown",  TYPE_UNKNOWN_v1},
-  { "control", TYPE_CONTROL_v1},
-  { "audio",   TYPE_AUDIO_v1  },
-  { "event",   TYPE_EVENT_v1  },
-  { "cv",      TYPE_CV_v1     },
+  {"unknown",  TYPE_UNKNOWN_v1       },
+  { "control", Z_PORT_TYPE_CONTROL_v1},
+  { "audio",   Z_PORT_TYPE_AUDIO_v1  },
+  { "event",   Z_PORT_TYPE_EVENT_v1  },
+  { "cv",      Z_PORT_TYPE_CV_v1     },
 };
 
 typedef enum PortUnit_v1
@@ -68,105 +68,105 @@ static const cyaml_strval_t port_unit_strings_v1[] = {
   { "μs", PORT_UNIT_US_v1     },
 };
 
-typedef enum PortOwnerType_v1
+typedef enum ZPortOwnerType_v1
 {
-  PORT_OWNER_TYPE_AUDIO_ENGINE_v1,
-  PORT_OWNER_TYPE_PLUGIN_v1,
-  PORT_OWNER_TYPE_TRACK_v1,
-  PORT_OWNER_TYPE_CHANNEL_v1,
-  PORT_OWNER_TYPE_FADER_v1,
-  PORT_OWNER_TYPE_CHANNEL_SEND_v1,
-  PORT_OWNER_TYPE_TRACK_PROCESSOR_v1,
-  PORT_OWNER_TYPE_HW_v1,
-  PORT_OWNER_TYPE_TRANSPORT_v1,
-  PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1,
-} PortOwnerType_v1;
+  Z_PORT_OWNER_TYPE_AUDIO_ENGINE_v1,
+  Z_PORT_OWNER_TYPE_PLUGIN_v1,
+  Z_PORT_OWNER_TYPE_TRACK_v1,
+  Z_PORT_OWNER_TYPE_CHANNEL_v1,
+  Z_PORT_OWNER_TYPE_FADER_v1,
+  Z_PORT_OWNER_TYPE_CHANNEL_SEND_v1,
+  Z_PORT_OWNER_TYPE_TRACK_PROCESSOR_v1,
+  Z_PORT_OWNER_TYPE_HW_v1,
+  Z_PORT_OWNER_TYPE_TRANSPORT_v1,
+  Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1,
+} ZPortOwnerType_v1;
 
 static const cyaml_strval_t port_owner_type_strings_v1[] = {
-  {"audio engine",               PORT_OWNER_TYPE_AUDIO_ENGINE_v1             },
-  { "plugin",                    PORT_OWNER_TYPE_PLUGIN_v1                   },
-  { "track",                     PORT_OWNER_TYPE_TRACK_v1                    },
-  { "channel",                   PORT_OWNER_TYPE_CHANNEL_v1                  },
-  { "fader",                     PORT_OWNER_TYPE_FADER_v1                    },
-  { "channel send",              PORT_OWNER_TYPE_CHANNEL_SEND_v1             },
-  { "track processor",           PORT_OWNER_TYPE_TRACK_PROCESSOR_v1          },
-  { "hw",                        PORT_OWNER_TYPE_HW_v1                       },
-  { "transport",                 PORT_OWNER_TYPE_TRANSPORT_v1                },
-  { "modulator macro processor", PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1},
+  {"audio engine",               Z_PORT_OWNER_TYPE_AUDIO_ENGINE_v1             },
+  { "plugin",                    Z_PORT_OWNER_TYPE_PLUGIN_v1                   },
+  { "track",                     Z_PORT_OWNER_TYPE_TRACK_v1                    },
+  { "channel",                   Z_PORT_OWNER_TYPE_CHANNEL_v1                  },
+  { "fader",                     Z_PORT_OWNER_TYPE_FADER_v1                    },
+  { "channel send",              Z_PORT_OWNER_TYPE_CHANNEL_SEND_v1             },
+  { "track processor",           Z_PORT_OWNER_TYPE_TRACK_PROCESSOR_v1          },
+  { "hw",                        Z_PORT_OWNER_TYPE_HW_v1                       },
+  { "transport",                 Z_PORT_OWNER_TYPE_TRANSPORT_v1                },
+  { "modulator macro processor", Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1},
 };
 
 /**
  * Port flags.
  */
-typedef enum PortFlags_v1
+typedef enum ZPortFlags_v1
 {
-  PORT_FLAG_STEREO_L_v1 = 1 << 0,
-  PORT_FLAG_STEREO_R_v1 = 1 << 1,
-  PORT_FLAG_PIANO_ROLL_v1 = 1 << 2,
-  PORT_FLAG_SIDECHAIN_v1 = 1 << 3,
-  PORT_FLAG_MAIN_PORT_v1 = 1 << 4,
-  PORT_FLAG_MANUAL_PRESS_v1 = 1 << 5,
-  PORT_FLAG_AMPLITUDE_v1 = 1 << 6,
-  PORT_FLAG_STEREO_BALANCE_v1 = 1 << 7,
-  PORT_FLAG_WANT_POSITION_v1 = 1 << 8,
-  PORT_FLAG_TRIGGER_v1 = 1 << 9,
-  PORT_FLAG_TOGGLE_v1 = 1 << 10,
-  PORT_FLAG_INTEGER_v1 = 1 << 11,
-  PORT_FLAG_FREEWHEEL_v1 = 1 << 12,
-  PORT_FLAG_REPORTS_LATENCY_v1 = 1 << 13,
-  PORT_FLAG_NOT_ON_GUI_v1 = 1 << 14,
-  PORT_FLAG_PLUGIN_ENABLED_v1 = 1 << 15,
-  PORT_FLAG_PLUGIN_CONTROL_v1 = 1 << 16,
-  PORT_FLAG_CHANNEL_MUTE_v1 = 1 << 17,
-  PORT_FLAG_CHANNEL_FADER_v1 = 1 << 18,
-  PORT_FLAG_AUTOMATABLE_v1 = 1 << 19,
-  PORT_FLAG_MIDI_AUTOMATABLE_v1 = 1 << 20,
-  PORT_FLAG_SEND_RECEIVABLE_v1 = 1 << 21,
-  PORT_FLAG_BPM_v1 = 1 << 22,
-  PORT_FLAG_GENERIC_PLUGIN_PORT_v1 = 1 << 23,
-  PORT_FLAG_PLUGIN_GAIN_v1 = 1 << 24,
-  PORT_FLAG_TP_MONO_v1 = 1 << 25,
-  PORT_FLAG_TP_INPUT_GAIN_v1 = 1 << 26,
-  PORT_FLAG_HW_v1 = 1 << 27,
-  PORT_FLAG_MODULATOR_MACRO_v1 = 1 << 28,
-  PORT_FLAG_LOGARITHMIC_v1 = 1 << 29,
-  PORT_FLAG_IS_PROPERTY_v1 = 1 << 30,
-} PortFlags_v1;
+  Z_PORT_FLAG_STEREO_L_v1 = 1 << 0,
+  Z_PORT_FLAG_STEREO_R_v1 = 1 << 1,
+  Z_PORT_FLAG_PIANO_ROLL_v1 = 1 << 2,
+  Z_PORT_FLAG_SIDECHAIN_v1 = 1 << 3,
+  Z_PORT_FLAG_MAIN_PORT_v1 = 1 << 4,
+  Z_PORT_FLAG_MANUAL_PRESS_v1 = 1 << 5,
+  Z_PORT_FLAG_AMPLITUDE_v1 = 1 << 6,
+  Z_PORT_FLAG_STEREO_BALANCE_v1 = 1 << 7,
+  Z_PORT_FLAG_WANT_POSITION_v1 = 1 << 8,
+  Z_PORT_FLAG_TRIGGER_v1 = 1 << 9,
+  Z_PORT_FLAG_TOGGLE_v1 = 1 << 10,
+  Z_PORT_FLAG_INTEGER_v1 = 1 << 11,
+  Z_PORT_FLAG_FREEWHEEL_v1 = 1 << 12,
+  Z_PORT_FLAG_REPORTS_LATENCY_v1 = 1 << 13,
+  Z_PORT_FLAG_NOT_ON_GUI_v1 = 1 << 14,
+  Z_PORT_FLAG_PLUGIN_ENABLED_v1 = 1 << 15,
+  Z_PORT_FLAG_PLUGIN_CONTROL_v1 = 1 << 16,
+  Z_PORT_FLAG_CHANNEL_MUTE_v1 = 1 << 17,
+  Z_PORT_FLAG_CHANNEL_FADER_v1 = 1 << 18,
+  Z_PORT_FLAG_AUTOMATABLE_v1 = 1 << 19,
+  Z_PORT_FLAG_MIDI_AUTOMATABLE_v1 = 1 << 20,
+  Z_PORT_FLAG_SEND_RECEIVABLE_v1 = 1 << 21,
+  Z_PORT_FLAG_BPM_v1 = 1 << 22,
+  Z_PORT_FLAG_GENERIC_PLUGIN_PORT_v1 = 1 << 23,
+  Z_PORT_FLAG_PLUGIN_GAIN_v1 = 1 << 24,
+  Z_PORT_FLAG_TP_MONO_v1 = 1 << 25,
+  Z_PORT_FLAG_TP_INPUT_GAIN_v1 = 1 << 26,
+  Z_PORT_FLAG_HW_v1 = 1 << 27,
+  Z_PORT_FLAG_MODULATOR_MACRO_v1 = 1 << 28,
+  Z_PORT_FLAG_LOGARITHMIC_v1 = 1 << 29,
+  Z_PORT_FLAG_IS_PROPERTY_v1 = 1 << 30,
+} ZPortFlags_v1;
 
-typedef enum PortFlags2_v1
+typedef enum ZPortFlags2_v1
 {
   /** Transport ports. */
-  PORT_FLAG2_TRANSPORT_ROLL_v1 = 1 << 0,
-  PORT_FLAG2_TRANSPORT_STOP_v1 = 1 << 1,
-  PORT_FLAG2_TRANSPORT_BACKWARD_v1 = 1 << 2,
-  PORT_FLAG2_TRANSPORT_FORWARD_v1 = 1 << 3,
-  PORT_FLAG2_TRANSPORT_LOOP_TOGGLE_v1 = 1 << 4,
-  PORT_FLAG2_TRANSPORT_REC_TOGGLE_v1 = 1 << 5,
-  PORT_FLAG2_SUPPORTS_PATCH_MESSAGE_v1 = 1 << 6,
-  PORT_FLAG2_ENUMERATION_v1 = 1 << 7,
-  PORT_FLAG2_URI_PARAM_v1 = 1 << 8,
-  PORT_FLAG2_SEQUENCE_v1 = 1 << 9,
-  PORT_FLAG2_SUPPORTS_MIDI_v1 = 1 << 10,
-  PORT_FLAG2_TP_OUTPUT_GAIN_v1 = 1 << 11,
-  PORT_FLAG2_MIDI_PITCH_BEND_v1 = 1 << 12,
-  PORT_FLAG2_MIDI_POLY_KEY_PRESSURE_v1 = 1 << 13,
-  PORT_FLAG2_MIDI_CHANNEL_PRESSURE_v1 = 1 << 14,
-  PORT_FLAG2_CHANNEL_SEND_ENABLED_v1 = 1 << 15,
-  PORT_FLAG2_CHANNEL_SEND_AMOUNT_v1 = 1 << 16,
-  PORT_FLAG2_BEATS_PER_BAR_v1 = 1 << 17,
-  PORT_FLAG2_BEAT_UNIT_v1 = 1 << 18,
-  PORT_FLAG2_FADER_SOLO_v1 = 1 << 19,
-  PORT_FLAG2_FADER_LISTEN_v1 = 1 << 20,
-  PORT_FLAG2_FADER_MONO_COMPAT_v1 = 1 << 21,
-  PORT_FLAG2_TRACK_RECORDING_v1 = 1 << 22,
-  PORT_FLAG2_TP_MONITOR_AUDIO_v1 = 1 << 23,
-  PORT_FLAG2_PREFADER_v1 = 1 << 24,
-  PORT_FLAG2_POSTFADER_v1 = 1 << 25,
-  PORT_FLAG2_MONITOR_FADER_v1 = 1 << 26,
-  PORT_FLAG2_SAMPLE_PROCESSOR_FADER_v1 = 1 << 27,
-  PORT_FLAG2_SAMPLE_PROCESSOR_TRACK_v1 = 1 << 28,
-  PORT_FLAG2_FADER_SWAP_PHASE_v1 = 1 << 29,
-} PortFlags2_v1;
+  Z_PORT_FLAG2_TRANSPORT_ROLL_v1 = 1 << 0,
+  Z_PORT_FLAG2_TRANSPORT_STOP_v1 = 1 << 1,
+  Z_PORT_FLAG2_TRANSPORT_BACKWARD_v1 = 1 << 2,
+  Z_PORT_FLAG2_TRANSPORT_FORWARD_v1 = 1 << 3,
+  Z_PORT_FLAG2_TRANSPORT_LOOP_TOGGLE_v1 = 1 << 4,
+  Z_PORT_FLAG2_TRANSPORT_REC_TOGGLE_v1 = 1 << 5,
+  Z_PORT_FLAG2_SUPPORTS_PATCH_MESSAGE_v1 = 1 << 6,
+  Z_PORT_FLAG2_ENUMERATION_v1 = 1 << 7,
+  Z_PORT_FLAG2_URI_PARAM_v1 = 1 << 8,
+  Z_PORT_FLAG2_SEQUENCE_v1 = 1 << 9,
+  Z_PORT_FLAG2_SUPPORTS_MIDI_v1 = 1 << 10,
+  Z_PORT_FLAG2_TP_OUTPUT_GAIN_v1 = 1 << 11,
+  Z_PORT_FLAG2_MIDI_PITCH_BEND_v1 = 1 << 12,
+  Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE_v1 = 1 << 13,
+  Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE_v1 = 1 << 14,
+  Z_PORT_FLAG2_CHANNEL_SEND_ENABLED_v1 = 1 << 15,
+  Z_PORT_FLAG2_CHANNEL_SEND_AMOUNT_v1 = 1 << 16,
+  Z_PORT_FLAG2_BEATS_PER_BAR_v1 = 1 << 17,
+  Z_PORT_FLAG2_BEAT_UNIT_v1 = 1 << 18,
+  Z_PORT_FLAG2_FADER_SOLO_v1 = 1 << 19,
+  Z_PORT_FLAG2_FADER_LISTEN_v1 = 1 << 20,
+  Z_PORT_FLAG2_FADER_MONO_COMPAT_v1 = 1 << 21,
+  Z_PORT_FLAG2_TRACK_RECORDING_v1 = 1 << 22,
+  Z_PORT_FLAG2_TP_MONITOR_AUDIO_v1 = 1 << 23,
+  Z_PORT_FLAG2_PREFADER_v1 = 1 << 24,
+  Z_PORT_FLAG2_POSTFADER_v1 = 1 << 25,
+  Z_PORT_FLAG2_MONITOR_FADER_v1 = 1 << 26,
+  Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER_v1 = 1 << 27,
+  Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK_v1 = 1 << 28,
+  Z_PORT_FLAG2_FADER_SWAP_PHASE_v1 = 1 << 29,
+} ZPortFlags2_v1;
 
 static const cyaml_bitdef_t port_flags_bitvals_v1[] = {
   {.name = "stereo_l",             .offset = 0,  .bits = 1},
@@ -243,11 +243,11 @@ typedef struct PortIdentifier_v1
   char *              sym;
   char *              uri;
   char *              comment;
-  PortOwnerType_v1    owner_type;
+  ZPortOwnerType_v1   owner_type;
   PortType_v1         type;
-  PortFlow_v1         flow;
-  PortFlags_v1        flags;
-  PortFlags2_v1       flags2;
+  ZPortFlow_v1        flow;
+  ZPortFlags_v1       flags;
+  ZPortFlags2_v1      flags2;
   PortUnit_v1         unit;
   PluginIdentifier_v1 plugin_id;
   char *              port_group;

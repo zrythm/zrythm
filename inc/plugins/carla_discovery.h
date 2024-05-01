@@ -63,17 +63,6 @@ bool
 z_carla_discovery_idle (ZCarlaDiscovery * self);
 
 /**
- * Runs carla discovery for the given arch with the
- * given arguments and returns the output as a
- * newly allocated string.
- */
-char *
-z_carla_discovery_run (
-  PluginArchitecture arch,
-  const char *       arg1,
-  const char *       arg2);
-
-/**
  * Create a descriptor for the given AU plugin.
  */
 PluginDescriptor *

@@ -60,7 +60,7 @@ on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
   MixerSelections * sel = mixer_selections_new ();
   Plugin *          modulator = get_modulator (self);
   mixer_selections_add_slot (
-    sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR, modulator->id.slot,
+    sel, P_MODULATOR_TRACK, Z_PLUGIN_SLOT_MODULATOR, modulator->id.slot,
     F_NO_CLONE, F_PUBLISH_EVENTS);
 
   GError * err = NULL;
@@ -159,8 +159,8 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       Port * port = modulator->in_ports[i];
 
       if (
-        port->id.type != TYPE_CONTROL || port->id.flow != FLOW_INPUT
-        || port->id.flags & PORT_FLAG_NOT_ON_GUI)
+        port->id.type != Z_PORT_TYPE_CONTROL || port->id.flow != Z_PORT_FLOW_INPUT
+        || port->id.flags & Z_PORT_FLAG_NOT_ON_GUI)
         continue;
 
       KnobWidget * knob = knob_widget_new_simple (
@@ -191,7 +191,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
   for (int i = 0; i < modulator->num_out_ports; i++)
     {
       Port * port = modulator->out_ports[i];
-      if (port->id.type != TYPE_CV)
+      if (port->id.type != Z_PORT_TYPE_CV)
         continue;
 
       int index = self->num_waveforms++;

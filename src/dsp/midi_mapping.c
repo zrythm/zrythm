@@ -87,7 +87,7 @@ midi_mappings_bind_at (
   char str[100];
   midi_ctrl_change_get_ch_and_description (buf, str);
 
-  if (!(dest_port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE))
+  if (!(dest_port->id.flags & Z_PORT_FLAG_MIDI_AUTOMATABLE))
     {
       g_message ("bounded MIDI mapping from %s to %s", str, dest_port->id.label);
     }
@@ -180,10 +180,10 @@ apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
   g_return_if_fail (mapping->dest);
 
   Port * dest = mapping->dest;
-  if (dest->id.type == TYPE_CONTROL)
+  if (dest->id.type == Z_PORT_TYPE_CONTROL)
     {
       /* if toggle, reverse value */
-      if (dest->id.flags & PORT_FLAG_TOGGLE)
+      if (dest->id.flags & Z_PORT_FLAG_TOGGLE)
         {
           control_port_set_toggled (
             dest, !control_port_is_toggled (dest), F_PUBLISH_EVENTS);
@@ -197,32 +197,32 @@ apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
             dest, normalized_val, F_NORMALIZED, F_PUBLISH_EVENTS);
         }
     }
-  else if (dest->id.type == TYPE_EVENT)
+  else if (dest->id.type == Z_PORT_TYPE_EVENT)
     {
       /* FIXME these are called during processing
        * they should be queued as UI events
        * instead */
-      if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_ROLL)
+      if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_ROLL)
         {
           EVENTS_PUSH (ET_TRANSPORT_ROLL_REQUIRED, NULL);
         }
-      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_STOP)
+      else if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_STOP)
         {
           EVENTS_PUSH (ET_TRANSPORT_PAUSE_REQUIRED, NULL);
         }
-      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_BACKWARD)
+      else if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_BACKWARD)
         {
           EVENTS_PUSH (ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, NULL);
         }
-      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_FORWARD)
+      else if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_FORWARD)
         {
           EVENTS_PUSH (ET_TRANSPORT_MOVE_FORWARD_REQUIRED, NULL);
         }
-      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
+      else if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
         {
           EVENTS_PUSH (ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, NULL);
         }
-      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_REC_TOGGLE)
+      else if (dest->id.flags2 & Z_PORT_FLAG2_TRANSPORT_REC_TOGGLE)
         {
           EVENTS_PUSH (ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, NULL);
         }

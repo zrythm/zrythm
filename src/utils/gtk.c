@@ -1960,3 +1960,13 @@ z_gtk_drop_down_factory_setup_common_ellipsized (
   gtk_label_set_ellipsize (label, PANGO_ELLIPSIZE_END);
   gtk_label_set_max_width_chars (label, 0);
 }
+
+const char *
+z_gtk_get_enum_nick (GType type, gint value)
+{
+  GEnumClass * class = g_type_class_ref (type);
+  GEnumValue * eval = g_enum_get_value (class, value);
+  const char * nick = eval->value_nick;
+  g_type_class_unref (class);
+  return nick;
+}

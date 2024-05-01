@@ -52,8 +52,8 @@ test_change_bpm_and_time_sig (void)
   /* change time sig to 4/16 */
   {
     ControlPortChange change = { 0 };
-    change.flag2 = PORT_FLAG2_BEAT_UNIT;
-    change.beat_unit = BEAT_UNIT_16;
+    change.flag2 = Z_PORT_FLAG2_BEAT_UNIT;
+    change.beat_unit = Z_BEAT_UNIT_16;
     router_queue_control_port_change (ROUTER, &change);
   }
 
@@ -94,7 +94,7 @@ test_change_bpm_and_time_sig (void)
   bpm_t bpm_before = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   {
     ControlPortChange change = { 0 };
-    change.flag1 = PORT_FLAG_BPM;
+    change.flag1 = Z_PORT_FLAG_BPM;
     change.real_val = 145.f;
     router_queue_control_port_change (ROUTER, &change);
   }
@@ -134,7 +134,7 @@ test_change_bpm_and_time_sig (void)
   bpm_before = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   {
     ControlPortChange change = { 0 };
-    change.flag1 = PORT_FLAG_BPM;
+    change.flag1 = Z_PORT_FLAG_BPM;
     change.real_val = 130.f;
     router_queue_control_port_change (ROUTER, &change);
   }

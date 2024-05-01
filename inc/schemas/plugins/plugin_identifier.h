@@ -14,29 +14,29 @@
 
 typedef struct PluginIdentifier PluginIdentifier;
 
-typedef enum PluginSlotType_v1
+typedef enum ZPluginSlotType_v1
 {
-  PLUGIN_SLOT_INVALID_v1,
-  PLUGIN_SLOT_INSERT_v1,
-  PLUGIN_SLOT_MIDI_FX_v1,
-  PLUGIN_SLOT_INSTRUMENT_v1,
-  PLUGIN_SLOT_MODULATOR_v1,
-} PluginSlotType_v1;
+  Z_PLUGIN_SLOT_INVALID_v1,
+  Z_PLUGIN_SLOT_INSERT_v1,
+  Z_PLUGIN_SLOT_MIDI_FX_v1,
+  Z_PLUGIN_SLOT_INSTRUMENT_v1,
+  Z_PLUGIN_SLOT_MODULATOR_v1,
+} ZPluginSlotType_v1;
 
 static const cyaml_strval_t plugin_slot_type_strings_v1[] = {
-  {"Invalid",     PLUGIN_SLOT_INVALID_v1   },
-  { "Insert",     PLUGIN_SLOT_INSERT_v1    },
-  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX_v1   },
-  { "Instrument", PLUGIN_SLOT_INSTRUMENT_v1},
-  { "Modulator",  PLUGIN_SLOT_MODULATOR_v1 },
+  {"Invalid",     Z_PLUGIN_SLOT_INVALID_v1   },
+  { "Insert",     Z_PLUGIN_SLOT_INSERT_v1    },
+  { "MIDI FX",    Z_PLUGIN_SLOT_MIDI_FX_v1   },
+  { "Instrument", Z_PLUGIN_SLOT_INSTRUMENT_v1},
+  { "Modulator",  Z_PLUGIN_SLOT_MODULATOR_v1 },
 };
 
 typedef struct PluginIdentifier_v1
 {
-  int               schema_version;
-  PluginSlotType_v1 slot_type;
-  unsigned int      track_name_hash;
-  int               slot;
+  int                schema_version;
+  ZPluginSlotType_v1 slot_type;
+  unsigned int       track_name_hash;
+  int                slot;
 } PluginIdentifier_v1;
 
 static const cyaml_schema_field_t plugin_identifier_fields_schema_v1[] = {

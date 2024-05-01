@@ -42,7 +42,7 @@ port_connection_update (
 bool
 port_connection_is_send (const PortConnection * self)
 {
-  return self->src_id->owner_type == PORT_OWNER_TYPE_CHANNEL_SEND;
+  return self->src_id->owner_type == Z_PORT_OWNER_TYPE_CHANNEL_SEND;
 }
 
 void

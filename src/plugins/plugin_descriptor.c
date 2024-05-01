@@ -20,6 +20,11 @@
 
 #include <lv2/instance-access/instance-access.h>
 
+static const char * plugin_protocol_strings[] = {
+  "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
+  "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
+};
+
 PluginDescriptor *
 plugin_descriptor_new (void)
 {
@@ -126,23 +131,23 @@ plugin_descriptor_get_category_from_carla_category_str (const char * category)
 #define EQUALS(x) string_is_equal (category, x)
 
   if (EQUALS ("synth"))
-    return PC_INSTRUMENT;
+    return Z_PLUGIN_CATEGORY_INSTRUMENT;
   else if (EQUALS ("delay"))
-    return PC_DELAY;
+    return Z_PLUGIN_CATEGORY_DELAY;
   else if (EQUALS ("eq"))
-    return PC_EQ;
+    return Z_PLUGIN_CATEGORY_EQ;
   else if (EQUALS ("filter"))
-    return PC_FILTER;
+    return Z_PLUGIN_CATEGORY_FILTER;
   else if (EQUALS ("distortion"))
-    return PC_DISTORTION;
+    return Z_PLUGIN_CATEGORY_DISTORTION;
   else if (EQUALS ("dynamics"))
-    return PC_DYNAMICS;
+    return Z_PLUGIN_CATEGORY_DYNAMICS;
   else if (EQUALS ("modulator"))
-    return PC_MODULATOR;
+    return Z_PLUGIN_CATEGORY_MODULATOR;
   else if (EQUALS ("utility"))
-    return PC_UTILITY;
+    return Z_PLUGIN_CATEGORY_UTILITY;
   else
-    return ZPLUGIN_CATEGORY_NONE;
+    return Z_PLUGIN_CATEGORY_NONE;
 
 #undef EQUALS
 }
@@ -153,19 +158,19 @@ plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat)
   switch (carla_cat)
     {
     case PLUGIN_CATEGORY_SYNTH:
-      return PC_INSTRUMENT;
+      return Z_PLUGIN_CATEGORY_INSTRUMENT;
     case PLUGIN_CATEGORY_DELAY:
-      return PC_DELAY;
+      return Z_PLUGIN_CATEGORY_DELAY;
     case PLUGIN_CATEGORY_EQ:
-      return PC_EQ;
+      return Z_PLUGIN_CATEGORY_EQ;
     case PLUGIN_CATEGORY_FILTER:
-      return PC_FILTER;
+      return Z_PLUGIN_CATEGORY_FILTER;
     case PLUGIN_CATEGORY_DISTORTION:
-      return PC_DISTORTION;
+      return Z_PLUGIN_CATEGORY_DISTORTION;
     case PLUGIN_CATEGORY_DYNAMICS:
-      return PC_DYNAMICS;
+      return Z_PLUGIN_CATEGORY_DYNAMICS;
     case PLUGIN_CATEGORY_MODULATOR:
-      return PC_MODULATOR;
+      return Z_PLUGIN_CATEGORY_MODULATOR;
     case PLUGIN_CATEGORY_UTILITY:
       break;
     case PLUGIN_CATEGORY_OTHER:
@@ -173,7 +178,7 @@ plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat)
     default:
       break;
     }
-  return ZPLUGIN_CATEGORY_NONE;
+  return Z_PLUGIN_CATEGORY_NONE;
 }
 
 bool
@@ -238,7 +243,7 @@ plugin_descriptor_clone (const PluginDescriptor * src)
   return self;
 }
 
-#define IS_CAT(x) (descr->category == PC_##x)
+#define IS_CAT(x) (descr->category == Z_PLUGIN_CATEGORY_##x)
 
 /**
  * Returns if the Plugin is an instrument or not.
@@ -251,7 +256,7 @@ plugin_descriptor_is_instrument (const PluginDescriptor * const descr)
       return false;
     }
 
-  if (descr->category == PC_INSTRUMENT)
+  if (descr->category == Z_PLUGIN_CATEGORY_INSTRUMENT)
     {
       return true;
     }
@@ -262,7 +267,7 @@ plugin_descriptor_is_instrument (const PluginDescriptor * const descr)
          * must be INSTRUMENT, otherwise they are
          * not */
         descr->protocol != Z_PLUGIN_PROTOCOL_VST
-        && descr->category == ZPLUGIN_CATEGORY_NONE && descr->num_midi_ins > 0
+        && descr->category == Z_PLUGIN_CATEGORY_NONE && descr->num_midi_ins > 0
         && descr->num_audio_outs > 0;
     }
 }
@@ -275,7 +280,7 @@ plugin_descriptor_is_effect (const PluginDescriptor * const descr)
 {
 
   return
-    (descr->category > ZPLUGIN_CATEGORY_NONE &&
+    (descr->category > Z_PLUGIN_CATEGORY_NONE &&
      (IS_CAT (DELAY) ||
       IS_CAT (REVERB) ||
       IS_CAT (DISTORTION) ||
@@ -313,7 +318,7 @@ plugin_descriptor_is_effect (const PluginDescriptor * const descr)
       IS_CAT (CONVERTER) ||
       IS_CAT (FUNCTION) ||
       IS_CAT (MIXER))) ||
-    (descr->category == ZPLUGIN_CATEGORY_NONE &&
+    (descr->category == Z_PLUGIN_CATEGORY_NONE &&
      descr->num_audio_ins > 0 &&
      descr->num_audio_outs > 0);
 }
@@ -324,8 +329,8 @@ plugin_descriptor_is_effect (const PluginDescriptor * const descr)
 int
 plugin_descriptor_is_modulator (const PluginDescriptor * const descr)
 {
-  return (descr->category == ZPLUGIN_CATEGORY_NONE
-          || (descr->category > ZPLUGIN_CATEGORY_NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
+  return (descr->category == Z_PLUGIN_CATEGORY_NONE
+          || (descr->category > Z_PLUGIN_CATEGORY_NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
          && descr->num_cv_outs > 0;
 }
 
@@ -336,9 +341,9 @@ int
 plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr)
 {
   return
-    (descr->category > ZPLUGIN_CATEGORY_NONE &&
-     descr->category == PC_MIDI) ||
-    (descr->category == ZPLUGIN_CATEGORY_NONE &&
+    (descr->category > Z_PLUGIN_CATEGORY_NONE &&
+     descr->category == Z_PLUGIN_CATEGORY_MIDI) ||
+    (descr->category == Z_PLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_midi_outs > 0 &&
      descr->protocol != Z_PLUGIN_PROTOCOL_VST);
@@ -353,11 +358,11 @@ plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr)
 ZPluginCategory
 plugin_descriptor_string_to_category (const char * str)
 {
-  ZPluginCategory category = ZPLUGIN_CATEGORY_NONE;
+  ZPluginCategory category = Z_PLUGIN_CATEGORY_NONE;
 
 #define CHECK_CAT(term, cat) \
   if (g_strrstr (str, term)) \
-  category = PC_##cat
+  category = Z_PLUGIN_CATEGORY_##cat
 
   /* add category */
   CHECK_CAT ("Delay", DELAY);
@@ -412,7 +417,7 @@ plugin_category_to_string (ZPluginCategory category)
 {
 
 #define RET_STRING(term, cat) \
-  if (category == PC_##cat) \
+  if (category == Z_PLUGIN_CATEGORY_##cat) \
   return term
 
   /* add category */
@@ -481,7 +486,7 @@ plugin_descriptor_is_valid_for_slot_type (
 {
   switch (slot_type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       if (track_type == TRACK_TYPE_MIDI)
         {
           return self->num_midi_outs > 0;
@@ -490,10 +495,10 @@ plugin_descriptor_is_valid_for_slot_type (
         {
           return self->num_audio_outs > 0;
         }
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       return self->num_midi_outs > 0;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       return track_type == TRACK_TYPE_INSTRUMENT
              && plugin_descriptor_is_instrument (self);
     default:
@@ -550,14 +555,14 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
  * Returns the minimum bridge mode required for this
  * plugin.
  */
-CarlaBridgeMode
+ZCarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
 {
-  CarlaBridgeMode mode = CARLA_BRIDGE_NONE;
+  ZCarlaBridgeMode mode = Z_CARLA_BRIDGE_NONE;
 
-  if (self->arch == ARCH_32)
+  if (self->arch == Z_PLUGIN_ARCHITECTURE_32)
     {
-      mode = CARLA_BRIDGE_FULL;
+      mode = Z_CARLA_BRIDGE_FULL;
     }
 
   return mode;
@@ -702,7 +707,7 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* add option for native generic LV2 UI */
   if (self->protocol == Z_PLUGIN_PROTOCOL_LV2
       &&
-      self->min_bridge_mode == CARLA_BRIDGE_NONE)
+      self->min_bridge_mode == Z_CARLA_BRIDGE_NONE)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -720,7 +725,7 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
 
   PluginSetting * new_setting = plugin_setting_new_default (self);
   if (
-    self->has_custom_ui && self->min_bridge_mode == CARLA_BRIDGE_NONE
+    self->has_custom_ui && self->min_bridge_mode == Z_CARLA_BRIDGE_NONE
     && !new_setting->force_generic_ui)
     {
       sprintf (

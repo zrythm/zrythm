@@ -686,9 +686,9 @@ track_deserialize_from_json (
         }
     }
   track->in_signal_type =
-    (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "inSignalType"));
+    (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "inSignalType"));
   track->out_signal_type =
-    (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "outSignalType"));
+    (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "outSignalType"));
   track->midi_ch =
     (uint8_t) yyjson_get_uint (yyjson_obj_iter_get (&it, "midiCh"));
   track->comment =

@@ -43,12 +43,12 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
         }
 
       Port *src = NULL, *dest = NULL;
-      if (self->port->id.flow == FLOW_INPUT)
+      if (self->port->id.flow == Z_PORT_FLOW_INPUT)
         {
           src = self->selected_port;
           dest = self->port;
         }
-      else if (self->port->id.flow == FLOW_OUTPUT)
+      else if (self->port->id.flow == Z_PORT_FLOW_OUTPUT)
         {
           src = self->port;
           dest = self->selected_port;
@@ -96,14 +96,14 @@ create_model_for_ports (
   list_store =
     gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  PortType type = self->port->id.type;
-  PortFlow flow = self->port->id.flow;
+  ZPortType type = self->port->id.type;
+  ZPortFlow flow = self->port->id.flow;
 
 /* Add a new row to the model if not already in the destinations */
 #define ADD_ROW \
   if ( \
-    (flow == FLOW_INPUT && !ports_connected (port, self->port)) \
-    || (flow == FLOW_OUTPUT && !ports_connected (self->port, port))) \
+    (flow == Z_PORT_FLOW_INPUT && !ports_connected (port, self->port)) \
+    || (flow == Z_PORT_FLOW_OUTPUT && !ports_connected (self->port, port))) \
     { \
       gtk_list_store_append (list_store, &iter); \
       gtk_list_store_set ( \
@@ -114,11 +114,11 @@ create_model_for_ports (
   if (track)
     {
       Channel * ch = track->channel;
-      if (flow == FLOW_INPUT)
+      if (flow == Z_PORT_FLOW_INPUT)
         {
           if (
-            (type == TYPE_AUDIO || type == TYPE_CV)
-            && track->out_signal_type == TYPE_AUDIO)
+            (type == Z_PORT_TYPE_AUDIO || type == Z_PORT_TYPE_CV)
+            && track->out_signal_type == Z_PORT_TYPE_AUDIO)
             {
               Port * port;
               port = ch->prefader->stereo_out->l;
@@ -130,18 +130,20 @@ create_model_for_ports (
               port = ch->fader->stereo_out->r;
               ADD_ROW;
             }
-          else if (type == TYPE_EVENT && track->out_signal_type == TYPE_EVENT)
+          else if (
+            type == Z_PORT_TYPE_EVENT
+            && track->out_signal_type == Z_PORT_TYPE_EVENT)
             {
               Port * port;
               port = ch->midi_out;
               ADD_ROW;
             }
         }
-      else if (flow == FLOW_OUTPUT)
+      else if (flow == Z_PORT_FLOW_OUTPUT)
         {
-          if (type == TYPE_AUDIO)
+          if (type == Z_PORT_TYPE_AUDIO)
             {
-              if (track->in_signal_type == TYPE_AUDIO)
+              if (track->in_signal_type == Z_PORT_TYPE_AUDIO)
                 {
                   Port * port;
                   port = track->processor->stereo_in->l;
@@ -150,7 +152,7 @@ create_model_for_ports (
                   ADD_ROW;
                 }
             }
-          else if (type == TYPE_CV)
+          else if (type == Z_PORT_TYPE_CV)
             {
               if (track->channel)
                 {
@@ -176,9 +178,9 @@ create_model_for_ports (
                     }
                 }
             }
-          else if (type == TYPE_EVENT)
+          else if (type == Z_PORT_TYPE_EVENT)
             {
-              if (track->in_signal_type == TYPE_EVENT)
+              if (track->in_signal_type == Z_PORT_TYPE_EVENT)
                 {
                   Port * port;
                   port = track->processor->midi_in;
@@ -190,7 +192,7 @@ create_model_for_ports (
   /* else if filtering to plugin ports */
   else if (pl)
     {
-      if (flow == FLOW_INPUT)
+      if (flow == Z_PORT_FLOW_INPUT)
         {
           for (int i = 0; i < pl->num_out_ports; i++)
             {
@@ -199,13 +201,14 @@ create_model_for_ports (
 
               if (
                 (port->id.type != type)
-                && !(port->id.type == TYPE_CV && type == TYPE_CONTROL))
+                && !(
+                  port->id.type == Z_PORT_TYPE_CV && type == Z_PORT_TYPE_CONTROL))
                 continue;
 
               ADD_ROW;
             }
         }
-      else if (flow == FLOW_OUTPUT)
+      else if (flow == Z_PORT_FLOW_OUTPUT)
         {
           for (int i = 0; i < pl->num_in_ports; i++)
             {
@@ -214,7 +217,8 @@ create_model_for_ports (
 
               if (
                 (port->id.type != type)
-                && !(type == TYPE_CV && port->id.type == TYPE_CONTROL))
+                && !(
+                  type == Z_PORT_TYPE_CV && port->id.type == Z_PORT_TYPE_CONTROL))
                 continue;
 
               ADD_ROW;
@@ -268,7 +272,7 @@ add_plugin (
    * port's plugin */
   if (
     !pl
-    || (id->owner_type == PORT_OWNER_TYPE_PLUGIN && pl == port_get_plugin (self->port, true)))
+    || (id->owner_type == Z_PORT_OWNER_TYPE_PLUGIN && pl == port_get_plugin (self->port, true)))
     {
       return;
     }
@@ -298,9 +302,9 @@ create_model_for_plugins (PortSelectorDialogWidget * self, Track * track)
        * a track port of the same track */
       Track * port_track = port_get_track (port, 0);
       if (
-        !((id->owner_type == PORT_OWNER_TYPE_TRACK && port_track == track)
-          || (id->owner_type == PORT_OWNER_TYPE_FADER && port_track == track)
-          || (id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR && port_track == track)))
+        !((id->owner_type == Z_PORT_OWNER_TYPE_TRACK && port_track == track)
+          || (id->owner_type == Z_PORT_OWNER_TYPE_FADER && port_track == track)
+          || (id->owner_type == Z_PORT_OWNER_TYPE_TRACK_PROCESSOR && port_track == track)))
         {
           // Add a new row to the model
           gtk_list_store_append (list_store, &iter);

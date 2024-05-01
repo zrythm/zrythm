@@ -15,13 +15,13 @@
 
 typedef struct MixerSelections_v1
 {
-  int               schema_version;
-  PluginSlotType_v1 type;
-  int               slots[60];
-  Plugin_v1 *       plugins[60];
-  int               num_slots;
-  unsigned int      track_name_hash;
-  int               has_any;
+  int                schema_version;
+  ZPluginSlotType_v1 type;
+  int                slots[60];
+  Plugin_v1 *        plugins[60];
+  int                num_slots;
+  unsigned int       track_name_hash;
+  int                has_any;
 } MixerSelections_v1;
 
 static const cyaml_schema_field_t mixer_selections_fields_schema_v1[] = {

@@ -459,14 +459,14 @@ ext_port_new_from_jack_port (jack_port_t * jport)
 }
 
 static void
-get_ext_ports_from_jack (PortType type, PortFlow flow, int hw, GPtrArray * ports)
+get_ext_ports_from_jack (ZPortType type, ZPortFlow flow, int hw, GPtrArray * ports)
 {
   long unsigned int flags = 0;
   if (hw)
     flags |= JackPortIsPhysical;
-  if (flow == FLOW_INPUT)
+  if (flow == Z_PORT_FLOW_INPUT)
     flags |= JackPortIsInput;
-  else if (flow == FLOW_OUTPUT)
+  else if (flow == Z_PORT_FLOW_OUTPUT)
     flags |= JackPortIsOutput;
   const char * jtype = engine_jack_get_jack_type (type);
   if (!jtype)
@@ -518,9 +518,9 @@ ext_port_from_windows_mme_device (WindowsMmeDevice * dev)
 }
 
 static void
-get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
+get_ext_ports_from_windows_mme (ZPortFlow flow, GPtrArray * ports)
 {
-  if (flow == FLOW_OUTPUT)
+  if (flow == Z_PORT_FLOW_OUTPUT)
     {
       for (int i = 0; i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
@@ -530,7 +530,7 @@ get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
           g_ptr_array_add (ports, ext_port);
         }
     }
-  else if (flow == FLOW_INPUT)
+  else if (flow == Z_PORT_FLOW_INPUT)
     {
       for (int i = 0; i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
@@ -566,9 +566,9 @@ ext_port_from_rtmidi (unsigned int id)
 }
 
 static void
-get_ext_ports_from_rtmidi (PortFlow flow, GPtrArray * ports)
+get_ext_ports_from_rtmidi (ZPortFlow flow, GPtrArray * ports)
 {
-  if (flow == FLOW_OUTPUT)
+  if (flow == Z_PORT_FLOW_OUTPUT)
     {
       unsigned int num_ports = engine_rtmidi_get_num_in_ports (AUDIO_ENGINE);
       for (unsigned int i = 0; i < num_ports; i++)
@@ -577,7 +577,7 @@ get_ext_ports_from_rtmidi (PortFlow flow, GPtrArray * ports)
           g_ptr_array_add (ports, ext_port);
         }
     }
-  else if (flow == FLOW_INPUT)
+  else if (flow == Z_PORT_FLOW_INPUT)
     {
       /* MIDI out devices not handled yet */
     }
@@ -614,11 +614,11 @@ ext_port_from_rtaudio (
 }
 
 static void
-get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
+get_ext_ports_from_rtaudio (ZPortFlow flow, GPtrArray * ports)
 {
   /* note: this is an output port from the graph side that will be used as an
    * input port on the zrythm side */
-  if (flow == FLOW_OUTPUT)
+  if (flow == Z_PORT_FLOW_OUTPUT)
     {
       bool      reuse_rtaudio = true;
       rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
@@ -661,7 +661,7 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
           rtaudio_destroy (rtaudio);
         }
     }
-  else if (flow == FLOW_INPUT)
+  else if (flow == Z_PORT_FLOW_INPUT)
     {
       bool      reuse_rtaudio = true;
       rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
@@ -706,9 +706,9 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
 #endif
 
 void
-ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports)
+ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports)
 {
-  if (type == TYPE_AUDIO)
+  if (type == Z_PORT_TYPE_AUDIO)
     {
       switch (AUDIO_ENGINE->audio_backend)
         {
@@ -735,7 +735,7 @@ ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports)
           break;
         }
     }
-  else if (type == TYPE_EVENT)
+  else if (type == Z_PORT_TYPE_EVENT)
     {
       switch (AUDIO_ENGINE->midi_backend)
         {

@@ -149,7 +149,7 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
           g_return_if_fail (port->id.track_name_hash == name_hash);
 
           /* set automation tracks on ports */
-          if (port->id.flags & PORT_FLAG_AUTOMATABLE)
+          if (port->id.flags & Z_PORT_FLAG_AUTOMATABLE)
             {
               AutomationTrack * at =
                 automation_track_find_from_port (port, self, true);
@@ -228,68 +228,68 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
   switch (type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      self->in_signal_type = TYPE_EVENT;
-      self->out_signal_type = TYPE_AUDIO;
+      self->in_signal_type = Z_PORT_TYPE_EVENT;
+      self->out_signal_type = Z_PORT_TYPE_AUDIO;
       instrument_track_init (self);
       break;
     case TRACK_TYPE_AUDIO:
-      self->in_signal_type = TYPE_AUDIO;
-      self->out_signal_type = TYPE_AUDIO;
+      self->in_signal_type = Z_PORT_TYPE_AUDIO;
+      self->out_signal_type = Z_PORT_TYPE_AUDIO;
       audio_track_init (self);
       break;
     case TRACK_TYPE_MASTER:
-      self->in_signal_type = TYPE_AUDIO;
-      self->out_signal_type = TYPE_AUDIO;
+      self->in_signal_type = Z_PORT_TYPE_AUDIO;
+      self->out_signal_type = Z_PORT_TYPE_AUDIO;
       master_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_BUS:
-      self->in_signal_type = TYPE_AUDIO;
-      self->out_signal_type = TYPE_AUDIO;
+      self->in_signal_type = Z_PORT_TYPE_AUDIO;
+      self->out_signal_type = Z_PORT_TYPE_AUDIO;
       audio_bus_track_init (self);
       break;
     case TRACK_TYPE_MIDI_BUS:
-      self->in_signal_type = TYPE_EVENT;
-      self->out_signal_type = TYPE_EVENT;
+      self->in_signal_type = Z_PORT_TYPE_EVENT;
+      self->out_signal_type = Z_PORT_TYPE_EVENT;
       midi_bus_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_GROUP:
-      self->in_signal_type = TYPE_AUDIO;
-      self->out_signal_type = TYPE_AUDIO;
+      self->in_signal_type = Z_PORT_TYPE_AUDIO;
+      self->out_signal_type = Z_PORT_TYPE_AUDIO;
       audio_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI_GROUP:
-      self->in_signal_type = TYPE_EVENT;
-      self->out_signal_type = TYPE_EVENT;
+      self->in_signal_type = Z_PORT_TYPE_EVENT;
+      self->out_signal_type = Z_PORT_TYPE_EVENT;
       midi_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI:
-      self->in_signal_type = TYPE_EVENT;
-      self->out_signal_type = TYPE_EVENT;
+      self->in_signal_type = Z_PORT_TYPE_EVENT;
+      self->out_signal_type = Z_PORT_TYPE_EVENT;
       midi_track_init (self);
       break;
     case TRACK_TYPE_CHORD:
-      self->in_signal_type = TYPE_EVENT;
-      self->out_signal_type = TYPE_EVENT;
+      self->in_signal_type = Z_PORT_TYPE_EVENT;
+      self->out_signal_type = Z_PORT_TYPE_EVENT;
       chord_track_init (self);
       break;
     case TRACK_TYPE_MARKER:
-      self->in_signal_type = TYPE_UNKNOWN;
-      self->out_signal_type = TYPE_UNKNOWN;
+      self->in_signal_type = Z_PORT_TYPE_UNKNOWN;
+      self->out_signal_type = Z_PORT_TYPE_UNKNOWN;
       marker_track_init (self);
       break;
     case TRACK_TYPE_TEMPO:
-      self->in_signal_type = TYPE_UNKNOWN;
-      self->out_signal_type = TYPE_UNKNOWN;
+      self->in_signal_type = Z_PORT_TYPE_UNKNOWN;
+      self->out_signal_type = Z_PORT_TYPE_UNKNOWN;
       tempo_track_init (self);
       break;
     case TRACK_TYPE_MODULATOR:
-      self->in_signal_type = TYPE_UNKNOWN;
-      self->out_signal_type = TYPE_UNKNOWN;
+      self->in_signal_type = Z_PORT_TYPE_UNKNOWN;
+      self->out_signal_type = Z_PORT_TYPE_UNKNOWN;
       modulator_track_init (self);
       break;
     case TRACK_TYPE_FOLDER:
-      self->in_signal_type = TYPE_UNKNOWN;
-      self->out_signal_type = TYPE_UNKNOWN;
+      self->in_signal_type = Z_PORT_TYPE_UNKNOWN;
+      self->out_signal_type = Z_PORT_TYPE_UNKNOWN;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -308,13 +308,13 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
   if (track_type_can_record (type))
     {
       self->recording = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, _ ("Track record"), PORT_OWNER_TYPE_TRACK,
-        self);
+        Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT, _ ("Track record"),
+        Z_PORT_OWNER_TYPE_TRACK, self);
       self->recording->id.sym = g_strdup ("track_record");
       control_port_set_toggled (
         self->recording, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-      self->recording->id.flags2 |= PORT_FLAG2_TRACK_RECORDING;
-      self->recording->id.flags |= PORT_FLAG_TOGGLE;
+      self->recording->id.flags2 |= Z_PORT_FLAG2_TRACK_RECORDING;
+      self->recording->id.flags |= Z_PORT_FLAG_TOGGLE;
     }
 
   self->processor = track_processor_new (self);
@@ -975,7 +975,7 @@ track_validate (Track * self)
         {
           Port * port = g_ptr_array_index (ports, i);
           g_return_val_if_fail (port->id.track_name_hash == name_hash, false);
-          if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+          if (port->id.owner_type == Z_PORT_OWNER_TYPE_PLUGIN)
             {
               PluginIdentifier * pid = &port->id.plugin_id;
               g_return_val_if_fail (pid->track_name_hash == name_hash, false);
@@ -984,7 +984,7 @@ track_validate (Track * self)
               g_return_val_if_fail (plugin_identifier_validate (&pl->id), false);
               g_return_val_if_fail (
                 plugin_identifier_is_equal (&pl->id, pid), false);
-              if (pid->slot_type == PLUGIN_SLOT_INSTRUMENT)
+              if (pid->slot_type == Z_PLUGIN_SLOT_INSTRUMENT)
                 {
                   g_return_val_if_fail (pl == self->channel->instrument, false);
                 }
@@ -992,7 +992,7 @@ track_validate (Track * self)
 
           /* check that the automation track is
            * there */
-          if (atl && port->id.flags & PORT_FLAG_AUTOMATABLE)
+          if (atl && port->id.flags & Z_PORT_FLAG_AUTOMATABLE)
             {
               /*g_message ("checking %s", port->id.label);*/
               AutomationTrack * at =
@@ -1966,22 +1966,22 @@ track_freeze (Track * self, bool freeze, GError ** error)
  */
 void
 track_insert_plugin (
-  Track *        self,
-  Plugin *       pl,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           instantiate_plugin,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           confirm,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           fire_events)
+  Track *         self,
+  Plugin *        pl,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            instantiate_plugin,
+  bool            replacing_plugin,
+  bool            moving_plugin,
+  bool            confirm,
+  bool            gen_automatables,
+  bool            recalc_graph,
+  bool            fire_events)
 {
   g_return_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
 
-  if (slot_type == PLUGIN_SLOT_MODULATOR)
+  if (slot_type == Z_PLUGIN_SLOT_MODULATOR)
     {
       modulator_track_insert_modulator (
         self, slot, pl, replacing_plugin, confirm, gen_automatables,
@@ -2011,17 +2011,17 @@ track_insert_plugin (
  */
 void
 track_remove_plugin (
-  Track *        self,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           deleting_plugin,
-  bool           deleting_track,
-  bool           recalc_graph)
+  Track *         self,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            replacing_plugin,
+  bool            moving_plugin,
+  bool            deleting_plugin,
+  bool            deleting_track,
+  bool            recalc_graph)
 {
   g_debug ("removing plugin from track %s", self->name);
-  if (slot_type == PLUGIN_SLOT_MODULATOR)
+  if (slot_type == Z_PLUGIN_SLOT_MODULATOR)
     {
       modulator_track_remove_modulator (
         self, slot, replacing_plugin, deleting_plugin, deleting_track,
@@ -3140,17 +3140,17 @@ track_type_get_from_string (const char * str)
  *   selected.
  */
 Plugin *
-track_get_plugin_at_slot (Track * self, PluginSlotType slot_type, int slot)
+track_get_plugin_at_slot (Track * self, ZPluginSlotType slot_type, int slot)
 {
   switch (slot_type)
     {
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       return self->channel->midi_fx[slot];
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       return self->channel->instrument;
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       return self->channel->inserts[slot];
-    case PLUGIN_SLOT_MODULATOR:
+    case Z_PLUGIN_SLOT_MODULATOR:
       if (self->modulators && slot < self->num_modulators)
         {
           return self->modulators[slot];
@@ -3497,9 +3497,9 @@ remove_ats_from_automation_tracklist (Track * track, bool fire_events)
     {
       AutomationTrack * at = atl->ats[i];
       if (
-        at->port_id.flags & PORT_FLAG_CHANNEL_FADER
-        || at->port_id.flags & PORT_FLAG_FADER_MUTE
-        || at->port_id.flags & PORT_FLAG_STEREO_BALANCE)
+        at->port_id.flags & Z_PORT_FLAG_CHANNEL_FADER
+        || at->port_id.flags & Z_PORT_FLAG_FADER_MUTE
+        || at->port_id.flags & Z_PORT_FLAG_STEREO_BALANCE)
         {
           automation_tracklist_remove_at (atl, at, F_NO_FREE, fire_events);
         }

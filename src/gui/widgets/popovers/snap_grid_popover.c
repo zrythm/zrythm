@@ -227,7 +227,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* note length */
   GtkStringList * strlist = z_gtk_string_list_new_from_string_array (
-    note_length_strings, G_N_ELEMENTS (note_length_strings), true);
+    note_length_get_strings (), NOTE_LENGTH_1_128 + 1, true);
   self->snap_length = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->snap_length, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (self->snap_length, sg->snap_note_length);
@@ -240,7 +240,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* note type */
   strlist = z_gtk_string_list_new_from_string_array (
-    note_type_strings, G_N_ELEMENTS (note_type_strings), true);
+    note_type_get_strings (), NOTE_TYPE_TRIPLET + 1, true);
   self->snap_type = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->snap_type, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (self->snap_type, sg->snap_note_type);
@@ -308,7 +308,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* note length */
   strlist = z_gtk_string_list_new_from_string_array (
-    note_length_strings, G_N_ELEMENTS (note_length_strings), true);
+    note_length_get_strings (), NOTE_LENGTH_1_128 + 1, true);
   self->object_length = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->object_length, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (self->object_length, sg->default_note_length);
@@ -319,7 +319,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* note type */
   strlist = z_gtk_string_list_new_from_string_array (
-    note_type_strings, G_N_ELEMENTS (note_type_strings), true);
+    note_type_get_strings (), NOTE_TYPE_TRIPLET + 1, true);
   self->object_length_type_custom = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (
     self->object_length_type_custom, G_LIST_MODEL (strlist));

@@ -271,7 +271,7 @@ channel_handle_plugin_import (
   const MixerSelections *  sel,
   const PluginDescriptor * descr,
   int                      slot,
-  PluginSlotType           slot_type,
+  ZPluginSlotType          slot_type,
   bool                     copy,
   bool                     ask_if_overwrite);
 
@@ -326,15 +326,15 @@ channel_process (Channel * channel);
  */
 NONNULL bool
 channel_add_plugin (
-  Channel *      channel,
-  PluginSlotType slot_type,
-  int            pos,
-  Plugin *       plugin,
-  bool           confirm,
-  bool           moving_plugin,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           pub_events);
+  Channel *       channel,
+  ZPluginSlotType slot_type,
+  int             pos,
+  Plugin *        plugin,
+  bool            confirm,
+  bool            moving_plugin,
+  bool            gen_automatables,
+  bool            recalc_graph,
+  bool            pub_events);
 
 NONNULL Track *
 channel_get_track (Channel * self);
@@ -354,7 +354,7 @@ channel_reconnect_ext_input_ports (Channel * ch);
  * of the given type for the channel.
  */
 NONNULL AutomationTrack *
-channel_get_automation_track (Channel * channel, PortFlags port_flags);
+channel_get_automation_track (Channel * channel, ZPortFlags port_flags);
 
 /**
  * Removes a plugin at pos from the channel.
@@ -374,13 +374,13 @@ channel_get_automation_track (Channel * channel, PortFlags port_flags);
  */
 NONNULL void
 channel_remove_plugin (
-  Channel *      channel,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           moving_plugin,
-  bool           deleting_plugin,
-  bool           deleting_channel,
-  bool           recalc_graph);
+  Channel *       channel,
+  ZPluginSlotType slot_type,
+  int             slot,
+  bool            moving_plugin,
+  bool            deleting_plugin,
+  bool            deleting_channel,
+  bool            recalc_graph);
 
 /**
  * Updates the track name hash in the channel and
@@ -423,14 +423,14 @@ channel_set_swap_phase (Channel * self, bool enabled, bool fire_events);
  * @memberof Channel
  */
 Plugin *
-channel_get_plugin_at (const Channel * self, int slot, PluginSlotType slot_type);
+channel_get_plugin_at (const Channel * self, int slot, ZPluginSlotType slot_type);
 
 /**
  * Selects/deselects all plugins in the given slot
  * type.
  */
 void
-channel_select_all (Channel * self, PluginSlotType type, bool select);
+channel_select_all (Channel * self, ZPluginSlotType type, bool select);
 
 /**
  * Sets caches for processing.

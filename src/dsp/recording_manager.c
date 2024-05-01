@@ -635,7 +635,7 @@ handle_pause_event (RecordingManager * self, RecordingEvent * ev)
       /* remember lane index */
       tr->last_lane_idx = region->id.lane_pos;
 
-      if (tr->in_signal_type == TYPE_EVENT)
+      if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
         {
           /* add midi note offs at the end */
           MidiNote * mn;
@@ -731,13 +731,13 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
               new_region =
                 chord_region_new (&resume_pos, &end_pos, tr->num_chord_regions);
             }
-          else if (tr->in_signal_type == TYPE_EVENT)
+          else if (tr->in_signal_type == Z_PORT_TYPE_EVENT)
             {
               new_region = midi_region_new (
                 &resume_pos, &end_pos, track_get_name_hash (tr), new_lane_pos,
                 idx_inside_lane);
             }
-          else if (tr->in_signal_type == TYPE_AUDIO)
+          else if (tr->in_signal_type == Z_PORT_TYPE_AUDIO)
             {
               char * name = audio_pool_gen_name_for_recording_clip (
                 AUDIO_POOL, tr, new_lane_pos);

@@ -39,22 +39,22 @@ Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
   g_return_val_if_fail (
-    self->type == PLUGIN_SLOT_INSTRUMENT || IS_TRACK (self->track), NULL);
+    self->type == Z_PLUGIN_SLOT_INSTRUMENT || IS_TRACK (self->track), NULL);
 
   Plugin * plugin = NULL;
   switch (self->type)
     {
-    case PLUGIN_SLOT_INSERT:
+    case Z_PLUGIN_SLOT_INSERT:
       return self->track->channel->inserts[self->slot_index];
       break;
-    case PLUGIN_SLOT_MIDI_FX:
+    case Z_PLUGIN_SLOT_MIDI_FX:
       return self->track->channel->midi_fx[self->slot_index];
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
+    case Z_PLUGIN_SLOT_INSTRUMENT:
       if (self->track && self->track->channel)
         return self->track->channel->instrument;
       break;
-    case PLUGIN_SLOT_MODULATOR:
+    case Z_PLUGIN_SLOT_MODULATOR:
       return self->track->modulators[self->slot_index];
       break;
     default:
@@ -144,7 +144,7 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       /* fill text */
       int w, h;
-      if (self->type == PLUGIN_SLOT_INSTRUMENT)
+      if (self->type == Z_PLUGIN_SLOT_INSTRUMENT)
         {
           snprintf (txt, MAX_LEN, "%s", _ ("No instrument"));
         }
@@ -436,15 +436,16 @@ on_press (
   g_message ("pressed %d", n_press);
 
   if (
-    self->open_plugin_inspector_on_click && self->type != PLUGIN_SLOT_INSTRUMENT)
+    self->open_plugin_inspector_on_click
+    && self->type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
-      if (self->type == PLUGIN_SLOT_INSERT)
+      if (self->type == Z_PLUGIN_SLOT_INSERT)
         {
-          PROJECT->last_selection = SELECTION_TYPE_INSERT;
+          PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_INSERT;
         }
-      else if (self->type == PLUGIN_SLOT_MIDI_FX)
+      else if (self->type == Z_PLUGIN_SLOT_MIDI_FX)
         {
-          PROJECT->last_selection = SELECTION_TYPE_MIDI_FX;
+          PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_MIDI_FX;
         }
       EVENTS_PUSH (ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
@@ -519,23 +520,23 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->bridge_icon),
-    plugin && plugin->setting->bridge_mode != CARLA_BRIDGE_NONE);
+    plugin && plugin->setting->bridge_mode != Z_CARLA_BRIDGE_NONE);
   if (plugin)
     {
       switch (plugin->setting->bridge_mode)
         {
-        case CARLA_BRIDGE_FULL:
+        case Z_CARLA_BRIDGE_FULL:
           gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (Full)"));
           break;
-        case CARLA_BRIDGE_UI:
+        case Z_CARLA_BRIDGE_UI:
           gtk_image_set_from_icon_name (
             self->bridge_icon, "material-design-remote-desktop");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (UI)"));
           break;
-        case CARLA_BRIDGE_NONE:
+        case Z_CARLA_BRIDGE_NONE:
           break;
         }
     }
@@ -550,17 +551,17 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
 
   switch (self->type)
     {
-    case PLUGIN_SLOT_INSERT:
-      PROJECT->last_selection = SELECTION_TYPE_INSERT;
+    case Z_PLUGIN_SLOT_INSERT:
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_INSERT;
       break;
-    case PLUGIN_SLOT_INSTRUMENT:
-      PROJECT->last_selection = SELECTION_TYPE_INSTRUMENT;
+    case Z_PLUGIN_SLOT_INSTRUMENT:
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_INSTRUMENT;
       break;
-    case PLUGIN_SLOT_MIDI_FX:
-      PROJECT->last_selection = SELECTION_TYPE_MIDI_FX;
+    case Z_PLUGIN_SLOT_MIDI_FX:
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_MIDI_FX;
       break;
-    case PLUGIN_SLOT_MODULATOR:
-      PROJECT->last_selection = SELECTION_TYPE_MODULATOR;
+    case Z_PLUGIN_SLOT_MODULATOR:
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_MODULATOR;
       break;
     default:
       g_return_if_reached ();
@@ -601,7 +602,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   GMenu * edit_submenu = g_menu_new ();
-  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
       menuitem = CREATE_CUT_MENU_ITEM ("app.cut");
       g_menu_append_item (edit_submenu, menuitem);
@@ -612,7 +613,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   /* if plugin exists */
-  if (pl && self->type != PLUGIN_SLOT_INSTRUMENT)
+  if (pl && self->type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
       /* add delete item */
       menuitem = CREATE_DELETE_MENU_ITEM ("app.mixer-selections-delete");
@@ -621,7 +622,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
 
   g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
 
-  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
       GMenu * select_submenu = g_menu_new ();
 
@@ -727,7 +728,7 @@ on_dnd_drag_prepare (
 static void
 setup_dnd (ChannelSlotWidget * self)
 {
-  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != Z_PLUGIN_SLOT_INSTRUMENT)
     {
       /* set as drag source for plugin */
       GtkDragSource * drag_source = gtk_drag_source_new ();
@@ -758,10 +759,10 @@ setup_dnd (ChannelSlotWidget * self)
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int            slot_index,
-  Track *        track,
-  PluginSlotType type,
-  bool           open_plugin_inspector_on_click)
+  int             slot_index,
+  Track *         track,
+  ZPluginSlotType type,
+  bool            open_plugin_inspector_on_click)
 {
   ChannelSlotWidget * self = g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
@@ -782,7 +783,7 @@ ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
   ChannelSlotWidget * self =
-    channel_slot_widget_new (-1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
+    channel_slot_widget_new (-1, NULL, Z_PLUGIN_SLOT_INSTRUMENT, false);
 
   return self;
 }

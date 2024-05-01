@@ -337,7 +337,7 @@ on_btn_release (
   Track * track = self->track;
   if (self->n_press == 1)
     {
-      PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
+      PROJECT->last_selection = Z_PROJECT_SELECTION_TYPE_TRACKLIST;
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;

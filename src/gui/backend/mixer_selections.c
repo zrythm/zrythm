@@ -11,12 +11,15 @@
 #include "utils/arrays.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include "enum-types.h"
 
 void
 mixer_selections_init_loaded (MixerSelections * self, bool is_project)
@@ -175,7 +178,7 @@ void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Track *           track,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot,
   bool              clone_pl,
   const bool        fire_events)
@@ -191,23 +194,24 @@ mixer_selections_add_slot (
   ms->has_any = true;
 
   g_debug (
-    "adding slot %s:%s:%d", track->name, plugin_slot_type_strings[type], slot);
+    "adding slot %s:%s:%d", track->name,
+    z_gtk_get_enum_nick (Z_TYPE_PLUGIN_SLOT_TYPE, type), slot);
 
   Plugin * pl = NULL;
   if (!array_contains_int (ms->slots, ms->num_slots, slot))
     {
       switch (type)
         {
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           pl = track->channel->midi_fx[slot];
           break;
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           pl = track->channel->inserts[slot];
           break;
-        case PLUGIN_SLOT_MODULATOR:
+        case Z_PLUGIN_SLOT_MODULATOR:
           pl = track->modulators[slot];
           break;
-        case PLUGIN_SLOT_INSTRUMENT:
+        case Z_PLUGIN_SLOT_INSTRUMENT:
           pl = track->channel->instrument;
           break;
         default:
@@ -248,13 +252,13 @@ void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   bool              publish_events)
 {
   g_message ("removing slot %d", slot);
   array_delete_primitive (ms->slots, ms->num_slots, slot);
 
-  if (ms->num_slots == 0 || ms->type == PLUGIN_SLOT_INSTRUMENT)
+  if (ms->num_slots == 0 || ms->type == Z_PLUGIN_SLOT_INSTRUMENT)
     {
       ms->has_any = 0;
       ms->track_name_hash = 0;
@@ -272,13 +276,13 @@ mixer_selections_remove_slot (
 bool
 mixer_selections_contains_slot (
   MixerSelections * self,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot)
 {
   if (type != self->type)
     return false;
 
-  if (type == PLUGIN_SLOT_INSTRUMENT)
+  if (type == Z_PLUGIN_SLOT_INSTRUMENT)
     {
       return self->has_any;
     }
@@ -307,10 +311,10 @@ mixer_selections_contains_plugin (MixerSelections * ms, Plugin * pl)
   if (ms->track_name_hash != pl->id.track_name_hash)
     return false;
 
-  if (ms->type == PLUGIN_SLOT_INSTRUMENT)
+  if (ms->type == Z_PLUGIN_SLOT_INSTRUMENT)
     {
       if (
-        pl->id.slot_type == PLUGIN_SLOT_INSTRUMENT
+        pl->id.slot_type == Z_PLUGIN_SLOT_INSTRUMENT
         && pl->id.track_name_hash == ms->track_name_hash)
         {
           return true;
@@ -366,13 +370,13 @@ mixer_selections_get_first_plugin (MixerSelections * self)
       g_return_val_if_fail (track, NULL);
       switch (self->type)
         {
-        case PLUGIN_SLOT_INSTRUMENT:
+        case Z_PLUGIN_SLOT_INSTRUMENT:
           return track->channel->instrument;
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           return track->channel->inserts[self->slots[0]];
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           return track->channel->midi_fx[self->slots[0]];
-        case PLUGIN_SLOT_MODULATOR:
+        case Z_PLUGIN_SLOT_MODULATOR:
           return track->modulators[self->slots[0]];
         default:
           g_return_val_if_reached (NULL);
@@ -417,16 +421,16 @@ mixer_selections_get_plugins (
           Plugin * pl = NULL;
           switch (self->type)
             {
-            case PLUGIN_SLOT_INSTRUMENT:
+            case Z_PLUGIN_SLOT_INSTRUMENT:
               pl = track->channel->instrument;
               break;
-            case PLUGIN_SLOT_INSERT:
+            case Z_PLUGIN_SLOT_INSERT:
               pl = track->channel->inserts[self->slots[i]];
               break;
-            case PLUGIN_SLOT_MIDI_FX:
+            case Z_PLUGIN_SLOT_MIDI_FX:
               pl = track->channel->midi_fx[self->slots[i]];
               break;
-            case PLUGIN_SLOT_MODULATOR:
+            case Z_PLUGIN_SLOT_MODULATOR:
               pl = track->modulators[self->slots[i]];
               break;
             default:
@@ -457,16 +461,16 @@ mixer_selections_validate (MixerSelections * self)
       Plugin * pl = NULL;
       switch (self->type)
         {
-        case PLUGIN_SLOT_INSTRUMENT:
+        case Z_PLUGIN_SLOT_INSTRUMENT:
           pl = track->channel->instrument;
           break;
-        case PLUGIN_SLOT_INSERT:
+        case Z_PLUGIN_SLOT_INSERT:
           pl = track->channel->inserts[self->slots[i]];
           break;
-        case PLUGIN_SLOT_MIDI_FX:
+        case Z_PLUGIN_SLOT_MIDI_FX:
           pl = track->channel->midi_fx[self->slots[i]];
           break;
-        case PLUGIN_SLOT_MODULATOR:
+        case Z_PLUGIN_SLOT_MODULATOR:
           pl = track->modulators[self->slots[i]];
           break;
         default:
@@ -575,7 +579,7 @@ bool
 mixer_selections_can_be_pasted (
   MixerSelections * self,
   Channel *         ch,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot)
 {
   int lowest = mixer_selections_get_lowest_slot (self);
@@ -593,7 +597,7 @@ void
 mixer_selections_paste_to_slot (
   MixerSelections * ms,
   Channel *         ch,
-  PluginSlotType    type,
+  ZPluginSlotType   type,
   int               slot)
 {
   GError * err = NULL;

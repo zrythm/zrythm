@@ -90,7 +90,7 @@ update_plugin_info_label (PluginBrowserWidget * self)
 
   char * type_label = g_strdup_printf (
     "%s • %s%s", descr->category_str, plugin_protocol_to_str (descr->protocol),
-    descr->arch == ARCH_32 ? " (32-bit)" : "");
+    descr->arch == Z_PLUGIN_ARCHITECTURE_32 ? " (32-bit)" : "");
   char * audio_label =
     g_strdup_printf ("%d, %d", descr->num_audio_ins, descr->num_audio_outs);
   char * midi_label =

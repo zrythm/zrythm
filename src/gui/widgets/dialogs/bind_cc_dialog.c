@@ -56,7 +56,7 @@ tick_cb (
         AUDIO_ENGINE->last_cc, ctrl_change);
 
       bool port_is_toggle =
-        self->port && self->port->id.flags & PORT_FLAG_TOGGLE;
+        self->port && self->port->id.flags & Z_PORT_FLAG_TOGGLE;
 
       gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), true);
 

@@ -24,33 +24,23 @@
  * @{
  */
 
-typedef enum PluginSlotType
+typedef enum ZPluginSlotType
 {
-  PLUGIN_SLOT_INVALID,
-  PLUGIN_SLOT_INSERT,
-  PLUGIN_SLOT_MIDI_FX,
-  PLUGIN_SLOT_INSTRUMENT,
+  Z_PLUGIN_SLOT_INVALID,
+  Z_PLUGIN_SLOT_INSERT,
+  Z_PLUGIN_SLOT_MIDI_FX,
+  Z_PLUGIN_SLOT_INSTRUMENT,
 
   /** Plugin is part of a modulator. */
-  PLUGIN_SLOT_MODULATOR,
-} PluginSlotType;
-
-static const char * plugin_slot_type_strings[] = {
-  "Invalid", "Insert", "MIDI FX", "Instrument", "Modulator",
-};
-
-static inline const char *
-plugin_slot_type_to_string (PluginSlotType type)
-{
-  return plugin_slot_type_strings[type];
-}
+  Z_PLUGIN_SLOT_MODULATOR,
+} ZPluginSlotType;
 
 /**
  * Plugin identifier.
  */
 typedef struct PluginIdentifier
 {
-  PluginSlotType slot_type;
+  ZPluginSlotType slot_type;
 
   /** Track name hash. */
   unsigned int track_name_hash;
@@ -89,8 +79,8 @@ plugin_identifier_validate (const PluginIdentifier * self);
  */
 bool
 plugin_identifier_validate_slot_type_slot_combo (
-  PluginSlotType slot_type,
-  int            slot);
+  ZPluginSlotType slot_type,
+  int             slot);
 
 void
 plugin_identifier_print (const PluginIdentifier * self, char * str);

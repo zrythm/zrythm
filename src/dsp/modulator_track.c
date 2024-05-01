@@ -127,7 +127,7 @@ do_insert (ModulatorImportData * data)
             self->modulators[i]->setting->descr->name, i - 1, i);
           plugin_set_track_and_slot (
             self->modulators[i], track_get_name_hash (self),
-            PLUGIN_SLOT_MODULATOR, i);
+            Z_PLUGIN_SLOT_MODULATOR, i);
         }
     }
 
@@ -138,7 +138,7 @@ do_insert (ModulatorImportData * data)
     data->slot);
 
   plugin_set_track_and_slot (
-    data->modulator, track_get_name_hash (self), PLUGIN_SLOT_MODULATOR,
+    data->modulator, track_get_name_hash (self), Z_PLUGIN_SLOT_MODULATOR,
     data->slot);
 
   if (data->gen_automatables)
@@ -266,7 +266,7 @@ modulator_track_remove_modulator (
       if (plugin_is_selected (plugin))
         {
           mixer_selections_remove_slot (
-            MIXER_SELECTIONS, plugin->id.slot, PLUGIN_SLOT_MODULATOR,
+            MIXER_SELECTIONS, plugin->id.slot, Z_PLUGIN_SLOT_MODULATOR,
             F_PUBLISH_EVENTS);
         }
 
@@ -281,7 +281,7 @@ modulator_track_remove_modulator (
           self->modulators[i] = self->modulators[i + 1];
           plugin_set_track_and_slot (
             self->modulators[i], track_get_name_hash (self),
-            PLUGIN_SLOT_MODULATOR, i);
+            Z_PLUGIN_SLOT_MODULATOR, i);
         }
       self->num_modulators--;
     }

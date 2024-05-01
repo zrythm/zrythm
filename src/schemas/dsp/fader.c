@@ -24,14 +24,14 @@ fader_upgrade_from_v1 (Fader_v1 * old)
   self->listen = (old->listen);
   self->mono_compat_enabled = (old->mono_compat_enabled);
   Port * swap_phase = port_new_with_type (
-    TYPE_CONTROL, FLOW_INPUT,
+    Z_PORT_TYPE_CONTROL, Z_PORT_FLOW_INPUT,
     old->passthrough ? "Prefader Swap Phase" : "Fader Swap Phase");
   swap_phase->id.sym =
     old->passthrough
       ? g_strdup ("prefader_swap_phase")
       : g_strdup ("fader_swap_phase");
-  swap_phase->id.flags2 |= PORT_FLAG2_FADER_SWAP_PHASE;
-  swap_phase->id.flags |= PORT_FLAG_TOGGLE;
+  swap_phase->id.flags2 |= Z_PORT_FLAG2_FADER_SWAP_PHASE;
+  swap_phase->id.flags |= Z_PORT_FLAG_TOGGLE;
   GError * err = NULL;
   char *   swap_phase_yaml = yaml_serialize (swap_phase, &port_schema_v1, &err);
   Port_v1 * swap_phase_v1 =

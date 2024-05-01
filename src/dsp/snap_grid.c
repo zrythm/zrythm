@@ -25,6 +25,39 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+const char **
+note_length_get_strings (void)
+{
+  static const char * note_length_strings[] = {
+    N_ ("bar"), N_ ("beat"), "2/1",  "1/1",  "1/2",   "1/4",
+    "1/8",      "1/16",      "1/32", "1/64", "1/128",
+  };
+  return note_length_strings;
+}
+
+const char *
+note_length_to_str (NoteLength len)
+{
+  return note_length_get_strings ()[len];
+}
+
+const char **
+note_type_get_strings (void)
+{
+  static const char * note_type_strings[] = {
+    N_ ("normal"),
+    N_ ("dotted"),
+    N_ ("triplet"),
+  };
+  return note_type_strings;
+}
+
+const char *
+note_type_to_str (NoteType type)
+{
+  return note_type_get_strings ()[type];
+}
+
 int
 snap_grid_get_ticks_from_length_and_type (NoteLength length, NoteType type)
 {
@@ -203,7 +236,7 @@ snap_grid_init (
 }
 
 static const char *
-get_note_type_str (NoteType type)
+get_note_type_short_str (NoteType type)
 {
   static const char * note_type_short_strings[] = {
     "",
@@ -211,12 +244,6 @@ get_note_type_str (NoteType type)
     "t",
   };
   return note_type_short_strings[type];
-}
-
-static const char *
-get_note_length_str (NoteLength length)
-{
-  return note_length_strings[length];
 }
 
 /**
@@ -228,8 +255,8 @@ get_note_length_str (NoteLength length)
 char *
 snap_grid_stringize_length_and_type (NoteLength note_length, NoteType note_type)
 {
-  const char * c = get_note_type_str (note_type);
-  const char * first_part = get_note_length_str (note_length);
+  const char * c = get_note_type_short_str (note_type);
+  const char * first_part = note_length_to_str (note_length);
 
   return g_strdup_printf ("%s%s", first_part, c);
 }

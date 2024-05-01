@@ -6,12 +6,15 @@
 #include "dsp/port.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include "enum-types.h"
 
 G_DEFINE_TYPE (PortInfoDialogWidget, port_info_dialog_widget, GTK_TYPE_WINDOW)
 
@@ -57,7 +60,7 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Type"));
-  gtk_label_set_text (lbl, port_type_strings[id->type]);
+  gtk_label_set_text (lbl, z_gtk_get_enum_nick (Z_TYPE_PORT_TYPE, id->type));
   ADD_ROW;
 
   PREPARE_ROW (_ ("Range"));
@@ -71,7 +74,7 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Current Value"));
-  if (id->type == TYPE_CONTROL)
+  if (id->type == Z_PORT_TYPE_CONTROL)
     {
       sprintf (tmp, "%f", (double) port->control);
       gtk_label_set_text (lbl, tmp);
@@ -84,21 +87,23 @@ set_values (
 
   PREPARE_ROW (_ ("Flags"));
   GtkFlowBox * flags_box = GTK_FLOW_BOX (gtk_flow_box_new ());
-  for (size_t i = 0; i < G_N_ELEMENTS (port_flags_bitvals); i++)
+  for (size_t i = 0; i <= 30; i++)
     {
       if (!(id->flags & (1 << i)))
         continue;
 
-      GtkWidget * lbl_ = gtk_label_new (port_flags_bitvals[i]);
+      GtkWidget * lbl_ =
+        gtk_label_new (z_gtk_get_enum_nick (Z_TYPE_PORT_FLAGS, i));
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
-  for (size_t i = 0; i < G_N_ELEMENTS (port_flags2_bitvals); i++)
+  for (size_t i = 0; i <= 30; i++)
     {
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
 
-      GtkWidget * lbl_ = gtk_label_new (port_flags2_bitvals[i]);
+      GtkWidget * lbl_ =
+        gtk_label_new (z_gtk_get_enum_nick (Z_TYPE_PORT_FLAGS2, i));
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }

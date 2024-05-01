@@ -81,7 +81,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
   GdkRGBA color;
-  if (peak_amp > 1.f && self->meter->port->id.type == TYPE_AUDIO)
+  if (peak_amp > 1.f && self->meter->port->id.type == Z_PORT_TYPE_AUDIO)
     {
       /* make higher peak brighter */
       color.red = 0.6f + 0.4f * peak;
@@ -193,7 +193,7 @@ meter_widget_setup (MeterWidget * self, Port * port, bool small)
 
   /* set size */
   int width = small ? 4 : 8;
-  if (port->id.type == TYPE_EVENT)
+  if (port->id.type == Z_PORT_TYPE_EVENT)
     {
       width = small ? 6 : 10;
     }

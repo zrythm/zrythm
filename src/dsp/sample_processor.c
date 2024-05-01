@@ -515,7 +515,7 @@ queue_file_or_chord_preset (
       GError * err = NULL;
       Plugin * pl = plugin_new_from_setting (
         self->instrument_setting, track_get_name_hash (instrument_track),
-        PLUGIN_SLOT_INSTRUMENT, -1, &err);
+        Z_PLUGIN_SLOT_INSTRUMENT, -1, &err);
       if (!pl)
         {
           HANDLE_ERROR (
@@ -536,7 +536,7 @@ queue_file_or_chord_preset (
       g_return_if_fail (pl->l_out);
       g_return_if_fail (pl->r_out);
       channel_add_plugin (
-        instrument_track->channel, PLUGIN_SLOT_INSTRUMENT, pl->id.slot, pl,
+        instrument_track->channel, Z_PLUGIN_SLOT_INSTRUMENT, pl->id.slot, pl,
         F_NO_CONFIRM, F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 

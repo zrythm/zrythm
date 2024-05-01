@@ -36,6 +36,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "enum-types.h"
+
 G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_WIDGET)
 
 #define FONT_SIZE 16
@@ -458,8 +460,8 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       self->height_start_pos = PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
       self->height_end_pos = self->height_start_pos + texth;
 
-      BeatUnit     bu = tempo_track_get_beat_unit_enum (P_TEMPO_TRACK);
-      const char * beat_unit = beat_unit_strings[bu];
+      ZBeatUnit    bu = tempo_track_get_beat_unit_enum (P_TEMPO_TRACK);
+      const char * beat_unit = z_gtk_get_enum_nick (Z_TYPE_BEAT_UNIT, bu);
       int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       if (beats_per_bar < 10)
         {
@@ -757,7 +759,7 @@ on_scroll (
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
-      change.flag1 = PORT_FLAG_BPM;
+      change.flag1 = Z_PORT_FLAG_BPM;
       if (self->update_num)
         {
           change.real_val = self->last_set_bpm + (bpm_t) num;
@@ -844,7 +846,7 @@ on_scroll (
       if (self->update_timesig_top)
         {
           num += self->beats_per_bar_at_start;
-          change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
+          change.flag2 = Z_PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
               change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
@@ -861,15 +863,15 @@ on_scroll (
       else if (self->update_timesig_bot)
         {
           num += (int) tempo_track_beat_unit_to_enum (self->beat_unit_at_start);
-          change.flag2 = PORT_FLAG2_BEAT_UNIT;
+          change.flag2 = Z_PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
-              change.beat_unit = BEAT_UNIT_2;
+              change.beat_unit = Z_BEAT_UNIT_2;
             }
           else
             {
               change.beat_unit =
-                num > BEAT_UNIT_16 ? BEAT_UNIT_16 : (BeatUnit) num;
+                num > Z_BEAT_UNIT_16 ? Z_BEAT_UNIT_16 : (ZBeatUnit) num;
             }
           router_queue_control_port_change (ROUTER, &change);
         }
@@ -918,7 +920,7 @@ drag_update (
           if (abs (num) > 0)
             {
               ControlPortChange change = { 0 };
-              change.flag1 = PORT_FLAG_BPM;
+              change.flag1 = Z_PORT_FLAG_BPM;
               change.real_val = self->last_set_bpm + (bpm_t) num;
               self->last_set_bpm = change.real_val;
               router_queue_control_port_change (ROUTER, &change);
@@ -933,7 +935,7 @@ drag_update (
           if (fabs (dec) > 0)
             {
               ControlPortChange change = { 0 };
-              change.flag1 = PORT_FLAG_BPM;
+              change.flag1 = Z_PORT_FLAG_BPM;
               change.real_val = self->last_set_bpm + (bpm_t) dec;
               self->last_set_bpm = change.real_val;
               router_queue_control_port_change (ROUTER, &change);
@@ -1060,7 +1062,7 @@ drag_update (
         {
           num = self->beats_per_bar_at_start + (int) diff / 24;
           ControlPortChange change = { 0 };
-          change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
+          change.flag2 = Z_PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
               change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
@@ -1080,15 +1082,15 @@ drag_update (
             (int) tempo_track_beat_unit_to_enum (self->beat_unit_at_start)
             + (int) diff / 24;
           ControlPortChange change = { 0 };
-          change.flag2 = PORT_FLAG2_BEAT_UNIT;
+          change.flag2 = Z_PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
-              change.beat_unit = BEAT_UNIT_2;
+              change.beat_unit = Z_BEAT_UNIT_2;
             }
           else
             {
               change.beat_unit =
-                num > BEAT_UNIT_16 ? BEAT_UNIT_16 : (BeatUnit) num;
+                num > Z_BEAT_UNIT_16 ? Z_BEAT_UNIT_16 : (ZBeatUnit) num;
             }
           router_queue_control_port_change (ROUTER, &change);
         }

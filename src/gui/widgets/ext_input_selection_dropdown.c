@@ -202,7 +202,7 @@ ext_input_selection_dropdown_widget_refresh (
   Track *       track,
   bool          left)
 {
-  bool midi = track->in_signal_type == TYPE_EVENT;
+  bool midi = track->in_signal_type == Z_PORT_TYPE_EVENT;
 
   /* --- disconnect existing signals --- */
 

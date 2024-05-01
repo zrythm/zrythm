@@ -207,7 +207,7 @@ check_vs_orig_state:
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
@@ -314,7 +314,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add an automation region with
    * 2 AutomationPoint's */
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
   track_name_hash = track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (p1, p2, track_name_hash, at->index, 0);
   success = track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);

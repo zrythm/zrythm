@@ -62,7 +62,7 @@ _test (
 
   /* 2. add no delay line */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
+    Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
