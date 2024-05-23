@@ -26,8 +26,8 @@ G_DECLARE_FINAL_TYPE (
   DIGITAL_METER_WIDGET,
   GtkWidget)
 
-typedef enum NoteLength NoteLength;
-typedef enum NoteType   NoteType;
+enum class NoteLength;
+enum class NoteType;
 typedef struct Position Position;
 
 /**
@@ -36,14 +36,14 @@ typedef struct Position Position;
  * @{
  */
 
-typedef enum DigitalMeterType
+enum class DigitalMeterType
 {
   DIGITAL_METER_TYPE_BPM,
   DIGITAL_METER_TYPE_POSITION,
   DIGITAL_METER_TYPE_TIMESIG,
   DIGITAL_METER_TYPE_NOTE_TYPE,
   DIGITAL_METER_TYPE_NOTE_LENGTH,
-} DigitalMeterType;
+};
 
 typedef struct SnapGrid SnapGrid;
 

@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 zrythm_srcs += files ([
-  'tracklist_selections.c',
+  'tracklist_selections.cpp',
   ])

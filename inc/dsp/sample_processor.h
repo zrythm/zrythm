@@ -18,7 +18,7 @@
 
 #include <zix/sem.h>
 
-typedef enum MetronomeType   MetronomeType;
+enum class MetronomeType;
 typedef struct SupportedFile SupportedFile;
 typedef struct Tracklist     Tracklist;
 typedef struct PluginSetting PluginSetting;

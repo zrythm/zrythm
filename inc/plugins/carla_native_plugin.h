@@ -31,7 +31,7 @@ typedef void *                  CarlaPluginHandle;
 /**
  * The type of the Carla plugin.
  */
-typedef enum CarlaPluginType
+enum class CarlaPluginType
 {
   CARLA_PLUGIN_NONE,
   CARLA_PLUGIN_RACK,
@@ -39,7 +39,7 @@ typedef enum CarlaPluginType
   CARLA_PLUGIN_PATCHBAY16,
   CARLA_PLUGIN_PATCHBAY32,
   CARLA_PLUGIN_PATCHBAY64,
-} CarlaPluginType;
+};
 
 typedef struct CarlaPatchbayPortInfo
 {

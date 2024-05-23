@@ -16,7 +16,7 @@ typedef struct Track Track;
 
 #define TRACK_CAN_BE_GROUP_TARGET(tr) \
   (IS_TRACK (tr) \
-   && (tr->type == TRACK_TYPE_AUDIO_GROUP || tr->type == TRACK_TYPE_MIDI_GROUP || tr->type == TRACK_TYPE_INSTRUMENT || tr->type == TRACK_TYPE_MASTER))
+   && (tr->type == TrackType::TRACK_TYPE_AUDIO_GROUP || tr->type == TrackType::TRACK_TYPE_MIDI_GROUP || tr->type == TrackType::TRACK_TYPE_INSTRUMENT || tr->type == TrackType::TRACK_TYPE_MASTER))
 
 void
 group_target_track_init_loaded (Track * self);

@@ -89,15 +89,15 @@ typedef struct MPMCQueue         MPMCQueue;
 #define engine_get_run(engine) g_atomic_int_get (&(engine)->run)
 
 #define engine_has_handled_buffer_size_change(engine) \
-  ((engine)->audio_backend != AUDIO_BACKEND_JACK || \
-  ((engine)->audio_backend == AUDIO_BACKEND_JACK && \
+  ((engine)->audio_backend != AudioBackend::AUDIO_BACKEND_JACK || \
+  ((engine)->audio_backend == AudioBackend::AUDIO_BACKEND_JACK && \
    g_atomic_int_get (&(engine)->handled_jack_buffer_size_change) == 1))
 
 #define ENGINE_MAX_EVENTS 100
 
 #define engine_queue_push_back_event(q, x) mpmc_queue_push_back (q, (void *) x)
 
-#define engine_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void *) x)
+#define engine_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void **) x)
 
 /**
  * Push events.
@@ -127,11 +127,11 @@ typedef struct MPMCQueue         MPMCQueue;
 /**
  * Audio engine event type.
  */
-typedef enum AudioEngineEventType
+enum class AudioEngineEventType
 {
   AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
   AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
-} AudioEngineEventType;
+};
 
 /**
  * Audio engine event.
@@ -151,7 +151,7 @@ typedef struct AudioEngineEvent
 /**
  * Buffer sizes to be used in combo boxes.
  */
-typedef enum AudioEngineBufferSize
+enum class AudioEngineBufferSize
 {
   AUDIO_ENGINE_BUFFER_SIZE_16,
   AUDIO_ENGINE_BUFFER_SIZE_32,
@@ -162,8 +162,7 @@ typedef enum AudioEngineBufferSize
   AUDIO_ENGINE_BUFFER_SIZE_1024,
   AUDIO_ENGINE_BUFFER_SIZE_2048,
   AUDIO_ENGINE_BUFFER_SIZE_4096,
-  NUM_AUDIO_ENGINE_BUFFER_SIZES,
-} AudioEngineBufferSize;
+};
 
 static const char * buffer_size_str[] = {
   "16",  "32",         "64",         "128",        "256",
@@ -173,13 +172,13 @@ static const char * buffer_size_str[] = {
 static inline const char *
 engine_buffer_size_to_string (AudioEngineBufferSize buf_size)
 {
-  return buffer_size_str[buf_size];
+  return buffer_size_str[static_cast<int> (buf_size)];
 }
 
 /**
  * Samplerates to be used in comboboxes.
  */
-typedef enum AudioEngineSamplerate
+enum class AudioEngineSamplerate
 {
   AUDIO_ENGINE_SAMPLERATE_22050,
   AUDIO_ENGINE_SAMPLERATE_32000,
@@ -188,8 +187,7 @@ typedef enum AudioEngineSamplerate
   AUDIO_ENGINE_SAMPLERATE_88200,
   AUDIO_ENGINE_SAMPLERATE_96000,
   AUDIO_ENGINE_SAMPLERATE_192000,
-  NUM_AUDIO_ENGINE_SAMPLERATES,
-} AudioEngineSamplerate;
+};
 
 static const char * sample_rate_str[] = {
   N_ ("22,050"), N_ ("32,000"), N_ ("44,100"),  N_ ("48,000"),
@@ -199,10 +197,10 @@ static const char * sample_rate_str[] = {
 static inline const char *
 engine_sample_rate_to_string (AudioEngineSamplerate sample_rate)
 {
-  return sample_rate_str[sample_rate];
+  return sample_rate_str[static_cast<int> (sample_rate)];
 }
 
-typedef enum AudioBackend
+enum class AudioBackend
 {
   AUDIO_BACKEND_DUMMY,
   AUDIO_BACKEND_DUMMY_LIBSOUNDIO,
@@ -221,18 +219,17 @@ typedef enum AudioBackend
   AUDIO_BACKEND_WASAPI_LIBSOUNDIO,
   AUDIO_BACKEND_WASAPI_RTAUDIO,
   AUDIO_BACKEND_ASIO_RTAUDIO,
-  NUM_AUDIO_BACKENDS,
-} AudioBackend;
+};
 
 static inline bool
 audio_backend_is_rtaudio (AudioBackend backend)
 {
-  return backend == AUDIO_BACKEND_ALSA_RTAUDIO
-         || backend == AUDIO_BACKEND_JACK_RTAUDIO
-         || backend == AUDIO_BACKEND_PULSEAUDIO_RTAUDIO
-         || backend == AUDIO_BACKEND_COREAUDIO_RTAUDIO
-         || backend == AUDIO_BACKEND_WASAPI_RTAUDIO
-         || backend == AUDIO_BACKEND_ASIO_RTAUDIO;
+  return backend == AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO
+         || backend == AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO
+         || backend == AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO
+         || backend == AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO
+         || backend == AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO
+         || backend == AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO;
 }
 
 __attribute__ ((unused)) static const char * audio_backend_str[] = {
@@ -252,7 +249,7 @@ __attribute__ ((unused)) static const char * audio_backend_str[] = {
  * Mode used when bouncing, either during exporting
  * or when bouncing tracks or regions to audio.
  */
-typedef enum BounceMode
+enum class BounceMode
 {
   /** Don't bounce. */
   BOUNCE_OFF,
@@ -267,9 +264,9 @@ typedef enum BounceMode
    * is bouncing.
    */
   BOUNCE_INHERIT,
-} BounceMode;
+};
 
-typedef enum MidiBackend
+enum class MidiBackend
 {
   MIDI_BACKEND_DUMMY,
   MIDI_BACKEND_ALSA,
@@ -280,16 +277,16 @@ typedef enum MidiBackend
   MIDI_BACKEND_WINDOWS_MME_RTMIDI,
   MIDI_BACKEND_COREMIDI_RTMIDI,
   MIDI_BACKEND_WINDOWS_UWP_RTMIDI,
-  NUM_MIDI_BACKENDS,
-} MidiBackend;
+};
 
 static inline bool
 midi_backend_is_rtmidi (MidiBackend backend)
 {
-  return backend == MIDI_BACKEND_ALSA_RTMIDI || backend == MIDI_BACKEND_JACK_RTMIDI
-         || backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI
-         || backend == MIDI_BACKEND_COREMIDI_RTMIDI
-         || backend == MIDI_BACKEND_WINDOWS_UWP_RTMIDI;
+  return backend == MidiBackend::MIDI_BACKEND_ALSA_RTMIDI
+         || backend == MidiBackend::MIDI_BACKEND_JACK_RTMIDI
+         || backend == MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI
+         || backend == MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI
+         || backend == MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI;
 }
 
 static const char * midi_backend_str[] = {
@@ -305,12 +302,12 @@ static const char * midi_backend_str[] = {
   "Windows UWP (rtmidi)",
 };
 
-typedef enum AudioEngineJackTransportType
+enum class AudioEngineJackTransportType
 {
   AUDIO_ENGINE_JACK_TIMEBASE_MASTER,
   AUDIO_ENGINE_JACK_TRANSPORT_CLIENT,
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
-} AudioEngineJackTransportType;
+};
 
 typedef struct AudioEnginePositionInfo
 {
@@ -564,9 +561,9 @@ typedef struct AudioEngine
   gint preparing_for_process;
 
 #ifdef HAVE_PORT_AUDIO
-  PaStream * pa_stream;
+  PaStream * port_audio_stream;
 #else
-  void * pa_stream;
+  void * port_audio_stream;
 #endif
 
   /**
@@ -574,9 +571,9 @@ typedef struct AudioEngine
    *
    * Unlike JACK, the audio goes directly here.
    * FIXME this is not really needed, just
-   * do the calculations in pa_stream_cb.
+   * do the calculations in port_audio_stream_cb.
    */
-  float * pa_out_buf;
+  float * port_audio_out_buf;
 
 #ifdef _WOE32
   /** Windows MME MIDI devices. */
@@ -726,13 +723,11 @@ typedef struct AudioEngine
   /**
    * Event queue.
    *
-   * Events such as buffer size change request and
-   * sample size change request should be queued
-   * here.
+   * Events such as buffer size change request and sample size change request
+   * should be queued here.
    *
-   * The engine will skip processing while the
-   * queue still has events or is currently
-   * processing events.
+   * The engine will skip processing while the queue still has events or is
+   * currently processing events.
    */
   MPMCQueue * ev_queue;
 
@@ -991,7 +986,7 @@ engine_audio_backend_from_string (const char * str);
 static inline const char *
 engine_midi_backend_to_string (MidiBackend backend)
 {
-  return midi_backend_str[backend];
+  return midi_backend_str[static_cast<int> (backend)];
 }
 
 MidiBackend

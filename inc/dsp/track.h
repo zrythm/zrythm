@@ -25,26 +25,26 @@
 
 #include <glib/gi18n.h>
 
-typedef struct AutomationTracklist            AutomationTracklist;
-typedef struct ZRegion                        ZRegion;
-typedef struct Position                       Position;
-typedef struct _TrackWidget                   TrackWidget;
-typedef struct _FolderChannelWidget           FolderChannelWidget;
-typedef struct Channel                        Channel;
-typedef struct MidiEvents                     MidiEvents;
-typedef struct AutomationTrack                AutomationTrack;
-typedef struct Automatable                    Automatable;
-typedef struct AutomationPoint                AutomationPoint;
-typedef struct ChordObject                    ChordObject;
-typedef struct MusicalScale                   MusicalScale;
-typedef struct Modulator                      Modulator;
-typedef struct Marker                         Marker;
-typedef struct PluginDescriptor               PluginDescriptor;
-typedef struct Tracklist                      Tracklist;
-typedef struct SupportedFile                  SupportedFile;
-typedef struct TracklistSelections            TracklistSelections;
-typedef enum PassthroughProcessorType         PassthroughProcessorType;
-typedef enum FaderType                        FaderType;
+typedef struct AutomationTracklist  AutomationTracklist;
+typedef struct ZRegion              ZRegion;
+typedef struct Position             Position;
+typedef struct _TrackWidget         TrackWidget;
+typedef struct _FolderChannelWidget FolderChannelWidget;
+typedef struct Channel              Channel;
+typedef struct MidiEvents           MidiEvents;
+typedef struct AutomationTrack      AutomationTrack;
+typedef struct Automatable          Automatable;
+typedef struct AutomationPoint      AutomationPoint;
+typedef struct ChordObject          ChordObject;
+typedef struct MusicalScale         MusicalScale;
+typedef struct Modulator            Modulator;
+typedef struct Marker               Marker;
+typedef struct PluginDescriptor     PluginDescriptor;
+typedef struct Tracklist            Tracklist;
+typedef struct SupportedFile        SupportedFile;
+typedef struct TracklistSelections  TracklistSelections;
+enum class PassthroughProcessorType;
+enum class FaderType;
 typedef void                                  MIDI_FILE;
 typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
@@ -78,7 +78,7 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 /**
  * The Track's type.
  */
-typedef enum TrackType
+enum class TrackType
 {
   /**
    * Instrument tracks must have an Instrument
@@ -157,7 +157,7 @@ typedef enum TrackType
 
   /** Foldable track used for visual grouping. */
   TRACK_TYPE_FOLDER,
-} TrackType;
+};
 
 static const char * track_type_strings[] = {
   N_ ("Instrument"),  N_ ("Audio"), N_ ("Master"),    N_ ("Chord"),
@@ -565,7 +565,7 @@ track_type_has_channel (TrackType type);
 static inline bool
 track_type_can_have_direct_out (TrackType type)
 {
-  return type != TRACK_TYPE_MASTER;
+  return type != TrackType::TRACK_TYPE_MASTER;
 }
 
 static inline bool
@@ -573,13 +573,14 @@ track_type_can_have_region_type (TrackType type, RegionType region_type)
 {
   switch (region_type)
     {
-    case REGION_TYPE_AUDIO:
-      return type == TRACK_TYPE_AUDIO;
-    case REGION_TYPE_MIDI:
-      return type == TRACK_TYPE_MIDI || type == TRACK_TYPE_INSTRUMENT;
-    case REGION_TYPE_CHORD:
-      return type == TRACK_TYPE_CHORD;
-    case REGION_TYPE_AUTOMATION:
+    case RegionType::REGION_TYPE_AUDIO:
+      return type == TrackType::TRACK_TYPE_AUDIO;
+    case RegionType::REGION_TYPE_MIDI:
+      return type == TrackType::TRACK_TYPE_MIDI
+             || type == TrackType::TRACK_TYPE_INSTRUMENT;
+    case RegionType::REGION_TYPE_CHORD:
+      return type == TrackType::TRACK_TYPE_CHORD;
+    case RegionType::REGION_TYPE_AUTOMATION:
       return true;
     }
 
@@ -589,16 +590,18 @@ track_type_can_have_region_type (TrackType type, RegionType region_type)
 static inline bool
 track_type_is_foldable (TrackType type)
 {
-  return type == TRACK_TYPE_FOLDER || type == TRACK_TYPE_MIDI_GROUP
-         || type == TRACK_TYPE_AUDIO_GROUP;
+  return type == TrackType::TRACK_TYPE_FOLDER
+         || type == TrackType::TRACK_TYPE_MIDI_GROUP
+         || type == TrackType::TRACK_TYPE_AUDIO_GROUP;
 }
 
 static inline bool
 track_type_is_copyable (TrackType type)
 {
-  return type != TRACK_TYPE_MASTER && type != TRACK_TYPE_TEMPO
-         && type != TRACK_TYPE_CHORD && type != TRACK_TYPE_MODULATOR
-         && type != TRACK_TYPE_MARKER;
+  return type != TrackType::TRACK_TYPE_MASTER && type != TrackType::TRACK_TYPE_TEMPO
+         && type != TrackType::TRACK_TYPE_CHORD
+         && type != TrackType::TRACK_TYPE_MODULATOR
+         && type != TrackType::TRACK_TYPE_MARKER;
 }
 
 /**
@@ -976,7 +979,8 @@ track_type_can_host_region_type (const TrackType tt, const RegionType rt);
 static inline bool
 track_type_has_mono_compat_switch (const TrackType tt)
 {
-  return tt == TRACK_TYPE_AUDIO_GROUP || tt == TRACK_TYPE_MASTER;
+  return tt == TrackType::TRACK_TYPE_AUDIO_GROUP
+         || tt == TrackType::TRACK_TYPE_MASTER;
 }
 
 #define track_type_is_audio_group track_type_has_mono_compat_switch
@@ -984,7 +988,8 @@ track_type_has_mono_compat_switch (const TrackType tt)
 static inline bool
 track_type_is_fx (const TrackType type)
 {
-  return type == TRACK_TYPE_AUDIO_BUS || type == TRACK_TYPE_MIDI_BUS;
+  return type == TrackType::TRACK_TYPE_AUDIO_BUS
+         || type == TrackType::TRACK_TYPE_MIDI_BUS;
 }
 
 /**
@@ -993,8 +998,9 @@ track_type_is_fx (const TrackType type)
 static inline int
 track_type_can_record (const TrackType type)
 {
-  return type == TRACK_TYPE_AUDIO || type == TRACK_TYPE_MIDI
-         || type == TRACK_TYPE_CHORD || type == TRACK_TYPE_INSTRUMENT;
+  return type == TrackType::TRACK_TYPE_AUDIO || type == TrackType::TRACK_TYPE_MIDI
+         || type == TrackType::TRACK_TYPE_CHORD
+         || type == TrackType::TRACK_TYPE_INSTRUMENT;
 }
 
 /**
@@ -1023,20 +1029,20 @@ track_get_automation_tracklist (Track * const track)
 
   switch (track->type)
     {
-    case TRACK_TYPE_MARKER:
-    case TRACK_TYPE_FOLDER:
+    case TrackType::TRACK_TYPE_MARKER:
+    case TrackType::TRACK_TYPE_FOLDER:
       break;
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_MIDI:
-    case TRACK_TYPE_TEMPO:
-    case TRACK_TYPE_MODULATOR:
+    case TrackType::TRACK_TYPE_CHORD:
+    case TrackType::TRACK_TYPE_AUDIO_BUS:
+    case TrackType::TRACK_TYPE_AUDIO_GROUP:
+    case TrackType::TRACK_TYPE_MIDI_BUS:
+    case TrackType::TRACK_TYPE_MIDI_GROUP:
+    case TrackType::TRACK_TYPE_INSTRUMENT:
+    case TrackType::TRACK_TYPE_AUDIO:
+    case TrackType::TRACK_TYPE_MASTER:
+    case TrackType::TRACK_TYPE_MIDI:
+    case TrackType::TRACK_TYPE_TEMPO:
+    case TrackType::TRACK_TYPE_MODULATOR:
       return &track->automation_tracklist;
     default:
       g_warn_if_reached ();
@@ -1055,15 +1061,15 @@ track_get_channel (const Track * const track)
 {
   switch (track->type)
     {
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-    case TRACK_TYPE_MIDI:
-    case TRACK_TYPE_CHORD:
+    case TrackType::TRACK_TYPE_MASTER:
+    case TrackType::TRACK_TYPE_INSTRUMENT:
+    case TrackType::TRACK_TYPE_AUDIO:
+    case TrackType::TRACK_TYPE_AUDIO_BUS:
+    case TrackType::TRACK_TYPE_AUDIO_GROUP:
+    case TrackType::TRACK_TYPE_MIDI_BUS:
+    case TrackType::TRACK_TYPE_MIDI_GROUP:
+    case TrackType::TRACK_TYPE_MIDI:
+    case TrackType::TRACK_TYPE_CHORD:
       return track->channel;
     default:
       return NULL;
@@ -1085,7 +1091,8 @@ CONST
 static inline bool
 track_type_has_piano_roll (const TrackType type)
 {
-  return type == TRACK_TYPE_MIDI || type == TRACK_TYPE_INSTRUMENT;
+  return type == TrackType::TRACK_TYPE_MIDI
+         || type == TrackType::TRACK_TYPE_INSTRUMENT;
 }
 
 /**
@@ -1095,8 +1102,9 @@ track_type_has_piano_roll (const TrackType type)
 static inline int
 track_has_inputs (const Track * track)
 {
-  return track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT
-         || track->type == TRACK_TYPE_AUDIO;
+  return track->type == TrackType::TRACK_TYPE_MIDI
+         || track->type == TrackType::TRACK_TYPE_INSTRUMENT
+         || track->type == TrackType::TRACK_TYPE_AUDIO;
 }
 
 Track *
@@ -1178,8 +1186,8 @@ static inline int
 track_type_is_compatible_for_moving (const TrackType type1, const TrackType type2)
 {
   return type1 == type2
-         || (type1 == TRACK_TYPE_MIDI && type2 == TRACK_TYPE_INSTRUMENT)
-         || (type1 == TRACK_TYPE_INSTRUMENT && type2 == TRACK_TYPE_MIDI);
+         || (type1 == TrackType::TRACK_TYPE_MIDI && type2 == TrackType::TRACK_TYPE_INSTRUMENT)
+         || (type1 == TrackType::TRACK_TYPE_INSTRUMENT && type2 == TrackType::TRACK_TYPE_MIDI);
 }
 
 /**
@@ -1410,7 +1418,7 @@ track_set_enabled (
 static inline const char *
 track_type_to_string (TrackType type)
 {
-  return track_type_strings[type];
+  return track_type_strings[static_cast<int> (type)];
 }
 
 TrackType

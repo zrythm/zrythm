@@ -31,13 +31,13 @@
  * Bitfield instead of plain enum so multiple values can be passed to some
  * functions (eg to collect all Regions of the given types in a Track).
  */
-typedef enum RegionType
+enum class RegionType
 {
   REGION_TYPE_MIDI = 1 << 0,
   REGION_TYPE_AUDIO = 1 << 1,
   REGION_TYPE_AUTOMATION = 1 << 2,
   REGION_TYPE_CHORD = 1 << 3,
-} RegionType;
+};
 
 static const char * region_type_bitvals[] = {
   "midi",
@@ -100,9 +100,11 @@ static inline const char *
 region_identifier_get_region_type_name (RegionType type)
 {
   g_return_val_if_fail (
-    type >= REGION_TYPE_MIDI && type <= REGION_TYPE_CHORD, NULL);
+    type >= RegionType::REGION_TYPE_MIDI && type <= RegionType::REGION_TYPE_CHORD,
+    NULL);
 
-  return region_type_bitvals[utils_get_uint_from_bitfield_val (type)];
+  return region_type_bitvals[utils_get_uint_from_bitfield_val (
+    static_cast<unsigned int> (type))];
 }
 
 static inline void

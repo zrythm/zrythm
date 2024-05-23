@@ -60,7 +60,7 @@ typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
 
 #define mpmc_queue_push_back_node(q, x) mpmc_queue_push_back (q, (void *) x)
 
-#define mpmc_queue_dequeue_node(q, x) mpmc_queue_dequeue (q, (void *) x)
+#define mpmc_queue_dequeue_node(q, x) mpmc_queue_dequeue (q, (void **) x)
 
 #define MAX_GRAPH_THREADS 128
 

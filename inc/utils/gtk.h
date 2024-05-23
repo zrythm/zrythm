@@ -75,25 +75,44 @@ G_GNUC_END_IGNORE_DEPRECATIONS
     complete);
 
 #define Z_GDK_RGBA_INIT(r, g, b, a) \
-  (GdkRGBA) \
+  (const GdkRGBA &) \
   { \
     .red = (float) (r), .green = (float) (g), .blue = (float) (b), \
     .alpha = (float) (a) \
   }
 
 #define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
-  (GdkRectangle) \
+  (const GdkRectangle &) \
   { \
     .x = _x, .y = _y, .width = _w, .height = _h \
   }
 
 #define Z_GDK_RECTANGLE_INIT_UNIT(_x, _y) \
-  (GdkRectangle) \
+  (const GdkRectangle &) \
   { \
     .x = _x, .y = _y, .width = 1, .height = 1 \
   }
 
-typedef enum IconType IconType;
+#define Z_GRAPHENE_RECT_INIT(_x, _y, _w, _h) \
+  (const graphene_rect_t &) \
+  { \
+    .origin = { .x = (_x), .y = (_y) }, .size = { \
+      .width = (_w), \
+      .height = (_h) \
+    } \
+  }
+
+#define Z_GRAPHENE_POINT_INIT(_x, _y) \
+  (const graphene_point_t &) \
+  { \
+    .x = (_x), .y = (_y) \
+  }
+
+#define Z_GRAPHENE_SIZE_INIT(_w, _h) \
+  (const graphene_size_t &) \
+  { \
+    .width = (_w), .height = (_h) \
+  }
 
 /**
  * GObject struct (from GObject source code), used

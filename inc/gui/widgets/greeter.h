@@ -107,7 +107,7 @@ typedef struct _GreeterWidget
   AdwPreferencesGroup * templates_pref_group;
   GtkButton *           create_project_confirm_btn;
 
-  char * template;
+  char * template_;
 
   bool zrythm_already_running;
 

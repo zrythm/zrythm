@@ -29,20 +29,20 @@
 
 #    include <windows.h>
 
-typedef enum AVRT_PRIORITY
+enum class AVRT_PRIORITY
 {
   AVRT_PRIORITY_VERYLOW = -2,
   AVRT_PRIORITY_LOW,
   AVRT_PRIORITY_NORMAL,
   AVRT_PRIORITY_HIGH,
   AVRT_PRIORITY_CRITICAL
-} AVRT_PRIORITY;
+};
 
-typedef enum WindowsMMCSSErrorCode
+enum class WindowsMMCSSErrorCode
 {
   MMCSS_ERROR_INVALID_TASK_NAME = 1550,
   MMCSS_ERROR_INVALID_TASK_INDEX = 1551
-} WindowsMMCSSErrorCode;
+};
 
 int
 windows_mmcss_initialize (void);

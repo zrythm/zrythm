@@ -21,7 +21,7 @@
 /**
  * Item factory column type.
  */
-typedef enum ItemFactoryType
+enum class ItemFactoryType
 {
   ITEM_FACTORY_TOGGLE,
   ITEM_FACTORY_TEXT,
@@ -40,7 +40,7 @@ typedef enum ItemFactoryType
 
   /** Color. */
   ITEM_FACTORY_COLOR,
-} ItemFactoryType;
+};
 
 /**
  * Item factory for column views.

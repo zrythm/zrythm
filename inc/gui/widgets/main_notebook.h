@@ -14,7 +14,6 @@
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
-#include <libpanel.h>
 
 #define MAIN_NOTEBOOK_WIDGET_TYPE (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -28,6 +27,7 @@ TYPEDEF_STRUCT_UNDERSCORED (TimelinePanelWidget);
 TYPEDEF_STRUCT_UNDERSCORED (EventViewerWidget);
 TYPEDEF_STRUCT_UNDERSCORED (CcBindingsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (PortConnectionsWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PanelFrame);
 
 /**
  * @addtogroup widgets

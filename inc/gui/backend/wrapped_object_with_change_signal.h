@@ -29,7 +29,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef enum WrappedObjectType
+enum class WrappedObjectType
 {
   WRAPPED_OBJECT_TYPE_TRACK,
   WRAPPED_OBJECT_TYPE_PLUGIN,
@@ -46,7 +46,7 @@ typedef enum WrappedObjectType
   WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION,
   WRAPPED_OBJECT_TYPE_EXT_PORT,
   WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION,
-} WrappedObjectType;
+};
 
 /**
  * A GObject-ified normal C object with a signal that interested

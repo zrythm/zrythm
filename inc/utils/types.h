@@ -16,6 +16,10 @@
 
 #include <gtk/gtk.h>
 
+#include <magic_enum_all.hpp>
+
+using namespace magic_enum::bitwise_operators;
+
 /**
  * @addtogroup utils
  *
@@ -26,7 +30,8 @@
 
 #define TYPEDEF_STRUCT_UNDERSCORED(s) typedef struct _##s s;
 
-#define TYPEDEF_ENUM(s) typedef enum s s;
+/** FIXME remove uses - deprecated */
+#define TYPEDEF_ENUM(s) enum class s;
 
 /** MIDI byte. */
 typedef uint8_t midi_byte_t;
@@ -176,6 +181,31 @@ typedef enum CacheTypes
   (CACHE_TYPE_TRACK_NAME_HASHES | CACHE_TYPE_PLUGIN_PORTS \
    | CACHE_TYPE_PLAYBACK_SNAPSHOTS | CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES \
    | CACHE_TYPE_AUTOMATION_LANE_PORTS)
+
+#define ENUM_INT_TO_VALUE_CONST(_enum, _int) \
+  (magic_enum::enum_value<_enum, _int> ())
+#define ENUM_INT_TO_VALUE(_enum, _int) (magic_enum::enum_value<_enum> (_int))
+#define ENUM_VALUE_TO_INT(_val) (magic_enum::enum_integer (_val))
+
+#define ENUM_ENABLE_BITSET(_enum) \
+  template <> struct magic_enum::customize::enum_range<_enum> \
+  { \
+    static constexpr bool is_flags = true; \
+  }
+#define ENUM_BITSET(_enum, _val) (magic_enum::containers::bitset<_enum> (_val))
+#define ENUM_BITSET_TEST(_enum, _val, _other_val) \
+  /* (ENUM_BITSET (_enum, _val).test (_other_val)) */ \
+  (static_cast<int> (_val) & static_cast<int> (_other_val))
+
+/** @important ENUM_ENABLE_BITSET must be called on the enum that this is used
+ * on. */
+#define ENUM_BITSET_TO_STRING(_enum, _val) \
+  (ENUM_BITSET (_enum, _val).to_string ().data ())
+
+#define ENUM_COUNT(_enum) (magic_enum::enum_count<_enum> ())
+#define ENUM_NAME(_val) (magic_enum::enum_name (_val).data ())
+#define ENUM_NAME_FROM_INT(_enum, _int) \
+  ENUM_NAME (ENUM_INT_TO_VALUE (_enum, _int))
 
 /**
  * @}

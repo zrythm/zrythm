@@ -82,30 +82,30 @@ typedef struct Track Track;
 /**
  * A MIDI modifier to use to display data for.
  */
-typedef enum MidiModifier
+enum class MidiModifier
 {
   MIDI_MODIFIER_VELOCITY,
   MIDI_MODIFIER_PITCH_WHEEL,
   MIDI_MODIFIER_MOD_WHEEL,
   MIDI_MODIFIER_AFTERTOUCH,
-} MidiModifier;
+};
 
 /**
  * Highlighting for the piano roll.
  */
-typedef enum PianoRollHighlighting
+enum class PianoRollHighlighting
 {
   PR_HIGHLIGHT_NONE,
   PR_HIGHLIGHT_CHORD,
   PR_HIGHLIGHT_SCALE,
   PR_HIGHLIGHT_BOTH,
-} PianoRollHighlighting;
+};
 
-typedef enum PianoRollNoteNotation
+enum class PianoRollNoteNotation
 {
   PIANO_ROLL_NOTE_NOTATION_MUSICAL,
   PIANO_ROLL_NOTE_NOTATION_PITCH,
-} PianoRollNoteNotation;
+};
 
 typedef struct ZRegion ZRegion;
 

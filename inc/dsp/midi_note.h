@@ -17,13 +17,13 @@
 #include "dsp/velocity.h"
 #include "gui/backend/arranger_object.h"
 
-typedef struct _MidiNoteWidget     MidiNoteWidget;
-typedef struct Channel             Channel;
-typedef struct Track               Track;
-typedef struct MidiEvents          MidiEvents;
-typedef struct Position            Position;
-typedef struct Velocity            Velocity;
-typedef enum PianoRollNoteNotation PianoRollNoteNotation;
+typedef struct _MidiNoteWidget MidiNoteWidget;
+typedef struct Channel         Channel;
+typedef struct Track           Track;
+typedef struct MidiEvents      MidiEvents;
+typedef struct Position        Position;
+typedef struct Velocity        Velocity;
+enum class PianoRollNoteNotation;
 
 /**
  * @addtogroup dsp

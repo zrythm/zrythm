@@ -2,20 +2,20 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 action_srcs = [
-  'actions.c',
-  'arranger_selections.c',
-  'channel_send_action.c',
-  'chord_action.c',
-  'midi_mapping_action.c',
-  'mixer_selections_action.c',
-  'port_action.c',
-  'port_connection_action.c',
-  'range_action.c',
-  'tracklist_selections.c',
-  'transport_action.c',
-  'undoable_action.c',
-  'undo_stack.c',
-  'undo_manager.c',
+  'actions.cpp',
+  'arranger_selections.cpp',
+  'channel_send_action.cpp',
+  'chord_action.cpp',
+  'midi_mapping_action.cpp',
+  'mixer_selections_action.cpp',
+  'port_action.cpp',
+  'port_connection_action.cpp',
+  'range_action.cpp',
+  'tracklist_selections.cpp',
+  'transport_action.cpp',
+  'undoable_action.cpp',
+  'undo_stack.cpp',
+  'undo_manager.cpp',
 ]
 
 zrythm_srcs += files (action_srcs)

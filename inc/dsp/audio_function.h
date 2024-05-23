@@ -25,7 +25,7 @@ typedef struct Plugin             Plugin;
  * @{
  */
 
-typedef enum AudioFunctionType
+enum class AudioFunctionType
 {
   AUDIO_FUNCTION_INVERT,
   AUDIO_FUNCTION_NORMALIZE_PEAK,
@@ -50,7 +50,7 @@ typedef enum AudioFunctionType
 
   /* reserved */
   AUDIO_FUNCTION_INVALID,
-} AudioFunctionType;
+};
 
 static const char * audio_function_type_strings[] = {
   N_ ("Invert"),         N_ ("Normalize peak"), N_ ("Normalize RMS"),
@@ -72,7 +72,7 @@ typedef struct AudioFunctionOpts
 static inline const char *
 audio_function_type_to_string (AudioFunctionType type)
 {
-  return audio_function_type_strings[type];
+  return audio_function_type_strings[static_cast<int> (type)];
 }
 
 char *

@@ -25,25 +25,26 @@ test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode)
   g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
   char *           filename = g_strdup ("test_export.wav");
   ExportSettings * settings = export_settings_new ();
-  settings->format = EXPORT_FORMAT_WAV;
+  settings->format = ExportFormat::EXPORT_FORMAT_WAV;
   settings->artist = g_strdup ("Test Artist");
   settings->title = g_strdup ("Test Title");
   settings->genre = g_strdup ("Test Genre");
-  settings->depth = BIT_DEPTH_16;
+  settings->depth = BitDepth::BIT_DEPTH_16;
   settings->time_range = time_range;
-  if (mode == EXPORT_MODE_FULL)
+  if (mode == ExportMode::EXPORT_MODE_FULL)
     {
-      settings->mode = EXPORT_MODE_FULL;
+      settings->mode = ExportMode::EXPORT_MODE_FULL;
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_NO_BOUNCE);
       settings->bounce_with_parents = false;
     }
   else
     {
-      settings->mode = EXPORT_MODE_TRACKS;
+      settings->mode = ExportMode::EXPORT_MODE_TRACKS;
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_BOUNCE);
       settings->bounce_with_parents = true;
     }
-  char * exports_dir = project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir =
+    project_get_path (PROJECT, ProjectPath::PROJECT_PATH_EXPORTS, false);
   settings->file_uri = g_build_filename (exports_dir, filename, NULL);
 
   EngineState state;

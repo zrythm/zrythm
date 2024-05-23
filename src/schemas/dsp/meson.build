@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 zrythm_srcs += files ([
-  'channel.c',
-  'control_room.c',
-  'engine.c',
-  'fader.c',
-  'sample_processor.c',
-  'track.c',
-  'tracklist.c',
+  'channel.cpp',
+  'control_room.cpp',
+  'engine.cpp',
+  'fader.cpp',
+  'sample_processor.cpp',
+  'track.cpp',
+  'tracklist.cpp',
   ])

@@ -14,13 +14,13 @@
 
 typedef struct Track Track;
 
-typedef enum FoldableTrackMixerStatus
+enum class FoldableTrackMixerStatus
 {
   FOLDABLE_TRACK_MIXER_STATUS_MUTED,
   FOLDABLE_TRACK_MIXER_STATUS_SOLOED,
   FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED,
   FOLDABLE_TRACK_MIXER_STATUS_LISTENED,
-} FoldableTrackMixerStatus;
+};
 
 void
 foldable_track_init (Track * track);

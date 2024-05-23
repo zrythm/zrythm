@@ -59,8 +59,8 @@
 /** Marker name. */
 #define MARKER_NAME "Marker name"
 
-#define MUSICAL_SCALE_TYPE SCALE_IONIAN
-#define MUSICAL_SCALE_ROOT NOTE_A
+#define MUSICAL_SCALE_TYPE MusicalScaleType::SCALE_IONIAN
+#define MUSICAL_SCALE_ROOT MusicalNote::NOTE_A
 
 #define MOVE_TICKS 400
 
@@ -207,7 +207,7 @@ check_vs_orig_state:
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
@@ -241,8 +241,8 @@ check_vs_orig_state:
   obj = (ArrangerObject *) P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
   g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmpint (s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpint (s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+  g_assert_cmpenum (s->scale->type, ==, MUSICAL_SCALE_TYPE);
+  g_assert_cmpenum (s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
 
   /* save the project and reopen it. some callers
    * undo after this step so this checks if the undo
@@ -287,7 +287,8 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   position_set_to_bar (p1, 2);
   position_set_to_bar (p2, 4);
   Track * track = track_new (
-    TRACK_TYPE_MIDI, TRACKLIST->num_tracks, MIDI_TRACK_NAME, F_WITH_LANE);
+    TrackType::TRACK_TYPE_MIDI, TRACKLIST->num_tracks, MIDI_TRACK_NAME,
+    F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   unsigned int track_name_hash = track_get_name_hash (track);
@@ -299,7 +300,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   arranger_object_set_name (r_obj, MIDI_REGION_NAME, F_NO_PUBLISH_EVENTS);
   g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
-  g_assert_cmpint (r->id.type, ==, REGION_TYPE_MIDI);
+  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_MIDI);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
 
@@ -314,14 +315,14 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add an automation region with
    * 2 AutomationPoint's */
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, Z_PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE);
   track_name_hash = track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (p1, p2, track_name_hash, at->index, 0);
   success = track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
   g_assert_true (success);
   g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.at_idx, ==, at->index);
-  g_assert_cmpint (r->id.type, ==, REGION_TYPE_AUTOMATION);
+  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_AUTOMATION);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
 
@@ -375,7 +376,8 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add an audio region */
   position_set_to_bar (p1, 2);
   track = track_new (
-    TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, AUDIO_TRACK_NAME, F_WITH_LANE);
+    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, AUDIO_TRACK_NAME,
+    F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   char audio_file_path[2000];
@@ -383,8 +385,8 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
   track_name_hash = track_get_name_hash (track);
   r = audio_region_new (
-    -1, audio_file_path, true, NULL, 0, NULL, 0, 0, p1, track_name_hash,
-    AUDIO_REGION_LANE, 0, NULL);
+    -1, audio_file_path, true, NULL, 0, NULL, 0, (BitDepth) 0, p1,
+    track_name_hash, AUDIO_REGION_LANE, 0, NULL);
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, >, 151000);
   g_assert_cmpuint (clip->num_frames, <, 152000);
@@ -394,17 +396,18 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   arranger_object_set_name (r_obj, AUDIO_REGION_NAME, F_NO_PUBLISH_EVENTS);
   g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.lane_pos, ==, AUDIO_REGION_LANE);
-  g_assert_cmpint (r->id.type, ==, REGION_TYPE_AUDIO);
+  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_AUDIO);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
 
   /* create the target tracks */
   track = track_new (
-    TRACK_TYPE_MIDI, TRACKLIST->num_tracks, TARGET_MIDI_TRACK_NAME, F_WITH_LANE);
+    TrackType::TRACK_TYPE_MIDI, TRACKLIST->num_tracks, TARGET_MIDI_TRACK_NAME,
+    F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   track = track_new (
-    TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, TARGET_AUDIO_TRACK_NAME,
+    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, TARGET_AUDIO_TRACK_NAME,
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);

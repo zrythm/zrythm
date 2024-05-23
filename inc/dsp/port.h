@@ -53,8 +53,8 @@ typedef struct ChannelSend             ChannelSend;
 typedef struct Transport               Transport;
 typedef struct PluginGtkController     PluginGtkController;
 typedef struct EngineProcessTimeInfo   EngineProcessTimeInfo;
-typedef enum PanAlgorithm              PanAlgorithm;
-typedef enum PanLaw                    PanLaw;
+enum class PanAlgorithm;
+enum class PanLaw;
 
 /**
  * @addtogroup dsp
@@ -82,22 +82,30 @@ typedef enum PanLaw                    PanLaw;
    && owner##_is_in_active_project (self->owner))
 
 #define port_is_in_active_project(self) \
-  (port_is_owner_active (self, Z_PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_PLUGIN, plugin) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_TRACK, track) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_CHANNEL, track) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_FADER, fader) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
+  (port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
    || port_is_owner_active ( \
-     self, Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, plugin) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, track) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL, track) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, fader) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
      modulator_macro_processor) \
-   || port_is_owner_active (self, Z_PORT_OWNER_TYPE_HW, ext_port))
+   || port_is_owner_active ( \
+     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_HW, ext_port))
 
 /**
  * What the internal data is.
  */
-typedef enum PortInternalType
+enum class PortInternalType
 {
   INTERNAL_NONE,
 
@@ -112,7 +120,7 @@ typedef enum PortInternalType
 
   /** Pointer to snd_seq_port_info_t. */
   INTERNAL_ALSA_SEQ_PORT,
-} PortInternalType;
+};
 
 /**
  * Scale point.
@@ -172,8 +180,7 @@ typedef struct Port
   int            num_dests;
   size_t         dests_size;
 
-  /** Caches filled when recalculating the
-   * graph. */
+  /** Caches filled when recalculating the graph. */
   const PortConnection ** src_connections;
   int                     num_src_connections;
   size_t                  src_connections_size;
@@ -762,9 +769,9 @@ port_set_expose_to_backend (Port * self, int expose);
 NONNULL PURE static inline bool
 port_is_exposed_to_backend (const Port * self)
 {
-  return self->internal_type == INTERNAL_JACK_PORT
-         || self->internal_type == INTERNAL_ALSA_SEQ_PORT
-         || self->id.owner_type == Z_PORT_OWNER_TYPE_AUDIO_ENGINE
+  return self->internal_type == PortInternalType::INTERNAL_JACK_PORT
+         || self->internal_type == PortInternalType::INTERNAL_ALSA_SEQ_PORT
+         || self->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE
          || self->exposed_to_backend;
 }
 
@@ -952,7 +959,8 @@ port_restore_from_non_project (Port * self, Port * non_project);
 #define port_clear_buffer(_port) \
   { \
     if ( \
-      _port->id.type == Z_PORT_TYPE_AUDIO || _port->id.type == Z_PORT_TYPE_CV) \
+      _port->id.type == ZPortType::Z_PORT_TYPE_AUDIO \
+      || _port->id.type == ZPortType::Z_PORT_TYPE_CV) \
       { \
         if (_port->buf) \
           { \
@@ -960,7 +968,7 @@ port_restore_from_non_project (Port * self, Port * non_project);
               _port->buf, DENORMAL_PREVENTION_VAL, AUDIO_ENGINE->block_length); \
           } \
       } \
-    else if (_port->id.type == Z_PORT_TYPE_EVENT) \
+    else if (_port->id.type == ZPortType::Z_PORT_TYPE_EVENT) \
       { \
         if (_port->midi_events) \
           _port->midi_events->num_events = 0; \

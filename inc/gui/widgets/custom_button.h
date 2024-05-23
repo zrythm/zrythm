@@ -20,7 +20,7 @@
 
 #define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
 
-typedef enum CustomButtonWidgetState
+enum class CustomButtonWidgetState
 {
   CUSTOM_BUTTON_WIDGET_STATE_NORMAL,
   CUSTOM_BUTTON_WIDGET_STATE_HOVERED,
@@ -29,14 +29,14 @@ typedef enum CustomButtonWidgetState
 
   /** Only border is toggled. */
   CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED,
-} CustomButtonWidgetState;
+};
 
-typedef enum CustomButtonWidgetOwner
+enum class CustomButtonWidgetOwner
 {
   CUSTOM_BUTTON_WIDGET_OWNER_TRACK,
   CUSTOM_BUTTON_WIDGET_OWNER_LANE,
   CUSTOM_BUTTON_WIDGET_OWNER_AT,
-} CustomButtonWidgetOwner;
+};
 
 /**
  * Custom button to be drawn inside drawing areas.

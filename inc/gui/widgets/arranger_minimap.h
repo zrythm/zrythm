@@ -36,7 +36,7 @@ typedef struct ArrangerMinimap                 ArrangerMinimap;
 
 #define MW_TIMELINE_MINIMAP (MW_TIMELINE_PANEL->timeline_wrapper->minimap)
 
-typedef enum ArrangerMinimapAction
+enum class ArrangerMinimapAction
 {
   ARRANGER_MINIMAP_ACTION_NONE,
   ARRANGER_MINIMAP_ACTION_RESIZING_L,
@@ -44,13 +44,13 @@ typedef enum ArrangerMinimapAction
   ARRANGER_MINIMAP_ACTION_STARTING_MOVING, ///< in drag_start
   ARRANGER_MINIMAP_ACTION_MOVING,          ///< in drag start,
                                   ///< also for dragging up/down bitwig style
-} ArrangerMinimapAction;
+};
 
-typedef enum ArrangerMinimapType
+enum class ArrangerMinimapType
 {
   ARRANGER_MINIMAP_TYPE_TIMELINE,
   ARRANGER_MINIMAP_TYPE_CLIP_EDITOR,
-} ArrangerMinimapType;
+};
 
 typedef struct _ArrangerMinimapWidget
 {

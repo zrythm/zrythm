@@ -31,7 +31,7 @@
 #define SNAP_GRID_ANY_SNAP(sg) (sg->snap_to_grid || sg->snap_to_events)
 #define SNAP_GRID_DEFAULT_MAX_BAR 10000
 
-typedef enum NoteLength
+enum class NoteLength
 {
   NOTE_LENGTH_BAR,
   NOTE_LENGTH_BEAT,
@@ -44,26 +44,26 @@ typedef enum NoteLength
   NOTE_LENGTH_1_32,
   NOTE_LENGTH_1_64,
   NOTE_LENGTH_1_128
-} NoteLength;
+};
 
 const char **
 note_length_get_strings (void);
 const char *
 note_length_to_str (NoteLength len);
 
-typedef enum NoteType
+enum class NoteType
 {
   NOTE_TYPE_NORMAL,
   NOTE_TYPE_DOTTED, ///< 2/3 of its original size
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
-} NoteType;
+};
 
 const char **
 note_type_get_strings (void);
 const char *
 note_type_to_str (NoteType type);
 
-typedef enum NoteLengthType
+enum class NoteLengthType
 {
   /** Link length with snap setting. */
   NOTE_LENGTH_LINK,
@@ -73,16 +73,16 @@ typedef enum NoteLengthType
 
   /** Custom length. */
   NOTE_LENGTH_CUSTOM,
-} NoteLengthType;
+};
 
 /**
  * Snap grid type.
  */
-typedef enum SnapGridType
+enum class SnapGridType
 {
   SNAP_GRID_TYPE_TIMELINE,
   SNAP_GRID_TYPE_EDITOR,
-} SnapGridType;
+};
 
 typedef struct SnapGrid
 {

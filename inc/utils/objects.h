@@ -43,7 +43,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 /**
  * Allocates memory for an object of type \ref type.
  */
-#define object_new(type) g_malloc0 (sizeof (type))
+#define object_new(type) (type *) g_malloc0 (sizeof (type))
 
 /**
  * Allocates memory for an object of type \ref type.
@@ -66,7 +66,8 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 /**
  * Calloc \ref n blocks for type \ref type.
  */
-#define object_new_n(n, type) object_new_n_sizeof (n, sizeof (type))
+#define object_new_n(n, type) \
+  (static_cast<type *> (object_new_n_sizeof (n, sizeof (type))))
 
 #define object_realloc_n_sizeof(obj, prev_sz, sz) \
   realloc_zero (obj, prev_sz, sz)
@@ -78,7 +79,8 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
  * @param n New number of blocks.
  */
 #define object_realloc_n(obj, prev_n, n, type) \
-  object_realloc_n_sizeof (obj, prev_n * sizeof (type), n * sizeof (type))
+  static_cast<type *> ( \
+    object_realloc_n_sizeof (obj, prev_n * sizeof (type), n * sizeof (type)))
 
 /**
  * Zero's out the struct pointed to by \ref ptr.

@@ -7,5 +7,5 @@ subdir ('plugins')
 subdir ('settings')
 
 zrythm_srcs += files ([
-  'project.c',
+  'project.cpp',
   ])

@@ -14,7 +14,7 @@ typedef struct Plugin          Plugin;
 typedef struct Track           Track;
 typedef struct MixerSelections MixerSelections;
 
-typedef enum MixerSelectionsActionType
+enum class MixerSelectionsActionType
 {
   /** Duplicate from existing plugins. */
   MIXER_SELECTIONS_ACTION_COPY,
@@ -26,7 +26,7 @@ typedef enum MixerSelectionsActionType
   MIXER_SELECTIONS_ACTION_MOVE,
   MIXER_SELECTIONS_ACTION_CHANGE_STATUS,
   MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR,
-} MixerSelectionsActionType;
+};
 
 /**
  * Restrict selections to a channel.
@@ -140,42 +140,48 @@ mixer_selections_action_new (
 #define mixer_selections_action_new_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_new ( \
-    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, 0, Z_CARLA_BRIDGE_NONE, error)
+    NULL, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CREATE, \
+    slot_type, to_tr, to_slot, setting, num_plugins, 0, \
+    ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
+    to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
+    to_tr, to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
+    to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
+    0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_change_status(ms, new_val, error) \
   mixer_selections_action_new ( \
-    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
-    new_val, Z_CARLA_BRIDGE_NONE, error)
+    ms, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_STATUS, \
+    0, 0, 0, NULL, 0, new_val, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_new_change_load_behavior( \
   ms, new_bridge_mode, error) \
   mixer_selections_action_perform ( \
-    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, 0, 0, 0, NULL, 0, \
-    0, new_bridge_mode, error)
+    ms, NULL, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, \
+    0, 0, 0, NULL, 0, 0, new_bridge_mode, error)
 
 NONNULL MixerSelectionsAction *
 mixer_selections_action_clone (const MixerSelectionsAction * src);
@@ -197,42 +203,51 @@ mixer_selections_action_perform (
 #define mixer_selections_action_perform_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_perform ( \
-    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
-    setting, num_plugins, 0, Z_CARLA_BRIDGE_NONE, error)
+    NULL, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CREATE, \
+    slot_type, to_tr, to_slot, setting, num_plugins, 0, \
+    ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
+    to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
+    to_tr, to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
+    to_slot, NULL, 0, 0, ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, 0, Z_CARLA_BRIDGE_NONE, error)
+    ms, port_connections_mgr, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_DELETE, \
+    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, 0, \
+    ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_change_status(ms, new_val, error) \
   mixer_selections_action_perform ( \
-    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_STATUS, 0, 0, 0, NULL, 0, \
-    new_val, Z_CARLA_BRIDGE_NONE, error)
+    ms, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_STATUS, \
+    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, new_val, \
+    ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE, error)
 
 #define mixer_selections_action_perform_change_load_behavior( \
   ms, new_bridge_mode, error) \
   mixer_selections_action_perform ( \
-    ms, NULL, MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, 0, 0, 0, NULL, 0, \
-    0, new_bridge_mode, error)
+    ms, NULL, \
+    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, \
+    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, 0, new_bridge_mode, \
+    error)
 
 int
 mixer_selections_action_do (MixerSelectionsAction * self, GError ** error);

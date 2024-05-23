@@ -1,5 +1,5 @@
 /*
- * midiutil.h - Header for auxiliary MIDI functionality. 
+ * midiutil.h - Header for auxiliary MIDI functionality.
  * Version 1.4
  *
  *  AUTHOR: Steven Goodwin (StevenGoodwin@gmail.com)
@@ -19,6 +19,10 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "midiinfo.h"
 
@@ -63,5 +67,9 @@ int		muGetNoteFromFreq(float fFreq);
 
 int muGuessChord(const int *pNoteStatus, const int channel, const int lowRange, const int highRange);
 char *muGetChordName(char *str, int chord);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _MIDIUTIL_H*/

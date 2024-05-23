@@ -24,7 +24,7 @@
  * @{
  */
 
-typedef enum StretcherBackend
+enum class StretcherBackend
 {
   /** Lib rubberband. */
   STRETCHER_BACKEND_RUBBERBAND,
@@ -35,7 +35,7 @@ typedef enum StretcherBackend
   /** SBSMS - Subband Sinusoidal Modeling
    * Synthesis. */
   STRETCHER_BACKEND_SBSMS,
-} StretcherBackend;
+};
 
 /**
  * Stretcher interface.

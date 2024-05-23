@@ -29,7 +29,7 @@
 /**
  * Scale type (name) eg Aeolian.
  */
-typedef enum MusicalScaleType
+enum class MusicalScaleType
 {
   /** All keys. */
   SCALE_CHROMATIC,
@@ -121,9 +121,7 @@ typedef enum MusicalScaleType
   SCALE_LYDIAN_AUGMENTED,
   SCALE_TRITONE,
   SCALE_UKRANIAN_DORIAN,
-
-  NUM_SCALES,
-} MusicalScaleType;
+};
 
 /**
  * Musical scale descriptor.

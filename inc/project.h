@@ -66,7 +66,7 @@ typedef struct TracklistSelections TracklistSelections;
 #define PROJECT_POOL_DIR "pool"
 #define PROJECT_FINISHED_FILE "FINISHED"
 
-typedef enum ProjectPath
+enum class ProjectPath
 {
   PROJECT_PATH_PROJECT_FILE,
   PROJECT_PATH_BACKUPS,
@@ -93,13 +93,13 @@ typedef enum ProjectPath
   PROJECT_PATH_POOL,
 
   PROJECT_PATH_FINISHED_FILE,
-} ProjectPath;
+};
 
 /**
  * Selection type, used for controlling which part of the interface is selected,
  * for copy-paste, displaying info in the inspector, etc.
  */
-typedef enum ZProjectSelectionType
+enum class ZProjectSelectionType
 {
   /** Track selection in tracklist or mixer. */
   Z_PROJECT_SELECTION_TYPE_TRACKLIST,
@@ -121,19 +121,19 @@ typedef enum ZProjectSelectionType
 
   /** Editor arranger. */
   Z_PROJECT_SELECTION_TYPE_EDITOR,
-} ZProjectSelectionType;
+};
 
 /**
  * Flag to pass to project_compress() and project_decompress().
  */
-typedef enum ProjectCompressionFlag
+enum class ProjectCompressionFlag
 {
   PROJECT_COMPRESS_FILE,
   PROJECT_COMPRESS_DATA,
-} ProjectCompressionFlag;
+};
 
-#define PROJECT_DECOMPRESS_FILE PROJECT_COMPRESS_FILE
-#define PROJECT_DECOMPRESS_DATA PROJECT_COMPRESS_DATA
+#define PROJECT_DECOMPRESS_FILE ProjectCompressionFlag::PROJECT_COMPRESS_FILE
+#define PROJECT_DECOMPRESS_DATA ProjectCompressionFlag::PROJECT_COMPRESS_DATA
 
 /**
  * Contains all of the info that will be serialized into a

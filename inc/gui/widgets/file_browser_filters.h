@@ -32,13 +32,13 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef enum FileBrowserFilterType
+enum class FileBrowserFilterType
 {
   FILE_BROWSER_FILTER_NONE,
   FILE_BROWSER_FILTER_AUDIO,
   FILE_BROWSER_FILTER_MIDI,
   FILE_BROWSER_FILTER_PRESET,
-} FileBrowserFilterType;
+};
 
 /**
  * File auditioner controls used in file browsers.

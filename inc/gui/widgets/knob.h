@@ -28,13 +28,13 @@ G_DECLARE_FINAL_TYPE (KnobWidget, knob_widget, Z, KNOB_WIDGET, GtkWidget)
 /**
  * Type of knob.
  */
-typedef enum KnobType
+enum class KnobType
 {
   KNOB_TYPE_NORMAL,
 
   /** Port connection multiplier. */
   KNOB_TYPE_PORT_MULTIPLIER,
-} KnobType;
+};
 
 typedef struct Port Port;
 
@@ -137,15 +137,16 @@ _knob_widget_new (
   getter, default_getter, setter, obj, min, max, size, zero) \
   _knob_widget_new ( \
     (GenericFloatGetter) getter, (GenericFloatGetter) default_getter, \
-    (GenericFloatSetter) setter, (void *) obj, KNOB_TYPE_NORMAL, min, max, \
-    size, zero)
+    (GenericFloatSetter) setter, (void *) obj, KnobType::KNOB_TYPE_NORMAL, \
+    min, max, size, zero)
 
 /**
  * @param conn PortConnection pointer.
  */
 #define knob_widget_new_port(conn, size) \
   _knob_widget_new ( \
-    NULL, NULL, (void *) conn, KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, size, 0.f)
+    NULL, NULL, (void *) conn, KnobType::KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, \
+    size, 0.f)
 
 /**
  * @}

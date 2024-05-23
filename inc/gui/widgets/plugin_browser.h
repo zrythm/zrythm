@@ -36,29 +36,29 @@ TYPEDEF_STRUCT (ItemFactory);
 
 #define MW_PLUGIN_BROWSER MW_RIGHT_DOCK_EDGE->plugin_browser
 
-typedef enum
+enum class PluginBrowserTab
 {
   PLUGIN_BROWSER_TAB_COLLECTION,
   PLUGIN_BROWSER_TAB_AUTHOR,
   PLUGIN_BROWSER_TAB_CATEGORY,
   PLUGIN_BROWSER_TAB_PROTOCOL,
-} PluginBrowserTab;
+};
 
-typedef enum
+enum class PluginBrowserFilter
 {
   PLUGIN_BROWSER_FILTER_NONE,
   PLUGIN_BROWSER_FILTER_INSTRUMENT,
   PLUGIN_BROWSER_FILTER_EFFECT,
   PLUGIN_BROWSER_FILTER_MODULATOR,
   PLUGIN_BROWSER_FILTER_MIDI_EFFECT,
-} PluginBrowserFilter;
+};
 
-typedef enum
+enum class PluginBrowserSortStyle
 {
   PLUGIN_BROWSER_SORT_ALPHA,
   PLUGIN_BROWSER_SORT_LAST_USED,
   PLUGIN_BROWSER_SORT_MOST_USED,
-} PluginBrowserSortStyle;
+};
 
 /**
  * The plugin browser allows to browse and filter available

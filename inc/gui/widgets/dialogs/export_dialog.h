@@ -29,11 +29,11 @@ typedef struct _DigitalMeterWidget DigitalMeterWidget;
  * @{
  */
 
-typedef enum ExportFilenamePattern
+enum class ExportFilenamePattern
 {
   EFP_APPEND_FORMAT,
   EFP_PREPEND_DATE_APPEND_FORMAT,
-} ExportFilenamePattern;
+};
 
 /**
  * The export dialog.

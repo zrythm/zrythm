@@ -53,14 +53,14 @@ typedef struct HardwareProcessor HardwareProcessor;
 /**
  * External port type.
  */
-typedef enum ExtPortType
+enum class ExtPortType
 {
   EXT_PORT_TYPE_JACK,
   EXT_PORT_TYPE_ALSA,
   EXT_PORT_TYPE_WINDOWS_MME,
   EXT_PORT_TYPE_RTMIDI,
   EXT_PORT_TYPE_RTAUDIO,
-} ExtPortType;
+};
 
 /**
  * External port.

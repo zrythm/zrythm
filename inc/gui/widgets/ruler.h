@@ -68,7 +68,7 @@ typedef struct EditorSettings EditorSettings;
 /**
  * The ruler widget target acting upon.
  */
-typedef enum RWTarget
+enum class RWTarget
 {
   RW_TARGET_PLAYHEAD,
   RW_TARGET_LOOP_START,
@@ -78,18 +78,18 @@ typedef enum RWTarget
   RW_TARGET_CLIP_START,
   RW_TARGET_RANGE,      ///< for timeline only
   RW_TARGET_LOOP_RANGE, ///< for timeline only
-} RWTarget;
+};
 
-typedef enum RulerWidgetType
+enum class RulerWidgetType
 {
   RULER_WIDGET_TYPE_TIMELINE,
   RULER_WIDGET_TYPE_EDITOR,
-} RulerWidgetType;
+};
 
 /**
  * Range type.
  */
-typedef enum RulerWidgetRangeType
+enum class RulerWidgetRangeType
 {
   /** Range start. */
   RW_RANGE_START,
@@ -97,7 +97,7 @@ typedef enum RulerWidgetRangeType
   RW_RANGE_FULL,
   /** Range end. */
   RW_RANGE_END,
-} RulerWidgetRangeType;
+};
 
 typedef struct _RulerWidget
 {

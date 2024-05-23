@@ -20,6 +20,7 @@
 
 #include "plugins/plugin_identifier.h"
 #include "utils/string.h"
+#include "utils/types.h"
 
 /**
  * @addtogroup dsp
@@ -36,29 +37,29 @@
 /**
  * Direction of the signal.
  */
-typedef enum Z_PortFlow
+enum class ZPortFlow
 {
   Z_PORT_FLOW_UNKNOWN,
   Z_PORT_FLOW_INPUT,
   Z_PORT_FLOW_OUTPUT
-} ZPortFlow;
+};
 
 /**
  * Type of signals the Port handles.
  */
-typedef enum ZPortType
+enum class ZPortType
 {
   Z_PORT_TYPE_UNKNOWN,
   Z_PORT_TYPE_CONTROL,
   Z_PORT_TYPE_AUDIO,
   Z_PORT_TYPE_EVENT,
   Z_PORT_TYPE_CV
-} ZPortType;
+};
 
 /**
  * Port unit to be displayed in the UI.
  */
-typedef enum ZPortUnit
+enum class ZPortUnit
 {
   Z_PORT_UNIT_NONE,
   Z_PORT_UNIT_HZ,
@@ -72,7 +73,7 @@ typedef enum ZPortUnit
 
   /** Microseconds. */
   Z_PORT_UNIT_US,
-} ZPortUnit;
+};
 
 const char *
 port_unit_to_str (const ZPortUnit unit);
@@ -80,7 +81,7 @@ port_unit_to_str (const ZPortUnit unit);
 /**
  * Type of owner.
  */
-typedef enum ZPortOwnerType
+enum class ZPortOwnerType
 {
   /* Z_PORT_OWNER_TYPE_NONE, */
   Z_PORT_OWNER_TYPE_AUDIO_ENGINE,
@@ -116,12 +117,12 @@ typedef enum ZPortOwnerType
 
   /** Modulator macro processor owner. */
   Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
-} ZPortOwnerType;
+};
 
 /**
  * Port flags.
  */
-typedef enum ZPortFlags
+enum class ZPortFlags
 {
   Z_PORT_FLAG_STEREO_L = 1 << 0,
   Z_PORT_FLAG_STEREO_R = 1 << 1,
@@ -252,9 +253,10 @@ typedef enum ZPortFlags
    *
    * @see http://lv2plug.in/ns/lv2core#Parameter. */
   Z_PORT_FLAG_IS_PROPERTY = 1 << 30,
-} ZPortFlags;
+};
+ENUM_ENABLE_BITSET (ZPortFlags);
 
-typedef enum ZPortFlags2
+enum class ZPortFlags2
 {
   /** Transport ports. */
   Z_PORT_FLAG2_TRANSPORT_ROLL = 1 << 0,
@@ -342,7 +344,8 @@ typedef enum ZPortFlags2
 
   /** MIDI clock. */
   Z_PORT_FLAG2_MIDI_CLOCK = 1 << 30,
-} ZPortFlags2;
+};
+ENUM_ENABLE_BITSET (ZPortFlags2);
 
 /**
  * Struct used to identify Ports in the project.
@@ -425,13 +428,20 @@ static inline int
 port_identifier_get_midi_channel (const PortIdentifier * self)
 {
   if (
-    self->flags2 & Z_PORT_FLAG2_MIDI_PITCH_BEND
-    || self->flags2 & Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
-    || self->flags2 & Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+    static_cast<int> (self->flags2 & ZPortFlags2::Z_PORT_FLAG2_MIDI_PITCH_BEND)
+      != 0
+    || static_cast<int> (
+         self->flags2 & ZPortFlags2::Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
+         != 0
+    || static_cast<int> (
+         self->flags2 & ZPortFlags2::Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+         != 0)
     {
       return self->port_index + 1;
     }
-  else if (self->flags & Z_PORT_FLAG_MIDI_AUTOMATABLE)
+  else if (
+    static_cast<int> (self->flags & ZPortFlags::Z_PORT_FLAG_MIDI_AUTOMATABLE)
+    != 0)
     {
       return self->port_index / 128 + 1;
     }

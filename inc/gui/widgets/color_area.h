@@ -24,7 +24,7 @@ G_DECLARE_FINAL_TYPE (
 
 /**
  * Type of ColorAreaWidget this is. */
-typedef enum ColorAreaType
+enum class ColorAreaType
 {
   /** Generic, only fill with color. */
   COLOR_AREA_TYPE_GENERIC,
@@ -36,7 +36,7 @@ typedef enum ColorAreaType
    * color box.
    */
   COLOR_AREA_TYPE_TRACK,
-} ColorAreaType;
+};
 
 typedef struct Track Track;
 

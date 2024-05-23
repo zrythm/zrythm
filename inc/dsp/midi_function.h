@@ -26,7 +26,7 @@ typedef struct ArrangerSelections ArrangerSelections;
  * @{
  */
 
-typedef enum MidiFunctionType
+enum class MidiFunctionType
 {
   MIDI_FUNCTION_CRESCENDO,
   MIDI_FUNCTION_FLAM,
@@ -36,7 +36,7 @@ typedef enum MidiFunctionType
   MIDI_FUNCTION_PORTATO,
   MIDI_FUNCTION_STACCATO,
   MIDI_FUNCTION_STRUM,
-} MidiFunctionType;
+};
 
 typedef struct MidiFunctionOpts
 {
@@ -61,7 +61,7 @@ midi_function_type_to_string (MidiFunctionType type)
     N_ ("Legato"),    N_ ("Portato"), N_ ("Staccato"), N_ ("Strum"),
   };
 
-  return midi_function_type_strings[type];
+  return midi_function_type_strings[static_cast<int> (type)];
 }
 
 /**

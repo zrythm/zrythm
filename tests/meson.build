@@ -346,8 +346,9 @@ if get_option ('tests')
     if 'different_source' in info
       source = info['different_source']
     else
-      source = name + '.c'
+      source = name + '.cpp'
     endif
+    warning(source)
     timeout = 180
     foreach suite : suites
       if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')

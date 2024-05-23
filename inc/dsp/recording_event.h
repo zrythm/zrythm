@@ -25,7 +25,7 @@
   mpmc_queue_push_back (q, (void *) x)
 
 #define recording_event_queue_dequeue_event(q, x) \
-  mpmc_queue_dequeue (q, (void *) x)
+  mpmc_queue_dequeue (q, (void **) x)
 
 /**
  * Push events.
@@ -40,7 +40,7 @@
       event_queue_push_back_event (RECORDING_MANAGER->event_queue, _ev); \
     }
 
-typedef enum RecordingEventType
+enum class RecordingEventType
 {
   RECORDING_EVENT_TYPE_START_TRACK_RECORDING,
   RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING,
@@ -62,7 +62,7 @@ typedef enum RecordingEventType
 
   RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING,
   RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING,
-} RecordingEventType;
+};
 
 /**
  * A recording event.
@@ -121,7 +121,7 @@ typedef struct RecordingEvent
  * Inits an already allocated recording event.
  */
 #define recording_event_init(re) \
-  re->type = 0; \
+  re->type = ENUM_INT_TO_VALUE (RecordingEventType, 0); \
   re->track_name_hash = 0; \
   re->region_name[0] = '\0'; \
   re->g_start_frame_w_offset = 0; \

@@ -32,12 +32,12 @@ G_DECLARE_FINAL_TYPE (
 #define TRACKLIST_DRAG_DEST_BOX MW_TRACKLIST->ddbox
 #define MIXER_DRAG_DEST_BOX MW_MIXER->ddbox
 
-typedef enum DragDestBoxType
+enum class DragDestBoxType
 {
   DRAG_DEST_BOX_TYPE_MIXER,
   DRAG_DEST_BOX_TYPE_TRACKLIST,
   DRAG_DEST_BOX_TYPE_MODULATORS,
-} DragDestBoxType;
+};
 
 /**
  * DnD destination box used by mixer and tracklist

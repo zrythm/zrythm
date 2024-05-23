@@ -20,7 +20,7 @@
 /**
  * See https://www.harmonycentral.com/articles/the-truth-about-panning-laws
  */
-typedef enum BalanceControlAlgorithm
+enum class BalanceControlAlgorithm
 {
   /**
    * Classic "Balance" mode.
@@ -35,7 +35,7 @@ typedef enum BalanceControlAlgorithm
    *   pan - 0.5), left channel untouched.
    */
   BALANCE_CONTROL_ALGORITHM_LINEAR,
-} BalanceControlAlgorithm;
+};
 
 /**
  * Returns the coefficients to multiply the L and

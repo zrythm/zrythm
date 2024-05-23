@@ -27,7 +27,7 @@ typedef struct Port        Port;
  * @{
  */
 
-typedef enum MeterAlgorithm
+enum class MeterAlgorithm
 {
   /** Use default algorithm for the port. */
   METER_ALGORITHM_AUTO,
@@ -39,7 +39,7 @@ typedef enum MeterAlgorithm
   METER_ALGORITHM_TRUE_PEAK,
   METER_ALGORITHM_RMS,
   METER_ALGORITHM_K,
-} MeterAlgorithm;
+};
 
 /**
  * A Meter used by a single GUI element.

@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 io_srcs = files([
-  'audio_file.c',
-  'file_import.c',
-  'midi_file.c',
+  'audio_file.cpp',
+  'file_import.cpp',
+  'midi_file.cpp',
   ])
 
 subdir('serialization')

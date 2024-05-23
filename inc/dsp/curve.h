@@ -37,7 +37,7 @@
  *
  * See https://www.desmos.com/calculator/typjsyykvb
  */
-typedef enum CurveAlgorithm
+enum class CurveAlgorithm
 {
   /**
    * y = x^n
@@ -46,7 +46,7 @@ typedef enum CurveAlgorithm
    *   full tilt and 1 is straight line (when starting
    *   at lower point).
    */
-  CURVE_ALGORITHM_EXPONENT,
+  EXPONENT,
 
   /**
    * y = 1 - (1 - x^n)^(1/n)
@@ -58,7 +58,7 @@ typedef enum CurveAlgorithm
    * See
    * https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
    */
-  CURVE_ALGORITHM_SUPERELLIPSE,
+  SUPERELLIPSE,
 
   /**
    * (e^(nx) - 1) / (e^n - 1)
@@ -70,12 +70,12 @@ typedef enum CurveAlgorithm
    *
    * Taken from Vital synth.
    */
-  CURVE_ALGORITHM_VITAL,
+  VITAL,
 
   /**
    * Pulse (square).
    */
-  CURVE_ALGORITHM_PULSE,
+  PULSE,
 
   /**
    * a = log (n)
@@ -90,10 +90,8 @@ typedef enum CurveAlgorithm
    *
    * Taken from Ardour.
    */
-  CURVE_ALGORITHM_LOGARITHMIC,
-
-  NUM_CURVE_ALGORITHMS,
-} CurveAlgorithm;
+  LOGARITHMIC,
+};
 
 const char **
 curve_algorithm_get_strings (void);

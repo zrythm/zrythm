@@ -13,7 +13,7 @@ project (
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=gnu17',
-    'cpp_std=gnu++11',
+    'cpp_std=gnu++17',
     'b_lto=true',
     'b_lto_threads=2',
     'wrap_mode=nofallback',
@@ -477,7 +477,7 @@ add_project_arguments([
     '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
     '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 14),
   ],
-  language: 'c')
+  language: ['c', 'cpp'])
 
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])
@@ -736,6 +736,7 @@ test_strict_cflags += [
   '-Werror=bool-compare',
   '-Werror=tautological-compare',
   '-Werror=unused-result',
+  '-Werror=unused-variable',
   #'-Wanalyzer-too-complex',
   #'-Werror=analyzer-too-complex',
   '-Werror=inline',
@@ -852,7 +853,7 @@ if not soxr_dep.found ()
     cmake_opts.add_cmake_defines ({
       'WITH_OPENMP': 'ON'
       })
-    cmake_opts.append_compile_args('c', '-fopenmp')
+    cmake_opts.append_compile_args(['c', 'cpp'], '-fopenmp')
     cmake_opts.append_link_args('-fopenmp')
   else
     cmake_opts.add_cmake_defines ({
@@ -1246,6 +1247,14 @@ yyjson_dep = dependency (
     'default_library=static',
     ])
 
+magic_enum_dep = dependency (
+  'magic_enum', version: '>=0.9.5',
+  fallback: ['magic_enum', 'magic_enum_dep'],
+  default_options: [
+    'hash=true',
+    'test=false',
+    ])
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1284,6 +1293,7 @@ zrythm_deps = [
   zix_dep,
   dbus_dep,
   yyjson_dep,
+  magic_enum_dep,
 
   libm,
 ]

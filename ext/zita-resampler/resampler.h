@@ -33,6 +33,10 @@
 #ifndef __ZITA_RESAMPLER_RESAMPLER_H__
 #define __ZITA_RESAMPLER_RESAMPLER_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "resampler_table.h"
 
 typedef struct ZitaResampler
@@ -99,5 +103,9 @@ zita_resampler_inpdist (
 int
 zita_resampler_process (
   ZitaResampler * self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

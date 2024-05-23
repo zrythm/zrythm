@@ -44,7 +44,7 @@ typedef struct AudioClip       AudioClip;
 /**
  * Musical mode setting for audio regions.
  */
-typedef enum RegionMusicalMode
+enum class RegionMusicalMode
 {
   /** Inherit from global musical mode setting. */
   REGION_MUSICAL_MODE_INHERIT,
@@ -54,7 +54,7 @@ typedef enum RegionMusicalMode
   /** Musical mode on - auto-stretch when BPM
    * changes. */
   REGION_MUSICAL_MODE_ON,
-} RegionMusicalMode;
+};
 
 const char *
 region_musical_mode_to_str (RegionMusicalMode mode);
@@ -276,7 +276,7 @@ typedef struct ZRegion
 /**
  * Returns if the given ZRegion type can have fades.
  */
-#define region_type_can_fade(rtype) (rtype == REGION_TYPE_AUDIO)
+#define region_type_can_fade(rtype) (rtype == RegionType::REGION_TYPE_AUDIO)
 
 /**
  * Only to be used by implementing structs.
@@ -486,7 +486,8 @@ CONST
 static inline int
 region_type_has_lane (const RegionType type)
 {
-  return type == REGION_TYPE_MIDI || type == REGION_TYPE_AUDIO;
+  return type == RegionType::REGION_TYPE_MIDI
+         || type == RegionType::REGION_TYPE_AUDIO;
 }
 
 /**

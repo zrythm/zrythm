@@ -120,8 +120,8 @@ test_plugin_manager_get_plugin_setting (
   PluginDescriptor * descr = NULL;
   for (size_t i = 0; i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * cur_descr =
-        g_ptr_array_index (PLUGIN_MANAGER->plugin_descriptors, i);
+      PluginDescriptor * cur_descr = (PluginDescriptor *) g_ptr_array_index (
+        PLUGIN_MANAGER->plugin_descriptors, i);
       if (pl_uri)
         {
           if (string_is_equal (cur_descr->uri, pl_uri))
@@ -129,7 +129,7 @@ test_plugin_manager_get_plugin_setting (
               descr = plugin_descriptor_clone (cur_descr);
             }
         }
-      else if (cur_descr->protocol != Z_PLUGIN_PROTOCOL_LV2)
+      else if (cur_descr->protocol != ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2)
         {
           char * basename = g_path_get_basename (pl_bundle);
           char * descr_basename = g_path_get_basename (cur_descr->path);
@@ -181,16 +181,16 @@ test_plugin_manager_create_tracks_from_plugin (
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
   g_return_val_if_fail (setting, -1);
 
-  TrackType track_type = TRACK_TYPE_AUDIO_BUS;
+  TrackType track_type = TrackType::TRACK_TYPE_AUDIO_BUS;
   if (is_instrument)
     {
       /* fix the descriptor (for some reason lilv reports it as Plugin instead
        * of Instrument if you don't do lilv_world_load_all) */
-      setting->descr->category = Z_PLUGIN_CATEGORY_INSTRUMENT;
+      setting->descr->category = ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
       g_free (setting->descr->category_str);
       setting->descr->category_str =
         plugin_descriptor_category_to_string (setting->descr->category);
-      track_type = TRACK_TYPE_INSTRUMENT;
+      track_type = TrackType::TRACK_TYPE_INSTRUMENT;
     }
 
   /* create a track from the plugin */

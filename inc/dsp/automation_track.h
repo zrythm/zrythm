@@ -37,20 +37,20 @@ typedef struct AutomationModeWidget   AutomationModeWidget;
 /** Release time in ms when in touch record mode. */
 #define AUTOMATION_RECORDING_TOUCH_REL_MS 800
 
-typedef enum AutomationMode
+enum class AutomationMode
 {
   AUTOMATION_MODE_READ,
   AUTOMATION_MODE_RECORD,
   AUTOMATION_MODE_OFF,
   NUM_AUTOMATION_MODES,
-} AutomationMode;
+};
 
-typedef enum AutomationRecordMode
+enum class AutomationRecordMode
 {
   AUTOMATION_RECORD_MODE_TOUCH,
   AUTOMATION_RECORD_MODE_LATCH,
   NUM_AUTOMATION_RECORD_MODES,
-} AutomationRecordMode;
+};
 
 typedef struct AutomationTrack
 {
@@ -202,7 +202,9 @@ automation_track_set_automation_mode (
 NONNULL static inline void
 automation_track_swap_record_mode (AutomationTrack * self)
 {
-  self->record_mode = (self->record_mode + 1) % NUM_AUTOMATION_RECORD_MODES;
+  self->record_mode = static_cast<AutomationRecordMode> (
+    (static_cast<int> (self->record_mode) + 1)
+    % static_cast<int> (AutomationRecordMode::NUM_AUTOMATION_RECORD_MODES));
 }
 
 NONNULL AutomationTracklist *

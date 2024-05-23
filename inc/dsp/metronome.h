@@ -27,12 +27,12 @@ typedef struct AudioEngine AudioEngine;
 /**
  * The type of the metronome sound.
  */
-typedef enum MetronomeType
+enum class MetronomeType
 {
   METRONOME_TYPE_NONE,
   METRONOME_TYPE_EMPHASIS,
   METRONOME_TYPE_NORMAL,
-} MetronomeType;
+};
 
 /**
  * Metronome settings.

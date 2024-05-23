@@ -25,23 +25,23 @@
 /**
  * Bit depth.
  */
-typedef enum BitDepth
+enum class BitDepth
 {
   BIT_DEPTH_16,
   BIT_DEPTH_24,
   BIT_DEPTH_32
-} BitDepth;
+};
 
 static inline int
 audio_bit_depth_enum_to_int (BitDepth depth)
 {
   switch (depth)
     {
-    case BIT_DEPTH_16:
+    case BitDepth::BIT_DEPTH_16:
       return 16;
-    case BIT_DEPTH_24:
+    case BitDepth::BIT_DEPTH_24:
       return 24;
-    case BIT_DEPTH_32:
+    case BitDepth::BIT_DEPTH_32:
       return 32;
     default:
       g_return_val_if_reached (-1);
@@ -54,13 +54,13 @@ audio_bit_depth_int_to_enum (int depth)
   switch (depth)
     {
     case 16:
-      return BIT_DEPTH_16;
+      return BitDepth::BIT_DEPTH_16;
     case 24:
-      return BIT_DEPTH_24;
+      return BitDepth::BIT_DEPTH_24;
     case 32:
-      return BIT_DEPTH_32;
+      return BitDepth::BIT_DEPTH_32;
     default:
-      g_return_val_if_reached (BIT_DEPTH_16);
+      g_return_val_if_reached (BitDepth::BIT_DEPTH_16);
     }
 }
 

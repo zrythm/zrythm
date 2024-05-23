@@ -28,7 +28,7 @@
 /**
  * Clipboard type.
  */
-typedef enum ClipboardType
+enum class ClipboardType
 {
   CLIPBOARD_TYPE_TIMELINE_SELECTIONS,
   CLIPBOARD_TYPE_MIDI_SELECTIONS,
@@ -37,7 +37,7 @@ typedef enum ClipboardType
   CLIPBOARD_TYPE_AUDIO_SELECTIONS,
   CLIPBOARD_TYPE_MIXER_SELECTIONS,
   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS,
-} ClipboardType;
+};
 
 #if 0
 static const char * clipboard_type_strings[] = {

@@ -79,23 +79,23 @@ TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
 /**
  * Highlight location.
  */
-typedef enum TrackWidgetHighlight
+enum class TrackWidgetHighlight
 {
   TRACK_WIDGET_HIGHLIGHT_NONE,
   TRACK_WIDGET_HIGHLIGHT_TOP,
   TRACK_WIDGET_HIGHLIGHT_BOTTOM,
   TRACK_WIDGET_HIGHLIGHT_INSIDE,
-} TrackWidgetHighlight;
+};
 
 /**
  * Resize target.
  */
-typedef enum TrackWidgetResizeTarget
+enum class TrackWidgetResizeTarget
 {
   TRACK_WIDGET_RESIZE_TARGET_TRACK,
   TRACK_WIDGET_RESIZE_TARGET_AT,
   TRACK_WIDGET_RESIZE_TARGET_LANE,
-} TrackWidgetResizeTarget;
+};
 
 /**
  * The TrackWidget is split into 3 parts.

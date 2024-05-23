@@ -16,13 +16,13 @@
  * @{
  */
 
-typedef enum MidiMappingActionType
+enum class MidiMappingActionType
 {
   MIDI_MAPPING_ACTION_BIND,
   MIDI_MAPPING_ACTION_UNBIND,
   MIDI_MAPPING_ACTION_ENABLE,
   MIDI_MAPPING_ACTION_DISABLE,
-} MidiMappingActionType;
+};
 
 /**
  * MIDI mapping action.

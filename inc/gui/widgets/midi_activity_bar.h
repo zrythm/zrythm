@@ -31,19 +31,19 @@ typedef struct Track Track;
  * @{
  */
 
-typedef enum MidiActivityBarType
+enum class MidiActivityBarType
 {
   MAB_TYPE_TRACK,
   MAB_TYPE_ENGINE,
-} MidiActivityBarType;
+};
 
-typedef enum MidiActivityBarAnimation
+enum class MidiActivityBarAnimation
 {
   /** Shows a bars that decreases over time. */
   MAB_ANIMATION_BAR,
   /** Shows a flash that fades out over time. */
   MAB_ANIMATION_FLASH,
-} MidiActivityBarAnimation;
+};
 
 typedef struct _MidiActivityBarWidget
 {

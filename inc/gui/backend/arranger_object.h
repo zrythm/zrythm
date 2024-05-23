@@ -19,12 +19,12 @@
 
 #include <glib/gi18n.h>
 
-typedef struct ArrangerObject                 ArrangerObject;
-typedef struct ArrangerSelections             ArrangerSelections;
-typedef struct _ArrangerWidget                ArrangerWidget;
-typedef struct _ArrangerObjectWidget          ArrangerObjectWidget;
-typedef struct UndoableAction                 UndoableAction;
-typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
+typedef struct ArrangerObject        ArrangerObject;
+typedef struct ArrangerSelections    ArrangerSelections;
+typedef struct _ArrangerWidget       ArrangerWidget;
+typedef struct _ArrangerObjectWidget ArrangerObjectWidget;
+typedef struct UndoableAction        UndoableAction;
+enum class ArrangerSelectionsActionEditType;
 
 /**
  * @addtogroup gui_backend
@@ -35,14 +35,16 @@ typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
 #define ARRANGER_OBJECT_MAGIC 347616554
 #define IS_ARRANGER_OBJECT(tr) \
   (((ArrangerObject *) tr)->magic == ARRANGER_OBJECT_MAGIC \
-   && ((ArrangerObject *) tr)->type >= ARRANGER_OBJECT_TYPE_REGION \
-   && ((ArrangerObject *) tr)->type <= ARRANGER_OBJECT_TYPE_VELOCITY)
+   && ((ArrangerObject *) tr)->type \
+        >= ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
+   && ((ArrangerObject *) tr)->type \
+        <= ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY)
 #define IS_ARRANGER_OBJECT_AND_NONNULL(x) (x && IS_ARRANGER_OBJECT (x))
 
 /**
  * Flag used in some functions.
  */
-typedef enum ArrangerObjectResizeType
+enum class ArrangerObjectResizeType
 {
   ARRANGER_OBJECT_RESIZE_NORMAL,
   ARRANGER_OBJECT_RESIZE_LOOP,
@@ -56,12 +58,12 @@ typedef enum ArrangerObjectResizeType
    * Only applies to audio.
    */
   ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
-} ArrangerObjectResizeType;
+};
 
 /**
  * The type of the object.
  */
-typedef enum ArrangerObjectType
+enum class ArrangerObjectType
 {
   /* These two are not actual object types. */
   ARRANGER_OBJECT_TYPE_NONE,
@@ -74,7 +76,7 @@ typedef enum ArrangerObjectType
   ARRANGER_OBJECT_TYPE_MARKER,
   ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
   ARRANGER_OBJECT_TYPE_VELOCITY,
-} ArrangerObjectType;
+};
 
 static const char * arranger_object_type_strings[] = {
   N_ ("None"),         N_ ("All"),
@@ -87,16 +89,14 @@ static const char * arranger_object_type_strings[] = {
 /**
  * ArrangerObject flags.
  */
-typedef enum ArrangerObjectFlags
+enum class ArrangerObjectFlags
 {
-  /** This object is not a project object, but an
-   * object used temporarily eg. when undoing/
-   * redoing. */
+  /** This object is not a project object, but an object used temporarily eg.
+   * when undoing/ redoing. */
   ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
+};
 
-} ArrangerObjectFlags;
-
-typedef enum ArrangerObjectPositionType
+enum class ArrangerObjectPositionType
 {
   ARRANGER_OBJECT_POSITION_TYPE_START,
   ARRANGER_OBJECT_POSITION_TYPE_END,
@@ -105,7 +105,7 @@ typedef enum ArrangerObjectPositionType
   ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
   ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
   ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
-} ArrangerObjectPositionType;
+};
 
 /**
  * Base struct for arranger objects.
@@ -285,44 +285,45 @@ typedef struct ArrangerObject
  * Returns if the object type has a length.
  */
 #define arranger_object_type_has_length(type) \
-  (type == ARRANGER_OBJECT_TYPE_REGION \
-   || type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+  (type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
+   || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE)
 
 /**
  * Returns if the object type has a global position.
  */
 #define arranger_object_type_has_global_pos(type) \
-  (type == ARRANGER_OBJECT_TYPE_REGION \
-   || type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT \
-   || type == ARRANGER_OBJECT_TYPE_MARKER)
+  (type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
+   || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_SCALE_OBJECT \
+   || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER)
 
 #define arranger_object_type_has_name(type) \
-  (type == ARRANGER_OBJECT_TYPE_REGION || type == ARRANGER_OBJECT_TYPE_MARKER)
+  (type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
+   || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER)
 
 /**
  * Returns if the object is allowed to have lanes.
  */
 #define arranger_object_can_have_lanes(_obj) \
-  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
+  ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
    && region_type_has_lane (((ZRegion *) _obj)->id.type))
 
 /** Returns if the object can loop. */
 #define arranger_object_type_can_loop(type) \
-  (type == ARRANGER_OBJECT_TYPE_REGION)
+  (type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
 
 #define arranger_object_can_fade(_obj) \
-  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
+  ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
    && region_type_can_fade (((ZRegion *) _obj)->id.type))
 
 #define arranger_object_can_mute(_obj) \
-  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+  ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
+   || (_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE)
 
 #define arranger_object_owned_by_region(_obj) \
-  ((_obj)->type == ARRANGER_OBJECT_TYPE_VELOCITY \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+  ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY \
+   || (_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE \
+   || (_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
+   || (_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
 
 /** Whether or not this object supports cached
  * drawing.
@@ -330,7 +331,7 @@ typedef struct ArrangerObject
 #define arranger_object_can_cache_drawing(_obj) (false)
 
 #if 0
-  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
+  ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION && \
     region_type_can_fade ( \
       ((ZRegion *) _obj)->id.type))
 #endif
@@ -767,7 +768,7 @@ arranger_object_get_track (const ArrangerObject * const self);
 static inline const char *
 arranger_object_get_type_as_string (ArrangerObjectType type)
 {
-  return arranger_object_type_strings[type];
+  return arranger_object_type_strings[static_cast<int> (type)];
 }
 
 void

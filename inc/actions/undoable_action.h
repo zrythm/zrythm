@@ -27,7 +27,7 @@ typedef struct PortConnectionsManager PortConnectionsManager;
 /**
  * Type of UndoableAction.
  */
-typedef enum UndoableActionType
+enum class UndoableActionType
 {
   /* ---- Track/Channel ---- */
   UA_TRACKLIST_SELECTIONS,
@@ -56,8 +56,7 @@ typedef enum UndoableActionType
   UA_TRANSPORT,
 
   UA_CHORD,
-
-} UndoableActionType;
+};
 
 /**
  * Base struct to be inherited by implementing

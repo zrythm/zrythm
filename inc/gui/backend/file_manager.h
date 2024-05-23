@@ -19,13 +19,13 @@ typedef struct SupportedFile SupportedFile;
 /**
  * Special location type.
  */
-typedef enum FileManagerSpecialLocation
+enum class FileManagerSpecialLocation
 {
   FILE_MANAGER_NONE,
   FILE_MANAGER_HOME,
   FILE_MANAGER_DESKTOP,
   FILE_MANAGER_DRIVE,
-} FileManagerSpecialLocation;
+};
 
 #define FILE_MANAGER (ZRYTHM->file_manager)
 
@@ -56,11 +56,11 @@ typedef struct FileBrowserLocation
 /**
  * Current selection in the top window.
  */
-typedef enum FileBrowserSelectionType
+enum class FileBrowserSelectionType
 {
   FB_SELECTION_TYPE_COLLECTIONS,
   FB_SELECTION_TYPE_LOCATIONS,
-} FileBrowserSelectionType;
+};
 
 typedef struct FileManager
 {
@@ -134,13 +134,13 @@ file_browser_location_get_icon_name (const FileBrowserLocation * loc)
 {
   switch (loc->special_location)
     {
-    case FILE_MANAGER_NONE:
+    case FileManagerSpecialLocation::FILE_MANAGER_NONE:
       return "folder";
-    case FILE_MANAGER_HOME:
+    case FileManagerSpecialLocation::FILE_MANAGER_HOME:
       return "user-home";
-    case FILE_MANAGER_DESKTOP:
+    case FileManagerSpecialLocation::FILE_MANAGER_DESKTOP:
       return "desktop";
-    case FILE_MANAGER_DRIVE:
+    case FileManagerSpecialLocation::FILE_MANAGER_DRIVE:
       return "drive-harddisk-symbolic";
     }
   return "folder";

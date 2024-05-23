@@ -11,7 +11,6 @@
 #define __GUI_WIDGETS_RIGHT_DOCK_EDGE_H__
 
 #include <gtk/gtk.h>
-#include <libpanel.h>
 
 #define RIGHT_DOCK_EDGE_WIDGET_TYPE (right_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -35,6 +34,7 @@ typedef struct _MonitorSectionWidget   MonitorSectionWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
 typedef struct _PanelFileBrowserWidget PanelFileBrowserWidget;
 typedef struct _ChordPackBrowserWidget ChordPackBrowserWidget;
+TYPEDEF_STRUCT_UNDERSCORED (PanelFrame);
 
 typedef struct _RightDockEdgeWidget
 {

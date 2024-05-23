@@ -16,22 +16,29 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
+typedef enum BitDepth_v1
+{
+  BIT_DEPTH_16_v1,
+  BIT_DEPTH_24_v1,
+  BIT_DEPTH_32_v1
+} BitDepth_v1;
+
 typedef struct AudioClip_v1
 {
-  int      schema_version;
-  char *   name;
-  bpm_t    bpm;
-  int      samplerate;
-  BitDepth bit_depth;
-  bool     use_flac;
-  int      pool_id;
-  char *   file_hash;
+  int         schema_version;
+  char *      name;
+  bpm_t       bpm;
+  int         samplerate;
+  BitDepth_v1 bit_depth;
+  bool        use_flac;
+  int         pool_id;
+  char *      file_hash;
 } AudioClip_v1;
 
 static const cyaml_strval_t bit_depth_strings_v1[] = {
-  {"16",  BIT_DEPTH_16},
-  { "24", BIT_DEPTH_24},
-  { "32", BIT_DEPTH_32},
+  {"16",  BIT_DEPTH_16_v1},
+  { "24", BIT_DEPTH_24_v1},
+  { "32", BIT_DEPTH_32_v1},
 };
 
 static const cyaml_schema_field_t audio_clip_fields_schema_v1[] = {

@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 widget_srcs += files([
-  'active_hardware_popover.c',
-  'automatable_selector_popover.c',
-  'popover_menu_bin.c',
-  'port_connections_popover.c',
-  'snap_grid_popover.c',
-  'track_filter_popover.c',
-  'tracklist_preferences_popover.c',
+  'active_hardware_popover.cpp',
+  'automatable_selector_popover.cpp',
+  'popover_menu_bin.cpp',
+  'port_connections_popover.cpp',
+  'snap_grid_popover.cpp',
+  'track_filter_popover.cpp',
+  'tracklist_preferences_popover.cpp',
   ])

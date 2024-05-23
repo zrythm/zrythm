@@ -40,14 +40,14 @@ typedef struct ArrangerSelections ArrangerSelections;
 #define MW_AUDIO_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_audio
 #define MW_AUTOMATION_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_automation
 
-typedef enum EventViewerType
+enum class EventViewerType
 {
   EVENT_VIEWER_TYPE_TIMELINE,
   EVENT_VIEWER_TYPE_CHORD,
   EVENT_VIEWER_TYPE_MIDI,
   EVENT_VIEWER_TYPE_AUDIO,
   EVENT_VIEWER_TYPE_AUTOMATION,
-} EventViewerType;
+};
 
 typedef struct _EventViewerWidget
 {
@@ -65,7 +65,7 @@ typedef struct _EventViewerWidget
 
   /** Used by the editor EV to check if it should
    * readd the columns. */
-  RegionType region_type;
+  // RegionType region_type;
 
   /** Clone of last selections used. */
   ArrangerSelections * last_selections;

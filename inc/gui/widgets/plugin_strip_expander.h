@@ -32,11 +32,11 @@ typedef struct _ChannelSlotWidget ChannelSlotWidget;
  * @{
  */
 
-typedef enum PluginStripExpanderPosition
+enum class PluginStripExpanderPosition
 {
   PSE_POSITION_CHANNEL,
   PSE_POSITION_INSPECTOR,
-} PluginStripExpanderPosition;
+};
 
 /**
  * A TwoColExpanderBoxWidget for showing the ports

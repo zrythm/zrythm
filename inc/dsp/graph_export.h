@@ -23,7 +23,7 @@ typedef struct Graph Graph;
 /**
  * Export type.
  */
-typedef enum GraphExportType
+enum class GraphExportType
 {
 #ifdef HAVE_CGRAPH
   GRAPH_EXPORT_PNG,
@@ -32,7 +32,7 @@ typedef enum GraphExportType
   GRAPH_EXPORT_SVG,
 #endif
   NUM_GRAPH_EXPORT_TYPES,
-} GraphExportType;
+};
 
 void
 graph_export_as_simple (GraphExportType type, const char * export_path);

@@ -10,7 +10,7 @@ Prerequisites
 Build Tools
 ~~~~~~~~~~~
 
-You will need the GNU toolchain, a C/C++ compiler
+You will need the GNU toolchain, a C++17-compatible compiler
 and the following
 
 `meson (Apache-2.0) <https://mesonbuild.com/>`_
@@ -71,6 +71,9 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 
 `libsndfile (LGPLv2.1+) <http://libsndfile.github.io/libsndfile/>`_
   Audio file IO
+
+`magic_enum (MIT) <https://github.com/Neargye/magic_enum>`_
+  Reflection for C++ enums
 
 `pcre2 (3-Clause BSD) <https://www.pcre.org/>`_
   Regex

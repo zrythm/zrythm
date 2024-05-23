@@ -34,18 +34,20 @@ typedef struct AudioEngine        AudioEngine;
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
-#define TRANSPORT_IS_ROLLING (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-#define TRANSPORT_IS_PAUSED (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+#define TRANSPORT_IS_ROLLING \
+  (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLLING)
+#define TRANSPORT_IS_PAUSED \
+  (TRANSPORT->play_state == PlayState::PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING (TRANSPORT->loop)
 #define TRANSPORT_IS_RECORDING (TRANSPORT->recording)
 
-typedef enum PrerollCountBars
+enum class PrerollCountBars
 {
   PREROLL_COUNT_BARS_NONE,
   PREROLL_COUNT_BARS_ONE,
   PREROLL_COUNT_BARS_TWO,
   PREROLL_COUNT_BARS_FOUR,
-} PrerollCountBars;
+};
 
 static const char * preroll_count_bars_str[] = {
   N_ ("None"),
@@ -57,7 +59,7 @@ static const char * preroll_count_bars_str[] = {
 static inline const char *
 transport_preroll_count_to_str (PrerollCountBars bars)
 {
-  return preroll_count_bars_str[bars];
+  return preroll_count_bars_str[static_cast<int> (bars)];
 }
 
 static inline int
@@ -65,35 +67,35 @@ transport_preroll_count_bars_enum_to_int (PrerollCountBars bars)
 {
   switch (bars)
     {
-    case PREROLL_COUNT_BARS_NONE:
+    case PrerollCountBars::PREROLL_COUNT_BARS_NONE:
       return 0;
-    case PREROLL_COUNT_BARS_ONE:
+    case PrerollCountBars::PREROLL_COUNT_BARS_ONE:
       return 1;
-    case PREROLL_COUNT_BARS_TWO:
+    case PrerollCountBars::PREROLL_COUNT_BARS_TWO:
       return 2;
-    case PREROLL_COUNT_BARS_FOUR:
+    case PrerollCountBars::PREROLL_COUNT_BARS_FOUR:
       return 4;
     }
   return -1;
 }
 
-typedef enum PlayState
+enum class PlayState
 {
   PLAYSTATE_ROLL_REQUESTED,
   PLAYSTATE_ROLLING,
   PLAYSTATE_PAUSE_REQUESTED,
   PLAYSTATE_PAUSED
-} PlayState;
+};
 
 /**
  * Corrseponts to "transport-display" in the
  * gsettings.
  */
-typedef enum TransportDisplay
+enum class TransportDisplay
 {
   TRANSPORT_DISPLAY_BBT,
   TRANSPORT_DISPLAY_TIME,
-} TransportDisplay;
+};
 
 /**
  * Recording mode for MIDI and audio.
@@ -102,7 +104,7 @@ typedef enum TransportDisplay
  * current recording cycle can be changed. Previous
  * objects shall not be touched.
  */
-typedef enum TransportRecordingMode
+enum class TransportRecordingMode
 {
   /**
    * Overwrite events in first recorded region.
@@ -139,7 +141,7 @@ typedef enum TransportRecordingMode
    * muted.
    */
   RECORDING_MODE_TAKES_MUTED,
-} TransportRecordingMode;
+};
 
 /**
  * The transport.

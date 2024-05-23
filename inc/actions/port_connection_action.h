@@ -13,14 +13,14 @@
  * @{
  */
 
-typedef enum PortConnectionActionType
+enum class PortConnectionActionType
 {
   PORT_CONNECTION_CONNECT,
   PORT_CONNECTION_DISCONNECT,
   PORT_CONNECTION_ENABLE,
   PORT_CONNECTION_DISABLE,
   PORT_CONNECTION_CHANGE_MULTIPLIER,
-} PortConnectionActionType;
+};
 
 typedef struct PortConnectionAction
 {
@@ -54,21 +54,26 @@ port_connection_action_new (
 
 #define port_connection_action_new_connect(src_id, dest_id, error) \
   port_connection_action_new ( \
-    PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, error)
+    PortConnectionActionType::PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
+    error)
 
 #define port_connection_action_new_disconnect(src_id, dest_id, error) \
   port_connection_action_new ( \
-    PORT_CONNECTION_DISCONNECT, src_id, dest_id, 0.f, error)
+    PortConnectionActionType::PORT_CONNECTION_DISCONNECT, src_id, dest_id, \
+    0.f, error)
 
 #define port_connection_action_new_enable(src_id, dest_id, enable, error) \
   port_connection_action_new ( \
-    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, src_id, \
-    dest_id, 0.f, error)
+    enable \
+      ? PortConnectionActionType::PORT_CONNECTION_ENABLE \
+      : PortConnectionActionType::PORT_CONNECTION_DISABLE, \
+    src_id, dest_id, 0.f, error)
 
 #define port_connection_action_new_change_multiplier( \
   src_id, dest_id, new_multiplier, error) \
   port_connection_action_new ( \
-    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, new_multiplier, error)
+    PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
+    dest_id, new_multiplier, error)
 
 NONNULL PortConnectionAction *
 port_connection_action_clone (const PortConnectionAction * src);
@@ -83,21 +88,26 @@ port_connection_action_perform (
 
 #define port_connection_action_perform_connect(src_id, dest_id, error) \
   port_connection_action_perform ( \
-    PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, error)
+    PortConnectionActionType::PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
+    error)
 
 #define port_connection_action_perform_disconnect(src_id, dest_id, error) \
   port_connection_action_perform ( \
-    PORT_CONNECTION_DISCONNECT, src_id, dest_id, 0.f, error)
+    PortConnectionActionType::PORT_CONNECTION_DISCONNECT, src_id, dest_id, \
+    0.f, error)
 
 #define port_connection_action_perform_enable(src_id, dest_id, enable, error) \
   port_connection_action_perform ( \
-    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, src_id, \
-    dest_id, 0.f, error)
+    enable \
+      ? PortConnectionActionType::PORT_CONNECTION_ENABLE \
+      : PortConnectionActionType::PORT_CONNECTION_DISABLE, \
+    src_id, dest_id, 0.f, error)
 
 #define port_connection_action_perform_change_multiplier( \
   src_id, dest_id, new_multiplier, error) \
   port_connection_action_perform ( \
-    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, new_multiplier, error)
+    PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
+    dest_id, new_multiplier, error)
 
 int
 port_connection_action_do (PortConnectionAction * self, GError ** error);

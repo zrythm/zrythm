@@ -40,8 +40,8 @@
 #define MPMC_USE_STD_ATOMIC 1
 
 #if MPMC_USE_STD_ATOMIC
-#  include <stdatomic.h>
-#  define MPMC_QUEUE_TYPE atomic_uint
+#  include <atomic>
+#  define MPMC_QUEUE_TYPE std::atomic<size_t>
 #else
 #  include <glib.h>
 #  define MPMC_QUEUE_TYPE guint

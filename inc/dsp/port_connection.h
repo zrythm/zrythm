@@ -23,15 +23,11 @@
  * @{
  */
 
-#define PORT_CONNECTION_SCHEMA_VERSION 1
-
 /**
  * A connection between two ports.
  */
 typedef struct PortConnection
 {
-  int schema_version;
-
   PortIdentifier * src_id;
   PortIdentifier * dest_id;
 

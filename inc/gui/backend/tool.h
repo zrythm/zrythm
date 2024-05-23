@@ -12,7 +12,7 @@
 
 #define P_TOOL PROJECT->tool
 
-typedef enum Tool
+enum class Tool
 {
   TOOL_SELECT,
   TOOL_EDIT,
@@ -20,6 +20,6 @@ typedef enum Tool
   TOOL_ERASER,
   TOOL_RAMP,
   TOOL_AUDITION,
-} Tool;
+};
 
 #endif

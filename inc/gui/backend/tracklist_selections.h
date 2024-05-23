@@ -13,9 +13,6 @@
 #include "dsp/track.h"
 #include "utils/yaml.h"
 
-typedef enum TracklistSelectionsActionType TracklistSelectionsActionType;
-typedef enum EditTracksActionType          EditTracksActionType;
-
 /**
  * @addtogroup gui_backend
  *

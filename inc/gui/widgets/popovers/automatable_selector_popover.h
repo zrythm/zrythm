@@ -30,7 +30,7 @@ TYPEDEF_STRUCT (ItemFactory);
  *
  * These are shown on the left side of the popover.
  */
-typedef enum AutomatableSelectorType
+enum class AutomatableSelectorType
 {
   /** Midi automatable (modwheel etc.). */
   AS_TYPE_MIDI_CH1,
@@ -70,7 +70,7 @@ typedef enum AutomatableSelectorType
 
   /** Modulator macros. */
   AS_TYPE_MACRO,
-} AutomatableSelectorType;
+};
 
 /**
  * A popover for selecting the automation track

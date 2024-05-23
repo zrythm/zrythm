@@ -29,7 +29,7 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 /**
  * File type.
  */
-typedef enum ZFileType
+enum class ZFileType
 {
   FILE_TYPE_MIDI,
   FILE_TYPE_MP3,
@@ -41,7 +41,7 @@ typedef enum ZFileType
   FILE_TYPE_PARENT_DIR,
   FILE_TYPE_OTHER,
   NUM_FILE_TYPES,
-} ZFileType;
+};
 
 /**
  * Metadata for a supported file.

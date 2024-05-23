@@ -26,12 +26,12 @@
  * See
  * https://www.hackaudio.com/digital-signal-processing/stereo-audio/square-law-panning/
  */
-typedef enum PanLaw
+enum class PanLaw
 {
   PAN_LAW_0DB,
   PAN_LAW_MINUS_3DB,
   PAN_LAW_MINUS_6DB
-} PanLaw;
+};
 
 static const char * pan_law_str[] = {
   /* TRANSLATORS: decibels */
@@ -43,18 +43,18 @@ static const char * pan_law_str[] = {
 static inline const char *
 pan_law_to_string (PanLaw pan_law)
 {
-  return pan_law_str[pan_law];
+  return pan_law_str[static_cast<int> (pan_law)];
 }
 
 /**
  * See https://www.harmonycentral.com/articles/the-truth-about-panning-laws
  */
-typedef enum PanAlgorithm
+enum class PanAlgorithm
 {
   PAN_ALGORITHM_LINEAR,
   PAN_ALGORITHM_SQUARE_ROOT,
   PAN_ALGORITHM_SINE_LAW
-} PanAlgorithm;
+};
 
 static const char * pan_algorithm_str[] = {
   N_ ("Linear"),
@@ -65,7 +65,7 @@ static const char * pan_algorithm_str[] = {
 static inline const char *
 pan_algorithm_to_string (PanAlgorithm pan_algo)
 {
-  return pan_algorithm_str[pan_algo];
+  return pan_algorithm_str[static_cast<int> (pan_algo)];
 }
 
 void

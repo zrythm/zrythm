@@ -25,7 +25,7 @@
 
 #define CHORD_DESCRIPTOR_MAX_NOTES 48
 
-typedef enum MusicalNote
+enum class MusicalNote
 {
   NOTE_C = 0,
   NOTE_CS,
@@ -39,12 +39,12 @@ typedef enum MusicalNote
   NOTE_A,
   NOTE_AS,
   NOTE_B
-} MusicalNote;
+};
 
 /**
  * Chord type.
  */
-typedef enum ChordType
+enum class ChordType
 {
   CHORD_TYPE_NONE,
   CHORD_TYPE_MAJ,
@@ -54,13 +54,12 @@ typedef enum ChordType
   CHORD_TYPE_SUS2,
   CHORD_TYPE_AUG,
   CHORD_TYPE_CUSTOM,
-  NUM_CHORD_TYPES,
-} ChordType;
+};
 
 /**
  * Chord accents.
  */
-typedef enum ChordAccent
+enum class ChordAccent
 {
   CHORD_ACC_NONE,
   /** b7 is 10 semitones from chord root, or 9
@@ -83,8 +82,7 @@ typedef enum ChordAccent
   CHORD_ACC_S5_b13,
   /** 9 and 21 semitones. */
   CHORD_ACC_6_13,
-  NUM_CHORD_ACCENTS,
-} ChordAccent;
+};
 
 /**
  * A ChordDescriptor describes a chord and is not
@@ -149,19 +147,19 @@ chord_descriptor_get_max_inversion (const ChordDescriptor * const self)
   int max_inv = 2;
   switch (self->accent)
     {
-    case CHORD_ACC_NONE:
+    case ChordAccent::CHORD_ACC_NONE:
       break;
-    case CHORD_ACC_7:
-    case CHORD_ACC_j7:
-    case CHORD_ACC_b9:
-    case CHORD_ACC_9:
-    case CHORD_ACC_S9:
-    case CHORD_ACC_11:
+    case ChordAccent::CHORD_ACC_7:
+    case ChordAccent::CHORD_ACC_j7:
+    case ChordAccent::CHORD_ACC_b9:
+    case ChordAccent::CHORD_ACC_9:
+    case ChordAccent::CHORD_ACC_S9:
+    case ChordAccent::CHORD_ACC_11:
       max_inv = 3;
       break;
-    case CHORD_ACC_b5_S11:
-    case CHORD_ACC_S5_b13:
-    case CHORD_ACC_6_13:
+    case ChordAccent::CHORD_ACC_b5_S11:
+    case ChordAccent::CHORD_ACC_S5_b13:
+    case ChordAccent::CHORD_ACC_6_13:
       max_inv = 4;
       break;
     default:

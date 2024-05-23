@@ -24,7 +24,7 @@
  * @{
  */
 
-typedef enum ZPluginSlotType
+enum class ZPluginSlotType
 {
   Z_PLUGIN_SLOT_INVALID,
   Z_PLUGIN_SLOT_INSERT,
@@ -33,7 +33,7 @@ typedef enum ZPluginSlotType
 
   /** Plugin is part of a modulator. */
   Z_PLUGIN_SLOT_MODULATOR,
-} ZPluginSlotType;
+};
 
 /**
  * Plugin identifier.

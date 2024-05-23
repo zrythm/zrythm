@@ -17,7 +17,7 @@
 /**
  * Type of chord action.
  */
-typedef enum ChordActionType
+enum class ChordActionType
 {
   /**
    * Change single chord.
@@ -26,7 +26,7 @@ typedef enum ChordActionType
 
   /** Change all chords. */
   CHORD_ACTION_ALL,
-} ChordActionType;
+};
 
 /**
  * Action for chord pad changes.

@@ -43,10 +43,9 @@ typedef struct AutomationModeWidget
   int height;
 
   /** Width of each button, including padding. */
-  // int                widths[NUM_AUTOMATION_MODES];
 
-  int text_widths[NUM_AUTOMATION_MODES];
-  int text_heights[NUM_AUTOMATION_MODES];
+  int text_widths[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
+  int text_heights[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
   int max_text_height;
 
   int has_hit_mode;
@@ -61,11 +60,11 @@ typedef struct AutomationModeWidget
   GdkRGBA hovered_color;
 
   /** Toggled color. */
-  GdkRGBA toggled_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA toggled_colors[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
 
   /** Held color (used after clicking and before
    * releasing). */
-  GdkRGBA held_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA held_colors[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
 
   /** Aspect ratio for the rounded rectangle. */
   double aspect;
@@ -75,13 +74,15 @@ typedef struct AutomationModeWidget
   double corner_radius;
 
   /** Used to update caches if state changed. */
-  CustomButtonWidgetState last_states[NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState
+    last_states[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
 
   /** Used during drawing. */
-  CustomButtonWidgetState current_states[NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState
+    current_states[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
 
   /** Used during transitions. */
-  GdkRGBA last_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA last_colors[static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES)];
 
   /** Cache layout for drawing text. */
   PangoLayout * layout;

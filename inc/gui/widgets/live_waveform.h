@@ -30,11 +30,11 @@ typedef struct Port Port;
  * @{
  */
 
-typedef enum LiveWaveformType
+enum class LiveWaveformType
 {
   LIVE_WAVEFORM_ENGINE,
   LIVE_WAVEFORM_PORT,
-} LiveWaveformType;
+};
 
 typedef struct _LiveWaveformWidget
 {

@@ -15,11 +15,11 @@
  * @{
  */
 
-typedef enum RangeActionType
+enum class RangeActionType
 {
   RANGE_ACTION_INSERT_SILENCE,
   RANGE_ACTION_REMOVE,
-} RangeActionType;
+};
 
 typedef struct RangeAction
 {
@@ -66,10 +66,11 @@ range_action_new (
   GError **       error);
 
 #define range_action_new_insert_silence(start, end, error) \
-  range_action_new (RANGE_ACTION_INSERT_SILENCE, start, end, error)
+  range_action_new ( \
+    RangeActionType::RANGE_ACTION_INSERT_SILENCE, start, end, error)
 
 #define range_action_new_remove(start, end, error) \
-  range_action_new (RANGE_ACTION_REMOVE, start, end, error)
+  range_action_new (RangeActionType::RANGE_ACTION_REMOVE, start, end, error)
 
 NONNULL RangeAction *
 range_action_clone (const RangeAction * src);
@@ -82,10 +83,11 @@ range_action_perform (
   GError **       error);
 
 #define range_action_perform_insert_silence(start, end, error) \
-  range_action_perform (RANGE_ACTION_INSERT_SILENCE, start, end, error)
+  range_action_perform ( \
+    RangeActionType::RANGE_ACTION_INSERT_SILENCE, start, end, error)
 
 #define range_action_perform_remove(start, end, error) \
-  range_action_perform (RANGE_ACTION_REMOVE, start, end, error)
+  range_action_perform (RangeActionType::RANGE_ACTION_REMOVE, start, end, error)
 
 int
 range_action_do (RangeAction * self, GError ** error);

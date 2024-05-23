@@ -65,7 +65,7 @@ TYPEDEF_STRUCT (ChannelSend);
  *
  * Processors can be plugins, faders, etc.
  */
-typedef enum GraphNodeType
+enum class GraphNodeType
 {
   /** Port. */
   ROUTE_NODE_TYPE_PORT,
@@ -97,7 +97,7 @@ typedef enum GraphNodeType
 
   /** Channel send. */
   ROUTE_NODE_TYPE_CHANNEL_SEND,
-} GraphNodeType;
+};
 
 /**
  * A node in the processing graph.

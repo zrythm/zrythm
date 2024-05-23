@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 project_srcs = [
-  'project_init_flow_manager.c',
+  'project_init_flow_manager.cpp',
   ]
 
 zrythm_srcs += files (project_srcs)

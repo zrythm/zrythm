@@ -39,14 +39,14 @@ G_DECLARE_FINAL_TYPE (
 /**
  * Used for Track's.
  */
-typedef enum PortsExpanderTrackPortType
+enum class PortsExpanderTrackPortType
 {
   PE_TRACK_PORT_TYPE_CONTROLS,
   PE_TRACK_PORT_TYPE_SENDS,
   PE_TRACK_PORT_TYPE_STEREO_IN,
   PE_TRACK_PORT_TYPE_MIDI_IN,
   PE_TRACK_PORT_TYPE_MIDI_OUT,
-} PortsExpanderTrackPortType;
+};
 
 /**
  * A TwoColExpanderBoxWidget for showing the ports

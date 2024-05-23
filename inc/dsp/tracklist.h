@@ -40,12 +40,12 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 /**
  * Used in track search functions.
  */
-typedef enum TracklistPinOption
+enum class TracklistPinOption
 {
   TRACKLIST_PIN_OPTION_PINNED_ONLY,
   TRACKLIST_PIN_OPTION_UNPINNED_ONLY,
   TRACKLIST_PIN_OPTION_BOTH,
-} TracklistPinOption;
+};
 
 /**
  * The Tracklist contains all the tracks in the

@@ -36,7 +36,7 @@ dsp_fill (float * buf, float val, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_fill (buf, val, size);
+      lsp::dsp::fill (buf, val, size);
     }
   else
     {
@@ -59,7 +59,7 @@ dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_limit1 (buf, minf, maxf, size);
+      lsp::dsp::limit1 (buf, minf, maxf, size);
     }
   else
     {
@@ -82,7 +82,7 @@ dsp_copy (float * dest, const float * src, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_copy (dest, src, size);
+      lsp::dsp::copy (dest, src, size);
     }
   else
     {
@@ -105,7 +105,7 @@ dsp_mul_k2 (float * dest, float k, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_mul_k2 (dest, k, size);
+      lsp::dsp::mul_k2 (dest, k, size);
     }
   else
     {
@@ -128,7 +128,7 @@ dsp_abs_max (float * buf, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      return lsp_dsp_abs_max (buf, size);
+      return lsp::dsp::abs_max (buf, size);
     }
   else
     {
@@ -160,7 +160,7 @@ dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      new_peak = lsp_dsp_abs_max (buf, size);
+      new_peak = lsp::dsp::abs_max (buf, size);
     }
   else
     {
@@ -204,7 +204,7 @@ dsp_add2 (float * dest, const float * src, size_t count)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_add2 (dest, src, count);
+      lsp::dsp::add2 (dest, src, count);
     }
   else
     {
@@ -227,7 +227,7 @@ dsp_mix2 (float * dest, const float * src, float k1, float k2, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_mix2 (dest, src, k1, k2, size);
+      lsp::dsp::mix2 (dest, src, k1, k2, size);
     }
   else
     {
@@ -250,7 +250,7 @@ dsp_reverse1 (float * dest, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_reverse1 (dest, size);
+      lsp::dsp::reverse1 (dest, size);
     }
   else
     {
@@ -273,7 +273,7 @@ dsp_reverse2 (float * dest, float * src, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_reverse2 (dest, src, size);
+      lsp::dsp::reverse2 (dest, src, size);
     }
   else
     {
@@ -297,7 +297,7 @@ dsp_normalize (float * dest, const float * src, size_t size)
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_normalize (dest, src, size);
+      lsp::dsp::normalize (dest, src, size);
     }
   else
     {

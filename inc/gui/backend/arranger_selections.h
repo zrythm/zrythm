@@ -13,12 +13,11 @@
 
 #include <stdbool.h>
 
-typedef struct ArrangerObject                 ArrangerObject;
-typedef struct Position                       Position;
-typedef struct AudioClip                      AudioClip;
-typedef struct UndoableAction                 UndoableAction;
-typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
-typedef struct ZRegion                        ZRegion;
+typedef struct ArrangerObject ArrangerObject;
+typedef struct Position       Position;
+typedef struct AudioClip      AudioClip;
+typedef struct UndoableAction UndoableAction;
+typedef struct ZRegion        ZRegion;
 
 /**
  * @addtogroup gui_backend
@@ -34,7 +33,7 @@ typedef struct ZRegion                        ZRegion;
 
 #define ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS 0.1
 
-typedef enum ArrangerSelectionsType
+enum class ArrangerSelectionsType
 {
   ARRANGER_SELECTIONS_TYPE_NONE,
   ARRANGER_SELECTIONS_TYPE_CHORD,
@@ -42,7 +41,7 @@ typedef enum ArrangerSelectionsType
   ARRANGER_SELECTIONS_TYPE_MIDI,
   ARRANGER_SELECTIONS_TYPE_AUTOMATION,
   ARRANGER_SELECTIONS_TYPE_AUDIO,
-} ArrangerSelectionsType;
+};
 
 static const char * arranger_selections_type_strings[] = {
   "None", "Chord", "Timeline", "MIDI", "Automation", "Audio",
@@ -56,18 +55,18 @@ typedef struct ArrangerSelections
   int magic;
 } ArrangerSelections;
 
-typedef enum ArrangerSelectionsProperty
+enum class ArrangerSelectionsProperty
 {
   ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
   ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
   ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
   ARRANGER_SELECTIONS_PROPERTY_CAN_FADE,
-} ArrangerSelectionsProperty;
+};
 
 static inline const char *
 arranger_selections_type_to_str (const ArrangerSelections * self)
 {
-  return arranger_selections_type_strings[self->type];
+  return arranger_selections_type_strings[static_cast<int> (self->type)];
 }
 
 static inline ArrangerSelections *

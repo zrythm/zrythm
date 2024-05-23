@@ -2,17 +2,17 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 plugin_srcs = files ([
-  'cached_plugin_descriptors.c',
-  'carla_discovery.c',
-  'carla_native_plugin.c',
-  'collection.c',
-  'collections.c',
-  'plugin.c',
-  'plugin_descriptor.c',
-  'plugin_gtk.c',
-  'plugin_identifier.c',
-  'plugin_manager.c',
-  'plugin_preset.c',
+  'cached_plugin_descriptors.cpp',
+  'carla_discovery.cpp',
+  'carla_native_plugin.cpp',
+  'collection.cpp',
+  'collections.cpp',
+  'plugin.cpp',
+  'plugin_descriptor.cpp',
+  'plugin_gtk.cpp',
+  'plugin_identifier.cpp',
+  'plugin_manager.cpp',
+  'plugin_preset.cpp',
   ])
 
 zrythm_srcs += plugin_srcs

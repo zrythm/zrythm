@@ -13,7 +13,8 @@
 #include <stdbool.h>
 
 #include <gtk/gtk.h>
-#include <libpanel.h>
+
+#include "libpanel_wrapper.h"
 
 #define BOT_DOCK_EDGE_WIDGET_TYPE (bot_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

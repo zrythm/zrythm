@@ -13,11 +13,11 @@
  * @{
  */
 
-typedef enum PortActionType
+enum class PortActionType
 {
   /** Set control port value. */
   PORT_ACTION_SET_CONTROL_VAL,
-} PortActionType;
+};
 
 typedef struct PortAction
 {

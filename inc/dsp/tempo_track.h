@@ -15,6 +15,8 @@
 #include "dsp/track.h"
 #include "utils/types.h"
 
+#include <magic_enum.hpp>
+
 /**
  * @addtogroup dsp
  *
@@ -27,22 +29,22 @@
 #define TEMPO_TRACK_DEFAULT_BEATS_PER_BAR 4
 #define TEMPO_TRACK_MIN_BEATS_PER_BAR 1
 #define TEMPO_TRACK_MAX_BEATS_PER_BAR 16
-#define TEMPO_TRACK_DEFAULT_BEAT_UNIT Z_BEAT_UNIT_4
-#define TEMPO_TRACK_MIN_BEAT_UNIT Z_BEAT_UNIT_2
-#define TEMPO_TRACK_MAX_BEAT_UNIT Z_BEAT_UNIT_16
+#define TEMPO_TRACK_DEFAULT_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_4
+#define TEMPO_TRACK_MIN_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_2
+#define TEMPO_TRACK_MAX_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_16
 
 #define P_TEMPO_TRACK (TRACKLIST->tempo_track)
 
 /**
  * Beat unit.
  */
-typedef enum ZBeatUnit
+enum class ZBeatUnit
 {
   Z_BEAT_UNIT_2,
   Z_BEAT_UNIT_4,
   Z_BEAT_UNIT_8,
   Z_BEAT_UNIT_16
-} ZBeatUnit;
+};
 
 /**
  * Creates the default tempo track.

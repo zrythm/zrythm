@@ -1,11 +1,11 @@
 # SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-zrythm_main = files ('main.c')
+zrythm_main = files ('main.cpp')
 zrythm_srcs = files ([
-  'project.c',
-  'zrythm.c',
-  'zrythm_app.c',
+  'project.cpp',
+  'zrythm.cpp',
+  'zrythm_app.cpp',
   ])
 
 if os_darwin
@@ -60,7 +60,6 @@ zrythm_lib = both_libraries (
   sources: [
     zrythm_lib_srcs,
     ext_srcs,
-    enum_files,
     ],
   dependencies: zrythm_deps,
   include_directories: all_inc,

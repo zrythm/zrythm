@@ -33,6 +33,10 @@
 #ifndef __ZITA_RESAMPLER_RESAMPLER_TABLE_H__
 #define __ZITA_RESAMPLER_RESAMPLER_TABLE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <pthread.h>
 
 typedef struct ZitaResamplerTable
@@ -70,5 +74,9 @@ zita_resampler_table_destroy (
 
 void
 zita_resampler_table_print_list (void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

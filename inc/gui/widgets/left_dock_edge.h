@@ -11,7 +11,8 @@
 #define __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 
 #include <gtk/gtk.h>
-#include <libpanel.h>
+
+#include "libpanel_wrapper.h"
 
 typedef struct _InspectorWidget        InspectorWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
@@ -37,14 +38,14 @@ G_DECLARE_FINAL_TYPE (
 /**
  * Left panel tabs.
  */
-typedef enum LeftDockEdgeTab
+enum class LeftDockEdgeTab
 {
   LEFT_DOCK_EDGE_TAB_TRACK,
   LEFT_DOCK_EDGE_TAB_PLUGIN,
   LEFT_DOCK_EDGE_TAB_VISIBILITY,
   LEFT_DOCK_EDGE_TAB_CC_BINDINGS,
   LEFT_DOCK_EDGE_TAB_PORT_CONNECTIONS,
-} LeftDockEdgeTab;
+};
 
 /**
  * Left dock widget.

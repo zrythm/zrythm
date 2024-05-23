@@ -42,7 +42,7 @@ typedef struct PortIdentifier  PortIdentifier;
   (ZRYTHM_TESTING ? FADER_DEFAULT_FADE_FRAMES_SHORT : 8192)
 
 #define FADER_FADE_FRAMES_FOR_TYPE(f) \
-  ((f)->type == FADER_TYPE_MONITOR \
+  ((f)->type == FaderType::FADER_TYPE_MONITOR \
      ? FADER_DEFAULT_FADE_FRAMES \
      : FADER_DEFAULT_FADE_FRAMES_SHORT)
 
@@ -63,7 +63,7 @@ typedef struct PortIdentifier  PortIdentifier;
 /**
  * Fader type.
  */
-typedef enum FaderType
+enum class FaderType
 {
   FADER_TYPE_NONE,
 
@@ -81,16 +81,16 @@ typedef enum FaderType
 
   /** For generic uses. */
   FADER_TYPE_GENERIC,
-} FaderType;
+};
 
-typedef enum MidiFaderMode
+enum class MidiFaderMode
 {
   /** Multiply velocity of all MIDI note ons. */
   MIDI_FADER_MODE_VEL_MULTIPLIER,
 
   /** Send CC volume event on change TODO. */
   MIDI_FADER_MODE_CC_VOLUME,
-} MidiFaderMode;
+};
 
 /**
  * A Fader is a processor that is used for volume controls and pan.

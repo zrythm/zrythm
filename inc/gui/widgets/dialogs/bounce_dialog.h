@@ -34,11 +34,11 @@ typedef struct _BounceStepSelectorWidget BounceStepSelectorWidget;
 /**
  * Type of bounce.
  */
-typedef enum BounceDialogWidgetType
+enum class BounceDialogWidgetType
 {
   BOUNCE_DIALOG_REGIONS,
   BOUNCE_DIALOG_TRACKS,
-} BounceDialogWidgetType;
+};
 
 /**
  * The export dialog.

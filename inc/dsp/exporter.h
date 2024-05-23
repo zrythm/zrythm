@@ -21,7 +21,7 @@ typedef struct ProgressInfo ProgressInfo;
 /**
  * Export format.
  */
-typedef enum ExportFormat
+enum class ExportFormat
 {
   EXPORT_FORMAT_AIFF,
   EXPORT_FORMAT_AU,
@@ -42,9 +42,7 @@ typedef enum ExportFormat
 
   /** MIDI type 1. */
   EXPORT_FORMAT_MIDI1,
-
-  NUM_EXPORT_FORMATS,
-} ExportFormat;
+};
 
 /**
  * Returns the format as a human friendly label.
@@ -64,12 +62,12 @@ export_format_from_pretty_str (const char * pretty_str);
 /**
  * Time range to export.
  */
-typedef enum ExportTimeRange
+enum class ExportTimeRange
 {
   TIME_RANGE_LOOP,
   TIME_RANGE_SONG,
   TIME_RANGE_CUSTOM,
-} ExportTimeRange;
+};
 
 static const char * export_time_range_str[] = {
   "Loop",
@@ -80,7 +78,7 @@ static const char * export_time_range_str[] = {
 static inline const char *
 export_time_range_to_str (ExportTimeRange export_time_range)
 {
-  return export_time_range_str[export_time_range];
+  return export_time_range_str[static_cast<int> (export_time_range)];
 }
 
 /**
@@ -90,7 +88,7 @@ export_time_range_to_str (ExportTimeRange export_time_range)
  * @ref EXPORT_MODE_FULL, the @ref Track.bounce
  * or @ref ZRegion.bounce_mode should be set.
  */
-typedef enum ExportMode
+enum class ExportMode
 {
   /** Export everything within the range normally. */
   EXPORT_MODE_FULL,
@@ -102,7 +100,7 @@ typedef enum ExportMode
   /** Export selected regions within the range
    * only. */
   EXPORT_MODE_REGIONS,
-} ExportMode;
+};
 
 static const char * export_mode_str[] = {
   "Full",
@@ -113,15 +111,15 @@ static const char * export_mode_str[] = {
 static inline const char *
 export_mode_to_str (ExportMode export_mode)
 {
-  return export_mode_str[export_mode];
+  return export_mode_str[static_cast<int> (export_mode)];
 }
 
-typedef enum BounceStep
+enum class BounceStep
 {
   BOUNCE_STEP_BEFORE_INSERTS,
   BOUNCE_STEP_PRE_FADER,
   BOUNCE_STEP_POST_FADER,
-} BounceStep;
+};
 
 static const char * bounce_step_str[] = {
   N_ ("Before inserts"),
@@ -132,7 +130,7 @@ static const char * bounce_step_str[] = {
 static inline const char *
 bounce_step_to_str (BounceStep bounce_step)
 {
-  return bounce_step_str[bounce_step];
+  return bounce_step_str[static_cast<int> (bounce_step)];
 }
 
 /**

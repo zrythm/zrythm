@@ -14,14 +14,16 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
+#include "utils/types.h"
 
 #include <glib/gi18n.h>
 
 #include <CarlaBackend.h>
 #include <gio/gio.h>
 
-typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
+TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal)
+enum class TrackType;
+enum class ZPluginSlotType;
 
 /**
  * @addtogroup plugins
@@ -34,7 +36,11 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 /**
  * Plugin category.
  */
-typedef enum ZPluginCategory
+#ifdef __cplusplus
+enum class ZPluginCategory
+#else
+typedef enum
+#endif
 {
   /** None specified. */
   Z_PLUGIN_CATEGORY_NONE,
@@ -77,12 +83,20 @@ typedef enum ZPluginCategory
   Z_PLUGIN_CATEGORY_CONVERTER,
   Z_PLUGIN_CATEGORY_FUNCTION,
   Z_PLUGIN_CATEGORY_MIXER,
+#ifdef __cplusplus
+};
+#else
 } ZPluginCategory;
+#endif
 
 /**
  * Plugin protocol.
  */
-typedef enum ZPluginProtocol
+#ifdef __cplusplus
+enum class ZPluginProtocol
+#else
+typedef enum
+#endif
 {
   /** Dummy protocol for tests. */
   Z_PLUGIN_PROTOCOL_DUMMY,
@@ -96,26 +110,30 @@ typedef enum ZPluginProtocol
   Z_PLUGIN_PROTOCOL_SF2,
   Z_PLUGIN_PROTOCOL_CLAP,
   Z_PLUGIN_PROTOCOL_JSFX,
+#ifdef __cplusplus
+};
+#else
 } ZPluginProtocol;
+#endif
 
 /**
  * 32 or 64 bit.
  */
-typedef enum Z_PluginArchitecture
+enum class ZPluginArchitecture
 {
   Z_PLUGIN_ARCHITECTURE_32,
   Z_PLUGIN_ARCHITECTURE_64
-} ZPluginArchitecture;
+};
 
 /**
  * Carla bridge mode.
  */
-typedef enum ZCarlaBridgeMode
+enum class ZCarlaBridgeMode
 {
   Z_CARLA_BRIDGE_NONE,
   Z_CARLA_BRIDGE_UI,
   Z_CARLA_BRIDGE_FULL,
-} ZCarlaBridgeMode;
+};
 
 /***
  * A descriptor to be implemented by all plugins
@@ -193,21 +211,21 @@ plugin_protocol_get_icon_name (ZPluginProtocol prot)
   const char * icon = NULL;
   switch (prot)
     {
-    case Z_PLUGIN_PROTOCOL_LV2:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
       icon = "logo-lv2";
       break;
-    case Z_PLUGIN_PROTOCOL_LADSPA:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA:
       icon = "logo-ladspa";
       break;
-    case Z_PLUGIN_PROTOCOL_AU:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
       icon = "logo-au";
       break;
-    case Z_PLUGIN_PROTOCOL_VST:
-    case Z_PLUGIN_PROTOCOL_VST3:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
       icon = "logo-vst";
       break;
-    case Z_PLUGIN_PROTOCOL_SFZ:
-    case Z_PLUGIN_PROTOCOL_SF2:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ:
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2:
       icon = "file-music-line";
       break;
     default:
@@ -223,17 +241,19 @@ plugin_protocol_is_supported (ZPluginProtocol protocol);
 const char *
 plugin_category_to_string (ZPluginCategory category);
 
-PluginType
+CarlaBackend::PluginType
 plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol);
 
 ZPluginProtocol
-plugin_descriptor_get_protocol_from_carla_plugin_type (PluginType ptype);
+plugin_descriptor_get_protocol_from_carla_plugin_type (
+  CarlaBackend::PluginType ptype);
 
 ZPluginCategory
 plugin_descriptor_get_category_from_carla_category_str (const char * category);
 
 ZPluginCategory
-plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat);
+plugin_descriptor_get_category_from_carla_category (
+  CarlaBackend::PluginCategory carla_cat);
 
 /**
  * Clones the plugin descriptor.
@@ -289,14 +309,14 @@ const char *
 plugin_descriptor_get_icon_name (const PluginDescriptor * const self);
 
 /**
- * Returns if the given plugin identifier can be
- * dropped in a slot of the given type.
+ * Returns if the given plugin identifier can be dropped in a slot of the given
+ * type.
  */
 bool
 plugin_descriptor_is_valid_for_slot_type (
   const PluginDescriptor * self,
-  int                      slot_type,
-  int                      track_type);
+  ZPluginSlotType          slot_type,
+  TrackType                track_type);
 
 /**
  * Returns whether the two descriptors describe

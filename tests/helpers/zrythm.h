@@ -130,6 +130,10 @@ test_helper_zrythm_gui_init (int argc, char * argv[]);
     G_STMT_END
 #endif
 
+#ifndef g_assert_cmpenum
+#  define g_assert_cmpenum(a, b, c) g_assert_cmpint ((int) (a), b, (int) (c))
+#endif
+
 #if defined(__GNUC__) && !defined(__clang__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"

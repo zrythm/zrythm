@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 settings_srcs = [
-  'chord_preset.c',
-  'chord_preset_pack.c',
-  'chord_preset_pack_manager.c',
-  'plugin_settings.c',
-  'settings.c',
-  'user_shortcuts.c',
+  'chord_preset.cpp',
+  'chord_preset_pack.cpp',
+  'chord_preset_pack_manager.cpp',
+  'plugin_settings.cpp',
+  'settings.cpp',
+  'user_shortcuts.cpp',
   ]
 
 zrythm_srcs += files (settings_srcs)

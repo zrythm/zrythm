@@ -15,7 +15,7 @@
  * @{
  */
 
-typedef enum EventType
+enum class EventType
 {
   /* arranger objects */
   ET_ARRANGER_OBJECT_CREATED,
@@ -446,7 +446,7 @@ typedef enum EventType
    * Arg: None.
    */
   ET_FILE_BROWSER_INSTRUMENT_CHANGED,
-} EventType;
+};
 
 /**
  * A Zrythm event.

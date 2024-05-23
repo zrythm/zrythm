@@ -73,7 +73,7 @@ typedef struct EventManager
 
 #define event_queue_push_back_event(q, x) mpmc_queue_push_back (q, (void *) x)
 
-#define event_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void *) x)
+#define event_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void **) x)
 
 /**
  * Push events.
@@ -99,7 +99,7 @@ typedef struct EventManager
       /* don't print events that are called \
        * continuously */ \
       if ( \
-        (et) != ET_PLAYHEAD_POS_CHANGED \
+        (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
         && g_thread_self () == zrythm_app->gtk_thread) \
         { \
           g_debug ("pushing UI event " #et " (%s:%d)", __func__, __LINE__); \
@@ -128,7 +128,7 @@ typedef struct EventManager
         } \
       /* don't print events that are called \
        * continuously */ \
-      if (et != ET_PLAYHEAD_POS_CHANGED) \
+      if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \
         { \
           g_debug ( \
             "processing UI event now " #et " (%s:%d)", __func__, __LINE__); \

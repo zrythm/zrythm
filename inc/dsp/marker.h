@@ -27,12 +27,13 @@
 #define marker_is_selected(r) arranger_object_is_selected ((ArrangerObject *) r)
 
 #define marker_is_deletable(m) \
-  ((m)->type != MARKER_TYPE_START && (m)->type != MARKER_TYPE_END)
+  ((m)->type != MarkerType::MARKER_TYPE_START \
+   && (m)->type != MarkerType::MARKER_TYPE_END)
 
 /**
  * Marker type.
  */
-typedef enum MarkerType
+enum class MarkerType
 {
   /** Song start Marker that cannot be deleted. */
   MARKER_TYPE_START,
@@ -40,7 +41,7 @@ typedef enum MarkerType
   MARKER_TYPE_END,
   /** Custom Marker. */
   MARKER_TYPE_CUSTOM,
-} MarkerType;
+};
 
 /**
  * Marker for the MarkerTrack.

@@ -37,7 +37,7 @@ typedef struct QuantizeOptions    QuantizeOptions;
  * @{
  */
 
-typedef enum ArrangerSelectionsActionType
+enum class ArrangerSelectionsActionType
 {
   AS_ACTION_AUTOMATION_FILL,
   AS_ACTION_CREATE,
@@ -51,12 +51,12 @@ typedef enum ArrangerSelectionsActionType
   AS_ACTION_RECORD,
   AS_ACTION_RESIZE,
   AS_ACTION_SPLIT,
-} ArrangerSelectionsActionType;
+};
 
 /**
  * Type used when the action is a RESIZE action.
  */
-typedef enum ArrangerSelectionsActionResizeType
+enum class ArrangerSelectionsActionResizeType
 {
   ARRANGER_SELECTIONS_ACTION_RESIZE_L,
   ARRANGER_SELECTIONS_ACTION_RESIZE_R,
@@ -66,12 +66,12 @@ typedef enum ArrangerSelectionsActionResizeType
   ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
   ARRANGER_SELECTIONS_ACTION_STRETCH_L,
   ARRANGER_SELECTIONS_ACTION_STRETCH_R,
-} ArrangerSelectionsActionResizeType;
+};
 
 /**
  * Type used when the action is an EDIT action.
  */
-typedef enum ArrangerSelectionsActionEditType
+enum class ArrangerSelectionsActionEditType
 {
   /** Edit the name of the ArrangerObject's in the
    * selection. */
@@ -112,7 +112,7 @@ typedef enum ArrangerSelectionsActionEditType
 
   /** MIDI function. */
   ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-} ArrangerSelectionsActionEditType;
+};
 
 /**
  * The action.

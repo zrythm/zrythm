@@ -45,7 +45,7 @@ typedef struct PortConnectionsManager PortConnectionsManager;
 /**
  * Target type.
  */
-typedef enum ChannelSendTargetType
+enum class ChannelSendTargetType
 {
   /** Remove send. */
   CHANNEL_SEND_TARGET_TYPE_NONE,
@@ -55,7 +55,7 @@ typedef enum ChannelSendTargetType
 
   /** Send to plugin sidechain inputs. */
   CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN,
-} ChannelSendTargetType;
+};
 
 /**
  * Send target (used in list views).

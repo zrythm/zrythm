@@ -30,7 +30,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef enum PrerollCountSelectorType
+enum class PrerollCountSelectorType
 {
   /** Countin before starting playback. */
   PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN,
@@ -38,7 +38,7 @@ typedef enum PrerollCountSelectorType
   /** Preroll to start at before the punch in
    * position during recording. */
   PREROLL_COUNT_SELECTOR_RECORD_PREROLL,
-} PrerollCountSelectorType;
+};
 
 typedef struct _PrerollCountSelectorWidget
 {

@@ -1,6 +1,10 @@
 #ifndef _MIDIFILE_H
 #define _MIDIFILE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include "midiinfo.h"		/* enumerations and constants for GM */
 
@@ -202,5 +206,8 @@ BOOL		midiReadGetNextMessage(const MIDI_FILE *pMF, int iTrack, MIDI_MSG *pMsg);
 void		midiReadInitMessage(MIDI_MSG *pMsg);
 void		midiReadFreeMessage(MIDI_MSG *pMsg);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _MIDIFILE_H */

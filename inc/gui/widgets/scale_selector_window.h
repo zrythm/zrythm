@@ -59,7 +59,7 @@ typedef struct _ScaleSelectorWindowWidget
   GtkFlowBox * creator_type_other_flowbox;
 
   /** All of the above in an array. */
-  GtkFlowBoxChild * creator_types[NUM_SCALES];
+  GtkFlowBoxChild * creator_types[ENUM_COUNT (MusicalScaleType)];
 
   /** The owner ScaleObjectWidget. */
   ScaleObject * scale;

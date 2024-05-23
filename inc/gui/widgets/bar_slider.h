@@ -34,7 +34,7 @@ typedef struct Port Port;
 /**
  * Type of slider.
  */
-typedef enum BarSliderType
+enum class BarSliderType
 {
   BAR_SLIDER_TYPE_NORMAL,
 
@@ -42,7 +42,7 @@ typedef enum BarSliderType
   BAR_SLIDER_TYPE_PORT_MULTIPLIER,
 
   BAR_SLIDER_TYPE_CONTROL_PORT,
-} BarSliderType;
+};
 
 /**
  * Draggable slider to adjust an amount (such as a
@@ -173,7 +173,7 @@ _bar_slider_widget_new (
 #define bar_slider_widget_new( \
   getter, setter, obj, min, max, w, h, zero, dec, mode, suffix) \
   _bar_slider_widget_new ( \
-    BAR_SLIDER_TYPE_NORMAL, (float (*) (void *)) getter, \
+    BarSliderType::BAR_SLIDER_TYPE_NORMAL, (float (*) (void *)) getter, \
     (void (*) (void *, float)) setter, (void *) obj, min, max, w, h, zero, 0, \
     dec, mode, "", suffix)
 
@@ -184,8 +184,8 @@ _bar_slider_widget_new (
  */
 #define bar_slider_widget_new_port_connection(conn, prefix) \
   _bar_slider_widget_new ( \
-    BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, (void *) conn, 0.f, 1.f, 160, \
-    20, 0.f, 1, 0, UI_DRAG_MODE_CURSOR, prefix, " %")
+    BarSliderType::BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, (void *) conn, \
+    0.f, 1.f, 160, 20, 0.f, 1, 0, UI_DRAG_MODE_CURSOR, prefix, " %")
 
 /**
  * @}

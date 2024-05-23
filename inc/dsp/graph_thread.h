@@ -72,7 +72,7 @@ typedef struct GraphThread
 
 #ifdef HAVE_LSP_DSP
   /** LSP DSP context. */
-  lsp_dsp_context_t lsp_ctx;
+  lsp::dsp::context_t lsp_ctx;
 #endif
 } GraphThread;
 

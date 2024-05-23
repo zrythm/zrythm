@@ -31,8 +31,8 @@ typedef struct ArrangerSelections        ArrangerSelections;
 typedef struct EditorSettings            EditorSettings;
 typedef struct ObjectPool                ObjectPool;
 typedef struct _RulerWidget              RulerWidget;
-typedef enum ArrangerObjectType          ArrangerObjectType;
-typedef enum TransportDisplay            TransportDisplay;
+enum class ArrangerObjectType;
+enum class TransportDisplay;
 
 /**
  * @addtogroup widgets
@@ -43,7 +43,7 @@ typedef enum TransportDisplay            TransportDisplay;
 #define ARRANGER_WIDGET_GET_ACTION(arr, actn) \
   (arr->action == UI_OVERLAY_ACTION_##actn)
 
-typedef enum ArrangerCursor
+enum class ArrangerCursor
 {
   /** Invalid cursor. */
   ARRANGER_CURSOR_NONE,
@@ -75,12 +75,12 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_FADE_OUT,
   ARRANGER_CURSOR_RENAME,
   ARRANGER_CURSOR_PANNING,
-} ArrangerCursor;
+};
 
 /**
  * Type of arranger.
  */
-typedef enum ArrangerWidgetType
+enum class ArrangerWidgetType
 {
   ARRANGER_WIDGET_TYPE_TIMELINE,
   ARRANGER_WIDGET_TYPE_MIDI,
@@ -88,7 +88,7 @@ typedef enum ArrangerWidgetType
   ARRANGER_WIDGET_TYPE_AUDIO,
   ARRANGER_WIDGET_TYPE_CHORD,
   ARRANGER_WIDGET_TYPE_AUTOMATION,
-} ArrangerWidgetType;
+};
 
 #if 0
 typedef enum ArrangerWidgetHoverType

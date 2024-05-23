@@ -35,11 +35,11 @@ typedef struct _ChannelSendWidget ChannelSendWidget;
  * @{
  */
 
-typedef enum ChannelSendsExpanderPosition
+enum class ChannelSendsExpanderPosition
 {
   CSE_POSITION_CHANNEL,
   CSE_POSITION_INSPECTOR,
-} ChannelSendsExpanderPosition;
+};
 
 /**
  * A TwoColExpanderBoxWidget for showing the ports
