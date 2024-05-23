@@ -144,9 +144,10 @@ draw_color_area (
 
   /* TODO figure out how to draw dark colors */
   graphene_matrix_t color_matrix;
-  graphene_matrix_init_from_float (
-    &color_matrix,
-    (float[16]){ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, c2.alpha });
+  const float       float_arr[16] = {
+    1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, c2.alpha
+  };
+  graphene_matrix_init_from_float (&color_matrix, float_arr);
   graphene_vec4_t color_offset;
   graphene_vec4_init (&color_offset, c2.red, c2.green, c2.blue, 0);
 
