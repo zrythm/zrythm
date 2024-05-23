@@ -25,7 +25,7 @@ stages:
 default:
   cache:
     # this number must be bumped every time these subprojects are updated
-    - key: configured-cache-5
+    - key: configured-cache-6
       paths:
         - venv
         - subprojects/gtk4
@@ -48,7 +48,7 @@ configure:
     - source ./venv/bin/activate
     - python3 -m pip install -r requirements.txt
   script:
-    - CC=gcc meson setup build -Dstrict_flags=true -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml -Dtests=true -Db_sanitize=address
+    - CC=gcc meson setup build -Dstrict_flags=true -Dyaml_project_compatibility=enabled -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml,magic_enum -Dtests=true -Db_sanitize=address
 
 clang-format-check:
   stage: check
