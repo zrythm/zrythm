@@ -74,7 +74,7 @@ tidy_bin = find_program ('tidy', required: false)
 
 # --- Set common variables ---
 
-cc = meson.get_compiler ('c')
+cc = meson.get_compiler ('cpp')
 is_gcc = cc.get_id() == 'gcc'
 is_clang = cc.get_id() == 'clang'
 
