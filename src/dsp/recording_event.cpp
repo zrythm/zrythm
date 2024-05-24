@@ -4,18 +4,6 @@
 #include "dsp/recording_event.h"
 #include "utils/objects.h"
 
-static const char * recording_event_type_strings[] = {
-  "start track recording",
-  "start automation recording",
-  "MIDI",
-  "audio",
-  "automation",
-  "pause track recording",
-  "pause automation recording",
-  "stop track recording",
-  "stop automation recording",
-};
-
 RecordingEvent *
 recording_event_new (void)
 {

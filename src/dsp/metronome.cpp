@@ -44,7 +44,7 @@ metronome_new (void)
     }
   else
     {
-      char * samplesdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
+      char * samplesdir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
       self->emphasis_path =
         g_build_filename (samplesdir, "square_emphasis.wav", NULL);
       self->normal_path =

@@ -123,7 +123,7 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           engine_wait_for_pause (AUDIO_ENGINE, &state, true, false);
 
           project_init_flow_manager_load_or_create_default_project (
-            ZRYTHM->open_filename, ZRYTHM->opening_template,
+            gZrythm->open_filename, gZrythm->opening_template,
             project_ready_while_zrythm_running_cb, NULL);
         }
       else
@@ -144,10 +144,10 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
     g_object_get_data (G_OBJECT (row), "project-info"));
   g_debug ("activated %s", nfo->filename);
 
-  ZRYTHM->open_filename = nfo->filename;
-  g_return_if_fail (ZRYTHM->open_filename);
-  g_message ("Loading project: %s", ZRYTHM->open_filename);
-  ZRYTHM->creating_project = false;
+  gZrythm->open_filename = nfo->filename;
+  g_return_if_fail (gZrythm->open_filename);
+  g_message ("Loading project: %s", gZrythm->open_filename);
+  gZrythm->creating_project = false;
 
   post_finish (self, self->zrythm_already_running, false);
 }
@@ -306,7 +306,7 @@ on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  char *  dir = zrythm_get_default_user_dir ();
+  char *  dir = gZrythmDirMgr->get_default_user_dir ();
   GFile * gf_dir = g_file_new_for_path (dir);
   g_message ("reset to %s", dir);
   ide_file_chooser_entry_set_file (self->fc_entry, gf_dir);
@@ -401,8 +401,8 @@ open_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, GreeterWidget * self)
   g_return_if_fail (path);
   g_object_unref (file);
 
-  ZRYTHM->open_filename = path;
-  g_message ("Loading project: %s", ZRYTHM->open_filename);
+  gZrythm->open_filename = path;
+  g_message ("Loading project: %s", gZrythm->open_filename);
 
   post_finish (self, self->zrythm_already_running, false);
 }
@@ -412,10 +412,10 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
 {
   /* get the zrythm project name */
   char * str = g_settings_get_string (S_GENERAL, "last-project-dir");
-  ZRYTHM->create_project_path = g_build_filename (
+  gZrythm->create_project_path = g_build_filename (
     str, gtk_editable_get_text (GTK_EDITABLE (self->project_title_row)), NULL);
   g_free (str);
-  g_message ("creating project at: %s", ZRYTHM->create_project_path);
+  g_message ("creating project at: %s", gZrythm->create_project_path);
 
   GObject * template_gobj =
     G_OBJECT (adw_combo_row_get_selected_item (self->templates_combo_row));
@@ -423,19 +423,19 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
     g_object_get_data (template_gobj, "project-info"));
   g_return_if_fail (selected_template);
 
-  ZRYTHM->creating_project = true;
+  gZrythm->creating_project = true;
 
   /* if we are loading a blank template */
   if (selected_template->filename[0] == '-')
     {
-      ZRYTHM->open_filename = NULL;
+      gZrythm->open_filename = NULL;
       g_message ("Creating blank project");
     }
   else
     {
-      ZRYTHM->open_filename = selected_template->filename;
-      g_message ("Creating project from template: %s", ZRYTHM->open_filename);
-      ZRYTHM->opening_template = true;
+      gZrythm->open_filename = selected_template->filename;
+      g_message ("Creating project from template: %s", gZrythm->open_filename);
+      gZrythm->opening_template = true;
     }
 
   post_finish (self, self->zrythm_already_running, false);
@@ -480,7 +480,7 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 on_open_from_path_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  ZRYTHM->creating_project = true;
+  gZrythm->creating_project = true;
 
   GtkFileDialog * dialog = gtk_file_dialog_new ();
   gtk_file_dialog_set_title (dialog, _ ("Select Project"));
@@ -522,13 +522,13 @@ greeter_widget_select_project (
   gtk_stack_set_visible_child_name (self->stack, "project-selector");
 
   /* fill recent projects */
-  for (int i = 0; i < ZRYTHM->num_recent_projects; i++)
+  for (int i = 0; i < gZrythm->num_recent_projects; i++)
     {
-      char * recent_dir = io_get_dir (ZRYTHM->recent_projects[i]);
+      char * recent_dir = io_get_dir (gZrythm->recent_projects[i]);
       char * project_name = g_path_get_basename (recent_dir);
 
       ProjectInfo * prj_nfo =
-        project_info_new (project_name, ZRYTHM->recent_projects[i]);
+        project_info_new (project_name, gZrythm->recent_projects[i]);
 
       if (prj_nfo)
         {
@@ -536,7 +536,7 @@ greeter_widget_select_project (
           if (string_is_equal (prj_nfo->modified_str, FILE_NOT_FOUND_STR))
             {
               /* remove from gsettings */
-              zrythm_remove_recent_project (prj_nfo->filename);
+              gZrythm->remove_recent_project (prj_nfo->filename);
 
               project_info_free (prj_nfo);
             }
@@ -556,7 +556,7 @@ greeter_widget_select_project (
     g_ptr_array_add (self->templates_arr, blank_template);
     int    count = 0;
     char * template_str;
-    while ((template_str = ZRYTHM->templates[count]) != NULL)
+    while ((template_str = gZrythm->templates[count]) != NULL)
       {
         char * name = g_path_get_basename (template_str);
         char * filename = g_build_filename (template_str, PROJECT_FILE, NULL);
@@ -582,10 +582,10 @@ greeter_widget_select_project (
 #if 0
   if (template_to_use)
     {
-      ZRYTHM->creating_project = true;
-      ZRYTHM->open_filename = g_build_filename (template_to_use, PROJECT_FILE, NULL);
-      ZRYTHM->opening_template = true;
-      g_message ("Creating project from template: %s", ZRYTHM->open_filename);
+      gZrythm->creating_project = true;
+      gZrythm->open_filename = g_build_filename (template_to_use, PROJECT_FILE, NULL);
+      gZrythm->opening_template = true;
+      g_message ("Creating project from template: %s", gZrythm->open_filename);
 
       CreateProjectDialogWidget * create_prj_dialog =
         create_project_dialog_widget_new ();
@@ -774,7 +774,7 @@ greeter_widget_init (GreeterWidget * self)
   }
 
   /* set zrythm dir */
-  char * dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  char * dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TOP);
   {
     AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("User path"));

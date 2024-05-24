@@ -27,7 +27,7 @@ enum class FileManagerSpecialLocation
   FILE_MANAGER_DRIVE,
 };
 
-#define FILE_MANAGER (ZRYTHM->file_manager)
+#define FILE_MANAGER (gZrythm->file_manager)
 
 /**
  * Locations to be used in the file browser.

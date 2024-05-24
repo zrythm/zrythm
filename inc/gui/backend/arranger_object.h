@@ -94,6 +94,9 @@ enum class ArrangerObjectFlags
   /** This object is not a project object, but an object used temporarily eg.
    * when undoing/ redoing. */
   ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
+
+  /** The object is a snapshot (cache used during DSP). TODO */
+  // ARRANGER_OBJECT_FLAG_SNAPSHOT = 1 << 1,
 };
 
 enum class ArrangerObjectPositionType
@@ -118,24 +121,20 @@ typedef struct ArrangerObject
   ArrangerObjectFlags flags;
 
   /**
-   * Position (or start Position if the object
-   * has length).
+   * Position (or start Position if the object has length).
    *
-   * For audio/MIDI, the material starts at this
-   * frame.
+   * For audio/MIDI, the material starts at this frame.
    *
-   * Midway Position between previous and next
-   * AutomationPoint's, if AutomationCurve.
+   * Midway Position between previous and next AutomationPoint's, if
+   * AutomationCurve.
    */
   Position pos;
 
   /**
    * End Position, if the object has one.
    *
-   * This is exclusive of the material, i.e., the
-   * data at this position is not counted (for
-   * audio regions at least, TODO check for
-   * others).
+   * This is exclusive of the material, i.e., the data at this position is not
+   * counted (for audio regions at least, TODO check for others).
    */
   Position end_pos;
 
@@ -187,11 +186,6 @@ typedef struct ArrangerObject
    * coordinates. */
   GdkRectangle full_rect;
 
-  /** The rectangle this object was last drawn in
-   * (ie, after any necessary clipping),
-   * in absolute coordinates. */
-  // GdkRectangle       draw_rect;
-
   /** Cache text H extents and W extents for
    * the text, if the object has any. */
   int textw;
@@ -242,13 +236,6 @@ typedef struct ArrangerObject
    * such as audio regions --- */
 
   /**
-   * Set to true to blit the cached surface, false to redraw.
-   *
-   * @note This is only used if \ref ArrangerObject.can_cache_drawing is true.
-   */
-  bool use_cache;
-
-  /**
    * Cached cairo_t.
    *
    * Has 2 elements in case the object needs to
@@ -272,8 +259,7 @@ typedef struct ArrangerObject
    */
   cairo_surface_t * cached_surface[2];
 
-  /** Last drawn name rectangle, if object has a
-   * name. */
+  /** Last drawn name rectangle, if object has a name. */
   GdkRectangle last_name_rect;
 
   /**

@@ -53,7 +53,7 @@ typedef struct TracklistSelections TracklistSelections;
 #define PROJECT_FORMAT_MAJOR 1
 #define PROJECT_FORMAT_MINOR 10
 
-#define PROJECT ZRYTHM->project
+#define PROJECT gZrythm->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"
 #define PROJECT_FILE "project.zpj"
 #define PROJECT_BACKUPS_DIR "backups"
@@ -464,8 +464,8 @@ project_clone (const Project * src, bool for_backup, GError ** error);
 /**
  * Creates an empty project object.
  */
-COLD Project *
-project_new (Zrythm * zrythm);
+COLD NONNULL Project *
+project_new (Zrythm * owner);
 
 /**
  * Tears down the project.

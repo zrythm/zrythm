@@ -3,6 +3,7 @@
 
 zrythm_main = files ('main.cpp')
 zrythm_srcs = files ([
+  'globals.cpp',
   'project.cpp',
   'zrythm.cpp',
   'zrythm_app.cpp',
@@ -53,8 +54,7 @@ if os_windows
   zrythm_lib_srcs += win_res
 endif
 
-# static is used in the executable and shared is
-# used in tests
+# static is used in the executable and shared is used in tests
 zrythm_lib = both_libraries (
   'zrythm-lib',
   sources: [
@@ -63,7 +63,8 @@ zrythm_lib = both_libraries (
     ],
   dependencies: zrythm_deps,
   include_directories: all_inc,
-  c_args: [ common_cflags, strict_cflags ],
+  cpp_args: [ common_cflags, strict_cflags ],
+  cpp_pch: 'pch/zrythm_pch.h',
   pic: true,
   link_with: zrythm_link_libs,
   )
@@ -85,7 +86,7 @@ zrythm_exe = executable (
   export_dynamic: true,
   win_subsystem: 'windows',
   include_directories: all_inc,
-  c_args: [ common_cflags ],
+  cpp_args: [ common_cflags ],
   link_args: common_ldflags,
   objects: objects,
   install: true,

@@ -147,6 +147,7 @@ ui_show_message_full (
     {
       g_warning ("vsnprintf failed");
       free (buf);
+      va_end (args);
       return NULL;
     }
   g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, NULL);

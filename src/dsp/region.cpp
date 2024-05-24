@@ -137,7 +137,7 @@ region_gen_name (
  * Sets the track lane.
  */
 void
-region_set_lane (ZRegion * self, const TrackLane * const lane)
+region_set_lane (ZRegion * self, TrackLane * lane)
 {
   g_return_if_fail (IS_REGION (self));
   g_return_if_fail (IS_TRACK_AND_NONNULL (lane->track));
@@ -147,6 +147,7 @@ region_set_lane (ZRegion * self, const TrackLane * const lane)
 
   self->id.lane_pos = lane->pos;
   self->id.track_name_hash = track_get_name_hash (lane->track);
+  self->owner_lane = lane;
 }
 
 /**
@@ -428,7 +429,6 @@ region_stretch (ZRegion * self, double ratio, GError ** error)
       break;
     }
 
-  obj->use_cache = false;
   self->stretching = false;
 
   return true;
@@ -551,16 +551,16 @@ region_get_lane (const ZRegion * self)
       || self->id.type == RegionType::REGION_TYPE_AUDIO,
     NULL);
 
-  Track * track = arranger_object_get_track ((ArrangerObject *) self);
-  g_return_val_if_fail (IS_TRACK (track), NULL);
-  if (self->id.lane_pos < track->num_lanes)
-    {
-      TrackLane * lane = track->lanes[self->id.lane_pos];
-      g_return_val_if_fail (lane, NULL);
-      return lane;
-    }
+  if (self->owner_lane)
+    return self->owner_lane;
 
-  g_return_val_if_reached (NULL);
+  Track * track = arranger_object_get_track ((ArrangerObject *) self);
+  g_return_val_if_fail (IS_TRACK (track), nullptr);
+  g_return_val_if_fail (self->id.lane_pos < track->num_lanes, nullptr);
+
+  TrackLane * lane = track->lanes[self->id.lane_pos];
+  g_return_val_if_fail (lane, NULL);
+  return lane;
 }
 
 /**

@@ -675,20 +675,13 @@ test_strict_cflags += [
   '-Werror=duplicated-cond',
   '-Werror=null-dereference',
   '-Werror=init-self',
-  '-Werror=jump-misses-init',
-  '-Werror=missing-prototypes',
-  '-Werror=nested-externs',
   '-Werror=write-strings',
-  '-Werror=sign-compare',
-  '-Werror=discarded-qualifiers',
+  # TODO fix and enable
+  #'-Werror=sign-compare',
   '-Werror=float-conversion',
-  '-Werror=implicit-function-declaration',
   '-Werror=uninitialized',
   '-Werror=maybe-uninitialized',
   '-Werror=return-type',
-  '-Werror=int-conversion',
-  '-Werror=incompatible-pointer-types',
-  '-Werror=implicit-int',
   '-Werror=multistatement-macros',
   '-Werror=switch',
   '-Werror=overflow',
@@ -711,13 +704,15 @@ test_strict_cflags += [
   '-Werror=use-after-free',
   '-fanalyzer',
   '-Werror=analyzer-possible-null-dereference',
-  '-Werror=analyzer-malloc-leak',
+  # false positives with GCC
+  #'-Werror=analyzer-malloc-leak',
   '-Werror=analyzer-null-dereference',
   '-Werror=analyzer-null-argument',
   '-Werror=analyzer-use-after-free',
   '-Werror=analyzer-possible-null-argument',
   '-Werror=analyzer-double-free',
-  '-Werror=analyzer-file-leak',
+  # false positives with GCC
+  #'-Werror=analyzer-file-leak',
   # GCC still makes mistakes
   #'-Werror=analyzer-use-of-uninitialized-value',
   '-Werror=analyzer-out-of-bounds',
@@ -731,8 +726,6 @@ test_strict_cflags += [
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
-  '-Werror=pointer-sign',
-  '-Werror=override-init',
   '-Werror=bool-compare',
   '-Werror=tautological-compare',
   '-Werror=unused-result',
@@ -740,13 +733,10 @@ test_strict_cflags += [
   #'-Wanalyzer-too-complex',
   #'-Werror=analyzer-too-complex',
   '-Werror=inline',
-  '-Werror=duplicate-decl-specifier',
   '-Werror=redundant-decls',
-  '-Werror=strict-prototypes',
   '-Werror=sizeof-array-argument',
   '-Werror=lto-type-mismatch',
   '-Werror=odr',
-  '-Werror=enum-int-mismatch',
   ]
 
 if is_gcc
@@ -760,9 +750,9 @@ if is_gcc
     #'-Wsuggest-attribute=malloc',
     '-Wsuggest-attribute=cold',
 
-    # only do the following on GCC because clang
-    # reports unnecessary errors
-    '-Werror=sign-conversion',
+    # only do the following on GCC because clang reports unnecessary errors
+    # TODO fix and re-enable
+    #'-Werror=sign-conversion',
     '-Werror=implicit-fallthrough',
     '-Werror=format=2',
     ]

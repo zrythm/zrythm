@@ -291,6 +291,8 @@ watch_parent (gint fd)
   while (TRUE);
 }
 
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 static GIOChannel *
 watcher_init (void)
 {
@@ -345,6 +347,7 @@ watcher_init (void)
 
   return channel;
 }
+#  pragma GCC diagnostic pop
 
 static void
 watcher_send_command (const gchar * command)
@@ -472,7 +475,11 @@ _test_helper_zrythm_init (
   int  buf_size,
   bool use_pipewire)
 {
-  object_free_w_func_and_null (zrythm_free, ZRYTHM);
+  if (gZrythm)
+    {
+      object_free_w_func_and_null (project_free, PROJECT);
+    }
+  gZrythm.reset ();
   object_free_w_func_and_null (log_free, LOG);
 
   Log ** log_ptr = log_get ();
@@ -480,24 +487,25 @@ _test_helper_zrythm_init (
   *log_ptr = log_obj;
   LOG = log_obj;
 
-  ZRYTHM = zrythm_new (NULL, false, true, optimized);
-  ZRYTHM->undo_stack_len = 64;
+  gZrythm.reset (new Zrythm (nullptr, false, optimized));
+  gZrythm->undo_stack_len = 64;
+  gZrythm->init ();
 
   if (use_pipewire)
     {
 #ifndef HAVE_PIPEWIRE
       g_error ("pipewire program not found but requested pipewire engine");
 #endif
-      ZRYTHM->use_pipewire_in_tests = use_pipewire;
-      start_daemon (ZRYTHM);
+      gZrythm->use_pipewire_in_tests = use_pipewire;
+      start_daemon (gZrythm.get ());
     }
 
   /* init logic - note: will use a random dir in
    * tmp as the user dir */
   GError * err = NULL;
-  bool     success = zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  bool     success = gZrythm->init_user_dirs_and_files (&err);
   g_assert_true (success);
-  zrythm_init_templates (ZRYTHM);
+  gZrythm->init_templates ();
 
   /* dummy ZrythmApp object for testing */
   ZrythmApp ** zapp_ptr = zrythm_app_get ();
@@ -522,7 +530,7 @@ _test_helper_zrythm_init (
   g_assert_true (success);
   log_init_writer_idle (LOG, 1);
 
-  ZRYTHM->create_project_path =
+  gZrythm->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
   project_init_flow_manager_load_or_create_default_project (
     NULL, false, _test_helper_project_init_done_cb, NULL);
@@ -563,14 +571,14 @@ test_helper_zrythm_init_optimized (void)
 void
 test_helper_zrythm_cleanup (void)
 {
-  g_assert_nonnull (ZRYTHM->testing_dir);
-  io_rmdir (ZRYTHM->testing_dir, true);
-  object_free_w_func_and_null (project_free, ZRYTHM->project);
-  if (ZRYTHM->use_pipewire_in_tests)
+  g_assert_nonnull (gZrythmDirMgr->testing_dir);
+  io_rmdir (gZrythmDirMgr->testing_dir, true);
+  object_free_w_func_and_null (project_free, gZrythm->project);
+  if (gZrythm->use_pipewire_in_tests)
     {
-      stop_daemon (ZRYTHM);
+      stop_daemon (gZrythm.get ());
     }
-  object_free_w_func_and_null (zrythm_free, ZRYTHM);
+  gZrythm.reset ();
   object_free_w_func_and_null (log_free, LOG);
 }
 
@@ -581,7 +589,7 @@ test_helper_zrythm_cleanup (void)
 void
 test_helper_zrythm_gui_init (int argc, char * argv[])
 {
-  ZRYTHM->have_ui = 1;
+  gZrythm->have_ui_ = true;
   if (gtk_init_check ())
     {
       gtk_init ();

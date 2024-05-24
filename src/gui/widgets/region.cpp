@@ -1591,7 +1591,6 @@ region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
     }
 
   self->last_positions_obj = *obj;
-  obj->use_cache = true;
 }
 
 /**

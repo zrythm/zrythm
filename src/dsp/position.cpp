@@ -892,7 +892,7 @@ int
 position_get_bars (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
+    gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
 
   double total_bars = pos->ticks / TRANSPORT->ticks_per_bar;
   if (total_bars >= 0.0)
@@ -928,7 +928,7 @@ int
 position_get_beats (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0
+    gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0
       && TRANSPORT->ticks_per_beat > 0 && P_TEMPO_TRACK,
     -1);
 
@@ -971,7 +971,7 @@ int
 position_get_sixteenths (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat > 0, -1);
+    gZrythm && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat > 0, -1);
 
   double total_beats = (double) position_get_total_beats (pos, true);
   /*g_message ("total beats %f", total_beats);*/

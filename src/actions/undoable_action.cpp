@@ -404,7 +404,7 @@ undoable_action_get_plugins (UndoableAction * self, GPtrArray * arr)
 void
 undoable_action_set_num_actions (UndoableAction * self, int num_actions)
 {
-  g_return_if_fail (num_actions > 0 && num_actions < ZRYTHM->undo_stack_len);
+  g_return_if_fail (num_actions > 0 && num_actions < gZrythm->undo_stack_len);
   self->num_actions = num_actions;
 }
 

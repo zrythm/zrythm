@@ -154,7 +154,7 @@ quantize_options_quantize_position (QuantizeOptions * self, Position * pos)
 
   const double upper = self->rand_ticks;
   const double lower = -self->rand_ticks;
-  double       rand_double = (double) pcg_rand_u32 (ZRYTHM->rand);
+  double       rand_double = (double) pcg_rand_u32 (gZrythm->rand);
   double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */

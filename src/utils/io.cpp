@@ -267,7 +267,7 @@ io_file_get_last_modified_datetime_as_str (const char * filename)
 int
 io_remove (const char * path)
 {
-  if (ZRYTHM)
+  if (gZrythm)
     {
       g_message ("Removing %s...", path);
     }

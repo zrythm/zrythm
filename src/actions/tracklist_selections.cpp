@@ -1287,7 +1287,7 @@ do_or_undo_move_or_copy (
         }
       else if (copy)
         {
-          int num_tracks = self->tls_before->num_tracks;
+          unsigned int num_tracks = self->tls_before->num_tracks;
 
           if (inside)
             {

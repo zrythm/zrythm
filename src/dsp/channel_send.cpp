@@ -213,15 +213,15 @@ channel_send_prepare_process (ChannelSend * self)
 {
   if (self->midi_in)
     {
-      port_clear_buffer (self->midi_in);
-      port_clear_buffer (self->midi_out);
+      port_clear_buffer (AUDIO_ENGINE, self->midi_in);
+      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
     }
   if (self->stereo_in)
     {
-      port_clear_buffer (self->stereo_in->l);
-      port_clear_buffer (self->stereo_in->r);
-      port_clear_buffer (self->stereo_out->l);
-      port_clear_buffer (self->stereo_out->r);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->l);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->r);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
     }
 }
 

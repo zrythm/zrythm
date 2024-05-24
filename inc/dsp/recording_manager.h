@@ -24,7 +24,7 @@ typedef struct MPMCQueue      MPMCQueue;
  * @{
  */
 
-#define RECORDING_MANAGER (ZRYTHM->recording_manager)
+#define RECORDING_MANAGER (gZrythm->recording_manager)
 
 typedef struct RecordingManager
 {

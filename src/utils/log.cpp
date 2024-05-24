@@ -781,7 +781,7 @@ log_idle_cb (Log * self)
 
       if (ev->backtrace)
         {
-          if (!ZRYTHM || ZRYTHM_TESTING)
+          if (!gZrythm || ZRYTHM_TESTING)
             {
               g_message ("Backtrace: %s", ev->backtrace);
             }
@@ -1008,7 +1008,7 @@ log_writer (
   /*(void) log_writer_standard_streams;*/
 
   /* call the default log writer */
-  if (ZRYTHM && ZRYTHM_TESTING)
+  if (gZrythm && ZRYTHM_TESTING)
     {
       if (self->use_structured_for_console)
         {
@@ -1172,7 +1172,7 @@ log_init_with_file (Log * self, const char * filepath, GError ** error)
   else
     {
       char * str_datetime = datetime_get_for_filename ();
-      char * user_log_dir = zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
+      char * user_log_dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_LOG);
       self->log_filepath = g_strdup_printf (
         "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S, str_datetime);
       GError * err = NULL;

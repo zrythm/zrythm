@@ -31,6 +31,7 @@
 void
 track_lane_init_loaded (TrackLane * self, Track * track)
 {
+  self->magic = TRACK_LANE_MAGIC;
   self->track = track;
   self->regions_size = (size_t) self->num_regions;
   int       i;
@@ -57,6 +58,7 @@ TrackLane *
 track_lane_new (Track * track, int pos)
 {
   TrackLane * self = object_new (TrackLane);
+  self->magic = TRACK_LANE_MAGIC;
   self->pos = pos;
   self->track = track;
 
@@ -316,6 +318,7 @@ TrackLane *
 track_lane_clone (const TrackLane * src, Track * track)
 {
   TrackLane * self = object_new (TrackLane);
+  self->magic = TRACK_LANE_MAGIC;
   self->track = track;
 
   self->name = g_strdup (src->name);

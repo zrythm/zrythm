@@ -24,7 +24,7 @@ typedef struct UserShortcuts  UserShortcuts;
  */
 
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
-#define SETTINGS (ZRYTHM->settings)
+#define SETTINGS (gZrythm->settings)
 
 /* ---- Standard settings ---- */
 #define S_MONITOR SETTINGS->monitor

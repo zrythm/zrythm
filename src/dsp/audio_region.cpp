@@ -322,11 +322,11 @@ audio_region_fill_stereo_ports (
       && MW_TIMELINE->action == UI_OVERLAY_ACTION_STRETCHING_R))
     {
       dsp_fill (
-        &stereo_ports->l->buf[time_nfo->local_offset], DENORMAL_PREVENTION_VAL,
-        time_nfo->nframes);
+        &stereo_ports->l->buf[time_nfo->local_offset],
+        DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
       dsp_fill (
-        &stereo_ports->r->buf[time_nfo->local_offset], DENORMAL_PREVENTION_VAL,
-        time_nfo->nframes);
+        &stereo_ports->r->buf[time_nfo->local_offset],
+        DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
       return;
     }
 

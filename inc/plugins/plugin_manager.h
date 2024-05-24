@@ -26,7 +26,7 @@ TYPEDEF_STRUCT (ZCarlaDiscovery);
  * @{
  */
 
-#define PLUGIN_MANAGER (ZRYTHM->plugin_manager)
+#define PLUGIN_MANAGER (gZrythm->plugin_manager)
 
 typedef struct PluginDescriptor PluginDescriptor;
 

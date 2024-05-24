@@ -29,7 +29,7 @@ z_pango_create_layout_from_description (
       FcConfig * fc_config = FcConfigCreate ();
 
       /* add fonts/zrythm dir to find DSEG font */
-      char * fontdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_FONTSDIR);
+      char * fontdir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_FONTSDIR);
       FcConfigAppFontAddDir (fc_config, (const unsigned char *) fontdir);
       g_free (fontdir);
       FcConfigBuildFonts (fc_config);

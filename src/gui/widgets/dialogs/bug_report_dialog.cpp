@@ -65,7 +65,7 @@ get_report_template (BugReportDialogWidget * self, bool for_uri)
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
-  zrythm_get_version_with_capabilities (ver_with_caps, false);
+  Zrythm::get_version_with_capabilities (ver_with_caps, false);
   char * report_template = g_strdup_printf (
     "# What did you do?\n"
     "%s\n\n"
@@ -115,7 +115,7 @@ get_json_string (BugReportDialogWidget * self)
   yyjson_mut_obj_add_int (doc, root, "fatal", self->fatal);
 
   char ver_with_caps[2000];
-  zrythm_get_version_with_capabilities (ver_with_caps, false);
+  Zrythm::get_version_with_capabilities (ver_with_caps, false);
   yyjson_mut_obj_add_strcpy (doc, root, "version", ver_with_caps);
 
   char * str = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, NULL);
@@ -535,7 +535,7 @@ bug_report_dialog_new (
       ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 32)
       : g_strdup ("<undo stack uninitialized>\n");
   self->backtrace = g_strdup (backtrace);
-  self->system_nfo = zrythm_get_system_info ();
+  self->system_nfo = Zrythm::get_system_info ();
   self->fatal = fatal;
 
   gtk_label_set_text (self->backtrace_lbl, self->backtrace);

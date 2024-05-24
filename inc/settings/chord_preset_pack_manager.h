@@ -22,7 +22,7 @@
  * @{
  */
 
-#define CHORD_PRESET_PACK_MANAGER (ZRYTHM->chord_preset_pack_manager)
+#define CHORD_PRESET_PACK_MANAGER (gZrythm->chord_preset_pack_manager)
 
 /**
  * Chord preset pack manager.

@@ -204,7 +204,7 @@ check_for_updates_latest_release_ver_ready (
   gpointer       data)
 {
   GError * err = NULL;
-  char *   latest_release = zrythm_fetch_latest_release_ver_finish (res, &err);
+  char *   latest_release = Zrythm::fetch_latest_release_ver_finish (res, &err);
   if (!latest_release)
     {
       HANDLE_ERROR_LITERAL (
@@ -212,7 +212,7 @@ check_for_updates_latest_release_ver_ready (
       return;
     }
 
-  bool is_latest_release = zrythm_is_latest_release (latest_release);
+  bool is_latest_release = Zrythm::is_latest_release (latest_release);
 #ifdef HAVE_CHANGELOG
   /* if latest release and first run on this release show
    * CHANGELOG */
@@ -239,7 +239,7 @@ check_for_updates_latest_release_ver_ready (
     "\n package version: %s",
     last_version_notified_on, PACKAGE_VERSION);
   if (
-    !is_latest_release && zrythm_is_release (true)
+    !is_latest_release && Zrythm::is_release (true)
     && !string_is_equal (last_version_notified_on, PACKAGE_VERSION))
     {
       ui_show_message_printf (
@@ -273,7 +273,7 @@ zrythm_app_check_for_updates (ZrythmApp * self)
   if (!g_settings_get_boolean (S_P_GENERAL_UPDATES, "check-for-updates"))
     return;
 
-  zrythm_fetch_latest_release_ver_async (
+  Zrythm::fetch_latest_release_ver_async (
     check_for_updates_latest_release_ver_ready, NULL);
 }
 
@@ -289,7 +289,7 @@ init_recent_projects (void)
   gchar ** recent_projects = g_settings_get_strv (S_GENERAL, "recent-projects");
 
   /* get recent projects */
-  ZRYTHM->num_recent_projects = 0;
+  gZrythm->num_recent_projects = 0;
   int    count = 0;
   char * prj;
   while (recent_projects[count])
@@ -299,25 +299,25 @@ init_recent_projects (void)
       /* skip duplicates */
       if (
         array_contains_cmp (
-          ZRYTHM->recent_projects, ZRYTHM->num_recent_projects, prj, strcmp, 0,
-          1))
+          gZrythm->recent_projects, gZrythm->num_recent_projects, prj, strcmp,
+          0, 1))
         {
           count++;
           continue;
         }
 
-      ZRYTHM->recent_projects[ZRYTHM->num_recent_projects++] = g_strdup (prj);
+      gZrythm->recent_projects[gZrythm->num_recent_projects++] = g_strdup (prj);
     }
   g_strfreev (recent_projects);
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
-  ZRYTHM->recent_projects[ZRYTHM->num_recent_projects] = NULL;
+  gZrythm->recent_projects[gZrythm->num_recent_projects] = NULL;
 
   /* save the new list */
   g_settings_set_strv (
     S_GENERAL, "recent-projects",
-    (const char * const *) ZRYTHM->recent_projects);
+    (const char * const *) gZrythm->recent_projects);
 
   g_message ("done");
 }
@@ -407,10 +407,10 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
   g_debug (
     "on_load_project called | open filename '%s' "
     "| opening template %d",
-    ZRYTHM->open_filename, ZRYTHM->opening_template);
+    gZrythm->open_filename, gZrythm->opening_template);
   g_application_hold (g_application_get_default ());
   project_init_flow_manager_load_or_create_default_project (
-    ZRYTHM->open_filename, ZRYTHM->opening_template,
+    gZrythm->open_filename, gZrythm->opening_template,
     project_load_or_create_ready_cb, NULL);
 }
 
@@ -429,20 +429,19 @@ zrythm_app_init_thread (ZrythmApp * self)
   greeter_widget_set_progress_and_status (
     self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
 
-  ZRYTHM->debug = env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
   char msg[500];
   sprintf (msg, _ ("Initializing %s directories"), PROGRAM_NAME);
   greeter_widget_set_progress_and_status (self->greeter, NULL, msg, 0.01);
   GError * err = NULL;
-  bool     success = zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  bool     success = gZrythm->init_user_dirs_and_files (&err);
   if (!success)
     {
       g_error ("Failed to create user dirs and files: %s", err->message);
       return NULL;
     }
   init_recent_projects ();
-  zrythm_init_templates (ZRYTHM);
+  gZrythm->init_templates ();
 
   /* init log */
   greeter_widget_set_progress_and_status (
@@ -456,7 +455,7 @@ zrythm_app_init_thread (ZrythmApp * self)
 
   {
     char ver[2000];
-    zrythm_get_version_with_capabilities (ver, false);
+    Zrythm::get_version_with_capabilities (ver, false);
     g_message ("\n%s", ver);
   }
 
@@ -477,7 +476,7 @@ zrythm_app_init_thread (ZrythmApp * self)
   greeter_widget_set_progress_and_status (
     self->greeter, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
   plugin_manager_begin_scan (
-    ZRYTHM->plugin_manager, 0.90, &self->greeter->progress,
+    gZrythm->plugin_manager, 0.90, &self->greeter->progress,
     (GenericCallback) on_plugin_scan_finished, self);
 
   return NULL;
@@ -512,7 +511,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 
   ZrythmApp * self = zrythm_app;
 
-  if (ZRYTHM->open_filename)
+  if (gZrythm->open_filename)
     {
       g_action_group_activate_action (
         G_ACTION_GROUP (self), "load_project", NULL);
@@ -521,7 +520,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
     {
       /* if running for the first time (even after the GSetting is set to false)
        * run the demo project, otherwise ask the user for a project */
-      bool use_demo_template = self->is_first_run && ZRYTHM->demo_template;
+      bool use_demo_template = self->is_first_run && gZrythm->demo_template;
 #ifdef _WOE32
       /* crashes on windows -- fix first then re-enable */
       use_demo_template = false;
@@ -533,7 +532,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 
       greeter_widget_select_project (
         self->greeter, false, false,
-        use_demo_template ? ZRYTHM->demo_template : NULL);
+        use_demo_template ? gZrythm->demo_template : NULL);
 
 #ifdef __APPLE__
       /* possibly not necessary / working, forces app window on top */
@@ -582,8 +581,8 @@ zrythm_app_open (
   g_warn_if_fail (n_files == 1);
 
   GFile * file = files[0];
-  ZRYTHM->open_filename = g_file_get_path (file);
-  g_message ("open %s", ZRYTHM->open_filename);
+  gZrythm->open_filename = g_file_get_path (file);
+  g_message ("open %s", gZrythm->open_filename);
 
   g_message ("done");
 }
@@ -900,12 +899,15 @@ zrythm_app_startup (GApplication * app)
       exe_path[length] = '\0';
     }
 
-  ZRYTHM = zrythm_new (exe_path ? exe_path : self->argv[0], true, false, true);
-  g_return_if_fail (ZRYTHM);
+  gZrythm.reset ();
+  gZrythm =
+    std::make_unique<Zrythm> (exe_path ? exe_path : self->argv[0], true, true);
+  gZrythm->init ();
+  g_return_if_fail (gZrythm);
 
   const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;
-  char * ver = zrythm_get_version (0);
+  char * ver = Zrythm::get_version (0);
   fprintf (
     stdout,
     _ ("%s-%s\n%s\n\n"
@@ -1045,7 +1047,8 @@ zrythm_app_startup (GApplication * app)
 
   /* prepend freedesktop system icons to search
    * path, just in case */
-  char * parent_datadir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_PARENT_DATADIR);
+  char * parent_datadir =
+    gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_PARENT_DATADIR);
   char * freedesktop_icon_theme_dir =
     g_build_filename (parent_datadir, "icons", NULL);
   gtk_icon_theme_add_search_path (icon_theme, freedesktop_icon_theme_dir);
@@ -1056,7 +1059,7 @@ zrythm_app_startup (GApplication * app)
   /* prepend zrythm system icons to search path */
   {
     char * system_icon_theme_dir =
-      zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR);
+      gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR);
     gtk_icon_theme_add_search_path (icon_theme, system_icon_theme_dir);
     g_message ("added icon theme search path: %s", system_icon_theme_dir);
     g_free (system_icon_theme_dir);
@@ -1064,7 +1067,8 @@ zrythm_app_startup (GApplication * app)
 
   /* prepend user custom icons to search path */
   {
-    char * user_icon_theme_dir = zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_ICONS);
+    char * user_icon_theme_dir =
+      gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_THEMES_ICONS);
     gtk_icon_theme_add_search_path (icon_theme, user_icon_theme_dir);
     g_message ("added icon theme search path: %s", user_icon_theme_dir);
     g_free (user_icon_theme_dir);
@@ -1127,7 +1131,7 @@ zrythm_app_startup (GApplication * app)
 
   /* get css theme file path */
   GtkCssProvider * css_provider = gtk_css_provider_new ();
-  char * user_themes_dir = zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
+  char * user_themes_dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
   char * css_theme_file = g_settings_get_string (S_P_UI_GENERAL, "css-theme");
   char * css_theme_path =
     g_build_filename (user_themes_dir, css_theme_file, NULL);
@@ -1137,7 +1141,7 @@ zrythm_app_startup (GApplication * app)
       /* fallback to theme in system path */
       g_free (css_theme_path);
       char * system_themes_dir =
-        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
+        gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         g_build_filename (system_themes_dir, css_theme_file, NULL);
       g_free (system_themes_dir);
@@ -1147,7 +1151,7 @@ zrythm_app_startup (GApplication * app)
       /* fallback to zrythm-theme.css */
       g_free (css_theme_path);
       char * system_themes_dir =
-        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
+        gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         g_build_filename (system_themes_dir, "zrythm-theme.css", NULL);
       g_free (system_themes_dir);
@@ -1251,9 +1255,9 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
       self->project_autosave_source_id = 0;
     }
 
-  if (ZRYTHM)
+  if (gZrythm)
     {
-      zrythm_free (ZRYTHM);
+      gZrythm.reset ();
     }
 
   object_free_w_func_and_null (
@@ -1346,7 +1350,7 @@ print_version (
   GError **     error)
 {
   char ver_with_caps[2000];
-  zrythm_get_version_with_capabilities (ver_with_caps, false);
+  Zrythm::get_version_with_capabilities (ver_with_caps, false);
   fprintf (
     stdout, "%s\n%s\n%s\n%s\n", ver_with_caps,
     "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME,

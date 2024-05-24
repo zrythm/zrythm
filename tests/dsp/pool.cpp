@@ -82,7 +82,7 @@ test_remove_unused (void)
         }
 
       /* create more tracks */
-      for (int j = 0; j < (ZRYTHM->undo_stack_len + 4); j++)
+      for (int j = 0; j < (gZrythm->undo_stack_len + 4); j++)
         {
           track_create_with_action (
             TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
@@ -90,14 +90,14 @@ test_remove_unused (void)
         }
 
       /* assert all clips still exist */
-      g_assert_cmpint (AUDIO_POOL->num_clips, ==, ZRYTHM->undo_stack_len + 5);
+      g_assert_cmpint (AUDIO_POOL->num_clips, ==, gZrythm->undo_stack_len + 5);
       AudioClip * clip = AUDIO_POOL->clips[0];
       char *      clip_path = audio_clip_get_path_in_pool (clip, F_NOT_BACKUP);
       g_assert_true (g_file_test (clip_path, G_FILE_TEST_EXISTS));
       AudioClip * clip2 = AUDIO_POOL->clips[1];
       char * clip_path2 = audio_clip_get_path_in_pool (clip2, F_NOT_BACKUP);
       g_assert_true (g_file_test (clip_path2, G_FILE_TEST_EXISTS));
-      AudioClip * last_clip = AUDIO_POOL->clips[ZRYTHM->undo_stack_len + 4];
+      AudioClip * last_clip = AUDIO_POOL->clips[gZrythm->undo_stack_len + 4];
       char *      last_clip_path =
         audio_clip_get_path_in_pool (last_clip, F_NOT_BACKUP);
       g_assert_true (g_file_test (last_clip_path, G_FILE_TEST_EXISTS));
@@ -105,8 +105,8 @@ test_remove_unused (void)
       /* undo and check that last file still exists */
       undo_manager_undo (UNDO_MANAGER, NULL);
       g_assert_true (g_file_test (last_clip_path, G_FILE_TEST_EXISTS));
-      g_assert_cmpint (AUDIO_POOL->num_clips, ==, ZRYTHM->undo_stack_len + 5);
-      g_assert_nonnull (AUDIO_POOL->clips[ZRYTHM->undo_stack_len + 4]);
+      g_assert_cmpint (AUDIO_POOL->num_clips, ==, gZrythm->undo_stack_len + 5);
+      g_assert_nonnull (AUDIO_POOL->clips[gZrythm->undo_stack_len + 4]);
 
       /* do another action so that the undoable action
        * for last file no longer exists */
@@ -119,11 +119,11 @@ test_remove_unused (void)
       test_project_save_and_reload ();
 
       /* assert first and previous last clip are removed */
-      g_assert_cmpint (AUDIO_POOL->num_clips, ==, ZRYTHM->undo_stack_len + 5);
+      g_assert_cmpint (AUDIO_POOL->num_clips, ==, gZrythm->undo_stack_len + 5);
       g_assert_null (AUDIO_POOL->clips[0]);
       g_assert_false (g_file_test (clip_path, G_FILE_TEST_EXISTS));
       g_assert_nonnull (AUDIO_POOL->clips[1]);
-      g_assert_null (AUDIO_POOL->clips[ZRYTHM->undo_stack_len + 4]);
+      g_assert_null (AUDIO_POOL->clips[gZrythm->undo_stack_len + 4]);
       g_assert_true (g_file_test (clip_path2, G_FILE_TEST_EXISTS));
       g_assert_false (g_file_test (last_clip_path, G_FILE_TEST_EXISTS));
 

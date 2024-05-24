@@ -280,10 +280,11 @@ _backtrace_get (
   if (state && msg_str)
     {
 
-      if (write_to_file && ZRYTHM)
+      if (write_to_file && gZrythm)
         {
           char * str_datetime = datetime_get_for_filename ();
-          char * user_bt_dir = zrythm_get_dir (ZRYTHM_DIR_USER_BACKTRACE);
+          char * user_bt_dir =
+            gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_BACKTRACE);
           char * backtrace_filepath = g_strdup_printf (
             "%s%sbacktrace_%s.txt", user_bt_dir, G_DIR_SEPARATOR_S,
             str_datetime);
@@ -295,7 +296,12 @@ _backtrace_get (
               goto call_backtrace_full;
             }
           FILE * f = fopen (backtrace_filepath, "a");
-          if (!f)
+          if (f)
+            {
+              backtrace_print (state, 0, f);
+              fclose (f);
+            }
+          else
             {
               g_message ("failed to open file %s", backtrace_filepath);
               g_free (str_datetime);
@@ -303,8 +309,6 @@ _backtrace_get (
               g_free (backtrace_filepath);
               goto call_backtrace_full;
             }
-          backtrace_print (state, 0, f);
-          fclose (f);
           g_free (str_datetime);
           g_free (user_bt_dir);
           g_free (backtrace_filepath);

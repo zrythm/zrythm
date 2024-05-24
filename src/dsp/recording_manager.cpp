@@ -1201,8 +1201,7 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
       delete_automation_points (self, at, region, &start_pos);
     }
 
-  /* if we left touch mode, set last recorded ap
-   * to NULL */
+  /* if we left touch mode, set last recorded ap to NULL */
   if (
     at->record_mode == AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH
     && !automation_track_should_be_recording (at, cur_time, true)

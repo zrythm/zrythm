@@ -654,7 +654,7 @@ init_common (AudioEngine * self)
   if (ZRYTHM_TESTING)
     {
       ab_code =
-        ZRYTHM->use_pipewire_in_tests
+        gZrythm->use_pipewire_in_tests
           ? AudioBackend::AUDIO_BACKEND_JACK
           : AudioBackend::AUDIO_BACKEND_DUMMY;
     }
@@ -731,7 +731,7 @@ init_common (AudioEngine * self)
   if (ZRYTHM_TESTING)
     {
       mb_code =
-        ZRYTHM->use_pipewire_in_tests
+        gZrythm->use_pipewire_in_tests
           ? MidiBackend::MIDI_BACKEND_JACK
           : MidiBackend::MIDI_BACKEND_DUMMY;
     }
@@ -982,8 +982,8 @@ engine_wait_for_pause (
   g_message ("waiting for engine to pause...");
 
   state->running = g_atomic_int_get (&self->run);
-  state->playing = TRANSPORT_IS_ROLLING;
-  state->looping = TRANSPORT->loop;
+  state->playing = transport_is_rolling (self->transport);
+  state->looping = self->transport->loop;
 
   if (!state->running)
     {
@@ -998,19 +998,24 @@ engine_wait_for_pause (
       g_message (
         "setting fade out samples and waiting for remaining samples to become 0");
       g_atomic_int_set (
-        &MONITOR_FADER->fade_out_samples, FADER_DEFAULT_FADE_FRAMES);
+        &self->control_room->monitor_fader->fade_out_samples,
+        FADER_DEFAULT_FADE_FRAMES);
       const gint64 start_time = g_get_monotonic_time ();
       const gint64 max_time_to_wait = 2 * 1000 * 1000; // 2sec
-      g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
-      while (g_atomic_int_get (&MONITOR_FADER->fade_out_samples) > 0)
+      g_atomic_int_set (&self->control_room->monitor_fader->fading_out, 1);
+      while (
+        g_atomic_int_get (&self->control_room->monitor_fader->fade_out_samples)
+        > 0)
         {
           g_usleep (100);
           gint64 cur_time = g_get_monotonic_time ();
           if (cur_time - start_time > max_time_to_wait)
             {
               /* abort */
-              g_atomic_int_set (&MONITOR_FADER->fading_out, 0);
-              g_atomic_int_set (&MONITOR_FADER->fade_out_samples, 0);
+              g_atomic_int_set (
+                &self->control_room->monitor_fader->fading_out, 0);
+              g_atomic_int_set (
+                &self->control_room->monitor_fader->fade_out_samples, 0);
               break;
             }
         }
@@ -1025,12 +1030,12 @@ engine_wait_for_pause (
 
       if (force_pause)
         {
-          TRANSPORT->play_state = PlayState::PLAYSTATE_PAUSED;
+          self->transport->play_state = PlayState::PLAYSTATE_PAUSED;
         }
       else
         {
           while (
-            TRANSPORT->play_state == PlayState::PLAYSTATE_PAUSE_REQUESTED
+            self->transport->play_state == PlayState::PLAYSTATE_PAUSE_REQUESTED
             && !self->stop_dummy_audio_thread)
             {
               g_usleep (100);
@@ -1052,9 +1057,9 @@ engine_wait_for_pause (
    * periodically) */
   hardware_processor_rescan_ext_ports (self->hw_in_processor);
 
-  g_atomic_int_set (&MONITOR_FADER->fading_out, 0);
+  g_atomic_int_set (&self->control_room->monitor_fader->fading_out, 0);
 
-  if (PROJECT->loaded)
+  if (gZrythm && PROJECT && PROJECT->loaded)
     {
 #if 0
       /* process all recording events */
@@ -1127,12 +1132,6 @@ engine_wait_n_cycles (AudioEngine * self, int n)
     }
 }
 
-/**
- * Activates the audio engine to start processing
- * and receiving events.
- *
- * @param activate Activate or deactivate.
- */
 void
 engine_activate (AudioEngine * self, bool activate)
 {
@@ -1319,9 +1318,9 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
     return;
 
   /* clear the monitor output (used by rtaudio) */
-  port_clear_buffer (self->monitor_out->l);
-  port_clear_buffer (self->monitor_out->r);
-  port_clear_buffer (self->midi_clock_out);
+  port_clear_buffer (AUDIO_ENGINE, self->monitor_out->l);
+  port_clear_buffer (AUDIO_ENGINE, self->monitor_out->r);
+  port_clear_buffer (AUDIO_ENGINE, self->midi_clock_out);
 
   /* if not running, do not attempt to access any
    * possibly deleted ports */
@@ -1479,8 +1478,8 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
 
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
-  port_clear_buffer (self->midi_in);
-  port_clear_buffer (self->midi_editor_manual_press);
+  port_clear_buffer (AUDIO_ENGINE, self->midi_in);
+  port_clear_buffer (AUDIO_ENGINE, self->midi_editor_manual_press);
 
   sample_processor_prepare_process (self->sample_processor, nframes);
 

@@ -771,14 +771,14 @@ fader_clear_buffers (Fader * self)
     case FaderType::FADER_TYPE_AUDIO_CHANNEL:
     case FaderType::FADER_TYPE_MONITOR:
     case FaderType::FADER_TYPE_SAMPLE_PROCESSOR:
-      port_clear_buffer (self->stereo_in->l);
-      port_clear_buffer (self->stereo_in->r);
-      port_clear_buffer (self->stereo_out->l);
-      port_clear_buffer (self->stereo_out->r);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->l);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->r);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
       break;
     case FaderType::FADER_TYPE_MIDI_CHANNEL:
-      port_clear_buffer (self->midi_in);
-      port_clear_buffer (self->midi_out);
+      port_clear_buffer (AUDIO_ENGINE, self->midi_in);
+      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
       break;
     default:
       break;

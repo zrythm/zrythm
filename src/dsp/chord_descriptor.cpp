@@ -109,7 +109,7 @@ chord_descriptor_update_notes (ChordDescriptor * self)
     self->type == ChordType::CHORD_TYPE_DIM ? 9 : 10;
 
   /* add accents */
-  int root_note_int = ENUM_VALUE_TO_INT (self->root_note);
+  unsigned int root_note_int = ENUM_VALUE_TO_INT (self->root_note);
   switch (self->accent)
     {
     case ChordAccent::CHORD_ACC_NONE:

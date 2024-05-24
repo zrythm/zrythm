@@ -289,7 +289,8 @@ audio_clip_new_recording (
   self->use_flac = false;
   g_return_val_if_fail (self->samplerate > 0, NULL);
   dsp_fill (
-    self->frames, DENORMAL_PREVENTION_VAL, (size_t) nframes * (size_t) channels);
+    self->frames, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
+    (size_t) nframes * (size_t) channels);
   audio_clip_update_channel_caches (self, 0);
 
   return self;

@@ -58,59 +58,84 @@ GQuark
 z_zrythm_error_quark (void);
 G_DEFINE_QUARK (z - zrythm - error - quark, z_zrythm_error)
 
-/** This is declared extern in zrythm.h. */
-Zrythm * zrythm = NULL;
+Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
+{
+  this->exe_path_ = g_strdup (exe_path);
 
-/**
- * FIXME move somewhere else.
- */
+  this->version = get_version (false);
+  this->have_ui_ = have_ui;
+  this->use_optimized_dsp = optimized_dsp;
+  this->debug = env_get_int ("ZRYTHM_DEBUG", 0);
+
+  /* these don't depend on anything external for sure */
+  this->rand = pcg_rand_new ();
+  this->symap = symap_new ();
+  this->error_domain_symap = symap_new ();
+
+  this->settings = settings_new ();
+  this->recording_manager = recording_manager_new ();
+}
+
 void
-zrythm_add_to_recent_projects (Zrythm * self, const char * _filepath)
+Zrythm::init (void)
+{
+  this->plugin_manager = plugin_manager_new ();
+  this->file_manager = file_manager_new ();
+  this->chord_preset_pack_manager =
+    chord_preset_pack_manager_new (have_ui_ && !ZRYTHM_TESTING);
+  this->cairo_caches = z_cairo_caches_new ();
+
+  if (have_ui_)
+    {
+      this->event_manager = event_manager_new ();
+    }
+}
+
+void
+Zrythm::add_to_recent_projects (const char * _filepath)
 {
   /* if we are at max
    * projects */
-  if (ZRYTHM->num_recent_projects == MAX_RECENT_PROJECTS)
+  if (this->num_recent_projects == MAX_RECENT_PROJECTS)
     {
       /* free the last one and delete it */
-      g_free (ZRYTHM->recent_projects[MAX_RECENT_PROJECTS - 1]);
+      g_free (this->recent_projects[MAX_RECENT_PROJECTS - 1]);
       array_delete (
-        ZRYTHM->recent_projects, ZRYTHM->num_recent_projects,
-        ZRYTHM->recent_projects[ZRYTHM->num_recent_projects - 1]);
+        this->recent_projects, this->num_recent_projects,
+        this->recent_projects[this->num_recent_projects - 1]);
     }
 
   char * filepath = g_strdup (_filepath);
 
-  array_insert (
-    ZRYTHM->recent_projects, ZRYTHM->num_recent_projects, 0, filepath);
+  array_insert (this->recent_projects, this->num_recent_projects, 0, filepath);
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
-  ZRYTHM->recent_projects[ZRYTHM->num_recent_projects] = NULL;
+  this->recent_projects[this->num_recent_projects] = NULL;
 
   g_settings_set_strv (
-    S_GENERAL, "recent-projects",
-    (const char * const *) ZRYTHM->recent_projects);
+    S_GENERAL, "recent-projects", (const char * const *) this->recent_projects);
 }
 
 void
-zrythm_remove_recent_project (char * filepath)
+Zrythm::remove_recent_project (char * filepath)
 {
   /* FIXME use GStrvBuilder */
-  for (int i = 0; i < ZRYTHM->num_recent_projects; i++)
+  for (int i = 0; i < this->num_recent_projects; i++)
     {
-      const char * recent_project = ZRYTHM->recent_projects[i];
+      const char * recent_project = this->recent_projects[i];
       g_return_if_fail (recent_project);
       if (string_is_equal (filepath, recent_project))
         {
           array_delete (
-            ZRYTHM->recent_projects, ZRYTHM->num_recent_projects,
-            ZRYTHM->recent_projects[i]);
+            this->recent_projects, this->num_recent_projects,
+            this->recent_projects[i]);
 
-          ZRYTHM->recent_projects[ZRYTHM->num_recent_projects] = NULL;
+          this->recent_projects[this->num_recent_projects] = NULL;
 
           g_settings_set_strv (
             S_GENERAL, "recent-projects",
-            (const char * const *) ZRYTHM->recent_projects);
+            (const char * const *) this->recent_projects);
         }
     }
 }
@@ -123,7 +148,7 @@ zrythm_remove_recent_project (char * filepath)
  * @param with_v Include a starting "v".
  */
 char *
-zrythm_get_version (bool with_v)
+Zrythm::get_version (bool with_v)
 {
   const char * ver = PACKAGE_VERSION;
 
@@ -151,9 +176,9 @@ zrythm_get_version (bool with_v)
  *   additional system info (for bug reports).
  */
 void
-zrythm_get_version_with_capabilities (char * buf, bool include_system_info)
+Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 {
-  char * ver = zrythm_get_version (0);
+  char * ver = get_version (0);
 
   GString * gstr = g_string_new (NULL);
 
@@ -225,7 +250,7 @@ zrythm_get_version_with_capabilities (char * buf, bool include_system_info)
   if (include_system_info)
     {
       g_string_append (gstr, "\n");
-      char * system_nfo = zrythm_get_system_info ();
+      char * system_nfo = get_system_info ();
       g_string_append (gstr, system_nfo);
       g_free (system_nfo);
     }
@@ -242,7 +267,7 @@ zrythm_get_version_with_capabilities (char * buf, bool include_system_info)
  * reports).
  */
 char *
-zrythm_get_system_info (void)
+Zrythm::get_system_info (void)
 {
   GString * gstr = g_string_new (NULL);
 
@@ -288,7 +313,7 @@ zrythm_get_system_info (void)
  * @note This only does regex checking.
  */
 bool
-zrythm_is_release (bool official)
+Zrythm::is_release (bool official)
 {
 #ifndef INSTALLER_VER
   if (official)
@@ -301,7 +326,7 @@ zrythm_is_release (bool official)
 }
 
 char *
-zrythm_fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error)
+Zrythm::fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error)
 {
   return z_curl_get_page_contents_finish (result, error);
 }
@@ -312,7 +337,7 @@ zrythm_fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error)
  * @param callback_data Data to pass to @p callback.
  */
 void
-zrythm_fetch_latest_release_ver_async (
+Zrythm::fetch_latest_release_ver_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
@@ -325,7 +350,7 @@ zrythm_fetch_latest_release_ver_async (
  * release.
  */
 bool
-zrythm_is_latest_release (const char * remote_latest_release)
+Zrythm::is_latest_release (const char * remote_latest_release)
 {
   return string_is_equal (remote_latest_release, PACKAGE_VERSION);
 }
@@ -341,7 +366,7 @@ zrythm_is_latest_release (const char * remote_latest_release)
  * @return A newly allocated string.
  */
 char *
-zrythm_get_prefix (void)
+Zrythm::get_prefix (void)
 {
 #if defined(_WOE32) && defined(INSTALLER_VER)
   return io_get_registry_string_val ("InstallPath");
@@ -358,44 +383,27 @@ zrythm_get_prefix (void)
 #endif
 }
 
-/**
- * Gets the zrythm directory, either from the
- * settings if non-empty, or the default
- * ($XDG_DATA_DIR/zrythm).
- *
- * @param force_default Ignore the settings and get
- *   the default dir.
- *
- * Must be free'd by caller.
- */
 char *
-zrythm_get_user_dir (bool force_default)
+ZrythmDirectoryManager::get_user_dir (bool force_default)
 {
   if (ZRYTHM_TESTING)
     {
-      if (!ZRYTHM->testing_dir)
+      if (!this->testing_dir)
         {
-          ZRYTHM->testing_dir = g_dir_make_tmp ("zrythm_test_dir_XXXXXX", NULL);
+          this->testing_dir = g_dir_make_tmp ("zrythm_test_dir_XXXXXX", NULL);
         }
-      g_debug ("returning user dir: %s", ZRYTHM->testing_dir);
-      return g_strdup (ZRYTHM->testing_dir);
+      g_debug ("returning user dir: %s", this->testing_dir);
+      return g_strdup (this->testing_dir);
     }
 
   char * dir = NULL;
-  if (SETTINGS && S_P_GENERAL_PATHS)
-    {
-      dir = g_settings_get_string (S_P_GENERAL_PATHS, "zrythm-dir");
-    }
-  else
-    {
-      GSettings * settings =
-        g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".preferences.general.paths");
-      g_return_val_if_fail (settings, NULL);
-
-      dir = g_settings_get_string (settings, "zrythm-dir");
-
-      g_object_unref (settings);
-    }
+  {
+    GSettings * settings =
+      g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".preferences.general.paths");
+    g_return_val_if_fail (settings, NULL);
+    dir = g_settings_get_string (settings, "zrythm-dir");
+    g_object_unref (settings);
+  }
 
   if (force_default || strlen (dir) == 0)
     {
@@ -406,33 +414,21 @@ zrythm_get_user_dir (bool force_default)
   return dir;
 }
 
-/**
- * Returns the default user "zrythm" dir.
- *
- * This is used when resetting or when the
- * dir is not selected by the user yet.
- */
 char *
-zrythm_get_default_user_dir (void)
+ZrythmDirectoryManager::get_default_user_dir (void)
 {
-  return zrythm_get_user_dir (true);
+  return get_user_dir (true);
 }
 
-/**
- * Returns a Zrythm directory specified by
- * \ref type.
- *
- * @return A newly allocated string.
- */
 char *
-zrythm_get_dir (ZrythmDirType type)
+ZrythmDirectoryManager::get_dir (ZrythmDirType type)
 {
   char * res = NULL;
 
   /* handle system dirs */
   if (type < ZRYTHM_DIR_USER_TOP)
     {
-      char * prefix = zrythm_get_prefix ();
+      char * prefix = Zrythm::get_prefix ();
 
       switch (type)
         {
@@ -450,15 +446,13 @@ zrythm_get_dir (ZrythmDirType type)
           break;
         case ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR:
           {
-            char * parent_path =
-              zrythm_get_dir (ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR);
+            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR);
             res = g_build_filename (parent_path, "zrythm", NULL);
           }
           break;
         case ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR:
           {
-            char * parent_path =
-              zrythm_get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
             res = g_build_filename (parent_path, "lv2", NULL);
           }
           break;
@@ -488,13 +482,14 @@ zrythm_get_dir (ZrythmDirType type)
           break;
         case ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR:
           {
-            char * parent_path = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
             res = g_build_filename (parent_path, "css", NULL);
           }
           break;
         case ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR:
           {
-            char * parent_path = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            char * parent_path =
+              gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
             res = g_build_filename (parent_path, "icons", NULL);
           }
           break;
@@ -516,7 +511,7 @@ zrythm_get_dir (ZrythmDirType type)
   /* handle user dirs */
   else
     {
-      char * user_dir = zrythm_get_user_dir (false);
+      char * user_dir = get_user_dir (false);
 
       switch (type)
         {
@@ -563,14 +558,8 @@ zrythm_get_dir (ZrythmDirType type)
   return res;
 }
 
-/**
- * Initializes/creates the default dirs/files in the user
- * directory.
- *
- * @return Whether successful.
- */
 bool
-zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error)
+Zrythm::init_user_dirs_and_files (GError ** error)
 {
   g_message ("initing dirs and files");
   char *   dir;
@@ -578,7 +567,7 @@ zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error)
   GError * err = NULL;
 
 #define MK_USER_DIR(x) \
-  dir = zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
+  dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_##x); \
   g_return_val_if_fail (dir, false); \
   success = io_mkdir (dir, &err); \
   if (!success) \
@@ -603,17 +592,15 @@ zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error)
   return true;
 }
 
-/**
- * Initializes the array of project templates.
- */
 void
-zrythm_init_templates (Zrythm * self)
+Zrythm::init_templates ()
 {
   g_message ("Initializing templates...");
 
   GStrvBuilder * builder = g_strv_builder_new ();
   {
-    char *  user_templates_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
+    char * user_templates_dir =
+      gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TEMPLATES);
     char ** user_templates = io_get_files_in_dir (user_templates_dir, true);
     g_free (user_templates_dir);
     g_return_if_fail (user_templates);
@@ -622,7 +609,8 @@ zrythm_init_templates (Zrythm * self)
   }
   if (!ZRYTHM_TESTING)
     {
-      char * system_templates_dir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
+      char * system_templates_dir =
+        gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
       char ** system_templates =
         io_get_files_in_dir (system_templates_dir, true);
       g_free (system_templates_dir);
@@ -630,94 +618,44 @@ zrythm_init_templates (Zrythm * self)
       g_strv_builder_addv (builder, (const char **) system_templates);
       g_strfreev (system_templates);
     }
-  ZRYTHM->templates = g_strv_builder_end (builder);
-  g_return_if_fail (ZRYTHM->templates);
+  this->templates = g_strv_builder_end (builder);
+  g_return_if_fail (this->templates);
 
-  for (int i = 0; ZRYTHM->templates[i] != NULL; i++)
+  for (int i = 0; this->templates[i] != NULL; i++)
     {
-      const char * tmpl = ZRYTHM->templates[i];
+      const char * tmpl = this->templates[i];
       g_message ("Template found: %s", tmpl);
       if (string_contains_substr (tmpl, "demo_zsong01"))
         {
-          ZRYTHM->demo_template = g_strdup (tmpl);
+          this->demo_template = g_strdup (tmpl);
         }
     }
 
   g_message ("done");
 }
 
-/**
- * Frees the instance and any unfreed members.
- */
-void
-zrythm_free (Zrythm * self)
+Zrythm::~Zrythm ()
 {
   g_message ("%s: deleting Zrythm instance...", __func__);
 
-  object_free_w_func_and_null (project_free, self->project);
+  object_free_w_func_and_null (project_free, this->project);
 
-  self->have_ui = false;
+  this->have_ui_ = false;
 
-  object_free_w_func_and_null (z_cairo_caches_free, self->cairo_caches);
-  object_free_w_func_and_null (recording_manager_free, self->recording_manager);
-  object_free_w_func_and_null (plugin_manager_free, self->plugin_manager);
-  object_free_w_func_and_null (event_manager_free, self->event_manager);
-  object_free_w_func_and_null (file_manager_free, self->file_manager);
+  object_free_w_func_and_null (z_cairo_caches_free, this->cairo_caches);
+  object_free_w_func_and_null (recording_manager_free, this->recording_manager);
+  object_free_w_func_and_null (plugin_manager_free, this->plugin_manager);
+  object_free_w_func_and_null (event_manager_free, this->event_manager);
+  object_free_w_func_and_null (file_manager_free, this->file_manager);
   object_free_w_func_and_null (
-    chord_preset_pack_manager_free, self->chord_preset_pack_manager);
+    chord_preset_pack_manager_free, this->chord_preset_pack_manager);
 
-  object_free_w_func_and_null (symap_free, self->symap);
-  object_free_w_func_and_null (symap_free, self->error_domain_symap);
+  object_free_w_func_and_null (symap_free, this->symap);
+  object_free_w_func_and_null (symap_free, this->error_domain_symap);
 
-  object_free_w_func_and_null (settings_free, self->settings);
+  object_free_w_func_and_null (settings_free, this->settings);
 
-  object_free_w_func_and_null (g_strfreev, self->templates);
-
-  if (ZRYTHM == self)
-    {
-      ZRYTHM = NULL;
-    }
-
-  object_zero_and_free (self);
+  object_free_w_func_and_null (g_strfreev, this->templates);
 
   g_message ("%s: done", __func__);
-}
-
-/**
- * Creates a new Zrythm instance.
- *
- * @param have_ui Whether Zrythm is instantiated
- *   with a UI (false if headless).
- * @param testing Whether this is a unit test.
- */
-Zrythm *
-zrythm_new (const char * exe_path, bool have_ui, bool testing, bool optimized_dsp)
-{
-  Zrythm * self = object_new (Zrythm);
-  ZRYTHM = self;
-
-  self->rand = pcg_rand_new ();
-
-  self->exe_path = g_strdup (exe_path);
-
-  self->version = zrythm_get_version (false);
-  self->have_ui = have_ui;
-  self->testing = testing;
-  self->use_optimized_dsp = optimized_dsp;
-  self->settings = settings_new ();
-  self->recording_manager = recording_manager_new ();
-  self->plugin_manager = plugin_manager_new ();
-  self->symap = symap_new ();
-  self->error_domain_symap = symap_new ();
-  self->file_manager = file_manager_new ();
-  self->chord_preset_pack_manager =
-    chord_preset_pack_manager_new (have_ui && !testing);
-  self->cairo_caches = z_cairo_caches_new ();
-
-  if (have_ui)
-    {
-      self->event_manager = event_manager_new ();
-    }
-
-  return self;
 }

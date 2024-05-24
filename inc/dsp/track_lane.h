@@ -24,6 +24,10 @@ typedef void                      MIDI_FILE;
  * @{
  */
 
+#define TRACK_LANE_MAGIC 3418552
+#define IS_TRACK_LANE(x) (((TrackLane *) x)->magic == TRACK_LANE_MAGIC)
+#define IS_TRACK_LANE_AND_NONNULL(x) (x && IS_TRACK_LANE (x))
+
 #define track_lane_is_auditioner(self) \
   (self->track && track_is_auditioner (self->track))
 
@@ -81,6 +85,8 @@ typedef struct TrackLane
 
   /** Owner track. */
   Track * track;
+
+  int magic;
 
 } TrackLane;
 

@@ -1088,13 +1088,6 @@ track_validate (Track * self)
   return true;
 }
 
-/**
- * Adds the track's folder parents to the given
- * array.
- *
- * @param prepend Whether to prepend instead of
- *   append.
- */
 void
 track_add_folder_parents (const Track * self, GPtrArray * parents, bool prepend)
 {

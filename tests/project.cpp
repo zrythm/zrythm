@@ -150,8 +150,8 @@ test_new_from_template (void)
   char * orig_dir = g_strdup (PROJECT->dir);
   g_return_if_fail (orig_dir);
   char * filepath = g_build_filename (orig_dir, "project.zpj", NULL);
-  g_free_and_null (ZRYTHM->create_project_path);
-  ZRYTHM->create_project_path =
+  g_free_and_null (gZrythm->create_project_path);
+  gZrythm->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
   project_init_flow_manager_load_or_create_default_project (
     filepath, true, _test_helper_project_init_done_cb, NULL);
@@ -249,7 +249,7 @@ test_save_backup_w_pool_and_plugins (void)
 
   /* attempt to open the latest backup (mimic
    * behavior from UI) */
-  ZRYTHM->open_newer_backup = true;
+  gZrythm->open_newer_backup = true;
   filepath = g_build_filename (dir, "project.zpj", NULL);
   test_project_reload (filepath);
 
@@ -304,7 +304,7 @@ test_load_with_plugin_after_backup (void)
   object_free_w_func_and_null (project_free, PROJECT);
 
   /* attempt to open the normal project (not backup) */
-  ZRYTHM->open_newer_backup = false;
+  gZrythm->open_newer_backup = false;
   char * filepath = g_build_filename (dir, "project.zpj", NULL);
   test_project_reload (filepath);
 

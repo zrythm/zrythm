@@ -34,6 +34,7 @@ typedef struct AudioEngine        AudioEngine;
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
+/* FIXME remove these globals */
 #define TRANSPORT_IS_ROLLING \
   (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLLING)
 #define TRANSPORT_IS_PAUSED \
@@ -303,6 +304,9 @@ transport_init_loaded (
  */
 Transport *
 transport_clone (const Transport * src);
+
+bool
+transport_is_rolling (const Transport * self);
 
 /**
  * Prepares audio regions for stretching (sets the

@@ -32,8 +32,8 @@ about_dialog_widget_new (GtkWindow * parent)
   };
   const char * translators = TRANSLATORS_STR;
 
-  char * version = zrythm_get_version (true);
-  char * sys_nfo = zrythm_get_system_info ();
+  char * version = Zrythm::get_version (true);
+  char * sys_nfo = Zrythm::get_system_info ();
 
   AdwAboutWindow * dialog = ADW_ABOUT_WINDOW (adw_about_window_new_from_appdata (
     RESOURCES_PATH_TOP "/org.zrythm.Zrythm.appdata.xml", RELEASE_VERSION));

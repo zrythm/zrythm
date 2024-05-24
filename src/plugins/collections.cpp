@@ -26,7 +26,7 @@ create_new (void)
 static char *
 get_plugin_collections_file_path (void)
 {
-  char * zrythm_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  char * zrythm_dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return g_build_filename (zrythm_dir, "plugin_collections.json", NULL);

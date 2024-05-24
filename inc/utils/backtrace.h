@@ -43,8 +43,8 @@ _backtrace_get (
 
 #define backtrace_get_with_lines(prefix, max_lines, write_to_file) \
   _backtrace_get ( \
-    (ZRYTHM && ZRYTHM->exe_path) ? ZRYTHM->exe_path : NULL, prefix, max_lines, \
-    ZRYTHM && ZRYTHM->exe_path ? true : false, write_to_file)
+    (gZrythm && gZrythm->exe_path_) ? gZrythm->exe_path_ : NULL, prefix, \
+    max_lines, gZrythm && gZrythm->exe_path_ ? true : false, write_to_file)
 
 /**
  * @}

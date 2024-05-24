@@ -212,9 +212,9 @@ plugin_manager_get_lv2_paths (const PluginManager * self)
 
   /* add special paths */
   char * builtin_plugins_path =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
+    gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
   char * special_plugins_path =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+    gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
   g_strv_builder_add_many (
     builder, builtin_plugins_path, special_plugins_path, NULL);
   g_free_and_null (builtin_plugins_path);

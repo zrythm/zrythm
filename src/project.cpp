@@ -712,19 +712,15 @@ project_init_common (Project * self)
  * Creates an empty project object.
  */
 Project *
-project_new (Zrythm * _zrythm)
+project_new (Zrythm * owner)
 {
   g_message ("%s: Creating...", __func__);
 
   Project * self = object_new (Project);
-  /*self->schema_version = PROJECT_SCHEMA_VERSION;*/
 
-  if (_zrythm)
-    {
-      _zrythm->project = self;
-    }
+  owner->project = self;
 
-  self->version = zrythm_get_version (0);
+  self->version = Zrythm::get_version (0);
   self->clip_editor = clip_editor_new ();
   self->timeline = timeline_new ();
   self->snap_grid_timeline = snap_grid_new ();
@@ -848,7 +844,7 @@ project_idle_saved_cb (ProjectSaveData * data)
     {
       if (!ZRYTHM_TESTING)
         {
-          zrythm_add_to_recent_projects (ZRYTHM, data->project_file_path);
+          gZrythm->add_to_recent_projects (data->project_file_path);
         }
       if (data->show_notification)
         ui_show_notification (_ ("Project saved."));
@@ -1017,7 +1013,7 @@ project_save (
 
   /* set the project version */
   g_free_and_null (self->version);
-  self->version = zrythm_get_version (false);
+  self->version = Zrythm::get_version (false);
 
   /* if backup, get next available backup dir */
   if (is_backup)

@@ -148,13 +148,13 @@ port_identifier_print_to_str (
     buf, buf_sz,
     "[PortIdentifier %p | hash %u]\nlabel: %s\n"
     "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
-    "type: %s\nflow: %s\nflags: %s %s\nunit: %d\n"
+    "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
     self, port_identifier_get_hash (self), self->label, self->sym, self->uri,
     self->comment, ENUM_NAME (self->owner_type), ENUM_NAME (self->type),
     ENUM_NAME (self->flow), ENUM_BITSET_TO_STRING (ZPortFlags, self->flags),
-    ENUM_BITSET_TO_STRING (ZPortFlags2, self->flags2), self->unit,
+    ENUM_BITSET_TO_STRING (ZPortFlags2, self->flags2), ENUM_NAME (self->unit),
     self->port_group, self->ext_port_id, self->track_name_hash,
     self->port_index, pl_buf);
 }

@@ -16,7 +16,10 @@
 
 #include <gtk/gtk.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #include <magic_enum_all.hpp>
+#pragma GCC diagnostic pop
 
 using namespace magic_enum::bitwise_operators;
 

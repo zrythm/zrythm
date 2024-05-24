@@ -323,12 +323,8 @@ if get_option ('tests')
   endif
 
   test_link_libs = []
-  if os_windows
-    # tests fail to link otherwise
-    test_link_libs += zrythm_lib.get_static_lib ()
-  else
-    test_link_libs += zrythm_lib.get_shared_lib ()
-  endif
+  # tests fail to link on windows, and global externed variables show as NULL (even though gdb shows actual variables) with the shared lib
+  test_link_libs += zrythm_lib.get_static_lib ()
 
   foreach name, info : tests
     is_parallel = info['parallel']
@@ -348,7 +344,6 @@ if get_option ('tests')
     else
       source = name + '.cpp'
     endif
-    warning(source)
     timeout = 180
     foreach suite : suites
       if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
@@ -358,7 +353,7 @@ if get_option ('tests')
     endforeach
 
     if fs.is_file (source)
-      # create C executable for C runner
+      # create CPP executable for CPP runner
       exe = executable (
         test_name,
         sources: [
@@ -366,7 +361,7 @@ if get_option ('tests')
           test_config_h,
           bundled_plugins_for_tests_tgts,
           ],
-        c_args : [
+        cpp_args : [
           common_cflags, strict_cflags,
           test_c_args,
           ],

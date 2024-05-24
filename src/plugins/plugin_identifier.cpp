@@ -53,8 +53,8 @@ void
 plugin_identifier_print (const PluginIdentifier * self, char * str)
 {
   sprintf (
-    str, "slot_type: %d, track_name hash: %u, slot: %d", self->slot_type,
-    self->track_name_hash, self->slot);
+    str, "slot_type: %s, track_name hash: %u, slot: %d",
+    ENUM_NAME (self->slot_type), self->track_name_hash, self->slot);
 }
 
 uint32_t

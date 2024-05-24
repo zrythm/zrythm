@@ -64,7 +64,7 @@ typedef struct EventManager
   GPtrArray * events_arr;
 } EventManager;
 
-#define EVENT_MANAGER (ZRYTHM->event_manager)
+#define EVENT_MANAGER (gZrythm->event_manager)
 
 /** The event queue. */
 #define EVENT_QUEUE (EVENT_MANAGER->mqueue)

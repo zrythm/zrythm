@@ -339,12 +339,12 @@ channel_prepare_process (Channel * self)
 
   if (out_type == ZPortType::Z_PORT_TYPE_AUDIO)
     {
-      port_clear_buffer (self->stereo_out->l);
-      port_clear_buffer (self->stereo_out->r);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
+      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
     }
   else if (out_type == ZPortType::Z_PORT_TYPE_EVENT)
     {
-      port_clear_buffer (self->midi_out);
+      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
     }
 
   for (j = 0; j < STRIP_SIZE; j++)

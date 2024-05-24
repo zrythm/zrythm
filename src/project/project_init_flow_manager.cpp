@@ -31,6 +31,7 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <adwaita.h>
@@ -317,7 +318,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         new_prj->schema_version = 4;
         new_prj->title = old_prj->title;
         new_prj->datetime_str = datetime_get_current_as_string ();
-        new_prj->version = zrythm_get_version (false);
+        new_prj->version = Zrythm::get_version (false);
 
         /* upgrade */
         new_prj->tracklist = tracklist_upgrade_from_v1 (old_prj->tracklist);
@@ -387,7 +388,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         new_prj->schema_version = 5;
         new_prj->title = old_prj->title;
         new_prj->datetime_str = datetime_get_current_as_string ();
-        new_prj->version = zrythm_get_version (false);
+        new_prj->version = Zrythm::get_version (false);
 
         /* re-serialize */
         g_free (*yaml);
@@ -520,7 +521,7 @@ create_default (
     {
       project_free (self);
     }
-  self = project_new (ZRYTHM);
+  self = project_new (gZrythm.get ());
 
   self->tracklist = tracklist_new (self, NULL);
 
@@ -889,11 +890,11 @@ continue_load_from_file_after_open_backup_response (
       char * prev_pool_dir =
         g_build_filename (flow_mgr->dir, PROJECT_POOL_DIR, NULL);
       char * new_pool_dir =
-        g_build_filename (ZRYTHM->create_project_path, PROJECT_POOL_DIR, NULL);
+        g_build_filename (gZrythm->create_project_path, PROJECT_POOL_DIR, NULL);
       char * prev_plugins_dir =
         g_build_filename (flow_mgr->dir, PROJECT_PLUGINS_DIR, NULL);
       char * new_plugins_dir = g_build_filename (
-        ZRYTHM->create_project_path, PROJECT_PLUGINS_DIR, NULL);
+        gZrythm->create_project_path, PROJECT_PLUGINS_DIR, NULL);
       bool success = io_copy_dir (
         new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
       if (!success)
@@ -921,7 +922,7 @@ continue_load_from_file_after_open_backup_response (
       g_free (new_plugins_dir);
 
       g_free (flow_mgr->dir);
-      flow_mgr->dir = g_strdup (ZRYTHM->create_project_path);
+      flow_mgr->dir = g_strdup (gZrythm->create_project_path);
     }
 
   /* FIXME this is a hack, make sure none of this extra copying is needed */
@@ -1153,7 +1154,7 @@ load_from_file (
   if (!PROJECT)
     {
       /* create a temporary project struct */
-      PROJECT = project_new (ZRYTHM);
+      PROJECT = project_new (gZrythm.get ());
     }
 
   g_free_and_null (PROJECT->dir);
@@ -1171,7 +1172,7 @@ load_from_file (
 
           if (ZRYTHM_TESTING)
             {
-              if (!ZRYTHM->open_newer_backup)
+              if (!gZrythm->open_newer_backup)
                 {
                   g_free (PROJECT->backup_dir);
                   PROJECT->backup_dir = NULL;
@@ -1271,7 +1272,7 @@ project_init_flow_manager_load_or_create_default_project (
     {
       GError *  err = NULL;
       Project * created_prj = create_default (
-        PROJECT, ZRYTHM->create_project_path, false, true, &err);
+        PROJECT, gZrythm->create_project_path, false, true, &err);
       if (!created_prj)
         {
           GError * error = NULL;

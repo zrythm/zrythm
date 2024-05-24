@@ -101,7 +101,7 @@ vamp_plugin_initialize (
   pl->initialise (channels, step_size, block_size);
 }
 
-ZVampFeatureSet *
+static ZVampFeatureSet *
 gen_feature_set_from_vamp_feature_set (
   Vamp::Plugin::FeatureSet &fset,
   unsigned int              samplerate)

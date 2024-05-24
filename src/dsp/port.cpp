@@ -1944,7 +1944,8 @@ port_prepare_rtaudio_data (Port * self)
       RtAudioDevice * dev = self->rtaudio_ins[i];
 
       /* clear the data */
-      dsp_fill (dev->buf, DENORMAL_PREVENTION_VAL, AUDIO_ENGINE->nframes);
+      dsp_fill (
+        dev->buf, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), AUDIO_ENGINE->nframes);
 
       zix_sem_wait (&dev->audio_ring_sem);
 
@@ -2779,8 +2780,8 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
       if (noroll)
         {
           dsp_fill (
-            &port->buf[time_nfo.local_offset], DENORMAL_PREVENTION_VAL,
-            time_nfo.nframes);
+            &port->buf[time_nfo.local_offset],
+            DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo.nframes);
           break;
         }
 
@@ -3426,7 +3427,9 @@ port_clear_external_buffer (Port * port)
     && AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
     {
       float * fbuf = (float *) buf;
-      dsp_fill (&fbuf[0], DENORMAL_PREVENTION_VAL, AUDIO_ENGINE->block_length);
+      dsp_fill (
+        &fbuf[0], DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
+        AUDIO_ENGINE->block_length);
     }
   else if (
     port->id.type == ZPortType::Z_PORT_TYPE_EVENT
@@ -3455,7 +3458,7 @@ port_get_track (const Port * const self, int warn_if_fail)
   Track * track = NULL;
   if (self->id.track_name_hash != 0)
     {
-      g_return_val_if_fail (ZRYTHM && TRACKLIST, NULL);
+      g_return_val_if_fail (gZrythm && TRACKLIST, NULL);
 
       track =
         tracklist_find_track_by_name_hash (TRACKLIST, self->id.track_name_hash);

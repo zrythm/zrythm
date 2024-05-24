@@ -86,7 +86,8 @@ audio_cb (
   nframes_t num_frames = (nframes_t) nframes;
   engine_process (self, num_frames);
 
-  dsp_fill (out_buf, DENORMAL_PREVENTION_VAL, (size_t) (nframes * 2));
+  dsp_fill (
+    out_buf, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
       out_buf[i * 2] = self->monitor_out->l->buf[i];

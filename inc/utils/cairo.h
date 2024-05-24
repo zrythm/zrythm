@@ -34,7 +34,7 @@ typedef struct CairoCaches
   Dictionary * icon_surface_dict;
 } CairoCaches;
 
-#define CAIRO_CACHES (ZRYTHM->cairo_caches)
+#define CAIRO_CACHES (gZrythm->cairo_caches)
 
 /**
  * Default font for drawing pango text.

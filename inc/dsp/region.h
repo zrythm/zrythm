@@ -270,6 +270,8 @@ typedef struct ZRegion
 
   /* --- drawing caches end --- */
 
+  TrackLane * owner_lane = nullptr;
+
   int magic;
 } ZRegion;
 
@@ -405,7 +407,7 @@ region_get_frames_till_next_loop_or_end (
  * @public @memberof ZRegion
  */
 NONNULL void
-region_set_lane (ZRegion * self, const TrackLane * const lane);
+region_set_lane (ZRegion * self, TrackLane * lane);
 
 /**
  * Generates a name for the ZRegion, either using

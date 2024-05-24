@@ -234,13 +234,12 @@ arranger_object_get_muted (ArrangerObject * self, bool check_parent)
         case RegionType::REGION_TYPE_AUDIO:
           {
             TrackLane * lane = region_get_lane (region);
-            g_return_val_if_fail (lane, true);
+            g_return_val_if_fail (IS_TRACK_LANE_AND_NONNULL (lane), true);
             if (track_lane_get_muted (lane))
               return true;
 
-            /* if lane is non-soloed while other
-             * soloed lanes exist, this should be
-             * muted */
+            /* if lane is non-soloed while other soloed lanes exist, this should
+             * be muted */
             Track * track = track_lane_get_track (lane);
             g_return_val_if_fail (track, true);
             if (track_has_soloed_lanes (track) && !track_lane_get_soloed (lane))

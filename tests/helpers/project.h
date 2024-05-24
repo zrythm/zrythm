@@ -139,8 +139,8 @@ test_project_save_and_reload (void)
   /* recreate the recording manager to drop any
    * events */
   object_free_w_func_and_null (
-    recording_manager_free, ZRYTHM->recording_manager);
-  ZRYTHM->recording_manager = recording_manager_new ();
+    recording_manager_free, gZrythm->recording_manager);
+  gZrythm->recording_manager = recording_manager_new ();
 
   /* reload it */
   test_project_reload (prj_file);

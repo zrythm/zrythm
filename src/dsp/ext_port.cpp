@@ -114,7 +114,7 @@ ext_port_clear_buffer (ExtPort * ext_port, nframes_t nframes)
 
   g_message ("clearing buffer of %p", ext_port);
 
-  dsp_fill (buf, DENORMAL_PREVENTION_VAL, nframes);
+  dsp_fill (buf, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), nframes);
 }
 
 /**

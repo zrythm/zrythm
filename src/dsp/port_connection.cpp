@@ -54,7 +54,7 @@ port_connection_print_to_str (
   bool         is_send = port_connection_is_send (self);
   const char * send_str = is_send ? " (send)" : "";
   if (
-    ZRYTHM && PROJECT
+    gZrythm && PROJECT
     && port_connections_manager_contains_connection (PORT_CONNECTIONS_MGR, self))
     {
       Track * src_track = tracklist_find_track_by_name_hash (

@@ -418,7 +418,7 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
       Port * port = self->audio_ports[i];
 
       /* clear the buffer */
-      port_clear_buffer (port);
+      port_clear_buffer (AUDIO_ENGINE, port);
 
       switch (AUDIO_ENGINE->audio_backend)
         {

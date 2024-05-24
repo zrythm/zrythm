@@ -1408,22 +1408,22 @@ plugin_prepare_process (Plugin * self)
   for (size_t i = 0; i < self->audio_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->audio_in_ports, i);
-      port_clear_buffer (port);
+      port_clear_buffer (AUDIO_ENGINE, port);
     }
   for (size_t i = 0; i < self->cv_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->cv_in_ports, i);
-      port_clear_buffer (port);
+      port_clear_buffer (AUDIO_ENGINE, port);
     }
   for (size_t i = 0; i < self->midi_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->midi_in_ports, i);
-      port_clear_buffer (port);
+      port_clear_buffer (AUDIO_ENGINE, port);
     }
 
   for (int i = 0; i < self->num_out_ports; i++)
     {
-      port_clear_buffer (self->out_ports[i]);
+      port_clear_buffer (AUDIO_ENGINE, self->out_ports[i]);
     }
 }
 
@@ -1489,8 +1489,8 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
           if (math_floats_equal_epsilon (plugin->gain->control, 0.f, 0.00001f))
             {
               dsp_fill (
-                &port->buf[time_nfo->local_offset], DENORMAL_PREVENTION_VAL,
-                time_nfo->nframes);
+                &port->buf[time_nfo->local_offset],
+                DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
             }
           /* otherwise just apply gain */
           else

@@ -119,20 +119,11 @@ transport_new (AudioEngine * engine)
 
   engine->transport = self;
 
-  // set initial total number of beats
-  // this is applied to the ruler
+  /* set initial total number of beats
+   * this is applied to the ruler */
   self->total_bars = TRANSPORT_DEFAULT_TOTAL_BARS;
 
   g_return_val_if_fail (engine->sample_rate > 0, NULL);
-
-  /* hack to allow setting positions */
-  /*double frames_per_tick_before =*/
-  /*AUDIO_ENGINE->frames_per_tick;*/
-  /*if (math_doubles_equal (*/
-  /*frames_per_tick_before, 0))*/
-  /*{*/
-  /*AUDIO_ENGINE->frames_per_tick = 512;*/
-  /*}*/
 
   /* set positions */
   position_init (&self->playhead_pos);
@@ -246,6 +237,12 @@ transport_clone (const Transport * src)
 #undef CLONE_PORT_IF_EXISTS
 
   return self;
+}
+
+bool
+transport_is_rolling (const Transport * self)
+{
+  return self->play_state == PlayState::PLAYSTATE_ROLLING;
 }
 
 /**
@@ -498,7 +495,7 @@ transport_request_roll (Transport * self, bool with_wait)
       zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
     }
 
-  if (ZRYTHM && !ZRYTHM_TESTING)
+  if (gZrythm && !ZRYTHM_TESTING)
     {
       /* handle countin */
       PrerollCountBars bars = ENUM_INT_TO_VALUE (
@@ -848,7 +845,7 @@ transport_set_loop (Transport * self, bool enabled, bool with_wait)
 
   self->loop = enabled;
 
-  if (ZRYTHM && !ZRYTHM_TESTING)
+  if (gZrythm && !ZRYTHM_TESTING)
     {
       g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
     }
