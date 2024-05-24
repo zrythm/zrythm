@@ -111,6 +111,8 @@ PenaltyBreakAssignment: 30
 PenaltyBreakBeforeFirstCallParameter: 20
 PenaltyBreakComment: 300
 PenaltyBreakOpenParenthesis: 40
+# TODO clang format 18
+#PenaltyBreakScopeResolution: 10000
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 120
 PenaltyIndentedWhitespace: 100
