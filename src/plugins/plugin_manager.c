@@ -607,6 +607,22 @@ plugin_manager_get_jsfx_paths (const PluginManager * self)
   return paths;
 }
 
+static char **
+plugin_manager_get_au_paths (const PluginManager * self)
+{
+  GStrvBuilder * builder = g_strv_builder_new ();
+
+  g_strv_builder_add (builder, "/Library/Audio/Plug-ins/Components");
+  char * user_components = g_build_filename (
+    g_get_home_dir (), "Library", "Audio", "Plug-ins", "Components", NULL);
+  g_strv_builder_add (builder, user_components);
+  g_free (user_components);
+
+  char ** paths = g_strv_builder_end (builder);
+  string_print_strv ("AU paths", paths);
+
+  return paths;
+}
 #endif /* HAVE_CARLA */
 
 /**
@@ -693,6 +709,9 @@ plugin_manager_get_paths_for_protocol (
       break;
     case Z_PLUGIN_PROTOCOL_LV2:
       paths = plugin_manager_get_lv2_paths (self);
+      break;
+    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
+      paths = plugin_manager_get_au_paths (self);
       break;
     default:
       break;
