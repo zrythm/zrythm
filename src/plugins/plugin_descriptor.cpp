@@ -18,8 +18,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <lv2/instance-access/instance-access.h>
-
 static const char * plugin_protocol_strings[] = {
   "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
   "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
