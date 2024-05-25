@@ -254,10 +254,11 @@ draw_bg (
           break;
         }
 
-      gtk_snapshot_append_color (
-        snapshot, &c,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) new_x, (float) y, (float) new_width, (float) self->height));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          (float) new_x, (float) y, (float) new_width, (float) self->height);
+        gtk_snapshot_append_color (snapshot, &c, &tmp_r);
+      }
     }
 
   if (!keep_clip)
@@ -324,12 +325,13 @@ automation_mode_widget_draw (
       AutomationMode cur = static_cast<AutomationMode> (i);
       PangoLayout *  layout = self->layout;
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           (float) (x + AUTOMATION_MODE_HPADDING
                    + i * (2 * AUTOMATION_MODE_HPADDING) + total_text_widths),
-          (float) ((y + self->height / 2) - self->text_heights[i] / 2)));
+          (float) ((y + self->height / 2) - self->text_heights[i] / 2));
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       char mode_str[400];
       if (cur == AutomationMode::AUTOMATION_MODE_RECORD)
         {

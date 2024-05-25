@@ -234,11 +234,12 @@ draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, ZRegion * region)
   int px_start, px_end;
   px_start = ui_pos_to_px_editor (&r_obj->pos, true);
   px_end = ui_pos_to_px_editor (&r_obj->end_pos, true);
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) px_start, 0.f, (float) px_end - (float) px_start,
-      (float) height / 4.f));
+      (float) height / 4.f);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 }
 
 /**
@@ -270,22 +271,24 @@ draw_regions (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
     arranger_object_get_muted (region_obj, true));
   px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
   px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) px_start, 0.f, (float) px_end - (float) px_start,
-      (float) height / 4.f));
+      (float) height / 4.f);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   /* draw its transient if copy-moving TODO */
   if (arranger_object_should_orig_be_visible (region_obj, NULL))
     {
       px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
       px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) px_start, 0.f, (float) px_end - (float) px_start,
-          (float) height / 4.f));
+          (float) height / 4.f);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   /* draw the other regions */
@@ -343,11 +346,9 @@ draw_loop_start (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
   /* draw rect */
   GdkRectangle dr;
   get_loop_start_rect (self, &dr);
-
-  cairo_t * cr = gtk_snapshot_append_cairo (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -401,11 +402,9 @@ draw_loop_end (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   /* draw rect */
   GdkRectangle dr;
   get_loop_end_rect (self, &dr);
-
-  cairo_t * cr = gtk_snapshot_append_cairo (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -435,11 +434,9 @@ draw_punch_in (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   /* draw rect */
   GdkRectangle dr;
   get_punch_in_rect (self, &dr);
-
-  cairo_t * cr = gtk_snapshot_append_cairo (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -470,11 +467,9 @@ draw_punch_out (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   /* draw rect */
   GdkRectangle dr;
   get_punch_out_rect (self, &dr);
-
-  cairo_t * cr = gtk_snapshot_append_cairo (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -560,11 +555,9 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
       g_warn_if_reached ();
       return;
     }
-
-  cairo_t * cr = gtk_snapshot_append_cairo (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -595,15 +588,19 @@ draw_markers (RulerWidget * self, GtkSnapshot * snapshot, int height)
     {
       const Marker * m = track->markers[i];
       const float    cur_px = (float) ui_pos_to_px_timeline (&m->base.pos, 1);
-      gtk_snapshot_append_color (
-        snapshot, &track->color, &Z_GRAPHENE_RECT_INIT (cur_px, 6.f, 2.f, 12.f));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (cur_px, 6.f, 2.f, 12.f);
+        gtk_snapshot_append_color (snapshot, &track->color, &tmp_r);
+      }
 
       int textw, texth;
       pango_layout_set_text (self->marker_layout, m->name, -1);
       pango_layout_get_pixel_size (self->marker_layout, &textw, &texth);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot, &Z_GRAPHENE_POINT_INIT (cur_px + 2.f, 6.f));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (cur_px + 2.f, 6.f);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1.f);
       gtk_snapshot_append_layout (snapshot, self->marker_layout, &white);
       gtk_snapshot_restore (snapshot);
@@ -694,11 +691,9 @@ draw_playhead (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
         gtk_widget_get_height (GTK_WIDGET (self)) - RW_PLAYHEAD_TRIANGLE_HEIGHT;
       dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
       dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
-
-      cairo_t * cr = gtk_snapshot_append_cairo (
-        snapshot,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+      cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
       cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
       cairo_set_line_width (cr, 2);
@@ -763,20 +758,22 @@ draw_lines_and_labels (
           if (curr_px + 20.0 < rect->x)
             continue;
 
-          gtk_snapshot_append_color (
-            snapshot, &main_color,
-            &Z_GRAPHENE_RECT_INIT (
-              (float) curr_px, 0.f, 1.f, (float) height / 3.f));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              (float) curr_px, 0.f, 1.f, (float) height / 3.f);
+            gtk_snapshot_append_color (snapshot, &main_color, &tmp_r);
+          }
 
           sprintf (text, "%d", i);
           pango_layout_set_text (self->layout_normal, text, -1);
           pango_layout_get_pixel_size (self->layout_normal, &textw, &texth);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
               (float) curr_px + 1.f - (float) textw / 2.f,
-              (float) height / 3.f + 2.f));
+              (float) height / 3.f + 2.f);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (
             snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
@@ -793,10 +790,11 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &secondary_color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, 1.f, (float) height / 4.f));
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0.f, 1.f, (float) height / 4.f);
+                gtk_snapshot_append_color (snapshot, &secondary_color, &tmp_r);
+              }
 
               if (
                 (self->px_per_10sec > RW_PX_TO_HIDE_BEATS * 2)
@@ -809,11 +807,12 @@ draw_lines_and_labels (
                   pango_layout_get_pixel_size (
                     self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
-                  gtk_snapshot_translate (
-                    snapshot,
-                    &Z_GRAPHENE_POINT_INIT (
+                  {
+                    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
                       (float) curr_px + 1.f - (float) textw / 2.f,
-                      (float) height / 4.f + 2.f));
+                      (float) height / 4.f + 2.f);
+                    gtk_snapshot_translate (snapshot, &tmp_pt);
+                  }
                   gtk_snapshot_append_layout (
                     snapshot, self->monospace_layout_small,
                     &secondary_text_color);
@@ -832,10 +831,11 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &tertiary_color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, 1.f, (float) height / 6.f));
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0.f, 1.f, (float) height / 6.f);
+                gtk_snapshot_append_color (snapshot, &tertiary_color, &tmp_r);
+              }
 
               if (
                 (self->px_per_sec > RW_PX_TO_HIDE_BEATS * 2)
@@ -850,11 +850,12 @@ draw_lines_and_labels (
                   pango_layout_get_pixel_size (
                     self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
-                  gtk_snapshot_translate (
-                    snapshot,
-                    &Z_GRAPHENE_POINT_INIT (
+                  {
+                    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
                       (float) curr_px + 1.f - (float) textw / 2.f,
-                      (float) height / 4.f + 2.f));
+                      (float) height / 4.f + 2.f);
+                    gtk_snapshot_translate (snapshot, &tmp_pt);
+                  }
                   gtk_snapshot_append_layout (
                     snapshot, self->monospace_layout_small,
                     &tertiary_text_color);
@@ -884,20 +885,22 @@ draw_lines_and_labels (
           if (curr_px + 20.0 < rect->x)
             continue;
 
-          gtk_snapshot_append_color (
-            snapshot, &main_color,
-            &Z_GRAPHENE_RECT_INIT (
-              (float) curr_px, 0.f, 1.f, (float) height / 3.f));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              (float) curr_px, 0.f, 1.f, (float) height / 3.f);
+            gtk_snapshot_append_color (snapshot, &main_color, &tmp_r);
+          }
 
           sprintf (text, "%d", i + 1);
           pango_layout_set_text (self->layout_normal, text, -1);
           pango_layout_get_pixel_size (self->layout_normal, &textw, &texth);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
               (float) curr_px + 1.f - (float) textw / 2.f,
-              (float) height / 3.f + 2.f));
+              (float) height / 3.f + 2.f);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (
             snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
@@ -914,10 +917,11 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &secondary_color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, 1.f, (float) height / 4.f));
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0.f, 1.f, (float) height / 4.f);
+                gtk_snapshot_append_color (snapshot, &secondary_color, &tmp_r);
+              }
 
               if (
                 (self->px_per_beat > RW_PX_TO_HIDE_BEATS * 2)
@@ -929,11 +933,12 @@ draw_lines_and_labels (
                   pango_layout_get_pixel_size (
                     self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
-                  gtk_snapshot_translate (
-                    snapshot,
-                    &Z_GRAPHENE_POINT_INIT (
+                  {
+                    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
                       (float) curr_px + 1.f - (float) textw / 2.f,
-                      (float) height / 4.f + 2.f));
+                      (float) height / 4.f + 2.f);
+                    gtk_snapshot_translate (snapshot, &tmp_pt);
+                  }
                   gtk_snapshot_append_layout (
                     snapshot, self->monospace_layout_small,
                     &secondary_text_color);
@@ -954,10 +959,11 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &tertiary_color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, 1.f, (float) height / 6.f));
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0.f, 1.f, (float) height / 6.f);
+                gtk_snapshot_append_color (snapshot, &tertiary_color, &tmp_r);
+              }
 
               if (
                 (self->px_per_sixteenth > RW_PX_TO_HIDE_BEATS * 2)
@@ -971,11 +977,12 @@ draw_lines_and_labels (
                   pango_layout_get_pixel_size (
                     self->monospace_layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
-                  gtk_snapshot_translate (
-                    snapshot,
-                    &Z_GRAPHENE_POINT_INIT (
+                  {
+                    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
                       (float) curr_px + 1.f - (float) textw / 2.f,
-                      (float) height / 4.f + 2.f));
+                      (float) height / 4.f + 2.f);
+                    gtk_snapshot_translate (snapshot, &tmp_pt);
+                  }
                   gtk_snapshot_append_layout (
                     snapshot, self->monospace_layout_small,
                     &tertiary_text_color);
@@ -1009,9 +1016,11 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* pretend we're drawing from 0, 0 */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (-visible_rect.origin.x, -visible_rect.origin.y));
+  {
+    graphene_point_t tmp_pt =
+      GRAPHENE_POINT_INIT (-visible_rect.origin.x, -visible_rect.origin.y);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
 
   /* ----- ruler background ------- */
 
@@ -1054,11 +1063,12 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     && start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
     {
       /* draw the loop start line */
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) start_px, 0.f, (float) line_width,
-          (float) visible_rect.size.height));
+          (float) visible_rect.size.height);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
   /* if transport loop end is within the
    * screen */
@@ -1067,11 +1077,12 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     && end_px <= visible_rect_gdk.x + visible_rect_gdk.width)
     {
       /* draw the loop end line */
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) end_px, 0.f, (float) line_width,
-          (float) visible_rect.size.height));
+          (float) visible_rect.size.height);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   /* create gradient for loop area */
@@ -1104,11 +1115,10 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   GskColorStop stops[] = { stop1, stop2 };
 
+  graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+    (float) start_px, 0, (float) (end_px - start_px), (float) height);
   gtk_snapshot_append_linear_gradient (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
-      (float) start_px, 0, (float) (end_px - start_px), (float) height),
-    &Z_GRAPHENE_POINT_INIT (0, 0),
+    snapshot, &tmp_r, &Z_GRAPHENE_POINT_INIT (0, 0),
     &Z_GRAPHENE_POINT_INIT (0.f, ((float) height * 3.f) / 4.f), stops,
     G_N_ELEMENTS (stops));
 
@@ -1138,22 +1148,25 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
       /* fill */
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.27f);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
 
       /* draw edges */
       tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.7f);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) dr.x, (float) dr.y, 2.f, (float) dr.height));
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          (float) dr.x, (float) dr.y, 2.f, (float) dr.height);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) dr.x + (float) dr.width, (float) dr.y, 2.f,
-          (float) dr.height - (float) dr.y));
+          (float) dr.height - (float) dr.y);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
     }
 
   /* ----- draw regions --------- */

@@ -74,11 +74,12 @@ marker_draw (Marker * self, GtkSnapshot * snapshot)
   ui_get_contrast_color (&color, &c2);
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
       (float) obj->full_rect.x + MARKER_NAME_PADDING,
-      (float) obj->full_rect.y + MARKER_NAME_PADDING));
+      (float) obj->full_rect.y + MARKER_NAME_PADDING);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   pango_layout_set_text (self->layout, self->escaped_name, -1);
   gtk_snapshot_append_layout (snapshot, self->layout, &c2);
   gtk_snapshot_restore (snapshot);

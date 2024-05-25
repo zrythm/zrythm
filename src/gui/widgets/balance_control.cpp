@@ -77,17 +77,19 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   if (pan_val < 0.5f)
     {
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
-          value_px, 0.f, (float) half_width - value_px, (float) height));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          value_px, 0.f, (float) half_width - value_px, (float) height);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
   else
     {
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
-          half_width, 0.f, value_px - (float) half_width, (float) height));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          half_width, 0.f, value_px - (float) half_width, (float) height);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   /* draw vertical line at current val */
@@ -97,9 +99,11 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       color.alpha = 1.0;
     }
   const int line_width = 2;
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (value_px, 0.f, (float) line_width, (float) height));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (value_px, 0.f, (float) line_width, (float) height);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   /* draw text */
   PangoLayout *  layout = self->layout;
@@ -111,10 +115,11 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   pango_layout_get_pixel_extents (layout, NULL, &pangorect);
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
-      TEXT_PADDING, (float) height / 2.f - (float) pangorect.height / 2.f));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+      TEXT_PADDING, (float) height / 2.f - (float) pangorect.height / 2.f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 
@@ -122,11 +127,12 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   pango_layout_get_pixel_extents (layout, NULL, &pangorect);
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
       (float) width - ((float) TEXT_PADDING + (float) pangorect.width),
-      (float) height / 2.f - (float) pangorect.height / 2.f));
+      (float) height / 2.f - (float) pangorect.height / 2.f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 
@@ -141,8 +147,10 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       float   start_x = (float) width / 2.f - x_px / 2.f;
       float   start_y = height / 2.f - y_px / 2.f;
       GdkRGBA text_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_translate (
-        snapshot, &Z_GRAPHENE_POINT_INIT (start_x, start_y));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (start_x, start_y);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->layout, &text_color);
     }
 }

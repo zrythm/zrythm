@@ -59,9 +59,11 @@ folder_channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* tint background */
       GdkRGBA tint_color = Z_GDK_RGBA_INIT (
         track->color.red, track->color.green, track->color.blue, 0.15f);
-      gtk_snapshot_append_color (
-        snapshot, &tint_color,
-        &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+      {
+        graphene_rect_t tmp_r =
+          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        gtk_snapshot_append_color (snapshot, &tint_color, &tmp_r);
+      }
     }
 
   GTK_WIDGET_CLASS (folder_channel_widget_parent_class)

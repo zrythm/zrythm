@@ -276,9 +276,7 @@ add_plugin (
 
   /* skip if no plugin or the plugin is the
    * port's plugin */
-  if (
-    !pl
-    || (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN && pl == port_get_plugin (self->port, true)))
+  if (!pl || (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN && pl == port_get_plugin (self->port, true)))
     {
       return;
     }

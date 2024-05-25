@@ -538,12 +538,7 @@ timeline_arranger_widget_snap_regions_l (
   double delta;
   if (ACTION_IS (RESIZING_L_FADE))
     {
-      delta =
-        position_to_ticks (pos) -
-        (position_to_ticks (
-           &start_r_obj->pos) +
-         position_to_ticks (
-           &start_r_obj->fade_in_pos));
+      delta = position_to_ticks (pos) - (position_to_ticks (&start_r_obj->pos) + position_to_ticks (&start_r_obj->fade_in_pos));
     }
   else
     {
@@ -717,12 +712,7 @@ timeline_arranger_widget_snap_regions_r (
   double delta;
   if (ACTION_IS (RESIZING_R_FADE))
     {
-      delta =
-        position_to_ticks (pos) -
-        (position_to_ticks (
-          &start_r_obj->pos) +
-         position_to_ticks (
-           &start_r_obj->fade_out_pos));
+      delta = position_to_ticks (pos) - (position_to_ticks (&start_r_obj->pos) + position_to_ticks (&start_r_obj->fade_out_pos));
     }
   else
     {

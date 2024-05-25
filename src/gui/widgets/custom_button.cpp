@@ -182,11 +182,12 @@ draw_icon_with_shadow (
 #endif
 
   /* add main icon */
-  gtk_snapshot_append_texture (
-    snapshot, self->icon_texture,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) (x + 1), (float) (y + 1), (float) self->size - 2,
-      (float) self->size - 2));
+      (float) self->size - 2);
+    gtk_snapshot_append_texture (snapshot, self->icon_texture, &tmp_r);
+  }
 }
 
 void
@@ -223,10 +224,11 @@ custom_button_widget_draw_with_text (
   /* draw text */
   gtk_snapshot_save (snapshot);
   float text_x = (float) (x + self->size + 2);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
-      text_x, (float) ((y + self->size / 2) - self->text_height / 2)));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+      text_x, (float) ((y + self->size / 2) - self->text_height / 2));
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   PangoLayout * layout = self->layout;
   pango_layout_set_text (layout, self->text, -1);
   pango_layout_set_width (layout, pango_units_from_double (x + width - text_x));

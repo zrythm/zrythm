@@ -904,15 +904,7 @@ plugin_get_port_in_same_group (Plugin * self, Port * port)
           continue;
         }
 
-      if (string_is_equal (
-            port->id.port_group,
-            cur_port->id.port_group) &&
-          ((ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags,
-              ZPortFlags::Z_PORT_FLAG_STEREO_L) &&
-            ENUM_BITSET_TEST(ZPortFlags,port->id.flags,ZPortFlags::Z_PORT_FLAG_STEREO_R)) ||
-           (ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags,
-              ZPortFlags::Z_PORT_FLAG_STEREO_R) &&
-            ENUM_BITSET_TEST(ZPortFlags,port->id.flags,ZPortFlags::Z_PORT_FLAG_STEREO_L))))
+      if (string_is_equal (port->id.port_group, cur_port->id.port_group) && ((ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L) && ENUM_BITSET_TEST (ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_R)) || (ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_R) && ENUM_BITSET_TEST (ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L))))
         {
           return cur_port;
         }

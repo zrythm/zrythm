@@ -400,11 +400,12 @@ draw_timeline_bg (
               /* line at current val */
               GdkRGBA color = Z_GDK_RGBA_INIT (
                 track->color.red, track->color.green, track->color.blue, 0.3f);
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) rect->x, (float) (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
-                  (float) rect->width, 1.f));
+                  (float) rect->width, 1.f);
+                gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+              }
 
               total_height += (double) at->height;
             }
@@ -429,40 +430,31 @@ draw_midi_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
       if (y_offset > rect->y && y_offset < (rect->y + rect->height))
         {
           GdkRGBA color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.5f);
-          gtk_snapshot_append_color (
-            snapshot, &color,
-            &Z_GRAPHENE_RECT_INIT (
-              (float) rect->x, (float) y_offset, (float) rect->width, 1.f));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              (float) rect->x, (float) y_offset, (float) rect->width, 1.f);
+            gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+          }
           if (piano_roll_is_key_black (PIANO_ROLL->piano_descriptors[i]->value))
             {
               color = Z_GDK_RGBA_INIT (0, 0, 0, 0.2f);
+              /* rect  y: + 1 since the border is bottom */
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &Z_GRAPHENE_RECT_INIT (
-                  (float) rect->x,
-                  /* + 1 since the border is
-                   * bottom */
-                  (float) (y_offset + 1), (float) rect->width,
+                  (float) rect->x, (float) (y_offset + 1), (float) rect->width,
                   (float) adj_px_per_key));
             }
         }
       bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
-      if ((drum_mode
-           && PIANO_ROLL->drum_descriptors[i]->value
-           == MW_MIDI_ARRANGER->hovered_note)
-          ||
-          (!drum_mode
-           && PIANO_ROLL->piano_descriptors[i]->value
-           == MW_MIDI_ARRANGER->hovered_note))
+      if ((drum_mode && PIANO_ROLL->drum_descriptors[i]->value == MW_MIDI_ARRANGER->hovered_note) || (!drum_mode && PIANO_ROLL->piano_descriptors[i]->value == MW_MIDI_ARRANGER->hovered_note))
         {
           GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.06f);
+          /* rect  y: + 1 since the border is bottom */
           gtk_snapshot_append_color (
             snapshot, &tmp_color,
             &Z_GRAPHENE_RECT_INIT (
-              (float) rect->x,
-              /* + 1 since the border is
-               * bottom */
-              (float) (y_offset + 1), (float) rect->width,
+              (float) rect->x, (float) (y_offset + 1), (float) rect->width,
               (float) adj_px_per_key));
         }
     }
@@ -478,10 +470,11 @@ draw_velocity_bg (
     {
       float   y_offset = (float) rect->height * ((float) i / 4.f);
       GdkRGBA color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) rect->x, (float) y_offset, (float) rect->width, 1.f));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          (float) rect->x, (float) y_offset, (float) rect->width, 1.f);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 }
 
@@ -586,10 +579,11 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
          - rect->y)
         - from_y;
 
-      gtk_snapshot_append_color (
-        snapshot, &fade_color,
-        &Z_GRAPHENE_RECT_INIT (
-          (float) i, (float) from_y, (float) width, (float) draw_height));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          (float) i, (float) from_y, (float) width, (float) draw_height);
+        gtk_snapshot_append_color (snapshot, &fade_color, &tmp_r);
+      }
 
       if (curr_frames >= obj_length_frames)
         break;
@@ -675,14 +669,17 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
             || ch_max[k] - ch_min[k] > epsilon)
             {
               gtk_snapshot_save (snapshot);
-              gtk_snapshot_translate (
-                snapshot,
-                &Z_GRAPHENE_POINT_INIT (0, (float) k * (float) height_per_ch));
-              gtk_snapshot_append_color (
-                snapshot, &audio_lines_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_point_t tmp_pt =
+                  GRAPHENE_POINT_INIT (0, (float) k * (float) height_per_ch);
+                gtk_snapshot_translate (snapshot, &tmp_pt);
+              }
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) i, (float) min_y, (float) MAX (width, 1),
-                  (float) MAX (max_y - min_y, 1)));
+                  (float) MAX (max_y - min_y, 1));
+                gtk_snapshot_append_color (snapshot, &audio_lines_color, &tmp_r);
+              }
               gtk_snapshot_restore (snapshot);
             }
 
@@ -701,13 +698,12 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   float gain_fader_val = math_get_fader_val_from_amp (ar->gain);
   int   gain_line_start_x = ui_pos_to_px_editor (&obj->pos, F_PADDING);
   int   gain_line_end_x = ui_pos_to_px_editor (&obj->end_pos, F_PADDING);
+  /* rect x:  need 1 pixel extra for some reason */
+  /* rect y:  invert because gtk draws the opposite way */
   gtk_snapshot_append_color (
     snapshot, &UI_COLORS->bright_orange,
     &Z_GRAPHENE_RECT_INIT (
-      /* need 1 pixel extra for some reason */
       1.f + (float) gain_line_start_x,
-      /* invert because gtk draws the opposite
-       * way */
       (float) rect->height * (1.f - gain_fader_val),
       (float) (gain_line_end_x - gain_line_start_x), 2.f));
 
@@ -718,12 +714,13 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   int gain_txt_padding = 3;
   pango_layout_set_markup (self->audio_layout, gain_txt, -1);
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
       (float) (gain_txt_padding + gain_line_start_x),
       (float) (gain_txt_padding
-               + (int) ((double) rect->height * (1.0 - gain_fader_val)))));
+               + (int) ((double) rect->height * (1.0 - gain_fader_val))));
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
   gtk_snapshot_append_layout (snapshot, self->audio_layout, &tmp_color);
   gtk_snapshot_restore (snapshot);
@@ -791,11 +788,12 @@ draw_vertical_lines (
           if (curr_px < rect->x)
             continue;
 
-          gtk_snapshot_append_color (
-            snapshot, &thick_color,
-            &Z_GRAPHENE_RECT_INIT (
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
               (float) curr_px, (float) rect->y, (float) thick_width,
-              (float) height));
+              (float) height);
+            gtk_snapshot_append_color (snapshot, &thick_color, &tmp_r);
+          }
         }
       i = 0;
       if (ten_sec_interval > 0)
@@ -808,11 +806,12 @@ draw_vertical_lines (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &thinner_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) curr_px, (float) rect->y, (float) thinner_width,
-                  (float) height));
+                  (float) height);
+                gtk_snapshot_append_color (snapshot, &thinner_color, &tmp_r);
+              }
             }
         }
       i = 0;
@@ -826,11 +825,12 @@ draw_vertical_lines (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &thinnest_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) curr_px, (float) rect->y, (float) thinnest_width,
-                  (float) height));
+                  (float) height);
+                gtk_snapshot_append_color (snapshot, &thinnest_color, &tmp_r);
+              }
             }
         }
     }
@@ -856,11 +856,12 @@ draw_vertical_lines (
           if (curr_px < rect->x)
             continue;
 
-          gtk_snapshot_append_color (
-            snapshot, &thick_color,
-            &Z_GRAPHENE_RECT_INIT (
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
               (float) curr_px, (float) rect->y, (float) thick_width,
-              (float) height));
+              (float) height);
+            gtk_snapshot_append_color (snapshot, &thick_color, &tmp_r);
+          }
         }
       i = 0;
       if (beat_interval > 0)
@@ -873,11 +874,12 @@ draw_vertical_lines (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &thinner_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) curr_px, (float) rect->y, (float) thinner_width,
-                  (float) height));
+                  (float) height);
+                gtk_snapshot_append_color (snapshot, &thinner_color, &tmp_r);
+              }
             }
         }
       i = 0;
@@ -892,11 +894,12 @@ draw_vertical_lines (
               if (curr_px < rect->x)
                 continue;
 
-              gtk_snapshot_append_color (
-                snapshot, &thinnest_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) curr_px, (float) rect->y, (float) thinnest_width,
-                  (float) height));
+                  (float) height);
+                gtk_snapshot_append_color (snapshot, &thinnest_color, &tmp_r);
+              }
             }
         }
     }
@@ -912,25 +915,28 @@ draw_range (
 {
   /* draw range */
   GdkRGBA color = Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 0.3f);
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) MAX (0, range_first_px), (float) rect->y,
-      (float) (range_second_px - range_first_px), (float) rect->height));
+      (float) (range_second_px - range_first_px), (float) rect->height);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   /* draw start and end lines */
   const float   line_width = 2.f;
   const GdkRGBA tmp_color = { 0.8f, 0.8f, 0.8f, 0.4f };
-  gtk_snapshot_append_color (
-    snapshot, &tmp_color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) range_first_px + 1.f, (float) rect->y, line_width,
-      (float) rect->height));
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+      (float) rect->height);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) range_second_px + 1.f, (float) rect->y, line_width,
-      (float) rect->height));
+      (float) rect->height);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 }
 
 void
@@ -982,9 +988,11 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* pretend we're drawing from 0, 0 */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (-visible_rect.origin.x, -visible_rect.origin.y));
+  {
+    graphene_point_t tmp_pt =
+      GRAPHENE_POINT_INIT (-visible_rect.origin.x, -visible_rect.origin.y);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
 
   /* draw loop background */
   if (TRANSPORT->loop)
@@ -1003,27 +1011,30 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       GdkRGBA loop_color = { 0, 0.9f, 0.7f, 0.08f };
 
       /* draw the loop start line */
-      gtk_snapshot_append_color (
-        snapshot, &loop_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) start_px + 1.f, visible_rect.origin.y, 2.f,
-          visible_rect.size.height));
+          visible_rect.size.height);
+        gtk_snapshot_append_color (snapshot, &loop_color, &tmp_r);
+      }
 
       /* draw loop end line */
-      gtk_snapshot_append_color (
-        snapshot, &loop_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) end_px + 1.f, visible_rect.origin.y, 2.f,
-          visible_rect.size.height));
+          visible_rect.size.height);
+        gtk_snapshot_append_color (snapshot, &loop_color, &tmp_r);
+      }
 
       /* draw transport loop area */
       double  loop_start_x = MAX (0, start_px);
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0, 0.9f, 0.7f, 0.02f);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) loop_start_x, visible_rect.origin.y,
-          (float) (end_px - start_px), visible_rect.size.height));
+          (float) (end_px - start_px), visible_rect.size.height);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
     }
 
   /* --- handle vertical drawing --- */

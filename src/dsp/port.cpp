@@ -2519,14 +2519,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((owner_type !=
-             ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-           (owner_type ==
-              ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            track &&
-            track_type_can_record (track->type) &&
-            track_get_recording (track))) &&
-           id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if ((owner_type != ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR || (owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR && track && track_type_can_record (track->type) && track_get_recording (track))) && id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
@@ -2641,7 +2634,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
                 i <= AUDIO_ENGINE->pos_nfo_at_end.ninetysixth_notes; i++)
                 {
                   double ninetysixth_ticks = i * TICKS_PER_NINETYSIXTH_NOTE_DBL;
-                  double ratio = (ninetysixth_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks) / (AUDIO_ENGINE->pos_nfo_at_end.playhead_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks);
+                  double      ratio = (ninetysixth_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks) / (AUDIO_ENGINE->pos_nfo_at_end.playhead_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks);
                   midi_time_t midi_time = (midi_time_t) floor (
                     ratio * (double) AUDIO_ENGINE->block_length);
                   if (
@@ -2793,13 +2786,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((owner_type !=
-             ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR
-           || (owner_type ==
-                 ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR
-               && track_type_can_record (track->type)
-               && track_get_recording (track)))
-          && id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if ((owner_type != ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR || (owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR && track_type_can_record (track->type) && track_get_recording (track))) && id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -2935,17 +2922,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 
       /* if bouncing tracks directly to master (e.g., when bouncing the track on
        * its own without parents), clear master input */
-      if (G_UNLIKELY (
-              AUDIO_ENGINE->bounce_mode > BounceMode::BOUNCE_OFF
-              && !AUDIO_ENGINE->bounce_with_parents
-              &&
-              (port ==
-                 P_MASTER_TRACK->processor->
-                   stereo_in->l
-               ||
-               port ==
-                 P_MASTER_TRACK->processor->
-                   stereo_in->r)))
+      if (G_UNLIKELY (AUDIO_ENGINE->bounce_mode > BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents && (port == P_MASTER_TRACK->processor->stereo_in->l || port == P_MASTER_TRACK->processor->stereo_in->r)))
         {
           dsp_fill (
             &port->buf[time_nfo.local_offset],
@@ -2954,26 +2931,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
 
       /* if bouncing track directly to master (e.g., when bouncing the track on
        * its own without parents), add the buffer to master output */
-      if (G_UNLIKELY (
-              AUDIO_ENGINE->bounce_mode >
-                BounceMode::BOUNCE_OFF &&
-              (owner_type ==
-                 ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL ||
-               owner_type ==
-                 ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-               (owner_type ==
-                 ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER
-                &&
-                ENUM_BITSET_TEST (ZPortFlags2,id.flags2 ,
-                  ZPortFlags2::Z_PORT_FLAG2_PREFADER))
-               ||
-               (owner_type ==
-                 ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN &&
-                id.plugin_id.slot_type ==
-                  ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)) &&
-              is_stereo_port &&
-              id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT &&
-              track && track->bounce_to_master))
+      if (G_UNLIKELY (AUDIO_ENGINE->bounce_mode > BounceMode::BOUNCE_OFF && (owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL || owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR || (owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER && ENUM_BITSET_TEST (ZPortFlags2, id.flags2, ZPortFlags2::Z_PORT_FLAG2_PREFADER)) || (owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN && id.plugin_id.slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)) && is_stereo_port && id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT && track && track->bounce_to_master))
         {
 
 #define _ADD(l_or_r) \

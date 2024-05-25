@@ -1068,14 +1068,7 @@ region_is_hit (
   const bool           inclusive)
 {
   const ArrangerObject * r_obj = (const ArrangerObject *) region;
-  return
-    r_obj->pos.frames <= gframes &&
-    ((inclusive &&
-      r_obj->end_pos.frames >=
-        gframes) ||
-     (!inclusive &&
-      r_obj->end_pos.frames >
-        gframes));
+  return r_obj->pos.frames <= gframes && ((inclusive && r_obj->end_pos.frames >= gframes) || (!inclusive && r_obj->end_pos.frames > gframes));
 }
 
 /**
@@ -1181,31 +1174,11 @@ region_is_hit_by_range (
    */
   if (end_inclusive)
     {
-      return
-        (gframes_start <=
-           obj->pos.frames &&
-         gframes_end >=
-           obj->pos.frames) ||
-        (gframes_start <=
-           obj->end_pos.frames &&
-         gframes_end >=
-           obj->end_pos.frames) ||
-        region_is_hit (region, gframes_start, 1) ||
-        region_is_hit (region, gframes_end, 1);
+      return (gframes_start <= obj->pos.frames && gframes_end >= obj->pos.frames) || (gframes_start <= obj->end_pos.frames && gframes_end >= obj->end_pos.frames) || region_is_hit (region, gframes_start, 1) || region_is_hit (region, gframes_end, 1);
     }
   else
     {
-      return
-        (gframes_start <=
-           obj->pos.frames &&
-         gframes_end >
-           obj->pos.frames) ||
-        (gframes_start <
-           obj->end_pos.frames &&
-         gframes_end >
-           obj->end_pos.frames) ||
-        region_is_hit (region, gframes_start, 0) ||
-        region_is_hit (region, gframes_end, 0);
+      return (gframes_start <= obj->pos.frames && gframes_end > obj->pos.frames) || (gframes_start < obj->end_pos.frames && gframes_end > obj->end_pos.frames) || region_is_hit (region, gframes_start, 0) || region_is_hit (region, gframes_end, 0);
     }
 }
 

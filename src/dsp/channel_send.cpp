@@ -862,18 +862,7 @@ channel_send_is_connected_to (
     {
       PortConnection * conn =
         (PortConnection *) g_ptr_array_index (conns, (size_t) i);
-      if ((stereo
-           &&
-           (port_identifier_is_equal (
-              conn->dest_id, &stereo->l->id)
-            ||
-            port_identifier_is_equal (
-              conn->dest_id, &stereo->r->id)))
-          ||
-          (midi
-           &&
-           port_identifier_is_equal (
-             conn->dest_id, &midi->id)))
+      if ((stereo && (port_identifier_is_equal (conn->dest_id, &stereo->l->id) || port_identifier_is_equal (conn->dest_id, &stereo->r->id))) || (midi && port_identifier_is_equal (conn->dest_id, &midi->id)))
         {
           ret = true;
           break;

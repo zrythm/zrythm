@@ -885,9 +885,7 @@ track_processor_process (
   switch (tr->in_signal_type)
     {
     case ZPortType::Z_PORT_TYPE_AUDIO:
-      if (
-        tr->type != TrackType::TRACK_TYPE_AUDIO
-        || (tr->type == TrackType::TRACK_TYPE_AUDIO && control_port_is_toggled (self->monitor_audio)))
+      if (tr->type != TrackType::TRACK_TYPE_AUDIO || (tr->type == TrackType::TRACK_TYPE_AUDIO && control_port_is_toggled (self->monitor_audio)))
         {
           dsp_mix2 (
             &self->stereo_out->l->buf[time_nfo->local_offset],

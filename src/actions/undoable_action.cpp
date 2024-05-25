@@ -330,15 +330,7 @@ undoable_action_contains_clip (UndoableAction * self, AudioClip * clip)
     case UndoableActionType::UA_RANGE:
       {
         RangeAction * action = (RangeAction *) self;
-        ret =
-          (action->sel_before &&
-           arranger_selections_contains_clip (
-             (ArrangerSelections *)
-             action->sel_before, clip)) ||
-          (action->sel_after &&
-           arranger_selections_contains_clip (
-             (ArrangerSelections *)
-             action->sel_after, clip));
+        ret = (action->sel_before && arranger_selections_contains_clip ((ArrangerSelections *) action->sel_before, clip)) || (action->sel_after && arranger_selections_contains_clip ((ArrangerSelections *) action->sel_after, clip));
       }
       break;
     default:

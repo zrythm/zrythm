@@ -45,20 +45,23 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   /* make velocity start at 0,0 to make it easier to
    * draw */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT ((float) obj->full_rect.x, (float) obj->full_rect.y));
+  {
+    graphene_point_t tmp_pt =
+      GRAPHENE_POINT_INIT ((float) obj->full_rect.x, (float) obj->full_rect.y);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
 
   /* --- draw --- */
 
   const int circle_radius = obj->full_rect.width / 2;
 
   /* draw line */
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       (float) obj->full_rect.width / 2.f - VELOCITY_LINE_WIDTH / 2.f,
-      (float) circle_radius, VELOCITY_LINE_WIDTH, (float) obj->full_rect.height));
+      (float) circle_radius, VELOCITY_LINE_WIDTH, (float) obj->full_rect.height);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   /*
    * draw circle:
@@ -69,7 +72,10 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
    * 3. append colored border
    */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (snapshot, &Z_GRAPHENE_POINT_INIT (-0.5f, -0.5f));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (-0.5f, -0.5f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   float          circle_angle = 2.f * (float) M_PI;
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
@@ -101,9 +107,11 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       int       text_start_x = obj->full_rect.width + padding;
 
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y));
+      {
+        graphene_point_t tmp_pt =
+          GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       PangoLayout * layout = arranger->vel_layout;
       pango_layout_set_text (layout, text, -1);
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);

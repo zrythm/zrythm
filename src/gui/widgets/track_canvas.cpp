@@ -101,9 +101,11 @@ draw_color_area (
     {
       color_brighten_default (&bg_color);
     }
-  gtk_snapshot_append_color (
-    snapshot, &bg_color,
-    &Z_GRAPHENE_RECT_INIT (0.f, 0.f, TRACK_COLOR_AREA_WIDTH, (float) height));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0.f, 0.f, TRACK_COLOR_AREA_WIDTH, (float) height);
+    gtk_snapshot_append_color (snapshot, &bg_color, &tmp_r);
+  }
 
   /* TODO */
   GdkRGBA c2, c3;
@@ -153,9 +155,11 @@ draw_color_area (
 
   gtk_snapshot_push_color_matrix (snapshot, &color_matrix, &color_offset);
 
-  gtk_snapshot_append_texture (
-    snapshot, self->track_icon,
-    &Z_GRAPHENE_RECT_INIT (0, 0, icon_texture_size, icon_texture_size));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0, 0, icon_texture_size, icon_texture_size);
+    gtk_snapshot_append_texture (snapshot, self->track_icon, &tmp_r);
+  }
 
   gtk_snapshot_pop (snapshot);
 }
@@ -184,7 +188,10 @@ draw_name (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
   pango_layout_set_width (layout, pango_units_from_double (first_button_x - 22));
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (snapshot, &Z_GRAPHENE_POINT_INIT (22.f, 2.f));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (22.f, 2.f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
   gtk_snapshot_append_layout (snapshot, layout, &white);
   gtk_snapshot_restore (snapshot);
@@ -323,19 +330,21 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
 
       /* draw separator */
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.3f);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           TRACK_COLOR_AREA_WIDTH, (float) total_height,
-          (float) width - TRACK_COLOR_AREA_WIDTH, 1.f));
+          (float) width - TRACK_COLOR_AREA_WIDTH, 1.f);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
 
       /* draw text */
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           TRACK_COLOR_AREA_WIDTH + TRACK_BUTTON_PADDING_FROM_EDGE,
-          (float) total_height + TRACK_BUTTON_PADDING_FROM_EDGE));
+          (float) total_height + TRACK_BUTTON_PADDING_FROM_EDGE);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       PangoLayout * layout = self->lane_layout;
       pango_layout_set_text (layout, lane->name, -1);
       GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
@@ -443,11 +452,12 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
 
       /* draw separator above at */
       GdkRGBA sep_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.3);
-      gtk_snapshot_append_color (
-        snapshot, &sep_color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           TRACK_COLOR_AREA_WIDTH, (float) total_height,
-          (float) width - TRACK_COLOR_AREA_WIDTH, 1.f));
+          (float) width - TRACK_COLOR_AREA_WIDTH, 1.f);
+        gtk_snapshot_append_color (snapshot, &sep_color, &tmp_r);
+      }
 
       /* create buttons if necessary */
       CustomButtonWidget * cb;
@@ -552,10 +562,11 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
       float remaining_y = (float) cb->size - (float) pangorect.height;
 
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
-          orig_start_x + remaining_x / 2.f, orig_start_y + remaining_y / 2.f));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+          orig_start_x + remaining_x / 2.f, orig_start_y + remaining_y / 2.f);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
       gtk_snapshot_append_layout (snapshot, layout, &white);
       gtk_snapshot_restore (snapshot);
@@ -673,31 +684,37 @@ track_canvas_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     case TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_NONE:
       break;
     case TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP:
-      gtk_snapshot_append_color (
-        snapshot, &UI_COLORS->bright_orange,
-        &Z_GRAPHENE_RECT_INIT (line_x, 0.f, (float) line_w, (float) line_h));
+      {
+        graphene_rect_t tmp_r =
+          GRAPHENE_RECT_INIT (line_x, 0.f, (float) line_w, (float) line_h);
+        gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp_r);
+      }
       break;
     case TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE:
-      gtk_snapshot_append_color (
-        snapshot, &UI_COLORS->bright_orange,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           line_x, (float) (height / 2 - line_h / 2), (float) line_w,
-          (float) line_h));
+          (float) line_h);
+        gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp_r);
+      }
       break;
     case TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM:
-      gtk_snapshot_append_color (
-        snapshot, &UI_COLORS->bright_orange,
-        &Z_GRAPHENE_RECT_INIT (
-          line_x, (float) (height - line_h), (float) line_w, (float) line_h));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          line_x, (float) (height - line_h), (float) line_w, (float) line_h);
+        gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp_r);
+      }
       break;
     }
 
   /* tint background */
   GdkRGBA tint_color = Z_GDK_RGBA_INIT (
     track->color.red, track->color.green, track->color.blue, 0.15);
-  gtk_snapshot_append_color (
-    snapshot, &tint_color,
-    &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+    gtk_snapshot_append_color (snapshot, &tint_color, &tmp_r);
+  }
 
   if (track->type == TrackType::TRACK_TYPE_CHORD)
     {
@@ -709,9 +726,11 @@ track_canvas_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       PangoRectangle pangorect;
       pango_layout_get_pixel_extents (layout, NULL, &pangorect);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (22.f, (float) (height - pangorect.height - 2)));
+      {
+        graphene_point_t tmp_pt =
+          GRAPHENE_POINT_INIT (22.f, (float) (height - pangorect.height - 2));
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
       gtk_snapshot_append_layout (snapshot, layout, &white);
       gtk_snapshot_restore (snapshot);
@@ -720,16 +739,20 @@ track_canvas_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (tw->bg_hovered)
     {
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+      {
+        graphene_rect_t tmp_r =
+          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
     }
   else if (track_is_selected (track))
     {
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.07);
-      gtk_snapshot_append_color (
-        snapshot, &tmp_color,
-        &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+      {
+        graphene_rect_t tmp_r =
+          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+      }
     }
 
   draw_color_area (self, snapshot, &rect, height);

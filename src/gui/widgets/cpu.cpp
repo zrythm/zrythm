@@ -61,14 +61,17 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_push_color_matrix (snapshot, &color_matrix, &color_offset);
 
-  gtk_snapshot_append_texture (
-    snapshot, self->cpu_texture,
-    &Z_GRAPHENE_RECT_INIT (PADDING, PADDING, ICON_SIZE, ICON_SIZE));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (PADDING, PADDING, ICON_SIZE, ICON_SIZE);
+    gtk_snapshot_append_texture (snapshot, self->cpu_texture, &tmp_r);
+  }
 
-  gtk_snapshot_append_texture (
-    snapshot, self->dsp_texture,
-    &Z_GRAPHENE_RECT_INIT (
-      PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE));
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+      PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE);
+    gtk_snapshot_append_texture (snapshot, self->dsp_texture, &tmp_r);
+  }
 
   gtk_snapshot_pop (snapshot);
 
@@ -82,11 +85,12 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       else
         color = inactive_color;
 
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           ICON_SIZE + PADDING + (float) i * PADDING * 2.f, PADDING, BAR_WIDTH,
-          BAR_HEIGHT));
+          BAR_HEIGHT);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   /* DSP */
@@ -99,11 +103,12 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       else
         color = inactive_color;
 
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           ICON_SIZE + PADDING + (float) i * PADDING * 2.f,
-          PADDING * 2.f + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT));
+          PADDING * 2.f + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 }
 

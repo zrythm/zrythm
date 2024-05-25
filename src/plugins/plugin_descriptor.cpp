@@ -279,48 +279,9 @@ bool
 plugin_descriptor_is_effect (const PluginDescriptor * const descr)
 {
 
-  return
-    (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE &&
-     (IS_CAT (DELAY) ||
-      IS_CAT (REVERB) ||
-      IS_CAT (DISTORTION) ||
-      IS_CAT (WAVESHAPER) ||
-      IS_CAT (DYNAMICS) ||
-      IS_CAT (AMPLIFIER) ||
-      IS_CAT (COMPRESSOR) ||
-      IS_CAT (ENVELOPE) ||
-      IS_CAT (EXPANDER) ||
-      IS_CAT (GATE) ||
-      IS_CAT (LIMITER) ||
-      IS_CAT (FILTER) ||
-      IS_CAT (ALLPASS_FILTER) ||
-      IS_CAT (BANDPASS_FILTER) ||
-      IS_CAT (COMB_FILTER) ||
-      IS_CAT (EQ) ||
-      IS_CAT (MULTI_EQ) ||
-      IS_CAT (PARA_EQ) ||
-      IS_CAT (HIGHPASS_FILTER) ||
-      IS_CAT (LOWPASS_FILTER) ||
-      IS_CAT (GENERATOR) ||
-      IS_CAT (CONSTANT) ||
-      IS_CAT (OSCILLATOR) ||
-      IS_CAT (MODULATOR) ||
-      IS_CAT (CHORUS) ||
-      IS_CAT (FLANGER) ||
-      IS_CAT (PHASER) ||
-      IS_CAT (SIMULATOR) ||
-      IS_CAT (SIMULATOR_REVERB) ||
-      IS_CAT (SPATIAL) ||
-      IS_CAT (SPECTRAL) ||
-      IS_CAT (PITCH) ||
-      IS_CAT (UTILITY) ||
-      IS_CAT (ANALYZER) ||
-      IS_CAT (CONVERTER) ||
-      IS_CAT (FUNCTION) ||
-      IS_CAT (MIXER))) ||
-    (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE &&
-     descr->num_audio_ins > 0 &&
-     descr->num_audio_outs > 0);
+  return (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE
+          && (IS_CAT (DELAY) || IS_CAT (REVERB) || IS_CAT (DISTORTION) || IS_CAT (WAVESHAPER) || IS_CAT (DYNAMICS) || IS_CAT (AMPLIFIER) || IS_CAT (COMPRESSOR) || IS_CAT (ENVELOPE) || IS_CAT (EXPANDER) || IS_CAT (GATE) || IS_CAT (LIMITER) || IS_CAT (FILTER) || IS_CAT (ALLPASS_FILTER) || IS_CAT (BANDPASS_FILTER) || IS_CAT (COMB_FILTER) || IS_CAT (EQ) || IS_CAT (MULTI_EQ) || IS_CAT (PARA_EQ) || IS_CAT (HIGHPASS_FILTER) || IS_CAT (LOWPASS_FILTER) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (CHORUS) || IS_CAT (FLANGER) || IS_CAT (PHASER) || IS_CAT (SIMULATOR) || IS_CAT (SIMULATOR_REVERB) || IS_CAT (SPATIAL) || IS_CAT (SPECTRAL) || IS_CAT (PITCH) || IS_CAT (UTILITY) || IS_CAT (ANALYZER) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION) || IS_CAT (MIXER)))
+         || (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->num_audio_ins > 0 && descr->num_audio_outs > 0);
 }
 
 /**
@@ -340,13 +301,7 @@ plugin_descriptor_is_modulator (const PluginDescriptor * const descr)
 int
 plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr)
 {
-  return
-    (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE &&
-     descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_MIDI) ||
-    (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE &&
-     descr->num_midi_ins > 0 &&
-     descr->num_midi_outs > 0 &&
-     descr->protocol != ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST);
+  return (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_MIDI) || (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->num_midi_ins > 0 && descr->num_midi_outs > 0 && descr->protocol != ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST);
 }
 
 #undef IS_CAT

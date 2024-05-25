@@ -74,9 +74,11 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   if (trigger)
     {
-      gtk_snapshot_append_color (
-        snapshot, &other_color,
-        &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+      {
+        graphene_rect_t tmp_r =
+          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
+      }
 
       switch (self->type)
         {
@@ -100,19 +102,22 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         {
           if (self->animation == MidiActivityBarAnimation::MAB_ANIMATION_BAR)
             {
-              gtk_snapshot_append_color (
-                snapshot, &other_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   0.f, (float) height * ((float) time_diff / (float) MAX_TIME),
-                  (float) width, (float) height));
+                  (float) width, (float) height);
+                gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
+              }
             }
           else if (
             self->animation == MidiActivityBarAnimation::MAB_ANIMATION_FLASH)
             {
               other_color.alpha = 1.f - (float) time_diff / (float) MAX_TIME;
-              gtk_snapshot_append_color (
-                snapshot, &other_color,
-                &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+              {
+                graphene_rect_t tmp_r =
+                  GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+                gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
+              }
             }
         }
     }

@@ -66,9 +66,11 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       color_brighten_default (&color);
     }
 
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   if (self->type == ColorAreaType::COLOR_AREA_TYPE_TRACK)
     {
@@ -97,10 +99,11 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           color = parent_track->color;
           if (self->hovered)
             color_brighten_default (&color);
-          gtk_snapshot_append_color (
-            snapshot, &color,
-            &Z_GRAPHENE_RECT_INIT (
-              0.f, (float) start_y, (float) width, (float) h));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              0.f, (float) start_y, (float) width, (float) h);
+            gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+          }
         }
 
       /* also show icon */
@@ -129,10 +132,11 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
           const float hspacing = 2.f;
           const float vspacing = (float) (height - icon_texture_size) / 2.f;
-          gtk_snapshot_append_texture (
-            snapshot, self->track_icon,
-            &Z_GRAPHENE_RECT_INIT (
-              hspacing, vspacing, icon_texture_size, icon_texture_size));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              hspacing, vspacing, icon_texture_size, icon_texture_size);
+            gtk_snapshot_append_texture (snapshot, self->track_icon, &tmp_r);
+          }
 
           gtk_snapshot_pop (snapshot);
         }

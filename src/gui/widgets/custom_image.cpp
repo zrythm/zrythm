@@ -11,11 +11,12 @@ custom_image_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   CustomImageWidget * self = Z_CUSTOM_IMAGE_WIDGET (widget);
 
-  gtk_snapshot_append_texture (
-    snapshot, self->texture,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       0.f, 0.f, (float) gdk_texture_get_width (self->texture),
-      (float) gdk_texture_get_height (self->texture)));
+      (float) gdk_texture_get_height (self->texture));
+    gtk_snapshot_append_texture (snapshot, self->texture, &tmp_r);
+  }
 }
 
 /**

@@ -562,14 +562,7 @@ project_autosave_cb (void * data)
     undo_manager_get_last_action (PROJECT->undo_manager);
 
   /* skip if bad time to save or rolling */
-  if (
-    cur_time - PROJECT->last_successful_autosave_time
-      < microsec_to_autosave
-    || TRANSPORT_IS_ROLLING
-    ||
-    (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLL_REQUESTED
-     && (TRANSPORT->preroll_frames_remaining > 0
-         || TRANSPORT->countin_frames_remaining > 0)))
+  if (cur_time - PROJECT->last_successful_autosave_time < microsec_to_autosave || TRANSPORT_IS_ROLLING || (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLL_REQUESTED && (TRANSPORT->preroll_frames_remaining > 0 || TRANSPORT->countin_frames_remaining > 0)))
     {
       goto post_save_sem_and_continue;
     }

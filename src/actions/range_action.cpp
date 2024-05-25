@@ -490,17 +490,7 @@ range_action_do (RangeAction * self, GError ** error)
                 }
               /* object starts and ends inside range
                * and not marker start/end - delete */
-              else if (
-                ends_inside_range
-                &&
-                !(prj_obj->type ==
-                    ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER
-                  &&
-                  (((Marker *) prj_obj)->type ==
-                     MarkerType::MARKER_TYPE_START
-                   ||
-                   (((Marker *) prj_obj)->type ==
-                     MarkerType::MARKER_TYPE_END))))
+              else if (ends_inside_range && !(prj_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER && (((Marker *) prj_obj)->type == MarkerType::MARKER_TYPE_START || (((Marker *) prj_obj)->type == MarkerType::MARKER_TYPE_END))))
                 {
                   g_debug ("removing object:");
                   arranger_object_print (prj_obj);

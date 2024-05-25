@@ -112,14 +112,7 @@ on_selection_changed (
               conn = port_connections_manager_get_source_or_dest (
                 PORT_CONNECTIONS_MGR, &send->midi_out->id, false);
             }
-          if (is_empty
-              ||
-              (conn
-               &&
-               !port_identifier_is_equal (
-                 conn->dest_id,
-                 &dest_track->processor->midi_in->
-                   id)))
+          if (is_empty || (conn && !port_identifier_is_equal (conn->dest_id, &dest_track->processor->midi_in->id)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_midi (
@@ -139,14 +132,7 @@ on_selection_changed (
               conn = port_connections_manager_get_source_or_dest (
                 PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
             }
-          if (is_empty
-              ||
-              (conn
-               &&
-               !port_identifier_is_equal (
-                  conn->dest_id,
-                  &dest_track->processor->stereo_in->
-                    l->id)))
+          if (is_empty || (conn && !port_identifier_is_equal (conn->dest_id, &dest_track->processor->stereo_in->l->id)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_audio (
@@ -172,15 +158,7 @@ on_selection_changed (
             conn = port_connections_manager_get_source_or_dest (
               PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
           }
-        if (dest_sidechain &&
-            (is_empty
-             || !send->is_sidechain
-             ||
-             (conn
-              &&
-              !port_identifier_is_equal (
-                conn->dest_id,
-                &dest_sidechain->l->id))))
+        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !port_identifier_is_equal (conn->dest_id, &dest_sidechain->l->id))))
           {
             GError * err = NULL;
             bool     ret = channel_send_action_perform_connect_sidechain (

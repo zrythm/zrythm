@@ -142,12 +142,13 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
 
       recreate_pango_layouts (self, MIN (full_rect.width, 400));
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           REGION_NAME_BOX_PADDING + (float) full_rect.x,
           (float) (fontsize_ratio * REGION_NAME_BOX_PADDING
-                   + (float) full_rect.y)));
+                   + (float) full_rect.y));
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       pango_layout_set_markup (self->layout, fontize_str, -1);
       gtk_snapshot_append_layout (snapshot, self->layout, &c2);
       gtk_snapshot_restore (snapshot);

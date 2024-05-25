@@ -244,14 +244,7 @@ audio_arranger_widget_snap_fade (
   g_return_val_if_fail (IS_REGION_AND_NONNULL (r), -1);
 
   /* get delta with region's start pos */
-  double delta =
-    position_to_ticks (pos) -
-    (position_to_ticks (
-       &r_obj->pos) +
-     position_to_ticks (
-       fade_in
-       ? &r_obj->fade_in_pos
-       : &r_obj->fade_out_pos));
+  double delta = position_to_ticks (pos) - (position_to_ticks (&r_obj->pos) + position_to_ticks (fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos));
 
   /* new start pos, calculated by
    * adding delta to the region's original start

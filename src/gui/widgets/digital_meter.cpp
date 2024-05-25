@@ -166,20 +166,22 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     self, self->caption_layout, self->caption, &caption_textw, &caption_texth);
   pango_layout_set_markup (self->caption_layout, self->caption, -1);
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
-      (float) width / 2.f - (float) caption_textw / 2.f, (float) PADDING_TOP));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+      (float) width / 2.f - (float) caption_textw / 2.f, (float) PADDING_TOP);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   gtk_snapshot_append_layout (snapshot, self->caption_layout, &color);
   gtk_snapshot_restore (snapshot);
 
   /* draw line */
   if (self->draw_line)
     {
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
-          0.f, (float) caption_texth + (float) PADDING_TOP, (float) width, 1.f));
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+          0.f, (float) caption_texth + (float) PADDING_TOP, (float) width, 1.f);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   /*GdkRGBA color;*/
@@ -220,10 +222,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         sprintf (text, "%d.", num_part);
       pango_layout_set_markup (self->seg7_layout, text, -1);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
-          (float) self->num_part_start_pos, (float) self->height_start_pos));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+          (float) self->num_part_start_pos, (float) self->height_start_pos);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
 
@@ -234,10 +237,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         sprintf (text, "%d", dec_part);
       pango_layout_set_markup (self->seg7_layout, text, -1);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
-          (float) self->dec_part_start_pos, (float) self->height_start_pos));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+          (float) self->dec_part_start_pos, (float) self->height_start_pos);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
 
@@ -282,10 +286,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             sprintf (text, "%d.", mins);
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->minutes_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->minutes_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
 
@@ -296,10 +301,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             sprintf (text, "%ld.", secs);
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->seconds_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->seconds_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
 
@@ -312,10 +318,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             sprintf (text, "%ld", ms);
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->ms_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->ms_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
         }
@@ -362,31 +369,34 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           strcat (text, ".");
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->bars_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->bars_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
 
           sprintf (text, "%d.", abs (beats));
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->beats_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->beats_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
 
           sprintf (text, "%d.", abs (sixteenths));
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
               (float) self->sixteenths_start_pos,
-              (float) self->height_start_pos));
+              (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
 
@@ -398,10 +408,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             sprintf (text, "%d", abs (ticks));
           pango_layout_set_markup (self->seg7_layout, text, -1);
           gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &Z_GRAPHENE_POINT_INIT (
-              (float) self->ticks_start_pos, (float) self->height_start_pos));
+          {
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+              (float) self->ticks_start_pos, (float) self->height_start_pos);
+            gtk_snapshot_translate (snapshot, &tmp_pt);
+          }
           gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
         }
@@ -415,11 +426,12 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       self->height_end_pos = self->height_start_pos + texth;
       pango_layout_set_markup (self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           (float) width / 2.f - (float) textw / 2.f,
-          (float) self->height_start_pos));
+          (float) self->height_start_pos);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
       g_free (heap_text);
@@ -444,11 +456,12 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       self->height_end_pos = self->height_start_pos + texth;
       pango_layout_set_markup (self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           (float) width / 2.f - (float) textw / 2.f,
-          (float) self->height_start_pos));
+          (float) self->height_start_pos);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
 
@@ -477,11 +490,12 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       heap_text = g_strdup_printf ("%s/%d", text, bu_int);
       pango_layout_set_markup (self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
           (float) width / 2.f - (float) textw / 2.f,
-          (float) self->height_start_pos));
+          (float) self->height_start_pos);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
       g_free (heap_text);

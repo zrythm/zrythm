@@ -90,10 +90,11 @@ automation_point_draw (
     {
       cr_node = ap->cairo_node;
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT (
-          (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+          (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_node (snapshot, cr_node);
       gtk_snapshot_restore (snapshot);
 
@@ -243,10 +244,11 @@ automation_point_draw (
   cairo_destroy (cr);
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (
-      (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f));
+  {
+    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+      (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   gtk_snapshot_append_node (snapshot, cr_node);
   gtk_snapshot_restore (snapshot);
 

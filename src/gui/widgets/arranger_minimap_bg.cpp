@@ -81,14 +81,15 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
               int px_end = ui_pos_to_px_timeline (&r_obj->end_pos, 1);
               int px_length = px_end - px_start;
 
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   ((float) px_start / (float) song_px) * (float) width,
                   ((float) wpt.y / (float) total_track_height) * (float) height,
                   ((float) px_length / (float) song_px) * (float) width,
                   ((float) track_height / (float) total_track_height)
-                    * (float) height));
+                    * (float) height);
+                gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+              }
             }
         }
     }

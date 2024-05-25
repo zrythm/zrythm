@@ -222,10 +222,7 @@ route_target_selector_widget_refresh (
       for (int i = 0; i < TRACKLIST->num_tracks; i++)
         {
           Track * cur_track = TRACKLIST->tracks[i];
-          if (
-            cur_track != track
-            && cur_track->in_signal_type == track->out_signal_type
-            && (cur_track->type == TrackType::TRACK_TYPE_AUDIO_GROUP || cur_track->type == TrackType::TRACK_TYPE_MIDI_GROUP))
+          if (cur_track != track && cur_track->in_signal_type == track->out_signal_type && (cur_track->type == TrackType::TRACK_TYPE_AUDIO_GROUP || cur_track->type == TrackType::TRACK_TYPE_MIDI_GROUP))
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (

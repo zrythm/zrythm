@@ -158,29 +158,11 @@ arranger_object_is_fade (
     {
       if (in)
         {
-          ret =
-            x <= fade_in_px && fade_in_px > 0 &&
-            (double) y <=
-              full_rect.height *
-              (1.0 -
-                fade_get_y_normalized (
-                  (double) x / fade_in_px,
-                  &self->fade_in_opts, 1));
+          ret = x <= fade_in_px && fade_in_px > 0 && (double) y <= full_rect.height * (1.0 - fade_get_y_normalized ((double) x / fade_in_px, &self->fade_in_opts, 1));
         }
       else
         {
-          ret =
-            x >= fade_out_px &&
-            full_rect.width -
-              fade_out_px > 0 &&
-            (double) y <=
-              full_rect.height *
-              (1.0 -
-                fade_get_y_normalized (
-                  (double) (x - fade_out_px) /
-                    (full_rect.width -
-                       fade_out_px),
-                  &self->fade_out_opts, 0));
+          ret = x >= fade_out_px && full_rect.width - fade_out_px > 0 && (double) y <= full_rect.height * (1.0 - fade_get_y_normalized ((double) (x - fade_out_px) / (full_rect.width - fade_out_px), &self->fade_out_opts, 0));
         }
     }
   else

@@ -74,9 +74,11 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   GdkRGBA tmp_color =
     Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f);
-  gtk_snapshot_append_color (
-    snapshot, &tmp_color,
-    &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
   gtk_snapshot_pop (snapshot);
 
   /* draw filled in bar */
@@ -102,11 +104,12 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
     &rounded_rect, &value_graphene_rect, fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   tmp_color = Z_GDK_RGBA_INIT ((float) r, (float) g, (float) b, (float) a);
-  gtk_snapshot_append_color (
-    snapshot, &tmp_color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       0.f, ((float) height - value_px) + (float) inner_line_width * 2.f,
-      (float) width, value_px));
+      (float) width, value_px);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
   gtk_snapshot_pop (snapshot);
 
   /* draw fader thin line */
@@ -119,11 +122,12 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
     }
-  gtk_snapshot_append_color (
-    snapshot, &color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       border_width, ((float) height - value_px) - (float) inner_line_width / 2.f,
-      (float) width - border_width * 2.f, inner_line_width));
+      (float) width - border_width * 2.f, inner_line_width);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   /* draw value */
   if (self->hover)
@@ -137,8 +141,10 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
       bool    show_text_at_bottom = y_px > (height - value_px);
       float   start_y = show_text_at_bottom ? height / 2.f - y_px / 2.f : 0;
       GdkRGBA text_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_translate (
-        snapshot, &Z_GRAPHENE_POINT_INIT (start_x, start_y));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (start_x, start_y);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->layout, &text_color);
     }
 }
@@ -189,11 +195,12 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     a = 0.9f;
 
   tmp_color = Z_GDK_RGBA_INIT ((float) r, (float) g, (float) b, (float) a);
-  gtk_snapshot_append_color (
-    snapshot, &tmp_color,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       width / 2.f - line_thickness / 2.f, (height - value_px), line_thickness,
-      value_px));
+      value_px);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
   gtk_snapshot_pop (snapshot);
 
   /* draw fader handle */
@@ -229,8 +236,10 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       GdkRGBA     text_color = Z_GDK_RGBA_INIT (
         text_color_brightness, text_color_brightness, text_color_brightness,
         1.f);
-      gtk_snapshot_translate (
-        snapshot, &Z_GRAPHENE_POINT_INIT (start_x, start_y));
+      {
+        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (start_x, start_y);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
       gtk_snapshot_append_layout (snapshot, self->layout, &text_color);
     }
 }

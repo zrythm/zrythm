@@ -353,16 +353,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
         {
           PortIdentifier * src = &port->id;
           PortIdentifier * dest = &at->port_id;
-          if (
-            dest->owner_type == src->owner_type
-            && dest->type == src->type
-            && dest->flow == src->flow
-            && dest->flags == src->flags
-            && dest->track_name_hash == src->track_name_hash
-            &&
-            (dest->sym
-               ? string_is_equal (dest->sym, src->sym)
-               : string_is_equal (dest->label, src->label)))
+          if (dest->owner_type == src->owner_type && dest->type == src->type && dest->flow == src->flow && dest->flags == src->flags && dest->track_name_hash == src->track_name_hash && (dest->sym ? string_is_equal (dest->sym, src->sym) : string_is_equal (dest->label, src->label)))
             {
               if (dest->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
                 {

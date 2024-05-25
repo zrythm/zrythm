@@ -65,19 +65,21 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   };
 
   /* used to stretch the gradient a little bit to make it look alive */
-  float value_px_for_gradient = (1 - value_px) * 0.02f;
-
+  float           value_px_for_gradient = (1 - value_px) * 0.02f;
+  graphene_rect_t tmp_r =
+    GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px);
   gtk_snapshot_append_linear_gradient (
-    snapshot, &Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px),
-    &Z_GRAPHENE_POINT_INIT (0.f, width),
+    snapshot, &tmp_r, &Z_GRAPHENE_POINT_INIT (0.f, width),
     &Z_GRAPHENE_POINT_INIT (0, height - value_px_for_gradient), stops,
     G_N_ELEMENTS (stops));
 
   /* draw meter line */
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1);
-  gtk_snapshot_append_color (
-    snapshot, &tmp_color,
-    &Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1));
+  {
+    graphene_rect_t tmp_r =
+      GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
 
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
@@ -100,8 +102,10 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       color.alpha = 1;
     }
   float peak_px = peak * height;
-  gtk_snapshot_append_color (
-    snapshot, &color, &Z_GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2));
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+  }
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;

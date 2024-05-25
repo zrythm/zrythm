@@ -1141,9 +1141,7 @@ transport_move_backward (Transport * self, bool with_wait)
   g_return_if_fail (ret);
   /* if prev snap point is exactly at the playhead or very close it, go back
    * more */
-  if (pos.frames > 0
-    && (position_is_equal (&pos, &self->playhead_pos) || (TRANSPORT_IS_ROLLING && (position_to_ms (&self->playhead_pos) - position_to_ms (&pos))
-         < REPEATED_BACKWARD_MS)))
+  if (pos.frames > 0 && (position_is_equal (&pos, &self->playhead_pos) || (TRANSPORT_IS_ROLLING && (position_to_ms (&self->playhead_pos) - position_to_ms (&pos)) < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       position_add_ticks (&tmp, -1);

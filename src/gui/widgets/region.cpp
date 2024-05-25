@@ -187,13 +187,17 @@ draw_loop_points (
     x_px >= vis_offset_x && x_px < vis_offset_x + vis_width)
     {
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot, &Z_GRAPHENE_POINT_INIT ((float) x_px - (float) padding, 0.f));
-      gtk_snapshot_push_clip (
-        snapshot,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_point_t tmp_pt =
+          GRAPHENE_POINT_INIT ((float) x_px - (float) padding, 0.f);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           0.f, 0.f, (float) line_width + (float) padding * 2.f,
-          (float) full_height));
+          (float) full_height);
+        gtk_snapshot_push_clip (snapshot, &tmp_r);
+      }
       gtk_snapshot_append_node (snapshot, clip_start_line_node);
       gtk_snapshot_pop (snapshot);
       gtk_snapshot_restore (snapshot);
@@ -222,10 +226,11 @@ draw_loop_points (
           gsk_stroke_set_dash (stroke, dashesf, 1);
           gtk_snapshot_push_stroke (snapshot, path, stroke);
           const GdkRGBA color = { 0, 0, 0, 1 };
-          gtk_snapshot_append_color (
-            snapshot, &color,
-            &Z_GRAPHENE_RECT_INIT (
-              (float) x_px, 0.f, (float) line_width, (float) full_height));
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+              (float) x_px, 0.f, (float) line_width, (float) full_height);
+            gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+          }
           gtk_snapshot_pop (snapshot); // stroke
         }
     }
@@ -268,13 +273,17 @@ draw_cut_line (
   int x_px = (int) arranger->hover_x - full_rect->x;
 
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot, &Z_GRAPHENE_POINT_INIT ((float) x_px - (float) padding, 0.f));
-  gtk_snapshot_push_clip (
-    snapshot,
-    &Z_GRAPHENE_RECT_INIT (
+  {
+    graphene_point_t tmp_pt =
+      GRAPHENE_POINT_INIT ((float) x_px - (float) padding, 0.f);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
+  {
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
       0.f, 0.f, (float) line_width + (float) padding * 2.f,
-      (float) full_rect->height));
+      (float) full_rect->height);
+    gtk_snapshot_push_clip (snapshot, &tmp_r);
+  }
   gtk_snapshot_append_node (snapshot, cut_line_node);
   gtk_snapshot_pop (snapshot);
   gtk_snapshot_restore (snapshot);
@@ -418,9 +427,11 @@ draw_midi_region (
               float draw_height = (float) MIN (
                 (y_note_size * (double) full_height) - (draw_y - y_start),
                 (float) (vis_offset_y + vis_height) - draw_y);
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &Z_GRAPHENE_RECT_INIT (draw_x, draw_y, draw_width, draw_height));
+              {
+                graphene_rect_t tmp_r =
+                  GRAPHENE_RECT_INIT (draw_x, draw_y, draw_width, draw_height);
+                gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+              }
 
             } /* endif part of note is visible */
 
@@ -498,19 +509,21 @@ draw_chord_region (
               /*x_end *= (double) full_width;*/
 
               /* draw */
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) x_start, 0, 2.f, (float) full_height));
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                  (float) x_start, 0, 2.f, (float) full_height);
+                gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+              }
 
               /* draw name */
               char desc_str[100];
               chord_descriptor_to_string (descr, desc_str);
               gtk_snapshot_save (snapshot);
-              gtk_snapshot_translate (
-                snapshot,
-                &Z_GRAPHENE_POINT_INIT (
-                  (float) x_start + 4.f, (float) full_height - 10.f));
+              {
+                graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+                  (float) x_start + 4.f, (float) full_height - 10.f);
+                gtk_snapshot_translate (snapshot, &tmp_pt);
+              }
               PangoLayout * layout = self->chords_layout;
               pango_layout_set_markup (layout, desc_str, -1);
               gtk_snapshot_append_layout (snapshot, layout, &color);
@@ -649,11 +662,12 @@ handle_loop (
   if (x_start_in_region > 0.0 && x_start_in_region < full_rect->width)
     {
       int padding = 1;
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) (x_start_in_region - padding), (float) (y_start - padding),
-          2.f * (float) padding, 2.f * (float) padding));
+          2.f * (float) padding, 2.f * (float) padding);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
     }
 
   bool ret_val = false;
@@ -748,11 +762,12 @@ handle_loop (
       GskPath *   path = gsk_path_builder_free_to_path (builder);
       GskStroke * stroke = gsk_stroke_new ((float) line_width);
       gtk_snapshot_push_stroke (snapshot, path, stroke);
-      gtk_snapshot_append_color (
-        snapshot, &color,
-        &Z_GRAPHENE_RECT_INIT (
+      {
+        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
           (float) ap_loop_part_rect.x, (float) ap_loop_part_rect.y,
-          (float) ap_loop_part_rect.width, (float) ap_loop_part_rect.height));
+          (float) ap_loop_part_rect.width, (float) ap_loop_part_rect.height);
+        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      }
       gtk_snapshot_pop (snapshot); // stroke
 
       ap->last_settings_tl.normalized_val = ap->normalized_val;
@@ -853,11 +868,12 @@ draw_fade_part (
       /* draw a white line on top of the fade area */
       if (arranger_object_is_hovered_or_start_object (obj, NULL))
         {
-          gtk_snapshot_append_color (
-            snapshot, &white,
-            &Z_GRAPHENE_RECT_INIT (
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
               (float) vis_start_px, 0.f,
-              (float) vis_fade_in_px - (float) vis_start_px, top_line_width));
+              (float) vis_fade_in_px - (float) vis_start_px, top_line_width);
+            gtk_snapshot_append_color (snapshot, &white, &tmp_r);
+          }
         }
 
       /* create cairo node if necessary */
@@ -944,12 +960,13 @@ draw_fade_part (
       /* draw a white line on top of the fade area */
       if (arranger_object_is_hovered_or_start_object (obj, NULL))
         {
-          gtk_snapshot_append_color (
-            snapshot, &white,
-            &Z_GRAPHENE_RECT_INIT (
+          {
+            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
               (float) visible_fade_out_px, 0.f,
               (float) visible_end_px - (float) visible_fade_out_px,
-              top_line_width));
+              top_line_width);
+            gtk_snapshot_append_color (snapshot, &white, &tmp_r);
+          }
         }
 
       /* create cairo node if necessary */
@@ -1174,15 +1191,17 @@ draw_audio_part (
             || ch_max[k] - ch_min[k] > epsilon)
             {
               gtk_snapshot_save (snapshot);
-              gtk_snapshot_translate (
-                snapshot,
-                &Z_GRAPHENE_POINT_INIT (
-                  0, (float) k * (float) full_height_per_ch));
-              gtk_snapshot_append_color (
-                snapshot, &object_fill_color,
-                &Z_GRAPHENE_RECT_INIT (
+              {
+                graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+                  0, (float) k * (float) full_height_per_ch);
+                gtk_snapshot_translate (snapshot, &tmp_pt);
+              }
+              {
+                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
                   (float) i, (float) local_min_y, (float) MAX (width, 1),
-                  (float) MAX (local_max_y - local_min_y, 1)));
+                  (float) MAX (local_max_y - local_min_y, 1));
+                gtk_snapshot_append_color (snapshot, &object_fill_color, &tmp_r);
+              }
               gtk_snapshot_restore (snapshot);
             }
           prev_min[k] = ch_min[k];
@@ -1310,9 +1329,11 @@ draw_name (
 
   /* draw text */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &Z_GRAPHENE_POINT_INIT (REGION_NAME_BOX_PADDING, REGION_NAME_BOX_PADDING));
+  {
+    graphene_point_t tmp_pt =
+      GRAPHENE_POINT_INIT (REGION_NAME_BOX_PADDING, REGION_NAME_BOX_PADDING);
+    gtk_snapshot_translate (snapshot, &tmp_pt);
+  }
   const GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
   gtk_snapshot_append_layout (snapshot, layout, &white);
   gtk_snapshot_restore (snapshot);
@@ -1475,9 +1496,11 @@ region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 
       /* translate to the full rect */
       gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &Z_GRAPHENE_POINT_INIT ((float) full_rect.x, (float) full_rect.y));
+      {
+        graphene_point_t tmp_pt =
+          GRAPHENE_POINT_INIT ((float) full_rect.x, (float) full_rect.y);
+        gtk_snapshot_translate (snapshot, &tmp_pt);
+      }
 
       /* draw any remaining parts */
       switch (self->id.type)
@@ -1503,11 +1526,12 @@ region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
         /* ---- draw applicable icons ---- */
 
 #define DRAW_TEXTURE(name) \
-  gtk_snapshot_append_texture ( \
-    snapshot, arranger->name, \
-    &Z_GRAPHENE_RECT_INIT ( \
+  { \
+    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT ( \
       (float) (full_rect.width - (size + paddingh) * (icons_drawn + 1)), \
-      (float) paddingv, (float) size, (float) size)); \
+      (float) paddingv, (float) size, (float) size); \
+    gtk_snapshot_append_texture (snapshot, arranger->name, &tmp_r); \
+  } \
   icons_drawn++
 
       const int size = arranger->region_icon_texture_size;

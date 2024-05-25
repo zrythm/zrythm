@@ -349,15 +349,7 @@ recording_manager_handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (
-        G_UNLIKELY (
-          at->recording_start_sent
-          && time_nfo->nframes == 0)
-        &&
-        (time_nfo->g_start_frame_w_offset
-         ==
-         (unsigned_frame_t)
-         TRANSPORT->loop_end_pos.frames))
+      else if (G_UNLIKELY (at->recording_start_sent && time_nfo->nframes == 0) && (time_nfo->g_start_frame_w_offset == (unsigned_frame_t) TRANSPORT->loop_end_pos.frames))
         {
           /* send pause event */
           RecordingEvent * re =
@@ -1020,16 +1012,7 @@ handle_midi_event (RecordingManager * self, RecordingEvent * ev)
           MidiNote *       mn = region->midi_notes[i];
           ArrangerObject * mn_obj = (ArrangerObject *) mn;
 
-          if (position_is_between_excl_start (
-                &mn_obj->pos, &local_pos,
-                &local_end_pos) ||
-              position_is_between_excl_start (
-                &mn_obj->end_pos, &local_pos,
-                &local_end_pos) ||
-              (position_is_before (
-                 &mn_obj->pos, &local_pos) &&
-               position_is_after_or_equal (
-                 &mn_obj->end_pos, &local_end_pos)))
+          if (position_is_between_excl_start (&mn_obj->pos, &local_pos, &local_end_pos) || position_is_between_excl_start (&mn_obj->end_pos, &local_pos, &local_end_pos) || (position_is_before (&mn_obj->pos, &local_pos) && position_is_after_or_equal (&mn_obj->end_pos, &local_end_pos)))
             {
               midi_region_remove_midi_note (
                 region, mn, F_FREE, F_NO_PUBLISH_EVENTS);

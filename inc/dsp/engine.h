@@ -89,9 +89,7 @@ typedef struct MPMCQueue         MPMCQueue;
 #define engine_get_run(engine) g_atomic_int_get (&(engine)->run)
 
 #define engine_has_handled_buffer_size_change(engine) \
-  ((engine)->audio_backend != AudioBackend::AUDIO_BACKEND_JACK || \
-  ((engine)->audio_backend == AudioBackend::AUDIO_BACKEND_JACK && \
-   g_atomic_int_get (&(engine)->handled_jack_buffer_size_change) == 1))
+  ((engine)->audio_backend != AudioBackend::AUDIO_BACKEND_JACK || ((engine)->audio_backend == AudioBackend::AUDIO_BACKEND_JACK && g_atomic_int_get (&(engine)->handled_jack_buffer_size_change) == 1))
 
 #define ENGINE_MAX_EVENTS 100
 
