@@ -76,14 +76,12 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
     graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (-0.5f, -0.5f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
-  float          circle_angle = 2.f * (float) M_PI;
-  GskRoundedRect rounded_rect;
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect,
-    &Z_GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) circle_radius * 2.f + 1.f,
-      (float) circle_radius * 2.f + 1.f),
-    circle_angle);
+  float           circle_angle = 2.f * (float) M_PI;
+  GskRoundedRect  rounded_rect;
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    0.f, 0.f, (float) circle_radius * 2.f + 1.f,
+    (float) circle_radius * 2.f + 1.f);
+  gsk_rounded_rect_init_from_rect (&rounded_rect, &tmp_r, circle_angle);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1);
   gtk_snapshot_append_color (snapshot, &tmp_color, &rounded_rect.bounds);

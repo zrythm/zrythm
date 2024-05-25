@@ -147,15 +147,15 @@ gtk_flipper_size_allocate (GtkWidget * widget, int width, int height, int baseli
 
   if (self->flip_horizontal)
     {
-      transform = gsk_transform_translate (
-        transform, &Z_GRAPHENE_POINT_INIT ((float) width, 0.f));
+      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) width, 0.f);
+      transform = gsk_transform_translate (transform, &tmp_pt);
       transform = gsk_transform_scale (transform, -1, 1);
     }
 
   if (self->flip_vertical)
     {
-      transform = gsk_transform_translate (
-        transform, &Z_GRAPHENE_POINT_INIT (0.f, (float) height));
+      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0.f, (float) height);
+      transform = gsk_transform_translate (transform, &tmp_pt);
       transform = gsk_transform_scale (transform, 1, -1);
       baseline = -1;
     }
@@ -166,8 +166,8 @@ gtk_flipper_size_allocate (GtkWidget * widget, int width, int height, int baseli
       width = height;
       height = tmp;
       transform = gsk_transform_rotate (transform, 90);
-      transform = gsk_transform_translate (
-        transform, &Z_GRAPHENE_POINT_INIT (0.f, -(float) height));
+      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0.f, -(float) height);
+      transform = gsk_transform_translate (transform, &tmp_pt);
       baseline = -1;
     }
 

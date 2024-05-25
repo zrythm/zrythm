@@ -439,11 +439,10 @@ draw_midi_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
             {
               color = Z_GDK_RGBA_INIT (0, 0, 0, 0.2f);
               /* rect  y: + 1 since the border is bottom */
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &Z_GRAPHENE_RECT_INIT (
-                  (float) rect->x, (float) (y_offset + 1), (float) rect->width,
-                  (float) adj_px_per_key));
+              graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                (float) rect->x, (float) (y_offset + 1), (float) rect->width,
+                (float) adj_px_per_key);
+              gtk_snapshot_append_color (snapshot, &color, &tmp_r);
             }
         }
       bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
@@ -451,11 +450,10 @@ draw_midi_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
         {
           GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.06f);
           /* rect  y: + 1 since the border is bottom */
-          gtk_snapshot_append_color (
-            snapshot, &tmp_color,
-            &Z_GRAPHENE_RECT_INIT (
-              (float) rect->x, (float) (y_offset + 1), (float) rect->width,
-              (float) adj_px_per_key));
+          graphene_rect_t rect_r = GRAPHENE_RECT_INIT (
+            (float) rect->x, (float) (y_offset + 1), (float) rect->width,
+            (float) adj_px_per_key);
+          gtk_snapshot_append_color (snapshot, &tmp_color, &rect_r);
         }
     }
 }
@@ -700,12 +698,11 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   int   gain_line_end_x = ui_pos_to_px_editor (&obj->end_pos, F_PADDING);
   /* rect x:  need 1 pixel extra for some reason */
   /* rect y:  invert because gtk draws the opposite way */
-  gtk_snapshot_append_color (
-    snapshot, &UI_COLORS->bright_orange,
-    &Z_GRAPHENE_RECT_INIT (
-      1.f + (float) gain_line_start_x,
-      (float) rect->height * (1.f - gain_fader_val),
-      (float) (gain_line_end_x - gain_line_start_x), 2.f));
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    1.f + (float) gain_line_start_x,
+    (float) rect->height * (1.f - gain_fader_val),
+    (float) (gain_line_end_x - gain_line_start_x), 2.f);
+  gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp_r);
 
   /* draw gain text */
   double gain_db = math_amp_to_dbfs (ar->gain);

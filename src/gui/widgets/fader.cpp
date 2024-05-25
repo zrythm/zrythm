@@ -66,11 +66,10 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   const float fill_radius = 2.f;
 
   /* draw background bar */
-  GskRoundedRect rounded_rect;
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect,
-    &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height),
-    fill_radius);
+  GskRoundedRect  rounded_rect;
+  graphene_rect_t tmp_r =
+    GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+  gsk_rounded_rect_init_from_rect (&rounded_rect, &tmp_r, fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   GdkRGBA tmp_color =
     Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f);

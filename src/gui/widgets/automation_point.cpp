@@ -80,9 +80,9 @@ automation_point_draw (
   GskRenderNode * cr_node = NULL;
   if (automation_point_settings_changed (ap, &draw_rect, false))
     {
-      cr_node = gsk_cairo_node_new (&Z_GRAPHENE_RECT_INIT (
-        0.f, 0.f, (float) draw_rect.width + 3.f,
-        (float) draw_rect.height + 3.f));
+      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        0.f, 0.f, (float) draw_rect.width + 3.f, (float) draw_rect.height + 3.f);
+      cr_node = gsk_cairo_node_new (&tmp_r);
 
       object_free_w_func_and_null (gsk_render_node_unref, ap->cairo_node);
     }

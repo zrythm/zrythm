@@ -58,9 +58,10 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
         continue;
 
       graphene_point_t wpt;
+      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (track->widget), GTK_WIDGET (MW_TRACKLIST->unpinned_box),
-        &Z_GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+        &tmp_pt, &wpt);
       g_return_if_fail (success);
       track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
 

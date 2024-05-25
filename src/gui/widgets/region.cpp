@@ -146,8 +146,8 @@ draw_loop_points (
   /*GskRenderNode * loop_line_node = NULL;*/
   if (!arranger->loop_line_node)
     {
-      arranger->loop_line_node =
-        gsk_cairo_node_new (&Z_GRAPHENE_RECT_INIT (0, 0, 3, 800));
+      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0, 0, 3, 800);
+      arranger->loop_line_node = gsk_cairo_node_new (&tmp_r);
       cairo_t * cr = gsk_cairo_node_get_draw_context (arranger->loop_line_node);
 
       cairo_set_dash (cr, dashes, 1, 0);
@@ -163,8 +163,8 @@ draw_loop_points (
   GskRenderNode * clip_start_line_node = NULL;
   if (!arranger->clip_start_line_node)
     {
-      arranger->clip_start_line_node =
-        gsk_cairo_node_new (&Z_GRAPHENE_RECT_INIT (0, 0, 3, 800));
+      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0, 0, 3, 800);
+      arranger->clip_start_line_node = gsk_cairo_node_new (&tmp_r);
 
       cairo_t * cr =
         gsk_cairo_node_get_draw_context (arranger->clip_start_line_node);
@@ -255,8 +255,8 @@ draw_cut_line (
   const int       line_width = 1;
   if (!arranger->cut_line_node)
     {
-      arranger->cut_line_node =
-        gsk_cairo_node_new (&Z_GRAPHENE_RECT_INIT (0, 0, 3, 800));
+      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0, 0, 3, 800);
+      arranger->cut_line_node = gsk_cairo_node_new (&tmp_r);
 
       cairo_t * cr = gsk_cairo_node_get_draw_context (arranger->cut_line_node);
       gdk_cairo_set_source_rgba (cr, &UI_COLORS->dark_text);
@@ -1310,15 +1310,15 @@ draw_name (
 
   /* create a rounded clip */
   /*float degrees = G_PI / 180.f;*/
-  float          radius = REGION_NAME_BOX_CURVINESS / 1.f;
-  GskRoundedRect rounded_rect;
+  float           radius = REGION_NAME_BOX_CURVINESS / 1.f;
+  GskRoundedRect  rounded_rect;
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    0.f, 0.f, (float) (pangorect.width + REGION_NAME_PADDING_R),
+    (float) black_box_height);
+  graphene_size_t tmp_sz = GRAPHENE_SIZE_INIT (0, 0);
+  graphene_size_t tmp_sz2 = GRAPHENE_SIZE_INIT (radius, radius);
   gsk_rounded_rect_init (
-    &rounded_rect,
-    &Z_GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) (pangorect.width + REGION_NAME_PADDING_R),
-      (float) black_box_height),
-    &Z_GRAPHENE_SIZE_INIT (0, 0), &Z_GRAPHENE_SIZE_INIT (0, 0),
-    &Z_GRAPHENE_SIZE_INIT (radius, radius), &Z_GRAPHENE_SIZE_INIT (0, 0));
+    &rounded_rect, &tmp_r, &tmp_sz, &tmp_sz, &tmp_sz2, &tmp_sz2);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill bg color */

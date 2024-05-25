@@ -1115,12 +1115,13 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   GskColorStop stops[] = { stop1, stop2 };
 
-  graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
     (float) start_px, 0, (float) (end_px - start_px), (float) height);
+  graphene_point_t zero_pt = GRAPHENE_POINT_INIT (0, 0);
+  graphene_point_t tmp_pt =
+    GRAPHENE_POINT_INIT (0.f, ((float) height * 3.f) / 4.f);
   gtk_snapshot_append_linear_gradient (
-    snapshot, &tmp_r, &Z_GRAPHENE_POINT_INIT (0, 0),
-    &Z_GRAPHENE_POINT_INIT (0.f, ((float) height * 3.f) / 4.f), stops,
-    G_N_ELEMENTS (stops));
+    snapshot, &tmp_r, &zero_pt, &tmp_pt, stops, G_N_ELEMENTS (stops));
 
   draw_lines_and_labels (self, snapshot, &visible_rect_gdk);
 

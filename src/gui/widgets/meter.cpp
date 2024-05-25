@@ -68,10 +68,11 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float           value_px_for_gradient = (1 - value_px) * 0.02f;
   graphene_rect_t tmp_r =
     GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px);
+  graphene_point_t tmp_pt1 = GRAPHENE_POINT_INIT (0, width);
+  graphene_point_t tmp_pt2 =
+    GRAPHENE_POINT_INIT (0, height - value_px_for_gradient);
   gtk_snapshot_append_linear_gradient (
-    snapshot, &tmp_r, &Z_GRAPHENE_POINT_INIT (0.f, width),
-    &Z_GRAPHENE_POINT_INIT (0, height - value_px_for_gradient), stops,
-    G_N_ELEMENTS (stops));
+    snapshot, &tmp_r, &tmp_pt1, &tmp_pt2, stops, G_N_ELEMENTS (stops));
 
   /* draw meter line */
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1);

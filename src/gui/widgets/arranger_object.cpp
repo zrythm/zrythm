@@ -484,12 +484,13 @@ arranger_object_set_full_rectangle (
         graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            bool success = gtk_widget_compute_point (
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            bool             success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget),
               arranger->is_pinned
-                ? (GtkWidget *) arranger
-                : (GtkWidget *) MW_TRACKLIST->unpinned_box,
-              &Z_GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+                            ? (GtkWidget *) arranger
+                            : (GtkWidget *) MW_TRACKLIST->unpinned_box,
+              &tmp_pt, &wpt);
             g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
@@ -581,9 +582,10 @@ arranger_object_set_full_rectangle (
         graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            bool success = gtk_widget_compute_point (
-              (GtkWidget *) (track->widget), (GtkWidget *) (arranger),
-              &Z_GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            bool             success = gtk_widget_compute_point (
+              (GtkWidget *) (track->widget), (GtkWidget *) (arranger), &tmp_pt,
+              &wpt);
             g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
@@ -612,9 +614,10 @@ arranger_object_set_full_rectangle (
         graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            bool success = gtk_widget_compute_point (
-              (GtkWidget *) (track->widget), (GtkWidget *) (arranger),
-              &Z_GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            bool             success = gtk_widget_compute_point (
+              (GtkWidget *) (track->widget), (GtkWidget *) (arranger), &tmp_pt,
+              &wpt);
             g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
