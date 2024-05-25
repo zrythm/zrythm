@@ -71,6 +71,7 @@ Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
   this->rand = pcg_rand_new ();
   this->symap = symap_new ();
   this->error_domain_symap = symap_new ();
+  recent_projects_ = std::make_unique<StringArray> ();
 
   this->settings = settings_new ();
   this->recording_manager = recording_manager_new ();
@@ -94,50 +95,27 @@ Zrythm::init (void)
 void
 Zrythm::add_to_recent_projects (const char * _filepath)
 {
-  /* if we are at max
-   * projects */
-  if (this->num_recent_projects == MAX_RECENT_PROJECTS)
+  recent_projects_->insert (0, _filepath);
+
+  /* if we are at max projects, remove the last one */
+  if (recent_projects_->size () > MAX_RECENT_PROJECTS)
     {
-      /* free the last one and delete it */
-      g_free (this->recent_projects[MAX_RECENT_PROJECTS - 1]);
-      array_delete (
-        this->recent_projects, this->num_recent_projects,
-        this->recent_projects[this->num_recent_projects - 1]);
+      recent_projects_->remove (MAX_RECENT_PROJECTS);
     }
 
-  char * filepath = g_strdup (_filepath);
-
-  array_insert (this->recent_projects, this->num_recent_projects, 0, filepath);
-
-  /* set last element to NULL because the call
-   * takes a NULL terminated array */
-  this->recent_projects[this->num_recent_projects] = NULL;
-
-  g_settings_set_strv (
-    S_GENERAL, "recent-projects", (const char * const *) this->recent_projects);
+  char ** tmp = recent_projects_->getNullTerminated ();
+  g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
+  g_strfreev (tmp);
 }
 
 void
 Zrythm::remove_recent_project (char * filepath)
 {
-  /* FIXME use GStrvBuilder */
-  for (int i = 0; i < this->num_recent_projects; i++)
-    {
-      const char * recent_project = this->recent_projects[i];
-      g_return_if_fail (recent_project);
-      if (string_is_equal (filepath, recent_project))
-        {
-          array_delete (
-            this->recent_projects, this->num_recent_projects,
-            this->recent_projects[i]);
+  recent_projects_->removeString (filepath);
 
-          this->recent_projects[this->num_recent_projects] = NULL;
-
-          g_settings_set_strv (
-            S_GENERAL, "recent-projects",
-            (const char * const *) this->recent_projects);
-        }
-    }
+  char ** tmp = recent_projects_->getNullTerminated ();
+  g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
+  g_strfreev (tmp);
 }
 
 /**

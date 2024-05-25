@@ -522,13 +522,13 @@ greeter_widget_select_project (
   gtk_stack_set_visible_child_name (self->stack, "project-selector");
 
   /* fill recent projects */
-  for (int i = 0; i < gZrythm->num_recent_projects; i++)
+  for (int i = 0; i < gZrythm->recent_projects_->size (); i++)
     {
-      char * recent_dir = io_get_dir (gZrythm->recent_projects[i]);
-      char * project_name = g_path_get_basename (recent_dir);
+      const char * recent_prj = (*gZrythm->recent_projects_)[i];
+      char *       recent_dir = io_get_dir (recent_prj);
+      char *       project_name = g_path_get_basename (recent_dir);
 
-      ProjectInfo * prj_nfo =
-        project_info_new (project_name, gZrythm->recent_projects[i]);
+      ProjectInfo * prj_nfo = project_info_new (project_name, recent_prj);
 
       if (prj_nfo)
         {

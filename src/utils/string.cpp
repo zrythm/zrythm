@@ -40,24 +40,41 @@
 #include <pcre2.h>
 #include <regex.h>
 
+StringArray::StringArray (const char * const * strs) : juce::StringArray ()
+{
+  int          count = 0;
+  const char * s;
+  while (strs[count])
+    {
+      s = strs[count];
+
+      add (juce::CharPointer_UTF8 (s));
+      count++;
+    }
+}
+
+char **
+StringArray::getNullTerminated () const
+{
+  GStrvBuilder * builder = g_strv_builder_new ();
+  for (int i = 0; i < size (); i++)
+    {
+      juce::String str = getReference (i);
+      g_strv_builder_add (builder, str.toStdString ().c_str ());
+    }
+  return g_strv_builder_end (builder);
+}
+
+char *
+StringArray::getCStr (int index)
+{
+  return g_strdup (juce::StringArray::getReference (index).toRawUTF8 ());
+}
+
 int
 string_is_ascii (const char * string)
 {
   return g_str_is_ascii (string);
-#if 0
-  unsigned long i;
-  if (!string || strlen (string) == 0)
-    return 0;
-  for (i = 0; i < strlen (string); i++)
-    {
-      if (string[i] < 32 ||
-          string[i] > 126)
-        {
-          return 0;
-        }
-    }
-  return 1;
-#endif
 }
 
 /**

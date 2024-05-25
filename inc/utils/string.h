@@ -38,11 +38,52 @@
 
 #include <stdbool.h>
 
+#include "ext/juce/juce.h"
+
 /**
  * @addtogroup utils
  *
  * @{
  */
+
+/**
+ * String array that auto-converts given char pointers to UTF8 (so JUCE doesn't
+ * complain.
+ */
+class StringArray : public juce::StringArray
+{
+public:
+  StringArray () : juce::StringArray (){};
+  StringArray (const char * const * strs);
+
+  /** Returns the strings in a newly-allocated NULL-terminated array.
+   *
+   * To be used for C APIs.
+   */
+  char ** getNullTerminated () const;
+
+  void insert (int index, const char * s)
+  {
+    juce::StringArray::insert (index, juce::CharPointer_UTF8 (s));
+  };
+  void add (const char * s)
+  {
+    juce::StringArray::add (juce::CharPointer_UTF8 (s));
+  };
+  void set (int index, const char * s)
+  {
+    juce::StringArray::set (index, juce::CharPointer_UTF8 (s));
+  };
+  char *       getCStr (int index);
+  const char * operator[] (size_t i)
+  {
+    return juce::StringArray::getReference (i).toRawUTF8 ();
+  };
+  void removeString (const char * s)
+  {
+    juce::StringArray::removeString (juce::CharPointer_UTF8 (s));
+  };
+};
 
 /**
  * Returns if the string is ASCII.

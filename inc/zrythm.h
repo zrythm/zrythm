@@ -14,6 +14,7 @@
 
 #include <glib.h>
 
+#include "ext/juce/juce.h"
 #include "zix/sem.h"
 #include <gio/gio.h>
 #include <memory>
@@ -29,6 +30,7 @@ typedef struct Settings               Settings;
 typedef struct Log                    Log;
 typedef struct CairoCaches            CairoCaches;
 typedef struct PCGRand                PCGRand;
+class StringArray;
 
 /**
  * @addtogroup general
@@ -325,8 +327,7 @@ public:
   Project * project = nullptr;
 
   /** +1 to ensure last element is NULL in case full. */
-  char * recent_projects[MAX_RECENT_PROJECTS + 1] = {};
-  int    num_recent_projects = 0;
+  std::unique_ptr<StringArray> recent_projects_;
 
   /** NULL terminated array of project template absolute paths. */
   char ** templates = nullptr;
@@ -424,6 +425,8 @@ public:
 
   /** Process ID for pipewire (used in tests). */
   GPid pipewire_pid = 0;
+
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Zrythm)
 };
 
 /**

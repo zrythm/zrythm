@@ -288,36 +288,14 @@ init_recent_projects (void)
 
   gchar ** recent_projects = g_settings_get_strv (S_GENERAL, "recent-projects");
 
-  /* get recent projects */
-  gZrythm->num_recent_projects = 0;
-  int    count = 0;
-  char * prj;
-  while (recent_projects[count])
-    {
-      prj = recent_projects[count];
-
-      /* skip duplicates */
-      if (
-        array_contains_cmp (
-          gZrythm->recent_projects, gZrythm->num_recent_projects, prj, strcmp,
-          0, 1))
-        {
-          count++;
-          continue;
-        }
-
-      gZrythm->recent_projects[gZrythm->num_recent_projects++] = g_strdup (prj);
-    }
-  g_strfreev (recent_projects);
-
-  /* set last element to NULL because the call
-   * takes a NULL terminated array */
-  gZrythm->recent_projects[gZrythm->num_recent_projects] = NULL;
+  gZrythm->recent_projects_.reset (
+    new StringArray ((const char * const *) recent_projects));
+  gZrythm->recent_projects_->removeDuplicates (false);
 
   /* save the new list */
-  g_settings_set_strv (
-    S_GENERAL, "recent-projects",
-    (const char * const *) gZrythm->recent_projects);
+  char ** tmp = gZrythm->recent_projects_->getNullTerminated ();
+  g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
+  g_strfreev (tmp);
 
   g_message ("done");
 }

@@ -958,3 +958,20 @@ Copyright: Flathub and Zrythm contributors
 License: AGPL-3.0-or-later
 Comment:
   Adapted from https://github.com/flathub/org.zrythm.Zrythm.
+
+Files:
+  ext/juce/modules/juce_audio_basics/*
+  ext/juce/modules/juce_audio_devices/*
+  ext/juce/modules/juce_core/*
+  ext/juce/modules/juce_events/*
+Copyright: Raw Material Software Limited
+License: ISC
+Comment:
+  JUCE
+
+Files:
+  ext/juce/modules/juce_*/*
+Copyright: Raw Material Software Limited
+License: GPL-3.0-only
+Comment:
+  JUCE

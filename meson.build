@@ -515,9 +515,7 @@ definitions = [
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
 if use_weak_jack
-  definitions += [
-    '-DUSE_WEAK_JACK=1',
-    ]
+  definitions += ['-DUSE_WEAK_JACK=1',]
 endif
 test_cflags += definitions
 
@@ -528,7 +526,8 @@ attribute_macros = [
   'const', 'malloc',
   ]
 foreach a : attribute_macros
-  test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
+  # some of these don't work on windows
+  test_cflags += '-D' + a.to_upper() + '=' + (os_windows ? ''  : ('__attribute__((' + a + '))'))
 endforeach
 
 extra_warnings = [
@@ -756,6 +755,7 @@ if is_gcc
     #'-Werror=sign-conversion',
     '-Werror=implicit-fallthrough',
     '-Werror=format=2',
+    '-Werror=endif-labels',
     ]
 endif
 
@@ -789,6 +789,31 @@ if os_windows
     '-static-libstdc++',
     ]
 endif
+
+test_cflags_c_only = [
+  '-Wno-bad-function-cast',
+  '-Wno-old-style-declaration',
+  '-Werror=absolute-value',
+  '-Werror=parentheses-equality',
+  ]
+
+common_cflags_c_only = cc.get_supported_arguments (
+  test_cflags_c_only)
+
+add_project_arguments (
+  common_cflags_c_only,
+  language: [ 'c' ]
+  )
+add_project_arguments (
+  common_cflags,
+  language: [ 'c', 'cpp' ],
+  )
+add_project_link_arguments (
+  common_ldflags,
+  language: [ 'c', 'cpp' ],
+  )
+
+subdir ('ext')
 
 # set config defines
 x11_dep = dependency (
@@ -1285,6 +1310,7 @@ zrythm_deps = [
   dbus_dep,
   yyjson_dep,
   magic_enum_dep,
+  juce_dep,
 
   libm,
 ]
@@ -1374,29 +1400,6 @@ config_h_dep = declare_dependency (
   sources: config_h_vcs,
   )
 zrythm_deps += config_h_dep
-
-test_cflags_c_only = [
-  '-Wno-bad-function-cast',
-  '-Wno-old-style-declaration',
-  '-Werror=absolute-value',
-  '-Werror=parentheses-equality',
-  ]
-
-common_cflags_c_only = cc.get_supported_arguments (
-  test_cflags_c_only)
-
-add_project_arguments (
-  common_cflags_c_only,
-  language: [ 'c' ]
-  )
-add_project_arguments (
-  common_cflags,
-  language: [ 'c', 'cpp' ],
-  )
-add_project_link_arguments (
-  common_ldflags,
-  language: [ 'c', 'cpp' ],
-  )
 
 # plugins for testing
 ext_lv2_plugins = {
@@ -1543,7 +1546,6 @@ ext_srcs = []
 
 subdir ('scripts')
 subdir ('po')
-subdir ('ext')
 subdir ('data')
 subdir ('resources')
 subdir ('inc')
