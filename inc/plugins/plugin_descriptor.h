@@ -16,10 +16,10 @@
 
 #include "utils/types.h"
 
+#include <gio/gio.h>
 #include <glib/gi18n.h>
 
 #include <CarlaBackend.h>
-#include <gio/gio.h>
 
 TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal)
 enum class TrackType;

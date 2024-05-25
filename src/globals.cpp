@@ -3,9 +3,9 @@
 
 #include "zrythm-config.h"
 
-#include "zrythm.h"
-
 #include <memory>
+
+#include "zrythm.h"
 
 /** This is declared extern in zrythm.h. */
 std::unique_ptr<Zrythm>                 gZrythm = nullptr;

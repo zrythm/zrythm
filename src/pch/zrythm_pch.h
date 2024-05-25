@@ -6,12 +6,12 @@
 
 #include "zrythm-config.h"
 
+#include <memory>
+
 #include "utils/objects.h"
 #include "utils/types.h"
 #include "zrythm.h"
 
 #include <glib.h>
-
-#include <memory>
 
 #endif /* __PCH_ZRYTHM_PCH_H__ */

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,12 +12,13 @@
 
 #include "zrythm-config.h"
 
+#include <memory>
+
+#include <gio/gio.h>
 #include <glib.h>
 
 #include "ext/juce/juce.h"
 #include "zix/sem.h"
-#include <gio/gio.h>
-#include <memory>
 
 typedef struct Project                Project;
 typedef struct Symap                  Symap;
