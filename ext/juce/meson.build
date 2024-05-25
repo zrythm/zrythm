@@ -6,6 +6,11 @@ juce_include_dirs = [
   include_directories('modules'),
 ]
 
+juce_cpp_args = [
+  '-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1',
+  '-DJUCE_DEBUG=' + (get_option('debug') ? '1' : '0'),
+  '-fno-single-precision-constant',
+  ]
 juce_srcs = [
   'modules/juce_core/juce_core.cpp',
   ]
@@ -19,17 +24,17 @@ if os_darwin
       'cocoa',
       'appkit',
       ])
+elif os_windows
+  # build fails without this
+  juce_cpp_args += [
+    '-fpermissive',
+    ]
 endif
-
 
 juce_lib = static_library (
   'juce', files(juce_srcs),
   include_directories: juce_include_dirs,
-  cpp_args: [
-    '-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1',
-    '-DJUCE_DEBUG=' + (get_option('debug') ? '1' : '0'),
-    '-fno-single-precision-constant',
-    ],
+  cpp_args: juce_cpp_args,
   dependencies: juce_lib_deps,
   )
 
