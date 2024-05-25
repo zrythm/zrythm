@@ -20,6 +20,7 @@ project (
     ],
   )
 
+#############################################################################
 # --- Import/configure required modules ---
 
 gnome = import ('gnome')
@@ -32,6 +33,7 @@ cmake_opts.add_cmake_defines ({
   'BUILD_TESTS': 'OFF',
   })
 
+#############################################################################
 # --- Check for programs ---
 
 find_program ('sed')
@@ -72,6 +74,7 @@ faust2lv2 = find_program ('faust2lv2', required: false)
 sox = find_program ('sox', required: false)
 tidy_bin = find_program ('tidy', required: false)
 
+#############################################################################
 # --- Set common variables ---
 
 cc = meson.get_compiler ('cpp')
@@ -250,12 +253,14 @@ illegal_char_test_args = [
 gtk_req = '4.14.0'
 glib_req = '2.74.0'
 
+#############################################################################
 # --- Add extra languages ---
 
 if os_darwin
   add_languages(['objc', 'objcpp'])
 endif
 
+#############################################################################
 # --- Create configuration data ---
 #
 # Note: more configuration data might be added after
@@ -408,6 +413,7 @@ if os_gnu
   cdata.set ('HAVE_C11_THREADS', 1)
 endif
 
+#############################################################################
 # --- Check for size of data types ---
 
 # Require at least 32 bits for compatibility
@@ -417,6 +423,7 @@ if cc.sizeof ('unsigned int') < 4
   error ('minimum required unsigned int size is 4')
 endif
 
+#############################################################################
 # --- Check for headers ---
 
 check_headers = [
@@ -430,6 +437,7 @@ foreach h : check_headers
   endif
 endforeach
 
+#############################################################################
 # --- Check for dependencies/libraries ---
 
 # math functions might be implemented in libm
@@ -565,7 +573,16 @@ extra_optimizations_cflags = [
   '-DPIC',
   '-freciprocal-math',
   '-fsingle-precision-constant',
+  # the following 2 taken from DISTRHO-Ports, need testing
+  '-ftree-vectorize',
+  '-funroll-loops',
   ]
+
+if not os_darwin
+  extra_optimizations_cflags += [
+    '-fprefetch-loop-arrays',
+    ]
+endif
 
 if host_machine.cpu() == 'x86_64'
   extra_optimizations_cflags += [
@@ -588,7 +605,7 @@ if get_option ('extra_optimizations')
 endif
 
 # TODO check
-# -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -ftree-vectorize -floop-parallelize-all -ftree-parallelize-loops=4
+# -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
 extra_extra_optimizations_cflags = [
   # not allowed on clang + C
   #'-fallow-store-data-races',
@@ -1560,6 +1577,7 @@ meson.add_install_script (
 meson.add_dist_script (
   'scripts/meson_dist.sh')
 
+#############################################################################
 # --- Run targets ---
 
 if iwyu_tool.found ()
@@ -1571,6 +1589,7 @@ if iwyu_tool.found ()
       ])
 endif
 
+#############################################################################
 # --- Summary ---
 
 summary ({
