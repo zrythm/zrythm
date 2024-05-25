@@ -390,6 +390,7 @@ __test_edit_tracks (bool with_carla)
     i++)
     {
       EditTrackActionType cur = ENUM_INT_TO_VALUE (EditTrackActionType, i);
+      (void) cur;
       test_helper_zrythm_init ();
 
       /* stop dummy audio engine processing so we can
