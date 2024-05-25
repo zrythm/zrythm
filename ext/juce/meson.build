@@ -9,9 +9,18 @@ juce_include_dirs = [
 juce_srcs = [
   'modules/juce_core/juce_core.cpp',
   ]
+juce_lib_deps = []
 if os_darwin
   juce_srcs += ['modules/juce_core/juce_core.mm',]
+  juce_lib_deps += dependency (
+    'appleframeworks',
+    modules: [
+      'foundation',
+      'cocoa',
+      'appkit',
+      ])
 endif
+
 
 juce_lib = static_library (
   'juce', files(juce_srcs),
@@ -21,6 +30,7 @@ juce_lib = static_library (
     '-DJUCE_DEBUG=' + (get_option('debug') ? '1' : '0'),
     '-fno-single-precision-constant',
     ],
+  dependencies: juce_lib_deps,
   )
 
 juce_dep = declare_dependency (
