@@ -25,7 +25,7 @@
  */
 
 #define REGION_NAME_FONT_NO_SIZE "Bold"
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 #  define REGION_NAME_FONT REGION_NAME_FONT_NO_SIZE " 7"
 #else
 #  define REGION_NAME_FONT REGION_NAME_FONT_NO_SIZE " 8"

@@ -142,7 +142,7 @@ static void
 segv_handler (int sig)
 {
   char prefix[200];
-#ifdef _WOE32
+#ifdef G_OS_WIN32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
 #else
   sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));

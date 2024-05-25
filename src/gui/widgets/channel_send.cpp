@@ -58,8 +58,9 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (channel_send_is_empty (send))
     {
       /* fill background */
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f);
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f),
+        snapshot, &tmp_color,
         &Z_GRAPHENE_RECT_INIT (
           (float) padding, (float) padding, (float) width - (float) padding * 2.f,
           (float) height - (float) padding * 2.f));

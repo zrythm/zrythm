@@ -22,7 +22,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 
 #  ifndef __AUDIO_WINDOWS_MMCSS_H__
 #    define __AUDIO_WINDOWS_MMCSS_H__
@@ -61,4 +61,4 @@ windows_mmcss_revert_thread_characteristics (HANDLE task_handle);
 int windows_mmcss_set_thread_priority (HANDLE, AVRT_PRIORITY);
 
 #  endif // __AUDIO_WINDOWS_MMCSS_H__
-#endif   // _WOE32
+#endif   // G_OS_WIN32

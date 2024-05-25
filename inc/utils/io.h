@@ -183,7 +183,7 @@ io_escape_dir_name (char * dest, const char * dir);
 
 #define io_write_file g_file_set_contents
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 char *
 io_get_registry_string_val (const char * path);
 #endif

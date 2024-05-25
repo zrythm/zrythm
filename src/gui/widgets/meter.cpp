@@ -74,8 +74,9 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     G_N_ELEMENTS (stops));
 
   /* draw meter line */
+  GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1);
   gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1),
+    snapshot, &tmp_color,
     &Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1));
 
   /* draw peak */

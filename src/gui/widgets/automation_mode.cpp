@@ -342,8 +342,8 @@ automation_mode_widget_draw (
           automation_mode_get_localized ((AutomationMode) i, mode_str);
           pango_layout_set_text (layout, mode_str, -1);
         }
-      gtk_snapshot_append_layout (
-        snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_layout (snapshot, layout, &tmp_color);
       gtk_snapshot_restore (snapshot);
 
       total_text_widths += self->text_widths[i];

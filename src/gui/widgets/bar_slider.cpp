@@ -195,14 +195,15 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     &Z_GRAPHENE_POINT_INIT (
       (float) width / 2.f - (float) we / 2.f,
       (float) height / 2.f - (float) he / 2.f));
-  gtk_snapshot_append_layout (
-    snapshot, self->layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+  gtk_snapshot_append_layout (snapshot, self->layout, &color);
   gtk_snapshot_restore (snapshot);
 
   if (self->hover)
     {
+      tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.12f);
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12f),
+        snapshot, &color,
         &Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
     }
 

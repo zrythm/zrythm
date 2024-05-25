@@ -244,9 +244,9 @@ drag_begin (
         }
 
       graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+      graphene_point_t tmp = GRAPHENE_POINT_INIT (0.f, 0.f);
       bool             success = gtk_widget_compute_point (
-        GTK_WIDGET (self->selection), GTK_WIDGET (self),
-        &Z_GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+        GTK_WIDGET (self->selection), GTK_WIDGET (self), &tmp, &wpt);
       g_return_if_fail (success);
       self->selection_start_pos = (double) wpt.x;
       self->selection_end_pos =

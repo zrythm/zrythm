@@ -129,8 +129,8 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         &Z_GRAPHENE_POINT_INIT (
           (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->txt_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_layout (snapshot, self->txt_layout, &tmp_color);
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
@@ -163,8 +163,8 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         &Z_GRAPHENE_POINT_INIT (
           (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->txt_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 0.55));
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.55);
+      gtk_snapshot_append_layout (snapshot, self->txt_layout, &tmp_color);
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */

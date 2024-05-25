@@ -79,8 +79,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       (float) circle_radius * 2.f + 1.f),
     circle_angle);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
-  gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1), &rounded_rect.bounds);
+  GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1);
+  gtk_snapshot_append_color (snapshot, &tmp_color, &rounded_rect.bounds);
   const float border_width = 2.f;
   float       border_widths[] = {
     border_width, border_width, border_width, border_width
@@ -106,8 +106,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
         &Z_GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y));
       PangoLayout * layout = arranger->vel_layout;
       pango_layout_set_text (layout, text, -1);
-      gtk_snapshot_append_layout (
-        snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_layout (snapshot, layout, &tmp_color);
       gtk_snapshot_restore (snapshot);
     }
 

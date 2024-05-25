@@ -1483,8 +1483,8 @@ z_gtk_show_context_menu_from_g_menu (
 {
   g_return_if_fail (GTK_IS_POPOVER_MENU (popover_menu));
   gtk_popover_menu_set_menu_model (popover_menu, G_MENU_MODEL (menu));
-  gtk_popover_set_pointing_to (
-    GTK_POPOVER (popover_menu), &Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y));
+  GdkRectangle rect = Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y);
+  gtk_popover_set_pointing_to (GTK_POPOVER (popover_menu), &rect);
   /*gtk_popover_set_has_arrow (*/
   /*GTK_POPOVER (popover_menu), false);*/
   gtk_popover_popup (GTK_POPOVER (popover_menu));

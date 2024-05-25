@@ -19,7 +19,7 @@
 #  include <gdk/x11/gdkx.h>
 #endif
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 #  include <gdk/win32/gdkwin32.h>
 #endif
 
@@ -75,20 +75,17 @@ G_GNUC_END_IGNORE_DEPRECATIONS
     complete);
 
 #define Z_GDK_RGBA_INIT(r, g, b, a) \
-  (const GdkRGBA &) \
   { \
-    .red = (float) (r), .green = (float) (g), .blue = (float) (b), \
-    .alpha = (float) (a) \
+    .red = static_cast<float> (r), .green = static_cast<float> (g), \
+    .blue = static_cast<float> (b), .alpha = static_cast<float> (a) \
   }
 
 #define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
-  (const GdkRectangle &) \
   { \
     .x = _x, .y = _y, .width = _w, .height = _h \
   }
 
 #define Z_GDK_RECTANGLE_INIT_UNIT(_x, _y) \
-  (const GdkRectangle &) \
   { \
     .x = _x, .y = _y, .width = 1, .height = 1 \
   }
@@ -586,7 +583,7 @@ Window
 z_gtk_window_get_x11_xid (GtkWindow * window);
 #endif
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 HWND
 z_gtk_window_get_windows_hwnd (GtkWindow * window);
 #endif

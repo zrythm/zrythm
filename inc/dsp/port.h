@@ -233,7 +233,7 @@ typedef struct Port
    */
   void * data;
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
   /**
    * Connections to WindowsMmeDevices.
    *

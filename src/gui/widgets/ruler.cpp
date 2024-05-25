@@ -604,8 +604,8 @@ draw_markers (RulerWidget * self, GtkSnapshot * snapshot, int height)
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot, &Z_GRAPHENE_POINT_INIT (cur_px + 2.f, 6.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->marker_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1.f));
+      GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1.f);
+      gtk_snapshot_append_layout (snapshot, self->marker_layout, &white);
       gtk_snapshot_restore (snapshot);
     }
 }
@@ -1137,18 +1137,20 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         gtk_widget_get_height (GTK_WIDGET (self)) / RW_RANGE_HEIGHT_DIVISOR;
 
       /* fill */
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.27f);
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.27f),
+        snapshot, &tmp_color,
         &Z_GRAPHENE_RECT_INIT (
           (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height));
 
       /* draw edges */
+      tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.7f);
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
+        snapshot, &tmp_color,
         &Z_GRAPHENE_RECT_INIT (
           (float) dr.x, (float) dr.y, 2.f, (float) dr.height));
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
+        snapshot, &tmp_color,
         &Z_GRAPHENE_RECT_INIT (
           (float) dr.x + (float) dr.width, (float) dr.y, 2.f,
           (float) dr.height - (float) dr.y));

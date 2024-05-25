@@ -823,7 +823,8 @@ draw_fade_part (
   const float top_line_width = 4.f;
 
   /* set color */
-  GdkRGBA color = { 0.2f, 0.2f, 0.2f, 0.6f };
+  GdkRGBA       color = { 0.2f, 0.2f, 0.2f, 0.6f };
+  const GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
 
   /* get fade in px */
   int fade_in_px = ui_pos_to_px_timeline (&obj->fade_in_pos, 0);
@@ -853,7 +854,7 @@ draw_fade_part (
       if (arranger_object_is_hovered_or_start_object (obj, NULL))
         {
           gtk_snapshot_append_color (
-            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            snapshot, &white,
             &Z_GRAPHENE_RECT_INIT (
               (float) vis_start_px, 0.f,
               (float) vis_fade_in_px - (float) vis_start_px, top_line_width));
@@ -944,7 +945,7 @@ draw_fade_part (
       if (arranger_object_is_hovered_or_start_object (obj, NULL))
         {
           gtk_snapshot_append_color (
-            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            snapshot, &white,
             &Z_GRAPHENE_RECT_INIT (
               (float) visible_fade_out_px, 0.f,
               (float) visible_end_px - (float) visible_fade_out_px,
@@ -1312,7 +1313,8 @@ draw_name (
   gtk_snapshot_translate (
     snapshot,
     &Z_GRAPHENE_POINT_INIT (REGION_NAME_BOX_PADDING, REGION_NAME_BOX_PADDING));
-  gtk_snapshot_append_layout (snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  const GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+  gtk_snapshot_append_layout (snapshot, layout, &white);
   gtk_snapshot_restore (snapshot);
 
   /* pop rounded clip */

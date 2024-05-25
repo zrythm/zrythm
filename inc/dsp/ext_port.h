@@ -90,7 +90,7 @@ typedef struct ExtPort
 
   int num_aliases;
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
   /**
    * Pointer to a WindowsMmeDevice.
    *

@@ -29,9 +29,8 @@ on_right_click (
   gtk_widget_activate_action (
     GTK_WIDGET (self), "listitem.select", "(bb)", true, true);
 
-  gtk_popover_set_pointing_to (
-    GTK_POPOVER (self->popover_menu),
-    &Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y));
+  GdkRectangle tmp_rect = Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y);
+  gtk_popover_set_pointing_to (GTK_POPOVER (self->popover_menu), &tmp_rect);
   g_debug ("popping up");
   gtk_popover_popup (GTK_POPOVER (self->popover_menu));
 }

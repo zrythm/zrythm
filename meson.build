@@ -496,15 +496,9 @@ foreach func : check_c_functions
 endforeach
 
 # Compiler flags
-test_cflags = [
-  '-Wformat=2',
-  '-Wno-missing-field-initializers',
-  '-Wno-unused-parameter',
-  '-Wno-sequence-point',
-  '-Wignored-qualifiers',
-  '-Wno-cast-function-type',
-  '-Walloca',
-  '-fno-common',
+test_cflags = []
+
+definitions = [
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
@@ -515,44 +509,42 @@ test_cflags = [
   '-DOPTIMIZE_O2=OPTIMIZE(O2)',
   '-DOPTIMIZE_O3=OPTIMIZE(O3)',
   '-DNOINLINE=__attribute__((noinline))',
-  '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
+  '-DNONNULL_ARGS(...)=' + (is_gcc ? '__attribute__((nonnull(__VA_ARGS__)))' : ''),
   '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
   '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
+if use_weak_jack
+  definitions += [
+    '-DUSE_WEAK_JACK=1',
+    ]
+endif
+test_cflags += definitions
+
+attribute_macros = [
+  'always_inline', 'cold', 'hot', 'pure', 'nonnull',
+  'returns_nonnull', 'stack_protect',
+  'no_stack_protector', 'warn_unused_result',
+  'const', 'malloc',
+  ]
+foreach a : attribute_macros
+  test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
+endforeach
+
+extra_warnings = [
+  '-Wformat=2',
+  '-Wno-missing-field-initializers',
+  '-Wno-unused-parameter',
+  '-Wno-sequence-point',
+  '-Wno-cast-function-type',
+  ]
+test_cflags += extra_warnings
 
 # not supported on windows
 if is_gcc and not os_windows
   test_cflags += [
     '-frecord-gcc-switches',
     ]
-endif
-
-# Stricter flags to be used where needed
-test_strict_cflags = []
-
-# add attribute macros
-attributes = [
-  'always_inline', 'cold', 'hot', 'pure', 'nonnull',
-  'returns_nonnull', 'stack_protect',
-  'no_stack_protector', 'warn_unused_result',
-  'const', 'malloc',
-  ]
-foreach a : attributes
-  test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
-endforeach
-
-if use_weak_jack
-  test_cflags += [
-    '-DUSE_WEAK_JACK=1',
-    ]
-endif
-
-if get_option ('profiling')
-  test_cflags += [ '-pg', 'no-pie' ]
-  if get_option ('extra_optimizations')
-    error ('extra_optimizations and profiling are incompatible')
-  endif
 endif
 
 if get_option ('native_build')
@@ -562,7 +554,12 @@ if get_option ('native_build')
     ]
 endif
 
-common_cflags = []
+if get_option ('profiling')
+  test_cflags += [ '-pg', 'no-pie' ]
+  if get_option ('extra_optimizations')
+    error ('extra_optimizations and profiling are incompatible')
+  endif
+endif
 
 extra_optimizations_cflags = [
   '-ffast-math',
@@ -594,7 +591,8 @@ endif
 # TODO check
 # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -ftree-vectorize -floop-parallelize-all -ftree-parallelize-loops=4
 extra_extra_optimizations_cflags = [
-  '-fallow-store-data-races',
+  # not allowed on clang + C
+  #'-fallow-store-data-races',
   '-ffinite-math-only',
   '-fno-signed-zeros',
   '-fno-trapping-math',
@@ -613,10 +611,12 @@ if get_option ('extra_debug_info')
     '-rdynamic',
     '-funwind-tables',
     '-fasynchronous-unwind-tables',
-    '-fno-toplevel-reorder',
+    # not supported on clang - not sure what it does either
+    #'-fno-toplevel-reorder',
     ]
 endif
 
+common_cflags = []
 common_cflags += cc.get_supported_arguments (
   test_cflags)
 
@@ -631,11 +631,12 @@ elif os_windows
     #'-mstackrealign',
     '-Wl,-Bdynamic',
     '-Wl,-as-needed',
-    '-D_WOE32=1',
     ]
 endif
 
-test_strict_cflags += [
+# Stricter flags to be used where needed
+test_strict_cflags = [
+  '-Werror=alloca',
   '-Werror=format-overflow',
   '-Werror=format-truncation',
   #'-Werror=cast-qual',

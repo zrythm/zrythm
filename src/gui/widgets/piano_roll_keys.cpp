@@ -232,8 +232,8 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           gtk_snapshot_save (snapshot);
           gtk_snapshot_translate (
             snapshot, &Z_GRAPHENE_POINT_INIT (4, text_y_start));
-          gtk_snapshot_append_layout (
-            snapshot, self->layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+          GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+          gtk_snapshot_append_layout (snapshot, self->layout, &white);
           gtk_snapshot_restore (snapshot);
         }
 

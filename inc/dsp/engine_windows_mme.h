@@ -8,7 +8,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
 
 #  include <windows.h>
 
@@ -87,5 +87,5 @@ engine_windows_mme_test (GtkWindow * win);
  * @}
  */
 
-#endif // _WOE32
+#endif // G_OS_WIN32
 #endif

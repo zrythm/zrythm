@@ -230,7 +230,8 @@ custom_button_widget_draw_with_text (
   PangoLayout * layout = self->layout;
   pango_layout_set_text (layout, self->text, -1);
   pango_layout_set_width (layout, pango_units_from_double (x + width - text_x));
-  gtk_snapshot_append_layout (snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+  gtk_snapshot_append_layout (snapshot, layout, &white);
   gtk_snapshot_restore (snapshot);
 
   self->width = (int) width;

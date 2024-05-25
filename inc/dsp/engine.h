@@ -575,7 +575,7 @@ typedef struct AudioEngine
    */
   float * port_audio_out_buf;
 
-#ifdef _WOE32
+#ifdef G_OS_WIN32
   /** Windows MME MIDI devices. */
   WindowsMmeDevice * mme_in_devs[1024];
   int                num_mme_in_devs;
