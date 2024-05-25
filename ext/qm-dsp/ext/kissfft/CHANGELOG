@@ -1,5 +1,5 @@
 1.3.0 2012-07-18
-  removed non-standard malloc.h from kiss_fft.h
+  removed non-standard malloc.h from qm_kiss_fft.h
 
   moved -lm to end of link line
 
@@ -14,7 +14,7 @@
 1.2.9 2010-05-27
   threadsafe ( including OpenMP )
 
-  first edition of kissfft.hh the C++ template fft engine
+  first edition of qmkissfft.hh the C++ template fft engine
  
 1.2.8 
   Changed memory.h to string.h -- apparently more standard
@@ -25,13 +25,13 @@
   Shrank the real-fft memory footprint. Thanks to Galen Seitz.
 
 1.2.6 (Nov 14, 2006) The "thanks to GenArts" release.
-  Added multi-dimensional real-optimized FFT, see tools/kiss_fftndr
+  Added multi-dimensional real-optimized FFT, see tools/qm_kiss_fftndr
   Thanks go to GenArts, Inc. for sponsoring the development.
 
 1.2.5 (June 27, 2006) The "release for no good reason" release.
    Changed some harmless code to make some compilers' warnings go away.
    Added some more digits to pi -- why not.
-   Added kiss_fft_next_fast_size() function to help people decide how much to pad.
+   Added qm_kiss_fft_next_fast_size() function to help people decide how much to pad.
    Changed multidimensional test from 8 dimensions to only 3 to avoid testing 
    problems with fixed point (sorry Buckaroo Banzai).
 
@@ -49,7 +49,7 @@
     Added ability to use 32 bit fixed point samples -- requires a 64 bit intermediate result, a la 'long long'
 
     Added ability to do 4 FFTs in parallel by using SSE SIMD instructions. This is accomplished by
-    using the __m128 (vector of 4 floats) as kiss_fft_scalar.  Define USE_SIMD to use this.
+    using the __m128 (vector of 4 floats) as qm_kiss_fft_scalar.  Define USE_SIMD to use this.
     
     I know, I know ...  this is drifting a bit from the "kiss" principle, but the speed advantages 
     make it worth it for some.  Also recent gcc makes it SOO easy to use vectors of 4 floats like a POD type.
@@ -65,7 +65,7 @@
 1.2.1 (April 4, 2004) 
     compiles cleanly with just about every -W warning flag under the sun
 
-    reorganized kiss_fft_state so it could be read-only/const. This may be useful for embedded systems
+    reorganized qm_kiss_fft_state so it could be read-only/const. This may be useful for embedded systems
     that are willing to predeclare twiddle factors, factorization.
 
     Fixed C_MUL,S_MUL on 16-bit platforms.
@@ -96,7 +96,7 @@
 
     modified fftutil.c to allow multi-d FFTs
 
-    Modified core fft routine to allow an input stride via kiss_fft_stride()
+    Modified core fft routine to allow an input stride via qm_kiss_fft_stride()
     (eased support of multi-D ffts)
 
     Added fast convolution filtering (FIR filtering using overlap-scrap method, with tail scrap)
@@ -107,11 +107,11 @@
     fixed bug that occurred when nfft==1. Thanks to Steven Johnson.
     
 1.0 : (Dec 14, 2003)
-    changed kiss_fft function from using a single buffer, to two buffers.
+    changed qm_kiss_fft function from using a single buffer, to two buffers.
     If the same buffer pointer is supplied for both in and out, kiss will
     manage the buffer copies.
 
-    added kiss_fft2d and kiss_fftr as separate source files (declarations in kiss_fft.h )
+    added qm_kiss_fft2d and qm_kiss_fftr as separate source files (declarations in qm_kiss_fft.h )
 
 0.4 :(Nov 4,2003) optimized for radix 2,3,4,5
 

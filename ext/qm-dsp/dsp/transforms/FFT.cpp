@@ -10,8 +10,8 @@
 
 #include "maths/MathUtilities.h"
 
-#include "kiss_fft.h"
-#include "kiss_fftr.h"
+#include "qm_kiss_fft.h"
+#include "qm_kiss_fftr.h"
 
 #include <cmath>
 
@@ -23,15 +23,15 @@ class FFT::D
 {
 public:
     D(int n) : m_n(n) {
-        m_planf = kiss_fft_alloc(m_n, 0, NULL, NULL);
-        m_plani = kiss_fft_alloc(m_n, 1, NULL, NULL);
-        m_kin = new kiss_fft_cpx[m_n];
-        m_kout = new kiss_fft_cpx[m_n];
+        m_planf = qm_kiss_fft_alloc(m_n, 0, NULL, NULL);
+        m_plani = qm_kiss_fft_alloc(m_n, 1, NULL, NULL);
+        m_kin = new qm_kiss_fft_cpx[m_n];
+        m_kout = new qm_kiss_fft_cpx[m_n];
     }
 
     ~D() {
-        kiss_fft_free(m_planf);
-        kiss_fft_free(m_plani);
+        qm_kiss_fft_free(m_planf);
+        qm_kiss_fft_free(m_plani);
         delete[] m_kin;
         delete[] m_kout;
     }
@@ -49,7 +49,7 @@ public:
 
         if (!inverse) {
 
-            kiss_fft(m_planf, m_kin, m_kout);
+            qm_kiss_fft(m_planf, m_kin, m_kout);
 
             for (int i = 0; i < m_n; ++i) {
                 ro[i] = m_kout[i].r;
@@ -58,7 +58,7 @@ public:
 
         } else {
 
-            kiss_fft(m_plani, m_kin, m_kout);
+            qm_kiss_fft(m_plani, m_kin, m_kout);
 
             double scale = 1.0 / m_n;
 
@@ -71,10 +71,10 @@ public:
     
 private:
     int m_n;
-    kiss_fft_cfg m_planf;
-    kiss_fft_cfg m_plani;
-    kiss_fft_cpx *m_kin;
-    kiss_fft_cpx *m_kout;
+    qm_kiss_fft_cfg m_planf;
+    qm_kiss_fft_cfg m_plani;
+    qm_kiss_fft_cpx *m_kin;
+    qm_kiss_fft_cpx *m_kout;
 };        
 
 FFT::FFT(int n) :
@@ -105,20 +105,20 @@ public:
             throw std::invalid_argument
                 ("nsamples must be even in FFTReal constructor");
         }
-        m_planf = kiss_fftr_alloc(m_n, 0, NULL, NULL);
-        m_plani = kiss_fftr_alloc(m_n, 1, NULL, NULL);
-        m_c = new kiss_fft_cpx[m_n];
+        m_planf = qm_kiss_fftr_alloc(m_n, 0, NULL, NULL);
+        m_plani = qm_kiss_fftr_alloc(m_n, 1, NULL, NULL);
+        m_c = new qm_kiss_fft_cpx[m_n];
     }
 
     ~D() {
-        kiss_fftr_free(m_planf);
-        kiss_fftr_free(m_plani);
+        qm_kiss_fftr_free(m_planf);
+        qm_kiss_fftr_free(m_plani);
         delete[] m_c;
     }
 
     void forward(const double *ri, double *ro, double *io) {
 
-        kiss_fftr(m_planf, ri, m_c);
+        qm_kiss_fftr(m_planf, ri, m_c);
 
         for (int i = 0; i <= m_n/2; ++i) {
             ro[i] = m_c[i].r;
@@ -146,7 +146,7 @@ public:
 
     void inverse(const double *ri, const double *ii, double *ro) {
 
-        // kiss_fftr.h says
+        // qm_kiss_fftr.h says
         // "input freqdata has nfft/2+1 complex points"
 
         for (int i = 0; i < m_n/2 + 1; ++i) {
@@ -154,7 +154,7 @@ public:
             m_c[i].i = ii[i];
         }
         
-        kiss_fftri(m_plani, m_c, ro);
+        qm_kiss_fftri(m_plani, m_c, ro);
 
         double scale = 1.0 / m_n;
 
@@ -165,9 +165,9 @@ public:
 
 private:
     int m_n;
-    kiss_fftr_cfg m_planf;
-    kiss_fftr_cfg m_plani;
-    kiss_fft_cpx *m_c;
+    qm_kiss_fftr_cfg m_planf;
+    qm_kiss_fftr_cfg m_plani;
+    qm_kiss_fft_cpx *m_c;
 };
 
 FFTReal::FFTReal(int n) :

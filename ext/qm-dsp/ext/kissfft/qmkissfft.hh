@@ -3,7 +3,7 @@
 #include <complex>
 #include <vector>
 
-namespace kissfft_utils {
+namespace qmkissfft_utils {
 
 template <typename T_scalar>
 struct traits
@@ -55,16 +55,16 @@ struct traits
 }
 
 template <typename T_Scalar,
-         typename T_traits=kissfft_utils::traits<T_Scalar> 
+         typename T_traits=qmkissfft_utils::traits<T_Scalar> 
          >
-class kissfft
+class qmkissfft
 {
     public:
         typedef T_traits traits_type;
         typedef typename traits_type::scalar_type scalar_type;
         typedef typename traits_type::cpx_type cpx_type;
 
-        kissfft(int nfft,bool inverse,const traits_type & traits=traits_type() ) 
+        qmkissfft(int nfft,bool inverse,const traits_type & traits=traits_type() ) 
             :_nfft(nfft),_inverse(inverse),_traits(traits)
         {
             _traits.prepare(_twiddles, _nfft,_inverse ,_stageRadix, _stageRemainder);
@@ -111,7 +111,7 @@ class kissfft
             }
         }
 
-        // these were #define macros in the original kiss_fft
+        // these were #define macros in the original qm_kiss_fft
         void C_ADD( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a+b;}
         void C_MUL( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a*b;}
         void C_SUB( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a-b;}

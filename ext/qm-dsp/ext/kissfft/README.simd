@@ -1,4 +1,4 @@
-If you are reading this, it means you think you may be interested in using the SIMD extensions in kissfft 
+If you are reading this, it means you think you may be interested in using the SIMD extensions in qmkissfft 
 to do 4 *separate* FFTs at once.
 
 Beware! Beyond here there be dragons!
@@ -23,13 +23,13 @@ Compile with gcc flags something like
 -O3 -mpreferred-stack-boundary=4  -DUSE_SIMD=1 -msse 
 
 Be aware of SIMD alignment.  This is the most likely cause of segfaults.  
-The code within kissfft uses scratch variables on the stack.  
+The code within qmkissfft uses scratch variables on the stack.  
 With SIMD, these must have addresses on 16 byte boundaries.  
 Search on "SIMD alignment" for more info.
 
 
 
-Robin at Divide Concept was kind enough to share his code for formatting to/from the SIMD kissfft.  
+Robin at Divide Concept was kind enough to share his code for formatting to/from the SIMD qmkissfft.  
 I have not run it -- use it at your own risk.  It appears to do 4xN and Nx4 transpositions 
 (out of place).
 

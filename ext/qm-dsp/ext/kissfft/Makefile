@@ -2,9 +2,9 @@ KFVER=130
 
 doc:
 	@echo "Start by reading the README file.  If you want to build and test lots of stuff, do a 'make testall'"
-	@echo "but be aware that 'make testall' has dependencies that the basic kissfft software does not."
+	@echo "but be aware that 'make testall' has dependencies that the basic qmkissfft software does not."
 	@echo "It is generally unneeded to run these tests yourself, unless you plan on changing the inner workings"
-	@echo "of kissfft and would like to make use of its regression tests."
+	@echo "of qmkissfft and would like to make use of its regression tests."
 
 testall:
 	# The simd and int32_t types may or may not work on your machine 
@@ -16,18 +16,18 @@ testall:
 	echo "all tests passed"
 
 tarball: clean
-	hg archive -r v$(KFVER) -t tgz kiss_fft$(KFVER).tar.gz 
-	hg archive -r v$(KFVER) -t zip kiss_fft$(KFVER).zip
+	hg archive -r v$(KFVER) -t tgz qm_kiss_fft$(KFVER).tar.gz 
+	hg archive -r v$(KFVER) -t zip qm_kiss_fft$(KFVER).zip
 
 clean:
 	cd test && make clean
 	cd tools && make clean
-	rm -f kiss_fft*.tar.gz *~ *.pyc kiss_fft*.zip 
+	rm -f qm_kiss_fft*.tar.gz *~ *.pyc qm_kiss_fft*.zip 
 
-asm: kiss_fft.s
+asm: qm_kiss_fft.s
 
-kiss_fft.s: kiss_fft.c kiss_fft.h _kiss_fft_guts.h
-	[ -e kiss_fft.s ] && mv kiss_fft.s kiss_fft.s~ || true
-	gcc -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -unroll-loops -dA -fverbose-asm 
-	gcc -o kiss_fft_short.s -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -dA -fverbose-asm -DFIXED_POINT
-	[ -e kiss_fft.s~ ] && diff kiss_fft.s~ kiss_fft.s || true
+qm_kiss_fft.s: qm_kiss_fft.c qm_kiss_fft.h _qm_kiss_fft_guts.h
+	[ -e qm_kiss_fft.s ] && mv qm_kiss_fft.s qm_kiss_fft.s~ || true
+	gcc -S qm_kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -unroll-loops -dA -fverbose-asm 
+	gcc -o qm_kiss_fft_short.s -S qm_kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -dA -fverbose-asm -DFIXED_POINT
+	[ -e qm_kiss_fft.s~ ] && diff qm_kiss_fft.s~ qm_kiss_fft.s || true

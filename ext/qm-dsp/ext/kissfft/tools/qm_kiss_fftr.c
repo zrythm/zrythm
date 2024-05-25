@@ -12,22 +12,22 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "kiss_fftr.h"
-#include "_kiss_fft_guts.h"
+#include "qm_kiss_fftr.h"
+#include "_qm_kiss_fft_guts.h"
 
-struct kiss_fftr_state{
-    kiss_fft_cfg substate;
-    kiss_fft_cpx * tmpbuf;
-    kiss_fft_cpx * super_twiddles;
+struct qm_kiss_fftr_state{
+    qm_kiss_fft_cfg substate;
+    qm_kiss_fft_cpx * tmpbuf;
+    qm_kiss_fft_cpx * super_twiddles;
 #ifdef USE_SIMD
     void * pad;
 #endif
 };
 
-kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem)
+qm_kiss_fftr_cfg qm_kiss_fftr_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem)
 {
     int i;
-    kiss_fftr_cfg st = NULL;
+    qm_kiss_fftr_cfg st = NULL;
     size_t subsize, memneeded;
 
     if (nfft & 1) {
@@ -36,23 +36,23 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem,size_t * lenme
     }
     nfft >>= 1;
 
-    kiss_fft_alloc (nfft, inverse_fft, NULL, &subsize);
-    memneeded = sizeof(struct kiss_fftr_state) + subsize + sizeof(kiss_fft_cpx) * ( nfft * 3 / 2);
+    qm_kiss_fft_alloc (nfft, inverse_fft, NULL, &subsize);
+    memneeded = sizeof(struct qm_kiss_fftr_state) + subsize + sizeof(qm_kiss_fft_cpx) * ( nfft * 3 / 2);
 
     if (lenmem == NULL) {
-        st = (kiss_fftr_cfg) KISS_FFT_MALLOC (memneeded);
+        st = (qm_kiss_fftr_cfg) KISS_FFT_MALLOC (memneeded);
     } else {
         if (*lenmem >= memneeded)
-            st = (kiss_fftr_cfg) mem;
+            st = (qm_kiss_fftr_cfg) mem;
         *lenmem = memneeded;
     }
     if (!st)
         return NULL;
 
-    st->substate = (kiss_fft_cfg) (st + 1); /*just beyond kiss_fftr_state struct */
-    st->tmpbuf = (kiss_fft_cpx *) (((char *) st->substate) + subsize);
+    st->substate = (qm_kiss_fft_cfg) (st + 1); /*just beyond qm_kiss_fftr_state struct */
+    st->tmpbuf = (qm_kiss_fft_cpx *) (((char *) st->substate) + subsize);
     st->super_twiddles = st->tmpbuf + nfft;
-    kiss_fft_alloc(nfft, inverse_fft, st->substate, &subsize);
+    qm_kiss_fft_alloc(nfft, inverse_fft, st->substate, &subsize);
 
     for (i = 0; i < nfft/2; ++i) {
         double phase =
@@ -64,11 +64,11 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem,size_t * lenme
     return st;
 }
 
-void kiss_fftr(kiss_fftr_cfg st,const kiss_fft_scalar *timedata,kiss_fft_cpx *freqdata)
+void qm_kiss_fftr(qm_kiss_fftr_cfg st,const qm_kiss_fft_scalar *timedata,qm_kiss_fft_cpx *freqdata)
 {
     /* input buffer timedata is stored row-wise */
     int k,ncfft;
-    kiss_fft_cpx fpnk,fpk,f1k,f2k,tw,tdc;
+    qm_kiss_fft_cpx fpnk,fpk,f1k,f2k,tw,tdc;
 
     if ( st->substate->inverse) {
         fprintf(stderr,"kiss fft usage error: improper alloc\n");
@@ -78,7 +78,7 @@ void kiss_fftr(kiss_fftr_cfg st,const kiss_fft_scalar *timedata,kiss_fft_cpx *fr
     ncfft = st->substate->nfft;
 
     /*perform the parallel fft of two real signals packed in real,imag*/
-    kiss_fft( st->substate , (const kiss_fft_cpx*)timedata, st->tmpbuf );
+    qm_kiss_fft( st->substate , (const qm_kiss_fft_cpx*)timedata, st->tmpbuf );
     /* The real part of the DC element of the frequency spectrum in st->tmpbuf
      * contains the sum of the even-numbered elements of the input time sequence
      * The imag part is the sum of the odd-numbered elements
@@ -120,7 +120,7 @@ void kiss_fftr(kiss_fftr_cfg st,const kiss_fft_scalar *timedata,kiss_fft_cpx *fr
     }
 }
 
-void kiss_fftri(kiss_fftr_cfg st,const kiss_fft_cpx *freqdata,kiss_fft_scalar *timedata)
+void qm_kiss_fftri(qm_kiss_fftr_cfg st,const qm_kiss_fft_cpx *freqdata,qm_kiss_fft_scalar *timedata)
 {
     /* input buffer timedata is stored row-wise */
     int k, ncfft;
@@ -137,7 +137,7 @@ void kiss_fftri(kiss_fftr_cfg st,const kiss_fft_cpx *freqdata,kiss_fft_scalar *t
     C_FIXDIV(st->tmpbuf[0],2);
 
     for (k = 1; k <= ncfft / 2; ++k) {
-        kiss_fft_cpx fk, fnkc, fek, fok, tmp;
+        qm_kiss_fft_cpx fk, fnkc, fek, fok, tmp;
         fk = freqdata[k];
         fnkc.r = freqdata[ncfft - k].r;
         fnkc.i = -freqdata[ncfft - k].i;
@@ -155,5 +155,5 @@ void kiss_fftri(kiss_fftr_cfg st,const kiss_fft_cpx *freqdata,kiss_fft_scalar *t
         st->tmpbuf[ncfft - k].i *= -1;
 #endif
     }
-    kiss_fft (st->substate, st->tmpbuf, (kiss_fft_cpx *) timedata);
+    qm_kiss_fft (st->substate, st->tmpbuf, (qm_kiss_fft_cpx *) timedata);
 }

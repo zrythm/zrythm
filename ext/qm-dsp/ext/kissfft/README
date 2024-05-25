@@ -10,15 +10,15 @@ USAGE:
 
     The basic usage for 1-d complex FFT is:
 
-        #include "kiss_fft.h"
+        #include "qm_kiss_fft.h"
 
-        kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
+        qm_kiss_fft_cfg cfg = qm_kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
 
         while ...
         
             ... // put kth sample in cx_in[k].r and cx_in[k].i
             
-            kiss_fft( cfg , cx_in , cx_out );
+            qm_kiss_fft( cfg , cx_in , cx_out );
             
             ... // transformed. DC is in cx_out[0].r and cx_out[0].i 
             
@@ -28,10 +28,10 @@ USAGE:
     so cx_out[0] is the dc bin of the FFT
     and cx_out[nfft/2] is the Nyquist bin (if exists)
 
-    Declarations are in "kiss_fft.h", along with a brief description of the 
+    Declarations are in "qm_kiss_fft.h", along with a brief description of the 
 functions you'll need to use. 
 
-Code definitions for 1d complex FFTs are in kiss_fft.c.
+Code definitions for 1d complex FFTs are in qm_kiss_fft.c.
 
 You can do other cool stuff with the extras you'll find in tools/
 
@@ -57,9 +57,9 @@ a well respected and highly optimized fft library.  I don't want to criticize
 this great library, so let's call it FFT_BRANDX.
 During this process, I learned:
 
-    1. FFT_BRANDX has more than 100K lines of code. The core of kiss_fft is about 500 lines (cpx 1-d).
+    1. FFT_BRANDX has more than 100K lines of code. The core of qm_kiss_fft is about 500 lines (cpx 1-d).
     2. It took me an embarrassingly long time to get FFT_BRANDX working.
-    3. A simple program using FFT_BRANDX is 522KB. A similar program using kiss_fft is 18KB (without optimizing for size).
+    3. A simple program using FFT_BRANDX is 522KB. A similar program using qm_kiss_fft is 18KB (without optimizing for size).
     4. FFT_BRANDX is roughly twice as fast as KISS FFT in default mode.
 
     It is wonderful that free, highly optimized libraries like FFT_BRANDX exist.
@@ -69,14 +69,14 @@ last bit of performance.
     Sometimes simpler is better, even if it's not better.
 
 FREQUENTLY ASKED QUESTIONS:
-	Q: Can I use kissfft in a project with a ___ license?
+	Q: Can I use qmkissfft in a project with a ___ license?
 	A: Yes.  See LICENSE below.
 
 	Q: Why don't I get the output I expect?
 	A: The two most common causes of this are 
 		1) scaling : is there a constant multiplier between what you got and what you want?
 		2) mixed build environment -- all code must be compiled with same preprocessor 
-		definitions for FIXED_POINT and kiss_fft_scalar
+		definitions for FIXED_POINT and qm_kiss_fft_scalar
 
 	Q: Will you write/debug my code for me?
 	A: Probably not unless you pay me.  I am happy to answer pointed and topical questions, but 
@@ -100,7 +100,7 @@ UNDER THE HOOD:
     Kiss FFT uses a time decimation, mixed-radix, out-of-place FFT. If you give it an input buffer  
     and output buffer that are the same, a temporary buffer will be created to hold the data.
 
-    No static data is used.  The core routines of kiss_fft are thread-safe (but not all of the tools directory).
+    No static data is used.  The core routines of qm_kiss_fft are thread-safe (but not all of the tools directory).
 
     No scaling is done for the floating point version (for speed).  
     Scaling is done both ways for the fixed-point version (for overflow prevention).

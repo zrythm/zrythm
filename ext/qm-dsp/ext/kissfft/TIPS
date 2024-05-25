@@ -11,7 +11,7 @@ Speed:
                 -ffast-math
                 -fomit-frame-pointer
 
-    * If the input data has no imaginary component, use the kiss_fftr code under tools/.
+    * If the input data has no imaginary component, use the qm_kiss_fftr code under tools/.
       Real ffts are roughly twice as fast as complex.
 
     * If you can rearrange your code to do 4 FFTs in parallel and you are on a recent Intel or AMD machine,
@@ -26,7 +26,7 @@ Reducing code size:
         know what you find.
 
     * For platforms where ROM/code space is more plentiful than RAM,
-     consider creating a hardcoded kiss_fft_state. In other words, decide which 
+     consider creating a hardcoded qm_kiss_fft_state. In other words, decide which 
      FFT size(s) you want and make a structure with the correct factors and twiddles.
 
     * Frank van der Hulst offered numerous suggestions for smaller code size and correct operation 

@@ -41,7 +41,7 @@ this distribution for more information.
 This code is Copyright (c) 2006-2019 Queen Mary, University of London,
 with the following exceptions:
 
- - `ext/kissfft` - Copyright (c) 2003-2010 Mark Borgerding
+ - `ext/qmkissfft` - Copyright (c) 2003-2010 Mark Borgerding
 
  - `maths/pca/pca.c` - Fionn Murtagh, from StatLib, used with permission
 

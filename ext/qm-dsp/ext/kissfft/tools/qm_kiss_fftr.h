@@ -1,7 +1,7 @@
 #ifndef KISS_FTR_H
 #define KISS_FTR_H
 
-#include "kiss_fft.h"
+#include "qm_kiss_fft.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,10 +15,10 @@ extern "C" {
  
  */
 
-typedef struct kiss_fftr_state *kiss_fftr_cfg;
+typedef struct qm_kiss_fftr_state *qm_kiss_fftr_cfg;
 
 
-kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem, size_t * lenmem);
+qm_kiss_fftr_cfg qm_kiss_fftr_alloc(int nfft,int inverse_fft,void * mem, size_t * lenmem);
 /*
  nfft must be even
 
@@ -26,19 +26,19 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem, size_t * lenm
 */
 
 
-void kiss_fftr(kiss_fftr_cfg cfg,const kiss_fft_scalar *timedata,kiss_fft_cpx *freqdata);
+void qm_kiss_fftr(qm_kiss_fftr_cfg cfg,const qm_kiss_fft_scalar *timedata,qm_kiss_fft_cpx *freqdata);
 /*
  input timedata has nfft scalar points
  output freqdata has nfft/2+1 complex points
 */
 
-void kiss_fftri(kiss_fftr_cfg cfg,const kiss_fft_cpx *freqdata,kiss_fft_scalar *timedata);
+void qm_kiss_fftri(qm_kiss_fftr_cfg cfg,const qm_kiss_fft_cpx *freqdata,qm_kiss_fft_scalar *timedata);
 /*
  input freqdata has  nfft/2+1 complex points
  output timedata has nfft scalar points
 */
 
-#define kiss_fftr_free free
+#define qm_kiss_fftr_free free
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,7 @@ qm_dsp_inc = include_directories ('.')
 
 qm_dsp_lib_c_args = [
   '-DNDEBUG',
-  '-Dkiss_fft_scalar=double',
+  '-Dqm_kiss_fft_scalar=double',
   '-Wall',
   '-Wextra',
   '-O3',
@@ -32,14 +32,12 @@ qm_dsp_lib = static_library (
   'dsp/tempotracking/TempoTrack.cpp',
   'dsp/tempotracking/TempoTrackV2.cpp',
   'dsp/transforms/FFT.cpp',
-  'ext/kissfft/kiss_fft.c',
-  'ext/kissfft/tools/kiss_fftr.c',
+  'ext/kissfft/qm_kiss_fft.c',
+  'ext/kissfft/tools/qm_kiss_fftr.c',
   'maths/Correlation.cpp',
   'maths/MathUtilities.cpp',
   c_args: qm_dsp_lib_c_args,
-  cpp_args: [
-    '-Dkiss_fft_scalar=double',
-    ],
+  cpp_args: qm_dsp_lib_c_args,
   pic: true,
   include_directories: [
     qm_dsp_inc,

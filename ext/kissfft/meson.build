@@ -9,5 +9,7 @@ kissfft_lib = static_library (
     '-O3',
     extra_optimizations_cflags,
     extra_extra_optimizations_cflags,
+    # recommended by kissfft's TIPS.md
+    '-fomit-frame-pointer',
     ],
   )
