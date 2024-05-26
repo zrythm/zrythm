@@ -13,6 +13,7 @@ juce_srcs = [
 juce_cpp_public_args = [
   '-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1',
   '-DJUCE_DEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
+  '-DDEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
   ]
 
 juce_cpp_private_args = [
@@ -29,6 +30,8 @@ if os_darwin
       'foundation',
       'cocoa',
       'appkit',
+      'iokit',
+      'security',
       ])
 elif os_windows
   # build fails without this

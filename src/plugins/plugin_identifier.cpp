@@ -5,6 +5,7 @@
 
 #include "plugins/plugin_identifier.h"
 #include "utils/debug.h"
+#include "utils/types.h"
 
 #include <glib.h>
 
