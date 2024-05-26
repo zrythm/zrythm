@@ -114,7 +114,7 @@ file_symlink (const char * old_path, const char * new_path)
 {
   int ret = 0;
 #ifdef _WIN32
-  ret = !CreateHardLink (new_path, old_path, 0);
+  ret = !CreateHardLink ((LPCSTR) new_path, (LPCSTR) old_path, 0);
 #else
   char * target = file_path_relative_to (old_path, new_path);
   ret = symlink (target, new_path);
