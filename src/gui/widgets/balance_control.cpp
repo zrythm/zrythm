@@ -78,7 +78,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (pan_val < 0.5f)
     {
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           value_px, 0.f, (float) half_width - value_px, (float) height);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
@@ -86,7 +86,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   else
     {
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           half_width, 0.f, value_px - (float) half_width, (float) height);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
@@ -101,7 +101,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   const int line_width = 2;
   {
     graphene_rect_t tmp_r =
-      GRAPHENE_RECT_INIT (value_px, 0.f, (float) line_width, (float) height);
+      Z_GRAPHENE_RECT_INIT (value_px, 0.f, (float) line_width, (float) height);
     gtk_snapshot_append_color (snapshot, &color, &tmp_r);
   }
 
@@ -116,7 +116,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       TEXT_PADDING, (float) height / 2.f - (float) pangorect.height / 2.f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
@@ -128,7 +128,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       (float) width - ((float) TEXT_PADDING + (float) pangorect.width),
       (float) height / 2.f - (float) pangorect.height / 2.f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
@@ -148,7 +148,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       float   start_y = height / 2.f - y_px / 2.f;
       GdkRGBA text_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (start_x, start_y);
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (start_x, start_y);
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
       gtk_snapshot_append_layout (snapshot, self->layout, &text_color);

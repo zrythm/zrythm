@@ -290,10 +290,10 @@ timeline_arranger_widget_create_chord_or_scale (
   int track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
 
 #if 0
-  graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+  graphene_point_t wpt = Z_GRAPHENE_POINT_INIT (0.f, 0.f);
   gtk_widget_compute_point (
     GTK_WIDGET (self), GTK_WIDGET (track->widget),
-    &Z_GRAPHENE_POINT_INIT (0.f, (float) y),
+    &Z_Z_GRAPHENE_POINT_INIT (0.f, (float) y),
     &wpt);
 #endif
 

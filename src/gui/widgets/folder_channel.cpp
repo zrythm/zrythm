@@ -61,7 +61,7 @@ folder_channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         track->color.red, track->color.green, track->color.blue, 0.15f);
       {
         graphene_rect_t tmp_r =
-          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+          Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
         gtk_snapshot_append_color (snapshot, &tint_color, &tmp_r);
       }
     }

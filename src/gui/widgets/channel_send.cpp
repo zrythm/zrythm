@@ -60,7 +60,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* fill background */
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f);
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) padding, (float) padding,
           (float) width - (float) padding * 2.f,
           (float) height - (float) padding * 2.f);
@@ -73,7 +73,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) (width / 2 - w / 2), (float) (height / 2 - h / 2));
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
@@ -100,7 +100,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       GdkRGBA bg_color = bg;
       bg_color.alpha = 0.4f;
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) padding, (float) padding,
           (float) width - (float) padding * 2.f,
           (float) height - (float) padding * 2.f);
@@ -112,7 +112,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       float amount =
         channel_send_get_amount_for_widgets (self->send) * (float) width;
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) padding, (float) padding, amount - (float) padding * 2.f,
           (float) height - (float) padding * 2);
         gtk_snapshot_append_color (snapshot, &bg_color, &tmp_r);
@@ -124,7 +124,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) (width / 2 - w / 2), (float) (height / 2 - h / 2));
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }

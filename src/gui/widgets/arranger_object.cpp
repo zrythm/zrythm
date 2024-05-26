@@ -481,10 +481,10 @@ arranger_object_set_full_rectangle (
             self->full_rect.width = 1;
           }
 
-        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+        graphene_point_t wpt = Z_GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0, 0);
             bool             success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget),
               arranger->is_pinned
@@ -579,10 +579,10 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_CHORD_TRACK;
 
-        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+        graphene_point_t wpt = Z_GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0, 0);
             bool             success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget), (GtkWidget *) (arranger), &tmp_pt,
               &wpt);
@@ -611,10 +611,10 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_MARKER_TRACK;
 
-        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+        graphene_point_t wpt = Z_GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+            graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0, 0);
             bool             success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget), (GtkWidget *) (arranger), &tmp_pt,
               &wpt);

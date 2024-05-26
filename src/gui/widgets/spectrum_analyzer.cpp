@@ -299,14 +299,14 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
                 (j - freqPos) / (float) freqDelta));
               /*fScrollingTexture.drawPixelOnCurrentLine(j, lerpedColor);*/
               const float     px_amt = (float) height * lerped_amt;
-              graphene_rect_t draw_rect = GRAPHENE_RECT_INIT (
+              graphene_rect_t draw_rect = Z_GRAPHENE_RECT_INIT (
                 (float) j, (float) height - px_amt, 1, px_amt);
               gtk_snapshot_append_color (snapshot, &color_green, &draw_rect);
             }
         }
 
       const float     px_amt = (float) height * amp;
-      graphene_rect_t draw_rect = GRAPHENE_RECT_INIT (
+      graphene_rect_t draw_rect = Z_GRAPHENE_RECT_INIT (
         (float) freqPos, (float) height - px_amt, 1, px_amt);
       gtk_snapshot_append_color (snapshot, &color_green, &draw_rect);
 

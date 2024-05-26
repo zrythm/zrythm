@@ -141,7 +141,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
               color = UI_COLORS->highlight_bass_bg;
 
               {
-                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   0, (127 - i) * px_per_key, label_width, px_per_key);
                 gtk_snapshot_append_color (snapshot, &color, &tmp_r);
               }
@@ -160,7 +160,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
               color = UI_COLORS->highlight_both_bg;
 
               {
-                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   0, (127 - i) * px_per_key, label_width, px_per_key);
                 gtk_snapshot_append_color (snapshot, &color, &tmp_r);
               }
@@ -210,7 +210,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           if (has_color)
             {
               {
-                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   0, (127 - i) * px_per_key, label_width, px_per_key);
                 gtk_snapshot_append_color (snapshot, &color, &tmp_r);
               }
@@ -234,7 +234,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             (px_per_key - (float) hh) / 2.f;
           gtk_snapshot_save (snapshot);
           {
-            graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (4, text_y_start);
+            graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (4, text_y_start);
             gtk_snapshot_translate (snapshot, &tmp_pt);
           }
           GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
@@ -253,7 +253,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       else
         color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           label_width, (127 - i) * px_per_key, key_width, px_per_key);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
@@ -269,7 +269,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             cr, 0.101961, 0.63922, 1, 1);
 #endif
           {
-            graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+            graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
               label_width + 4, (127 - i) * px_per_key, key_width - 4,
               px_per_key);
             gtk_snapshot_append_color (snapshot, &color, &tmp_r);
@@ -280,7 +280,8 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       float y = (float) ((127 - i) + 1) * px_per_key;
       color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0.f, y, (float) width, 1.f);
+        graphene_rect_t tmp_r =
+          Z_GRAPHENE_RECT_INIT (0.f, y, (float) width, 1.f);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
     }

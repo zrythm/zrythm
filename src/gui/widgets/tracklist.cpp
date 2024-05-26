@@ -179,7 +179,7 @@ on_dnd_motion (
   if (hit_tw)
     {
       graphene_point_t wpt;
-      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) x, (float) y);
+      graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (hit_tw), &tmp_pt, &wpt);
       g_return_val_if_fail (success, GDK_ACTION_ASK);
@@ -193,7 +193,7 @@ on_dnd_motion (
       GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll), 1, 1, x, y, 0, 1))
     {
       graphene_point_t wpt;
-      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) x, (float) y);
+      graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll), &tmp_pt, &wpt);
       g_return_val_if_fail (success, GDK_ACTION_ASK);
@@ -388,7 +388,7 @@ on_dnd_drop (
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
   graphene_point_t wpt;
-  graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) x, (float) y);
+  graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (self), GTK_WIDGET (hit_tw), &tmp_pt, &wpt);
   g_return_val_if_fail (success, false);

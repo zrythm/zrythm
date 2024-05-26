@@ -67,10 +67,10 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* used to stretch the gradient a little bit to make it look alive */
   float           value_px_for_gradient = (1 - value_px) * 0.02f;
   graphene_rect_t tmp_r =
-    GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px);
-  graphene_point_t tmp_pt1 = GRAPHENE_POINT_INIT (0, width);
+    Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, value_px);
+  graphene_point_t tmp_pt1 = Z_GRAPHENE_POINT_INIT (0, width);
   graphene_point_t tmp_pt2 =
-    GRAPHENE_POINT_INIT (0, height - value_px_for_gradient);
+    Z_GRAPHENE_POINT_INIT (0, height - value_px_for_gradient);
   gtk_snapshot_append_linear_gradient (
     snapshot, &tmp_r, &tmp_pt1, &tmp_pt2, stops, G_N_ELEMENTS (stops));
 
@@ -78,7 +78,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1);
   {
     graphene_rect_t tmp_r =
-      GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1);
+      Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1);
     gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
   }
 
@@ -104,7 +104,8 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   float peak_px = peak * height;
   {
-    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2);
+    graphene_rect_t tmp_r =
+      Z_GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2);
     gtk_snapshot_append_color (snapshot, &color, &tmp_r);
   }
 

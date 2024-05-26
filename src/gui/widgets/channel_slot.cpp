@@ -125,7 +125,7 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       pango_layout_set_markup (self->txt_layout, txt, -1);
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f);
         gtk_snapshot_translate (snapshot, &tmp_pt);
@@ -160,7 +160,7 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       pango_layout_set_markup (self->txt_layout, txt, -1);
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f);
         gtk_snapshot_translate (snapshot, &tmp_pt);

@@ -46,8 +46,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
    * draw */
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt =
-      GRAPHENE_POINT_INIT ((float) obj->full_rect.x, (float) obj->full_rect.y);
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
+      (float) obj->full_rect.x, (float) obj->full_rect.y);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
 
@@ -57,7 +57,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
 
   /* draw line */
   {
-    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
       (float) obj->full_rect.width / 2.f - VELOCITY_LINE_WIDTH / 2.f,
       (float) circle_radius, VELOCITY_LINE_WIDTH, (float) obj->full_rect.height);
     gtk_snapshot_append_color (snapshot, &color, &tmp_r);
@@ -73,12 +73,12 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
    */
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (-0.5f, -0.5f);
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (-0.5f, -0.5f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
   float           circle_angle = 2.f * (float) M_PI;
   GskRoundedRect  rounded_rect;
-  graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+  graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
     0.f, 0.f, (float) circle_radius * 2.f + 1.f,
     (float) circle_radius * 2.f + 1.f);
   gsk_rounded_rect_init_from_rect (&rounded_rect, &tmp_r, circle_angle);
@@ -107,7 +107,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       gtk_snapshot_save (snapshot);
       {
         graphene_point_t tmp_pt =
-          GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y);
+          Z_GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y);
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
       PangoLayout * layout = arranger->vel_layout;

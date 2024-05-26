@@ -41,7 +41,7 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       GskRoundedRect  rounded_rect;
       graphene_rect_t graphene_rect =
-        GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
       gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
       const float border_width = 1.f;
       GdkRGBA     border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
@@ -76,7 +76,7 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       {
         graphene_rect_t tmp_r =
-          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+          Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
         gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
       }
 
@@ -103,7 +103,7 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           if (self->animation == MidiActivityBarAnimation::MAB_ANIMATION_BAR)
             {
               {
-                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   0.f, (float) height * ((float) time_diff / (float) MAX_TIME),
                   (float) width, (float) height);
                 gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
@@ -114,8 +114,8 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             {
               other_color.alpha = 1.f - (float) time_diff / (float) MAX_TIME;
               {
-                graphene_rect_t tmp_r =
-                  GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+                  0.f, 0.f, (float) width, (float) height);
                 gtk_snapshot_append_color (snapshot, &other_color, &tmp_r);
               }
             }

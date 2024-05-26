@@ -28,37 +28,32 @@
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>
 
-/**
- * Initializes settings.
- */
-Settings *
-settings_new (void)
+void
+Settings::init ()
 {
-  Settings * self = object_new (Settings);
-
   if (ZRYTHM_TESTING)
     {
-      return self;
+      return;
     }
 
-  self->general = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
-  self->export_audio = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.audio");
-  self->export_midi = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.midi");
-  self->monitor = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".monitor");
-  self->ui = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui");
-  self->ui_inspector = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
-  self->ui_mixer = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.mixer");
-  self->ui_plugin_browser =
+  this->general = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
+  this->export_audio = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.audio");
+  this->export_midi = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.midi");
+  this->monitor = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".monitor");
+  this->ui = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui");
+  this->ui_inspector = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
+  this->ui_mixer = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.mixer");
+  this->ui_plugin_browser =
     g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.plugin-browser");
-  self->ui_panels = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.panels");
-  self->ui_file_browser =
+  this->ui_panels = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.panels");
+  this->ui_file_browser =
     g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.file-browser");
-  self->transport = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".transport");
+  this->transport = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".transport");
 
 #define PREFERENCES_PREFIX GSETTINGS_ZRYTHM_PREFIX ".preferences."
 #define NEW_PREFERENCES_SETTINGS(a, b) \
-  self->preferences_##a##_##b = g_settings_new (PREFERENCES_PREFIX #a "." #b); \
-  g_return_val_if_fail (self->preferences_##a##_##b, NULL)
+  this->preferences_##a##_##b = g_settings_new (PREFERENCES_PREFIX #a "." #b); \
+  g_return_if_fail (this->preferences_##a##_##b)
 
   NEW_PREFERENCES_SETTINGS (dsp, pan);
   NEW_PREFERENCES_SETTINGS (editing, audio);
@@ -74,8 +69,8 @@ settings_new (void)
 
 #undef PREFERENCES_PREFIX
 
-  g_return_val_if_fail (
-    self->general && self->export_audio && self->ui && self->ui_inspector, NULL);
+  g_return_if_fail (
+    this->general && this->export_audio && this->ui && this->ui_inspector);
 
 #if 0
   /* plugin settings */
@@ -84,24 +79,22 @@ settings_new (void)
       "/filesystem/path/plugin-settings.ini",
       "/",
       NULL);
-  self->plugin_settings =
+  this->plugin_settings =
     g_settings_new_with_backend (
       GSETTINGS_ZRYTHM_PREFIX ".plugin-settings",
       psettings_backend);
   g_settings_set_boolean (
-    self->plugin_settings, "loop", 1);
+    this->plugin_settings, "loop", 1);
 #endif
 
-  self->plugin_settings = plugin_settings_read_or_new ();
-  g_return_val_if_fail (self->plugin_settings, NULL);
+  this->plugin_settings = plugin_settings_read_or_new ();
+  g_return_if_fail (this->plugin_settings);
 
-  self->user_shortcuts = user_shortcuts_new ();
-  if (!self->user_shortcuts)
+  this->user_shortcuts = user_shortcuts_new ();
+  if (!this->user_shortcuts)
     {
       g_warning ("failed to parse user shortcuts");
     }
-
-  return self;
 }
 
 static int
@@ -447,10 +440,9 @@ settings_append_to_strv (
 /**
  * Frees settings.
  */
-void
-settings_free (Settings * self)
+Settings::~Settings ()
 {
-#define FREE_SETTING(x) g_object_unref_and_null (self->x)
+#define FREE_SETTING(x) g_object_unref_and_null (this->x)
 
   FREE_SETTING (general);
   FREE_SETTING (preferences_dsp_pan);
@@ -477,8 +469,6 @@ settings_free (Settings * self)
 
 #undef FREE_SETTING
 
-  object_free_w_func_and_null (plugin_settings_free, self->plugin_settings);
-  object_free_w_func_and_null (user_shortcuts_free, self->user_shortcuts);
-
-  object_zero_and_free (self);
+  object_free_w_func_and_null (plugin_settings_free, this->plugin_settings);
+  object_free_w_func_and_null (user_shortcuts_free, this->user_shortcuts);
 }

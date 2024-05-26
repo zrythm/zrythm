@@ -27,10 +27,10 @@ typedef struct EventManager           EventManager;
 typedef struct PluginManager          PluginManager;
 typedef struct FileManager            FileManager;
 typedef struct ChordPresetPackManager ChordPresetPackManager;
-typedef struct Settings               Settings;
-typedef struct Log                    Log;
-typedef struct CairoCaches            CairoCaches;
-typedef struct PCGRand                PCGRand;
+class Settings;
+typedef struct Log         Log;
+typedef struct CairoCaches CairoCaches;
+typedef struct PCGRand     PCGRand;
 class StringArray;
 
 /**
@@ -316,7 +316,7 @@ public:
   /**
    * Application settings
    */
-  Settings * settings = nullptr;
+  std::unique_ptr<Settings> settings;
 
   /**
    * Project data.

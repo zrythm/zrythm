@@ -58,7 +58,7 @@ marker_draw (Marker * self, GtkSnapshot * snapshot)
 
   /* create clip */
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
     (float) obj->full_rect.x, (float) obj->full_rect.y,
     (float) obj->full_rect.width, (float) obj->full_rect.height);
   gsk_rounded_rect_init_from_rect (
@@ -75,7 +75,7 @@ marker_draw (Marker * self, GtkSnapshot * snapshot)
 
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       (float) obj->full_rect.x + MARKER_NAME_PADDING,
       (float) obj->full_rect.y + MARKER_NAME_PADDING);
     gtk_snapshot_translate (snapshot, &tmp_pt);

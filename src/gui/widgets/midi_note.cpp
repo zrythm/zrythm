@@ -69,7 +69,7 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
 
   /* create clip */
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
     (float) full_rect.x, (float) full_rect.y, (float) full_rect.width,
     (float) full_rect.height);
   if (drum_mode)
@@ -107,7 +107,7 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
           gtk_snapshot_append_color (
             snapshot, &transparent_color, &graphene_rect);
           /* draw velocity-filled part */
-          graphene_rect_t graphene_vel_rect = GRAPHENE_RECT_INIT (
+          graphene_rect_t graphene_vel_rect = Z_GRAPHENE_RECT_INIT (
             (float) full_rect.x, (float) full_rect.y,
             (float) full_rect.width * ((float) self->vel->vel / 128.f),
             (float) full_rect.height);
@@ -143,7 +143,7 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
       recreate_pango_layouts (self, MIN (full_rect.width, 400));
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           REGION_NAME_BOX_PADDING + (float) full_rect.x,
           (float) (fontsize_ratio * REGION_NAME_BOX_PADDING
                    + (float) full_rect.y));

@@ -90,6 +90,14 @@ G_GNUC_END_IGNORE_DEPRECATIONS
     .x = _x, .y = _y, .width = 1, .height = 1 \
   }
 
+#define Z_GRAPHENE_RECT_INIT(_x, _y, _w, _h) \
+  GRAPHENE_RECT_INIT ( \
+    static_cast<float> (_x), static_cast<float> (_y), static_cast<float> (_w), \
+    static_cast<float> (_h))
+
+#define Z_GRAPHENE_POINT_INIT(_x, _y) \
+  GRAPHENE_POINT_INIT (static_cast<float> (_x), static_cast<float> (_y))
+
 /**
  * GObject struct (from GObject source code), used
  * where hacks are needed.

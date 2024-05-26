@@ -26,7 +26,7 @@ arranger_minimap_selection_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int height = gtk_widget_get_height (widget);
 
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
     0.f, PADDING, (float) width, (float) height - PADDING * 2.f);
   gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;

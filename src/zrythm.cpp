@@ -60,13 +60,14 @@ Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
   recent_projects_ = std::make_unique<StringArray> ();
 
   this->dir_mgr = std::make_unique<ZrythmDirectoryManager> ();
-  this->settings = settings_new ();
-  this->recording_manager = recording_manager_new ();
+  this->settings = std::make_unique<Settings> ();
 }
 
 void
 Zrythm::init (void)
 {
+  settings->init ();
+  this->recording_manager = recording_manager_new ();
   this->plugin_manager = plugin_manager_new ();
   this->file_manager = file_manager_new ();
   this->chord_preset_pack_manager =
@@ -615,8 +616,6 @@ Zrythm::~Zrythm ()
 
   object_free_w_func_and_null (symap_free, this->symap);
   object_free_w_func_and_null (symap_free, this->error_domain_symap);
-
-  object_free_w_func_and_null (settings_free, this->settings);
 
   object_free_w_func_and_null (g_strfreev, this->templates);
 

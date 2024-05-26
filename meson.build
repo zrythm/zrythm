@@ -756,6 +756,7 @@ test_strict_cflags = [
   '-Werror=lto-type-mismatch',
   '-Werror=odr',
   '-Werror=mismatched-tags',
+  '-Werror=narrowing',
   ]
 
 if is_gcc
@@ -1399,10 +1400,7 @@ root_doc_files = [
   'THANKS',
   ]
 foreach f : root_doc_files
-  configure_file (
-    copy: true,
-    input: f,
-    output: '@PLAINNAME@')
+  fs.copyfile(f)
 endforeach
 
 # create config.h

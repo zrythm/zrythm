@@ -58,7 +58,7 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
         continue;
 
       graphene_point_t wpt;
-      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0, 0);
+      graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0, 0);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (track->widget), GTK_WIDGET (MW_TRACKLIST->unpinned_box),
         &tmp_pt, &wpt);
@@ -83,7 +83,7 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
               int px_length = px_end - px_start;
 
               {
-                graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   ((float) px_start / (float) song_px) * (float) width,
                   ((float) wpt.y / (float) total_track_height) * (float) height,
                   ((float) px_length / (float) song_px) * (float) width,

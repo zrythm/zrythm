@@ -2629,7 +2629,8 @@ track_fill_events (
                 .g_start_frame = cur_g_start_frame,
                 .g_start_frame_w_offset = cur_g_start_frame_w_offset,
                 .local_offset = cur_local_start_frame,
-                .nframes = cur_num_frames_till_next_r_loop_or_end
+                .nframes = static_cast<nframes_t> (
+                  cur_num_frames_till_next_r_loop_or_end)
               };
 
               if (midi_events)

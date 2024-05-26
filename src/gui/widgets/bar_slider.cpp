@@ -139,7 +139,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       {
         graphene_rect_t tmp_r =
-          GRAPHENE_RECT_INIT (val_px, 0.f, zero_px - val_px, (float) height);
+          Z_GRAPHENE_RECT_INIT (val_px, 0.f, zero_px - val_px, (float) height);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
     }
@@ -148,7 +148,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       {
         graphene_rect_t tmp_r =
-          GRAPHENE_RECT_INIT (zero_px, 0.f, val_px - zero_px, (float) height);
+          Z_GRAPHENE_RECT_INIT (zero_px, 0.f, val_px - zero_px, (float) height);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
     }
@@ -195,7 +195,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int he = self->last_height_extent;
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       (float) width / 2.f - (float) we / 2.f,
       (float) height / 2.f - (float) he / 2.f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
@@ -209,7 +209,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.12f);
       {
         graphene_rect_t tmp_r =
-          GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+          Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
       }
     }

@@ -10,6 +10,7 @@
 #ifndef __SETTINGS_SETTINGS_H__
 #define __SETTINGS_SETTINGS_H__
 
+#include <memory>
 #include <stdbool.h>
 
 #include <gtk/gtk.h>
@@ -71,30 +72,39 @@ typedef struct UserShortcuts  UserShortcuts;
 
 #define S_USER_SHORTCUTS SETTINGS->user_shortcuts
 
-typedef struct Settings
+class Settings
 {
+public:
+  Settings (){};
+  ~Settings ();
+
+  /**
+   * Initializes settings.
+   */
+  void init ();
+
   /**
    * General settings, like recent projects list.
    */
-  GSettings * general;
+  GSettings * general = nullptr;
 
   /** All preferences_* settings are to be shown in
    * the preferences dialog. */
-  GSettings * preferences_dsp_pan;
-  GSettings * preferences_editing_audio;
-  GSettings * preferences_editing_automation;
-  GSettings * preferences_editing_undo;
-  GSettings * preferences_general_engine;
-  GSettings * preferences_general_paths;
-  GSettings * preferences_general_updates;
-  GSettings * preferences_plugins_uis;
-  GSettings * preferences_plugins_paths;
-  GSettings * preferences_projects_general;
-  GSettings * preferences_ui_general;
-  GSettings * preferences_scripting_general;
+  GSettings * preferences_dsp_pan = nullptr;
+  GSettings * preferences_editing_audio = nullptr;
+  GSettings * preferences_editing_automation = nullptr;
+  GSettings * preferences_editing_undo = nullptr;
+  GSettings * preferences_general_engine = nullptr;
+  GSettings * preferences_general_paths = nullptr;
+  GSettings * preferences_general_updates = nullptr;
+  GSettings * preferences_plugins_uis = nullptr;
+  GSettings * preferences_plugins_paths = nullptr;
+  GSettings * preferences_projects_general = nullptr;
+  GSettings * preferences_ui_general = nullptr;
+  GSettings * preferences_scripting_general = nullptr;
 
   /** Monitor settings. */
-  GSettings * monitor;
+  GSettings * monitor = nullptr;
 
   /**
    * UI memory.
@@ -103,30 +113,24 @@ typedef struct Settings
    * that do not appear in the preferences but are "silently"
    * remembered.
    */
-  GSettings * ui;
+  GSettings * ui = nullptr;
 
   /** Transport settings. */
-  GSettings * transport;
+  GSettings * transport = nullptr;
 
-  GSettings * export_audio;
-  GSettings * export_midi;
+  GSettings * export_audio = nullptr;
+  GSettings * export_midi = nullptr;
 
-  GSettings * ui_mixer;
-  GSettings * ui_inspector;
-  GSettings * ui_panels;
-  GSettings * ui_plugin_browser;
-  GSettings * ui_file_browser;
+  GSettings * ui_mixer = nullptr;
+  GSettings * ui_inspector = nullptr;
+  GSettings * ui_panels = nullptr;
+  GSettings * ui_plugin_browser = nullptr;
+  GSettings * ui_file_browser = nullptr;
 
-  PluginSettings * plugin_settings;
+  PluginSettings * plugin_settings = nullptr;
 
-  UserShortcuts * user_shortcuts;
-} Settings;
-
-/**
- * Initializes settings.
- */
-Settings *
-settings_new (void);
+  UserShortcuts * user_shortcuts = nullptr;
+};
 
 /**
  * Resets settings to defaults.
@@ -192,12 +196,6 @@ settings_get_summary (GSettings * settings, const char * key);
  */
 char *
 settings_get_description (GSettings * settings, const char * key);
-
-/**
- * Frees settings.
- */
-void
-settings_free (Settings * self);
 
 /**
  * @}

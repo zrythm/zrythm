@@ -603,7 +603,7 @@ bool
 track_widget_is_cursor_in_range_select_half (TrackWidget * self, double y)
 {
   graphene_point_t wpt;
-  graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0.f, (float) y);
+  graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0.f, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (MW_TIMELINE), GTK_WIDGET (self), &tmp_pt, &wpt);
   g_return_val_if_fail (success, false);
@@ -1434,7 +1434,7 @@ track_widget_get_local_y (
   int              arranger_y)
 {
   graphene_point_t local;
-  graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (0.f, (float) arranger_y);
+  graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0.f, (float) arranger_y);
   bool             success = gtk_widget_compute_point (
     arranger->is_pinned
       ? GTK_WIDGET (arranger)

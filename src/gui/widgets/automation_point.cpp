@@ -71,7 +71,7 @@ automation_point_draw (
 #if 0
   gtk_snapshot_append_color (
     snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.2),
-    &Z_GRAPHENE_RECT_INIT (
+    &Z_Z_GRAPHENE_RECT_INIT (
       obj->full_rect.x, obj->full_rect.y,
       obj->full_rect.width,
       obj->full_rect.height));
@@ -80,7 +80,7 @@ automation_point_draw (
   GskRenderNode * cr_node = NULL;
   if (automation_point_settings_changed (ap, &draw_rect, false))
     {
-      graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+      graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
         0.f, 0.f, (float) draw_rect.width + 3.f, (float) draw_rect.height + 3.f);
       cr_node = gsk_cairo_node_new (&tmp_r);
 
@@ -91,7 +91,7 @@ automation_point_draw (
       cr_node = ap->cairo_node;
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f);
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
@@ -245,7 +245,7 @@ automation_point_draw (
 
   gtk_snapshot_save (snapshot);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }

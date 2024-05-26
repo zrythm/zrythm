@@ -161,7 +161,7 @@ draw_bg (
   bool                   keep_clip)
 {
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
     (float) x, (float) y, (float) self->width, (float) self->height);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, (float) self->corner_radius);
@@ -255,7 +255,7 @@ draw_bg (
         }
 
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) new_x, (float) y, (float) new_width, (float) self->height);
         gtk_snapshot_append_color (snapshot, &c, &tmp_r);
       }
@@ -326,7 +326,7 @@ automation_mode_widget_draw (
       PangoLayout *  layout = self->layout;
       gtk_snapshot_save (snapshot);
       {
-        graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+        graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) (x + AUTOMATION_MODE_HPADDING
                    + i * (2 * AUTOMATION_MODE_HPADDING) + total_text_widths),
           (float) ((y + self->height / 2) - self->text_heights[i] / 2));

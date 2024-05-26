@@ -486,7 +486,7 @@ handle_recording (
 #endif
 
   unsigned_frame_t split_points[6];
-  unsigned_frame_t each_nframes[6];
+  nframes_t        each_nframes[6];
   int              num_split_points = 1;
 
   unsigned_frame_t start_frames = time_nfo->g_start_frame_w_offset;

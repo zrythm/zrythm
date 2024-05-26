@@ -845,12 +845,6 @@ zrythm_app_startup (GApplication * app)
 
   ZrythmApp * self = ZRYTHM_APP (app);
 
-  /* init localization, using system locale if first run */
-  GSettings * prefs = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
-  self->is_first_run = g_settings_get_boolean (prefs, "first-run");
-  localization_init (self->is_first_run, true, true);
-  g_object_unref (G_OBJECT (prefs));
-
   char * exe_path = NULL;
   int    dirname_length, length;
   length = wai_getExecutablePath (NULL, 0, &dirname_length);
@@ -861,11 +855,16 @@ zrythm_app_startup (GApplication * app)
       exe_path[length] = '\0';
     }
 
-  gZrythm.reset ();
   gZrythm =
     std::make_unique<Zrythm> (exe_path ? exe_path : self->argv[0], true, true);
+
+  /* init localization, using system locale if first run */
+  GSettings * prefs = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
+  self->is_first_run = g_settings_get_boolean (prefs, "first-run");
+  localization_init (self->is_first_run, true, true);
+  g_object_unref (G_OBJECT (prefs));
+
   gZrythm->init ();
-  g_return_if_fail (gZrythm);
 
   const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;

@@ -196,7 +196,7 @@ ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
         continue;
 
       graphene_point_t wpt;
-      graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) x, (float) y);
+      graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
       g_return_val_if_fail (success, NULL);
@@ -419,7 +419,7 @@ ui_is_child_hit (
   const double y_padding)
 {
   graphene_point_t wpt;
-  graphene_point_t tmp_pt = GRAPHENE_POINT_INIT ((float) x, (float) y);
+  graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
   g_return_val_if_fail (success, -1);

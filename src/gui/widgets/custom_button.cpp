@@ -103,7 +103,7 @@ draw_bg (
   CustomButtonWidgetState state)
 {
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
     (float) x, (float) y, (float) width, (float) self->size);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, (float) self->corner_radius);
@@ -183,7 +183,7 @@ draw_icon_with_shadow (
 
   /* add main icon */
   {
-    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
       (float) (x + 1), (float) (y + 1), (float) self->size - 2,
       (float) self->size - 2);
     gtk_snapshot_append_texture (snapshot, self->icon_texture, &tmp_r);
@@ -225,7 +225,7 @@ custom_button_widget_draw_with_text (
   gtk_snapshot_save (snapshot);
   float text_x = (float) (x + self->size + 2);
   {
-    graphene_point_t tmp_pt = GRAPHENE_POINT_INIT (
+    graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
       text_x, (float) ((y + self->size / 2) - self->text_height / 2));
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }

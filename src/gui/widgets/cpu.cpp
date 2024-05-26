@@ -63,12 +63,12 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   {
     graphene_rect_t tmp_r =
-      GRAPHENE_RECT_INIT (PADDING, PADDING, ICON_SIZE, ICON_SIZE);
+      Z_GRAPHENE_RECT_INIT (PADDING, PADDING, ICON_SIZE, ICON_SIZE);
     gtk_snapshot_append_texture (snapshot, self->cpu_texture, &tmp_r);
   }
 
   {
-    graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+    graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
       PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE);
     gtk_snapshot_append_texture (snapshot, self->dsp_texture, &tmp_r);
   }
@@ -86,7 +86,7 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         color = inactive_color;
 
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           ICON_SIZE + PADDING + (float) i * PADDING * 2.f, PADDING, BAR_WIDTH,
           BAR_HEIGHT);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);
@@ -104,7 +104,7 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         color = inactive_color;
 
       {
-        graphene_rect_t tmp_r = GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           ICON_SIZE + PADDING + (float) i * PADDING * 2.f,
           PADDING * 2.f + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
         gtk_snapshot_append_color (snapshot, &color, &tmp_r);

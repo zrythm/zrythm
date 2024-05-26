@@ -71,7 +71,7 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       GdkRGBA color = Z_GDK_RGBA_INIT (
         track->color.red, track->color.green, track->color.blue, 0.15f);
       graphene_rect_t rect =
-        GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+        Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
       gtk_snapshot_append_color (snapshot, &color, &rect);
     }
 

@@ -358,7 +358,7 @@ if get_option ('tests')
     if fs.is_file (source)
       # create CPP executable for CPP runner
       exe = executable (
-        test_name,
+        test_name + '_test_exe',
         sources: [
           source,
           test_config_h,
@@ -378,7 +378,7 @@ if get_option ('tests')
       )
       if is_benchmark
         benchmark (
-          test_name, exe,
+          test_name + '_benchmark', exe,
           env: test_env, suite: suites,
           args: 'args' in info ? info['args'] : [],
           depends: [
@@ -389,7 +389,7 @@ if get_option ('tests')
       # else if not benchmark
       else
         test (
-          test_name, exe,
+          test_name + '_test', exe,
           env: test_env, suite: suites,
           is_parallel: is_parallel,
           args: 'args' in info ? info['args'] : [],

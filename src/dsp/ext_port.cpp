@@ -509,7 +509,7 @@ get_ext_ports_from_jack (ZPortType type, ZPortFlow flow, int hw, GPtrArray * por
 static ExtPort *
 ext_port_from_windows_mme_device (WindowsMmeDevice * dev)
 {
-  ExtPort * self = calloc (1, sizeof (ExtPort));
+  ExtPort * self = object_new (ExtPort);
 
   self->mme_dev = dev;
   self->full_name = g_strdup (dev->name);
