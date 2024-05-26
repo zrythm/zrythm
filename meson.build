@@ -207,6 +207,7 @@ have_custom_name = prog_name != 'Zrythm'
 have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 
 # include dirs
+zrythm_pch = meson_src_root / 'src/pch/zrythm_pch.h'
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 # this works around a mkenums_simple() bug

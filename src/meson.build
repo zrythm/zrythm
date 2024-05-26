@@ -64,7 +64,7 @@ zrythm_lib = both_libraries (
   dependencies: zrythm_deps,
   include_directories: all_inc,
   cpp_args: [ common_cflags, strict_cflags ],
-  cpp_pch: 'pch/zrythm_pch.h',
+  cpp_pch: zrythm_pch,
   pic: true,
   link_with: zrythm_link_libs,
   )
@@ -87,6 +87,7 @@ zrythm_exe = executable (
   win_subsystem: 'windows',
   include_directories: all_inc,
   cpp_args: [ common_cflags ],
+  cpp_pch: zrythm_pch,
   link_args: common_ldflags,
   objects: objects,
   install: true,
