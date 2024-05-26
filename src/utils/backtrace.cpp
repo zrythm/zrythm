@@ -361,8 +361,8 @@ read_traditional_bt:
   symbol->MaxNameLen = 255;
   symbol->SizeOfStruct = sizeof (SYMBOL_INFO);
 
-  IMAGEHLP_LINE64 * line =
-    (IMAGEHLP_LINE64 *) calloc (sizeof (IMAGEHLP_LINE64) + 256 * sizeof (char), 1);
+  IMAGEHLP_LINE64 * line = (IMAGEHLP_LINE64 *) calloc (
+    sizeof (IMAGEHLP_LINE64) + 256 * sizeof (char), 1);
   line->SizeOfStruct = sizeof (IMAGEHLP_LINE64);
 
   for (unsigned int i = 0; i < frames; i++)
