@@ -10,7 +10,7 @@
 #ifndef __UTILS_HASH_H__
 #define __UTILS_HASH_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <xxhash.h>
 

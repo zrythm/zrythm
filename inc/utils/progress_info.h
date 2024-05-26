@@ -10,8 +10,6 @@
 #ifndef __UTILS_PROGRESS_INFO_H__
 #define __UTILS_PROGRESS_INFO_H__
 
-#include <stdbool.h>
-
 /**
  * @addtogroup utils
  *

@@ -17,7 +17,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "dsp/engine.h"
 #include "dsp/master_track.h"

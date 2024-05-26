@@ -10,7 +10,7 @@
 #ifndef __UTILS_MEM_H__
 #define __UTILS_MEM_H__
 
-#include <stddef.h>
+#include <cstddef>
 
 /**
  * Reallocate and zero out newly added memory.

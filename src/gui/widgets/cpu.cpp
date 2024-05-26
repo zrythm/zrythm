@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "dsp/engine.h"
 #include "gui/widgets/bot_bar.h"

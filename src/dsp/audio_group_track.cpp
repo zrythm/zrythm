@@ -9,7 +9,7 @@
  * Track logic specific to bus tracks.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/audio_group_track.h"
 #include "dsp/automation_tracklist.h"

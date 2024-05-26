@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/clip_editor.h"
@@ -12,6 +10,8 @@
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
+
+#include <cmath>
 
 G_DEFINE_TYPE (PianoKeyboardWidget, piano_keyboard_widget, GTK_TYPE_DRAWING_AREA)
 

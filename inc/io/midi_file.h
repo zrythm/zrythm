@@ -10,8 +10,6 @@
 #ifndef __IO_MIDI_FILE_H__
 #define __IO_MIDI_FILE_H__
 
-#include <stdbool.h>
-
 /**
  * @addtogroup io
  *

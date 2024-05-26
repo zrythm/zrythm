@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
-#include <math.h>
 
 #include "dsp/engine.h"
 #include "dsp/position.h"
@@ -24,6 +23,8 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 static int
 position_cmpfunc (const void * a, const void * b)

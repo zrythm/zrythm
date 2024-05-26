@@ -27,10 +27,9 @@
 
 #include "zrythm-config.h"
 
+#include <cstdlib>
+#include <cstring>
 #include <errno.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 #ifdef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/stat.h>

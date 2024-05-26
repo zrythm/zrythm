@@ -10,8 +10,6 @@
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 #include "utils/yaml.h"
 

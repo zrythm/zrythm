@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/region_link_group_manager.h"
 #include "utils/arrays.h"

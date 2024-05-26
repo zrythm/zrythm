@@ -29,7 +29,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "gui/widgets/greeter.h"
 #include "gui/widgets/main_window.h"

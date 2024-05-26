@@ -35,8 +35,6 @@
 #ifndef __AUDIO_GRAPH_NODE_H__
 #define __AUDIO_GRAPH_NODE_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 
 #include <gtk/gtk.h>

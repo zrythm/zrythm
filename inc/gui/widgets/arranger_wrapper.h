@@ -12,8 +12,6 @@
 #ifndef __GUI_WIDGETS_ARRANGER_WRAPPER_H__
 #define __GUI_WIDGETS_ARRANGER_WRAPPER_H__
 
-#include <stdbool.h>
-
 #include "gui/widgets/arranger.h"
 #include "utils/types.h"
 

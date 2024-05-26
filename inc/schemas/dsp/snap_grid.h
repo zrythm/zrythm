@@ -10,8 +10,6 @@
 #ifndef __SCHEMAS_AUDIO_SNAP_GRID_H__
 #define __SCHEMAS_AUDIO_SNAP_GRID_H__
 
-#include <stdbool.h>
-
 #include "schemas/dsp/position.h"
 
 typedef enum NoteLength_v1

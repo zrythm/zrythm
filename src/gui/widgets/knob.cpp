@@ -26,9 +26,8 @@
  * ---
  */
 
-#include <math.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
@@ -40,6 +39,8 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_WIDGET)
 

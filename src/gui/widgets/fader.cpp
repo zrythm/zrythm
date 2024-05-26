@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "actions/midi_mapping_action.h"
 #include "actions/tracklist_selections.h"

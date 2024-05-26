@@ -10,9 +10,8 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "utils/types.h"
 

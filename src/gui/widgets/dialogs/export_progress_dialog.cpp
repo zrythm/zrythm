@@ -7,7 +7,7 @@
  * Export dialog.
  */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "dsp/engine.h"
 #include "dsp/exporter.h"

@@ -26,8 +26,6 @@
 #ifndef __AUDIO_TRUE_PEAK_DSP__
 #define __AUDIO_TRUE_PEAK_DSP__
 
-#include <stdbool.h>
-
 #include "ext/zita-resampler/resampler.h"
 
 typedef struct TruePeakDsp

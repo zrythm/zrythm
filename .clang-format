@@ -84,7 +84,7 @@ IncludeCategories:
   - Regex:           '^<(windows|shlobj).h>$'
     Priority:        -6
     CaseSensitive:   false
-  - Regex:           '^<(assert|errno|inttypes|signal|string|std.+|sys/.+|math|memory|vector)(\.h)*>$'
+  - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|math|memory|vector)(\.h)*>$'
     Priority:        -2
     CaseSensitive:   true
   - Regex:           '^"((audio|actions|dsp|io|plugins|settings|utils|gui|schemas)/.*|zrythm\.h|zrythm_app\.h|project\.h)'

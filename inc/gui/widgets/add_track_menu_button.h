@@ -12,8 +12,6 @@
 #ifndef __GUI_WIDGETS_ADD_TRACK_MENU_BUTTON_H__
 #define __GUI_WIDGETS_ADD_TRACK_MENU_BUTTON_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #define ADD_TRACK_MENU_BUTTON_WIDGET_TYPE \

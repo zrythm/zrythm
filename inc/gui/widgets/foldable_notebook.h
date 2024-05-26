@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_FOLDABLE_NOTEBOOK_H__
 #define __GUI_WIDGETS_FOLDABLE_NOTEBOOK_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #define FOLDABLE_NOTEBOOK_WIDGET_TYPE (foldable_notebook_widget_get_type ())

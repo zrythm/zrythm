@@ -10,8 +10,6 @@
 #ifndef __UTILS_CURL_H__
 #define __UTILS_CURL_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 /**

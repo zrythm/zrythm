@@ -11,7 +11,7 @@
 #ifndef __AUDIO_SCALE_OBJECT_H__
 #define __AUDIO_SCALE_OBJECT_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/position.h"
 #include "dsp/scale.h"

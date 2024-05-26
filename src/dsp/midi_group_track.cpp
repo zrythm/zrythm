@@ -9,7 +9,7 @@
  * Track logic specific to MIDI group tracks.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/automation_tracklist.h"
 #include "dsp/midi_group_track.h"

@@ -27,12 +27,12 @@
  * ---
  */
 
-#include <math.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/peak_dsp.h"
 #include "utils/objects.h"
+
+#include <cmath>
 
 /**
  * Process.
@@ -71,7 +71,7 @@ peak_dsp_process (PeakDsp * self, float * p, int n)
         t = max; // Update digital peak.
     }
 
-  if (!isfinite (t))
+  if (!std::isfinite (t))
     t = 0;
 
   if (self->flag) // Display thread has read the rms value.

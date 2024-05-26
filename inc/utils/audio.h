@@ -10,8 +10,7 @@
 #ifndef __UTILS_AUDIO_H__
 #define __UTILS_AUDIO_H__
 
-#include <stdarg.h>
-#include <stdbool.h>
+#include <cstdarg>
 
 #include "utils/types.h"
 #include "utils/yaml.h"

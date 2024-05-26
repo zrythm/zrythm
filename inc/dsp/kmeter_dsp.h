@@ -30,8 +30,6 @@
 #ifndef __AUDIO_KMETER_DSP__
 #define __AUDIO_KMETER_DSP__
 
-#include <stdbool.h>
-
 typedef struct KMeterDsp
 {
   float z1;   // filter state

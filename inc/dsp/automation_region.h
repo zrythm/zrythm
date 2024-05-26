@@ -10,8 +10,6 @@
 #ifndef __AUDIO_AUTOMATION_REGION_H__
 #define __AUDIO_AUTOMATION_REGION_H__
 
-#include <stdbool.h>
-
 #include "dsp/region.h"
 
 typedef struct Track           Track;

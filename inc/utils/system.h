@@ -13,8 +13,6 @@
 #ifndef __UTILS_SYSTEM_H__
 #define __UTILS_SYSTEM_H__
 
-#include <stdbool.h>
-
 /**
  * @addtogroup utils
  *

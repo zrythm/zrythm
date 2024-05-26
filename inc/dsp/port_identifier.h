@@ -14,9 +14,8 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "plugins/plugin_identifier.h"
 #include "utils/string.h"

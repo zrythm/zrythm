@@ -35,7 +35,7 @@
 #ifndef __UTILS_MPMC_QUEUE_H__
 #define __UTILS_MPMC_QUEUE_H__
 
-#include <stddef.h>
+#include <cstddef>
 
 #define MPMC_USE_STD_ATOMIC 1
 

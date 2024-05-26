@@ -83,9 +83,8 @@ gtk_fishbowl_set_creation_func (
 
 G_END_DECLS
 
-#include <math.h>
-
 #include "config.h"
+#include <cmath>
 
 typedef struct _GtkFishbowlPrivate GtkFishbowlPrivate;
 typedef struct _GtkFishbowlChild   GtkFishbowlChild;

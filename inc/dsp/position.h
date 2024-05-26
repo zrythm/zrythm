@@ -12,8 +12,6 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 #include "utils/yaml.h"
 

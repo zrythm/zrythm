@@ -11,8 +11,6 @@
 #ifndef __GUI_WIDGETS_DIGITAL_METER_H__
 #define __GUI_WIDGETS_DIGITAL_METER_H__
 
-#include <stdbool.h>
-
 #include "dsp/transport.h"
 #include "utils/types.h"
 

@@ -11,8 +11,6 @@
 #ifndef __UTILS_UI_H__
 #define __UTILS_UI_H__
 
-#include <stdbool.h>
-
 #include "utils/localization.h"
 #include "utils/types.h"
 

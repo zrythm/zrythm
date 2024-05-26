@@ -27,8 +27,6 @@
 
 #include "zrythm-config.h"
 
-#include <math.h>
-
 #include "dsp/engine.h"
 #include "dsp/track.h"
 #include "gui/backend/event.h"
@@ -51,6 +49,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include <cmath>
 
 #define MIN_SCALE_WIDTH 120
 

@@ -10,8 +10,6 @@
 #ifndef __AUDIO_CHANNEL_SEND_H__
 #define __AUDIO_CHANNEL_SEND_H__
 
-#include <stdbool.h>
-
 #include "dsp/port.h"
 #include "dsp/port_identifier.h"
 #include "utils/yaml.h"

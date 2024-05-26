@@ -10,8 +10,6 @@
 #ifndef __SCHEMAS_GUI_BACKEND_PIANO_ROLL_H__
 #define __SCHEMAS_GUI_BACKEND_PIANO_ROLL_H__
 
-#include <stdbool.h>
-
 #include "schemas/gui/backend/editor_settings.h"
 #include "utils/yaml.h"
 

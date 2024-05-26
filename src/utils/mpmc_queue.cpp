@@ -25,8 +25,8 @@
  * ---
  */
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"

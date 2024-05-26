@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "actions/undo_manager.h"
 #include "dsp/clip.h"

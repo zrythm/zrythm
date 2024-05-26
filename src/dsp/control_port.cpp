@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
 #include "dsp/port.h"
@@ -15,6 +13,8 @@
 #include "utils/math.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
+
+#include <cmath>
 
 /**
  * Get the current real value of the control.

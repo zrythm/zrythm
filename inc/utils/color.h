@@ -11,8 +11,6 @@
 #ifndef __UTILS_COLOR_H__
 #define __UTILS_COLOR_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 /**

@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_MULTI_SELECTION_H__
 #define __GUI_WIDGETS_MULTI_SELECTION_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 #include "utils/yaml.h"
 

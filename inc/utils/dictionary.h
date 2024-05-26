@@ -13,7 +13,7 @@
 #ifndef __UTILS_DICTIONARY_H__
 #define __UTILS_DICTIONARY_H__
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <gtk/gtk.h>
 

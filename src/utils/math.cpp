@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
-#include <math.h>
-
 #include "utils/math.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
 
-#include <float.h>
+#include <cfloat>
+#include <cmath>
 
 /**
  * Gets the RMS of the given signal as amplitude

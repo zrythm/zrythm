@@ -14,8 +14,6 @@
 #ifndef __UTILS_LOCALIZATION_H__
 #define __UTILS_LOCALIZATION_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 /**

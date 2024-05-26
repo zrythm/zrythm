@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdbool.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "gui/widgets/custom_button.h"
 #include "utils/gtk.h"

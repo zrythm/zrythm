@@ -10,8 +10,6 @@
 #ifndef __AUDIO_CONTROL_PORT_H__
 #define __AUDIO_CONTROL_PORT_H__
 
-#include <stdbool.h>
-
 #include "dsp/port_identifier.h"
 #include "dsp/tempo_track.h"
 

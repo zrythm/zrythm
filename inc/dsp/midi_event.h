@@ -12,8 +12,8 @@
 
 #include "zrythm-config.h"
 
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 
 #include "utils/types.h"
 

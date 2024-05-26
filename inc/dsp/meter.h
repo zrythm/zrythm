@@ -10,8 +10,6 @@
 #ifndef __AUDIO_METER_H__
 #define __AUDIO_METER_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 
 #include <gtk/gtk.h>

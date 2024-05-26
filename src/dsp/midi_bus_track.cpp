@@ -7,7 +7,7 @@
  * Track logic specific to bus tracks.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/automation_tracklist.h"
 #include "dsp/midi_bus_track.h"

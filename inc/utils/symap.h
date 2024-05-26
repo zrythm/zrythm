@@ -28,7 +28,7 @@
 #ifndef SYMAP_H
 #define SYMAP_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #define ZSYMAP (ZRYTHM->symap)
 

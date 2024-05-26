@@ -3,8 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <cstdlib>
 #include <inttypes.h>
-#include <stdlib.h>
 
 #include "dsp/engine.h"
 #include "dsp/metronome.h"

@@ -10,8 +10,6 @@
 #ifndef __SCHEMAS_AUDIO_CURVE_H__
 #define __SCHEMAS_AUDIO_CURVE_H__
 
-#include <stdbool.h>
-
 #include "utils/yaml.h"
 
 typedef enum CurveAlgorithm_v1

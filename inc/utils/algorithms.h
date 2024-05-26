@@ -10,8 +10,7 @@
 #ifndef __UTILS_ALGORITHMS_H__
 #define __UTILS_ALGORITHMS_H__
 
-#include <stdbool.h>
-#include <stddef.h>
+#include <cstddef>
 
 #include "utils/types.h"
 

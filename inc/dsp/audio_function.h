@@ -12,8 +12,6 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
-#include <stdbool.h>
-
 #include <glib/gi18n.h>
 
 typedef struct ArrangerSelections ArrangerSelections;

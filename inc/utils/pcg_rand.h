@@ -13,7 +13,7 @@
 #ifndef __UTILS_PCG_RAND_H__
 #define __UTILS_PCG_RAND_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 typedef struct PCGRand PCGRand;
 

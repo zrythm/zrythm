@@ -24,9 +24,8 @@
  * ---
  */
 
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "dsp/stretcher.h"
 #include "utils/math.h"
@@ -34,6 +33,8 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 /**
  * Create a new Stretcher using the rubberband backend.

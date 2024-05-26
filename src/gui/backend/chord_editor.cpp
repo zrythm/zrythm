@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"

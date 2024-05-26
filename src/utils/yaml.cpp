@@ -5,14 +5,13 @@
 
 #ifdef HAVE_CYAML
 
-#  include <string.h>
-
 #  include "utils/objects.h"
 #  include "utils/yaml.h"
 
 #  include <gtk/gtk.h>
 
 #  include <locale.h>
+#  include <string.h>
 
 typedef enum
 {

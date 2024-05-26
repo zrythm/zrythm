@@ -4,7 +4,7 @@
 #ifndef __UTILS_OBJECTS_H__
 #define __UTILS_OBJECTS_H__
 
-#include <stddef.h>
+#include <cstddef>
 
 #include <gmodule.h>
 

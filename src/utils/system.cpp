@@ -5,9 +5,8 @@
 #  include <windows.h>
 #endif
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "utils/system.h"
 

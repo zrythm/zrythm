@@ -22,10 +22,9 @@
  */
 // clang-format on
 
+#include <cstdlib>
 #include <inttypes.h>
-#include <math.h>
 #include <signal.h>
-#include <stdlib.h>
 
 #include "dsp/channel.h"
 #include "dsp/engine.h"
@@ -35,6 +34,8 @@
 #include "project.h"
 #include "utils/midi.h"
 #include "utils/objects.h"
+
+#include <cmath>
 
 /* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
  */

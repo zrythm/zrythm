@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/automation_point.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -27,6 +25,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include <cmath>
 
 static AutomationTrack *
 _at_create (void)

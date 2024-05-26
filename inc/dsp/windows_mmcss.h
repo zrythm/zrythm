@@ -38,8 +38,8 @@ enum class AVRT_PRIORITY
   AVRT_PRIORITY_CRITICAL
 };
 
-#    define MMCSS_ERROR_INVALID_TASK_NAME = 1550,
-#    define MMCSS_ERROR_INVALID_TASK_INDEX = 1551
+#    define MMCSS_ERROR_INVALID_TASK_NAME 1550
+#    define MMCSS_ERROR_INVALID_TASK_INDEX 1551
 
 int
 windows_mmcss_initialize (void);

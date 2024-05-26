@@ -10,7 +10,7 @@
 #ifndef __AUDIO_MARKER_TRACK_H__
 #define __AUDIO_MARKER_TRACK_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/track.h"
 

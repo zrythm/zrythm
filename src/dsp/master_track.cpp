@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/automation_tracklist.h"
 #include "dsp/master_track.h"

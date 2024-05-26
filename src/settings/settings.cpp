@@ -9,8 +9,8 @@
 
 #include "zrythm-config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"

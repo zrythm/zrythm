@@ -28,8 +28,6 @@
 #ifndef __AUDIO_PEAK_DSP__
 #define __AUDIO_PEAK_DSP__
 
-#include <stdbool.h>
-
 typedef struct PeakDsp
 {
   float rms;  // max rms value since last read()

@@ -10,8 +10,6 @@
 #ifndef __AUDIO_HARDWARE_PROCESSOR_H__
 #define __AUDIO_HARDWARE_PROCESSOR_H__
 
-#include <stdbool.h>
-
 #include "dsp/ext_port.h"
 #include "dsp/port.h"
 

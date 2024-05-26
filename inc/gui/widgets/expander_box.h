@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_EXPANDER_BOX_H__
 #define __GUI_WIDGETS_EXPANDER_BOX_H__
 
-#include <stdbool.h>
-
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>

@@ -12,7 +12,7 @@
  * This is meant to be serialized along with each project.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/channel.h"
 #include "dsp/track.h"

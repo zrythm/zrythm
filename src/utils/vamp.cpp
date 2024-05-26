@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "dsp/vamp-ports/BeatTrack.h"
 #include "dsp/vamp-ports/FixedTempoEstimator.h"

@@ -13,8 +13,6 @@
 #ifndef __SETTINGS_USER_SHORTCUTS_H__
 #define __SETTINGS_USER_SHORTCUTS_H__
 
-#include <stdbool.h>
-
 #include "utils/yaml.h"
 
 /**

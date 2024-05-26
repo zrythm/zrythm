@@ -12,8 +12,6 @@
 #ifndef __AUDIO_SUPPORTED_FILE_H__
 #define __AUDIO_SUPPORTED_FILE_H__
 
-#include <stdbool.h>
-
 #include <glib.h>
 
 typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;

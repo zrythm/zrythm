@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "plugins/plugin_descriptor.h"
 
 /**

@@ -10,8 +10,6 @@
 #ifndef __GUI_BACKEND_CLIP_EDITOR_H__
 #define __GUI_BACKEND_CLIP_EDITOR_H__
 
-#include <stdbool.h>
-
 #include "dsp/region_identifier.h"
 #include "gui/backend/audio_clip_editor.h"
 #include "gui/backend/automation_editor.h"

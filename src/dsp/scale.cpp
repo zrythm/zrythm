@@ -11,7 +11,7 @@
  * See https://pianoscales.org/
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/scale.h"

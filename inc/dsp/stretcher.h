@@ -10,8 +10,7 @@
 #ifndef __AUDIO_STRETCHER_H__
 #define __AUDIO_STRETCHER_H__
 
-#include <stdbool.h>
-#include <stddef.h>
+#include <cstddef>
 #include <sys/types.h>
 
 #include "utils/types.h"

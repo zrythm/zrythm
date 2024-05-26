@@ -3,7 +3,7 @@
  * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/foldable_track.h"
 #include "dsp/track.h"

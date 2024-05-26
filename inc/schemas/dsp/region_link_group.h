@@ -10,8 +10,6 @@
 #ifndef __SCHEMAS_AUDIO_REGION_LINK_GROUP_H__
 #define __SCHEMAS_AUDIO_REGION_LINK_GROUP_H__
 
-#include <stdbool.h>
-
 #include "schemas/dsp/region_identifier.h"
 #include "utils/yaml.h"
 

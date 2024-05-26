@@ -10,8 +10,6 @@
 #ifndef __AUDIO_FOLDABLE_TRACK_H__
 #define __AUDIO_FOLDABLE_TRACK_H__
 
-#include <stdbool.h>
-
 typedef struct Track Track;
 
 enum class FoldableTrackMixerStatus

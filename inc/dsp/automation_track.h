@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "dsp/automation_point.h"
 #include "dsp/port.h"
 #include "dsp/position.h"

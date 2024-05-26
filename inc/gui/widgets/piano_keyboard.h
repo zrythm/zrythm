@@ -13,8 +13,6 @@
 #ifndef __GUI_WIDGETS_PIANO_KEYBOARD_H__
 #define __GUI_WIDGETS_PIANO_KEYBOARD_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #define PIANO_KEYBOARD_WIDGET_TYPE (piano_keyboard_widget_get_type ())

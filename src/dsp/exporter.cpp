@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "actions/tracklist_selections.h"
 #include "dsp/channel.h"

@@ -3,8 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include <math.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/audio_track.h"
 #include "dsp/automation_track.h"
@@ -51,6 +50,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include <cmath>
 #include <unistd.h>
 
 typedef enum

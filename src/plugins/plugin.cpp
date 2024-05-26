@@ -11,9 +11,9 @@
 
 #include "zrythm-config.h"
 
+#include <cstdlib>
+#include <cstring>
 #include <signal.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "actions/undo_manager.h"
 #include "dsp/automation_tracklist.h"

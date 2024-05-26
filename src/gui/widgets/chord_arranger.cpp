@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
-#include <math.h>
-
 #include "actions/arranger_selections.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
@@ -57,6 +55,8 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 /**
  * Create a ChordObject at the given Position in the

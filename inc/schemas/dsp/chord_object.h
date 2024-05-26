@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_AUDIO_CHORD_OBJECT_H__
 #define __SCHEMAS_AUDIO_CHORD_OBJECT_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "schemas/gui/backend/arranger_object.h"
 #include "utils/yaml.h"

@@ -13,8 +13,6 @@
 #ifndef __GUI_WIDGETS_CHORD_PAD_H__
 #define __GUI_WIDGETS_CHORD_PAD_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 /**

@@ -36,8 +36,6 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
-#include <stdbool.h>
-
 #include "ext/juce/juce.h"
 
 /**

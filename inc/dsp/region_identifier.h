@@ -13,8 +13,6 @@
 #ifndef __AUDIO_REGION_IDENTIFIER_H__
 #define __AUDIO_REGION_IDENTIFIER_H__
 
-#include <stdbool.h>
-
 #include "utils/general.h"
 
 #include <gtk/gtk.h>

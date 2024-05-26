@@ -10,7 +10,7 @@
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/midi_region.h"
 #include "dsp/position.h"

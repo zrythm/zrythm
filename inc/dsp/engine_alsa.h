@@ -8,9 +8,9 @@
 #    ifndef __AUDIO_ENGINE_ALSA_H__
 #      define __AUDIO_ENGINE_ALSA_H__
 
-#      include <stdlib.h>
-
 #      include "utils/types.h"
+
+#      include <stdlib.h>
 
 typedef struct AudioEngine AudioEngine;
 

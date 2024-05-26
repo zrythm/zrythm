@@ -34,7 +34,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _WIN32
 #  include <process.h>

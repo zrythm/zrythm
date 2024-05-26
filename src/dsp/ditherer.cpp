@@ -15,10 +15,11 @@
  */
 // clang-format on
 
-#include <math.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/ditherer.h"
+
+#include <cmath>
 
 void
 ditherer_reset (Ditherer * self, int num_bits)

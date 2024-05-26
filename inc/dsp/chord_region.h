@@ -10,8 +10,6 @@
 #ifndef __AUDIO_CHORD_REGION_H__
 #define __AUDIO_CHORD_REGION_H__
 
-#include <stdbool.h>
-
 typedef struct Position    Position;
 typedef struct ChordObject ChordObject;
 typedef struct ZRegion     ZRegion;

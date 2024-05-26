@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "actions/actions.h"
 #include "dsp/marker_track.h"
 #include "dsp/position.h"
@@ -44,6 +42,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 

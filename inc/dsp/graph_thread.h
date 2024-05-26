@@ -35,8 +35,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 
 #include <gtk/gtk.h>

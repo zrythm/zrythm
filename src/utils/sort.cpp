@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include <string.h>
+#include <cstring>
 
 #include "utils/sort.h"
 

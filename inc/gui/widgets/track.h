@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #define TRACK_WIDGET_TYPE (track_widget_get_type ())

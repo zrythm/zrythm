@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "utils/hash.h"
 

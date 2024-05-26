@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "utils/system.h"
 

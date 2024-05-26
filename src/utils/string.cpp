@@ -27,7 +27,7 @@
  * ---
  */
 
-#include <string.h>
+#include <cstring>
 
 #include "utils/objects.h"
 #include "utils/string.h"

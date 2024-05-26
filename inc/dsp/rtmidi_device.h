@@ -11,10 +11,9 @@
 
 #ifdef HAVE_RTMIDI
 
-#  include <stdint.h>
-
 #  include "zix/ring.h"
 #  include <rtmidi_c.h>
+#  include <stdint.h>
 
 typedef struct Port Port;
 

@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"

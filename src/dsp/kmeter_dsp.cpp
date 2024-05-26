@@ -28,14 +28,14 @@
  * ---
  */
 
-#include <math.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/kmeter_dsp.h"
 #include "utils/objects.h"
 
 #include <glib.h>
+
+#include <cmath>
 
 /**
  * Process.
@@ -92,11 +92,11 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
       z2 += 4 * self->omega * (z1 - z2); // Update second filter.
     }
 
-  if (isnan (z1))
+  if (std::isnan (z1))
     z1 = 0;
-  if (isnan (z2))
+  if (std::isnan (z2))
     z2 = 0;
-  if (!isfinite (t))
+  if (!std::isfinite (t))
     t = 0;
 
   // Save filter state. The added constants avoid denormals.

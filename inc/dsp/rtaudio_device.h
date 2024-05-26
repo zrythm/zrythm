@@ -13,10 +13,9 @@
 
 #  define RTAUDIO_DEVICE_BUFFER_SIZE 32000
 
-#  include <stdint.h>
-
 #  include "zix/ring.h"
 #  include <rtaudio_c.h>
+#  include <stdint.h>
 
 typedef struct Port Port;
 

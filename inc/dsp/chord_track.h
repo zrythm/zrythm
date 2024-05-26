@@ -12,7 +12,7 @@
 #ifndef __AUDIO_CHORD_TRACK_H__
 #define __AUDIO_CHORD_TRACK_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/track.h"
 

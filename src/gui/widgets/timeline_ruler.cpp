@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format off
 
-#include <math.h>
+#include <cmath>
 
 #include "dsp/engine.h"
 #include "dsp/position.h"

@@ -4,8 +4,6 @@
 #ifndef __AUDIO_ENGINE_DUMMY_H__
 #define __AUDIO_ENGINE_DUMMY_H__
 
-#include <stdbool.h>
-
 typedef struct AudioEngine AudioEngine;
 
 /**

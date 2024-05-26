@@ -10,8 +10,6 @@
 #ifndef __AUDIO_SNAP_GRID_H__
 #define __AUDIO_SNAP_GRID_H__
 
-#include <stdbool.h>
-
 #include "dsp/position.h"
 
 #include <glib/gi18n.h>

@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/midi_event.h"
 #include "dsp/midi_note.h"
 #include "dsp/position.h"
@@ -22,6 +20,8 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+
+#include <cmath>
 
 /**
  * Creates a new MidiNote.

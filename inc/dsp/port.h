@@ -13,8 +13,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "dsp/port_identifier.h"
 #include "utils/types.h"
 

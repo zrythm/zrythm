@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <string.h>
+#include <cstring>
 
 #include "dsp/channel.h"
 #include "dsp/ext_port.h"

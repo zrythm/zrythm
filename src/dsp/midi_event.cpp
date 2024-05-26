@@ -27,10 +27,9 @@
  * ---
  */
 
+#include <cstdlib>
 #include <inttypes.h>
-#include <math.h>
 #include <signal.h>
-#include <stdlib.h>
 
 #include "dsp/channel.h"
 #include "dsp/chord_descriptor.h"
@@ -41,6 +40,8 @@
 #include "project.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
+
+#include <cmath>
 
 /**
  * Type of MIDI event.

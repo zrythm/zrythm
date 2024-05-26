@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "dsp/chord_descriptor.h"
 #include "utils/yaml.h"
 

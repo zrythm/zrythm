@@ -8,8 +8,6 @@
 #  ifdef HAVE_ALSA
 
 #    include <math.h>
-#    include <stdio.h>
-#    include <stdlib.h>
 
 #    include "dsp/engine.h"
 #    include "dsp/engine_alsa.h"
@@ -22,6 +20,8 @@
 
 #    include <alsa/asoundlib.h>
 #    include <pthread.h>
+#    include <stdio.h>
+#    include <stdlib.h>
 
 #    define POLY 10
 

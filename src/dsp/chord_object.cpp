@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/chord_object.h"
 #include "dsp/chord_track.h"
@@ -13,6 +12,8 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
+
+#include <cmath>
 
 /**
  * Creates a ChordObject.

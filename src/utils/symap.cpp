@@ -22,9 +22,8 @@
  */
 
 #include <assert.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "utils/objects.h"
 #include "utils/symap.h"

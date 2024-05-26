@@ -10,8 +10,6 @@
 #ifndef __ACTIONS_TRANSPORT_ACTION_H__
 #define __ACTIONS_TRANSPORT_ACTION_H__
 
-#include <stdbool.h>
-
 #include "actions/undoable_action.h"
 #include "dsp/transport.h"
 #include "utils/types.h"

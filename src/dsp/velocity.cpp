@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/midi_note.h"
 #include "dsp/region.h"

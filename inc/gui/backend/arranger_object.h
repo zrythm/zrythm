@@ -10,8 +10,6 @@
 #ifndef __GUI_BACKEND_ARRANGER_OBJECT_H__
 #define __GUI_BACKEND_ARRANGER_OBJECT_H__
 
-#include <stdbool.h>
-
 #include "dsp/curve.h"
 #include "dsp/position.h"
 #include "dsp/region_identifier.h"

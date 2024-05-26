@@ -10,7 +10,7 @@
 #ifndef __AUDIO_METRONOME_H__
 #define __AUDIO_METRONOME_H__
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "utils/types.h"
 

@@ -17,13 +17,12 @@
 
 #ifdef HAVE_CHROMAPRINT
 
-#  include <stdarg.h>
-#  include <stdbool.h>
-
 #  include "utils/types.h"
 #  include "utils/yaml.h"
 
 #  include <chromaprint.h>
+#  include <stdarg.h>
+#  include <stdbool.h>
 
 /**
  * @addtogroup utils

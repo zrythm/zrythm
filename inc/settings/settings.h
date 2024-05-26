@@ -11,7 +11,6 @@
 #define __SETTINGS_SETTINGS_H__
 
 #include <memory>
-#include <stdbool.h>
 
 #include <gtk/gtk.h>
 

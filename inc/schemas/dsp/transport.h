@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_AUDIO_TRANSPORT_H__
 #define __SCHEMAS_AUDIO_TRANSPORT_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "schemas/dsp/port.h"
 #include "schemas/dsp/position.h"

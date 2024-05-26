@@ -10,7 +10,7 @@
 #ifndef __UTILS_FILE_H__
 #define __UTILS_FILE_H__
 
-#include <stdio.h>
+#include <cstdio>
 
 /**
  * @addtogroup utils

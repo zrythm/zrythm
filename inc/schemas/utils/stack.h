@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_UTILS_STACK_H__
 #define __SCHEMAS_UTILS_STACK_H__
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "utils/yaml.h"
 

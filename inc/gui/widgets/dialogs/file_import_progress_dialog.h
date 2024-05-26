@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 
 #include <adwaita.h>

@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/port_identifier.h"
 #include "utils/general.h"

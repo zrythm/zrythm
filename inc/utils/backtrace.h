@@ -13,8 +13,6 @@
 #ifndef __UTILS_BACKTRACE_H__
 #define __UTILS_BACKTRACE_H__
 
-#include <stdbool.h>
-
 /**
  * @addtogroup utils
  *

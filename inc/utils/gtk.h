@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 #ifdef HAVE_X11
 #  include <gdk/x11/gdkx.h>

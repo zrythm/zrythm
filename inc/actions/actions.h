@@ -10,8 +10,6 @@
 #ifndef __ACTIONS_ACTIONS_H__
 #define __ACTIONS_ACTIONS_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #define DECLARE_SIMPLE(x) \

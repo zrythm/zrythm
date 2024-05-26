@@ -12,8 +12,6 @@
 #ifndef __AUDIO_CURVE_H__
 #define __AUDIO_CURVE_H__
 
-#include <stdbool.h>
-
 #include "utils/yaml.h"
 
 #include <glib/gi18n.h>

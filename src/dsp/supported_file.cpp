@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
+#include <cstdlib>
 #include <inttypes.h>
-#include <stdlib.h>
 
 #include "dsp/supported_file.h"
 #include "io/audio_file.h"

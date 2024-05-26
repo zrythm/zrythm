@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/control_port.h"
 #include "dsp/port.h"
 #include "gui/widgets/volume.h"
 #include "utils/ui.h"
+
+#include <cmath>
 
 G_DEFINE_TYPE (VolumeWidget, volume_widget, GTK_TYPE_DRAWING_AREA)
 

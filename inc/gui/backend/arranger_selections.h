@@ -11,8 +11,6 @@
 #ifndef __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 #define __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 
-#include <stdbool.h>
-
 typedef struct ArrangerObject ArrangerObject;
 typedef struct Position       Position;
 typedef struct AudioClip      AudioClip;

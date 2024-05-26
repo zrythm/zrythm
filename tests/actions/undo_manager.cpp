@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#include <math.h>
-
 #include "actions/undo_manager.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -15,6 +13,7 @@
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
+#include <cmath>
 #include <locale.h>
 
 static void

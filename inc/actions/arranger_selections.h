@@ -10,8 +10,7 @@
 #ifndef __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 #define __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "actions/undoable_action.h"
 #include "dsp/audio_function.h"

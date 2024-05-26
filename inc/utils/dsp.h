@@ -15,8 +15,7 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-#include <stddef.h>
+#include <cstddef>
 
 #include "utils/math.h"
 #include "zrythm.h"

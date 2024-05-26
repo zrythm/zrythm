@@ -4,8 +4,6 @@
 #ifndef __GUI_BACKEND_FILE_MANAGER_H__
 #define __GUI_BACKEND_FILE_MANAGER_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 typedef struct SupportedFile SupportedFile;

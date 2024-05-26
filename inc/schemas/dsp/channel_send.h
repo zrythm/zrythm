@@ -4,8 +4,6 @@
 #ifndef __SCHEMAS_AUDIO_CHANNEL_SEND_H__
 #define __SCHEMAS_AUDIO_CHANNEL_SEND_H__
 
-#include <stdbool.h>
-
 #include "schemas/dsp/port.h"
 #include "utils/yaml.h"
 

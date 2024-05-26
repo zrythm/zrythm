@@ -7,7 +7,7 @@
  * Generic dialog.
  */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "dsp/engine.h"
 #include "gui/widgets/dialogs/generic_progress_dialog.h"

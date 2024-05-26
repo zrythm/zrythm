@@ -10,8 +10,6 @@
 #ifndef __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 #include "libpanel_wrapper.h"

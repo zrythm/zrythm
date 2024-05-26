@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "dsp/port_connection.h"
 #include "utils/types.h"
 #include "utils/yaml.h"

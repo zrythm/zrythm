@@ -10,8 +10,6 @@
 #ifndef __AUDIO_REGION_LINK_GROUP_H__
 #define __AUDIO_REGION_LINK_GROUP_H__
 
-#include <stdbool.h>
-
 #include "dsp/region_identifier.h"
 
 typedef struct ZRegion ZRegion;

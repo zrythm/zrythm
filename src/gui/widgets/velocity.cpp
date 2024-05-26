@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-
 #include "dsp/channel.h"
 #include "dsp/channel_track.h"
 #include "dsp/chord_track.h"
@@ -26,6 +24,8 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 /**
  * Draws the Velocity in the given cairo context in

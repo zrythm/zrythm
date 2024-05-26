@@ -10,7 +10,7 @@
 #ifndef __AUDIO_MARKER_H__
 #define __AUDIO_MARKER_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/position.h"
 #include "gui/backend/arranger_object.h"

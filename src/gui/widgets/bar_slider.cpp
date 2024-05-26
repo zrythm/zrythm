@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <math.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
@@ -15,6 +14,8 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface);

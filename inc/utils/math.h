@@ -37,13 +37,12 @@
 #ifndef __UTILS_MATH_H__
 #define __UTILS_MATH_H__
 
-#include <math.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "utils/types.h"
 
-#include <float.h>
+#include <cfloat>
+#include <cmath>
 
 /**
  * @addtogroup utils

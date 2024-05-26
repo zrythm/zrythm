@@ -10,8 +10,6 @@
 #ifndef __AUDIO_CLIP_H__
 #define __AUDIO_CLIP_H__
 
-#include <stdbool.h>
-
 #include "utils/audio.h"
 #include "utils/types.h"
 #include "utils/yaml.h"

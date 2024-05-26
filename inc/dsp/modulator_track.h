@@ -13,7 +13,7 @@
 #ifndef __AUDIO_MODULATOR_TRACK_H__
 #define __AUDIO_MODULATOR_TRACK_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/track.h"
 #include "utils/types.h"

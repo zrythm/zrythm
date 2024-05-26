@@ -10,7 +10,7 @@
 #ifndef __AUDIO_TRANSPORT_H__
 #define __AUDIO_TRANSPORT_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/port.h"
 #include "dsp/region.h"

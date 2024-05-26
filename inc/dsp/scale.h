@@ -12,7 +12,7 @@
 #ifndef __AUDIO_SCALE_H__
 #define __AUDIO_SCALE_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/chord_descriptor.h"
 

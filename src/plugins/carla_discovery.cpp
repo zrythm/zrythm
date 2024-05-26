@@ -7,8 +7,6 @@
 
 #ifdef HAVE_CARLA
 
-#  include <stdlib.h>
-
 #  include "plugins/cached_plugin_descriptors.h"
 #  include "plugins/carla_discovery.h"
 #  include "plugins/plugin_descriptor.h"
@@ -21,6 +19,7 @@
 #  include "zrythm_app.h"
 
 #  include <CarlaBackend.h>
+#  include <stdlib.h>
 
 static char *
 z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)

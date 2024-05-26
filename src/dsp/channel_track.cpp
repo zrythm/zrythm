@@ -3,7 +3,7 @@
  * SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/automation_tracklist.h"
 #include "dsp/channel_track.h"

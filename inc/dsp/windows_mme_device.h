@@ -33,9 +33,8 @@
 
 #    include <windows.h>
 
-#    include <stdint.h>
-
 #    include "zix/ring.h"
+#    include <stdint.h>
 
 typedef struct AudioEngine AudioEngine;
 typedef struct MidiEvent   MidiEvent;

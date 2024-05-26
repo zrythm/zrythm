@@ -7,8 +7,8 @@
  * Array helpers.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "utils/arrays.h"
 #include "utils/mem.h"

@@ -27,7 +27,7 @@
 #include "zrythm-config.h"
 
 #define _XOPEN_SOURCE 500
-#include <stdio.h>
+#include <cstdio>
 
 #include <ftw.h>
 #include <limits.h>
@@ -36,7 +36,7 @@
 #  include <windows.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <sys/stat.h>
 #include <sys/types.h>
 

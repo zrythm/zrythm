@@ -17,13 +17,11 @@
  SPDX-License-Identifier: ISC
 */
 
-#include <math.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "utils/symap.h"
 
@@ -33,6 +31,7 @@
 #include "lv2/options/options.h"
 #include "lv2/parameters/parameters.h"
 #include "lv2/urid/urid.h"
+#include <cmath>
 #include <lilv/lilv.h>
 #include <sndfile.h>
 
@@ -235,7 +234,7 @@ create_ports (LV2Apply * self)
 
       port->lilv_port = lport;
       port->index = i;
-      port->value = isnan (values[i]) ? 0.0f : values[i];
+      port->value = std::isnan (values[i]) ? 0.0f : values[i];
       port->optional =
         lilv_port_has_property (self->plugin, lport, lv2_connectionOptional);
 

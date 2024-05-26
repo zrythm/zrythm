@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cstdlib>
 #include <inttypes.h>
-#include <stdlib.h>
 
 #include "dsp/engine.h"
 #include "dsp/fader.h"

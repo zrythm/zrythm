@@ -10,7 +10,7 @@
 #ifndef __AUDIO_CHORD_DESCRIPTOR_H__
 #define __AUDIO_CHORD_DESCRIPTOR_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/position.h"
 #include "utils/yaml.h"

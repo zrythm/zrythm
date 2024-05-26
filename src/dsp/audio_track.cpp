@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
  */
 
-#include <math.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "dsp/audio_track.h"
 #include "dsp/automation_tracklist.h"
@@ -20,6 +19,8 @@
 #include "utils/dsp.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
+
+#include <cmath>
 
 void
 audio_track_init (Track * self)

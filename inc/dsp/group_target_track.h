@@ -10,8 +10,6 @@
 #ifndef __AUDIO_GROUP_TARGET_TRACK_H__
 #define __AUDIO_GROUP_TARGET_TRACK_H__
 
-#include <stdbool.h>
-
 typedef struct Track Track;
 
 #define TRACK_CAN_BE_GROUP_TARGET(tr) \

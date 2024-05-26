@@ -12,7 +12,7 @@
 #ifndef __AUDIO_CHORD_OBJECT_H__
 #define __AUDIO_CHORD_OBJECT_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/position.h"

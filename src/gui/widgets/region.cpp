@@ -3,8 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include <math.h>
-
 #include "dsp/audio_bus_track.h"
 #include "dsp/audio_region.h"
 #include "dsp/automation_region.h"
@@ -41,6 +39,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
+
+#include <cmath>
 
 static const GdkRGBA object_fill_color = { 1, 1, 1, 1 };
 

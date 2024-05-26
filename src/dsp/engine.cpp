@@ -29,9 +29,8 @@
 
 #include "zrythm-config.h"
 
-#include <math.h>
+#include <cstdlib>
 #include <signal.h>
-#include <stdlib.h>
 
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
@@ -82,6 +81,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include <cmath>
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"

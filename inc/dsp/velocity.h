@@ -10,7 +10,7 @@
 #ifndef __AUDIO_VELOCITY_H__
 #define __AUDIO_VELOCITY_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "dsp/region_identifier.h"
 #include "gui/backend/arranger_object.h"

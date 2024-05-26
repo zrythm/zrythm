@@ -12,8 +12,6 @@
 #ifndef __GUI_BACKEND_PIANO_ROLL_H__
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
-#include <stdbool.h>
-
 #include "gui/backend/editor_settings.h"
 
 typedef struct Track Track;

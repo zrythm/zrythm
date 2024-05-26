@@ -10,8 +10,6 @@
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
-#include <stdbool.h>
-
 /**
  * @addtogroup gui_backend
  *

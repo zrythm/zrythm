@@ -10,10 +10,11 @@
 #ifndef __UTILS_TYPES_H__
 #define __UTILS_TYPES_H__
 
+#include <cstdint>
+
 #include <gtk/gtk.h>
 
 #include <cinttypes>
-#include <cstdint>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"

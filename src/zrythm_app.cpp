@@ -39,6 +39,8 @@
 #  include <sys/mman.h>
 #  include <sys/resource.h>
 #endif
+#include <cstdlib>
+
 #include "actions/actions.h"
 #include "dsp/router.h"
 #include "gui/backend/file_manager.h"
@@ -73,7 +75,6 @@
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
 #include "project/project_init_flow_manager.h"
-#include <cstdlib>
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtksourceview/gtksource.h>

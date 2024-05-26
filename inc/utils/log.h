@@ -4,8 +4,6 @@
 #ifndef __UTILS_LOG_H__
 #define __UTILS_LOG_H__
 
-#include <stdbool.h>
-
 #include <gtk/gtk.h>
 
 typedef struct _LogViewerWidget LogViewerWidget;
