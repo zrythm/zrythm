@@ -6,19 +6,23 @@ juce_include_dirs = [
   include_directories('modules'),
 ]
 
+juce_srcs = [
+  'modules/juce_core/juce_core.cpp',
+  ]
+
 juce_cpp_public_args = [
   '-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1',
   '-DJUCE_DEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
   ]
+
 juce_cpp_private_args = [
   '-fno-single-precision-constant',
   ]
-juce_srcs = [
-  'modules/juce_core/juce_core.cpp',
-  ]
 juce_lib_deps = []
 if os_darwin
-  juce_srcs += ['modules/juce_core/juce_core.mm',]
+  juce_cpp_private_args += [
+     '-ObjC++',
+    ]
   juce_lib_deps += dependency (
     'appleframeworks',
     modules: [
