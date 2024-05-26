@@ -6,8 +6,10 @@
 #include <memory>
 
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 /** This is declared extern in zrythm.h. */
-std::unique_ptr<Zrythm>                 gZrythm = nullptr;
-std::unique_ptr<ZrythmDirectoryManager> gZrythmDirMgr =
-  std::make_unique<ZrythmDirectoryManager> ();
+std::unique_ptr<Zrythm> gZrythm = nullptr;
+
+/** This is declared extern in zrythm_app.h. */
+ZrythmApp * zrythm_app = NULL;

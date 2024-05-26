@@ -284,7 +284,7 @@ _backtrace_get (
         {
           char * str_datetime = datetime_get_for_filename ();
           char * user_bt_dir =
-            gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_BACKTRACE);
+            gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_BACKTRACE);
           char * backtrace_filepath = g_strdup_printf (
             "%s%sbacktrace_%s.txt", user_bt_dir, G_DIR_SEPARATOR_S,
             str_datetime);

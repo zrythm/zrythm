@@ -785,7 +785,7 @@ z_gtk_source_language_manager_get (void)
 
   /* add the new path if not already in the list */
   char * language_specs_dir =
-    gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
+    gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   g_return_val_if_fail (language_specs_dir, NULL);
   char ** tmp_dirs = g_strv_builder_end (after_paths_builder_tmp);
   if (!g_strv_contains ((const char * const *) tmp_dirs, language_specs_dir))
@@ -796,7 +796,7 @@ z_gtk_source_language_manager_get (void)
   g_free (language_specs_dir);
 
   /* add bundled dir for GNU/Linux packages */
-  language_specs_dir = gZrythmDirMgr->get_dir (
+  language_specs_dir = gZrythm->dir_mgr->get_dir (
     ZRYTHM_DIR_SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   g_strv_builder_add (after_paths_builder, language_specs_dir);
   g_free (language_specs_dir);

@@ -323,7 +323,10 @@ if get_option ('tests')
   endif
 
   test_link_libs = []
-  # tests fail to link on windows, and global externed variables show as NULL (even though gdb shows actual variables) with the shared lib
+  # using the static lib takes longer to link, however:
+  # - tests fail to link on windows
+  # - global externed variables show as NULL (even though gdb shows actual variables)
+  # when using the shared lib
   test_link_libs += zrythm_lib.get_static_lib ()
 
   foreach name, info : tests

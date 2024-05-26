@@ -9,6 +9,7 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -29,7 +30,7 @@ create_new (void)
 static char *
 get_cached_plugin_descriptors_file_path (void)
 {
-  char * zrythm_dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  char * zrythm_dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return g_build_filename (

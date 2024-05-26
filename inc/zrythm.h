@@ -370,6 +370,8 @@ public:
   /** Chord preset pack manager. */
   ChordPresetPackManager * chord_preset_pack_manager = nullptr;
 
+  std::unique_ptr<ZrythmDirectoryManager> dir_mgr;
+
   /**
    * String interner for internal things.
    */
@@ -433,8 +435,7 @@ public:
 /**
  * Global variable, should be available to all files.
  */
-extern std::unique_ptr<Zrythm>                 gZrythm;
-extern std::unique_ptr<ZrythmDirectoryManager> gZrythmDirMgr;
+extern std::unique_ptr<Zrythm> gZrythm;
 
 /**
  * @}

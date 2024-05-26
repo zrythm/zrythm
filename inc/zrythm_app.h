@@ -10,6 +10,10 @@
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
+#include "zrythm-config.h"
+
+#include <memory>
+
 #include "utils/types.h"
 
 #include <adwaita.h>
@@ -28,6 +32,7 @@ TYPEDEF_STRUCT_UNDERSCORED (BugReportDialogWidget);
 TYPEDEF_STRUCT_UNDERSCORED (GreeterWidget);
 TYPEDEF_STRUCT (Zrythm);
 TYPEDEF_STRUCT (UiCaches);
+class ZrythmDirectoryManager;
 
 /**
  * @addtogroup general

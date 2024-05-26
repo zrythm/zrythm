@@ -306,7 +306,7 @@ on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  char *  dir = gZrythmDirMgr->get_default_user_dir ();
+  char *  dir = gZrythm->dir_mgr->get_default_user_dir ();
   GFile * gf_dir = g_file_new_for_path (dir);
   g_message ("reset to %s", dir);
   ide_file_chooser_entry_set_file (self->fc_entry, gf_dir);
@@ -774,7 +774,7 @@ greeter_widget_init (GreeterWidget * self)
   }
 
   /* set zrythm dir */
-  char * dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  char * dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
   {
     AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("User path"));

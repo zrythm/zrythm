@@ -571,8 +571,8 @@ test_helper_zrythm_init_optimized (void)
 void
 test_helper_zrythm_cleanup (void)
 {
-  g_assert_nonnull (gZrythmDirMgr->testing_dir);
-  io_rmdir (gZrythmDirMgr->testing_dir, true);
+  g_assert_nonnull (gZrythm->dir_mgr->testing_dir);
+  io_rmdir (gZrythm->dir_mgr->testing_dir, true);
   object_free_w_func_and_null (project_free, gZrythm->project);
   if (gZrythm->use_pipewire_in_tests)
     {

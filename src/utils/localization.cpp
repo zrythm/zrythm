@@ -332,7 +332,7 @@ localization_init (
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
 #else
-  char * localedir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_LOCALEDIR);
+  char * localedir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE, localedir);
   bindtextdomain ("libadwaita", localedir);
   g_debug ("setting textdomain: %s, %s", GETTEXT_PACKAGE, localedir);

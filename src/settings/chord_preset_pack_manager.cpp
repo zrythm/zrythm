@@ -18,7 +18,7 @@
 static char *
 get_user_packs_path (void)
 {
-  char * zrythm_dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  char * zrythm_dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return g_build_filename (zrythm_dir, USER_PACKS_DIR_NAME, NULL);

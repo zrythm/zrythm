@@ -18,6 +18,7 @@
 #  include "utils/objects.h"
 #  include "utils/string.h"
 #  include "zrythm.h"
+#  include "zrythm_app.h"
 
 #  include <CarlaBackend.h>
 
@@ -45,7 +46,7 @@ z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)
   else
     {
       char * zrythm_libdir =
-        gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+        gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
       g_debug ("using zrythm_libdir: %s", zrythm_libdir);
       carla_discovery = g_build_filename (
         zrythm_libdir, "carla", carla_discovery_filename, NULL);

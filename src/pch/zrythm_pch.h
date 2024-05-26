@@ -13,5 +13,8 @@
 #include "zrythm.h"
 
 #include <glib.h>
+#include <gtk/gtk.h>
+
+#include "ext/juce/juce.h"
 
 #endif /* __PCH_ZRYTHM_PCH_H__ */

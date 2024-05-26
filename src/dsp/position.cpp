@@ -418,7 +418,7 @@ HOT static bool get_next_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-static inline bool
+static bool
 get_closest_snap_point (
   const Position * pos,
   Track *          track,

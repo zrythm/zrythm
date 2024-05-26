@@ -73,6 +73,7 @@ Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
   this->error_domain_symap = symap_new ();
   recent_projects_ = std::make_unique<StringArray> ();
 
+  this->dir_mgr = std::make_unique<ZrythmDirectoryManager> ();
   this->settings = settings_new ();
   this->recording_manager = recording_manager_new ();
 }
@@ -466,8 +467,7 @@ ZrythmDirectoryManager::get_dir (ZrythmDirType type)
           break;
         case ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR:
           {
-            char * parent_path =
-              gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
             res = g_build_filename (parent_path, "icons", NULL);
           }
           break;
@@ -545,7 +545,7 @@ Zrythm::init_user_dirs_and_files (GError ** error)
   GError * err = NULL;
 
 #define MK_USER_DIR(x) \
-  dir = gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_##x); \
+  dir = dir_mgr->get_dir (ZRYTHM_DIR_USER_##x); \
   g_return_val_if_fail (dir, false); \
   success = io_mkdir (dir, &err); \
   if (!success) \
@@ -577,8 +577,7 @@ Zrythm::init_templates ()
 
   GStrvBuilder * builder = g_strv_builder_new ();
   {
-    char * user_templates_dir =
-      gZrythmDirMgr->get_dir (ZRYTHM_DIR_USER_TEMPLATES);
+    char *  user_templates_dir = dir_mgr->get_dir (ZRYTHM_DIR_USER_TEMPLATES);
     char ** user_templates = io_get_files_in_dir (user_templates_dir, true);
     g_free (user_templates_dir);
     g_return_if_fail (user_templates);
@@ -588,7 +587,7 @@ Zrythm::init_templates ()
   if (!ZRYTHM_TESTING)
     {
       char * system_templates_dir =
-        gZrythmDirMgr->get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
+        dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
       char ** system_templates =
         io_get_files_in_dir (system_templates_dir, true);
       g_free (system_templates_dir);
