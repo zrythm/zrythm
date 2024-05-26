@@ -12,51 +12,6 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Runs the given command in the background, waits for
- * it to finish and returns its exit code.
- *
- * @param ms_timer A timer in ms to
- *   kill the process, or negative to not
- *   wait.
- */
-int
-system_run_cmd (const char * cmd, long ms_timer)
-{
-#ifdef _WIN32
-  STARTUPINFO         si;
-  PROCESS_INFORMATION pi;
-  ZeroMemory (&si, sizeof (si));
-  si.cb = sizeof (si);
-  ZeroMemory (&pi, sizeof (pi));
-  g_message ("attempting to run process %s", cmd);
-  BOOL b = CreateProcess (
-    NULL, cmd, NULL, NULL, TRUE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
-  if (!b)
-    {
-      g_critical ("create process failed for %s", cmd);
-      return -1;
-    }
-  /* wait for process to end */
-  DWORD dwMilliseconds = ms_timer >= 0 ? (DWORD) ms_timer : INFINITE;
-  WaitForSingleObject (pi.hProcess, dwMilliseconds);
-  DWORD dwExitCode = 0;
-  GetExitCodeProcess (pi.hProcess, &dwExitCode);
-  /* close process and thread handles */
-  CloseHandle (pi.hProcess);
-  CloseHandle (pi.hThread);
-  g_message ("windows process exit code: %d", (int) dwExitCode);
-  return (int) dwExitCode;
-#else
-  char timed_cmd[8000];
-  if (ms_timer >= 0)
-    {
-      sprintf (timed_cmd, "timeout %ld bash -c \"%s\"", ms_timer / 1000, cmd);
-    }
-  return system (timed_cmd);
-#endif
-}
-
 typedef struct ChildWatchData
 {
   bool exited;

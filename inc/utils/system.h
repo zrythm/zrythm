@@ -20,17 +20,6 @@
  */
 
 /**
- * Runs the given command in the background, waits for
- * it to finish and returns its exit code.
- *
- * @param ms_timer A timer in ms to
- *   kill the process, or negative to not
- *   wait.
- */
-int
-system_run_cmd (const char * cmd, long ms_timer);
-
-/**
  * Runs the command and returns the output, or NULL.
  *
  * This assumes that the process will exit within a
