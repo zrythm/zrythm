@@ -4,6 +4,10 @@
 #ifndef __PCH_ZRYTHM_PCH_H__
 #define __PCH_ZRYTHM_PCH_H__
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <memory>
 
 #include <glib.h>
