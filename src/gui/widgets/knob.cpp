@@ -26,6 +26,7 @@
  * ---
  */
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 
@@ -39,8 +40,6 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_WIDGET)
 

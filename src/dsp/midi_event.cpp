@@ -27,6 +27,7 @@
  * ---
  */
 
+#include <cmath>
 #include <cstdlib>
 #include <inttypes.h>
 #include <signal.h>
@@ -40,8 +41,6 @@
 #include "project.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
-
-#include <cmath>
 
 /**
  * Type of MIDI event.

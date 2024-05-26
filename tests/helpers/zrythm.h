@@ -49,6 +49,7 @@
 #include "dsp/marker_track.h"
 #include "dsp/tracklist.h"
 #include "plugins/plugin_manager.h"
+#include "settings/settings.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/datetime.h"
@@ -69,6 +70,9 @@
 #endif
 
 #include <project.h>
+
+extern std::unique_ptr<Zrythm> gZrythm;
+extern ZrythmApp *             zrythm_app;
 
 /**
  * @addtogroup tests
@@ -488,7 +492,12 @@ _test_helper_zrythm_init (
   LOG = log_obj;
 
   gZrythm.reset (new Zrythm (nullptr, false, optimized));
+  g_assert_true (gZrythm != nullptr);
   gZrythm->undo_stack_len = 64;
+  g_message ("%s", gZrythm->version);
+  char * zrythm_dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  g_assert_nonnull (zrythm_dir);
+  g_message ("%s", zrythm_dir);
   gZrythm->init ();
 
   if (use_pipewire)

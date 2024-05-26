@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/engine.h"
@@ -18,8 +19,6 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 /**
  * Updates snap points.

@@ -28,14 +28,13 @@
  * ---
  */
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/kmeter_dsp.h"
 #include "utils/objects.h"
 
 #include <glib.h>
-
-#include <cmath>
 
 /**
  * Process.

@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#include <cmath>
+
 #include "dsp/midi_region.h"
 #include "gui/backend/arranger_selections.h"
 #include "project.h"
@@ -13,7 +15,6 @@
 
 #include "tests/helpers/zrythm.h"
 
-#include <cmath>
 #include <locale.h>
 
 static void

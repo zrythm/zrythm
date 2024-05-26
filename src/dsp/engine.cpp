@@ -29,6 +29,7 @@
 
 #include "zrythm-config.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <signal.h>
 
@@ -81,8 +82,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"

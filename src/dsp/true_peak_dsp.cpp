@@ -24,14 +24,13 @@
  */
 
 #include <assert.h>
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/true_peak_dsp.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 /**
  * Process.

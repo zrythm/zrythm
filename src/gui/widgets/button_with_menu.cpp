@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 
@@ -8,8 +9,6 @@
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 G_DEFINE_TYPE (ButtonWithMenuWidget, button_with_menu_widget, GTK_TYPE_BOX)
 

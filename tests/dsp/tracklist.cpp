@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#include <cmath>
+
 #include "dsp/automation_region.h"
 #include "dsp/tracklist.h"
 #include "project.h"
@@ -14,7 +16,6 @@
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <cmath>
 #include <locale.h>
 
 static void

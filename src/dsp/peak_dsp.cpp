@@ -27,12 +27,11 @@
  * ---
  */
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/peak_dsp.h"
 #include "utils/objects.h"
-
-#include <cmath>
 
 /**
  * Process.

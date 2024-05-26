@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/control_port.h"
@@ -34,8 +35,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_WIDGET)
 

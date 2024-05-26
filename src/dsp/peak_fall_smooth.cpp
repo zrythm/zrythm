@@ -12,10 +12,10 @@
  * ---
  */
 
+#include <cmath>
+
 #include "dsp/peak_fall_smooth.h"
 #include "utils/objects.h"
-
-#include <cmath>
 
 PeakFallSmooth *
 peak_fall_smooth_new (void)

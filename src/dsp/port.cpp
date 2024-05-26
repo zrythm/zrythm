@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <inttypes.h>
@@ -44,7 +45,6 @@
 #include <gtk/gtk.h>
 
 #include "zix/ring.h"
-#include <cmath>
 
 #define SLEEPTIME_USEC 60
 

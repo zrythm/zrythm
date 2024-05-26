@@ -7,8 +7,6 @@
 
 #  ifdef HAVE_ALSA
 
-#    include <math.h>
-
 #    include "dsp/engine.h"
 #    include "dsp/engine_alsa.h"
 #    include "dsp/port.h"
@@ -19,6 +17,7 @@
 #    include <glib/gi18n.h>
 
 #    include <alsa/asoundlib.h>
+#    include <math.h>
 #    include <pthread.h>
 #    include <stdio.h>
 #    include <stdlib.h>

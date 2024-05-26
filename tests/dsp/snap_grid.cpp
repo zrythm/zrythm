@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#include <cmath>
+
 #include "dsp/audio_track.h"
 #include "dsp/engine_dummy.h"
 #include "project.h"
@@ -13,7 +15,6 @@
 
 #include "tests/helpers/zrythm.h"
 
-#include <cmath>
 #include <locale.h>
 
 static void

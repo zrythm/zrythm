@@ -5,8 +5,6 @@
 
 #ifdef HAVE_JACK
 
-#  include <math.h>
-
 #  include "dsp/channel.h"
 #  include "dsp/engine.h"
 #  include "dsp/engine_jack.h"
@@ -30,6 +28,8 @@
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
+
+#  include <math.h>
 
 #  if !defined _WIN32 && defined __GLIBC__
 #    include <dlfcn.h>

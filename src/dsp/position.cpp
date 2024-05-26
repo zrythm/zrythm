@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
 #include <inttypes.h>
 
 #include "dsp/engine.h"
@@ -23,8 +24,6 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 static int
 position_cmpfunc (const void * a, const void * b)

@@ -6,7 +6,6 @@
 #ifdef HAVE_CARLA
 
 #  include <inttypes.h>
-#  include <math.h>
 
 #  include "dsp/engine.h"
 #  include "dsp/midi_event.h"
@@ -40,6 +39,7 @@
 
 #  include <CarlaHost.h>
 #  include <CarlaNative.h>
+#  include <math.h>
 #  include <stdlib.h>
 
 typedef enum

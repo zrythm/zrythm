@@ -24,6 +24,7 @@
  * ---
  */
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 
@@ -33,8 +34,6 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 /**
  * Create a new Stretcher using the rubberband backend.

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/chord_track.h"
@@ -12,8 +13,6 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
-
-#include <cmath>
 
 /**
  * Creates a ScaleObject.

@@ -3,9 +3,9 @@
  * SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
  */
 
-#include "dsp/pan.h"
-
 #include <cmath>
+
+#include "dsp/pan.h"
 
 #define M_PIF 3.14159265358979323846f
 

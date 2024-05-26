@@ -3,13 +3,13 @@
 
 #include "zrythm-config.h"
 
+#include <cmath>
+
 #include "utils/dsp.h"
 #include "utils/math.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 #ifdef HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

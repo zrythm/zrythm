@@ -8,6 +8,7 @@
 #  include <windows.h>
 #endif
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -16,8 +17,6 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-#include <cmath>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"

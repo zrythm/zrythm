@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <cmath>
+
 #include "dsp/audio_region.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -87,8 +89,6 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include <cmath>
 
 static void
 on_project_selection_type_changed (void)

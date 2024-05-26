@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
 #include <cstdlib>
 
 #include "dsp/audio_region.h"
@@ -32,7 +33,6 @@
 
 #include <glib/gi18n.h>
 
-#include <cmath>
 #include <limits.h>
 
 #define TYPE(x) (ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_##x)

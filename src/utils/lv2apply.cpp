@@ -17,6 +17,7 @@
  SPDX-License-Identifier: ISC
 */
 
+#include <cmath>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
@@ -31,7 +32,6 @@
 #include "lv2/options/options.h"
 #include "lv2/parameters/parameters.h"
 #include "lv2/urid/urid.h"
-#include <cmath>
 #include <lilv/lilv.h>
 #include <sndfile.h>
 

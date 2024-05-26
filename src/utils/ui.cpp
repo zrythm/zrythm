@@ -5,6 +5,8 @@
 
 #include "zrythm-config.h"
 
+#include <cmath>
+
 #include "dsp/engine.h"
 #include "dsp/engine_rtaudio.h"
 #include "dsp/engine_sdl.h"
@@ -33,8 +35,6 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include <cmath>
 
 /**
  * Sets cursor from icon name.

@@ -4,6 +4,8 @@
 /** \file
  */
 
+#include <cmath>
+
 #include "dsp/automation_point.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -29,8 +31,6 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include <cmath>
 
 static AutomationPoint *
 _create_new (const Position * pos)

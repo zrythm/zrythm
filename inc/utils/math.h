@@ -37,12 +37,11 @@
 #ifndef __UTILS_MATH_H__
 #define __UTILS_MATH_H__
 
+#include <cfloat>
+#include <cmath>
 #include <cstdint>
 
 #include "utils/types.h"
-
-#include <cfloat>
-#include <cmath>
 
 /**
  * @addtogroup utils

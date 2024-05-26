@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+
 #include "dsp/engine.h"
 #include "project.h"
 #include "utils/audio.h"
@@ -11,7 +13,6 @@
 
 #include <glib/gi18n.h>
 
-#include <cmath>
 #include <sndfile.h>
 #include <unistd.h>
 

@@ -29,6 +29,8 @@
  */
 // clang-format on
 
+#include <cmath>
+
 #include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math.h"
@@ -36,8 +38,6 @@
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
-
-#include <cmath>
 
 const char **
 curve_algorithm_get_strings (void)
