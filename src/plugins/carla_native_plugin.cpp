@@ -1914,90 +1914,90 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
     case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
     case ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP:
     case ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX:
-      if (show)
-        {
-          char * title = plugin_generate_window_title (pl);
-          g_debug ("plugin window title '%s'", title);
-          carla_set_custom_ui_title (self->host_handle, 0, title);
-          g_free (title);
+      {
+        if (show)
+          {
+            char * title = plugin_generate_window_title (pl);
+            g_debug ("plugin window title '%s'", title);
+            carla_set_custom_ui_title (self->host_handle, 0, title);
+            g_free (title);
 
-          /* set whether to keep window on top */
-          if (
-            ZRYTHM_HAVE_UI
-            && g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
-            {
+            /* set whether to keep window on top */
+            if (
+              ZRYTHM_HAVE_UI
+              && g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
+              {
 #  if defined(HAVE_X11) && !defined(GDK_WINDOWING_WAYLAND)
-              Window xid = z_gtk_window_get_x11_xid (GTK_WINDOW (MAIN_WINDOW));
-              g_debug (
-                "FRONTEND_WIN_ID: "
-                "setting X11 parent to %lx",
-                xid);
-              char xid_str[400];
-              sprintf (xid_str, "%lx", xid);
-              carla_set_engine_option (
-                self->host_handle, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID,
-                0, xid_str);
+                Window xid = z_gtk_window_get_x11_xid (GTK_WINDOW (MAIN_WINDOW));
+                g_debug (
+                  "FRONTEND_WIN_ID: "
+                  "setting X11 parent to %lx",
+                  xid);
+                char xid_str[400];
+                sprintf (xid_str, "%lx", xid);
+                carla_set_engine_option (
+                  self->host_handle,
+                  CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0, xid_str);
 #  else
-              g_warning (
-                "stay-on-top unavailable on this "
-                "window manager");
+                g_warning (
+                  "stay-on-top unavailable on this "
+                  "window manager");
 #  endif
-            }
-        }
+              }
+          }
 
 #  if defined(_WIN32)
-      HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
-      g_debug (
-        "FRONTEND_WIN_ID: "
-        "setting Windows parent to %" PRIxPTR,
-        hwnd);
-      char hwnd_str[400];
-      sprintf (hwnd_str, "%" PRIxPTR, hwnd);
-      carla_set_engine_option (
-        self->host_handle, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-        hwnd_str);
+        HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
+        g_debug ("FRONTEND_WIN_ID: setting Windows parent to %" PRIxPTR, hwnd);
+        char hwnd_str[400];
+        sprintf (hwnd_str, "%" PRIxPTR, hwnd);
+        carla_set_engine_option (
+          self->host_handle, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+          hwnd_str);
 #  endif
 
-      {
-        g_message (
-          "Attempting to %s UI for %s", show ? "show" : "hide",
-          pl->setting->descr->name);
-        GdkGLContext * context = clear_gl_context ();
-        carla_show_custom_ui (self->host_handle, 0, show);
-        return_gl_context (context);
-        g_message ("Completed %s UI", show ? "show" : "hide");
-        pl->visible = show;
+        {
+          g_message (
+            "Attempting to %s UI for %s", show ? "show" : "hide",
+            pl->setting->descr->name);
+          GdkGLContext * context = clear_gl_context ();
+          carla_show_custom_ui (self->host_handle, 0, show);
+          return_gl_context (context);
+          g_message ("Completed %s UI", show ? "show" : "hide");
+          pl->visible = show;
+        }
+
+        if (self->tick_cb)
+          {
+            g_debug ("removing tick callback for %s", pl->setting->descr->name);
+            g_source_remove (self->tick_cb);
+            self->tick_cb = 0;
+          }
+
+        if (show)
+          {
+            g_return_if_fail (MAIN_WINDOW);
+            g_debug ("setting tick callback for %s", pl->setting->descr->name);
+            /* do not use tick callback: */
+            /* falktx: I am doing some checks on ildaeil/carla, and see there is
+             * a nice way without conflicts to avoid the GL context issues. it
+             * came from cardinal, where I cannot draw plugin UIs in the same
+             * function as the main stuff, because it is in between other opengl
+             * calls (before and after). the solution I found was to have a
+             * dedicated idle timer, and handle the plugin UI stuff there,
+             * outside of the main application draw function */
+            self->tick_cb = g_timeout_add_full (
+              G_PRIORITY_DEFAULT,
+              /* 60 fps */
+              1000 / 60, carla_plugin_tick_cb, self,
+              carla_plugin_tick_cb_destroy);
+          }
+
+        if (!ZRYTHM_TESTING)
+          {
+            EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, pl);
+          }
       }
-
-      if (self->tick_cb)
-        {
-          g_debug ("removing tick callback for %s", pl->setting->descr->name);
-          g_source_remove (self->tick_cb);
-          self->tick_cb = 0;
-        }
-
-      if (show)
-        {
-          g_return_if_fail (MAIN_WINDOW);
-          g_debug ("setting tick callback for %s", pl->setting->descr->name);
-          /* do not use tick callback: */
-          /* falktx: I am doing some checks on ildaeil/carla, and see there is a
-           * nice way without conflicts to avoid the GL context issues. it came
-           * from cardinal, where I cannot draw plugin UIs in the same function
-           * as the main stuff, because it is in between other opengl calls
-           * (before and after). the solution I found was to have a dedicated
-           * idle timer, and handle the plugin UI stuff there, outside of the
-           * main application draw function */
-          self->tick_cb = g_timeout_add_full (
-            G_PRIORITY_DEFAULT,
-            /* 60 fps */
-            1000 / 60, carla_plugin_tick_cb, self, carla_plugin_tick_cb_destroy);
-        }
-
-      if (!ZRYTHM_TESTING)
-        {
-          EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, pl);
-        }
       break;
     default:
       break;

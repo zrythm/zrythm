@@ -17,12 +17,11 @@
 #include "dsp/position.h"
 #include "dsp/region.h"
 
-typedef struct Port                   Port;
-typedef struct _AutomationTrackWidget AutomationTrackWidget;
-typedef struct Track                  Track;
-typedef struct AutomationTracklist    AutomationTracklist;
-typedef struct CustomButtonWidget     CustomButtonWidget;
-typedef struct AutomationModeWidget   AutomationModeWidget;
+typedef struct Port                 Port;
+typedef struct Track                Track;
+typedef struct AutomationTracklist  AutomationTracklist;
+typedef struct CustomButtonWidget   CustomButtonWidget;
+typedef struct AutomationModeWidget AutomationModeWidget;
 
 /**
  * @addtogroup dsp
