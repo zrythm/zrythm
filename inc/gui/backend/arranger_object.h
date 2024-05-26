@@ -419,7 +419,7 @@ arranger_object_select (
  *   for intersection with \ref start.
  */
 NONNULL_ARGS (1)
-PURE WARN_UNUSED_RESULT bool arranger_object_is_hit (
+WARN_UNUSED_RESULT bool arranger_object_is_hit (
   const ArrangerObject * self,
   const Position *       start,
   const Position *       end);

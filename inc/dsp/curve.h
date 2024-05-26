@@ -160,7 +160,7 @@ curve_algorithm_set_g_settings_mapping (
 HOT NONNULL double
 curve_get_normalized_y (double x, CurveOptions * opts, int start_higher);
 
-PURE bool
+bool
 curve_options_are_equal (const CurveOptions * a, const CurveOptions * b);
 
 /**

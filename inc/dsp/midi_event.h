@@ -124,7 +124,7 @@ midi_event_set_velocity (MidiEvent * ev, midi_byte_t vel);
 void
 midi_event_print (const MidiEvent * ev);
 
-PURE static inline bool
+static inline bool
 midi_events_are_equal (const MidiEvent * src, const MidiEvent * dest)
 {
   return dest->time == src->time && dest->raw_buffer[0] == src->raw_buffer[0]

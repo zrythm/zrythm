@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 
-PURE static int
+static int
 position_cmpfunc (const void * a, const void * b)
 {
   const Position * posa = (Position const *) a;
@@ -206,7 +206,7 @@ position_set_min_size (
  * @param p1 Snap point 1.
  * @param p2 Snap point 2.
  */
-PURE static inline Position *
+static inline Position *
 closest_snap_point (
   const Position * const pos,
   Position * const       p1,

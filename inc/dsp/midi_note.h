@@ -111,7 +111,7 @@ midi_note_set_cache_val (MidiNote * self, const uint8_t val);
 /**
  * Returns 1 if the MidiNotes match, 0 if not.
  */
-NONNULL PURE int
+NONNULL int
 midi_note_is_equal (MidiNote * src, MidiNote * dest);
 
 /**

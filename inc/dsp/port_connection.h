@@ -76,7 +76,7 @@ port_connection_update (
   bool             locked,
   bool             enabled);
 
-NONNULL PURE bool
+NONNULL bool
 port_connection_is_send (const PortConnection * self);
 
 NONNULL void

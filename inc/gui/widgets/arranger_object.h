@@ -66,7 +66,7 @@ arranger_object_is_fade (
  *
  * @param x X in local coordinates.
  */
-NONNULL PURE bool
+NONNULL bool
 arranger_object_is_resize_l (ArrangerObject * self, const int x);
 
 /**

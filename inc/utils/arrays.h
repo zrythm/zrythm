@@ -237,7 +237,7 @@ array_shuffle (void * _array, size_t n, size_t size);
  *
  * The element exists if the pointers are equal.
  */
-NONNULL PURE WARN_UNUSED_RESULT int
+NONNULL WARN_UNUSED_RESULT int
 _array_contains (void ** _array, int size, void * element);
 
 /**

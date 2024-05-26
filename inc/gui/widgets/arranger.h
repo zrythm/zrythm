@@ -458,7 +458,7 @@ typedef struct _ArrangerWidget
   GtkPopoverMenu * popover_menu;
 } ArrangerWidget;
 
-PURE const char *
+const char *
 arranger_widget_get_type_str (ArrangerWidgetType type);
 
 /**
@@ -590,7 +590,7 @@ arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events
  * Useful to know if we need transient widgets or
  * not.
  */
-NONNULL PURE bool
+NONNULL bool
 arranger_widget_is_in_moving_operation (ArrangerWidget * self);
 
 /**
@@ -702,7 +702,7 @@ typedef void (*ArrangerWidgetForeachFunc) (ArrangerWidget * arranger);
 NONNULL void
 arranger_widget_foreach (ArrangerWidgetForeachFunc func);
 
-NONNULL PURE RulerWidget *
+NONNULL RulerWidget *
 arranger_widget_get_ruler (ArrangerWidget * self);
 
 /**

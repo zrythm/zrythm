@@ -739,7 +739,7 @@ ui_get_mid_color (
 /**
  * Returns if the 2 rectangles overlay.
  */
-NONNULL PURE static inline bool
+NONNULL static inline bool
 ui_rectangle_overlap (
   const GdkRectangle * const rect1,
   const GdkRectangle * const rect2)

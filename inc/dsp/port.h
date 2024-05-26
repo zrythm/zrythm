@@ -131,7 +131,7 @@ typedef struct PortScalePoint
   char * label;
 } PortScalePoint;
 
-PURE int
+int
 port_scale_point_cmp (const void * _a, const void * _b);
 
 NONNULL PortScalePoint *
@@ -766,7 +766,7 @@ port_set_expose_to_backend (Port * self, int expose);
 /**
  * Returns if the port is exposed to the backend.
  */
-NONNULL PURE static inline bool
+NONNULL static inline bool
 port_is_exposed_to_backend (const Port * self)
 {
   return self->internal_type == PortInternalType::INTERNAL_JACK_PORT

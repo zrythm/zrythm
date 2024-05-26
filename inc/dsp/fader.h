@@ -293,13 +293,13 @@ fader_set_muted (Fader * self, bool mute, bool fire_events);
 /**
  * Returns if the fader is muted.
  */
-NONNULL PURE bool
+NONNULL bool
 fader_get_muted (const Fader * const self);
 
 /**
  * Returns if the track is soloed.
  */
-HOT NONNULL PURE bool
+HOT NONNULL bool
 fader_get_soloed (const Fader * const self);
 
 /**
@@ -334,7 +334,7 @@ fader_set_soloed (Fader * self, bool solo, bool fire_events);
  * Gets the fader amplitude (not db)
  * FIXME is void * necessary? do it in the caller.
  */
-NONNULL PURE float
+NONNULL float
 fader_get_amp (void * self);
 
 /**

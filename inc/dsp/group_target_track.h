@@ -76,7 +76,7 @@ group_target_track_add_children (
  * Returns the index of the child matching the
  * given hash.
  */
-NONNULL PURE int
+NONNULL int
 group_target_track_find_child (Track * self, unsigned int track_name_hash);
 
 #endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

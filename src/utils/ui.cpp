@@ -273,7 +273,7 @@ ui_px_to_pos_editor (double px, Position * pos, bool has_padding)
   px_to_pos (px, pos, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
 }
 
-PURE NONNULL static inline int
+NONNULL static inline int
 pos_to_px (const Position * pos, int use_padding, RulerWidget * ruler)
 {
   int px = (int) (pos->ticks * ruler->px_per_tick);

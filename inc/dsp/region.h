@@ -529,7 +529,7 @@ region_copy (ZRegion * src, ZRegion * dest);
  *
  * @public @memberof ZRegion
  */
-NONNULL PURE int
+NONNULL int
 region_is_hit (
   const ZRegion *      region,
   const signed_frame_t gframes,
@@ -560,7 +560,7 @@ region_is_hit_by_range (
  * @param pos The position.
  */
 NONNULL_ARGS (3)
-PURE ZRegion * region_at_position (
+ZRegion * region_at_position (
   const Track *           track,
   const AutomationTrack * at,
   const Position *        pos);

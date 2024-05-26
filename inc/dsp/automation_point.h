@@ -162,7 +162,7 @@ automation_point_get_port (const AutomationPoint * const self);
 AutomationTrack *
 automation_point_get_automation_track (const AutomationPoint * const self);
 
-PURE int
+int
 automation_point_is_equal (AutomationPoint * a, AutomationPoint * b);
 
 /**
