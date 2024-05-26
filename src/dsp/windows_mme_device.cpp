@@ -34,6 +34,7 @@
 #  include "dsp/windows_mmcss.h"
 #  include "dsp/windows_mme_device.h"
 #  include "project.h"
+#  include "utils/objects.h"
 
 WindowsMmeDevice *
 windows_mme_device_new (int input, int index)
@@ -56,7 +57,7 @@ windows_mme_device_new (int input, int index)
       return NULL;
     }
 
-  WindowsMmeDevice * self = calloc (1, sizeof (WindowsMmeDevice));
+  WindowsMmeDevice * self = object_new (WindowsMmeDevice);
   self->is_input = input;
   self->id = index;
   if (input)
