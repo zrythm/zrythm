@@ -621,7 +621,7 @@ io_get_registry_string_val (const char * path)
   char  prefix[500];
   sprintf (prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME, PROGRAM_NAME);
   RegGetValue (
-    HKEY_LOCAL_MACHINE, prefix, path, RRF_RT_ANY, NULL, (PVOID) &value,
+    HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, NULL, (PVOID) &value,
     &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);
