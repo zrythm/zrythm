@@ -26,7 +26,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include "dsp/channel.h"
 #  include "dsp/engine.h"
@@ -268,4 +268,4 @@ engine_windows_mme_tear_down (AudioEngine * engine)
   return 0;
 }
 
-#endif // _WOE32
+#endif // _WIN32

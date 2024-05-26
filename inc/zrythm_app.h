@@ -30,7 +30,6 @@ G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
 TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 TYPEDEF_STRUCT_UNDERSCORED (BugReportDialogWidget);
 TYPEDEF_STRUCT_UNDERSCORED (GreeterWidget);
-TYPEDEF_STRUCT (Zrythm);
 TYPEDEF_STRUCT (UiCaches);
 class ZrythmDirectoryManager;
 

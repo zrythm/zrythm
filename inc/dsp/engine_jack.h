@@ -15,7 +15,7 @@
 #  define JACK_PORT_T(exp) ((jack_port_t *) exp)
 
 TYPEDEF_STRUCT (AudioEngine);
-TYPEDEF_ENUM (AudioEngineJackTransportType);
+enum class AudioEngineJackTransportType;
 
 /**
  * Tests if JACK is working properly.

@@ -19,7 +19,7 @@
 
 #include <glib.h>
 
-typedef struct Zrythm Zrythm;
+class Zrythm;
 typedef struct ZEvent ZEvent;
 
 /**

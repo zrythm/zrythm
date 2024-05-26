@@ -186,7 +186,7 @@ plugin_protocol_is_supported (ZPluginProtocol protocol)
   if (protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU)
     return false;
 #endif
-#if defined(_WOE32) || defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__)
   if (
     protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA
     || protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI)

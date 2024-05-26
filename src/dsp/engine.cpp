@@ -528,7 +528,7 @@ setup_dummy_midi:
         }
       break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
     case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
       mret = engine_windows_mme_setup (self);
       break;
@@ -762,7 +762,7 @@ init_common (AudioEngine * self)
       self->midi_backend = MidiBackend::MIDI_BACKEND_JACK;
       break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
     case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
       self->midi_backend = MidiBackend::MIDI_BACKEND_WINDOWS_MME;
       break;
@@ -1194,7 +1194,7 @@ engine_activate (AudioEngine * self, bool activate)
     {
       engine_dummy_activate (self, activate);
     }
-#ifdef _WOE32
+#ifdef _WIN32
   if (self->midi_backend == MidiBackend::MIDI_BACKEND_WINDOWS_MME)
     {
       engine_windows_mme_activate (self, activate);
@@ -2034,7 +2034,7 @@ engine_set_default_backends (bool reset_to_dummy)
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
     }
 
-#if defined(HAVE_JACK) && !defined(_WOE32) && !defined(__APPLE__)
+#if defined(HAVE_JACK) && !defined(_WIN32) && !defined(__APPLE__)
   if (engine_jack_test (NULL))
     {
       g_settings_set_enum (
@@ -2061,7 +2061,7 @@ engine_set_default_backends (bool reset_to_dummy)
   /* default to RtAudio if above failed */
   if (!audio_set)
     {
-#ifdef _WOE32
+#ifdef _WIN32
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO));
@@ -2077,7 +2077,7 @@ engine_set_default_backends (bool reset_to_dummy)
   /* default to RtMidi if above failed */
   if (!midi_set)
     {
-#ifdef _WOE32
+#ifdef _WIN32
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI));

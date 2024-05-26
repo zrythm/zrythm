@@ -52,11 +52,11 @@
 
 #include "zrythm-config.h"
 
-#ifndef _WOE32
+#ifndef _WIN32
 #  include <sys/resource.h>
 #endif
 
-#if !defined _WOE32 && defined __GLIBC__
+#if !defined _WIN32 && defined __GLIBC__
 #  include <dlfcn.h>
 #  include <limits.h>
 #endif
@@ -272,7 +272,7 @@ static size_t
 get_stack_size (void)
 {
   size_t rv = 0;
-#if !defined _WOE32 && defined __GLIBC__
+#if !defined _WIN32 && defined __GLIBC__
 
   size_t pt_min_stack = 16384;
 

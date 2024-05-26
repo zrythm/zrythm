@@ -754,6 +754,7 @@ test_strict_cflags = [
   '-Werror=sizeof-array-argument',
   '-Werror=lto-type-mismatch',
   '-Werror=odr',
+  '-Werror=mismatched-tags',
   ]
 
 if is_gcc

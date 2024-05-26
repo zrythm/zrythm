@@ -25,7 +25,7 @@
 /* This file is taken from
  * https://github.com/vikyd/cpu_usage */
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include <Windows.h>
 
@@ -126,4 +126,4 @@ cpu_windows_get_usage (int pid)
 
 } // extern "C"
 
-#endif // _WOE32
+#endif // _WIN32

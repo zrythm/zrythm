@@ -10,13 +10,15 @@
 #ifndef __AUDIO_RECORDING_MANAGER_H__
 #define __AUDIO_RECORDING_MANAGER_H__
 
+#include "dsp/region_identifier.h"
 #include "utils/types.h"
 
 #include "zix/sem.h"
 
-typedef struct ObjectPool     ObjectPool;
-typedef struct TrackProcessor TrackProcessor;
-typedef struct MPMCQueue      MPMCQueue;
+typedef struct ObjectPool         ObjectPool;
+typedef struct TrackProcessor     TrackProcessor;
+typedef struct MPMCQueue          MPMCQueue;
+typedef struct ArrangerSelections ArrangerSelections;
 
 /**
  * @addtogroup dsp
@@ -80,9 +82,9 @@ typedef struct RecordingManager
 REALTIME
 void
 recording_manager_handle_recording (
-  RecordingManager *                  self,
-  const TrackProcessor *              track_processor,
-  const EngineProcessTimeInfo * const time_nfo);
+  RecordingManager *            self,
+  const TrackProcessor *        track_processor,
+  const EngineProcessTimeInfo * time_nfo);
 
 /**
  * GSourceFunc to be added using idle add.
@@ -102,7 +104,7 @@ recording_manager_process_events (RecordingManager * self);
  * Must be called from a GTK thread.
  */
 RecordingManager *
-recording_manager_new (void);
+recording_manager_new ();
 
 void
 recording_manager_free (RecordingManager * self);

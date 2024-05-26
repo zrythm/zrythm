@@ -26,7 +26,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 
 #  ifndef __AUDIO_WINDOWS_MME_DEVICE_H__
 #    define __AUDIO_WINDOWS_MME_DEVICE_H__
@@ -197,4 +197,4 @@ windows_mme_device_free (WindowsMmeDevice * dev);
  */
 
 #  endif
-#endif // G_OS_WIN32
+#endif // _WIN32

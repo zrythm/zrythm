@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <windows.h>
 /*#define DBGHELP_TRANSLATE_TCHAR*/
 #  include <dbghelp.h>
@@ -54,7 +54,7 @@
 #  endif
 #endif
 
-#if !defined(_WOE32)
+#if !defined(_WIN32)
 /**
  * Resolve symbol name and source location given
  * the path to the executable and an address.
@@ -349,7 +349,7 @@ read_traditional_bt:
     }
 #endif /* CAN_USE_LIBBACKTRACE */
 
-#if defined(_WOE32)
+#if defined(_WIN32)
   void * stack[100];
   HANDLE process = GetCurrentProcess ();
 
@@ -400,7 +400,7 @@ read_traditional_bt:
     }
   free (symbol);
   free (line);
-#else /* else if not _WOE32 */
+#else /* else if not _WIN32 */
   void *  array[max_lines];
   char ** strings;
 

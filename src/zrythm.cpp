@@ -3,42 +3,28 @@
 
 #include "zrythm-config.h"
 
-#ifndef _WOE32
+#ifndef _WIN32
 #  include <sys/mman.h>
 #endif
-#include <stdlib.h>
 
-#include "actions/actions.h"
-#include "actions/undo_manager.h"
-#include "dsp/engine.h"
-#include "dsp/quantize_options.h"
 #include "dsp/recording_manager.h"
 #include "dsp/router.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/file_manager.h"
-#include "gui/backend/piano_roll.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
-#include "utils/arrays.h"
 #include "utils/cairo.h"
 #include "utils/curl.h"
 #include "utils/env.h"
 #include "utils/error.h"
-#include "utils/gtk.h"
 #include "utils/io.h"
-#include "utils/localization.h"
-#include "utils/log.h"
-#include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "utils/pcg_rand.h"
 #include "utils/string.h"
 #include "utils/symap.h"
-#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -347,7 +333,7 @@ Zrythm::is_latest_release (const char * remote_latest_release)
 char *
 Zrythm::get_prefix (void)
 {
-#if defined(_WOE32) && defined(INSTALLER_VER)
+#if defined(_WIN32) && defined(INSTALLER_VER)
   return io_get_registry_string_val ("InstallPath");
 #elif defined(__APPLE__) && defined(INSTALLER_VER)
   char bundle_path[PATH_MAX];

@@ -32,7 +32,7 @@
 #include <ftw.h>
 #include <limits.h>
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <windows.h>
 #endif
 
@@ -198,7 +198,7 @@ io_path_get_basename_without_ext (const char * filename)
 char *
 io_path_get_parent_dir (const char * path)
 {
-#ifdef _WOE32
+#ifdef _WIN32
 #  define PATH_SEP "\\\\"
 #  define ROOT_REGEX "[A-Z]:" PATH_SEP
 #else
@@ -575,7 +575,7 @@ io_open_directory (const char * path)
   g_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
 
   char command[800];
-#ifdef _WOE32
+#ifdef _WIN32
   char * canonical_path = g_canonicalize_filename (path, NULL);
   char * new_path = string_replace (canonical_path, "\\", "\\\\");
   g_free (canonical_path);
@@ -612,7 +612,7 @@ io_escape_dir_name (char * dest, const char * dir)
     }
 }
 
-#ifdef _WOE32
+#ifdef _WIN32
 char *
 io_get_registry_string_val (const char * path)
 {

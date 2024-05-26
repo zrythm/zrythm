@@ -412,7 +412,7 @@ bot_bar_widget_update_status (BotBarWidget * self)
     "%s: %s%s%s%s | "
     "%s: %s%s%s\n"
     "%s: %s%d frames%s "
-#ifndef _WOE32
+#ifndef _WIN32
     "(<a href=\"change\">%s</a>) "
 #endif
     "| "
@@ -430,7 +430,7 @@ bot_bar_widget_update_status (BotBarWidget * self)
      * translation short */
     _ ("Buf sz"), color_prefix,
     AUDIO_ENGINE->activated ? AUDIO_ENGINE->block_length : 0, color_suffix,
-#ifndef _WOE32
+#ifndef _WIN32
     /* TRANSLATORS: verb - change buffer size */
     _ ("change"),
 #endif

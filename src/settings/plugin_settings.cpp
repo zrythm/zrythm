@@ -149,7 +149,7 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #endif
     }
 
-#if defined(_WOE32) && defined(HAVE_CARLA)
+#if defined(_WIN32) && defined(HAVE_CARLA)
   /* open all LV2 plugins with custom UIs using
    * carla */
   if (descr->has_custom_ui && !self->force_generic_ui)

@@ -175,7 +175,7 @@ plugin_manager_get_lv2_paths (const PluginManager * self)
   if (paths_from_settings[0] == NULL)
     {
       /* no paths given - use default */
-#ifdef _WOE32
+#ifdef _WIN32
       g_strv_builder_add_many (
         builder, "C:\\Program Files\\Common Files\\LV2", NULL);
 #elif defined(__APPLE__)
@@ -267,7 +267,7 @@ plugin_manager_get_vst2_paths (const PluginManager * self)
   if (paths_from_settings[0] == NULL)
     {
       /* no paths given - use default */
-#  ifdef _WOE32
+#  ifdef _WIN32
       g_strv_builder_add_many (
         builder, "C:\\Program Files\\Common Files\\VST2",
         "C:\\Program Files\\VSTPlugins",
@@ -332,7 +332,7 @@ plugin_manager_get_vst3_paths (const PluginManager * self)
   if (paths_from_settings[0] == NULL)
     {
       /* no paths given - use default */
-#  ifdef _WOE32
+#  ifdef _WIN32
       g_strv_builder_add_many (
         builder, "C:\\Program Files\\Common Files\\VST3",
         "C:\\Program Files\\Common Files\\VST3", NULL);
@@ -532,7 +532,7 @@ plugin_manager_get_clap_paths (const PluginManager * self)
   if (paths_from_settings[0] == NULL)
     {
       /* no paths given - use default */
-#  ifdef _WOE32
+#  ifdef _WIN32
       g_strv_builder_add_many (
         builder, "C:\\Program Files\\Common Files\\CLAP",
         "C:\\Program Files (x86)\\Common Files\\CLAP", NULL);
@@ -840,7 +840,7 @@ plugin_manager_begin_scan (
       z_carla_discovery_start (
         self->carla_discovery, CarlaBackend::BINARY_NATIVE, cur);
       /* also scan 32-bit on windows */
-#ifdef _WOE32
+#ifdef _WIN32
       z_carla_discovery_start (
         self->carla_discovery, CarlaBackend::BINARY_WIN32, cur);
 #endif

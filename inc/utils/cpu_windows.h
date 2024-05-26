@@ -13,7 +13,7 @@
 #ifndef __UTILS_CPU_WINDOWS_H__
 #define __UTILS_CPU_WINDOWS_H__
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 
 #  ifdef __cplusplus
 extern "C" {
@@ -32,6 +32,6 @@ cpu_windows_get_usage (int pid);
 }
 #  endif
 
-#endif // G_OS_WIN32
+#endif // _WIN32
 
 #endif

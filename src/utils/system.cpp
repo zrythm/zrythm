@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <windows.h>
 #endif
 
@@ -24,7 +24,7 @@
 int
 system_run_cmd (const char * cmd, long ms_timer)
 {
-#ifdef _WOE32
+#ifdef _WIN32
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
   ZeroMemory (&si, sizeof (si));
@@ -101,7 +101,7 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
 
   /* create channels used to read output */
   GIOChannel * out_ch =
-#ifdef _WOE32
+#ifdef _WIN32
     g_io_channel_win32_new_fd (out);
 #else
     g_io_channel_unix_new (out);

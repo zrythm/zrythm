@@ -28,7 +28,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include "dsp/windows_mmcss.h"
 
@@ -206,4 +206,4 @@ windows_mmcss_set_thread_priority (HANDLE task_handle, AVRT_PRIORITY priority)
   return 0;
 }
 
-#endif // _WOE32
+#endif // _WIN32

@@ -36,7 +36,7 @@
 
 #include <stdio.h>
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <process.h>
 #endif
 
@@ -117,7 +117,7 @@ static GLogLevelFlags g_log_msg_prefix =
   G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL
   | G_LOG_LEVEL_DEBUG;
 
-#ifdef _WOE32
+#ifdef _WIN32
 static gboolean win32_keep_fatal_message = FALSE;
 static gchar    fatal_msg_buf[1000] =
   "Unspecified fatal error encountered, aborting.";
@@ -162,12 +162,12 @@ _log_abort (gboolean breakpoint)
       _exit (1);
     }
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
   debugger_present = IsDebuggerPresent ();
 #else
   /* Assume GDB is attached. */
   debugger_present = TRUE;
-#endif /* !G_OS_WIN32 */
+#endif /* !_WIN32 */
 
   /*g_warn_if_reached ();*/
 
@@ -419,7 +419,7 @@ mklevel_prefix (
   if (log_level & ALERT_LEVELS)
     strcat (level_prefix, " **");
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
   if ((log_level & G_LOG_FLAG_FATAL) != 0 && !g_test_initialized ())
     win32_keep_fatal_message = TRUE;
 #endif
@@ -528,7 +528,7 @@ log_writer_format_fields (
     == (log_level & G_LOG_LEVEL_MASK))
     {
       const gchar * prg_name = g_get_prgname ();
-#ifdef _WOE32
+#ifdef _WIN32
       gulong pid = (gulong) _getpid ();
 #else
       gulong pid = (gulong) getpid ();
@@ -727,7 +727,7 @@ write_str (Log * self, GLogLevelFlags log_level, char * str)
         self->logfd, "%s\n", str);
 #  endif
 
-#  ifdef _WOE32
+#  ifdef _WIN32
       FlushFileBuffers (
         (HANDLE) self->logfd);
 #  else
@@ -907,7 +907,7 @@ handled:
   /* Abort if the message was fatal. */
   if (log_level & G_LOG_FLAG_FATAL)
     {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
       if (!g_test_initialized ())
         {
           gchar * locale_msg = NULL;
@@ -916,7 +916,7 @@ handled:
           MessageBox (NULL, locale_msg, NULL, MB_ICONERROR | MB_SETFOREGROUND);
           g_free (locale_msg);
         }
-#endif /* !G_OS_WIN32 */
+#endif /* !_WIN32 */
 
       _log_abort (!(log_level & G_LOG_FLAG_RECURSION));
     }
@@ -984,7 +984,7 @@ log_writer (
     }
   else
     {
-#ifdef _WOE32
+#ifdef _WIN32
       /* log file not ready yet, log to console */
       fprintf (stderr, "%s\n", str);
 #endif

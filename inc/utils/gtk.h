@@ -19,7 +19,7 @@
 #  include <gdk/x11/gdkx.h>
 #endif
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #  include <gdk/win32/gdkwin32.h>
 #endif
 
@@ -562,7 +562,7 @@ Window
 z_gtk_window_get_x11_xid (GtkWindow * window);
 #endif
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 HWND
 z_gtk_window_get_windows_hwnd (GtkWindow * window);
 #endif

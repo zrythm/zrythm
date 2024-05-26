@@ -116,8 +116,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   cairo_pattern_t * shade_pattern;
 
   const float scale = (float) MIN (width, height);
-  /* if the knob is 80 pixels wide, we want a
-   * 3px line on it */
+  /* if the knob is 80 pixels wide, we want a 3px line on it */
   const float pointer_thickness = 3.f * (scale / 80.f);
 
   const float start_angle = ((180.f - ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
@@ -135,8 +134,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float xc = 0.5f + (float) width / 2.0f;
   float yc = 0.5f + (float) height / 2.0f;
 
-  /* after this, everything is based on the center
-   * of the knob */
+  /* after this, everything is based around the center of the knob */
   cairo_translate (cr, (double) xc, (double) yc);
 
   /* get the knob color from the theme */

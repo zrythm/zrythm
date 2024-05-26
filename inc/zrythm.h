@@ -193,7 +193,7 @@ public:
    *
    * This is used when resetting or when the dir is not selected by the user yet.
    */
-  char * get_default_user_dir (void);
+  char * get_default_user_dir ();
 
   /**
    * Returns a Zrythm directory specified by
@@ -223,7 +223,7 @@ public:
 
   ~Zrythm ();
 
-  void init (void);
+  void init ();
 
   void add_to_recent_projects (const char * filepath);
 
@@ -278,7 +278,7 @@ public:
    * Returns system info (mainly used for bug
    * reports).
    */
-  static char * get_system_info (void);
+  static char * get_system_info ();
 
   /**
    * Returns the prefix or in the case of windows
@@ -290,7 +290,7 @@ public:
    *
    * @return A newly allocated string.
    */
-  static char * get_prefix (void);
+  static char * get_prefix ();
 
   /**
    * Initializes/creates the default dirs/files in the user

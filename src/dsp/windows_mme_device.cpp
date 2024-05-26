@@ -26,7 +26,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include "dsp/engine.h"
 #  include "dsp/engine_windows_mme.h"
@@ -691,4 +691,4 @@ windows_mme_device_free (WindowsMmeDevice * self)
   free (self);
 }
 
-#endif // _WOE32
+#endif // _WIN32

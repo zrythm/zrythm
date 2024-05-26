@@ -10,11 +10,10 @@
 #ifndef __UTILS_TYPES_H__
 #define __UTILS_TYPES_H__
 
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stdint.h>
-
 #include <gtk/gtk.h>
+
+#include <cinttypes>
+#include <cstdint>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
@@ -29,12 +28,9 @@ using namespace magic_enum::bitwise_operators;
  * @{
  */
 
-#define TYPEDEF_STRUCT(s) typedef struct s s;
+#define TYPEDEF_STRUCT(s) typedef struct s s
 
-#define TYPEDEF_STRUCT_UNDERSCORED(s) typedef struct _##s s;
-
-/** FIXME remove uses - deprecated */
-#define TYPEDEF_ENUM(s) enum class s;
+#define TYPEDEF_STRUCT_UNDERSCORED(s) typedef struct _##s s
 
 /** MIDI byte. */
 typedef uint8_t midi_byte_t;

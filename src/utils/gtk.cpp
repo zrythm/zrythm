@@ -1570,7 +1570,7 @@ z_gtk_window_get_x11_xid (GtkWindow * window)
 }
 #endif
 
-#ifdef _WOE32
+#ifdef _WIN32
 HWND
 z_gtk_window_get_windows_hwnd (GtkWindow * window)
 {

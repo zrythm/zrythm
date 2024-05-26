@@ -20,7 +20,7 @@
 
 G_DEFINE_TYPE (TrackCanvasWidget, track_canvas_widget, GTK_TYPE_WIDGET)
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  define AUTOMATABLE_NAME_FONT "8.5"
 #  define AUTOMATABLE_VAL_FONT "7"
 #else

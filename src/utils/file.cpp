@@ -40,7 +40,7 @@
 #  include <linux/fs.h>
 #endif
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <windows.h>
 #else
 #  include <unistd.h>
@@ -84,7 +84,7 @@ file_path_relative_to (const char * path, const char * base)
         }
     }
 
-#ifdef _WOE32
+#ifdef _WIN32
   const bool use_slash = strchr (path, '/');
 #else
   static const bool use_slash = true;
@@ -114,7 +114,7 @@ int
 file_symlink (const char * old_path, const char * new_path)
 {
   int ret = 0;
-#ifdef _WOE32
+#ifdef _WIN32
   ret = !CreateHardLink (new_path, old_path, 0);
 #else
   char * target = file_path_relative_to (old_path, new_path);

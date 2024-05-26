@@ -28,7 +28,7 @@ z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)
   char carla_discovery_filename[60];
   strcpy (
     carla_discovery_filename,
-#  ifdef _WOE32
+#  ifdef _WIN32
     arch == ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32
       ? "carla-discovery-win32"
       : "carla-discovery-native"

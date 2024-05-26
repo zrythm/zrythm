@@ -636,7 +636,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   /* has issues */
   /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_SDL],*/
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
 #  ifdef HAVE_LIBSOUNDIO
     audio_backend_str[ENUM_VALUE_TO_INT (
       AudioBackend::AUDIO_BACKEND_WASAPI_LIBSOUNDIO)],
@@ -647,7 +647,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   /* doesn't work & licensing issues */
   /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO],*/
 #  endif
-#endif /* _WOE32 */
+#endif /* _WIN32 */
     NULL,
   };
   GtkStringList * string_list = gtk_string_list_new (labels);
@@ -718,21 +718,21 @@ ui_gen_midi_backends_combo_row (bool with_signal)
   /*midi_backend_str[MidiBackend::MIDI_BACKEND_JACK_RTMIDI],*/
 #  endif
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
   /* has known issues - use rtmidi */
   /*midi_backend_str[MidiBackend::MIDI_BACKEND_WINDOWS_MME],*/
 #  ifdef HAVE_RTMIDI
     midi_backend_str[ENUM_VALUE_TO_INT (
       MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI)],
 #  endif
-#endif /* _WOE32 */
+#endif /* _WIN32 */
 #ifdef __APPLE__
 #  ifdef HAVE_RTMIDI
     midi_backend_str[ENUM_VALUE_TO_INT (
       MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI)],
 #  endif
 #endif /* __APPLE__ */
-#ifdef _WOE32
+#ifdef _WIN32
 #  ifdef HAVE_RTMIDI_6
 #  endif
     midi_backend_str[ENUM_VALUE_TO_INT (
@@ -778,7 +778,7 @@ char *
 ui_get_locale_not_available_string (LocalizationLanguage lang)
 {
   /* show warning */
-#ifdef _WOE32
+#ifdef _WIN32
 #  define _TEMPLATE \
     _ ( \
       "A locale for the language you have \

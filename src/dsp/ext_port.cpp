@@ -386,7 +386,7 @@ ext_port_matches_backend (ExtPort * self)
         case MidiBackend::MIDI_BACKEND_ALSA:
           break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
           g_warning ("TODO");
           break;
@@ -502,7 +502,7 @@ get_ext_ports_from_jack (ZPortType type, ZPortFlow flow, int hw, GPtrArray * por
 }
 #endif
 
-#ifdef _WOE32
+#ifdef _WIN32
 /**
  * Creates an ExtPort from a Windows MME device.
  */
@@ -749,7 +749,7 @@ ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports)
         case MidiBackend::MIDI_BACKEND_ALSA:
           break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
           get_ext_ports_from_windows_mme (flow, ports);
           break;
@@ -803,7 +803,7 @@ ext_port_clone (ExtPort * ext_port)
 #ifdef HAVE_JACK
   newport->jport = ext_port->jport;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
   newport->mme_dev = ext_port->mme_dev;
 #endif
 #ifdef HAVE_RTMIDI

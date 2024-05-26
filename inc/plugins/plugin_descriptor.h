@@ -12,8 +12,6 @@
 
 #include "zrythm-config.h"
 
-#include <stdbool.h>
-
 #include "utils/types.h"
 
 #include <gio/gio.h>
@@ -21,7 +19,7 @@
 
 #include <CarlaBackend.h>
 
-TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal)
+TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 enum class TrackType;
 enum class ZPluginSlotType;
 

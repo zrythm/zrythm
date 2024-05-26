@@ -244,7 +244,7 @@ should_be_hidden (const char * group, const char * subgroup, const char * key)
     || audio_backend_is_rtaudio (audio_backend);
 
   return
-#if defined(_WOE32) || defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__)
     KEY_IS ("Plugins", "Paths", "dssi-search-paths")
     || KEY_IS ("Plugins", "Paths", "ladspa-search-paths") ||
 #endif

@@ -34,7 +34,7 @@
  * ---
  */
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include <shlobj.h>
 
@@ -70,4 +70,4 @@ windows_get_special_path (WindowsSpecialPath path_type)
   g_return_val_if_reached (NULL);
 }
 
-#endif // _WOE32
+#endif // _WIN32

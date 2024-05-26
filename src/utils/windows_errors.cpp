@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#ifdef _WOE32
+#ifdef _WIN32
 
 #  include "utils/windows_errors.h"
 
@@ -62,4 +62,4 @@ windows_errors_get_last_error_str (char * str)
   LocalFree (buf);
 }
 
-#endif // _WOE32
+#endif // _WIN32

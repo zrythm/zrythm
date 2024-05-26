@@ -699,7 +699,7 @@ port_new_with_type (ZPortType type, ZPortFlow flow, const char * label)
     {
     case ZPortType::Z_PORT_TYPE_EVENT:
       self->maxf = 1.f;
-#ifdef _WOE32
+#ifdef _WIN32
       if (AUDIO_ENGINE->midi_backend == MidiBackend::MIDI_BACKEND_WINDOWS_MME)
         {
           zix_sem_init (&self->mme_connections_sem, 1);
@@ -1669,7 +1669,7 @@ expose_to_rtmidi (Port * self, int expose)
         {
           self->rtmidi_in =
             rtmidi_in_create (
-#    ifdef _WOE32
+#    ifdef _WIN32
               RTMIDI_API_WINDOWS_MM,
 #    elif defined(__APPLE__)
               RTMIDI_API_MACOSX_CORE,
@@ -1987,7 +1987,7 @@ port_sum_data_from_rtaudio (
 }
 #endif // HAVE_RTAUDIO
 
-#ifdef _WOE32
+#ifdef _WIN32
 /**
  * Sums the inputs coming in from Windows MME,
  * before the port is processed.
@@ -2528,7 +2528,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
               sum_data_from_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
             case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
               sum_data_from_windows_mme (
                 port, time_nfo.local_offset, time_nfo.nframes);
@@ -2711,7 +2711,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
               send_data_to_jack (port, time_nfo.local_offset, time_nfo.nframes);
               break;
 #endif
-#ifdef _WOE32
+#ifdef _WIN32
             case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
               send_data_to_windows_mme (
                 port, time_nfo.local_offset, time_nfo.nframes);

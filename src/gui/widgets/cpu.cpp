@@ -195,7 +195,7 @@ refresh_cpu_load (CpuWidget * self)
   b[3] = a[3];
   /* ========== end ========= */
 
-#elif defined(_WOE32)
+#elif defined(_WIN32)
 
   self->cpu = cpu_windows_get_usage (-1);
 

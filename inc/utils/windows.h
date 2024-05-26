@@ -4,7 +4,7 @@
 #ifndef __UTILS_WINDOWS_H__
 #define __UTILS_WINDOWS_H__
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 
 typedef enum WindowsSpecialPath
 {
@@ -15,6 +15,6 @@ typedef enum WindowsSpecialPath
 char *
 windows_get_special_path (WindowsSpecialPath path_type);
 
-#endif // G_OS_WIN32
+#endif // _WIN32
 
 #endif

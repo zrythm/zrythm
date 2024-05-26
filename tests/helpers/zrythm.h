@@ -142,7 +142,7 @@ static void
 segv_handler (int sig)
 {
   char prefix[200];
-#ifdef G_OS_WIN32
+#ifdef _WIN32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
 #else
   sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
@@ -164,7 +164,7 @@ typedef struct ZrythmTestPipewire
 {
 } ZrythmTestPipewire;
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 
 /* This could be interesting to expose in public API */
 static void
@@ -395,7 +395,7 @@ make_pipe (gint pipe_fds[2], GError ** error)
 {
 #if defined(G_OS_UNIX)
   return g_unix_open_pipe (pipe_fds, FD_CLOEXEC, error);
-#elif defined(G_OS_WIN32)
+#elif defined(_WIN32)
   if (_pipe (pipe_fds, 4096, _O_BINARY) < 0)
     {
       int errsv = errno;
@@ -450,7 +450,7 @@ start_daemon (Zrythm * self)
 static void
 stop_daemon (Zrythm * self)
 {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
   if (!TerminateProcess (self->pipewire_pid, 0))
     g_warning (
       "Can't terminate process: %s", g_win32_error_message (GetLastError ()));

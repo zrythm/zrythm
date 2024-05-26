@@ -31,7 +31,7 @@
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
 
-#  if !defined _WOE32 && defined __GLIBC__
+#  if !defined _WIN32 && defined __GLIBC__
 #    include <dlfcn.h>
 #  endif
 
@@ -857,7 +857,7 @@ engine_jack_get_jack_type (ZPortType type)
 bool
 engine_jack_is_pipewire (AudioEngine * self)
 {
-#  if defined(_WOE32) || defined(__APPLE__)
+#  if defined(_WIN32) || defined(__APPLE__)
   return false;
 #  else
   const char * libname = "libjack.so.0";

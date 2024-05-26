@@ -1945,7 +1945,7 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
             }
         }
 
-#  if defined(_WOE32)
+#  if defined(_WIN32)
       HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
       g_debug (
         "FRONTEND_WIN_ID: "

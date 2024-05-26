@@ -18,7 +18,7 @@ test_get_parent_dir (void)
 {
   char * parent;
 
-#ifdef _WOE32
+#ifdef _WIN32
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");

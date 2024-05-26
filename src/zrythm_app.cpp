@@ -33,41 +33,28 @@
 
 #include "zrythm-config.h"
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  include <stdio.h> // for _setmaxstdio
 #else
 #  include <sys/mman.h>
 #  include <sys/resource.h>
 #endif
-#include <stdlib.h>
-
 #include "actions/actions.h"
-#include "actions/undo_manager.h"
-#include "dsp/engine.h"
-#include "dsp/quantize_options.h"
 #include "dsp/router.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
 #include "gui/backend/file_manager.h"
-#include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/dialogs/welcome_message_dialog.h"
 #include "gui/widgets/greeter.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "settings/user_shortcuts.h"
-#include "utils/arrays.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/dialogs.h"
-#include "utils/env.h"
 #include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/math.h"
@@ -86,6 +73,7 @@
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
 #include "project/project_init_flow_manager.h"
+#include <cstdlib>
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtksourceview/gtksource.h>
@@ -116,7 +104,7 @@ segv_handler (int sig)
   signal (SIGSEGV, SIG_DFL);
 
   char prefix[200];
-#ifdef _WOE32
+#ifdef _WIN32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
 #else
   sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
@@ -253,8 +241,7 @@ check_for_updates_latest_release_ver_ready (
 }
 
 /**
- * Handles the logic for checking for updates on
- * startup.
+ * Handles the logic for checking for updates on startup.
  */
 void
 zrythm_app_check_for_updates (ZrythmApp * self)
@@ -434,7 +421,7 @@ zrythm_app_init_thread (ZrythmApp * self)
     g_message ("\n%s", ver);
   }
 
-#if defined(_WOE32) || defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__)
   g_warning (
     "Warning, you are running a non-free operating "
     "system.");
@@ -496,7 +483,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
       /* if running for the first time (even after the GSetting is set to false)
        * run the demo project, otherwise ask the user for a project */
       bool use_demo_template = self->is_first_run && gZrythm->demo_template;
-#ifdef _WOE32
+#ifdef _WIN32
       /* crashes on windows -- fix first then re-enable */
       use_demo_template = false;
 #endif
@@ -686,7 +673,7 @@ load_icon (
 static void
 lock_memory (ZrythmApp * self)
 {
-#ifdef _WOE32
+#ifdef _WIN32
   /* TODO */
 #else
 
@@ -774,7 +761,7 @@ lock_memory (ZrythmApp * self)
 static void
 raise_open_file_limit (void)
 {
-#ifdef _WOE32
+#ifdef _WIN32
   /* this only affects stdio. 2048 is the maximum possible (512 the default).
    *
    * If we want more, we'll have to replaces the POSIX I/O interfaces with
@@ -799,7 +786,7 @@ raise_open_file_limit (void)
         "Current limit is %d open files",
         _getmaxstdio ());
     }
-#else /* else if not _WOE32 */
+#else /* else if not _WIN32 */
   struct rlimit rl;
 
   if (getrlimit (RLIMIT_NOFILE, &rl) == 0)
@@ -993,7 +980,7 @@ zrythm_app_startup (GApplication * app)
 #endif
   int scale_factor = z_gtk_get_primary_monitor_scale_factor ();
   g_message ("Monitor scale factor: %d", scale_factor);
-#if defined(_WOE32)
+#if defined(_WIN32)
   g_object_set (
     self->default_settings, "gtk-font-name", "Segoe UI Normal 10", NULL);
   g_object_set (

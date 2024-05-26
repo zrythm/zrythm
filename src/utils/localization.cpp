@@ -24,7 +24,7 @@
 #include "po/zrythm-locales.h"
 #include <locale.h>
 
-#ifdef _WOE32
+#ifdef _WIN32
 #  define CODESET "1252"
 #  define ALT_CODESET "1252"
 #else
@@ -135,7 +135,7 @@ get_match (
 char *
 localization_locale_exists (LocalizationLanguage lang)
 {
-#ifdef _WOE32
+#ifdef _WIN32
   const char * _code = localization_get_string_code (lang);
   return g_strdup (_code);
 #endif
@@ -295,7 +295,7 @@ localization_init (
         {
           g_message ("setting locale to %s (found %s)", code, match);
         }
-#if defined(_WOE32) || defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__)
       char buf[120];
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
@@ -327,7 +327,7 @@ localization_init (
     }
 
     /* bind text domain */
-#if defined(_WOE32) && defined(INSTALLER_VER)
+#if defined(_WIN32) && defined(INSTALLER_VER)
   const char * windows_localedir = "share/locale";
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
