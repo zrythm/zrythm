@@ -17,15 +17,10 @@
 
 #include "utils/types.h"
 
-#include "zix/sem.h"
-
-#ifdef HAVE_JACK
-#  include "weak_libjack.h"
-#endif
-
 #include <gtk/gtk.h>
 
 #include "ext/midilib/src/midifile.h"
+#include "zix/sem.h"
 
 typedef struct ChordDescriptor ChordDescriptor;
 

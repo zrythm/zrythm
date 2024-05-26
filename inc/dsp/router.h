@@ -62,10 +62,6 @@ typedef struct Position              Position;
 typedef struct ControlPortChange     ControlPortChange;
 typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
 
-#ifdef HAVE_JACK
-#  include "weak_libjack.h"
-#endif
-
 /**
  * @addtogroup dsp
  *

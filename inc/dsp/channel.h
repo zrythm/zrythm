@@ -22,10 +22,6 @@
 
 #include <gdk/gdk.h>
 
-#ifdef HAVE_JACK
-#  include "weak_libjack.h"
-#endif
-
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _ChannelWidget  ChannelWidget;
 typedef struct Track           Track;

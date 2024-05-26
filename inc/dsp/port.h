@@ -20,10 +20,6 @@
 
 #include "zix/sem.h"
 
-#ifdef HAVE_JACK
-#  include "weak_libjack.h"
-#endif
-
 #ifdef HAVE_RTMIDI
 #  include <rtmidi_c.h>
 #endif
