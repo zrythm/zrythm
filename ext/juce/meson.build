@@ -38,6 +38,19 @@ elif os_windows
   juce_cpp_private_args += [
     '-fpermissive',
     ]
+  juce_lib_deps += [
+    cc.find_library('comdlg32'),
+    cc.find_library('gdi32'),
+    cc.find_library('imm32'),
+    cc.find_library('ole32'),
+    cc.find_library('oleaut32'),
+    cc.find_library('shlwapi'),
+    cc.find_library('uuid'),
+    cc.find_library('version'),
+    cc.find_library('wininet'),
+    cc.find_library('winmm'),
+    cc.find_library('ws2_32'),
+    ]
 endif
 
 juce_lib = static_library (
