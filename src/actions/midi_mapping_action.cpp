@@ -248,5 +248,7 @@ midi_mapping_action_free (MidiMappingAction * self)
 {
   object_free_w_func_and_null (ext_port_free, self->dev_port);
 
+  object_delete_and_null (self->dest_port_id);
+
   object_zero_and_free (self);
 }

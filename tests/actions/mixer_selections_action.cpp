@@ -1136,9 +1136,7 @@ _test_replace_instrument (
   Track *        lsp_track = TRACKLIST->tracks[lsp_track_pos];
   Plugin *       lsp = lsp_track->channel->inserts[0];
   Port *         sidechain_port = NULL;
-  PortIdentifier sidechain_port_id;
-  memset (&sidechain_port_id, 0, sizeof (PortIdentifier));
-  sidechain_port_id = PortIdentifier ();
+  PortIdentifier sidechain_port_id = PortIdentifier ();
   for (int i = 0; i < lsp->num_in_ports; i++)
     {
       Port * port = lsp->in_ports[i];
@@ -1155,9 +1153,7 @@ _test_replace_instrument (
   g_return_if_fail (IS_PORT_AND_NONNULL (sidechain_port));
 
   /*#if 0*/
-  PortIdentifier helm_l_out_port_id;
-  memset (&helm_l_out_port_id, 0, sizeof (PortIdentifier));
-  helm_l_out_port_id = PortIdentifier ();
+  PortIdentifier helm_l_out_port_id = PortIdentifier ();
   helm_l_out_port_id = src_track->channel->instrument->l_out->id;
   port_connection_action_perform_connect (
     &src_track->channel->instrument->l_out->id, &sidechain_port->id, NULL);

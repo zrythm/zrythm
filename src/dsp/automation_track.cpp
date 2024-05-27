@@ -895,5 +895,7 @@ automation_track_free (AutomationTrack * self)
     }
   object_zero_and_free (self->region_snapshots);
 
+  self->port_id.~PortIdentifier ();
+
   object_zero_and_free (self);
 }

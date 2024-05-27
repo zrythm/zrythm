@@ -3061,5 +3061,7 @@ arranger_selections_action_free (ArrangerSelectionsAction * self)
 {
   object_free_w_func_and_null (arranger_selections_free_full, self->sel);
 
+  object_delete_and_null (self->target_port);
+
   object_zero_and_free (self);
 }

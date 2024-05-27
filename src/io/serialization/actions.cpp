@@ -694,7 +694,7 @@ arranger_selections_action_deserialize_from_json (
   yyjson_val * target_port_obj = yyjson_obj_iter_get (&it, "targetPort");
   if (target_port_obj)
     {
-      action->target_port = object_new (PortIdentifier);
+      action->target_port = new PortIdentifier ();
       port_identifier_deserialize_from_json (
         doc, target_port_obj, action->target_port, error);
     }
@@ -1218,7 +1218,7 @@ midi_mapping_action_deserialize_from_json (
   yyjson_val * dest_port_id_obj = yyjson_obj_iter_get (&it, "destPortId");
   if (dest_port_id_obj)
     {
-      action->dest_port_id = object_new (PortIdentifier);
+      action->dest_port_id = new PortIdentifier ();
       port_identifier_deserialize_from_json (
         doc, dest_port_id_obj, action->dest_port_id, error);
     }

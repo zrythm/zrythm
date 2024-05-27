@@ -325,10 +325,10 @@ port_connection_deserialize_from_json (
 {
   yyjson_obj_iter it = yyjson_obj_iter_with (conn_obj);
   yyjson_val *    src_id_obj = yyjson_obj_iter_get (&it, "srcId");
-  conn->src_id = object_new (PortIdentifier);
+  conn->src_id = new PortIdentifier ();
   port_identifier_deserialize_from_json (doc, src_id_obj, conn->src_id, error);
   yyjson_val * dest_id_obj = yyjson_obj_iter_get (&it, "destId");
-  conn->dest_id = object_new (PortIdentifier);
+  conn->dest_id = new PortIdentifier ();
   port_identifier_deserialize_from_json (doc, dest_id_obj, conn->dest_id, error);
   conn->multiplier =
     (float) yyjson_get_real (yyjson_obj_iter_get (&it, "multiplier"));

@@ -1577,15 +1577,14 @@ port_update_identifier (
 void
 port_update_track_name_hash (Port * self, Track * track, unsigned int new_hash)
 {
-  PortIdentifier * copy = new PortIdentifier (self->id);
+  PortIdentifier copy = PortIdentifier (self->id);
 
   self->id.track_name_hash = new_hash;
   if (self->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
     {
       self->id.plugin_id.track_name_hash = new_hash;
     }
-  port_update_identifier (self, copy, track, F_UPDATE_AUTOMATION_TRACK);
-  delete copy;
+  port_update_identifier (self, &copy, track, F_UPDATE_AUTOMATION_TRACK);
 }
 
 #ifdef HAVE_ALSA
@@ -3679,6 +3678,7 @@ port_free (Port * self)
   object_zero_and_free (self->dests);
   object_zero_and_free (self->src_connections);
   object_zero_and_free (self->dest_connections);
+  self->id.~PortIdentifier ();
 
   for (int i = 0; i < self->num_scale_points; i++)
     {

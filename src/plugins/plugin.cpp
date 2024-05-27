@@ -728,29 +728,27 @@ plugin_set_track_and_slot (
 
   for (int i = 0; i < pl->num_in_ports; i++)
     {
-      Port *           port = pl->in_ports[i];
-      PortIdentifier * copy_id = new PortIdentifier (port->id);
+      Port *         port = pl->in_ports[i];
+      PortIdentifier copy_id = PortIdentifier (port->id);
       port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
-            port, copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
+            port, &copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
         }
-      delete copy_id;
     }
   for (int i = 0; i < pl->num_out_ports; i++)
     {
-      Port *           port = pl->out_ports[i];
-      PortIdentifier * copy_id = new PortIdentifier (port->id);
+      Port *         port = pl->out_ports[i];
+      PortIdentifier copy_id = PortIdentifier (port->id);
       port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
-            port, copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
+            port, &copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
         }
-      delete copy_id;
     }
 }
 
