@@ -530,24 +530,23 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->bridge_icon),
-    plugin
-      && plugin->setting->bridge_mode != ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE);
+    plugin && plugin->setting->bridge_mode != CarlaBridgeMode::None);
   if (plugin)
     {
       switch (plugin->setting->bridge_mode)
         {
-        case ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL:
+        case CarlaBridgeMode::Full:
           gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (Full)"));
           break;
-        case ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI:
+        case CarlaBridgeMode::UI:
           gtk_image_set_from_icon_name (
             self->bridge_icon, "material-design-remote-desktop");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (UI)"));
           break;
-        case ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE:
+        case CarlaBridgeMode::None:
           break;
         }
     }

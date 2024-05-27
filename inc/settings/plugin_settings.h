@@ -35,7 +35,7 @@ typedef struct PluginSetting
   bool force_generic_ui;
 
   /** Requested carla bridge mode. */
-  ZCarlaBridgeMode bridge_mode;
+  CarlaBridgeMode bridge_mode;
 
   /** Last datetime instantiated (number of microseconds since
    * January 1, 1970 UTC). */

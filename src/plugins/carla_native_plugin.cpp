@@ -1620,13 +1620,13 @@ carla_native_plugin_instantiate (
   /* set bridging on if needed */
   switch (setting->bridge_mode)
     {
-    case ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL:
+    case CarlaBridgeMode::Full:
       g_message ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         self->host_handle, CarlaBackend::ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
         true, NULL);
       break;
-    case ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI:
+    case CarlaBridgeMode::UI:
       g_message ("using UI bridge only");
       carla_set_engine_option (
         self->host_handle, CarlaBackend::ENGINE_OPTION_PREFER_UI_BRIDGES, true,
@@ -1638,8 +1638,8 @@ carla_native_plugin_instantiate (
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting->bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL
-    || setting->bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI)
+    setting->bridge_mode == CarlaBridgeMode::Full
+    || setting->bridge_mode == CarlaBridgeMode::UI)
     {
       carla_set_engine_option (
         self->host_handle, CarlaBackend::ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000,

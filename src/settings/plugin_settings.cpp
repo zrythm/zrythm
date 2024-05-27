@@ -45,7 +45,7 @@ plugin_setting_new_default (const PluginDescriptor * descr)
       self = object_new (PluginSetting);
       self->descr = plugin_descriptor_clone (descr);
       /* bridge all plugins by default */
-      self->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+      self->bridge_mode = CarlaBridgeMode::Full;
       plugin_setting_validate (self, false);
     }
 
@@ -170,17 +170,17 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #ifdef HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
   /*g_debug ("%s: recalculating bridge mode...", __func__);*/
-  if (self->bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE)
+  if (self->bridge_mode == CarlaBridgeMode::None)
     {
       self->bridge_mode = descr->min_bridge_mode;
-      if (self->bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE)
+      if (self->bridge_mode == CarlaBridgeMode::None)
         {
 #  if 0
           /* bridge if plugin is not whitelisted */
           if (!plugin_descriptor_is_whitelisted (descr))
             {
               self->open_with_carla = true;
-              self->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+              self->bridge_mode = CarlaBridgeMode::Full;
               /*g_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
@@ -194,9 +194,9 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
   else
     {
       self->open_with_carla = true;
-      ZCarlaBridgeMode mode = descr->min_bridge_mode;
+      CarlaBridgeMode mode = descr->min_bridge_mode;
 
-      if (mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL)
+      if (mode == CarlaBridgeMode::Full)
         {
           self->bridge_mode = mode;
         }
@@ -204,9 +204,9 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 
 #  if 0
   /* force bridge mode */
-  if (self->bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE)
+  if (self->bridge_mode == CarlaBridgeMode::None)
     {
-      self->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+      self->bridge_mode = CarlaBridgeMode::Full;
     }
 #  endif
 

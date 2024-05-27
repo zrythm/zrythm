@@ -3507,18 +3507,18 @@ DEFINE_SIMPLE (activate_plugin_change_load_behavior)
 
   plugin_select (pl, F_SELECT, F_EXCLUSIVE);
 
-  ZCarlaBridgeMode new_bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE;
+  CarlaBridgeMode new_bridge_mode = CarlaBridgeMode::None;
   if (string_is_equal (new_behavior, "normal"))
     {
-      new_bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE;
+      new_bridge_mode = CarlaBridgeMode::None;
     }
   else if (string_is_equal (new_behavior, "ui"))
     {
-      new_bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI;
+      new_bridge_mode = CarlaBridgeMode::UI;
     }
   else if (string_is_equal (new_behavior, "full"))
     {
-      new_bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+      new_bridge_mode = CarlaBridgeMode::Full;
     }
 
   GError * err = NULL;
@@ -3746,7 +3746,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project)
 
   PluginSetting * setting = plugin_setting_new_default (descr);
   /*setting->open_with_carla = true;*/
-  /*setting->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE;*/
+  /*setting->bridge_mode = CarlaBridgeMode::None;*/
   activate_plugin_setting (setting, NULL);
   plugin_setting_free (setting);
 }
@@ -3761,7 +3761,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_carla)
 
   PluginSetting * setting = plugin_setting_new_default (descr);
   setting->open_with_carla = true;
-  setting->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE;
+  setting->bridge_mode = CarlaBridgeMode::None;
   activate_plugin_setting (setting, NULL);
   plugin_setting_free (setting);
 }
@@ -3776,7 +3776,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui)
 
   PluginSetting * setting = plugin_setting_new_default (descr);
   setting->open_with_carla = true;
-  setting->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI;
+  setting->bridge_mode = CarlaBridgeMode::UI;
   activate_plugin_setting (setting, NULL);
   plugin_setting_free (setting);
 }
@@ -3791,7 +3791,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_full)
 
   PluginSetting * setting = plugin_setting_new_default (descr);
   setting->open_with_carla = true;
-  setting->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+  setting->bridge_mode = CarlaBridgeMode::Full;
   activate_plugin_setting (setting, NULL);
   plugin_setting_free (setting);
 }

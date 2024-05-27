@@ -511,14 +511,14 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
  * Returns the minimum bridge mode required for this
  * plugin.
  */
-ZCarlaBridgeMode
+CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
 {
-  ZCarlaBridgeMode mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE;
+  CarlaBridgeMode mode = CarlaBridgeMode::None;
 
   if (self->arch == ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32)
     {
-      mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+      mode = CarlaBridgeMode::Full;
     }
 
   return mode;
@@ -663,7 +663,7 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* add option for native generic LV2 UI */
   if (self->protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2
       &&
-      self->min_bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE)
+      self->min_bridge_mode == CarlaBridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -681,8 +681,7 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
 
   PluginSetting * new_setting = plugin_setting_new_default (self);
   if (
-    self->has_custom_ui
-    && self->min_bridge_mode == ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE
+    self->has_custom_ui && self->min_bridge_mode == CarlaBridgeMode::None
     && !new_setting->force_generic_ui)
     {
       sprintf (

@@ -203,7 +203,7 @@ test_crash_handling (void)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
   g_return_if_fail (setting);
-  setting->bridge_mode = ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL;
+  setting->bridge_mode = CarlaBridgeMode::Full;
 
   /* create a track from the plugin */
   track_create_for_plugin_at_idx_w_action (

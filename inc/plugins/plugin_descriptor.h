@@ -126,11 +126,11 @@ enum class ZPluginArchitecture
 /**
  * Carla bridge mode.
  */
-enum class ZCarlaBridgeMode
+enum class CarlaBridgeMode
 {
-  Z_CARLA_BRIDGE_NONE,
-  Z_CARLA_BRIDGE_UI,
-  Z_CARLA_BRIDGE_FULL,
+  None,
+  UI,
+  Full,
 };
 
 /***
@@ -175,7 +175,7 @@ typedef struct PluginDescriptor
   int64_t unique_id;
 
   /** Minimum required bridge mode. */
-  ZCarlaBridgeMode min_bridge_mode;
+  CarlaBridgeMode min_bridge_mode;
 
   bool has_custom_ui;
 
@@ -336,7 +336,7 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self);
  * Returns the minimum bridge mode required for this
  * plugin.
  */
-NONNULL ZCarlaBridgeMode
+NONNULL CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self);
 
 /**

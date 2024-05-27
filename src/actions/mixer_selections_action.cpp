@@ -120,7 +120,7 @@ mixer_selections_action_new (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
-  ZCarlaBridgeMode               new_bridge_mode,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error)
 {
   MixerSelectionsAction * self = object_new (MixerSelectionsAction);
@@ -219,7 +219,7 @@ mixer_selections_action_perform (
   PluginSetting *                setting,
   int                            num_plugins,
   int                            new_val,
-  ZCarlaBridgeMode               new_bridge_mode,
+  CarlaBridgeMode                new_bridge_mode,
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
@@ -740,11 +740,11 @@ do_or_undo_change_load_behavior (
 
       switch (pl->setting->bridge_mode)
         {
-        case ZCarlaBridgeMode::Z_CARLA_BRIDGE_FULL:
+        case CarlaBridgeMode::Full:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, NULL);
           break;
-        case ZCarlaBridgeMode::Z_CARLA_BRIDGE_UI:
+        case CarlaBridgeMode::UI:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, NULL);
           break;

@@ -878,7 +878,7 @@ mixer_selections_action_deserialize_from_json (
   if (new_bridge_mode_obj)
     {
       action->new_bridge_mode = ENUM_INT_TO_VALUE (
-        ZCarlaBridgeMode, yyjson_get_int (new_bridge_mode_obj));
+        CarlaBridgeMode, yyjson_get_int (new_bridge_mode_obj));
     }
   yyjson_val * setting_obj = yyjson_obj_iter_get (&it, "setting");
   if (setting_obj)

@@ -935,7 +935,7 @@ plugin_generate_window_title (Plugin * self)
 
   char bridge_mode[100];
   strcpy (bridge_mode, "");
-  if (setting->bridge_mode != ZCarlaBridgeMode::Z_CARLA_BRIDGE_NONE)
+  if (setting->bridge_mode != CarlaBridgeMode::None)
     {
       sprintf (bridge_mode, " - bridge: %s", ENUM_NAME (setting->bridge_mode));
     }
