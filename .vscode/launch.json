@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "gdb",
+            "request": "launch",
+            "target": "${workspaceFolder}/${config:mesonbuild.buildFolder}/src/zrythm",
+            "cwd": "${workspaceFolder}",
+            "valuesFormatting": "parseText",
+            "env": {
+                "GSETTINGS_SCHEMA_DIR": "${workspaceFolder}/_installed/share/glib-2.0/schemas",
+                "G_DEBUG": "fatal_criticals"
+            },
+            "arguments": "--dummy"
+        }
+    ]
+}

@@ -975,3 +975,9 @@ Copyright: Raw Material Software Limited
 License: GPL-3.0-only
 Comment:
   JUCE
+
+Files:
+  .vscode/*
+Copyright: Alexandros Theodotou
+License: CC0-1.0
+Comment:

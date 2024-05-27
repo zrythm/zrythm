@@ -1,0 +1,19 @@
+{
+    "mesonbuild.configureOptions": [
+        "-Ddebug=true",
+        "-Doptimization=0",
+        "-Dprefix=${workspaceFolder}/_installed",
+        "-Db_lto=false",
+        "-Dnative_build=true",
+        "-Dstrict_flags=true",
+        "-Dcarla=enabled",
+        "-Dtests=true",
+        "-Dextra_debug_info=true",
+        "-Drtaudio=enabled",
+        "-Drtmidi=enabled",
+        "-Dforce_fallback_for=gtk4,libadwaita,libpanel,xxhash,libcyaml,pangoft2,json-glib,gtksourceview5,rtmidi,rtaudio,zstd,pcre2,libsndfile,libsoxr,yyjson",
+        "-Dyaml_project_compatibility=enabled",
+        "-Db_sanitize=none"
+    ],
+    "clang-tidy.buildPath": "builddir"
+}
