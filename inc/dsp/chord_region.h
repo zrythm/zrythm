@@ -4,7 +4,7 @@
 /**
  * \file
  *
- * ZRegion for ChordObject's.
+ * Region for ChordObject's.
  */
 
 #ifndef __AUDIO_CHORD_REGION_H__
@@ -12,7 +12,7 @@
 
 typedef struct Position    Position;
 typedef struct ChordObject ChordObject;
-typedef struct ZRegion     ZRegion;
+typedef struct Region      Region;
 
 /**
  * @addtogroup dsp
@@ -21,11 +21,11 @@ typedef struct ZRegion     ZRegion;
  */
 
 /**
- * Creates a new ZRegion for chords.
+ * Creates a new Region for chords.
  *
  * @param idx Index inside chord track.
  */
-NONNULL ZRegion *
+NONNULL Region *
 chord_region_new (const Position * start_pos, const Position * end_pos, int idx);
 
 /**
@@ -33,7 +33,7 @@ chord_region_new (const Position * start_pos, const Position * end_pos, int idx)
  */
 NONNULL void
 chord_region_insert_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   int           pos,
   bool          fire_events);
@@ -43,7 +43,7 @@ chord_region_insert_chord_object (
  */
 NONNULL void
 chord_region_add_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   bool          fire_events);
 
@@ -54,21 +54,21 @@ chord_region_add_chord_object (
  */
 NONNULL void
 chord_region_remove_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   int           free,
   bool          fire_events);
 
 NONNULL bool
-chord_region_validate (ZRegion * self);
+chord_region_validate (Region * self);
 
 /**
- * Frees members only but not the ZRegion itself.
+ * Frees members only but not the Region itself.
  *
  * Regions should be free'd using region_free.
  */
 NONNULL void
-chord_region_free_members (ZRegion * self);
+chord_region_free_members (Region * self);
 
 /**
  * @}

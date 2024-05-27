@@ -34,7 +34,7 @@ typedef struct AudioClip       AudioClip;
  */
 
 #define REGION_MAGIC 93075327
-#define IS_REGION(x) (((ZRegion *) x)->magic == REGION_MAGIC)
+#define IS_REGION(x) (((Region *) x)->magic == REGION_MAGIC)
 #define IS_REGION_AND_NONNULL(x) (x && IS_REGION (x))
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
@@ -68,7 +68,7 @@ region_musical_mode_to_str (RegionMusicalMode mode);
  *
  * @extends ArrangerObject
  */
-typedef struct ZRegion
+typedef struct Region
 {
   /**
    * Base struct.
@@ -116,7 +116,7 @@ typedef struct ZRegion
    * FIXME allocate.
    *
    * @note These are present in
-   *   \ref ZRegion.midi_notes and must not be
+   *   \ref Region.midi_notes and must not be
    *   free'd separately.
    */
   MidiNote * unended_notes[12000];
@@ -273,10 +273,10 @@ typedef struct ZRegion
   TrackLane * owner_lane = nullptr;
 
   int magic;
-} ZRegion;
+} Region;
 
 /**
- * Returns if the given ZRegion type can have fades.
+ * Returns if the given Region type can have fades.
  */
 #define region_type_can_fade(rtype) (rtype == RegionType::REGION_TYPE_AUDIO)
 
@@ -285,7 +285,7 @@ typedef struct ZRegion
  */
 void
 region_init (
-  ZRegion *        region,
+  Region *         region,
   const Position * start_pos,
   const Position * end_pos,
   unsigned int     track_name_hash,
@@ -293,15 +293,15 @@ region_init (
   int              idx_inside_lane);
 
 /**
- * Looks for the ZRegion matching the identifier.
+ * Looks for the Region matching the identifier.
  */
-HOT NONNULL ZRegion *
+HOT NONNULL Region *
 region_find (const RegionIdentifier * const id);
 
 #if 0
 static inline void
 region_set_track_name_hash (
-  ZRegion *    self,
+  Region *    self,
   unsigned int name_hash)
 {
   self->id.track_name_hash = name_hash;
@@ -309,31 +309,31 @@ region_set_track_name_hash (
 #endif
 
 NONNULL void
-region_print_to_str (const ZRegion * self, char * buf, const size_t buf_size);
+region_print_to_str (const Region * self, char * buf, const size_t buf_size);
 
 /**
  * Print region info for debugging.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL void
-region_print (const ZRegion * region);
+region_print (const Region * region);
 
 /**
  * Get lane.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 TrackLane *
-region_get_lane (const ZRegion * region);
+region_get_lane (const Region * region);
 
 /**
  * Returns the region's link group.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 RegionLinkGroup *
-region_get_link_group (ZRegion * self);
+region_get_link_group (Region * self);
 
 /**
  * Sets the link group to the region.
@@ -341,13 +341,13 @@ region_get_link_group (ZRegion * self);
  * @param group_idx If -1, the region will be
  *   removed from its current link group, if any.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_set_link_group (ZRegion * region, int group_idx, bool update_identifier);
+region_set_link_group (Region * region, int group_idx, bool update_identifier);
 
 NONNULL bool
-region_has_link_group (ZRegion * region);
+region_has_link_group (Region * region);
 
 /**
  * Returns the MidiNote matching the properties of
@@ -356,10 +356,10 @@ region_has_link_group (ZRegion * region);
  * Used to find the actual MidiNote in the region
  * from a cloned MidiNote (e.g. when doing/undoing).
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 MidiNote *
-region_find_midi_note (ZRegion * r, MidiNote * _mn);
+region_find_midi_note (Region * r, MidiNote * _mn);
 
 /**
  * Converts frames on the timeline (global)
@@ -375,13 +375,13 @@ region_find_midi_note (ZRegion * r, MidiNote * _mn);
  *
  * @return The local frames.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL HOT signed_frame_t
 region_timeline_frames_to_local (
-  const ZRegion * const self,
-  const signed_frame_t  timeline_frames,
-  const bool            normalize);
+  const Region * const self,
+  const signed_frame_t timeline_frames,
+  const bool           normalize);
 
 /**
  * Returns the number of frames until the next loop end point or the end of the
@@ -392,33 +392,33 @@ region_timeline_frames_to_local (
  * @param[out] is_loop Whether the return frames are for a loop (if false,
  *   the return frames are for the region's end).
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL void
 region_get_frames_till_next_loop_or_end (
-  const ZRegion * const self,
-  const signed_frame_t  timeline_frames,
-  signed_frame_t *      ret_frames,
-  bool *                is_loop);
+  const Region * const self,
+  const signed_frame_t timeline_frames,
+  signed_frame_t *     ret_frames,
+  bool *               is_loop);
 
 /**
  * Sets the track lane.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL void
-region_set_lane (ZRegion * self, TrackLane * lane);
+region_set_lane (Region * self, TrackLane * lane);
 
 /**
- * Generates a name for the ZRegion, either using
+ * Generates a name for the Region, either using
  * the given AutomationTrack or Track, or appending
  * to the given base name.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
 region_gen_name (
-  ZRegion *         region,
+  Region *          region,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track);
@@ -433,34 +433,34 @@ region_gen_name (
  *
  * @return Whether successful.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL WARN_UNUSED_RESULT bool
-region_stretch (ZRegion * self, double ratio, GError ** error);
+region_stretch (Region * self, double ratio, GError ** error);
 
 /**
  * To be called every time the identifier changes
  * to update the region's children.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL void
-region_update_identifier (ZRegion * self);
+region_update_identifier (Region * self);
 
 /**
  * Updates all other regions in the region link
  * group, if any.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL void
-region_update_link_group (ZRegion * self);
+region_update_link_group (Region * self);
 
 /**
- * Moves the ZRegion to the given Track, maintaining the
- * selection status of the ZRegion.
+ * Moves the Region to the given Track, maintaining the
+ * selection status of the Region.
  *
- * Assumes that the ZRegion is already in a TrackLane or
+ * Assumes that the Region is already in a TrackLane or
  * AutomationTrack.
  *
  * @param lane_or_at_index If MIDI or audio, lane position.
@@ -471,17 +471,17 @@ region_update_link_group (ZRegion * self);
  *   track to insert the region to, or -1 to append. If
  *   automation, index in the automation track.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
 region_move_to_track (
-  ZRegion * region,
-  Track *   track,
-  int       lane_or_at_index,
-  int       index);
+  Region * region,
+  Track *  track,
+  int      lane_or_at_index,
+  int      index);
 
 /**
- * Returns if the given ZRegion type can exist
+ * Returns if the given Region type can exist
  * in TrackLane's.
  */
 CONST
@@ -495,18 +495,18 @@ region_type_has_lane (const RegionType type)
 /**
  * Sets the automation track.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_set_automation_track (ZRegion * region, AutomationTrack * at);
+region_set_automation_track (Region * region, AutomationTrack * at);
 
 /**
  * Gets the AutomationTrack using the saved index.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 AutomationTrack *
-region_get_automation_track (const ZRegion * const region);
+region_get_automation_track (const Region * const region);
 
 /**
  * Copies the data from src to dest.
@@ -515,7 +515,7 @@ region_get_automation_track (const ZRegion * const region);
  * clip start point, loop start point, etc.
  */
 void
-region_copy (ZRegion * src, ZRegion * dest);
+region_copy (Region * src, Region * dest);
 
 /**
  * Returns if the position is inside the region
@@ -527,25 +527,25 @@ region_copy (ZRegion * src, ZRegion * dest);
  * @param inclusive Whether the last frame should
  *   be counted as part of the region.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 NONNULL int
 region_is_hit (
-  const ZRegion *      region,
+  const Region *       region,
   const signed_frame_t gframes,
   const bool           inclusive);
 
 /**
- * Returns if any part of the ZRegion is inside the
+ * Returns if any part of the Region is inside the
  * given range, inclusive.
  *
  * FIXME move to arranger object
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 int
 region_is_hit_by_range (
-  const ZRegion *      region,
+  const Region *       region,
   const signed_frame_t gframes_start,
   const signed_frame_t gframes_end,
   const bool           end_inclusive);
@@ -560,7 +560,7 @@ region_is_hit_by_range (
  * @param pos The position.
  */
 NONNULL_ARGS (3)
-ZRegion * region_at_position (
+Region * region_at_position (
   const Track *           track,
   const AutomationTrack * at,
   const Position *        pos);
@@ -570,10 +570,10 @@ ZRegion * region_at_position (
  *
  * MUST be free'd.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 char *
-region_generate_filename (ZRegion * region);
+region_generate_filename (Region * region);
 
 void
 region_get_type_as_string (RegionType type, char * buf);
@@ -582,10 +582,10 @@ region_get_type_as_string (RegionType type, char * buf);
  * Returns if this region is currently being
  * recorded onto.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 bool
-region_is_recording (ZRegion * self);
+region_is_recording (Region * self);
 
 /**
  * Returns whether the region is effectively in
@@ -593,67 +593,64 @@ region_is_recording (ZRegion * self);
  *
  * @note Only applicable to audio regions.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 bool
-region_get_musical_mode (ZRegion * self);
+region_get_musical_mode (Region * self);
 
 /**
  * Wrapper for adding an arranger object.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_add_arranger_object (
-  ZRegion *        self,
-  ArrangerObject * obj,
-  bool             fire_events);
+region_add_arranger_object (Region * self, ArrangerObject * obj, bool fire_events);
 
 void
-region_create_link_group_if_none (ZRegion * region);
+region_create_link_group_if_none (Region * region);
 
 /**
  * Removes the link group from the region, if any.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_unlink (ZRegion * region);
+region_unlink (Region * region);
 
 /**
  * Removes all children objects from the region.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_remove_all_children (ZRegion * region);
+region_remove_all_children (Region * region);
 
 /**
  * Clones and copies all children from \ref src to
  * \ref dest.
  */
 void
-region_copy_children (ZRegion * dest, ZRegion * src);
+region_copy_children (Region * dest, Region * src);
 
 NONNULL bool
-region_is_looped (const ZRegion * const self);
+region_is_looped (const Region * const self);
 
 /**
  * Returns the ArrangerSelections based on the
  * given region type.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 ArrangerSelections *
-region_get_arranger_selections (ZRegion * self);
+region_get_arranger_selections (Region * self);
 
 /**
  * Returns the arranger for editing the region's children.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 ArrangerWidget *
-region_get_arranger_for_children (ZRegion * self);
+region_get_arranger_for_children (Region * self);
 
 /**
  * Sanity checking.
@@ -661,21 +658,21 @@ region_get_arranger_for_children (ZRegion * self);
  * @param frames_per_tick Frames per tick used when validating audio regions.
  * Passing 0 will use the value from the current engine.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 bool
-region_validate (ZRegion * self, bool is_project, double frames_per_tick);
+region_validate (Region * self, bool is_project, double frames_per_tick);
 
 /**
  * Disconnects the region and anything using it.
  *
- * Does not free the ZRegion or its children's
+ * Does not free the Region or its children's
  * resources.
  *
- * @public @memberof ZRegion
+ * @public @memberof Region
  */
 void
-region_disconnect (ZRegion * self);
+region_disconnect (Region * self);
 
 /**
  * @}

@@ -17,7 +17,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (InspectorPluginWidget, inspector_plugin_widget, GTK_TYPE_BOX)
 

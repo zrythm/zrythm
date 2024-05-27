@@ -15,7 +15,7 @@
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 MidiNote *
 midi_arranger_selections_get_highest_note (MidiArrangerSelections * mas)
@@ -85,13 +85,13 @@ midi_arranger_selections_unlisten_note_diff (
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 int
 midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
-  ZRegion *                r)
+  Region *                 r)
 {
   if (!r || r->id.type != RegionType::REGION_TYPE_MIDI)
     return 0;

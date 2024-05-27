@@ -9,7 +9,8 @@
 #define __GUI_WIDGETS_CLIP_EDITOR_H__
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define CLIP_EDITOR_WIDGET_TYPE (clip_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

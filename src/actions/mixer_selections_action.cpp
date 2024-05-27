@@ -85,7 +85,7 @@ clone_ats (
         {
           AutomationTrack * at = atl->ats[i];
           if (
-            at->port_id.owner_type != ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
             || at->port_id.plugin_id.slot != slot
             || at->port_id.plugin_id.slot_type != ms->type)
             continue;
@@ -233,14 +233,14 @@ copy_at_regions (AutomationTrack * dest, AutomationTrack * src)
 {
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
-  dest->regions = static_cast<ZRegion **> (
-    g_realloc (dest->regions, dest->regions_size * sizeof (ZRegion *)));
+  dest->regions = static_cast<Region **> (
+    g_realloc (dest->regions, dest->regions_size * sizeof (Region *)));
 
   for (int j = 0; j < src->num_regions; j++)
     {
-      ZRegion * src_region = src->regions[j];
+      Region * src_region = src->regions[j];
       dest->regions[j] =
-        (ZRegion *) arranger_object_clone ((ArrangerObject *) src_region);
+        (Region *) arranger_object_clone ((ArrangerObject *) src_region);
       region_set_automation_track (dest->regions[j], dest);
     }
 
@@ -250,7 +250,7 @@ copy_at_regions (AutomationTrack * dest, AutomationTrack * src)
         "reverted %d regions for "
         "automation track %d:",
         dest->num_regions, dest->index);
-      port_identifier_print (&dest->port_id);
+      dest->port_id.print ();
     }
 }
 
@@ -640,8 +640,7 @@ do_or_undo_create_or_delete (
                     {
                       Port * cur_own_port =
                         static_cast<Port *> (g_ptr_array_index (own_ports, k));
-                      if (port_identifier_is_equal (
-                            &cur_own_port->id, &prj_port->id))
+                      if (cur_own_port->id.is_equal (prj_port->id))
                         {
                           own_port = cur_own_port;
                           break;
@@ -797,7 +796,7 @@ copy_automation_from_track1_to_track2 (
       AutomationTrack * prev_at = prev_atl->ats[j];
       if (
         prev_at->num_regions == 0
-        || prev_at->port_id.owner_type != ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+        || prev_at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
         || prev_at->port_id.plugin_id.slot != from_slot
         || prev_at->port_id.plugin_id.slot_type != slot_type)
         {
@@ -812,7 +811,7 @@ copy_automation_from_track1_to_track2 (
           AutomationTrack * at = atl->ats[k];
 
           if (
-            at->port_id.owner_type != ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
             || at->port_id.plugin_id.slot != to_slot
             || at->port_id.plugin_id.slot_type != slot_type
             || at->port_id.port_index != prev_at->port_id.port_index)
@@ -823,8 +822,8 @@ copy_automation_from_track1_to_track2 (
           /* copy the automation regions */
           for (int l = 0; l < prev_at->num_regions; l++)
             {
-              ZRegion * prev_region = prev_at->regions[l];
-              ZRegion * new_region = (ZRegion *) arranger_object_clone (
+              Region * prev_region = prev_at->regions[l];
+              Region * new_region = (Region *) arranger_object_clone (
                 (ArrangerObject *) prev_region);
               GError * err = NULL;
               bool     success =

@@ -17,9 +17,8 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
-
 #include "ext/midilib/src/midifile.h"
+#include "gtk_wrapper.h"
 #include "zix/sem.h"
 
 typedef struct ChordDescriptor ChordDescriptor;

@@ -12,8 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <kiss_fft.h>
 
 TYPEDEF_STRUCT (Port);

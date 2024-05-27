@@ -8,6 +8,7 @@
 #include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
 #include "dsp/marker_track.h"
+#include "dsp/port_identifier.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
 #include "gui/backend/arranger_selections.h"
@@ -188,8 +189,8 @@ set_split_objects (
   switch (r1->type)
     {
     case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
-      self->region_r1[i] = (ZRegion *) r1;
-      self->region_r2[i] = (ZRegion *) r2;
+      self->region_r1[i] = (Region *) r1;
+      self->region_r2[i] = (Region *) r2;
       break;
     case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       self->mn_r1[i] = (MidiNote *) r1;
@@ -318,7 +319,7 @@ arranger_selections_action_new_move_or_duplicate (
   self->delta_normalized_amount = delta_normalized_amount;
   if (tgt_port_id)
     {
-      self->target_port = port_identifier_clone (tgt_port_id);
+      self->target_port = new PortIdentifier (*tgt_port_id);
     }
 
   return ua;
@@ -655,8 +656,8 @@ arranger_selections_action_new_edit_audio_function (
  */
 UndoableAction *
 arranger_selections_action_new_automation_fill (
-  ZRegion * region_before,
-  ZRegion * region_after,
+  Region *  region_before,
+  Region *  region_after,
   bool      already_changed,
   GError ** error)
 {
@@ -670,9 +671,9 @@ arranger_selections_action_new_automation_fill (
   self->type = ArrangerSelectionsActionType::AS_ACTION_AUTOMATION_FILL;
 
   self->region_before =
-    (ZRegion *) arranger_object_clone ((ArrangerObject *) region_before);
+    (Region *) arranger_object_clone ((ArrangerObject *) region_before);
   self->region_after =
-    (ZRegion *) arranger_object_clone ((ArrangerObject *) region_after);
+    (Region *) arranger_object_clone ((ArrangerObject *) region_after);
 
   if (!already_changed)
     {
@@ -900,8 +901,8 @@ arranger_selections_action_clone (const ArrangerSelectionsAction * src)
       switch (r1->type)
         {
         case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
-          self->region_r1[i] = (ZRegion *) r1;
-          self->region_r2[i] = (ZRegion *) r2;
+          self->region_r1[i] = (Region *) r1;
+          self->region_r2[i] = (Region *) r2;
           break;
         case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
           self->mn_r1[i] = (MidiNote *) r1;
@@ -1041,8 +1042,8 @@ arranger_selections_action_perform_edit_audio_function (
 
 bool
 arranger_selections_action_perform_automation_fill (
-  ZRegion * region_before,
-  ZRegion * region_after,
+  Region *  region_before,
+  Region *  region_after,
   bool      already_changed,
   GError ** error)
 {
@@ -1110,7 +1111,7 @@ update_region_link_groups (GPtrArray * objs_arr)
 
       if (arranger_object_owned_by_region (obj))
         {
-          ZRegion * region = arranger_object_get_region (obj);
+          Region * region = arranger_object_get_region (obj);
           g_return_if_fail (region);
 
           /* shift all linked objects */
@@ -1176,7 +1177,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
                 obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
                 -1);
 
-              ZRegion * r = (ZRegion *) obj;
+              Region * r = (Region *) obj;
 
               Track * track_to_move_to = tracklist_get_visible_track_after_delta (
                 TRACKLIST, arranger_object_get_track (obj), delta_tracks);
@@ -1187,7 +1188,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
               region_move_to_track (r, track_to_move_to, -1, -1);
 
               /* remember info in identifier */
-              ZRegion * r_clone = (ZRegion *) own_obj;
+              Region * r_clone = (Region *) own_obj;
               region_identifier_copy (&r_clone->id, &r->id);
             }
 
@@ -1213,7 +1214,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
                 obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
                 -1);
 
-              ZRegion * r = (ZRegion *) obj;
+              Region * r = (Region *) obj;
 
               Track * region_track = arranger_object_get_track (obj);
               int     new_lane_pos = r->id.lane_pos + delta_lanes;
@@ -1223,7 +1224,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
               region_move_to_track (r, region_track, new_lane_pos, -1);
 
               /* remember info in identifier */
-              ZRegion * r_own = (ZRegion *) own_obj;
+              Region * r_own = (Region *) own_obj;
               region_identifier_copy (&r_own->id, &r->id);
             }
 
@@ -1248,7 +1249,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
               g_return_val_if_fail (
                 obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
                 -1);
-              ZRegion * r = (ZRegion *) obj;
+              Region * r = (Region *) obj;
               g_return_val_if_fail (
                 r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
               AutomationTrack * cur_at = region_get_automation_track (r);
@@ -1265,12 +1266,11 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
               region_move_to_track (r, track, at->index, -1);
 
               /* remember info in identifier */
-              ZRegion * r_own = (ZRegion *) own_obj;
+              Region * r_own = (Region *) own_obj;
               region_identifier_copy (&r_own->id, &r->id);
 
-              object_free_w_func_and_null (
-                port_identifier_free, self->target_port);
-              self->target_port = port_identifier_clone (&cur_at->port_id);
+              object_delete_and_null (self->target_port);
+              self->target_port = new PortIdentifier (cur_at->port_id);
             }
 
           if (!math_doubles_equal (delta_normalized_amt, 0.0))
@@ -1312,7 +1312,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
             arranger_object_find (first_own_obj);
           g_return_val_if_fail (obj, -1);
 
-          ZRegion * region = arranger_object_get_region (obj);
+          Region * region = arranger_object_get_region (obj);
           g_return_val_if_fail (region, -1);
           automation_region_force_sort (region);
 
@@ -1361,7 +1361,7 @@ move_obj_by_tracks_and_lanes (
       g_return_if_fail (
         obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION);
 
-      ZRegion * r = (ZRegion *) obj;
+      Region * r = (Region *) obj;
 
       Track * track_to_move_to = tracklist_get_visible_track_after_delta (
         TRACKLIST, arranger_object_get_track (obj), tracks_diff);
@@ -1383,7 +1383,7 @@ move_obj_by_tracks_and_lanes (
     }
   if (lanes_diff)
     {
-      ZRegion * r = (ZRegion *) obj;
+      Region * r = (Region *) obj;
 
       Track * region_track = arranger_object_get_track (obj);
       int     new_lane_pos = r->id.lane_pos + lanes_diff;
@@ -1467,14 +1467,14 @@ do_or_undo_duplicate_or_link (
           if (own_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
             {
               g_debug ("our:");
-              region_print ((ZRegion *) own_obj);
+              region_print ((Region *) own_obj);
             }
-          ZRegion * r_orig = NULL;
-          ZRegion * r_our = NULL;
+          Region * r_orig = NULL;
+          Region * r_our = NULL;
           if (own_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
             {
-              r_orig = (ZRegion *) own_orig_obj;
-              r_our = (ZRegion *) own_obj;
+              r_orig = (Region *) own_orig_obj;
+              r_our = (Region *) own_obj;
               g_return_val_if_fail (
                 IS_REGION_AND_NONNULL (r_orig) && IS_REGION_AND_NONNULL (r_our),
                 -1);
@@ -1516,7 +1516,7 @@ do_or_undo_duplicate_or_link (
                * cached objects in the same lane */
               for (int j = i + 1; j < (int) objs_arr->len; j++)
                 {
-                  ZRegion * own_r = (ZRegion *) own_obj;
+                  Region * own_r = (Region *) own_obj;
                   if (
                     own_id_before_move.track_name_hash == own_r->id.track_name_hash
                     && own_id_before_move.lane_pos == own_r->id.lane_pos
@@ -1591,7 +1591,7 @@ do_or_undo_duplicate_or_link (
            * instead of inserted */
           if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
             {
-              ZRegion * r = (ZRegion *) obj;
+              Region * r = (Region *) obj;
               r->id.idx = -1;
             }
 
@@ -1637,7 +1637,7 @@ do_or_undo_duplicate_or_link (
               g_return_val_if_fail (
                 obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
                 -1);
-              ZRegion * r = (ZRegion *) obj;
+              Region * r = (Region *) obj;
               g_return_val_if_fail (
                 r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
               AutomationTrack * cur_at = region_get_automation_track (r);
@@ -1673,28 +1673,28 @@ do_or_undo_duplicate_or_link (
                   /* add link group to original object if necessary */
                   ArrangerObject * orig_obj =
                     arranger_object_find (own_orig_obj);
-                  ZRegion * orig_r = (ZRegion *) orig_obj;
+                  Region * orig_r = (Region *) orig_obj;
                   g_return_val_if_fail (orig_r->id.idx >= 0, -1);
                   region_create_link_group_if_none (orig_r);
                   int link_group = orig_r->id.link_group;
 
                   /* add link group to clone */
-                  ZRegion * r_obj = (ZRegion *) obj;
+                  Region * r_obj = (Region *) obj;
                   g_return_val_if_fail (r_obj->id.type == orig_r->id.type, -1);
                   g_return_val_if_fail (r_obj->id.idx >= 0, -1);
                   region_set_link_group (r_obj, link_group, true);
 
                   /* remember link groups */
-                  ZRegion * r = (ZRegion *) own_orig_obj;
+                  Region * r = (Region *) own_orig_obj;
                   region_set_link_group (r, link_group, true);
-                  r = (ZRegion *) own_obj;
+                  r = (Region *) own_obj;
                   region_set_link_group (r, link_group, true);
 
                   region_link_group_manager_validate (REGION_LINK_GROUP_MANAGER);
                 }
               else /* else if we are not linking */
                 {
-                  ZRegion * region = (ZRegion *) obj;
+                  Region * region = (Region *) obj;
 
                   /* remove link group if first run */
                   if (self->first_run)
@@ -1749,16 +1749,16 @@ do_or_undo_duplicate_or_link (
               /* remove link from created object (this will also automatically
                * remove the link from the parent region if it is the only region
                * in the link group) */
-              ZRegion * region = (ZRegion *) obj;
+              Region * region = (Region *) obj;
               g_warn_if_fail (
                 IS_REGION (region) && region_has_link_group (region));
               region_unlink (region);
               g_warn_if_fail (region->id.link_group == -1);
 
               /* unlink remembered link groups */
-              region = (ZRegion *) own_orig_obj;
+              region = (Region *) own_orig_obj;
               region_unlink (region);
-              region = (ZRegion *) own_obj;
+              region = (Region *) own_obj;
               region_unlink (region);
             }
 
@@ -1818,7 +1818,7 @@ do_or_undo_duplicate_or_link (
         {
           ArrangerObject * obj = static_cast<ArrangerObject *> (keys_arr[0]);
           g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
-          ZRegion * region = arranger_object_get_region (obj);
+          Region * region = arranger_object_get_region (obj);
           g_return_val_if_fail (region, -1);
           automation_region_force_sort (region);
 
@@ -1948,7 +1948,7 @@ do_or_undo_create_or_delete (
               /* if region, remove link */
               if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
                 {
-                  ZRegion * region = (ZRegion *) obj;
+                  Region * region = (Region *) obj;
                   if (region_has_link_group (region))
                     {
                       region_unlink (region);
@@ -2013,7 +2013,7 @@ do_or_undo_create_or_delete (
       bool                 have_automation_region = false;
       for (int i = 0; i < ts->num_regions; i++)
         {
-          ZRegion * r = ts->regions[i];
+          Region * r = ts->regions[i];
           if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
             {
               have_automation_region = true;
@@ -2175,7 +2175,7 @@ do_or_undo_record (
       bool                 have_automation_region = false;
       for (int i = 0; i < ts->num_regions; i++)
         {
-          ZRegion * r = ts->regions[i];
+          Region * r = ts->regions[i];
           if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
             {
               have_automation_region = true;
@@ -2221,7 +2221,7 @@ do_or_undo_edit (ArrangerSelectionsAction * self, const int _do, GError ** error
         {
           AudioSelections * src_audio_sel =
             (AudioSelections *) (_do ? self->sel_after : self->sel);
-          ZRegion *   r = region_find (&src_audio_sel->region_id);
+          Region *    r = region_find (&src_audio_sel->region_id);
           AudioClip * src_clip =
             audio_pool_get_clip (AUDIO_POOL, src_audio_sel->pool_id);
 
@@ -2311,10 +2311,10 @@ do_or_undo_edit (ArrangerSelectionsAction * self, const int _do, GError ** error
                     case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
                       {
                         SET_PRIMITIVE (ArrangerObject, muted);
-                        SET_PRIMITIVE (ZRegion, color);
-                        SET_PRIMITIVE (ZRegion, use_color);
-                        SET_PRIMITIVE (ZRegion, musical_mode);
-                        SET_PRIMITIVE (ZRegion, gain);
+                        SET_PRIMITIVE (Region, color);
+                        SET_PRIMITIVE (Region, use_color);
+                        SET_PRIMITIVE (Region, musical_mode);
+                        SET_PRIMITIVE (Region, gain);
                       }
                       break;
                     case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -2437,7 +2437,7 @@ do_or_undo_automation_fill (
       g_return_val_if_fail (obj, -1);
 
       /* remove link */
-      ZRegion * region = (ZRegion *) obj;
+      Region * region = (Region *) obj;
       if (region_has_link_group (region))
         {
           region_unlink (region);
@@ -2544,7 +2544,7 @@ do_or_undo_split (ArrangerSelectionsAction * self, const int _do, GError ** erro
 
           if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
             {
-              ZRegion * own_region = (ZRegion *) own_obj;
+              Region * own_region = (Region *) own_obj;
               arranger_object_set_name (
                 obj, own_region->name, F_NO_PUBLISH_EVENTS);
             }
@@ -2982,8 +2982,8 @@ arranger_selections_action_contains_clip (
   /* check split regions (if any) */
   for (int i = 0; i < self->num_split_objs; i++)
     {
-      ZRegion * r1 = self->region_r1[i];
-      ZRegion * r2 = self->region_r2[i];
+      Region * r1 = self->region_r1[i];
+      Region * r2 = self->region_r2[i];
       if (r1 && r2)
         {
           if (r1->id.type != RegionType::REGION_TYPE_AUDIO)

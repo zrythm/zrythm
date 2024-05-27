@@ -35,8 +35,7 @@
 #include "plugins/plugin.h"
 #include "zrythm.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <zix/sem.h>
 
 typedef struct Timeline            Timeline;
@@ -99,7 +98,7 @@ enum class ProjectPath
  * Selection type, used for controlling which part of the interface is selected,
  * for copy-paste, displaying info in the inspector, etc.
  */
-enum class ZProjectSelectionType
+enum class ProjectSelectionType
 {
   /** Track selection in tracklist or mixer. */
   Z_PROJECT_SELECTION_TYPE_TRACKLIST,
@@ -268,7 +267,7 @@ typedef struct Project
    *
    * Used in inspector_widget_refresh.
    */
-  ZProjectSelectionType last_selection;
+  ProjectSelectionType last_selection;
 
   /** Zrythm version, for serialization */
   char * version;

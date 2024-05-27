@@ -65,8 +65,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <time.h>
 #include <zstd.h>
 
@@ -363,7 +363,7 @@ project_fix_audio_regions (Project * self)
 
           for (int k = 0; k < lane->num_regions; k++)
             {
-              ZRegion * r = lane->regions[k];
+              Region * r = lane->regions[k];
               if (audio_region_fix_positions (r, 0))
                 num_fixed++;
             }
@@ -380,14 +380,14 @@ ArrangerWidget *
 project_get_arranger_for_last_selection (
   Project * self)
 {
-  ZRegion * r =
+  Region * r =
     clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
       return TL_SELECTIONS;
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (r)
         {
           switch (r->id.type)
@@ -414,13 +414,13 @@ project_get_arranger_for_last_selection (
 ArrangerSelections *
 project_get_arranger_selections_for_last_selection (Project * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
       return (ArrangerSelections *) TL_SELECTIONS;
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (r)
         {
           switch (r->id.type)

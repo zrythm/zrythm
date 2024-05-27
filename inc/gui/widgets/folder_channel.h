@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_FOLDER_CHANNEL_H__
 #define __GUI_WIDGETS_FOLDER_CHANNEL_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define FOLDER_CHANNEL_WIDGET_TYPE (folder_channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

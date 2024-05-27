@@ -19,7 +19,7 @@
 #include "gui/backend/tracklist_selections.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup gui_backend

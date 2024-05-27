@@ -13,7 +13,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define PLUGIN_STRIP_EXPANDER_WIDGET_TYPE \
   (plugin_strip_expander_widget_get_type ())

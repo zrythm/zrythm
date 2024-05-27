@@ -26,7 +26,7 @@ create_automation_region (int track_pos)
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
-  ZRegion * region =
+  Region * region =
     automation_region_new (&start, &end, track_get_name_hash (track), 0, 0);
   AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);

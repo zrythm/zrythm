@@ -11,7 +11,7 @@
 #ifndef __UTILS_COLOR_H__
 #define __UTILS_COLOR_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup utils

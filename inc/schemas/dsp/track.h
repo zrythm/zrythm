@@ -22,7 +22,7 @@
 #include "schemas/plugins/plugin.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef enum TrackType_v1
 {

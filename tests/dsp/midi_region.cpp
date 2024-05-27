@@ -44,7 +44,7 @@ test_export (void)
 
       g_assert_cmpint (track->num_lanes, >, 0);
       g_assert_cmpint (track->lanes[0]->num_regions, >, 0);
-      ZRegion * region = track->lanes[0]->regions[0];
+      Region * region = track->lanes[0]->regions[0];
       g_assert_true (IS_REGION (region));
 
       char * basename = g_path_get_basename (midi_file);
@@ -101,7 +101,7 @@ compare_files_hash (const char * filepath1, const char * filepath2)
 }
 
 static void
-setup_region_for_full_export (ZRegion * region)
+setup_region_for_full_export (Region * region)
 {
   Position clip_start_pos;
   position_init (&clip_start_pos);
@@ -139,7 +139,7 @@ test_full_export (void)
 
   g_assert_cmpint (track->num_lanes, >, 0);
   g_assert_cmpint (track->lanes[0]->num_regions, >, 0);
-  ZRegion * region = track->lanes[0]->regions[0];
+  Region * region = track->lanes[0]->regions[0];
   g_assert_true (IS_REGION (region));
 
   setup_region_for_full_export (region);

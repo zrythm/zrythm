@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/channel_send.h"
 #include "dsp/port_connections_manager.h"
+#include "dsp/port_identifier.h"
+#include "dsp/track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
-#include "utils/string.h"
-#include "utils/terminal.h"
 #include "zrythm_app.h"
 
 static void
@@ -42,12 +43,12 @@ add_or_replace_connection (
 
   if (replacing)
     {
-      PortIdentifier * pi_clone = port_identifier_clone (pi);
+      PortIdentifier * pi_clone = new PortIdentifier (*pi);
       g_hash_table_replace (ht, pi_clone, connections);
     }
   else
     {
-      PortIdentifier * pi_clone = port_identifier_clone (pi);
+      PortIdentifier * pi_clone = new PortIdentifier (*pi);
       g_hash_table_insert (ht, pi_clone, connections);
     }
 }
@@ -70,17 +71,15 @@ port_connections_manager_regenerate_hashtables (PortConnectionsManager * self)
   object_free_w_func_and_null (g_hash_table_destroy, self->src_ht);
   object_free_w_func_and_null (g_hash_table_destroy, self->dest_ht);
 
-  /* FIXME the hashes returned are 32 bits but
-   * they should allow the minimum size of 16 bits
-   * for guint used in the hash func. currently
-   * this doesn't affect any major platform but
-   * it's not standards compliant */
+  /* FIXME the hashes returned are 32 bits but they should allow the minimum
+   * size of 16 bits for guint used in the hash func. currently this doesn't
+   * affect any major platform but it's not standards compliant */
   self->src_ht = g_hash_table_new_full (
     port_identifier_get_hash, port_identifier_is_equal_func,
-    port_identifier_free_func, free_connections);
+    port_identifier_destroy_notify, free_connections);
   self->dest_ht = g_hash_table_new_full (
     port_identifier_get_hash, port_identifier_is_equal_func,
-    port_identifier_free_func, free_connections);
+    port_identifier_destroy_notify, free_connections);
 
   for (int i = 0; i < self->num_connections; i++)
     {
@@ -143,8 +142,8 @@ port_connections_manager_predicate_is_send_of (
           ? track->channel->prefader->stereo_out
           : track->channel->fader->stereo_out;
 
-      return port_identifier_is_equal (conn->src_id, &self_stereo->l->id)
-             || port_identifier_is_equal (conn->src_id, &self_stereo->r->id);
+      return conn->src_id->is_equal (self_stereo->l->id)
+             || conn->src_id->is_equal (self_stereo->r->id);
     }
   else if (track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
     {
@@ -153,7 +152,7 @@ port_connections_manager_predicate_is_send_of (
           ? track->channel->prefader->midi_out
           : track->channel->fader->midi_out;
 
-      return port_identifier_is_equal (conn->src_id, &self_port->id);
+      return conn->src_id->is_equal (self_port->id);
     }
 
   g_return_val_if_reached (false);
@@ -268,7 +267,7 @@ port_connections_manager_get_source_or_dest (
     {
       size_t sz = 2000;
       char   buf[sz];
-      port_identifier_print_to_str (id, buf, sz);
+      id->print_to_str (buf, sz);
       g_critical (
         "expected 1 %s, found %d "
         "connections for\n%s",
@@ -291,9 +290,7 @@ port_connections_manager_find_connection (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      if (
-        port_identifier_is_equal (conn->src_id, src)
-        && port_identifier_is_equal (conn->dest_id, dest))
+      if (conn->src_id->is_equal (*src) && conn->dest_id->is_equal (*dest))
         {
           return conn;
         }
@@ -323,9 +320,7 @@ port_connections_manager_ensure_connect (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      if (
-        port_identifier_is_equal (conn->src_id, src)
-        && port_identifier_is_equal (conn->dest_id, dest))
+      if (conn->src_id->is_equal (*src) && conn->dest_id->is_equal (*dest))
         {
           port_connection_update (conn, multiplier, locked, enabled);
           port_connections_manager_regenerate_hashtables (self);
@@ -400,9 +395,7 @@ port_connections_manager_ensure_disconnect (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      if (
-        port_identifier_is_equal (conn->src_id, src)
-        && port_identifier_is_equal (conn->dest_id, dest))
+      if (conn->src_id->is_equal (*src) && conn->dest_id->is_equal (*dest))
         {
           remove_connection (self, i);
           return true;
@@ -426,9 +419,7 @@ port_connections_manager_ensure_disconnect_all (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      if (
-        port_identifier_is_equal (conn->src_id, pi)
-        || port_identifier_is_equal (conn->dest_id, pi))
+      if (conn->src_id->is_equal (*pi) || conn->dest_id->is_equal (*pi))
         {
           remove_connection (self, i);
         }

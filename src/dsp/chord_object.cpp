@@ -69,7 +69,7 @@ chord_object_find_by_pos (ChordObject * clone)
 
   /* get actual region - clone's region might be
    * an unused clone */
-  ZRegion * r = region_find (&clone_obj->region_id);
+  Region * r = region_find (&clone_obj->region_id);
   g_return_val_if_fail (r, NULL);
 
   ChordObject *    chord;
@@ -88,14 +88,14 @@ chord_object_find_by_pos (ChordObject * clone)
  * Sets the region and index of the chord.
  */
 void
-chord_object_set_region_and_index (ChordObject * self, ZRegion * region, int idx)
+chord_object_set_region_and_index (ChordObject * self, Region * region, int idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   region_identifier_copy (&obj->region_id, &region->id);
   self->index = idx;
 }
 
-ZRegion *
+Region *
 chord_object_get_region (ChordObject * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;

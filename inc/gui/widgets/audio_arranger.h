@@ -12,7 +12,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

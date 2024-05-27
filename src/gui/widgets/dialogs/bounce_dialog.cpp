@@ -20,7 +20,7 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (BounceDialogWidget, bounce_dialog_widget, GTK_TYPE_DIALOG)
 

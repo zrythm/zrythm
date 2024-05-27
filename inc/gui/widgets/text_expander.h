@@ -13,7 +13,7 @@
 #include "gui/widgets/expander_box.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

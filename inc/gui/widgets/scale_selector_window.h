@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
 #define __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define SCALE_SELECTOR_WINDOW_WIDGET_TYPE \
   (scale_selector_window_widget_get_type ())

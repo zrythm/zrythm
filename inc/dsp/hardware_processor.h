@@ -13,7 +13,7 @@
 #include "dsp/ext_port.h"
 #include "dsp/port.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct AudioEngine AudioEngine;
 

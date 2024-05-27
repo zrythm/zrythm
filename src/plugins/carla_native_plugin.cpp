@@ -951,7 +951,7 @@ set_unit_from_str (Port * port, const char * unit_str)
 {
 #  define SET_UNIT(caps, str) \
     if (string_is_equal (unit_str, str)) \
-    port->id.unit = ZPortUnit::Z_PORT_UNIT_##caps
+    port->id.unit = PortUnit::Z_PORT_UNIT_##caps
 
   SET_UNIT (HZ, "Hz");
   SET_UNIT (MS, "ms");
@@ -1000,7 +1000,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
           if (audio_port_hints & CarlaBackend::AUDIO_PORT_IS_SIDECHAIN)
             {
               g_debug ("%s is sidechain", port->id.sym);
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_SIDECHAIN;
+              port->id.flags |= PortIdentifier::Flags::SIDECHAIN;
             }
 #  endif
           plugin_add_in_port (self->plugin, port);
@@ -1015,22 +1015,25 @@ create_ports (CarlaNativePlugin * self, bool loading)
           if (
             port->id.type == ZPortType::Z_PORT_TYPE_AUDIO
             && ENUM_BITSET_TEST (
-              ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_SIDECHAIN)
+              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags::SIDECHAIN)
             && port->id.port_group == NULL
             && !(ENUM_BITSET_TEST (
-              ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L))
+              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags::STEREO_L))
             && !(ENUM_BITSET_TEST (
-              ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_R)))
+              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags::STEREO_R)))
             {
               port->id.port_group = g_strdup ("[Zrythm] Sidechain Group");
               if (num_default_sidechains_added == 0)
                 {
-                  port->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_L;
+                  port->id.flags |= PortIdentifier::Flags::STEREO_L;
                   num_default_sidechains_added++;
                 }
               else if (num_default_sidechains_added == 1)
                 {
-                  port->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_R;
+                  port->id.flags |= PortIdentifier::Flags::STEREO_R;
                   break;
                 }
             }
@@ -1054,7 +1057,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
           Port * port = port_new_with_type (
             ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, name);
           port->id.sym = g_strdup_printf ("midi_in_%d", i);
-          port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI;
+          port->id.flags2 |= PortIdentifier::Flags2::SUPPORTS_MIDI;
           plugin_add_in_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_midi_outs; i++)
@@ -1064,7 +1067,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
           Port * port = port_new_with_type (
             ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT, name);
           port->id.sym = g_strdup_printf ("midi_out_%d", i);
-          port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI;
+          port->id.flags2 |= PortIdentifier::Flags2::SUPPORTS_MIDI;
           plugin_add_out_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_cv_ins; i++)
@@ -1138,7 +1141,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
             {
               port->id.sym = g_strdup_printf ("param_%u", i);
             }
-          port->id.flags |= ZPortFlags::Z_PORT_FLAG_PLUGIN_CONTROL;
+          port->id.flags |= PortIdentifier::Flags::PLUGIN_CONTROL;
           if (param_info->comment && strlen (param_info->comment) > 0)
             {
               port->id.comment = g_strdup (param_info->comment);
@@ -1161,27 +1164,27 @@ create_ports (CarlaNativePlugin * self, bool loading)
           g_return_if_fail (native_param);
           if (native_param->hints & NATIVE_PARAMETER_IS_LOGARITHMIC)
             {
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_LOGARITHMIC;
+              port->id.flags |= PortIdentifier::Flags::LOGARITHMIC;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_AUTOMABLE)
             {
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
+              port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
             }
           if (!(native_param->hints & NATIVE_PARAMETER_IS_ENABLED))
             {
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI;
+              port->id.flags |= PortIdentifier::Flags::NOT_ON_GUI;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_BOOLEAN)
             {
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+              port->id.flags |= PortIdentifier::Flags::TOGGLE;
             }
           else if (native_param->hints & NATIVE_PARAMETER_USES_SCALEPOINTS)
             {
-              port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_ENUMERATION;
+              port->id.flags2 |= PortIdentifier::Flags2::ENUMERATION;
             }
           else if (native_param->hints & NATIVE_PARAMETER_IS_INTEGER)
             {
-              port->id.flags |= ZPortFlags::Z_PORT_FLAG_INTEGER;
+              port->id.flags |= PortIdentifier::Flags::INTEGER;
             }
 
           /* get scale points */
@@ -2063,7 +2066,8 @@ carla_native_plugin_get_midi_out_port (CarlaNativePlugin * self)
       if (
         port->id.type == ZPortType::Z_PORT_TYPE_EVENT
         && ENUM_BITSET_TEST (
-          ZPortFlags2, port->id.flags2, ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+          PortIdentifier::Flags2, port->id.flags2,
+          PortIdentifier::Flags2::SUPPORTS_MIDI))
         return port;
     }
 

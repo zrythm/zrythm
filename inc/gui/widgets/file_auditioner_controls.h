@@ -17,7 +17,7 @@
 
 #include "dsp/supported_file.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define FILE_AUDITIONER_CONTROLS_WIDGET_TYPE \
   (file_auditioner_controls_widget_get_type ())

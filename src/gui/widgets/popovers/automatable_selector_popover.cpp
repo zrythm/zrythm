@@ -14,10 +14,12 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   AutomatableSelectorPopoverWidget,
@@ -169,8 +171,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
           else if (string_is_equal (_ ("Channel"), str))
             {
               if (
-                port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL
-                || port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER)
+                port->id.owner_type == PortIdentifier::OwnerType::CHANNEL
+                || port->id.owner_type == PortIdentifier::OwnerType::FADER)
                 {
                   match = true;
                   break;
@@ -181,7 +183,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
               int midi_ch;
               int found_nums = sscanf (str, "MIDI Ch%d", &midi_ch);
               g_return_val_if_fail (found_nums == 1, false);
-              int port_midi_ch = port_identifier_get_midi_channel (&port->id);
+              int port_midi_ch = port->id.get_midi_channel ();
               if (port_midi_ch == midi_ch)
                 {
                   match = true;

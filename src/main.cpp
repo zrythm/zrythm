@@ -6,7 +6,7 @@
 #include "utils/log.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Application entry point.

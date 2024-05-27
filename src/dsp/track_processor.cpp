@@ -120,16 +120,16 @@ init_midi_port (TrackProcessor * self, int in)
     {
       self->midi_in = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT,
-        "TP MIDI in", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        "TP MIDI in", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       self->midi_in->id.sym = g_strdup ("track_processor_midi_in");
       g_warn_if_fail (IS_PORT (self->midi_in));
-      self->midi_in->id.flags |= ZPortFlags::Z_PORT_FLAG_SEND_RECEIVABLE;
+      self->midi_in->id.flags |= PortIdentifier::Flags::SEND_RECEIVABLE;
     }
   else
     {
       self->midi_out = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-        "TP MIDI out", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        "TP MIDI out", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       self->midi_out->id.sym = g_strdup ("track_processor_midi_out");
       g_warn_if_fail (IS_PORT (self->midi_out));
     }
@@ -139,8 +139,8 @@ static void
 init_midi_cc_ports (TrackProcessor * self, int loading)
 {
 #define INIT_MIDI_PORT(x, idx) \
-  x->id.flags |= ZPortFlags::Z_PORT_FLAG_MIDI_AUTOMATABLE; \
-  x->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE; \
+  x->id.flags |= PortIdentifier::Flags::MIDI_AUTOMATABLE; \
+  x->id.flags |= PortIdentifier::Flags::AUTOMATABLE; \
   x->id.port_index = idx;
 
   char name[400];
@@ -154,7 +154,7 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
           sprintf (name, "Ch%d %s", channel, midi_get_controller_name (j));
           Port * cc = port_new_with_type_and_owner (
             ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, name,
-            ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+            PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
           INIT_MIDI_PORT (cc, i * 128 + j);
           cc->id.sym =
             g_strdup_printf ("midi_controller_ch%d_%d", channel, j + 1);
@@ -164,32 +164,32 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
       sprintf (name, "Ch%d Pitch bend", i + 1);
       Port * cc = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, name,
-        ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_pitch_bend", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->maxf = 8191.f;
       cc->minf = -8192.f;
       cc->deff = 0.f;
       cc->zerof = 0.f;
-      cc->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_MIDI_PITCH_BEND;
+      cc->id.flags2 |= PortIdentifier::Flags2::MIDI_PITCH_BEND;
       self->pitch_bend[i] = cc;
 
       sprintf (name, "Ch%d Poly key pressure", i + 1);
       cc = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, name,
-        ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_poly_key_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
-      cc->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
+      cc->id.flags2 |= PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE;
       self->poly_key_pressure[i] = cc;
 
       sprintf (name, "Ch%d Channel pressure", i + 1);
       cc = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, name,
-        ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       cc->id.sym = g_strdup_printf ("ch%d_channel_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
-      cc->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
+      cc->id.flags2 |= PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE;
       self->channel_pressure[i] = cc;
     }
 
@@ -219,21 +219,21 @@ init_stereo_out_ports (TrackProcessor * self, bool in)
   l = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_AUDIO, flow,
     in ? "TP Stereo in L" : "TP Stereo out L",
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+    PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
   l->id.sym = g_strdup ("track_processor_stereo_out_l");
 
   r = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_AUDIO, flow,
     in ? "TP Stereo in R" : "TP Stereo out R",
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+    PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
   r->id.sym = g_strdup ("track_processor_stereo_out_r");
 
   *sp = stereo_ports_new_from_existing (l, r);
 
   if (in)
     {
-      l->id.flags |= ZPortFlags::Z_PORT_FLAG_SEND_RECEIVABLE;
-      r->id.flags |= ZPortFlags::Z_PORT_FLAG_SEND_RECEIVABLE;
+      l->id.flags |= PortIdentifier::Flags::SEND_RECEIVABLE;
+      r->id.flags |= PortIdentifier::Flags::SEND_RECEIVABLE;
     }
 }
 
@@ -264,10 +264,9 @@ track_processor_new (Track * tr)
         {
           self->piano_roll = port_new_with_type_and_owner (
             ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT,
-            "TP Piano Roll", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
-            self);
+            "TP Piano Roll", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
           self->piano_roll->id.sym = g_strdup ("track_processor_piano_roll");
-          self->piano_roll->id.flags = ZPortFlags::Z_PORT_FLAG_PIANO_ROLL;
+          self->piano_roll->id.flags = PortIdentifier::Flags::PianoRoll;
           if (tr->type != TrackType::TRACK_TYPE_CHORD)
             {
               init_midi_cc_ports (self, false);
@@ -281,21 +280,19 @@ track_processor_new (Track * tr)
         {
           self->mono = port_new_with_type_and_owner (
             ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-            "TP Mono Toggle", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
-            self);
+            "TP Mono Toggle", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
           self->mono->id.sym = g_strdup ("track_processor_mono_toggle");
-          self->mono->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-          self->mono->id.flags |= ZPortFlags::Z_PORT_FLAG_TP_MONO;
+          self->mono->id.flags |= PortIdentifier::Flags::TOGGLE;
+          self->mono->id.flags |= PortIdentifier::Flags::TP_MONO;
           self->input_gain = port_new_with_type_and_owner (
             ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-            "TP Input Gain", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
-            self);
+            "TP Input Gain", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
           self->input_gain->id.sym = g_strdup ("track_processor_input_gain");
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
           self->input_gain->deff = 1.f;
-          self->input_gain->id.flags |= ZPortFlags::Z_PORT_FLAG_TP_INPUT_GAIN;
+          self->input_gain->id.flags |= PortIdentifier::Flags::TP_INPUT_GAIN;
           port_set_control_value (
             self->input_gain, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
         }
@@ -308,25 +305,22 @@ track_processor_new (Track * tr)
     {
       self->output_gain = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-        "TP Output Gain", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
-        self);
+        "TP Output Gain", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       self->output_gain->id.sym = g_strdup ("track_processor_output_gain");
       self->output_gain->minf = 0.f;
       self->output_gain->maxf = 4.f;
       self->output_gain->zerof = 0.f;
       self->output_gain->deff = 1.f;
-      self->output_gain->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TP_OUTPUT_GAIN;
+      self->output_gain->id.flags2 |= PortIdentifier::Flags2::TP_OUTPUT_GAIN;
       port_set_control_value (
         self->output_gain, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
       self->monitor_audio = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-        "Monitor audio", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR,
-        self);
+        "Monitor audio", PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
       self->monitor_audio->id.sym = g_strdup ("track_processor_monitor_audio");
-      self->monitor_audio->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-      self->monitor_audio->id.flags2 |=
-        ZPortFlags2::Z_PORT_FLAG2_TP_MONITOR_AUDIO;
+      self->monitor_audio->id.flags |= PortIdentifier::Flags::TOGGLE;
+      self->monitor_audio->id.flags2 |= PortIdentifier::Flags2::TP_MONITOR_AUDIO;
       port_set_control_value (
         self->monitor_audio, 0.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
     }
@@ -726,7 +720,8 @@ add_events_from_midi_cc_control_ports (
       /*port_identifier_print (&cc->id);*/
       if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, cc->id.flags2, ZPortFlags2::Z_PORT_FLAG2_MIDI_PITCH_BEND))
+          PortIdentifier::Flags2, cc->id.flags2,
+          PortIdentifier::Flags2::MIDI_PITCH_BEND))
         {
           midi_events_add_pitchbend (
             self->midi_out->midi_events, cc->midi_channel,
@@ -735,8 +730,8 @@ add_events_from_midi_cc_control_ports (
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, cc->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_MIDI_POLY_KEY_PRESSURE))
+          PortIdentifier::Flags2, cc->id.flags2,
+          PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE))
         {
 #if ZRYTHM_TARGET_VER_MAJ > 1
           /* TODO - unsupported in v1 */
@@ -744,8 +739,8 @@ add_events_from_midi_cc_control_ports (
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, cc->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_MIDI_CHANNEL_PRESSURE))
+          PortIdentifier::Flags2, cc->id.flags2,
+          PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE))
         {
           midi_events_add_channel_pressure (
             self->midi_out->midi_events, cc->midi_channel,

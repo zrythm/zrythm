@@ -10,7 +10,8 @@
 #include "utils/gtk.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define FADER_CONTROLS_EXPANDER_WIDGET_TYPE \
   (fader_controls_expander_widget_get_type ())

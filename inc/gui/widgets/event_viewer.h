@@ -14,7 +14,7 @@
 
 #include "dsp/region_identifier.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define EVENT_VIEWER_WIDGET_TYPE (event_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

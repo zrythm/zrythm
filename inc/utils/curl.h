@@ -10,7 +10,7 @@
 #ifndef __UTILS_CURL_H__
 #define __UTILS_CURL_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup utils

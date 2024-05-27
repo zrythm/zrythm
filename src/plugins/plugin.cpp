@@ -7,6 +7,7 @@
  * Implementation of Plugin.
  */
 
+#include "dsp/port_identifier.h"
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
 
 #include "zrythm-config.h"
@@ -49,7 +50,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 typedef enum
 {
@@ -93,12 +95,12 @@ set_stereo_outs_and_midi_in (Plugin * pl)
         {
           if (num_audio_outs == 0)
             {
-              out_port->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_L;
+              out_port->id.flags |= PortIdentifier::Flags::STEREO_L;
               pl->l_out = out_port;
             }
           else if (num_audio_outs == 1)
             {
-              out_port->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_R;
+              out_port->id.flags |= PortIdentifier::Flags::STEREO_R;
               pl->r_out = out_port;
             }
           num_audio_outs++;
@@ -113,7 +115,7 @@ set_stereo_outs_and_midi_in (Plugin * pl)
        * projects before the change to force
        * stereo a few commits after beta 1.1.11 */
       g_warning ("should not happen with carla");
-      pl->l_out->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_R;
+      pl->l_out->id.flags |= PortIdentifier::Flags::STEREO_R;
       pl->r_out = pl->l_out;
     }
 
@@ -128,7 +130,8 @@ set_stereo_outs_and_midi_in (Plugin * pl)
       Port * port = pl->in_ports[i];
       if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, port->id.flags2, ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+          PortIdentifier::Flags2, port->id.flags2,
+          PortIdentifier::Flags2::SUPPORTS_MIDI))
         {
           pl->midi_in_port = port;
           break;
@@ -150,17 +153,21 @@ set_enabled_and_gain (Plugin * self)
       if (
         !(port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
           && ENUM_BITSET_TEST (
-            ZPortFlags, port->id.flags,
-            ZPortFlags::Z_PORT_FLAG_GENERIC_PLUGIN_PORT)))
+            PortIdentifier::Flags, port->id.flags,
+            PortIdentifier::Flags::GENERIC_PLUGIN_PORT)))
         continue;
 
-      if (ENUM_BITSET_TEST (
-            ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_PLUGIN_ENABLED))
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::PLUGIN_ENABLED))
         {
           self->enabled = port;
         }
-      if (ENUM_BITSET_TEST (
-            ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_PLUGIN_GAIN))
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::PLUGIN_GAIN))
         {
           self->gain = port;
         }
@@ -255,10 +262,10 @@ plugin_init (
   port->id.comment = g_strdup (_ ("Enables or disables the plugin"));
   port->id.port_group = g_strdup ("[Zrythm]");
   plugin_add_in_port (plugin, port);
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_PLUGIN_ENABLED;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_GENERIC_PLUGIN_PORT;
+  port->id.flags |= PortIdentifier::Flags::PLUGIN_ENABLED;
+  port->id.flags |= PortIdentifier::Flags::TOGGLE;
+  port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+  port->id.flags |= PortIdentifier::Flags::GENERIC_PLUGIN_PORT;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->zerof = 0.f;
@@ -274,9 +281,9 @@ plugin_init (
   port->id.sym = g_strdup ("gain");
   port->id.comment = g_strdup (_ ("Plugin gain"));
   plugin_add_in_port (plugin, port);
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_PLUGIN_GAIN;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_GENERIC_PLUGIN_PORT;
+  port->id.flags |= PortIdentifier::Flags::PLUGIN_GAIN;
+  port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+  port->id.flags |= PortIdentifier::Flags::GENERIC_PLUGIN_PORT;
   port->id.port_group = g_strdup ("[Zrythm]");
   port->minf = 0.f;
   port->maxf = 8.f;
@@ -560,9 +567,10 @@ plugin_remove_ats_from_automation_tracklist (
     {
       AutomationTrack * at = atl->ats[i];
       if (
-        at->port_id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+        at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN
         || ENUM_BITSET_TEST (
-          ZPortFlags, at->port_id.flags, ZPortFlags::Z_PORT_FLAG_PLUGIN_CONTROL))
+          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags::PLUGIN_CONTROL))
         {
           if (
             at->port_id.plugin_id.slot == pl->id.slot
@@ -721,28 +729,28 @@ plugin_set_track_and_slot (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port *           port = pl->in_ports[i];
-      PortIdentifier * copy_id = port_identifier_clone (&port->id);
-      port_set_owner (port, ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, pl);
+      PortIdentifier * copy_id = new PortIdentifier (port->id);
+      port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
             port, copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
         }
-      object_free_w_func_and_null (port_identifier_free, copy_id);
+      delete copy_id;
     }
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port *           port = pl->out_ports[i];
-      PortIdentifier * copy_id = port_identifier_clone (&port->id);
-      port_set_owner (port, ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, pl);
+      PortIdentifier * copy_id = new PortIdentifier (port->id);
+      port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
             port, copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
         }
-      object_free_w_func_and_null (port_identifier_free, copy_id);
+      delete copy_id;
     }
 }
 
@@ -844,9 +852,9 @@ plugin_get_port_in_group (Plugin * self, const char * port_group, bool left)
       if (
         string_is_equal (port->id.port_group, port_group)
         && ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags,
-          (left ? ZPortFlags::Z_PORT_FLAG_STEREO_L
-                : ZPortFlags::Z_PORT_FLAG_STEREO_R)))
+          PortIdentifier::Flags, port->id.flags,
+          (left ? PortIdentifier::Flags::STEREO_L
+                : PortIdentifier::Flags::STEREO_R)))
         {
           return port;
         }
@@ -857,9 +865,9 @@ plugin_get_port_in_group (Plugin * self, const char * port_group, bool left)
       if (
         string_is_equal (port->id.port_group, port_group)
         && ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags,
-          (left ? ZPortFlags::Z_PORT_FLAG_STEREO_L
-                : ZPortFlags::Z_PORT_FLAG_STEREO_R)))
+          PortIdentifier::Flags, port->id.flags,
+          (left ? PortIdentifier::Flags::STEREO_L
+                : PortIdentifier::Flags::STEREO_R)))
         {
           return port;
         }
@@ -904,7 +912,7 @@ plugin_get_port_in_same_group (Plugin * self, Port * port)
           continue;
         }
 
-      if (string_is_equal (port->id.port_group, cur_port->id.port_group) && ((ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L) && ENUM_BITSET_TEST (ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_R)) || (ENUM_BITSET_TEST (ZPortFlags, cur_port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_R) && ENUM_BITSET_TEST (ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L))))
+      if (string_is_equal (port->id.port_group, cur_port->id.port_group) && ((ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id.flags, PortIdentifier::Flags::STEREO_L) && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::STEREO_R)) || (ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id.flags, PortIdentifier::Flags::STEREO_R) && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::STEREO_L))))
         {
           return cur_port;
         }
@@ -1056,7 +1064,7 @@ plugin_update_latency (Plugin * pl)
         pl->type##_ports, sizeof (Port *) * pl->type##_ports_size)); \
     } \
   port->id.port_index = pl->num_##type##_ports; \
-  port_set_owner (port, ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, pl); \
+  port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl); \
   array_append (pl->type##_ports, pl->num_##type##_ports, port)
 
 /**
@@ -1119,7 +1127,7 @@ plugin_move_automation (
       if (!port)
         continue;
       g_return_if_fail (IS_PORT (port));
-      if (port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (port_pl != pl)
@@ -1266,7 +1274,8 @@ plugin_generate_automation_tracks (Plugin * self, Track * track)
       if (
         port->id.type != ZPortType::Z_PORT_TYPE_CONTROL
         || !(ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_AUTOMATABLE)))
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::AUTOMATABLE)))
         continue;
 
       AutomationTrack * at = automation_track_new (port);
@@ -1285,10 +1294,11 @@ plugin_get_enabled_port (Plugin * self)
       Port * port = self->in_ports[i];
       if (
         ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_PLUGIN_ENABLED)
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::PLUGIN_ENABLED)
         && ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags,
-          ZPortFlags::Z_PORT_FLAG_GENERIC_PLUGIN_PORT))
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::GENERIC_PLUGIN_PORT))
         {
           return port;
         }
@@ -1460,7 +1470,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
     {
       Port * port = (Port *) g_ptr_array_index (plugin->ctrl_in_ports, i);
       if (
-        ENUM_BITSET_TEST(ZPortFlags,port->id.flags,ZPortFlags::Z_PORT_FLAG_TRIGGER)
+        ENUM_BITSET_TEST(PortIdentifier::Flags,port->id.flags,PortIdentifier::Flags::TRIGGER)
         && !math_floats_equal (port->control, 0.f))
         {
           port_set_control_value (port, 0.f, 0, 1);
@@ -1892,13 +1902,13 @@ plugin_clone (Plugin * src, GError ** error)
     {
       self->in_ports[i] = port_clone (src->in_ports[i]);
       port_set_owner (
-        self->in_ports[i], ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, self);
+        self->in_ports[i], PortIdentifier::OwnerType::PLUGIN, self);
     }
   for (int i = 0; i < src->num_out_ports; i++)
     {
       self->out_ports[i] = port_clone (src->out_ports[i]);
       port_set_owner (
-        self->out_ports[i], ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, self);
+        self->out_ports[i], PortIdentifier::OwnerType::PLUGIN, self);
     }
   self->num_in_ports = src->num_in_ports;
   self->num_out_ports = src->num_out_ports;
@@ -2001,8 +2011,8 @@ plugin_process_passthrough (
               if (
                 out_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
                 && ENUM_BITSET_TEST (
-                  ZPortFlags2, out_port->id.flags2,
-                  ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+                  PortIdentifier::Flags2, out_port->id.flags2,
+                  PortIdentifier::Flags2::SUPPORTS_MIDI))
                 {
                   /* copy */
                   midi_events_append (
@@ -2250,8 +2260,8 @@ done2:;
       if (
         out_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
         && ENUM_BITSET_TEST (
-          ZPortFlags2, out_port->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+          PortIdentifier::Flags2, out_port->id.flags2,
+          PortIdentifier::Flags2::SUPPORTS_MIDI))
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
@@ -2260,8 +2270,8 @@ done2:;
               if (
                 in_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
                 && ENUM_BITSET_TEST (
-                  ZPortFlags2, in_port->id.flags2,
-                  ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+                  PortIdentifier::Flags2, in_port->id.flags2,
+                  PortIdentifier::Flags2::SUPPORTS_MIDI))
                 {
                   port_connect (out_port, in_port, 1);
                 }
@@ -2293,8 +2303,8 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
           if (
             out_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
             && ENUM_BITSET_TEST (
-              ZPortFlags2, out_port->id.flags2,
-              ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI)
+              PortIdentifier::Flags2, out_port->id.flags2,
+              PortIdentifier::Flags2::SUPPORTS_MIDI)
             && out_port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
             {
               port_connect (out_port, ch->midi_out, 1);
@@ -2340,8 +2350,8 @@ plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
         type == ZPortType::Z_PORT_TYPE_EVENT
         && out_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
         && ENUM_BITSET_TEST (
-          ZPortFlags2, out_port->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+          PortIdentifier::Flags2, out_port->id.flags2,
+          PortIdentifier::Flags2::SUPPORTS_MIDI))
         {
           if (ports_connected (out_port, ch->prefader->midi_in))
             port_disconnect (out_port, ch->prefader->midi_in);
@@ -2489,8 +2499,8 @@ done2:;
       if (
         out_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
         && ENUM_BITSET_TEST (
-          ZPortFlags2, out_port->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+          PortIdentifier::Flags2, out_port->id.flags2,
+          PortIdentifier::Flags2::SUPPORTS_MIDI))
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
@@ -2499,8 +2509,8 @@ done2:;
               if (
                 in_port->id.type == ZPortType::Z_PORT_TYPE_EVENT
                 && ENUM_BITSET_TEST (
-                  ZPortFlags2, in_port->id.flags2,
-                  ZPortFlags2::Z_PORT_FLAG2_SUPPORTS_MIDI))
+                  PortIdentifier::Flags2, in_port->id.flags2,
+                  PortIdentifier::Flags2::SUPPORTS_MIDI))
                 {
                   port_disconnect (out_port, in_port);
                 }

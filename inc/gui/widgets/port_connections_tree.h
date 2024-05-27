@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_PORT_CONNECTIONS_TREE_H__
 #define __GUI_WIDGETS_PORT_CONNECTIONS_TREE_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Port Port;
 

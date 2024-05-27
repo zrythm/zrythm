@@ -19,10 +19,12 @@
 #include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Inits the modulator track.

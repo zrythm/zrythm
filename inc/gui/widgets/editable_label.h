@@ -10,7 +10,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define EDITABLE_LABEL_WIDGET_TYPE (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

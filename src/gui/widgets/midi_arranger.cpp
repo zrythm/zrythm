@@ -44,7 +44,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Called on drag begin in parent when background is
@@ -57,7 +58,7 @@ midi_arranger_widget_create_note (
   ArrangerWidget * self,
   Position *       pos,
   int              note,
-  ZRegion *        region)
+  Region *         region)
 {
   ArrangerObject * region_obj = (ArrangerObject *) region;
 
@@ -182,7 +183,7 @@ midi_arranger_widget_snap_midi_notes_l (
       position_add_ticks (&new_global_start_pos, r_obj->pos.ticks);
 
       /* snap the global pos */
-      ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+      Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
       if (
         SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held
         && position_is_positive (&new_global_start_pos))
@@ -298,7 +299,7 @@ midi_arranger_widget_snap_midi_notes_r (
         {
           position_snap (
             &self->earliest_obj_start_pos, &new_global_end_pos, NULL,
-            (ZRegion *) r_obj, self->snap_grid);
+            (Region *) r_obj, self->snap_grid);
         }
 
       /* convert it back to a local pos */

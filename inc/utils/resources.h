@@ -4,7 +4,7 @@
 #ifndef __UTILS_RESOURCES_H__
 #define __UTILS_RESOURCES_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup utils

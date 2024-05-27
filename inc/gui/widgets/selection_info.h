@@ -16,7 +16,7 @@
 
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define SELECTION_INFO_WIDGET_TYPE (selection_info_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (

@@ -131,7 +131,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   unsigned int track_name_hash = track_get_name_hash (src_track);
-  ZRegion *    region = automation_region_new (
+  Region *     region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
   bool success = track_add_region (
     src_track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -277,7 +277,7 @@ _test_undo_track_deletion (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   unsigned int track_name_hash = track_get_name_hash (helm_track);
-  ZRegion *    region = automation_region_new (
+  Region *     region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
   bool success = track_add_region (
     helm_track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -553,7 +553,8 @@ test_track_deletion_with_sends (
       if (
         port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
         && ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_PLUGIN_CONTROL))
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::PLUGIN_CONTROL))
         {
           /* connect the first in control port */
           in_port = port;
@@ -783,7 +784,7 @@ test_ins_track_deletion_w_automation (void)
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region = automation_region_new (
+  Region * region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (track), at->index,
     at->num_regions);
   bool success = track_add_region (
@@ -966,7 +967,7 @@ _test_move_tracks (
   position_init (&pos);
   position_init (&end_pos);
   position_add_ticks (&end_pos, 600);
-  ZRegion * ar = automation_region_new (
+  Region * ar = automation_region_new (
     &pos, &end_pos, track_get_name_hash (fx_track), 0, 0);
   bool success = track_add_region (
     fx_track, ar, fx_track->automation_tracklist.ats[0], -1, F_GEN_NAME,
@@ -1006,7 +1007,7 @@ _test_move_tracks (
   track_validate (fx_track);
 
   /* check that the clip editor region is updated */
-  ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
   g_assert_true (clip_editor_region == ar);
 
   /* check that the stereo out of the audio fx
@@ -2660,11 +2661,11 @@ test_move_track_w_clip_editor_region (void)
   g_assert_true (success);
   Track * first_track = TRACKLIST->tracks[num_tracks_before];
   track_select (first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  ZRegion * r = first_track->lanes[0]->regions[0];
+  Region * r = first_track->lanes[0]->regions[0];
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   clip_editor_set_region (CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
-  ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
   g_assert_nonnull (clip_editor_region);
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);

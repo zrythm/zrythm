@@ -36,12 +36,12 @@ test_fill_stereo_ports (void)
     NULL, NULL);
 
   Track *     track = TRACKLIST->tracks[num_tracks_before];
-  ZRegion *   r = track->lanes[0]->regions[0];
+  Region *    r = track->lanes[0]->regions[0];
   AudioClip * r_clip = audio_region_get_clip (r);
 
   StereoPorts * ports = stereo_ports_new_generic (
-    false, "ports", "ports", ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE,
-    NULL);
+    false, "ports", "ports",
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, NULL);
   port_allocate_bufs (ports->l);
   port_allocate_bufs (ports->r);
 
@@ -140,8 +140,8 @@ test_load_project_with_selected_audio_region (void)
     NULL, NULL);
 
   /* select region */
-  Track *   track = TRACKLIST->tracks[num_tracks_before];
-  ZRegion * r = track->lanes[0]->regions[0];
+  Track *  track = TRACKLIST->tracks[num_tracks_before];
+  Region * r = track->lanes[0]->regions[0];
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
@@ -217,7 +217,7 @@ test_detect_bpm (void)
   supported_file_free (file);
 
   /* select region */
-  ZRegion * r = track->lanes[0]->regions[0];
+  Region * r = track->lanes[0]->regions[0];
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 

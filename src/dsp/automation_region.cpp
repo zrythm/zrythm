@@ -39,7 +39,7 @@ automation_region_sort_func (const void * _a, const void * _b)
   return (int) CLAMP (ret, -1, 1);
 }
 
-ZRegion *
+Region *
 automation_region_new (
   const Position * start_pos,
   const Position * end_pos,
@@ -47,7 +47,7 @@ automation_region_new (
   int              at_idx,
   int              idx_inside_at)
 {
-  ZRegion * self = object_new (ZRegion);
+  Region * self = object_new (Region);
 
   self->id.type = RegionType::REGION_TYPE_AUTOMATION;
 
@@ -63,7 +63,7 @@ automation_region_new (
  * Prints the automation in this Region.
  */
 void
-automation_region_print_automation (ZRegion * self)
+automation_region_print_automation (Region * self)
 {
   AutomationPoint * ap;
   ArrangerObject *  ap_obj;
@@ -80,7 +80,7 @@ automation_region_print_automation (ZRegion * self)
  * Forces sort of the automation points.
  */
 void
-automation_region_force_sort (ZRegion * self)
+automation_region_force_sort (Region * self)
 {
   /* sort by position */
   qsort (
@@ -98,7 +98,7 @@ automation_region_force_sort (ZRegion * self)
  * Adds an AutomationPoint to the Region.
  */
 void
-automation_region_add_ap (ZRegion * self, AutomationPoint * ap, int pub_events)
+automation_region_add_ap (Region * self, AutomationPoint * ap, int pub_events)
 {
   g_return_if_fail (IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
 
@@ -121,7 +121,7 @@ automation_region_add_ap (ZRegion * self, AutomationPoint * ap, int pub_events)
  * one.
  */
 AutomationPoint *
-automation_region_get_prev_ap (ZRegion * self, AutomationPoint * ap)
+automation_region_get_prev_ap (Region * self, AutomationPoint * ap)
 {
   if (ap->index > 0)
     return self->aps[ap->index - 1];
@@ -143,7 +143,7 @@ automation_region_get_prev_ap (ZRegion * self, AutomationPoint * ap)
  */
 AutomationPoint *
 automation_region_get_next_ap (
-  ZRegion *         self,
+  Region *          self,
   AutomationPoint * ap,
   bool              check_positions,
   bool              check_transients)
@@ -197,7 +197,7 @@ automation_region_get_next_ap (
 }
 
 /**
- * Removes the AutomationPoint from the ZRegion,
+ * Removes the AutomationPoint from the Region,
  * optionally freeing it.
  *
  * @param free Free the AutomationPoint after
@@ -205,7 +205,7 @@ automation_region_get_next_ap (
  */
 void
 automation_region_remove_ap (
-  ZRegion *         self,
+  Region *          self,
   AutomationPoint * ap,
   bool              freeing_region,
   int               free)
@@ -248,7 +248,7 @@ automation_region_remove_ap (
  */
 void
 automation_region_get_aps_since_last_recorded (
-  ZRegion *   self,
+  Region *    self,
   Position *  pos,
   GPtrArray * aps)
 {
@@ -283,7 +283,7 @@ automation_region_get_aps_since_last_recorded (
  */
 AutomationPoint *
 automation_region_get_ap_around (
-  ZRegion *  self,
+  Region *   self,
   Position * _pos,
   double     delta_ticks,
   bool       before_only,
@@ -317,7 +317,7 @@ automation_region_get_ap_around (
 }
 
 bool
-automation_region_validate (ZRegion * self)
+automation_region_validate (Region * self)
 {
   for (int i = 0; i < self->num_aps; i++)
     {
@@ -330,12 +330,12 @@ automation_region_validate (ZRegion * self)
 }
 
 /**
- * Frees members only but not the ZRegion itself.
+ * Frees members only but not the Region itself.
  *
  * Regions should be free'd using region_free.
  */
 void
-automation_region_free_members (ZRegion * self)
+automation_region_free_members (Region * self)
 {
   int i;
   for (i = self->num_aps - 1; i >= 0; i--)

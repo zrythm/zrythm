@@ -7,7 +7,7 @@
 #include "dsp/channel.h"
 #include "gui/widgets/meter.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _PluginStripExpanderWidget PluginStripExpanderWidget;
 

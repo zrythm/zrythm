@@ -12,7 +12,7 @@
 
 #include "gui/widgets/two_col_expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TRACK_INPUT_EXPANDER_WIDGET_TYPE \
   (track_input_expander_widget_get_type ())

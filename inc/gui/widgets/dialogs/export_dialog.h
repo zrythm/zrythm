@@ -11,7 +11,8 @@
 #define __GUI_WIDGETS_EXPORT_DIALOG_H__
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define EXPORT_DIALOG_WIDGET_TYPE (export_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

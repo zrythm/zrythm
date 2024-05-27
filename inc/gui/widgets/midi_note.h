@@ -14,7 +14,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

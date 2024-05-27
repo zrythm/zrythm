@@ -54,7 +54,7 @@ on_notebook_switch_page (
 void
 bot_dock_edge_widget_update_event_viewer_stack_page (BotDockEdgeWidget * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   if (r)
     {
       switch (r->id.type)
@@ -97,8 +97,8 @@ bot_dock_edge_widget_setup (BotDockEdgeWidget * self)
   chord_pad_panel_widget_setup (self->chord_pad_panel);
 
   /* set event viewer visibility */
-  bool      visibility = false;
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  bool     visibility = false;
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (g_settings_get_boolean (S_UI, "editor-event-viewer-visible") && region)
     {
       visibility = true;

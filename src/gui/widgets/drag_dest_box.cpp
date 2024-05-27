@@ -420,7 +420,7 @@ on_click_pressed (
   tracklist_selections_select_last_visible (TRACKLIST_SELECTIONS);
 
   PROJECT->last_selection =
-    ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+    ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 

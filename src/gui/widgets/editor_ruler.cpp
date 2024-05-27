@@ -23,8 +23,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <limits.h>
 
 #define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
@@ -62,7 +62,7 @@ editor_ruler_on_drag_update (
     {
       Position         editor_pos;
       Position         region_local_pos;
-      ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+      Region *         r = clip_editor_get_region (CLIP_EDITOR);
       ArrangerObject * r_obj = (ArrangerObject *) r;
 
       /* convert px to position */
@@ -200,7 +200,7 @@ editor_ruler_on_drag_end (RulerWidget * self)
     ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
   ArrangerSelections * after_sel = arranger_selections_new (
     ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =
     arranger_object_clone ((ArrangerObject *) r);
@@ -250,7 +250,7 @@ editor_ruler_get_regions_in_range (
   RulerWidget * self,
   double        x_start,
   double        x_end,
-  ZRegion **    regions)
+  Region **     regions)
 {
   Position p1, p2;
   ui_px_to_pos_editor (x_start, &p1, true);

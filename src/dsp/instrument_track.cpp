@@ -22,7 +22,7 @@
 #include "utils/stoat.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Initializes an instrument track.

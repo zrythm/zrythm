@@ -68,19 +68,19 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
       {
         switch (node->port->id.owner_type)
           {
-          case ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN:
+          case PortIdentifier::OwnerType::PLUGIN:
             {
               Plugin * pl = port_get_plugin (node->port, true);
               parent_node = graph_find_node_from_plugin (node->graph, pl);
             }
             break;
-          case ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK:
+          case PortIdentifier::OwnerType::TRACK:
             {
               Track * tr = port_get_track (node->port, true);
               if (
                 ENUM_BITSET_TEST (
-                  ZPortFlags, node->port->id.flags,
-                  ZPortFlags::Z_PORT_FLAG_MODULATOR_MACRO))
+                  PortIdentifier::Flags, node->port->id.flags,
+                  PortIdentifier::Flags::MODULATOR_MACRO))
                 {
                   parent_node = graph_find_node_from_modulator_macro_processor (
                     node->graph,
@@ -93,7 +93,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
             }
             break;
-          case ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL_SEND:
+          case PortIdentifier::OwnerType::CHANNEL_SEND:
             {
               Track * tr = port_get_track (node->port, true);
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
@@ -104,20 +104,20 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 graph_find_node_from_channel_send (node->graph, send);
             }
             break;
-          case ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER:
+          case PortIdentifier::OwnerType::FADER:
             {
               if (
                 ENUM_BITSET_TEST (
-                  ZPortFlags2, node->port->id.flags2,
-                  ZPortFlags2::Z_PORT_FLAG) 2_MONITOR_FADER)
+                  PortIdentifier::Flags2, node->port->id.flags2,
+                  PortIdentifier::Flags2::Z_PORT_FLAG) 2_MONITOR_FADER)
                 {
                   parent_node =
                     graph_find_node_from_fader (node->graph, MONITOR_FADER);
                 }
               else if (
                 ENUM_BITSET_TEST (
-                  ZPortFlags2, node->port->id.flags2,
-                  ZPortFlags2::Z_PORT_FLAG) 2_SAMPLE_PROCESSOR_FADER)
+                  PortIdentifier::Flags2, node->port->id.flags2,
+                  PortIdentifier::Flags2::Z_PORT_FLAG) 2_SAMPLE_PROCESSOR_FADER)
                 {
                   parent_node = graph_find_node_from_fader (
                     node->graph, SAMPLE_PROCESSOR->fader);
@@ -127,8 +127,8 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                   Track * tr = port_get_track (node->port, true);
                   if (
                     ENUM_BITSET_TEST (
-                      ZPortFlags2, node->port->id.flags2,
-                      ZPortFlags2::Z_PORT_FLAG) 2_PREFADER)
+                      PortIdentifier::Flags2, node->port->id.flags2,
+                      PortIdentifier::Flags2::Z_PORT_FLAG) 2_PREFADER)
                     parent_node = graph_find_node_from_prefader (
                       node->graph, tr->channel->prefader);
                   else
@@ -137,7 +137,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
             }
             break;
-          case ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR:
+          case PortIdentifier::OwnerType::TRACK_PROCESSOR:
             {
               Track * tr = port_get_track (node->port, true);
               parent_node = graph_find_node_from_track (node->graph, tr, true);

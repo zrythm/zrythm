@@ -16,7 +16,7 @@
 #include "gui/widgets/tracklist.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ArrangerWrapperWidget, arranger_wrapper_widget, GTK_TYPE_WIDGET);
 

@@ -11,7 +11,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define MW_CHORD_ARRANGER MW_CHORD_EDITOR_SPACE->arranger
 
@@ -19,7 +19,7 @@ typedef struct ChordObject        ChordObject;
 typedef struct _ChordObjectWidget ChordObjectWidget;
 typedef struct SnapGrid           SnapGrid;
 typedef struct AutomationPoint    AutomationPoint;
-typedef struct ZRegion            ChordRegion;
+typedef struct Region             ChordRegion;
 typedef struct Channel            Channel;
 
 /**
@@ -43,7 +43,7 @@ chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position * pos,
   int              chord_index,
-  ZRegion *        region);
+  Region *         region);
 
 /**
  * Called on move items_y setup.

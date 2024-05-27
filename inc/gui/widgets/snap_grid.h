@@ -5,7 +5,8 @@
 #define __GUI_WIDGETS_SNAP_GRID_H__
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define SNAP_GRID_WIDGET_TYPE (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

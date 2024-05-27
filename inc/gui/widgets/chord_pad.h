@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_CHORD_PAD_H__
 #define __GUI_WIDGETS_CHORD_PAD_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

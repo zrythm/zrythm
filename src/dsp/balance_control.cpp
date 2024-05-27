@@ -3,7 +3,7 @@
 
 #include "dsp/balance_control.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Returns the coefficients to multiply the L and

@@ -44,13 +44,13 @@ typedef struct AutomationSelections
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 bool
 automation_selections_can_be_pasted (
   AutomationSelections * ts,
   Position *             pos,
-  ZRegion *              r);
+  Region *               r);
 
 /**
  * @}

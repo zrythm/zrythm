@@ -30,8 +30,8 @@ fader_upgrade_from_v1 (Fader_v1 * old)
     old->passthrough
       ? g_strdup ("prefader_swap_phase")
       : g_strdup ("fader_swap_phase");
-  swap_phase->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_FADER_SWAP_PHASE;
-  swap_phase->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+  swap_phase->id.flags2 |= PortIdentifier::Flags2::FADER_SWAP_PHASE;
+  swap_phase->id.flags |= PortIdentifier::Flags::TOGGLE;
   GError * err = NULL;
   char *   swap_phase_yaml = yaml_serialize (swap_phase, &port_schema_v1, &err);
   Port_v1 * swap_phase_v1 =

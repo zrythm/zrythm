@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_PORT_CONNECTIONS_POPOVER_H__
 #define __GUI_WIDGETS_PORT_CONNECTIONS_POPOVER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PORT_CONNECTIONS_POPOVER_WIDGET_TYPE \
   (port_connections_popover_widget_get_type ())

@@ -77,43 +77,38 @@ enum class PanLaw;
 
 #define port_is_in_active_project(self) \
   (port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+     self, PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+   || port_is_owner_active (self, PortIdentifier::OwnerType::PLUGIN, plugin) \
+   || port_is_owner_active (self, PortIdentifier::OwnerType::TRACK, track) \
+   || port_is_owner_active (self, PortIdentifier::OwnerType::CHANNEL, track) \
+   || port_is_owner_active (self, PortIdentifier::OwnerType::FADER, fader) \
    || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN, plugin) \
+     self, PortIdentifier::OwnerType::CHANNEL_SEND, channel_send) \
    || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, track) \
+     self, PortIdentifier::OwnerType::TRACK_PROCESSOR, track) \
    || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL, track) \
-   || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, fader) \
-   || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
-   || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
-   || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+     self, PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, \
      modulator_macro_processor) \
-   || port_is_owner_active ( \
-     self, ZPortOwnerType::Z_PORT_OWNER_TYPE_HW, ext_port))
+   || port_is_owner_active (self, PortIdentifier::OwnerType::HW, ext_port))
 
 /**
  * What the internal data is.
  */
 enum class PortInternalType
 {
-  INTERNAL_NONE,
+  None,
 
   /** Pointer to Lv2Port. */
-  INTERNAL_LV2_PORT,
+  Lv2Port,
 
   /** Pointer to jack_port_t. */
-  INTERNAL_JACK_PORT,
+  JackPort,
 
   /** TODO */
-  INTERNAL_PA_PORT,
+  PulseAudioPort,
 
   /** Pointer to snd_seq_port_info_t. */
-  INTERNAL_ALSA_SEQ_PORT,
+  AlsaSequencerPort,
 };
 
 /**
@@ -520,7 +515,7 @@ NONNULL void
 port_init_loaded (Port * self, void * owner);
 
 void
-port_set_owner (Port * self, ZPortOwnerType owner_type, void * owner);
+port_set_owner (Port * self, PortIdentifier::OwnerType owner_type, void * owner);
 
 NONNULL Port *
 port_find_from_identifier (const PortIdentifier * const id);
@@ -534,9 +529,9 @@ stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 
 NONNULL_ARGS (1)
 static inline void stereo_ports_set_owner (
-  StereoPorts *  sp,
-  ZPortOwnerType owner_type,
-  void *         owner)
+  StereoPorts *             sp,
+  PortIdentifier::OwnerType owner_type,
+  void *                    owner)
 {
   port_set_owner (sp->l, owner_type, owner);
   port_set_owner (sp->r, owner_type, owner);
@@ -550,11 +545,11 @@ port_new_with_type (ZPortType type, ZPortFlow flow, const char * label);
 
 WARN_UNUSED_RESULT NONNULL Port *
 port_new_with_type_and_owner (
-  ZPortType      type,
-  ZPortFlow      flow,
-  const char *   label,
-  ZPortOwnerType owner_type,
-  void *         owner);
+  ZPortType                 type,
+  ZPortFlow                 flow,
+  const char *              label,
+  PortIdentifier::OwnerType owner_type,
+  void *                    owner);
 
 /**
  * Allocates buffers used during DSP.
@@ -589,11 +584,11 @@ stereo_ports_new_from_existing (Port * l, Port * r);
  */
 StereoPorts *
 stereo_ports_new_generic (
-  int            in,
-  const char *   name,
-  const char *   symbol,
-  ZPortOwnerType owner_type,
-  void *         owner);
+  int                       in,
+  const char *              name,
+  const char *              symbol,
+  PortIdentifier::OwnerType owner_type,
+  void *                    owner);
 
 /**
  * Connects the internal ports using
@@ -763,9 +758,9 @@ port_set_expose_to_backend (Port * self, int expose);
 NONNULL static inline bool
 port_is_exposed_to_backend (const Port * self)
 {
-  return self->internal_type == PortInternalType::INTERNAL_JACK_PORT
-         || self->internal_type == PortInternalType::INTERNAL_ALSA_SEQ_PORT
-         || self->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE
+  return self->internal_type == PortInternalType::JackPort
+         || self->internal_type == PortInternalType::AlsaSequencerPort
+         || self->id.owner_type == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE
          || self->exposed_to_backend;
 }
 

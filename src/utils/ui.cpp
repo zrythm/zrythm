@@ -143,11 +143,11 @@ ui_show_message_full (
 #define UI_MESSAGE_BUF_SZ 2000
   char * buf = object_new_n (UI_MESSAGE_BUF_SZ, char);
   int    printed = vsnprintf (buf, UI_MESSAGE_BUF_SZ, format, args);
+  va_end (args);
   if (printed == -1)
     {
       g_warning ("vsnprintf failed");
       free (buf);
-      va_end (args);
       return NULL;
     }
   g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, NULL);
@@ -173,7 +173,6 @@ ui_show_message_full (
     }
 
   free (buf);
-  va_end (args);
 
   return win;
 }

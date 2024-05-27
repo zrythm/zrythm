@@ -94,7 +94,7 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
       marker = self->markers[i];
       arranger_object_init_loaded ((ArrangerObject *) marker);
     }
-  ZRegion * region;
+  Region * region;
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       region = self->chord_regions[i];
@@ -151,7 +151,8 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
           /* set automation tracks on ports */
           if (
             ENUM_BITSET_TEST (
-              ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_AUTOMATABLE))
+              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags::AUTOMATABLE))
             {
               AutomationTrack * at =
                 automation_track_find_from_port (port, self, true);
@@ -312,12 +313,12 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
     {
       self->recording = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-        _ ("Track record"), ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, self);
+        _ ("Track record"), PortIdentifier::OwnerType::TRACK, self);
       self->recording->id.sym = g_strdup ("track_record");
       control_port_set_toggled (
         self->recording, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-      self->recording->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRACK_RECORDING;
-      self->recording->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+      self->recording->id.flags2 |= PortIdentifier::Flags2::TRACK_RECORDING;
+      self->recording->id.flags |= PortIdentifier::Flags::TOGGLE;
     }
 
   self->processor = track_processor_new (self);
@@ -490,14 +491,14 @@ track_clone (Track * track, GError ** error)
     }
 
   new_track->num_chord_regions = track->num_chord_regions;
-  new_track->chord_regions = static_cast<ZRegion **> (g_realloc_n (
+  new_track->chord_regions = static_cast<Region **> (g_realloc_n (
     new_track->chord_regions, (size_t) track->num_chord_regions,
-    sizeof (ZRegion *)));
+    sizeof (Region *)));
   for (int j = 0; j < track->num_chord_regions; j++)
     {
-      ZRegion * r = track->chord_regions[j];
+      Region * r = track->chord_regions[j];
       new_track->chord_regions[j] =
-        (ZRegion *) arranger_object_clone ((ArrangerObject *) r);
+        (Region *) arranger_object_clone ((ArrangerObject *) r);
     }
 
   new_track->automation_tracklist.track = new_track;
@@ -945,7 +946,7 @@ track_get_velocities_in_range (
       TrackLane * lane = track->lanes[i];
       for (int j = 0; j < lane->num_regions; j++)
         {
-          ZRegion * r = lane->regions[j];
+          Region * r = lane->regions[j];
           midi_region_get_velocities_in_range (
             r, start_pos, end_pos, velocities, num_velocities, velocities_size,
             inside);
@@ -983,7 +984,7 @@ track_validate (Track * self)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
           g_return_val_if_fail (port->id.track_name_hash == name_hash, false);
-          if (port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+          if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
             {
               PluginIdentifier * pid = &port->id.plugin_id;
               g_return_val_if_fail (pid->track_name_hash == name_hash, false);
@@ -1003,7 +1004,8 @@ track_validate (Track * self)
           if (
             atl
             && ENUM_BITSET_TEST (
-              ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_AUTOMATABLE))
+              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags::AUTOMATABLE))
             {
               /*g_message ("checking %s", port->id.label);*/
               AutomationTrack * at =
@@ -1071,15 +1073,15 @@ track_validate (Track * self)
 
       for (int j = 0; j < lane->num_regions; j++)
         {
-          ZRegion * region = lane->regions[j];
-          bool      is_project = track_is_in_active_project (self);
+          Region * region = lane->regions[j];
+          bool     is_project = track_is_in_active_project (self);
           region_validate (region, is_project, 0);
         }
     }
 
   for (int i = 0; i < self->num_chord_regions; i++)
     {
-      ZRegion * r = self->chord_regions[i];
+      Region * r = self->chord_regions[i];
       region_validate (r, track_is_in_active_project (self), 0);
     }
 
@@ -1473,11 +1475,11 @@ track_contains_uninstantiated_plugin (const Track * const self)
  *
  * FIXME cache.
  */
-ZRegion *
+Region *
 track_get_last_region (Track * track)
 {
   int              i, j;
-  ZRegion *        last_region = NULL, *r;
+  Region *         last_region = NULL, *r;
   ArrangerObject * r_obj;
   Position         tmp;
   position_init (&tmp);
@@ -1664,7 +1666,7 @@ track_setup (Track * track)
 bool
 track_insert_region (
   Track *           track,
-  ZRegion *         region,
+  Region *          region,
   AutomationTrack * at,
   int               lane_pos,
   int               idx,
@@ -2215,7 +2217,7 @@ track_clear (Track * self)
  * @pararm free Also free the Region.
  */
 void
-track_remove_region (Track * self, ZRegion * region, bool fire_events, bool free)
+track_remove_region (Track * self, Region * region, bool fire_events, bool free)
 {
   g_return_if_fail (IS_TRACK (self) && IS_REGION (region));
 
@@ -2291,7 +2293,7 @@ track_remove_region (Track * self, ZRegion * region, bool fire_events, bool free
  * @param include_region_end Whether to include the
  *   region's end in the calculation.
  */
-ZRegion *
+Region *
 track_get_region_at_pos (
   const Track *    track,
   const Position * pos,
@@ -2305,7 +2307,7 @@ track_get_region_at_pos (
     || track->type == TrackType::TRACK_TYPE_MIDI)
     {
       TrackLane *      lane;
-      ZRegion *        r;
+      Region *         r;
       ArrangerObject * r_obj;
       for (i = 0; i < track->num_lanes; i++)
         {
@@ -2327,7 +2329,7 @@ track_get_region_at_pos (
     }
   else if (track->type == TrackType::TRACK_TYPE_CHORD)
     {
-      ZRegion *        r;
+      Region *         r;
       ArrangerObject * r_obj;
       for (j = 0; j < track->num_chord_regions; j++)
         {
@@ -2511,8 +2513,8 @@ track_fill_events (
   bool use_caches = !track_is_auditioner (self);
 
   TrackLane ** lanes = use_caches ? self->lane_snapshots : self->lanes;
-  int num_lanes = use_caches ? self->num_lane_snapshots : self->num_lanes;
-  ZRegion ** chord_regions =
+  int       num_lanes = use_caches ? self->num_lane_snapshots : self->num_lanes;
+  Region ** chord_regions =
     use_caches ? self->chord_region_snapshots : self->chord_regions;
   int num_chord_regions =
     use_caches ? self->num_chord_region_snapshots : self->num_chord_regions;
@@ -2533,7 +2535,7 @@ track_fill_events (
         (tt == TrackType::TRACK_TYPE_CHORD ? num_chord_regions : lane->num_regions);
       for (int i = 0; i < num_regions; i++)
         {
-          ZRegion * r =
+          Region * r =
             tt == TrackType::TRACK_TYPE_CHORD
               ? chord_regions[i]
               : lane->regions[i];
@@ -2724,9 +2726,9 @@ add_region_if_in_range (
   Track *    track,
   Position * p1,
   Position * p2,
-  ZRegion ** regions,
+  Region **  regions,
   int *      count,
-  ZRegion *  region)
+  Region *   region)
 {
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
@@ -2769,7 +2771,7 @@ track_get_regions_in_range (
   Track *    track,
   Position * p1,
   Position * p2,
-  ZRegion ** regions)
+  Region **  regions)
 {
   int count = 0;
 
@@ -2784,7 +2786,7 @@ track_get_regions_in_range (
 
           for (int j = 0; j < lane->num_regions; j++)
             {
-              ZRegion * r = lane->regions[j];
+              Region * r = lane->regions[j];
               add_region_if_in_range (track, p1, p2, regions, &count, r);
             }
         }
@@ -2793,7 +2795,7 @@ track_get_regions_in_range (
     {
       for (int j = 0; j < track->num_chord_regions; j++)
         {
-          ZRegion * r = track->chord_regions[j];
+          Region * r = track->chord_regions[j];
           add_region_if_in_range (track, p1, p2, regions, &count, r);
         }
     }
@@ -2807,7 +2809,7 @@ track_get_regions_in_range (
 
           for (int j = 0; j < at->num_regions; j++)
             {
-              ZRegion * r = at->regions[j];
+              Region * r = at->regions[j];
               add_region_if_in_range (track, p1, p2, regions, &count, r);
             }
         }
@@ -2887,7 +2889,7 @@ track_set_name (Track * self, const char * name, bool pub_events)
 
       for (int i = 0; i < self->num_chord_regions; i++)
         {
-          ZRegion * r = self->chord_regions[i];
+          Region * r = self->chord_regions[i];
           r->id.track_name_hash = new_hash;
           region_update_identifier (r);
         }
@@ -3219,7 +3221,7 @@ track_mark_for_bounce (
 
           for (int k = 0; k < lane->num_regions; k++)
             {
-              ZRegion * r = lane->regions[k];
+              Region * r = lane->regions[k];
               if (
                 r->id.type != RegionType::REGION_TYPE_MIDI
                 && r->id.type != RegionType::REGION_TYPE_AUDIO)
@@ -3231,7 +3233,7 @@ track_mark_for_bounce (
 
       for (int i = 0; i < self->num_chord_regions; i++)
         {
-          ZRegion * r = self->chord_regions[i];
+          Region * r = self->chord_regions[i];
           r->bounce = bounce;
         }
     }
@@ -3515,11 +3517,14 @@ remove_ats_from_automation_tracklist (Track * track, bool fire_events)
       AutomationTrack * at = atl->ats[i];
       if (
         ENUM_BITSET_TEST (
-          ZPortFlags, at->port_id.flags, ZPortFlags::Z_PORT_FLAG_CHANNEL_FADER)
+          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags::CHANNEL_FADER)
         || ENUM_BITSET_TEST (
-          ZPortFlags, at->port_id.flags, ZPortFlags::Z_PORT_FLAG_FADER_MUTE)
+          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags::FADER_MUTE)
         || ENUM_BITSET_TEST (
-          ZPortFlags, at->port_id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE))
+          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags::STEREO_BALANCE))
         {
           automation_tracklist_remove_at (atl, at, F_NO_FREE, fire_events);
         }
@@ -3566,12 +3571,12 @@ track_set_caches (Track * self, CacheTypes types)
             (ArrangerObject *) self->chord_region_snapshots[i]);
         }
       self->num_chord_region_snapshots = 0;
-      self->chord_region_snapshots = static_cast<ZRegion **> (g_realloc_n (
+      self->chord_region_snapshots = static_cast<Region **> (g_realloc_n (
         self->chord_region_snapshots, (size_t) self->num_chord_regions,
-        sizeof (ZRegion *)));
+        sizeof (Region *)));
       for (int i = 0; i < self->num_chord_regions; i++)
         {
-          self->chord_region_snapshots[i] = (ZRegion *) arranger_object_clone (
+          self->chord_region_snapshots[i] = (Region *) arranger_object_clone (
             (ArrangerObject *) self->chord_regions[i]);
           self->num_chord_region_snapshots++;
         }

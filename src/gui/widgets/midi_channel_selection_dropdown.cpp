@@ -7,6 +7,7 @@
 #include "gui/widgets/midi_channel_selection_dropdown.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/string.h"
 
 static char *
 get_str (void * data)

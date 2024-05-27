@@ -37,7 +37,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
 
@@ -164,7 +165,7 @@ timeline_arranger_widget_get_at_at_y (ArrangerWidget * self, double y)
 }
 
 /**
- * Create a ZRegion at the given Position in the
+ * Create a Region at the given Position in the
  * given Track's given TrackLane.
  *
  * @param type The type of region to create.
@@ -199,7 +200,7 @@ timeline_arranger_widget_create_region (
   position_set_min_size (pos, &end_pos, self->snap_grid);
 
   /* create a new region */
-  ZRegion * region = NULL;
+  Region * region = NULL;
   switch (type)
     {
     case RegionType::REGION_TYPE_MIDI:
@@ -437,7 +438,7 @@ timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y)
 static inline int
 snap_region_l (
   ArrangerWidget * self,
-  ZRegion *        region,
+  Region *         region,
   Position *       new_pos,
   int              dry_run)
 {
@@ -550,7 +551,7 @@ timeline_arranger_widget_snap_regions_l (
    * pos */
   Position new_pos;
 
-  ZRegion *        region;
+  Region *         region;
   ArrangerObject * r_obj;
   int              ret;
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
@@ -595,7 +596,7 @@ timeline_arranger_widget_snap_regions_l (
 static int
 snap_region_r (
   ArrangerWidget * self,
-  ZRegion *        region,
+  Region *         region,
   Position *       new_pos,
   int              dry_run)
 {
@@ -724,7 +725,7 @@ timeline_arranger_widget_snap_regions_r (
    * original end pos */
   Position new_pos;
 
-  ZRegion *        region;
+  Region *         region;
   ArrangerObject * r_obj;
   int              ret;
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
@@ -831,7 +832,7 @@ on_musical_mode_toggled (
       (ArrangerSelections *) TL_SELECTIONS);
 
   /* make the change */
-  ZRegion * region = (ZRegion *) info->obj;
+  Region * region = (Region *) info->obj;
   region->musical_mode = info->mode;
 
   g_warn_if_fail (
@@ -879,7 +880,7 @@ create_musical_mode_pset_menu (
     RegionMusicalMode::REGION_MUSICAL_MODE_ON + 2];
   MusicalModeInfo * nfo;
   GSList * group = NULL;
-  ZRegion * region = (ZRegion *) obj;
+  Region * region = (Region *) obj;
   for (int i = 0; i <= RegionMusicalMode::REGION_MUSICAL_MODE_ON; i++)
     {
       submenu_item[i] =
@@ -1163,7 +1164,7 @@ timeline_arranger_widget_fade_up (
 {
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
-      ZRegion *        r = TL_SELECTIONS->regions[i];
+      Region *         r = TL_SELECTIONS->regions[i];
       ArrangerObject * obj = (ArrangerObject *) r;
 
       CurveOptions * opts = fade_in ? &obj->fade_in_opts : &obj->fade_out_opts;
@@ -1297,8 +1298,8 @@ on_dnd_drop (
         self->highlight_rect.x + self->highlight_rect.width, &end_pos, true);
       int lane_pos =
         lane ? lane->pos : (track->num_lanes == 1 ? 0 : track->num_lanes - 2);
-      int       idx_in_lane = track->lanes[lane_pos]->num_regions;
-      ZRegion * region = midi_region_new_from_chord_descr (
+      int      idx_in_lane = track->lanes[lane_pos]->num_regions;
+      Region * region = midi_region_new_from_chord_descr (
         &pos, descr, track_get_name_hash (track), lane_pos, idx_in_lane);
       GError * err = NULL;
       bool     success = track_add_region (

@@ -13,7 +13,7 @@
 #ifndef __UTILS_PANGO_H__
 #define __UTILS_PANGO_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup utils

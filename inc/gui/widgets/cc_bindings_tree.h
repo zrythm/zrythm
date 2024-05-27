@@ -12,7 +12,7 @@
 #ifndef __GUI_WIDGETS_CC_BINDINGS_TREE_H__
 #define __GUI_WIDGETS_CC_BINDINGS_TREE_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CC_BINDINGS_TREE_WIDGET_TYPE (cc_bindings_tree_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

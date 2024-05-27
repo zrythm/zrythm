@@ -34,7 +34,7 @@
 #include "utils/symap.h"
 #include "zrythm.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
@@ -176,7 +176,7 @@ string_to_lower (const char * in, char * out)
  * Returns a newly allocated string that is a
  * filename version of the given string.
  *
- * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
+ * Example: "MIDI Region #1" -> "MIDI_Region_1".
  */
 char *
 string_convert_to_filename (const char * str)

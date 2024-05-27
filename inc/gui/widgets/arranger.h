@@ -15,7 +15,7 @@
 #include "gui/widgets/main_window.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ARRANGER_WIDGET_TYPE (arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ArrangerWidget, arranger_widget, Z, ARRANGER_WIDGET, GtkWidget)
@@ -197,7 +197,7 @@ typedef struct _ArrangerWidget
   /**
    * Region on drag begin, if editing automation.
    */
-  ZRegion * region_at_start;
+  Region * region_at_start;
 
   /** Selections to delete, used with the eraser
    * tool. */

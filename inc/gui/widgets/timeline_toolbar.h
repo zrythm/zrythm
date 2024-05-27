@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
 #define __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TIMELINE_TOOLBAR_WIDGET_TYPE (timeline_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

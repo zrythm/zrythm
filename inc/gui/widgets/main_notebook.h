@@ -13,7 +13,7 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define MAIN_NOTEBOOK_WIDGET_TYPE (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -12,7 +12,7 @@
 #ifndef __GUI_WIDGETS_ADD_TRACK_MENU_BUTTON_H__
 #define __GUI_WIDGETS_ADD_TRACK_MENU_BUTTON_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ADD_TRACK_MENU_BUTTON_WIDGET_TYPE \
   (add_track_menu_button_widget_get_type ())

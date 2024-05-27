@@ -15,7 +15,7 @@ typedef struct ArrangerObject ArrangerObject;
 typedef struct Position       Position;
 typedef struct AudioClip      AudioClip;
 typedef struct UndoableAction UndoableAction;
-typedef struct ZRegion        ZRegion;
+typedef struct Region         Region;
 
 /**
  * @addtogroup gui_backend
@@ -241,7 +241,7 @@ arranger_selections_redraw (
 void
 arranger_selections_add_to_region (
   ArrangerSelections * self,
-  ZRegion *            region,
+  Region *             region,
   bool                 clone);
 
 /**

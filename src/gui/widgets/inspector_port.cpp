@@ -49,9 +49,9 @@ static bool
 get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 {
   if (
-    port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
-    || port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER
-    || port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK)
+    port->id.owner_type == PortIdentifier::OwnerType::PLUGIN
+    || port->id.owner_type == PortIdentifier::OwnerType::FADER
+    || port->id.owner_type == PortIdentifier::OwnerType::TRACK)
     {
       int num_midi_mappings =
         midi_mappings_get_for_port (MIDI_MAPPINGS, port, NULL);
@@ -423,9 +423,7 @@ inspector_port_widget_new (Port * port)
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->jack), _ ("Expose port to JACK"));
           gtk_overlay_add_overlay (self->overlay, GTK_WIDGET (self->jack));
-          if (
-            port->data
-            && port->internal_type == PortInternalType::INTERNAL_JACK_PORT)
+          if (port->data && port->internal_type == PortInternalType::JackPort)
             {
               gtk_toggle_button_set_active (self->jack, 1);
             }

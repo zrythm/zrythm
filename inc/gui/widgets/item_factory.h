@@ -16,7 +16,7 @@
 #ifndef __GUI_WIDGETS_ITEM_FACTORY_H__
 #define __GUI_WIDGETS_ITEM_FACTORY_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Item factory column type.

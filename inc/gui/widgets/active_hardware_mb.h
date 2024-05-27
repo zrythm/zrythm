@@ -12,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ACTIVE_HARDWARE_MB_WIDGET_TYPE (active_hardware_mb_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

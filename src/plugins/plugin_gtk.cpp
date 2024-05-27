@@ -202,7 +202,7 @@ plugin_gtk_add_control_row (
     {
       PortIdentifier id = controller->port->id;
 
-      if (id.unit > ZPortUnit::Z_PORT_UNIT_NONE)
+      if (id.unit > PortUnit::Z_PORT_UNIT_NONE)
         {
           sprintf (
             name, "%s <small>(%s)</small>", _name, port_unit_to_str (id.unit));
@@ -509,7 +509,7 @@ make_slider (Port * port, float value)
   const float min = port->minf;
   const float max = port->maxf;
   bool        is_integer = ENUM_BITSET_TEST (
-    ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_INTEGER);
+    PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::INTEGER);
   const double step = is_integer ? 1.0 : ((double) (max - min) / 100.0);
   GtkWidget *  scale =
     gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, min, max, step);
@@ -628,20 +628,21 @@ make_controller (Plugin * pl, Port * port, float value)
 {
   PluginGtkController * controller = NULL;
 
-  if (
-    ENUM_BITSET_TEST (ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_TOGGLE))
+  if (ENUM_BITSET_TEST (
+        PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::TOGGLE))
     {
       controller = make_toggle (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
-      ZPortFlags2, port->id.flags2, ZPortFlags2::Z_PORT_FLAG2_ENUMERATION))
+      PortIdentifier::Flags2, port->id.flags2,
+      PortIdentifier::Flags2::ENUMERATION))
     {
       controller = make_combo (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
-      ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_LOGARITHMIC))
+      PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::LOGARITHMIC))
     {
       controller = make_log_slider (port, value);
     }

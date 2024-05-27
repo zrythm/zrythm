@@ -16,15 +16,15 @@ test_uint_from_bitfield (void)
   g_assert_cmpuint (
     0, ==,
     utils_get_uint_from_bitfield_val (
-      ENUM_VALUE_TO_INT (ZPortFlags::Z_PORT_FLAG_STEREO_L)));
+      ENUM_VALUE_TO_INT (PortIdentifier::Flags::STEREO_L)));
   g_assert_cmpuint (
     14, ==,
     utils_get_uint_from_bitfield_val (
-      ENUM_VALUE_TO_INT (ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI)));
+      ENUM_VALUE_TO_INT (PortIdentifier::Flags::NOT_ON_GUI)));
   g_assert_cmpuint (
     18, ==,
     utils_get_uint_from_bitfield_val (
-      ENUM_VALUE_TO_INT (ZPortFlags::Z_PORT_FLAG_CHANNEL_FADER)));
+      ENUM_VALUE_TO_INT (PortIdentifier::Flags::CHANNEL_FADER)));
 }
 
 int

@@ -13,7 +13,8 @@
 #define __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget     SnapGridWidget;

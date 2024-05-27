@@ -10,8 +10,8 @@
 #include "zrythm.h"
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include "libpanel_wrapper.h"
 
 #define MAIN_WINDOW_WIDGET_TYPE (main_window_widget_get_type ())

@@ -289,7 +289,7 @@ typedef struct ArrangerObject
  */
 #define arranger_object_can_have_lanes(_obj) \
   ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
-   && region_type_has_lane (((ZRegion *) _obj)->id.type))
+   && region_type_has_lane (((Region *) _obj)->id.type))
 
 /** Returns if the object can loop. */
 #define arranger_object_type_can_loop(type) \
@@ -297,7 +297,7 @@ typedef struct ArrangerObject
 
 #define arranger_object_can_fade(_obj) \
   ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
-   && region_type_can_fade (((ZRegion *) _obj)->id.type))
+   && region_type_can_fade (((Region *) _obj)->id.type))
 
 #define arranger_object_can_mute(_obj) \
   ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION \
@@ -317,7 +317,7 @@ typedef struct ArrangerObject
 #if 0
   ((_obj)->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION && \
     region_type_can_fade ( \
-      ((ZRegion *) _obj)->id.type))
+      ((Region *) _obj)->id.type))
 #endif
 
 /**
@@ -333,10 +333,10 @@ void
 arranger_object_set_magic (ArrangerObject * self);
 
 /**
- * If the object is part of a ZRegion, returns it,
+ * If the object is part of a Region, returns it,
  * otherwise returns NULL.
  */
-HOT ZRegion *
+HOT Region *
 arranger_object_get_region (const ArrangerObject * const self);
 
 /**
@@ -610,10 +610,10 @@ void
 arranger_object_copy_identifier (ArrangerObject * dest, ArrangerObject * src);
 
 void
-arranger_object_add_linked_region (ArrangerObject * self, ZRegion * region);
+arranger_object_add_linked_region (ArrangerObject * self, Region * region);
 
 void
-arranger_object_remove_linked_region (ArrangerObject * self, ZRegion * region);
+arranger_object_remove_linked_region (ArrangerObject * self, Region * region);
 
 /**
  * Moves the object by the given amount of ticks.

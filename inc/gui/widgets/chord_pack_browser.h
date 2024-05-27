@@ -7,7 +7,7 @@
 #ifndef __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 #define __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct ChordPreset                   ChordPreset;
 typedef struct ChordPresetPack               ChordPresetPack;

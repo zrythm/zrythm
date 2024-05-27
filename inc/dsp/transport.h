@@ -310,7 +310,7 @@ transport_is_rolling (const Transport * self);
 
 /**
  * Prepares audio regions for stretching (sets the
- * \ref ZRegion.before_length).
+ * \ref Region.before_length).
  *
  * @param selections If NULL, all audio regions
  *   are used. If non-NULL, only the regions in the
@@ -329,7 +329,7 @@ transport_prepare_audio_regions_for_stretch (
  *   selections are used.
  * @param with_fixed_ratio Stretch all regions with
  *   a fixed ratio. If this is off, the current
- *   region length and \ref ZRegion.before_length
+ *   region length and \ref Region.before_length
  *   will be used to calculate the ratio.
  * @param force Force stretching, regardless of
  *   musical mode.

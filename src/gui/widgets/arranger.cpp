@@ -94,7 +94,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 
@@ -421,7 +422,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
         }
       else
         {
-          ZRegion * r = arranger_object_get_region (obj);
+          Region * r = arranger_object_get_region (obj);
           g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
           g_obj_end_pos = r->base.pos;
           position_add_ticks (&g_obj_end_pos, obj->end_pos.ticks);
@@ -455,7 +456,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
     }
   else
     {
-      ZRegion * r = arranger_object_get_region (obj);
+      Region * r = arranger_object_get_region (obj);
       g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
       g_obj_start_pos = r->base.pos;
       position_add_ticks (&g_obj_start_pos, obj->pos.ticks);
@@ -666,7 +667,7 @@ get_hit_objects (
                   TrackLane * lane = track->lanes[j];
                   for (int k = 0; k < lane->num_regions; k++)
                     {
-                      ZRegion * r = lane->regions[k];
+                      Region * r = lane->regions[k];
                       g_warn_if_fail (IS_REGION (r));
                       obj = (ArrangerObject *) r;
                       nfo.obj = obj;
@@ -694,7 +695,7 @@ get_hit_objects (
               /* chord regions */
               for (int j = 0; j < track->num_chord_regions; j++)
                 {
-                  ZRegion * cr = track->chord_regions[j];
+                  Region * cr = track->chord_regions[j];
                   obj = (ArrangerObject *) cr;
                   nfo.obj = obj;
                   add_object_if_overlap (self, &nfo);
@@ -756,7 +757,7 @@ get_hit_objects (
         type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_ALL
         || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE)
         {
-          ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+          Region * r = clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -781,7 +782,7 @@ get_hit_objects (
                   TrackLane * lane = track->lanes[i];
                   for (int j = 0; j < lane->num_regions; j++)
                     {
-                      ZRegion * cur_r = lane->regions[j];
+                      Region * cur_r = lane->regions[j];
                       if (cur_r == r)
                         continue;
                       for (int k = 0; k < cur_r->num_midi_notes; k++)
@@ -802,7 +803,7 @@ get_hit_objects (
         type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_ALL
         || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY)
         {
-          ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+          Region * r = clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -824,7 +825,7 @@ get_hit_objects (
         type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_ALL
         || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
         {
-          ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+          Region * r = clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -844,7 +845,7 @@ get_hit_objects (
         type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_ALL
         || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
-          ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+          Region * r = clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -974,7 +975,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
   if (sel->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION)
     {
       /* re-sort the automation region */
-      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = clip_editor_get_region (CLIP_EDITOR);
       g_return_if_fail (region);
       automation_region_force_sort (region);
     }
@@ -993,7 +994,7 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
 {
   float height = (float) gtk_widget_get_height (GTK_WIDGET (self));
 
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
     region && region->id.type == RegionType::REGION_TYPE_AUTOMATION, -1.f);
   AutomationTrack * at = region_get_automation_track (region);
@@ -1892,8 +1893,8 @@ click_pressed (
 
   PROJECT->last_selection =
     self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE
-      ? ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE
-      : ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
+      ? ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE
+      : ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
@@ -1924,7 +1925,7 @@ arranger_widget_create_item (
   Track *           track = NULL;
   AutomationTrack * at = NULL;
   int               note, chord_index;
-  ZRegion *         region = NULL;
+  Region *          region = NULL;
 
   /* get the position */
   arranger_widget_px_to_pos (self, start_x, &pos, F_PADDING);
@@ -2030,8 +2031,7 @@ arranger_widget_create_item (
       /* create a note */
       if (region)
         {
-          midi_arranger_widget_create_note (
-            self, &pos, note, (ZRegion *) region);
+          midi_arranger_widget_create_note (self, &pos, note, (Region *) region);
         }
       break;
     case TYPE (MIDI_MODIFIER):
@@ -2111,10 +2111,10 @@ autofill (ArrangerWidget * self, double x, double y)
           self->sel_at_start = arranger_selections_clone (sel);
         }
 
-      ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+      Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
       if (clip_editor_region)
         {
-          self->region_at_start = (ZRegion *) arranger_object_clone (
+          self->region_at_start = (Region *) arranger_object_clone (
             (ArrangerObject *) clip_editor_region);
         }
       else
@@ -2266,7 +2266,7 @@ on_drag_begin_handle_hit_object (
     obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION
     && self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
-      clip_editor_set_region (CLIP_EDITOR, (ZRegion *) obj, F_PUBLISH_EVENTS);
+      clip_editor_set_region (CLIP_EDITOR, (Region *) obj, F_PUBLISH_EVENTS);
 
       /* if double click bring up piano roll */
       if (self->n_press == 2 && !self->ctrl_held)
@@ -2281,8 +2281,8 @@ on_drag_begin_handle_hit_object (
    * region */
   else if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE)
     {
-      ZRegion * cur_r = clip_editor_get_region (CLIP_EDITOR);
-      ZRegion * r = arranger_object_get_region (obj);
+      Region * cur_r = clip_editor_get_region (CLIP_EDITOR);
+      Region * r = arranger_object_get_region (obj);
       if (r != cur_r)
         {
           clip_editor_set_region (CLIP_EDITOR, r, F_PUBLISH_EVENTS);
@@ -2624,12 +2624,12 @@ drag_begin (
   if (self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
     {
       PROJECT->last_selection =
-        ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE;
+        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE;
     }
   else
     {
       PROJECT->last_selection =
-        ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
+        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
     }
 
   self->drag_start_btn =
@@ -3602,7 +3602,7 @@ on_drag_end_automation (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       {
-        ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+        Region * region = clip_editor_get_region (CLIP_EDITOR);
 
         GError * err = NULL;
         bool     ret = arranger_selections_action_perform_automation_fill (
@@ -4008,7 +4008,7 @@ on_drag_end_audio (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
-        ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+        Region *         r = clip_editor_get_region (CLIP_EDITOR);
         ArrangerObject * obj = (ArrangerObject *) r;
         g_return_if_fail (IS_REGION_AND_NONNULL (obj));
 
@@ -4037,7 +4037,7 @@ on_drag_end_audio (ArrangerWidget * self)
           }
         else if (self->action == UI_OVERLAY_ACTION_RESIZING_UP)
           {
-            ZRegion * clone_r = (ZRegion *) clone_obj;
+            Region * clone_r = (Region *) clone_obj;
             clone_r->gain = self->fval_at_start;
             edit_type = ArrangerSelectionsActionEditType::
               ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE;
@@ -4612,7 +4612,7 @@ get_hit_timeline_object (
        * position */
       for (int i = 0; i < at->num_regions; i++)
         {
-          ZRegion * r = at->regions[i];
+          Region * r = at->regions[i];
           if (region_is_hit (r, pos.frames, 1))
             {
               return (ArrangerObject *) r;
@@ -4630,7 +4630,7 @@ get_hit_timeline_object (
        * position */
       for (int i = 0; i < lane->num_regions; i++)
         {
-          ZRegion * r = lane->regions[i];
+          Region * r = lane->regions[i];
           if (region_is_hit (r, pos.frames, 1))
             {
               return (ArrangerObject *) r;
@@ -4652,7 +4652,7 @@ get_hit_timeline_object (
               for (int j = 0; j < lane->num_regions;
                    j++)
                 {
-                  ZRegion * r = lane->regions[j];
+                  Region * r = lane->regions[j];
                   if (region_is_hit (
                         r, pos.frames, 1))
                     {
@@ -5980,7 +5980,7 @@ arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos
     case TYPE (AUTOMATION):
     case TYPE (AUDIO):
       {
-        ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+        Region * region = clip_editor_get_region (CLIP_EDITOR);
         g_return_if_fail (region);
         position_set_to_pos (pos, &((ArrangerObject *) region)->pos);
         position_change_sign (pos);

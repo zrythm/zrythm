@@ -10,7 +10,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Creates and returns the overwrite plugin dialog.

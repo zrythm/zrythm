@@ -13,7 +13,7 @@
  * Bounce step selector.
  */
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PREROLL_COUNT_SELECTOR_WIDGET_TYPE \
   (preroll_count_selector_widget_get_type ())

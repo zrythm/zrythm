@@ -11,7 +11,8 @@
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   ArrangerObjectInfoDialogWidget,
@@ -56,7 +57,7 @@ set_basic_info (
   lbl = GTK_LABEL (gtk_label_new (NULL));
   if (arranger_object_owned_by_region (obj))
     {
-      ZRegion * region = arranger_object_get_region (obj);
+      Region * region = arranger_object_get_region (obj);
       g_return_if_fail (region);
       sprintf (
         tmp, "%s [tr %u, ln %d, at %d, idx %d]", region->name,

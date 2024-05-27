@@ -81,7 +81,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"
@@ -828,9 +829,10 @@ init_common (AudioEngine * self)
 
   self->midi_clock_out = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    "MIDI Clock Out", ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+    "MIDI Clock Out", PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE,
+    self);
   self->midi_clock_out->midi_events = midi_events_new ();
-  self->midi_clock_out->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_MIDI_CLOCK;
+  self->midi_clock_out->id.flags2 |= PortIdentifier::Flags2::MIDI_CLOCK;
 }
 
 bool
@@ -874,25 +876,28 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
     {
       Port *           port = (Port *) g_ptr_array_index (ports, i);
       PortIdentifier * id = &port->id;
-      if (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE)
+      if (
+        id->owner_type
+        == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE)
         port_init_loaded (port, self);
-      else if (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_HW)
+      else if (id->owner_type == PortIdentifier::OwnerType::HW)
         {
           if (id->flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
             port_init_loaded (port, self->hw_in_processor);
           else if (id->flow == ZPortFlow::Z_PORT_FLOW_INPUT)
             port_init_loaded (port, self->hw_out_processor);
         }
-      else if (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER)
+      else if (id->owner_type == PortIdentifier::OwnerType::FADER)
         {
           if (
             ENUM_BITSET_TEST (
-              ZPortFlags2, id->flags2,
-              ZPortFlags2::Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER))
+              PortIdentifier::Flags2, id->flags2,
+              PortIdentifier::Flags2::SAMPLE_PROCESSOR_FADER))
             port_init_loaded (port, self->sample_processor->fader);
           else if (
             ENUM_BITSET_TEST (
-              ZPortFlags2, id->flags2, ZPortFlags2::Z_PORT_FLAG2_MONITOR_FADER))
+              PortIdentifier::Flags2, id->flags2,
+              PortIdentifier::Flags2::MonitorFader))
             port_init_loaded (port, self->control_room->monitor_fader);
         }
     }
@@ -933,7 +938,7 @@ engine_new (Project * project)
     "MIDI Editor Manual Press");
   self->midi_editor_manual_press->id.sym = g_strdup ("midi_editor_manual_press");
   self->midi_editor_manual_press->id.flags |=
-    ZPortFlags::Z_PORT_FLAG_MANUAL_PRESS;
+    PortIdentifier::Flags::MANUAL_PRESS;
 
   /* init midi in */
   self->midi_in = port_new_with_type (
@@ -957,7 +962,8 @@ engine_new (Project * project)
   self->monitor_out =
     stereo_ports_new_from_existing (monitor_out_l, monitor_out_r);
   stereo_ports_set_owner (
-    self->monitor_out, ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+    self->monitor_out, PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE,
+    self);
 
   self->hw_in_processor = hardware_processor_new (true, self);
   self->hw_out_processor = hardware_processor_new (false, self);

@@ -89,7 +89,8 @@ midi_mappings_bind_at (
 
   if (
     !(ENUM_BITSET_TEST (
-      ZPortFlags, dest_port->id.flags, ZPortFlags::Z_PORT_FLAG_MIDI_AUTOMATABLE)))
+      PortIdentifier::Flags, dest_port->id.flags,
+      PortIdentifier::Flags::MIDI_AUTOMATABLE)))
     {
       g_message ("bounded MIDI mapping from %s to %s", str, dest_port->id.label);
     }
@@ -160,7 +161,7 @@ midi_mapping_clone (const MidiMapping * src)
   memcpy (&self->key[0], &src->key[0], 3 * sizeof (midi_byte_t));
   if (src->device_port)
     self->device_port = ext_port_clone (src->device_port);
-  port_identifier_copy (&self->dest_id, &src->dest_id);
+  self->dest_id = src->dest_id;
   g_atomic_int_set (&self->enabled, (guint) g_atomic_int_get (&src->enabled));
 
   return self;
@@ -185,8 +186,9 @@ apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
   if (dest->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
     {
       /* if toggle, reverse value */
-      if (ENUM_BITSET_TEST (
-            ZPortFlags, dest->id.flags, ZPortFlags::Z_PORT_FLAG_TOGGLE))
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, dest->id.flags, PortIdentifier::Flags::TOGGLE))
         {
           control_port_set_toggled (
             dest, !control_port_is_toggled (dest), F_PUBLISH_EVENTS);
@@ -207,41 +209,43 @@ apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
        * instead */
       if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2, ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_ROLL))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_ROLL))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, NULL);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2, ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_STOP))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_STOP))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, NULL);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_BACKWARD))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_BACKWARD))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, NULL);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_FORWARD))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_FORWARD))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, NULL);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_LOOP_TOGGLE))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, NULL);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, dest->id.flags2,
-          ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_REC_TOGGLE))
+          PortIdentifier::Flags2, dest->id.flags2,
+          PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE))
         {
           EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, NULL);
         }

@@ -65,13 +65,13 @@ midi_arranger_selections_unlisten_note_diff (
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 int
 midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
-  ZRegion *                region);
+  Region *                 region);
 
 NONNULL void
 midi_arranger_selections_sort_by_pitch (MidiArrangerSelections * self, bool desc);

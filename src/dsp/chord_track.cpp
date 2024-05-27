@@ -47,12 +47,12 @@ chord_track_new (int track_pos)
  * index.
  */
 void
-chord_track_insert_chord_region (Track * self, ZRegion * region, int idx)
+chord_track_insert_chord_region (Track * self, Region * region, int idx)
 {
   g_return_if_fail (idx >= 0);
   array_double_size_if_full (
     self->chord_regions, self->num_chord_regions, self->chord_regions_size,
-    ZRegion *);
+    Region *);
   for (int i = self->num_chord_regions; i > idx; i--)
     {
       self->chord_regions[i] = self->chord_regions[i - 1];
@@ -121,7 +121,7 @@ chord_track_get_scale_at_pos (const Track * ct, const Position * pos)
 ChordObject *
 chord_track_get_chord_at_pos (const Track * ct, const Position * pos)
 {
-  ZRegion * region = track_get_region_at_pos (ct, pos, false);
+  Region * region = track_get_region_at_pos (ct, pos, false);
 
   if (!region)
     {
@@ -162,7 +162,7 @@ chord_track_clear (ChordTrack * self)
     }
   for (int i = 0; i < self->num_chord_regions; i++)
     {
-      ZRegion * region = self->chord_regions[i];
+      Region * region = self->chord_regions[i];
       track_remove_region (self, region, 0, 1);
     }
 }
@@ -178,7 +178,7 @@ chord_track_validate (Track * self)
 
   for (int i = 0; i < self->num_chord_regions; i++)
     {
-      ZRegion * r = self->chord_regions[i];
+      Region * r = self->chord_regions[i];
       g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
       g_return_val_if_fail (chord_region_validate (r), false);
     }
@@ -224,7 +224,7 @@ chord_track_remove_scale (ChordTrack * self, ScaleObject * scale, bool free)
  * Removes a region from the chord track.
  */
 void
-chord_track_remove_region (ChordTrack * self, ZRegion * region)
+chord_track_remove_region (ChordTrack * self, Region * region)
 {
   g_return_if_fail (IS_TRACK (self) && IS_REGION (region));
 
@@ -232,7 +232,7 @@ chord_track_remove_region (ChordTrack * self, ZRegion * region)
 
   for (int i = region->id.idx; i < self->num_chord_regions; i++)
     {
-      ZRegion * r = self->chord_regions[i];
+      Region * r = self->chord_regions[i];
       r->id.idx = i;
       region_update_identifier (r);
     }

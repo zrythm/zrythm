@@ -54,7 +54,7 @@ test_fill_when_region_starts_on_loop_end (void)
   TRANSPORT->play_state = PlayState::PLAYSTATE_ROLLING;
 
   StereoPorts * ports = stereo_ports_new_generic (
-    false, "ports", "ports", ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, track);
+    false, "ports", "ports", PortIdentifier::OwnerType::TRACK, track);
   port_allocate_bufs (ports->l);
   port_allocate_bufs (ports->r);
 

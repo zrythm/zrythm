@@ -62,7 +62,7 @@ refresh_editor_ruler_and_arranger (void * user_data)
 void
 clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
 
   if (r)
     {
@@ -105,7 +105,7 @@ clip_editor_widget_navigate_to_region_start (
   ClipEditorWidget * self,
   bool               center_contents_if_already_at_start)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
   ArrangerObject * r_obj = (ArrangerObject *) r;
   int              px = ui_pos_to_px_editor (&r_obj->pos, false);

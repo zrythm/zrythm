@@ -29,9 +29,9 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "Wrapper.h"
+#include "gtk_wrapper.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef enum

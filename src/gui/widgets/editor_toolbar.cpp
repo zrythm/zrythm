@@ -152,7 +152,7 @@ update_automation_funcs_menu (EditorToolbarWidget * self)
 void
 editor_toolbar_widget_refresh (EditorToolbarWidget * self)
 {
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     {
       return;

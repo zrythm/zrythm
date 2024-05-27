@@ -43,7 +43,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 
@@ -219,7 +220,7 @@ ruler_widget_get_sec_interval (RulerWidget * self)
  * Draws a region other than the editor one.
  */
 static void
-draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, ZRegion * region)
+draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, Region * region)
 {
   /*g_debug (
    * "drawing other region %s", region->name);*/
@@ -253,7 +254,7 @@ draw_regions (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   /* get a visible region - the clip editor
    * region is removed temporarily while moving
    * regions so this could be NULL */
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     return;
 
@@ -292,12 +293,12 @@ draw_regions (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
     }
 
   /* draw the other regions */
-  ZRegion * other_regions[1000];
-  int       num_other_regions =
+  Region * other_regions[1000];
+  int      num_other_regions =
     track_get_regions_in_range (track, NULL, NULL, other_regions);
   for (int i = 0; i < num_other_regions; i++)
     {
-      ZRegion * other_region = other_regions[i];
+      Region * other_region = other_regions[i];
       if (
         region_identifier_is_equal (&region->id, &other_region->id)
         || region->id.type != other_region->id.type)
@@ -315,7 +316,7 @@ get_loop_start_rect (RulerWidget * self, GdkRectangle * rect)
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj = (ArrangerObject *) region;
@@ -369,7 +370,7 @@ get_loop_end_rect (RulerWidget * self, GdkRectangle * rect)
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj = (ArrangerObject *) region;
@@ -494,7 +495,7 @@ get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
 
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj = (ArrangerObject *) region;
@@ -621,15 +622,15 @@ ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops)
     {
       if (after_loops)
         {
-          long      frames = 0;
-          ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+          long     frames = 0;
+          Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
           if (!clip_editor_region)
             {
               g_warning ("no clip editor region");
               return ui_pos_to_px_editor (PLAYHEAD, 1);
             }
 
-          ZRegion * r = NULL;
+          Region * r = NULL;
 
           if (clip_editor_region->id.type == RegionType::REGION_TYPE_AUTOMATION)
             {
@@ -1536,7 +1537,7 @@ drag_begin (
   int loop_end_hit = is_loop_end_hit (self, start_x, start_y);
   int clip_start_hit = is_clip_start_hit (self, start_x, start_y);
 
-  ZRegion *        region = clip_editor_get_region (CLIP_EDITOR);
+  Region *         region = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* if alt held down, start panning */

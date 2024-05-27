@@ -57,7 +57,7 @@ enum class EventType
   ET_AUTOMATION_TRACK_CHANGED,
 
   /**
-   * ZRegion (clip) to show in the piano roll
+   * Region (clip) to show in the piano roll
    * changed.
    *
    * Eg., a region in the timeline was clicked.
@@ -406,7 +406,7 @@ enum class EventType
   /**
    * Audio region fade in/out changed.
    *
-   * Arg: ZRegion pointer.
+   * Arg: Region pointer.
    */
   ET_AUDIO_REGION_FADE_IN_CHANGED,
   ET_AUDIO_REGION_FADE_OUT_CHANGED,
@@ -414,7 +414,7 @@ enum class EventType
   /**
    * Audio region gain changed.
    *
-   * Arg: ZRegion pointer.
+   * Arg: Region pointer.
    */
   ET_AUDIO_REGION_GAIN_CHANGED,
 

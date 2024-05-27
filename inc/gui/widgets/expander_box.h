@@ -12,7 +12,7 @@
 
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define EXPANDER_BOX_WIDGET_TYPE (expander_box_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (

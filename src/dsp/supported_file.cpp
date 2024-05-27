@@ -14,7 +14,8 @@
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Creates a new SupportedFile from the given absolute

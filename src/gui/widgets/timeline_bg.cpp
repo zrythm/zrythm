@@ -34,7 +34,7 @@
 #include "utils/cairo.h"
 #include "zrythm.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, ARRANGER_BG_WIDGET_TYPE)
 

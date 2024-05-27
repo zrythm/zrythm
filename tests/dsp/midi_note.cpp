@@ -14,7 +14,7 @@
 #if 0
 typedef struct
 {
-  ZRegion * region;
+  Region * region;
 } MidiNoteFixture;
 
 static void
@@ -64,11 +64,11 @@ test_new_midi_note ()
   g_assert_cmpint (mn->val, ==, val);
   g_assert_false (mn->muted);
 
-  ZRegion * region =
+  Region * region =
     arranger_object_get_region (
       (ArrangerObject *) mn);
-  ZRegion * r_clone =
-    (ZRegion *)
+  Region * r_clone =
+    (Region *)
     arranger_object_clone (
       (ArrangerObject *) region,
       ARRANGER_OBJECT_CLONE_COPY);

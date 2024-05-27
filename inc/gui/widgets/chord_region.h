@@ -18,7 +18,7 @@
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets
@@ -31,15 +31,15 @@
  * names inside the region.
  */
 void
-chord_region_recreate_pango_layouts (ZRegion * self);
+chord_region_recreate_pango_layouts (Region * self);
 
 #if 0
 
 /**
- * A widget that represents a ZRegion in the
+ * A widget that represents a Region in the
  * TimelineArrangerWidget.
  *
- * It displays the MidiNotes of the ZRegion in
+ * It displays the MidiNotes of the Region in
  * miniature size.
  */
 typedef struct _ChordRegionWidget
@@ -52,7 +52,7 @@ typedef struct _ChordRegionWidget
  */
 ChordRegionWidget *
 chord_region_widget_new (
-  ZRegion * chord_region);
+  Region * chord_region);
 
 #endif
 

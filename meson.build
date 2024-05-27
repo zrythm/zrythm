@@ -17,7 +17,6 @@ project (
     'b_lto=true',
     'b_lto_threads=2',
     'wrap_mode=nofallback',
-    'backend_max_links=1',
     ],
   )
 

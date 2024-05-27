@@ -25,7 +25,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 typedef enum
 {
@@ -597,7 +598,7 @@ audio_clip_is_in_use (AudioClip * self, bool check_undo_stack)
 
           for (int k = 0; k < lane->num_regions; k++)
             {
-              ZRegion * r = lane->regions[k];
+              Region * r = lane->regions[k];
               if (r->id.type != RegionType::REGION_TYPE_AUDIO)
                 continue;
 

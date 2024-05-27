@@ -23,7 +23,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 static int
 position_cmpfunc (const void * a, const void * b)
@@ -245,7 +245,7 @@ NONNULL_ARGS (1, 4, 5)
 HOT static bool get_prev_snap_point (
   const Position * pos,
   Track *          track,
-  ZRegion *        region,
+  Region *         region,
   const SnapGrid * sg,
   Position *       prev_sp)
 {
@@ -275,7 +275,7 @@ HOT static bool get_prev_snap_point (
           TrackLane * lane = track->lanes[i];
           for (int j = 0; j < lane->num_regions; j++)
             {
-              ZRegion *        r = lane->regions[j];
+              Region *         r = lane->regions[j];
               ArrangerObject * r_obj = (ArrangerObject *) r;
               snap_point = r_obj->pos;
               if (
@@ -333,7 +333,7 @@ NONNULL_ARGS (1, 4, 5)
 HOT static bool get_next_snap_point (
   const Position * pos,
   Track *          track,
-  ZRegion *        region,
+  Region *         region,
   const SnapGrid * sg,
   Position *       next_sp)
 {
@@ -365,7 +365,7 @@ HOT static bool get_next_snap_point (
           TrackLane * lane = track->lanes[i];
           for (int j = 0; j < lane->num_regions; j++)
             {
-              ZRegion *        r = lane->regions[j];
+              Region *         r = lane->regions[j];
               ArrangerObject * r_obj = (ArrangerObject *) r;
               snap_point = r_obj->pos;
               if (
@@ -422,7 +422,7 @@ static bool
 get_closest_snap_point (
   const Position * pos,
   Track *          track,
-  ZRegion *        region,
+  Region *         region,
   const SnapGrid * sg,
   Position *       closest_sp)
 {
@@ -476,7 +476,7 @@ position_snap (
   const Position * start_pos,
   Position *       pos,
   Track *          track,
-  ZRegion *        region,
+  Region *         region,
   const SnapGrid * sg)
 {
   g_return_if_fail (sg);

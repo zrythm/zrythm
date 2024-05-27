@@ -13,10 +13,10 @@
 #ifndef __GUI_WIDGETS_OBJECT_COLOR_CHOOSER_DIALOG_H__
 #define __GUI_WIDGETS_OBJECT_COLOR_CHOOSER_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Track               Track;
-typedef struct ZRegion             ZRegion;
+typedef struct Region              Region;
 typedef struct TracklistSelections TracklistSelections;
 
 /**
@@ -32,7 +32,7 @@ typedef struct TracklistSelections TracklistSelections;
  * @param track Track, if track.
  * @param sel TracklistSelections, if multiple
  *   tracks.
- * @param region ZRegion, if region.
+ * @param region Region, if region.
  *
  * @return Whether the color was set or not.
  */
@@ -41,7 +41,7 @@ object_color_chooser_dialog_widget_run (
   GtkWindow *           parent,
   Track *               track,
   TracklistSelections * sel,
-  ZRegion *             region);
+  Region *              region);
 
 /**
  * @}

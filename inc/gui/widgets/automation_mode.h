@@ -15,7 +15,7 @@
 #include "dsp/automation_track.h"
 #include "gui/widgets/custom_button.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct AutomationTrack AutomationTrack;
 

@@ -23,7 +23,7 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 

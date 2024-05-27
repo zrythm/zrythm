@@ -18,14 +18,14 @@
 #include <glib/gi18n.h>
 
 /**
- * Creates a new ZRegion for chords.
+ * Creates a new Region for chords.
  *
  * @param idx Index inside chord track.
  */
-ZRegion *
+Region *
 chord_region_new (const Position * start_pos, const Position * end_pos, int idx)
 {
-  ZRegion * self = object_new (ZRegion);
+  Region * self = object_new (Region);
 
   self->chord_objects_size = 1;
   self->chord_objects = object_new_n (self->chord_objects_size, ChordObject *);
@@ -45,7 +45,7 @@ chord_region_new (const Position * start_pos, const Position * end_pos, int idx)
  */
 void
 chord_region_insert_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   int           pos,
   bool          fire_events)
@@ -82,7 +82,7 @@ chord_region_insert_chord_object (
  */
 void
 chord_region_add_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   bool          fire_events)
 {
@@ -97,7 +97,7 @@ chord_region_add_chord_object (
  */
 void
 chord_region_remove_chord_object (
-  ZRegion *     self,
+  Region *      self,
   ChordObject * chord,
   int           free,
   bool          fire_events)
@@ -143,7 +143,7 @@ chord_region_remove_chord_object (
 }
 
 bool
-chord_region_validate (ZRegion * self)
+chord_region_validate (Region * self)
 {
   for (int i = 0; i < self->num_chord_objects; i++)
     {
@@ -156,12 +156,12 @@ chord_region_validate (ZRegion * self)
 }
 
 /**
- * Frees members only but not the ZRegion itself.
+ * Frees members only but not the Region itself.
  *
  * Regions should be free'd using region_free.
  */
 void
-chord_region_free_members (ZRegion * self)
+chord_region_free_members (Region * self)
 {
   g_return_if_fail (IS_REGION (self));
 

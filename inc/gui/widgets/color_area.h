@@ -12,7 +12,7 @@
  * Color picker for a channel strip.
  */
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define COLOR_AREA_WIDGET_TYPE (color_area_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

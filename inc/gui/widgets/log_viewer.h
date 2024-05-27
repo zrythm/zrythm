@@ -15,7 +15,7 @@
 
 #include "zrythm-config.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

@@ -482,8 +482,8 @@ queue_file_or_chord_preset (
 
       /* create an audio region & add to
        * track */
-      GError *  err = NULL;
-      ZRegion * ar = audio_region_new (
+      GError * err = NULL;
+      Region * ar = audio_region_new (
         -1, file->abs_path, false, NULL, 0, NULL, 0,
         ENUM_INT_TO_VALUE (BitDepth, 0), &start_pos, 0, 0, 0, &err);
       if (!ar)
@@ -568,7 +568,7 @@ queue_file_or_chord_preset (
             {
               /* create a MIDI region from the MIDI
                * file & add to track */
-              ZRegion * mr = midi_region_new_from_midi_file (
+              Region * mr = midi_region_new_from_midi_file (
                 &start_pos, file->abs_path, track_get_name_hash (track), 0, 0,
                 i);
               if (mr)
@@ -611,7 +611,7 @@ queue_file_or_chord_preset (
                * preset and add to track */
               Position end_pos;
               position_from_seconds (&end_pos, 13.0);
-              ZRegion * mr = midi_region_new (
+              Region * mr = midi_region_new (
                 &start_pos, &end_pos, track_get_name_hash (track), 0, 0);
 
               /* add notes */

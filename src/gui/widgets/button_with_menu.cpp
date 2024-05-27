@@ -8,7 +8,7 @@
 #include "gui/widgets/button_with_menu.h"
 #include "utils/gtk.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ButtonWithMenuWidget, button_with_menu_widget, GTK_TYPE_BOX)
 

@@ -59,7 +59,7 @@ typedef enum RegionCounterpart
  * @param width Full width of the region.
  */
 static void
-recreate_pango_layouts (ZRegion * self, int width)
+recreate_pango_layouts (Region * self, int width)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -87,7 +87,7 @@ recreate_pango_layouts (ZRegion * self, int width)
  */
 static void
 get_last_rects (
-  ZRegion *         self,
+  Region *          self,
   RegionCounterpart counterpart,
   GdkRectangle *    full_rect,
   GdkRectangle *    draw_rect)
@@ -112,7 +112,7 @@ get_last_rects (
  */
 static void
 draw_loop_points (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -244,7 +244,7 @@ draw_loop_points (
  */
 static void
 draw_cut_line (
-  ZRegion *        self,
+  Region *         self,
   GtkSnapshot *    snapshot,
   ArrangerWidget * arranger,
   GdkRectangle *   full_rect,
@@ -294,7 +294,7 @@ draw_cut_line (
  */
 static void
 draw_midi_region (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -445,7 +445,7 @@ draw_midi_region (
  */
 static void
 draw_chord_region (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -540,7 +540,7 @@ draw_chord_region (
  */
 static inline bool
 handle_loop (
-  ZRegion *         self,
+  Region *          self,
   GtkSnapshot *     snapshot,
   GdkRectangle *    full_rect,
   GdkRectangle *    draw_rect,
@@ -784,7 +784,7 @@ handle_loop (
  */
 static void
 draw_automation_region (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -824,7 +824,7 @@ draw_automation_region (
  */
 static void
 draw_fade_part (
-  ZRegion *     self,
+  Region *      self,
   GtkSnapshot * snapshot,
   int           vis_offset_x,
   int           vis_width,
@@ -1038,7 +1038,7 @@ draw_fade_part (
 
 static void
 draw_audio_part (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   int            vis_offset_x,
@@ -1233,7 +1233,7 @@ draw_audio_part (
  */
 static void
 draw_audio_region (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect,
@@ -1264,7 +1264,7 @@ draw_audio_region (
  */
 static void
 draw_name (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -1291,7 +1291,7 @@ draw_name (
     {
       char str[200];
       strcpy (str, escaped_name);
-      ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+      Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
       if (clip_editor_region == self)
         {
           strcat (str, " (CLIP EDITOR)");
@@ -1356,7 +1356,7 @@ draw_name (
  */
 static void
 draw_bottom_right_part (
-  ZRegion *      self,
+  Region *       self,
   GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
@@ -1391,13 +1391,13 @@ draw_bottom_right_part (
 }
 
 /**
- * Draws the ZRegion in the given cairo context in
+ * Draws the Region in the given cairo context in
  * relative coordinates.
  *
  * @param rect Arranger rectangle.
  */
 void
-region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
+region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -1623,7 +1623,7 @@ region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect)
  * Returns the lane rectangle for the region.
  */
 void
-region_get_lane_full_rect (ZRegion * self, GdkRectangle * rect)
+region_get_lane_full_rect (Region * self, GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 

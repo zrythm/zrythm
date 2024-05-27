@@ -13,7 +13,7 @@
 #include "plugins/plugin.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CHANNEL_SLOT_WIDGET_TYPE (channel_slot_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

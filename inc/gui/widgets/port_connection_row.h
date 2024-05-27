@@ -7,7 +7,7 @@
 #ifndef __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
 #define __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PORT_CONNECTION_ROW_WIDGET_TYPE (port_connection_row_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

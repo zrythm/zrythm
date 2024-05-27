@@ -350,7 +350,9 @@ channel_reconnect_ext_input_ports (Channel * ch);
  * of the given type for the channel.
  */
 NONNULL AutomationTrack *
-channel_get_automation_track (Channel * channel, ZPortFlags port_flags);
+channel_get_automation_track (
+  Channel *             channel,
+  PortIdentifier::Flags port_flags);
 
 /**
  * Removes a plugin at pos from the channel.

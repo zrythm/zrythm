@@ -67,7 +67,7 @@ automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at)
   /* move automation track regions */
   for (int i = 0; i < at->num_regions; i++)
     {
-      ZRegion * region = at->regions[i];
+      Region * region = at->regions[i];
       region_set_automation_track (region, at);
     }
 }
@@ -92,7 +92,7 @@ automation_tracklist_get_plugin_at (
       g_return_val_if_fail (at, NULL);
 
       if (
-        at->port_id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+        at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN
         && plugin_slot == at->port_id.plugin_id.slot
         && slot_type == at->port_id.plugin_id.slot_type
         && port_index == at->port_id.port_index
@@ -162,8 +162,8 @@ automation_tracklist_set_at_index (
   if (at->index == index)
     return;
 
-  ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
-  int       clip_editor_region_idx = -2;
+  Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  int      clip_editor_region_idx = -2;
   if (clip_editor_region)
     {
       RegionIdentifier * clip_editor_region_id = &clip_editor_region->id;
@@ -279,13 +279,13 @@ automation_tracklist_update_track_name_hash (
     {
       AutomationTrack * at = self->ats[i];
       at->port_id.track_name_hash = track_name_hash;
-      if (at->port_id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+      if (at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN)
         {
           at->port_id.plugin_id.track_name_hash = track_name_hash;
         }
       for (int j = 0; j < at->num_regions; j++)
         {
-          ZRegion * region = at->regions[j];
+          Region * region = at->regions[j];
           region->id.track_name_hash = track_name_hash;
           region_update_identifier (region);
         }
@@ -599,7 +599,7 @@ automation_tracklist_remove_at (
       cur_at->index = j;
       for (int i = 0; i < cur_at->num_regions; i++)
         {
-          ZRegion * region = cur_at->regions[i];
+          Region * region = cur_at->regions[i];
           region_set_automation_track (region, cur_at);
         }
     }

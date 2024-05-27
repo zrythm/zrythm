@@ -51,8 +51,8 @@
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <time.h>
 #include <unistd.h>
 

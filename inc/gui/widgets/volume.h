@@ -7,7 +7,7 @@
 #ifndef __GUI_WIDGETS_VOLUME_H__
 #define __GUI_WIDGETS_VOLUME_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Port Port;
 

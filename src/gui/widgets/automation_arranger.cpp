@@ -66,7 +66,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Create an AutomationPointat the given Position
@@ -79,7 +80,7 @@ automation_arranger_widget_create_ap (
   ArrangerWidget * self,
   const Position * pos,
   const double     start_y,
-  ZRegion *        region,
+  Region *         region,
   bool             autofilling)
 {
   AutomationTrack * at = region_get_automation_track (region);

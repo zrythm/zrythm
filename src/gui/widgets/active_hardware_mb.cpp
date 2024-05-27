@@ -5,7 +5,8 @@
 #include "gui/widgets/popovers/active_hardware_popover.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ActiveHardwareMbWidget, active_hardware_mb_widget, GTK_TYPE_WIDGET)
 

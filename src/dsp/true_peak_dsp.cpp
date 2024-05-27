@@ -30,7 +30,7 @@
 #include "dsp/true_peak_dsp.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Process.

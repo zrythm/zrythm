@@ -15,7 +15,7 @@
 
 #include "gui/widgets/expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CHANNEL_SENDS_EXPANDER_WIDGET_TYPE \
   (channel_sends_expander_widget_get_type ())

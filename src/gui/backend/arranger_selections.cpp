@@ -60,7 +60,7 @@ arranger_selections_init_loaded (
           /* throws an error otherwise */ \
           if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
             { \
-              ZRegion * r = (ZRegion *) obj; \
+              Region * r = (Region *) obj; \
               if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
                 { \
                   r->read_from_pool = true; \
@@ -78,15 +78,14 @@ arranger_selections_init_loaded (
           arranger_object_update_positions (obj, true, false, action); \
           if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
             { \
-              ZRegion * r = (ZRegion *) obj; \
+              Region * r = (Region *) obj; \
               if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
                 { \
                   audio_region_fix_positions ( \
                     r, action ? action->frames_per_tick : 0); \
                 } \
               region_validate ( \
-                (ZRegion *) obj, project, \
-                action ? action->frames_per_tick : 0); \
+                (Region *) obj, project, action ? action->frames_per_tick : 0); \
             } \
         } \
     }
@@ -95,7 +94,7 @@ arranger_selections_init_loaded (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      SET_OBJ (ts, ZRegion, region);
+      SET_OBJ (ts, Region, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
@@ -158,7 +157,7 @@ arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      SET_OBJ (ts, ZRegion, region);
+      SET_OBJ (ts, Region, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
@@ -302,7 +301,7 @@ arranger_selections_add_object (ArrangerSelections * self, ArrangerObject * obj)
     case TYPE (TIMELINE):
       {
         TimelineSelections * sel = (TimelineSelections *) self;
-        ADD_OBJ (sel, REGION, ZRegion, region);
+        ADD_OBJ (sel, REGION, Region, region);
         ADD_OBJ (sel, SCALE_OBJECT, ScaleObject, scale_object);
         ADD_OBJ (sel, MARKER, Marker, marker);
       }
@@ -354,7 +353,7 @@ arranger_selections_set_from_selections (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) dest;
-      RESET_COUNTERPART (ts, ZRegion, region);
+      RESET_COUNTERPART (ts, Region, region);
       RESET_COUNTERPART (ts, ScaleObject, scale_object);
       RESET_COUNTERPART (ts, Marker, marker);
       break;
@@ -408,7 +407,7 @@ arranger_selections_clone (const ArrangerSelections * self)
         arranger_selections_init (
           (ArrangerSelections *) new_ts,
           ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
-        CLONE_OBJS (src_ts, new_ts, ZRegion, region);
+        CLONE_OBJS (src_ts, new_ts, Region, region);
         CLONE_OBJS (src_ts, new_ts, ScaleObject, scale_object);
         CLONE_OBJS (src_ts, new_ts, Marker, marker);
         return ((ArrangerSelections *) new_ts);
@@ -526,8 +525,8 @@ sort_chords_desc (const void * a, const void * b)
 static int
 sort_regions_func (const void * _a, const void * _b)
 {
-  ZRegion * a = *(ZRegion * const *) _a;
-  ZRegion * b = *(ZRegion * const *) _b;
+  Region * a = *(Region * const *) _a;
+  Region * b = *(Region * const *) _b;
 
   Track * at =
     tracklist_find_track_by_name_hash (TRACKLIST, a->id.track_name_hash);
@@ -628,7 +627,7 @@ arranger_selections_sort_by_indices (ArrangerSelections * self, int desc)
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       qsort (
-        ts->regions, (size_t) ts->num_regions, sizeof (ZRegion *),
+        ts->regions, (size_t) ts->num_regions, sizeof (Region *),
         desc ? sort_regions_desc : sort_regions_func);
       qsort (
         ts->scale_objects, (size_t) ts->num_scale_objects,
@@ -687,7 +686,7 @@ arranger_selections_sort_by_positions (ArrangerSelections * self, int desc)
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       qsort (
-        ts->regions, (size_t) ts->num_regions, sizeof (ZRegion *),
+        ts->regions, (size_t) ts->num_regions, sizeof (Region *),
         desc ? sort_by_pos_desc_func : sort_by_pos_func);
       qsort (
         ts->scale_objects, (size_t) ts->num_scale_objects,
@@ -787,7 +786,7 @@ add_region_ticks (const ArrangerSelections * self, Position * pos)
  * @param pos The return value will be stored here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
- *   of the ZRegion) Position.
+ *   of the Region) Position.
  */
 void
 arranger_selections_get_start_pos (
@@ -816,7 +815,7 @@ arranger_selections_get_start_pos (
     case TYPE (TIMELINE):
       {
         const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_START_POS (ts, ZRegion, region);
+        GET_START_POS (ts, Region, region);
         GET_START_POS (ts, ScaleObject, scale_object);
         GET_START_POS (ts, Marker, marker);
       }
@@ -875,7 +874,7 @@ arranger_selections_get_start_pos (
  * @param pos The return value will be stored here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
- *   of the ZRegion) Position.
+ *   of the Region) Position.
  */
 void
 arranger_selections_get_end_pos (
@@ -912,7 +911,7 @@ arranger_selections_get_end_pos (
     case TYPE (TIMELINE):
       {
         const TimelineSelections * ts = (TimelineSelections *) self;
-        GET_END_POS (ts, ZRegion, region);
+        GET_END_POS (ts, Region, region);
         GET_END_POS (ts, ScaleObject, scale_object);
         GET_END_POS (ts, Marker, marker);
       }
@@ -975,7 +974,7 @@ arranger_selections_get_end_pos (
 void
 arranger_selections_add_to_region (
   ArrangerSelections * self,
-  ZRegion *            region,
+  Region *             region,
   bool                 clone)
 {
   switch (self->type)
@@ -1065,7 +1064,7 @@ arranger_selections_get_first_object (const ArrangerSelections * self)
     case TYPE (TIMELINE):
       {
         const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_FIRST_OBJ (ts, ZRegion, region);
+        GET_FIRST_OBJ (ts, Region, region);
         GET_FIRST_OBJ (ts, ScaleObject, scale_object);
         GET_FIRST_OBJ (ts, Marker, marker);
       }
@@ -1144,7 +1143,7 @@ arranger_selections_get_last_object (
     case TYPE (TIMELINE):
       {
         const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_LAST_OBJ (ts, ZRegion, region);
+        GET_LAST_OBJ (ts, Region, region);
         GET_LAST_OBJ (ts, ScaleObject, scale_object);
         GET_LAST_OBJ (ts, Marker, marker);
       }
@@ -1234,7 +1233,7 @@ arranger_selections_select_all (ArrangerSelections * self, bool fire_events)
 {
   arranger_selections_clear (self, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
 
   ArrangerObject * obj = NULL;
   switch (self->type)
@@ -1279,7 +1278,7 @@ arranger_selections_select_all (ArrangerSelections * self, bool fire_events)
       /* chord regions */
       for (int j = 0; j < P_CHORD_TRACK->num_chord_regions; j++)
         {
-          ZRegion * cr = P_CHORD_TRACK->chord_regions[j];
+          Region * cr = P_CHORD_TRACK->chord_regions[j];
           obj = (ArrangerObject *) cr;
           arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
@@ -1494,7 +1493,7 @@ arranger_selections_post_deserialize (ArrangerSelections * self)
       /* throws an error otherwise */ \
       if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
         { \
-          ZRegion * r = (ZRegion *) obj; \
+          Region * r = (Region *) obj; \
           if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
             { \
               r->read_from_pool = true; \
@@ -1563,7 +1562,7 @@ arranger_selections_validate (ArrangerSelections * self)
     case TYPE (AUDIO):
       {
         aus = (AudioSelections *) self;
-        ZRegion * r = region_find (&aus->region_id);
+        Region * r = region_find (&aus->region_id);
         g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
         if (
           position_is_before (&aus->sel_start, &r->base.pos)
@@ -1976,7 +1975,7 @@ arranger_selections_all_on_same_lane (ArrangerSelections * self)
 
       /* verify that region is of same type as
        * first */
-      ZRegion * r = (ZRegion *) obj;
+      Region * r = (Region *) obj;
       if (i == 0)
         {
           id = r->id;
@@ -2053,9 +2052,9 @@ arranger_selections_merge (ArrangerSelections * self)
   g_return_if_fail (
     IS_ARRANGER_OBJECT_AND_NONNULL (first_obj)
     && first_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION);
-  ZRegion * first_r = (ZRegion *) first_obj;
+  Region * first_r = (Region *) first_obj;
 
-  ZRegion * new_r = NULL;
+  Region * new_r = NULL;
   switch (first_r->id.type)
     {
     case RegionType::REGION_TYPE_MIDI:
@@ -2066,8 +2065,8 @@ arranger_selections_merge (ArrangerSelections * self)
         {
           ArrangerObject * r_obj =
             (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          ZRegion * r = (ZRegion *) r_obj;
-          double    ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
+          Region * r = (Region *) r_obj;
+          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
 
           /* copy all midi notes */
           for (int j = 0; j < r->num_midi_notes; j++)
@@ -2098,8 +2097,8 @@ arranger_selections_merge (ArrangerSelections * self)
           {
             ArrangerObject * r_obj =
               (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-            ZRegion * r = (ZRegion *) r_obj;
-            long      frames_diff = r_obj->pos.frames - first_obj->pos.frames;
+            Region * r = (Region *) r_obj;
+            long     frames_diff = r_obj->pos.frames - first_obj->pos.frames;
             long r_frames_length = arranger_object_get_length_in_frames (r_obj);
 
             /* add all audio data */
@@ -2134,8 +2133,8 @@ arranger_selections_merge (ArrangerSelections * self)
         {
           ArrangerObject * r_obj =
             (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          ZRegion * r = (ZRegion *) r_obj;
-          double    ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
+          Region * r = (Region *) r_obj;
+          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
 
           /* copy all chord objects */
           for (int j = 0; j < r->num_chord_objects; j++)
@@ -2160,8 +2159,8 @@ arranger_selections_merge (ArrangerSelections * self)
         {
           ArrangerObject * r_obj =
             (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          ZRegion * r = (ZRegion *) r_obj;
-          double    ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
+          Region * r = (Region *) r_obj;
+          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
 
           /* copy all chord objects */
           for (int j = 0; j < r->num_aps; j++)
@@ -2199,7 +2198,7 @@ arranger_selections_contains_looped (ArrangerSelections * self)
   TimelineSelections * tl = (TimelineSelections *) self;
   for (int i = 0; i < tl->num_regions; i++)
     {
-      ZRegion * r = tl->regions[i];
+      Region * r = tl->regions[i];
       if (region_is_looped (r))
         return true;
     }
@@ -2225,7 +2224,7 @@ arranger_selections_can_be_merged (ArrangerSelections * self)
 bool
 arranger_selections_can_be_pasted (ArrangerSelections * self)
 {
-  ZRegion *  r = clip_editor_get_region (CLIP_EDITOR);
+  Region *   r = clip_editor_get_region (CLIP_EDITOR);
   Position * pos = PLAYHEAD;
 
   if (arranger_selections_contains_unclonable_object (self))
@@ -2304,7 +2303,7 @@ arranger_selections_paste_to_pos (
       /* add selections to track */
       for (int i = 0; i < ts->num_regions; i++)
         {
-          ZRegion * r = ts->regions[i];
+          Region * r = ts->regions[i];
 
           /* automation not allowed to be pasted this way */
           if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
@@ -2334,7 +2333,7 @@ arranger_selections_paste_to_pos (
   /* else if selections inside region */
   else
     {
-      ZRegion *        region = clip_editor_get_region (CLIP_EDITOR);
+      Region *         region = clip_editor_get_region (CLIP_EDITOR);
       ArrangerObject * r_obj = (ArrangerObject *) region;
 
       /* add selections to region */
@@ -2434,7 +2433,7 @@ arranger_selections_contains_clip (ArrangerSelections * self, AudioClip * clip)
       TimelineSelections * sel = (TimelineSelections *) self;
       for (int i = 0; i < sel->num_regions; i++)
         {
-          ZRegion * r = sel->regions[i];
+          Region * r = sel->regions[i];
           if (
             r->id.type == RegionType::REGION_TYPE_AUDIO
             && r->pool_id == clip->pool_id)
@@ -2475,7 +2474,7 @@ arranger_selections_can_split_at_pos (
         }
       for (int i = 0; i < ts->num_regions; i++)
         {
-          ZRegion *        r = ts->regions[i];
+          Region *         r = ts->regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) r;
 
           /* don't allow splitting at edges */

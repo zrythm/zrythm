@@ -15,7 +15,7 @@
 #include "gui/widgets/arranger.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ARRANGER_WRAPPER_WIDGET_TYPE (arranger_wrapper_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

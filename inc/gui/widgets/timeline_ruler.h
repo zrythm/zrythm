@@ -16,7 +16,7 @@
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _RulerRangeWidget  RulerRangeWidget;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;

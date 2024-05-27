@@ -25,7 +25,7 @@
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Returns a human friendly name of the node.

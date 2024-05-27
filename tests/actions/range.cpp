@@ -106,8 +106,8 @@ test_prepare_common (void)
     (ArrangerSelections *) TL_SELECTIONS, NULL)
 
   /* add all the midi regions */
-  Position  start, end;
-  ZRegion * midi_region;
+  Position start, end;
+  Region * midi_region;
   ADD_MREGION (MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
   ADD_MREGION (MIDI_REGION2_START_BAR, MIDI_REGION2_END_BAR);
   ADD_MREGION (MIDI_REGION3_START_BAR, MIDI_REGION3_END_BAR);
@@ -128,7 +128,7 @@ test_prepare_common (void)
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   audio_track_pos = audio_track->pos;
-  ZRegion * audio_region = audio_track->lanes[0]->regions[0];
+  Region * audio_region = audio_track->lanes[0]->regions[0];
 
   /* resize audio region */
   arranger_object_select (
@@ -185,7 +185,7 @@ check_before_insert (void)
   g_assert_cmpint (midi_track->lanes[0]->num_regions, ==, 7);
 
 #define GET_MIDI_REGION(name, idx) \
-  ZRegion *        name = midi_track->lanes[0]->regions[idx]; \
+  Region *         name = midi_track->lanes[0]->regions[idx]; \
   ArrangerObject * name##_obj = (ArrangerObject *) name
 
   GET_MIDI_REGION (midi_region, 0);
@@ -198,8 +198,8 @@ check_before_insert (void)
 
 #undef GET_MIDI_REGION
 
-  Track *   audio_track = TRACKLIST->tracks[audio_track_pos];
-  ZRegion * audio_region = audio_track->lanes[0]->regions[0];
+  Track *  audio_track = TRACKLIST->tracks[audio_track_pos];
+  Region * audio_region = audio_track->lanes[0]->regions[0];
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);
   ArrangerObject * audio_region_obj = (ArrangerObject *) audio_region;
 
@@ -229,7 +229,7 @@ check_after_insert (void)
 {
 
 #define GET_MIDI_REGION(name, idx) \
-  ZRegion *        name = midi_track->lanes[0]->regions[idx]; \
+  Region *         name = midi_track->lanes[0]->regions[idx]; \
   ArrangerObject * name##_obj = (ArrangerObject *) name
 
   /* get objects */
@@ -251,8 +251,8 @@ check_after_insert (void)
   /* get new audio regions */
   Track * audio_track = TRACKLIST->tracks[audio_track_pos];
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 2);
-  ZRegion *        audio_region1 = audio_track->lanes[0]->regions[0];
-  ZRegion *        audio_region2 = audio_track->lanes[0]->regions[1];
+  Region *         audio_region1 = audio_track->lanes[0]->regions[0];
+  Region *         audio_region2 = audio_track->lanes[0]->regions[1];
   ArrangerObject * audio_region_obj1 = (ArrangerObject *) audio_region1;
   ArrangerObject * audio_region_obj2 = (ArrangerObject *) audio_region2;
 
@@ -365,7 +365,7 @@ static void
 check_after_remove (void)
 {
 #define GET_MIDI_REGION(name, idx) \
-  ZRegion *        name = midi_track->lanes[0]->regions[idx]; \
+  Region *         name = midi_track->lanes[0]->regions[idx]; \
   ArrangerObject * name##_obj = (ArrangerObject *) name
 
   test_project_save_and_reload ();
@@ -385,7 +385,7 @@ check_after_remove (void)
   /* get new audio regions */
   Track * audio_track = TRACKLIST->tracks[audio_track_pos];
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);
-  ZRegion *        audio_region = audio_track->lanes[0]->regions[0];
+  Region *         audio_region = audio_track->lanes[0]->regions[0];
   ArrangerObject * audio_region_obj = (ArrangerObject *) audio_region;
 
 #define CHECK_POS(obj, start_bar, end_bar) \

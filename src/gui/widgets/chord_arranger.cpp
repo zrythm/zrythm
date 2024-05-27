@@ -56,7 +56,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Create a ChordObject at the given Position in the
@@ -69,7 +69,7 @@ chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position * pos,
   int              chord_index,
-  ZRegion *        region)
+  Region *         region)
 {
   g_return_val_if_fail (chord_index < CHORD_EDITOR->num_chords, NULL);
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;

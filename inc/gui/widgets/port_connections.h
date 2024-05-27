@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_PORT_CONNECTIONS_H__
 #define __GUI_WIDGETS_PORT_CONNECTIONS_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _PortConnectionsTreeWidget PortConnectionsTreeWidget;
 

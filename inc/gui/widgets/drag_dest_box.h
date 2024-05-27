@@ -12,7 +12,7 @@
 #ifndef __GUI_WIDGETS_DRAG_DEST_BOX_H__
 #define __GUI_WIDGETS_DRAG_DEST_BOX_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Channel Channel;
 

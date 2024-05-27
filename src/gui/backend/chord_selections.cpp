@@ -16,16 +16,16 @@
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 int
-chord_selections_can_be_pasted (ChordSelections * ts, Position * pos, ZRegion * r)
+chord_selections_can_be_pasted (ChordSelections * ts, Position * pos, Region * r)
 {
   if (!r || r->id.type != RegionType::REGION_TYPE_CHORD)
     return 0;

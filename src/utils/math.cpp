@@ -9,7 +9,7 @@
 #include "utils/math.h"
 #include "utils/string.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Gets the RMS of the given signal as amplitude

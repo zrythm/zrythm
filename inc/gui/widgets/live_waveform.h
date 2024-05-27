@@ -12,7 +12,7 @@
  * Live waveform display like LMMS.
  */
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define LIVE_WAVEFORM_WIDGET_TYPE (live_waveform_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -12,7 +12,8 @@
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (PortInfoDialogWidget, port_info_dialog_widget, GTK_TYPE_WINDOW)
 
@@ -87,23 +88,27 @@ set_values (
   GtkFlowBox * flags_box = GTK_FLOW_BOX (gtk_flow_box_new ());
   for (size_t i = 0; i <= 30; i++)
     {
-      if (!(ENUM_BITSET_TEST (
-            ZPortFlags, id->flags, ENUM_INT_TO_VALUE (ZPortFlags, 1 << i))))
+      if (
+        !(ENUM_BITSET_TEST (
+          PortIdentifier::Flags, id->flags,
+          ENUM_INT_TO_VALUE (PortIdentifier::Flags, 1 << i))))
         continue;
 
-      GtkWidget * lbl_ =
-        gtk_label_new (ENUM_NAME (ENUM_INT_TO_VALUE (ZPortFlags, i)));
+      GtkWidget * lbl_ = gtk_label_new (
+        ENUM_NAME (ENUM_INT_TO_VALUE (PortIdentifier::Flags, i)));
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
   for (size_t i = 0; i <= 30; i++)
     {
-      if (!(ENUM_BITSET_TEST (
-            ZPortFlags2, id->flags2, ENUM_INT_TO_VALUE (ZPortFlags2, 1 << i))))
+      if (
+        !(ENUM_BITSET_TEST (
+          PortIdentifier::Flags2, id->flags2,
+          ENUM_INT_TO_VALUE (PortIdentifier::Flags2, 1 << i))))
         continue;
 
-      GtkWidget * lbl_ =
-        gtk_label_new (ENUM_NAME (ENUM_INT_TO_VALUE (ZPortFlags2, i)));
+      GtkWidget * lbl_ = gtk_label_new (
+        ENUM_NAME (ENUM_INT_TO_VALUE (PortIdentifier::Flags2, i)));
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }

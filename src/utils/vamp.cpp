@@ -12,7 +12,7 @@
 #include "utils/string.h"
 #include "utils/vamp.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 extern "C" {
 

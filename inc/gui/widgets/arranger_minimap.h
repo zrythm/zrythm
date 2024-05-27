@@ -14,7 +14,7 @@
 
 #include "dsp/position.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ARRANGER_MINIMAP_WIDGET_TYPE (arranger_minimap_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

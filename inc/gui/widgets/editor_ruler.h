@@ -16,7 +16,7 @@
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets
@@ -57,7 +57,7 @@ editor_ruler_get_regions_in_range (
   RulerWidget * self,
   double        x_start,
   double        x_end,
-  ZRegion **    regions);
+  Region **     regions);
 
 /**
  * @}

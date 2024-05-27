@@ -22,7 +22,7 @@ test_crescendo (void)
   Position pos, end_pos;
   position_set_to_bar (&pos, 1);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * r1 =
+  Region * r1 =
     midi_region_new (&pos, &end_pos, track_get_name_hash (midi_track), 0, 0);
   GError * err = NULL;
   success = track_add_region (

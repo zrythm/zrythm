@@ -34,8 +34,8 @@ track_lane_init_loaded (TrackLane * self, Track * track)
   self->magic = TRACK_LANE_MAGIC;
   self->track = track;
   self->regions_size = (size_t) self->num_regions;
-  int       i;
-  ZRegion * region;
+  int      i;
+  Region * region;
   for (i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];
@@ -65,7 +65,7 @@ track_lane_new (Track * track, int pos)
   self->name = g_strdup_printf (_ ("Lane %d"), pos + 1);
 
   self->regions_size = 1;
-  self->regions = object_new_n (self->regions_size, ZRegion *);
+  self->regions = object_new_n (self->regions_size, Region *);
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -227,25 +227,25 @@ track_lane_update_positions (TrackLane * self, bool from_ticks, bool bpm_change)
       if (ZRYTHM_TESTING)
         {
           region_validate (
-            (ZRegion *) r_obj, track_lane_is_in_active_project (self), 0);
+            (Region *) r_obj, track_lane_is_in_active_project (self), 0);
         }
       arranger_object_update_positions (r_obj, from_ticks, bpm_change, NULL);
       if (ZRYTHM_TESTING)
         {
           region_validate (
-            (ZRegion *) r_obj, track_lane_is_in_active_project (self), 0);
+            (Region *) r_obj, track_lane_is_in_active_project (self), 0);
         }
     }
 }
 
 void
-track_lane_add_region (TrackLane * self, ZRegion * region)
+track_lane_add_region (TrackLane * self, Region * region)
 {
   track_lane_insert_region (self, region, self->num_regions);
 }
 
 void
-track_lane_insert_region (TrackLane * self, ZRegion * region, int idx)
+track_lane_insert_region (TrackLane * self, Region * region, int idx)
 {
   g_return_if_fail (
     self && IS_REGION (region) && idx >= 0
@@ -254,12 +254,12 @@ track_lane_insert_region (TrackLane * self, ZRegion * region, int idx)
   region_set_lane (region, self);
 
   array_double_size_if_full (
-    self->regions, self->num_regions, self->regions_size, ZRegion *);
+    self->regions, self->num_regions, self->regions_size, Region *);
 
   /* adjust link groups */
   for (int i = self->num_regions; i > idx; i--)
     {
-      ZRegion * r = self->regions[i - 1];
+      Region * r = self->regions[i - 1];
       if (region_has_link_group (r))
         {
           RegionLinkGroup * group = region_get_link_group (r);
@@ -302,7 +302,7 @@ track_lane_update_track_name_hash (TrackLane * self)
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * region = self->regions[i];
+      Region * region = self->regions[i];
       region->id.track_name_hash = track_get_name_hash (track);
       region->id.lane_pos = self->pos;
       region_update_identifier (region);
@@ -323,22 +323,22 @@ track_lane_clone (const TrackLane * src, Track * track)
 
   self->name = g_strdup (src->name);
   self->regions_size = (size_t) src->num_regions;
-  self->regions = object_new_n (self->regions_size, ZRegion *);
+  self->regions = object_new_n (self->regions_size, Region *);
   self->height = src->height;
   self->pos = src->pos;
   self->mute = src->mute;
   self->solo = src->solo;
   self->midi_ch = src->midi_ch;
 
-  ZRegion *region, *new_region;
+  Region *region, *new_region;
   self->num_regions = src->num_regions;
-  self->regions = static_cast<ZRegion **> (
-    g_realloc (self->regions, sizeof (ZRegion *) * (size_t) src->num_regions));
+  self->regions = static_cast<Region **> (
+    g_realloc (self->regions, sizeof (Region *) * (size_t) src->num_regions));
   for (int i = 0; i < src->num_regions; i++)
     {
       /* clone region */
       region = src->regions[i];
-      new_region = (ZRegion *) arranger_object_clone ((ArrangerObject *) region);
+      new_region = (Region *) arranger_object_clone ((ArrangerObject *) region);
 
       self->regions[i] = new_region;
       region_set_lane (new_region, self);
@@ -361,7 +361,7 @@ track_lane_unselect_all (TrackLane * self)
   g_return_if_fail (track);
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * region = self->regions[i];
+      Region * region = self->regions[i];
       arranger_object_select (
         (ArrangerObject *) region, false, false, F_NO_PUBLISH_EVENTS);
     }
@@ -384,7 +384,7 @@ track_lane_clear (TrackLane * self)
 
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
-      ZRegion * region = self->regions[i];
+      Region * region = self->regions[i];
       g_return_if_fail (
         IS_REGION (region)
         && region->id.track_name_hash == track_get_name_hash (track)
@@ -399,7 +399,7 @@ track_lane_clear (TrackLane * self)
  * Removes but does not free the region.
  */
 void
-track_lane_remove_region (TrackLane * self, ZRegion * region)
+track_lane_remove_region (TrackLane * self, Region * region)
 {
   g_return_if_fail (IS_REGION (region));
 
@@ -407,7 +407,7 @@ track_lane_remove_region (TrackLane * self, ZRegion * region)
     {
       /* if clip editor region index is greater
        * than this index, decrement it */
-      ZRegion * clip_editor_r = clip_editor_get_region (CLIP_EDITOR);
+      Region * clip_editor_r = clip_editor_get_region (CLIP_EDITOR);
       if (
         clip_editor_r
         && clip_editor_r->id.track_name_hash == region->id.track_name_hash
@@ -422,7 +422,7 @@ track_lane_remove_region (TrackLane * self, ZRegion * region)
    * to the expected new ones */
   for (int i = region->id.idx + 1; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      Region * r = self->regions[i];
       if (region_has_link_group (r))
         {
           RegionLinkGroup * group = region_get_link_group (r);
@@ -442,7 +442,7 @@ track_lane_remove_region (TrackLane * self, ZRegion * region)
 
   for (int i = region->id.idx; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      Region * r = self->regions[i];
       r->id.idx = i;
       region_update_identifier (r);
     }
@@ -553,7 +553,7 @@ track_lane_write_to_midi_file (
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      const ZRegion *        region = self->regions[i];
+      const Region *         region = self->regions[i];
       const ArrangerObject * r_obj = (const ArrangerObject *) region;
 
       /* skip regions not inside the given range */

@@ -6,7 +6,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE \
   (automatable_selector_popover_widget_get_type ())

@@ -15,7 +15,7 @@
 
 #include <cstdlib>
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * \file

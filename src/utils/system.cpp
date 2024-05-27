@@ -10,7 +10,7 @@
 
 #include "utils/system.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct ChildWatchData
 {

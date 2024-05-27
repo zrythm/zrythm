@@ -6,7 +6,7 @@
 
 #include "utils/mem.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Reallocate and zero out newly added memory.

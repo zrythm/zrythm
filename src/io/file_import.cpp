@@ -156,8 +156,8 @@ file_import_thread_func (
     {
     case TrackType::TRACK_TYPE_AUDIO:
       {
-        GError *  err = NULL;
-        ZRegion * region = audio_region_new (
+        GError * err = NULL;
+        Region * region = audio_region_new (
           -1, self->filepath, true, NULL, 0, NULL, 0,
           ENUM_INT_TO_VALUE (BitDepth, 0), &self->import_info->pos,
           self->import_info->track_name_hash, lane_pos, idx_in_lane, &err);
@@ -173,7 +173,7 @@ file_import_thread_func (
     case TrackType::TRACK_TYPE_MIDI:
       for (int i = 0; i < num_nonempty_midi_tracks; i++)
         {
-          ZRegion * region = midi_region_new_from_midi_file (
+          Region * region = midi_region_new_from_midi_file (
             &self->import_info->pos, self->filepath,
             self->import_info->track_name_hash, lane_pos, idx_in_lane, i);
           if (!region)

@@ -15,7 +15,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Runs the widget and processes the result, then
@@ -24,7 +25,7 @@
  * @param track Track, if track.
  * @param sel TracklistSelections, if multiple
  *   tracks.
- * @param region ZRegion, if region.
+ * @param region Region, if region.
  *
  * @return Whether the color was set or not.
  */
@@ -33,7 +34,7 @@ object_color_chooser_dialog_widget_run (
   GtkWindow *           parent,
   Track *               track,
   TracklistSelections * sel,
-  ZRegion *             region)
+  Region *              region)
 {
   GtkColorChooserDialog * dialog = NULL;
   if (track)

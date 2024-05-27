@@ -12,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct TruePeakDsp TruePeakDsp;
 typedef struct KMeterDsp   KMeterDsp;

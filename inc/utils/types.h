@@ -12,8 +12,7 @@
 
 #include <cstdint>
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <cinttypes>
 
 #pragma GCC diagnostic push

@@ -172,7 +172,7 @@ _test_port_connection (
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
+        port->id.owner_type == PortIdentifier::OwnerType::PLUGIN
         && port->id.type == ZPortType::Z_PORT_TYPE_CV
         && port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
         {
@@ -199,9 +199,10 @@ _test_port_connection (
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER
+        port->id.owner_type == PortIdentifier::OwnerType::FADER
         && ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE))
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::STEREO_BALANCE))
         {
           dest_port = port;
           break;

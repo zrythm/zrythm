@@ -4,7 +4,7 @@
 #ifndef __GUI_BACKEND_FILE_MANAGER_H__
 #define __GUI_BACKEND_FILE_MANAGER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct SupportedFile SupportedFile;
 

@@ -16,7 +16,7 @@
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/piano_roll.h"
 
-typedef struct ZRegion            ZRegion;
+typedef struct Region             Region;
 typedef struct ArrangerSelections ArrangerSelections;
 
 /**
@@ -35,7 +35,7 @@ typedef struct ArrangerSelections ArrangerSelections;
  */
 typedef struct ClipEditor
 {
-  /** ZRegion currently attached to the clip
+  /** Region currently attached to the clip
    * editor. */
   RegionIdentifier region_id;
 
@@ -52,7 +52,7 @@ typedef struct ClipEditor
   int region_changed;
 
   /* --- caches --- */
-  ZRegion * region;
+  Region * region;
 
   Track * track;
 } ClipEditor;
@@ -82,9 +82,9 @@ clip_editor_new (void);
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (ClipEditor * self, ZRegion * region, bool fire_events);
+clip_editor_set_region (ClipEditor * self, Region * region, bool fire_events);
 
-ZRegion *
+Region *
 clip_editor_get_region (ClipEditor * self);
 
 ArrangerSelections *
@@ -92,10 +92,10 @@ clip_editor_get_arranger_selections (ClipEditor * self);
 
 #if 0
 /**
- * Returns the ZRegion that widgets are expected
+ * Returns the Region that widgets are expected
  * to use.
  */
-ZRegion *
+Region *
 clip_editor_get_region_for_widgets (
   ClipEditor * self);
 #endif

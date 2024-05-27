@@ -34,7 +34,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_WIDGET)
 
@@ -773,7 +774,7 @@ on_scroll (
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_BPM:
-      change.flag1 = ZPortFlags::Z_PORT_FLAG_BPM;
+      change.flag1 = PortIdentifier::Flags::BPM;
       if (self->update_num)
         {
           change.real_val = self->last_set_bpm + (bpm_t) num;
@@ -864,7 +865,7 @@ on_scroll (
       if (self->update_timesig_top)
         {
           num += self->beats_per_bar_at_start;
-          change.flag2 = ZPortFlags2::Z_PORT_FLAG2_BEATS_PER_BAR;
+          change.flag2 = PortIdentifier::Flags2::BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
               change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
@@ -881,7 +882,7 @@ on_scroll (
       else if (self->update_timesig_bot)
         {
           num += (int) tempo_track_beat_unit_to_enum (self->beat_unit_at_start);
-          change.flag2 = ZPortFlags2::Z_PORT_FLAG2_BEAT_UNIT;
+          change.flag2 = PortIdentifier::Flags2::BEAT_UNIT;
           if (num < 0)
             {
               change.beat_unit = ZBeatUnit::Z_BEAT_UNIT_2;
@@ -940,7 +941,7 @@ drag_update (
           if (abs (num) > 0)
             {
               ControlPortChange change = {};
-              change.flag1 = ZPortFlags::Z_PORT_FLAG_BPM;
+              change.flag1 = PortIdentifier::Flags::BPM;
               change.real_val = self->last_set_bpm + (bpm_t) num;
               self->last_set_bpm = change.real_val;
               router_queue_control_port_change (ROUTER, &change);
@@ -955,7 +956,7 @@ drag_update (
           if (fabs (dec) > 0)
             {
               ControlPortChange change = {};
-              change.flag1 = ZPortFlags::Z_PORT_FLAG_BPM;
+              change.flag1 = PortIdentifier::Flags::BPM;
               change.real_val = self->last_set_bpm + (bpm_t) dec;
               self->last_set_bpm = change.real_val;
               router_queue_control_port_change (ROUTER, &change);
@@ -1086,7 +1087,7 @@ drag_update (
         {
           num = self->beats_per_bar_at_start + (int) diff / 24;
           ControlPortChange change = {};
-          change.flag2 = ZPortFlags2::Z_PORT_FLAG2_BEATS_PER_BAR;
+          change.flag2 = PortIdentifier::Flags2::BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
               change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
@@ -1106,7 +1107,7 @@ drag_update (
             (int) tempo_track_beat_unit_to_enum (self->beat_unit_at_start)
             + (int) diff / 24;
           ControlPortChange change = {};
-          change.flag2 = ZPortFlags2::Z_PORT_FLAG2_BEAT_UNIT;
+          change.flag2 = PortIdentifier::Flags2::BEAT_UNIT;
           if (num < 0)
             {
               change.beat_unit = ZBeatUnit::Z_BEAT_UNIT_2;

@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_MODULATOR_INNER_H__
 #define __GUI_WIDGETS_MODULATOR_INNER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define MODULATOR_INNER_WIDGET_TYPE (modulator_inner_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

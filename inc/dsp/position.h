@@ -115,7 +115,7 @@
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track    Track;
-typedef struct ZRegion  ZRegion;
+typedef struct Region   Region;
 
 /**
  * A Position is made up of bars.beats.sixteenths.ticks.
@@ -263,7 +263,7 @@ void position_snap (
   const Position * start_pos,
   Position *       pos,
   Track *          track,
-  ZRegion *        region,
+  Region *         region,
   const SnapGrid * sg);
 
 /**

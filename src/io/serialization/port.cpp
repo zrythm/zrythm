@@ -204,14 +204,15 @@ port_identifier_deserialize_from_json (
     {
       pi->comment = g_strdup (yyjson_get_str (comment_obj));
     }
-  pi->owner_type =
-    (ZPortOwnerType) yyjson_get_int (yyjson_obj_iter_get (&it, "ownerType"));
+  pi->owner_type = (PortIdentifier::OwnerType) yyjson_get_int (
+    yyjson_obj_iter_get (&it, "ownerType"));
   pi->type = (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
   pi->flow = (ZPortFlow) yyjson_get_int (yyjson_obj_iter_get (&it, "flow"));
-  pi->unit = (ZPortUnit) yyjson_get_int (yyjson_obj_iter_get (&it, "unit"));
-  pi->flags = (ZPortFlags) yyjson_get_int (yyjson_obj_iter_get (&it, "flags"));
-  pi->flags2 =
-    (ZPortFlags2) yyjson_get_int (yyjson_obj_iter_get (&it, "flags2"));
+  pi->unit = (PortUnit) yyjson_get_int (yyjson_obj_iter_get (&it, "unit"));
+  pi->flags =
+    (PortIdentifier::Flags) yyjson_get_int (yyjson_obj_iter_get (&it, "flags"));
+  pi->flags2 = (PortIdentifier::Flags2) yyjson_get_int (
+    yyjson_obj_iter_get (&it, "flags2"));
   pi->track_name_hash =
     yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
   yyjson_val * plugin_id_obj = yyjson_obj_iter_get (&it, "pluginId");

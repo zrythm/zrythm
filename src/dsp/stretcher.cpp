@@ -33,7 +33,7 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Create a new Stretcher using the rubberband backend.

@@ -55,14 +55,14 @@ _create_new (const Position * pos)
 }
 
 /**
- * Sets the ZRegion and the index in the
+ * Sets the Region and the index in the
  * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
 automation_point_set_region_and_index (
   AutomationPoint * ap,
-  ZRegion *         region,
+  Region *          region,
   int               index)
 {
   g_return_if_fail (ap && region);
@@ -122,7 +122,7 @@ automation_point_new_float (
 bool
 automation_point_curves_up (AutomationPoint * self)
 {
-  ZRegion * region = arranger_object_get_region ((ArrangerObject *) self);
+  Region * region = arranger_object_get_region ((ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (region, self, true, true);
 
@@ -184,7 +184,7 @@ automation_point_set_fvalue (
       math_assert_nonnann (self->normalized_val);
     }
 
-  ZRegion * region = arranger_object_get_region ((ArrangerObject *) self);
+  Region * region = arranger_object_get_region ((ArrangerObject *) self);
   g_return_if_fail (region);
 
   /* don't set value - wait for engine to process
@@ -251,7 +251,7 @@ automation_point_set_fvalue_with_action (
 double
 automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
-  ZRegion *         region,
+  Region *          region,
   double            x)
 {
   g_return_val_if_fail (self && x >= 0.0 && x <= 1.0, 0.0);
@@ -313,7 +313,7 @@ AutomationTrack *
 automation_point_get_automation_track (const AutomationPoint * const self)
 {
   g_return_val_if_fail (self, NULL);
-  const ZRegion * const region =
+  const Region * const region =
     arranger_object_get_region ((const ArrangerObject *) (self));
   g_return_val_if_fail (region, NULL);
   return region_get_automation_track (region);

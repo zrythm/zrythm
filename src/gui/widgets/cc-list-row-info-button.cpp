@@ -42,7 +42,7 @@
 #include "gui/widgets/cc-list-row-info-button.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 struct _CcListRowInfoButton
 {

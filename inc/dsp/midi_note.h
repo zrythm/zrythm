@@ -41,7 +41,7 @@ enum class PianoRollNoteNotation;
   arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
- * A MIDI note inside a ZRegion shown in the piano roll.
+ * A MIDI note inside a Region shown in the piano roll.
  *
  * @extends ArrangerObject
  */
@@ -103,7 +103,7 @@ midi_note_new (
  * Sets the region the MidiNote belongs to.
  */
 void
-midi_note_set_region_and_index (MidiNote * self, ZRegion * region, int idx);
+midi_note_set_region_and_index (MidiNote * self, Region * region, int idx);
 
 void
 midi_note_set_cache_val (MidiNote * self, const uint8_t val);
@@ -178,7 +178,7 @@ midi_note_notes_to_events (
 void
 midi_note_set_val (MidiNote * midi_note, const uint8_t val);
 
-ZRegion *
+Region *
 midi_note_get_region (MidiNote * self);
 
 /**

@@ -304,7 +304,7 @@ tracklist_insert_track (
       for (size_t i = 0; i < ports->len; i++)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
-          port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK;
+          port->id.flags2 |= PortIdentifier::Flags2::SAMPLE_PROCESSOR_TRACK;
         }
       object_free_w_func_and_null (g_ptr_array_unref, ports);
     }
@@ -913,7 +913,7 @@ tracklist_move_track (
     {
       /* clear the editor region if it exists and
        * belongs to this track */
-      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = clip_editor_get_region (CLIP_EDITOR);
       if (
         region && arranger_object_get_track ((ArrangerObject *) region) == track)
         {
@@ -1183,7 +1183,7 @@ tracklist_import_regions (
         {
           int iter = i++;
           g_debug ("REGION %d", iter);
-          ZRegion * r = (ZRegion *) g_ptr_array_steal_index (regions, 0);
+          Region *  r = (Region *) g_ptr_array_steal_index (regions, 0);
           TrackType track_type = ENUM_INT_TO_VALUE (TrackType, 0);
           bool      gen_name = true;
           if (r->id.type == RegionType::REGION_TYPE_AUDIO)

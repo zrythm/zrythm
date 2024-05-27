@@ -39,8 +39,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <time.h>
 
 G_DEFINE_TYPE (FolderChannelWidget, folder_channel_widget, GTK_TYPE_WIDGET)
@@ -344,7 +344,7 @@ on_btn_release (
   if (self->n_press == 1)
     {
       PROJECT->last_selection =
-        ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;

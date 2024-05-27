@@ -13,7 +13,7 @@
 #include "dsp/track.h"
 #include "gui/widgets/two_col_expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _KnobWithNameWidget           KnobWithNameWidget;
 typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;

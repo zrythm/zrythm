@@ -49,7 +49,7 @@
  *   loading from file.
  * @param bit_depth Bit depth, if using \ref frames.
  */
-ZRegion *
+Region *
 audio_region_new (
   const int              pool_id,
   const char *           filename,
@@ -65,7 +65,7 @@ audio_region_new (
   int                    idx_inside_lane,
   GError **              error)
 {
-  ZRegion * self = object_new (ZRegion);
+  Region * self = object_new (Region);
   /*ArrangerObject * obj =*/
   /*(ArrangerObject *) self;*/
 
@@ -154,7 +154,7 @@ audio_region_new (
  * Region.
  */
 AudioClip *
-audio_region_get_clip (const ZRegion * self)
+audio_region_get_clip (const Region * self)
 {
   g_return_val_if_fail (
     (!self->read_from_pool && self->clip)
@@ -183,7 +183,7 @@ audio_region_get_clip (const ZRegion * self)
  * references.
  */
 void
-audio_region_set_clip_id (ZRegion * self, int clip_id)
+audio_region_set_clip_id (Region * self, int clip_id)
 {
   self->pool_id = clip_id;
 
@@ -202,7 +202,7 @@ audio_region_set_clip_id (ZRegion * self, int clip_id)
  */
 bool
 audio_region_replace_frames (
-  ZRegion *        self,
+  Region *         self,
   float *          frames,
   unsigned_frame_t start_frame,
   unsigned_frame_t num_frames,
@@ -258,7 +258,7 @@ audio_region_replace_frames (
 static void
 timestretch_buf (
   Track *          self,
-  ZRegion *        r,
+  Region *         r,
   AudioClip *      clip,
   unsigned_frame_t in_frame_offset,
   double           timestretch_ratio,
@@ -306,7 +306,7 @@ timestretch_buf (
  */
 void
 audio_region_fill_stereo_ports (
-  ZRegion *                           self,
+  Region *                            self,
   const EngineProcessTimeInfo * const time_nfo,
   StereoPorts *                       stereo_ports)
 {
@@ -581,7 +581,7 @@ audio_region_fill_stereo_ports (
 }
 
 float
-audio_region_detect_bpm (ZRegion * self, GArray * candidates)
+audio_region_detect_bpm (Region * self, GArray * candidates)
 {
   AudioClip * clip = audio_region_get_clip (self);
   g_return_val_if_fail (clip, 0.f);
@@ -592,7 +592,7 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates)
 }
 
 bool
-audio_region_validate (ZRegion * self, double frames_per_tick)
+audio_region_validate (Region * self, double frames_per_tick)
 {
   if (PROJECT->loaded && !AUDIO_ENGINE->updating_frames_per_tick)
     {
@@ -627,7 +627,7 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
 }
 
 bool
-audio_region_fix_positions (ZRegion * self, double frames_per_tick)
+audio_region_fix_positions (Region * self, double frames_per_tick)
 {
   AudioClip * clip = audio_region_get_clip (self);
   g_return_val_if_fail (clip, false);
@@ -691,7 +691,7 @@ audio_region_fix_positions (ZRegion * self, double frames_per_tick)
  * Regions should be free'd using region_free.
  */
 void
-audio_region_free_members (ZRegion * self)
+audio_region_free_members (Region * self)
 {
   object_free_w_func_and_null (audio_clip_free, self->clip);
 }

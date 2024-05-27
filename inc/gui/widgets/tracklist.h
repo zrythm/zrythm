@@ -6,7 +6,7 @@
 #ifndef __GUI_WIDGETS_TRACKLIST_H__
 #define __GUI_WIDGETS_TRACKLIST_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define USE_WIDE_HANDLE 1
 

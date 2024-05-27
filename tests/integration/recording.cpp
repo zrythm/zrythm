@@ -47,7 +47,7 @@ prepare (void)
   /* create dummy input for audio recording */
   AUDIO_ENGINE->dummy_input = stereo_ports_new_generic (
     true, "Dummy input", "dummy_input",
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->l);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
 
@@ -112,7 +112,7 @@ do_takes_no_loop_no_punch (
 
   g_message ("process 1 ended");
 
-  ZRegion *mr, *audio_r, *latch_r, *touch_r, *on_r;
+  Region *mr, *audio_r, *latch_r, *touch_r, *on_r;
   (void) on_r;
   (void) touch_r;
   ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj, *touch_r_obj, *on_r_obj;
@@ -349,7 +349,7 @@ do_takes_loop_no_punch (
   g_message ("--- processing recording events...");
   recording_manager_process_events (RECORDING_MANAGER);
 
-  ZRegion *mr, *audio_r, *latch_r, *touch_r, *on_r;
+  Region *mr, *audio_r, *latch_r, *touch_r, *on_r;
   (void) on_r;
   (void) touch_r;
   ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj, *touch_r_obj, *on_r_obj;
@@ -697,7 +697,7 @@ test_automation_touch_recording (void)
   g_message ("--- processing recording events...");
   recording_manager_process_events (RECORDING_MANAGER);
 
-  ZRegion *        touch_r;
+  Region *         touch_r;
   ArrangerObject * touch_r_obj;
 
   /* assert that automation events are created */
@@ -797,7 +797,7 @@ test_mono_recording (void)
   SET_CACHES_AND_PROCESS;
   recording_manager_process_events (RECORDING_MANAGER);
 
-  ZRegion *        audio_r;
+  Region *         audio_r;
   ArrangerObject * audio_r_obj;
 
   /* assert that audio events are created */
@@ -882,7 +882,7 @@ test_long_audio_recording (void)
 
   unsigned_frame_t total_loops = total_samples_to_process / CYCLE_SIZE;
 
-  ZRegion *        audio_r;
+  Region *         audio_r;
   ArrangerObject * audio_r_obj;
 
   /* run the engine for a few cycles */
@@ -1023,7 +1023,7 @@ test_2nd_audio_recording (void)
 
   unsigned_frame_t total_loops = total_samples_to_process / CYCLE_SIZE;
 
-  ZRegion *        audio_r;
+  Region *         audio_r;
   ArrangerObject * audio_r_obj;
 
   /* run the engine for a few cycles */

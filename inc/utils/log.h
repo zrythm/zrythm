@@ -4,7 +4,7 @@
 #ifndef __UTILS_LOG_H__
 #define __UTILS_LOG_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _LogViewerWidget LogViewerWidget;
 typedef struct MPMCQueue        MPMCQueue;

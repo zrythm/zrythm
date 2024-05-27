@@ -33,7 +33,7 @@
 void
 midi_modifier_arranger_widget_set_start_vel (ArrangerWidget * self)
 {
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (region && region->id.type == RegionType::REGION_TYPE_MIDI);
 
   for (int i = 0; i < region->num_midi_notes; i++)
@@ -64,7 +64,7 @@ get_enclosed_velocities (
     self->start_x + offset_x,
     offset_x >= 0 ? &selection_end_pos : &selection_start_pos, F_PADDING);
 
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
     region && region->id.type == RegionType::REGION_TYPE_MIDI, NULL);
 
@@ -118,7 +118,7 @@ midi_modifier_arranger_widget_select_vels_in_range (
 /*ArrangerObject ** objs,*/
 /*int *             num_objs)*/
 /*{*/
-/*ZRegion * r = clip_editor_get_region (CLIP_EDITOR);*/
+/*Region * r = clip_editor_get_region (CLIP_EDITOR);*/
 /*if (!r)*/
 /*break;*/
 

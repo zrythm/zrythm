@@ -18,7 +18,7 @@
 #include "utils/yaml.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Sets whether a range selection exists and sends
@@ -36,10 +36,10 @@ audio_selections_set_has_range (AudioSelections * self, bool has_range)
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 bool
-audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, ZRegion * r)
+audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, Region * r)
 {
   if (!r || r->id.type != RegionType::REGION_TYPE_AUDIO)
     return false;

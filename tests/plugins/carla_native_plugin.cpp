@@ -56,7 +56,7 @@ test_vst_instrument_makes_sound (void)
       Position pos, end_pos;
       position_init (&pos);
       position_set_to_bar (&end_pos, 3);
-      ZRegion * r =
+      Region * r =
         midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
       bool success = track_add_region (
         track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);

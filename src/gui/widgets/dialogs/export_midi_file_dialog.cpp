@@ -168,9 +168,9 @@ export_midi_file_dialog_widget_run (
   gtk_file_filter_add_suffix (filter, "midi");
   gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (fc_native), filter);
 
-  ZRegion * r = sel->regions[0];
-  char *    tmp = g_strdup_printf ("%s.mid", r->name);
-  char *    file = string_convert_to_filename (tmp);
+  Region * r = sel->regions[0];
+  char *   tmp = g_strdup_printf ("%s.mid", r->name);
+  char *   file = string_convert_to_filename (tmp);
   g_free (tmp);
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (fc_native), file);
   g_free (file);

@@ -112,7 +112,9 @@ on_selection_changed (
               conn = port_connections_manager_get_source_or_dest (
                 PORT_CONNECTIONS_MGR, &send->midi_out->id, false);
             }
-          if (is_empty || (conn && !port_identifier_is_equal (conn->dest_id, &dest_track->processor->midi_in->id)))
+          if (
+            is_empty
+            || (conn && !conn->dest_id->is_equal (dest_track->processor->midi_in->id)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_midi (
@@ -132,7 +134,7 @@ on_selection_changed (
               conn = port_connections_manager_get_source_or_dest (
                 PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
             }
-          if (is_empty || (conn && !port_identifier_is_equal (conn->dest_id, &dest_track->processor->stereo_in->l->id)))
+          if (is_empty || (conn && !conn->dest_id->is_equal(dest_track->processor->stereo_in->l->id)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_audio (
@@ -158,7 +160,7 @@ on_selection_changed (
             conn = port_connections_manager_get_source_or_dest (
               PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
           }
-        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !port_identifier_is_equal (conn->dest_id, &dest_sidechain->l->id))))
+        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !conn->dest_id->is_equal(dest_sidechain->l->id))))
           {
             GError * err = NULL;
             bool     ret = channel_send_action_perform_connect_sidechain (
@@ -263,11 +265,13 @@ setup_view (ChannelSendSelectorWidget * self)
 
               if (
                 !(ENUM_BITSET_TEST (
-                  ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_SIDECHAIN))
+                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags::SIDECHAIN))
                 || port->id.type != ZPortType::Z_PORT_TYPE_AUDIO
                 || !port->id.port_group
                 || !(ENUM_BITSET_TEST (
-                  ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L)))
+                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags::STEREO_L)))
                 {
                   continue;
                 }
@@ -284,10 +288,11 @@ setup_view (ChannelSendSelectorWidget * self)
               Port *l = NULL, *r = NULL;
               if (
                 ENUM_BITSET_TEST (
-                  ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_STEREO_L)
+                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags::STEREO_L)
                 && ENUM_BITSET_TEST (
-                  ZPortFlags, other_channel->id.flags,
-                  ZPortFlags::Z_PORT_FLAG_STEREO_R))
+                  PortIdentifier::Flags, other_channel->id.flags,
+                  PortIdentifier::Flags::STEREO_R))
                 {
                   l = port;
                   r = other_channel;

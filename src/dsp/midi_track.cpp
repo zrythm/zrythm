@@ -25,7 +25,7 @@
 #include "utils/math.h"
 #include "utils/stoat.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Initializes an midi track.

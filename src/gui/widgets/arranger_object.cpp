@@ -129,7 +129,7 @@ arranger_object_is_fade (
   Track *      track = arranger_object_get_track (self);
   if (check_lane && track->lanes_visible)
     {
-      ZRegion * r = (ZRegion *) self;
+      Region * r = (Region *) self;
       region_get_lane_full_rect (r, &full_rect);
       y -= full_rect.y - self->full_rect.y;
     }
@@ -229,7 +229,7 @@ arranger_object_is_resize_loop (
 
   if (self->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
     {
-      ZRegion * r = (ZRegion *) self;
+      Region * r = (Region *) self;
       if (r->id.type == RegionType::REGION_TYPE_AUDIO && !ctrl_pressed)
         {
           return 1;
@@ -328,7 +328,7 @@ get_automation_point_y (AutomationPoint * ap, ArrangerWidget * arranger)
 int
 arranger_object_get_full_rect_x_for_region_child (
   ArrangerObject * self,
-  ZRegion *        region,
+  Region *         region,
   GdkRectangle *   full_rect)
 {
   g_return_val_if_fail (region, 0);
@@ -374,7 +374,7 @@ arranger_object_set_full_rectangle (
         ChordObject *     co = (ChordObject *) self;
         ChordDescriptor * descr = chord_object_get_chord_descriptor (co);
 
-        ZRegion *        region = arranger_object_get_region (self);
+        Region *         region = arranger_object_get_region (self);
         ArrangerObject * region_obj = (ArrangerObject *) region;
 
         double   region_start_ticks = region_obj->pos.ticks;
@@ -407,7 +407,7 @@ arranger_object_set_full_rectangle (
     case TYPE (AUTOMATION_POINT):
       {
         AutomationPoint * ap = (AutomationPoint *) self;
-        ZRegion *         region = arranger_object_get_region (self);
+        Region *          region = arranger_object_get_region (self);
         ArrangerObject *  region_obj = (ArrangerObject *) region;
 
         /* use absolute position */
@@ -464,8 +464,8 @@ arranger_object_set_full_rectangle (
       break;
     case TYPE (REGION):
       {
-        ZRegion * region = (ZRegion *) self;
-        Track *   track = arranger_object_get_track (self);
+        Region * region = (Region *) self;
+        Track *  track = arranger_object_get_track (self);
 
 #if 0
         if (!track->widget)
@@ -539,7 +539,7 @@ arranger_object_set_full_rectangle (
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
-        ZRegion *  region = arranger_object_get_region (self);
+        Region *   region = arranger_object_get_region (self);
         g_return_if_fail (region);
         ArrangerObject * region_obj = (ArrangerObject *) region;
         Track *          track = arranger_object_get_track (self);
@@ -647,7 +647,7 @@ arranger_object_set_full_rectangle (
         MidiNote * mn = velocity_get_midi_note (vel);
         g_return_if_fail (mn);
         ArrangerObject * mn_obj = (ArrangerObject *) mn;
-        ZRegion *        region = arranger_object_get_region (mn_obj);
+        Region *         region = arranger_object_get_region (mn_obj);
         g_return_if_fail (region);
         ArrangerObject * region_obj = (ArrangerObject *) region;
 
@@ -780,7 +780,7 @@ arranger_object_draw (
         (AutomationPoint *) self, snapshot, rect, arranger->ap_layout);
       break;
     case TYPE (REGION):
-      region_draw ((ZRegion *) self, snapshot, rect);
+      region_draw ((Region *) self, snapshot, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw ((MidiNote *) self, snapshot);

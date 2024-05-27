@@ -6,9 +6,9 @@
 #ifndef __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
-typedef struct ZRegion ZRegion;
+typedef struct Region Region;
 
 /**
  * Runs the dialog asynchronously.

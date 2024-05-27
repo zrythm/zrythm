@@ -142,7 +142,7 @@ string_is_equal_ignore_case (const char * str1, const char * str2);
  * Returns a newly allocated string that is a
  * filename version of the given string.
  *
- * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
+ * Example: "MIDI Region #1" -> "MIDI_Region_1".
  */
 NONNULL char *
 string_convert_to_filename (const char * str);

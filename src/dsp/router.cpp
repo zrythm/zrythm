@@ -116,21 +116,23 @@ router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo)
     {
       ControlPortChange change = {};
       zix_ring_read (self->ctrl_port_change_queue, &change, sizeof (change));
-      if (
-        ENUM_BITSET_TEST (ZPortFlags, change.flag1, ZPortFlags::Z_PORT_FLAG_BPM))
+      if (ENUM_BITSET_TEST (
+            PortIdentifier::Flags, change.flag1, PortIdentifier::Flags::BPM))
         {
           tempo_track_set_bpm (
             P_TEMPO_TRACK, change.real_val, 0.f, true, F_PUBLISH_EVENTS);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, change.flag2, ZPortFlags2::Z_PORT_FLAG2_BEATS_PER_BAR))
+          PortIdentifier::Flags2, change.flag2,
+          PortIdentifier::Flags2::BEATS_PER_BAR))
         {
           tempo_track_set_beats_per_bar (P_TEMPO_TRACK, change.ival);
         }
       else if (
         ENUM_BITSET_TEST (
-          ZPortFlags2, change.flag2, ZPortFlags2::Z_PORT_FLAG2_BEAT_UNIT))
+          PortIdentifier::Flags2, change.flag2,
+          PortIdentifier::Flags2::BEAT_UNIT))
         {
           tempo_track_set_beat_unit_from_enum (P_TEMPO_TRACK, change.beat_unit);
         }

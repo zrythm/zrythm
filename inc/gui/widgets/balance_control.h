@@ -11,7 +11,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define BALANCE_CONTROL_WIDGET_TYPE (balance_control_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

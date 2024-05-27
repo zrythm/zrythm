@@ -10,7 +10,7 @@
 #ifndef __ACTIONS_ACTIONS_H__
 #define __ACTIONS_ACTIONS_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define DECLARE_SIMPLE(x) \
   void x (GSimpleAction * action, GVariant * variant, gpointer user_data)

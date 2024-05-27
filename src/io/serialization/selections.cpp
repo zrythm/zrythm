@@ -77,7 +77,7 @@ timeline_selections_serialize_to_json (
         yyjson_mut_obj_add_arr (doc, sel_obj, "regions");
       for (int i = 0; i < sel->num_regions; i++)
         {
-          ZRegion *        r = sel->regions[i];
+          Region *         r = sel->regions[i];
           yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, regions_arr);
           region_serialize_to_json (doc, r_obj, r, error);
         }
@@ -286,12 +286,12 @@ timeline_selections_deserialize_from_json (
   sel->regions_size = yyjson_arr_size (regions_arr);
   if (sel->regions_size > 0)
     {
-      sel->regions = object_new_n (sel->regions_size, ZRegion *);
+      sel->regions = object_new_n (sel->regions_size, Region *);
       yyjson_arr_iter region_it = yyjson_arr_iter_with (regions_arr);
       yyjson_val *    region_obj = NULL;
       while ((region_obj = yyjson_arr_iter_next (&region_it)))
         {
-          ZRegion * r = object_new (ZRegion);
+          Region * r = object_new (Region);
           sel->regions[sel->num_regions++] = r;
           region_deserialize_from_json (doc, region_obj, r, error);
         }

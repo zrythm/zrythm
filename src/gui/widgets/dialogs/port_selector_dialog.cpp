@@ -18,7 +18,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /* FIXME this should re-use the same logic from automatable selector popover */
 
@@ -276,7 +277,9 @@ add_plugin (
 
   /* skip if no plugin or the plugin is the
    * port's plugin */
-  if (!pl || (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN && pl == port_get_plugin (self->port, true)))
+  if (
+    !pl
+    || (id->owner_type == PortIdentifier::OwnerType::PLUGIN && pl == port_get_plugin (self->port, true)))
     {
       return;
     }
@@ -306,10 +309,10 @@ create_model_for_plugins (PortSelectorDialogWidget * self, Track * track)
        * a track port of the same track */
       Track * port_track = port_get_track (port, 0);
       if (
-        !((id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK
+        !((id->owner_type == PortIdentifier::OwnerType::TRACK
            && port_track == track)
-          || (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER && port_track == track)
-          || (id->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR && port_track == track)))
+          || (id->owner_type == PortIdentifier::OwnerType::FADER && port_track == track)
+          || (id->owner_type == PortIdentifier::OwnerType::TRACK_PROCESSOR && port_track == track)))
         {
           // Add a new row to the model
           gtk_list_store_append (list_store, &iter);

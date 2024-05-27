@@ -10,7 +10,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT (Track);
 

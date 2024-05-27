@@ -14,7 +14,7 @@
 
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define RW_RULER_MARKER_SIZE 8
 #define RW_CUE_MARKER_HEIGHT 12

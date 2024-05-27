@@ -61,7 +61,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
 
@@ -957,7 +958,7 @@ click_pressed (
   else
     {
       PROJECT->last_selection =
-        ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
       EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
 

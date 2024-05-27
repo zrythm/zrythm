@@ -127,9 +127,8 @@ static Port *
 create_port_for_ext_port (ExtPort * ext_port, ZPortType type, ZPortFlow flow)
 {
   Port * port = port_new_with_type_and_owner (
-    type, flow, ext_port->full_name, ZPortOwnerType::Z_PORT_OWNER_TYPE_HW,
-    ext_port);
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_HW;
+    type, flow, ext_port->full_name, PortIdentifier::OwnerType::HW, ext_port);
+  port->id.flags |= PortIdentifier::Flags::HW;
   port->id.ext_port_id = ext_port_get_id (ext_port);
 
   return port;

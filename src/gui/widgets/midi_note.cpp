@@ -187,8 +187,8 @@ midi_note_get_adjusted_color (MidiNote * self, GdkRGBA * color)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger = arranger_object_get_arranger (obj);
-  ZRegion *        region = arranger_object_get_region (obj);
-  ZRegion *        ce_region = clip_editor_get_region (CLIP_EDITOR);
+  Region *         region = arranger_object_get_region (obj);
+  Region *         ce_region = clip_editor_get_region (CLIP_EDITOR);
   Position         global_start_pos;
   midi_note_get_global_start_pos (self, &global_start_pos);
   ChordObject * co =

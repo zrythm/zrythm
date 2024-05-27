@@ -198,14 +198,14 @@ typedef struct ArrangerSelectionsAction
   AudioSelections *        audio_sel_after;
 
   /* arranger objects that can be split */
-  ZRegion *  region_r1[800];
-  ZRegion *  region_r2[800];
+  Region *   region_r1[800];
+  Region *   region_r2[800];
   MidiNote * mn_r1[800];
   MidiNote * mn_r2[800];
 
   /** Used for automation autofill action. */
-  ZRegion * region_before;
-  ZRegion * region_after;
+  Region * region_before;
+  Region * region_after;
 
 } ArrangerSelectionsAction;
 
@@ -406,8 +406,8 @@ arranger_selections_action_new_edit_audio_function (
  */
 WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_automation_fill (
-  ZRegion * region_before,
-  ZRegion * region_after,
+  Region *  region_before,
+  Region *  region_after,
   bool      already_changed,
   GError ** error);
 
@@ -593,8 +593,8 @@ arranger_selections_action_perform_edit_audio_function (
 
 bool
 arranger_selections_action_perform_automation_fill (
-  ZRegion * region_before,
-  ZRegion * region_after,
+  Region *  region_before,
+  Region *  region_after,
   bool      already_changed,
   GError ** error);
 

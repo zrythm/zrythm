@@ -15,7 +15,7 @@
 
 typedef struct
 {
-  ZRegion * midi_region;
+  Region * midi_region;
 } RegionFixture;
 
 static void
@@ -38,7 +38,7 @@ test_region_is_hit_by_range (void)
   position_set_to_bar (&end_pos, 5);
   Position other_start_pos;
   position_set_to_bar (&other_start_pos, 3);
-  ZRegion * region = midi_region_new (&pos, &end_pos, 0, -1, -1);
+  Region * region = midi_region_new (&pos, &end_pos, 0, -1, -1);
   g_assert_true (
     region_is_hit_by_range (region, other_start_pos.frames, pos.frames, false));
 }
@@ -50,14 +50,14 @@ test_region_is_hit (void)
   RegionFixture * fixture = &_fixture;
   fixture_set_up (fixture);
 
-  ZRegion *        r = fixture->midi_region;
+  Region *         r = fixture->midi_region;
   ArrangerObject * r_obj = (ArrangerObject *) r;
 
   Position pos;
   int      ret;
 
   /*
-   * Position: ZRegion start
+   * Position: Region start
    *
    * Expected result:
    * Returns true either exclusive or inclusive.
@@ -70,7 +70,7 @@ test_region_is_hit (void)
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: ZRegion start - 1 frame
+   * Position: Region start - 1 frame
    *
    * Expected result:
    * Returns false either exclusive or inclusive.
@@ -84,7 +84,7 @@ test_region_is_hit (void)
   g_assert_cmpint (ret, ==, 0);
 
   /*
-   * Position: ZRegion end
+   * Position: Region end
    *
    * Expected result:
    * Returns true for inclusive, false for not.
@@ -97,7 +97,7 @@ test_region_is_hit (void)
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: ZRegion end - 1
+   * Position: Region end - 1
    *
    * Expected result:
    * Returns true for both.
@@ -111,7 +111,7 @@ test_region_is_hit (void)
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: ZRegion end + 1
+   * Position: Region end + 1
    *
    * Expected result:
    * Returns false for both.
@@ -135,7 +135,7 @@ test_new_region (void)
   Position start_pos, end_pos, tmp;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion *        region = midi_region_new (&start_pos, &end_pos, 0, 0, 0);
+  Region *         region = midi_region_new (&start_pos, &end_pos, 0, 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   g_assert_nonnull (region);
@@ -172,7 +172,7 @@ test_timeline_frames_to_local (void)
   Position pos, end_pos;
   position_init (&pos);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region =
+  Region * region =
     midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
   signed_frame_t localp = region_timeline_frames_to_local (region, 13000, true);
   g_assert_cmpint (localp, ==, 13000);

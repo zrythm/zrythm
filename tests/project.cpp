@@ -99,8 +99,7 @@ test_new_from_template (void)
   Position start, end;
   position_init (&start);
   position_set_to_bar (&end, 3);
-  ZRegion * r =
-    midi_region_new (&start, &end, track_get_name_hash (track), 0, 0);
+  Region * r = midi_region_new (&start, &end, track_get_name_hash (track), 0, 0);
   bool success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);

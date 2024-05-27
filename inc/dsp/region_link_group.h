@@ -12,7 +12,7 @@
 
 #include "dsp/region_identifier.h"
 
-typedef struct ZRegion ZRegion;
+typedef struct Region Region;
 
 /**
  * @addtogroup dsp
@@ -47,7 +47,7 @@ RegionLinkGroup *
 region_link_group_new (int idx);
 
 NONNULL void
-region_link_group_add_region (RegionLinkGroup * self, ZRegion * region);
+region_link_group_add_region (RegionLinkGroup * self, Region * region);
 
 /**
  * Remove the region from the link group.
@@ -59,12 +59,12 @@ region_link_group_add_region (RegionLinkGroup * self, ZRegion * region);
 NONNULL void
 region_link_group_remove_region (
   RegionLinkGroup * self,
-  ZRegion *         region,
+  Region *          region,
   bool              autoremove_last_region_and_group,
   bool              update_identifier);
 
 NONNULL bool
-region_link_group_contains_region (RegionLinkGroup * self, ZRegion * region);
+region_link_group_contains_region (RegionLinkGroup * self, Region * region);
 
 NONNULL void
 region_link_group_print (RegionLinkGroup * self);
@@ -76,7 +76,7 @@ region_link_group_print (RegionLinkGroup * self);
  *   happened.
  */
 NONNULL void
-region_link_group_update (RegionLinkGroup * self, ZRegion * region);
+region_link_group_update (RegionLinkGroup * self, Region * region);
 
 NONNULL bool
 region_link_group_validate (RegionLinkGroup * self);

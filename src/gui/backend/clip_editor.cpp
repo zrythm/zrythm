@@ -48,7 +48,7 @@ clip_editor_init_loaded (ClipEditor * self)
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (ClipEditor * self, ZRegion * region, bool fire_events)
+clip_editor_set_region (ClipEditor * self, Region * region, bool fire_events)
 {
   if (region)
     {
@@ -113,7 +113,7 @@ clip_editor_set_region (ClipEditor * self, ZRegion * region, bool fire_events)
     }
 }
 
-ZRegion *
+Region *
 clip_editor_get_region (ClipEditor * self)
 {
   if (router_is_processing_thread (ROUTER))
@@ -124,7 +124,7 @@ clip_editor_get_region (ClipEditor * self)
   if (!self->has_region)
     return NULL;
 
-  ZRegion * region = region_find (&self->region_id);
+  Region * region = region_find (&self->region_id);
   return region;
 }
 
@@ -139,7 +139,7 @@ clip_editor_get_track (ClipEditor * self)
   if (!self->has_region)
     return NULL;
 
-  ZRegion * region = clip_editor_get_region (self);
+  Region * region = clip_editor_get_region (self);
   g_return_val_if_fail (region, NULL);
 
   Track * track = arranger_object_get_track ((ArrangerObject *) region);
@@ -150,14 +150,14 @@ clip_editor_get_track (ClipEditor * self)
 
 #if 0
 /**
- * Returns the ZRegion that widgets are expected
+ * Returns the Region that widgets are expected
  * to use.
  */
-ZRegion *
+Region *
 clip_editor_get_region_for_widgets (
   ClipEditor * self)
 {
-  ZRegion * region =
+  Region * region =
     region_find (&self->region_id_cache);
   return region;
 }
@@ -166,7 +166,7 @@ clip_editor_get_region_for_widgets (
 ArrangerSelections *
 clip_editor_get_arranger_selections (ClipEditor * self)
 {
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     {
       return NULL;

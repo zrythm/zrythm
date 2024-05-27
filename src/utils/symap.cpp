@@ -28,7 +28,7 @@
 #include "utils/objects.h"
 #include "utils/symap.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
   @file symap.c Implementation of Symap, a basic symbol map (string interner).

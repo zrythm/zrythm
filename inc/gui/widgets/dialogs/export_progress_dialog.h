@@ -14,7 +14,7 @@
 
 #include "gui/widgets/dialogs/generic_progress_dialog.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define EXPORT_PROGRESS_DIALOG_WIDGET_TYPE \
   (export_progress_dialog_widget_get_type ())

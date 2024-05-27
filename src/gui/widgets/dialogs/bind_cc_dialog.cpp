@@ -12,7 +12,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (BindCcDialogWidget, bind_cc_dialog_widget, GTK_TYPE_DIALOG)
 
@@ -58,7 +59,8 @@ tick_cb (
       bool port_is_toggle =
         self->port
         && ENUM_BITSET_TEST (
-          ZPortFlags, self->port->id.flags, ZPortFlags::Z_PORT_FLAG_TOGGLE);
+          PortIdentifier::Flags, self->port->id.flags,
+          PortIdentifier::Flags::TOGGLE);
 
       gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), true);
 

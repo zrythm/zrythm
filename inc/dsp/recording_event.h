@@ -77,7 +77,7 @@ typedef struct RecordingEvent
   /** The name of the track this event is for. */
   unsigned int track_name_hash;
 
-  /** ZRegion name, if applicable. */
+  /** Region name, if applicable. */
   char region_name[200];
 
   /** Global start frames of the event (including offset). */

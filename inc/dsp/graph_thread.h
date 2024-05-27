@@ -37,8 +37,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <pthread.h>
 
 #ifdef HAVE_LSP_DSP

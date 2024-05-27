@@ -12,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define KNOB_WIDGET_TYPE (knob_widget_get_type ())
 G_DECLARE_FINAL_TYPE (KnobWidget, knob_widget, Z, KNOB_WIDGET, GtkWidget)

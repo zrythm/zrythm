@@ -4,7 +4,7 @@
 #ifndef __UTILS_DIALOGS_H__
 #define __UTILS_DIALOGS_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Creates and returns the overwrite plugin dialog.

@@ -12,7 +12,7 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_EDITOR_SPACE_H__
 #define __GUI_WIDGETS_AUTOMATION_EDITOR_SPACE_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define AUTOMATION_EDITOR_SPACE_WIDGET_TYPE \
   (automation_editor_space_widget_get_type ())

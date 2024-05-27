@@ -10,8 +10,7 @@
 #ifndef __GUI_WIDGETS_CENTER_DOCK_H__
 #define __GUI_WIDGETS_CENTER_DOCK_H__
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include "libpanel_wrapper.h"
 
 #define CENTER_DOCK_WIDGET_TYPE (center_dock_widget_get_type ())

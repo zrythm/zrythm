@@ -37,7 +37,7 @@ test_change_bpm_and_time_sig (void)
   supported_file_free (file_descr);
 
   /* loop the region */
-  ZRegion *        r = audio_track->lanes[0]->regions[0];
+  Region *         r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = arranger_object_resize (
     r_obj, false, ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_LOOP, 40000,
@@ -53,7 +53,7 @@ test_change_bpm_and_time_sig (void)
   /* change time sig to 4/16 */
   {
     ControlPortChange change = {};
-    change.flag2 = ZPortFlags2::Z_PORT_FLAG2_BEAT_UNIT;
+    change.flag2 = PortIdentifier::Flags2::BEAT_UNIT;
     change.beat_unit = ZBeatUnit::Z_BEAT_UNIT_16;
     router_queue_control_port_change (ROUTER, &change);
   }
@@ -95,7 +95,7 @@ test_change_bpm_and_time_sig (void)
   bpm_t bpm_before = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   {
     ControlPortChange change = {};
-    change.flag1 = ZPortFlags::Z_PORT_FLAG_BPM;
+    change.flag1 = PortIdentifier::Flags::BPM;
     change.real_val = 145.f;
     router_queue_control_port_change (ROUTER, &change);
   }
@@ -135,7 +135,7 @@ test_change_bpm_and_time_sig (void)
   bpm_before = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   {
     ControlPortChange change = {};
-    change.flag1 = ZPortFlags::Z_PORT_FLAG_BPM;
+    change.flag1 = PortIdentifier::Flags::BPM;
     change.real_val = 130.f;
     router_queue_control_port_change (ROUTER, &change);
   }
@@ -191,7 +191,7 @@ test_change_bpm_twice_during_playback (void)
   supported_file_free (file_descr);
 
   /* loop the region */
-  ZRegion *        r = audio_track->lanes[0]->regions[0];
+  Region *         r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = arranger_object_resize (
     r_obj, false, ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_LOOP, 40000,

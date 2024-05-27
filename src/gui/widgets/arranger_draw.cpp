@@ -479,7 +479,7 @@ draw_velocity_bg (
 static void
 draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 {
-  ZRegion * ar = clip_editor_get_region (CLIP_EDITOR);
+  Region * ar = clip_editor_get_region (CLIP_EDITOR);
   if (!ar)
     {
       g_message ("audio region not found, skipping draw");

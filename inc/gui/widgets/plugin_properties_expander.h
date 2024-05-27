@@ -13,7 +13,7 @@
 #include "dsp/port.h"
 #include "gui/widgets/two_col_expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _EditableLabelWidget        EditableLabelWidget;
 typedef struct _PluginPresetSelectorWidget PluginPresetSelectorWidget;

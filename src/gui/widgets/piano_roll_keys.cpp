@@ -26,6 +26,7 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -318,7 +319,7 @@ send_note_event (PianoRollKeysWidget * self, int note, bool on)
 {
   g_debug ("sending note event %d, on: %d", note, on);
   g_return_if_fail (note >= 0 && note < 128);
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (on)
     {
       /* add note on event */
@@ -432,7 +433,7 @@ select_notes_in_pitch (int pitch, bool append)
       arranger_selections_clear (
         (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE, F_PUBLISH_EVENTS);
     }
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
 
   for (int i = 0; i < r->num_midi_notes; i++)

@@ -17,7 +17,7 @@
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define EDITOR_SELECTION_INFO_WIDGET_TYPE \
   (editor_selection_info_widget_get_type ())

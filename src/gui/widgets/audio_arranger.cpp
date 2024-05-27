@@ -62,7 +62,7 @@ audio_arranger_widget_is_cursor_in_fade (
   bool             fade_in,
   bool             resize)
 {
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
 
@@ -104,7 +104,7 @@ audio_arranger_widget_is_cursor_in_fade (
 }
 
 NONNULL static double
-get_region_gain_y (ArrangerWidget * self, ZRegion * region)
+get_region_gain_y (ArrangerWidget * self, Region * region)
 {
   int   height = gtk_widget_get_height (GTK_WIDGET (self));
   float gain_fader_val = math_get_fader_val_from_amp (region->gain);
@@ -117,7 +117,7 @@ get_region_gain_y (ArrangerWidget * self, ZRegion * region)
 bool
 audio_arranger_widget_is_cursor_gain (ArrangerWidget * self, double x, double y)
 {
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
 
@@ -139,7 +139,7 @@ audio_arranger_widget_get_action_on_drag_begin (ArrangerWidget * self)
 {
   self->action = UI_OVERLAY_ACTION_NONE;
   ArrangerCursor   cursor = arranger_widget_get_cursor (self);
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (IS_REGION_AND_NONNULL (r), UI_OVERLAY_ACTION_NONE);
 
@@ -181,7 +181,7 @@ audio_arranger_widget_fade_up (
   double           offset_y,
   bool             fade_in)
 {
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
@@ -202,7 +202,7 @@ audio_arranger_widget_fade_up (
 void
 audio_arranger_widget_update_gain (ArrangerWidget * self, double offset_y)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -239,7 +239,7 @@ audio_arranger_widget_snap_fade (
   bool             fade_in,
   bool             dry_run)
 {
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (IS_REGION_AND_NONNULL (r), -1);
 

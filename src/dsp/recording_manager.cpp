@@ -28,7 +28,8 @@
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #if 0
 static int received = 0;
@@ -51,7 +52,7 @@ static int returned = 0;
  * action when recording stops.
  */
 NONNULL static void
-add_recorded_id (RecordingManager * self, ZRegion * region)
+add_recorded_id (RecordingManager * self, Region * region)
 {
   /*region_identifier_print (&region->id);*/
   region_identifier_copy (
@@ -115,7 +116,7 @@ handle_stop_recording (RecordingManager * self, bool is_automation)
         }
 
       /*region_identifier_print (id);*/
-      ZRegion * region = region_find (id);
+      Region * region = region_find (id);
       g_return_if_fail (region);
       arranger_selections_add_object (
         (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) region);
@@ -140,7 +141,7 @@ handle_stop_recording (RecordingManager * self, bool is_automation)
    * pool */
   for (int i = 0; i < self->num_recorded_ids; i++)
     {
-      ZRegion * r = region_find (&self->recorded_ids[i]);
+      Region * r = region_find (&self->recorded_ids[i]);
       if (r->id.type == RegionType::REGION_TYPE_AUDIO)
         {
           AudioClip * clip = audio_region_get_clip (r);
@@ -515,7 +516,7 @@ static void
 delete_automation_points (
   RecordingManager * self,
   AutomationTrack *  at,
-  ZRegion *          region,
+  Region *           region,
   Position *         pos)
 {
   automation_region_get_aps_since_last_recorded (region, pos, self->pending_aps);
@@ -565,11 +566,12 @@ static AutomationPoint *
 create_automation_point (
   RecordingManager * self,
   AutomationTrack *  at,
-  ZRegion *          region,
+  Region *           region,
   float              val,
   float              normalized_val,
   Position *         pos)
 {
+  g_return_val_if_fail (region, NULL);
   automation_region_get_aps_since_last_recorded (region, pos, self->pending_aps);
   for (size_t i = 0; i < self->pending_aps->len; i++)
     {
@@ -631,7 +633,7 @@ handle_pause_event (RecordingManager * self, RecordingEvent * ev)
       tr->recording_paused = true;
 
       /* get the recording region */
-      ZRegion * region = tr->recording_region;
+      Region * region = tr->recording_region;
       g_return_if_fail (region);
 
       /* remember lane index */
@@ -731,7 +733,7 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
             tr->num_lanes > new_lane_pos
               ? tr->lanes[new_lane_pos]->num_regions
               : 0;
-          ZRegion * new_region = NULL;
+          Region * new_region = NULL;
           if (tr->type == TrackType::TRACK_TYPE_CHORD)
             {
               new_region =
@@ -800,7 +802,7 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
       float  normalized_value = port_get_control_value (port, true);
 
       /* get or start new region at resume pos */
-      ZRegion * new_region = automation_track_get_region_before_pos (
+      Region * new_region = automation_track_get_region_before_pos (
         at, &resume_pos, true, Z_F_NO_USE_SNAPSHOTS);
       if (
         !new_region
@@ -865,7 +867,7 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
   position_from_frames (&end_pos, (signed_frame_t) end_frames);
 
   /* get the recording region */
-  ZRegion * region = tr->recording_region;
+  Region * region = tr->recording_region;
   g_return_if_fail (region);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
@@ -969,7 +971,7 @@ handle_midi_event (RecordingManager * self, RecordingEvent * ev)
     (signed_frame_t) ev->g_start_frame_w_offset + (signed_frame_t) ev->nframes);
 
   /* get the recording region */
-  ZRegion *        region = tr->recording_region;
+  Region *         region = tr->recording_region;
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* set region end pos */
@@ -1109,7 +1111,7 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
   bool new_region_created = false;
 
   /* get the recording region */
-  ZRegion * region = automation_track_get_region_before_pos (
+  Region * region = automation_track_get_region_before_pos (
     at, &start_pos, true, Z_F_NO_USE_SNAPSHOTS);
 #if 0
   position_print (&start_pos);
@@ -1125,7 +1127,7 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
     }
 #endif
 
-  ZRegion * region_at_end = automation_track_get_region_before_pos (
+  Region * region_at_end = automation_track_get_region_before_pos (
     at, &end_pos, true, Z_F_NO_USE_SNAPSHOTS);
   if (!region && automation_value_changed)
     {
@@ -1286,8 +1288,8 @@ handle_start_recording (
       if (track_type_has_piano_roll (tr->type))
         {
           /* create region */
-          int       new_lane_pos = tr->num_lanes - 1;
-          ZRegion * region = midi_region_new (
+          int      new_lane_pos = tr->num_lanes - 1;
+          Region * region = midi_region_new (
             &start_pos, &end_pos, track_get_name_hash (tr), new_lane_pos,
             tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);
@@ -1305,7 +1307,7 @@ handle_start_recording (
         }
       else if (tr->type == TrackType::TRACK_TYPE_CHORD)
         {
-          ZRegion * region =
+          Region * region =
             chord_region_new (&start_pos, &end_pos, tr->num_chord_regions);
           g_return_if_fail (region);
           GError * err = NULL;
@@ -1326,7 +1328,7 @@ handle_start_recording (
           int    new_lane_pos = tr->num_lanes - 1;
           char * name = audio_pool_gen_name_for_recording_clip (
             AUDIO_POOL, tr, new_lane_pos);
-          ZRegion * region = audio_region_new (
+          Region * region = audio_region_new (
             -1, NULL, true, NULL, ev->nframes, name, 2, BitDepth::BIT_DEPTH_32,
             &start_pos, track_get_name_hash (tr), new_lane_pos,
             tr->lanes[new_lane_pos]->num_regions, NULL);

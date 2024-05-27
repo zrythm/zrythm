@@ -26,7 +26,7 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #include <limits.h>
 

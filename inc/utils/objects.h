@@ -117,6 +117,13 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
       _obj = NULL; \
     }
 
+#define object_delete_and_null(_obj) \
+  if (_obj) \
+    { \
+      delete _obj; \
+      _obj = nullptr; \
+    }
+
 #define object_zero_and_free_if_nonnull(ptr) \
   object_free_w_func_and_null (object_zero_and_free, ptr)
 

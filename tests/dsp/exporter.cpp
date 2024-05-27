@@ -131,7 +131,7 @@ bounce_region (bool with_bpm_automation)
       /* create bpm automation */
       AutomationTrack * at = automation_track_find_from_port (
         P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
-      ZRegion * r = automation_region_new (
+      Region * r = automation_region_new (
         &pos, &end_pos, track_get_name_hash (P_TEMPO_TRACK), at->index, 0);
       bool success = track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0, NULL);
       g_assert_true (success);
@@ -153,9 +153,9 @@ bounce_region (bool with_bpm_automation)
   /* create midi region */
   char * midi_file =
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
-  int       lane_pos = 0;
-  int       idx_in_lane = 0;
-  ZRegion * region = midi_region_new_from_midi_file (
+  int      lane_pos = 0;
+  int      idx_in_lane = 0;
+  Region * region = midi_region_new_from_midi_file (
     &pos, midi_file, track_get_name_hash (track), lane_pos, idx_in_lane, 0);
   bool success = track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -303,9 +303,9 @@ test_bounce_region_with_first_note (void)
   /* create midi region */
   char * midi_file =
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M1.MID", NULL);
-  int       lane_pos = 0;
-  int       idx_in_lane = 0;
-  ZRegion * region = midi_region_new_from_midi_file (
+  int      lane_pos = 0;
+  int      idx_in_lane = 0;
+  Region * region = midi_region_new_from_midi_file (
     &pos, midi_file, track_get_name_hash (track), lane_pos, idx_in_lane, 0);
   ArrangerObject * r_obj = (ArrangerObject *) region;
   bool             success = track_add_region (
@@ -487,7 +487,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   /* create a MIDI region on the instrument track */
   char * midi_file =
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
-  ZRegion * r = midi_region_new_from_midi_file (
+  Region * r = midi_region_new_from_midi_file (
     PLAYHEAD, midi_file, track_get_name_hash (ins_track), 0, 0, 0);
   g_free (midi_file);
   bool success = track_add_region (
@@ -637,7 +637,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   /* assert exported material starts at start
    * marker and ends at end marker */
   Track *          audio_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  ZRegion *        bounced_r = audio_track->lanes[0]->regions[0];
+  Region *         bounced_r = audio_track->lanes[0]->regions[0];
   ArrangerObject * bounce_r_obj = (ArrangerObject *) bounced_r;
   g_assert_cmppos (&start_marker_obj->pos, &bounce_r_obj->pos);
   g_assert_cmppos (&end_marker_obj->pos, &bounce_r_obj->end_pos);
@@ -671,8 +671,8 @@ test_bounce_with_note_at_start (void)
   Position start, end;
   position_init (&start);
   position_set_to_bar (&end, 4);
-  ZRegion * r = midi_region_new (&start, &end, ins_track->name_hash, 0, 0);
-  bool      success = track_add_region (
+  Region * r = midi_region_new (&start, &end, ins_track->name_hash, 0, 0);
+  bool     success = track_add_region (
     ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   position_init (&start);
@@ -731,7 +731,7 @@ test_chord_routed_to_instrument (void)
   Position start_pos, end_pos;
   position_init (&start_pos);
   position_set_to_bar (&end_pos, 3);
-  ZRegion * r =
+  Region * r =
     chord_region_new (&start_pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
   bool success = track_add_region (
     P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS, NULL);
@@ -912,8 +912,8 @@ test_mixdown_midi (void)
   Position start, end;
   position_init (&start);
   position_set_to_bar (&end, 4);
-  ZRegion * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
-  bool      success =
+  Region * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
+  bool     success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
 
@@ -1014,8 +1014,8 @@ test_export_midi_range (void)
   Position start, end;
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
-  ZRegion * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
-  bool      success =
+  Region * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
+  bool     success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
 

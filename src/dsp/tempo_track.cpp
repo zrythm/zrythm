@@ -20,7 +20,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Inits the tempo track.
@@ -37,32 +38,32 @@ tempo_track_init (Track * self)
   /* create bpm port */
   self->bpm_port = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, _ ("BPM"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, self);
+    PortIdentifier::OwnerType::TRACK, self);
   self->bpm_port->id.sym = g_strdup ("bpm");
   self->bpm_port->minf = 60.f;
   self->bpm_port->maxf = 360.f;
   self->bpm_port->deff = 140.f;
   port_set_control_value (self->bpm_port, self->bpm_port->deff, false, false);
-  self->bpm_port->id.flags |= ZPortFlags::Z_PORT_FLAG_BPM;
-  self->bpm_port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
+  self->bpm_port->id.flags |= PortIdentifier::Flags::BPM;
+  self->bpm_port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
 
   /* create time sig ports */
   self->beats_per_bar_port = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-    _ ("Beats per bar"), ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, self);
+    _ ("Beats per bar"), PortIdentifier::OwnerType::TRACK, self);
   self->beats_per_bar_port->id.sym = g_strdup ("beats_per_bar");
   self->beats_per_bar_port->minf = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   self->beats_per_bar_port->maxf = TEMPO_TRACK_MAX_BEATS_PER_BAR;
   self->beats_per_bar_port->deff = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   port_set_control_value (
     self->beats_per_bar_port, TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-  self->beats_per_bar_port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_BEATS_PER_BAR;
-  self->beats_per_bar_port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-  self->beats_per_bar_port->id.flags |= ZPortFlags::Z_PORT_FLAG_INTEGER;
+  self->beats_per_bar_port->id.flags2 |= PortIdentifier::Flags2::BEATS_PER_BAR;
+  self->beats_per_bar_port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+  self->beats_per_bar_port->id.flags |= PortIdentifier::Flags::INTEGER;
 
   self->beat_unit_port = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-    _ ("Beat unit"), ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK, self);
+    _ ("Beat unit"), PortIdentifier::OwnerType::TRACK, self);
   self->beat_unit_port->id.sym = g_strdup ("beat_unit");
   self->beat_unit_port->minf = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
   self->beat_unit_port->maxf = static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT);
@@ -70,9 +71,9 @@ tempo_track_init (Track * self)
   port_set_control_value (
     self->beat_unit_port, static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT),
     false, false);
-  self->beat_unit_port->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_BEAT_UNIT;
-  self->beat_unit_port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-  self->beat_unit_port->id.flags |= ZPortFlags::Z_PORT_FLAG_INTEGER;
+  self->beat_unit_port->id.flags2 |= PortIdentifier::Flags2::BEAT_UNIT;
+  self->beat_unit_port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+  self->beat_unit_port->id.flags |= PortIdentifier::Flags::INTEGER;
 
   /* set invisible */
   self->visible = false;

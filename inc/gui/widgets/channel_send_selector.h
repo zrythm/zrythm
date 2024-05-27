@@ -12,7 +12,7 @@
 #ifndef __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 #define __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CHANNEL_SEND_SELECTOR_WIDGET_TYPE \
   (channel_send_selector_widget_get_type ())

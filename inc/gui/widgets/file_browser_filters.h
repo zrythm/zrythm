@@ -15,7 +15,7 @@
 #include "dsp/supported_file.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define FILE_BROWSER_FILTERS_WIDGET_TYPE \
   (file_browser_filters_widget_get_type ())

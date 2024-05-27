@@ -12,14 +12,7 @@
 
 #include "zrythm-config.h"
 
-#include <gtk/gtk.h>
-#ifdef HAVE_X11
-#  include <gdk/x11/gdkx.h>
-#endif
-
-#ifdef _WIN32
-#  include <gdk/win32/gdkwin32.h>
-#endif
+#include "gtk_wrapper.h"
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtksourceview/gtksource.h>

@@ -56,9 +56,9 @@ on_drag_begin_w_object ()
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
-DEFINE_DRAG_END_POS_SET (REGION, ZRegion, region, CLIP_START_POS, clip_start_pos);
-DEFINE_DRAG_END_POS_SET (REGION, ZRegion, region, LOOP_START_POS, loop_start_pos);
-DEFINE_DRAG_END_POS_SET (REGION, ZRegion, region, LOOP_END_POS, loop_end_pos);
+DEFINE_DRAG_END_POS_SET (REGION, Region, region, CLIP_START_POS, clip_start_pos);
+DEFINE_DRAG_END_POS_SET (REGION, Region, region, LOOP_START_POS, loop_start_pos);
+DEFINE_DRAG_END_POS_SET (REGION, Region, region, LOOP_END_POS, loop_end_pos);
 
 #define DEFINE_DRAG_END_POS_RESIZE_L(cc, sc) \
   static void on_drag_end_##sc##_resize_l (cc * sc) \
@@ -80,7 +80,7 @@ DEFINE_DRAG_END_POS_SET (REGION, ZRegion, region, LOOP_END_POS, loop_end_pos);
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
-DEFINE_DRAG_END_POS_RESIZE_L (ZRegion, region);
+DEFINE_DRAG_END_POS_RESIZE_L (Region, region);
 
 #define DEFINE_DRAG_END_POS_RESIZE_R(cc, sc) \
   static void on_drag_end_##sc##_resize_r (cc * sc) \
@@ -102,7 +102,7 @@ DEFINE_DRAG_END_POS_RESIZE_L (ZRegion, region);
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
-DEFINE_DRAG_END_POS_RESIZE_R (ZRegion, region);
+DEFINE_DRAG_END_POS_RESIZE_R (Region, region);
 
 static void
 on_drag_begin ()
@@ -171,7 +171,7 @@ timeline_selection_info_widget_refresh (
       if (Z_IS_REGION_WIDGET (fo))
         {
           REGION_WIDGET_GET_PRIVATE (fo);
-          ZRegion * r = region_get_main_trans_region (rw_prv->region);
+          Region * r = region_get_main_trans_region (rw_prv->region);
 
           DigitalMeterWidget * dm;
           dm = digital_meter_widget_new_for_position (

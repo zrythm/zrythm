@@ -12,7 +12,8 @@
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   MidiFunctionDialogWidget,

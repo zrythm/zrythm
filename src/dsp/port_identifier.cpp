@@ -10,9 +10,10 @@
 #include "utils/hash.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/types.h"
 
 const char *
-port_unit_to_str (const ZPortUnit unit)
+port_unit_to_str (const PortUnit unit)
 {
   static const char * port_unit_strings[] = {
     "none", "Hz", "MHz", "dB", "°", "s", "ms", "μs",
@@ -21,11 +22,9 @@ port_unit_to_str (const ZPortUnit unit)
 }
 
 void
-port_identifier_init (PortIdentifier * self)
+PortIdentifier::init ()
 {
-  memset (self, 0, sizeof (PortIdentifier));
-  self->schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
-  plugin_identifier_init (&self->plugin_id);
+  plugin_identifier_init (&this->plugin_id);
 }
 
 /**
@@ -55,68 +54,61 @@ port_identifier_port_group_cmp (const void * p1, const void * p2)
 #endif
 }
 
-/**
- * Copy the identifier content from \ref src to
- * \ref dest.
- *
- * @note This frees/allocates memory on \ref dest.
- */
-void
-port_identifier_copy (PortIdentifier * dest, const PortIdentifier * src)
+PortIdentifier &
+PortIdentifier::operator= (const PortIdentifier &other)
 {
-  g_return_if_fail (dest != src);
-  dest->schema_version = src->schema_version;
-  string_copy_w_realloc (&dest->label, src->label);
-  string_copy_w_realloc (&dest->sym, src->sym);
-  string_copy_w_realloc (&dest->uri, src->uri);
-  string_copy_w_realloc (&dest->comment, src->comment);
-  dest->owner_type = src->owner_type;
-  dest->type = src->type;
-  dest->flow = src->flow;
-  dest->flags = src->flags;
-  dest->flags2 = src->flags2;
-  dest->unit = src->unit;
-  plugin_identifier_copy (&dest->plugin_id, &src->plugin_id);
-  string_copy_w_realloc (&dest->ext_port_id, src->ext_port_id);
-  string_copy_w_realloc (&dest->port_group, src->port_group);
-  dest->track_name_hash = src->track_name_hash;
-  dest->port_index = src->port_index;
+  schema_version = other.schema_version;
+  string_copy_w_realloc (&label, other.label);
+  string_copy_w_realloc (&sym, other.sym);
+  string_copy_w_realloc (&uri, other.uri);
+  string_copy_w_realloc (&comment, other.comment);
+  this->owner_type = other.owner_type;
+  this->type = other.type;
+  this->flow = other.flow;
+  this->flags = other.flags;
+  this->flags2 = other.flags2;
+  this->unit = other.unit;
+  plugin_identifier_copy (&this->plugin_id, &other.plugin_id);
+  string_copy_w_realloc (&this->ext_port_id, other.ext_port_id);
+  string_copy_w_realloc (&this->port_group, other.port_group);
+  this->track_name_hash = other.track_name_hash;
+  this->port_index = other.port_index;
+  return *this;
 }
 
 bool
-port_identifier_is_equal (const PortIdentifier * src, const PortIdentifier * dest)
+PortIdentifier::is_equal (const PortIdentifier &other) const
 {
   bool eq =
-    dest->owner_type == src->owner_type && dest->unit == src->unit
-    && dest->type == src->type && dest->flow == src->flow
-    && dest->flags == src->flags && dest->flags2 == src->flags2
-    && dest->track_name_hash == src->track_name_hash;
+    owner_type == other.owner_type && unit == other.unit && type == other.type
+    && flow == other.flow && flags == other.flags && flags2 == other.flags2
+    && track_name_hash == other.track_name_hash;
   if (!eq)
     return false;
 
-  if (dest->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+  if (owner_type == PortIdentifier::OwnerType::PLUGIN)
     {
-      eq = eq && plugin_identifier_is_equal (&dest->plugin_id, &src->plugin_id);
+      eq = eq && plugin_identifier_is_equal (&plugin_id, &other.plugin_id);
     }
 
   /* if LV2 (has symbol) check symbol match,
-   * otherwise check index match and label match */
-  if (dest->sym)
+   * other.wise check index match and label match */
+  if (sym)
     {
-      eq = eq && string_is_equal (dest->sym, src->sym);
+      eq = eq && string_is_equal (sym, other.sym);
     }
   else
     {
       eq =
-        eq && dest->port_index == src->port_index
-        && string_is_equal (dest->label, src->label);
+        eq && port_index == other.port_index
+        && string_is_equal (label, other.label);
     }
 
   /* do string comparisons at the end */
   eq =
-    eq && string_is_equal (dest->uri, src->uri)
-    && string_is_equal (dest->port_group, src->port_group)
-    && string_is_equal (dest->ext_port_id, src->ext_port_id);
+    eq && string_is_equal (uri, other.uri)
+    && string_is_equal (port_group, other.port_group)
+    && string_is_equal (ext_port_id, other.ext_port_id);
 
   return eq;
 }
@@ -127,22 +119,20 @@ port_identifier_is_equal (const PortIdentifier * src, const PortIdentifier * des
 int
 port_identifier_is_equal_func (const void * a, const void * b)
 {
-  bool is_equal = port_identifier_is_equal (
-    (const PortIdentifier *) a, (const PortIdentifier *) b);
+  auto p1 = static_cast<const PortIdentifier *> (a);
+  auto p2 = static_cast<const PortIdentifier *> (b);
+  bool is_equal = p1->is_equal (*p2);
   return is_equal;
 }
 
 void
-port_identifier_print_to_str (
-  const PortIdentifier * self,
-  char *                 buf,
-  size_t                 buf_sz)
+PortIdentifier::print_to_str (char * buf, size_t buf_sz) const
 {
   char pl_buf[800];
   strcpy (pl_buf, "{none}");
-  if (self->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+  if (owner_type == PortIdentifier::OwnerType::PLUGIN)
     {
-      plugin_identifier_print (&self->plugin_id, pl_buf);
+      plugin_identifier_print (&plugin_id, pl_buf);
     }
   snprintf (
     buf, buf_sz,
@@ -151,37 +141,36 @@ port_identifier_print_to_str (
     "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
-    self, port_identifier_get_hash (self), self->label, self->sym, self->uri,
-    self->comment, ENUM_NAME (self->owner_type), ENUM_NAME (self->type),
-    ENUM_NAME (self->flow), ENUM_BITSET_TO_STRING (ZPortFlags, self->flags),
-    ENUM_BITSET_TO_STRING (ZPortFlags2, self->flags2), ENUM_NAME (self->unit),
-    self->port_group, self->ext_port_id, self->track_name_hash,
-    self->port_index, pl_buf);
+    this, get_hash (), label, sym, uri, comment, ENUM_NAME (owner_type),
+    ENUM_NAME (type), ENUM_NAME (flow),
+    ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags),
+    ENUM_BITSET_TO_STRING (PortIdentifier::Flags2, flags2), ENUM_NAME (unit),
+    port_group, ext_port_id, track_name_hash, port_index, pl_buf);
 }
 
 void
-port_identifier_print (const PortIdentifier * self)
+PortIdentifier::print () const
 {
   size_t size = 2000;
   char   buf[size];
-  port_identifier_print_to_str (self, buf, size);
+  print_to_str (buf, size);
   g_message ("%s", buf);
 }
 
 bool
-port_identifier_validate (PortIdentifier * self)
+PortIdentifier::validate () const
 {
   g_return_val_if_fail (
     /*self->schema_version == PORT_IDENTIFIER_SCHEMA_VERSION*/
-    plugin_identifier_validate (&self->plugin_id), false);
+    plugin_identifier_validate (&this->plugin_id), false);
   return true;
 }
 
 OPTIMIZE_O3
 uint32_t
-port_identifier_get_hash (const void * self)
+PortIdentifier::get_hash () const
 {
-  const PortIdentifier * id = (const PortIdentifier *) self;
+  const PortIdentifier * id = static_cast<const PortIdentifier *> (this);
   uint32_t               hash = 0;
   if (id->sym)
     {
@@ -212,38 +201,39 @@ port_identifier_get_hash (const void * self)
   return hash;
 }
 
-PortIdentifier *
-port_identifier_clone (const PortIdentifier * src)
+PortIdentifier::PortIdentifier (const PortIdentifier &other)
 {
-  PortIdentifier * self = object_new (PortIdentifier);
-  self->schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
+  this->schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
+  *this = other;
+}
 
-  port_identifier_copy (self, src);
+PortIdentifier::~PortIdentifier ()
+{
+  g_free_and_null (label);
+  g_free_and_null (sym);
+  g_free_and_null (uri);
+  g_free_and_null (comment);
+  g_free_and_null (port_group);
+  g_free_and_null (ext_port_id);
+}
 
-  return self;
+const char *
+port_identifier_get_label (void * data)
+{
+  PortIdentifier * self = static_cast<PortIdentifier *> (data);
+  return self->get_label ();
 }
 
 void
-port_identifier_free_members (PortIdentifier * self)
+port_identifier_destroy_notify (void * data)
 {
-  g_free_and_null (self->label);
-  g_free_and_null (self->sym);
-  g_free_and_null (self->uri);
-  g_free_and_null (self->comment);
-  g_free_and_null (self->port_group);
-  g_free_and_null (self->ext_port_id);
-  object_set_to_zero (self);
+  PortIdentifier * self = static_cast<PortIdentifier *> (data);
+  delete self;
 }
 
-void
-port_identifier_free (PortIdentifier * self)
+uint32_t
+port_identifier_get_hash (const void * data)
 {
-  port_identifier_free_members (self);
-  object_zero_and_free (self);
-}
-
-void
-port_identifier_free_func (void * self)
-{
-  port_identifier_free ((PortIdentifier *) self);
+  const PortIdentifier * self = static_cast<const PortIdentifier *> (data);
+  return self->get_hash ();
 }

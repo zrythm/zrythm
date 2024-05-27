@@ -7,7 +7,7 @@
 #include "dsp/supported_file.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (FileAuditionerControlsWidget);
 TYPEDEF_STRUCT (FileBrowserLocation);

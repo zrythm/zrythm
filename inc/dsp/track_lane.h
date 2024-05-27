@@ -65,9 +65,9 @@ typedef struct TrackLane
   int solo;
 
   /** Regions in this track. */
-  ZRegion ** regions;
-  int        num_regions;
-  size_t     regions_size;
+  Region ** regions;
+  int       num_regions;
+  size_t    regions_size;
 
   /**
    * MIDI channel, if MIDI lane, starting at 1.
@@ -106,23 +106,23 @@ TrackLane *
 track_lane_new (Track * track, int pos);
 
 /**
- * Inserts a ZRegion to the given TrackLane at the
+ * Inserts a Region to the given TrackLane at the
  * given index.
  */
 void
-track_lane_insert_region (TrackLane * self, ZRegion * region, int idx);
+track_lane_insert_region (TrackLane * self, Region * region, int idx);
 
 /**
- * Adds a ZRegion to the given TrackLane.
+ * Adds a Region to the given TrackLane.
  */
 void
-track_lane_add_region (TrackLane * self, ZRegion * region);
+track_lane_add_region (TrackLane * self, Region * region);
 
 /**
  * Removes but does not free the region.
  */
 void
-track_lane_remove_region (TrackLane * self, ZRegion * region);
+track_lane_remove_region (TrackLane * self, Region * region);
 
 /**
  * Unselects all arranger objects.

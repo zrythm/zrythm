@@ -11,6 +11,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 /**
@@ -146,7 +147,7 @@ midi_function_apply (
           {
             MidiNote *       mn = new_midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            ZRegion *        r = region_find (&mn_obj->region_id);
+            Region *         r = region_find (&mn_obj->region_id);
             midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
             /* clone again because the selections are supposed to hold clones */
             ArrangerObject * mn_clone = arranger_object_clone (mn_obj);

@@ -16,7 +16,7 @@
 #include "dsp/port.h"
 #include "gui/widgets/two_col_expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _EditableLabelWidget EditableLabelWidget;
 typedef struct Track                Track;
@@ -56,9 +56,9 @@ typedef struct _PortsExpanderWidget
 {
   TwoColExpanderBoxWidget parent_instance;
 
-  ZPortFlow      flow;
-  ZPortType      type;
-  ZPortOwnerType owner_type;
+  ZPortFlow                 flow;
+  ZPortType                 type;
+  PortIdentifier::OwnerType owner_type;
 
   /** Plugin, in case of owner type Plugin. */
   Plugin * plugin;

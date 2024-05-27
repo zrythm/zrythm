@@ -70,10 +70,10 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
+#include "gtk_wrapper.h"
 #include "project/project_init_flow_manager.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>

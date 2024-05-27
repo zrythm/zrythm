@@ -46,11 +46,12 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <unistd.h>
 
 typedef enum
@@ -1128,14 +1129,14 @@ init_stereo_out_ports (Channel * self, bool loading)
   strcat (str, " L");
   Port * l = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL, self);
+    PortIdentifier::OwnerType::CHANNEL, self);
   l->id.sym = g_strdup ("stereo_out_l");
 
   str[10] = '\0';
   strcat (str, " R");
   Port * r = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL, self);
+    PortIdentifier::OwnerType::CHANNEL, self);
   r->id.sym = g_strdup ("stereo_out_r");
 
   self->stereo_out = stereo_ports_new_from_existing (l, r);
@@ -1158,7 +1159,7 @@ init_midi_port (Channel * self, int loading)
 {
   Port * port = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT, _ ("MIDI out"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL, self);
+    PortIdentifier::OwnerType::CHANNEL, self);
   port->id.sym = g_strdup ("midi_out");
   self->midi_out = port;
 }
@@ -1716,7 +1717,7 @@ channel_update_track_name_hash (
  * of the given type for the channel.
  */
 AutomationTrack *
-channel_get_automation_track (Channel * channel, ZPortFlags port_flags)
+channel_get_automation_track (Channel * channel, PortIdentifier::Flags port_flags)
 {
   Track *               track = channel_get_track (channel);
   AutomationTracklist * atl = track_get_automation_tracklist (track);
@@ -1725,7 +1726,8 @@ channel_get_automation_track (Channel * channel, ZPortFlags port_flags)
     {
       AutomationTrack * at = atl->ats[i];
 
-      if (ENUM_BITSET_TEST (ZPortFlags, at->port_id.flags, port_flags))
+      if (
+        ENUM_BITSET_TEST (PortIdentifier::Flags, at->port_id.flags, port_flags))
         return at;
     }
   return NULL;
@@ -2014,8 +2016,7 @@ channel_clone (Channel * ch, Track * track, GError ** error)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       Port * clone_port = (Port *) g_ptr_array_index (ports_clone, i);
-      g_return_val_if_fail (
-        port_identifier_is_equal (&port->id, &clone_port->id), NULL);
+      g_return_val_if_fail (port->id.is_equal (clone_port->id), NULL);
       port_copy_values (clone_port, port);
     }
   g_ptr_array_unref (ports);

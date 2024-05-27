@@ -86,7 +86,7 @@ export_time_range_to_str (ExportTimeRange export_time_range)
  *
  * If this is anything other than
  * @ref EXPORT_MODE_FULL, the @ref Track.bounce
- * or @ref ZRegion.bounce_mode should be set.
+ * or @ref Region.bounce_mode should be set.
  */
 enum class ExportMode
 {

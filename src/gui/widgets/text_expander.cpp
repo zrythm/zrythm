@@ -11,7 +11,8 @@
 #include "utils/gtk.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define TEXT_EXPANDER_WIDGET_TYPE (text_expander_widget_get_type ())
 G_DEFINE_TYPE (TextExpanderWidget, text_expander_widget, EXPANDER_BOX_WIDGET_TYPE)

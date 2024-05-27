@@ -15,7 +15,7 @@
 
 #include "gui/widgets/two_col_expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE \
   (track_properties_expander_widget_get_type ())

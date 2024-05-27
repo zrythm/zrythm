@@ -70,7 +70,7 @@ port_action_clone (const PortAction * src)
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
-  port_identifier_copy (&self->port_id, &src->port_id);
+  self->port_id = src->port_id;
   self->val = src->val;
 
   return self;

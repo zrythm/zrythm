@@ -113,14 +113,14 @@ automation_point_set_fvalue_with_action (
   const char *      fval_str);
 
 /**
- * Sets the ZRegion and the index in the
+ * Sets the Region and the index in the
  * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
 automation_point_set_region_and_index (
   AutomationPoint * _ap,
-  ZRegion *         region,
+  Region *          region,
   int               index);
 
 /**
@@ -137,7 +137,7 @@ automation_point_set_region_and_index (
 HOT double
 automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
-  ZRegion *         region,
+  Region *          region,
   double            x);
 
 /**

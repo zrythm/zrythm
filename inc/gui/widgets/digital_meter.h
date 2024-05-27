@@ -14,7 +14,7 @@
 #include "dsp/transport.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define DIGITAL_METER_WIDGET_TYPE (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

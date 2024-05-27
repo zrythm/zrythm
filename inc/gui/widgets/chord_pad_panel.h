@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_CHORD_PAD_PANEL_H__
 #define __GUI_WIDGETS_CHORD_PAD_PANEL_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _ChordPadWidget ChordPadWidget;
 

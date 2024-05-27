@@ -14,7 +14,7 @@
 #include "dsp/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
 
-typedef struct ZRegion ZRegion;
+typedef struct Region Region;
 
 /**
  * @addtogroup gui_backend
@@ -83,10 +83,10 @@ audio_selections_set_has_range (AudioSelections * self, bool has_range);
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region ZRegion to paste to.
+ * @param region Region to paste to.
  */
 bool
-audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, ZRegion * r);
+audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, Region * r);
 
 /**
  * @}

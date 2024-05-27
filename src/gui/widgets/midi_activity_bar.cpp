@@ -10,7 +10,7 @@
 #include "utils/midi.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (MidiActivityBarWidget, midi_activity_bar_widget, GTK_TYPE_WIDGET)
 

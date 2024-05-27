@@ -317,7 +317,7 @@ audio_function_apply (
 
   AudioSelections * audio_sel = (AudioSelections *) sel;
 
-  ZRegion * r = region_find (&audio_sel->region_id);
+  Region * r = region_find (&audio_sel->region_id);
   g_return_val_if_fail (r, false);
   Track * tr = arranger_object_get_track ((ArrangerObject *) r);
   g_return_val_if_fail (tr, false);

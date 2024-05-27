@@ -12,7 +12,7 @@
 #ifndef __UTILS_CAIRO_H__
 #define __UTILS_CAIRO_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Dictionary Dictionary;
 

@@ -8,7 +8,7 @@
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerWrapperWidget);
 typedef struct MidiNote        MidiNote;
@@ -33,7 +33,7 @@ midi_arranger_widget_create_note (
   ArrangerWidget * self,
   Position *       pos,
   int              note,
-  ZRegion *        region);
+  Region *         region);
 
 /**
  * Called during drag_update in the parent when

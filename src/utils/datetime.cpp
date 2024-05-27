@@ -5,8 +5,7 @@
 
 #include "utils/datetime.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <time.h>
 
 /**

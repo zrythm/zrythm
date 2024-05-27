@@ -12,6 +12,7 @@
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>

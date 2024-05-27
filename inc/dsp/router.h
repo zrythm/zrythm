@@ -44,8 +44,7 @@
 #include "dsp/graph_thread.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include <pthread.h>

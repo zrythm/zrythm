@@ -155,7 +155,7 @@ automation_track_serialize_to_json (
         yyjson_mut_obj_add_arr (doc, at_obj, "regions");
       for (int i = 0; i < at->num_regions; i++)
         {
-          ZRegion *        r = at->regions[i];
+          Region *         r = at->regions[i];
           yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, regions_arr);
           region_serialize_to_json (doc, r_obj, r, error);
         }
@@ -210,7 +210,7 @@ track_serialize_to_json (
         yyjson_mut_obj_add_arr (doc, lane_obj, "regions");
       for (int k = 0; k < lane->num_regions; k++)
         {
-          ZRegion *        region = lane->regions[k];
+          Region *         region = lane->regions[k];
           yyjson_mut_val * region_obj =
             yyjson_mut_arr_add_obj (doc, regions_arr);
           region_serialize_to_json (doc, region_obj, region, error);
@@ -223,7 +223,7 @@ track_serialize_to_json (
         yyjson_mut_obj_add_arr (doc, track_obj, "chordRegions");
       for (int j = 0; j < track->num_chord_regions; j++)
         {
-          ZRegion *        r = track->chord_regions[j];
+          Region *         r = track->chord_regions[j];
           yyjson_mut_val * r_obj =
             yyjson_mut_arr_add_obj (doc, chord_regions_arr);
           region_serialize_to_json (doc, r_obj, r, error);
@@ -476,12 +476,12 @@ automation_track_deserialize_from_json (
       at->regions_size = yyjson_arr_size (regions_arr);
       if (at->regions_size > 0)
         {
-          at->regions = object_new_n (at->regions_size, ZRegion *);
+          at->regions = object_new_n (at->regions_size, Region *);
           yyjson_arr_iter region_it = yyjson_arr_iter_with (regions_arr);
           yyjson_val *    r_obj = NULL;
           while ((r_obj = yyjson_arr_iter_next (&region_it)))
             {
-              ZRegion * r = object_new (ZRegion);
+              Region * r = object_new (Region);
               at->regions[at->num_regions++] = r;
               region_deserialize_from_json (doc, r_obj, r, error);
             }
@@ -550,12 +550,12 @@ track_deserialize_from_json (
           lane->regions_size = yyjson_arr_size (regions_arr);
           if (lane->regions_size > 0)
             {
-              lane->regions = object_new_n (lane->regions_size, ZRegion *);
+              lane->regions = object_new_n (lane->regions_size, Region *);
               yyjson_arr_iter regions_it = yyjson_arr_iter_with (regions_arr);
               yyjson_val *    region_obj = NULL;
               while ((region_obj = yyjson_arr_iter_next (&regions_it)))
                 {
-                  ZRegion * r = object_new (ZRegion);
+                  Region * r = object_new (Region);
                   lane->regions[lane->num_regions++] = r;
                   region_deserialize_from_json (doc, region_obj, r, error);
                 }
@@ -571,13 +571,13 @@ track_deserialize_from_json (
       if (track->chord_regions_size > 0)
         {
           track->chord_regions =
-            object_new_n (track->chord_regions_size, ZRegion *);
+            object_new_n (track->chord_regions_size, Region *);
           yyjson_arr_iter chord_region_it =
             yyjson_arr_iter_with (chord_regions_arr);
           yyjson_val * region_obj = NULL;
           while ((region_obj = yyjson_arr_iter_next (&chord_region_it)))
             {
-              ZRegion * r = object_new (ZRegion);
+              Region * r = object_new (Region);
               track->chord_regions[track->num_chord_regions++] = r;
               region_deserialize_from_json (doc, region_obj, r, error);
             }

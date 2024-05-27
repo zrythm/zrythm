@@ -39,10 +39,10 @@ fixture_set_up (TrackFixture * self)
 
 /**
  * Prepares a MIDI region with a note starting at
- * the ZRegion start position and ending at the
+ * the Region start position and ending at the
  * region end position.
  */
-static ZRegion *
+static Region *
 prepare_region_with_note_at_start_to_end (
   Track *     track,
   midi_byte_t pitch,
@@ -56,7 +56,7 @@ prepare_region_with_note_at_start_to_end (
   position_add_ticks (&end_pos, 3);
   position_update_frames_from_ticks (&start_pos, 0.0);
   position_update_frames_from_ticks (&end_pos, 0.0);
-  ZRegion * r =
+  Region * r =
     midi_region_new (&start_pos, &end_pos, track_get_name_hash (track), 0, 0);
   MidiNote * mn1 = midi_note_new (&r->id, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (r, mn1, 0);
@@ -81,7 +81,7 @@ test_fill_midi_events (void)
 
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1 = 91;
-  ZRegion * r = prepare_region_with_note_at_start_to_end (track, pitch1, vel1);
+  Region * r = prepare_region_with_note_at_start_to_end (track, pitch1, vel1);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = track_add_region (track, r, NULL, 0, 1, 0, NULL);
   g_assert_true (success);
@@ -275,7 +275,7 @@ test_fill_midi_events (void)
   /*
    * Initialization
    *
-   * ZRegion <2.1.1.0 ~ 4.1.1.0>
+   * Region <2.1.1.0 ~ 4.1.1.0>
    *   loop end 2.1.1.0
    * MidiNote <-1.1.1.1>
    */
@@ -312,7 +312,7 @@ test_fill_midi_events (void)
   /*
    * Initialization
    *
-   * ZRegion <2.1.1.0 ~ 4.1.1.0>
+   * Region <2.1.1.0 ~ 4.1.1.0>
    *   loop start 1.1.1.7
    *   loop end 2.1.1.0
    * MidiNote <1.1.1.7 ~ 2.1.1.7>
@@ -363,7 +363,7 @@ test_fill_midi_events (void)
   /*
    * Initialization
    *
-   * ZRegion <2.1.1.0 ~ 3.1.1.0>
+   * Region <2.1.1.0 ~ 3.1.1.0>
    *   loop end (same as midi note end)
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>
    */
@@ -473,7 +473,7 @@ test_fill_midi_events (void)
   /*
    * Initialization
    *
-   * ZRegion <2.1.1.0 ~ 3.1.1.0>
+   * Region <2.1.1.0 ~ 3.1.1.0>
    *   loop start <1.1.1.0>
    *   loop end (same as midi note end)
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>
@@ -546,7 +546,7 @@ test_fill_midi_events (void)
 
   /**
    * Premise:
-   * ZRegion <2.1.1.0 ~ 4.1.1.0>
+   * Region <2.1.1.0 ~ 4.1.1.0>
    *   loop start <1.1.1.0>
    *   clip start <1.3.1.0>
    *   loop end <2.1.1.0>
@@ -750,7 +750,7 @@ test_fill_midi_events_from_engine (void)
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  ZRegion * r = prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
+  Region * r = prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = track_add_region (
     ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);

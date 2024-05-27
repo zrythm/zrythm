@@ -115,8 +115,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include "project/project_init_flow_manager.h"
 
 #define DEFINE_SIMPLE(x) \
@@ -404,7 +404,7 @@ DEFINE_SIMPLE (activate_zoom_in)
         {
           switch (PROJECT->last_selection)
             {
-            case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+            case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
               ruler = EDITOR_RULER;
               break;
             default:
@@ -460,7 +460,7 @@ DEFINE_SIMPLE (activate_zoom_out)
         {
           switch (PROJECT->last_selection)
             {
-            case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+            case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
               ruler = EDITOR_RULER;
               break;
             default:
@@ -495,7 +495,7 @@ DEFINE_SIMPLE (activate_best_fit)
     {
       switch (PROJECT->last_selection)
         {
-        case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+        case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
           ruler = EDITOR_RULER;
           break;
         default:
@@ -515,7 +515,7 @@ DEFINE_SIMPLE (activate_best_fit)
     }
   else if (ruler == EDITOR_RULER)
     {
-      ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+      Region * r = clip_editor_get_region (CLIP_EDITOR);
       if (!r)
         return;
 
@@ -586,7 +586,7 @@ DEFINE_SIMPLE (activate_original_size)
     {
       switch (PROJECT->last_selection)
         {
-        case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+        case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
           ruler = EDITOR_RULER;
           break;
         default:
@@ -603,7 +603,7 @@ DEFINE_SIMPLE (activate_loop_selection)
 {
   if (
     PROJECT->last_selection
-    == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
     {
       if (!arranger_selections_has_any ((ArrangerSelections *) TL_SELECTIONS))
         return;
@@ -1005,8 +1005,8 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (sel && arranger_selections_has_any (sel))
         {
           GError * err = NULL;
@@ -1017,8 +1017,8 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
             }
         }
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
       if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           GError * err = NULL;
@@ -1044,8 +1044,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (sel)
         {
           Clipboard * clipboard =
@@ -1071,8 +1071,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           g_warning ("no selections to copy");
         }
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
       if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           Clipboard * clipboard =
@@ -1088,7 +1088,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           ui_show_notification (_ ("Plugins copied to clipboard"));
         }
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       {
         /* TODO fix crashes eg when copy pasting master */
         return;
@@ -1227,19 +1227,19 @@ activate_delete (
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       g_message ("activating delete selected tracks");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-selected-tracks", NULL);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
       g_message ("activating delete mixer selections");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-mixer-selections", NULL);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (
         sel && arranger_selections_has_any (sel)
         && !arranger_selections_contains_undeletable_object (sel))
@@ -1289,18 +1289,18 @@ activate_clear_selection (
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (sel)
         {
           arranger_selections_clear (sel, F_NO_FREE, F_PUBLISH_EVENTS);
         }
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       tracklist_select_all (TRACKLIST, F_NO_SELECT, F_PUBLISH_EVENTS);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
       {
         Track * track =
           tracklist_selections_get_lowest_track (TRACKLIST_SELECTIONS);
@@ -1311,7 +1311,7 @@ activate_clear_selection (
             ZPluginSlotType slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_INSERT;
             if (
               PROJECT->last_selection
-              == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
+              == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
@@ -1335,18 +1335,18 @@ activate_select_all (
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       if (sel)
         {
           arranger_selections_select_all (sel, F_PUBLISH_EVENTS);
         }
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       tracklist_select_all (TRACKLIST, F_SELECT, F_PUBLISH_EVENTS);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
       {
         Track * track =
           tracklist_selections_get_lowest_track (TRACKLIST_SELECTIONS);
@@ -1357,7 +1357,7 @@ activate_select_all (
             ZPluginSlotType slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_INSERT;
             if (
               PROJECT->last_selection
-              == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
+              == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
@@ -1544,7 +1544,7 @@ activate_snap_to_grid (
     {
       if (
         PROJECT->last_selection
-        == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+        == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
         {
           GError * err = NULL;
           bool     ret = arranger_selections_action_perform_quantize (
@@ -2059,7 +2059,7 @@ do_quantize (const char * variant, bool quick)
 
   if (
     string_is_equal (variant, "timeline")
-    || (string_is_equal (variant, "global") && PROJECT->last_selection == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE))
+    || (string_is_equal (variant, "global") && PROJECT->last_selection == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE))
     {
       if (quick)
         {
@@ -2083,7 +2083,7 @@ do_quantize (const char * variant, bool quick)
     }
   else if (
     string_is_equal (variant, "editor")
-    || (string_is_equal (variant, "global") && PROJECT->last_selection == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR))
+    || (string_is_equal (variant, "global") && PROJECT->last_selection == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR))
     {
       if (quick)
         {
@@ -2505,7 +2505,7 @@ DEFINE_SIMPLE (activate_editor_function)
   size_t       size;
   const char * str = g_variant_get_string (variant, &size);
 
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     return;
 
@@ -2660,7 +2660,7 @@ DEFINE_SIMPLE (activate_editor_function_lv2)
   size_t       size;
   const char * str = g_variant_get_string (variant, &size);
 
-  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     return;
 
@@ -2723,7 +2723,7 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
 
   if (
     PROJECT->last_selection
-    == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
     {
       ArrangerSelections * sel = arranger_widget_get_selections (MW_TIMELINE);
       if (arranger_selections_get_num_objects (sel) == 1)
@@ -2741,7 +2741,7 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
     }
   else if (
     PROJECT->last_selection
-    == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR)
+    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR)
     {
       /* nothing can be renamed yet */
     }
@@ -2787,7 +2787,7 @@ on_region_color_dialog_response (
       for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
         {
           /* change */
-          ZRegion * r = TL_SELECTIONS->regions[i];
+          Region * r = TL_SELECTIONS->regions[i];
           r->use_color = true;
           r->color = color;
         }
@@ -2814,8 +2814,8 @@ DEFINE_SIMPLE (activate_change_region_color)
   if (!timeline_selections_contains_only_regions (TL_SELECTIONS))
     return;
 
-  ZRegion * r = TL_SELECTIONS->regions[0];
-  GdkRGBA   color;
+  Region * r = TL_SELECTIONS->regions[0];
+  GdkRGBA  color;
   if (r->use_color)
     {
       color = r->color;
@@ -2849,7 +2849,7 @@ DEFINE_SIMPLE (activate_reset_region_color)
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
       /* change */
-      ZRegion * r = TL_SELECTIONS->regions[i];
+      Region * r = TL_SELECTIONS->regions[i];
       r->use_color = false;
     }
 
@@ -2972,7 +2972,7 @@ DEFINE_SIMPLE (activate_detect_bpm)
 {
   size_t       size;
   const char * _str = g_variant_get_string (variant, &size);
-  ZRegion *    r = NULL;
+  Region *     r = NULL;
   sscanf (_str, "%p", &r);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
@@ -3012,7 +3012,7 @@ DEFINE_SIMPLE (activate_timeline_function)
 
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
-      ZRegion *         r = TL_SELECTIONS->regions[i];
+      Region *          r = TL_SELECTIONS->regions[i];
       AudioSelections * sel = (AudioSelections *) arranger_selections_new (
         ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO);
       region_identifier_copy (&sel->region_id, &r->id);
@@ -3080,7 +3080,7 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
       return;
     }
 
-  ZRegion * r = TL_SELECTIONS->regions[0];
+  Region * r = TL_SELECTIONS->regions[0];
 
   ExportData * data = object_new (ExportData);
   data->state = object_new (EngineState);
@@ -3114,7 +3114,7 @@ DEFINE_SIMPLE (activate_bounce_selections)
       return;
     }
 
-  ZRegion * r = TL_SELECTIONS->regions[0];
+  Region * r = TL_SELECTIONS->regions[0];
 
   BounceDialogWidget * dialog = bounce_dialog_widget_new (
     BounceDialogWidgetType::BOUNCE_DIALOG_REGIONS, r->name);
@@ -3175,7 +3175,7 @@ handle_region_fade_algo_preset (const char * pset_id, bool fade_in)
 
   ArrangerSelections * sel_before =
     arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
-  ZRegion *        r = TL_SELECTIONS->regions[0];
+  Region *         r = TL_SELECTIONS->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   if (fade_in)
     {
@@ -4259,7 +4259,7 @@ DEFINE_SIMPLE (activate_append_track_objects_to_selection)
       TrackLane * lane = track->lanes[i];
       for (int j = 0; j < lane->num_regions; j++)
         {
-          ZRegion * r = lane->regions[j];
+          Region * r = lane->regions[j];
           arranger_object_select (
             (ArrangerObject *) r, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
@@ -4276,7 +4276,7 @@ DEFINE_SIMPLE (activate_append_lane_objects_to_selection)
 
   for (int j = 0; j < lane->num_regions; j++)
     {
-      ZRegion * r = lane->regions[j];
+      Region * r = lane->regions[j];
       arranger_object_select (
         (ArrangerObject *) r, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
     }
@@ -4292,7 +4292,7 @@ DEFINE_SIMPLE (activate_append_lane_automation_regions_to_selection)
   AutomationTrack * at = atl->ats[at_index];
   for (int j = 0; j < at->num_regions; j++)
     {
-      ZRegion * r = at->regions[j];
+      Region * r = at->regions[j];
       arranger_object_select (
         (ArrangerObject *) r, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
     }

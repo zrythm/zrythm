@@ -31,7 +31,7 @@ ports_expander_widget_refresh (PortsExpanderWidget * self)
   /* set visibility */
   /* FIXME the port counts used don't take into
    * account invisible (notOnGUI) ports */
-  if (self->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+  if (self->owner_type == PortIdentifier::OwnerType::PLUGIN)
     {
       if (self->type == ZPortType::Z_PORT_TYPE_CONTROL)
         {
@@ -94,7 +94,7 @@ ports_expander_widget_refresh (PortsExpanderWidget * self)
             }
         }
     }
-  else if (self->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK)
+  else if (self->owner_type == PortIdentifier::OwnerType::TRACK)
     {
     }
 }
@@ -194,7 +194,7 @@ ports_expander_widget_setup_plugin (
 {
   self->flow = flow;
   self->type = type;
-  self->owner_type = ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN;
+  self->owner_type = PortIdentifier::OwnerType::PLUGIN;
 
   /* if same plugin, do nothing (already set up) */
   if (self->plugin == pl)
@@ -267,7 +267,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_CONTROL
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -284,7 +285,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_CONTROL
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -301,7 +303,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_CV
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -318,7 +321,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_CV
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -335,7 +339,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_AUDIO
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -352,7 +357,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_AUDIO
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -369,7 +375,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_EVENT
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -386,7 +393,8 @@ ports_expander_widget_setup_plugin (
           if (
             pi->type != ZPortType::Z_PORT_TYPE_EVENT
             || ENUM_BITSET_TEST (
-              ZPortFlags, pi->flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+              PortIdentifier::Flags, pi->flags,
+              PortIdentifier::Flags::NOT_ON_GUI))
             continue;
 
           g_array_append_val (ports, port);
@@ -528,7 +536,7 @@ ports_expander_widget_setup_track (
   Track *                    tr,
   PortsExpanderTrackPortType type)
 {
-  self->owner_type = ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK;
+  self->owner_type = PortIdentifier::OwnerType::TRACK;
   self->track = tr;
 
   /*PortType in_type =*/
@@ -556,19 +564,19 @@ ports_expander_widget_setup_track (
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("Stereo In"));
       self->flow = ZPortFlow::Z_PORT_FLOW_INPUT;
-      self->owner_type = ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK;
+      self->owner_type = PortIdentifier::OwnerType::TRACK;
       break;
     case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
-      self->owner_type = ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK;
+      self->owner_type = PortIdentifier::OwnerType::TRACK;
       self->flow = ZPortFlow::Z_PORT_FLOW_INPUT;
       self->type = ZPortType::Z_PORT_TYPE_EVENT;
       break;
     case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_OUT:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI Out"));
-      self->owner_type = ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK;
+      self->owner_type = PortIdentifier::OwnerType::TRACK;
       self->flow = ZPortFlow::Z_PORT_FLOW_OUTPUT;
       self->type = ZPortType::Z_PORT_TYPE_EVENT;
       break;

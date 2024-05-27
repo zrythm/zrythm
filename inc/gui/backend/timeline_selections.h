@@ -36,9 +36,9 @@ typedef struct TimelineSelections
   ArrangerSelections base;
 
   /** Selected TrackLane Region's. */
-  ZRegion ** regions;
-  int        num_regions;
-  size_t     regions_size;
+  Region ** regions;
+  int       num_regions;
+  size_t    regions_size;
 
   ScaleObject ** scale_objects;
   int            num_scale_objects;
@@ -153,7 +153,7 @@ timeline_selections_move_regions_to_new_tracks (
 
 /**
  * Sets the regions'
- * \ref ZRegion.index_in_prev_lane.
+ * \ref Region.index_in_prev_lane.
  */
 void
 timeline_selections_set_index_in_prev_lane (TimelineSelections * self);

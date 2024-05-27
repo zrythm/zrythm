@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_BOUNCE_DIALOG_H__
 #define __GUI_WIDGETS_BOUNCE_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define BOUNCE_DIALOG_WIDGET_TYPE (bounce_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -16,7 +16,8 @@
 
 #include <adwaita.h>
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 typedef struct Position Position;
 typedef struct Port     Port;

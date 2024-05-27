@@ -755,8 +755,8 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
         {
           /* create an audio region & add to
            * track */
-          GError *  err = NULL;
-          ZRegion * ar = audio_region_new (
+          GError * err = NULL;
+          Region * ar = audio_region_new (
             self->pool_id, NULL, true, NULL, 0, NULL, 0,
             ENUM_INT_TO_VALUE (BitDepth, 0), &start_pos,
             track_get_name_hash (track), 0, 0, &err);
@@ -801,7 +801,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
 
           /* create a MIDI region from the MIDI
            * file & add to track */
-          ZRegion * mr = midi_region_new_from_midi_file (
+          Region * mr = midi_region_new_from_midi_file (
             &start_pos, full_path, track_get_name_hash (track), 0, 0, idx);
           if (mr)
             {
@@ -1101,8 +1101,7 @@ do_or_undo_create_or_delete (
                     {
                       Port * cur_clone_port =
                         (Port *) g_ptr_array_index (clone_ports, k);
-                      if (port_identifier_is_equal (
-                            &cur_clone_port->id, &prj_port->id))
+                      if (cur_clone_port->id.is_equal (prj_port->id))
                         {
                           clone_port = cur_clone_port;
                           break;
@@ -1168,7 +1167,7 @@ do_or_undo_move_or_copy (
     == TracklistSelectionsActionType::TRACKLIST_SELECTIONS_ACTION_UNPIN;
 
   /* if moving, this will be set back */
-  ZRegion * prev_clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  Region * prev_clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
 
   if (_do)
     {

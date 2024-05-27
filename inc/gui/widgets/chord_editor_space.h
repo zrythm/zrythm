@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_CHORD_EDITOR_SPACE_H__
 #define __GUI_WIDGETS_CHORD_EDITOR_SPACE_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CHORD_EDITOR_SPACE_WIDGET_TYPE (chord_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

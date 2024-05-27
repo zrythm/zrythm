@@ -3,6 +3,7 @@
 
 #include "actions/midi_mapping_action.h"
 #include "dsp/channel.h"
+#include "dsp/port_identifier.h"
 #include "dsp/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -59,7 +60,7 @@ midi_mapping_action_new_bind (
     {
       self->dev_port = ext_port_clone (device_port);
     }
-  self->dest_port_id = port_identifier_clone (&dest_port->id);
+  self->dest_port_id = new PortIdentifier (dest_port->id);
 
   return ua;
 }
@@ -89,7 +90,7 @@ midi_mapping_action_clone (const MidiMappingAction * src)
   self->idx = src->idx;
   if (src->dest_port_id)
     {
-      self->dest_port_id = port_identifier_clone (src->dest_port_id);
+      self->dest_port_id = new PortIdentifier (*src->dest_port_id);
     }
   if (src->dev_port)
     {
@@ -156,8 +157,8 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
         {
           self->dev_port = ext_port_clone (mapping->device_port);
         }
-      object_free_w_func_and_null (port_identifier_free, self->dest_port_id);
-      self->dest_port_id = port_identifier_clone (&mapping->dest_id);
+      object_delete_and_null (self->dest_port_id);
+      self->dest_port_id = new PortIdentifier (mapping->dest_id);
       midi_mappings_unbind (MIDI_MAPPINGS, self->idx, F_NO_PUBLISH_EVENTS);
     }
 }

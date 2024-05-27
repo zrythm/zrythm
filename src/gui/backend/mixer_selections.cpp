@@ -17,7 +17,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 void
 mixer_selections_init_loaded (MixerSelections * self, bool is_project)

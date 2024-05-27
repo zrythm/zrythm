@@ -188,7 +188,7 @@ check_vs_orig_state:
     (ArrangerObject *) midi_track->lanes[MIDI_REGION_LANE]->regions[0];
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmppos (&obj->end_pos, p2);
-  ZRegion * r = (ZRegion *) obj;
+  Region * r = (Region *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn = r->midi_notes[0];
   obj = (ArrangerObject *) mn;
@@ -207,13 +207,13 @@ check_vs_orig_state:
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmppos (&obj->end_pos, p2);
-  r = (ZRegion *) obj;
+  r = (Region *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
   AutomationPoint * ap = r->aps[0];
   obj = (ArrangerObject *) ap;
@@ -292,7 +292,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   unsigned int track_name_hash = track_get_name_hash (track);
-  ZRegion *    r =
+  Region *     r =
     midi_region_new (p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool success = track_add_region (track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
@@ -315,7 +315,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add an automation region with
    * 2 AutomationPoint's */
   AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE);
+    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
   track_name_hash = track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (p1, p2, track_name_hash, at->index, 0);
   success = track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);

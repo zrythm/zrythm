@@ -11,7 +11,7 @@
 
 #include "utils/general.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define METER_WIDGET_TYPE (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MeterWidget, meter_widget, Z, METER_WIDGET, GtkWidget)

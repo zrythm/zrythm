@@ -14,7 +14,7 @@
 #include "plugins/plugin.h"
 #include "utils/symap.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PLUGIN_BROWSER_WIDGET_TYPE (plugin_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

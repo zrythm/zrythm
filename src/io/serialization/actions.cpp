@@ -791,14 +791,14 @@ arranger_selections_action_deserialize_from_json (
   yyjson_val * region_before_obj = yyjson_obj_iter_get (&it, "regionBefore");
   if (region_before_obj)
     {
-      action->region_before = object_new (ZRegion);
+      action->region_before = object_new (Region);
       region_deserialize_from_json (
         doc, region_before_obj, action->region_before, error);
     }
   yyjson_val * region_after_obj = yyjson_obj_iter_get (&it, "regionAfter");
   if (region_after_obj)
     {
-      action->region_after = object_new (ZRegion);
+      action->region_after = object_new (Region);
       region_deserialize_from_json (
         doc, region_after_obj, action->region_after, error);
     }
@@ -813,7 +813,7 @@ arranger_selections_action_deserialize_from_json (
   yyjson_val *    region_r1_obj = NULL;
   while ((region_r1_obj = yyjson_arr_iter_next (&region_r1_iter)))
     {
-      ZRegion * r = object_new (ZRegion);
+      Region * r = object_new (Region);
       action->region_r1[count++] = r;
       region_deserialize_from_json (doc, region_r1_obj, r, error);
     }
@@ -822,7 +822,7 @@ arranger_selections_action_deserialize_from_json (
   yyjson_val *    region_r2_obj = NULL;
   while ((region_r2_obj = yyjson_arr_iter_next (&region_r2_iter)))
     {
-      ZRegion * r = object_new (ZRegion);
+      Region * r = object_new (Region);
       action->region_r2[count++] = r;
       region_deserialize_from_json (doc, region_r2_obj, r, error);
     }

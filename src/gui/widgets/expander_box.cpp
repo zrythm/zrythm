@@ -7,7 +7,7 @@
 #include "gui/widgets/gtk_flipper.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (ExpanderBoxWidget, expander_box_widget, GTK_TYPE_BOX)
 

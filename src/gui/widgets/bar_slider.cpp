@@ -14,7 +14,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface);

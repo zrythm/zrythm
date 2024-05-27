@@ -26,7 +26,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ModulatorInnerWidget, modulator_inner_widget, GTK_TYPE_BOX)
 
@@ -163,7 +164,8 @@ modulator_inner_widget_new (ModulatorWidget * parent)
         port->id.type != ZPortType::Z_PORT_TYPE_CONTROL
         || port->id.flow != ZPortFlow::Z_PORT_FLOW_INPUT
         || ENUM_BITSET_TEST (
-          ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_NOT_ON_GUI))
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::NOT_ON_GUI))
         continue;
 
       KnobWidget * knob = knob_widget_new_simple (
@@ -172,7 +174,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
         port->zerof);
       knob->snapped_getter = (GenericFloatGetter) get_snapped_control_value;
       KnobWithNameWidget * knob_with_name = knob_with_name_widget_new (
-        &port->id, (GenericStringGetter) port_identifier_get_label, NULL, knob,
+        &port->id, port_identifier_get_label, NULL, knob,
         GTK_ORIENTATION_HORIZONTAL, false, 3);
 
       array_double_size_if_full (

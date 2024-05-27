@@ -13,7 +13,7 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define MULTI_SELECTION_WIDGET_TYPE (multi_selection_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

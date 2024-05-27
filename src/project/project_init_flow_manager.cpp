@@ -30,6 +30,7 @@
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -591,7 +592,7 @@ create_default (
   self->tracklist->master_track = track;
   tracklist_selections_add_track (self->tracklist_selections, track, 0);
   self->last_selection =
-    ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+    ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
 
   /* pre-setup engine */
   if (with_engine)

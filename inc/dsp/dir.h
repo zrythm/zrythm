@@ -8,5 +8,5 @@
  * Audio processing related code.
  *
  * Contains various arranger, editor, etc., structs
- * such as ZRegion and MidiNote.
+ * such as Region and MidiNote.
  */

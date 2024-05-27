@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_TRACK_FILTER_POPOVER_H__
 #define __GUI_WIDGETS_TRACK_FILTER_POPOVER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TRACK_FILTER_POPOVER_WIDGET_TYPE \
   (track_filter_popover_widget_get_type ())

@@ -72,7 +72,7 @@ chord_object_is_equal (ChordObject * a, ChordObject * b);
  * Sets the region and index of the chord.
  */
 void
-chord_object_set_region_and_index (ChordObject * self, ZRegion * region, int idx);
+chord_object_set_region_and_index (ChordObject * self, Region * region, int idx);
 
 /**
  * Returns the ChordDescriptor associated with this
@@ -88,7 +88,7 @@ chord_object_get_chord_descriptor (const ChordObject * self);
 ChordObject *
 chord_object_find_by_pos (ChordObject * clone);
 
-ZRegion *
+Region *
 chord_object_get_region (ChordObject * self);
 
 /**

@@ -10,7 +10,7 @@
  * Track canvas.
  */
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TRACK_CANVAS_WIDGET_TYPE (track_canvas_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

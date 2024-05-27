@@ -26,7 +26,7 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
 

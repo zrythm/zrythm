@@ -10,8 +10,7 @@
 #ifndef __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include "libpanel_wrapper.h"
 
 typedef struct _InspectorWidget        InspectorWidget;

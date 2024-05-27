@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
 #define __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define FADER_CONTROLS_GRID_WIDGET_TYPE (fader_controls_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

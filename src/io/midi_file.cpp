@@ -3,8 +3,7 @@
 
 #include "io/midi_file.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <ext/midilib/src/midifile.h>
 
 /**

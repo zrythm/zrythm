@@ -105,7 +105,7 @@ enum class PianoRollNoteNotation
   PIANO_ROLL_NOTE_NOTATION_PITCH,
 };
 
-typedef struct ZRegion ZRegion;
+typedef struct Region Region;
 
 /**
  * A descriptor for a MidiNote, used by the piano roll.

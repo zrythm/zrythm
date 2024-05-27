@@ -10,7 +10,7 @@
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   ArrangerMinimapSelectionWidget,

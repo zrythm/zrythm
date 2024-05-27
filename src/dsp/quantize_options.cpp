@@ -18,7 +18,7 @@
 #include "utils/pcg_rand.h"
 #include "zrythm.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Updates snap points.

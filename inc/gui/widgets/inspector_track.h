@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_INSPECTOR_TRACK_H__
 #define __GUI_WIDGETS_INSPECTOR_TRACK_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define INSPECTOR_TRACK_WIDGET_TYPE (inspector_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

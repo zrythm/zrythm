@@ -7,7 +7,7 @@
 #include "gui/backend/event.h"
 #include "utils/objects.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 ZEvent *
 event_new (void)

@@ -13,7 +13,7 @@
 #include "gui/backend/arranger_object.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets
@@ -125,7 +125,7 @@ arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed);
 int
 arranger_object_get_full_rect_x_for_region_child (
   ArrangerObject * self,
-  ZRegion *        region,
+  Region *         region,
   GdkRectangle *   full_rect);
 
 void

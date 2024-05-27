@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct PluginSettings PluginSettings;
 typedef struct UserShortcuts  UserShortcuts;

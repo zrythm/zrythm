@@ -69,7 +69,7 @@ test_midi_file_playback (void)
       Track * track = tracklist_get_last_track (
         TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, true);
 
-      ZRegion * region = track->lanes[0]->regions[0];
+      Region * region = track->lanes[0]->regions[0];
 
       /* set start pos to a bit before the first
        * note, send end pos a few cycles later */

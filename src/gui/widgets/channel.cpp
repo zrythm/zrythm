@@ -35,14 +35,15 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <time.h>
 
 G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_WIDGET)
@@ -367,7 +368,7 @@ on_btn_release (
       if (cur_time - self->last_plugin_press > 1000)
         {
           PROJECT->last_selection =
-            ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+            ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
         }
 
       GdkModifierType state = gtk_event_controller_get_current_event_state (

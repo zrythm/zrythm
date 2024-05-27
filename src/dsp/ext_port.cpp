@@ -14,6 +14,7 @@
 #include "project.h"
 #include "utils/dsp.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK

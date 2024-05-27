@@ -14,7 +14,7 @@
 #include "utils/string.h"
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Creates a new Velocity with the given value.
@@ -99,7 +99,7 @@ velocity_get_midi_note (const Velocity * const self)
 
 #if 0
   g_return_val_if_fail (self, NULL);
-  ZRegion * region =
+  Region * region =
     region_find (&self->region_id);
   g_return_val_if_fail (region, NULL);
   return region->midi_notes[self->note_pos];

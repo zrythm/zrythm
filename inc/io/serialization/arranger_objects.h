@@ -18,7 +18,7 @@
 
 TYPEDEF_STRUCT (ArrangerObject);
 TYPEDEF_STRUCT (RegionIdentifier);
-TYPEDEF_STRUCT (ZRegion);
+TYPEDEF_STRUCT (Region);
 TYPEDEF_STRUCT (Marker);
 TYPEDEF_STRUCT (ScaleObject);
 TYPEDEF_STRUCT (ChordObject);
@@ -64,7 +64,7 @@ bool
 region_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * r_obj,
-  const ZRegion *  r,
+  const Region *   r,
   GError **        error);
 
 bool
@@ -120,7 +120,7 @@ bool
 region_deserialize_from_json (
   yyjson_doc * doc,
   yyjson_val * r_obj,
-  ZRegion *    r,
+  Region *     r,
   GError **    error);
 
 bool

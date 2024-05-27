@@ -23,9 +23,9 @@ perform_create_region_action (void)
   Position p1, p2;
   position_set_to_bar (&p1, 1);
   position_set_to_bar (&p2, 2);
-  int       track_pos = TRACKLIST->num_tracks - 1;
-  Track *   track = TRACKLIST->tracks[track_pos];
-  ZRegion * r =
+  int      track_pos = TRACKLIST->num_tracks - 1;
+  Track *  track = TRACKLIST->tracks[track_pos];
+  Region * r =
     automation_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track = TRACKLIST->tracks[track_pos];

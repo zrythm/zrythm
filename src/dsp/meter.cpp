@@ -184,7 +184,7 @@ meter_new_for_port (Port * port)
     || port->id.type == ZPortType::Z_PORT_TYPE_CV)
     {
       bool is_master_fader = false;
-      if (port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK)
+      if (port->id.owner_type == PortIdentifier::OwnerType::TRACK)
         {
           Track * track = port_get_track (port, true);
           if (track->type == TrackType::TRACK_TYPE_MASTER)

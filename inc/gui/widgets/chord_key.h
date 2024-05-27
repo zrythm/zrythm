@@ -11,7 +11,7 @@
 #ifndef __GUI_WIDGETS_CHORD_KEY_H__
 #define __GUI_WIDGETS_CHORD_KEY_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define CHORD_KEY_WIDGET_TYPE (chord_key_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChordKeyWidget, chord_key_widget, Z, CHORD_KEY_WIDGET, GtkGrid)

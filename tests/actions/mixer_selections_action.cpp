@@ -5,8 +5,8 @@
 
 #include "actions/mixer_selections_action.h"
 #include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/control_port.h"
+#include "dsp/port_identifier.h"
 #include "plugins/carla_discovery.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -393,7 +393,7 @@ _test_port_and_plugin_track_pos_after_move (
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region = automation_region_new (
+  Region * region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (src_track), at->index,
     at->num_regions);
   bool success = track_add_region (
@@ -567,7 +567,7 @@ test_move_two_plugins_one_slot_up (void)
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region = automation_region_new (
+  Region * region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (track), at->index,
     at->num_regions);
   bool success = track_add_region (
@@ -951,8 +951,10 @@ test_move_pl_after_duplicating_track (void)
   for (int i = 0; i < lsp->num_in_ports; i++)
     {
       Port * port = lsp->in_ports[i];
-      if (ENUM_BITSET_TEST (
-            ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_SIDECHAIN))
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::SIDECHAIN))
         {
           sidechain_port = port;
           break;
@@ -1136,15 +1138,17 @@ _test_replace_instrument (
   Port *         sidechain_port = NULL;
   PortIdentifier sidechain_port_id;
   memset (&sidechain_port_id, 0, sizeof (PortIdentifier));
-  port_identifier_init (&sidechain_port_id);
+  sidechain_port_id = PortIdentifier ();
   for (int i = 0; i < lsp->num_in_ports; i++)
     {
       Port * port = lsp->in_ports[i];
-      if (ENUM_BITSET_TEST (
-            ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_SIDECHAIN))
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags::SIDECHAIN))
         {
           sidechain_port = port;
-          port_identifier_copy (&sidechain_port_id, &port->id);
+          sidechain_port_id = port->id;
           break;
         }
     }
@@ -1153,9 +1157,8 @@ _test_replace_instrument (
   /*#if 0*/
   PortIdentifier helm_l_out_port_id;
   memset (&helm_l_out_port_id, 0, sizeof (PortIdentifier));
-  port_identifier_init (&helm_l_out_port_id);
-  port_identifier_copy (
-    &helm_l_out_port_id, &src_track->channel->instrument->l_out->id);
+  helm_l_out_port_id = PortIdentifier ();
+  helm_l_out_port_id = src_track->channel->instrument->l_out->id;
   port_connection_action_perform_connect (
     &src_track->channel->instrument->l_out->id, &sidechain_port->id, NULL);
   g_assert_cmpint (sidechain_port->num_srcs, ==, 1);
@@ -1173,8 +1176,7 @@ _test_replace_instrument (
   AutomationTracklist * atl = track_get_automation_tracklist (src_track);
   g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
-  g_assert_true (
-    at->port_id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN);
+  g_assert_true (at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN);
   at->created = true;
   automation_tracklist_set_at_visible (atl, at, true);
 
@@ -1182,7 +1184,7 @@ _test_replace_instrument (
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region = automation_region_new (
+  Region * region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (src_track), at->index,
     at->num_regions);
   bool success = track_add_region (

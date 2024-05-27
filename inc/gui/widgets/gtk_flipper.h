@@ -22,7 +22,7 @@
 #ifndef __GTK_FLIPPER_H__
 #define __GTK_FLIPPER_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_BEGIN_DECLS
 

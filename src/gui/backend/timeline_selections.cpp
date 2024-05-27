@@ -23,8 +23,7 @@
 #include "utils/yaml.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include <limits.h>
 
 /**
@@ -118,7 +117,7 @@ timeline_selections_get_last_track (TimelineSelections * ts)
       track = tmp_track; \
     }
 
-  ZRegion * region;
+  Region * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -152,7 +151,7 @@ timeline_selections_get_first_track (TimelineSelections * ts)
       track = tmp_track; \
     }
 
-  ZRegion * region;
+  Region * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -190,7 +189,7 @@ get_lowest_track_pos (TimelineSelections * ts)
 
   for (int i = 0; i < ts->num_regions; i++)
     {
-      ZRegion * r = ts->regions[i];
+      Region * r = ts->regions[i];
       Track *   tr = tracklist_find_track_by_name_hash (
           TRACKLIST, r->id.track_name_hash);
       if (tr->pos < track_pos)
@@ -228,8 +227,8 @@ timeline_selections_set_vis_track_indices (TimelineSelections * ts)
 
   for (i = 0; i < ts->num_regions; i++)
     {
-      ZRegion * r = ts->regions[i];
-      Track *   region_track = arranger_object_get_track ((ArrangerObject *) r);
+      Region * r = ts->regions[i];
+      Track *  region_track = arranger_object_get_track ((ArrangerObject *) r);
       ts->region_track_vis_index =
         tracklist_get_visible_track_diff (TRACKLIST, highest_tr, region_track);
     }
@@ -262,7 +261,7 @@ timeline_selections_can_be_pasted (
 
   for (int j = 0; j < ts->num_regions; j++)
     {
-      ZRegion * r = ts->regions[j];
+      Region * r = ts->regions[j];
 
       /* automation regions can't be copy-pasted this way */
       if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
@@ -313,7 +312,7 @@ timeline_selections_paste_to_pos (
   int i;
   for (i = 0; i < ts->num_regions; i++)
     {
-      ZRegion * region = ts->regions[i];
+      Region * region = ts->regions[i];
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       Track * region_track =
@@ -335,8 +334,8 @@ timeline_selections_paste_to_pos (
       /* TODO */
 
       /* clone and add to track */
-      ZRegion * cp =
-        (ZRegion *)
+      Region * cp =
+        (Region *)
         arranger_object_clone (
           r_obj,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
@@ -440,8 +439,8 @@ timeline_selections_mark_for_bounce (TimelineSelections * ts, bool with_parents)
 
   for (int i = 0; i < ts->num_regions; i++)
     {
-      ZRegion * r = ts->regions[i];
-      Track *   track = arranger_object_get_track ((ArrangerObject *) r);
+      Region * r = ts->regions[i];
+      Track *  track = arranger_object_get_track ((ArrangerObject *) r);
       g_return_if_fail (track);
 
       if (!with_parents)
@@ -513,7 +512,7 @@ move_regions_to_new_lanes_or_tracks_or_ats (
   bool compatible = true;
   for (size_t i = 0; i < regions_arr->len; i++)
     {
-      ZRegion *        region = (ZRegion *) g_ptr_array_index (regions_arr, i);
+      Region *         region = (Region *) g_ptr_array_index (regions_arr, i);
       ArrangerObject * r_obj = (ArrangerObject *) region;
       Track *          track = arranger_object_get_track (r_obj);
       track->block_auto_creation_and_deletion = true;
@@ -595,7 +594,7 @@ move_regions_to_new_lanes_or_tracks_or_ats (
    * regions */
   for (size_t i = 0; i < regions_arr->len; i++)
     {
-      ZRegion *        region = (ZRegion *) g_ptr_array_index (regions_arr, i);
+      Region *         region = (Region *) g_ptr_array_index (regions_arr, i);
       ArrangerObject * r_obj = (ArrangerObject *) region;
       if (vis_track_diff != 0)
         {
@@ -697,14 +696,14 @@ timeline_selections_move_regions_to_new_tracks (
 
 /**
  * Sets the regions'
- * \ref ZRegion.index_in_prev_lane.
+ * \ref Region.index_in_prev_lane.
  */
 void
 timeline_selections_set_index_in_prev_lane (TimelineSelections * self)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion *        r = self->regions[i];
+      Region *         r = self->regions[i];
       ArrangerObject * r_obj = (ArrangerObject *) r;
       r_obj->index_in_prev_lane = r->id.idx;
     }
@@ -727,7 +726,7 @@ timeline_selections_contains_only_region_types (
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      Region * r = self->regions[i];
       if (!ENUM_BITSET_TEST (RegionType, types, r->id.type))
         return false;
     }
@@ -780,7 +779,7 @@ timeline_selections_export_to_midi_file (
       MidiEvents * events = NULL;
       for (int i = 0; i < sel_clone->num_regions; i++)
         {
-          const ZRegion * r = sel_clone->regions[i];
+          const Region * r = sel_clone->regions[i];
 
           int midi_track_pos = 1;
           if (midi_version > 0)

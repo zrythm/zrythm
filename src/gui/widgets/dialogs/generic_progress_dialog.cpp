@@ -17,11 +17,13 @@
 #include "utils/math.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   GenericProgressDialogWidget,

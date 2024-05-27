@@ -39,7 +39,7 @@
 #include "utils/string.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_WIDGET)
 

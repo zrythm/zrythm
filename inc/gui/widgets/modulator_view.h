@@ -11,7 +11,8 @@
 #define __GUI_WIDGETS_MODULATOR_VIEW_H__
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 #define MODULATOR_VIEW_WIDGET_TYPE (modulator_view_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -61,13 +61,13 @@ typedef struct AutomationTrack
   bool created;
 
   /** The automation Region's. */
-  ZRegion ** regions;
-  int        num_regions;
-  size_t     regions_size;
+  Region ** regions;
+  int       num_regions;
+  size_t    regions_size;
 
   /** Snapshots used during playback TODO unimplemented. */
-  ZRegion ** region_snapshots;
-  int        num_region_snapshots;
+  Region ** region_snapshots;
+  int       num_region_snapshots;
 
   /**
    * Whether visible or not.
@@ -101,7 +101,7 @@ typedef struct AutomationTrack
   bool recording_started;
 
   /** Region currently recording to. */
-  ZRegion * recording_region;
+  Region * recording_region;
 
   /**
    * This is a flag to let the recording manager know that a START signal was
@@ -241,23 +241,23 @@ automation_track_should_be_recording (
   const bool                    record_aps);
 
 /**
- * Adds an automation ZRegion to the AutomationTrack.
+ * Adds an automation Region to the AutomationTrack.
  *
  * @note This must not be used directly. Use
  *   track_add_region() instead.
  */
 NONNULL void
-automation_track_add_region (AutomationTrack * self, ZRegion * region);
+automation_track_add_region (AutomationTrack * self, Region * region);
 
 /**
- * Inserts an automation ZRegion to the
+ * Inserts an automation Region to the
  * AutomationTrack at the given index.
  *
  * @note This must not be used directly. Use
  *   track_insert_region() instead.
  */
 NONNULL void
-automation_track_insert_region (AutomationTrack * self, ZRegion * region, int idx);
+automation_track_insert_region (AutomationTrack * self, Region * region, int idx);
 
 /**
  * Returns the visible y offset from the top of
@@ -314,7 +314,7 @@ automation_track_get_ap_before_pos (
   bool                    use_snapshots);
 
 /**
- * Returns the ZRegion that starts before
+ * Returns the Region that starts before
  * given Position, if any.
  *
  * @param ends_after Whether to only check for
@@ -322,7 +322,7 @@ automation_track_get_ap_before_pos (
  *   the region surrounds \ref pos), otherwise
  *   get the region that ends last.
  */
-ZRegion *
+Region *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
@@ -339,7 +339,7 @@ automation_track_unselect_all (AutomationTrack * self);
  * Removes a region from the automation track.
  */
 NONNULL void
-automation_track_remove_region (AutomationTrack * self, ZRegion * region);
+automation_track_remove_region (AutomationTrack * self, Region * region);
 
 /**
  * Removes and frees all arranger objects
@@ -388,9 +388,9 @@ automation_track_get_port (
 #endif
 
 /**
- * Gets the last ZRegion in the AutomationTrack.
+ * Gets the last Region in the AutomationTrack.
  */
-NONNULL ZRegion *
+NONNULL Region *
 automation_track_get_last_region (AutomationTrack * self);
 
 NONNULL void

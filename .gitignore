@@ -169,7 +169,8 @@ subprojects/**/*
 subprojects/*sass*.wrap
 
 # VS Code config
-.vscode
+#.vscode
+.cache
 
 # Python related files
 venv
@@ -180,3 +181,6 @@ venv
 
 # KDevelop
 *.kdev4
+
+# CLion
+.idea

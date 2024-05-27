@@ -6,7 +6,6 @@
 #include "dsp/tracklist.h"
 #include "project.h"
 #include "utils/objects.h"
-#include "utils/string.h"
 #include "zrythm.h"
 
 PortConnection *
@@ -19,8 +18,8 @@ port_connection_new (
 {
   PortConnection * self = object_new (PortConnection);
 
-  self->src_id = port_identifier_clone (src);
-  self->dest_id = port_identifier_clone (dest);
+  self->src_id = new PortIdentifier (*src);
+  self->dest_id = new PortIdentifier (*dest);
   port_connection_update (self, multiplier, locked, enabled);
 
   return self;
@@ -41,8 +40,7 @@ port_connection_update (
 bool
 port_connection_is_send (const PortConnection * self)
 {
-  return self->src_id->owner_type
-         == ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL_SEND;
+  return self->src_id->owner_type == PortIdentifier::OwnerType::CHANNEL_SEND;
 }
 
 void
@@ -101,7 +99,7 @@ port_connection_clone (const PortConnection * src)
 NONNULL void
 port_connection_free (PortConnection * self)
 {
-  port_identifier_free (self->src_id);
-  port_identifier_free (self->dest_id);
+  object_delete_and_null (self->src_id);
+  object_delete_and_null (self->dest_id);
   object_zero_and_free (self);
 }

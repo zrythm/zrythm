@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_SAVE_CHORD_PRESET_DIALOG_H__
 #define __GUI_WIDGETS_SAVE_CHORD_PRESET_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define SAVE_CHORD_PRESET_DIALOG_WIDGET_TYPE \
   (save_chord_preset_dialog_widget_get_type ())

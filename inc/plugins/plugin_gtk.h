@@ -12,7 +12,7 @@
 #ifndef __PLUGINS_PLUGIN_GTK_H__
 #define __PLUGINS_PLUGIN_GTK_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct Plugin Plugin;
 

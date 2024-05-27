@@ -3,6 +3,7 @@
 
 #include "actions/channel_send_action.h"
 #include "dsp/channel.h"
+#include "dsp/port_identifier.h"
 #include "dsp/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -48,12 +49,12 @@ channel_send_action_new (
   self->amount = amount;
 
   if (port)
-    self->midi_id = port_identifier_clone (&port->id);
+    self->midi_id = new PortIdentifier (port->id);
 
   if (stereo)
     {
-      self->l_id = port_identifier_clone (&stereo->l->id);
-      self->r_id = port_identifier_clone (&stereo->r->id);
+      self->l_id = new PortIdentifier (stereo->l->id);
+      self->r_id = new PortIdentifier (stereo->r->id);
     }
 
   if (port_connections_mgr)
@@ -318,9 +319,9 @@ void
 channel_send_action_free (ChannelSendAction * self)
 {
   object_free_w_func_and_null (channel_send_free, self->send_before);
-  object_free_w_func_and_null (port_identifier_free, self->l_id);
-  object_free_w_func_and_null (port_identifier_free, self->r_id);
-  object_free_w_func_and_null (port_identifier_free, self->midi_id);
+  object_delete_and_null (self->l_id);
+  object_delete_and_null (self->r_id);
+  object_delete_and_null (self->midi_id);
   object_free_w_func_and_null (
     port_connections_manager_free, self->connections_mgr_before);
   object_free_w_func_and_null (

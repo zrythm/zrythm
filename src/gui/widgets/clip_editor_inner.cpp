@@ -94,7 +94,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
 {
   g_message ("refreshing...");
 
-  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
+  Region *         r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   Track *          track = NULL;
 

@@ -23,7 +23,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * Initializes the Metronome by loading the samples

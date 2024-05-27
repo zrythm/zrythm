@@ -18,7 +18,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT (AutomationPoint);
 TYPEDEF_STRUCT (AutomationCurve);
@@ -51,7 +51,7 @@ automation_arranger_widget_create_ap (
   ArrangerWidget * self,
   const Position * pos,
   const double     start_y,
-  ZRegion *        region,
+  Region *         region,
   bool             autofilling);
 
 /**

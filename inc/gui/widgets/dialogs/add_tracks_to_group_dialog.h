@@ -12,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define ADD_TRACKS_TO_GROUP_DIALOG_WIDGET_TYPE \
   (add_tracks_to_group_dialog_widget_get_type ())

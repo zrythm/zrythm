@@ -18,7 +18,7 @@
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel       Channel;
 typedef struct Track         Track;
-typedef struct ZRegion       AudioRegion;
+typedef struct Region        AudioRegion;
 typedef struct AudioClip     AudioClip;
 typedef struct StereoPorts   StereoPorts;
 
@@ -59,7 +59,7 @@ typedef struct StereoPorts   StereoPorts;
  *   loading from file.
  * @param bit_depth Bit depth, if using \ref frames.
  */
-ZRegion *
+Region *
 audio_region_new (
   const int              pool_id,
   const char *           filename,
@@ -91,7 +91,7 @@ audio_region_init_frame_caches (
  */
 void
 audio_region_update_channel_caches (
-  ZRegion *   self,
+  Region *   self,
   AudioClip * clip);
 #endif
 
@@ -100,14 +100,14 @@ audio_region_update_channel_caches (
  * Region.
  */
 AudioClip *
-audio_region_get_clip (const ZRegion * self);
+audio_region_get_clip (const Region * self);
 
 /**
  * Sets the clip ID on the region and updates any
  * references.
  */
 void
-audio_region_set_clip_id (ZRegion * self, int clip_id);
+audio_region_set_clip_id (Region * self, int clip_id);
 
 /**
  * Replaces the region's frames from \ref
@@ -121,7 +121,7 @@ audio_region_set_clip_id (ZRegion * self, int clip_id);
  */
 WARN_UNUSED_RESULT bool
 audio_region_replace_frames (
-  ZRegion *        self,
+  Region *         self,
   float *          frames,
   unsigned_frame_t start_frame,
   unsigned_frame_t num_frames,
@@ -140,12 +140,12 @@ audio_region_replace_frames (
 REALTIME
 HOT NONNULL void
 audio_region_fill_stereo_ports (
-  ZRegion *                           self,
+  Region *                            self,
   const EngineProcessTimeInfo * const time_nfo,
   StereoPorts *                       stereo_ports);
 
 float
-audio_region_detect_bpm (ZRegion * self, GArray * candidates);
+audio_region_detect_bpm (Region * self, GArray * candidates);
 
 /**
  * Sanity checking.
@@ -154,7 +154,7 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates);
  * Passing 0 will use the value from the current engine.
  */
 bool
-audio_region_validate (ZRegion * self, double frames_per_tick);
+audio_region_validate (Region * self, double frames_per_tick);
 
 /**
  * Fixes off-by-one rounding errors when changing BPM or sample rate which result
@@ -166,7 +166,7 @@ audio_region_validate (ZRegion * self, double frames_per_tick);
  * @return Whether positions were adjusted.
  */
 bool
-audio_region_fix_positions (ZRegion * self, double frames_per_tick);
+audio_region_fix_positions (Region * self, double frames_per_tick);
 
 /**
  * Frees members only but not the audio region itself.
@@ -174,7 +174,7 @@ audio_region_fix_positions (ZRegion * self, double frames_per_tick);
  * Regions should be free'd using region_free.
  */
 void
-audio_region_free_members (ZRegion * self);
+audio_region_free_members (Region * self);
 
 /**
  * @}

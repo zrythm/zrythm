@@ -4,7 +4,8 @@
 #include "gui/widgets/multi_selection.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (MultiSelectionWidget, multi_selection_widget, GTK_TYPE_WIDGET)
 

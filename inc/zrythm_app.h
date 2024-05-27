@@ -17,8 +17,8 @@
 #include "utils/types.h"
 
 #include <adwaita.h>
-#include <gtk/gtk.h>
 
+#include "gtk_wrapper.h"
 #include <zix/sem.h>
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())

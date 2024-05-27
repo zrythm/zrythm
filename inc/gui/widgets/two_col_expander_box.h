@@ -6,7 +6,7 @@
 
 #include "gui/widgets/expander_box.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TWO_COL_EXPANDER_BOX_WIDGET_TYPE \
   (two_col_expander_box_widget_get_type ())

@@ -28,7 +28,7 @@ test_get_chord_at_pos (void)
   position_set_to_bar (&p2, 24);
   position_set_to_bar (&loop, 5);
 
-  ZRegion *     r = P_CHORD_TRACK->chord_regions[0];
+  Region *      r = P_CHORD_TRACK->chord_regions[0];
   ChordObject * co1 = r->chord_objects[0];
   ChordObject * co2 = r->chord_objects[1];
   co1->chord_index = 0;

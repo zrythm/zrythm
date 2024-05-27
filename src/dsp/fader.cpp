@@ -96,8 +96,8 @@ fader_create_swap_phase_port (Fader * self, bool passthrough)
     passthrough ? _ ("Prefader Swap Phase") : _ ("Fader Swap Phase"));
   swap_phase->id.sym =
     passthrough ? g_strdup ("prefader_swap_phase") : g_strdup ("fader_swap_phase");
-  swap_phase->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_FADER_SWAP_PHASE;
-  swap_phase->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+  swap_phase->id.flags2 |= PortIdentifier::Flags2::FADER_SWAP_PHASE;
+  swap_phase->id.flags |= PortIdentifier::Flags::TOGGLE;
 
   return swap_phase;
 }
@@ -134,7 +134,7 @@ fader_new (
   self->amp = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->amp->id.sym =
     passthrough ? g_strdup ("prefader_volume") : g_strdup ("fader_volume");
   self->amp->deff = amp;
@@ -142,14 +142,14 @@ fader_new (
   self->amp->maxf = 2.f;
   port_set_control_value (self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
   self->fader_val = math_get_fader_val_from_amp (amp);
-  self->amp->id.flags |= ZPortFlags::Z_PORT_FLAG_AMPLITUDE;
+  self->amp->id.flags |= PortIdentifier::Flags::AMPLITUDE;
   if (
     (type == FaderType::FADER_TYPE_AUDIO_CHANNEL
      || type == FaderType::FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->amp->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-      self->amp->id.flags |= ZPortFlags::Z_PORT_FLAG_CHANNEL_FADER;
+      self->amp->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+      self->amp->id.flags |= PortIdentifier::Flags::CHANNEL_FADER;
     }
 
   /* set phase */
@@ -160,64 +160,64 @@ fader_new (
   self->balance = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->balance->id.sym =
     passthrough ? g_strdup ("prefader_balance") : g_strdup ("fader_balance");
   port_set_control_value (self->balance, balance, 0, 0);
-  self->balance->id.flags |= ZPortFlags::Z_PORT_FLAG_STEREO_BALANCE;
+  self->balance->id.flags |= PortIdentifier::Flags::STEREO_BALANCE;
   if (
     (type == FaderType::FADER_TYPE_AUDIO_CHANNEL
      || type == FaderType::FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->balance->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
+      self->balance->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
     }
 
   /* set mute */
   self->mute = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->mute->id.sym =
     passthrough ? g_strdup ("prefader_mute") : g_strdup ("fader_mute");
   control_port_set_toggled (self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->mute->id.flags |= ZPortFlags::Z_PORT_FLAG_FADER_MUTE;
-  self->mute->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+  self->mute->id.flags |= PortIdentifier::Flags::FADER_MUTE;
+  self->mute->id.flags |= PortIdentifier::Flags::TOGGLE;
   if (
     (type == FaderType::FADER_TYPE_AUDIO_CHANNEL
      || type == FaderType::FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
-      self->mute->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
+      self->mute->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
     }
 
   /* set solo */
   self->solo = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->solo->id.sym =
     passthrough ? g_strdup ("prefader_solo") : g_strdup ("fader_solo");
   control_port_set_toggled (self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->solo->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_FADER_SOLO;
-  self->solo->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+  self->solo->id.flags2 |= PortIdentifier::Flags2::FADER_SOLO;
+  self->solo->id.flags |= PortIdentifier::Flags::TOGGLE;
 
   /* set listen */
   self->listen = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->listen->id.sym =
     passthrough ? g_strdup ("prefader_listen") : g_strdup ("fader_listen");
   control_port_set_toggled (self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->listen->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_FADER_LISTEN;
-  self->listen->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+  self->listen->id.flags2 |= PortIdentifier::Flags2::FADER_LISTEN;
+  self->listen->id.flags |= PortIdentifier::Flags::TOGGLE;
 
   /* set mono compat */
   self->mono_compat_enabled = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
     passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"),
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+    PortIdentifier::OwnerType::FADER, self);
   self->mono_compat_enabled->id.sym =
     passthrough
       ? g_strdup ("prefader_mono_compat_enabled")
@@ -225,14 +225,13 @@ fader_new (
   control_port_set_toggled (
     self->mono_compat_enabled, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->mono_compat_enabled->id.flags2 |=
-    ZPortFlags2::Z_PORT_FLAG2_FADER_MONO_COMPAT;
-  self->mono_compat_enabled->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
+    PortIdentifier::Flags2::FADER_MONO_COMPAT;
+  self->mono_compat_enabled->id.flags |= PortIdentifier::Flags::TOGGLE;
 
   /* set swap phase */
   self->swap_phase = fader_create_swap_phase_port (self, passthrough);
   control_port_set_toggled (self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  port_set_owner (
-    self->swap_phase, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+  port_set_owner (self->swap_phase, PortIdentifier::OwnerType::FADER, self);
 
   if (
     type == FaderType::FADER_TYPE_AUDIO_CHANNEL
@@ -267,13 +266,13 @@ fader_new (
 
       /* stereo in */
       self->stereo_in = stereo_ports_new_generic (
-        F_INPUT, name, sym, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        F_INPUT, name, sym, PortIdentifier::OwnerType::FADER, self);
 
       /* set proper owner */
       port_set_owner (
-        self->stereo_in->l, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        self->stereo_in->l, PortIdentifier::OwnerType::FADER, self);
       port_set_owner (
-        self->stereo_in->r, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        self->stereo_in->r, PortIdentifier::OwnerType::FADER, self);
 
       if (type == FaderType::FADER_TYPE_AUDIO_CHANNEL)
         {
@@ -301,13 +300,13 @@ fader_new (
 
       /* stereo out */
       self->stereo_out = stereo_ports_new_generic (
-        F_NOT_INPUT, name, sym, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        F_NOT_INPUT, name, sym, PortIdentifier::OwnerType::FADER, self);
 
       /* set proper owner */
       port_set_owner (
-        self->stereo_out->l, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        self->stereo_out->l, PortIdentifier::OwnerType::FADER, self);
       port_set_owner (
-        self->stereo_out->r, ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        self->stereo_out->r, PortIdentifier::OwnerType::FADER, self);
     }
 
   if (type == FaderType::FADER_TYPE_MIDI_CHANNEL)
@@ -327,7 +326,7 @@ fader_new (
         }
       self->midi_in = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, name,
-        ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        PortIdentifier::OwnerType::FADER, self);
       self->midi_in->id.sym = g_strdup (sym);
       self->midi_in->midi_events = midi_events_new ();
 
@@ -344,7 +343,7 @@ fader_new (
         }
       self->midi_out = port_new_with_type_and_owner (
         ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT, name,
-        ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER, self);
+        PortIdentifier::OwnerType::FADER, self);
       self->midi_out->id.sym = g_strdup (sym);
       self->midi_out->midi_events = midi_events_new ();
     }
@@ -355,33 +354,37 @@ fader_new (
 Fader *
 fader_find_from_port_identifier (const PortIdentifier * id)
 {
-  ZPortFlags2 flag2 = id->flags2;
-  Track *     tr =
+  PortIdentifier::Flags2 flag2 = id->flags2;
+  Track *                tr =
     tracklist_find_track_by_name_hash (TRACKLIST, id->track_name_hash);
   if (
     !tr
     && ENUM_BITSET_TEST (
-      ZPortFlags2, flag2, ZPortFlags2::Z_PORT_FLAG2_SAMPLE_PROCESSOR_TRACK))
+      PortIdentifier::Flags2, flag2,
+      PortIdentifier::Flags2::SAMPLE_PROCESSOR_TRACK))
     {
       tr = tracklist_find_track_by_name_hash (
         SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
     }
   if (ENUM_BITSET_TEST (
-        ZPortFlags2, flag2, ZPortFlags2::Z_PORT_FLAG2_MONITOR_FADER))
+        PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::MonitorFader))
     return MONITOR_FADER;
   else if (
     ENUM_BITSET_TEST (
-      ZPortFlags2, flag2, ZPortFlags2::Z_PORT_FLAG2_SAMPLE_PROCESSOR_FADER))
+      PortIdentifier::Flags2, flag2,
+      PortIdentifier::Flags2::SAMPLE_PROCESSOR_FADER))
     return SAMPLE_PROCESSOR->fader;
   else if (
-    ENUM_BITSET_TEST (ZPortFlags2, flag2, ZPortFlags2::Z_PORT_FLAG2_PREFADER))
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::PREFADER))
     {
       g_return_val_if_fail (tr, NULL);
       g_return_val_if_fail (tr->channel, NULL);
       return tr->channel->prefader;
     }
   else if (
-    ENUM_BITSET_TEST (ZPortFlags2, flag2, ZPortFlags2::Z_PORT_FLAG2_POSTFADER))
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::POSTFADER))
     {
       g_return_val_if_fail (tr, NULL);
       g_return_val_if_fail (tr->channel, NULL);

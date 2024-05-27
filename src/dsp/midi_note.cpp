@@ -57,7 +57,7 @@ midi_note_new (
  * Sets the region the MidiNote belongs to.
  */
 void
-midi_note_set_region_and_index (MidiNote * self, ZRegion * region, int idx)
+midi_note_set_region_and_index (MidiNote * self, Region * region, int idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   region_identifier_copy (&obj->region_id, &region->id);
@@ -235,7 +235,7 @@ midi_note_set_val (MidiNote * midi_note, const uint8_t val)
   /* if currently playing set a note off event. */
   if (midi_note_hit (midi_note, PLAYHEAD->frames) && TRANSPORT_IS_ROLLING)
     {
-      ZRegion * region =
+      Region * region =
         arranger_object_get_region ((ArrangerObject *) midi_note);
       ArrangerObject * r_obj = (ArrangerObject *) region;
       g_return_if_fail (r_obj);
@@ -266,7 +266,7 @@ midi_note_shift_pitch (MidiNote * self, const int delta)
   midi_note_set_val (self, self->val);
 }
 
-ZRegion *
+Region *
 midi_note_get_region (MidiNote * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -280,7 +280,7 @@ midi_note_get_region (MidiNote * self)
 int
 midi_note_hit (MidiNote * self, const signed_frame_t gframes)
 {
-  ZRegion * region = arranger_object_get_region ((ArrangerObject *) self);
+  Region * region = arranger_object_get_region ((ArrangerObject *) self);
   ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local positions */

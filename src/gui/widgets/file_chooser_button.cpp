@@ -12,7 +12,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (FileChooserButtonWidget, file_chooser_button_widget, GTK_TYPE_BOX)
 

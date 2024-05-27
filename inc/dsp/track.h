@@ -26,7 +26,7 @@
 #include <glib/gi18n.h>
 
 typedef struct AutomationTracklist  AutomationTracklist;
-typedef struct ZRegion              ZRegion;
+typedef struct Region               Region;
 typedef struct Position             Position;
 typedef struct _TrackWidget         TrackWidget;
 typedef struct _FolderChannelWidget FolderChannelWidget;
@@ -282,13 +282,13 @@ typedef struct Track
   int passthrough_midi_input;
 
   /**
-   * ZRegion currently recording on.
+   * Region currently recording on.
    *
    * This must only be set by the RecordingManager
    * when processing an event and should not
    * be touched by anything else.
    */
-  ZRegion * recording_region;
+  Region * recording_region;
 
   /**
    * This is a flag to let the recording manager
@@ -340,13 +340,13 @@ typedef struct Track
    *
    * Note: these must always be sorted by Position.
    */
-  ZRegion ** chord_regions;
-  int        num_chord_regions;
-  size_t     chord_regions_size;
+  Region ** chord_regions;
+  int       num_chord_regions;
+  size_t    chord_regions_size;
 
   /** Snapshots used during playback. */
-  ZRegion ** chord_region_snapshots;
-  int        num_chord_region_snapshots;
+  Region ** chord_region_snapshots;
+  int       num_chord_region_snapshots;
 
   /**
    * ScaleObject's.
@@ -783,13 +783,13 @@ track_is_selected (Track * self);
 #define track_is_pinned(x) (x->pos < TRACKLIST->pinned_tracks_cutoff)
 
 /**
- * Adds a ZRegion to the given lane or
+ * Adds a Region to the given lane or
  * AutomationTrack of the track.
  *
- * The ZRegion must be the main region (see
+ * The Region must be the main region (see
  * ArrangerObjectInfo).
  *
- * @param at The AutomationTrack of this ZRegion, if
+ * @param at The AutomationTrack of this Region, if
  *   automation region.
  * @param lane_pos The position of the lane to add
  *   to, if applicable.
@@ -803,14 +803,14 @@ track_is_selected (Track * self);
     self, region, at, lane_pos, -1, gen_name, fire_events, error)
 
 /**
- * Inserts a ZRegion to the given lane or
+ * Inserts a Region to the given lane or
  * AutomationTrack of the track, at the given
  * index.
  *
- * The ZRegion must be the main region (see
+ * The Region must be the main region (see
  * ArrangerObjectInfo).
  *
- * @param at The AutomationTrack of this ZRegion, if
+ * @param at The AutomationTrack of this Region, if
  *   automation region.
  * @param lane_pos The position of the lane to add
  *   to, if applicable.
@@ -825,7 +825,7 @@ track_is_selected (Track * self);
 bool
 track_insert_region (
   Track *           track,
-  ZRegion *         region,
+  Region *          region,
   AutomationTrack * at,
   int               lane_pos,
   int               idx,
@@ -884,7 +884,7 @@ track_clear (Track * self);
  * @pararm free Also free the Region.
  */
 NONNULL void
-track_remove_region (Track * self, ZRegion * region, bool fire_events, bool free);
+track_remove_region (Track * self, Region * region, bool fire_events, bool free);
 
 /**
  * Wrapper for audio and MIDI/instrument tracks to fill in
@@ -944,17 +944,17 @@ track_remove_from_folder_parents (Track * self);
  * @param include_region_end Whether to include the
  *   region's end in the calculation.
  */
-ZRegion *
+Region *
 track_get_region_at_pos (
   const Track *    track,
   const Position * pos,
   bool             include_region_end);
 
 /**
- * Returns the last ZRegion in the
+ * Returns the last Region in the
  * track, or NULL.
  */
-ZRegion *
+Region *
 track_get_last_region (Track * track);
 
 /**
@@ -1251,7 +1251,7 @@ track_get_regions_in_range (
   Track *    self,
   Position * p1,
   Position * p2,
-  ZRegion ** regions);
+  Region **  regions);
 
 /**
  * Fills in the given array (if non-NULL) with all

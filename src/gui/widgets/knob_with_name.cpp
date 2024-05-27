@@ -5,7 +5,7 @@
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (KnobWithNameWidget, knob_with_name_widget, GTK_TYPE_BOX)
 

@@ -11,7 +11,7 @@
 #ifndef __GUI_WIDGETS_PLAYHEAD_SCROLL_BUTTONS_H__
 #define __GUI_WIDGETS_PLAYHEAD_SCROLL_BUTTONS_H__
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

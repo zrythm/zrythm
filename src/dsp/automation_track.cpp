@@ -8,6 +8,7 @@
 #include "dsp/automation_track.h"
 #include "dsp/control_port.h"
 #include "dsp/instrument_track.h"
+#include "dsp/port_identifier.h"
 #include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -33,7 +34,7 @@ _at_create (void)
 {
   AutomationTrack * self = object_new (AutomationTrack);
 
-  port_identifier_init (&self->port_id);
+  self->port_id = PortIdentifier ();
 
   return self;
 }
@@ -45,8 +46,8 @@ automation_track_init_loaded (AutomationTrack * self, AutomationTracklist * atl)
 
   /* init regions */
   self->regions_size = (size_t) self->num_regions;
-  int       i;
-  ZRegion * region;
+  int      i;
+  Region * region;
   for (i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];
@@ -60,19 +61,19 @@ automation_track_new (Port * port)
   AutomationTrack * self = _at_create ();
 
   self->regions_size = 1;
-  self->regions = object_new_n (self->regions_size, ZRegion *);
+  self->regions = object_new_n (self->regions_size, Region *);
 
   self->height = TRACK_DEF_HEIGHT;
 
-  g_return_val_if_fail (port_identifier_validate (&port->id), NULL);
-  port_identifier_copy (&self->port_id, &port->id);
+  g_return_val_if_fail (port->id.validate (), NULL);
+  self->port_id = port->id;
 
   port->at = self;
 
   self->automation_mode = AutomationMode::AUTOMATION_MODE_READ;
 
 #if 0
-  if (ENUM_BITSET_TEST(ZPortFlags,port->id.flags,ZPortFlags::Z_PORT_FLAG_MIDI_AUTOMATABLE))
+  if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
     {
       self->automation_mode =
         AutomationMode::AUTOMATION_MODE_RECORD;
@@ -87,10 +88,10 @@ automation_track_new (Port * port)
 NONNULL bool
 automation_track_validate (AutomationTrack * self)
 {
-  g_return_val_if_fail (port_identifier_validate (&self->port_id), false);
+  g_return_val_if_fail (self->port_id.validate (), false);
 
   unsigned int track_name_hash = self->port_id.track_name_hash;
-  if (self->port_id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+  if (self->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN)
     {
       g_return_val_if_fail (
         self->port_id.plugin_id.track_name_hash == track_name_hash, false);
@@ -106,7 +107,7 @@ automation_track_validate (AutomationTrack * self)
           g_message (
             "The automation track for the following "
             "port identifier was not found");
-          port_identifier_print (&self->port_id);
+          self->port_id.print ();
           g_message ("automation tracks:");
           AutomationTracklist * atl =
             automation_track_get_automation_tracklist (self);
@@ -117,7 +118,7 @@ automation_track_validate (AutomationTrack * self)
 
   for (int j = 0; j < self->num_regions; j++)
     {
-      ZRegion * r = self->regions[j];
+      Region * r = self->regions[j];
       g_return_val_if_fail (
         r->id.track_name_hash == track_name_hash && r->id.at_idx == self->index
           && r->id.idx == j,
@@ -178,33 +179,33 @@ automation_record_mode_get_localized (AutomationRecordMode mode, char * buf)
 }
 
 /**
- * Adds an automation ZRegion to the AutomationTrack.
+ * Adds an automation Region to the AutomationTrack.
  *
  * @note This must not be used directly. Use
  *   track_add_region() instead.
  */
 void
-automation_track_add_region (AutomationTrack * self, ZRegion * region)
+automation_track_add_region (AutomationTrack * self, Region * region)
 {
   automation_track_insert_region (self, region, self->num_regions);
 }
 
 /**
- * Inserts an automation ZRegion to the
+ * Inserts an automation Region to the
  * AutomationTrack at the given index.
  *
  * @note This must not be used directly. Use
  *   track_insert_region() instead.
  */
 void
-automation_track_insert_region (AutomationTrack * self, ZRegion * region, int idx)
+automation_track_insert_region (AutomationTrack * self, Region * region, int idx)
 {
   g_return_if_fail (idx >= 0);
   g_return_if_fail (
     region->name && region->id.type == RegionType::REGION_TYPE_AUTOMATION);
 
   array_double_size_if_full (
-    self->regions, self->num_regions, self->regions_size, ZRegion *);
+    self->regions, self->num_regions, self->regions_size, Region *);
   for (int i = self->num_regions; i > idx; i--)
     {
       self->regions[i] = self->regions[i - 1];
@@ -228,7 +229,7 @@ automation_track_get_automation_tracklist (AutomationTrack * self)
 }
 
 /**
- * Returns the ZRegion that starts before
+ * Returns the Region that starts before
  * given Position, if any.
  *
  * @param ends_after Whether to only check for
@@ -236,21 +237,21 @@ automation_track_get_automation_tracklist (AutomationTrack * self)
  *   the region surrounds \ref pos), otherwise
  *   get the region that ends last.
  */
-ZRegion *
+Region *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
   bool                    ends_after,
   bool                    use_snapshots)
 {
-  ZRegion ** regions = use_snapshots ? self->region_snapshots : self->regions;
-  int        num_regions =
+  Region ** regions = use_snapshots ? self->region_snapshots : self->regions;
+  int       num_regions =
     use_snapshots ? self->num_region_snapshots : self->num_regions;
   if (ends_after)
     {
       for (int i = num_regions - 1; i >= 0; i--)
         {
-          ZRegion *        region = regions[i];
+          Region *         region = regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) region;
           if (
             position_is_before_or_equal (&r_obj->pos, pos)
@@ -261,11 +262,11 @@ automation_track_get_region_before_pos (
   else
     {
       /* find latest region */
-      ZRegion * latest_r = NULL;
-      long      latest_distance = LONG_MIN;
+      Region * latest_r = NULL;
+      long     latest_distance = LONG_MIN;
       for (int i = num_regions - 1; i >= 0; i--)
         {
-          ZRegion *        region = regions[i];
+          Region *         region = regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) region;
           long distance_from_r_end = r_obj->end_pos.frames - pos->frames;
           if (
@@ -297,7 +298,7 @@ automation_track_get_ap_before_pos (
   bool                    ends_after,
   bool                    use_snapshots)
 {
-  ZRegion * r = automation_track_get_region_before_pos (
+  Region * r = automation_track_get_region_before_pos (
     self, pos, ends_after, use_snapshots);
   ArrangerObject * r_obj = (ArrangerObject *) r;
 
@@ -355,7 +356,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
           PortIdentifier * dest = &at->port_id;
           if (dest->owner_type == src->owner_type && dest->type == src->type && dest->flow == src->flow && dest->flags == src->flags && dest->track_name_hash == src->track_name_hash && (dest->sym ? string_is_equal (dest->sym, src->sym) : string_is_equal (dest->label, src->label)))
             {
-              if (dest->owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+              if (dest->owner_type == PortIdentifier::OwnerType::PLUGIN)
                 {
                   if (!plugin_identifier_is_equal (
                         &dest->plugin_id, &src->plugin_id))
@@ -375,8 +376,8 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
                        * ports with the same label but different symbol) */
                       if (
                         !ENUM_BITSET_TEST (
-                          ZPortFlags, src->flags,
-                          ZPortFlags::Z_PORT_FLAG_GENERIC_PLUGIN_PORT)
+                          PortIdentifier::Flags, src->flags,
+                          PortIdentifier::Flags::GENERIC_PLUGIN_PORT)
                         && !string_is_equal (dest->sym, src->sym))
                         {
                           continue;
@@ -401,7 +402,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
       /* not basic search */
       else
         {
-          if (port_identifier_is_equal (&port->id, &at->port_id))
+          if (port->id.is_equal (at->port_id))
             {
               return at;
             }
@@ -423,7 +424,7 @@ AutomationTrack *
 automation_track_find_from_port_id (PortIdentifier * id, bool basic_search)
 {
   Port * port = port_find_from_identifier (id);
-  g_return_val_if_fail (port && port_identifier_is_equal (id, &port->id), NULL);
+  g_return_val_if_fail (port && id->is_equal (port->id), NULL);
 
   return automation_track_find_from_port (port, NULL, basic_search);
 }
@@ -530,7 +531,7 @@ automation_track_unselect_all (AutomationTrack * self)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * region = self->regions[i];
+      Region * region = self->regions[i];
       arranger_object_select (
         (ArrangerObject *) region, false, false, F_NO_PUBLISH_EVENTS);
     }
@@ -540,18 +541,18 @@ automation_track_unselect_all (AutomationTrack * self)
  * Removes a region from the automation track.
  */
 void
-automation_track_remove_region (AutomationTrack * self, ZRegion * region)
+automation_track_remove_region (AutomationTrack * self, Region * region)
 {
   g_return_if_fail (IS_REGION (region));
 
-  ZRegion * clip_editor_region =
+  Region * clip_editor_region =
     CLIP_EDITOR ? clip_editor_get_region (CLIP_EDITOR) : NULL;
 
   array_delete (self->regions, self->num_regions, region);
 
   for (int i = region->id.idx; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      Region * r = self->regions[i];
 
       r->id.idx = i;
       region_update_identifier (r);
@@ -571,8 +572,8 @@ automation_track_clear (AutomationTrack * self)
 {
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
-      ZRegion * region = self->regions[i];
-      Track *   track = automation_track_get_track (self);
+      Region * region = self->regions[i];
+      Track *  track = automation_track_get_track (self);
       g_return_if_fail (IS_TRACK_AND_NONNULL (track));
       track_remove_region (track, region, F_NO_PUBLISH_EVENTS, F_FREE);
     }
@@ -600,7 +601,7 @@ automation_track_set_index (AutomationTrack * self, int index)
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * region = self->regions[i];
+      Region * region = self->regions[i];
       g_return_if_fail (region);
       region->id.at_idx = index;
       region_update_identifier (region);
@@ -644,8 +645,8 @@ automation_track_get_val_at_pos (
       return port_get_control_value (port, normalized);
     }
 
-  /*ZRegion * region = arranger_object_get_region (ap_obj);*/
-  ZRegion * region = automation_track_get_region_before_pos (
+  /*Region * region = arranger_object_get_region (ap_obj);*/
+  Region * region = automation_track_get_region_before_pos (
     self, pos, ends_after, use_snapshots);
   g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.f);
   ArrangerObject * r_obj = (ArrangerObject *) region;
@@ -764,16 +765,16 @@ automation_track_get_y_px_from_normalized_val (
 }
 
 /**
- * Gets the last ZRegion in the AutomationTrack.
+ * Gets the last Region in the AutomationTrack.
  *
  * FIXME cache.
  */
-ZRegion *
+Region *
 automation_track_get_last_region (AutomationTrack * self)
 {
   Position pos;
   position_init (&pos);
-  ZRegion *        region, *last_region = NULL;
+  Region *         region, *last_region = NULL;
   ArrangerObject * r_obj;
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -793,7 +794,7 @@ automation_track_verify (AutomationTrack * self)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      Region * r = self->regions[i];
 
       for (int j = 0; j < r->num_aps; j++)
         {
@@ -823,11 +824,11 @@ automation_track_set_caches (AutomationTrack * self, CacheTypes types)
           arranger_object_free ((ArrangerObject *) self->region_snapshots[i]);
         }
       self->num_region_snapshots = 0;
-      self->region_snapshots = static_cast<ZRegion **> (g_realloc_n (
-        self->region_snapshots, (size_t) self->num_regions, sizeof (ZRegion *)));
+      self->region_snapshots = static_cast<Region **> (g_realloc_n (
+        self->region_snapshots, (size_t) self->num_regions, sizeof (Region *)));
       for (int i = 0; i < self->num_regions; i++)
         {
-          self->region_snapshots[i] = (ZRegion *) arranger_object_clone (
+          self->region_snapshots[i] = (Region *) arranger_object_clone (
             (ArrangerObject *) self->regions[i]);
           self->num_region_snapshots++;
         }
@@ -855,7 +856,7 @@ automation_track_clone (AutomationTrack * src)
 
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
-  dest->regions = object_new_n (dest->regions_size, ZRegion *);
+  dest->regions = object_new_n (dest->regions_size, Region *);
   dest->visible = src->visible;
   dest->created = src->created;
   dest->index = src->index;
@@ -865,14 +866,14 @@ automation_track_clone (AutomationTrack * src)
   dest->height = src->height;
   g_warn_if_fail (dest->height >= TRACK_MIN_HEIGHT);
 
-  port_identifier_copy (&dest->port_id, &src->port_id);
+  dest->port_id = src->port_id;
 
-  ZRegion * src_region;
+  Region * src_region;
   for (int j = 0; j < src->num_regions; j++)
     {
       src_region = src->regions[j];
       dest->regions[j] =
-        (ZRegion *) arranger_object_clone ((ArrangerObject *) src_region);
+        (Region *) arranger_object_clone ((ArrangerObject *) src_region);
     }
 
   return dest;
@@ -893,8 +894,6 @@ automation_track_free (AutomationTrack * self)
         arranger_object_free, ArrangerObject *, self->region_snapshots[i]);
     }
   object_zero_and_free (self->region_snapshots);
-
-  port_identifier_free_members (&self->port_id);
 
   object_zero_and_free (self);
 }

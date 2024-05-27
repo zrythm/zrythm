@@ -7,7 +7,7 @@
 #include "dsp/master_track.h"
 #include "project.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 void
 master_track_init (Track * self)

@@ -16,7 +16,8 @@
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 static const char * plugin_protocol_strings[] = {
   "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",

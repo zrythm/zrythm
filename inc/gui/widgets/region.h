@@ -16,7 +16,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets
@@ -38,15 +38,15 @@
  * Returns the lane rectangle for the region.
  */
 void
-region_get_lane_full_rect (ZRegion * self, GdkRectangle * rect);
+region_get_lane_full_rect (Region * self, GdkRectangle * rect);
 
 /**
- * Draws the ZRegion in the given cairo context in
+ * Draws the Region in the given cairo context in
  * relative coordinates.
  *
  * @param rect Arranger rectangle.
  */
 HOT void
-region_draw (ZRegion * self, GtkSnapshot * snapshot, GdkRectangle * rect);
+region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect);
 
 #endif

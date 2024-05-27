@@ -31,7 +31,7 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 /**
  * A buffer of n bars after the end of the last object.
@@ -153,49 +153,52 @@ transport_new (AudioEngine * engine)
   self->roll = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Roll");
   self->roll->id.sym = g_strdup ("roll");
-  port_set_owner (self->roll, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->roll->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->roll->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_ROLL;
+  port_set_owner (
+    self->roll, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->roll->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->roll->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_ROLL;
 
   self->stop = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Stop");
   self->stop->id.sym = g_strdup ("stop");
-  port_set_owner (self->stop, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->stop->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->stop->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_STOP;
+  port_set_owner (
+    self->stop, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->stop->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->stop->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_STOP;
 
   self->backward = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Backward");
   self->backward->id.sym = g_strdup ("backward");
   port_set_owner (
-    self->backward, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->backward->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->backward->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_BACKWARD;
+    self->backward, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->backward->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->backward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_BACKWARD;
 
   self->forward = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Forward");
   self->forward->id.sym = g_strdup ("forward");
   port_set_owner (
-    self->forward, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->forward->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->forward->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_FORWARD;
+    self->forward, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->forward->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->forward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_FORWARD;
 
   self->loop_toggle = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Loop toggle");
   self->loop_toggle->id.sym = g_strdup ("loop_toggle");
   port_set_owner (
-    self->loop_toggle, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->loop_toggle->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->loop_toggle->id.flags2 |=
-    ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
+    self->loop_toggle, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT,
+    self);
+  self->loop_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->loop_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE;
 
   self->rec_toggle = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Rec toggle");
   self->rec_toggle->id.sym = g_strdup ("rec_toggle");
   port_set_owner (
-    self->rec_toggle, ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT, self);
-  self->rec_toggle->id.flags |= ZPortFlags::Z_PORT_FLAG_TOGGLE;
-  self->rec_toggle->id.flags2 |= ZPortFlags2::Z_PORT_FLAG2_TRANSPORT_REC_TOGGLE;
+    self->rec_toggle, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT,
+    self);
+  self->rec_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
+  self->rec_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE;
 
   init_common (self);
 
@@ -247,7 +250,7 @@ transport_is_rolling (const Transport * self)
 
 /**
  * Prepares audio regions for stretching (sets the
- * \ref ZRegion.before_length).
+ * \ref Region.before_length).
  *
  * @param selections If NULL, all audio regions
  *   are used. If non-NULL, only the regions in the
@@ -262,7 +265,7 @@ transport_prepare_audio_regions_for_stretch (
     {
       for (int i = 0; i < sel->num_regions; i++)
         {
-          ZRegion * region = sel->regions[i];
+          Region * region = sel->regions[i];
           region->before_length =
             arranger_object_get_length_in_ticks ((ArrangerObject *) region);
         }
@@ -282,7 +285,7 @@ transport_prepare_audio_regions_for_stretch (
 
               for (int k = 0; k < lane->num_regions; k++)
                 {
-                  ZRegion * region = lane->regions[k];
+                  Region * region = lane->regions[k];
                   region->before_length = arranger_object_get_length_in_ticks (
                     (ArrangerObject *) region);
                 } // foreach region
@@ -299,7 +302,7 @@ transport_prepare_audio_regions_for_stretch (
  *   selections are used.
  * @param with_fixed_ratio Stretch all regions with
  *   a fixed ratio. If this is off, the current
- *   region length and \ref ZRegion.before_length
+ *   region length and \ref Region.before_length
  *   will be used to calculate the ratio.
  * @param force Force stretching, regardless of
  *   musical mode.
@@ -319,7 +322,7 @@ transport_stretch_regions (
     {
       for (int i = 0; i < sel->num_regions; i++)
         {
-          ZRegion * region = TL_SELECTIONS->regions[i];
+          Region * region = TL_SELECTIONS->regions[i];
 
           /* don't stretch audio regions with
            * musical mode off */
@@ -358,7 +361,7 @@ transport_stretch_regions (
 
               for (int k = 0; k < lane->num_regions; k++)
                 {
-                  ZRegion * region = lane->regions[k];
+                  Region * region = lane->regions[k];
 
                   /* don't stretch regions with
                    * musical mode off */
@@ -639,7 +642,7 @@ transport_move_playhead (
 
           for (int l = 0; l < lane->num_regions; l++)
             {
-              ZRegion * region = lane->regions[l];
+              Region * region = lane->regions[l];
 
               if (!region_is_hit (region, PLAYHEAD->frames, 1))
                 continue;

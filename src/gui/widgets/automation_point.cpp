@@ -50,7 +50,7 @@ automation_point_draw (
   PangoLayout *     layout)
 {
   ArrangerObject *  obj = (ArrangerObject *) ap;
-  ZRegion *         region = arranger_object_get_region (obj);
+  Region *          region = arranger_object_get_region (obj);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (region, ap, true, true);
   ArrangerObject * next_obj = (ArrangerObject *) next_ap;

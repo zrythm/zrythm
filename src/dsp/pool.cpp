@@ -19,7 +19,8 @@
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+
+#include "gtk_wrapper.h"
 
 /**
  * Inits after loading a project.

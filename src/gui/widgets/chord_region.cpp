@@ -23,7 +23,7 @@
  * names inside the region.
  */
 void
-chord_region_recreate_pango_layouts (ZRegion * self)
+chord_region_recreate_pango_layouts (Region * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 

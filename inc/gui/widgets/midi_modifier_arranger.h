@@ -10,7 +10,7 @@
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define MW_MIDI_MODIFIER_ARRANGER (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 

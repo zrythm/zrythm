@@ -17,7 +17,7 @@
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define TIMELINE_SELECTION_INFO_WIDGET_TYPE \
   (timeline_selection_info_widget_get_type ())

@@ -314,9 +314,9 @@ graph_destroy (Graph * self)
 static GraphNode *
 add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 {
-  ZPortOwnerType owner = port->id.owner_type;
+  PortIdentifier::OwnerType owner = port->id.owner_type;
 
-  if (owner == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+  if (owner == PortIdentifier::OwnerType::PLUGIN)
     {
       port->plugin = port_get_plugin (port, true);
       g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (port->plugin), NULL);
@@ -381,7 +381,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
   if (
     drop_if_unnecessary && port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
     && ENUM_BITSET_TEST (
-      ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_AUTOMATABLE))
+      PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::AUTOMATABLE))
     {
       AutomationTrack * found_at = port->at;
       g_return_val_if_fail (found_at, NULL);
@@ -394,18 +394,19 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
   /* drop ports without sources and dests */
   if (
     drop_if_unnecessary && port->num_dests == 0 && port->num_srcs == 0
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_FADER
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK_PROCESSOR
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_TRACK
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_CHANNEL_SEND
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_AUDIO_ENGINE
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_HW
-    && owner != ZPortOwnerType::Z_PORT_OWNER_TYPE_TRANSPORT
+    && owner != PortIdentifier::OwnerType::PLUGIN
+    && owner != PortIdentifier::OwnerType::FADER
+    && owner != PortIdentifier::OwnerType::TRACK_PROCESSOR
+    && owner != PortIdentifier::OwnerType::TRACK
+    && owner != PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR
+    && owner != PortIdentifier::OwnerType::CHANNEL
+    && owner != PortIdentifier::OwnerType::CHANNEL_SEND
+    && owner != PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE
+    && owner != PortIdentifier::OwnerType::HW
+    && owner != PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT
     && !(ENUM_BITSET_TEST (
-      ZPortFlags, port->id.flags, ZPortFlags::Z_PORT_FLAG_MANUAL_PRESS)))
+      PortIdentifier::Flags, port->id.flags,
+      PortIdentifier::Flags::MANUAL_PRESS)))
     {
       return NULL;
     }
@@ -652,7 +653,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (port->deleting)
         continue;
-      if (port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (port_pl->deleting)
@@ -1075,7 +1076,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       port = (Port *) g_ptr_array_index (ports, i);
       if (G_UNLIKELY (port->deleting))
         continue;
-      if (port->id.owner_type == ZPortOwnerType::Z_PORT_OWNER_TYPE_PLUGIN)
+      if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);
           if (G_UNLIKELY (port_pl->deleting))

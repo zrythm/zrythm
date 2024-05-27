@@ -11,7 +11,7 @@
 #include "project.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 static gpointer
 process_cb (gpointer data)

@@ -83,33 +83,33 @@ modulator_macro_processor_new (Track * track, int idx)
   self->name = g_strdup (str);
   self->macro = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, str,
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, self);
+    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
   self->macro->id.sym = g_strdup_printf ("macro_%d", idx + 1);
   Port * port = self->macro;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->deff = 0.f;
   port_set_control_value (port, 0.75f, false, false);
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_AUTOMATABLE;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_MODULATOR_MACRO;
+  port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
   port->id.port_index = idx;
 
   sprintf (str, _ ("Macro CV In %d"), idx + 1);
   self->cv_in = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_INPUT, str,
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, self);
+    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
   self->cv_in->id.sym = g_strdup_printf ("macro_cv_in_%d", idx + 1);
   port = self->cv_in;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_MODULATOR_MACRO;
+  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
   port->id.port_index = idx;
 
   sprintf (str, _ ("Macro CV Out %d"), idx + 1);
   self->cv_out = port_new_with_type_and_owner (
     ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
-    ZPortOwnerType::Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, self);
+    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
   self->cv_out->id.sym = g_strdup_printf ("macro_cv_out_%d", idx + 1);
   port = self->cv_out;
-  port->id.flags |= ZPortFlags::Z_PORT_FLAG_MODULATOR_MACRO;
+  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
   port->id.port_index = idx;
 
   return self;

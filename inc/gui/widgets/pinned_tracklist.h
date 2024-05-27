@@ -19,7 +19,7 @@
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 #define PINNED_TRACKLIST_WIDGET_TYPE (pinned_tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

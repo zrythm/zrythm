@@ -16,7 +16,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
-#include <gtk/gtk.h>
+#include "gtk_wrapper.h"
 
 typedef struct _ArrangerWidget        ArrangerWidget;
 typedef struct MidiNote               MidiNote;
@@ -65,7 +65,7 @@ void
 timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y);
 
 /**
- * Create a ZRegion at the given Position in the
+ * Create a Region at the given Position in the
  * given Track's given TrackLane.
  *
  * @param type The type of region to create.

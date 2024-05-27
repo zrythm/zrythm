@@ -11,8 +11,7 @@
 #ifndef __GUI_WIDGETS_BOT_BAR_H__
 #define __GUI_WIDGETS_BOT_BAR_H__
 
-#include <gtk/gtk.h>
-
+#include "gtk_wrapper.h"
 #include "libpanel_wrapper.h"
 
 typedef struct _MidiActivityBarWidget   MidiActivityBarWidget;

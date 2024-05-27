@@ -112,7 +112,7 @@ on_project_selection_type_changed (void)
 
   switch (PROJECT->last_selection)
     {
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top), klass);
       gtk_widget_remove_css_class (
@@ -120,18 +120,18 @@ on_project_selection_type_changed (void)
       gtk_widget_add_css_class (GTK_WIDGET (MW_MIXER), klass);
       gtk_widget_remove_css_class (GTK_WIDGET (MW_MIXER), selectable_class);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), klass);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), selectable_class);
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSTRUMENT:
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MODULATOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSTRUMENT:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MODULATOR:
       break;
-    case ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
       gtk_widget_add_css_class (GTK_WIDGET (MW_CLIP_EDITOR_INNER), klass);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), selectable_class);
@@ -239,8 +239,10 @@ on_automation_value_changed (Port * port)
 {
   PortIdentifier * id = &port->id;
 
-  if (ENUM_BITSET_TEST (
-        ZPortFlags2, id->flags2, ZPortFlags2::Z_PORT_FLAG2_CHANNEL_SEND_AMOUNT))
+  if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id->flags2,
+      PortIdentifier::Flags2::CHANNEL_SEND_AMOUNT))
     {
       Track * tr = port_get_track (port, true);
       if (track_is_selected (tr))
@@ -651,13 +653,13 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
        * clicking on a track or on a region */
       if (
         PROJECT->last_selection
-          == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST
+          == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST
         || PROJECT->last_selection
-             == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT
+             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT
         || PROJECT->last_selection
-             == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX
+             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX
         || PROJECT->last_selection
-             == ZProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
         {
           left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
         }
