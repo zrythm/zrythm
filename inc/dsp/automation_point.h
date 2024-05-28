@@ -16,7 +16,7 @@
 #include "gui/backend/arranger_object.h"
 #include "utils/types.h"
 
-typedef struct Port                   Port;
+class Port;
 typedef struct AutomationTrack        AutomationTrack;
 typedef struct _AutomationPointWidget AutomationPointWidget;
 

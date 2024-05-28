@@ -17,7 +17,7 @@
 #include "dsp/position.h"
 #include "dsp/region.h"
 
-typedef struct Port                 Port;
+class Port;
 typedef struct Track                Track;
 typedef struct AutomationTracklist  AutomationTracklist;
 typedef struct CustomButtonWidget   CustomButtonWidget;

@@ -105,7 +105,7 @@ port_connection_row_widget_new (
   char                   designation[600];
   const PortIdentifier * port_id =
     is_input ? connection->dest_id : connection->src_id;
-  Port * port = port_find_from_identifier (port_id);
+  Port * port = Port::find_from_identifier (port_id);
   if (!IS_PORT_AND_NONNULL (port))
     {
       g_critical ("failed to find port for '%s'", port_id->label);

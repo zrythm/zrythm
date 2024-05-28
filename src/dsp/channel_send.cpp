@@ -107,7 +107,7 @@ channel_send_init_loaded (ChannelSend * self, Track * track)
 {
   self->track = track;
 
-#define INIT_LOADED_PORT(x) port_init_loaded (self->x, self)
+#define INIT_LOADED_PORT(x) self->x->init_loaded (self)
 
   INIT_LOADED_PORT (enabled);
   INIT_LOADED_PORT (amount);
@@ -132,7 +132,7 @@ channel_send_new (unsigned int track_name_hash, int slot, Track * track)
   self->slot = slot;
 
 #define SET_PORT_OWNER(x) \
-  port_set_owner (self->x, PortIdentifier::OwnerType::CHANNEL_SEND, self)
+  self->x->set_owner (PortIdentifier::OwnerType::CHANNEL_SEND, self)
 
   char name[600];
   char sym[600];
@@ -307,7 +307,7 @@ channel_send_get_target_track (ChannelSend * self, Track * owner)
     }
 
   g_return_val_if_fail (conn, NULL);
-  Port * port = port_find_from_identifier (conn->dest_id);
+  Port * port = Port::find_from_identifier (conn->dest_id);
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), NULL);
 
   return port_get_track (port, true);
@@ -330,13 +330,13 @@ channel_send_get_target_sidechain (ChannelSend * self)
   PortConnection * conn = port_connections_manager_get_source_or_dest (
     PORT_CONNECTIONS_MGR, &self->stereo_out->l->id, false);
   g_return_val_if_fail (conn, NULL);
-  Port * l = port_find_from_identifier (conn->dest_id);
+  Port * l = Port::find_from_identifier (conn->dest_id);
   g_return_val_if_fail (l, NULL);
 
   conn = port_connections_manager_get_source_or_dest (
     PORT_CONNECTIONS_MGR, &self->stereo_out->r->id, false);
   g_return_val_if_fail (conn, NULL);
-  Port * r = port_find_from_identifier (conn->dest_id);
+  Port * r = Port::find_from_identifier (conn->dest_id);
   g_return_val_if_fail (r, NULL);
 
   StereoPorts * sp = stereo_ports_new_from_existing (l, r);
@@ -448,7 +448,7 @@ channel_send_connect_stereo (
   /* verify can be connected */
   if (validate && port_is_in_active_project (l))
     {
-      Port * src = port_find_from_identifier (&self->stereo_out->l->id);
+      Port * src = Port::find_from_identifier (&self->stereo_out->l->id);
       if (!ports_can_be_connected (src, l))
         {
           g_set_error_literal (
@@ -503,7 +503,7 @@ channel_send_connect_midi (
   /* verify can be connected */
   if (validate && port_is_in_active_project (port))
     {
-      Port * src = port_find_from_identifier (&self->midi_out->id);
+      Port * src = Port::find_from_identifier (&self->midi_out->id);
       if (!ports_can_be_connected (src, port))
         {
           g_set_error_literal (
@@ -536,7 +536,7 @@ disconnect_midi (ChannelSend * self)
   if (!conn)
     return;
 
-  Port * dest_port = port_find_from_identifier (conn->dest_id);
+  Port * dest_port = Port::find_from_identifier (conn->dest_id);
   g_return_if_fail (dest_port);
 
   port_connections_manager_ensure_disconnect (
@@ -554,7 +554,7 @@ disconnect_audio (ChannelSend * self)
       if (!conn)
         continue;
 
-      Port * dest_port = port_find_from_identifier (conn->dest_id);
+      Port * dest_port = Port::find_from_identifier (conn->dest_id);
       g_return_if_fail (dest_port);
       port_connections_manager_ensure_disconnect (
         PORT_CONNECTIONS_MGR, &src_port->id, &dest_port->id);
@@ -623,7 +623,7 @@ channel_send_get_dest_name (ChannelSend * self, char * buf)
       PortConnection * conn = port_connections_manager_get_source_or_dest (
         PORT_CONNECTIONS_MGR, &search_port->id, false);
       g_return_if_fail (conn);
-      Port * dest = port_find_from_identifier (conn->dest_id);
+      Port * dest = Port::find_from_identifier (conn->dest_id);
       g_return_if_fail (IS_PORT_AND_NONNULL (dest));
       if (self->is_sidechain)
         {
@@ -710,7 +710,7 @@ channel_send_is_enabled (const ChannelSend * self)
   PortConnection * conn = port_connections_manager_get_source_or_dest (
     PORT_CONNECTIONS_MGR, &search_port->id, false);
   g_return_val_if_fail (conn, false);
-  Port * dest = port_find_from_identifier (conn->dest_id);
+  Port * dest = Port::find_from_identifier (conn->dest_id);
   g_return_val_if_fail (IS_PORT_AND_NONNULL (dest), false);
 
   /* if dest port is a plugin port and plugin

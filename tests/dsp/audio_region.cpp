@@ -42,8 +42,8 @@ test_fill_stereo_ports (void)
   StereoPorts * ports = stereo_ports_new_generic (
     false, "ports", "ports",
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, NULL);
-  port_allocate_bufs (ports->l);
-  port_allocate_bufs (ports->r);
+  ports->l->allocate_bufs ();
+  ports->r->allocate_bufs ();
 
   transport_move_playhead (
     TRANSPORT, &pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);

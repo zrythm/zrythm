@@ -2093,7 +2093,7 @@ track_disconnect (Track * self, bool remove_pl, bool recalc_graph)
         }
 
       port_disconnect_all (port);
-      port_free_bufs (port);
+      port->free_bufs ();
     }
   object_free_w_func_and_null (g_ptr_array_unref, ports);
 

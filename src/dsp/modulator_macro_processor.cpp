@@ -19,9 +19,9 @@ modulator_macro_processor_init_loaded (
 {
   self->track = track;
 
-  port_init_loaded (self->macro, self);
-  port_init_loaded (self->cv_in, self);
-  port_init_loaded (self->cv_out, self);
+  self->macro->init_loaded (self);
+  self->cv_in->init_loaded (self);
+  self->cv_out->init_loaded (self);
 }
 
 Track *

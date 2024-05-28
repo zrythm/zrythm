@@ -22,7 +22,7 @@ G_DECLARE_FINAL_TYPE (
   LIVE_WAVEFORM_WIDGET,
   GtkDrawingArea)
 
-typedef struct Port Port;
+class Port;
 
 /**
  * @addtogroup widgets

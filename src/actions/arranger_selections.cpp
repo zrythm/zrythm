@@ -1254,7 +1254,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
                 r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
               AutomationTrack * cur_at = region_get_automation_track (r);
               g_return_val_if_fail (cur_at, -1);
-              Port * port = port_find_from_identifier (self->target_port);
+              Port * port = Port::find_from_identifier (self->target_port);
               g_return_val_if_fail (port, -1);
               Track * track = port_get_track (port, true);
               g_return_val_if_fail (track, -1);
@@ -1642,7 +1642,7 @@ do_or_undo_duplicate_or_link (
                 r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
               AutomationTrack * cur_at = region_get_automation_track (r);
               g_return_val_if_fail (cur_at, -1);
-              Port * port = port_find_from_identifier (self->target_port);
+              Port * port = Port::find_from_identifier (self->target_port);
               g_return_val_if_fail (port, -1);
               Track * track = port_get_track (port, true);
               g_return_val_if_fail (track, -1);

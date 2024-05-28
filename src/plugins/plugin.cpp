@@ -730,7 +730,7 @@ plugin_set_track_and_slot (
     {
       Port *         port = pl->in_ports[i];
       PortIdentifier copy_id = PortIdentifier (port->id);
-      port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
+      port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -742,7 +742,7 @@ plugin_set_track_and_slot (
     {
       Port *         port = pl->out_ports[i];
       PortIdentifier copy_id = PortIdentifier (port->id);
-      port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl);
+      port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -1062,7 +1062,7 @@ plugin_update_latency (Plugin * pl)
         pl->type##_ports, sizeof (Port *) * pl->type##_ports_size)); \
     } \
   port->id.port_index = pl->num_##type##_ports; \
-  port_set_owner (port, PortIdentifier::OwnerType::PLUGIN, pl); \
+  port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl); \
   array_append (pl->type##_ports, pl->num_##type##_ports, port)
 
 /**
@@ -1121,7 +1121,7 @@ plugin_move_automation (
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
-      Port *            port = port_find_from_identifier (&at->port_id);
+      Port *            port = Port::find_from_identifier (&at->port_id);
       if (!port)
         continue;
       g_return_if_fail (IS_PORT (port));
@@ -1899,14 +1899,12 @@ plugin_clone (Plugin * src, GError ** error)
   for (int i = 0; i < src->num_in_ports; i++)
     {
       self->in_ports[i] = port_clone (src->in_ports[i]);
-      port_set_owner (
-        self->in_ports[i], PortIdentifier::OwnerType::PLUGIN, self);
+      self->in_ports[i]->set_owner (PortIdentifier::OwnerType::PLUGIN, self);
     }
   for (int i = 0; i < src->num_out_ports; i++)
     {
       self->out_ports[i] = port_clone (src->out_ports[i]);
-      port_set_owner (
-        self->out_ports[i], PortIdentifier::OwnerType::PLUGIN, self);
+      self->out_ports[i]->set_owner (PortIdentifier::OwnerType::PLUGIN, self);
     }
   self->num_in_ports = src->num_in_ports;
   self->num_out_ports = src->num_out_ports;

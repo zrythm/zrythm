@@ -299,7 +299,7 @@ automation_point_get_port (const AutomationPoint * const self)
   const AutomationTrack * const at =
     automation_point_get_automation_track (self);
   g_return_val_if_fail (at, NULL);
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   g_return_val_if_fail (port, NULL);
 
   return port;

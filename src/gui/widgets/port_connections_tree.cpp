@@ -98,8 +98,8 @@ create_model (void)
       if (conn->locked)
         continue;
 
-      Port * src_port = port_find_from_identifier (conn->src_id);
-      Port * dest_port = port_find_from_identifier (conn->dest_id);
+      Port * src_port = Port::find_from_identifier (conn->src_id);
+      Port * dest_port = Port::find_from_identifier (conn->dest_id);
       g_return_val_if_fail (
         IS_PORT_AND_NONNULL (src_port) && IS_PORT_AND_NONNULL (dest_port), NULL);
 

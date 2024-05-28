@@ -665,7 +665,7 @@ item_factory_bind_cb (
                 }
               if (string_is_equal (self->column_name, _ ("Destination")))
                 {
-                  Port * port = port_find_from_identifier (&mm->dest_id);
+                  Port * port = Port::find_from_identifier (&mm->dest_id);
                   port_get_full_designation (port, str);
 
                   char min_str[40], max_str[40];

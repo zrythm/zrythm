@@ -42,7 +42,7 @@
 TYPEDEF_STRUCT (GraphNode);
 TYPEDEF_STRUCT (Graph);
 TYPEDEF_STRUCT (PassthroughProcessor);
-TYPEDEF_STRUCT (Port);
+class Port;
 TYPEDEF_STRUCT (Fader);
 TYPEDEF_STRUCT (Track);
 TYPEDEF_STRUCT (SampleProcessor);

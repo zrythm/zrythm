@@ -9,7 +9,7 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct Port Port;
+class Port;
 
 /**
  * @addtogroup widgets

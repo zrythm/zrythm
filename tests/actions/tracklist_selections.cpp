@@ -141,7 +141,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   g_debug ("deff %f", (double) port->deff);
   float normalized_val = control_port_real_val_to_normalized (port, port->deff);
@@ -287,7 +287,7 @@ _test_undo_track_deletion (
   arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
     port->deff, control_port_real_val_to_normalized (port, port->deff),
@@ -795,7 +795,7 @@ test_ins_track_deletion_w_automation (void)
   arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
     port->deff, control_port_real_val_to_normalized (port, port->deff),
@@ -826,7 +826,7 @@ test_ins_track_deletion_w_automation (void)
   arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  port = port_find_from_identifier (&at->port_id);
+  port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   ap = automation_point_new_float (
     port->deff, control_port_real_val_to_normalized (port, port->deff),

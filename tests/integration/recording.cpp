@@ -48,8 +48,8 @@ prepare (void)
   AUDIO_ENGINE->dummy_input = stereo_ports_new_generic (
     true, "Dummy input", "dummy_input",
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
-  port_allocate_bufs (AUDIO_ENGINE->dummy_input->l);
-  port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
+  AUDIO_ENGINE->dummy_input->l->allocate_bufs ();
+  AUDIO_ENGINE->dummy_input->r->allocate_bufs ();
 
   /* sleep for a bit because Port's last_change interferes
    * with touch automation recording if it's too close to the
@@ -92,18 +92,18 @@ do_takes_no_loop_no_punch (
   latch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_LATCH;
   automation_track_set_automation_mode (
     latch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
-  latch_port = port_find_from_identifier (&latch_at->port_id);
+  latch_port = Port::find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
   float latch_val_at_start = latch_port->control;
   touch_at = master_track->automation_tracklist.ats[1];
   touch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
     touch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
-  touch_port = port_find_from_identifier (&touch_at->port_id);
+  touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
   float touch_val_at_start = touch_port->control;
   on_at = master_track->automation_tracklist.ats[1];
-  on_port = port_find_from_identifier (&on_at->port_id);
+  on_port = Port::find_from_identifier (&on_at->port_id);
   g_assert_nonnull (on_port);
   float on_val_at_start = on_port->control;
 
@@ -328,18 +328,18 @@ do_takes_loop_no_punch (
   latch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_LATCH;
   automation_track_set_automation_mode (
     latch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
-  latch_port = port_find_from_identifier (&latch_at->port_id);
+  latch_port = Port::find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
   float latch_val_at_start = latch_port->control;
   touch_at = master_track->automation_tracklist.ats[1];
   touch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
     touch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
-  touch_port = port_find_from_identifier (&touch_at->port_id);
+  touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
   float touch_val_at_start = touch_port->control;
   on_at = master_track->automation_tracklist.ats[1];
-  on_port = port_find_from_identifier (&on_at->port_id);
+  on_port = Port::find_from_identifier (&on_at->port_id);
   g_assert_nonnull (on_port);
   float on_val_at_start = on_port->control;
 
@@ -685,7 +685,7 @@ test_automation_touch_recording (void)
   touch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
     touch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
-  touch_port = port_find_from_identifier (&touch_at->port_id);
+  touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
   float touch_val_at_start = 0.1f;
   port_set_control_value (

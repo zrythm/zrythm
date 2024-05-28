@@ -128,7 +128,7 @@ connect_or_disconnect (
             {
             case ZPortType::Z_PORT_TYPE_EVENT:
               {
-                Port *   port = port_find_from_identifier (self->midi_id);
+                Port *   port = Port::find_from_identifier (self->midi_id);
                 GError * err = NULL;
                 bool     connected = channel_send_connect_midi (
                   send, port, F_NO_RECALC_GRAPH, F_VALIDATE, &err);
@@ -144,8 +144,8 @@ connect_or_disconnect (
               break;
             case ZPortType::Z_PORT_TYPE_AUDIO:
               {
-                Port *   l = port_find_from_identifier (self->l_id);
-                Port *   r = port_find_from_identifier (self->r_id);
+                Port *   l = Port::find_from_identifier (self->l_id);
+                Port *   r = Port::find_from_identifier (self->r_id);
                 GError * err = NULL;
                 bool     connected = channel_send_connect_stereo (
                   send, NULL, l, r,

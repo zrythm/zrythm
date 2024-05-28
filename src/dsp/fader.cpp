@@ -47,7 +47,7 @@ fader_init_loaded (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
-      port_init_loaded (port, self);
+      port->init_loaded (self);
     }
   g_ptr_array_unref (ports);
 
@@ -231,7 +231,7 @@ fader_new (
   /* set swap phase */
   self->swap_phase = fader_create_swap_phase_port (self, passthrough);
   control_port_set_toggled (self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  port_set_owner (self->swap_phase, PortIdentifier::OwnerType::FADER, self);
+  self->swap_phase->set_owner (PortIdentifier::OwnerType::FADER, self);
 
   if (
     type == FaderType::FADER_TYPE_AUDIO_CHANNEL
@@ -269,10 +269,8 @@ fader_new (
         F_INPUT, name, sym, PortIdentifier::OwnerType::FADER, self);
 
       /* set proper owner */
-      port_set_owner (
-        self->stereo_in->l, PortIdentifier::OwnerType::FADER, self);
-      port_set_owner (
-        self->stereo_in->r, PortIdentifier::OwnerType::FADER, self);
+      self->stereo_in->l->set_owner (PortIdentifier::OwnerType::FADER, self);
+      self->stereo_in->r->set_owner (PortIdentifier::OwnerType::FADER, self);
 
       if (type == FaderType::FADER_TYPE_AUDIO_CHANNEL)
         {
@@ -303,10 +301,8 @@ fader_new (
         F_NOT_INPUT, name, sym, PortIdentifier::OwnerType::FADER, self);
 
       /* set proper owner */
-      port_set_owner (
-        self->stereo_out->l, PortIdentifier::OwnerType::FADER, self);
-      port_set_owner (
-        self->stereo_out->r, PortIdentifier::OwnerType::FADER, self);
+      self->stereo_out->l->set_owner (PortIdentifier::OwnerType::FADER, self);
+      self->stereo_out->r->set_owner (PortIdentifier::OwnerType::FADER, self);
     }
 
   if (type == FaderType::FADER_TYPE_MIDI_CHANNEL)

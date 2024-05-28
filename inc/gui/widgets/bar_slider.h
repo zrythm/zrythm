@@ -23,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   BAR_SLIDER_WIDGET,
   GtkWidget)
 
-typedef struct Port Port;
+class Port;
 
 /**
  * @addtogroup widgets

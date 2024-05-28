@@ -20,7 +20,7 @@
 #include "gtk_wrapper.h"
 
 typedef struct Position Position;
-typedef struct Port     Port;
+class Port;
 
 /**
  * @addtogroup utils

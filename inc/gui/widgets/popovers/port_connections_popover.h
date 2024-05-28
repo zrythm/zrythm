@@ -24,7 +24,7 @@ G_DECLARE_FINAL_TYPE (
   PORT_CONNECTIONS_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct Port                       Port;
+class Port;
 typedef struct _PortSelectorPopoverWidget PortSelectorPopoverWidget;
 
 /**

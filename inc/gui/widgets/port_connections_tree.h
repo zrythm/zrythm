@@ -12,7 +12,7 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct Port Port;
+class Port;
 
 #define MW_PORT_CONNECTIONS_TREE (MW_PORT_CONNECTIONS->bindings_tree)
 

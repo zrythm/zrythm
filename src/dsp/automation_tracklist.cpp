@@ -488,7 +488,7 @@ automation_tracklist_get_at_from_port (AutomationTracklist * self, Port * port)
   for (int i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
-      Port * at_port = port_find_from_identifier (&at->port_id);
+      Port * at_port = Port::find_from_identifier (&at->port_id);
       if (at_port == port)
         {
           return at;

@@ -15,7 +15,7 @@
 #include "gtk_wrapper.h"
 #include <kiss_fft.h>
 
-TYPEDEF_STRUCT (Port);
+class Port;
 TYPEDEF_STRUCT (PeakFallSmooth);
 
 /**

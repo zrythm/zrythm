@@ -13,7 +13,7 @@
 #include "dsp/port_identifier.h"
 #include "dsp/tempo_track.h"
 
-typedef struct Port Port;
+class Port;
 
 /**
  * Used for queueing changes to be applied during

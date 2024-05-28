@@ -94,7 +94,7 @@ track_processor_init_loaded (TrackProcessor * self, Track * track)
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
-      port_init_loaded (port, self);
+      port->init_loaded (self);
     }
   object_free_w_func_and_null (g_ptr_array_unref, ports);
 

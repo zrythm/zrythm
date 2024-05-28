@@ -209,7 +209,7 @@ region_move_to_track (
 
       /* convert the automation points to match the new
        * automatable */
-      Port * port = port_find_from_identifier (&at->port_id);
+      Port * port = Port::find_from_identifier (&at->port_id);
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
       for (int i = 0; i < region->num_aps; i++)
         {

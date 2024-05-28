@@ -15,8 +15,6 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/cpu.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
@@ -25,19 +23,15 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
-#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "settings/settings.h"
-#include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
-#include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -385,7 +379,7 @@ draw_timeline_bg (
 
               float normalized_val = automation_track_get_val_at_pos (
                 at, PLAYHEAD, true, true, Z_F_USE_SNAPSHOTS);
-              Port *            port = port_find_from_identifier (&at->port_id);
+              Port * port = Port::find_from_identifier (&at->port_id);
               AutomationPoint * ap = automation_track_get_ap_before_pos (
                 at, PLAYHEAD, true, Z_F_USE_SNAPSHOTS);
               if (!ap)

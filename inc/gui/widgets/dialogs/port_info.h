@@ -20,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
   PORT_INFO_DIALOG_WIDGET,
   GtkWindow)
 
-typedef struct Port Port;
+class Port;
 
 /**
  * @addtogroup widgets

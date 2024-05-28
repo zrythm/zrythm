@@ -590,7 +590,7 @@ do_or_undo_create_or_delete (
                 {
                   Port * port =
                     static_cast<Port *> (g_ptr_array_index (ports, j));
-                  Port * prj_port = port_find_from_identifier (&port->id);
+                  Port * prj_port = Port::find_from_identifier (&port->id);
                   port_restore_from_non_project (prj_port, port);
                 }
               object_free_w_func_and_null (g_ptr_array_unref, ports);

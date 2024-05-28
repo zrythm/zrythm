@@ -39,7 +39,7 @@ port_action_new (
   self->type = type;
   if (is_normalized)
     {
-      Port * port = port_find_from_identifier (port_id);
+      Port * port = Port::find_from_identifier (port_id);
       self->val = control_port_normalized_val_to_real (port, val);
     }
   else
@@ -56,7 +56,7 @@ port_action_new (
 UndoableAction *
 port_action_new_reset_control (PortIdentifier * port_id, GError ** error)
 {
-  Port * port = port_find_from_identifier (port_id);
+  Port * port = Port::find_from_identifier (port_id);
 
   return port_action_new (
     PortActionType::PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff,
@@ -98,7 +98,7 @@ port_action_perform_reset_control (PortIdentifier * port_id, GError ** error)
 static int
 port_action_do_or_undo (PortAction * self, bool _do)
 {
-  Port * port = port_find_from_identifier (&self->port_id);
+  Port * port = Port::find_from_identifier (&self->port_id);
 
   switch (self->type)
     {

@@ -56,9 +56,6 @@ enum class PanLaw;
  * @{
  */
 
-#define PORT_SCHEMA_VERSION 1
-#define STEREO_PORTS_SCHEMA_VERSION 1
-
 #define PORT_MAGIC 456861194
 #define IS_PORT(_p) (((Port *) (_p))->magic == PORT_MAGIC)
 #define IS_PORT_AND_NONNULL(x) ((x) && IS_PORT (x))
@@ -92,61 +89,76 @@ enum class PanLaw;
    || port_is_owner_active (self, PortIdentifier::OwnerType::HW, ext_port))
 
 /**
- * What the internal data is.
- */
-enum class PortInternalType
-{
-  None,
-
-  /** Pointer to Lv2Port. */
-  Lv2Port,
-
-  /** Pointer to jack_port_t. */
-  JackPort,
-
-  /** TODO */
-  PulseAudioPort,
-
-  /** Pointer to snd_seq_port_info_t. */
-  AlsaSequencerPort,
-};
-
-/**
- * Scale point.
- */
-typedef struct PortScalePoint
-{
-  float  val;
-  char * label;
-} PortScalePoint;
-
-int
-port_scale_point_cmp (const void * _a, const void * _b);
-
-NONNULL PortScalePoint *
-port_scale_point_new (const float val, const char * label);
-
-NONNULL void
-port_scale_point_free (PortScalePoint * self);
-
-/**
  * Must ONLY be created via port_new()
  */
-typedef struct Port
+class Port
 {
-  int schema_version;
+public:
+  /**
+   * What the internal data is.
+   */
+  enum class InternalType
+  {
+    None,
+
+    /** Pointer to Lv2Port. */
+    Lv2Port,
+
+    /** Pointer to jack_port_t. */
+    JackPort,
+
+    /** TODO */
+    PulseAudioPort,
+
+    /** Pointer to snd_seq_port_info_t. */
+    AlsaSequencerPort,
+  };
+
+  /**
+   * Scale point.
+   */
+  struct ScalePoint
+  {
+    float  val;
+    char * label;
+  };
+
+  /**
+   * This function finds the Ports corresponding to
+   * the PortIdentifiers for srcs and dests.
+   *
+   * Should be called after the ports are loaded from
+   * yml.
+   */
+  NONNULL void init_loaded (void * owner);
+
+  void set_owner (PortIdentifier::OwnerType owner_type, void * owner);
+
+  NONNULL static Port * find_from_identifier (const PortIdentifier * const id);
+
+  /**
+   * @brief Allocates buffers used during DSP.
+   *
+   * To be called only where necessary to save RAM.
+   */
+  void allocate_bufs ();
+
+  /**
+   * @brief Frees buffers.
+   *
+   * To be used when removing ports from the project/graph.
+   */
+  void free_bufs ();
 
   PortIdentifier id;
 
   /**
-   * Flag to indicate that this port is exposed
-   * to the backend.
+   * Flag to indicate that this port is exposed to the backend.
    */
-  int exposed_to_backend;
+  bool exposed_to_backend;
 
   /**
-   * Buffer to be reallocated every time the buffer
-   * size changes.
+   * Buffer to be reallocated every time the buffer size changes.
    *
    * The buffer size is AUDIO_ENGINE->block_length.
    */
@@ -157,17 +169,15 @@ typedef struct Port
    */
   MidiEvents * midi_events;
 
-  /** Caches filled when recalculating the
-   * graph. */
-  struct Port ** srcs;
-  int            num_srcs;
-  size_t         srcs_size;
+  /** Caches filled when recalculating the graph. */
+  Port ** srcs;
+  int     num_srcs;
+  size_t  srcs_size;
 
-  /** Caches filled when recalculating the
-   * graph. */
-  struct Port ** dests;
-  int            num_dests;
-  size_t         dests_size;
+  /** Caches filled when recalculating the graph. */
+  Port ** dests;
+  int     num_dests;
+  size_t  dests_size;
 
   /** Caches filled when recalculating the graph. */
   const PortConnection ** src_connections;
@@ -184,7 +194,7 @@ typedef struct Port
    * Indicates whether data or lv2_port should be
    * used.
    */
-  PortInternalType internal_type;
+  InternalType internal_type;
 
   /**
    * Minimum, maximum and zero values for this
@@ -284,27 +294,23 @@ typedef struct Port
 #endif
 
   /** Scale points. */
-  PortScalePoint ** scale_points;
-  int               num_scale_points;
+  ScalePoint ** scale_points;
+  int           num_scale_points;
 
   /**
-   * The control value if control port, otherwise
-   * 0.0f.
+   * @brief The control value if control port, otherwise 0.0f.
    *
-   * FIXME for fader, this should be the
-   * fader_val (0.0 to 1.0) and not the
+   * FIXME for fader, this should be the fader_val (0.0 to 1.0) and not the
    * amplitude.
    *
-   * This value will be snapped (eg, if integer or
-   * toggle).
+   * This value will be snapped (eg, if integer or toggle).
    */
   float control;
 
   /** Unsnapped value, used by widgets. */
   float unsnapped_control;
 
-  /** Flag that the value of the port changed from
-   * reading automation. */
+  /** Flag that the value of the port changed from reading automation. */
   bool value_changed_from_reading;
 
   /**
@@ -381,8 +387,7 @@ typedef struct Port
   int deleting;
 
   /**
-   * Flag to indicate if the ring buffers below should be
-   * filled or not.
+   * Flag to indicate if the ring buffers below should be filled or not.
    *
    * If a UI element that needs them becomes mapped
    * (visible), this should be set to true, and when unmapped
@@ -398,34 +403,29 @@ typedef struct Port
   gint64 last_midi_event_time;
 
   /**
-   * Ring buffer for saving the contents of the audio buffer
-   * to be used in the UI instead of directly accessing the
-   * buffer.
+   * Ring buffer for saving the contents of the audio buffer to be used in the
+   * UI instead of directly accessing the buffer.
    *
-   * This should contain blocks of block_length samples and
-   * should maintain at least 10 cycles' worth of buffers.
+   * This should contain blocks of block_length samples and should maintain at
+   * least 10 cycles' worth of buffers.
    *
    * This is also used for CV.
    */
   ZixRing * audio_ring;
 
   /**
-   * Ring buffer for saving MIDI events to be
-   * used in the UI instead of directly accessing
-   * the events.
+   * @brief Ring buffer for saving MIDI events to be used in the UI instead of
+   * directly accessing the events.
    *
-   * This should keep pushing MidiEvent's whenever
-   * they occur and the reader should empty it
-   * after checking if there are any events.
+   * This should keep pushing MidiEvent's whenever they occur and the reader
+   * should empty it after checking if there are any events.
    *
-   * Currently there is only 1 reader for each port
-   * so this wont be a problem for now, but we
-   * should have one ring for each reader.
+   * Currently there is only 1 reader for each port so this wont be a problem
+   * for now, but we should have one ring for each reader.
    */
   ZixRing * midi_ring;
 
-  /** Max amplitude during processing, if audio
-   * (fabsf). */
+  /** Max amplitude during processing, if audio (fabsf). */
   float peak;
 
   /** Last time \ref Port.max_amp was set. */
@@ -449,11 +449,9 @@ typedef struct Port
   PluginGtkController * widget;
 
   /**
-   * Whether the port received a UI event from
-   * the plugin UI in this cycle.
+   * Whether the port received a UI event from the plugin UI in this cycle.
    *
-   * This is used to avoid re-sending that event
-   * to the plugin.
+   * This is used to avoid re-sending that event to the plugin.
    *
    * @note for control ports only.
    */
@@ -463,7 +461,7 @@ typedef struct Port
   bool automating;
 
   /**
-   * Automation track this port is attached to.
+   * @brief Automation track this port is attached to.
    *
    * To be set at runtime only (not serialized).
    */
@@ -487,10 +485,18 @@ typedef struct Port
   /** Magic number to identify that this is a Port. */
   int magic;
 
-  /** Last allocated buffer size (used for audio
-   * ports). */
+  /** Last allocated buffer size (used for audio ports). */
   size_t last_buf_sz;
-} Port;
+};
+
+int
+port_scale_point_cmp (const void * _a, const void * _b);
+
+NONNULL Port::ScalePoint *
+        port_scale_point_new (const float val, const char * label);
+
+NONNULL void
+port_scale_point_free (Port::ScalePoint * self);
 
 /**
  * L & R port, for convenience.
@@ -504,27 +510,11 @@ typedef struct StereoPorts
   Port * r;
 } StereoPorts;
 
-/**
- * This function finds the Ports corresponding to
- * the PortIdentifiers for srcs and dests.
- *
- * Should be called after the ports are loaded from
- * yml.
- */
-NONNULL void
-port_init_loaded (Port * self, void * owner);
-
-void
-port_set_owner (Port * self, PortIdentifier::OwnerType owner_type, void * owner);
-
-NONNULL Port *
-port_find_from_identifier (const PortIdentifier * const id);
-
 NONNULL static inline void
 stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 {
-  port_init_loaded (sp->l, owner);
-  port_init_loaded (sp->r, owner);
+  sp->l->init_loaded (owner);
+  sp->r->init_loaded (owner);
 }
 
 NONNULL_ARGS (1)
@@ -533,8 +523,8 @@ static inline void stereo_ports_set_owner (
   PortIdentifier::OwnerType owner_type,
   void *                    owner)
 {
-  port_set_owner (sp->l, owner_type, owner);
-  port_set_owner (sp->r, owner_type, owner);
+  sp->l->set_owner (owner_type, owner);
+  sp->r->set_owner (owner_type, owner);
 }
 
 /**
@@ -550,24 +540,6 @@ port_new_with_type_and_owner (
   const char *              label,
   PortIdentifier::OwnerType owner_type,
   void *                    owner);
-
-/**
- * Allocates buffers used during DSP.
- *
- * To be called only where necessary to save
- * RAM.
- */
-NONNULL void
-port_allocate_bufs (Port * self);
-
-/**
- * Frees buffers.
- *
- * To be used when removing ports from the
- * project/graph.
- */
-NONNULL void
-port_free_bufs (Port * self);
 
 /**
  * Creates blank stereo ports.
@@ -758,8 +730,8 @@ port_set_expose_to_backend (Port * self, int expose);
 NONNULL static inline bool
 port_is_exposed_to_backend (const Port * self)
 {
-  return self->internal_type == PortInternalType::JackPort
-         || self->internal_type == PortInternalType::AlsaSequencerPort
+  return self->internal_type == Port::InternalType::JackPort
+         || self->internal_type == Port::InternalType::AlsaSequencerPort
          || self->id.owner_type == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE
          || self->exposed_to_backend;
 }
@@ -781,21 +753,18 @@ port_find_by_alsa_seq_id (const int id);
 #endif
 
 /**
- * Sets the given control value to the
- * corresponding underlying structure in the Port.
+ * Sets the given control value to the corresponding underlying structure in the
+ Port.
  *
- * Note: this is only for setting the base values
- * (eg when automating via an automation lane). For
- * CV automations this should not be used.
+ * Note: this is only for setting the base values (eg when automating via an
+ automation lane). For CV automations this should not be used.
  *
- * @param is_normalized Whether the given value is
- *   normalized between 0 and 1.
- * @param forward_event Whether to forward a port
- *   control change event to the plugin UI. Only
- *   applicable for plugin control ports.
- *   If the control is being changed manually or
- *   from within Zrythm, this should be true to
- *   notify the plugin of the change.
+ * @param is_normalized Whether the given value is normalized between 0 and 1.
+ * @param forward_event Whether to forward a port   control change event to the
+ plugin UI. Only
+ *   applicable for plugin control ports. If the control is being changed
+ manually or from within Zrythm, this should be true to notify the plugin of the
+ change.
  */
 NONNULL void
 port_set_control_value (

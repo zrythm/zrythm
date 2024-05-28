@@ -405,7 +405,7 @@ _test_port_and_plugin_track_pos_after_move (
   g_assert_true (ret);
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
     port->deff, control_port_real_val_to_normalized (port, port->deff),
@@ -589,7 +589,7 @@ test_move_two_plugins_one_slot_up (void)
   at = atl->ats[atl->num_ats - 1];
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);
@@ -916,8 +916,8 @@ test_create_modulator (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* verify port connection is back */
-  cv_out = port_find_from_identifier (&cv_out_id);
-  ctrl_in = port_find_from_identifier (&ctrl_in_id);
+  cv_out = Port::find_from_identifier (&cv_out_id);
+  ctrl_in = Port::find_from_identifier (&ctrl_in_id);
   g_assert_true (ports_connected (cv_out, ctrl_in));
 
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -1193,7 +1193,7 @@ _test_replace_instrument (
   g_assert_cmpint (num_regions, ==, 1);
 
   /* create some automation points */
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
     port->deff, control_port_real_val_to_normalized (port, port->deff),

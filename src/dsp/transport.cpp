@@ -94,7 +94,7 @@ transport_init_loaded (Transport * self, AudioEngine * engine, Track * tempo_tra
       transport_update_caches (self, beats_per_bar, beat_unit);
     }
 
-#define INIT_LOADED_PORT(x) port_init_loaded (self->x, self)
+#define INIT_LOADED_PORT(x) self->x->init_loaded (self)
 
   INIT_LOADED_PORT (roll);
   INIT_LOADED_PORT (stop);
@@ -153,50 +153,48 @@ transport_new (AudioEngine * engine)
   self->roll = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Roll");
   self->roll->id.sym = g_strdup ("roll");
-  port_set_owner (
-    self->roll, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->roll->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->roll->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_ROLL;
 
   self->stop = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Stop");
   self->stop->id.sym = g_strdup ("stop");
-  port_set_owner (
-    self->stop, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->stop->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->stop->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_STOP;
 
   self->backward = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Backward");
   self->backward->id.sym = g_strdup ("backward");
-  port_set_owner (
-    self->backward, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->backward->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->backward->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->backward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_BACKWARD;
 
   self->forward = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Forward");
   self->forward->id.sym = g_strdup ("forward");
-  port_set_owner (
-    self->forward, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
+  self->forward->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->forward->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->forward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_FORWARD;
 
   self->loop_toggle = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Loop toggle");
   self->loop_toggle->id.sym = g_strdup ("loop_toggle");
-  port_set_owner (
-    self->loop_toggle, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT,
-    self);
+  self->loop_toggle->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->loop_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->loop_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE;
 
   self->rec_toggle = port_new_with_type (
     ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Rec toggle");
   self->rec_toggle->id.sym = g_strdup ("rec_toggle");
-  port_set_owner (
-    self->rec_toggle, PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT,
-    self);
+  self->rec_toggle->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
   self->rec_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
   self->rec_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE;
 

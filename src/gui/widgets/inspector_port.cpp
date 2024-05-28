@@ -423,7 +423,7 @@ inspector_port_widget_new (Port * port)
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->jack), _ ("Expose port to JACK"));
           gtk_overlay_add_overlay (self->overlay, GTK_WIDGET (self->jack));
-          if (port->data && port->internal_type == PortInternalType::JackPort)
+          if (port->data && port->internal_type == Port::InternalType::JackPort)
             {
               gtk_toggle_button_set_active (self->jack, 1);
             }

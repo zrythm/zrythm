@@ -14,8 +14,8 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts     StereoPorts;
-typedef struct Port            Port;
+typedef struct StereoPorts StereoPorts;
+class Port;
 typedef struct Channel         Channel;
 typedef struct AudioEngine     AudioEngine;
 typedef struct ControlRoom     ControlRoom;

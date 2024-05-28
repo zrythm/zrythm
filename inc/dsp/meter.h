@@ -17,7 +17,7 @@
 typedef struct TruePeakDsp TruePeakDsp;
 typedef struct KMeterDsp   KMeterDsp;
 typedef struct PeakDsp     PeakDsp;
-typedef struct Port        Port;
+class Port;
 
 /**
  * @addtogroup dsp

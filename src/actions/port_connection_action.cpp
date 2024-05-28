@@ -79,8 +79,8 @@ port_connection_action_do_or_undo (
   bool                   _do,
   GError **              error)
 {
-  Port * src = port_find_from_identifier (self->connection->src_id);
-  Port * dest = port_find_from_identifier (self->connection->dest_id);
+  Port * src = Port::find_from_identifier (self->connection->src_id);
+  Port * dest = Port::find_from_identifier (self->connection->dest_id);
   g_return_val_if_fail (src && dest, -1);
   PortConnection * prj_connection = port_connections_manager_find_connection (
     PORT_CONNECTIONS_MGR, self->connection->src_id, self->connection->dest_id);

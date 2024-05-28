@@ -239,10 +239,10 @@ host_dispatcher (
 #  endif
       break;
 #  if 0
-    case NATIVE_HOST_OPCODE_PortInternalType::INTERNAL_PLUGIN:
+    case NATIVE_HOST_OPCODE_Port::InternalType::INTERNAL_PLUGIN:
       /* falktx: you will need to call the new
        * juce functions, then return 1 on the
-       * PortInternalType::INTERNAL_PLUGIN host opcode.
+       * Port::InternalType::INTERNAL_PLUGIN host opcode.
        * when that opcode returns 1, carla-plugin
        * will let the host do the juce idling
        * which is for the best here, since you want
@@ -1191,7 +1191,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
           if (param_info->scalePointCount > 0)
             {
               port->scale_points =
-                object_new_n (param_info->scalePointCount, PortScalePoint *);
+                object_new_n (param_info->scalePointCount, Port::ScalePoint *);
               port->num_scale_points = (int) param_info->scalePointCount;
             }
           for (uint32_t j = 0; j < param_info->scalePointCount; j++)
@@ -1204,7 +1204,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
             }
           qsort (
             port->scale_points, (size_t) port->num_scale_points,
-            sizeof (PortScalePoint *), port_scale_point_cmp);
+            sizeof (Port::ScalePoint *), port_scale_point_cmp);
 
           plugin_add_in_port (self->plugin, port);
 

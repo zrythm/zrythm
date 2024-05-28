@@ -423,7 +423,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
 AutomationTrack *
 automation_track_find_from_port_id (PortIdentifier * id, bool basic_search)
 {
-  Port * port = port_find_from_identifier (id);
+  Port * port = Port::find_from_identifier (id);
   g_return_val_if_fail (port && id->is_equal (port->id), NULL);
 
   return automation_track_find_from_port (port, NULL, basic_search);
@@ -635,7 +635,7 @@ automation_track_get_val_at_pos (
     automation_track_get_ap_before_pos (self, pos, ends_after, use_snapshots);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
 
-  Port * port = port_find_from_identifier (&self->port_id);
+  Port * port = Port::find_from_identifier (&self->port_id);
   g_return_val_if_fail (port, 0.f);
 
   /* no automation points yet, return negative
@@ -836,7 +836,7 @@ automation_track_set_caches (AutomationTrack * self, CacheTypes types)
 
   if (types & CACHE_TYPE_AUTOMATION_LANE_PORTS)
     {
-      self->port = port_find_from_identifier (&self->port_id);
+      self->port = Port::find_from_identifier (&self->port_id);
     }
 }
 

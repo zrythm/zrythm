@@ -797,7 +797,7 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
       if (!at->recording_paused)
         return false;
 
-      Port * port = port_find_from_identifier (&at->port_id);
+      Port * port = Port::find_from_identifier (&at->port_id);
       float  value = port_get_control_value (port, false);
       float  normalized_value = port_get_control_value (port, true);
 
@@ -1087,7 +1087,7 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
   Track * tr =
     tracklist_find_track_by_name_hash (TRACKLIST, ev->track_name_hash);
   AutomationTrack * at = tr->automation_tracklist.ats[ev->automation_track_idx];
-  Port *            port = port_find_from_identifier (&at->port_id);
+  Port *            port = Port::find_from_identifier (&at->port_id);
   float             value = port_get_control_value (port, false);
   float             normalized_value = port_get_control_value (port, true);
   if (ZRYTHM_TESTING)
@@ -1263,7 +1263,7 @@ handle_start_recording (
       /*at->recording_paused = false;*/
 
       /* nothing, wait for event to start writing data */
-      Port * port = port_find_from_identifier (&at->port_id);
+      Port * port = Port::find_from_identifier (&at->port_id);
       float  value = port_get_control_value (port, false);
 
       if (automation_track_should_be_recording (at, cur_time, true))

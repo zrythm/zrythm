@@ -879,13 +879,13 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
       if (
         id->owner_type
         == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE)
-        port_init_loaded (port, self);
+        port->init_loaded (self);
       else if (id->owner_type == PortIdentifier::OwnerType::HW)
         {
           if (id->flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
-            port_init_loaded (port, self->hw_in_processor);
+            port->init_loaded (self->hw_in_processor);
           else if (id->flow == ZPortFlow::Z_PORT_FLOW_INPUT)
-            port_init_loaded (port, self->hw_out_processor);
+            port->init_loaded (self->hw_out_processor);
         }
       else if (id->owner_type == PortIdentifier::OwnerType::FADER)
         {
@@ -893,12 +893,12 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
             ENUM_BITSET_TEST (
               PortIdentifier::Flags2, id->flags2,
               PortIdentifier::Flags2::SAMPLE_PROCESSOR_FADER))
-            port_init_loaded (port, self->sample_processor->fader);
+            port->init_loaded (self->sample_processor->fader);
           else if (
             ENUM_BITSET_TEST (
               PortIdentifier::Flags2, id->flags2,
               PortIdentifier::Flags2::MonitorFader))
-            port_init_loaded (port, self->control_room->monitor_fader);
+            port->init_loaded (self->control_room->monitor_fader);
         }
     }
 

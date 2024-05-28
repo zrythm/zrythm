@@ -14,9 +14,9 @@
 #include "dsp/port_identifier.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts            StereoPorts;
-typedef struct Track                  Track;
-typedef struct Port                   Port;
+typedef struct StereoPorts StereoPorts;
+typedef struct Track       Track;
+class Port;
 typedef struct _ChannelSendWidget     ChannelSendWidget;
 typedef struct PortConnectionsManager PortConnectionsManager;
 

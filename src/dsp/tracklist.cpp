@@ -337,7 +337,7 @@ tracklist_insert_track (
           for (int i = 0; i < atl->num_ats; i++)
             {
               AutomationTrack * at = atl->ats[i];
-              Port *            port = port_find_from_identifier (&at->port_id);
+              Port * port = Port::find_from_identifier (&at->port_id);
               g_return_if_fail (IS_PORT_AND_NONNULL (port));
               port->at = at;
             }

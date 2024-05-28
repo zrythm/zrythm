@@ -548,7 +548,7 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
       /* draw automation value */
       PangoLayout * layout = self->automation_value_layout;
       char          str[50];
-      Port *        port = port_find_from_identifier (&at->port_id);
+      Port *        port = Port::find_from_identifier (&at->port_id);
       sprintf (str, "%.2f", (double) control_port_get_val (port));
       cb = at->top_left_buttons[0];
       pango_layout_set_text (layout, str, -1);

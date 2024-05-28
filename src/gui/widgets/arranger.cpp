@@ -1002,7 +1002,7 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
   /* get ratio from widget */
   float  widget_value = height - (float) y;
   float  widget_ratio = CLAMP (widget_value / height, 0.f, 1.f);
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   float  automatable_value =
     control_port_normalized_val_to_real (port, widget_ratio);
 

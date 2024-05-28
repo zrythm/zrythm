@@ -9,7 +9,6 @@
 #include <inttypes.h>
 
 #include "dsp/channel.h"
-#include "dsp/clip.h"
 #include "dsp/control_port.h"
 #include "dsp/engine_jack.h"
 #include "dsp/graph.h"
@@ -45,62 +44,50 @@
 
 #define AUDIO_RING_SIZE 65536
 
-/**
- * Allocates buffers used during DSP.
- *
- * To be called only where necessary to save
- * RAM.
- */
-NONNULL void
-port_allocate_bufs (Port * self)
+void
+Port::allocate_bufs ()
 {
 #if 0
   size_t sz = 600;
   char str[sz];
   port_identifier_print_to_str (
-    &self->id, str, sz);
+    &this->id, str, sz);
   g_message ("allocating bufs for %s", str);
 #endif
 
-  switch (self->id.type)
+  switch (this->id.type)
     {
     case ZPortType::Z_PORT_TYPE_EVENT:
-      object_free_w_func_and_null (midi_events_free, self->midi_events);
-      self->midi_events = midi_events_new ();
-      object_free_w_func_and_null (zix_ring_free, self->midi_ring);
-      self->midi_ring = zix_ring_new (
+      object_free_w_func_and_null (midi_events_free, this->midi_events);
+      this->midi_events = midi_events_new ();
+      object_free_w_func_and_null (zix_ring_free, this->midi_ring);
+      this->midi_ring = zix_ring_new (
         zix_default_allocator (), sizeof (MidiEvent) * (size_t) 11);
       break;
     case ZPortType::Z_PORT_TYPE_AUDIO:
     case ZPortType::Z_PORT_TYPE_CV:
       {
-        object_free_w_func_and_null (zix_ring_free, self->audio_ring);
-        self->audio_ring = zix_ring_new (
+        object_free_w_func_and_null (zix_ring_free, this->audio_ring);
+        this->audio_ring = zix_ring_new (
           zix_default_allocator (), sizeof (float) * AUDIO_RING_SIZE);
-        object_zero_and_free (self->buf);
+        object_zero_and_free (this->buf);
         size_t max = AUDIO_ENGINE->block_length;
         max = MAX (max, 1);
-        self->buf = object_new_n (max, float);
-        self->last_buf_sz = max;
+        this->buf = object_new_n (max, float);
+        this->last_buf_sz = max;
       }
     default:
       break;
     }
 }
 
-/**
- * Frees buffers.
- *
- * To be used when removing ports from the
- * project/graph.
- */
 void
-port_free_bufs (Port * self)
+Port::free_bufs ()
 {
-  object_free_w_func_and_null (midi_events_free, self->midi_events);
-  object_free_w_func_and_null (zix_ring_free, self->midi_ring);
-  object_free_w_func_and_null (zix_ring_free, self->audio_ring);
-  object_zero_and_free (self->buf);
+  object_free_w_func_and_null (midi_events_free, this->midi_events);
+  object_free_w_func_and_null (zix_ring_free, this->midi_ring);
+  object_free_w_func_and_null (zix_ring_free, this->audio_ring);
+  object_zero_and_free (this->buf);
 }
 
 /**
@@ -111,25 +98,25 @@ port_free_bufs (Port * self)
  * yml.
  */
 void
-port_init_loaded (Port * self, void * owner)
+Port::init_loaded (void * owner)
 {
-  self->magic = PORT_MAGIC;
+  this->magic = PORT_MAGIC;
 
-  self->unsnapped_control = self->control;
+  this->unsnapped_control = this->control;
 
-  port_set_owner (self, self->id.owner_type, owner);
+  this->set_owner (this->id.owner_type, owner);
 
 #if 0
-  if (self->track
-      && ENUM_BITSET_TEST(PortIdentifier::Flags,self->id.flags,PortIdentifier::Flags::AUTOMATABLE))
+  if (this->track
+      && ENUM_BITSET_TEST(PortIdentifier::Flags,this->id.flags,PortIdentifier::Flags::AUTOMATABLE))
     {
-      if (!self->at)
+      if (!this->at)
         {
-          self->at =
+          this->at =
             automation_track_find_from_port (
-              self, NULL, false);
+              this, NULL, false);
         }
-      g_return_if_fail (self->at);
+      g_return_if_fail (this->at);
     }
 #endif
 }
@@ -141,7 +128,7 @@ port_init_loaded (Port * self, void * owner)
  *   searching.
  */
 Port *
-port_find_from_identifier (const PortIdentifier * const id)
+Port::find_from_identifier (const PortIdentifier * const id)
 {
   Track *                tr = NULL;
   Channel *              ch = NULL;
@@ -761,7 +748,7 @@ port_new_with_type_and_owner (
   void *                    owner)
 {
   Port * self = port_new_with_type (type, flow, label);
-  port_set_owner (self, owner_type, owner);
+  self->set_owner (owner_type, owner);
 
   return self;
 }
@@ -773,7 +760,6 @@ StereoPorts *
 stereo_ports_new_from_existing (Port * l, Port * r)
 {
   StereoPorts * sp = object_new (StereoPorts);
-  /*sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;*/
   sp->l = l;
   l->id.flags |= PortIdentifier::Flags::STEREO_L;
   r->id.flags |= PortIdentifier::Flags::STEREO_R;
@@ -793,7 +779,6 @@ StereoPorts *
 stereo_ports_clone (const StereoPorts * src)
 {
   StereoPorts * sp = object_new (StereoPorts);
-  /*sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;*/
 
   sp->l = port_clone (src->l);
   sp->r = port_clone (src->r);
@@ -818,7 +803,7 @@ port_receive_midi_events_from_jack (
   const nframes_t nframes)
 {
   if (
-    self->internal_type != PortInternalType::JackPort
+    self->internal_type != Port::InternalType::JackPort
     || self->id.type != ZPortType::Z_PORT_TYPE_EVENT)
     return;
 
@@ -879,7 +864,7 @@ port_receive_audio_data_from_jack (
   const nframes_t nframes)
 {
   if (
-    self->internal_type != PortInternalType::JackPort
+    self->internal_type != Port::InternalType::JackPort
     || self->id.type != ZPortType::Z_PORT_TYPE_AUDIO)
     return;
 
@@ -904,7 +889,7 @@ send_midi_events_to_jack (
   const nframes_t nframes)
 {
   if (
-    port->internal_type != PortInternalType::JackPort
+    port->internal_type != Port::InternalType::JackPort
     || port->id.type != ZPortType::Z_PORT_TYPE_EVENT)
     return;
 
@@ -931,7 +916,7 @@ send_audio_data_to_jack (
   const nframes_t nframes)
 {
   if (
-    port->internal_type != PortInternalType::JackPort
+    port->internal_type != Port::InternalType::JackPort
     || port->id.type != ZPortType::Z_PORT_TYPE_AUDIO)
     return;
 
@@ -959,7 +944,7 @@ sum_data_from_jack (
 {
   if (
     self->id.owner_type == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE
-    || self->internal_type != PortInternalType::JackPort
+    || self->internal_type != Port::InternalType::JackPort
     || self->id.flow != ZPortFlow::Z_PORT_FLOW_INPUT)
     return;
 
@@ -987,7 +972,7 @@ send_data_to_jack (
   const nframes_t nframes)
 {
   if (
-    self->internal_type != PortInternalType::JackPort
+    self->internal_type != Port::InternalType::JackPort
     || self->id.flow != ZPortFlow::Z_PORT_FLOW_OUTPUT)
     return;
 
@@ -1051,7 +1036,7 @@ expose_to_jack (Port * self, bool expose)
             AUDIO_ENGINE->client, label, type, flags, 0);
         }
       g_return_if_fail (self->data);
-      self->internal_type = PortInternalType::JackPort;
+      self->internal_type = Port::InternalType::JackPort;
     }
   else
     {
@@ -1068,7 +1053,7 @@ expose_to_jack (Port * self, bool expose)
               g_warning ("JACK port unregister error: %s", jack_error);
             }
         }
-      self->internal_type = PortInternalType::None;
+      self->internal_type = Port::InternalType::None;
       self->data = NULL;
     }
 
@@ -1348,40 +1333,40 @@ set_owner_ext_port (Port * self, ExtPort * ext_port)
 }
 
 NONNULL void
-port_set_owner (Port * self, PortIdentifier::OwnerType owner_type, void * owner)
+Port::set_owner (PortIdentifier::OwnerType owner_type, void * owner)
 {
   switch (owner_type)
     {
     case PortIdentifier::OwnerType::CHANNEL_SEND:
-      set_owner_channel_send (self, (ChannelSend *) owner);
+      set_owner_channel_send (this, (ChannelSend *) owner);
       break;
     case PortIdentifier::OwnerType::FADER:
-      set_owner_fader (self, (Fader *) owner);
+      set_owner_fader (this, (Fader *) owner);
       break;
     case PortIdentifier::OwnerType::TRACK:
-      set_owner_track (self, (Track *) owner);
+      set_owner_track (this, (Track *) owner);
       break;
     case PortIdentifier::OwnerType::TRACK_PROCESSOR:
-      set_owner_track_processor (self, (TrackProcessor *) owner);
+      set_owner_track_processor (this, (TrackProcessor *) owner);
       break;
     case PortIdentifier::OwnerType::CHANNEL:
-      set_owner_channel (self, (Channel *) owner);
+      set_owner_channel (this, (Channel *) owner);
       break;
     case PortIdentifier::OwnerType::PLUGIN:
-      set_owner_plugin (self, (Plugin *) owner);
+      set_owner_plugin (this, (Plugin *) owner);
       break;
     case PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT:
-      set_owner_transport (self, (Transport *) owner);
+      set_owner_transport (this, (Transport *) owner);
       break;
     case PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR:
       set_owner_modulator_macro_processor (
-        self, (ModulatorMacroProcessor *) owner);
+        this, (ModulatorMacroProcessor *) owner);
       break;
     case PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE:
-      set_owner_audio_engine (self, (AudioEngine *) owner);
+      set_owner_audio_engine (this, (AudioEngine *) owner);
       break;
     case PortIdentifier::OwnerType::HW:
-      set_owner_ext_port (self, (ExtPort *) owner);
+      set_owner_ext_port (this, (ExtPort *) owner);
       break;
     default:
       g_return_if_reached ();
@@ -1477,7 +1462,7 @@ port_disconnect_all (Port * self)
   g_ptr_array_unref (dests);
 
 #ifdef HAVE_JACK
-  if (self->internal_type == PortInternalType::JackPort)
+  if (self->internal_type == Port::InternalType::JackPort)
     {
       expose_to_jack (self, false);
     }
@@ -1607,7 +1592,7 @@ port_find_by_alsa_seq_id (
       port = ports[i];
 
       if (port->internal_type ==
-            PortInternalType::INTERNAL_ALSA_SEQ_PORT &&
+            Port::InternalType::INTERNAL_ALSA_SEQ_PORT &&
           snd_seq_port_info_get_port (
             (snd_seq_port_info_t *) port->data) ==
             id)
@@ -1656,7 +1641,7 @@ expose_to_alsa (
             id, info);
           self->data = (void *) info;
           self->internal_type =
-            PortInternalType::INTERNAL_ALSA_SEQ_PORT;
+            Port::InternalType::INTERNAL_ALSA_SEQ_PORT;
         }
       else
         {
@@ -1665,7 +1650,7 @@ expose_to_alsa (
             snd_seq_port_info_get_port (
               (snd_seq_port_info_t *)
                 self->data));
-          self->internal_type = PortInternalType::INTERNAL_NONE;
+          self->internal_type = Port::InternalType::INTERNAL_NONE;
           self->data = NULL;
         }
     }
@@ -1723,10 +1708,6 @@ expose_to_rtmidi (Port * self, int expose)
   self->exposed_to_backend = expose;
 }
 
-/**
- * Sums the inputs coming in from RtMidi
- * before the port is processed.
- */
 void
 port_sum_data_from_rtmidi (
   Port *          self,
@@ -2352,15 +2333,15 @@ port_get_control_value (Port * self, const bool normalize)
 int
 port_scale_point_cmp (const void * _a, const void * _b)
 {
-  const PortScalePoint * a = *(PortScalePoint const **) _a;
-  const PortScalePoint * b = *(PortScalePoint const **) _b;
+  const Port::ScalePoint * a = *(Port::ScalePoint const **) _a;
+  const Port::ScalePoint * b = *(Port::ScalePoint const **) _b;
   return a->val - b->val > 0.f;
 }
 
-PortScalePoint *
+Port::ScalePoint *
 port_scale_point_new (const float val, const char * label)
 {
-  PortScalePoint * self = object_new (PortScalePoint);
+  Port::ScalePoint * self = object_new (Port::ScalePoint);
 
   self->val = val;
   self->label = g_strdup (label);
@@ -2369,7 +2350,7 @@ port_scale_point_new (const float val, const char * label)
 }
 
 void
-port_scale_point_free (PortScalePoint * self)
+port_scale_point_free (Port::ScalePoint * self)
 {
   g_free_and_null (self->label);
 
@@ -2457,8 +2438,8 @@ stereo_ports_new_generic (
   ports->r->id.flags |= PortIdentifier::Flags::STEREO_R;
   ports->r->id.sym = g_strdup_printf ("%s_r", symbol);
 
-  port_set_owner (ports->l, owner_type, owner);
-  port_set_owner (ports->r, owner_type, owner);
+  ports->l->set_owner (owner_type, owner);
+  ports->r->set_owner (owner_type, owner);
 
   g_free (pll);
   g_free (plr);
@@ -3260,7 +3241,7 @@ port_rename_backend (Port * self)
   switch (self->internal_type)
     {
 #ifdef HAVE_JACK
-    case PortInternalType::JackPort:
+    case Port::InternalType::JackPort:
       {
         char str[600];
         port_get_full_designation (self, str);
@@ -3268,7 +3249,7 @@ port_rename_backend (Port * self)
       }
       break;
 #endif
-    case PortInternalType::AlsaSequencerPort:
+    case Port::InternalType::AlsaSequencerPort:
       break;
     default:
       break;
@@ -3405,7 +3386,7 @@ port_clear_external_buffer (Port * port)
     }
 
 #ifdef HAVE_JACK
-  if (port->internal_type != PortInternalType::JackPort)
+  if (port->internal_type != Port::InternalType::JackPort)
     {
       return;
     }
@@ -3535,7 +3516,6 @@ port_get_plugin (Port * const self, const bool warn_if_fail)
     {
       g_critical (
         "plugin at slot type %s (slot %d) not found for port %s",
-
         ENUM_NAME (pl_id->slot_type), pl_id->slot, self->id.label);
       return NULL;
     }
@@ -3665,7 +3645,7 @@ port_clone (const Port * src)
 void
 port_free (Port * self)
 {
-  port_free_bufs (self);
+  self->free_bufs ();
 
 #ifdef HAVE_RTMIDI
   for (int i = 0; i < self->num_rtmidi_ins; i++)

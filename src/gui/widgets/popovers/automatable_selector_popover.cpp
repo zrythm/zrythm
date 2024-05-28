@@ -30,7 +30,7 @@ static void
 on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
 {
   /* if the selected automatable changed */
-  Port * at_port = port_find_from_identifier (&self->owner->port_id);
+  Port * at_port = Port::find_from_identifier (&self->owner->port_id);
   if (self->selected_port && at_port != self->selected_port)
     {
       /* set the previous automation track invisible */
@@ -230,7 +230,7 @@ setup_ports_listview (
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
-      Port *            port = port_find_from_identifier (&at->port_id);
+      Port *            port = Port::find_from_identifier (&at->port_id);
 
       if (!port)
         {
@@ -498,7 +498,7 @@ automatable_selector_popover_widget_new (AutomationTrack * owner)
   self->owner = owner;
 
   /* set selected automatable */
-  Port * port = port_find_from_identifier (&owner->port_id);
+  Port * port = Port::find_from_identifier (&owner->port_id);
   g_return_val_if_fail (port, NULL);
   self->selected_port = port;
 

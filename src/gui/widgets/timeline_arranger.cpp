@@ -1105,7 +1105,7 @@ timeline_arranger_widget_gen_context_menu (
                       if (!at->created)
                         continue;
 
-                      Port * port = port_find_from_identifier (&at->port_id);
+                      Port * port = Port::find_from_identifier (&at->port_id);
 
                       char tmp[200];
                       sprintf (tmp, "app.move-automation-regions::%p", port);

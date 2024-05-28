@@ -27,7 +27,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct Port                          Port;
+class Port;
 typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
 
 /**

@@ -15,8 +15,8 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts           StereoPorts;
-typedef struct Port                  Port;
+typedef struct StereoPorts StereoPorts;
+class Port;
 typedef struct Track                 Track;
 typedef struct MidiMappings          MidiMappings;
 typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;

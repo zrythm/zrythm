@@ -49,11 +49,11 @@
 #include "zix/sem.h"
 #include <pthread.h>
 
-typedef struct GraphNode             GraphNode;
-typedef struct Graph                 Graph;
-typedef struct PassthroughProcessor  PassthroughProcessor;
-typedef struct MPMCQueue             MPMCQueue;
-typedef struct Port                  Port;
+typedef struct GraphNode            GraphNode;
+typedef struct Graph                Graph;
+typedef struct PassthroughProcessor PassthroughProcessor;
+typedef struct MPMCQueue            MPMCQueue;
+class Port;
 typedef struct Fader                 Fader;
 typedef struct Track                 Track;
 typedef struct Plugin                Plugin;

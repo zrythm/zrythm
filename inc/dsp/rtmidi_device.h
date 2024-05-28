@@ -15,7 +15,7 @@
 #  include <rtmidi_c.h>
 #  include <stdint.h>
 
-typedef struct Port Port;
+class Port;
 
 /**
  * @addtogroup dsp

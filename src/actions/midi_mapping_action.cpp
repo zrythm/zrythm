@@ -140,7 +140,7 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
 {
   if (bind)
     {
-      Port * port = port_find_from_identifier (self->dest_port_id);
+      Port * port = Port::find_from_identifier (self->dest_port_id);
       self->idx = MIDI_MAPPINGS->num_mappings;
       midi_mappings_bind_device (
         MIDI_MAPPINGS, self->buf, self->dev_port, port, F_NO_PUBLISH_EVENTS);

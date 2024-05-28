@@ -346,7 +346,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
     {
       PortConnection * conn = (PortConnection *) g_ptr_array_index (srcs, i);
 
-      port->srcs[i] = port_find_from_identifier (conn->src_id);
+      port->srcs[i] = Port::find_from_identifier (conn->src_id);
       g_return_val_if_fail (port->srcs[i], NULL);
       port->src_connections[i] = conn;
     }
@@ -370,7 +370,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
     {
       PortConnection * conn = (PortConnection *) g_ptr_array_index (dests, i);
 
-      port->dests[i] = port_find_from_identifier (conn->dest_id);
+      port->dests[i] = Port::find_from_identifier (conn->dest_id);
       g_return_val_if_fail (port->dests[i], NULL);
       port->dest_connections[i] = conn;
     }
@@ -413,7 +413,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
   else
     {
       /* allocate buffers to be used during DSP */
-      port_allocate_bufs (port);
+      port->allocate_bufs ();
       return graph_create_node (self, GraphNodeType::ROUTE_NODE_TYPE_PORT, port);
     }
 }

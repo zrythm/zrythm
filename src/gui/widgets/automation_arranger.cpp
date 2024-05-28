@@ -85,7 +85,7 @@ automation_arranger_widget_create_ap (
 {
   AutomationTrack * at = region_get_automation_track (region);
   g_return_if_fail (at);
-  Port * port = port_find_from_identifier (&at->port_id);
+  Port * port = Port::find_from_identifier (&at->port_id);
   g_return_if_fail (port);
 
   if (!autofilling)

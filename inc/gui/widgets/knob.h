@@ -34,7 +34,7 @@ enum class KnobType
   KNOB_TYPE_PORT_MULTIPLIER,
 };
 
-typedef struct Port Port;
+class Port;
 
 typedef struct _KnobWidget
 {

@@ -51,7 +51,7 @@ typedef struct MidiEvent
 } MidiEvent;
 
 typedef struct MidiEvents MidiEvents;
-typedef struct Port       Port;
+class Port;
 
 /**
  * Container for passing midi events through ports.

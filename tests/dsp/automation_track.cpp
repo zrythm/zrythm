@@ -135,7 +135,7 @@ test_curve_value (void)
   AutomationTracklist * atl =
     automation_track_get_automation_tracklist (fader_at);
   automation_tracklist_set_at_visible (atl, fader_at, true);
-  Port * port = port_find_from_identifier (&fader_at->port_id);
+  Port * port = Port::find_from_identifier (&fader_at->port_id);
 
   /* create region */
   Position start, end;
