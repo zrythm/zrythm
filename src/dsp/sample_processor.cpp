@@ -516,7 +516,7 @@ queue_file_or_chord_preset (
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
       GError * err = NULL;
       Plugin * pl = plugin_new_from_setting (
-        self->instrument_setting, track_get_name_hash (instrument_track),
+        self->instrument_setting, track_get_name_hash (*instrument_track),
         ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT, -1, &err);
       if (!pl)
         {
@@ -537,9 +537,10 @@ queue_file_or_chord_preset (
       g_return_if_fail (pl->midi_in_port);
       g_return_if_fail (pl->l_out);
       g_return_if_fail (pl->r_out);
-      channel_add_plugin (
-        instrument_track->channel, ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT,
-        pl->id.slot, pl, F_NO_CONFIRM, F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
+
+      instrument_track->channel->add_plugin (
+        ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT, pl->id.slot, pl,
+        F_NO_CONFIRM, F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       int num_tracks = 1;
@@ -561,7 +562,7 @@ queue_file_or_chord_preset (
 
           /* route track to instrument */
           group_target_track_add_child (
-            instrument_track, track_get_name_hash (track), F_CONNECT,
+            instrument_track, track_get_name_hash (*track), F_CONNECT,
             F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
           if (file)
@@ -569,7 +570,7 @@ queue_file_or_chord_preset (
               /* create a MIDI region from the MIDI
                * file & add to track */
               Region * mr = midi_region_new_from_midi_file (
-                &start_pos, file->abs_path, track_get_name_hash (track), 0, 0,
+                &start_pos, file->abs_path, track_get_name_hash (*track), 0, 0,
                 i);
               if (mr)
                 {
@@ -612,7 +613,7 @@ queue_file_or_chord_preset (
               Position end_pos;
               position_from_seconds (&end_pos, 13.0);
               Region * mr = midi_region_new (
-                &start_pos, &end_pos, track_get_name_hash (track), 0, 0);
+                &start_pos, &end_pos, track_get_name_hash (*track), 0, 0);
 
               /* add notes */
               for (int j = 0; j < 12; j++)

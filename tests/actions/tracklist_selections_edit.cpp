@@ -22,7 +22,7 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 #if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
 static Track *
@@ -105,7 +105,7 @@ _test_edit_tracks (
         g_assert_true (midi_track->channel->has_output);
         g_assert_cmpuint (
           midi_track->channel->output_name_hash, ==,
-          track_get_name_hash (ins_track));
+          track_get_name_hash (*ins_track));
 
         /* undo and re-verify */
         undo_manager_undo (UNDO_MANAGER, NULL);
@@ -148,7 +148,7 @@ _test_edit_tracks (
         Track * group_track = TRACKLIST->tracks[2];
 
         g_assert_cmpuint (
-          track_get_name_hash (ins_track), !=,
+          track_get_name_hash (*ins_track), !=,
           ins_track->channel->output_name_hash);
 
         /* route the instrument to the group
@@ -255,7 +255,7 @@ _test_edit_tracks (
         float val_before = fader_get_amp (ins_track->channel->fader);
         if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN)
           {
-            val_before = channel_get_balance_control (ins_track->channel);
+            val_before = ins_track->channel->get_balance_control ();
           }
         GError * err = NULL;
         ua = tracklist_selections_action_new_edit_single_float (
@@ -267,8 +267,7 @@ _test_edit_tracks (
         if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN)
           {
             g_assert_cmpfloat_with_epsilon (
-              new_val, channel_get_balance_control (ins_track->channel),
-              0.0001f);
+              new_val, ins_track->channel->get_balance_control (), 0.0001f);
           }
         else if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_VOLUME)
           {
@@ -281,8 +280,7 @@ _test_edit_tracks (
         if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN)
           {
             g_assert_cmpfloat_with_epsilon (
-              val_before, channel_get_balance_control (ins_track->channel),
-              0.0001f);
+              val_before, ins_track->channel->get_balance_control (), 0.0001f);
           }
         else if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_VOLUME)
           {
@@ -293,8 +291,7 @@ _test_edit_tracks (
         if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN)
           {
             g_assert_cmpfloat_with_epsilon (
-              new_val, channel_get_balance_control (ins_track->channel),
-              0.0001f);
+              new_val, ins_track->channel->get_balance_control (), 0.0001f);
           }
         else if (type == EditTrackActionType::EDIT_TRACK_ACTION_TYPE_VOLUME)
           {
@@ -452,7 +449,7 @@ test_edit_midi_direct_out_to_ins (void)
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, NULL);
 
   Channel * ch = midi_track->channel;
-  Track *   direct_out = channel_get_output_track (ch);
+  Track *   direct_out = ch->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (direct_out == ins_track);
   g_assert_cmpint (ins_track->num_children, ==, 1);
@@ -464,13 +461,13 @@ test_edit_midi_direct_out_to_ins (void)
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
 
-  direct_out = channel_get_output_track (ch);
+  direct_out = ch->get_output_track ();
   g_assert_null (direct_out);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
   ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  direct_out = channel_get_output_track (ch);
+  direct_out = ch->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (direct_out == ins_track);
 
@@ -507,8 +504,8 @@ test_edit_multi_track_direct_out (void)
 
   Channel * ch = ins_track->channel;
   Channel * ch2 = ins_track2->channel;
-  Track *   direct_out = channel_get_output_track (ch);
-  Track *   direct_out2 = channel_get_output_track (ch2);
+  Track *   direct_out = ch->get_output_track ();
+  Track *   direct_out2 = ch2->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (IS_TRACK (direct_out2));
   g_assert_true (direct_out == audio_group);
@@ -521,8 +518,8 @@ test_edit_multi_track_direct_out (void)
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
 
-  direct_out = channel_get_output_track (ch);
-  direct_out2 = channel_get_output_track (ch2);
+  direct_out = ch->get_output_track ();
+  direct_out2 = ch2->get_output_track ();
   g_assert_null (direct_out);
   g_assert_null (direct_out2);
 
@@ -535,16 +532,16 @@ test_edit_multi_track_direct_out (void)
   UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
   undoable_action_set_num_actions (ua, 2);
 
-  direct_out = channel_get_output_track (ch);
-  direct_out2 = channel_get_output_track (ch2);
+  direct_out = ch->get_output_track ();
+  direct_out2 = ch2->get_output_track ();
   g_assert_true (direct_out == P_MASTER_TRACK);
   g_assert_true (direct_out2 == P_MASTER_TRACK);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
   audio_group = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  direct_out = channel_get_output_track (ch);
-  direct_out2 = channel_get_output_track (ch2);
+  direct_out = ch->get_output_track ();
+  direct_out2 = ch2->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (IS_TRACK (direct_out2));
   g_assert_true (direct_out == audio_group);

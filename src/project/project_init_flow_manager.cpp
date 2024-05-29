@@ -22,6 +22,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "io/serialization/project.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
 #include "schemas/project.h"
 #include "utils/datetime.h"
 #include "utils/debug.h"
@@ -37,7 +38,6 @@
 
 #include <adwaita.h>
 
-#include "project/project_init_flow_manager.h"
 #include <time.h>
 #include <yyjson.h>
 
@@ -467,7 +467,7 @@ project_activate (void)
       if (!ch)
         continue;
 
-      channel_reconnect_ext_input_ports (ch);
+      ch->reconnect_ext_input_ports ();
     }
   tracklist_expose_ports_to_backend (TRACKLIST);
 

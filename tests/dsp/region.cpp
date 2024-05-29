@@ -11,7 +11,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 typedef struct
 {
@@ -173,7 +173,7 @@ test_timeline_frames_to_local (void)
   position_init (&pos);
   position_set_to_bar (&end_pos, 4);
   Region * region =
-    midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
+    midi_region_new (&pos, &end_pos, track_get_name_hash (*track), 0, 0);
   signed_frame_t localp = region_timeline_frames_to_local (region, 13000, true);
   g_assert_cmpint (localp, ==, 13000);
   localp = region_timeline_frames_to_local (region, 13000, false);

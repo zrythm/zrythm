@@ -183,12 +183,6 @@ int
 zrythm_app_prompt_for_project_func (ZrythmApp * self);
 
 /**
- * Returns a pointer to the global zrythm_app.
- */
-ZrythmApp **
-zrythm_app_get (void);
-
-/**
  * Shows the trial limitation error message.
  *
  * @return Whether the limit was reached.

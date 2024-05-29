@@ -11,7 +11,7 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 int
 main (int argc, char * argv[])

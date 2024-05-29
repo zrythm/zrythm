@@ -4,13 +4,16 @@
 #include "zrythm-test-config.h"
 
 #include "actions/tracklist_selections.h"
+#include "dsp/engine.h"
 #include "dsp/fader.h"
+#include "dsp/master_track.h"
 #include "dsp/midi_event.h"
 #include "dsp/router.h"
-#include "utils/math.h"
+#include "dsp/tracklist.h"
+#include "project.h"
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_fader_process_with_instrument (

@@ -21,7 +21,6 @@
 #include "dsp/track_lane.h"
 #include "dsp/track_processor.h"
 #include "plugins/plugin.h"
-#include "utils/yaml.h"
 
 #include <glib/gi18n.h>
 
@@ -68,12 +67,12 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 #define TRACK_DND_PREFIX Z_DND_STRING_PREFIX "Track::"
 
 #define track_is_in_active_project(self) \
-  (self->tracklist && tracklist_is_in_active_project (self->tracklist))
+  ((self)->tracklist && tracklist_is_in_active_project ((self)->tracklist))
 
 /** Whether this track is part of the
  * SampleProcessor auditioner tracklist. */
 #define track_is_auditioner(self) \
-  (self->tracklist && tracklist_is_auditioner (self->tracklist))
+  ((self)->tracklist && tracklist_is_auditioner ((self)->tracklist))
 
 /**
  * The Track's type.
@@ -610,7 +609,11 @@ track_type_is_copyable (TrackType type)
 NONNULL void
 track_set_magic (Track * self);
 
-#define track_get_name_hash(self) g_str_hash (self->name)
+static inline guint
+track_get_name_hash (Track &self)
+{
+  return g_str_hash (self.name);
+}
 
 /**
  * Sets track muted and optionally adds the action

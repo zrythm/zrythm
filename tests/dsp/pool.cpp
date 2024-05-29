@@ -12,8 +12,8 @@
 #include <glib.h>
 
 #include "helpers/plugin_manager.h"
-#include "helpers/project.h"
-#include "helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 

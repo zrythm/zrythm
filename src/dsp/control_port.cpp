@@ -327,11 +327,11 @@ control_port_set_val_from_normalized (Port * self, float val, bool automating)
       Track *   track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
-      if (!math_floats_equal (channel_get_balance_control (ch), val))
+      if (!math_floats_equal (ch->get_balance_control (), val))
         {
           EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, self);
         }
-      channel_set_balance_control (ch, val);
+      ch->set_balance_control (val);
     }
   else if (
     ENUM_BITSET_TEST (

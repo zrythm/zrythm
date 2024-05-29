@@ -21,7 +21,7 @@
 
 #include <glib.h>
 
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 Position p1, p2;
 
@@ -135,8 +135,8 @@ check_timeline_objects_deleted (int creating)
   /* check automation region */
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 0);
 
@@ -351,14 +351,14 @@ check_after_move_timeline (int new_tracks)
       Track * tmp = arranger_object_get_track (obj);
       g_assert_true (tmp == midi_track_after);
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (midi_track_after));
+        r->id.track_name_hash, ==, track_get_name_hash (*midi_track_after));
     }
   else
     {
       Track * tmp = arranger_object_get_track (obj);
       g_assert_true (tmp == midi_track_before);
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (midi_track_before));
+        r->id.track_name_hash, ==, track_get_name_hash (*midi_track_before));
     }
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn = r->midi_notes[0];
@@ -382,14 +382,14 @@ check_after_move_timeline (int new_tracks)
       Track * tmp = arranger_object_get_track (obj);
       g_assert_true (tmp == audio_track_after);
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (audio_track_after));
+        r->id.track_name_hash, ==, track_get_name_hash (*audio_track_after));
     }
   else
     {
       Track * tmp = arranger_object_get_track (obj);
       g_assert_true (tmp == audio_track_before);
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (audio_track_before));
+        r->id.track_name_hash, ==, track_get_name_hash (*audio_track_before));
     }
 
   if (!new_tracks)
@@ -695,7 +695,8 @@ check_after_duplicate_timeline (int new_tracks, bool link)
   g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmppos (&obj->end_pos, &p2_before_move);
   Region * r = (Region *) obj;
-  g_assert_cmpuint (r->id.track_name_hash, ==, track_get_name_hash (midi_track));
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==, track_get_name_hash (*midi_track));
   g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
   g_assert_cmpint (r->id.idx, ==, 0);
   g_assert_cmpint (r->num_midi_notes, ==, 1);
@@ -735,13 +736,13 @@ check_after_duplicate_timeline (int new_tracks, bool link)
   if (new_tracks)
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (new_midi_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*new_midi_track));
       g_assert_cmpint (r->id.idx, ==, 0);
     }
   else
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (midi_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*midi_track));
       g_assert_cmpint (r->id.idx, ==, 1);
     }
   g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
@@ -749,12 +750,12 @@ check_after_duplicate_timeline (int new_tracks, bool link)
   if (new_tracks)
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (new_midi_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*new_midi_track));
     }
   else
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (midi_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*midi_track));
     }
   g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
   mn = r->midi_notes[0];
@@ -788,7 +789,7 @@ check_after_duplicate_timeline (int new_tracks, bool link)
   g_assert_cmppos (&obj->pos, &p1_before_move);
   r = (Region *) obj;
   g_assert_cmpuint (
-    r->id.track_name_hash, ==, track_get_name_hash (audio_track));
+    r->id.track_name_hash, ==, track_get_name_hash (*audio_track));
   g_assert_cmpint (r->id.idx, ==, 0);
   g_assert_cmpint (r->id.lane_pos, ==, AUDIO_REGION_LANE);
   link_group = r->id.link_group;
@@ -813,12 +814,12 @@ check_after_duplicate_timeline (int new_tracks, bool link)
   if (new_tracks)
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (new_audio_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*new_audio_track));
     }
   else
     {
       g_assert_cmpuint (
-        r->id.track_name_hash, ==, track_get_name_hash (audio_track));
+        r->id.track_name_hash, ==, track_get_name_hash (*audio_track));
     }
   if (link)
     {
@@ -831,8 +832,8 @@ check_after_duplicate_timeline (int new_tracks, bool link)
       AutomationTracklist * atl =
         track_get_automation_tracklist (P_MASTER_TRACK);
       g_assert_nonnull (atl);
-      AutomationTrack * at = channel_get_automation_track (
-        P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
+      AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+        PortIdentifier::Flags::STEREO_BALANCE);
       g_assert_nonnull (at);
       g_assert_cmpint (at->num_regions, ==, 2);
       obj = (ArrangerObject *) at->regions[0];
@@ -952,8 +953,8 @@ test_duplicate_automation_region (void)
 
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
 
@@ -1144,7 +1145,7 @@ test_link_and_delete (void)
   position_set_to_pos (&end_pos, &r3->base.end_pos);
   position_add_bars (&end_pos, 2);
   Region * r4 = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
   GError * err = NULL;
   bool     success = track_add_region (
     midi_track, r4, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
@@ -1611,7 +1612,7 @@ test_split_large_audio_file (void)
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
-  unsigned int track_name_hash = track_get_name_hash (track);
+  unsigned int track_name_hash = track_get_name_hash (*track);
   Position     pos;
   position_set_to_bar (&pos, 3);
   Region * r = audio_region_new (
@@ -1743,8 +1744,8 @@ test_automation_fill (void)
   /* check automation region */
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
 
@@ -1786,7 +1787,7 @@ test_duplicate_midi_regions_to_track_below (void)
   position_set_to_bar (&pos, 2);
   position_set_to_bar (&end_pos, 4);
   Region * r1 = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
   GError * err = NULL;
   bool     success = track_add_region (
     midi_track, r1, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
@@ -1799,7 +1800,7 @@ test_duplicate_midi_regions_to_track_below (void)
   position_set_to_bar (&pos, 5);
   position_set_to_bar (&end_pos, 7);
   Region * r2 = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
   success = track_add_region (
     midi_track, r2, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
@@ -1866,7 +1867,7 @@ test_midi_region_split (void)
   position_set_to_bar (&pos, 1);
   position_set_to_bar (&end_pos, 5);
   Region * r = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
   GError * err = NULL;
   bool     success = track_add_region (
     midi_track, r, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
@@ -2106,7 +2107,7 @@ test_pin_unpin (void)
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
 
   g_assert_cmpuint (
-    r->id.track_name_hash, ==, track_get_name_hash (P_CHORD_TRACK));
+    r->id.track_name_hash, ==, track_get_name_hash (*P_CHORD_TRACK));
 
   /* TODO more tests */
 
@@ -2271,11 +2272,11 @@ test_delete_automation_points (void)
   Position pos1, pos2;
   position_set_to_bar (&pos1, 1);
   position_set_to_bar (&pos2, 4);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::CHANNEL_FADER);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::CHANNEL_FADER);
   g_assert_nonnull (at);
   Region * r = automation_region_new (
-    &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), at->index, 0);
+    &pos1, &pos2, track_get_name_hash (*P_MASTER_TRACK), at->index, 0);
   GError * err = NULL;
   bool     success =
     track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
@@ -2372,7 +2373,7 @@ test_undo_moving_midi_region_to_other_lane (void)
       int lane_pos = (i == 3) ? 2 : 0;
       int idx_inside_lane = (i == 3) ? 0 : i;
       r = midi_region_new (
-        &start, &end, track_get_name_hash (midi_track), lane_pos,
+        &start, &end, track_get_name_hash (*midi_track), lane_pos,
         idx_inside_lane);
       bool success = track_add_region (
         midi_track, r, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -2412,7 +2413,7 @@ test_delete_multiple_regions (void)
       position_set_to_bar (&pos, 2 + i);
       position_set_to_bar (&end_pos, 4 + i);
       Region * r1 = midi_region_new (
-        &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+        &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
       bool success = track_add_region (
         midi_track, r1, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
       g_assert_true (success);
@@ -2468,7 +2469,7 @@ test_split_and_merge_midi_unlooped (void)
   position_set_to_bar (&pos, 2);
   position_set_to_bar (&end_pos, 10);
   Region * r1 = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (midi_track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*midi_track), 0, lane->num_regions);
   bool success = track_add_region (
     midi_track, r1, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
@@ -3013,7 +3014,7 @@ test_delete_midi_notes (void)
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 6);
   Region * r =
-    midi_region_new (&start, &end, track_get_name_hash (midi_track), 0, 0);
+    midi_region_new (&start, &end, track_get_name_hash (*midi_track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
   bool             success = track_add_region (
@@ -3090,11 +3091,11 @@ test_cut_automation_region (void)
   Position pos1, pos2;
   position_set_to_bar (&pos1, 1);
   position_set_to_bar (&pos2, 8);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::CHANNEL_FADER);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::CHANNEL_FADER);
   g_assert_nonnull (at);
   Region * r = automation_region_new (
-    &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), at->index, 0);
+    &pos1, &pos2, track_get_name_hash (*P_MASTER_TRACK), at->index, 0);
   bool success =
     track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, NULL);
   g_assert_true (success);
@@ -3153,11 +3154,11 @@ test_copy_and_move_automation_regions (void)
   Position pos1, pos2;
   position_set_to_bar (&pos1, 2);
   position_set_to_bar (&pos2, 4);
-  AutomationTrack * fader_at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::CHANNEL_FADER);
+  AutomationTrack * fader_at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::CHANNEL_FADER);
   g_assert_nonnull (fader_at);
   Region * r = automation_region_new (
-    &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK), fader_at->index, 0);
+    &pos1, &pos2, track_get_name_hash (*P_MASTER_TRACK), fader_at->index, 0);
   GError * err = NULL;
   bool     success =
     track_add_region (P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0, &err);
@@ -3177,8 +3178,8 @@ test_copy_and_move_automation_regions (void)
     (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
 
-  AutomationTrack * mute_at = channel_get_automation_track (
-    audio_track->channel, PortIdentifier::Flags::FADER_MUTE);
+  AutomationTrack * mute_at = audio_track->channel->get_automation_track (
+    PortIdentifier::Flags::FADER_MUTE);
   g_assert_nonnull (mute_at);
 
   /* 1st test */
@@ -3286,7 +3287,7 @@ test_move_region_from_lane_3_to_lane_1 (void)
   position_set_to_bar (&pos, 2);
   position_set_to_bar (&end_pos, 4);
   Region * r1 = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (track), 0, lane->num_regions);
+    &pos, &end_pos, track_get_name_hash (*track), 0, lane->num_regions);
   bool success = track_add_region (
     track, r1, NULL, lane->pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);

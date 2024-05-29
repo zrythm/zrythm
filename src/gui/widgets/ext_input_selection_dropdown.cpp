@@ -118,7 +118,7 @@ on_ext_input_changed (
         }
     }
 
-  channel_reconnect_ext_input_ports (ch);
+  ch->reconnect_ext_input_ports ();
 }
 
 static void

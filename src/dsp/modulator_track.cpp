@@ -129,7 +129,7 @@ do_insert (ModulatorImportData * data)
             "to slot %d",
             self->modulators[i]->setting->descr->name, i - 1, i);
           plugin_set_track_and_slot (
-            self->modulators[i], track_get_name_hash (self),
+            self->modulators[i], track_get_name_hash (*self),
             ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, i);
         }
     }
@@ -141,7 +141,7 @@ do_insert (ModulatorImportData * data)
     data->slot);
 
   plugin_set_track_and_slot (
-    data->modulator, track_get_name_hash (self),
+    data->modulator, track_get_name_hash (*self),
     ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, data->slot);
 
   if (data->gen_automatables)
@@ -251,7 +251,7 @@ modulator_track_remove_modulator (
 {
   Plugin * plugin = self->modulators[slot];
   g_return_if_fail (IS_PLUGIN (plugin));
-  g_return_if_fail (plugin->id.track_name_hash == track_get_name_hash (self));
+  g_return_if_fail (plugin->id.track_name_hash == track_get_name_hash (*self));
 
   plugin_remove_ats_from_automation_tracklist (
     plugin, deleting_modulator, !deleting_track && !deleting_modulator);
@@ -283,7 +283,7 @@ modulator_track_remove_modulator (
         {
           self->modulators[i] = self->modulators[i + 1];
           plugin_set_track_and_slot (
-            self->modulators[i], track_get_name_hash (self),
+            self->modulators[i], track_get_name_hash (*self),
             ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, i);
         }
       self->num_modulators--;

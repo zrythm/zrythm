@@ -25,7 +25,7 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 static void
 test_route_master_send_to_fx (void)

@@ -12,8 +12,8 @@
 
 #include <glib.h>
 
-#include "tests/helpers/project.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 
@@ -26,7 +26,7 @@ perform_create_region_action (void)
   int      track_pos = TRACKLIST->num_tracks - 1;
   Track *  track = TRACKLIST->tracks[track_pos];
   Region * r =
-    automation_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+    automation_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track = TRACKLIST->tracks[track_pos];
   AutomationTracklist * atl = track_get_automation_tracklist (track);

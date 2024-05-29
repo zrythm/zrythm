@@ -3,9 +3,6 @@
 
 #include <sys/time.h>
 
-#include "actions/tracklist_selections.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/master_track.h"
 #include "dsp/meter.h"
 #include "dsp/track.h"
@@ -23,7 +20,6 @@
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/fader_buttons.h"
-#include "gui/widgets/knob.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_strip_expander.h"
@@ -35,9 +31,6 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/symap.h"
-#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -65,16 +58,13 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  Track * track = channel_get_track (self->channel);
-  if (track)
-    {
-      /* tint background */
-      GdkRGBA color = Z_GDK_RGBA_INIT (
-        track->color.red, track->color.green, track->color.blue, 0.15f);
-      graphene_rect_t rect =
-        Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
-      gtk_snapshot_append_color (snapshot, &color, &rect);
-    }
+  Track &track = self->channel->get_track ();
+  /* tint background */
+  GdkRGBA color = Z_GDK_RGBA_INIT (
+    track.color.red, track.color.green, track.color.blue, 0.15f);
+  graphene_rect_t rect =
+    Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+  gtk_snapshot_append_color (snapshot, &color, &rect);
 
   GTK_WIDGET_CLASS (channel_widget_parent_class)->snapshot (widget, snapshot);
 }
@@ -103,9 +93,9 @@ channel_widget_tick_cb (
       return G_SOURCE_CONTINUE;
     }
 
-  Track * track = channel_get_track (channel);
+  Track &track = channel->get_track ();
 
-  if (track_is_selected (track))
+  if (track_is_selected (&track))
     {
       gtk_widget_add_css_class (GTK_WIDGET (self->name), "caption-heading");
       gtk_widget_remove_css_class (GTK_WIDGET (self->name), "caption");
@@ -117,7 +107,7 @@ channel_widget_tick_cb (
     }
 
   /* TODO */
-  if (track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track.out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
     {
       gtk_label_set_text (self->meter_reading, "-∞");
       return G_SOURCE_CONTINUE;
@@ -184,7 +174,7 @@ on_dnd_drop (
   ChannelWidget * self = Z_CHANNEL_WIDGET (user_data);
   GtkWidget *     widget = GTK_WIDGET (self);
 
-  Track * owner_track = channel_get_track (self->channel);
+  Track &owner_track = self->channel->get_track ();
 
   /* determine if moving or copying */
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
@@ -199,7 +189,7 @@ on_dnd_drop (
   int w = gtk_widget_get_width (widget);
 
   TrackWidgetHighlight location;
-  if (track_type_is_foldable (owner_track->type) && x < w - 12 && x > 12)
+  if (track_type_is_foldable (owner_track.type) && x < w - 12 && x > 12)
     {
       location = TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE;
     }
@@ -211,7 +201,7 @@ on_dnd_drop (
     {
       location = TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM;
     }
-  tracklist_handle_move_or_copy (TRACKLIST, owner_track, location, action);
+  tracklist_handle_move_or_copy (TRACKLIST, &owner_track, location, action);
 
   return true;
 }
@@ -361,7 +351,7 @@ on_btn_release (
   if (self->dragged || self->selected_in_dnd)
     return;
 
-  Track * track = channel_get_track (self->channel);
+  Track &track = self->channel->get_track ();
   if (n_press == 1)
     {
       gint64 cur_time = g_get_monotonic_time ();
@@ -376,15 +366,15 @@ on_btn_release (
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;
-      tracklist_selections_handle_click (track, ctrl, shift, self->dragged);
+      tracklist_selections_handle_click (&track, ctrl, shift, self->dragged);
     }
 }
 
 static void
 refresh_color (ChannelWidget * self)
 {
-  Track * track = channel_get_track (self->channel);
-  color_area_widget_set_color (self->color, &track->color);
+  Track &track = self->channel->get_track ();
+  color_area_widget_set_color (self->color, &track.color);
 }
 
 #if 0
@@ -413,8 +403,8 @@ setup_phase_panel (ChannelWidget * self)
 static void
 setup_meter (ChannelWidget * self)
 {
-  Track * track = channel_get_track (self->channel);
-  switch (track->out_signal_type)
+  Track &track = self->channel->get_track ();
+  switch (track.out_signal_type)
     {
     case ZPortType::Z_PORT_TYPE_EVENT:
       meter_widget_setup (self->meter_l, self->channel->midi_out, false);
@@ -438,7 +428,7 @@ void
 channel_widget_update_midi_fx_and_inserts (ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (self->inserts);
-  if (self->channel->track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (self->channel->track_.in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
     {
       plugin_strip_expander_widget_refresh (self->midi_fx);
     }
@@ -470,11 +460,11 @@ on_instrument_ui_toggled (GtkToggleButton * toggle, gpointer user_data)
 static void
 setup_instrument_ui_toggle (ChannelWidget * self)
 {
-  Track * track = channel_get_track (self->channel);
+  Track &track = self->channel->get_track ();
   gtk_widget_set_visible (
     GTK_WIDGET (self->instrument_ui_toggle),
-    track->type == TrackType::TRACK_TYPE_INSTRUMENT);
-  if (track->type != TrackType::TRACK_TYPE_INSTRUMENT)
+    track.type == TrackType::TRACK_TYPE_INSTRUMENT);
+  if (track.type != TrackType::TRACK_TYPE_INSTRUMENT)
     return;
 
   gtk_toggle_button_set_active (
@@ -488,22 +478,22 @@ static void
 refresh_output (ChannelWidget * self)
 {
   route_target_selector_widget_refresh (
-    self->output, channel_get_track (self->channel));
+    self->output, &self->channel->get_track ());
 }
 
 static void
 refresh_name (ChannelWidget * self)
 {
-  Track * track = channel_get_track (self->channel);
-  g_warn_if_fail (track->name);
-  if (track_is_enabled (track))
+  Track &track = self->channel->get_track ();
+  g_warn_if_fail (track.name);
+  if (track_is_enabled (&track))
     {
-      gtk_label_set_text (GTK_LABEL (self->name->label), track->name);
+      gtk_label_set_text (GTK_LABEL (self->name->label), track.name);
     }
   else
     {
       char * markup =
-        g_strdup_printf ("<span foreground=\"grey\">%s</span>", track->name);
+        g_strdup_printf ("<span foreground=\"grey\">%s</span>", track.name);
       gtk_label_set_markup (GTK_LABEL (self->name->label), markup);
     }
 }
@@ -512,7 +502,7 @@ static void
 setup_balance_control (ChannelWidget * self)
 {
   self->balance_control = balance_control_widget_new (
-    channel_get_balance_control, channel_set_balance_control, self->channel,
+    Channel::get_balance_control, Channel::set_balance_control, self->channel,
     self->channel->fader->balance, 12);
   gtk_box_append (self->balance_control_box, GTK_WIDGET (self->balance_control));
 }
@@ -526,7 +516,7 @@ void
 channel_widget_refresh_buttons (ChannelWidget * self)
 {
   fader_buttons_widget_refresh (
-    self->fader_buttons, channel_get_track (self->channel));
+    self->fader_buttons, &self->channel->get_track ());
 }
 
 static void
@@ -559,8 +549,8 @@ channel_widget_refresh (ChannelWidget * self)
   refresh_color (self);
   update_reveal_status (self);
 
-  Track * track = channel_get_track (self->channel);
-  if (track_is_selected (track))
+  Track &track = self->channel->get_track ();
+  if (track_is_selected (&track))
     {
       /* set selected or not */
       gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, 0);
@@ -630,8 +620,8 @@ channel_widget_generate_context_menu_for_track (Track * track)
 static void
 show_context_menu (ChannelWidget * self, double x, double y)
 {
-  GMenu * menu =
-    channel_widget_generate_context_menu_for_track (self->channel->track);
+  GMenu * menu = channel_widget_generate_context_menu_for_track (
+    &self->channel->get_track ());
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
   if (self->fader_buttons_for_popover)
@@ -653,16 +643,16 @@ on_right_click (
   GdkModifierType state = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (gesture));
 
-  Track * track = self->channel->track;
-  if (!track_is_selected (track))
+  Track &track = self->channel->get_track ();
+  if (!track_is_selected (&track))
     {
       if (state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK)
         {
-          track_select (track, F_SELECT, 0, 1);
+          track_select (&track, F_SELECT, 0, 1);
         }
       else
         {
-          track_select (track, F_SELECT, 1, 1);
+          track_select (&track, F_SELECT, 1, 1);
         }
     }
   if (n_press == 1)
@@ -684,10 +674,10 @@ on_dnd_drag_prepare (
   double          y,
   ChannelWidget * self)
 {
-  Track *                         track = channel_get_track (self->channel);
+  Track                          &track = self->channel->get_track ();
   WrappedObjectWithChangeSignal * wrapped_obj =
     wrapped_object_with_change_signal_new (
-      track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+      &track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
@@ -707,9 +697,9 @@ on_dnd_drag_begin (GtkDragSource * source, GdkDrag * drag, gpointer user_data)
   gtk_drag_source_set_icon (source, paintable, 0, 0);
   g_object_unref (paintable);
 
-  Track * track = channel_get_track (self->channel);
+  Track &track = self->channel->get_track ();
   self->selected_in_dnd = 1;
-  MW_MIXER->start_drag_track = track;
+  MW_MIXER->start_drag_track = &track;
 
   if (self->n_press == 1)
     {
@@ -717,20 +707,20 @@ on_dnd_drag_begin (GtkDragSource * source, GdkDrag * drag, gpointer user_data)
 
       ctrl = self->ctrl_held_at_start;
 
-      if (tracklist_selections_contains_track (TRACKLIST_SELECTIONS, track))
+      if (tracklist_selections_contains_track (TRACKLIST_SELECTIONS, &track))
         selected = 1;
 
       /* no control & not selected */
       if (!ctrl && !selected)
         {
           tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS, track, F_PUBLISH_EVENTS);
+            TRACKLIST_SELECTIONS, &track, F_PUBLISH_EVENTS);
         }
       else if (!ctrl && selected)
         {
         }
       else if (ctrl && !selected)
-        tracklist_selections_add_track (TRACKLIST_SELECTIONS, track, 1);
+        tracklist_selections_add_track (TRACKLIST_SELECTIONS, &track, 1);
     }
 }
 
@@ -774,39 +764,39 @@ channel_widget_new (Channel * channel)
     static_cast<ChannelWidget *> (g_object_new (CHANNEL_WIDGET_TYPE, NULL));
   self->channel = channel;
 
-  Track * track = channel_get_track (self->channel);
+  Track &track = self->channel->get_track ();
 
   self->fader_buttons_for_popover =
-    g_object_ref (fader_buttons_widget_new (track));
+    g_object_ref (fader_buttons_widget_new (&track));
 
   plugin_strip_expander_widget_setup (
     self->inserts, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT,
-    PluginStripExpanderPosition::PSE_POSITION_CHANNEL, track);
-  if (track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+    PluginStripExpanderPosition::PSE_POSITION_CHANNEL, &track);
+  if (track.in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
     {
       plugin_strip_expander_widget_setup (
         self->midi_fx, ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX,
-        PluginStripExpanderPosition::PSE_POSITION_CHANNEL, track);
+        PluginStripExpanderPosition::PSE_POSITION_CHANNEL, &track);
     }
   else
     {
       gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), false);
     }
   channel_sends_expander_widget_setup (
-    self->sends, ChannelSendsExpanderPosition::CSE_POSITION_CHANNEL, track);
+    self->sends, ChannelSendsExpanderPosition::CSE_POSITION_CHANNEL, &track);
   setup_aux_buttons (self);
   fader_widget_setup (self->fader, channel->fader, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_instrument_ui_toggle (self);
   editable_label_widget_setup (
-    self->name, track, (GenericStringGetter) track_get_name,
+    self->name, &track, (GenericStringGetter) track_get_name,
     (GenericStringSetter) track_set_name_with_action);
-  route_target_selector_widget_refresh (self->output, track);
-  color_area_widget_setup_track (self->color, track);
+  route_target_selector_widget_refresh (self->output, &track);
+  color_area_widget_setup_track (self->color, &track);
 
 #if 0
-  /*if (self->channel->track->type ==*/
+  /*if (self->channel->track.type ==*/
         /*TrackType::TRACK_TYPE_INSTRUMENT)*/
     /*{*/
       self->instrument_slot =

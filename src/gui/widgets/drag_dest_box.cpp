@@ -31,11 +31,6 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/symap.h"
-#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -298,7 +293,7 @@ on_dnd_drop (
           GError *        err = NULL;
           bool            ret = mixer_selections_action_perform_create (
             ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR,
-            track_get_name_hash (P_MODULATOR_TRACK),
+            track_get_name_hash (*P_MODULATOR_TRACK),
             P_MODULATOR_TRACK->num_modulators, setting, 1, &err);
           if (!ret)
             {

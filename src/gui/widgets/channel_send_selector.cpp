@@ -251,7 +251,7 @@ setup_view (ChannelSendSelectorWidget * self)
       Channel * ch = target_track->channel;
 
       Plugin * plugins[300];
-      int      num_plugins = channel_get_plugins (ch, plugins);
+      int      num_plugins = ch->get_plugins (plugins);
 
       for (int j = 0; j < num_plugins; j++)
         {

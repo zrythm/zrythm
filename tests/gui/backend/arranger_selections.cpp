@@ -13,7 +13,7 @@
 
 #include <glib.h>
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 
@@ -23,7 +23,7 @@ test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
   Position p1, p2;
   position_set_to_bar (&p1, bar_start);
   position_set_to_bar (&p2, bar_end);
-  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
   bool             success =
@@ -64,7 +64,7 @@ test_get_last_object (void)
   Position p1, p2;
   position_set_to_bar (&p1, 3);
   position_set_to_bar (&p2, 4);
-  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
   GError * err = NULL;
   bool     success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
@@ -97,7 +97,7 @@ test_contains_object_with_property (void)
   Position p1, p2;
   position_set_to_bar (&p1, 3);
   position_set_to_bar (&p2, 4);
-  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+  Region * r = midi_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
   GError * err = NULL;
   bool     success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);

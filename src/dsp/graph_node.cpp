@@ -549,7 +549,7 @@ graph_node_new (Graph * graph, GraphNodeType type, void * data)
     case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
       node->track = (Track *) data;
       /* set cache */
-      node->track->name_hash = track_get_name_hash (node->track);
+      node->track->name_hash = track_get_name_hash (*node->track);
       break;
     case GraphNodeType::ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
       break;

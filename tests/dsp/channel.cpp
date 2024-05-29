@@ -12,7 +12,7 @@
 
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 #include <locale.h>
 

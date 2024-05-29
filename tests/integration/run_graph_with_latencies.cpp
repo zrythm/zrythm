@@ -25,8 +25,8 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #ifdef HAVE_NO_DELAY_LINE
 static Port *
@@ -62,7 +62,7 @@ _test (
 
   /* 2. add no delay line */
   mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
+    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*track), 0,
     setting, 1, NULL);
 
   /* 3. set delay to high value */

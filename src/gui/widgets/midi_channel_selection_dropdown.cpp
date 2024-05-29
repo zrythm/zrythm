@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
-#include "dsp/hardware_processor.h"
 #include "dsp/track.h"
 #include "gui/widgets/midi_channel_selection_dropdown.h"
-#include "project.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
 
@@ -54,7 +52,7 @@ on_midi_channel_changed (GtkDropDown * dropdown, GParamSpec * pspec, Track * tra
         }
     }
 
-  channel_reconnect_ext_input_ports (ch);
+  ch->reconnect_ext_input_ports ();
 }
 
 static void

@@ -280,16 +280,14 @@ tracklist_insert_track (
   /* TODO throw critical if attempted to add a special track
    * (like master) when it already exists */
 
-  /* set to -1 so other logic knows it is a new
-   * track */
+  /* set to -1 so other logic knows it is a new track */
   track->pos = -1;
   if (track->channel)
     {
       track->channel->track_pos = -1;
     }
 
-  /* this needs to be called before appending the
-   * track to the tracklist */
+  /* this needs to be called before appending the track to the tracklist */
   track_set_name (track, track->name, F_NO_PUBLISH_EVENTS);
 
   /* append the track at the end */
@@ -309,8 +307,7 @@ tracklist_insert_track (
       object_free_w_func_and_null (g_ptr_array_unref, ports);
     }
 
-  /* if inserting it, swap until it reaches its
-   * position */
+  /* if inserting it, swap until it reaches its position */
   if (pos != self->num_tracks - 1)
     {
       for (int i = self->num_tracks - 1; i > pos; i--)
@@ -346,7 +343,7 @@ tracklist_insert_track (
 
   if (track->channel)
     {
-      channel_connect (track->channel);
+      track->channel->connect ();
     }
 
   /* if audio output route to master */
@@ -355,7 +352,7 @@ tracklist_insert_track (
     && track->type != TrackType::TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (
-        self->master_track, track_get_name_hash (track), F_CONNECT,
+        self->master_track, track_get_name_hash (*track), F_CONNECT,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
     }
 
@@ -379,7 +376,7 @@ tracklist_insert_track (
               if (ch->has_output)
                 {
                   g_return_if_fail (
-                    ch->output_name_hash != track_get_name_hash (cur_track));
+                    ch->output_name_hash != track_get_name_hash (*cur_track));
                 }
             }
         }
@@ -403,7 +400,7 @@ tracklist_insert_track (
 
   g_message (
     "%s: done - inserted track '%s' (%u) at %d", __func__, track->name,
-    track_get_name_hash (track), pos);
+    track_get_name_hash (*track), pos);
 }
 
 ChordTrack *
@@ -471,7 +468,7 @@ tracklist_find_track_by_name_hash (Tracklist * self, unsigned int hash)
             {
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
             }
-          if (G_UNLIKELY (track_get_name_hash (track) == hash))
+          if (G_UNLIKELY (track_get_name_hash (*track) == hash))
             return track;
         }
     }
@@ -1156,7 +1153,7 @@ tracklist_expose_ports_to_backend (Tracklist * self)
         {
           Channel * ch = track_get_channel (track);
           g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
-          channel_expose_ports_to_backend (ch);
+          ch->expose_ports_to_backend ();
         }
     }
 }

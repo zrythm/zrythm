@@ -21,7 +21,7 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 #ifdef HAVE_CARLA
 #  ifdef HAVE_AMS_LFO
@@ -50,7 +50,7 @@ test_modulator_connection (
   /* create a modulator */
   mixer_selections_action_perform_create (
     ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR,
-    track_get_name_hash (P_MODULATOR_TRACK), 0, setting, 1, NULL);
+    track_get_name_hash (*P_MODULATOR_TRACK), 0, setting, 1, NULL);
   plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro = P_MODULATOR_TRACK->modulator_macros[0];
@@ -154,8 +154,8 @@ _test_port_connection (
       Track * last_track = tracklist_get_last_track (
         TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
       mixer_selections_action_perform_create (
-        ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (last_track),
-        0, setting, 1, NULL);
+        ZPluginSlotType::Z_PLUGIN_SLOT_INSERT,
+        track_get_name_hash (*last_track), 0, setting, 1, NULL);
     }
 
   plugin_setting_free (setting);

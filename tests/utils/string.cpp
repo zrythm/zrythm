@@ -9,7 +9,7 @@
 
 #include <glib.h>
 
-#include "helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_get_int_after_last_space (void)

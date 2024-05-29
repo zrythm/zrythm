@@ -95,6 +95,7 @@
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
@@ -117,7 +118,6 @@
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
-#include "project/project_init_flow_manager.h"
 
 #define DEFINE_SIMPLE(x) \
   void x (GSimpleAction * action, GVariant * variant, gpointer user_data)
@@ -1315,7 +1315,7 @@ activate_clear_selection (
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
-            channel_select_all (ch, slot_type, F_NO_SELECT);
+            ch->select_all (slot_type, F_NO_SELECT);
           }
       }
       break;
@@ -1361,7 +1361,7 @@ activate_select_all (
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
-            channel_select_all (ch, slot_type, F_SELECT);
+            ch->select_all (slot_type, F_SELECT);
           }
       }
       break;
@@ -3603,7 +3603,7 @@ DEFINE_SIMPLE (activate_reset_fader)
   if (fader->type == FaderType::FADER_TYPE_AUDIO_CHANNEL)
     {
       Channel * ch = fader_get_channel (fader);
-      channel_reset_fader (ch, F_PUBLISH_EVENTS);
+      ch->reset_fader (F_PUBLISH_EVENTS);
     }
   else
     {
@@ -4108,7 +4108,7 @@ handle_direct_out_change (int direct_out_idx, bool new_group)
 
       Channel * ch = track_get_channel (cur_track);
       g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
-      if (channel_get_output_track (ch) != direct_out)
+      if (ch->get_output_track () != direct_out)
         {
           need_change = true;
           break;

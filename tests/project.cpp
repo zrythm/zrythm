@@ -3,19 +3,36 @@
 
 #include "zrythm-test-config.h"
 
+#include <signal.h>
+
+#include "dsp/chord_track.h"
+#include "dsp/engine_dummy.h"
+#include "dsp/marker_track.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
+#include "settings/settings.h"
+#include "utils/backtrace.h"
+#include "utils/cairo.h"
+#include "utils/datetime.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
+#include "utils/io.h"
+#include "utils/log.h"
+#include "utils/objects.h"
+#include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib.h>
 
 #include "helpers/jack.h"
 #include "helpers/plugin_manager.h"
-#include "helpers/project.h"
-#include "helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 
@@ -99,7 +116,8 @@ test_new_from_template (void)
   Position start, end;
   position_init (&start);
   position_set_to_bar (&end, 3);
-  Region * r = midi_region_new (&start, &end, track_get_name_hash (track), 0, 0);
+  Region * r =
+    midi_region_new (&start, &end, track_get_name_hash (*track), 0, 0);
   bool success =
     track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
@@ -153,7 +171,7 @@ test_new_from_template (void)
   gZrythm->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
   project_init_flow_manager_load_or_create_default_project (
-    filepath, true, _test_helper_project_init_done_cb, NULL);
+    filepath, true, test_helper_project_init_done_cb, NULL);
   io_rmdir (orig_dir, true);
   g_free_and_null (orig_dir);
   g_free_and_null (filepath);

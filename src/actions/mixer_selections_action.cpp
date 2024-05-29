@@ -530,7 +530,7 @@ do_or_undo_create_or_delete (
 
           /* set track */
           pl->track = track;
-          plugin_set_track_name_hash (pl, track_get_name_hash (track));
+          plugin_set_track_name_hash (pl, track_get_name_hash (*track));
 
           /* save any plugin about to be deleted */
           save_existing_plugin (
@@ -879,7 +879,7 @@ do_or_undo_move_or_copy (
             TRACKLIST, to_tr, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
           /* remember to track pos */
-          self->to_track_name_hash = track_get_name_hash (to_tr);
+          self->to_track_name_hash = track_get_name_hash (*to_tr);
         }
       /* else if not new track/channel */
       else
@@ -925,7 +925,7 @@ do_or_undo_move_or_copy (
             pl = track_get_plugin_at_slot (from_tr, own_ms->type, from_slot);
             g_return_val_if_fail (
               IS_PLUGIN_AND_NONNULL (pl)
-                && pl->id.track_name_hash == track_get_name_hash (from_tr),
+                && pl->id.track_name_hash == track_get_name_hash (*from_tr),
               -1);
           }
         else

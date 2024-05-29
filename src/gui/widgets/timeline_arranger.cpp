@@ -205,7 +205,7 @@ timeline_arranger_widget_create_region (
     {
     case RegionType::REGION_TYPE_MIDI:
       region = midi_region_new (
-        pos, &end_pos, track_get_name_hash (track),
+        pos, &end_pos, track_get_name_hash (*track),
         /* create on lane 0 if creating in main
          * track */
         lane ? lane->pos : 0,
@@ -220,7 +220,7 @@ timeline_arranger_widget_create_region (
     case RegionType::REGION_TYPE_AUTOMATION:
       g_return_val_if_fail (at, false);
       region = automation_region_new (
-        pos, &end_pos, track_get_name_hash (track), at->index, at->num_regions);
+        pos, &end_pos, track_get_name_hash (*track), at->index, at->num_regions);
       break;
     }
 
@@ -1300,7 +1300,7 @@ on_dnd_drop (
         lane ? lane->pos : (track->num_lanes == 1 ? 0 : track->num_lanes - 2);
       int      idx_in_lane = track->lanes[lane_pos]->num_regions;
       Region * region = midi_region_new_from_chord_descr (
-        &pos, descr, track_get_name_hash (track), lane_pos, idx_in_lane);
+        &pos, descr, track_get_name_hash (*track), lane_pos, idx_in_lane);
       GError * err = NULL;
       bool     success = track_add_region (
         track, region, NULL, lane_pos, F_GEN_NAME, F_PUBLISH_EVENTS, &err);

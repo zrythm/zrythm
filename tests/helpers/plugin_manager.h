@@ -23,6 +23,8 @@
 
 #include <glib.h>
 
+#include "tests/helpers/zrythm_helper.h"
+
 /**
  * @addtogroup tests
  *

@@ -275,12 +275,12 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
         }
       else if (
         TRACK_CB_ICON_IS (MONO_COMPAT)
-        && channel_get_mono_compat_enabled (track->channel))
+        && track->channel->get_mono_compat_enabled ())
         {
           state = CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
-        TRACK_CB_ICON_IS (SWAP_PHASE) && channel_get_swap_phase (track->channel))
+        TRACK_CB_ICON_IS (SWAP_PHASE) && track->channel->get_swap_phase ())
         {
           state = CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }

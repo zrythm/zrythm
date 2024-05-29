@@ -15,5 +15,6 @@
         "-Dyaml_project_compatibility=enabled",
         "-Db_sanitize=none"
     ],
+    "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "clang-tidy.buildPath": "builddir"
 }

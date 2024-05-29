@@ -1372,7 +1372,7 @@ move_obj_by_tracks_and_lanes (
           ArrangerObjectFlags, obj->flags,
           ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT))
         {
-          r->id.track_name_hash = track_get_name_hash (track_to_move_to);
+          r->id.track_name_hash = track_get_name_hash (*track_to_move_to);
         }
       else
         {

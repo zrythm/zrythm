@@ -11,7 +11,7 @@
 
 #include <glib.h>
 
-#include "helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 

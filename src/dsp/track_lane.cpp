@@ -303,7 +303,7 @@ track_lane_update_track_name_hash (TrackLane * self)
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      region->id.track_name_hash = track_get_name_hash (track);
+      region->id.track_name_hash = track_get_name_hash (*track);
       region->id.lane_pos = self->pos;
       region_update_identifier (region);
     }
@@ -387,7 +387,7 @@ track_lane_clear (TrackLane * self)
       Region * region = self->regions[i];
       g_return_if_fail (
         IS_REGION (region)
-        && region->id.track_name_hash == track_get_name_hash (track)
+        && region->id.track_name_hash == track_get_name_hash (*track)
         && region->id.lane_pos == self->pos);
       track_remove_region (track, region, 0, 1);
     }

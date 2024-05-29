@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -31,112 +31,12 @@
  * ---
  */
 
-/**
- * \file
- *
- * Zrythm test helper.
- */
+#include "tests/helpers/zrythm_helper.h"
 
-#ifndef __TEST_HELPERS_ZRYTHM_H__
-#define __TEST_HELPERS_ZRYTHM_H__
+#include "gtk_wrapper.h"
 
-#include "zrythm-test-config.h"
-
-#include <signal.h>
-
-#include "dsp/chord_track.h"
-#include "dsp/engine_dummy.h"
-#include "dsp/marker_track.h"
-#include "dsp/tracklist.h"
-#include "plugins/plugin_manager.h"
-#include "settings/settings.h"
-#include "utils/backtrace.h"
-#include "utils/cairo.h"
-#include "utils/datetime.h"
-#include "utils/flags.h"
-#include "utils/io.h"
-#include "utils/log.h"
-#include "utils/objects.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
-
-#include <glib.h>
-#include <glib/gi18n.h>
-
-#include "project/project_init_flow_manager.h"
-#ifdef G_OS_UNIX
-#  include <glib-unix.h>
-#endif
-
-#include <project.h>
-
-extern std::unique_ptr<Zrythm> gZrythm;
-extern ZrythmApp *             zrythm_app;
-
-/**
- * @addtogroup tests
- *
- * @{
- */
-
-void
-test_helper_zrythm_init (void);
-void
-test_helper_zrythm_init_with_pipewire (void);
-void
-test_helper_zrythm_init_optimized (void);
-void
-test_helper_zrythm_cleanup (void);
-void
-test_helper_zrythm_gui_init (int argc, char * argv[]);
-
-/** Time to run fishbowl, in seconds */
-#define DEFAULT_FISHBOWL_TIME 20
-
-/** Compares 2 Position pointers. */
-#define g_assert_cmppos(a, b) \
-  g_assert_cmpfloat_with_epsilon ((a)->ticks, (b)->ticks, 0.0001); \
-  g_assert_cmpint ((a)->frames, ==, (b)->frames)
-
-#ifndef G_APPROX_VALUE
-#  define G_APPROX_VALUE(a, b, epsilon) \
-    (((a) > (b) ? (a) - (b) : (b) - (a)) < (epsilon))
-#endif
-
-#ifndef g_assert_cmpfloat_with_epsilon
-#  define g_assert_cmpfloat_with_epsilon(n1, n2, epsilon) \
-    G_STMT_START \
-    { \
-      double __n1 = (n1), __n2 = (n2), __epsilon = (epsilon); \
-      if (G_APPROX_VALUE (__n1, __n2, __epsilon)) \
-        ; \
-      else \
-        g_assertion_message_cmpnum ( \
-          G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
-          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \
-    } \
-    G_STMT_END
-#endif
-
-#ifndef g_assert_cmpfloat
-#  define g_assert_cmpfloat(n1, n2) \
-    G_STMT_START \
-    { \
-      double __n1 = (n1), __n2 = (n2), __epsilon = (FLT_EPSILON); \
-      if (G_APPROX_VALUE (__n1, __n2, __epsilon)) \
-        ; \
-      else \
-        g_assertion_message_cmpnum ( \
-          G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
-          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \
-    } \
-    G_STMT_END
-#endif
-
-#ifndef g_assert_cmpenum
-#  define g_assert_cmpenum(a, b, c) g_assert_cmpint ((int) (a), b, (int) (c))
-#endif
+static void
+_g_test_watcher_remove_pid (GPid pid);
 
 #if defined(__GNUC__) && !defined(__clang__)
 #  pragma GCC diagnostic push
@@ -161,12 +61,30 @@ segv_handler (int sig)
 #  pragma GCC diagnostic pop
 #endif
 
-/* -------------------------------------------------------------------------- */
-/* Utilities to cleanup the mess in the case unit test process crash */
-
-typedef struct ZrythmTestPipewire
+static gboolean
+make_pipe (gint pipe_fds[2], GError ** error)
 {
-} ZrythmTestPipewire;
+#if defined(G_OS_UNIX)
+  return g_unix_open_pipe (pipe_fds, FD_CLOEXEC, error);
+#elif defined(_WIN32)
+  if (_pipe (pipe_fds, 4096, _O_BINARY) < 0)
+    {
+      int errsv = errno;
+
+      g_set_error (
+        error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
+        _ ("Failed to create pipe for communicating with child process (%s)"),
+        g_strerror (errsv));
+      return FALSE;
+    }
+  return TRUE;
+#else
+  g_set_error (
+    error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
+    _ ("Pipes are not supported in this platform"));
+  return FALSE;
+#endif
+}
 
 #ifdef _WIN32
 
@@ -394,62 +312,12 @@ _g_test_watcher_remove_pid (GPid pid)
 
 #endif
 
-static gboolean
-make_pipe (gint pipe_fds[2], GError ** error)
+/* -------------------------------------------------------------------------- */
+/* Utilities to cleanup the mess in the case unit test process crash */
+
+typedef struct ZrythmTestPipewire
 {
-#if defined(G_OS_UNIX)
-  return g_unix_open_pipe (pipe_fds, FD_CLOEXEC, error);
-#elif defined(_WIN32)
-  if (_pipe (pipe_fds, 4096, _O_BINARY) < 0)
-    {
-      int errsv = errno;
-
-      g_set_error (
-        error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-        _ ("Failed to create pipe for communicating with child process (%s)"),
-        g_strerror (errsv));
-      return FALSE;
-    }
-  return TRUE;
-#else
-  g_set_error (
-    error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-    _ ("Pipes are not supported in this platform"));
-  return FALSE;
-#endif
-}
-
-static void
-start_daemon (Zrythm * self)
-{
-  const gchar * argv[] = { PIPEWIRE_BIN, "-c", PIPEWIRE_CONF_PATH, NULL };
-  gint          pipe_fds[2] = { -1, -1 };
-  GError *      error = NULL;
-
-  make_pipe (pipe_fds, &error);
-  g_assert_no_error (error);
-
-  g_message ("print address: %d", pipe_fds[1]);
-
-  const char * pipewire_runtime_dir = g_getenv ("PIPEWIRE_RUNTIME_DIR");
-  bool         success = io_mkdir (pipewire_runtime_dir, &error);
-  g_assert_true (success);
-  g_assert_no_error (error);
-
-  /* Spawn pipewire */
-  g_spawn_async_with_pipes_and_fds (
-    NULL, argv, NULL,
-    /* We Need this to get the pid returned on win32 */
-    G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH |
-      /* dbus-daemon will not abuse our descriptors, and
-       * passing this means we can use posix_spawn() for speed */
-      G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
-    NULL, NULL, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1, &self->pipewire_pid,
-    NULL, NULL, NULL, &error);
-  g_assert_no_error (error);
-
-  _g_test_watcher_add_pid (self->pipewire_pid);
-}
+} ZrythmTestPipewire;
 
 static void
 stop_daemon (Zrythm * self)
@@ -466,134 +334,8 @@ stop_daemon (Zrythm * self)
   self->pipewire_pid = 0;
 }
 
-static void
-_test_helper_project_init_done_cb (bool success, GError * error, void * user_data)
-{
-  g_assert_true (success);
-}
-
-static void
-_test_helper_zrythm_init (
-  bool optimized,
-  int  samplerate,
-  int  buf_size,
-  bool use_pipewire)
-{
-  if (gZrythm)
-    {
-      object_free_w_func_and_null (project_free, PROJECT);
-    }
-  gZrythm.reset ();
-  object_free_w_func_and_null (log_free, LOG);
-
-  Log ** log_ptr = log_get ();
-  Log *  log_obj = log_new ();
-  *log_ptr = log_obj;
-  LOG = log_obj;
-
-  gZrythm.reset (new Zrythm (nullptr, false, optimized));
-  g_assert_true (gZrythm != nullptr);
-  gZrythm->undo_stack_len = 64;
-  g_message ("%s", gZrythm->version);
-  char * zrythm_dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
-  g_assert_nonnull (zrythm_dir);
-  g_message ("%s", zrythm_dir);
-  gZrythm->init ();
-
-  if (use_pipewire)
-    {
-#ifndef HAVE_PIPEWIRE
-      g_error ("pipewire program not found but requested pipewire engine");
-#endif
-      gZrythm->use_pipewire_in_tests = use_pipewire;
-      start_daemon (gZrythm.get ());
-    }
-
-  /* init logic - note: will use a random dir in
-   * tmp as the user dir */
-  GError * err = NULL;
-  bool     success = gZrythm->init_user_dirs_and_files (&err);
-  g_assert_true (success);
-  gZrythm->init_templates ();
-
-  /* dummy ZrythmApp object for testing */
-  ZrythmApp ** zapp_ptr = zrythm_app_get ();
-  ZrythmApp *  zapp = object_new (ZrythmApp);
-  *zapp_ptr = zapp;
-  zapp->gtk_thread = g_thread_self ();
-  zrythm_app = zapp;
-  zrythm_app->samplerate = samplerate;
-  zrythm_app->buf_size = buf_size;
-
-  /* init logging to custom file */
-  char * tmp_log_dir =
-    g_build_filename (g_get_tmp_dir (), "zrythm_test_logs", NULL);
-  success = io_mkdir (tmp_log_dir, NULL);
-  g_assert_true (success);
-  char * str_datetime = datetime_get_for_filename ();
-  char * log_filepath = g_strdup_printf (
-    "%s%slog_%s.log", tmp_log_dir, G_DIR_SEPARATOR_S, str_datetime);
-  g_free (str_datetime);
-  g_free (tmp_log_dir);
-  success = log_init_with_file (LOG, log_filepath, NULL);
-  g_assert_true (success);
-  log_init_writer_idle (LOG, 1);
-
-  gZrythm->create_project_path =
-    g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  project_init_flow_manager_load_or_create_default_project (
-    NULL, false, _test_helper_project_init_done_cb, NULL);
-
-  /* adaptive snap only supported with UI */
-  SNAP_GRID_TIMELINE->snap_adaptive = false;
-
-  /* set a segv handler */
-  signal (SIGSEGV, segv_handler);
-}
-
 /**
- * To be called by every test's main to initialize
- * Zrythm to default values.
- */
-void
-test_helper_zrythm_init (void)
-{
-  _test_helper_zrythm_init (false, 0, 0, false);
-}
-
-void
-test_helper_zrythm_init_with_pipewire (void)
-{
-  _test_helper_zrythm_init (false, 0, 0, true);
-}
-
-void
-test_helper_zrythm_init_optimized (void)
-{
-  _test_helper_zrythm_init (true, 0, 0, false);
-}
-
-/**
- * To be called by every test's main at the end to
- * clean up.
- */
-void
-test_helper_zrythm_cleanup (void)
-{
-  g_assert_nonnull (gZrythm->dir_mgr->testing_dir);
-  io_rmdir (gZrythm->dir_mgr->testing_dir, true);
-  object_free_w_func_and_null (project_free, gZrythm->project);
-  if (gZrythm->use_pipewire_in_tests)
-    {
-      stop_daemon (gZrythm.get ());
-    }
-  gZrythm.reset ();
-  object_free_w_func_and_null (log_free, LOG);
-}
-
-/**
- * To be called after test_helper_zrythm_init() to
- * initialize the UI (GTK).
+ * To be called after test_helper_zrythm_init() to initialize the UI (GTK).
  */
 void
 test_helper_zrythm_gui_init (int argc, char * argv[])
@@ -642,8 +384,157 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
   UI_CACHES = ui_caches_new ();
 }
 
-/**
- * @}
- */
+static void
+start_daemon (Zrythm * self)
+{
+  const gchar * argv[] = { PIPEWIRE_BIN, "-c", PIPEWIRE_CONF_PATH, NULL };
+  gint          pipe_fds[2] = { -1, -1 };
+  GError *      error = NULL;
 
+  make_pipe (pipe_fds, &error);
+  g_assert_no_error (error);
+
+  g_message ("print address: %d", pipe_fds[1]);
+
+  const char * pipewire_runtime_dir = g_getenv ("PIPEWIRE_RUNTIME_DIR");
+  bool         success = io_mkdir (pipewire_runtime_dir, &error);
+  g_assert_true (success);
+  g_assert_no_error (error);
+
+  /* Spawn pipewire */
+  g_spawn_async_with_pipes_and_fds (
+    NULL, argv, NULL,
+    /* We Need this to get the pid returned on win32 */
+    G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH |
+      /* dbus-daemon will not abuse our descriptors, and
+       * passing this means we can use posix_spawn() for speed */
+      G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+    NULL, NULL, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1, &self->pipewire_pid,
+    NULL, NULL, NULL, &error);
+  g_assert_no_error (error);
+
+  _g_test_watcher_add_pid (self->pipewire_pid);
+}
+
+void
+_test_helper_zrythm_init (
+  bool optimized,
+  int  samplerate,
+  int  buf_size,
+  bool use_pipewire)
+{
+  if (gZrythm)
+    {
+      object_free_w_func_and_null (project_free, PROJECT);
+    }
+  gZrythm.reset ();
+  object_free_w_func_and_null (log_free, LOG);
+
+  /* dummy ZrythmApp object for testing */
+  zrythm_app = object_new (ZrythmApp);
+  zrythm_app->gtk_thread = g_thread_self ();
+  zrythm_app->samplerate = samplerate;
+  zrythm_app->buf_size = buf_size;
+
+  Log ** log_ptr = log_get ();
+  Log *  log_obj = log_new ();
+  *log_ptr = log_obj;
+  LOG = log_obj;
+
+  gZrythm.reset (new Zrythm (nullptr, false, optimized));
+  g_assert_true (gZrythm != nullptr);
+  gZrythm->undo_stack_len = 64;
+  g_message ("%s", gZrythm->version);
+  char * zrythm_dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  g_assert_nonnull (zrythm_dir);
+  g_message ("%s", zrythm_dir);
+  gZrythm->init ();
+
+  if (use_pipewire)
+    {
+#ifndef HAVE_PIPEWIRE
+      g_error ("pipewire program not found but requested pipewire engine");
 #endif
+      gZrythm->use_pipewire_in_tests = use_pipewire;
+      start_daemon (gZrythm.get ());
+    }
+
+  /* init logic - note: will use a random dir in
+   * tmp as the user dir */
+  GError * err = NULL;
+  bool     success = gZrythm->init_user_dirs_and_files (&err);
+  g_assert_true (success);
+  gZrythm->init_templates ();
+
+  /* init logging to custom file */
+  char * tmp_log_dir =
+    g_build_filename (g_get_tmp_dir (), "zrythm_test_logs", NULL);
+  success = io_mkdir (tmp_log_dir, NULL);
+  g_assert_true (success);
+  char * str_datetime = datetime_get_for_filename ();
+  char * log_filepath = g_strdup_printf (
+    "%s%slog_%s.log", tmp_log_dir, G_DIR_SEPARATOR_S, str_datetime);
+  g_free (str_datetime);
+  g_free (tmp_log_dir);
+  success = log_init_with_file (LOG, log_filepath, NULL);
+  g_assert_true (success);
+  log_init_writer_idle (LOG, 1);
+
+  gZrythm->create_project_path =
+    g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
+  project_init_flow_manager_load_or_create_default_project (
+    NULL, false, test_helper_project_init_done_cb, NULL);
+
+  /* adaptive snap only supported with UI */
+  SNAP_GRID_TIMELINE->snap_adaptive = false;
+
+  /* set a segv handler */
+  signal (SIGSEGV, segv_handler);
+}
+
+/**
+ * To be called by every test's main at the end to
+ * clean up.
+ */
+void
+test_helper_zrythm_cleanup (void)
+{
+  g_assert_nonnull (gZrythm->dir_mgr->testing_dir);
+  io_rmdir (gZrythm->dir_mgr->testing_dir, true);
+  object_free_w_func_and_null (project_free, gZrythm->project);
+  if (gZrythm->use_pipewire_in_tests)
+    {
+      stop_daemon (gZrythm.get ());
+    }
+  gZrythm.reset ();
+  object_free_w_func_and_null (log_free, LOG);
+  object_zero_and_free (zrythm_app);
+}
+
+/**
+ * To be called by every test's main to initialize
+ * Zrythm to default values.
+ */
+void
+test_helper_zrythm_init (void)
+{
+  _test_helper_zrythm_init (false, 0, 0, false);
+}
+
+void
+test_helper_zrythm_init_with_pipewire (void)
+{
+  _test_helper_zrythm_init (false, 0, 0, true);
+}
+
+void
+test_helper_zrythm_init_optimized (void)
+{
+  _test_helper_zrythm_init (true, 0, 0, false);
+}
+
+void
+test_helper_project_init_done_cb (bool success, GError * error, void * user_data)
+{
+  g_assert_true (success);
+}

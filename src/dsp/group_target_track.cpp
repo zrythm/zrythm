@@ -50,7 +50,7 @@ update_child_output (
 
   if (ch->has_output)
     {
-      Track * track = channel_get_output_track (ch);
+      Track * track = ch->get_output_track ();
       /* disconnect Channel's output from the
        * current
        * output channel */
@@ -87,7 +87,7 @@ update_child_output (
           break;
         }
       ch->has_output = true;
-      ch->output_name_hash = track_get_name_hash (output);
+      ch->output_name_hash = track_get_name_hash (*output);
     }
   else
     {
@@ -131,7 +131,7 @@ group_target_track_remove_child (
   bool         recalc_graph,
   bool         pub_events)
 {
-  g_return_if_fail (child_name_hash != track_get_name_hash (self));
+  g_return_if_fail (child_name_hash != track_get_name_hash (*self));
   g_return_if_fail (contains_child (self, child_name_hash));
 
   Tracklist * tracklist = track_get_tracklist (self);
@@ -181,7 +181,7 @@ group_target_track_validate (Track * self)
       Track * track =
         tracklist_find_track_by_name_hash (TRACKLIST, self->children[i]);
       g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
-      Track * out_track = channel_get_output_track (track->channel);
+      Track * out_track = track->channel->get_output_track ();
       g_return_val_if_fail (self == out_track, false);
     }
 

@@ -13,7 +13,6 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -34,7 +33,7 @@ on_route_target_changed (
   if (!self->track)
     return;
 
-  Track * old_direct_out = channel_get_output_track (self->track->channel);
+  Track * old_direct_out = self->track->channel->get_output_track ();
   Track * new_direct_out = old_direct_out;
   if (gtk_drop_down_get_selected (dropdown) == 0)
     {
@@ -274,7 +273,7 @@ route_target_selector_widget_refresh (
     }
   else
     {
-      Track * direct_out = channel_get_output_track (track->channel);
+      Track * direct_out = track->channel->get_output_track ();
       if (direct_out)
         {
           WrappedObjectWithChangeSignal * direct_out_wobj =
@@ -333,7 +332,7 @@ route_target_selector_widget_refresh (
   /* if routable */
   else
     {
-      Track * direct_out = channel_get_output_track (track->channel);
+      Track * direct_out = track->channel->get_output_track ();
       if (direct_out)
         {
           char * str = g_strdup_printf (_ ("Routed to %s"), direct_out->name);

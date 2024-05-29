@@ -12,8 +12,8 @@
 #include "utils/io.h"
 #include "zrythm.h"
 
-#include "tests/helpers/project.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #if 0
 static void

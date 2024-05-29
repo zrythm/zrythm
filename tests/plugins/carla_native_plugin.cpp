@@ -12,7 +12,8 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_vst_instrument_makes_sound (void)
@@ -57,7 +58,7 @@ test_vst_instrument_makes_sound (void)
       position_init (&pos);
       position_set_to_bar (&end_pos, 3);
       Region * r =
-        midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
+        midi_region_new (&pos, &end_pos, track_get_name_hash (*track), 0, 0);
       bool success = track_add_region (
         track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
       g_assert_true (success);
@@ -130,8 +131,8 @@ test_mono_plugin (void)
   g_return_if_fail (setting);
 
   bool ret = mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (audio_track), 0,
-    setting, 1, NULL);
+    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*audio_track),
+    0, setting, 1, NULL);
   g_assert_true (ret);
 
   Plugin * pl = audio_track->channel->inserts[0];

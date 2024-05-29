@@ -13,7 +13,8 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 
@@ -57,7 +58,7 @@ prepare_region_with_note_at_start_to_end (
   position_update_frames_from_ticks (&start_pos, 0.0);
   position_update_frames_from_ticks (&end_pos, 0.0);
   Region * r =
-    midi_region_new (&start_pos, &end_pos, track_get_name_hash (track), 0, 0);
+    midi_region_new (&start_pos, &end_pos, track_get_name_hash (*track), 0, 0);
   MidiNote * mn1 = midi_note_new (&r->id, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (r, mn1, 0);
 

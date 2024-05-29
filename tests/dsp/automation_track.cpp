@@ -14,8 +14,8 @@
 
 #include <glib.h>
 
-#include "tests/helpers/project.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <locale.h>
 
@@ -37,7 +37,7 @@ test_set_at_index (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
   Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (master), first_vis_at->index, 0);
+    &start, &end, track_get_name_hash (*master), first_vis_at->index, 0);
   bool success = track_add_region (
     master, region, first_vis_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
@@ -96,7 +96,7 @@ test_region_in_2nd_automation_track_get_muted (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
   Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (master), new_at->index, 0);
+    &start, &end, track_get_name_hash (*master), new_at->index, 0);
   bool success = track_add_region (
     master, region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
@@ -127,8 +127,8 @@ test_curve_value (void)
   track_set_automation_visible (master, true);
   /*AutomationTracklist * atl =*/
   /*track_get_automation_tracklist (master);*/
-  AutomationTrack * fader_at = channel_get_automation_track (
-    master->channel, PortIdentifier::Flags::CHANNEL_FADER);
+  AutomationTrack * fader_at = master->channel->get_automation_track (
+    PortIdentifier::Flags::CHANNEL_FADER);
   g_assert_nonnull (fader_at);
   if (!fader_at->created)
     fader_at->created = 1;
@@ -142,7 +142,7 @@ test_curve_value (void)
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 5);
   Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (master), fader_at->index, 0);
+    &start, &end, track_get_name_hash (*master), fader_at->index, 0);
   bool success = track_add_region (
     master, region, fader_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);

@@ -410,25 +410,25 @@ track_processor_clear_buffers (TrackProcessor * self)
 
   if (self->stereo_in)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->r);
+      self->stereo_in->l->clear_buffer (*AUDIO_ENGINE);
+      self->stereo_in->r->clear_buffer (*AUDIO_ENGINE);
     }
   if (self->stereo_out)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
+      self->stereo_out->l->clear_buffer (*AUDIO_ENGINE);
+      self->stereo_out->r->clear_buffer (*AUDIO_ENGINE);
     }
   if (self->midi_in)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->midi_in);
+      self->midi_in->clear_buffer (*AUDIO_ENGINE);
     }
   if (self->midi_out)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
+      self->midi_out->clear_buffer (*AUDIO_ENGINE);
     }
   if (self->piano_roll)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->piano_roll);
+      self->piano_roll->clear_buffer (*AUDIO_ENGINE);
     }
 }
 

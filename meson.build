@@ -890,7 +890,7 @@ if not soxr_dep.found ()
       'WITH_OPENMP': 'ON'
       })
     cmake_opts.append_compile_args(['c', 'cpp'], '-fopenmp')
-    cmake_opts.append_link_args('-fopenmp')
+    cmake_opts.append_link_args('-fopenmp', language: ['c', 'cpp'])
   else
     cmake_opts.add_cmake_defines ({
       'WITH_OPENMP': 'OFF'

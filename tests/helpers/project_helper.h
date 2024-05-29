@@ -27,6 +27,7 @@
 #include "dsp/tempo_track.h"
 #include "dsp/tracklist.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
 #include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
@@ -36,9 +37,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-#include "tests/helpers/zrythm.h"
-
-#include "project/project_init_flow_manager.h"
+#include "tests/helpers/zrythm_helper.h"
 
 /**
  * @addtogroup tests
@@ -126,7 +125,7 @@ void
 test_project_reload (const char * prj_file)
 {
   project_init_flow_manager_load_or_create_default_project (
-    prj_file, false, _test_helper_project_init_done_cb, NULL);
+    prj_file, false, test_helper_project_init_done_cb, NULL);
 }
 
 void
@@ -206,8 +205,8 @@ check_vs_orig_state:
   /* check automation region */
   AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
@@ -291,9 +290,9 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
-  unsigned int track_name_hash = track_get_name_hash (track);
+  unsigned int track_name_hash = track_get_name_hash (*track);
   Region *     r =
-    midi_region_new (p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
+    midi_region_new (p1, p2, track_get_name_hash (*track), MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool success = track_add_region (track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
   g_assert_true (success);
@@ -314,9 +313,9 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
 
   /* Create and add an automation region with
    * 2 AutomationPoint's */
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel, PortIdentifier::Flags::STEREO_BALANCE);
-  track_name_hash = track_get_name_hash (P_MASTER_TRACK);
+  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
+    PortIdentifier::Flags::STEREO_BALANCE);
+  track_name_hash = track_get_name_hash (*P_MASTER_TRACK);
   r = automation_region_new (p1, p2, track_name_hash, at->index, 0);
   success = track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
   g_assert_true (success);
@@ -383,7 +382,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-  track_name_hash = track_get_name_hash (track);
+  track_name_hash = track_get_name_hash (*track);
   r = audio_region_new (
     -1, audio_file_path, true, NULL, 0, NULL, 0, (BitDepth) 0, p1,
     track_name_hash, AUDIO_REGION_LANE, 0, NULL);

@@ -76,7 +76,7 @@ inspector_plugin_widget_show (
       if (ch)
         {
           Plugin * pls[120];
-          int      num_pls = channel_get_plugins (ch, pls);
+          int      num_pls = ch->get_plugins (pls);
           if (num_pls > 0)
             {
               pl = pls[0];

@@ -708,7 +708,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
 
           GError * err = NULL;
           pl = plugin_new_from_setting (
-            setting, track_get_name_hash (track),
+            setting, track_get_name_hash (*track),
             ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
@@ -736,8 +736,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
       if (track->channel && pl)
         {
           bool is_instrument = track->type == TrackType::TRACK_TYPE_INSTRUMENT;
-          channel_add_plugin (
-            track->channel,
+          track->channel->add_plugin (
             is_instrument
               ? ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT
               : ZPluginSlotType::Z_PLUGIN_SLOT_INSERT,
@@ -759,7 +758,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
           Region * ar = audio_region_new (
             self->pool_id, NULL, true, NULL, 0, NULL, 0,
             ENUM_INT_TO_VALUE (BitDepth, 0), &start_pos,
-            track_get_name_hash (track), 0, 0, &err);
+            track_get_name_hash (*track), 0, 0, &err);
           if (!ar)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -802,7 +801,7 @@ create_track (TracklistSelectionsAction * self, int idx, GError ** error)
           /* create a MIDI region from the MIDI
            * file & add to track */
           Region * mr = midi_region_new_from_midi_file (
-            &start_pos, full_path, track_get_name_hash (track), 0, 0, idx);
+            &start_pos, full_path, track_get_name_hash (*track), 0, 0, idx);
           if (mr)
             {
               bool success = track_add_region (
@@ -982,14 +981,14 @@ do_or_undo_create_or_delete (
               /* reconnect output */
               if (self->out_tracks[i] != 0)
                 {
-                  Track * out_track = channel_get_output_track (track->channel);
+                  Track * out_track = track->channel->get_output_track ();
                   group_target_track_remove_child (
-                    out_track, track_get_name_hash (track), F_DISCONNECT,
+                    out_track, track_get_name_hash (*track), F_DISCONNECT,
                     F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                   out_track = tracklist_find_track_by_name_hash (
                     TRACKLIST, self->out_tracks[i]);
                   group_target_track_add_child (
-                    out_track, track_get_name_hash (track), F_CONNECT,
+                    out_track, track_get_name_hash (*track), F_CONNECT,
                     F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
@@ -1302,7 +1301,7 @@ do_or_undo_move_or_copy (
               Track * own_track = self->tls_before->tracks[i];
               if (own_track->channel)
                 {
-                  outputs[i] = channel_get_output_track (own_track->channel);
+                  outputs[i] = own_track->channel->get_output_track ();
 
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
@@ -1378,12 +1377,12 @@ do_or_undo_move_or_copy (
               Track * track = new_tracks[i];
               if (outputs[i])
                 {
-                  Track * out_track = channel_get_output_track (track->channel);
+                  Track * out_track = track->channel->get_output_track ();
                   group_target_track_remove_child (
-                    out_track, track_get_name_hash (track), F_DISCONNECT,
+                    out_track, track_get_name_hash (*track), F_DISCONNECT,
                     F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                   group_target_track_add_child (
-                    outputs[i], track_get_name_hash (track), F_CONNECT,
+                    outputs[i], track_get_name_hash (*track), F_CONNECT,
                     F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
@@ -1640,7 +1639,7 @@ do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
           break;
         case EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
-          channel_set_balance_control (
+          Channel::set_balance_control (
             ch, _do ? self->val_after : self->val_before);
           break;
         case EditTrackActionType::EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE:
@@ -1667,7 +1666,7 @@ do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
             int cur_direct_out_pos = -1;
             if (ch->has_output)
               {
-                Track * cur_direct_out_track = channel_get_output_track (ch);
+                Track * cur_direct_out_track = ch->get_output_track ();
                 cur_direct_out_pos = cur_direct_out_track->pos;
               }
 
@@ -1677,7 +1676,7 @@ do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
                 Track * target_track = tracklist_find_track_by_name_hash (
                   TRACKLIST, ch->output_name_hash);
                 group_target_track_remove_child (
-                  target_track, track_get_name_hash (ch->track), F_DISCONNECT,
+                  target_track, track_get_name_hash (ch->track_), F_DISCONNECT,
                   F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
               }
 
@@ -1686,10 +1685,11 @@ do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
             /* reconnect to the new track */
             if (target_pos != -1)
               {
-                z_return_val_if_fail_cmp (target_pos, !=, ch->track->pos, -1);
+                z_return_val_if_fail_cmp (target_pos, !=, ch->track_.pos, -1);
                 group_target_track_add_child (
-                  TRACKLIST->tracks[target_pos], track_get_name_hash (ch->track),
-                  F_CONNECT, F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
+                  TRACKLIST->tracks[target_pos],
+                  track_get_name_hash (ch->track_), F_CONNECT,
+                  F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
               }
 
             /* remember previous pos */

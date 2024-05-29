@@ -16,7 +16,7 @@
 #include <glib.h>
 
 #include "helpers/plugin_manager.h"
-#include "helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #include <sndfile.h>
 
@@ -132,7 +132,7 @@ bounce_region (bool with_bpm_automation)
       AutomationTrack * at = automation_track_find_from_port (
         P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
       Region * r = automation_region_new (
-        &pos, &end_pos, track_get_name_hash (P_TEMPO_TRACK), at->index, 0);
+        &pos, &end_pos, track_get_name_hash (*P_TEMPO_TRACK), at->index, 0);
       bool success = track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0, NULL);
       g_assert_true (success);
       position_set_to_bar (&pos, 1);
@@ -156,7 +156,7 @@ bounce_region (bool with_bpm_automation)
   int      lane_pos = 0;
   int      idx_in_lane = 0;
   Region * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (track), lane_pos, idx_in_lane, 0);
+    &pos, midi_file, track_get_name_hash (*track), lane_pos, idx_in_lane, 0);
   bool success = track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
@@ -306,7 +306,7 @@ test_bounce_region_with_first_note (void)
   int      lane_pos = 0;
   int      idx_in_lane = 0;
   Region * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (track), lane_pos, idx_in_lane, 0);
+    &pos, midi_file, track_get_name_hash (*track), lane_pos, idx_in_lane, 0);
   ArrangerObject * r_obj = (ArrangerObject *) region;
   bool             success = track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -488,7 +488,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   char * midi_file =
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
   Region * r = midi_region_new_from_midi_file (
-    PLAYHEAD, midi_file, track_get_name_hash (ins_track), 0, 0, 0);
+    PLAYHEAD, midi_file, track_get_name_hash (*ins_track), 0, 0, 0);
   g_free (midi_file);
   bool success = track_add_region (
     ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -501,7 +501,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), 0,
+    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*ins_track), 0,
     setting, 1, NULL);
 
   /* adjust fader */

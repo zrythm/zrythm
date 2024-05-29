@@ -7,7 +7,7 @@
 #include "utils/math.h"
 #include "utils/string.h"
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_conversions (void)

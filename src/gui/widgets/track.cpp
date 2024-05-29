@@ -1005,16 +1005,13 @@ click_released (
         {
           if (TRACK_CB_ICON_IS (MONO_COMPAT))
             {
-              channel_set_mono_compat_enabled (
-                track->channel,
-                !channel_get_mono_compat_enabled (track->channel),
-                F_PUBLISH_EVENTS);
+              track->channel->set_mono_compat_enabled (
+                !track->channel->get_mono_compat_enabled (), F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (SWAP_PHASE))
             {
-              channel_set_swap_phase (
-                track->channel, !channel_get_swap_phase (track->channel),
-                F_PUBLISH_EVENTS);
+              track->channel->set_swap_phase (
+                !track->channel->get_swap_phase (), F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (RECORD))
             {

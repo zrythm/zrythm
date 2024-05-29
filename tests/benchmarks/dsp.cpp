@@ -8,8 +8,8 @@
 #include "zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #ifdef HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

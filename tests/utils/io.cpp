@@ -11,7 +11,7 @@
 
 #include <glib.h>
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_get_parent_dir (void)

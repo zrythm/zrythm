@@ -329,6 +329,10 @@ if get_option ('tests')
   # when using the shared lib
   test_link_libs += zrythm_lib.get_shared_lib ()
 
+  helper_sources = files([
+    'helpers/zrythm.cpp',
+    ])
+
   foreach name, info : tests
     is_parallel = info['parallel']
     test_name = '_'.join(name.split('/'))
@@ -363,6 +367,7 @@ if get_option ('tests')
           source,
           test_config_h,
           bundled_plugins_for_tests_tgts,
+          helper_sources,
           ],
         cpp_args : [
           common_cflags, strict_cflags,

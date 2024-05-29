@@ -50,6 +50,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
 #include "settings/settings.h"
 #include "settings/user_shortcuts.h"
 #include "utils/backtrace.h"
@@ -74,7 +75,6 @@
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
 #include "gtk_wrapper.h"
-#include "project/project_init_flow_manager.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtksourceview/gtksource.h>
@@ -1400,15 +1400,6 @@ add_option_entries (ZrythmApp * self)
   sprintf (
     summary, _ ("Run %s, optionally passing a project file."), PROGRAM_NAME);
   g_application_set_option_context_summary (G_APPLICATION (self), summary);
-}
-
-/**
- * Returns a pointer to the global zrythm_app.
- */
-ZrythmApp **
-zrythm_app_get (void)
-{
-  return &zrythm_app;
 }
 
 /**

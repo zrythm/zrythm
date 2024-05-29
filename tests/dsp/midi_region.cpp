@@ -14,7 +14,7 @@
 #include "utils/io.h"
 #include "zrythm.h"
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_export (void)

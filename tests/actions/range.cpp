@@ -20,7 +20,7 @@
 
 #include <glib.h>
 
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 #define RANGE_START_BAR 4
 #define RANGE_END_BAR 10
@@ -93,7 +93,7 @@ test_prepare_common (void)
   position_set_to_bar (&start, start_bar); \
   position_set_to_bar (&end, end_bar); \
   midi_region = midi_region_new ( \
-    &start, &end, track_get_name_hash (midi_track), 0, \
+    &start, &end, track_get_name_hash (*midi_track), 0, \
     midi_track->lanes[0]->num_regions); \
   success = track_add_region ( \
     midi_track, midi_region, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL); \

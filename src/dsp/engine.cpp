@@ -1324,9 +1324,9 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
     return;
 
   /* clear the monitor output (used by rtaudio) */
-  port_clear_buffer (AUDIO_ENGINE, self->monitor_out->l);
-  port_clear_buffer (AUDIO_ENGINE, self->monitor_out->r);
-  port_clear_buffer (AUDIO_ENGINE, self->midi_clock_out);
+  self->monitor_out->l->clear_buffer (*AUDIO_ENGINE);
+  self->monitor_out->r->clear_buffer (*AUDIO_ENGINE);
+  self->midi_clock_out->clear_buffer (*AUDIO_ENGINE);
 
   /* if not running, do not attempt to access any
    * possibly deleted ports */
@@ -1484,8 +1484,8 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
 
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
-  port_clear_buffer (AUDIO_ENGINE, self->midi_in);
-  port_clear_buffer (AUDIO_ENGINE, self->midi_editor_manual_press);
+  self->midi_in->clear_buffer (*AUDIO_ENGINE);
+  self->midi_editor_manual_press->clear_buffer (*AUDIO_ENGINE);
 
   sample_processor_prepare_process (self->sample_processor, nframes);
 
@@ -1496,7 +1496,7 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
       ch = TRACKLIST->tracks[i]->channel;
 
       if (ch)
-        channel_prepare_process (ch);
+        ch->prepare_process ();
     }
 
   self->filled_stereo_out_bufs = 0;

@@ -150,6 +150,14 @@ public:
    */
   void free_bufs ();
 
+  /**
+   * Clears the port buffer.
+   *
+   * @note Only the Zrythm buffer is cleared. Use port_clear_external_buffer()
+   * to clear backend buffers.
+   */
+  void clear_buffer (AudioEngine &engine);
+
   PortIdentifier id;
 
   /**
@@ -907,32 +915,6 @@ port_copy_values (Port * self, const Port * other);
  */
 NONNULL void
 port_restore_from_non_project (Port * self, Port * non_project);
-
-/**
- * Clears the port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-#define port_clear_buffer(engine_, _port) \
-  { \
-    if ( \
-      _port->id.type == ZPortType::Z_PORT_TYPE_AUDIO \
-      || _port->id.type == ZPortType::Z_PORT_TYPE_CV) \
-      { \
-        if (_port->buf) \
-          { \
-            dsp_fill ( \
-              _port->buf, DENORMAL_PREVENTION_VAL (engine_), \
-              engine_->block_length); \
-          } \
-      } \
-    else if (_port->id.type == ZPortType::Z_PORT_TYPE_EVENT) \
-      { \
-        if (_port->midi_events) \
-          _port->midi_events->num_events = 0; \
-      } \
-  }
 
 /**
  * Clears the backend's port buffer.

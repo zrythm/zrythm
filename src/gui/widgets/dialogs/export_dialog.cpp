@@ -800,7 +800,7 @@ set_track_toggle_on_parent_recursively (
   Track * track = (Track *) wobj->obj;
 
   /* enable the parent if toggled */
-  Track * direct_out = channel_get_output_track (track->channel);
+  Track * direct_out = track->channel->get_output_track ();
   if (!direct_out)
     return;
 

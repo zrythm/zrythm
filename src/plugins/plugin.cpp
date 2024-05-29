@@ -634,9 +634,9 @@ do_move (PluginMoveData * data)
     track_get_plugin_at_slot (data->track, data->slot_type, data->slot);
   if (existing_pl)
     {
-      channel_remove_plugin (
-        data->track->channel, data->slot_type, data->slot, F_NOT_MOVING_PLUGIN,
-        F_DELETING_PLUGIN, F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+      data->track->channel->remove_plugin (
+        data->slot_type, data->slot, F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+        F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
     }
 
   /* move plugin's automation from src to
@@ -645,14 +645,14 @@ do_move (PluginMoveData * data)
     pl, prev_track, data->track, data->slot_type, data->slot);
 
   /* remove plugin from its channel */
-  channel_remove_plugin (
-    prev_ch, prev_slot_type, prev_slot, F_MOVING_PLUGIN, F_NOT_DELETING_PLUGIN,
+  prev_ch->remove_plugin (
+    prev_slot_type, prev_slot, F_MOVING_PLUGIN, F_NOT_DELETING_PLUGIN,
     F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
 
   /* add plugin to its new channel */
-  channel_add_plugin (
-    data->track->channel, data->slot_type, data->slot, pl, F_NO_CONFIRM,
-    F_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+  data->track->channel->add_plugin (
+    data->slot_type, data->slot, pl, F_NO_CONFIRM, F_MOVING_PLUGIN,
+    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH, F_PUBLISH_EVENTS);
 
   if (data->fire_events)
     {
@@ -1117,7 +1117,7 @@ plugin_move_automation (
   AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);
 
-  unsigned int name_hash = track_get_name_hash (track);
+  unsigned int name_hash = track_get_name_hash (*track);
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
@@ -1408,22 +1408,22 @@ plugin_prepare_process (Plugin * self)
   for (size_t i = 0; i < self->audio_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->audio_in_ports, i);
-      port_clear_buffer (AUDIO_ENGINE, port);
+      port->clear_buffer (*AUDIO_ENGINE);
     }
   for (size_t i = 0; i < self->cv_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->cv_in_ports, i);
-      port_clear_buffer (AUDIO_ENGINE, port);
+      port->clear_buffer (*AUDIO_ENGINE);
     }
   for (size_t i = 0; i < self->midi_in_ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (self->midi_in_ports, i);
-      port_clear_buffer (AUDIO_ENGINE, port);
+      port->clear_buffer (*AUDIO_ENGINE);
     }
 
   for (int i = 0; i < self->num_out_ports; i++)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->out_ports[i]);
+      self->out_ports[i]->clear_buffer (*AUDIO_ENGINE);
     }
 }
 
@@ -2288,8 +2288,8 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
 {
   g_return_if_fail (pl->instantiated || pl->instantiation_failed);
 
-  Track *   track = channel_get_track (ch);
-  ZPortType type = track->out_signal_type;
+  Track    &track = ch->get_track ();
+  ZPortType type = track.out_signal_type;
 
   if (type == ZPortType::Z_PORT_TYPE_EVENT)
     {
@@ -2327,8 +2327,8 @@ plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
 {
   int       i;
   Port *    out_port;
-  Track *   track = channel_get_track (ch);
-  ZPortType type = track->out_signal_type;
+  Track    &track = ch->get_track ();
+  ZPortType type = track.out_signal_type;
 
   for (i = 0; i < pl->num_out_ports; i++)
     {

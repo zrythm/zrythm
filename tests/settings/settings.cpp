@@ -5,7 +5,7 @@
 
 #include "settings/settings.h"
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_append_to_strv (void)

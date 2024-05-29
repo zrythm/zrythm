@@ -8,7 +8,7 @@
 #include "dsp/sample_processor.h"
 #include "utils/math.h"
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_find_and_queue_metronome (void)

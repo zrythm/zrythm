@@ -4,16 +4,11 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/error.h"
 #include "utils/flags.h"
-#include "utils/gtk.h"
 #include "utils/objects.h"
-#include "utils/yaml.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -182,7 +177,7 @@ mixer_selections_add_slot (
   bool              clone_pl,
   const bool        fire_events)
 {
-  unsigned int name_hash = track_get_name_hash (track);
+  unsigned int name_hash = track_get_name_hash (*track);
 
   if (!ms->has_any || name_hash != ms->track_name_hash || type != ms->type)
     {
@@ -600,7 +595,8 @@ mixer_selections_paste_to_slot (
 {
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_paste (
-    ms, PORT_CONNECTIONS_MGR, type, track_get_name_hash (ch->track), slot, &err);
+    ms, PORT_CONNECTIONS_MGR, type, track_get_name_hash (ch->get_track ()),
+    slot, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to paste plugins"));

@@ -83,8 +83,8 @@ on_mono_compat_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
         {
           track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
-      channel_set_mono_compat_enabled (
-        track->channel, gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
+      track->channel->set_mono_compat_enabled (
+        gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
     }
 }
 
@@ -98,8 +98,8 @@ on_swap_phase_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
         {
           track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
-      channel_set_swap_phase (
-        track->channel, gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
+      track->channel->set_swap_phase (
+        gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
     }
 }
 
@@ -151,7 +151,7 @@ fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track)
       if (track_type_has_mono_compat_switch (track->type))
         {
           gtk_toggle_button_set_active (
-            self->mono_compat, channel_get_mono_compat_enabled (track->channel));
+            self->mono_compat, track->channel->get_mono_compat_enabled ());
           gtk_widget_set_visible (GTK_WIDGET (self->mono_compat), true);
         }
       else
@@ -161,7 +161,7 @@ fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track)
       if (track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
         {
           gtk_toggle_button_set_active (
-            self->swap_phase, channel_get_swap_phase (track->channel));
+            self->swap_phase, track->channel->get_swap_phase ());
           gtk_widget_set_visible (GTK_WIDGET (self->swap_phase), true);
         }
       else

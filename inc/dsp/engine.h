@@ -79,7 +79,7 @@ typedef struct MPMCQueue         MPMCQueue;
 #define MANUAL_PRESS_EVENTS \
   (AUDIO_ENGINE->midi_editor_manual_press->midi_events)
 
-#define DENORMAL_PREVENTION_VAL(engine_) (engine_->denormal_prevention_val)
+#define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val)
 
 #define engine_is_in_active_project(self) (self->project == PROJECT)
 

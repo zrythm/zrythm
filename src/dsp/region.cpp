@@ -146,7 +146,7 @@ region_set_lane (Region * self, TrackLane * lane)
     self->base.is_auditioner = true;
 
   self->id.lane_pos = lane->pos;
-  self->id.track_name_hash = track_get_name_hash (lane->track);
+  self->id.track_name_hash = track_get_name_hash (*lane->track);
   self->owner_lane = lane;
 }
 
@@ -460,7 +460,7 @@ region_set_automation_track (Region * self, AutomationTrack * at)
     }
   self->id.at_idx = at->index;
   Track * track = automation_track_get_track (at);
-  self->id.track_name_hash = track_get_name_hash (track);
+  self->id.track_name_hash = track_get_name_hash (*track);
 
   region_update_identifier (self);
 

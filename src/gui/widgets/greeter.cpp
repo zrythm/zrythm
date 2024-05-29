@@ -19,6 +19,7 @@
 #include "gui/widgets/item_factory.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "project/project_init_flow_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
@@ -35,8 +36,6 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "project/project_init_flow_manager.h"
 
 #define FILE_NOT_FOUND_STR _ ("<File not found>")
 

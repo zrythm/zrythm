@@ -10,8 +10,8 @@
 #include "utils/objects.h"
 #include "zrythm.h"
 
-#include "helpers/project.h"
-#include "helpers/zrythm.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_midi_mappping (void)

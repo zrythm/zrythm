@@ -3,8 +3,10 @@
 
 #include "dsp/channel_send.h"
 #include "dsp/control_port.h"
+#include "dsp/engine.h"
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
+#include "dsp/port.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
@@ -210,17 +212,18 @@ channel_send_is_target_sidechain (ChannelSend * self)
 void
 channel_send_prepare_process (ChannelSend * self)
 {
+  AudioEngine &engine = *AUDIO_ENGINE;
   if (self->midi_in)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->midi_in);
-      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
+      self->midi_in->clear_buffer (engine);
+      self->midi_out->clear_buffer (engine);
     }
   if (self->stereo_in)
     {
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->r);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
+      self->stereo_in->l->clear_buffer (engine);
+      self->stereo_in->r->clear_buffer (engine);
+      self->stereo_out->l->clear_buffer (engine);
+      self->stereo_out->r->clear_buffer (engine);
     }
 }
 

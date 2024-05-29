@@ -24,7 +24,7 @@
 #include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project.h"
+#include "tests/helpers/project_helper.h"
 
 static void
 test_num_tracks_with_file (const char * filepath, const int num_tracks)
@@ -130,7 +130,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  unsigned int track_name_hash = track_get_name_hash (src_track);
+  unsigned int track_name_hash = track_get_name_hash (*src_track);
   Region *     region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
   bool success = track_add_region (
@@ -276,7 +276,7 @@ _test_undo_track_deletion (
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  unsigned int track_name_hash = track_get_name_hash (helm_track);
+  unsigned int track_name_hash = track_get_name_hash (*helm_track);
   Region *     region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
   bool success = track_add_region (
@@ -371,9 +371,9 @@ test_group_track_deletion (void)
   g_assert_true (audio_fx1->channel->has_output);
   g_assert_true (audio_fx2->channel->has_output);
   g_assert_cmpuint (
-    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (group));
+    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (*group));
   g_assert_cmpuint (
-    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (group));
+    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (*group));
 
   /* save and reload the project */
   int group_pos = group->pos;
@@ -407,14 +407,14 @@ test_group_track_deletion (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
   group = TRACKLIST->tracks[group_pos];
   g_assert_cmpint (group->num_children, ==, 2);
-  g_assert_cmpint (group->children[0], ==, track_get_name_hash (audio_fx1));
-  g_assert_cmpint (group->children[1], ==, track_get_name_hash (audio_fx2));
+  g_assert_cmpint (group->children[0], ==, track_get_name_hash (*audio_fx1));
+  g_assert_cmpint (group->children[1], ==, track_get_name_hash (*audio_fx2));
   g_assert_true (audio_fx1->channel->has_output);
   g_assert_true (audio_fx2->channel->has_output);
   g_assert_cmpuint (
-    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (group));
+    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (*group));
   g_assert_cmpuint (
-    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (group));
+    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (*group));
 
   /* save and reload the project */
   audio_fx1_pos = audio_fx1->pos;
@@ -768,7 +768,7 @@ test_ins_track_deletion_w_automation (void)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
+    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*track), 0,
     setting, 1, NULL);
 
   engine_activate (AUDIO_ENGINE, true);
@@ -785,7 +785,7 @@ test_ins_track_deletion_w_automation (void)
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   Region * region = automation_region_new (
-    &start_pos, &end_pos, track_get_name_hash (track), at->index,
+    &start_pos, &end_pos, track_get_name_hash (*track), at->index,
     at->num_regions);
   bool success = track_add_region (
     track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -816,7 +816,7 @@ test_ins_track_deletion_w_automation (void)
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   region = automation_region_new (
-    &start_pos, &end_pos, track_get_name_hash (track), at->index,
+    &start_pos, &end_pos, track_get_name_hash (*track), at->index,
     at->num_regions);
   success = track_add_region (
     track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
@@ -968,7 +968,7 @@ _test_move_tracks (
   position_init (&end_pos);
   position_add_ticks (&end_pos, 600);
   Region * ar = automation_region_new (
-    &pos, &end_pos, track_get_name_hash (fx_track), 0, 0);
+    &pos, &end_pos, track_get_name_hash (*fx_track), 0, 0);
   bool success = track_add_region (
     fx_track, ar, fx_track->automation_tracklist.ats[0], -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS, NULL);
@@ -997,9 +997,9 @@ _test_move_tracks (
   send = ins_track->channel->sends[0];
   stereo_in = fx_track->processor->stereo_in;
   g_assert_cmpuint (
-    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (fx_track));
+    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (*fx_track));
   g_assert_cmpuint (
-    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (fx_track));
+    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (*fx_track));
   g_assert_true (send->track == ins_track);
   g_assert_true (channel_send_is_enabled (send));
   g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
@@ -1048,9 +1048,9 @@ _test_move_tracks (
   send = ins_track->channel->sends[0];
   stereo_in = fx_track->processor->stereo_in;
   g_assert_cmpuint (
-    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (fx_track));
+    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (*fx_track));
   g_assert_cmpuint (
-    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (fx_track));
+    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (*fx_track));
   g_assert_true (send->track == ins_track);
   g_assert_true (channel_send_is_enabled (send));
   g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
@@ -1331,7 +1331,8 @@ test_duplicate_w_output_and_send (void)
   Track * new_track = TRACKLIST->tracks[start_pos + 1];
   g_assert_true (new_track->type == TrackType::TRACK_TYPE_AUDIO);
   g_assert_cmpuint (
-    new_track->channel->output_name_hash, ==, track_get_name_hash (group_track));
+    new_track->channel->output_name_hash, ==,
+    track_get_name_hash (*group_track));
   g_assert_true (
     ports_connected (
       new_track->channel->stereo_out->l, group_track->processor->stereo_in->l)
@@ -1344,7 +1345,7 @@ test_duplicate_w_output_and_send (void)
   g_assert_true (new_group_track->type == TrackType::TRACK_TYPE_AUDIO_GROUP);
   g_assert_cmpuint (
     new_group_track->channel->output_name_hash, ==,
-    track_get_name_hash (group_track2));
+    track_get_name_hash (*group_track2));
   g_assert_true (
     ports_connected (
       new_group_track->channel->stereo_out->l,
@@ -1395,7 +1396,7 @@ test_track_deletion_w_mixer_selections (void)
     F_NO_CLONE, F_NO_PUBLISH_EVENTS);
   g_assert_true (MIXER_SELECTIONS->has_any);
   g_assert_cmpuint (
-    MIXER_SELECTIONS->track_name_hash, ==, track_get_name_hash (pl_track));
+    MIXER_SELECTIONS->track_name_hash, ==, track_get_name_hash (*pl_track));
 
   track_select (first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_delete (

@@ -617,7 +617,7 @@ track_deserialize_from_json (
   if (track_type_has_channel (track->type))
     {
       yyjson_val * ch_obj = yyjson_obj_iter_get (&it, "channel");
-      track->channel = object_new (Channel);
+      track->channel = new Channel (*track);
       channel_deserialize_from_json (doc, ch_obj, track->channel, error);
     }
   if (track->type == TrackType::TRACK_TYPE_TEMPO)

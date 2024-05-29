@@ -62,7 +62,7 @@ automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at)
   array_append (self->ats, self->num_ats, at);
 
   at->index = self->num_ats - 1;
-  at->port_id.track_name_hash = track_get_name_hash (self->track);
+  at->port_id.track_name_hash = track_get_name_hash (*self->track);
 
   /* move automation track regions */
   for (int i = 0; i < at->num_regions; i++)
@@ -274,7 +274,7 @@ automation_tracklist_update_track_name_hash (
   Track *               track)
 {
   self->track = track;
-  unsigned int track_name_hash = track_get_name_hash (track);
+  unsigned int track_name_hash = track_get_name_hash (*track);
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
@@ -694,7 +694,7 @@ automation_tracklist_validate (AutomationTracklist * self)
 {
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (self->track), false);
 
-  unsigned int track_name_hash = track_get_name_hash (self->track);
+  unsigned int track_name_hash = track_get_name_hash (*self->track);
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];

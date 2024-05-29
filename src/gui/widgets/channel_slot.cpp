@@ -221,9 +221,9 @@ on_dnd_drop (
       pl = (Plugin *) wrapped_obj->obj;
     }
 
-  channel_handle_plugin_import (
-    self->track->channel, pl, MIXER_SELECTIONS, descr, self->slot_index,
-    self->type, action == GDK_ACTION_COPY, true);
+  self->track->channel->handle_plugin_import (
+    pl, MIXER_SELECTIONS, descr, self->slot_index, self->type,
+    action == GDK_ACTION_COPY, true);
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
@@ -357,7 +357,7 @@ select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
   g_return_if_fail (self->track);
   if (
     self->track->channel
-    && track_get_name_hash (self->track) == MIXER_SELECTIONS->track_name_hash)
+    && track_get_name_hash (*self->track) == MIXER_SELECTIONS->track_name_hash)
     ch = true;
 
   if (!ctrl && !pl && !ch)

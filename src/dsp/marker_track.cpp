@@ -135,7 +135,7 @@ marker_track_insert_marker (MarkerTrack * self, Marker * marker, int pos)
 {
   g_return_if_fail (self->type == TrackType::TRACK_TYPE_MARKER && marker);
 
-  marker_set_track_name_hash (marker, track_get_name_hash (self));
+  marker_set_track_name_hash (marker, track_get_name_hash (*self));
   array_double_size_if_full (
     self->markers, self->num_markers, self->markers_size, Marker *);
   array_insert (self->markers, self->num_markers, pos, marker);

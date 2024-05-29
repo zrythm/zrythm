@@ -98,7 +98,7 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       region = self->chord_regions[i];
-      region->id.track_name_hash = track_get_name_hash (self);
+      region->id.track_name_hash = track_get_name_hash (*self);
       arranger_object_init_loaded ((ArrangerObject *) region);
     }
 
@@ -112,8 +112,7 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
   /* init loaded channel */
   if (self->channel)
     {
-      self->channel->track = self;
-      channel_init_loaded (self->channel, self);
+      self->channel->init_loaded (*self);
     }
 
   /* set track to automation tracklist */
@@ -138,7 +137,7 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
   /** set magic to all track ports */
   GPtrArray * ports = g_ptr_array_new ();
   track_append_ports (self, ports, true);
-  unsigned int name_hash = track_get_name_hash (self);
+  unsigned int name_hash = track_get_name_hash (*self);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
@@ -327,7 +326,7 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
 
   if (track_type_has_channel (self->type))
     {
-      self->channel = channel_new (self);
+      self->channel = new Channel (*self);
     }
 
   track_generate_automation_tracks (self);
@@ -376,13 +375,6 @@ track_clone (Track * track, GError ** error)
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
-  /* set the track on the given track's channel
-   * if not set */
-  if (
-    !track_is_in_active_project (track) && track->channel
-    && !track->channel->track)
-    track->channel->track = track;
-
   Track * new_track =
     track_new (track->type, track->pos, track->name, F_WITHOUT_LANE);
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (new_track), NULL);
@@ -425,9 +417,7 @@ track_clone (Track * track, GError ** error)
           if (!clone_pl)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s",
-                _ ("Failed to clone modulator "
-                   "plugin"));
+                error, err, "%s", _ ("Failed to clone modulator plugin"));
               object_free_w_func_and_null (track_free, new_track);
               return NULL;
             }
@@ -441,12 +431,11 @@ track_clone (Track * track, GError ** error)
 
   if (track->channel)
     {
-      object_free_w_func_and_null (channel_free, new_track->channel);
+      object_delete_and_null (new_track->channel);
 
-      /* set the given channel's track if not
-       * set */
+      /* set the given channel's track if not set */
       GError * err = NULL;
-      new_track->channel = channel_clone (track->channel, new_track, &err);
+      new_track->channel = track->channel->clone (*new_track, &err);
       if (new_track->channel == NULL)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -454,7 +443,7 @@ track_clone (Track * track, GError ** error)
           object_free_w_func_and_null (track_free, new_track);
           return NULL;
         }
-      new_track->channel->track = new_track;
+      new_track->channel->track_ = *new_track;
     }
 
   /* --- copy objects --- */
@@ -558,7 +547,7 @@ track_set_magic (Track * self)
       Channel * ch = self->channel;
       g_return_if_fail (ch);
 
-      channel_set_magic (ch);
+      ch->set_magic ();
     }
 }
 
@@ -979,7 +968,7 @@ track_validate (Track * self)
       GPtrArray * ports = g_ptr_array_new ();
       track_append_ports (self, ports, F_INCLUDE_PLUGINS);
       AutomationTracklist * atl = track_get_automation_tracklist (self);
-      unsigned int          name_hash = track_get_name_hash (self);
+      unsigned int          name_hash = track_get_name_hash (*self);
       for (size_t i = 0; i < ports->len; i++)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
@@ -1034,7 +1023,7 @@ track_validate (Track * self)
   if (self->channel)
     {
       Channel * ch = self->channel;
-      Track *   out_track = channel_get_output_track (ch);
+      Track *   out_track = ch->get_output_track ();
       g_return_val_if_fail (out_track != self, false);
 
       if (TRACK_CAN_BE_GROUP_TARGET (self))
@@ -1044,7 +1033,7 @@ track_validate (Track * self)
 
       /* verify plugins */
       Plugin * plugins[60];
-      int      num_plugins = channel_get_plugins (self->channel, plugins);
+      int      num_plugins = self->channel->get_plugins (plugins);
       for (int i = 0; i < num_plugins; i++)
         {
           Plugin * pl = plugins[i];
@@ -1859,7 +1848,7 @@ track_remove_empty_last_lanes (Track * self)
 void
 track_update_children (Track * self)
 {
-  unsigned int name_hash = track_get_name_hash (self);
+  unsigned int name_hash = track_get_name_hash (*self);
   for (int i = 0; i < self->num_children; i++)
     {
       Track * child =
@@ -2001,9 +1990,9 @@ track_insert_plugin (
     }
   else
     {
-      channel_add_plugin (
-        self->channel, slot_type, slot, pl, confirm, moving_plugin,
-        gen_automatables, recalc_graph, fire_events);
+      self->channel->add_plugin (
+        slot_type, slot, pl, confirm, moving_plugin, gen_automatables,
+        recalc_graph, fire_events);
     }
 
   if (!pl->instantiated && !pl->instantiation_failed)
@@ -2041,9 +2030,9 @@ track_remove_plugin (
     }
   else
     {
-      channel_remove_plugin (
-        self->channel, slot_type, slot, moving_plugin, deleting_plugin,
-        deleting_track, recalc_graph);
+      self->channel->remove_plugin (
+        slot_type, slot, moving_plugin, deleting_plugin, deleting_track,
+        recalc_graph);
     }
 }
 
@@ -2110,7 +2099,7 @@ track_disconnect (Track * self, bool remove_pl, bool recalc_graph)
 
   if (track_type_has_channel (self->type))
     {
-      channel_disconnect (self->channel, remove_pl);
+      self->channel->disconnect (remove_pl);
     }
 
   self->disconnecting = false;
@@ -2862,16 +2851,16 @@ track_set_name (Track * self, const char * name, bool pub_events)
   char * new_name = track_get_unique_name (self, name);
   g_return_if_fail (new_name);
 
-  unsigned int old_hash = self->name ? track_get_name_hash (self) : 0;
+  unsigned int old_hash = self->name ? track_get_name_hash (*self) : 0;
 
   if (self->name)
     {
-      old_hash = track_get_name_hash (self);
+      old_hash = track_get_name_hash (*self);
       g_free (self->name);
     }
   self->name = new_name;
 
-  unsigned int new_hash = track_get_name_hash (self);
+  unsigned int new_hash = track_get_name_hash (*self);
 
   if (old_hash != 0)
     {
@@ -2898,7 +2887,7 @@ track_set_name (Track * self, const char * name, bool pub_events)
 
       /* update sends */
       if (self->channel)
-        channel_update_track_name_hash (self->channel, old_hash, new_hash);
+        self->channel->update_track_name_hash (old_hash, new_hash);
 
       GPtrArray * ports = g_ptr_array_new ();
       track_append_ports (self, ports, true);
@@ -2960,7 +2949,7 @@ track_get_plugins (const Track * const self, GPtrArray * arr)
   if (track_type_has_channel (self->type))
     {
       Plugin * pls[100];
-      num_pls += channel_get_plugins (self->channel, pls);
+      num_pls += self->channel->get_plugins (pls);
 
       if (arr)
         {
@@ -3240,7 +3229,7 @@ track_mark_for_bounce (
 
   /* also mark all parents */
   g_return_if_fail (track_type_has_channel (self->type));
-  Track * direct_out = channel_get_output_track (self->channel);
+  Track * direct_out = self->channel->get_output_track ();
   if (direct_out && mark_parents)
     {
       track_mark_for_bounce (
@@ -3272,7 +3261,7 @@ track_append_ports (Track * self, GPtrArray * ports, bool include_plugins)
   if (track_type_has_channel (self->type))
     {
       g_return_if_fail (self->channel);
-      channel_append_ports (self->channel, ports, include_plugins);
+      self->channel->append_ports (ports, include_plugins);
       track_processor_append_ports (self->processor, ports);
     }
 
@@ -3543,7 +3532,7 @@ track_set_caches (Track * self, CacheTypes types)
   if (types & CACHE_TYPE_TRACK_NAME_HASHES)
     {
       /* update name hash */
-      self->name_hash = track_get_name_hash (self);
+      self->name_hash = track_get_name_hash (*self);
     }
 
   if (types & CACHE_TYPE_PLAYBACK_SNAPSHOTS && !track_is_auditioner (self))
@@ -3623,7 +3612,7 @@ track_set_caches (Track * self, CacheTypes types)
     {
       if (track_type_has_channel (self->type))
         {
-          channel_set_caches (self->channel);
+          self->channel->set_caches ();
         }
     }
 
@@ -3865,7 +3854,7 @@ track_free (Track * self)
     }
 
   object_free_w_func_and_null (track_processor_free, self->processor);
-  object_free_w_func_and_null (channel_free, self->channel);
+  object_delete_and_null (self->channel);
 
   g_free_and_null (self->name);
   g_free_and_null (self->comment);

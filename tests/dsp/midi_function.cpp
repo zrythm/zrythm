@@ -7,7 +7,7 @@
 
 #include <glib.h>
 
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_crescendo (void)
@@ -23,7 +23,7 @@ test_crescendo (void)
   position_set_to_bar (&pos, 1);
   position_set_to_bar (&end_pos, 4);
   Region * r1 =
-    midi_region_new (&pos, &end_pos, track_get_name_hash (midi_track), 0, 0);
+    midi_region_new (&pos, &end_pos, track_get_name_hash (*midi_track), 0, 0);
   GError * err = NULL;
   success = track_add_region (
     midi_track, r1, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);

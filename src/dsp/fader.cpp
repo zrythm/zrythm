@@ -453,7 +453,7 @@ fader_get_implied_soloed (Fader * self)
     {
       if (track_type_has_channel (out_track->type))
         {
-          out_track = channel_get_output_track (out_track->channel);
+          out_track = out_track->channel->get_output_track ();
           if (out_track && track_get_soloed (out_track))
             {
               return true;
@@ -770,14 +770,14 @@ fader_clear_buffers (Fader * self)
     case FaderType::FADER_TYPE_AUDIO_CHANNEL:
     case FaderType::FADER_TYPE_MONITOR:
     case FaderType::FADER_TYPE_SAMPLE_PROCESSOR:
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_in->r);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->l);
-      port_clear_buffer (AUDIO_ENGINE, self->stereo_out->r);
+      self->stereo_in->l->clear_buffer (*AUDIO_ENGINE);
+      self->stereo_in->r->clear_buffer (*AUDIO_ENGINE);
+      self->stereo_out->l->clear_buffer (*AUDIO_ENGINE);
+      self->stereo_out->r->clear_buffer (*AUDIO_ENGINE);
       break;
     case FaderType::FADER_TYPE_MIDI_CHANNEL:
-      port_clear_buffer (AUDIO_ENGINE, self->midi_in);
-      port_clear_buffer (AUDIO_ENGINE, self->midi_out);
+      self->midi_in->clear_buffer (*AUDIO_ENGINE);
+      self->midi_out->clear_buffer (*AUDIO_ENGINE);
       break;
     default:
       break;

@@ -5,8 +5,7 @@
 #include <cstdlib>
 
 #include "actions/tracklist_selections.h"
-#include "actions/undo_manager.h"
-#include "dsp/midi_mapping.h"
+#include "dsp/port.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
@@ -17,8 +16,6 @@
 #include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -237,10 +234,11 @@ on_drag_end (
     IS_CHANNEL ((Channel *) self->object)
     && !math_floats_equal_epsilon (self->balance_at_start, GET_VAL, 0.0001f))
     {
-      Track *  track = channel_get_track ((Channel *) self->object);
-      GError * err = NULL;
-      bool     ret = tracklist_selections_action_perform_edit_single_float (
-        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, track,
+      Channel * ch = static_cast<Channel *> (self->object);
+      Track    &track = ch->get_track ();
+      GError *  err = NULL;
+      bool      ret = tracklist_selections_action_perform_edit_single_float (
+        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track,
         self->balance_at_start, GET_VAL, true, &err);
       if (!ret)
         {
@@ -311,10 +309,11 @@ set_val_with_action (void * object, const char * str)
 
   if (!math_floats_equal_epsilon (val, GET_VAL, 0.0001f))
     {
-      Track *  track = channel_get_track ((Channel *) self->object);
-      GError * err = NULL;
-      bool     ret = tracklist_selections_action_perform_edit_single_float (
-        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL, val,
+      Channel * ch = static_cast<Channel *> (self->object);
+      Track    &track = ch->get_track ();
+      GError *  err = NULL;
+      bool      ret = tracklist_selections_action_perform_edit_single_float (
+        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track, GET_VAL, val,
         false, &err);
       if (!ret)
         {
@@ -348,10 +347,11 @@ on_click (
         GTK_EVENT_CONTROLLER (gesture));
       if (state & GDK_CONTROL_MASK)
         {
-          Track *  track = channel_get_track ((Channel *) self->object);
-          GError * err = NULL;
-          bool     ret = tracklist_selections_action_perform_edit_single_float (
-            EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL,
+          Channel * ch = static_cast<Channel *> (self->object);
+          Track    &track = ch->get_track ();
+          GError *  err = NULL;
+          bool ret = tracklist_selections_action_perform_edit_single_float (
+            EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track, GET_VAL,
             0.5f, false, &err);
           if (!ret)
             {

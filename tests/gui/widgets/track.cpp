@@ -9,7 +9,7 @@
 
 #include "tests/helpers/fishbowl.h"
 #include "tests/helpers/fishbowl_window.h"
-#include "tests/helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 typedef struct
 {

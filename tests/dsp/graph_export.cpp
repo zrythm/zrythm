@@ -11,7 +11,7 @@
 #include <glib.h>
 
 #include "helpers/plugin_manager.h"
-#include "helpers/zrythm.h"
+#include "tests/helpers/zrythm_helper.h"
 
 static void
 test_svg_export (void)

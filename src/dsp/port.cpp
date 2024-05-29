@@ -90,6 +90,26 @@ Port::free_bufs ()
   object_zero_and_free (this->buf);
 }
 
+void
+Port::clear_buffer (AudioEngine &_engine)
+{
+  if (
+    this->id.type == ZPortType::Z_PORT_TYPE_AUDIO
+    || this->id.type == ZPortType::Z_PORT_TYPE_CV)
+    {
+      if (this->buf)
+        {
+          dsp_fill (
+            this->buf, DENORMAL_PREVENTION_VAL (&_engine), _engine.block_length);
+        }
+    }
+  else if (this->id.type == ZPortType::Z_PORT_TYPE_EVENT)
+    {
+      if (this->midi_events)
+        this->midi_events->num_events = 0;
+    }
+}
+
 /**
  * This function finds the Ports corresponding to
  * the PortIdentifiers for srcs and dests.
@@ -1194,7 +1214,7 @@ set_owner_track_processor (Port * port, TrackProcessor * track_processor)
 {
   Track * track = track_processor->track;
   g_return_if_fail (track && track->name);
-  port->id.track_name_hash = track_get_name_hash (track);
+  port->id.track_name_hash = track_get_name_hash (*track);
   port->id.owner_type = PortIdentifier::OwnerType::TRACK_PROCESSOR;
 }
 
@@ -1214,7 +1234,7 @@ set_owner_fader (Port * self, Fader * fader)
     {
       Track * track = fader->track;
       g_return_if_fail (track && track->name);
-      self->id.track_name_hash = track_get_name_hash (track);
+      self->id.track_name_hash = track_get_name_hash (*track);
       if (fader->passthrough)
         {
           id->flags2 |= PortIdentifier::Flags2::PREFADER;
@@ -1257,7 +1277,7 @@ NONNULL static void
 set_owner_track (Port * port, Track * track)
 {
   g_return_if_fail (track->name);
-  port->id.track_name_hash = track_get_name_hash (track);
+  port->id.track_name_hash = track_get_name_hash (*track);
   port->id.owner_type = PortIdentifier::OwnerType::TRACK;
 }
 
@@ -1295,8 +1315,8 @@ set_owner_channel_send (Port * self, ChannelSend * send)
 NONNULL static void
 set_owner_channel (Port * port, Channel * ch)
 {
-  Track * track = ch->track;
-  g_return_if_fail (track && track->name);
+  Track &track = ch->track_;
+  g_return_if_fail (track.name);
   port->id.track_name_hash = track_get_name_hash (track);
   port->id.owner_type = PortIdentifier::OwnerType::CHANNEL;
 }
@@ -1314,7 +1334,7 @@ set_owner_modulator_macro_processor (Port * self, ModulatorMacroProcessor * mmp)
   self->modulator_macro_processor = mmp;
   self->id.owner_type = PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR;
   g_return_if_fail (IS_TRACK_AND_NONNULL (mmp->track));
-  self->id.track_name_hash = track_get_name_hash (mmp->track);
+  self->id.track_name_hash = track_get_name_hash (*mmp->track);
   self->track = mmp->track;
 }
 
@@ -2497,7 +2517,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
           && port == track->processor->midi_out
           && port->midi_events->num_events > 0 && CLIP_EDITOR->has_region
           && CLIP_EDITOR->region_id.track_name_hash
-               == track_get_name_hash (track)))
+               == track_get_name_hash (*track)))
         {
           MidiEvents * events = port->midi_events;
           bool         events_processed = false;
