@@ -22,29 +22,29 @@ test_port_disconnect (void)
   test_helper_zrythm_init ();
 
   Port * port =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, "test-port");
+    new Port (
+      PortType::Audio, PortFlow::Output, "test-port");
   Port * port2 =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_INPUT, "test-port2");
-  port_connect (port, port2, true);
-  g_assert_cmpint (port->num_dests, ==, 1);
-  g_assert_cmpint (port2->num_srcs, ==, 1);
-  g_assert_true (port->dests[0] == port2);
+    new Port (
+      PortType::Audio, PortFlow::Input, "test-port2");
+  port->connect_to (*port2, true);
+  g_assert_cmpint (port->dests_.size (), ==, 1);
+  g_assert_cmpint (port2->srcs_.size (), ==, 1);
+  g_assert_true (port->dests_[0] == port2);
 
-  /*port->dests[0] = NULL;*/
+  /*port->dests_[0] = NULL;*/
   port->multipliers[0] = 2.f;
   port->dest_locked[0] = 256;
   port->dest_enabled[0] = 257;
 
   Port * port3 =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_INPUT, "test-port3");
-  port_connect (port, port3, true);
-  g_assert_cmpint (port->num_dests, ==, 2);
-  g_assert_cmpint (port3->num_srcs, ==, 1);
-  g_assert_true (port->dests[0] == port2);
-  g_assert_true (port->dests[1] == port3);
+    new Port (
+      PortType::Audio, PortFlow::Input, "test-port3");
+  port->connect_to (*port3, true);
+  g_assert_cmpint (port->dests_.size (), ==, 2);
+  g_assert_cmpint (port3->srcs_.size (), ==, 1);
+  g_assert_true (port->dests_[0] == port2);
+  g_assert_true (port->dests_[1] == port3);
   g_assert_cmpfloat_with_epsilon (
     port->multipliers[0], 2.f, FLT_EPSILON);
   g_assert_cmpint (
@@ -58,11 +58,11 @@ test_port_disconnect (void)
   g_assert_cmpint (
     port->dest_enabled[1], ==, 1);
 
-  port_disconnect (port, port2);
-  g_assert_cmpint (port->num_dests, ==, 1);
-  g_assert_cmpint (port2->num_srcs, ==, 0);
+  port->disconnect_from (port2);
+  g_assert_cmpint (port->dests_.size (), ==, 1);
+  g_assert_cmpint (port2->srcs_.size (), ==, 0);
   g_assert_true (
-    port->dests[0] == port3);
+    port->dests_[0] == port3);
   g_assert_cmpfloat_with_epsilon (
     port->multipliers[0], 1, FLT_EPSILON);
   g_assert_cmpint (
@@ -82,21 +82,21 @@ test_serialization (void)
   yaml_set_log_level (CYAML_LOG_DEBUG);
 
   Port * port =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, "test-port");
+    new Port (
+      PortType::Audio, PortFlow::Output, "test-port");
   Port * port2 =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_INPUT, "test-port2");
-  port_connect (port, port2, true);
+    new Port (
+      PortType::Audio, PortFlow::Input, "test-port2");
+  port->connect_to (*port2, true);
 
   port->multipliers[0] = 2.f;
   port->dest_locked[0] = 256;
   port->dest_enabled[0] = 257;
 
   Port * port3 =
-    port_new_with_type (
-      ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_INPUT, "test-port3");
-  port_connect (port, port3, true);
+    new Port (
+      PortType::Audio, PortFlow::Input, "test-port3");
+  port->connect_to (*port3, true);
 
   yaml = yaml_serialize (port, &port_schema);
   /*g_warning ("%s", yaml);*/
@@ -120,7 +120,7 @@ test_serialization (void)
     yaml_serialize (deserialized_port, &port_schema);
   /*g_warning ("%s", yaml);*/
 
-  port_disconnect_all (port);
+  port->disconnect_all ();
   port_free (port);
 
   port =
@@ -138,10 +138,10 @@ test_serialization (void)
     deserialized_port->dest_enabled[0]);
   port->magic = PORT_MAGIC;
 
-  port_disconnect_all (port);
-  port_disconnect_all (port2);
-  port_disconnect_all (port3);
-  port_disconnect_all (deserialized_port);
+  port->disconnect_all ();
+  port2->disconnect_all ();
+  port3->disconnect_all ();
+  deserialized_port->disconnect_all ();
   port_free (port);
   port_free (port2);
   port_free (port3);
@@ -156,30 +156,23 @@ test_get_hash (void)
 {
   test_helper_zrythm_init ();
 
-  Port * port1 = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, "test-port");
-  Port * port2 = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, "test-port");
-  Port * port3 = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, "test-port3");
+  Port port1 = Port (PortType::Audio, PortFlow::Output, "test-port");
+  Port port2 = Port (PortType::Audio, PortFlow::Output, "test-port");
+  Port port3 = Port (PortType::Audio, PortFlow::Output, "test-port3");
 
-  unsigned int hash1 = port_get_hash (port1);
-  unsigned int hash2 = port_get_hash (port2);
-  unsigned int hash3 = port_get_hash (port3);
+  unsigned int hash1 = port1.get_hash ();
+  unsigned int hash2 = port2.get_hash ();
+  unsigned int hash3 = port3.get_hash ();
   g_assert_cmpuint (hash1, !=, hash2);
   g_assert_cmpuint (hash1, !=, hash3);
 
   /* hash again and check equal */
-  unsigned int hash11 = port_get_hash (port1);
-  unsigned int hash22 = port_get_hash (port2);
-  unsigned int hash33 = port_get_hash (port3);
+  unsigned int hash11 = port1.get_hash ();
+  unsigned int hash22 = port2.get_hash ();
+  unsigned int hash33 = port3.get_hash ();
   g_assert_cmpuint (hash1, ==, hash11);
   g_assert_cmpuint (hash2, ==, hash22);
   g_assert_cmpuint (hash3, ==, hash33);
-
-  port_free (port1);
-  port_free (port2);
-  port_free (port3);
 
   test_helper_zrythm_cleanup ();
 }

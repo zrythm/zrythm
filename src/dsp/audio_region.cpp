@@ -322,10 +322,10 @@ audio_region_fill_stereo_ports (
       && MW_TIMELINE->action == UI_OVERLAY_ACTION_STRETCHING_R))
     {
       dsp_fill (
-        &stereo_ports->l->buf[time_nfo->local_offset],
+        &stereo_ports->get_l ().buf_[time_nfo->local_offset],
         DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
       dsp_fill (
-        &stereo_ports->r->buf[time_nfo->local_offset],
+        &stereo_ports->get_r ().buf_[time_nfo->local_offset],
         DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
       return;
     }
@@ -483,10 +483,10 @@ audio_region_fill_stereo_ports (
 
   /* copy frames */
   dsp_copy (
-    &stereo_ports->l->buf[time_nfo->local_offset], &lbuf_after_ts[0],
+    &stereo_ports->get_l ().buf_[time_nfo->local_offset], &lbuf_after_ts[0],
     time_nfo->nframes);
   dsp_copy (
-    &stereo_ports->r->buf[time_nfo->local_offset], &rbuf_after_ts[0],
+    &stereo_ports->get_r ().buf_[time_nfo->local_offset], &rbuf_after_ts[0],
     time_nfo->nframes);
 
   /* apply fades */
@@ -530,8 +530,8 @@ audio_region_fill_stereo_ports (
             (double) current_local_frame / (double) num_frames_in_fade_in_area,
             &r_obj->fade_in_opts, 1);
 
-          stereo_ports->l->buf[current_cycle_frame] *= fade_in;
-          stereo_ports->r->buf[current_cycle_frame] *= fade_in;
+          stereo_ports->get_l ().buf_[current_cycle_frame] *= fade_in;
+          stereo_ports->get_r ().buf_[current_cycle_frame] *= fade_in;
         }
       /* if inside object fade out */
       if (current_local_frame >= r_obj->fade_out_pos.frames)
@@ -546,8 +546,8 @@ audio_region_fill_stereo_ports (
               / (double) num_frames_in_fade_out_area,
             &r_obj->fade_out_opts, 0);
 
-          stereo_ports->l->buf[current_cycle_frame] *= fade_out;
-          stereo_ports->r->buf[current_cycle_frame] *= fade_out;
+          stereo_ports->get_l ().buf_[current_cycle_frame] *= fade_out;
+          stereo_ports->get_r ().buf_[current_cycle_frame] *= fade_out;
         }
       /* if inside builtin fade in, apply builtin fade in */
       if (
@@ -558,8 +558,8 @@ audio_region_fill_stereo_ports (
             (float) current_local_frame
             / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES;
 
-          stereo_ports->l->buf[current_cycle_frame] *= fade_in;
-          stereo_ports->r->buf[current_cycle_frame] *= fade_in;
+          stereo_ports->get_l ().buf_[current_cycle_frame] *= fade_in;
+          stereo_ports->get_r ().buf_[current_cycle_frame] *= fade_in;
         }
       /* if inside builtin fade out, apply builtin
        * fade out */
@@ -574,8 +574,8 @@ audio_region_fill_stereo_ports (
             1.f
             - ((float) num_frames_from_fade_out_start / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES);
 
-          stereo_ports->l->buf[current_cycle_frame] *= fade_out;
-          stereo_ports->r->buf[current_cycle_frame] *= fade_out;
+          stereo_ports->get_l ().buf_[current_cycle_frame] *= fade_out;
+          stereo_ports->get_r ().buf_[current_cycle_frame] *= fade_out;
         }
     }
 }

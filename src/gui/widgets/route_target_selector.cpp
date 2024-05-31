@@ -206,7 +206,7 @@ route_target_selector_widget_refresh (
   /* master */
   GListStore * master_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  if (track && track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (track && track->out_signal_type == PortType::Audio)
     {
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new (
@@ -235,7 +235,7 @@ route_target_selector_widget_refresh (
   /* instrument */
   GListStore * instruments_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  if (track && track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track && track->out_signal_type == PortType::Event)
     {
       for (int i = 0; i < TRACKLIST->num_tracks; i++)
         {

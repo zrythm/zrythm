@@ -170,7 +170,7 @@ _test_edit_tracks (
          * and verify that signal comes out
          * in both tracks */
         midi_events_add_note_on (
-          ins_track->processor->midi_in->midi_events, 1, 62, 74, 2, true);
+          ins_track->processor->midi_in->midi_events_, 1, 62, 74, 2, true);
 
         bool has_signal = false;
 
@@ -180,7 +180,7 @@ _test_edit_tracks (
         engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
         engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
-        Port * l = ins_track->channel->fader->stereo_out->l;
+        Port &l = ins_track->channel->fader->stereo_out->get_l ();
 #  if 0
         Port * ins_out_l =
           plugin_get_port_by_symbol (
@@ -197,7 +197,7 @@ _test_edit_tracks (
               "[%u i] %.16f", i,
               (double) ins_out_l->buf[i]);
 #  endif
-            if (l->buf[i] > 0.0001f)
+            if (l.buf_[i] > 0.0001f)
               {
                 has_signal = true;
                 break;

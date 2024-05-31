@@ -171,6 +171,7 @@ subprojects/*sass*.wrap
 # VS Code config
 #.vscode
 .cache
+_installed
 
 # Python related files
 venv

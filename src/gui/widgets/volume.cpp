@@ -107,7 +107,7 @@ drag_end (
   /* reset if ctrl-clicked */
   if (state & GDK_CONTROL_MASK)
     {
-      float def_val = self->port->deff;
+      float def_val = self->port->deff_;
       control_port_set_real_val (self->port, def_val);
     }
 

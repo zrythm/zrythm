@@ -404,7 +404,7 @@ recording_manager_handle_recording (
         track_type_has_piano_roll (tr->type)
         || tr->type == TrackType::TRACK_TYPE_CHORD)
         {
-          MidiEvents * midi_events = track_processor->midi_in->midi_events;
+          MidiEvents * midi_events = track_processor->midi_in->midi_events_;
 
           for (int i = 0; i < midi_events->num_events; i++)
             {
@@ -450,15 +450,15 @@ recording_manager_handle_recording (
           re->nframes = time_nfo->nframes;
           dsp_copy (
             &re->lbuf[time_nfo->local_offset],
-            &track_processor->stereo_in->l->buf[time_nfo->local_offset],
+            &track_processor->stereo_in->get_l ().buf_[time_nfo->local_offset],
             time_nfo->nframes);
-          Port * r =
+          Port &r =
             track_processor->mono
                 && control_port_is_toggled (track_processor->mono)
-              ? track_processor->stereo_in->l
-              : track_processor->stereo_in->r;
+              ? track_processor->stereo_in->get_l ()
+              : track_processor->stereo_in->get_r ();
           dsp_copy (
-            &re->rbuf[time_nfo->local_offset], &r->buf[time_nfo->local_offset],
+            &re->rbuf[time_nfo->local_offset], &r.buf_[time_nfo->local_offset],
             time_nfo->nframes);
           re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
@@ -639,7 +639,7 @@ handle_pause_event (RecordingManager * self, RecordingEvent * ev)
       /* remember lane index */
       tr->last_lane_idx = region->id.lane_pos;
 
-      if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+      if (tr->in_signal_type == PortType::Event)
         {
           /* add midi note offs at the end */
           MidiNote * mn;
@@ -739,13 +739,13 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
               new_region =
                 chord_region_new (&resume_pos, &end_pos, tr->num_chord_regions);
             }
-          else if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+          else if (tr->in_signal_type == PortType::Event)
             {
               new_region = midi_region_new (
                 &resume_pos, &end_pos, track_get_name_hash (*tr), new_lane_pos,
                 idx_inside_lane);
             }
-          else if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+          else if (tr->in_signal_type == PortType::Audio)
             {
               char * name = audio_pool_gen_name_for_recording_clip (
                 AUDIO_POOL, tr, new_lane_pos);
@@ -798,8 +798,8 @@ handle_resume_event (RecordingManager * self, RecordingEvent * ev)
         return false;
 
       Port * port = Port::find_from_identifier (&at->port_id);
-      float  value = port_get_control_value (port, false);
-      float  normalized_value = port_get_control_value (port, true);
+      float  value = port->get_control_value (false);
+      float  normalized_value = port->get_control_value (true);
 
       /* get or start new region at resume pos */
       Region * new_region = automation_track_get_region_before_pos (
@@ -1088,15 +1088,15 @@ handle_automation_event (RecordingManager * self, RecordingEvent * ev)
     tracklist_find_track_by_name_hash (TRACKLIST, ev->track_name_hash);
   AutomationTrack * at = tr->automation_tracklist.ats[ev->automation_track_idx];
   Port *            port = Port::find_from_identifier (&at->port_id);
-  float             value = port_get_control_value (port, false);
-  float             normalized_value = port_get_control_value (port, true);
+  float             value = port->get_control_value (false);
+  float             normalized_value = port->get_control_value (true);
   if (ZRYTHM_TESTING)
     {
       math_assert_nonnann (value);
       math_assert_nonnann (normalized_value);
     }
   bool automation_value_changed =
-    !port->value_changed_from_reading
+    !port->value_changed_from_reading_
     && !math_floats_equal (value, at->last_recorded_value);
   gint64 cur_time = g_get_monotonic_time ();
 
@@ -1264,7 +1264,7 @@ handle_start_recording (
 
       /* nothing, wait for event to start writing data */
       Port * port = Port::find_from_identifier (&at->port_id);
-      float  value = port_get_control_value (port, false);
+      float  value = port->get_control_value (false);
 
       if (automation_track_should_be_recording (at, cur_time, true))
         {

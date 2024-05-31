@@ -49,12 +49,12 @@ channel_send_action_new (
   self->amount = amount;
 
   if (port)
-    self->midi_id = new PortIdentifier (port->id);
+    self->midi_id = new PortIdentifier (port->id_);
 
   if (stereo)
     {
-      self->l_id = new PortIdentifier (stereo->l->id);
-      self->r_id = new PortIdentifier (stereo->r->id);
+      self->l_id = new PortIdentifier (stereo->get_l ().id_);
+      self->r_id = new PortIdentifier (stereo->get_r ().id_);
     }
 
   if (port_connections_mgr)
@@ -126,7 +126,7 @@ connect_or_disconnect (
           Track * track = channel_send_get_track (send);
           switch (track->out_signal_type)
             {
-            case ZPortType::Z_PORT_TYPE_EVENT:
+            case PortType::Event:
               {
                 Port *   port = Port::find_from_identifier (self->midi_id);
                 GError * err = NULL;
@@ -142,7 +142,7 @@ connect_or_disconnect (
                   }
               }
               break;
-            case ZPortType::Z_PORT_TYPE_AUDIO:
+            case PortType::Audio:
               {
                 Port *   l = Port::find_from_identifier (self->l_id);
                 Port *   r = Port::find_from_identifier (self->r_id);
@@ -261,7 +261,7 @@ channel_send_action_undo (ChannelSendAction * self, GError ** error)
       need_restore_and_recalc = true;
       break;
     case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
-      channel_send_set_amount (send, self->send_before->amount->control);
+      channel_send_set_amount (send, self->send_before->amount->control_);
       successful = true;
       break;
     default:

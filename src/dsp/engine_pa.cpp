@@ -168,10 +168,10 @@ engine_pa_fill_out_bufs (AudioEngine * self, const nframes_t nframes)
 {
   for (unsigned int i = 0; i < nframes; i++)
     {
-      self->port_audio_out_buf[i * 2] = self->monitor_out->l->buf[i];
+      self->port_audio_out_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
       /*g_message ("%f",*/
       /*engine->port_audio_out_buf[i]);*/
-      self->port_audio_out_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
+      self->port_audio_out_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
     }
 }
 

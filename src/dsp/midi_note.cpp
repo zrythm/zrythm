@@ -95,7 +95,7 @@ midi_note_listen (MidiNote * mn, bool listen)
 
   Track * track = arranger_object_get_track (obj);
   g_return_if_fail (track && track->processor->midi_in);
-  MidiEvents * events = track->processor->midi_in->midi_events;
+  MidiEvents * events = track->processor->midi_in->midi_events_;
 
   if (listen)
     {
@@ -242,7 +242,7 @@ midi_note_set_val (MidiNote * midi_note, const uint8_t val)
       Track * track = arranger_object_get_track (r_obj);
       g_return_if_fail (track);
 
-      MidiEvents * midi_events = track->processor->piano_roll->midi_events;
+      MidiEvents * midi_events = track->processor->piano_roll->midi_events_;
 
       zix_sem_wait (&midi_events->access_sem);
       uint8_t midi_ch = midi_region_get_midi_ch (region);

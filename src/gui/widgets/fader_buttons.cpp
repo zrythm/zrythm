@@ -158,7 +158,7 @@ fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track)
         {
           gtk_widget_set_visible (GTK_WIDGET (self->mono_compat), false);
         }
-      if (track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+      if (track->out_signal_type == PortType::Audio)
         {
           gtk_toggle_button_set_active (
             self->swap_phase, track->channel->get_swap_phase ());

@@ -30,6 +30,7 @@
 #include <cmath>
 
 #include "dsp/engine.h"
+#include "dsp/port_identifier.h"
 #include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -200,12 +201,12 @@ plugin_gtk_add_control_row (
 
   if (controller && controller->port)
     {
-      PortIdentifier id = controller->port->id;
+      const PortIdentifier &id = controller->port->id_;
 
-      if (id.unit > PortUnit::Z_PORT_UNIT_NONE)
+      if (id.unit_ > PortUnit::Z_PORT_UNIT_NONE)
         {
           sprintf (
-            name, "%s <small>(%s)</small>", _name, port_unit_to_str (id.unit));
+            name, "%s <small>(%s)</small>", _name, port_unit_to_str (id.unit_));
         }
 
       preformatted = true;
@@ -239,7 +240,7 @@ on_window_destroy (GtkWidget * widget, Plugin * pl)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      port->widget = NULL;
+      port->widget_ = NULL;
     }
 }
 
@@ -311,10 +312,10 @@ set_float_control (Plugin * pl, Port * port, float value)
 {
   if (pl->setting->open_with_carla)
     {
-      port_set_control_value (port, value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+      port->set_control_value (value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
     }
 
-  PluginGtkController * controller = (PluginGtkController *) port->widget;
+  PluginGtkController * controller = (PluginGtkController *) port->widget_;
   if (
     controller && controller->spin
     && !math_floats_equal (
@@ -329,7 +330,7 @@ scale_changed (GtkRange * range, Port * port)
 {
   /*g_message ("scale changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
-  PluginGtkController * controller = port->widget;
+  PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
   g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -341,7 +342,7 @@ scale_changed (GtkRange * range, Port * port)
 static gboolean
 spin_changed (GtkSpinButton * spin, Port * port)
 {
-  PluginGtkController * controller = port->widget;
+  PluginGtkController * controller = port->widget_;
   GtkRange *            range = GTK_RANGE (controller->control);
   const double          value = gtk_spin_button_get_value (spin);
   if (!math_doubles_equal (gtk_range_get_value (range), value))
@@ -357,7 +358,7 @@ log_scale_changed (GtkRange * range, Port * port)
 {
   /*g_message ("log scale changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
-  PluginGtkController * controller = port->widget;
+  PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
   g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -369,7 +370,7 @@ log_scale_changed (GtkRange * range, Port * port)
 static gboolean
 log_spin_changed (GtkSpinButton * spin, Port * port)
 {
-  PluginGtkController * controller = port->widget;
+  PluginGtkController * controller = port->widget_;
   GtkRange *            range = GTK_RANGE (controller->control);
   const double          value = gtk_spin_button_get_value (spin);
   if (!math_floats_equal (
@@ -395,7 +396,7 @@ combo_changed (GtkComboBox * box, Port * port)
       g_value_unset (&value);
 
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
-      Plugin * pl = port_get_plugin (port, true);
+      Plugin * pl = port->get_plugin (true);
       g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
 
       set_float_control (pl, port, (float) v);
@@ -407,7 +408,7 @@ switch_state_set (GtkSwitch * button, gboolean state, Port * port)
 {
   /*g_message ("toggle_changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
-  PluginGtkController * controller = port->widget;
+  PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
   g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -433,25 +434,25 @@ make_combo (Port * port, float value)
   GtkListStore * list_store =
     gtk_list_store_new (2, G_TYPE_FLOAT, G_TYPE_STRING);
   int active = -1;
-  for (int i = 0; i < port->num_scale_points; i++)
+  int count = 0;
+  for (auto &point : port->scale_points_)
     {
-      const Port::ScalePoint * point = port->scale_points[i];
-
       GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, (double) point->val, 1, point->label, -1);
-      if (fabsf (value - point->val) < FLT_EPSILON)
+        list_store, &iter, 0, (double) point.val_, 1, point.label_, -1);
+      if (fabsf (value - point.val_) < FLT_EPSILON)
         {
-          active = i;
+          active = count;
         }
+      count++;
     }
 
   GtkWidget * combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (list_store));
   gtk_combo_box_set_active (GTK_COMBO_BOX (combo), active);
   g_object_unref (list_store);
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow_ == PortFlow::Input;
   gtk_widget_set_sensitive (combo, is_input);
 
   GtkCellRenderer * cell = gtk_cell_renderer_text_new ();
@@ -471,8 +472,8 @@ make_combo (Port * port, float value)
 static PluginGtkController *
 make_log_slider (Port * port, float value)
 {
-  const float min = port->minf;
-  const float max = port->maxf;
+  const float min = port->minf_;
+  const float max = port->maxf_;
   const float lmin = logf (min);
   const float lmax = logf (max);
   const float ldft = logf (value);
@@ -482,7 +483,7 @@ make_log_slider (Port * port, float value)
   GtkWidget * spin = gtk_spin_button_new_with_range (min, max, 0.000001);
   gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow_ == PortFlow::Input;
   gtk_widget_set_sensitive (scale, is_input);
   gtk_widget_set_sensitive (spin, is_input);
 
@@ -506,10 +507,10 @@ make_log_slider (Port * port, float value)
 static PluginGtkController *
 make_slider (Port * port, float value)
 {
-  const float min = port->minf;
-  const float max = port->maxf;
+  const float min = port->minf_;
+  const float max = port->maxf_;
   bool        is_integer = ENUM_BITSET_TEST (
-    PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::INTEGER);
+    PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::INTEGER);
   const double step = is_integer ? 1.0 : ((double) (max - min) / 100.0);
   GtkWidget *  scale =
     gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, min, max, step);
@@ -517,7 +518,7 @@ make_slider (Port * port, float value)
   GtkWidget * spin = gtk_spin_button_new_with_range (min, max, step);
   gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow_ == PortFlow::Input;
   gtk_widget_set_sensitive (scale, is_input);
   gtk_widget_set_sensitive (spin, is_input);
 
@@ -535,17 +536,13 @@ make_slider (Port * port, float value)
   gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
   gtk_range_set_value (GTK_RANGE (scale), value);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), value);
-  if (port->num_scale_points > 0)
+  if (port->scale_points_.size () > 0)
     {
-      for (int i = 0; i < port->num_scale_points; i++)
+      for (auto &point : port->scale_points_)
         {
-          const Port::ScalePoint * point = port->scale_points[i];
-
           char * str = g_markup_printf_escaped (
-            "<span font_size=\"small\">"
-            "%s</span>",
-            point->label);
-          gtk_scale_add_mark (GTK_SCALE (scale), point->val, GTK_POS_TOP, str);
+            "<span font_size=\"small\">%s</span>", point.label_.c_str ());
+          gtk_scale_add_mark (GTK_SCALE (scale), point.val_, GTK_POS_TOP, str);
         }
     }
 
@@ -566,7 +563,7 @@ make_toggle (Port * port, float value)
   GtkWidget * check = gtk_switch_new ();
   gtk_widget_set_halign (check, GTK_ALIGN_START);
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow_ == PortFlow::Input;
   gtk_widget_set_sensitive (check, is_input);
 
   if (!math_floats_equal (value, 0))
@@ -589,7 +586,7 @@ make_entry (Port * port)
 {
   GtkWidget * entry = gtk_entry_new ();
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow == PortFlow::Input;
   gtk_widget_set_sensitive (entry, is_input);
   if (is_input)
     {
@@ -606,7 +603,7 @@ make_file_chooser (Port * port)
   GtkWidget * button = GTK_WIDGET (file_chooser_button_widget_new (
     GTK_WINDOW (MAIN_WINDOW), _ ("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN));
 
-  bool is_input = port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT;
+  bool is_input = port->id_.flow == PortFlow::Input;
   gtk_widget_set_sensitive (button, is_input);
 
   if (is_input)
@@ -629,20 +626,21 @@ make_controller (Plugin * pl, Port * port, float value)
   PluginGtkController * controller = NULL;
 
   if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::TOGGLE))
+        PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::TOGGLE))
     {
       controller = make_toggle (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, port->id.flags2,
+      PortIdentifier::Flags2, port->id_.flags2_,
       PortIdentifier::Flags2::ENUMERATION))
     {
       controller = make_combo (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
-      PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::LOGARITHMIC))
+      PortIdentifier::Flags, port->id_.flags_,
+      PortIdentifier::Flags::LOGARITHMIC))
     {
       controller = make_log_slider (port, value);
     }
@@ -670,12 +668,12 @@ build_control_widget (Plugin * pl, GtkWindow * window)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      if (port->id.type != ZPortType::Z_PORT_TYPE_CONTROL)
+      if (port->id_.type_ != PortType::Control)
         continue;
 
       g_array_append_val (controls, port);
     }
-  g_array_sort (controls, port_identifier_port_group_cmp);
+  g_array_sort (controls, PortIdentifier::port_group_cmp);
 
   /* Add controls in group order */
   const char * last_group = NULL;
@@ -685,7 +683,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
     {
       Port *                port = g_array_index (controls, Port *, i);
       PluginGtkController * controller = NULL;
-      const char *          group = port->id.port_group;
+      const char *          group = port->id_.port_group_.c_str ();
 
       /* Check group and add new heading if
        * necessary */
@@ -701,9 +699,9 @@ build_control_widget (Plugin * pl, GtkWindow * window)
 
       /* Make control widget */
       /* TODO handle non-float carla params */
-      controller = make_controller (pl, port, port->deff);
+      controller = make_controller (pl, port, port->deff_);
 
-      port->widget = controller;
+      port->widget_ = controller;
       if (controller)
         {
           controller->port = port;
@@ -712,14 +710,16 @@ build_control_widget (Plugin * pl, GtkWindow * window)
           /* Add row to table for this controller */
           plugin_gtk_add_control_row (
             port_table, n_rows++,
-            (port->id.label ? port->id.label : port->id.sym), controller);
+            (port->id_.label_.empty ()
+               ? port->id_.sym_.c_str ()
+               : port->get_label_as_c_str ()),
+            controller);
 
-          /* Set tooltip text from comment,
-           * if available */
-          if (port->id.comment)
+          /* Set tooltip text from comment, if available */
+          if (!port->id_.comment_.empty ())
             {
               gtk_widget_set_tooltip_text (
-                controller->control, port->id.comment);
+                controller->control, port->id_.comment_.c_str ());
             }
         }
     }
@@ -762,10 +762,10 @@ plugin_gtk_generic_set_widget_value (
   /* skip setting a value if it's already set */
   g_return_if_fail (IS_PORT_AND_NONNULL (controller->port));
   if (math_floats_equal (
-        controller->port->control, controller->last_set_control_val))
+        controller->port->control_, controller->last_set_control_val))
     return;
 
-  controller->last_set_control_val = controller->port->control;
+  controller->last_set_control_val = controller->port->control_;
 
   if (!is_nan)
     {
@@ -831,12 +831,13 @@ plugin_gtk_update_plugin_ui (Plugin * pl)
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           Port * port = pl->in_ports[i];
-          if (port->id.type != ZPortType::Z_PORT_TYPE_CONTROL || !port->widget)
+          if (port->id_.type_ != PortType::Control || !port->widget_)
             {
               continue;
             }
 
-          plugin_gtk_generic_set_widget_value (pl, port->widget, port->control);
+          plugin_gtk_generic_set_widget_value (
+            pl, port->widget_, port->control_);
         }
     }
 

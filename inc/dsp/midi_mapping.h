@@ -30,26 +30,26 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 typedef struct MidiMapping
 {
   /** Raw MIDI signal. */
-  midi_byte_t key[3];
+  midi_byte_t key[3] = {};
 
   /** The device that this connection will be mapped for. */
-  ExtPort * device_port;
+  ExtPort * device_port = nullptr;
 
   /** Destination. */
-  PortIdentifier dest_id;
+  PortIdentifier dest_id = {};
 
   /**
    * Destination pointer, for convenience.
    *
    * @note This pointer is not owned by this instance.
    */
-  Port * dest;
+  Port * dest = nullptr;
 
   /** Whether this binding is enabled. */
-  int enabled;
+  int enabled = 0;
 
   /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj;
+  WrappedObjectWithChangeSignal * gobj = nullptr;
 } MidiMapping;
 
 /**

@@ -92,7 +92,7 @@ hardware_processor_find_port (HardwareProcessor * self, const char * id)
       Port *    port = self->audio_ports[i];
       if (!PROJECT || !PROJECT->loaded)
         {
-          port->magic = PORT_MAGIC;
+          port->magic_ = PORT_MAGIC;
         }
       g_return_val_if_fail (ext_port && IS_PORT (port), NULL);
       if (string_is_equal (ext_port_id, id))
@@ -109,7 +109,7 @@ hardware_processor_find_port (HardwareProcessor * self, const char * id)
       Port *    port = self->midi_ports[i];
       if (!PROJECT || !PROJECT->loaded)
         {
-          port->magic = PORT_MAGIC;
+          port->magic_ = PORT_MAGIC;
         }
       g_return_val_if_fail (ext_port && IS_PORT (port), NULL);
       if (string_is_equal (ext_port_id, id))
@@ -124,12 +124,14 @@ hardware_processor_find_port (HardwareProcessor * self, const char * id)
 }
 
 static Port *
-create_port_for_ext_port (ExtPort * ext_port, ZPortType type, ZPortFlow flow)
+create_port_for_ext_port (ExtPort * ext_port, PortType type, PortFlow flow)
 {
-  Port * port = port_new_with_type_and_owner (
+  Port * port = new Port (
     type, flow, ext_port->full_name, PortIdentifier::OwnerType::HW, ext_port);
-  port->id.flags |= PortIdentifier::Flags::HW;
-  port->id.ext_port_id = ext_port_get_id (ext_port);
+  port->id_.flags_ |= PortIdentifier::Flags::HW;
+  char * ext_id = ext_port_get_id (ext_port);
+  port->id_.ext_port_id_ = ext_id;
+  g_free (ext_id);
 
   return port;
 }
@@ -146,14 +148,14 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
   g_debug ("rescanning ports...");
 
   /* get correct flow */
-  ZPortFlow flow =
+  PortFlow flow =
     /* these are reversed:
      * input here -> port that outputs in backend */
-    self->is_input ? ZPortFlow::Z_PORT_FLOW_OUTPUT : ZPortFlow::Z_PORT_FLOW_INPUT;
+    self->is_input ? PortFlow::Output : PortFlow::Input;
 
   /* collect audio ports */
   GPtrArray * ports = g_ptr_array_new ();
-  ext_ports_get (ZPortType::Z_PORT_TYPE_AUDIO, flow, true, ports);
+  ext_ports_get (PortType::Audio, flow, true, ports);
 
   /* add missing ports to the list */
   for (size_t i = 0; i < ports->len; i++)
@@ -183,7 +185,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
 
   /* collect midi ports */
   ports = g_ptr_array_new ();
-  ext_ports_get (ZPortType::Z_PORT_TYPE_EVENT, flow, true, ports);
+  ext_ports_get (PortType::Event, flow, true, ports);
 
   /* add missing ports to the list */
   for (size_t i = 0; i < ports->len; i++)
@@ -224,8 +226,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
         {
           g_return_val_if_fail (self->audio_ports, G_SOURCE_REMOVE);
           self->audio_ports[i] = create_port_for_ext_port (
-            ext_port, ZPortType::Z_PORT_TYPE_AUDIO,
-            ZPortFlow::Z_PORT_FLOW_OUTPUT);
+            ext_port, PortType::Audio, PortFlow::Output);
           self->num_audio_ports++;
         }
 
@@ -238,8 +239,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
       if (i >= self->num_midi_ports)
         {
           self->midi_ports[i] = create_port_for_ext_port (
-            ext_port, ZPortType::Z_PORT_TYPE_EVENT,
-            ZPortFlow::Z_PORT_FLOW_OUTPUT);
+            ext_port, PortType::Event, PortFlow::Output);
           self->num_midi_ports++;
         }
 
@@ -423,7 +423,7 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
         {
 #ifdef HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
-          port_receive_audio_data_from_jack (port, 0, nframes);
+          port->receive_audio_data_from_jack (0, nframes);
           break;
 #endif
 #ifdef HAVE_RTAUDIO
@@ -433,14 +433,12 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
         case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          /* extract audio data from the RtAudio
-           * device ring buffer into RtAudio
+          /* extract audio data from the RtAudio device ring buffer into RtAudio
            * device temp buffer */
-          port_prepare_rtaudio_data (port);
+          port->prepare_rtaudio_data ();
 
-          /* copy data from RtAudio temp buffer
-           * to normal buffer */
-          port_sum_data_from_rtaudio (port, 0, nframes);
+          /* copy data from RtAudio temp buffer to normal buffer */
+          port->sum_data_from_rtaudio (0, nframes);
           break;
 #endif
         default:
@@ -456,13 +454,13 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
       Port * port = self->midi_ports[i];
 
       /* clear the buffer */
-      midi_events_clear (port->midi_events, F_NOT_QUEUED);
+      midi_events_clear (port->midi_events_, F_NOT_QUEUED);
 
       switch (AUDIO_ENGINE->midi_backend)
         {
 #ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
-          port_receive_midi_events_from_jack (port, 0, nframes);
+          port->receive_midi_events_from_jack (0, nframes);
           break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -473,13 +471,12 @@ hardware_processor_process (HardwareProcessor * self, nframes_t nframes)
 #  ifdef HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
-          /* extract MIDI events from the RtMidi
-           * device ring buffer into RtMidi device */
-          port_prepare_rtmidi_events (port);
+          /* extract MIDI events from the RtMidi device ring buffer into RtMidi
+           * device */
+          port->prepare_rtmidi_events ();
 
-          /* copy data from RtMidi device events
-           * to normal events */
-          port_sum_data_from_rtmidi (port, 0, nframes);
+          /* copy data from RtMidi device events to normal events */
+          port->sum_data_from_rtmidi (0, nframes);
           break;
 #endif
         default:
@@ -518,14 +515,14 @@ hardware_processor_clone (const HardwareProcessor * src)
   self->audio_ports = object_new_n ((size_t) src->num_audio_ports, Port *);
   for (int i = 0; i < src->num_audio_ports; i++)
     {
-      self->audio_ports[i] = port_clone (src->audio_ports[i]);
+      self->audio_ports[i] = new Port (src->audio_ports[i]->clone ());
     }
   self->num_audio_ports = src->num_audio_ports;
 
   self->midi_ports = object_new_n ((size_t) src->num_midi_ports, Port *);
   for (int i = 0; i < src->num_midi_ports; i++)
     {
-      self->midi_ports[i] = port_clone (src->midi_ports[i]);
+      self->midi_ports[i] = new Port (src->midi_ports[i]->clone ());
     }
   self->num_midi_ports = src->num_midi_ports;
 
@@ -561,13 +558,13 @@ hardware_processor_free (HardwareProcessor * self)
 
   for (int i = 0; i < self->num_audio_ports; i++)
     {
-      object_free_w_func_and_null (port_free, self->audio_ports[i]);
+      object_delete_and_null (self->audio_ports[i]);
     }
   object_zero_and_free_if_nonnull (self->audio_ports);
 
   for (int i = 0; i < self->num_midi_ports; i++)
     {
-      object_free_w_func_and_null (port_free, self->midi_ports[i]);
+      object_delete_and_null (self->midi_ports[i]);
     }
   object_zero_and_free_if_nonnull (self->midi_ports);
 

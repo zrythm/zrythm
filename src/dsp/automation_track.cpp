@@ -32,9 +32,7 @@
 static AutomationTrack *
 _at_create (void)
 {
-  AutomationTrack * self = object_new (AutomationTrack);
-
-  self->port_id = PortIdentifier ();
+  AutomationTrack * self = new AutomationTrack ();
 
   return self;
 }
@@ -65,15 +63,15 @@ automation_track_new (Port * port)
 
   self->height = TRACK_DEF_HEIGHT;
 
-  g_return_val_if_fail (port->id.validate (), NULL);
-  self->port_id = port->id;
+  g_return_val_if_fail (port->id_.validate (), NULL);
+  self->port_id = port->id_;
 
-  port->at = self;
+  port->at_ = self;
 
   self->automation_mode = AutomationMode::AUTOMATION_MODE_READ;
 
 #if 0
-  if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
+  if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id_.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
     {
       self->automation_mode =
         AutomationMode::AUTOMATION_MODE_RECORD;
@@ -90,11 +88,11 @@ automation_track_validate (AutomationTrack * self)
 {
   g_return_val_if_fail (self->port_id.validate (), false);
 
-  unsigned int track_name_hash = self->port_id.track_name_hash;
-  if (self->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN)
+  unsigned int track_name_hash = self->port_id.track_name_hash_;
+  if (self->port_id.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
     {
       g_return_val_if_fail (
-        self->port_id.plugin_id.track_name_hash == track_name_hash, false);
+        self->port_id.plugin_id_.track_name_hash == track_name_hash, false);
     }
 
   /* this is expensive so only do this during tests */
@@ -341,7 +339,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
 {
   if (!track)
     {
-      track = port_get_track (port, 1);
+      track = port->get_track (1);
     }
   g_return_val_if_fail (track, NULL);
 
@@ -352,19 +350,23 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
       AutomationTrack * at = atl->ats[i];
       if (basic_search)
         {
-          PortIdentifier * src = &port->id;
+          PortIdentifier * src = &port->id_;
           PortIdentifier * dest = &at->port_id;
-          if (dest->owner_type == src->owner_type && dest->type == src->type && dest->flow == src->flow && dest->flags == src->flags && dest->track_name_hash == src->track_name_hash && (dest->sym ? string_is_equal (dest->sym, src->sym) : string_is_equal (dest->label, src->label)))
+          if (
+            dest->owner_type_ == src->owner_type_ && dest->type_ == src->type_
+            && dest->flow_ == src->flow_ && dest->flags_ == src->flags_
+            && dest->track_name_hash_ == src->track_name_hash_
+            && (dest->sym_.empty() ? dest->label_ == src->label_ : dest->sym_ == src->sym_ ))
             {
-              if (dest->owner_type == PortIdentifier::OwnerType::PLUGIN)
+              if (dest->owner_type_ == PortIdentifier::OwnerType::PLUGIN)
                 {
                   if (!plugin_identifier_is_equal (
-                        &dest->plugin_id, &src->plugin_id))
+                        &dest->plugin_id_, &src->plugin_id_))
                     {
                       continue;
                     }
 
-                  Plugin * pl = port_get_plugin (port, true);
+                  Plugin * pl = port->get_plugin (true);
                   g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), NULL);
 
                   if (
@@ -376,23 +378,23 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
                        * ports with the same label but different symbol) */
                       if (
                         !ENUM_BITSET_TEST (
-                          PortIdentifier::Flags, src->flags,
+                          PortIdentifier::Flags, src->flags_,
                           PortIdentifier::Flags::GENERIC_PLUGIN_PORT)
-                        && !string_is_equal (dest->sym, src->sym))
+                        && dest->sym_ != src->sym_)
                         {
                           continue;
                         }
                       return at;
                     }
                   /* if not lv2, also search by index */
-                  else if (dest->port_index == src->port_index)
+                  else if (dest->port_index_ == src->port_index_)
                     {
                       return at;
                     }
                 }
               else
                 {
-                  if (dest->port_index == src->port_index)
+                  if (dest->port_index_ == src->port_index_)
                     {
                       return at;
                     }
@@ -402,7 +404,7 @@ automation_track_find_from_port (Port * port, Track * track, bool basic_search)
       /* not basic search */
       else
         {
-          if (port->id.is_equal (at->port_id))
+          if (port->id_.is_equal (at->port_id))
             {
               return at;
             }
@@ -424,7 +426,7 @@ AutomationTrack *
 automation_track_find_from_port_id (PortIdentifier * id, bool basic_search)
 {
   Port * port = Port::find_from_identifier (id);
-  g_return_val_if_fail (port && id->is_equal (port->id), NULL);
+  g_return_val_if_fail (port && id->is_equal (port->id_), NULL);
 
   return automation_track_find_from_port (port, NULL, basic_search);
 }
@@ -510,7 +512,7 @@ automation_track_should_be_recording (
     {
       Port * port = at->port;
       g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
-      gint64 diff = cur_time - port->last_change;
+      gint64 diff = cur_time - port->last_change_;
       if (diff < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
         {
           /* still recording */
@@ -584,7 +586,7 @@ Track *
 automation_track_get_track (AutomationTrack * self)
 {
   Track * track = tracklist_find_track_by_name_hash (
-    TRACKLIST, self->port_id.track_name_hash);
+    TRACKLIST, self->port_id.track_name_hash_);
   g_return_val_if_fail (track, NULL);
 
   return track;
@@ -642,7 +644,7 @@ automation_track_get_val_at_pos (
    * (no change) */
   if (!ap)
     {
-      return port_get_control_value (port, normalized);
+      return port->get_control_value (normalized);
     }
 
   /*Region * region = arranger_object_get_region (ap_obj);*/
@@ -651,8 +653,7 @@ automation_track_get_val_at_pos (
   g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.f);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
-  /* if region ends before pos, assume pos is the
-   * region's end pos */
+  /* if region ends before pos, assume pos is the region's end pos */
   signed_frame_t localp = (signed_frame_t) region_timeline_frames_to_local (
     region,
     !ends_after && (r_obj->end_pos.frames < pos->frames)
@@ -895,7 +896,5 @@ automation_track_free (AutomationTrack * self)
     }
   object_zero_and_free (self->region_snapshots);
 
-  self->port_id.~PortIdentifier ();
-
-  object_zero_and_free (self);
+  delete self;
 }

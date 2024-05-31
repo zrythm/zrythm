@@ -42,27 +42,29 @@ test_queue_file (void)
   AudioClip * c = audio_clip_new_from_file (filepath, &err);
   g_assert_nonnull (c);
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[AUDIO_REGION_BUILTIN_FADE_FRAMES],
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ()
+       .buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     &c->ch_frames[0][AUDIO_REGION_BUILTIN_FADE_FRAMES],
     256 - AUDIO_REGION_BUILTIN_FADE_FRAMES, 0.0000001f));
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[AUDIO_REGION_BUILTIN_FADE_FRAMES],
-    &MONITOR_FADER->stereo_out->l->buf[AUDIO_REGION_BUILTIN_FADE_FRAMES],
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ()
+       .buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
+    &MONITOR_FADER->stereo_out->get_l ().buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     256 - AUDIO_REGION_BUILTIN_FADE_FRAMES, 0.0000001f));
   engine_process (AUDIO_ENGINE, 256);
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[0], &c->ch_frames[0][256], 256,
-    0.0000001f));
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ().buf_[0],
+    &c->ch_frames[0][256], 256, 0.0000001f));
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[0],
-    &MONITOR_FADER->stereo_out->l->buf[0], 256, 0.0000001f));
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ().buf_[0],
+    &MONITOR_FADER->stereo_out->get_l ().buf_[0], 256, 0.0000001f));
   engine_process (AUDIO_ENGINE, 256);
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[0], &c->ch_frames[0][256 * 2],
-    256, 0.0000001f));
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ().buf_[0],
+    &c->ch_frames[0][256 * 2], 256, 0.0000001f));
   g_assert_true (audio_frames_equal (
-    &SAMPLE_PROCESSOR->fader->stereo_out->l->buf[0],
-    &MONITOR_FADER->stereo_out->l->buf[0], 256, 0.0000001f));
+    &SAMPLE_PROCESSOR->fader->stereo_out->get_l ().buf_[0],
+    &MONITOR_FADER->stereo_out->get_l ().buf_[0], 256, 0.0000001f));
 
   supported_file_free (file);
   g_free (filepath);

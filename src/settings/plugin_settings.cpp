@@ -323,7 +323,7 @@ activate_finish (
       for (int j = 0; j < pl->num_out_ports; j++)
         {
           Port * cur_port = pl->out_ports[j];
-          if (cur_port->id.type != ZPortType::Z_PORT_TYPE_AUDIO)
+          if (cur_port->id_.type_ != PortType::Audio)
             continue;
 
           g_ptr_array_add (pl_audio_outs, cur_port);
@@ -399,7 +399,7 @@ activate_finish (
           /* route left port to audio fx */
           err = NULL;
           ret = port_connection_action_perform_connect (
-            &port->id, &fx_track->processor->stereo_in->l->id, &err);
+            &port->id_, &fx_track->processor->stereo_in->get_l ().id_, &err);
           if (!ret)
             {
               HANDLE_ERROR (err, "%s", _ ("Failed to connect L port"));
@@ -413,7 +413,7 @@ activate_finish (
           /* route right port to audio fx */
           err = NULL;
           ret = port_connection_action_perform_connect (
-            &port->id, &fx_track->processor->stereo_in->r->id, &err);
+            &port->id_, &fx_track->processor->stereo_in->get_r ().id_, &err);
           if (!ret)
             {
               HANDLE_ERROR (err, "%s", _ ("Failed to connect R port"));

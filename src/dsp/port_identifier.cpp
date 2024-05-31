@@ -6,10 +6,6 @@
 #include "dsp/port.h"
 #include "dsp/port_identifier.h"
 #include "plugins/plugin_identifier.h"
-#include "utils/gtk.h"
-#include "utils/hash.h"
-#include "utils/objects.h"
-#include "utils/string.h"
 #include "utils/types.h"
 
 const char *
@@ -24,15 +20,11 @@ port_unit_to_str (const PortUnit unit)
 void
 PortIdentifier::init ()
 {
-  plugin_identifier_init (&this->plugin_id);
+  plugin_identifier_init (&this->plugin_id_);
 }
 
-/**
- * Port group comparator function where @ref p1 and
- * @ref p2 are pointers to Port.
- */
 int
-port_identifier_port_group_cmp (const void * p1, const void * p2)
+PortIdentifier::port_group_cmp (const void * p1, const void * p2)
 {
   const Port * control1 = *(const Port **) p1;
   const Port * control2 = *(const Port **) p2;
@@ -40,9 +32,9 @@ port_identifier_port_group_cmp (const void * p1, const void * p2)
   g_return_val_if_fail (IS_PORT (control1), -1);
   g_return_val_if_fail (IS_PORT (control2), -1);
 
-  /* use index for now - this assumes that ports
-   * inside port groups are declared in sequence */
-  return control1->id.port_index - control2->id.port_index;
+  /* use index for now - this assumes that ports inside port groups are declared
+   * in sequence */
+  return control1->id_.port_index_ - control2->id_.port_index_;
 
 #if 0
   return
@@ -57,22 +49,21 @@ port_identifier_port_group_cmp (const void * p1, const void * p2)
 PortIdentifier &
 PortIdentifier::operator= (const PortIdentifier &other)
 {
-  schema_version = other.schema_version;
-  string_copy_w_realloc (&label, other.label);
-  string_copy_w_realloc (&sym, other.sym);
-  string_copy_w_realloc (&uri, other.uri);
-  string_copy_w_realloc (&comment, other.comment);
-  this->owner_type = other.owner_type;
-  this->type = other.type;
-  this->flow = other.flow;
-  this->flags = other.flags;
-  this->flags2 = other.flags2;
-  this->unit = other.unit;
-  plugin_identifier_copy (&this->plugin_id, &other.plugin_id);
-  string_copy_w_realloc (&this->ext_port_id, other.ext_port_id);
-  string_copy_w_realloc (&this->port_group, other.port_group);
-  this->track_name_hash = other.track_name_hash;
-  this->port_index = other.port_index;
+  label_ = other.label_;
+  sym_ = other.sym_;
+  uri_ = other.uri_;
+  comment_ = other.comment_;
+  this->owner_type_ = other.owner_type_;
+  this->type_ = other.type_;
+  this->flow_ = other.flow_;
+  this->flags_ = other.flags_;
+  this->flags2_ = other.flags2_;
+  this->unit_ = other.unit_;
+  plugin_identifier_copy (&this->plugin_id_, &other.plugin_id_);
+  ext_port_id_ = other.ext_port_id_;
+  port_group_ = other.port_group_;
+  this->track_name_hash_ = other.track_name_hash_;
+  this->port_index_ = other.port_index_;
   return *this;
 }
 
@@ -80,35 +71,32 @@ bool
 PortIdentifier::is_equal (const PortIdentifier &other) const
 {
   bool eq =
-    owner_type == other.owner_type && unit == other.unit && type == other.type
-    && flow == other.flow && flags == other.flags && flags2 == other.flags2
-    && track_name_hash == other.track_name_hash;
+    owner_type_ == other.owner_type_ && unit_ == other.unit_
+    && type_ == other.type_ && flow_ == other.flow_ && flags_ == other.flags_
+    && flags2_ == other.flags2_ && track_name_hash_ == other.track_name_hash_;
   if (!eq)
     return false;
 
-  if (owner_type == PortIdentifier::OwnerType::PLUGIN)
+  if (owner_type_ == PortIdentifier::OwnerType::PLUGIN)
     {
-      eq = eq && plugin_identifier_is_equal (&plugin_id, &other.plugin_id);
+      eq = eq && plugin_identifier_is_equal (&plugin_id_, &other.plugin_id_);
     }
 
-  /* if LV2 (has symbol) check symbol match,
-   * other.wise check index match and label match */
-  if (sym)
+  /* if LV2 (has symbol) check symbol match, other.wise check index match and
+   * label match */
+  if (sym_.empty ())
     {
-      eq = eq && string_is_equal (sym, other.sym);
+      eq = eq && port_index_ == other.port_index_ && label_ == other.label_;
     }
   else
     {
-      eq =
-        eq && port_index == other.port_index
-        && string_is_equal (label, other.label);
+      eq = eq && sym_ == other.sym_;
     }
 
   /* do string comparisons at the end */
   eq =
-    eq && string_is_equal (uri, other.uri)
-    && string_is_equal (port_group, other.port_group)
-    && string_is_equal (ext_port_id, other.ext_port_id);
+    eq && uri_ == other.uri_ && port_group_ == other.port_group_
+    && ext_port_id_ == other.ext_port_id_;
 
   return eq;
 }
@@ -117,7 +105,7 @@ PortIdentifier::is_equal (const PortIdentifier &other) const
  * To be used as GEqualFunc.
  */
 int
-port_identifier_is_equal_func (const void * a, const void * b)
+PortIdentifier::is_equal_func (const void * a, const void * b)
 {
   auto p1 = static_cast<const PortIdentifier *> (a);
   auto p2 = static_cast<const PortIdentifier *> (b);
@@ -130,9 +118,9 @@ PortIdentifier::print_to_str (char * buf, size_t buf_sz) const
 {
   char pl_buf[800];
   strcpy (pl_buf, "{none}");
-  if (owner_type == PortIdentifier::OwnerType::PLUGIN)
+  if (owner_type_ == PortIdentifier::OwnerType::PLUGIN)
     {
-      plugin_identifier_print (&plugin_id, pl_buf);
+      plugin_identifier_print (&plugin_id_, pl_buf);
     }
   snprintf (
     buf, buf_sz,
@@ -141,11 +129,12 @@ PortIdentifier::print_to_str (char * buf, size_t buf_sz) const
     "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
-    this, get_hash (), label, sym, uri, comment, ENUM_NAME (owner_type),
-    ENUM_NAME (type), ENUM_NAME (flow),
-    ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags),
-    ENUM_BITSET_TO_STRING (PortIdentifier::Flags2, flags2), ENUM_NAME (unit),
-    port_group, ext_port_id, track_name_hash, port_index, pl_buf);
+    this, get_hash (), label_.c_str (), sym_.c_str (), uri_.c_str (),
+    comment_.c_str (), ENUM_NAME (owner_type_), ENUM_NAME (type_),
+    ENUM_NAME (flow_), ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_),
+    ENUM_BITSET_TO_STRING (PortIdentifier::Flags2, flags2_), ENUM_NAME (unit_),
+    port_group_.c_str (), ext_port_id_.c_str (), track_name_hash_, port_index_,
+    pl_buf);
 }
 
 void
@@ -162,7 +151,7 @@ PortIdentifier::validate () const
 {
   g_return_val_if_fail (
     /*self->schema_version == PORT_IDENTIFIER_SCHEMA_VERSION*/
-    plugin_identifier_validate (&this->plugin_id), false);
+    plugin_identifier_validate (&this->plugin_id_), false);
   return true;
 }
 
@@ -172,67 +161,58 @@ PortIdentifier::get_hash () const
 {
   const PortIdentifier * id = static_cast<const PortIdentifier *> (this);
   uint32_t               hash = 0;
-  if (id->sym)
+  if (!id->sym_.empty ())
     {
-      hash = hash ^ g_str_hash (id->sym);
+      hash = hash ^ g_str_hash (id->sym_.c_str ());
     }
   /* don't check label when have symbol because label might be
    * localized */
-  else if (id->label)
+  else if (!id->label_.empty ())
     {
-      hash = hash ^ g_str_hash (id->label);
+      hash = hash ^ g_str_hash (id->label_.c_str ());
     }
 
-  if (id->uri)
-    hash = hash ^ g_str_hash (id->uri);
-  hash = hash ^ g_int_hash (&id->owner_type);
-  hash = hash ^ g_int_hash (&id->type);
-  hash = hash ^ g_int_hash (&id->flow);
-  hash = hash ^ g_int_hash (&id->flags);
-  hash = hash ^ g_int_hash (&id->flags2);
-  hash = hash ^ g_int_hash (&id->unit);
-  hash = hash ^ plugin_identifier_get_hash (&id->plugin_id);
-  if (id->port_group)
-    hash = hash ^ g_str_hash (id->port_group);
-  if (id->ext_port_id)
-    hash = hash ^ g_str_hash (id->ext_port_id);
-  hash = hash ^ id->track_name_hash;
-  hash = hash ^ g_int_hash (&id->port_index);
+  if (!id->uri_.empty ())
+    hash = hash ^ g_str_hash (id->uri_.c_str ());
+  hash = hash ^ g_int_hash (&id->owner_type_);
+  hash = hash ^ g_int_hash (&id->type_);
+  hash = hash ^ g_int_hash (&id->flow_);
+  hash = hash ^ g_int_hash (&id->flags_);
+  hash = hash ^ g_int_hash (&id->flags2_);
+  hash = hash ^ g_int_hash (&id->unit_);
+  hash = hash ^ plugin_identifier_get_hash (&id->plugin_id_);
+  if (!id->port_group_.empty ())
+    hash = hash ^ g_str_hash (id->port_group_.c_str ());
+  if (!id->ext_port_id_.empty ())
+    hash = hash ^ g_str_hash (id->ext_port_id_.c_str ());
+  hash = hash ^ id->track_name_hash_;
+  hash = hash ^ g_int_hash (&id->port_index_);
   return hash;
 }
 
 PortIdentifier::PortIdentifier (const PortIdentifier &other)
 {
-  this->schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
   *this = other;
 }
 
-PortIdentifier::~PortIdentifier ()
-{
-  g_free_and_null (label);
-  g_free_and_null (sym);
-  g_free_and_null (uri);
-  g_free_and_null (comment);
-  g_free_and_null (port_group);
-  g_free_and_null (ext_port_id);
-}
+PortIdentifier::~PortIdentifier () { }
 
 const char *
-port_identifier_get_label (void * data)
+PortIdentifier::get_label (void * data)
 {
   PortIdentifier * self = static_cast<PortIdentifier *> (data);
-  return self->get_label ();
+  return self->get_label ().c_str ();
 }
 
 void
-port_identifier_destroy_notify (void * data)
+PortIdentifier::destroy_notify (void * data)
 {
   PortIdentifier * self = static_cast<PortIdentifier *> (data);
   delete self;
 }
 
 uint32_t
-port_identifier_get_hash (const void * data)
+PortIdentifier::get_hash (const void * data)
 {
   const PortIdentifier * self = static_cast<const PortIdentifier *> (data);
   return self->get_hash ();

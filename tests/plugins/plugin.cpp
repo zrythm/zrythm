@@ -72,7 +72,7 @@ get_skew_duty_port (void)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * cur_port = pl->in_ports[i];
-      if (string_is_equal (cur_port->id.label, "OscA Skew/Duty"))
+      if (cur_port->id_.label_ == "OscA Skew/Duty")
         {
           port = cur_port;
           break;
@@ -93,10 +93,10 @@ test_loading_fully_bridged_plugin (void)
 
   Port * port = get_skew_duty_port ();
   g_return_if_fail (port);
-  float val_before = port->control;
+  float val_before = port->control_;
   float val_after = 1.f;
   g_assert_cmpfloat_with_epsilon (val_before, 0.5f, 0.0001f);
-  port_set_control_value (port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
+  port->set_control_value (val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
   g_assert_cmpfloat_with_epsilon (port->control, val_after, 0.0001f);
 
   /* save project and reload and check the

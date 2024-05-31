@@ -340,7 +340,7 @@ midi_mappings_deserialize_from_json (
       yyjson_val *    mapping_obj = NULL;
       while ((mapping_obj = yyjson_arr_iter_next (&mappings_it)))
         {
-          MidiMapping * mapping = object_new (MidiMapping);
+          MidiMapping * mapping = new MidiMapping ();
           mm->mappings[mm->num_mappings++] = mapping;
           midi_mapping_deserialize_from_json (doc, mapping_obj, mapping, error);
         }

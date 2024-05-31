@@ -36,7 +36,7 @@ test_process_master (void)
 
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
-      P_MASTER_TRACK->processor->stereo_in->l->buf[i] = (float) (i + 1);
+      P_MASTER_TRACK->processor->stereo_in->get_l ().buf_[i] = (float) (i + 1);
     }
 
   nframes_t             local_offset = 60;
@@ -56,8 +56,8 @@ test_process_master (void)
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        P_MASTER_TRACK->processor->stereo_out->l->buf[i], (float) (i + 1),
-        0.000001f);
+        P_MASTER_TRACK->processor->stereo_out->get_l ().buf_[i],
+        (float) (i + 1), 0.000001f);
     }
 
   test_helper_zrythm_cleanup ();

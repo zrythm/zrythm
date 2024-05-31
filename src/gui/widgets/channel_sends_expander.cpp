@@ -66,11 +66,11 @@ channel_sends_expander_widget_setup (
     {
       switch (track->out_signal_type)
         {
-        case ZPortType::Z_PORT_TYPE_AUDIO:
+        case PortType::Audio:
           expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self), "audio-send");
           break;
-        case ZPortType::Z_PORT_TYPE_EVENT:
+        case PortType::Event:
           expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self), "midi-send");
           break;

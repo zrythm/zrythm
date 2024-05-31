@@ -255,7 +255,7 @@ test_process (void)
   carla_native_plugin_process (pl->carla, &time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
-      g_assert_true (fabsf (out->buf[i]) > 1e-10f);
+      g_assert_true (fabsf (out->buf_[i]) > 1e-10f);
     }
   time_nfo.g_start_frame = 0;
   time_nfo.g_start_frame_w_offset = local_offset;
@@ -264,7 +264,7 @@ test_process (void)
   carla_native_plugin_process (pl->carla, &time_nfo);
   for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length; i++)
     {
-      g_assert_true (fabsf (out->buf[i]) > 1e-10f);
+      g_assert_true (fabsf (out->buf_[i]) > 1e-10f);
     }
 
   test_helper_zrythm_cleanup ();

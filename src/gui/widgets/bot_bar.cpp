@@ -547,8 +547,10 @@ bot_bar_widget_init (BotBarWidget * self)
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MidiActivityBarAnimation::MAB_ANIMATION_FLASH);
 
-  MeterWidget * l = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->l, 4);
-  MeterWidget * r = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->r, 4);
+  MeterWidget * l =
+    meter_widget_new (&P_MASTER_TRACK->channel->stereo_out->get_l (), 4);
+  MeterWidget * r =
+    meter_widget_new (&P_MASTER_TRACK->channel->stereo_out->get_r (), 4);
   gtk_box_append (self->meter_box, GTK_WIDGET (l));
   gtk_box_append (self->meter_box, GTK_WIDGET (r));
 

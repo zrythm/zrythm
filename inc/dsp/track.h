@@ -446,13 +446,13 @@ typedef struct Track
    * The input signal type (eg audio bus tracks have
    * audio input signals).
    */
-  ZPortType in_signal_type;
+  PortType in_signal_type;
 
   /**
    * The output signal type (eg midi tracks have
    * MIDI output signals).
    */
-  ZPortType out_signal_type;
+  PortType out_signal_type;
 
   /** User comments. */
   char * comment;

@@ -60,7 +60,7 @@ midi_mapping_action_new_bind (
     {
       self->dev_port = ext_port_clone (device_port);
     }
-  self->dest_port_id = new PortIdentifier (dest_port->id);
+  self->dest_port_id = new PortIdentifier (dest_port->id_);
 
   return ua;
 }

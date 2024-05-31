@@ -325,7 +325,7 @@ project_validate (Project * self)
     {
       Port * port = ports[i];
       port_update_identifier (
-        port, &port->id, port->track,
+        port, &port->id_, port->track,
         F_UPDATE_AUTOMATION_TRACK);
     }
   free (ports);
@@ -569,7 +569,8 @@ project_autosave_cb (void * data)
 
   /* skip if sound is playing */
   out_ports = P_MASTER_TRACK->channel->stereo_out;
-  if (out_ports->l->peak >= 0.0001f || out_ports->r->peak >= 0.0001f)
+  if (
+    out_ports->get_l ().peak_ >= 0.0001f || out_ports->get_r ().peak_ >= 0.0001f)
     {
       g_debug ("sound is playing, skipping autosave");
       goto post_save_sem_and_continue;

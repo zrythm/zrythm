@@ -1256,7 +1256,7 @@ do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** erro
               g_return_val_if_fail (cur_at, -1);
               Port * port = Port::find_from_identifier (self->target_port);
               g_return_val_if_fail (port, -1);
-              Track * track = port_get_track (port, true);
+              Track * track = port->get_track (true);
               g_return_val_if_fail (track, -1);
               AutomationTrack * at =
                 automation_track_find_from_port (port, track, true);
@@ -1644,7 +1644,7 @@ do_or_undo_duplicate_or_link (
               g_return_val_if_fail (cur_at, -1);
               Port * port = Port::find_from_identifier (self->target_port);
               g_return_val_if_fail (port, -1);
-              Track * track = port_get_track (port, true);
+              Track * track = port->get_track (true);
               g_return_val_if_fail (track, -1);
               AutomationTrack * at =
                 automation_track_find_from_port (port, track, true);

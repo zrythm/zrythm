@@ -249,7 +249,7 @@ void
 custom_button_widget_set_text (
   CustomButtonWidget * self,
   PangoLayout *        layout,
-  char *               text,
+  const char *         text,
   const char *         font_descr)
 {
   g_return_if_fail (text && layout);

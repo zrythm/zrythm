@@ -165,17 +165,17 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
                     self->full_name);
                   return -1;
                 }
-              port_set_expose_to_backend (self->port, true);
+              self->port->set_expose_to_backend (true);
 
               g_message (
                 "attempting to connect jack port %s "
                 "to jack port %s",
                 jack_port_name (self->jport),
-                jack_port_name (JACK_PORT_T (self->port->data)));
+                jack_port_name (JACK_PORT_T (self->port->data_)));
 
               ret = jack_connect (
                 AUDIO_ENGINE->client, jack_port_name (self->jport),
-                jack_port_name (JACK_PORT_T (self->port->data)));
+                jack_port_name (JACK_PORT_T (self->port->data_)));
               if (ret != 0 && ret != EEXIST)
                 {
                   char msg[600];
@@ -184,7 +184,7 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
                     "Failed connecting %s to %s:\n"
                     "%s",
                     jack_port_name (self->jport),
-                    jack_port_name (JACK_PORT_T (self->port->data)), msg);
+                    jack_port_name (JACK_PORT_T (self->port->data_)), msg);
                   return ret;
                 }
               break;
@@ -214,9 +214,9 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
                   return -1;
                 }
               ret = rtmidi_device_open (self->rtmidi_dev, true);
-              self->port->rtmidi_ins[0] = self->rtmidi_dev;
-              self->port->num_rtmidi_ins = 1;
               g_warn_if_fail (ret == 0);
+              self->port->rtmidi_ins_.clear ();
+              self->port->rtmidi_ins_.push_back (self->rtmidi_dev);
               break;
 #endif
             default:
@@ -252,17 +252,17 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
                     self->full_name);
                   return -1;
                 }
-              port_set_expose_to_backend (self->port, true);
+              self->port->set_expose_to_backend (true);
 
               g_message (
                 "attempting to connect jack port %s "
                 "to jack port %s",
                 jack_port_name (self->jport),
-                jack_port_name (JACK_PORT_T (self->port->data)));
+                jack_port_name (JACK_PORT_T (self->port->data_)));
 
               ret = jack_connect (
                 AUDIO_ENGINE->client, jack_port_name (self->jport),
-                jack_port_name (JACK_PORT_T (self->port->data)));
+                jack_port_name (JACK_PORT_T (self->port->data_)));
               if (ret != 0 && ret != EEXIST)
                 return ret;
               break;
@@ -288,8 +288,8 @@ ext_port_activate (ExtPort * self, Port * port, bool activate)
                 {
                   return -1;
                 }
-              self->port->rtaudio_ins[0] = self->rtaudio_dev;
-              self->port->num_rtaudio_ins = 1;
+              self->port->rtaudio_ins_.clear ();
+              self->port->rtaudio_ins_.push_back (self->rtaudio_dev);
               break;
 #endif
             default:
@@ -461,14 +461,14 @@ ext_port_new_from_jack_port (jack_port_t * jport)
 }
 
 static void
-get_ext_ports_from_jack (ZPortType type, ZPortFlow flow, int hw, GPtrArray * ports)
+get_ext_ports_from_jack (PortType type, PortFlow flow, int hw, GPtrArray * ports)
 {
   long unsigned int flags = 0;
   if (hw)
     flags |= JackPortIsPhysical;
-  if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  if (flow == PortFlow::Input)
     flags |= JackPortIsInput;
-  else if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  else if (flow == PortFlow::Output)
     flags |= JackPortIsOutput;
   const char * jtype = engine_jack_get_jack_type (type);
   if (!jtype)
@@ -520,9 +520,9 @@ ext_port_from_windows_mme_device (WindowsMmeDevice * dev)
 }
 
 static void
-get_ext_ports_from_windows_mme (ZPortFlow flow, GPtrArray * ports)
+get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
 {
-  if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  if (flow == PortFlow::Output)
     {
       for (int i = 0; i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
@@ -532,7 +532,7 @@ get_ext_ports_from_windows_mme (ZPortFlow flow, GPtrArray * ports)
           g_ptr_array_add (ports, ext_port);
         }
     }
-  else if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  else if (flow == PortFlow::Input)
     {
       for (int i = 0; i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
@@ -568,9 +568,9 @@ ext_port_from_rtmidi (unsigned int id)
 }
 
 static void
-get_ext_ports_from_rtmidi (ZPortFlow flow, GPtrArray * ports)
+get_ext_ports_from_rtmidi (PortFlow flow, GPtrArray * ports)
 {
-  if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  if (flow == PortFlow::Output)
     {
       unsigned int num_ports = engine_rtmidi_get_num_in_ports (AUDIO_ENGINE);
       for (unsigned int i = 0; i < num_ports; i++)
@@ -579,7 +579,7 @@ get_ext_ports_from_rtmidi (ZPortFlow flow, GPtrArray * ports)
           g_ptr_array_add (ports, ext_port);
         }
     }
-  else if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  else if (flow == PortFlow::Input)
     {
       /* MIDI out devices not handled yet */
     }
@@ -616,11 +616,11 @@ ext_port_from_rtaudio (
 }
 
 static void
-get_ext_ports_from_rtaudio (ZPortFlow flow, GPtrArray * ports)
+get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
 {
   /* note: this is an output port from the graph side that will be used as an
    * input port on the zrythm side */
-  if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  if (flow == PortFlow::Output)
     {
       bool      reuse_rtaudio = true;
       rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
@@ -663,7 +663,7 @@ get_ext_ports_from_rtaudio (ZPortFlow flow, GPtrArray * ports)
           rtaudio_destroy (rtaudio);
         }
     }
-  else if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  else if (flow == PortFlow::Input)
     {
       bool      reuse_rtaudio = true;
       rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
@@ -708,9 +708,9 @@ get_ext_ports_from_rtaudio (ZPortFlow flow, GPtrArray * ports)
 #endif
 
 void
-ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports)
+ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports)
 {
-  if (type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (type == PortType::Audio)
     {
       switch (AUDIO_ENGINE->audio_backend)
         {
@@ -737,7 +737,7 @@ ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports)
           break;
         }
     }
-  else if (type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (type == PortType::Event)
     {
       switch (AUDIO_ENGINE->midi_backend)
         {

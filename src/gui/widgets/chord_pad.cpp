@@ -36,14 +36,14 @@ send_note_offs (ChordPadWidget * self)
 {
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  if (track && track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track && track->in_signal_type == PortType::Event)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note offs at time 1 */
       Port * port = track->processor->midi_in;
       midi_events_add_note_offs_from_chord_descr (
-        port->midi_events, descr, 1, 1, F_QUEUED);
+        port->midi_events_, descr, 1, 1, F_QUEUED);
     }
 }
 
@@ -61,14 +61,14 @@ on_chord_click_pressed (
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  if (track && track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track && track->in_signal_type == PortType::Event)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note ons at time 0 */
       Port * port = track->processor->midi_in;
       midi_events_add_note_ons_from_chord_descr (
-        port->midi_events, descr, 1, VELOCITY_DEFAULT, 0, F_QUEUED);
+        port->midi_events_, descr, 1, VELOCITY_DEFAULT, 0, F_QUEUED);
     }
 }
 

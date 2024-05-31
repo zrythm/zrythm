@@ -177,7 +177,7 @@ test_curve_value (void)
   transport_request_roll (TRANSPORT, true);
   engine_process (AUDIO_ENGINE, 40);
 
-  g_assert_cmpfloat_with_epsilon (port->control, 2.32830644e-10, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control_, 2.32830644e-10, 0.0001f);
 
   position_set_to_bar (&pos, 3);
   position_add_frames (&pos, -80);
@@ -185,7 +185,7 @@ test_curve_value (void)
 
   engine_process (AUDIO_ENGINE, 40);
 
-  g_assert_cmpfloat_with_epsilon (port->control, 2.32830644e-10, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control_, 2.32830644e-10, 0.0001f);
 
   test_helper_zrythm_cleanup ();
 }

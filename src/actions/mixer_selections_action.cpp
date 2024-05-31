@@ -85,9 +85,9 @@ clone_ats (
         {
           AutomationTrack * at = atl->ats[i];
           if (
-            at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
-            || at->port_id.plugin_id.slot != slot
-            || at->port_id.plugin_id.slot_type != ms->type)
+            at->port_id.owner_type_ != PortIdentifier::OwnerType::PLUGIN
+            || at->port_id.plugin_id_.slot != slot
+            || at->port_id.plugin_id_.slot_type != ms->type)
             continue;
 
           if (deleted)
@@ -279,16 +279,16 @@ revert_automation (
       AutomationTrack * cloned_at = ats[j];
 
       if (
-        cloned_at->port_id.plugin_id.slot != slot
-        || cloned_at->port_id.plugin_id.slot_type != ms->type)
+        cloned_at->port_id.plugin_id_.slot != slot
+        || cloned_at->port_id.plugin_id_.slot_type != ms->type)
         {
           continue;
         }
 
       /* find corresponding automation track in track and copy regions */
       AutomationTrack * actual_at = automation_tracklist_get_plugin_at (
-        atl, ms->type, slot, cloned_at->port_id.port_index,
-        cloned_at->port_id.sym);
+        atl, ms->type, slot, cloned_at->port_id.port_index_,
+        cloned_at->port_id.sym_.c_str ());
 
       copy_at_regions (actual_at, cloned_at);
       num_reverted_regions += actual_at->num_regions;
@@ -590,8 +590,8 @@ do_or_undo_create_or_delete (
                 {
                   Port * port =
                     static_cast<Port *> (g_ptr_array_index (ports, j));
-                  Port * prj_port = Port::find_from_identifier (&port->id);
-                  port_restore_from_non_project (prj_port, port);
+                  Port * prj_port = Port::find_from_identifier (&port->id_);
+                  prj_port->restore_from_non_project (*port);
                 }
               object_free_w_func_and_null (g_ptr_array_unref, ports);
 
@@ -640,7 +640,7 @@ do_or_undo_create_or_delete (
                     {
                       Port * cur_own_port =
                         static_cast<Port *> (g_ptr_array_index (own_ports, k));
-                      if (cur_own_port->id.is_equal (prj_port->id))
+                      if (cur_own_port->id_.is_equal (prj_port->id_))
                         {
                           own_port = cur_own_port;
                           break;
@@ -648,7 +648,7 @@ do_or_undo_create_or_delete (
                     }
                   g_return_val_if_fail (own_port, -1);
 
-                  port_copy_metadata_from_project (own_port, prj_port);
+                  own_port->copy_metadata_from_project (prj_port);
                 }
               object_free_w_func_and_null (g_ptr_array_unref, ports);
               object_free_w_func_and_null (g_ptr_array_unref, own_ports);
@@ -796,9 +796,9 @@ copy_automation_from_track1_to_track2 (
       AutomationTrack * prev_at = prev_atl->ats[j];
       if (
         prev_at->num_regions == 0
-        || prev_at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
-        || prev_at->port_id.plugin_id.slot != from_slot
-        || prev_at->port_id.plugin_id.slot_type != slot_type)
+        || prev_at->port_id.owner_type_ != PortIdentifier::OwnerType::PLUGIN
+        || prev_at->port_id.plugin_id_.slot != from_slot
+        || prev_at->port_id.plugin_id_.slot_type != slot_type)
         {
           continue;
         }
@@ -811,10 +811,10 @@ copy_automation_from_track1_to_track2 (
           AutomationTrack * at = atl->ats[k];
 
           if (
-            at->port_id.owner_type != PortIdentifier::OwnerType::PLUGIN
-            || at->port_id.plugin_id.slot != to_slot
-            || at->port_id.plugin_id.slot_type != slot_type
-            || at->port_id.port_index != prev_at->port_id.port_index)
+            at->port_id.owner_type_ != PortIdentifier::OwnerType::PLUGIN
+            || at->port_id.plugin_id_.slot != to_slot
+            || at->port_id.plugin_id_.slot_type != slot_type
+            || at->port_id.port_index_ != prev_at->port_id.port_index_)
             {
               continue;
             }

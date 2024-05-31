@@ -49,7 +49,7 @@
 #  include <rtaudio_c.h>
 #endif
 
-typedef struct StereoPorts StereoPorts;
+class StereoPorts;
 class Port;
 typedef struct Channel           Channel;
 typedef struct Plugin            Plugin;
@@ -73,11 +73,11 @@ typedef struct MPMCQueue         MPMCQueue;
 #define BLOCK_LENGTH 4096  // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
-#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events->num_events
+#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events_->num_events
 
 #define AUDIO_ENGINE (PROJECT->audio_engine)
 #define MANUAL_PRESS_EVENTS \
-  (AUDIO_ENGINE->midi_editor_manual_press->midi_events)
+  (AUDIO_ENGINE->midi_editor_manual_press->midi_events_)
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val)
 
@@ -961,13 +961,10 @@ void
 engine_set_buffer_size (AudioEngine * self, uint32_t buf_size);
 
 /**
- * Returns 1 if the port is an engine port or
- * control room port, otherwise 0.
+ * Returns 1 if the port is an engine port or control room port, otherwise 0.
  */
-#define engine_is_port_own(self, port) \
-  (port == MONITOR_FADER->stereo_in->l || port == MONITOR_FADER->stereo_in->r \
-   || port == MONITOR_FADER->stereo_out->l \
-   || port == MONITOR_FADER->stereo_out->r)
+bool
+engine_is_port_own (AudioEngine * self, const Port * port);
 
 /**
  * Returns the audio backend as a string.

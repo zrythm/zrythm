@@ -107,7 +107,7 @@ channel_widget_tick_cb (
     }
 
   /* TODO */
-  if (track.out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track.out_signal_type == PortType::Event)
     {
       gtk_label_set_text (self->meter_reading, "-∞");
       return G_SOURCE_CONTINUE;
@@ -406,15 +406,17 @@ setup_meter (ChannelWidget * self)
   Track &track = self->channel->get_track ();
   switch (track.out_signal_type)
     {
-    case ZPortType::Z_PORT_TYPE_EVENT:
+    case PortType::Event:
       meter_widget_setup (self->meter_l, self->channel->midi_out, false);
       gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
       break;
-    case ZPortType::Z_PORT_TYPE_AUDIO:
-      meter_widget_setup (self->meter_l, self->channel->stereo_out->l, false);
-      meter_widget_setup (self->meter_r, self->channel->stereo_out->r, false);
+    case PortType::Audio:
+      meter_widget_setup (
+        self->meter_l, &self->channel->stereo_out->get_l (), false);
+      meter_widget_setup (
+        self->meter_r, &self->channel->stereo_out->get_r (), false);
       break;
     default:
       break;
@@ -428,7 +430,7 @@ void
 channel_widget_update_midi_fx_and_inserts (ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (self->inserts);
-  if (self->channel->track_.in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (self->channel->track_.in_signal_type == PortType::Event)
     {
       plugin_strip_expander_widget_refresh (self->midi_fx);
     }
@@ -772,7 +774,7 @@ channel_widget_new (Channel * channel)
   plugin_strip_expander_widget_setup (
     self->inserts, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT,
     PluginStripExpanderPosition::PSE_POSITION_CHANNEL, &track);
-  if (track.in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track.in_signal_type == PortType::Event)
     {
       plugin_strip_expander_widget_setup (
         self->midi_fx, ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX,

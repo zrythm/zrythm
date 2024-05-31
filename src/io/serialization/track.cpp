@@ -331,13 +331,13 @@ modulator_macro_processor_deserialize_from_json (
   yyjson_obj_iter it = yyjson_obj_iter_with (mmp_obj);
   mmp->name = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "name")));
   yyjson_val * cv_in_obj = yyjson_obj_iter_get (&it, "cvIn");
-  mmp->cv_in = object_new (Port);
+  mmp->cv_in = new Port ();
   port_deserialize_from_json (doc, cv_in_obj, mmp->cv_in, error);
   yyjson_val * cv_out_obj = yyjson_obj_iter_get (&it, "cvOut");
-  mmp->cv_out = object_new (Port);
+  mmp->cv_out = new Port ();
   port_deserialize_from_json (doc, cv_out_obj, mmp->cv_out, error);
   yyjson_val * macro_obj = yyjson_obj_iter_get (&it, "macro");
-  mmp->macro = object_new (Port);
+  mmp->macro = new Port ();
   port_deserialize_from_json (doc, macro_obj, mmp->macro, error);
   return true;
 }
@@ -353,57 +353,57 @@ track_processor_deserialize_from_json (
   yyjson_val *    mono_obj = yyjson_obj_iter_get (&it, "mono");
   if (mono_obj)
     {
-      tp->mono = object_new (Port);
+      tp->mono = new Port ();
       port_deserialize_from_json (doc, mono_obj, tp->mono, error);
     }
   yyjson_val * input_gain_obj = yyjson_obj_iter_get (&it, "inputGain");
   if (input_gain_obj)
     {
-      tp->input_gain = object_new (Port);
+      tp->input_gain = new Port ();
       port_deserialize_from_json (doc, input_gain_obj, tp->input_gain, error);
     }
   yyjson_val * output_gain_obj = yyjson_obj_iter_get (&it, "outputGain");
   if (output_gain_obj)
     {
-      tp->output_gain = object_new (Port);
+      tp->output_gain = new Port ();
       port_deserialize_from_json (doc, output_gain_obj, tp->output_gain, error);
     }
   yyjson_val * midi_in_obj = yyjson_obj_iter_get (&it, "midiIn");
   if (midi_in_obj)
     {
-      tp->midi_in = object_new (Port);
+      tp->midi_in = new Port ();
       port_deserialize_from_json (doc, midi_in_obj, tp->midi_in, error);
     }
   yyjson_val * midi_out_obj = yyjson_obj_iter_get (&it, "midiOut");
   if (midi_out_obj)
     {
-      tp->midi_out = object_new (Port);
+      tp->midi_out = new Port ();
       port_deserialize_from_json (doc, midi_out_obj, tp->midi_out, error);
     }
   yyjson_val * piano_roll_obj = yyjson_obj_iter_get (&it, "pianoRoll");
   if (piano_roll_obj)
     {
-      tp->piano_roll = object_new (Port);
+      tp->piano_roll = new Port ();
       port_deserialize_from_json (doc, piano_roll_obj, tp->piano_roll, error);
     }
   yyjson_val * monitor_audio_obj = yyjson_obj_iter_get (&it, "monitorAudio");
   if (monitor_audio_obj)
     {
-      tp->monitor_audio = object_new (Port);
+      tp->monitor_audio = new Port ();
       port_deserialize_from_json (
         doc, monitor_audio_obj, tp->monitor_audio, error);
     }
   yyjson_val * stereo_in_obj = yyjson_obj_iter_get (&it, "stereoIn");
   if (stereo_in_obj)
     {
-      tp->stereo_in = object_new (StereoPorts);
+      tp->stereo_in = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_in_obj, tp->stereo_in, error);
     }
   yyjson_val * stereo_out_obj = yyjson_obj_iter_get (&it, "stereoOut");
   if (stereo_out_obj)
     {
-      tp->stereo_out = object_new (StereoPorts);
+      tp->stereo_out = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_out_obj, tp->stereo_out, error);
     }
@@ -415,7 +415,7 @@ track_processor_deserialize_from_json (
       size_t          count = 0;
       while ((midi_cc_obj = yyjson_arr_iter_next (&midi_cc_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           tp->midi_cc[count++] = port;
           port_deserialize_from_json (doc, midi_cc_obj, port, error);
         }
@@ -425,7 +425,7 @@ track_processor_deserialize_from_json (
       count = 0;
       while ((pitch_bend_obj = yyjson_arr_iter_next (&pitch_bend_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           tp->pitch_bend[count++] = port;
           port_deserialize_from_json (doc, pitch_bend_obj, port, error);
         }
@@ -438,7 +438,7 @@ track_processor_deserialize_from_json (
       while (
         (poly_key_pressure_obj = yyjson_arr_iter_next (&poly_key_pressure_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           tp->poly_key_pressure[count++] = port;
           port_deserialize_from_json (doc, poly_key_pressure_obj, port, error);
         }
@@ -451,7 +451,7 @@ track_processor_deserialize_from_json (
       while (
         (channel_pressure_obj = yyjson_arr_iter_next (&channel_pressure_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           tp->channel_pressure[count++] = port;
           port_deserialize_from_json (doc, channel_pressure_obj, port, error);
         }
@@ -521,7 +521,7 @@ track_deserialize_from_json (
   yyjson_val * recording_obj = yyjson_obj_iter_get (&it, "recording");
   if (recording_obj)
     {
-      track->recording = object_new (Port);
+      track->recording = new Port ();
       port_deserialize_from_json (doc, recording_obj, track->recording, error);
     }
   track->enabled = yyjson_get_bool (yyjson_obj_iter_get (&it, "enabled"));
@@ -623,14 +623,14 @@ track_deserialize_from_json (
   if (track->type == TrackType::TRACK_TYPE_TEMPO)
     {
       yyjson_val * port_obj = yyjson_obj_iter_get (&it, "bpmPort");
-      track->bpm_port = object_new (Port);
+      track->bpm_port = new Port ();
       port_deserialize_from_json (doc, port_obj, track->bpm_port, error);
       port_obj = yyjson_obj_iter_get (&it, "beatsPerBarPort");
-      track->beats_per_bar_port = object_new (Port);
+      track->beats_per_bar_port = new Port ();
       port_deserialize_from_json (
         doc, port_obj, track->beats_per_bar_port, error);
       port_obj = yyjson_obj_iter_get (&it, "beatUnitPort");
-      track->beat_unit_port = object_new (Port);
+      track->beat_unit_port = new Port ();
       port_deserialize_from_json (doc, port_obj, track->beat_unit_port, error);
     }
   yyjson_val * modulators_arr = yyjson_obj_iter_get (&it, "modulators");
@@ -678,16 +678,16 @@ track_deserialize_from_json (
       yyjson_val *    at_obj = NULL;
       while ((at_obj = yyjson_arr_iter_next (&at_it)))
         {
-          AutomationTrack * at = object_new (AutomationTrack);
+          AutomationTrack * at = new AutomationTrack ();
           track->automation_tracklist
             .ats[track->automation_tracklist.num_ats++] = at;
           automation_track_deserialize_from_json (doc, at_obj, at, error);
         }
     }
   track->in_signal_type =
-    (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "inSignalType"));
+    (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "inSignalType"));
   track->out_signal_type =
-    (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "outSignalType"));
+    (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "outSignalType"));
   track->midi_ch =
     (uint8_t) yyjson_get_uint (yyjson_obj_iter_get (&it, "midiCh"));
   track->comment =

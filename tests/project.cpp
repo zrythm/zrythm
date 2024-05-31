@@ -143,7 +143,7 @@ test_new_from_template (void)
 
   g_assert_true (
     dsp_abs_max (
-      &MONITOR_FADER->stereo_out->l->buf[0], AUDIO_ENGINE->block_length)
+      &MONITOR_FADER->stereo_out->get_l ().buf_[0], AUDIO_ENGINE->block_length)
     > 0.0001f);
 
   test_project_save_and_reload ();
@@ -160,7 +160,7 @@ test_new_from_template (void)
 
   g_assert_true (
     dsp_abs_max (
-      &MONITOR_FADER->stereo_out->l->buf[0], AUDIO_ENGINE->block_length)
+      &MONITOR_FADER->stereo_out->get_l ().buf_[0], AUDIO_ENGINE->block_length)
     > 0.0001f);
 
   /* create a new project using old one as template */
@@ -188,7 +188,7 @@ test_new_from_template (void)
 
   g_assert_true (
     dsp_abs_max (
-      &MONITOR_FADER->stereo_out->l->buf[0], AUDIO_ENGINE->block_length)
+      &MONITOR_FADER->stereo_out->get_l ().buf_[0], AUDIO_ENGINE->block_length)
     > 0.0001f);
 
   test_helper_zrythm_cleanup ();
@@ -372,18 +372,19 @@ test_exposed_ports_after_load (void)
 
   Track * track =
     track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO, NULL);
-  Port * port = track->channel->stereo_out->l;
-  char   buf[600];
-  port_get_full_designation (port, buf);
+  char buf[600];
+  {
+    const Port &port = track->channel->stereo_out->get_l ();
+    port.get_full_designation (buf);
 
-  g_assert_true (port_is_exposed_to_backend (port));
-  assert_jack_port_exists (buf);
-
+    g_assert_true (port.is_exposed_to_backend ());
+    assert_jack_port_exists (buf);
+  }
   test_project_save_and_reload ();
 
   track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  port = track->channel->stereo_out->l;
-  g_assert_true (port_is_exposed_to_backend (port));
+  const Port &port = track->channel->stereo_out->get_l ();
+  g_assert_true (port.is_exposed_to_backend ());
   assert_jack_port_exists (buf);
 
   test_helper_zrythm_cleanup ();

@@ -28,7 +28,7 @@ test_fader_process_with_instrument (
 
   /* send a note then wait for playback */
   midi_events_add_note_on (
-    track->processor->midi_in->midi_events, 1, 82, 74, 2, true);
+    track->processor->midi_in->midi_events_, 1, 82, 74, 2, true);
 
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -44,11 +44,11 @@ test_fader_process_with_instrument (
 
   /* test fader */
   zix_sem_wait (&ROUTER->graph_access);
-  bool   has_signal = false;
-  Port * l = track->channel->fader->stereo_out->l;
+  bool  has_signal = false;
+  Port &l = track->channel->fader->stereo_out->get_l ();
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
-      if (l->buf[i] > 0.0001f)
+      if (l.buf_[i] > 0.0001f)
         {
           has_signal = true;
           break;
@@ -75,7 +75,7 @@ track_has_sound (Track * track)
 {
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
-      if (fabsf (track->channel->fader->stereo_out->l->buf[i]) > 0.0001f)
+      if (fabsf (track->channel->fader->stereo_out->get_l ().buf_[i]) > 0.0001f)
         {
           return true;
         }

@@ -39,11 +39,10 @@ test_fill_stereo_ports (void)
   Region *    r = track->lanes[0]->regions[0];
   AudioClip * r_clip = audio_region_get_clip (r);
 
-  StereoPorts * ports = stereo_ports_new_generic (
+  StereoPorts ports = StereoPorts (
     false, "ports", "ports",
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, NULL);
-  ports->l->allocate_bufs ();
-  ports->r->allocate_bufs ();
+  ports.allocate_bufs ();
 
   transport_move_playhead (
     TRANSPORT, &pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
@@ -54,10 +53,10 @@ test_fill_stereo_ports (void)
     .local_offset = 0,
     .nframes = 100
   };
-  audio_region_fill_stereo_ports (r, &time_nfo, ports);
+  audio_region_fill_stereo_ports (r, &time_nfo, &ports);
 
-  g_assert_true (audio_frames_empty (&ports->l->buf[0], 20));
-  g_assert_true (audio_frames_empty (&ports->r->buf[0], 20));
+  g_assert_true (audio_frames_empty (&ports.get_l ().buf_[0], 20));
+  g_assert_true (audio_frames_empty (&ports.get_r ().buf_[0], 20));
   for (int i = 0; i < 80; i++)
     {
       float adj_multiplier =
@@ -65,12 +64,10 @@ test_fill_stereo_ports (void)
       float adj_clip_frame_l = r_clip->ch_frames[0][i] * adj_multiplier;
       float adj_clip_frame_r = r_clip->ch_frames[1][i] * adj_multiplier;
       g_assert_true (math_floats_equal_epsilon (
-        adj_clip_frame_l, ports->l->buf[20 + i], 0.00001f));
+        adj_clip_frame_l, ports.get_l ().buf_[20 + i], 0.00001f));
       g_assert_true (math_floats_equal_epsilon (
-        adj_clip_frame_r, ports->l->buf[20 + i], 0.00001f));
+        adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f));
     }
-
-  object_free_w_func_and_null (stereo_ports_free, ports);
 
   test_helper_zrythm_cleanup ();
 }

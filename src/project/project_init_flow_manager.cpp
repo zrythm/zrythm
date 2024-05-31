@@ -1079,14 +1079,14 @@ on_failed_to_init_pool:
 
   /* init ports */
   GPtrArray * ports = g_ptr_array_new ();
-  port_get_all (ports);
+  Port::get_all (ports);
   g_message ("Initializing loaded Ports...");
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
-      if (port_is_exposed_to_backend (port))
+      if (port->is_exposed_to_backend ())
         {
-          port_set_expose_to_backend (port, true);
+          port->set_expose_to_backend (true);
         }
     }
   object_free_w_func_and_null (g_ptr_array_unref, ports);

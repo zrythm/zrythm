@@ -21,9 +21,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <assert.h>
 #include <cstdlib>
 #include <cstring>
+
+#include <assert.h>
 
 #include "utils/objects.h"
 #include "utils/symap.h"

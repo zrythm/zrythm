@@ -35,23 +35,23 @@
 /**
  * Direction of the signal.
  */
-enum class ZPortFlow
+enum class PortFlow
 {
-  Z_PORT_FLOW_UNKNOWN,
-  Z_PORT_FLOW_INPUT,
-  Z_PORT_FLOW_OUTPUT
+  Unknown,
+  Input,
+  Output
 };
 
 /**
  * Type of signals the Port handles.
  */
-enum class ZPortType
+enum class PortType
 {
-  Z_PORT_TYPE_UNKNOWN,
-  Z_PORT_TYPE_CONTROL,
-  Z_PORT_TYPE_AUDIO,
-  Z_PORT_TYPE_EVENT,
-  Z_PORT_TYPE_CV
+  Unknown,
+  Control,
+  Audio,
+  Event,
+  CV
 };
 
 /**
@@ -79,14 +79,13 @@ port_unit_to_str (const PortUnit unit);
 /**
  * Struct used to identify Ports in the project.
  *
- * This should include some members of the original struct
- * enough to identify the port. To be used for sources and
- * dests.
+ * This should include some members of the original struct enough to identify
+ * the port. To be used for sources and dests.
  *
- * This must be filled in before saving and read from while
- * loading to fill in the srcs/dests.
+ * This must be filled in before saving and read from while loading to fill in
+ * the srcs/dests.
  */
-typedef struct PortIdentifier
+struct PortIdentifier
 {
   /**
    * Type of owner.
@@ -355,48 +354,6 @@ typedef struct PortIdentifier
     MIDI_CLOCK = 1 << 30,
   };
 
-  int schema_version = PORT_IDENTIFIER_SCHEMA_VERSION;
-
-  /** Human readable label. */
-  char * label = nullptr;
-
-  /** Unique symbol. */
-  char * sym = nullptr;
-
-  /** URI, if LV2 property. */
-  char * uri = nullptr;
-
-  /** Comment, if any. */
-  char * comment = nullptr;
-
-  /** Owner type. */
-  PortIdentifier::OwnerType owner_type = (OwnerType) 0;
-  /** Data type (e.g. AUDIO). */
-  ZPortType type = (ZPortType) 0;
-  /** Flow (IN/OUT). */
-  ZPortFlow flow = (ZPortFlow) 0;
-  /** Flags (e.g. is side chain). */
-  PortIdentifier::Flags  flags = (Flags) 0;
-  PortIdentifier::Flags2 flags2 = (Flags2) 0;
-
-  /** Port unit. */
-  PortUnit unit = (PortUnit) 0;
-
-  /** Identifier of plugin. */
-  PluginIdentifier plugin_id = {};
-
-  /** Port group this port is part of (only applicable for LV2 plugin ports). */
-  char * port_group = nullptr;
-
-  /** ExtPort ID (type + full name), if hw port. */
-  char * ext_port_id = nullptr;
-
-  /** Track name hash (0 for non-track ports). */
-  unsigned int track_name_hash = 0;
-
-  /** Index (e.g. in plugin's output ports). */
-  int port_index = 0;
-
 public:
   PortIdentifier () = default;
   PortIdentifier (const PortIdentifier &other);
@@ -406,7 +363,8 @@ public:
 
   void init ();
 
-  inline const char * get_label () const { return label; }
+  const std::string &get_label () const { return label_; }
+  const char *       get_label_as_c_str () const { return label_.c_str (); }
 
   /**
    * Returns the MIDI channel for a MIDI CC port, or -1 if not a MIDI CC port.
@@ -416,18 +374,19 @@ public:
   inline int get_midi_channel () const
   {
     if (
-      static_cast<int> (flags2 & PortIdentifier::Flags2::MIDI_PITCH_BEND) != 0
-      || static_cast<int> (flags2 & PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE)
+      static_cast<int> (flags2_ & PortIdentifier::Flags2::MIDI_PITCH_BEND) != 0
+      || static_cast<int> (
+           flags2_ & PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE)
            != 0
-      || static_cast<int> (flags2 & PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE)
+      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE)
            != 0)
       {
-        return port_index + 1;
+        return port_index_ + 1;
       }
     else if (
-      static_cast<int> (flags & PortIdentifier::Flags::MIDI_AUTOMATABLE) != 0)
+      static_cast<int> (flags_ & PortIdentifier::Flags::MIDI_AUTOMATABLE) != 0)
       {
-        return port_index / 128 + 1;
+        return port_index_ / 128 + 1;
       }
     return -1;
   }
@@ -444,32 +403,68 @@ public:
   void         print () const;
   bool         validate () const;
   uint32_t     get_hash () const;
-} PortIdentifier;
+
+  /**
+   * Port group comparator function where @ref p1 and
+   * @ref p2 are pointers to Port.
+   */
+  static int port_group_cmp (const void * p1, const void * p2);
+
+  static const char * get_label (void * data);
+
+  static uint32_t get_hash (const void * data);
+
+  static void destroy_notify (void * data);
+
+  /**
+   * To be used as GEqualFunc.
+   */
+  static int is_equal_func (const void * a, const void * b);
+
+public:
+  /** Human readable label. */
+  std::string label_;
+
+  /** Unique symbol. */
+  std::string sym_;
+
+  /** URI, if LV2 property. */
+  std::string uri_;
+
+  /** Comment, if any. */
+  std::string comment_;
+
+  /** Owner type. */
+  PortIdentifier::OwnerType owner_type_ = (OwnerType) 0;
+  /** Data type (e.g. AUDIO). */
+  PortType type_ = (PortType) 0;
+  /** Flow (IN/OUT). */
+  PortFlow flow_ = PortFlow::Unknown;
+  /** Flags (e.g. is side chain). */
+  PortIdentifier::Flags  flags_ = (Flags) 0;
+  PortIdentifier::Flags2 flags2_ = (Flags2) 0;
+
+  /** Port unit. */
+  PortUnit unit_ = (PortUnit) 0;
+
+  /** Identifier of plugin. */
+  PluginIdentifier plugin_id_ = {};
+
+  /** Port group this port is part of (only applicable for LV2 plugin ports). */
+  std::string port_group_;
+
+  /** ExtPort ID (type + full name), if hw port. */
+  std::string ext_port_id_;
+
+  /** Track name hash (0 for non-track ports). */
+  unsigned int track_name_hash_ = 0;
+
+  /** Index (e.g. in plugin's output ports). */
+  int port_index_ = 0;
+};
 
 ENUM_ENABLE_BITSET (PortIdentifier::Flags);
 ENUM_ENABLE_BITSET (PortIdentifier::Flags2);
-
-/**
- * Port group comparator function where @ref p1 and
- * @ref p2 are pointers to Port.
- */
-int
-port_identifier_port_group_cmp (const void * p1, const void * p2);
-
-const char *
-port_identifier_get_label (void * data);
-
-uint32_t
-port_identifier_get_hash (const void * data);
-
-void
-port_identifier_destroy_notify (void * data);
-
-/**
- * To be used as GEqualFunc.
- */
-int
-port_identifier_is_equal_func (const void * a, const void * b);
 
 /**
  * @}

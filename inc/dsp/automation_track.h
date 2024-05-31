@@ -52,22 +52,22 @@ enum class AutomationRecordMode
 typedef struct AutomationTrack
 {
   /** Index in parent AutomationTracklist. */
-  int index;
+  int index = 0;
 
   /** Identifier of the Port this AutomationTrack is for. */
-  PortIdentifier port_id;
+  PortIdentifier port_id{};
 
   /** Whether it has been created by the user yet or not. */
-  bool created;
+  bool created = false;
 
   /** The automation Region's. */
-  Region ** regions;
-  int       num_regions;
-  size_t    regions_size;
+  Region ** regions = nullptr;
+  int       num_regions = 0;
+  size_t    regions_size = 0;
 
   /** Snapshots used during playback TODO unimplemented. */
-  Region ** region_snapshots;
-  int       num_region_snapshots;
+  Region ** region_snapshots = nullptr;
+  int       num_region_snapshots = 0;
 
   /**
    * Whether visible or not.
@@ -77,31 +77,31 @@ typedef struct AutomationTrack
    * @important Must only be set with
    *   automation_tracklist_set_at_visible().
    */
-  bool visible;
+  bool visible = false;
 
   /** Y local to track. */
-  int y;
+  int y = 0;
 
   /** Position of multipane handle. */
-  double height;
+  double height = 0.0;
 
   /** Last value recorded in this automation
    * track. */
-  float last_recorded_value;
+  float last_recorded_value = 0.f;
 
   /** Automation mode. */
-  AutomationMode automation_mode;
+  AutomationMode automation_mode = (AutomationMode) 0;
 
   /** Automation record mode, when \ref AutomationTrack.automation_mode is
    * set to record. */
-  AutomationRecordMode record_mode;
+  AutomationRecordMode record_mode = (AutomationRecordMode) 0;
 
   /** To be set to true when recording starts (when the first change is
    * received) and false when recording ends. */
-  bool recording_started;
+  bool recording_started = false;
 
   /** Region currently recording to. */
-  Region * recording_region;
+  Region * recording_region = nullptr;
 
   /**
    * This is a flag to let the recording manager know that a START signal was
@@ -110,7 +110,7 @@ typedef struct AutomationTrack
    * This is because \ref AutomationTrack.recording_region takes a cycle or 2 to
    * become non-NULL.
    */
-  bool recording_start_sent;
+  bool recording_start_sent = false;
 
   /**
    * This must only be set by the RecordingManager when temporarily pausing
@@ -119,28 +119,27 @@ typedef struct AutomationTrack
    * See \ref
    * RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
-  bool recording_paused;
+  bool recording_paused = false;
 
   /** Buttons used by the track widget */
-  CustomButtonWidget * top_right_buttons[8];
-  int                  num_top_right_buttons;
-  CustomButtonWidget * top_left_buttons[8];
-  int                  num_top_left_buttons;
-  CustomButtonWidget * bot_right_buttons[8];
-  int                  num_bot_right_buttons;
+  CustomButtonWidget * top_right_buttons[8] = {};
+  int                  num_top_right_buttons = 0;
+  CustomButtonWidget * top_left_buttons[8] = {};
+  int                  num_top_left_buttons = 0;
+  CustomButtonWidget * bot_right_buttons[8] = {};
+  int                  num_bot_right_buttons = 0;
 
   /** Automation mode button group. */
-  AutomationModeWidget * am_widget;
+  AutomationModeWidget * am_widget = nullptr;
 
-  CustomButtonWidget * bot_left_buttons[8];
-  int                  num_bot_left_buttons;
+  CustomButtonWidget * bot_left_buttons[8] = {};
+  int                  num_bot_left_buttons = 0;
 
-  /** Pointer to owner automation tracklist, if
-   * any. */
-  AutomationTracklist * atl;
+  /** Pointer to owner automation tracklist, if any. */
+  AutomationTracklist * atl = nullptr;
 
   /** Cache used during DSP. */
-  Port * port;
+  Port * port = nullptr;
 } AutomationTrack;
 
 COLD NONNULL_ARGS (1) void automation_track_init_loaded (

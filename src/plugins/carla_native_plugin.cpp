@@ -3,9 +3,9 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_CARLA
+#include <algorithm>
 
-#  include <inttypes.h>
+#ifdef HAVE_CARLA
 
 #  include "dsp/engine.h"
 #  include "dsp/midi_event.h"
@@ -14,7 +14,6 @@
 #  include "gui/backend/event.h"
 #  include "gui/backend/event_manager.h"
 #  include "gui/widgets/main_window.h"
-#  include "plugins/cached_plugin_descriptors.h"
 #  include "plugins/carla_discovery.h"
 #  include "plugins/carla_native_plugin.h"
 #  include "plugins/plugin.h"
@@ -39,8 +38,8 @@
 
 #  include <CarlaHost.h>
 #  include <CarlaNative.h>
-#  include <math.h>
-#  include <stdlib.h>
+#  include <fmt/format.h>
+#  include <fmt/printf.h>
 
 typedef enum
 {
@@ -165,7 +164,7 @@ host_write_midi_event (NativeHostHandle handle, const NativeMidiEvent * event)
       buf[i] = event->data[i];
     }
   midi_events_add_event_from_buf (
-    midi_out_port->midi_events, event->time, buf, event->size, false);
+    midi_out_port->midi_events_, event->time, buf, event->size, false);
 
   return 0;
 }
@@ -187,7 +186,7 @@ host_ui_parameter_changed (NativeHostHandle handle, uint32_t index, float value)
       carla_set_parameter_value (self->host_handle, 1, index, value);
     }
 
-  port_set_control_value (port, value, false, false);
+  port->set_control_value (value, false, false);
 }
 
 static void
@@ -667,7 +666,7 @@ carla_native_plugin_process (
       {
         Port * port =
           (Port *) g_ptr_array_index (self->plugin->audio_in_ports, i);
-        self->inbufs[audio_ports++] = &port->buf[time_nfo->local_offset];
+        self->inbufs[audio_ports++] = &port->buf_[time_nfo->local_offset];
       }
   }
 
@@ -680,7 +679,7 @@ carla_native_plugin_process (
       {
         Port * port = (Port *) g_ptr_array_index (self->plugin->cv_in_ports, i);
         self->inbufs[self->max_variant_audio_ins + cv_ports++] =
-          &port->buf[time_nfo->local_offset];
+          &port->buf_[time_nfo->local_offset];
       }
   }
 
@@ -690,9 +689,9 @@ carla_native_plugin_process (
     for (int i = 0; i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
-        if (port->id.type == ZPortType::Z_PORT_TYPE_AUDIO)
+        if (port->id_.type_ == PortType::Audio)
           {
-            self->outbufs[audio_ports++] = &port->buf[time_nfo->local_offset];
+            self->outbufs[audio_ports++] = &port->buf_[time_nfo->local_offset];
           }
         if (audio_ports == self->max_variant_audio_outs)
           break;
@@ -706,10 +705,10 @@ carla_native_plugin_process (
     for (int i = 0; i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
-        if (port->id.type == ZPortType::Z_PORT_TYPE_CV)
+        if (port->id_.type_ == PortType::CV)
           {
             self->outbufs[self->max_variant_audio_outs + cv_ports++] =
-              &port->buf[time_nfo->local_offset];
+              &port->buf_[time_nfo->local_offset];
           }
         if (cv_ports == self->max_variant_cv_outs)
           break;
@@ -719,13 +718,13 @@ carla_native_plugin_process (
   /* get main midi port */
   Port * port = self->plugin->midi_in_port;
 
-  int num_events = port ? port->midi_events->num_events : 0;
+  int num_events = port ? port->midi_events_->num_events : 0;
 #  define MAX_EVENTS 4000
   NativeMidiEvent events[MAX_EVENTS];
   int             num_events_written = 0;
   for (int i = 0; i < num_events; i++)
     {
-      MidiEvent * ev = &port->midi_events->events[i];
+      MidiEvent * ev = &port->midi_events_->events[i];
       if (
         ev->time < time_nfo->local_offset
         || ev->time >= time_nfo->local_offset + time_nfo->nframes)
@@ -951,7 +950,7 @@ set_unit_from_str (Port * port, const char * unit_str)
 {
 #  define SET_UNIT(caps, str) \
     if (string_is_equal (unit_str, str)) \
-    port->id.unit = PortUnit::Z_PORT_UNIT_##caps
+    port->id_.unit_ = PortUnit::Z_PORT_UNIT_##caps
 
   SET_UNIT (HZ, "Hz");
   SET_UNIT (MS, "ms");
@@ -989,9 +988,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("Audio in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_INPUT, name);
-          port->id.sym = g_strdup_printf ("audio_in_%d", i);
+          Port * port = new Port (PortType::Audio, PortFlow::Input, name);
+          port->id_.sym_ = fmt::format ("audio_in_{}", i);
 #  ifdef CARLA_HAVE_AUDIO_PORT_HINTS
           unsigned int audio_port_hints = carla_get_audio_port_hints (
             self->host_handle, 0, false,
@@ -999,8 +997,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
           g_debug ("audio port hints %d: %u", i, audio_port_hints);
           if (audio_port_hints & CarlaBackend::AUDIO_PORT_IS_SIDECHAIN)
             {
-              g_debug ("%s is sidechain", port->id.sym);
-              port->id.flags |= PortIdentifier::Flags::SIDECHAIN;
+              g_debug ("%s is sidechain", port->id_.sym_.c_str ());
+              port->id_.flags_ |= PortIdentifier::Flags::SIDECHAIN;
             }
 #  endif
           plugin_add_in_port (self->plugin, port);
@@ -1013,27 +1011,27 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           Port * port = self->plugin->in_ports[i];
           if (
-            port->id.type == ZPortType::Z_PORT_TYPE_AUDIO
+            port->id_.type_ == PortType::Audio
             && ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::SIDECHAIN)
-            && port->id.port_group == NULL
+            && port->id_.port_group_.empty ()
             && !(ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::STEREO_L))
             && !(ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::STEREO_R)))
             {
-              port->id.port_group = g_strdup ("[Zrythm] Sidechain Group");
+              port->id_.port_group_ = ("[Zrythm] Sidechain Group");
               if (num_default_sidechains_added == 0)
                 {
-                  port->id.flags |= PortIdentifier::Flags::STEREO_L;
+                  port->id_.flags_ |= PortIdentifier::Flags::STEREO_L;
                   num_default_sidechains_added++;
                 }
               else if (num_default_sidechains_added == 1)
                 {
-                  port->id.flags |= PortIdentifier::Flags::STEREO_R;
+                  port->id_.flags_ |= PortIdentifier::Flags::STEREO_R;
                   break;
                 }
             }
@@ -1045,47 +1043,42 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           strcpy (tmp, _ ("Audio out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, name);
-          port->id.sym = g_strdup_printf ("audio_out_%d", i);
+          Port * port = new Port (PortType::Audio, PortFlow::Output, name);
+          port->id_.sym_ = fmt::sprintf ("audio_out_%d", i);
           plugin_add_out_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_midi_ins; i++)
         {
           strcpy (tmp, _ ("MIDI in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, name);
-          port->id.sym = g_strdup_printf ("midi_in_%d", i);
-          port->id.flags2 |= PortIdentifier::Flags2::SUPPORTS_MIDI;
+          Port * port = new Port (PortType::Event, PortFlow::Input, name);
+          port->id_.sym_ = fmt::sprintf ("midi_in_%d", i);
+          port->id_.flags2_ |= PortIdentifier::Flags2::SUPPORTS_MIDI;
           plugin_add_in_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_midi_outs; i++)
         {
           strcpy (tmp, _ ("MIDI out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT, name);
-          port->id.sym = g_strdup_printf ("midi_out_%d", i);
-          port->id.flags2 |= PortIdentifier::Flags2::SUPPORTS_MIDI;
+          Port * port = new Port (PortType::Event, PortFlow::Output, name);
+          port->id_.sym_ = fmt::sprintf ("midi_out_%d", i);
+          port->id_.flags2_ |= PortIdentifier::Flags2::SUPPORTS_MIDI;
           plugin_add_out_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_cv_ins; i++)
         {
           strcpy (tmp, _ ("CV in"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_INPUT, name);
-          port->id.sym = g_strdup_printf ("cv_in_%d", i);
+          Port * port = new Port (PortType::CV, PortFlow::Input, name);
+          port->id_.sym_ = fmt::sprintf ("cv_in_%d", i);
           plugin_add_in_port (self->plugin, port);
         }
       for (int i = 0; i < descr->num_cv_outs; i++)
         {
           strcpy (tmp, _ ("CV out"));
           sprintf (name, "%s %d", tmp, i);
-          Port * port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_OUTPUT, name);
-          port->id.sym = g_strdup_printf ("cv_out_%d", i);
+          Port * port = new Port (PortType::CV, PortFlow::Output, name);
+          port->id_.sym_ = fmt::sprintf ("cv_out_%d", i);
           plugin_add_out_port (self->plugin, port);
         }
     }
@@ -1123,9 +1116,7 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           const CarlaParameterInfo * param_info =
             carla_get_parameter_info (self->host_handle, 0, i);
-          port = port_new_with_type (
-            ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-            param_info->name);
+          port = new Port (PortType::Control, PortFlow::Input, param_info->name);
           if (!IS_PORT_AND_NONNULL (port))
             {
               g_critical (
@@ -1135,16 +1126,16 @@ create_ports (CarlaNativePlugin * self, bool loading)
             }
           if (param_info->symbol && strlen (param_info->symbol) > 0)
             {
-              port->id.sym = g_strdup (param_info->symbol);
+              port->id_.sym_ = param_info->symbol;
             }
           else
             {
-              port->id.sym = g_strdup_printf ("param_%u", i);
+              port->id_.sym_ = fmt::sprintf ("param_%u", i);
             }
-          port->id.flags |= PortIdentifier::Flags::PLUGIN_CONTROL;
+          port->id_.flags_ |= PortIdentifier::Flags::PLUGIN_CONTROL;
           if (param_info->comment && strlen (param_info->comment) > 0)
             {
-              port->id.comment = g_strdup (param_info->comment);
+              port->id_.comment_ = param_info->comment;
             }
           if (param_info->unit && strlen (param_info->unit) > 0)
             {
@@ -1152,11 +1143,13 @@ create_ports (CarlaNativePlugin * self, bool loading)
             }
           if (param_info->groupName && strlen (param_info->groupName) > 0)
             {
-              port->id.port_group =
+              char * sub =
                 string_get_substr_before_suffix (param_info->groupName, ":");
-              g_return_if_fail (port->id.port_group);
+              g_return_if_fail (sub);
+              port->id_.port_group_ = sub;
+              g_free (sub);
             }
-          port->carla_param_id = (int) i;
+          port->carla_param_id_ = (int) i;
 
           const NativeParameter * native_param =
             self->native_plugin_descriptor->get_parameter_info (
@@ -1164,47 +1157,43 @@ create_ports (CarlaNativePlugin * self, bool loading)
           g_return_if_fail (native_param);
           if (native_param->hints & NATIVE_PARAMETER_IS_LOGARITHMIC)
             {
-              port->id.flags |= PortIdentifier::Flags::LOGARITHMIC;
+              port->id_.flags_ |= PortIdentifier::Flags::LOGARITHMIC;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_AUTOMABLE)
             {
-              port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
+              port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
             }
           if (!(native_param->hints & NATIVE_PARAMETER_IS_ENABLED))
             {
-              port->id.flags |= PortIdentifier::Flags::NOT_ON_GUI;
+              port->id_.flags_ |= PortIdentifier::Flags::NOT_ON_GUI;
             }
           if (native_param->hints & NATIVE_PARAMETER_IS_BOOLEAN)
             {
-              port->id.flags |= PortIdentifier::Flags::TOGGLE;
+              port->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
             }
           else if (native_param->hints & NATIVE_PARAMETER_USES_SCALEPOINTS)
             {
-              port->id.flags2 |= PortIdentifier::Flags2::ENUMERATION;
+              port->id_.flags2_ |= PortIdentifier::Flags2::ENUMERATION;
             }
           else if (native_param->hints & NATIVE_PARAMETER_IS_INTEGER)
             {
-              port->id.flags |= PortIdentifier::Flags::INTEGER;
+              port->id_.flags_ |= PortIdentifier::Flags::INTEGER;
             }
 
           /* get scale points */
           if (param_info->scalePointCount > 0)
             {
-              port->scale_points =
-                object_new_n (param_info->scalePointCount, Port::ScalePoint *);
-              port->num_scale_points = (int) param_info->scalePointCount;
+              port->scale_points_.reserve (param_info->scalePointCount);
             }
           for (uint32_t j = 0; j < param_info->scalePointCount; j++)
             {
               const CarlaScalePointInfo * scale_point_info =
                 carla_get_parameter_scalepoint_info (self->host_handle, 0, i, j);
 
-              port->scale_points[j] = port_scale_point_new (
-                scale_point_info->value, scale_point_info->label);
+              port->scale_points_.emplace_back (Port::ScalePoint (
+                scale_point_info->value, scale_point_info->label));
             }
-          qsort (
-            port->scale_points, (size_t) port->num_scale_points,
-            sizeof (Port::ScalePoint *), port_scale_point_cmp);
+          std::sort (port->scale_points_.begin (), port->scale_points_.end ());
 
           plugin_add_in_port (self->plugin, port);
 
@@ -1217,23 +1206,22 @@ create_ports (CarlaNativePlugin * self, bool loading)
 
           const ParameterRanges * ranges =
             carla_get_parameter_ranges (self->host_handle, 0, i);
-          port->deff = ranges->def;
-          port->minf = ranges->min;
-          port->maxf = ranges->max;
+          port->deff_ = ranges->def;
+          port->minf_ = ranges->min;
+          port->maxf_ = ranges->max;
 #  if 0
           g_debug (
             "ranges: min %f max %f default %f",
-            (double) port->minf,
-            (double) port->maxf,
-            (double) port->deff);
+            (double) port->minf_,
+            (double) port->maxf_,
+            (double) port->deff_;
 #  endif
         }
       float cur_val = carla_native_plugin_get_param_value (self, i);
       g_debug (
-        "%d: %s=%f%s", i, port->id.label, (double) cur_val,
+        "%d: %s=%f%s", i, port->get_label_as_c_str (), (double) cur_val,
         loading ? " (loading)" : "");
-      port_set_control_value (
-        port, cur_val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+      port->set_control_value (cur_val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
     }
 
   self->ports_created = true;
@@ -2064,9 +2052,9 @@ carla_native_plugin_get_midi_out_port (CarlaNativePlugin * self)
     {
       port = pl->out_ports[i];
       if (
-        port->id.type == ZPortType::Z_PORT_TYPE_EVENT
+        port->id_.type_ == PortType::Event
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, port->id.flags2,
+          PortIdentifier::Flags2, port->id_.flags2_,
           PortIdentifier::Flags2::SUPPORTS_MIDI))
         return port;
     }
@@ -2089,11 +2077,11 @@ carla_native_plugin_get_port_from_param_id (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->in_ports[i];
-      if (port->id.type != ZPortType::Z_PORT_TYPE_CONTROL)
+      if (port->id_.type_ != PortType::Control)
         continue;
 
-      j = port->carla_param_id;
-      if ((int) id == port->carla_param_id)
+      j = port->carla_param_id_;
+      if ((int) id == port->carla_param_id_)
         return port;
     }
 

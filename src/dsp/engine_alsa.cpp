@@ -251,7 +251,7 @@ on_midi_event (
           g_message ("pitch %d",
                      ev->data.control.value);
           midi_events_add_pitchbend (
-            port->midi_events, 1,
+            port->midi_events_, 1,
             (midi_byte_t)
             ev->data.control.value,
             time++, 1);
@@ -260,7 +260,7 @@ on_midi_event (
           g_message ("modulation %d",
                      ev->data.control.value);
           midi_events_add_control_change (
-            port->midi_events,
+            port->midi_events_,
             1, (midi_byte_t) ev->data.control.param,
             (midi_byte_t) ev->data.control.value,
             time++, 1);
@@ -273,7 +273,7 @@ on_midi_event (
                      /*ev->time.time.tv_sec,*/
                      /*ev->time.time.tv_nsec);*/
           midi_events_add_note_on (
-            port->midi_events,
+            port->midi_events_,
             1, ev->data.note.note,
             ev->data.note.velocity,
             time++, 1);
@@ -282,7 +282,7 @@ on_midi_event (
           g_message ("note off: note %d",
                      ev->data.note.note);
           midi_events_add_note_off (
-            port->midi_events,
+            port->midi_events_,
             1, ev->data.note.note,
             time++, 1);
           /* FIXME passing ticks, should pass
@@ -347,9 +347,9 @@ engine_alsa_fill_out_bufs (
   for (unsigned int i = 0; i < nframes; i++)
     {
       self->alsa_out_buf[i * 2] =
-        self->monitor_out->l->buf[i];
+        self->monitor_out->get_l ().buf_[i];
       self->alsa_out_buf[i * 2 + 1] =
-        self->monitor_out->l->buf[i];
+        self->monitor_out->get_l ().buf_[i];
     }
 }
 

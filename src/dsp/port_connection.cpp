@@ -40,7 +40,7 @@ port_connection_update (
 bool
 port_connection_is_send (const PortConnection * self)
 {
-  return self->src_id->owner_type == PortIdentifier::OwnerType::CHANNEL_SEND;
+  return self->src_id->owner_type_ == PortIdentifier::OwnerType::CHANNEL_SEND;
 }
 
 void
@@ -56,21 +56,24 @@ port_connection_print_to_str (
     && port_connections_manager_contains_connection (PORT_CONNECTIONS_MGR, self))
     {
       Track * src_track = tracklist_find_track_by_name_hash (
-        TRACKLIST, self->src_id->track_name_hash);
+        TRACKLIST, self->src_id->track_name_hash_);
       Track * dest_track = tracklist_find_track_by_name_hash (
-        TRACKLIST, self->dest_id->track_name_hash);
+        TRACKLIST, self->dest_id->track_name_hash_);
       snprintf (
         buf, buf_sz, "[%s (%u)] %s => [%s (%u)] %s%s",
-        src_track ? src_track->name : "(none)", self->src_id->track_name_hash,
-        self->src_id->label, dest_track ? dest_track->name : "(none)",
-        self->dest_id->track_name_hash, self->dest_id->label, send_str);
+        src_track ? src_track->name : "(none)", self->src_id->track_name_hash_,
+        self->src_id->get_label_as_c_str (),
+        dest_track ? dest_track->name : "(none)",
+        self->dest_id->track_name_hash_, self->dest_id->get_label_as_c_str (),
+        send_str);
     }
   else
     {
       snprintf (
         buf, buf_sz, "[track %u] %s => [track %u] %s%s",
-        self->src_id->track_name_hash, self->src_id->label,
-        self->dest_id->track_name_hash, self->dest_id->label, send_str);
+        self->src_id->track_name_hash_, self->src_id->get_label_as_c_str (),
+        self->dest_id->track_name_hash_, self->dest_id->get_label_as_c_str (),
+        send_str);
     }
 }
 

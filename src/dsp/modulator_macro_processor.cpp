@@ -12,6 +12,9 @@
 
 #include <glib/gi18n.h>
 
+#include <fmt/format.h>
+#include <fmt/printf.h>
+
 void
 modulator_macro_processor_init_loaded (
   ModulatorMacroProcessor * self,
@@ -27,7 +30,7 @@ modulator_macro_processor_init_loaded (
 Track *
 modulator_macro_processor_get_track (ModulatorMacroProcessor * self)
 {
-  return port_get_track (self->cv_in, true);
+  return self->cv_in->get_track (true);
 }
 
 void
@@ -47,15 +50,15 @@ modulator_macro_processor_process (
   const EngineProcessTimeInfo * const time_nfo)
 {
   z_return_if_fail_cmp (
-    time_nfo->local_offset + time_nfo->nframes, <=, self->cv_out->last_buf_sz);
+    time_nfo->local_offset + time_nfo->nframes, <=, self->cv_out->last_buf_sz_);
 
   /* if there are inputs, multiply by the knov
    * value */
-  if (self->cv_in->num_srcs > 0)
+  if (self->cv_in->srcs_.size () > 0)
     {
       dsp_mix2 (
-        &self->cv_out->buf[time_nfo->local_offset],
-        &self->cv_in->buf[time_nfo->local_offset], 0.f, self->macro->control,
+        &self->cv_out->buf_[time_nfo->local_offset],
+        &self->cv_in->buf_[time_nfo->local_offset], 0.f, self->macro->control_,
         time_nfo->nframes);
     }
   /* else if there are no inputs, set the knob value
@@ -65,8 +68,8 @@ modulator_macro_processor_process (
       Port * cv_out = self->cv_out;
       g_return_if_fail (IS_PORT (cv_out));
       dsp_fill (
-        &cv_out->buf[time_nfo->local_offset],
-        self->macro->control * (cv_out->maxf - cv_out->minf) + cv_out->minf,
+        &cv_out->buf_[time_nfo->local_offset],
+        self->macro->control_ * (cv_out->maxf_ - cv_out->minf_) + cv_out->minf_,
         time_nfo->nframes);
     }
 }
@@ -81,36 +84,36 @@ modulator_macro_processor_new (Track * track, int idx)
   char str[600];
   sprintf (str, _ ("Macro %d"), idx + 1);
   self->name = g_strdup (str);
-  self->macro = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT, str,
+  self->macro = new Port (
+    PortType::Control, PortFlow::Input, str,
     PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->macro->id.sym = g_strdup_printf ("macro_%d", idx + 1);
+  self->macro->id_.sym_ = fmt::sprintf ("macro_%d", idx + 1);
   Port * port = self->macro;
-  port->minf = 0.f;
-  port->maxf = 1.f;
-  port->deff = 0.f;
-  port_set_control_value (port, 0.75f, false, false);
-  port->id.flags |= PortIdentifier::Flags::AUTOMATABLE;
-  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id.port_index = idx;
+  port->minf_ = 0.f;
+  port->maxf_ = 1.f;
+  port->deff_ = 0.f;
+  port->set_control_value (0.75f, false, false);
+  port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
+  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
+  port->id_.port_index_ = idx;
 
   sprintf (str, _ ("Macro CV In %d"), idx + 1);
-  self->cv_in = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_INPUT, str,
+  self->cv_in = new Port (
+    PortType::CV, PortFlow::Input, str,
     PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->cv_in->id.sym = g_strdup_printf ("macro_cv_in_%d", idx + 1);
+  self->cv_in->id_.sym_ = fmt::sprintf ("macro_cv_in_%d", idx + 1);
   port = self->cv_in;
-  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id.port_index = idx;
+  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
+  port->id_.port_index_ = idx;
 
   sprintf (str, _ ("Macro CV Out %d"), idx + 1);
-  self->cv_out = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_CV, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
+  self->cv_out = new Port (
+    PortType::CV, PortFlow::Output, str,
     PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->cv_out->id.sym = g_strdup_printf ("macro_cv_out_%d", idx + 1);
+  self->cv_out->id_.sym_ = fmt::sprintf ("macro_cv_out_%d", idx + 1);
   port = self->cv_out;
-  port->id.flags |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id.port_index = idx;
+  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
+  port->id_.port_index_ = idx;
 
   return self;
 }
@@ -118,9 +121,9 @@ modulator_macro_processor_new (Track * track, int idx)
 void
 modulator_macro_processor_free (ModulatorMacroProcessor * self)
 {
-  object_free_w_func_and_null (port_free, self->macro);
-  object_free_w_func_and_null (port_free, self->cv_in);
-  object_free_w_func_and_null (port_free, self->cv_out);
+  object_delete_and_null (self->macro);
+  object_delete_and_null (self->cv_in);
+  object_delete_and_null (self->cv_out);
 
   object_zero_and_free (self);
 }

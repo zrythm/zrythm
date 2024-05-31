@@ -12,7 +12,6 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
-#include "utils/mem.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -56,12 +55,15 @@ update_child_output (
        * output channel */
       switch (track->in_signal_type)
         {
-        case ZPortType::Z_PORT_TYPE_AUDIO:
-          port_disconnect (ch->stereo_out->l, track->processor->stereo_in->l);
-          port_disconnect (ch->stereo_out->r, track->processor->stereo_in->r);
+        case PortType::Audio:
+          ch->stereo_out->get_l ().disconnect_from (
+            track->processor->stereo_in->get_l ());
+
+          ch->stereo_out->get_r ().disconnect_from (
+            track->processor->stereo_in->get_r ());
           break;
-        case ZPortType::Z_PORT_TYPE_EVENT:
-          port_disconnect (ch->midi_out, track->processor->midi_in);
+        case PortType::Event:
+          ch->midi_out->disconnect_from (*track->processor->midi_in);
           break;
         default:
           break;
@@ -74,14 +76,15 @@ update_child_output (
        * output */
       switch (output->in_signal_type)
         {
-        case ZPortType::Z_PORT_TYPE_AUDIO:
-          port_connect (
-            ch->stereo_out->l, output->processor->stereo_in->l, F_LOCKED);
-          port_connect (
-            ch->stereo_out->r, output->processor->stereo_in->r, F_LOCKED);
+        case PortType::Audio:
+
+          ch->stereo_out->get_l ().connect_to (
+            output->processor->stereo_in->get_l (), F_LOCKED);
+          ch->stereo_out->get_r ().connect_to (
+            output->processor->stereo_in->get_r (), F_LOCKED);
           break;
-        case ZPortType::Z_PORT_TYPE_EVENT:
-          port_connect (ch->midi_out, output->processor->midi_in, F_LOCKED);
+        case PortType::Event:
+          ch->midi_out->connect_to (*output->processor->midi_in, F_LOCKED);
           break;
         default:
           break;
@@ -238,10 +241,6 @@ group_target_track_add_children (
     }
 }
 
-/**
- * Returns the index of the child matching the
- * given hash.
- */
 int
 group_target_track_find_child (Track * self, unsigned int track_name_hash)
 {

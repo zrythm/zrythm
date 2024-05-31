@@ -474,7 +474,8 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
           /*text, "%d - %s",*/
           /*at->index, at->automatable->label);*/
           custom_button_widget_set_text (
-            cb, self->layout, at->port_id.label, AUTOMATABLE_NAME_FONT);
+            cb, self->layout, at->port_id.label_.c_str (),
+            AUTOMATABLE_NAME_FONT);
           pango_layout_set_ellipsize (cb->layout, PANGO_ELLIPSIZE_END);
           at->num_top_left_buttons = 1;
         }

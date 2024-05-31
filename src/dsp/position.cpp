@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
+
 #include <inttypes.h>
 
 #include "dsp/engine.h"

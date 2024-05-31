@@ -41,7 +41,7 @@ on_inputs_draw (
   Port * port =
     P_MODULATOR_TRACK->modulator_macros[self->modulator_macro_idx]->cv_in;
 
-  if (port->num_srcs == 0)
+  if (port->srcs_.size () == 0)
     {
       const char * str = _ ("No inputs");
       int          w, h;
@@ -66,12 +66,12 @@ on_inputs_draw (
     }
   else
     {
-      double val_w = ((double) width / (double) port->num_srcs);
-      for (int i = 0; i < port->num_srcs; i++)
+      double val_w = ((double) width / (double) port->srcs_.size ());
+      for (size_t i = 0; i < port->srcs_.size (); i++)
         {
           double val_h =
-            (double) ((port->srcs[i]->buf[0] - port->minf)
-                      / (port->maxf - port->minf))
+            (double) ((port->srcs_[i]->buf_[0] - port->minf_)
+                      / (port->maxf_ - port->minf_))
             * (double) height;
           cairo_set_source_rgba (cr, 1, 1, 0, 1);
           cairo_rectangle (
@@ -102,7 +102,7 @@ on_output_draw (
 
   cairo_set_source_rgba (cr, 1, 1, 0, 1);
   double val_h =
-    (double) ((port->buf[0] - port->minf) / (port->maxf - port->minf))
+    (double) ((port->buf_[0] - port->minf_) / (port->maxf_ - port->minf_))
     * (double) height;
   cairo_rectangle (cr, 0, (double) height - val_h, width, 1);
   cairo_fill (cr);
@@ -188,7 +188,7 @@ modulator_macro_widget_new (int modulator_macro_idx)
 
   KnobWidget * knob = knob_widget_new_simple (
     control_port_get_val, control_port_get_default_val,
-    control_port_set_real_val, port, port->minf, port->maxf, 48, port->zerof);
+    control_port_set_real_val, port, port->minf_, port->maxf_, 48, port->zerof_);
   self->knob_with_name = knob_with_name_widget_new (
     macro, (GenericStringGetter) modulator_macro_processor_get_name,
     (GenericStringSetter) modulator_macro_processor_set_name, knob,

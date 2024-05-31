@@ -30,7 +30,7 @@ test_midi_fx_routing (void)
   g_assert_nonnull (track);
 
   int num_dests = port_connections_manager_get_sources_or_dests (
-    PORT_CONNECTIONS_MGR, NULL, &track->processor->midi_out->id, false);
+    PORT_CONNECTIONS_MGR, NULL, &track->processor->midi_out->id_, false);
   g_assert_cmpint (num_dests, ==, 1);
 
   /* add MIDI file */
@@ -63,7 +63,7 @@ test_midi_fx_routing (void)
   g_assert_true (ret);
 
   num_dests = port_connections_manager_get_sources_or_dests (
-    PORT_CONNECTIONS_MGR, NULL, &track->processor->midi_out->id, false);
+    PORT_CONNECTIONS_MGR, NULL, &track->processor->midi_out->id_, false);
   g_assert_cmpint (num_dests, ==, 1);
 
   /* export loop and check that there is no audio */

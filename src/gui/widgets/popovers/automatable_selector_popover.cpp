@@ -38,7 +38,8 @@ on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
         automation_track_get_automation_tracklist (self->owner);
       automation_tracklist_set_at_visible (atl, self->owner, false);
 
-      g_message ("selected port: %s", self->selected_port->id.label);
+      g_message (
+        "selected port: %s", self->selected_port->get_label ().c_str ());
 
       /* swap indices */
       AutomationTrack * selected_at =
@@ -71,8 +72,8 @@ update_info_label (AutomatableSelectorPopoverWidget * self)
       Port * port = self->selected_port;
 
       char * label = g_strdup_printf (
-        "%s\nMin: %f\nMax: %f", port->id.label, (double) port->minf,
-        (double) port->maxf);
+        "%s\nMin: %f\nMax: %f", port->get_label ().c_str (),
+        (double) port->minf_, (double) port->maxf_);
 
       gtk_label_set_text (self->info, label);
     }
@@ -121,8 +122,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
   Port *         port = (Port *) wrapped_obj->obj;
-  const Plugin * port_pl = port_get_plugin (port, false);
-  const Track *  port_tr = port_get_track (port, false);
+  const Plugin * port_pl = port->get_plugin (false);
+  const Track *  port_tr = port->get_track (false);
 
   GtkMultiSelection * multi_sel =
     GTK_MULTI_SELECTION (gtk_list_view_get_model (self->type_listview));
@@ -171,8 +172,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
           else if (string_is_equal (_ ("Channel"), str))
             {
               if (
-                port->id.owner_type == PortIdentifier::OwnerType::CHANNEL
-                || port->id.owner_type == PortIdentifier::OwnerType::FADER)
+                port->id_.owner_type_ == PortIdentifier::OwnerType::CHANNEL
+                || port->id_.owner_type_ == PortIdentifier::OwnerType::FADER)
                 {
                   match = true;
                   break;
@@ -183,7 +184,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
               int midi_ch;
               int found_nums = sscanf (str, "MIDI Ch%d", &midi_ch);
               g_return_val_if_fail (found_nums == 1, false);
-              int port_midi_ch = port->id.get_midi_channel ();
+              int port_midi_ch = port->id_.get_midi_channel ();
               if (port_midi_ch == midi_ch)
                 {
                   match = true;
@@ -196,7 +197,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
   if (match)
     {
       char str[1200];
-      port_get_full_designation (port, str);
+      port->get_full_designation (str);
       const char * search_term =
         gtk_editable_get_text (GTK_EDITABLE (self->port_search_entry));
       char ** search_terms = g_strsplit (search_term, " ", -1);

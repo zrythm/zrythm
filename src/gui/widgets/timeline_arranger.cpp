@@ -1109,8 +1109,8 @@ timeline_arranger_widget_gen_context_menu (
 
                       char tmp[200];
                       sprintf (tmp, "app.move-automation-regions::%p", port);
-                      GMenuItem * submenu_item =
-                        z_gtk_create_menu_item (port->id.label, NULL, tmp);
+                      GMenuItem * submenu_item = z_gtk_create_menu_item (
+                        port->id_.label_.c_str (), NULL, tmp);
                       g_menu_append_item (ats_submenu, submenu_item);
                     }
 

@@ -508,7 +508,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   Fader * fader = track_get_fader (ins_track, true);
   Port *  port = fader->amp;
   port_action_perform (
-    PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f, false, NULL);
+    PORT_ACTION_SET_CONTROL_VAL, &port->id_, 0.5f, false, NULL);
   g_assert_cmpfloat_with_epsilon (port->control, 0.5f, 0.00001f);
 
   /* bounce it */

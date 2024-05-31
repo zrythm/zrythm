@@ -249,35 +249,35 @@ channel_send_deserialize_from_json (
   yyjson_obj_iter it = yyjson_obj_iter_with (cs_obj);
   cs->slot = yyjson_get_int (yyjson_obj_iter_get (&it, "slot"));
   yyjson_val * amount_obj = yyjson_obj_iter_get (&it, "amount");
-  cs->amount = object_new (Port);
+  cs->amount = new Port ();
   port_deserialize_from_json (doc, amount_obj, cs->amount, error);
   yyjson_val * enabled_obj = yyjson_obj_iter_get (&it, "enabled");
-  cs->enabled = object_new (Port);
+  cs->enabled = new Port ();
   port_deserialize_from_json (doc, enabled_obj, cs->enabled, error);
   cs->is_sidechain = yyjson_get_bool (yyjson_obj_iter_get (&it, "isSidechain"));
   yyjson_val * midi_in_obj = yyjson_obj_iter_get (&it, "midiIn");
   if (midi_in_obj)
     {
-      cs->midi_in = object_new (Port);
+      cs->midi_in = new Port ();
       port_deserialize_from_json (doc, midi_in_obj, cs->midi_in, error);
     }
   yyjson_val * stereo_in_obj = yyjson_obj_iter_get (&it, "stereoIn");
   if (stereo_in_obj)
     {
-      cs->stereo_in = object_new (StereoPorts);
+      cs->stereo_in = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_in_obj, cs->stereo_in, error);
     }
   yyjson_val * midi_out_obj = yyjson_obj_iter_get (&it, "midiOut");
   if (midi_out_obj)
     {
-      cs->midi_out = object_new (Port);
+      cs->midi_out = new Port ();
       port_deserialize_from_json (doc, midi_out_obj, cs->midi_out, error);
     }
   yyjson_val * stereo_out_obj = yyjson_obj_iter_get (&it, "stereoOut");
   if (stereo_out_obj)
     {
-      cs->stereo_out = object_new (StereoPorts);
+      cs->stereo_out = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_out_obj, cs->stereo_out, error);
     }
@@ -297,52 +297,52 @@ fader_deserialize_from_json (
   f->type = (FaderType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
   f->volume = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "volume"));
   yyjson_val * amp_obj = yyjson_obj_iter_get (&it, "amp");
-  f->amp = object_new (Port);
+  f->amp = new Port ();
   port_deserialize_from_json (doc, amp_obj, f->amp, error);
   f->phase = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "phase"));
   yyjson_val * balance_obj = yyjson_obj_iter_get (&it, "balance");
-  f->balance = object_new (Port);
+  f->balance = new Port ();
   port_deserialize_from_json (doc, balance_obj, f->balance, error);
   yyjson_val * mute_obj = yyjson_obj_iter_get (&it, "mute");
-  f->mute = object_new (Port);
+  f->mute = new Port ();
   port_deserialize_from_json (doc, mute_obj, f->mute, error);
   yyjson_val * solo_obj = yyjson_obj_iter_get (&it, "solo");
-  f->solo = object_new (Port);
+  f->solo = new Port ();
   port_deserialize_from_json (doc, solo_obj, f->solo, error);
   yyjson_val * listen_obj = yyjson_obj_iter_get (&it, "listen");
-  f->listen = object_new (Port);
+  f->listen = new Port ();
   port_deserialize_from_json (doc, listen_obj, f->listen, error);
   yyjson_val * mono_compat_enabled_obj =
     yyjson_obj_iter_get (&it, "monoCompatEnabled");
-  f->mono_compat_enabled = object_new (Port);
+  f->mono_compat_enabled = new Port ();
   port_deserialize_from_json (
     doc, mono_compat_enabled_obj, f->mono_compat_enabled, error);
   yyjson_val * swap_phase_obj = yyjson_obj_iter_get (&it, "swapPhase");
-  f->swap_phase = object_new (Port);
+  f->swap_phase = new Port ();
   port_deserialize_from_json (doc, swap_phase_obj, f->swap_phase, error);
   yyjson_val * midi_in_obj = yyjson_obj_iter_get (&it, "midiIn");
   if (midi_in_obj)
     {
-      f->midi_in = object_new (Port);
+      f->midi_in = new Port ();
       port_deserialize_from_json (doc, midi_in_obj, f->midi_in, error);
     }
   yyjson_val * midi_out_obj = yyjson_obj_iter_get (&it, "midiOut");
   if (midi_out_obj)
     {
-      f->midi_out = object_new (Port);
+      f->midi_out = new Port ();
       port_deserialize_from_json (doc, midi_out_obj, f->midi_out, error);
     }
   yyjson_val * stereo_in_obj = yyjson_obj_iter_get (&it, "stereoIn");
   if (stereo_in_obj)
     {
-      f->stereo_in = object_new (StereoPorts);
+      f->stereo_in = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_in_obj, f->stereo_in, error);
     }
   yyjson_val * stereo_out_obj = yyjson_obj_iter_get (&it, "stereoOut");
   if (stereo_out_obj)
     {
-      f->stereo_out = object_new (StereoPorts);
+      f->stereo_out = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_out_obj, f->stereo_out, error);
     }
@@ -424,13 +424,13 @@ channel_deserialize_from_json (
   yyjson_val * midi_out_obj = yyjson_obj_iter_get (&it, "midiOut");
   if (midi_out_obj)
     {
-      ch->midi_out = object_new (Port);
+      ch->midi_out = new Port ();
       port_deserialize_from_json (doc, midi_out_obj, ch->midi_out, error);
     }
   yyjson_val * stereo_out_obj = yyjson_obj_iter_get (&it, "stereoOut");
   if (stereo_out_obj)
     {
-      ch->stereo_out = object_new (StereoPorts);
+      ch->stereo_out = new StereoPorts ();
       stereo_ports_deserialize_from_json (
         doc, stereo_out_obj, ch->stereo_out, error);
     }

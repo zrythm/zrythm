@@ -90,8 +90,8 @@ audio_cb (
     out_buf, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
-      out_buf[i * 2] = self->monitor_out->l->buf[i];
-      out_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
+      out_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
+      out_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
     }
 
   return 0;

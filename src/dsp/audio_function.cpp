@@ -183,7 +183,7 @@ apply_plugin (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      if (port->id.type == ZPortType::Z_PORT_TYPE_AUDIO)
+      if (port->id_.type == PortType::Audio)
         {
           if (l_out)
             {
@@ -200,7 +200,7 @@ apply_plugin (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      if (port->id.type == ZPortType::Z_PORT_TYPE_AUDIO)
+      if (port->id_.type == PortType::Audio)
         {
           if (l_in)
             {

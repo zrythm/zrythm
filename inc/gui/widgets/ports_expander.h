@@ -56,8 +56,8 @@ typedef struct _PortsExpanderWidget
 {
   TwoColExpanderBoxWidget parent_instance;
 
-  ZPortFlow                 flow;
-  ZPortType                 type;
+  PortFlow                  flow;
+  PortType                  type;
   PortIdentifier::OwnerType owner_type;
 
   /** Plugin, in case of owner type Plugin. */
@@ -79,8 +79,8 @@ ports_expander_widget_refresh (PortsExpanderWidget * self);
 void
 ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
-  ZPortFlow             flow,
-  ZPortType             type,
+  PortFlow              flow,
+  PortType              type,
   Plugin *              pl);
 
 /**

@@ -907,7 +907,7 @@ mixer_selections_action_deserialize_from_json (
   yyjson_val *    at_obj = NULL;
   while ((at_obj = yyjson_arr_iter_next (&at_it)))
     {
-      AutomationTrack * at = object_new (AutomationTrack);
+      AutomationTrack * at = new AutomationTrack ();
       action->ats[action->num_ats++] = at;
       automation_track_deserialize_from_json (doc, at_obj, at, error);
     }
@@ -917,7 +917,7 @@ mixer_selections_action_deserialize_from_json (
   yyjson_val *    deleted_at_obj = NULL;
   while ((deleted_at_obj = yyjson_arr_iter_next (&deleted_at_it)))
     {
-      AutomationTrack * at = object_new (AutomationTrack);
+      AutomationTrack * at = new AutomationTrack ();
       action->deleted_ats[action->num_deleted_ats++] = at;
       automation_track_deserialize_from_json (doc, deleted_at_obj, at, error);
     }

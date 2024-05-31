@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -167,7 +167,7 @@ test_midi_fx_slot_deletion (void)
   /* set the value to check if it is brought
    * back on undo */
   Port * port = plugin_get_port_by_symbol (pl, "ccin");
-  port_set_control_value (port, 120.f, F_NOT_NORMALIZED, false);
+  port->set_control_value (120.f, F_NOT_NORMALIZED, false);
 
   /* delete slot */
   plugin_select (pl, F_SELECT, F_EXCLUSIVE);
@@ -179,7 +179,7 @@ test_midi_fx_slot_deletion (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
   pl = track->channel->midi_fx[slot];
   port = plugin_get_port_by_symbol (pl, "ccin");
-  g_assert_cmpfloat_with_epsilon (port->control, 120.f, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control_, 120.f, 0.0001f);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 #endif
@@ -408,7 +408,7 @@ _test_port_and_plugin_track_pos_after_move (
   Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -559,7 +559,7 @@ test_move_two_plugins_one_slot_up (void)
   AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
-  g_message ("automation track %s", at->port_id.label);
+  g_message ("automation track %s", at->port_id.get_label_as_c_str ());
   at->created = true;
   automation_tracklist_set_at_visible (atl, at, true);
 
@@ -597,7 +597,7 @@ test_move_two_plugins_one_slot_up (void)
   g_assert_cmpint (at->num_regions, >, 0);
   region = at->regions[0];
   AutomationPoint * ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -803,9 +803,9 @@ test_move_two_plugins_one_slot_up (void)
   /* set the value to check if it is brought
    * back on undo */
   port = plugin_get_port_by_symbol (pl, "ccin");
-  port_set_control_value (port, 120.f, F_NOT_NORMALIZED, true);
+  port->set_control_value (120.f, F_NOT_NORMALIZED, true);
 
-  g_assert_cmpfloat_with_epsilon (port->control, 120.f, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control_, 120.f, 0.0001f);
 
   /* move 2nd plugin to 1st plugin (replacing it) */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
@@ -830,7 +830,7 @@ test_move_two_plugins_one_slot_up (void)
   pl = track->channel->inserts[0];
   g_assert_cmpstr (pl->setting->descr->uri, ==, setting->descr->uri);
   port = plugin_get_port_by_symbol (pl, "ccin");
-  g_assert_cmpfloat_with_epsilon (port->control, 120.f, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control_, 120.f, 0.0001f);
 
   g_assert_true (IS_PLUGIN (track->channel->inserts[0]));
   g_assert_true (IS_PLUGIN (track->channel->inserts[1]));
@@ -898,18 +898,19 @@ test_create_modulator (void)
   for (int i = 0; i < p1->num_out_ports; i++)
     {
       Port * p = p1->out_ports[i];
-      if (p->id.type != ZPortType::Z_PORT_TYPE_CV)
+      if (p->id_.type_ != PortType::CV)
         continue;
       cv_out = p;
     }
   Port * ctrl_in = plugin_get_port_by_symbol (p2, "freq");
   g_return_if_fail (cv_out);
   g_return_if_fail (ctrl_in);
-  PortIdentifier cv_out_id = cv_out->id;
-  PortIdentifier ctrl_in_id = ctrl_in->id;
+  PortIdentifier cv_out_id = cv_out->id_;
+  PortIdentifier ctrl_in_id = ctrl_in->id_;
 
   /* connect the ports */
-  ret = port_connection_action_perform_connect (&cv_out->id, &ctrl_in->id, NULL);
+  ret =
+    port_connection_action_perform_connect (&cv_out->id_, &ctrl_in->id_, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -925,7 +926,7 @@ test_create_modulator (void)
   /* verify port connection is back */
   cv_out = Port::find_from_identifier (&cv_out_id);
   ctrl_in = Port::find_from_identifier (&ctrl_in_id);
-  g_assert_true (ports_connected (cv_out, ctrl_in));
+  g_assert_true (cv_out->is_connected_to (ctrl_in));
 
   undo_manager_redo (UNDO_MANAGER, NULL);
   mixer_selections_free (sel);
@@ -960,7 +961,7 @@ test_move_pl_after_duplicating_track (void)
       Port * port = lsp->in_ports[i];
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::SIDECHAIN))
         {
           sidechain_port = port;
@@ -972,7 +973,8 @@ test_move_pl_after_duplicating_track (void)
   /* create sidechain connection from instrument
    * track to lsp plugin in lsp track */
   bool ret = port_connection_action_perform_connect (
-    &ins_track->channel->fader->stereo_out->l->id, &sidechain_port->id, NULL);
+    &ins_track->channel->fader->stereo_out->get_l ().id_, &sidechain_port->id_,
+    NULL);
   g_assert_true (ret);
 
   /* duplicate instrument track */
@@ -1149,11 +1151,11 @@ _test_replace_instrument (
       Port * port = lsp->in_ports[i];
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::SIDECHAIN))
         {
           sidechain_port = port;
-          sidechain_port_id = port->id;
+          sidechain_port_id = port->id_;
           break;
         }
     }
@@ -1161,15 +1163,15 @@ _test_replace_instrument (
 
   /*#if 0*/
   PortIdentifier helm_l_out_port_id = PortIdentifier ();
-  helm_l_out_port_id = src_track->channel->instrument->l_out->id;
+  helm_l_out_port_id = src_track->channel->instrument->l_out->id_;
   port_connection_action_perform_connect (
-    &src_track->channel->instrument->l_out->id, &sidechain_port->id, NULL);
-  g_assert_cmpint (sidechain_port->num_srcs, ==, 1);
-  g_assert_true (string_is_equal (
-    helm_l_out_port_id.sym,
-    UNDO_MANAGER->undo_stack
-      ->port_connection_actions[num_port_connection_actions]
-      ->connection->src_id->sym));
+    &src_track->channel->instrument->l_out->id_, &sidechain_port->id_, NULL);
+  g_assert_cmpint (sidechain_port->srcs_.size (), ==, 1);
+  g_assert_true (
+    helm_l_out_port_id.sym_
+    == UNDO_MANAGER->undo_stack
+         ->port_connection_actions[num_port_connection_actions]
+         ->connection->src_id->sym_);
   /*#endif*/
 
   /*test_project_save_and_reload ();*/
@@ -1179,7 +1181,7 @@ _test_replace_instrument (
   AutomationTracklist * atl = track_get_automation_tracklist (src_track);
   g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
-  g_assert_true (at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN);
+  g_assert_true (at->port_id.owner_type_ == PortIdentifier::OwnerType::PLUGIN);
   at->created = true;
   automation_tracklist_set_at_visible (atl, at, true);
 
@@ -1203,7 +1205,7 @@ _test_replace_instrument (
   Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -1243,12 +1245,12 @@ _test_replace_instrument (
   g_assert_cmpint (num_regions, ==, 0);
 
   g_assert_cmpint (num_ats, ==, atl->num_ats);
-  g_assert_cmpint (sidechain_port->num_srcs, ==, 0);
-  g_assert_true (string_is_equal (
-    helm_l_out_port_id.sym,
-    UNDO_MANAGER->undo_stack
-      ->port_connection_actions[num_port_connection_actions]
-      ->connection->src_id->sym));
+  g_assert_cmpint (sidechain_port->srcs_.size (), ==, 0);
+  g_assert_true (
+    helm_l_out_port_id.sym_
+    == UNDO_MANAGER->undo_stack
+         ->port_connection_actions[num_port_connection_actions]
+         ->connection->src_id->sym_);
 
   /* test undo and redo */
   g_assert_true (IS_PLUGIN_AND_NONNULL (src_track->channel->instrument));

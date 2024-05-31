@@ -20,7 +20,7 @@ typedef struct Channel       Channel;
 typedef struct Track         Track;
 typedef struct Region        AudioRegion;
 typedef struct AudioClip     AudioClip;
-typedef struct StereoPorts   StereoPorts;
+class StereoPorts;
 
 /**
  * @addtogroup dsp

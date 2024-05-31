@@ -302,7 +302,7 @@ tracklist_insert_track (
       for (size_t i = 0; i < ports->len; i++)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
-          port->id.flags2 |= PortIdentifier::Flags2::SAMPLE_PROCESSOR_TRACK;
+          port->id_.flags2_ |= PortIdentifier::Flags2::SAMPLE_PROCESSOR_TRACK;
         }
       object_free_w_func_and_null (g_ptr_array_unref, ports);
     }
@@ -336,7 +336,7 @@ tracklist_insert_track (
               AutomationTrack * at = atl->ats[i];
               Port * port = Port::find_from_identifier (&at->port_id);
               g_return_if_fail (IS_PORT_AND_NONNULL (port));
-              port->at = at;
+              port->at_ = at;
             }
         }
     }
@@ -348,7 +348,7 @@ tracklist_insert_track (
 
   /* if audio output route to master */
   if (
-    track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO
+    track->out_signal_type == PortType::Audio
     && track->type != TrackType::TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (

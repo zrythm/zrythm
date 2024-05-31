@@ -82,10 +82,10 @@ midi_in_cb (
 
   /* generate timestamp */
   gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts = cur_time - self->port->last_midi_dequeue;
+  gint64 ts = cur_time - self->port->last_midi_dequeue_;
   g_return_if_fail (ts >= 0);
   char portname[900];
-  port_get_full_designation (self->port, portname);
+  self->port->get_full_designation (portname);
   if (DEBUGGING)
     {
       g_debug (
@@ -234,7 +234,7 @@ rtmidi_device_open (RtMidiDevice * self, int start)
 {
   g_message ("opening rtmidi device");
   char designation[800];
-  port_get_full_designation (self->port, designation);
+  self->port->get_full_designation (designation);
   char lbl[1200];
   sprintf (lbl, "%s [%u]", designation, self->id);
   rtmidi_close_port (self->in_handle);

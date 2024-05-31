@@ -13,7 +13,7 @@ typedef struct Channel         Channel;
 typedef struct Region          AudioRegion;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable     Automatable;
-typedef struct StereoPorts     StereoPorts;
+class StereoPorts;
 
 typedef struct Track AudioTrack;
 

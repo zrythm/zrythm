@@ -11,11 +11,9 @@
 #define __AUDIO_TRACK_PROCESSOR_H__
 
 #include "dsp/port.h"
-#include "utils/midi.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
-typedef struct StereoPorts StereoPorts;
+class StereoPorts;
 class Port;
 typedef struct Track                 Track;
 typedef struct MidiMappings          MidiMappings;
@@ -145,8 +143,8 @@ typedef struct TrackProcessor
   Track * track;
 
   /**
-   * To be set to true when a panic (all notes off) message
-   * should be sent during processing.
+   * To be set to true when a panic (all notes off) message should be sent
+   * during processing.
    *
    * Only applies to tracks that receive MIDI input.
    */
@@ -246,8 +244,8 @@ void
 track_processor_disconnect_from_prefader (TrackProcessor * self);
 
 /**
- * Connects the TrackProcessor's stereo out ports to
- * the Channel's prefader in ports.
+ * Connects the TrackProcessor's stereo out ports to the Channel's prefader in
+ * ports.
  *
  * Used when deleting the only plugin left.
  */
@@ -255,15 +253,13 @@ void
 track_processor_connect_to_prefader (TrackProcessor * self);
 
 /**
- * Disconnect the TrackProcessor's out ports
- * from the Plugin's input ports.
+ * Disconnect the TrackProcessor's out ports from the Plugin's input ports.
  */
 void
 track_processor_disconnect_from_plugin (TrackProcessor * self, Plugin * pl);
 
 /**
- * Connect the TrackProcessor's out ports to the
- * Plugin's input ports.
+ * Connect the TrackProcessor's out ports to the Plugin's input ports.
  */
 void
 track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl);

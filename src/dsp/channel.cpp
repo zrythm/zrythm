@@ -4,6 +4,7 @@
 #include "zrythm-config.h"
 
 #include <cstdlib>
+#include <utility>
 
 #include "dsp/audio_track.h"
 #include "dsp/automation_track.h"
@@ -16,6 +17,7 @@
 #include "dsp/master_track.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_track.h"
+#include "dsp/port.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "dsp/router.h"
@@ -314,26 +316,25 @@ disconnect_prev_next (Channel * ch, Plugin * prev_pl, Plugin * pl, Plugin * next
 void
 Channel::prepare_process ()
 {
-  Plugin *  plugin;
-  int       j;
-  ZPortType out_type = track_.out_signal_type;
+  Plugin * plugin;
+  PortType out_type = track_.out_signal_type;
 
   /* clear buffers */
   track_processor_clear_buffers (track_.processor);
   fader_clear_buffers (this->prefader);
   fader_clear_buffers (this->fader);
 
-  if (out_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (out_type == PortType::Audio)
     {
-      this->stereo_out->l->clear_buffer (*AUDIO_ENGINE);
-      this->stereo_out->r->clear_buffer (*AUDIO_ENGINE);
+      this->stereo_out->get_l ().clear_buffer (*AUDIO_ENGINE);
+      this->stereo_out->get_r ().clear_buffer (*AUDIO_ENGINE);
     }
-  else if (out_type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (out_type == PortType::Event)
     {
       this->midi_out->clear_buffer (*AUDIO_ENGINE);
     }
 
-  for (j = 0; j < STRIP_SIZE; j++)
+  for (int j = 0; j < STRIP_SIZE; j++)
     {
       plugin = this->inserts[j];
       if (plugin)
@@ -350,20 +351,18 @@ Channel::prepare_process ()
       channel_send_prepare_process (this->sends[i]);
     }
 
-  if (track_.in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (track_.in_signal_type == PortType::Event)
     {
 #ifdef HAVE_RTMIDI
-      /* extract the midi events from the ring
-       * buffer */
+      /* extract the midi events from the ring buffer */
       if (midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend))
         {
-          port_prepare_rtmidi_events (track_.processor->midi_in);
+          track_.processor->midi_in->prepare_rtmidi_events ();
         }
 #endif
 
-      /* copy the cached MIDI events to the
-       * MIDI events in the MIDI in port */
-      midi_events_dequeue (track_.processor->midi_in->midi_events);
+      /* copy the cached MIDI events to the MIDI events in the MIDI in port */
+      midi_events_dequeue (track_.processor->midi_in->midi_events_);
     }
 }
 
@@ -382,19 +381,18 @@ Channel::init_loaded (Track &track)
   fader_init_loaded (this->prefader, &track, NULL, NULL);
   fader_init_loaded (this->fader, &track, NULL, NULL);
 
-  ZPortType out_type = track_.out_signal_type;
+  PortType out_type = track_.out_signal_type;
 
   switch (out_type)
     {
-    case ZPortType::Z_PORT_TYPE_EVENT:
-      this->midi_out->midi_events = midi_events_new ();
+    case PortType::Event:
+      this->midi_out->midi_events_ = midi_events_new ();
       break;
-    case ZPortType::Z_PORT_TYPE_AUDIO:
+    case PortType::Audio:
       /* make sure master is exposed to backend */
       if (track_.type == TrackType::TRACK_TYPE_MASTER)
         {
-          this->stereo_out->l->exposed_to_backend = true;
-          this->stereo_out->r->exposed_to_backend = true;
+          stereo_out->set_expose_to_backend (true);
         }
       break;
     default:
@@ -458,23 +456,21 @@ Channel::expose_ports_to_backend ()
 
   g_message ("%s: %s", __func__, tr->name);
 
-  if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (tr->in_signal_type == PortType::Audio)
     {
-      port_set_expose_to_backend (tr->processor->stereo_in->l, true);
-      port_set_expose_to_backend (tr->processor->stereo_in->r, true);
+      tr->processor->stereo_in->set_expose_to_backend (true);
     }
-  if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (tr->in_signal_type == PortType::Event)
     {
-      port_set_expose_to_backend (tr->processor->midi_in, true);
+      tr->processor->midi_in->set_expose_to_backend (true);
     }
-  if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (tr->out_signal_type == PortType::Audio)
     {
-      port_set_expose_to_backend (this->stereo_out->l, true);
-      port_set_expose_to_backend (this->stereo_out->r, true);
+      this->stereo_out->set_expose_to_backend (true);
     }
-  if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  if (tr->out_signal_type == PortType::Event)
     {
-      port_set_expose_to_backend (this->midi_out, true);
+      this->midi_out->set_expose_to_backend (true);
     }
 }
 
@@ -507,13 +503,12 @@ Channel::reconnect_ext_input_ports ()
     {
       Port * midi_in = track->processor->midi_in;
 
-      /* if the project was loaded with another
-       * backend, the port might not be exposed
-       * yet, so expose it */
-      port_set_expose_to_backend (midi_in, 1);
+      /* if the project was loaded with another backend, the port might not be
+       * exposed yet, so expose it */
+      midi_in->set_expose_to_backend (true);
 
       /* disconnect all connections to hardware */
-      port_disconnect_hw_inputs (midi_in);
+      midi_in->disconnect_hw_inputs ();
 
       if (this->all_midi_ins)
         {
@@ -528,8 +523,8 @@ Channel::reconnect_ext_input_ports ()
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &midi_in->id, 1.f, F_LOCKED,
-                F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id_, &midi_in->id_, 1.f,
+                F_LOCKED, F_ENABLE);
             }
         }
       /* else if not all stereo ins selected */
@@ -548,25 +543,22 @@ Channel::reconnect_ext_input_ports ()
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &midi_in->id, 1.f, F_LOCKED,
-                F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id_, &midi_in->id_, 1.f,
+                F_LOCKED, F_ENABLE);
             }
         }
     }
   else if (track->type == TrackType::TRACK_TYPE_AUDIO)
     {
-      /* if the project was loaded with another
-       * backend, the port might not be exposed
-       * yet, so expose it */
-      Port * l = track->processor->stereo_in->l;
-      Port * r = track->processor->stereo_in->r;
-      port_set_expose_to_backend (l, true);
-      port_set_expose_to_backend (r, true);
+      /* if the project was loaded with another backend, the port might not be
+       * exposed yet, so expose it */
+      track->processor->stereo_in->set_expose_to_backend (true);
 
       /* disconnect all connections to hardware */
-      port_disconnect_hw_inputs (l);
-      port_disconnect_hw_inputs (r);
+      track->processor->stereo_in->disconnect_hw_inputs ();
 
+      Port &l = track->processor->stereo_in->get_l ();
+      Port &r = track->processor->stereo_in->get_r ();
       if (this->all_stereo_l_ins)
         {
           for (int i = 0; i < HW_IN_PROCESSOR->num_selected_audio_ports; i++)
@@ -580,7 +572,7 @@ Channel::reconnect_ext_input_ports ()
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &l->id, 1.f, F_LOCKED,
+                PORT_CONNECTIONS_MGR, &source->id_, &l.id_, 1.f, F_LOCKED,
                 F_ENABLE);
             }
         }
@@ -600,7 +592,7 @@ Channel::reconnect_ext_input_ports ()
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &l->id, 1.f, F_LOCKED,
+                PORT_CONNECTIONS_MGR, &source->id_, &l.id_, 1.f, F_LOCKED,
                 F_ENABLE);
             }
         } /* endif all audio ins for L */
@@ -618,7 +610,7 @@ Channel::reconnect_ext_input_ports ()
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &r->id, 1.f, F_LOCKED,
+                PORT_CONNECTIONS_MGR, &source->id_, &r.id_, 1.f, F_LOCKED,
                 F_ENABLE);
             }
         }
@@ -639,7 +631,7 @@ Channel::reconnect_ext_input_ports ()
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR, &source->id, &r->id, 1.f, F_LOCKED,
+                PORT_CONNECTIONS_MGR, &source->id_, &r.id_, 1.f, F_LOCKED,
                 F_ENABLE);
             }
         } /* endif all audio ins for R */
@@ -656,9 +648,8 @@ Channel::add_balance_control (void * _channel, float pan)
 {
   Channel * channel = static_cast<Channel *> (_channel);
 
-  port_set_control_value (
-    channel->fader->balance,
-    CLAMP (channel->fader->balance->control + pan, 0.f, 1.f), 0, 0);
+  channel->fader->balance->set_control_value (
+    CLAMP (channel->fader->balance->control_ + pan, 0.f, 1.f), 0, 0);
 }
 
 /**
@@ -667,7 +658,8 @@ Channel::add_balance_control (void * _channel, float pan)
 void
 Channel::reset_fader (bool fire_events)
 {
-  fader_set_amp_with_action (this->fader, this->fader->amp->control, 1.0f, true);
+  fader_set_amp_with_action (
+    this->fader, this->fader->amp->control_, 1.0f, true);
 
   if (fire_events)
     {
@@ -902,37 +894,37 @@ Channel::connect ()
       this->output_name_hash = 0;
       this->has_output = 0;
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->stereo_out->l->id,
-        &MONITOR_FADER->stereo_in->l->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->stereo_out->get_l ().id_,
+        &MONITOR_FADER->stereo_in->get_l ().id_, 1.f, F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->stereo_out->r->id,
-        &MONITOR_FADER->stereo_in->r->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->stereo_out->get_r ().id_,
+        &MONITOR_FADER->stereo_in->get_r ().id_, 1.f, F_LOCKED, F_ENABLE);
     }
 
-  if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (tr->out_signal_type == PortType::Audio)
     {
       /* connect stereo in to stereo out through
        * fader */
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->prefader->stereo_out->l->id,
-        &this->fader->stereo_in->l->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->prefader->stereo_out->get_l ().id_,
+        &this->fader->stereo_in->get_l ().id_, 1.f, F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->prefader->stereo_out->r->id,
-        &this->fader->stereo_in->r->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->prefader->stereo_out->get_r ().id_,
+        &this->fader->stereo_in->get_r ().id_, 1.f, F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->fader->stereo_out->l->id,
-        &this->stereo_out->l->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->fader->stereo_out->get_l ().id_,
+        &this->stereo_out->get_l ().id_, 1.f, F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->fader->stereo_out->r->id,
-        &this->stereo_out->r->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->fader->stereo_out->get_r ().id_,
+        &this->stereo_out->get_r ().id_, 1.f, F_LOCKED, F_ENABLE);
     }
-  else if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (tr->out_signal_type == PortType::Event)
     {
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->prefader->midi_out->id,
-        &this->fader->midi_in->id, 1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &this->prefader->midi_out->id_,
+        &this->fader->midi_in->id_, 1.f, F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &this->fader->midi_out->id, &this->midi_out->id,
+        PORT_CONNECTIONS_MGR, &this->fader->midi_out->id_, &this->midi_out->id_,
         1.f, F_LOCKED, F_ENABLE);
     }
 
@@ -991,30 +983,27 @@ Channel::get_output_track ()
 void
 Channel::append_ports (GPtrArray * ports, bool include_plugins)
 {
-  auto add_port = [ports] (Port * port) {
-    g_warn_if_fail (port);
-    g_ptr_array_add (ports, port);
-  };
+  auto add_port = [ports] (Port * port) { g_ptr_array_add (ports, port); };
 
   /* add channel ports */
-  if (track_.out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (track_.out_signal_type == PortType::Audio)
     {
-      add_port (this->stereo_out->l);
-      add_port (this->stereo_out->r);
+      add_port (&this->stereo_out->get_l ());
+      add_port (&this->stereo_out->get_r ());
 
       /* add fader ports */
-      add_port (this->fader->stereo_in->l);
-      add_port (this->fader->stereo_in->r);
-      add_port (this->fader->stereo_out->l);
-      add_port (this->fader->stereo_out->r);
+      add_port (&this->fader->stereo_in->get_l ());
+      add_port (&this->fader->stereo_in->get_r ());
+      add_port (&this->fader->stereo_out->get_l ());
+      add_port (&this->fader->stereo_out->get_r ());
 
       /* add prefader ports */
-      add_port (this->prefader->stereo_in->l);
-      add_port (this->prefader->stereo_in->r);
-      add_port (this->prefader->stereo_out->l);
-      add_port (this->prefader->stereo_out->r);
+      add_port (&this->prefader->stereo_in->get_l ());
+      add_port (&this->prefader->stereo_in->get_r ());
+      add_port (&this->prefader->stereo_out->get_l ());
+      add_port (&this->prefader->stereo_out->get_r ());
     }
-  else if (track_.out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (track_.out_signal_type == PortType::Event)
     {
       add_port (this->midi_out);
 
@@ -1083,23 +1072,17 @@ init_stereo_out_ports (Channel * self, bool loading)
       return;
     }
 
-  char str[80];
-  strcpy (str, "Stereo out");
-
-  strcat (str, " L");
-  Port * l = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
+  Port l = Port (
+    PortType::Audio, PortFlow::Output, "Stero out L",
     PortIdentifier::OwnerType::CHANNEL, self);
-  l->id.sym = g_strdup ("stereo_out_l");
+  l.id_.sym_ = "stereo_out_l";
 
-  str[10] = '\0';
-  strcat (str, " R");
-  Port * r = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT, str,
+  Port r = Port (
+    PortType::Audio, PortFlow::Output, "Stereo out R",
     PortIdentifier::OwnerType::CHANNEL, self);
-  r->id.sym = g_strdup ("stereo_out_r");
+  r.id_.sym_ = "stereo_out_r";
 
-  self->stereo_out = stereo_ports_new_from_existing (l, r);
+  self->stereo_out = new StereoPorts (std::move (l), std::move (r));
 }
 
 Channel::Channel (Track &track) : track_ (track)
@@ -1115,15 +1098,15 @@ Channel::Channel (Track &track) : track_ (track)
   /* create ports */
   switch (track_.out_signal_type)
     {
-    case ZPortType::Z_PORT_TYPE_AUDIO:
+    case PortType::Audio:
       init_stereo_out_ports (this, 0);
       break;
-    case ZPortType::Z_PORT_TYPE_EVENT:
+    case PortType::Event:
       {
-        Port * port = port_new_with_type_and_owner (
-          ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-          _ ("MIDI out"), PortIdentifier::OwnerType::CHANNEL, this);
-        port->id.sym = g_strdup ("midi_out");
+        Port * port = new Port (
+          PortType::Event, PortFlow::Output, _ ("MIDI out"),
+          PortIdentifier::OwnerType::CHANNEL, this);
+        port->id_.sym_ = "midi_out";
         this->midi_out = port;
       }
       break;
@@ -1174,7 +1157,7 @@ Channel::set_balance_control (void * _channel, float val)
 void
 Channel::set_balance_control (float val)
 {
-  port_set_control_value (fader->balance, val, 0, 0);
+  fader->balance->set_control_value (val, 0, 0);
 }
 
 float
@@ -1187,7 +1170,7 @@ Channel::get_balance_control (void * _channel)
 float
 Channel::get_balance_control () const
 {
-  return port_get_control_value (fader->balance, 0);
+  return fader->balance->get_control_value (false);
 }
 
 static inline void
@@ -1610,7 +1593,7 @@ Channel::get_automation_track (PortIdentifier::Flags port_flags)
       AutomationTrack * at = atl->ats[i];
 
       if (
-        ENUM_BITSET_TEST (PortIdentifier::Flags, at->port_id.flags, port_flags))
+        ENUM_BITSET_TEST (PortIdentifier::Flags, at->port_id.flags_, port_flags))
         return at;
     }
   return nullptr;
@@ -1898,8 +1881,8 @@ Channel::clone (Track &track, GError ** error)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       Port * clone_port = (Port *) g_ptr_array_index (ports_clone, i);
-      g_return_val_if_fail (port->id.is_equal (clone_port->id), NULL);
-      port_copy_values (clone_port, port);
+      g_return_val_if_fail (port->id_.is_equal (clone_port->id_), NULL);
+      clone_port->copy_values (*port);
     }
   g_ptr_array_unref (ports);
   g_ptr_array_unref (ports_clone);
@@ -2037,15 +2020,14 @@ Channel::disconnect (bool remove_pl)
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
         !IS_PORT (port)
-        || port_is_in_active_project (port)
-             != track_is_in_active_project (&track_))
+        || port->is_in_active_project () != track_is_in_active_project (&track_))
         {
           g_critical ("invalid port");
           g_ptr_array_unref (ports);
           return;
         }
 
-      port_disconnect_all (port);
+      port->disconnect_all ();
     }
   g_ptr_array_unref (ports);
 }
@@ -2055,8 +2037,8 @@ Channel::~Channel ()
   object_free_w_func_and_null (fader_free, this->prefader);
   object_free_w_func_and_null (fader_free, this->fader);
 
-  object_free_w_func_and_null (stereo_ports_free, this->stereo_out);
-  object_free_w_func_and_null (port_free, this->midi_out);
+  object_delete_and_null (this->stereo_out);
+  object_delete_and_null (this->midi_out);
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {

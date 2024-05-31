@@ -113,7 +113,7 @@ engine_jack_activate (AudioEngine * self, bool activate);
  */
 CONST
 const char *
-engine_jack_get_jack_type (ZPortType type);
+engine_jack_get_jack_type (PortType type);
 
 /** Jack buffer size callback. */
 int

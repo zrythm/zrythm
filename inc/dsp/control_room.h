@@ -10,8 +10,12 @@
 #define __AUDIO_CONTROL_ROOM_H__
 
 #include "dsp/fader.h"
+#include "dsp/port.h"
+#include "utils/types.h"
 
 typedef struct AudioEngine AudioEngine;
+typedef struct ExtPort     ExtPort;
+TYPEDEF_STRUCT (RtAudioDevice);
 
 /**
  * @addtogroup dsp

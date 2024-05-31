@@ -62,7 +62,7 @@ automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at)
   array_append (self->ats, self->num_ats, at);
 
   at->index = self->num_ats - 1;
-  at->port_id.track_name_hash = track_get_name_hash (*self->track);
+  at->port_id.track_name_hash_ = track_get_name_hash (*self->track);
 
   /* move automation track regions */
   for (int i = 0; i < at->num_regions; i++)
@@ -92,11 +92,11 @@ automation_tracklist_get_plugin_at (
       g_return_val_if_fail (at, NULL);
 
       if (
-        at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN
-        && plugin_slot == at->port_id.plugin_id.slot
-        && slot_type == at->port_id.plugin_id.slot_type
-        && port_index == at->port_id.port_index
-        && string_is_equal (symbol, at->port_id.sym))
+        at->port_id.owner_type_ == PortIdentifier::OwnerType::PLUGIN
+        && plugin_slot == at->port_id.plugin_id_.slot
+        && slot_type == at->port_id.plugin_id_.slot_type
+        && port_index == at->port_id.port_index_
+        && string_is_equal (symbol, at->port_id.sym_.c_str ()))
         {
           return at;
         }
@@ -168,7 +168,7 @@ automation_tracklist_set_at_index (
     {
       RegionIdentifier * clip_editor_region_id = &clip_editor_region->id;
 
-      if (clip_editor_region_id->track_name_hash == at->port_id.track_name_hash)
+      if (clip_editor_region_id->track_name_hash == at->port_id.track_name_hash_)
         {
           clip_editor_region_idx = clip_editor_region_id->at_idx;
         }
@@ -258,7 +258,8 @@ automation_tracklist_set_at_index (
           CLIP_EDITOR->region_id.at_idx = index;
         }
 
-      g_debug ("new pos %s (%d)", new_at->port_id.label, new_at->index);
+      g_debug (
+        "new pos %s (%d)", new_at->port_id.get_label_as_c_str (), new_at->index);
     }
 }
 
@@ -278,10 +279,10 @@ automation_tracklist_update_track_name_hash (
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
-      at->port_id.track_name_hash = track_name_hash;
-      if (at->port_id.owner_type == PortIdentifier::OwnerType::PLUGIN)
+      at->port_id.track_name_hash_ = track_name_hash;
+      if (at->port_id.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
         {
-          at->port_id.plugin_id.track_name_hash = track_name_hash;
+          at->port_id.plugin_id_.track_name_hash = track_name_hash;
         }
       for (int j = 0; j < at->num_regions; j++)
         {
@@ -653,7 +654,8 @@ automation_tracklist_print_ats (AutomationTracklist * self)
       AutomationTrack * at = self->ats[i];
 
       g_string_append_printf (
-        g_str, "[%d] '%s' (sym '%s')\n", i, at->port_id.label, at->port_id.sym);
+        g_str, "[%d] '%s' (sym '%s')\n", i, at->port_id.get_label_as_c_str (),
+        at->port_id.sym_.c_str ());
     }
   g_string_erase (g_str, (gssize) (g_str->len - 1), -1);
 
@@ -699,7 +701,8 @@ automation_tracklist_validate (AutomationTracklist * self)
     {
       AutomationTrack * at = self->ats[i];
       g_return_val_if_fail (
-        at->port_id.track_name_hash == track_name_hash && at->index == i, false);
+        at->port_id.track_name_hash_ == track_name_hash && at->index == i,
+        false);
       automation_track_validate (at);
     }
 
@@ -773,8 +776,8 @@ automation_tracklist_print_regions (AutomationTracklist * self)
         continue;
 
       g_string_append_printf (
-        str, "\n  [%d] port '%s': %d regions", i, at->port_id.label,
-        at->num_regions);
+        str, "\n  [%d] port '%s': %d regions", i,
+        at->port_id.get_label_as_c_str (), at->num_regions);
     }
   char * tmp = g_string_free (str, false);
   g_message ("%s", tmp);

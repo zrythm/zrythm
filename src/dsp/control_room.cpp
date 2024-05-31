@@ -32,7 +32,7 @@ init_common (ControlRoom * self)
     fader_new (FaderType::FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ? 0.f : (float) g_settings_get_double (S_MONITOR, "mute-vol");
-  self->mute_fader->amp->deff =
+  self->mute_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 0.f
       : (float) settings_get_default_value_double (
@@ -41,8 +41,8 @@ init_common (ControlRoom * self)
     {
       settings_get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol", &lower, &upper);
-      self->mute_fader->amp->minf = (float) lower;
-      self->mute_fader->amp->maxf = (float) upper;
+      self->mute_fader->amp->minf_ = (float) lower;
+      self->mute_fader->amp->maxf_ = (float) upper;
     }
   fader_set_amp (self->mute_fader, amp);
 
@@ -50,7 +50,7 @@ init_common (ControlRoom * self)
     fader_new (FaderType::FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ? 1.f : (float) g_settings_get_double (S_MONITOR, "listen-vol");
-  self->listen_fader->amp->deff =
+  self->listen_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 1.f
       : (float) settings_get_default_value_double (
@@ -60,15 +60,15 @@ init_common (ControlRoom * self)
     {
       settings_get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol", &lower, &upper);
-      self->listen_fader->amp->minf = (float) lower;
-      self->listen_fader->amp->maxf = (float) upper;
+      self->listen_fader->amp->minf_ = (float) lower;
+      self->listen_fader->amp->maxf_ = (float) upper;
     }
 
   self->dim_fader =
     fader_new (FaderType::FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ? 0.1f : (float) g_settings_get_double (S_MONITOR, "dim-vol");
-  self->dim_fader->amp->deff =
+  self->dim_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 0.1f
       : (float) settings_get_default_value_double (
@@ -77,8 +77,8 @@ init_common (ControlRoom * self)
     {
       settings_get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol", &lower, &upper);
-      self->dim_fader->amp->minf = (float) lower;
-      self->dim_fader->amp->maxf = (float) upper;
+      self->dim_fader->amp->minf_ = (float) lower;
+      self->dim_fader->amp->maxf_ = (float) upper;
     }
   fader_set_amp (self->dim_fader, amp);
 
@@ -91,7 +91,7 @@ init_common (ControlRoom * self)
     ZRYTHM_TESTING ? false : g_settings_get_boolean (S_MONITOR, "dim-output");
   bool mute =
     ZRYTHM_TESTING ? false : g_settings_get_boolean (S_MONITOR, "mute");
-  self->monitor_fader->mute->control = mute ? 1.f : 0.f;
+  self->monitor_fader->mute->control_ = mute ? 1.f : 0.f;
 }
 
 /**

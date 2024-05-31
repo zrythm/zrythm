@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
+
 #include <inttypes.h>
 
 #include "dsp/engine.h"
@@ -45,7 +46,7 @@ graph_node_get_name (GraphNode * node)
           "%s/%s (Plugin)", track->name, node->pl->setting->descr->name);
       }
     case GraphNodeType::ROUTE_NODE_TYPE_PORT:
-      port_get_full_designation (node->port, str);
+      node->port->get_full_designation (str);
       return g_strdup (str);
     case GraphNodeType::ROUTE_NODE_TYPE_FADER:
       {
@@ -55,7 +56,7 @@ graph_node_get_name (GraphNode * node)
     case GraphNodeType::ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       {
         ModulatorMacroProcessor * mmp = node->modulator_macro_processor;
-        Track *                   track = port_get_track (mmp->cv_in, true);
+        Track *                   track = mmp->cv_in->get_track (true);
         return g_strdup_printf ("%s Modulator Macro Processor", track->name);
       }
     case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
@@ -237,15 +238,15 @@ process_node (const GraphNode * node, const EngineProcessTimeInfo time_nfo)
         /* decide what to do based on what port it
          * is */
         Port * port = node->port;
-        /*PortIdentifier * id = &port->id;*/
+        /*PortIdentifier * id = &port->id_;*/
 
         /* if midi editor manual press */
         if (port == AUDIO_ENGINE->midi_editor_manual_press)
           {
             g_return_if_fail (
-              AUDIO_ENGINE->midi_editor_manual_press->midi_events);
+              AUDIO_ENGINE->midi_editor_manual_press->midi_events_);
             midi_events_dequeue (
-              AUDIO_ENGINE->midi_editor_manual_press->midi_events);
+              AUDIO_ENGINE->midi_editor_manual_press->midi_events_);
           }
 
         /* if exporting and the port is not a
@@ -257,7 +258,7 @@ process_node (const GraphNode * node, const EngineProcessTimeInfo time_nfo)
 
         else
           {
-            port_process (port, time_nfo, false);
+            port->process (time_nfo, false);
           }
       }
       break;

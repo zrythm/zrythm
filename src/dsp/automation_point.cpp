@@ -171,7 +171,7 @@ automation_point_set_fvalue (
   else
     {
       g_message ("reveived real val %f", (double) real_val);
-      real_val = CLAMP (real_val, port->minf, port->maxf);
+      real_val = CLAMP (real_val, port->minf_, port->maxf_);
       normalized_val = control_port_real_val_to_normalized (port, real_val);
     }
   g_message ("setting to %f", (double) real_val);
@@ -221,11 +221,11 @@ automation_point_set_fvalue_with_action (
 
   float val;
   int   res = sscanf (fval_str, "%f", &val);
-  if (res != 1 || res == EOF || val < port->minf || val > port->maxf)
+  if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
     {
       ui_show_error_message_printf (
         _ ("Invalid Value"), _ ("Please enter a number between %f and %f"),
-        port->minf, port->maxf);
+        port->minf_, port->maxf_);
       return;
     }
 

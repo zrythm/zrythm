@@ -34,7 +34,8 @@ get_delay_port (Plugin * pl)
 {
   for (int i = 0; i < pl->num_in_ports; i++)
     {
-      if (string_is_equal_ignore_case (pl->in_ports[i]->id.label, "Delay Time"))
+      if (string_is_equal_ignore_case (
+            pl->in_ports[i]->id_.label_.c_str (), "Delay Time"))
         {
           return pl->in_ports[i];
           break;

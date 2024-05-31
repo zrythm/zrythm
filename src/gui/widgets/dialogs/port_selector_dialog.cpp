@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/port.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
@@ -45,12 +43,12 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
         }
 
       Port *src = NULL, *dest = NULL;
-      if (self->port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if (self->port->id_.flow_ == PortFlow::Input)
         {
           src = self->selected_port;
           dest = self->port;
         }
-      else if (self->port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+      else if (self->port->id_.flow_ == PortFlow::Output)
         {
           src = self->port;
           dest = self->selected_port;
@@ -58,16 +56,16 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
 
       g_return_if_fail (src && dest);
 
-      if (ports_can_be_connected (src, dest))
+      if (src->can_be_connected_to (dest))
         {
           GError * err = NULL;
-          bool     ret =
-            port_connection_action_perform_connect (&src->id, &dest->id, &err);
+          bool     ret = port_connection_action_perform_connect (
+            &src->id_, &dest->id_, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, _ ("Failed to connect %s to %s"), src->id.label,
-                dest->id.label);
+                err, _ ("Failed to connect %s to %s"),
+                src->get_label ().c_str (), dest->get_label ().c_str ());
             }
 
           port_connections_popover_widget_refresh (self->owner, self->port);
@@ -92,104 +90,83 @@ create_model_for_ports (
   Track *                    track,
   Plugin *                   pl)
 {
-  GtkListStore * list_store;
-  GtkTreeIter    iter;
-
   /* icon, name, pointer to port */
-  list_store =
+  GtkListStore * list_store =
     gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  ZPortType type = self->port->id.type;
-  ZPortFlow flow = self->port->id.flow;
+  PortType type = self->port->id_.type_;
+  PortFlow flow = self->port->id_.flow_;
 
-/* Add a new row to the model if not already in the destinations */
-#define ADD_ROW \
-  if ( \
-    (flow == ZPortFlow::Z_PORT_FLOW_INPUT \
-     && !ports_connected (port, self->port)) \
-    || (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT && !ports_connected (self->port, port))) \
-    { \
-      gtk_list_store_append (list_store, &iter); \
-      gtk_list_store_set ( \
-        list_store, &iter, 0, "automation-4p", 1, port->id.label, 2, port, -1); \
-    }
+  /* Add a new row to the model if not already in the destinations */
+  auto add_row = [flow, self, list_store] (Port &port) {
+    if (
+      (flow == PortFlow::Input && !port.is_connected_to (self->port))
+      || (flow == PortFlow::Output && !self->port->is_connected_to (&port)))
+      {
+        GtkTreeIter iter;
+        gtk_list_store_append (list_store, &iter);
+        gtk_list_store_set (
+          list_store, &iter, 0, "automation-4p", 1, port.get_label ().c_str (),
+          2, &port, -1);
+      }
+  };
 
   /* if filtering to track ports */
   if (track)
     {
       Channel * ch = track->channel;
-      if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if (flow == PortFlow::Input)
         {
           if (
-            (type == ZPortType::Z_PORT_TYPE_AUDIO
-             || type == ZPortType::Z_PORT_TYPE_CV)
-            && track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+            (type == PortType::Audio || type == PortType::CV)
+            && track->out_signal_type == PortType::Audio)
             {
-              Port * port;
-              port = ch->prefader->stereo_out->l;
-              ADD_ROW;
-              port = ch->prefader->stereo_out->r;
-              ADD_ROW;
-              port = ch->fader->stereo_out->l;
-              ADD_ROW;
-              port = ch->fader->stereo_out->r;
-              ADD_ROW;
+              add_row (ch->prefader->stereo_out->get_l ());
+              add_row (ch->prefader->stereo_out->get_r ());
+              add_row (ch->fader->stereo_out->get_l ());
+              add_row (ch->fader->stereo_out->get_r ());
             }
           else if (
-            type == ZPortType::Z_PORT_TYPE_EVENT
-            && track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+            type == PortType::Event && track->out_signal_type == PortType::Event)
             {
-              Port * port;
-              port = ch->midi_out;
-              ADD_ROW;
+              add_row (*ch->midi_out);
             }
         }
-      else if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+      else if (flow == PortFlow::Output)
         {
-          if (type == ZPortType::Z_PORT_TYPE_AUDIO)
+          if (type == PortType::Audio)
             {
-              if (track->in_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+              if (track->in_signal_type == PortType::Audio)
                 {
-                  Port * port;
-                  port = track->processor->stereo_in->l;
-                  ADD_ROW;
-                  port = track->processor->stereo_in->r;
-                  ADD_ROW;
+                  add_row (track->processor->stereo_in->get_l ());
+                  add_row (track->processor->stereo_in->get_r ());
                 }
             }
-          else if (type == ZPortType::Z_PORT_TYPE_CV)
+          else if (type == PortType::CV)
             {
               if (track->channel)
                 {
-                  Port * port;
-                  port = track->channel->fader->amp;
-                  ADD_ROW;
-                  port = track->channel->fader->balance;
-                  ADD_ROW;
+                  add_row (*track->channel->fader->amp);
+                  add_row (*track->channel->fader->balance);
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
                       ChannelSend * send = track->channel->sends[j];
-                      port = send->amount;
-                      ADD_ROW;
+                      add_row (*send->amount);
                     }
                 }
               if (track->type == TrackType::TRACK_TYPE_MODULATOR)
                 {
                   for (int j = 0; j < track->num_modulator_macros; j++)
                     {
-                      Port * port;
-                      port = track->modulator_macros[j]->cv_in;
-                      ADD_ROW;
+                      add_row (*track->modulator_macros[j]->cv_in);
                     }
                 }
             }
-          else if (type == ZPortType::Z_PORT_TYPE_EVENT)
+          else if (type == PortType::Event)
             {
-              if (track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+              if (track->in_signal_type == PortType::Event)
                 {
-                  Port * port;
-                  port = track->processor->midi_in;
-                  ADD_ROW;
+                  add_row (*track->processor->midi_in);
                 }
             }
         } /* endif output */
@@ -197,43 +174,37 @@ create_model_for_ports (
   /* else if filtering to plugin ports */
   else if (pl)
     {
-      if (flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if (flow == PortFlow::Input)
         {
           for (int i = 0; i < pl->num_out_ports; i++)
             {
-              Port * port;
-              port = pl->out_ports[i];
+              Port * port = pl->out_ports[i];
 
               if (
-                (port->id.type != type)
+                (port->id_.type_ != type)
                 && !(
-                  port->id.type == ZPortType::Z_PORT_TYPE_CV
-                  && type == ZPortType::Z_PORT_TYPE_CONTROL))
+                  port->id_.type_ == PortType::CV && type == PortType::Control))
                 continue;
 
-              ADD_ROW;
+              add_row (*port);
             }
         }
-      else if (flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+      else if (flow == PortFlow::Output)
         {
           for (int i = 0; i < pl->num_in_ports; i++)
             {
-              Port * port;
-              port = pl->in_ports[i];
+              Port * port = pl->in_ports[i];
 
               if (
-                (port->id.type != type)
+                (port->id_.type_ != type)
                 && !(
-                  type == ZPortType::Z_PORT_TYPE_CV
-                  && port->id.type == ZPortType::Z_PORT_TYPE_CONTROL))
+                  type == PortType::CV && port->id_.type_ == PortType::Control))
                 continue;
 
-              ADD_ROW;
+              add_row (*port);
             }
         }
     }
-
-#undef ADD_ROW
 
   return GTK_TREE_MODEL (list_store);
 }
@@ -273,13 +244,13 @@ add_plugin (
   GtkTreeIter *              iter)
 {
   Port *           port = self->port;
-  PortIdentifier * id = &port->id;
+  PortIdentifier * id = &port->id_;
 
   /* skip if no plugin or the plugin is the
    * port's plugin */
   if (
     !pl
-    || (id->owner_type == PortIdentifier::OwnerType::PLUGIN && pl == port_get_plugin (self->port, true)))
+    || (id->owner_type_ == PortIdentifier::OwnerType::PLUGIN && pl == self->port->get_plugin (true)))
     {
       return;
     }
@@ -302,17 +273,16 @@ create_model_for_plugins (PortSelectorDialogWidget * self, Track * track)
     gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   Port *           port = self->port;
-  PortIdentifier * id = &port->id;
+  PortIdentifier * id = &port->id_;
   if (track)
     {
-      /* skip track ports if the owner port is
-       * a track port of the same track */
-      Track * port_track = port_get_track (port, 0);
+      /* skip track ports if the owner port is a track port of the same track */
+      Track * port_track = port->get_track (0);
       if (
-        !((id->owner_type == PortIdentifier::OwnerType::TRACK
+        !((id->owner_type_ == PortIdentifier::OwnerType::TRACK
            && port_track == track)
-          || (id->owner_type == PortIdentifier::OwnerType::FADER && port_track == track)
-          || (id->owner_type == PortIdentifier::OwnerType::TRACK_PROCESSOR && port_track == track)))
+          || (id->owner_type_ == PortIdentifier::OwnerType::FADER && port_track == track)
+          || (id->owner_type_ == PortIdentifier::OwnerType::TRACK_PROCESSOR && port_track == track)))
         {
           // Add a new row to the model
           gtk_list_store_append (list_store, &iter);

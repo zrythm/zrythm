@@ -87,23 +87,22 @@ live_waveform_draw_cb (
   uint32_t block_size_in_bytes =
     sizeof (float) * (uint32_t) AUDIO_ENGINE->block_length;
 
-  Port * port = NULL;
+  Port * port = nullptr;
   switch (self->type)
     {
     case LiveWaveformType::LIVE_WAVEFORM_ENGINE:
       g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
-      if (!P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers)
+      if (!P_MASTER_TRACK->channel->stereo_out->get_l ().write_ring_buffers_)
         {
-          P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers = true;
-          P_MASTER_TRACK->channel->stereo_out->r->write_ring_buffers = true;
+          P_MASTER_TRACK->channel->stereo_out->set_write_ring_buffers (true);
           return;
         }
-      port = P_MASTER_TRACK->channel->stereo_out->l;
+      port = &P_MASTER_TRACK->channel->stereo_out->get_l ();
       break;
     case LiveWaveformType::LIVE_WAVEFORM_PORT:
-      if (!self->port->write_ring_buffers)
+      if (!self->port->write_ring_buffers_)
         {
-          self->port->write_ring_buffers = true;
+          self->port->write_ring_buffers_ = true;
           return;
         }
       port = self->port;
@@ -113,11 +112,11 @@ live_waveform_draw_cb (
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   /* if ring not ready yet skip draw */
-  if (!port->audio_ring)
+  if (!port->audio_ring_)
     return;
 
   /* get the L buffer */
-  uint32_t read_space_avail = zix_ring_read_space (port->audio_ring);
+  uint32_t read_space_avail = zix_ring_read_space (port->audio_ring_);
   uint32_t blocks_to_read =
     block_size_in_bytes == 0 ? 0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
@@ -130,7 +129,7 @@ live_waveform_draw_cb (
         self->bufs[0], self->buf_sz[0], self->buf_sz[0], float);
     }
   uint32_t lblocks_read =
-    zix_ring_peek (port->audio_ring, &(self->bufs[0][0]), read_space_avail);
+    zix_ring_peek (port->audio_ring_, &(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
   uint32_t lstart_index = (lblocks_read - 1) * AUDIO_ENGINE->block_length;
   if (lblocks_read == 0)
@@ -142,8 +141,8 @@ live_waveform_draw_cb (
   if (self->type == LiveWaveformType::LIVE_WAVEFORM_ENGINE)
     {
       /* get the R buffer */
-      port = P_MASTER_TRACK->channel->stereo_out->r;
-      read_space_avail = zix_ring_read_space (port->audio_ring);
+      port = &P_MASTER_TRACK->channel->stereo_out->get_r ();
+      read_space_avail = zix_ring_read_space (port->audio_ring_);
       blocks_to_read = read_space_avail / block_size_in_bytes;
 
       /* if buffer is not filled do not draw */
@@ -155,8 +154,8 @@ live_waveform_draw_cb (
           array_double_size_if_full (
             self->bufs[1], self->buf_sz[1], self->buf_sz[1], float);
         }
-      size_t rblocks_read =
-        zix_ring_peek (port->audio_ring, &(self->bufs[1][0]), read_space_avail);
+      size_t rblocks_read = zix_ring_peek (
+        port->audio_ring_, &(self->bufs[1][0]), read_space_avail);
       rblocks_read /= block_size_in_bytes;
       size_t rstart_index = (rblocks_read - 1) * AUDIO_ENGINE->block_length;
       if (rblocks_read == 0)

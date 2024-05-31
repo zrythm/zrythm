@@ -90,7 +90,7 @@ control_port_real_val_to_normalized (const Port * const self, float real_val);
  * Returns if the control port is toggled.
  */
 #define control_port_is_toggled(self) \
-  (control_port_is_val_toggled (self->control))
+  (control_port_is_val_toggled (self->control_))
 
 /**
  * Gets the control value for an integer port.

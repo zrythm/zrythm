@@ -76,6 +76,11 @@ test:
   script:
     - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
 
+test_valgrind:
+  stage: test
+  script:
+    - meson test -C build --wrap='valgrind --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat build/meson-logs/testlog.txt && exit 1)
+
 update_manual:
   stage: deploy
   only:

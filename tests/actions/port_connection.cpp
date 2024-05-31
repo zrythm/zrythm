@@ -62,9 +62,7 @@ test_modulator_connection (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
-      if (
-        port->id.type == ZPortType::Z_PORT_TYPE_CV
-        && port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+      if (port->id_.type_ == PortType::CV && port->id_.flow_ == PortFlow::Output)
         {
           pl_cv_port = port;
           if (pl_control_port)
@@ -73,8 +71,8 @@ test_modulator_connection (
             }
         }
       else if (
-        port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
-        && port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+        port->id_.type_ == PortType::Control
+        && port->id_.flow_ == PortFlow::Input)
         {
           pl_control_port = port;
           if (pl_cv_port)
@@ -88,7 +86,7 @@ test_modulator_connection (
   /* connect the plugin's CV out to the macro
    * button */
   port_connection_action_perform_connect (
-    &pl_cv_port->id, &macro->cv_in->id, NULL);
+    &pl_cv_port->id_, &macro->cv_in->id_, NULL);
 
   /* expect messages */
   LOG->use_structured_for_console = false;
@@ -105,7 +103,7 @@ test_modulator_connection (
   /* connect the macro button to the plugin's
    * control input */
   port_connection_action_perform_connect (
-    &macro->cv_out->id, &pl_control_port->id, NULL);
+    &macro->cv_out->id_, &pl_control_port->id_, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -172,9 +170,9 @@ _test_port_connection (
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == PortIdentifier::OwnerType::PLUGIN
-        && port->id.type == ZPortType::Z_PORT_TYPE_CV
-        && port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+        port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN
+        && port->id_.type_ == PortType::CV
+        && port->id_.flow_ == PortFlow::Output)
         {
           if (src_port1)
             {
@@ -199,9 +197,9 @@ _test_port_connection (
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
-        port->id.owner_type == PortIdentifier::OwnerType::FADER
+        port->id_.owner_type_ == PortIdentifier::OwnerType::FADER
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::STEREO_BALANCE))
         {
           dest_port = port;
@@ -212,40 +210,42 @@ _test_port_connection (
 
   g_assert_nonnull (dest_port);
   g_return_if_fail (dest_port);
-  g_assert_true (port_is_in_active_project (src_port1));
-  g_assert_true (port_is_in_active_project (src_port2));
-  g_assert_true (port_is_in_active_project (dest_port));
-  g_assert_cmpint (dest_port->num_srcs, ==, 0);
-  g_assert_cmpint (src_port1->num_dests, ==, 0);
+  g_assert_true (src_port1->is_in_active_project ());
+  g_assert_true (src_port2->is_in_active_project ());
+  g_assert_true (dest_port->is_in_active_project ());
+  g_assert_cmpint (dest_port->srcs_.size (), ==, 0);
+  g_assert_cmpint (src_port1->dests_.size (), ==, 0);
 
-  port_connection_action_perform_connect (&src_port1->id, &dest_port->id, NULL);
+  port_connection_action_perform_connect (
+    &src_port1->id_, &dest_port->id_, NULL);
 
-  g_assert_cmpint (dest_port->num_srcs, ==, 1);
-  g_assert_cmpint (src_port1->num_dests, ==, 1);
+  g_assert_cmpint (dest_port->srcs_.size (), ==, 1);
+  g_assert_cmpint (src_port1->dests_.size (), ==, 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (dest_port->num_srcs, ==, 0);
-  g_assert_cmpint (src_port1->num_dests, ==, 0);
+  g_assert_cmpint (dest_port->srcs_.size (), ==, 0);
+  g_assert_cmpint (src_port1->dests_.size (), ==, 0);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (dest_port->num_srcs, ==, 1);
-  g_assert_cmpint (src_port1->num_dests, ==, 1);
+  g_assert_cmpint (dest_port->srcs_.size (), ==, 1);
+  g_assert_cmpint (src_port1->dests_.size (), ==, 1);
 
-  port_connection_action_perform_connect (&src_port2->id, &dest_port->id, NULL);
+  port_connection_action_perform_connect (
+    &src_port2->id_, &dest_port->id_, NULL);
 
-  g_assert_cmpint (dest_port->num_srcs, ==, 2);
-  g_assert_cmpint (src_port1->num_dests, ==, 1);
-  g_assert_cmpint (src_port2->num_dests, ==, 1);
+  g_assert_cmpint (dest_port->srcs_.size (), ==, 2);
+  g_assert_cmpint (src_port1->dests_.size (), ==, 1);
+  g_assert_cmpint (src_port2->dests_.size (), ==, 1);
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &src_port1->id, &dest_port->id));
+    PORT_CONNECTIONS_MGR, &src_port1->id_, &dest_port->id_));
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &src_port2->id, &dest_port->id));
-  g_assert_true (dest_port->srcs[0] == src_port1);
-  g_assert_true (dest_port == src_port1->dests[0]);
-  g_assert_true (dest_port->srcs[1] == src_port2);
-  g_assert_true (dest_port == src_port2->dests[0]);
+    PORT_CONNECTIONS_MGR, &src_port2->id_, &dest_port->id_));
+  g_assert_true (dest_port->srcs_[0] == src_port1);
+  g_assert_true (dest_port == src_port1->dests_[0]);
+  g_assert_true (dest_port->srcs_[1] == src_port2);
+  g_assert_true (dest_port == src_port2->dests_[0]);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -289,7 +289,7 @@ test_cv_to_control_connection (void)
   Port * cv_out_port = ams_lfo->out_ports[3];
   Port * freq_port = lp_filter->in_ports[4];
   port_connection_action_perform_connect (
-    &cv_out_port->id, &freq_port->id, NULL);
+    &cv_out_port->id_, &freq_port->id_, NULL);
 
   test_helper_zrythm_cleanup ();
 #endif // HAVE_AMS_LFO

@@ -43,9 +43,9 @@ get_sidechain_from_target (ChannelSendTarget * target)
 
   Plugin * pl = plugin_find (&target->pl_id);
   g_return_val_if_fail (pl, NULL);
-  Port * l = plugin_get_port_in_group (pl, target->port_group, true);
-  Port * r = plugin_get_port_in_group (pl, target->port_group, false);
-  return stereo_ports_new_from_existing (l, r);
+  Port l = plugin_get_port_in_group (pl, target->port_group, true)->clone ();
+  Port r = plugin_get_port_in_group (pl, target->port_group, false)->clone ();
+  return new StereoPorts (std::move (l), std::move (r));
 }
 
 /**
@@ -103,18 +103,18 @@ on_selection_changed (
       dest_track = get_track_from_target (target);
       switch (src_track->out_signal_type)
         {
-        case ZPortType::Z_PORT_TYPE_EVENT:
+        case PortType::Event:
           if (
             port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL, &send->midi_out->id, false)
+              PORT_CONNECTIONS_MGR, NULL, &send->midi_out->id_, false)
             == 1)
             {
               conn = port_connections_manager_get_source_or_dest (
-                PORT_CONNECTIONS_MGR, &send->midi_out->id, false);
+                PORT_CONNECTIONS_MGR, &send->midi_out->id_, false);
             }
           if (
             is_empty
-            || (conn && !conn->dest_id->is_equal (dest_track->processor->midi_in->id)))
+            || (conn && !conn->dest_id->is_equal (dest_track->processor->midi_in->id_)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_midi (
@@ -125,16 +125,16 @@ on_selection_changed (
                 }
             }
           break;
-        case ZPortType::Z_PORT_TYPE_AUDIO:
+        case PortType::Audio:
           if (
             port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->l->id, false)
+              PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->get_l ().id_, false)
             == 1)
             {
               conn = port_connections_manager_get_source_or_dest (
-                PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
+                PORT_CONNECTIONS_MGR, &send->stereo_out->get_l ().id_, false);
             }
-          if (is_empty || (conn && !conn->dest_id->is_equal(dest_track->processor->stereo_in->l->id)))
+          if (is_empty || (conn && !conn->dest_id->is_equal(dest_track->processor->stereo_in->get_l().id_)))
             {
               GError * err = NULL;
               bool     ret = channel_send_action_perform_connect_audio (
@@ -154,13 +154,13 @@ on_selection_changed (
         dest_sidechain = get_sidechain_from_target (target);
         if (
           port_connections_manager_get_sources_or_dests (
-            PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->l->id, false)
+            PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->get_l ().id_, false)
           == 1)
           {
             conn = port_connections_manager_get_source_or_dest (
-              PORT_CONNECTIONS_MGR, &send->stereo_out->l->id, false);
+              PORT_CONNECTIONS_MGR, &send->stereo_out->get_l ().id_, false);
           }
-        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !conn->dest_id->is_equal(dest_sidechain->l->id))))
+        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !conn->dest_id->is_equal(dest_sidechain->get_l().id_))))
           {
             GError * err = NULL;
             bool     ret = channel_send_action_perform_connect_sidechain (
@@ -261,16 +261,16 @@ setup_view (ChannelSendSelectorWidget * self)
           for (int k = 0; k < pl->num_in_ports; k++)
             {
               Port * port = pl->in_ports[k];
-              g_debug ("port %s", port->id.label);
+              g_debug ("port %s", port->id_.label_.c_str ());
 
               if (
                 !(ENUM_BITSET_TEST (
-                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags, port->id_.flags_,
                   PortIdentifier::Flags::SIDECHAIN))
-                || port->id.type != ZPortType::Z_PORT_TYPE_AUDIO
-                || !port->id.port_group
+                || port->id_.type_ != PortType::Audio
+                || port->id_.port_group_.empty ()
                 || !(ENUM_BITSET_TEST (
-                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags, port->id_.flags_,
                   PortIdentifier::Flags::STEREO_L)))
                 {
                   continue;
@@ -283,15 +283,15 @@ setup_view (ChannelSendSelectorWidget * self)
                 {
                   continue;
                 }
-              g_debug ("other channel %s", other_channel->id.label);
+              g_debug ("other channel %s", other_channel->id_.label_.c_str ());
 
               Port *l = NULL, *r = NULL;
               if (
                 ENUM_BITSET_TEST (
-                  PortIdentifier::Flags, port->id.flags,
+                  PortIdentifier::Flags, port->id_.flags_,
                   PortIdentifier::Flags::STEREO_L)
                 && ENUM_BITSET_TEST (
-                  PortIdentifier::Flags, other_channel->id.flags,
+                  PortIdentifier::Flags, other_channel->id_.flags_,
                   PortIdentifier::Flags::STEREO_R))
                 {
                   l = port;
@@ -308,7 +308,7 @@ setup_view (ChannelSendSelectorWidget * self)
                 ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN;
               target->track_pos = target_track->pos;
               target->pl_id = pl->id;
-              target->port_group = g_strdup (l->id.port_group);
+              target->port_group = g_strdup (l->id_.port_group_.c_str ());
 
               /* add it to list */
               WrappedObjectWithChangeSignal * wobj =
@@ -321,7 +321,7 @@ setup_view (ChannelSendSelectorWidget * self)
               if (channel_send_is_target_sidechain (send))
                 {
                   StereoPorts * sp = channel_send_get_target_sidechain (send);
-                  if (sp->l == l && sp->r == r)
+                  if (&sp->get_l () == l && &sp->get_r () == r)
                     {
                       select_idx = count;
                     }

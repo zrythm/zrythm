@@ -15,12 +15,12 @@
 
 typedef struct PortIdentifier PortIdentifier;
 
-typedef enum ZPortFlow_v1
+typedef enum PortFlow_v1
 {
   Z_PORT_FLOW_UNKNOWN_v1,
   Z_PORT_FLOW_INPUT_v1,
   Z_PORT_FLOW_OUTPUT_v1,
-} ZPortFlow_v1;
+} PortFlow_v1;
 
 static const cyaml_strval_t port_flow_strings_v1[] = {
   {"unknown", Z_PORT_FLOW_UNKNOWN_v1},
@@ -245,7 +245,7 @@ typedef struct PortIdentifier_v1
   char *              comment;
   ZPortOwnerType_v1   owner_type;
   PortType_v1         type;
-  ZPortFlow_v1        flow;
+  PortFlow_v1         flow;
   ZPortFlags_v1       flags;
   ZPortFlags2_v1      flags2;
   PortUnit_v1         unit;

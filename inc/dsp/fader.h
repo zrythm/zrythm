@@ -12,15 +12,15 @@
 
 #include "dsp/port.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
-typedef struct StereoPorts StereoPorts;
+class StereoPorts;
 class Port;
 typedef struct Channel         Channel;
 typedef struct AudioEngine     AudioEngine;
 typedef struct ControlRoom     ControlRoom;
 typedef struct SampleProcessor SampleProcessor;
-typedef struct PortIdentifier  PortIdentifier;
+struct PortIdentifier;
+typedef struct Track Track;
 
 /**
  * @addtogroup dsp

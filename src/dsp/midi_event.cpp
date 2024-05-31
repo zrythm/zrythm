@@ -29,6 +29,7 @@
 
 #include <cmath>
 #include <cstdlib>
+
 #include <inttypes.h>
 #include <signal.h>
 
@@ -1055,7 +1056,7 @@ midi_events_panic_all (const bool queued)
   g_message ("~ midi panic all (queued: %d) ~", queued);
 
   midi_events_panic (
-    AUDIO_ENGINE->midi_editor_manual_press->midi_events, queued);
+    AUDIO_ENGINE->midi_editor_manual_press->midi_events_, queued);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -1066,7 +1067,7 @@ midi_events_panic_all (const bool queued)
         track_type_has_piano_roll (track->type)
         || track->type == TrackType::TRACK_TYPE_CHORD)
         {
-          midi_events_panic (track->processor->piano_roll->midi_events, queued);
+          midi_events_panic (track->processor->piano_roll->midi_events_, queued);
         }
     }
 }

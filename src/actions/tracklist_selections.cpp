@@ -11,7 +11,6 @@
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/main_window.h"
 #include "io/midi_file.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -22,9 +21,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/mem.h"
 #include "utils/objects.h"
-#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -939,7 +936,7 @@ do_or_undo_create_or_delete (
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
                       ChannelSend * send = track->channel->sends[j];
-                      send->enabled->control = 0.f;
+                      send->enabled->control_ = 0.f;
                     }
                 }
 
@@ -1007,8 +1004,8 @@ do_or_undo_create_or_delete (
               for (size_t j = 0; j < ports->len; j++)
                 {
                   Port * port = (Port *) g_ptr_array_index (ports, j);
-                  Port * prj_port = Port::find_from_identifier (&port->id);
-                  port_restore_from_non_project (prj_port, port);
+                  Port * prj_port = Port::find_from_identifier (&port->id_);
+                  prj_port->restore_from_non_project (*port);
                 }
               object_free_w_func_and_null (g_ptr_array_unref, ports);
             }
@@ -1100,7 +1097,7 @@ do_or_undo_create_or_delete (
                     {
                       Port * cur_clone_port =
                         (Port *) g_ptr_array_index (clone_ports, k);
-                      if (cur_clone_port->id.is_equal (prj_port->id))
+                      if (cur_clone_port->id_.is_equal (prj_port->id_))
                         {
                           clone_port = cur_clone_port;
                           break;
@@ -1108,7 +1105,7 @@ do_or_undo_create_or_delete (
                     }
                   g_return_val_if_fail (clone_port, -1);
 
-                  port_copy_metadata_from_project (clone_port, prj_port);
+                  clone_port->copy_metadata_from_project (prj_port);
                 }
               object_free_w_func_and_null (g_ptr_array_unref, ports);
               object_free_w_func_and_null (g_ptr_array_unref, clone_ports);
@@ -1349,7 +1346,7 @@ do_or_undo_move_or_copy (
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
                       ChannelSend * send = track->channel->sends[j];
-                      send->enabled->control = 0.f;
+                      send->enabled->control_ = 0.f;
                     }
                 }
 
@@ -1396,27 +1393,29 @@ do_or_undo_move_or_copy (
                       channel_send_copy_values (track_send, own_send);
                       if (
                         own_conns->len > 0
-                        && track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+                        && track->out_signal_type == PortType::Audio)
                         {
                           PortConnection * conn = static_cast<PortConnection *> (
                             g_ptr_array_index (own_conns, 0));
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR, &track_send->stereo_out->l->id,
+                            PORT_CONNECTIONS_MGR,
+                            &track_send->stereo_out->get_l ().id_,
                             conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
                           conn = static_cast<PortConnection *> (
                             g_ptr_array_index (own_conns, 1));
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR, &track_send->stereo_out->r->id,
+                            PORT_CONNECTIONS_MGR,
+                            &track_send->stereo_out->get_r ().id_,
                             conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
                         }
                       else if (
                         own_conns->len > 0
-                        && track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+                        && track->out_signal_type == PortType::Event)
                         {
                           PortConnection * conn = static_cast<PortConnection *> (
                             g_ptr_array_index (own_conns, 0));
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR, &track_send->midi_out->id,
+                            PORT_CONNECTIONS_MGR, &track_send->midi_out->id_,
                             conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
                         }
 

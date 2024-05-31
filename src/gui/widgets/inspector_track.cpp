@@ -137,7 +137,7 @@ inspector_track_widget_show_tracks (
             {
               gtk_widget_set_visible (GTK_WIDGET (self->inputs), true);
             }
-          if (track->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+          if (track->in_signal_type == PortType::Event)
             {
               gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), true);
               plugin_strip_expander_widget_setup (

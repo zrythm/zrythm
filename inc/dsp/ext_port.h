@@ -277,7 +277,7 @@ ext_port_get_enabled (ExtPort * self);
  * @param hw Hardware or not.
  */
 void
-ext_ports_get (ZPortType type, ZPortFlow flow, bool hw, GPtrArray * ports);
+ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports);
 
 /**
  * Creates a shallow clone of the port.

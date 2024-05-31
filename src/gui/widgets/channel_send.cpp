@@ -150,7 +150,7 @@ on_drag_begin (
   ChannelSendWidget * self)
 {
   self->start_x = start_x;
-  self->send_amount_at_start = self->send->amount->control;
+  self->send_amount_at_start = self->send->amount->control_;
 }
 
 static void
@@ -185,10 +185,9 @@ on_drag_end (
   self->start_x = 0;
   self->last_offset_x = 0;
 
-  float send_amount_at_end = self->send->amount->control;
-  port_set_control_value (
-    self->send->amount, self->send_amount_at_start, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+  float send_amount_at_end = self->send->amount->control_;
+  self->send->amount->set_control_value (
+    self->send_amount_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   if (channel_send_is_enabled (self->send) && self->n_press != 2)
     {

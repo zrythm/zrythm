@@ -66,25 +66,25 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
       break;
     case GraphNodeType::ROUTE_NODE_TYPE_PORT:
       {
-        switch (node->port->id.owner_type)
+        switch (node->port->id_.owner_type)
           {
           case PortIdentifier::OwnerType::PLUGIN:
             {
-              Plugin * pl = port_get_plugin (node->port, true);
+              Plugin * pl = node->port->get_plugin (true);
               parent_node = graph_find_node_from_plugin (node->graph, pl);
             }
             break;
           case PortIdentifier::OwnerType::TRACK:
             {
-              Track * tr = port_get_track (node->port, true);
+              Track * tr = node->port->get_track (true);
               if (
                 ENUM_BITSET_TEST (
-                  PortIdentifier::Flags, node->port->id.flags,
+                  PortIdentifier::Flags, node->port->id_.flags,
                   PortIdentifier::Flags::MODULATOR_MACRO))
                 {
                   parent_node = graph_find_node_from_modulator_macro_processor (
                     node->graph,
-                    tr->modulator_macros[node->port->id.port_index]);
+                    tr->modulator_macros[node->port->id_.port_index]);
                 }
               else
                 {
@@ -95,10 +95,11 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
             break;
           case PortIdentifier::OwnerType::CHANNEL_SEND:
             {
-              Track * tr = port_get_track (node->port, true);
+              Track * tr = node->port->get_track (true);
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
               g_return_val_if_fail (tr->channel, NULL);
-              ChannelSend * send = tr->channel->sends[node->port->id.port_index];
+              ChannelSend * send =
+                tr->channel->sends[node->port->id_.port_index];
               g_return_val_if_fail (send, NULL);
               parent_node =
                 graph_find_node_from_channel_send (node->graph, send);
@@ -108,7 +109,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
             {
               if (
                 ENUM_BITSET_TEST (
-                  PortIdentifier::Flags2, node->port->id.flags2,
+                  PortIdentifier::Flags2, node->port->id_.flags2,
                   PortIdentifier::Flags2::Z_PORT_FLAG) 2_MONITOR_FADER)
                 {
                   parent_node =
@@ -116,7 +117,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
               else if (
                 ENUM_BITSET_TEST (
-                  PortIdentifier::Flags2, node->port->id.flags2,
+                  PortIdentifier::Flags2, node->port->id_.flags2,
                   PortIdentifier::Flags2::Z_PORT_FLAG) 2_SAMPLE_PROCESSOR_FADER)
                 {
                   parent_node = graph_find_node_from_fader (
@@ -124,10 +125,10 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
               else
                 {
-                  Track * tr = port_get_track (node->port, true);
+                  Track * tr = node->port->get_track (true);
                   if (
                     ENUM_BITSET_TEST (
-                      PortIdentifier::Flags2, node->port->id.flags2,
+                      PortIdentifier::Flags2, node->port->id_.flags2,
                       PortIdentifier::Flags2::Z_PORT_FLAG) 2_PREFADER)
                     parent_node = graph_find_node_from_prefader (
                       node->graph, tr->channel->prefader);
@@ -139,7 +140,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
             break;
           case PortIdentifier::OwnerType::TRACK_PROCESSOR:
             {
-              Track * tr = port_get_track (node->port, true);
+              Track * tr = node->port->get_track (true);
               parent_node = graph_find_node_from_track (node->graph, tr, true);
             }
             break;
@@ -178,20 +179,20 @@ create_anode (Agraph_t * aroot_graph, GraphNode * node, GHashTable * anodes)
   switch (node->type)
     {
     case GraphNodeType::ROUTE_NODE_TYPE_PORT:
-      switch (node->port->id.type)
+      switch (node->port->id_.type)
         {
-        case ZPortType::Z_PORT_TYPE_AUDIO:
+        case PortType::Audio:
           agsafeset (
             anode, (char *) "color", (char *) "crimson", (char *) "black");
           break;
-        case ZPortType::Z_PORT_TYPE_EVENT:
+        case PortType::Event:
           agsafeset (anode, (char *) "color", (char *) "navy", (char *) "black");
           break;
-        case ZPortType::Z_PORT_TYPE_CONTROL:
+        case PortType::Control:
           agsafeset (
             anode, (char *) "color", (char *) "darkviolet", (char *) "black");
           break;
-        case ZPortType::Z_PORT_TYPE_CV:
+        case PortType::CV:
           agsafeset (
             anode, (char *) "color", (char *) "darkgreen", (char *) "black");
           break;
@@ -222,7 +223,7 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
       GraphNode * node = (GraphNode *) value;
 #  if 0
       /* skip control ports */
-      if (node->type == GraphNodeType::ROUTE_NODE_TYPE_PORT && node->port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+      if (node->type == GraphNodeType::ROUTE_NODE_TYPE_PORT && node->port->id_.type == PortType::Control)
         continue;
 #  endif
       ANode * anode = anode_new ();

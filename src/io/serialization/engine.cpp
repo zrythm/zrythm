@@ -289,23 +289,23 @@ transport_deserialize_from_json (
   transport->has_range = yyjson_get_bool (yyjson_obj_iter_get (&it, "hasRange"));
   transport->position = yyjson_get_uint (yyjson_obj_iter_get (&it, "position"));
   yyjson_val * roll_obj = yyjson_obj_iter_get (&it, "roll");
-  transport->roll = object_new (Port);
+  transport->roll = new Port ();
   port_deserialize_from_json (doc, roll_obj, transport->roll, error);
   yyjson_val * stop_obj = yyjson_obj_iter_get (&it, "stop");
-  transport->stop = object_new (Port);
+  transport->stop = new Port ();
   port_deserialize_from_json (doc, stop_obj, transport->stop, error);
   yyjson_val * backward_obj = yyjson_obj_iter_get (&it, "backward");
-  transport->backward = object_new (Port);
+  transport->backward = new Port ();
   port_deserialize_from_json (doc, backward_obj, transport->backward, error);
   yyjson_val * forward_obj = yyjson_obj_iter_get (&it, "forward");
-  transport->forward = object_new (Port);
+  transport->forward = new Port ();
   port_deserialize_from_json (doc, forward_obj, transport->forward, error);
   yyjson_val * loop_toggle_obj = yyjson_obj_iter_get (&it, "loopToggle");
-  transport->loop_toggle = object_new (Port);
+  transport->loop_toggle = new Port ();
   port_deserialize_from_json (
     doc, loop_toggle_obj, transport->loop_toggle, error);
   yyjson_val * rec_toggle_obj = yyjson_obj_iter_get (&it, "recToggle");
-  transport->rec_toggle = object_new (Port);
+  transport->rec_toggle = new Port ();
   port_deserialize_from_json (doc, rec_toggle_obj, transport->rec_toggle, error);
   return true;
 }
@@ -441,7 +441,7 @@ hardware_processor_deserialize_from_json (
       yyjson_val *    audio_port_obj = NULL;
       while ((audio_port_obj = yyjson_arr_iter_next (&audio_ports_it)))
         {
-          Port * audio_port = object_new (Port);
+          Port * audio_port = new Port ();
           hp->audio_ports[hp->num_audio_ports++] = audio_port;
           port_deserialize_from_json (doc, audio_port_obj, audio_port, error);
         }
@@ -454,7 +454,7 @@ hardware_processor_deserialize_from_json (
       yyjson_val *    midi_port_obj = NULL;
       while ((midi_port_obj = yyjson_arr_iter_next (&midi_ports_it)))
         {
-          Port * midi_port = object_new (Port);
+          Port * midi_port = new Port ();
           hp->midi_ports[hp->num_midi_ports++] = midi_port;
           port_deserialize_from_json (doc, midi_port_obj, midi_port, error);
         }
@@ -477,16 +477,16 @@ audio_engine_deserialize_from_json (
   engine->frames_per_tick =
     yyjson_get_real (yyjson_obj_iter_get (&it, "framesPerTick"));
   yyjson_val * monitor_out_obj = yyjson_obj_iter_get (&it, "monitorOut");
-  engine->monitor_out = object_new (StereoPorts);
+  engine->monitor_out = new StereoPorts ();
   stereo_ports_deserialize_from_json (
     doc, monitor_out_obj, engine->monitor_out, error);
   yyjson_val * midi_editor_manual_press_obj =
     yyjson_obj_iter_get (&it, "midiEditorManualPress");
-  engine->midi_editor_manual_press = object_new (Port);
+  engine->midi_editor_manual_press = new Port ();
   port_deserialize_from_json (
     doc, midi_editor_manual_press_obj, engine->midi_editor_manual_press, error);
   yyjson_val * midi_in_obj = yyjson_obj_iter_get (&it, "midiIn");
-  engine->midi_in = object_new (Port);
+  engine->midi_in = new Port ();
   port_deserialize_from_json (doc, midi_in_obj, engine->midi_in, error);
   yyjson_val * transport_obj = yyjson_obj_iter_get (&it, "transport");
   engine->transport = object_new (Transport);

@@ -150,53 +150,48 @@ transport_new (AudioEngine * engine)
   /*}*/
 
   /* create ports */
-  self->roll = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Roll");
-  self->roll->id.sym = g_strdup ("roll");
+  self->roll = new Port (PortType::Event, PortFlow::Input, "Roll");
+  self->roll->id_.sym_ = ("roll");
   self->roll->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->roll->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->roll->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_ROLL;
+  self->roll->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->roll->id_.flags2_ |= PortIdentifier::Flags2::TRANSPORT_ROLL;
 
-  self->stop = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Stop");
-  self->stop->id.sym = g_strdup ("stop");
+  self->stop = new Port (PortType::Event, PortFlow::Input, "Stop");
+  self->stop->id_.sym_ = ("stop");
   self->stop->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->stop->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->stop->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_STOP;
+  self->stop->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->stop->id_.flags2_ |= PortIdentifier::Flags2::TRANSPORT_STOP;
 
-  self->backward = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Backward");
-  self->backward->id.sym = g_strdup ("backward");
+  self->backward = new Port (PortType::Event, PortFlow::Input, "Backward");
+  self->backward->id_.sym_ = ("backward");
   self->backward->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->backward->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->backward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_BACKWARD;
+  self->backward->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->backward->id_.flags2_ |= PortIdentifier::Flags2::TRANSPORT_BACKWARD;
 
-  self->forward = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Forward");
-  self->forward->id.sym = g_strdup ("forward");
+  self->forward = new Port (PortType::Event, PortFlow::Input, "Forward");
+  self->forward->id_.sym_ = ("forward");
   self->forward->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->forward->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->forward->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_FORWARD;
+  self->forward->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->forward->id_.flags2_ |= PortIdentifier::Flags2::TRANSPORT_FORWARD;
 
-  self->loop_toggle = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Loop toggle");
-  self->loop_toggle->id.sym = g_strdup ("loop_toggle");
+  self->loop_toggle = new Port (PortType::Event, PortFlow::Input, "Loop toggle");
+  self->loop_toggle->id_.sym_ = ("loop_toggle");
   self->loop_toggle->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->loop_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->loop_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE;
+  self->loop_toggle->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->loop_toggle->id_.flags2_ |=
+    PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE;
 
-  self->rec_toggle = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "Rec toggle");
-  self->rec_toggle->id.sym = g_strdup ("rec_toggle");
+  self->rec_toggle = new Port (PortType::Event, PortFlow::Input, "Rec toggle");
+  self->rec_toggle->id_.sym_ = ("rec_toggle");
   self->rec_toggle->set_owner (
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT, self);
-  self->rec_toggle->id.flags |= PortIdentifier::Flags::TOGGLE;
-  self->rec_toggle->id.flags2 |= PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE;
+  self->rec_toggle->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
+  self->rec_toggle->id_.flags2_ |= PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE;
 
   init_common (self);
 
@@ -226,7 +221,7 @@ transport_clone (const Transport * src)
 
 #define CLONE_PORT_IF_EXISTS(x) \
   if (src->x) \
-  self->x = port_clone (src->x)
+  self->x = new Port (src->x->clone ())
 
   CLONE_PORT_IF_EXISTS (roll);
   CLONE_PORT_IF_EXISTS (stop);
@@ -652,7 +647,7 @@ transport_move_playhead (
                   if (midi_note_hit (midi_note, PLAYHEAD->frames))
                     {
                       MidiEvents * midi_events =
-                        track->processor->piano_roll->midi_events;
+                        track->processor->piano_roll->midi_events_;
 
                       zix_sem_wait (&midi_events->access_sem);
                       midi_events_add_note_off (
@@ -1222,12 +1217,12 @@ transport_free (Transport * self)
 {
   zix_sem_destroy (&self->paused);
 
-  object_free_w_func_and_null (port_free, self->roll);
-  object_free_w_func_and_null (port_free, self->stop);
-  object_free_w_func_and_null (port_free, self->backward);
-  object_free_w_func_and_null (port_free, self->forward);
-  object_free_w_func_and_null (port_free, self->loop_toggle);
-  object_free_w_func_and_null (port_free, self->rec_toggle);
+  object_delete_and_null (self->roll);
+  object_delete_and_null (self->stop);
+  object_delete_and_null (self->backward);
+  object_delete_and_null (self->forward);
+  object_delete_and_null (self->loop_toggle);
+  object_delete_and_null (self->rec_toggle);
 
   object_zero_and_free (self);
 }

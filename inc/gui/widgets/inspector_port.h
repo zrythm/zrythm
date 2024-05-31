@@ -58,7 +58,7 @@ typedef struct _InspectorPortWidget
   /** Caches from the port. */
   float minf;
   float maxf;
-  float zerof;
+  float zerof_;
 
   /** Normalized value at the start of an action. */
   float normalized_init_port_val;

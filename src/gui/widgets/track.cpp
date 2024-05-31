@@ -743,7 +743,7 @@ show_context_menu (TrackWidget * self, double x, double y)
       g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
     }
 
-  if (track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (track->out_signal_type == PortType::Audio)
     {
       GMenu * bounce_submenu = g_menu_new ();
 
@@ -1926,18 +1926,18 @@ track_widget_new (Track * track)
 
       switch (track->out_signal_type)
         {
-        case ZPortType::Z_PORT_TYPE_EVENT:
+        case PortType::Event:
           meter_widget_setup (
             self->meter_l, self->track->channel->midi_out, true);
           gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
           break;
-        case ZPortType::Z_PORT_TYPE_AUDIO:
+        case PortType::Audio:
           meter_widget_setup (
-            self->meter_l, self->track->channel->stereo_out->l, true);
+            self->meter_l, &self->track->channel->stereo_out->get_l (), true);
           meter_widget_setup (
-            self->meter_r, self->track->channel->stereo_out->r, true);
+            self->meter_r, &self->track->channel->stereo_out->get_r (), true);
           break;
         default:
           break;

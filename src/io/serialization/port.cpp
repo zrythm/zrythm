@@ -28,42 +28,44 @@ port_identifier_serialize_to_json (
   const PortIdentifier * pi,
   GError **              error)
 {
-  if (pi->label)
+  if (!pi->label_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "label", pi->label);
+      yyjson_mut_obj_add_str (doc, pi_obj, "label", pi->label_.c_str ());
     }
-  if (pi->sym)
+  if (!pi->sym_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "symbol", pi->sym);
+      yyjson_mut_obj_add_str (doc, pi_obj, "symbol", pi->sym_.c_str ());
     }
-  if (pi->uri)
+  if (!pi->uri_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "uri", pi->uri);
+      yyjson_mut_obj_add_str (doc, pi_obj, "uri", pi->uri_.c_str ());
     }
-  if (pi->comment)
+  if (!pi->comment_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "comment", pi->comment);
+      yyjson_mut_obj_add_str (doc, pi_obj, "comment", pi->comment_.c_str ());
     }
-  yyjson_mut_obj_add_int (doc, pi_obj, "ownerType", (int64_t) pi->owner_type);
-  yyjson_mut_obj_add_int (doc, pi_obj, "type", (int64_t) pi->type);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flow", (int64_t) pi->flow);
-  yyjson_mut_obj_add_int (doc, pi_obj, "unit", (int64_t) pi->unit);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flags", (int64_t) pi->flags);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flags2", (int64_t) pi->flags2);
-  yyjson_mut_obj_add_uint (doc, pi_obj, "trackNameHash", pi->track_name_hash);
+  yyjson_mut_obj_add_int (doc, pi_obj, "ownerType", (int64_t) pi->owner_type_);
+  yyjson_mut_obj_add_int (doc, pi_obj, "type", (int64_t) pi->type_);
+  yyjson_mut_obj_add_int (doc, pi_obj, "flow", (int64_t) pi->flow_);
+  yyjson_mut_obj_add_int (doc, pi_obj, "unit", (int64_t) pi->unit_);
+  yyjson_mut_obj_add_int (doc, pi_obj, "flags", (int64_t) pi->flags_);
+  yyjson_mut_obj_add_int (doc, pi_obj, "flags2", (int64_t) pi->flags2_);
+  yyjson_mut_obj_add_uint (doc, pi_obj, "trackNameHash", pi->track_name_hash_);
   yyjson_mut_val * plugin_id_obj =
     yyjson_mut_obj_add_obj (doc, pi_obj, "pluginId");
   plugin_identifier_serialize_to_json (
-    doc, plugin_id_obj, &pi->plugin_id, error);
-  if (pi->port_group)
+    doc, plugin_id_obj, &pi->plugin_id_, error);
+  if (!pi->port_group_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "portGroup", pi->port_group);
+      yyjson_mut_obj_add_str (
+        doc, pi_obj, "portGroup", pi->port_group_.c_str ());
     }
-  if (pi->ext_port_id)
+  if (!pi->ext_port_id_.empty ())
     {
-      yyjson_mut_obj_add_str (doc, pi_obj, "externalPortId", pi->ext_port_id);
+      yyjson_mut_obj_add_str (
+        doc, pi_obj, "externalPortId", pi->ext_port_id_.c_str ());
     }
-  yyjson_mut_obj_add_int (doc, pi_obj, "portIndex", pi->port_index);
+  yyjson_mut_obj_add_int (doc, pi_obj, "portIndex", pi->port_index_);
   return true;
 }
 
@@ -75,17 +77,17 @@ port_serialize_to_json (
   GError **        error)
 {
   yyjson_mut_val * pi_id_obj = yyjson_mut_obj_add_obj (doc, port_obj, "id");
-  port_identifier_serialize_to_json (doc, pi_id_obj, &port->id, error);
+  port_identifier_serialize_to_json (doc, pi_id_obj, &port->id_, error);
   yyjson_mut_obj_add_bool (
-    doc, port_obj, "exposedToBackend", port->exposed_to_backend);
-  yyjson_mut_obj_add_real (doc, port_obj, "control", port->control);
-  yyjson_mut_obj_add_real (doc, port_obj, "minf", port->minf);
-  yyjson_mut_obj_add_real (doc, port_obj, "maxf", port->maxf);
-  yyjson_mut_obj_add_real (doc, port_obj, "zerof", port->zerof);
-  yyjson_mut_obj_add_real (doc, port_obj, "deff", port->deff);
+    doc, port_obj, "exposedToBackend", port->exposed_to_backend_);
+  yyjson_mut_obj_add_real (doc, port_obj, "control", port->control_);
+  yyjson_mut_obj_add_real (doc, port_obj, "minf", port->minf_);
+  yyjson_mut_obj_add_real (doc, port_obj, "maxf", port->maxf_);
+  yyjson_mut_obj_add_real (doc, port_obj, "zerof_", port->zerof_);
+  yyjson_mut_obj_add_real (doc, port_obj, "deff", port->deff_);
   yyjson_mut_obj_add_int (
-    doc, port_obj, "carlaParameterId", port->carla_param_id);
-  yyjson_mut_obj_add_real (doc, port_obj, "baseValue", port->base_value);
+    doc, port_obj, "carlaParameterId", port->carla_param_id_);
+  yyjson_mut_obj_add_real (doc, port_obj, "baseValue", port->base_value_);
   return true;
 }
 
@@ -97,9 +99,9 @@ stereo_ports_serialize_to_json (
   GError **           error)
 {
   yyjson_mut_val * l_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "l");
-  port_serialize_to_json (doc, l_obj, sp->l, error);
+  port_serialize_to_json (doc, l_obj, &sp->get_l (), error);
   yyjson_mut_val * r_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "r");
-  port_serialize_to_json (doc, r_obj, sp->r, error);
+  port_serialize_to_json (doc, r_obj, &sp->get_r (), error);
   return true;
 }
 
@@ -187,48 +189,48 @@ port_identifier_deserialize_from_json (
   yyjson_val *    label_obj = yyjson_obj_iter_get (&it, "label");
   if (label_obj)
     {
-      pi->label = g_strdup (yyjson_get_str (label_obj));
+      pi->label_ = g_strdup (yyjson_get_str (label_obj));
     }
   yyjson_val * sym_obj = yyjson_obj_iter_get (&it, "symbol");
   if (sym_obj)
     {
-      pi->sym = g_strdup (yyjson_get_str (sym_obj));
+      pi->sym_ = g_strdup (yyjson_get_str (sym_obj));
     }
   yyjson_val * uri_obj = yyjson_obj_iter_get (&it, "uri");
   if (uri_obj)
     {
-      pi->uri = g_strdup (yyjson_get_str (uri_obj));
+      pi->uri_ = g_strdup (yyjson_get_str (uri_obj));
     }
   yyjson_val * comment_obj = yyjson_obj_iter_get (&it, "comment");
   if (comment_obj)
     {
-      pi->comment = g_strdup (yyjson_get_str (comment_obj));
+      pi->comment_ = g_strdup (yyjson_get_str (comment_obj));
     }
-  pi->owner_type = (PortIdentifier::OwnerType) yyjson_get_int (
+  pi->owner_type_ = (PortIdentifier::OwnerType) yyjson_get_int (
     yyjson_obj_iter_get (&it, "ownerType"));
-  pi->type = (ZPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  pi->flow = (ZPortFlow) yyjson_get_int (yyjson_obj_iter_get (&it, "flow"));
-  pi->unit = (PortUnit) yyjson_get_int (yyjson_obj_iter_get (&it, "unit"));
-  pi->flags =
+  pi->type_ = (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
+  pi->flow_ = (PortFlow) yyjson_get_int (yyjson_obj_iter_get (&it, "flow"));
+  pi->unit_ = (PortUnit) yyjson_get_int (yyjson_obj_iter_get (&it, "unit"));
+  pi->flags_ =
     (PortIdentifier::Flags) yyjson_get_int (yyjson_obj_iter_get (&it, "flags"));
-  pi->flags2 = (PortIdentifier::Flags2) yyjson_get_int (
+  pi->flags2_ = (PortIdentifier::Flags2) yyjson_get_int (
     yyjson_obj_iter_get (&it, "flags2"));
-  pi->track_name_hash =
+  pi->track_name_hash_ =
     yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
   yyjson_val * plugin_id_obj = yyjson_obj_iter_get (&it, "pluginId");
   plugin_identifier_deserialize_from_json (
-    doc, plugin_id_obj, &pi->plugin_id, error);
+    doc, plugin_id_obj, &pi->plugin_id_, error);
   yyjson_val * port_group_obj = yyjson_obj_iter_get (&it, "portGroup");
   if (port_group_obj)
     {
-      pi->port_group = g_strdup (yyjson_get_str (port_group_obj));
+      pi->port_group_ = g_strdup (yyjson_get_str (port_group_obj));
     }
   yyjson_val * ext_port_id_obj = yyjson_obj_iter_get (&it, "externalPortId");
   if (ext_port_id_obj)
     {
-      pi->ext_port_id = g_strdup (yyjson_get_str (ext_port_id_obj));
+      pi->ext_port_id_ = g_strdup (yyjson_get_str (ext_port_id_obj));
     }
-  pi->port_index = yyjson_get_int (yyjson_obj_iter_get (&it, "portIndex"));
+  pi->port_index_ = yyjson_get_int (yyjson_obj_iter_get (&it, "portIndex"));
   return true;
 }
 
@@ -241,22 +243,23 @@ port_deserialize_from_json (
 {
   yyjson_obj_iter it = yyjson_obj_iter_with (port_obj);
   yyjson_val *    id_obj = yyjson_obj_iter_get (&it, "id");
-  port_identifier_deserialize_from_json (doc, id_obj, &port->id, error);
-  port->exposed_to_backend =
+  port_identifier_deserialize_from_json (doc, id_obj, &port->id_, error);
+  port->exposed_to_backend_ =
     yyjson_get_bool (yyjson_obj_iter_get (&it, "exposedToBackend"));
-  port->control = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "control"));
-  port->minf = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "minf"));
-  port->maxf = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "maxf"));
-  port->zerof = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "zerof"));
-  port->deff = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "deff"));
-  port->carla_param_id =
+  port->control_ =
+    (float) yyjson_get_real (yyjson_obj_iter_get (&it, "control"));
+  port->minf_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "minf"));
+  port->maxf_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "maxf"));
+  port->zerof_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "zerof_"));
+  port->deff_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "deff"));
+  port->carla_param_id_ =
     yyjson_get_int (yyjson_obj_iter_get (&it, "carlaParameterId"));
   yyjson_val * base_val_obj = yyjson_obj_iter_get (&it, "baseValue");
   if (base_val_obj) /* added in 1.7 */
     {
-      port->base_value = (float) yyjson_get_real (base_val_obj);
+      port->base_value_ = (float) yyjson_get_real (base_val_obj);
     }
-  port->magic = PORT_MAGIC;
+  port->magic_ = PORT_MAGIC;
   return true;
 }
 
@@ -269,11 +272,9 @@ stereo_ports_deserialize_from_json (
 {
   yyjson_obj_iter it = yyjson_obj_iter_with (sp_obj);
   yyjson_val *    l_obj = yyjson_obj_iter_get (&it, "l");
-  sp->l = object_new (Port);
-  port_deserialize_from_json (doc, l_obj, sp->l, error);
+  port_deserialize_from_json (doc, l_obj, &sp->get_l (), error);
   yyjson_val * r_obj = yyjson_obj_iter_get (&it, "r");
-  sp->r = object_new (Port);
-  port_deserialize_from_json (doc, r_obj, sp->r, error);
+  port_deserialize_from_json (doc, r_obj, &sp->get_r (), error);
   return true;
 }
 

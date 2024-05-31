@@ -365,8 +365,8 @@ export_audio (ExportSettings * info)
       dsp_fill (tmp_r, 0.f, nframes);
       for (nframes_t i = 0; i < nframes; i++)
         {
-          tmp_l[i] = P_MASTER_TRACK->channel->stereo_out->l->buf[i];
-          tmp_r[i] = P_MASTER_TRACK->channel->stereo_out->r->buf[i];
+          tmp_l[i] = P_MASTER_TRACK->channel->stereo_out->get_l ().buf_[i];
+          tmp_r[i] = P_MASTER_TRACK->channel->stereo_out->get_r ().buf_[i];
           out_ptr[i * 2] = tmp_l[i];
           out_ptr[i * 2 + 1] = tmp_r[i];
         }
@@ -735,11 +735,13 @@ exporter_prepare_tracks_for_export (
           Track * cur_tr = TRACKLIST->tracks[j];
           if (
             cur_tr->bounce || !track_type_has_channel (cur_tr->type)
-            || cur_tr->out_signal_type != ZPortType::Z_PORT_TYPE_AUDIO)
+            || cur_tr->out_signal_type != PortType::Audio)
             continue;
 
-          PortIdentifier * l_src_id = &cur_tr->channel->fader->stereo_out->l->id;
-          PortIdentifier * l_dest_id = &cur_tr->channel->stereo_out->l->id;
+          PortIdentifier * l_src_id =
+            &cur_tr->channel->fader->stereo_out->get_l ().id_;
+          PortIdentifier * l_dest_id =
+            &cur_tr->channel->stereo_out->get_l ().id_;
           PortConnection * l_conn = port_connections_manager_find_connection (
             PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
           g_return_val_if_fail (l_conn, NULL);
@@ -747,8 +749,10 @@ exporter_prepare_tracks_for_export (
           port_connections_manager_ensure_disconnect (
             PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
 
-          PortIdentifier * r_src_id = &cur_tr->channel->fader->stereo_out->r->id;
-          PortIdentifier * r_dest_id = &cur_tr->channel->stereo_out->r->id;
+          PortIdentifier * r_src_id =
+            &cur_tr->channel->fader->stereo_out->get_r ().id_;
+          PortIdentifier * r_dest_id =
+            &cur_tr->channel->stereo_out->get_r ().id_;
           PortConnection * r_conn = port_connections_manager_find_connection (
             PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
           g_return_val_if_fail (r_conn, NULL);

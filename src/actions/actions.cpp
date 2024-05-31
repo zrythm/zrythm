@@ -18,7 +18,6 @@
 #include "dsp/audio_region.h"
 #include "dsp/automation_function.h"
 #include "dsp/graph.h"
-#include "dsp/graph_export.h"
 #include "dsp/instrument_track.h"
 #include "dsp/marker.h"
 #include "dsp/marker_track.h"
@@ -2876,7 +2875,7 @@ DEFINE_SIMPLE (activate_move_automation_regions)
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   arranger_selections_action_perform_move_timeline (
-    TL_SELECTIONS, 0, 0, 0, &port->id, F_NOT_ALREADY_MOVED, NULL);
+    TL_SELECTIONS, 0, 0, 0, &port->id_, F_NOT_ALREADY_MOVED, NULL);
 }
 
 DEFINE_SIMPLE (activate_add_region)
@@ -3462,12 +3461,12 @@ DEFINE_SIMPLE (activate_reset_stereo_balance)
   sscanf (str, "%p", &port);
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
-  Track * track = port_get_track (port, true);
+  Track * track = port->get_track (true);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_edit_single_float (
-    EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, track, port->control, 0.5f,
-    false, &err);
+    EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, track, port->control_,
+    0.5f, false, &err);
   if (!ret)
     {
       HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
@@ -3620,10 +3619,10 @@ DEFINE_SIMPLE (activate_reset_control)
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   GError * err = NULL;
-  bool     ret = port_action_perform_reset_control (&port->id, &err);
+  bool     ret = port_action_perform_reset_control (&port->id_, &err);
   if (!ret)
     {
-      HANDLE_ERROR (err, _ ("Failed to reset %s"), port->id.label);
+      HANDLE_ERROR (err, _ ("Failed to reset %s"), port->get_label ().c_str ());
     }
 }
 
@@ -3643,14 +3642,14 @@ DEFINE_SIMPLE (activate_port_connection_remove)
 {
   GError * err = NULL;
   bool     ret = port_connection_action_perform_disconnect (
-    &MW_PORT_CONNECTIONS_TREE->src_port->id,
-    &MW_PORT_CONNECTIONS_TREE->dest_port->id, &err);
+    &MW_PORT_CONNECTIONS_TREE->src_port->id_,
+    &MW_PORT_CONNECTIONS_TREE->dest_port->id_, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, _ ("Failed to disconnect %s from %s"),
-        MW_PORT_CONNECTIONS_TREE->src_port->id.label,
-        MW_PORT_CONNECTIONS_TREE->dest_port->id.label);
+        MW_PORT_CONNECTIONS_TREE->src_port->get_label ().c_str (),
+        MW_PORT_CONNECTIONS_TREE->dest_port->get_label ().c_str ());
     }
 }
 

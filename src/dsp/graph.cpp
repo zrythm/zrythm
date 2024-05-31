@@ -234,11 +234,11 @@ connect_plugin (Graph * self, Plugin * pl, bool drop_unnecessary_ports)
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      g_return_if_fail (port_get_plugin (port, 1) != NULL);
+      g_return_if_fail (port->get_plugin (true) != NULL);
       GraphNode * port_node = graph_find_node_from_port (self, port);
       if (
         drop_unnecessary_ports && !port_node
-        && port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+        && port->id_.type_ == PortType::Control)
         {
           continue;
         }
@@ -248,7 +248,7 @@ connect_plugin (Graph * self, Plugin * pl, bool drop_unnecessary_ports)
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      g_return_if_fail (port_get_plugin (port, 1) != NULL);
+      g_return_if_fail (port->get_plugin (1) != NULL);
       GraphNode * port_node = graph_find_node_from_port (self, port);
       g_warn_if_fail (port_node);
       graph_node_connect (pl_node, port_node);
@@ -314,78 +314,69 @@ graph_destroy (Graph * self)
 static GraphNode *
 add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 {
-  PortIdentifier::OwnerType owner = port->id.owner_type;
+  PortIdentifier::OwnerType owner = port->id_.owner_type_;
 
   if (owner == PortIdentifier::OwnerType::PLUGIN)
     {
-      port->plugin = port_get_plugin (port, true);
-      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (port->plugin), NULL);
+      port->plugin_ = port->get_plugin (true);
+      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (port->plugin_), NULL);
     }
 
-  if (port->id.track_name_hash != 0)
+  if (port->id_.track_name_hash_ != 0)
     {
-      port->track = port_get_track (port, true);
-      g_return_val_if_fail (IS_TRACK_AND_NONNULL (port->track), NULL);
+      port->track_ = port->get_track (true);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (port->track_), NULL);
     }
 
   /* reset port sources/dests */
   GPtrArray * srcs = g_ptr_array_new ();
   int         num_srcs = port_connections_manager_get_sources_or_dests (
-    PORT_CONNECTIONS_MGR, srcs, &port->id, true);
-  port->srcs_size = (size_t) num_srcs;
-  port->srcs = object_realloc_n (port->srcs, 0, port->srcs_size, Port *);
-  port->src_connections = object_realloc_n (
-    port->src_connections, 0, port->srcs_size, const PortConnection *);
+    PORT_CONNECTIONS_MGR, srcs, &port->id_, true);
+  port->srcs_.resize (num_srcs);
+  port->src_connections_.resize (num_srcs);
 #if 0
   if (num_srcs > 0)
-    g_debug (
-      "%d sources for %s",
-      num_srcs, port->id.label);
+    g_debug ("%d sources for %s", num_srcs, port->id_.label);
 #endif
   for (int i = 0; i < num_srcs; i++)
     {
       PortConnection * conn = (PortConnection *) g_ptr_array_index (srcs, i);
 
-      port->srcs[i] = Port::find_from_identifier (conn->src_id);
-      g_return_val_if_fail (port->srcs[i], NULL);
-      port->src_connections[i] = conn;
+      port->srcs_[i] = Port::find_from_identifier (conn->src_id);
+      g_return_val_if_fail (port->srcs_[i], NULL);
+      port->src_connections_[i] = conn;
     }
-  port->num_srcs = num_srcs;
   g_ptr_array_unref (srcs);
 
   GPtrArray * dests = g_ptr_array_new ();
   int         num_dests = port_connections_manager_get_sources_or_dests (
-    PORT_CONNECTIONS_MGR, dests, &port->id, false);
-  port->dests_size = (size_t) num_dests;
-  port->dests = object_realloc_n (port->dests, 0, port->dests_size, Port *);
-  port->dest_connections = object_realloc_n (
-    port->dest_connections, 0, port->dests_size, const PortConnection *);
+    PORT_CONNECTIONS_MGR, dests, &port->id_, false);
+  port->dests_.resize (num_dests);
+  port->dest_connections_.resize (num_dests);
 #if 0
   if (num_dests > 0)
-    g_debug (
-      "%d dests for %s",
-      num_dests, port->id.label);
+    g_debug ("%d dests for %s", num_dests, port->id_.label);
 #endif
   for (int i = 0; i < num_dests; i++)
     {
       PortConnection * conn = (PortConnection *) g_ptr_array_index (dests, i);
 
-      port->dests[i] = Port::find_from_identifier (conn->dest_id);
-      g_return_val_if_fail (port->dests[i], NULL);
-      port->dest_connections[i] = conn;
+      port->dests_[i] = Port::find_from_identifier (conn->dest_id);
+      g_return_val_if_fail (port->dests_[i], NULL);
+      port->dest_connections_[i] = conn;
     }
-  port->num_dests = num_dests;
   g_ptr_array_unref (dests);
 
   /* skip unnecessary control ports */
   if (
-    drop_if_unnecessary && port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
+    drop_if_unnecessary && port->id_.type_ == PortType::Control
     && ENUM_BITSET_TEST (
-      PortIdentifier::Flags, port->id.flags, PortIdentifier::Flags::AUTOMATABLE))
+      PortIdentifier::Flags, port->id_.flags_,
+      PortIdentifier::Flags::AUTOMATABLE))
     {
-      AutomationTrack * found_at = port->at;
+      AutomationTrack * found_at = port->at_;
       g_return_val_if_fail (found_at, NULL);
-      if (found_at->num_regions == 0 && port->num_srcs == 0)
+      if (found_at->num_regions == 0 && port->srcs_.size () == 0)
         {
           return NULL;
         }
@@ -393,7 +384,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 
   /* drop ports without sources and dests */
   if (
-    drop_if_unnecessary && port->num_dests == 0 && port->num_srcs == 0
+    drop_if_unnecessary && port->dests_.size () == 0 && port->srcs_.size () == 0
     && owner != PortIdentifier::OwnerType::PLUGIN
     && owner != PortIdentifier::OwnerType::FADER
     && owner != PortIdentifier::OwnerType::TRACK_PROCESSOR
@@ -405,7 +396,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
     && owner != PortIdentifier::OwnerType::HW
     && owner != PortIdentifier::OwnerType::PORT_OWNER_TYPE_TRANSPORT
     && !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, port->id.flags,
+      PortIdentifier::Flags, port->id_.flags_,
       PortIdentifier::Flags::MANUAL_PRESS)))
     {
       return NULL;
@@ -426,36 +417,30 @@ connect_port (Graph * self, Port * port)
 {
   GraphNode * node = graph_find_node_from_port (self, port);
   GraphNode * node2;
-  for (int j = 0; j < port->num_srcs; j++)
+  for (auto &src : port->srcs_)
     {
-      Port * src = port->srcs[j];
       node2 = graph_find_node_from_port (self, src);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
 #if 0
       g_debug ("graph: %s => %s",
-        src->id.label, port->id.label);
+        src->id_.label, port->id_.label);
 #endif
       graph_node_connect (node2, node);
     }
-  for (int j = 0; j < port->num_dests; j++)
+  for (auto &dest : port->dests_)
     {
-      Port * dest = port->dests[j];
       node2 = graph_find_node_from_port (self, dest);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
 #if 0
       g_debug ("graph: %s => %s",
-        port->id.label, dest->id.label);
+        port->id_.label, dest->id_.label);
 #endif
       graph_node_connect (node, node2);
     }
 }
 
-/**
- * Returns the max playback latency of the trigger
- * nodes.
- */
 nframes_t
 graph_get_max_route_playback_latency (Graph * graph, bool use_setup_nodes)
 {
@@ -620,8 +605,8 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
 
       /* add sends */
       if (
-        tr->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO
-        || tr->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+        tr->out_signal_type == PortType::Audio
+        || tr->out_signal_type == PortType::Event)
         {
           for (int j = 0; j < STRIP_SIZE; j++)
             {
@@ -646,23 +631,21 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
   /* add ports */
   Port *      port;
   GPtrArray * ports = g_ptr_array_new ();
-  port_get_all (ports);
+  Port::get_all (ports);
   for (size_t i = 0; i < ports->len; i++)
     {
       port = (Port *) g_ptr_array_index (ports, i);
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
-      if (port->deleting)
+      if (port->deleting_)
         continue;
-      if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
+      if (port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
         {
-          Plugin * port_pl = port_get_plugin (port, 1);
+          Plugin * port_pl = port->get_plugin (1);
           if (port_pl->deleting)
             continue;
         }
 
-      if (
-        port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT
-        && port_is_exposed_to_backend (port))
+      if (port->id_.flow_ == PortFlow::Output && port->is_exposed_to_backend ())
         {
           g_ptr_array_add (self->external_out_ports, port);
         }
@@ -673,13 +656,13 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       if (port_node)
         {
           /*g_debug (*/
-            /*"added port %s", port->id.label);*/
+            /*"added port %s", port->id_.label);*/
         }
       else
         {
 /*#if 0*/
           char label[5000];
-          port_get_full_designation (port, label);
+          port->get_full_designation ( label);
           g_message (
             "%s: skipped port %s",
             __func__, label);
@@ -694,25 +677,25 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
 
   /* connect the sample processor */
   node = graph_find_node_from_sample_processor (self, SAMPLE_PROCESSOR);
-  port = SAMPLE_PROCESSOR->fader->stereo_out->l;
+  port = &SAMPLE_PROCESSOR->fader->stereo_out->get_l ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
-  port = SAMPLE_PROCESSOR->fader->stereo_out->r;
+  port = &SAMPLE_PROCESSOR->fader->stereo_out->get_r ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
 
   /* connect the monitor fader */
   node = graph_find_node_from_monitor_fader (self, MONITOR_FADER);
-  port = MONITOR_FADER->stereo_in->l;
+  port = &MONITOR_FADER->stereo_in->get_l ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node2, node);
-  port = MONITOR_FADER->stereo_in->r;
+  port = &MONITOR_FADER->stereo_in->get_r ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node2, node);
-  port = MONITOR_FADER->stereo_out->l;
+  port = &MONITOR_FADER->stereo_out->get_l ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
-  port = MONITOR_FADER->stereo_out->r;
+  port = &MONITOR_FADER->stereo_out->get_r ();
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
 
@@ -761,7 +744,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
 
       /* connect the track */
       node = graph_find_node_from_track (self, tr, true);
-      if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+      if (tr->in_signal_type == PortType::Audio)
         {
           if (tr->type == TrackType::TRACK_TYPE_AUDIO)
             {
@@ -774,22 +757,22 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
               graph_node_connect (node2, node);
               graph_node_connect (initial_processor_node, node2);
             }
-          port = tr->processor->stereo_in->l;
+          port = &tr->processor->stereo_in->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
           graph_node_connect (initial_processor_node, node2);
-          port = tr->processor->stereo_in->r;
+          port = &tr->processor->stereo_in->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
           graph_node_connect (initial_processor_node, node2);
-          port = tr->processor->stereo_out->l;
+          port = &tr->processor->stereo_out->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
-          port = tr->processor->stereo_out->r;
+          port = &tr->processor->stereo_out->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
-      else if (tr->in_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+      else if (tr->in_signal_type == PortType::Event)
         {
           if (
             track_type_has_piano_roll (tr->type)
@@ -887,12 +870,12 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
                   for (int k = 0; k < pl->num_in_ports; k++)
                     {
                       Port * pl_port = pl->in_ports[k];
-                      g_return_if_fail (port_get_plugin (pl_port, 1) != NULL);
+                      g_return_if_fail (pl_port->get_plugin (1) != NULL);
                       GraphNode * port_node =
                         graph_find_node_from_port (self, pl_port);
                       if (
                         drop_unnecessary_ports && !port_node
-                        && port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+                        && port->id_.type_ == PortType::Control)
                         {
                           continue;
                         }
@@ -900,7 +883,7 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
                         {
                           g_critical (
                             "failed to find node for port %s",
-                            pl_port->id.label);
+                            pl_port->get_label_as_c_str ());
                           return;
                         }
                       graph_node_connect (node, port_node);
@@ -945,18 +928,18 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       if (fader->type == FaderType::FADER_TYPE_AUDIO_CHANNEL)
         {
           /* connect ins */
-          port = fader->stereo_in->l;
+          port = &fader->stereo_in->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
-          port = fader->stereo_in->r;
+          port = &fader->stereo_in->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
 
           /* connect outs */
-          port = fader->stereo_out->l;
+          port = &fader->stereo_out->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
-          port = fader->stereo_out->r;
+          port = &fader->stereo_out->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
@@ -993,16 +976,16 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
       g_warn_if_fail (node);
       if (prefader->type == FaderType::FADER_TYPE_AUDIO_CHANNEL)
         {
-          port = prefader->stereo_in->l;
+          port = &prefader->stereo_in->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
-          port = prefader->stereo_in->r;
+          port = &prefader->stereo_in->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
-          port = prefader->stereo_out->l;
+          port = &prefader->stereo_out->get_l ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
-          port = prefader->stereo_out->r;
+          port = &prefader->stereo_out->get_r ();
           node2 = graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
@@ -1050,22 +1033,26 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
           if (node2)
             graph_node_connect (node2, node);
 
-          if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+          if (tr->out_signal_type == PortType::Event)
             {
               node2 = graph_find_node_from_port (self, send->midi_in);
               graph_node_connect (node2, node);
               node2 = graph_find_node_from_port (self, send->midi_out);
               graph_node_connect (node, node2);
             }
-          else if (tr->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+          else if (tr->out_signal_type == PortType::Audio)
             {
-              node2 = graph_find_node_from_port (self, send->stereo_in->l);
+              node2 =
+                graph_find_node_from_port (self, &send->stereo_in->get_l ());
               graph_node_connect (node2, node);
-              node2 = graph_find_node_from_port (self, send->stereo_in->r);
+              node2 =
+                graph_find_node_from_port (self, &send->stereo_in->get_r ());
               graph_node_connect (node2, node);
-              node2 = graph_find_node_from_port (self, send->stereo_out->l);
+              node2 =
+                graph_find_node_from_port (self, &send->stereo_out->get_l ());
               graph_node_connect (node, node2);
-              node2 = graph_find_node_from_port (self, send->stereo_out->r);
+              node2 =
+                graph_find_node_from_port (self, &send->stereo_out->get_r ());
               graph_node_connect (node, node2);
             }
         }
@@ -1074,11 +1061,11 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
   for (size_t i = 0; i < ports->len; i++)
     {
       port = (Port *) g_ptr_array_index (ports, i);
-      if (G_UNLIKELY (port->deleting))
+      if (G_UNLIKELY (port->deleting_))
         continue;
-      if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
+      if (port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
         {
-          Plugin * port_pl = port_get_plugin (port, 1);
+          Plugin * port_pl = port->get_plugin (1);
           if (G_UNLIKELY (port_pl->deleting))
             continue;
         }
@@ -1170,7 +1157,9 @@ graph_validate_with_connection (Graph * self, const Port * src, const Port * des
   EngineState state;
   engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
 
-  g_message ("validating for %s to %s", src->id.label, dest->id.label);
+  g_message (
+    "validating for %s to %s", src->get_label ().c_str (),
+    dest->get_label ().c_str ());
 
   graph_setup (self, Z_F_NO_DROP_UNNECESSARY, Z_F_NO_RECHAIN);
 

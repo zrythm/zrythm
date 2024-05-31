@@ -114,7 +114,7 @@ plugin_strip_expander_widget_setup (
     {
     case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
       strcpy (fullstr, _ ("Inserts"));
-      is_midi = track && track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT;
+      is_midi = track && track->out_signal_type == PortType::Event;
       break;
     case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
       strcpy (fullstr, "MIDI FX");

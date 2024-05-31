@@ -33,7 +33,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
 {
   /* verify that the out signal type is the same for
    * all selected tracks */
-  ZPortType signal_type;
+  PortType signal_type;
   g_return_val_if_fail (sel->num_tracks > 0, NULL);
   for (int i = 0; i < sel->num_tracks; i++)
     {
@@ -85,7 +85,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
   switch (result)
     {
     case GTK_RESPONSE_OK:
-      if (signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+      if (signal_type == PortType::Audio)
         {
           GError * err = NULL;
           bool     ret = track_create_empty_at_idx_with_action (
@@ -98,7 +98,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
                    "track"));
             }
         }
-      else if (signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+      else if (signal_type == PortType::Event)
         {
           GError * err = NULL;
           bool     ret = track_create_empty_at_idx_with_action (

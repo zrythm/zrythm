@@ -59,7 +59,7 @@ tick_cb (
       bool port_is_toggle =
         self->port
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, self->port->id.flags,
+          PortIdentifier::Flags, self->port->id_.flags_,
           PortIdentifier::Flags::TOGGLE);
 
       gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), true);

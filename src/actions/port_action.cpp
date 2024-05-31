@@ -5,8 +5,6 @@
 #include "dsp/control_port.h"
 #include "dsp/port.h"
 #include "dsp/router.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
@@ -59,7 +57,7 @@ port_action_new_reset_control (PortIdentifier * port_id, GError ** error)
   Port * port = Port::find_from_identifier (port_id);
 
   return port_action_new (
-    PortActionType::PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff,
+    PortActionType::PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff_,
     F_NOT_NORMALIZED, error);
 }
 
@@ -105,8 +103,7 @@ port_action_do_or_undo (PortAction * self, bool _do)
     case PortActionType::PORT_ACTION_SET_CONTROL_VAL:
       {
         float val_before = control_port_get_val (port);
-        port_set_control_value (
-          port, self->val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+        port->set_control_value (self->val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
         self->val = val_before;
       }
       break;

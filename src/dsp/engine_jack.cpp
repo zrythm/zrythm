@@ -681,10 +681,10 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
   gchar ** devices =
     g_settings_get_strv (S_MONITOR, left ? "l-devices" : "r-devices");
 
-  Port * port = left ? self->monitor_out->l : self->monitor_out->r;
+  Port &port = left ? self->monitor_out->get_l () : self->monitor_out->get_r ();
 
   /* disconnect port */
-  int ret = jack_port_disconnect (self->client, JACK_PORT_T (port->data));
+  int ret = jack_port_disconnect (self->client, JACK_PORT_T (port.data_));
   if (ret)
     {
       char msg[600];
@@ -708,7 +708,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
         {
           /*g_return_val_if_reached (-1);*/
           ret = jack_connect (
-            self->client, jack_port_name (JACK_PORT_T (port->data)),
+            self->client, jack_port_name (JACK_PORT_T (port.data_)),
             ext_port->full_name);
           if (ret)
             {
@@ -744,7 +744,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
         }
 
       ret = jack_connect (
-        self->client, jack_port_name (JACK_PORT_T (port->data)),
+        self->client, jack_port_name (JACK_PORT_T (port.data_)),
         left ? ports[0] : ports[1]);
       if (ret)
         {
@@ -798,7 +798,8 @@ engine_jack_activate (AudioEngine * self, bool activate)
        */
 
       g_return_val_if_fail (
-        self->monitor_out->l->data && self->monitor_out->r->data, -1);
+        self->monitor_out->get_l ().data_ && self->monitor_out->get_r ().data_,
+        -1);
 
       g_message ("connecting to system out ports...");
 
@@ -836,14 +837,14 @@ engine_jack_activate (AudioEngine * self, bool activate)
  * Returns the JACK type string.
  */
 const char *
-engine_jack_get_jack_type (ZPortType type)
+engine_jack_get_jack_type (PortType type)
 {
   switch (type)
     {
-    case ZPortType::Z_PORT_TYPE_AUDIO:
+    case PortType::Audio:
       return JACK_DEFAULT_AUDIO_TYPE;
       break;
-    case ZPortType::Z_PORT_TYPE_EVENT:
+    case PortType::Event:
       return JACK_DEFAULT_MIDI_TYPE;
       break;
     default:

@@ -28,13 +28,11 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
   /* get amplitude */
   float amp = -1.f;
   float max_amp = -1.f;
-  if (
-    port->id.type == ZPortType::Z_PORT_TYPE_AUDIO
-    || port->id.type == ZPortType::Z_PORT_TYPE_CV)
+  if (port->id_.type_ == PortType::Audio || port->id_.type_ == PortType::CV)
     {
-      g_return_if_fail (port->audio_ring);
+      g_return_if_fail (port->audio_ring_);
       int    num_cycles = 4;
-      size_t read_space_avail = zix_ring_read_space (port->audio_ring);
+      size_t read_space_avail = zix_ring_read_space (port->audio_ring_);
       size_t size = sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
       size_t blocks_to_read = size == 0 ? 0 : read_space_avail / size;
       /* if no blocks available, skip */
@@ -47,7 +45,7 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
 
       float  buf[read_space_avail];
       size_t blocks_read =
-        zix_ring_peek (port->audio_ring, &buf[0], read_space_avail);
+        zix_ring_peek (port->audio_ring_, &buf[0], read_space_avail);
       blocks_read /= size;
       num_cycles = MIN (num_cycles, (int) blocks_read);
       size_t start_index =
@@ -56,7 +54,8 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
       if (blocks_read == 0)
         {
           g_message (
-            "%s: blocks read for port %s is 0", __func__, port->id.label);
+            "%s: blocks read for port %s is 0", __func__,
+            port->get_label_as_c_str ());
           *val = 1e-20f;
           *max = 1e-20f;
           return;
@@ -72,19 +71,19 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
           break;
         case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
           true_peak_dsp_process (
-            self->true_peak_processor, &port->buf[0],
+            self->true_peak_processor, &port->buf_[0],
             (int) AUDIO_ENGINE->block_length);
           amp = true_peak_dsp_read_f (self->true_peak_processor);
           break;
         case MeterAlgorithm::METER_ALGORITHM_K:
           kmeter_dsp_process (
-            self->kmeter_processor, &port->buf[0],
+            self->kmeter_processor, &port->buf_[0],
             (int) AUDIO_ENGINE->block_length);
           kmeter_dsp_read (self->kmeter_processor, &amp, &max_amp);
           break;
         case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
           peak_dsp_process (
-            self->peak_processor, &port->buf[0],
+            self->peak_processor, &port->buf_[0],
             (int) AUDIO_ENGINE->block_length);
           peak_dsp_read (self->peak_processor, &amp, &max_amp);
           break;
@@ -92,13 +91,14 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
           break;
         }
     }
-  else if (port->id.type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (port->id_.type_ == PortType::Event)
     {
       bool on = false;
-      if (port->write_ring_buffers)
+      if (port->write_ring_buffers_)
         {
           MidiEvent event;
-          while (zix_ring_peek (port->midi_ring, &event, sizeof (MidiEvent)) > 0)
+          while (
+            zix_ring_peek (port->midi_ring_, &event, sizeof (MidiEvent)) > 0)
             {
               if (event.systime > self->last_midi_trigger_time)
                 {
@@ -110,12 +110,12 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
         }
       else
         {
-          on = port->last_midi_event_time > self->last_midi_trigger_time;
+          on = port->last_midi_event_time_ > self->last_midi_trigger_time;
           /*g_atomic_int_compare_and_exchange (*/
           /*&port->has_midi_events, 1, 0);*/
           if (on)
             {
-              self->last_midi_trigger_time = port->last_midi_event_time;
+              self->last_midi_trigger_time = port->last_midi_event_time_;
               /*g_get_monotonic_time ();*/
             }
         }
@@ -179,14 +179,12 @@ meter_new_for_port (Port * port)
   self->port = port;
 
   /* master */
-  if (
-    port->id.type == ZPortType::Z_PORT_TYPE_AUDIO
-    || port->id.type == ZPortType::Z_PORT_TYPE_CV)
+  if (port->id_.type_ == PortType::Audio || port->id_.type_ == PortType::CV)
     {
       bool is_master_fader = false;
-      if (port->id.owner_type == PortIdentifier::OwnerType::TRACK)
+      if (port->id_.owner_type_ == PortIdentifier::OwnerType::TRACK)
         {
-          Track * track = port_get_track (port, true);
+          Track * track = port->get_track (true);
           if (track->type == TrackType::TRACK_TYPE_MASTER)
             {
               is_master_fader = true;
@@ -206,7 +204,7 @@ meter_new_for_port (Port * port)
           peak_dsp_init (self->peak_processor, AUDIO_ENGINE->sample_rate);
         }
     }
-  else if (port->id.type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (port->id_.type_ == PortType::Event)
     {
     }
 

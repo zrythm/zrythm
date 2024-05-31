@@ -304,7 +304,7 @@ editable_label_changed_source (gpointer user_data)
 
       float val;
       int   res = sscanf (text, "%f", &val);
-      if (res != 1 || res == EOF || val < port->minf || val > port->maxf)
+      if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
         {
           ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
         }
@@ -666,11 +666,11 @@ item_factory_bind_cb (
               if (string_is_equal (self->column_name, _ ("Destination")))
                 {
                   Port * port = Port::find_from_identifier (&mm->dest_id);
-                  port_get_full_designation (port, str);
+                  port->get_full_designation (str);
 
                   char min_str[40], max_str[40];
-                  sprintf (min_str, "%.4f", (double) port->minf);
-                  sprintf (max_str, "%.4f", (double) port->maxf);
+                  sprintf (min_str, "%.4f", (double) port->minf_);
+                  sprintf (max_str, "%.4f", (double) port->maxf_);
                 }
             }
             break;
@@ -836,7 +836,7 @@ item_factory_bind_cb (
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT:
             {
               Port * port = (Port *) obj->obj;
-              port_get_full_designation (port, str);
+              port->get_full_designation (str);
             }
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION:

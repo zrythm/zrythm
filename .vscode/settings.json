@@ -16,5 +16,6 @@
         "-Db_sanitize=none"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
+    "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,
     "clang-tidy.buildPath": "builddir"
 }

@@ -433,7 +433,7 @@ plugin_deserialize_from_json (
       yyjson_val *    port_obj = NULL;
       while ((port_obj = yyjson_arr_iter_next (&port_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           plugin->in_ports[plugin->num_in_ports++] = port;
           port_deserialize_from_json (doc, port_obj, port, error);
         }
@@ -447,7 +447,7 @@ plugin_deserialize_from_json (
       yyjson_val *    port_obj = NULL;
       while ((port_obj = yyjson_arr_iter_next (&port_it)))
         {
-          Port * port = object_new (Port);
+          Port * port = new Port ();
           plugin->out_ports[plugin->num_out_ports++] = port;
           port_deserialize_from_json (doc, port_obj, port, error);
         }

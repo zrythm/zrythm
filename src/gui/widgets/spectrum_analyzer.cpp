@@ -148,24 +148,20 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   size_t   block_size = AUDIO_ENGINE->block_length;
   uint32_t block_size_in_bytes = sizeof (float) * (uint32_t) block_size;
 
-  Port * port = NULL;
   g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
-  if (!P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers)
+  if (!P_MASTER_TRACK->channel->stereo_out->get_l ().write_ring_buffers_)
     {
-      P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers = true;
-      P_MASTER_TRACK->channel->stereo_out->r->write_ring_buffers = true;
+      P_MASTER_TRACK->channel->stereo_out->set_write_ring_buffers (true);
       return;
     }
-  port = P_MASTER_TRACK->channel->stereo_out->l;
-
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  Port &lport = P_MASTER_TRACK->channel->stereo_out->get_l ();
 
   /* if ring not ready yet skip draw */
-  if (!port->audio_ring)
+  if (!lport.audio_ring_)
     return;
 
   /* get the L buffer */
-  uint32_t read_space_avail = zix_ring_read_space (port->audio_ring);
+  uint32_t read_space_avail = zix_ring_read_space (lport.audio_ring_);
   uint32_t blocks_to_read =
     block_size_in_bytes == 0 ? 0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
@@ -178,7 +174,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         self->bufs[0], self->buf_sz[0], self->buf_sz[0], float);
     }
   uint32_t lblocks_read =
-    zix_ring_peek (port->audio_ring, &(self->bufs[0][0]), read_space_avail);
+    zix_ring_peek (lport.audio_ring_, &(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
   uint32_t lstart_index = (lblocks_read - 1) * block_size;
   if (lblocks_read == 0)
@@ -188,8 +184,8 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 
   /* get the R buffer */
-  port = P_MASTER_TRACK->channel->stereo_out->r;
-  read_space_avail = zix_ring_read_space (port->audio_ring);
+  Port &rport = P_MASTER_TRACK->channel->stereo_out->get_r ();
+  read_space_avail = zix_ring_read_space (rport.audio_ring_);
   blocks_to_read = read_space_avail / block_size_in_bytes;
 
   /* if buffer is not filled do not draw */
@@ -202,7 +198,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         self->bufs[1], self->buf_sz[1], self->buf_sz[1], float);
     }
   size_t rblocks_read =
-    zix_ring_peek (port->audio_ring, &(self->bufs[1][0]), read_space_avail);
+    zix_ring_peek (rport.audio_ring_, &(self->bufs[1][0]), read_space_avail);
   rblocks_read /= block_size_in_bytes;
   size_t rstart_index = (rblocks_read - 1) * block_size;
   if (rblocks_read == 0)

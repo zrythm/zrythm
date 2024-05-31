@@ -67,14 +67,14 @@ on_enabled_toggled (
   /* perform an undoable action */
   GError * err = NULL;
   bool     ret = port_connection_action_perform_enable (
-    &src_port->id, &dest_port->id, enabled, &err);
+    &src_port->id_, &dest_port->id_, enabled, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err,
         _ ("Failed to enable connection from %s to "
            "%s"),
-        src_port->id.label, dest_port->id.label);
+        src_port->id_.label_, dest_port->id_.label_);
     }
 }
 
@@ -104,9 +104,9 @@ create_model (void)
         IS_PORT_AND_NONNULL (src_port) && IS_PORT_AND_NONNULL (dest_port), NULL);
 
       char src_path[600];
-      port_get_full_designation (src_port, src_path);
+      src_port->get_full_designation (src_path);
       char dest_path[600];
-      port_get_full_designation (dest_port, dest_path);
+      dest_port->get_full_designation (dest_path);
 
       /* get multiplier */
       char mult_str[40];

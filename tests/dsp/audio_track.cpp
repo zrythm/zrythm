@@ -10,6 +10,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -53,10 +54,9 @@ test_fill_when_region_starts_on_loop_end (void)
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PlayState::PLAYSTATE_ROLLING;
 
-  StereoPorts * ports = stereo_ports_new_generic (
+  StereoPorts * ports = new StereoPorts (
     false, "ports", "ports", PortIdentifier::OwnerType::TRACK, track);
-  ports->l->allocate_bufs ();
-  ports->r->allocate_bufs ();
+  ports->allocate_bufs ();
 
   /* run until loop end and make sure sample is
    * never played */
@@ -73,8 +73,8 @@ test_fill_when_region_starts_on_loop_end (void)
   track_fill_events (track, &time_nfo, NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
-      g_assert_cmpfloat_with_epsilon (ports->l->buf[j], 0.f, 0.0000001f);
-      g_assert_cmpfloat_with_epsilon (ports->r->buf[j], 0.f, 0.0000001f);
+      g_assert_cmpfloat_with_epsilon (ports->get_l ().buf_[j], 0.f, 0.0000001f);
+      g_assert_cmpfloat_with_epsilon (ports->get_r ().buf_[j], 0.f, 0.0000001f);
     }
 
   /* run after loop end and make sure sample is
@@ -90,17 +90,17 @@ test_fill_when_region_starts_on_loop_end (void)
       /* take into account builtin fades */
       if (j == 0)
         {
-          g_assert_true (math_floats_equal (ports->l->buf[j], 0.f));
-          g_assert_true (math_floats_equal (ports->r->buf[j], 0.f));
+          g_assert_true (math_floats_equal (ports->get_l ().buf_[j], 0.f));
+          g_assert_true (math_floats_equal (ports->get_r ().buf_[j], 0.f));
         }
       else
         {
-          g_assert_true (fabsf (ports->l->buf[j]) > 0.0000001f);
-          g_assert_true (fabsf (ports->r->buf[j]) > 0.0000001f);
+          g_assert_true (fabsf (ports->get_l ().buf_[j]) > 0.0000001f);
+          g_assert_true (fabsf (ports->get_r ().buf_[j]) > 0.0000001f);
         }
     }
 
-  object_free_w_func_and_null (stereo_ports_free, ports);
+  object_delete_and_null (ports);
 
   test_helper_zrythm_cleanup ();
 }

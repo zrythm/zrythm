@@ -141,22 +141,22 @@ track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
-      port->magic = PORT_MAGIC;
-      port->track = self;
+      port->magic_ = PORT_MAGIC;
+      port->track_ = self;
       if (track_is_in_active_project (self))
         {
-          g_return_if_fail (port->id.track_name_hash == name_hash);
+          g_return_if_fail (port->id_.track_name_hash_ == name_hash);
 
           /* set automation tracks on ports */
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::AUTOMATABLE))
             {
               AutomationTrack * at =
                 automation_track_find_from_port (port, self, true);
               g_return_if_fail (at);
-              port->at = at;
+              port->at_ = at;
             }
         }
     }
@@ -231,68 +231,68 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
   switch (type)
     {
     case TrackType::TRACK_TYPE_INSTRUMENT:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
+      self->in_signal_type = PortType::Event;
+      self->out_signal_type = PortType::Audio;
       instrument_track_init (self);
       break;
     case TrackType::TRACK_TYPE_AUDIO:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
+      self->in_signal_type = PortType::Audio;
+      self->out_signal_type = PortType::Audio;
       audio_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MASTER:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
+      self->in_signal_type = PortType::Audio;
+      self->out_signal_type = PortType::Audio;
       master_track_init (self);
       break;
     case TrackType::TRACK_TYPE_AUDIO_BUS:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
+      self->in_signal_type = PortType::Audio;
+      self->out_signal_type = PortType::Audio;
       audio_bus_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MIDI_BUS:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
+      self->in_signal_type = PortType::Event;
+      self->out_signal_type = PortType::Event;
       midi_bus_track_init (self);
       break;
     case TrackType::TRACK_TYPE_AUDIO_GROUP:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_AUDIO;
+      self->in_signal_type = PortType::Audio;
+      self->out_signal_type = PortType::Audio;
       audio_group_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MIDI_GROUP:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
+      self->in_signal_type = PortType::Event;
+      self->out_signal_type = PortType::Event;
       midi_group_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MIDI:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
+      self->in_signal_type = PortType::Event;
+      self->out_signal_type = PortType::Event;
       midi_track_init (self);
       break;
     case TrackType::TRACK_TYPE_CHORD:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_EVENT;
+      self->in_signal_type = PortType::Event;
+      self->out_signal_type = PortType::Event;
       chord_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MARKER:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
+      self->in_signal_type = PortType::Unknown;
+      self->out_signal_type = PortType::Unknown;
       marker_track_init (self);
       break;
     case TrackType::TRACK_TYPE_TEMPO:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
+      self->in_signal_type = PortType::Unknown;
+      self->out_signal_type = PortType::Unknown;
       tempo_track_init (self);
       break;
     case TrackType::TRACK_TYPE_MODULATOR:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
+      self->in_signal_type = PortType::Unknown;
+      self->out_signal_type = PortType::Unknown;
       modulator_track_init (self);
       break;
     case TrackType::TRACK_TYPE_FOLDER:
-      self->in_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
-      self->out_signal_type = ZPortType::Z_PORT_TYPE_UNKNOWN;
+      self->in_signal_type = PortType::Unknown;
+      self->out_signal_type = PortType::Unknown;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -310,14 +310,14 @@ track_new (TrackType type, int pos, const char * label, const int with_lane)
 
   if (track_type_can_record (type))
     {
-      self->recording = port_new_with_type_and_owner (
-        ZPortType::Z_PORT_TYPE_CONTROL, ZPortFlow::Z_PORT_FLOW_INPUT,
-        _ ("Track record"), PortIdentifier::OwnerType::TRACK, self);
-      self->recording->id.sym = g_strdup ("track_record");
+      self->recording = new Port (
+        PortType::Control, PortFlow::Input, _ ("Track record"),
+        PortIdentifier::OwnerType::TRACK, self);
+      self->recording->id_.sym_ = ("track_record");
       control_port_set_toggled (
         self->recording, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-      self->recording->id.flags2 |= PortIdentifier::Flags2::TRACK_RECORDING;
-      self->recording->id.flags |= PortIdentifier::Flags::TOGGLE;
+      self->recording->id_.flags2_ |= PortIdentifier::Flags2::TRACK_RECORDING;
+      self->recording->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
     }
 
   self->processor = track_processor_new (self);
@@ -514,7 +514,7 @@ track_clone (Track * track, GError ** error)
 
 #define COPY_PORT_VALUES(x) \
   if (track->x) \
-  port_copy_values (new_track->x, track->x)
+  new_track->x->copy_values (*track->x)
 
   /* copy own values */
   COPY_PORT_VALUES (recording);
@@ -959,7 +959,7 @@ track_validate (Track * self)
   if (self->channel)
     g_return_val_if_fail (
       self->channel->sends[0]->track_name_hash
-        == self->channel->sends[0]->amount->id.track_name_hash,
+        == self->channel->sends[0]->amount->id_.track_name_hash_,
       false);
 
   if (ZRYTHM_TESTING)
@@ -972,10 +972,10 @@ track_validate (Track * self)
       for (size_t i = 0; i < ports->len; i++)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
-          g_return_val_if_fail (port->id.track_name_hash == name_hash, false);
-          if (port->id.owner_type == PortIdentifier::OwnerType::PLUGIN)
+          g_return_val_if_fail (port->id_.track_name_hash_ == name_hash, false);
+          if (port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
             {
-              PluginIdentifier * pid = &port->id.plugin_id;
+              PluginIdentifier * pid = &port->id_.plugin_id_;
               g_return_val_if_fail (pid->track_name_hash == name_hash, false);
               Plugin * pl = plugin_find (pid);
               g_return_val_if_fail (plugin_identifier_validate (pid), false);
@@ -993,16 +993,16 @@ track_validate (Track * self)
           if (
             atl
             && ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id.flags,
+              PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::AUTOMATABLE))
             {
-              /*g_message ("checking %s", port->id.label);*/
+              /*g_message ("checking %s", port->id_.label);*/
               AutomationTrack * at =
                 automation_track_find_from_port (port, self, true);
               if (!at)
                 {
                   char full_str[600];
-                  port_get_full_designation (port, full_str);
+                  port->get_full_designation (full_str);
                   g_critical (
                     "Could not find automation track "
                     "for port '%s'",
@@ -1011,7 +1011,7 @@ track_validate (Track * self)
                 }
               g_return_val_if_fail (
                 automation_track_find_from_port (port, self, false), false);
-              g_return_val_if_fail (port->at == at, false);
+              g_return_val_if_fail (port->at_ == at, false);
 
               automation_track_verify (at);
             }
@@ -2074,14 +2074,14 @@ track_disconnect (Track * self, bool remove_pl, bool recalc_graph)
       Port * port = (Port *) g_ptr_array_index (ports, i);
       if (
         !IS_PORT (port)
-        || port_is_in_active_project (port) != track_is_in_active_project (self))
+        || port->is_in_active_project () != track_is_in_active_project (self))
         {
           g_critical ("invalid port");
           object_free_w_func_and_null (g_ptr_array_unref, ports);
           return;
         }
 
-      port_disconnect_all (port);
+      port->disconnect_all ();
       port->free_bufs ();
     }
   object_free_w_func_and_null (g_ptr_array_unref, ports);
@@ -2895,11 +2895,11 @@ track_set_name (Track * self, const char * name, bool pub_events)
         {
           Port * port = (Port *) g_ptr_array_index (ports, i);
           g_return_if_fail (IS_PORT_AND_NONNULL (port));
-          port_update_track_name_hash (port, self, new_hash);
+          port->update_track_name_hash (self, new_hash);
 
-          if (port_is_exposed_to_backend (port))
+          if (port->is_exposed_to_backend ())
             {
-              port_rename_backend (port);
+              port->rename_backend ();
             }
         }
       object_free_w_func_and_null (g_ptr_array_unref, ports);
@@ -3506,13 +3506,13 @@ remove_ats_from_automation_tracklist (Track * track, bool fire_events)
       AutomationTrack * at = atl->ats[i];
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags, at->port_id.flags_,
           PortIdentifier::Flags::CHANNEL_FADER)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags, at->port_id.flags_,
           PortIdentifier::Flags::FADER_MUTE)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id.flags,
+          PortIdentifier::Flags, at->port_id.flags_,
           PortIdentifier::Flags::STEREO_BALANCE))
         {
           automation_tracklist_remove_at (atl, at, F_NO_FREE, fire_events);
@@ -3830,18 +3830,18 @@ track_free (Track * self)
 
   if (self->bpm_port)
     {
-      port_disconnect_all (self->bpm_port);
-      object_free_w_func_and_null (port_free, self->bpm_port);
+      self->bpm_port->disconnect_all ();
+      object_delete_and_null (self->bpm_port);
     }
   if (self->beats_per_bar_port)
     {
-      port_disconnect_all (self->beats_per_bar_port);
-      object_free_w_func_and_null (port_free, self->beats_per_bar_port);
+      self->beats_per_bar_port->disconnect_all ();
+      object_delete_and_null (self->beats_per_bar_port);
     }
   if (self->beats_per_bar_port)
     {
-      port_disconnect_all (self->beat_unit_port);
-      object_free_w_func_and_null (port_free, self->beat_unit_port);
+      self->beat_unit_port->disconnect_all ();
+      object_delete_and_null (self->beat_unit_port);
     }
 
 #undef _FREE_TRACK

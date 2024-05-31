@@ -1291,6 +1291,8 @@ magic_enum_dep = dependency (
     'test=false',
     ])
 
+fmt_dep = dependency('fmt')
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1331,6 +1333,7 @@ zrythm_deps = [
   yyjson_dep,
   magic_enum_dep,
   juce_dep,
+  fmt_dep,
 
   libm,
 ]

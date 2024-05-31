@@ -3,16 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/tracklist_selections.h"
 #include "dsp/engine_dummy.h"
 #include "dsp/master_track.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_track.h"
 #include "dsp/recording_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
-#include "utils/io.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -45,11 +42,10 @@ prepare (void)
   test_project_stop_dummy_engine ();
 
   /* create dummy input for audio recording */
-  AUDIO_ENGINE->dummy_input = stereo_ports_new_generic (
+  AUDIO_ENGINE->dummy_input = new StereoPorts (
     true, "Dummy input", "dummy_input",
     PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
-  AUDIO_ENGINE->dummy_input->l->allocate_bufs ();
-  AUDIO_ENGINE->dummy_input->r->allocate_bufs ();
+  AUDIO_ENGINE->dummy_input->allocate_bufs ();
 
   /* sleep for a bit because Port's last_change interferes
    * with touch automation recording if it's too close to the
@@ -82,8 +78,8 @@ do_takes_no_loop_no_punch (
 
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      AUDIO_ENGINE->dummy_input->l->buf[i] = 0.f;
-      AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+      AUDIO_ENGINE->dummy_input->get_l ().buf_[i] = 0.f;
+      AUDIO_ENGINE->dummy_input->get_r ().buf_[i] = 0.f;
     }
 
   /* enable recording for master track automation */
@@ -94,18 +90,18 @@ do_takes_no_loop_no_punch (
     latch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
   latch_port = Port::find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
-  float latch_val_at_start = latch_port->control;
+  float latch_val_at_start = latch_port->control_;
   touch_at = master_track->automation_tracklist.ats[1];
   touch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
     touch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
   touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
-  float touch_val_at_start = touch_port->control;
+  float touch_val_at_start = touch_port->control_;
   on_at = master_track->automation_tracklist.ats[1];
   on_port = Port::find_from_identifier (&on_at->port_id);
   g_assert_nonnull (on_port);
-  float on_val_at_start = on_port->control;
+  float on_val_at_start = on_port->control_;
 
   SET_CACHES_AND_PROCESS;
   recording_manager_process_events (RECORDING_MANAGER);
@@ -163,10 +159,10 @@ do_takes_no_loop_no_punch (
   g_assert_cmpint (touch_at->num_regions, ==, 0);
   g_assert_cmpint (on_at->num_regions, ==, 0);
   g_assert_cmpfloat_with_epsilon (
-    latch_val_at_start, latch_port->control, 0.0001f);
+    latch_val_at_start, latch_port->control_, 0.0001f);
   g_assert_cmpfloat_with_epsilon (
-    touch_val_at_start, touch_port->control, 0.0001f);
-  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control, 0.0001f);
+    touch_val_at_start, touch_port->control_, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control_, 0.0001f);
 
   /* assert that automation points are created */
   g_assert_cmpint (latch_r->num_aps, ==, 1);
@@ -178,20 +174,20 @@ do_takes_no_loop_no_punch (
 
   /* send a MIDI event */
   Port * port = ins_track->processor->midi_in;
-  midi_events_add_note_on (port->midi_events, 1, NOTE_PITCH, 70, 0, F_QUEUED);
+  midi_events_add_note_on (port->midi_events_, 1, NOTE_PITCH, 70, 0, F_QUEUED);
   midi_events_add_note_off (
-    port->midi_events, 1, NOTE_PITCH, CYCLE_SIZE - 1, F_QUEUED);
+    port->midi_events_, 1, NOTE_PITCH, CYCLE_SIZE - 1, F_QUEUED);
 
   /* send audio data */
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      AUDIO_ENGINE->dummy_input->l->buf[i] = AUDIO_VAL;
-      AUDIO_ENGINE->dummy_input->r->buf[i] = -AUDIO_VAL;
+      AUDIO_ENGINE->dummy_input->get_l ().buf_[i] = AUDIO_VAL;
+      AUDIO_ENGINE->dummy_input->get_r ().buf_[i] = -AUDIO_VAL;
     }
 
   /* send automation data */
-  port_set_control_value (
-    latch_port, AUTOMATION_VAL, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  latch_port->set_control_value (
+    AUTOMATION_VAL, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine */
   SET_CACHES_AND_PROCESS;
@@ -318,8 +314,8 @@ do_takes_loop_no_punch (
 
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      AUDIO_ENGINE->dummy_input->l->buf[i] = 0.f;
-      AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+      AUDIO_ENGINE->dummy_input->get_l ().buf_[i] = 0.f;
+      AUDIO_ENGINE->dummy_input->get_r ().buf_[i] = 0.f;
     }
 
   /* enable recording for master track automation */
@@ -330,18 +326,18 @@ do_takes_loop_no_punch (
     latch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
   latch_port = Port::find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
-  float latch_val_at_start = latch_port->control;
+  float latch_val_at_start = latch_port->control_;
   touch_at = master_track->automation_tracklist.ats[1];
   touch_at->record_mode = AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
     touch_at, AutomationMode::AUTOMATION_MODE_RECORD, F_NO_PUBLISH_EVENTS);
   touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
-  float touch_val_at_start = touch_port->control;
+  float touch_val_at_start = touch_port->control_;
   on_at = master_track->automation_tracklist.ats[1];
   on_port = Port::find_from_identifier (&on_at->port_id);
   g_assert_nonnull (on_port);
-  float on_val_at_start = on_port->control;
+  float on_val_at_start = on_port->control_;
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");
@@ -435,10 +431,10 @@ do_takes_loop_no_punch (
   g_assert_cmpint (touch_at->num_regions, ==, 0);
   g_assert_cmpint (on_at->num_regions, ==, 0);
   g_assert_cmpfloat_with_epsilon (
-    latch_val_at_start, latch_port->control, 0.0001f);
+    latch_val_at_start, latch_port->control_, 0.0001f);
   g_assert_cmpfloat_with_epsilon (
-    touch_val_at_start, touch_port->control, 0.0001f);
-  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control, 0.0001f);
+    touch_val_at_start, touch_port->control_, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control_, 0.0001f);
 
   /* assert that automation points are created */
   latch_r = latch_at->regions[0];
@@ -464,24 +460,23 @@ do_takes_loop_no_punch (
   /* send a MIDI event */
   Port * port = ins_track->processor->midi_in;
   midi_events_add_note_on (
-    port->midi_events, 1, NOTE_PITCH, 70, 0,
+    port->midi_events_, 1, NOTE_PITCH, 70, 0,
     F_QUEUED);
   midi_events_add_note_off (
-    port->midi_events, 1, NOTE_PITCH, CYCLE_SIZE - 1,
+    port->midi_events_, 1, NOTE_PITCH, CYCLE_SIZE - 1,
     F_QUEUED);
 
   /* send audio data */
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      AUDIO_ENGINE->dummy_input->l->buf[i] =
+      AUDIO_ENGINE->dummy_input->get_l ().buf_[i] =
         AUDIO_VAL;
-      AUDIO_ENGINE->dummy_input->r->buf[i] =
+      AUDIO_ENGINE->dummy_input->get_r ().buf_[i] =
         - AUDIO_VAL;
     }
 
   /* send automation data */
-  port_set_control_value (
-    latch_port, AUTOMATION_VAL, F_NOT_NORMALIZED,
+  latch_port->set_control_value (AUTOMATION_VAL, F_NOT_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
 
   /* run the engine */
@@ -688,8 +683,8 @@ test_automation_touch_recording (void)
   touch_port = Port::find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
   float touch_val_at_start = 0.1f;
-  port_set_control_value (
-    touch_port, touch_val_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  touch_port->set_control_value (
+    touch_val_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");
@@ -705,8 +700,8 @@ test_automation_touch_recording (void)
 
   /* alter automation */
   float touch_val_at_end = 0.2f;
-  port_set_control_value (
-    touch_port, touch_val_at_end, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  touch_port->set_control_value (
+    touch_val_at_end, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for 1 cycle (including loop) */
   g_message ("--- processing engine...");
@@ -784,13 +779,13 @@ test_mono_recording (void)
 
   /* set mono */
   TrackProcessor * audio_track_processor = audio_track->processor;
-  port_set_control_value (
-    audio_track_processor->mono, 1.f, true, F_NO_PUBLISH_EVENTS);
+  audio_track_processor->mono->set_control_value (
+    1.f, true, F_NO_PUBLISH_EVENTS);
 
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      AUDIO_ENGINE->dummy_input->l->buf[i] = AUDIO_VAL;
-      AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+      AUDIO_ENGINE->dummy_input->get_l ().buf_[i] = AUDIO_VAL;
+      AUDIO_ENGINE->dummy_input->get_r ().buf_[i] = 0.f;
     }
 
   /* run the engine for 1 cycle */
@@ -890,9 +885,9 @@ test_long_audio_recording (void)
     {
       for (nframes_t i = 0; i < CYCLE_SIZE; i++)
         {
-          AUDIO_ENGINE->dummy_input->l->buf[i] =
+          AUDIO_ENGINE->dummy_input->get_l ().buf_[i] =
             clip->ch_frames[0][processed_ch_frames];
-          AUDIO_ENGINE->dummy_input->r->buf[i] =
+          AUDIO_ENGINE->dummy_input->get_r ().buf_[i] =
             clip->ch_frames[1][processed_ch_frames];
           processed_ch_frames++;
         }
@@ -1032,8 +1027,8 @@ test_2nd_audio_recording (void)
       /* clear audio input */
       for (nframes_t i = 0; i < CYCLE_SIZE; i++)
         {
-          AUDIO_ENGINE->dummy_input->l->buf[i] = 0.f;
-          AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+          AUDIO_ENGINE->dummy_input->get_l ().buf_[i] = 0.f;
+          AUDIO_ENGINE->dummy_input->get_r ().buf_[i] = 0.f;
           processed_ch_frames++;
         }
 

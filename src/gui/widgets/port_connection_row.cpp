@@ -108,10 +108,10 @@ port_connection_row_widget_new (
   Port * port = Port::find_from_identifier (port_id);
   if (!IS_PORT_AND_NONNULL (port))
     {
-      g_critical ("failed to find port for '%s'", port_id->label);
+      g_critical ("failed to find port for '%s'", port_id->label_);
       return NULL;
     }
-  port_get_full_designation (port, designation);
+  port->get_full_designation (designation);
   strcat (designation, " ");
   self->slider = bar_slider_widget_new_port_connection (connection, designation);
   gtk_overlay_set_child (GTK_OVERLAY (self->overlay), GTK_WIDGET (self->slider));

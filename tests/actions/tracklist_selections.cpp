@@ -143,12 +143,12 @@ _test_port_and_plugin_track_pos_after_duplication (
   /* create some automation points */
   Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
-  g_debug ("deff %f", (double) port->deff);
-  float normalized_val = control_port_real_val_to_normalized (port, port->deff);
-  math_assert_nonnann (port->deff);
+  g_debug ("deff %f", (double) port->deff_);
+  float normalized_val = control_port_real_val_to_normalized (port, port->deff_);
+  math_assert_nonnann (port->deff_);
   math_assert_nonnann (normalized_val);
   AutomationPoint * ap =
-    automation_point_new_float (port->deff, normalized_val, &start_pos);
+    automation_point_new_float (port->deff_, normalized_val, &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
@@ -169,14 +169,14 @@ _test_port_and_plugin_track_pos_after_duplication (
       /* check that track processor is connected
        * to the instrument */
       PortConnection * conn = port_connections_manager_get_source_or_dest (
-        PORT_CONNECTIONS_MGR, &dest_track->processor->midi_out->id, false);
+        PORT_CONNECTIONS_MGR, &dest_track->processor->midi_out->id_, false);
       g_assert_nonnull (conn);
 
       /* check that instrument is connected to
        * channel prefader */
       conn = port_connections_manager_get_source_or_dest (
-        PORT_CONNECTIONS_MGR, &dest_track->channel->prefader->stereo_in->l->id,
-        true);
+        PORT_CONNECTIONS_MGR,
+        &dest_track->channel->prefader->stereo_in->get_l ().id_, true);
       g_assert_nonnull (conn);
     }
 
@@ -290,7 +290,7 @@ _test_undo_track_deletion (
   Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -461,9 +461,9 @@ assert_sends_connected (
       bool fader_connected = channel_send_is_connected_to (
         postfader_send, dest->processor->stereo_in, NULL);
 
-      bool pl_ports_connected = ports_connected (
-        src->channel->inserts[0]->out_ports[pl_out_port_idx],
-        dest->channel->inserts[0]->in_ports[pl_in_port_idx]);
+      bool pl_ports_connected =
+        src->channel->inserts[0]->out_ports[pl_out_port_idx]->is_connected_to (
+          dest->channel->inserts[0]->in_ports[pl_in_port_idx]);
 
       if (connected)
         {
@@ -483,7 +483,7 @@ assert_sends_connected (
       bool fader_connected = channel_send_is_enabled (
         src->channel->sends[CHANNEL_SEND_POST_FADER_START_SLOT]);
       bool pl_ports_connected =
-        src->channel->inserts[0]->out_ports[pl_out_port_idx]->num_dests > 0;
+        src->channel->inserts[0]->out_ports[pl_out_port_idx]->dests_.size () > 0;
 
       if (connected)
         {
@@ -516,7 +516,7 @@ test_track_deletion_with_sends (
 
   g_assert_cmpuint (
     audio_fx_for_receiving->channel->sends[0]->track_name_hash, ==,
-    audio_fx_for_receiving->channel->sends[0]->amount->id.track_name_hash);
+    audio_fx_for_receiving->channel->sends[0]->amount->id_.track_name_hash_);
 
   ChannelSend * prefader_send = audio_fx_for_sending->channel->sends[0];
   channel_send_action_perform_connect_audio (
@@ -538,7 +538,7 @@ test_track_deletion_with_sends (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      if (port->id.type == ZPortType::Z_PORT_TYPE_CV)
+      if (port->id_.type_ == PortType::CV)
         {
           /* connect the first out CV port */
           out_port = port;
@@ -551,9 +551,9 @@ test_track_deletion_with_sends (
     {
       Port * port = pl->in_ports[i];
       if (
-        port->id.type == ZPortType::Z_PORT_TYPE_CONTROL
+        port->id_.type_ == PortType::Control
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::PLUGIN_CONTROL))
         {
           /* connect the first in control port */
@@ -562,7 +562,7 @@ test_track_deletion_with_sends (
           break;
         }
     }
-  port_connection_action_perform_connect (&out_port->id, &in_port->id, NULL);
+  port_connection_action_perform_connect (&out_port->id_, &in_port->id_, NULL);
 
   /* assert they are connected */
   assert_sends_connected (
@@ -571,10 +571,10 @@ test_track_deletion_with_sends (
 
   g_assert_cmpuint (
     prefader_send->track_name_hash, ==,
-    prefader_send->amount->id.track_name_hash);
+    prefader_send->amount->id_.track_name_hash_);
   g_assert_cmpuint (
     postfader_send->track_name_hash, ==,
-    postfader_send->amount->id.track_name_hash);
+    postfader_send->amount->id_.track_name_hash_);
 
   /* save and reload the project */
   int audio_fx_for_sending_pos = audio_fx_for_sending->pos;
@@ -670,8 +670,8 @@ test_audio_track_deletion (void)
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* set input gain and mono */
-  port_set_control_value (track->processor->input_gain, 1.4f, false, false);
-  port_set_control_value (track->processor->mono, 1.0f, false, false);
+  track->processor->input_gain->set_control_value (1.4f, false, false);
+  track->processor->mono->set_control_value (1.0f, false, false);
 
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
@@ -680,8 +680,9 @@ test_audio_track_deletion (void)
 
   track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   g_assert_cmpfloat_with_epsilon (
-    track->processor->input_gain->control, 1.4f, 0.001f);
-  g_assert_cmpfloat_with_epsilon (track->processor->mono->control, 1.0f, 0.001f);
+    track->processor->input_gain->control_, 1.4f, 0.001f);
+  g_assert_cmpfloat_with_epsilon (
+    track->processor->mono->control_, 1.0f, 0.001f);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 
@@ -798,7 +799,7 @@ test_ins_track_deletion_w_automation (void)
   Port * port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -829,7 +830,7 @@ test_ins_track_deletion_w_automation (void)
   port = Port::find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   ap = automation_point_new_float (
-    port->deff, control_port_real_val_to_normalized (port, port->deff),
+    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
     &start_pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -997,9 +998,11 @@ _test_move_tracks (
   send = ins_track->channel->sends[0];
   stereo_in = fx_track->processor->stereo_in;
   g_assert_cmpuint (
-    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (*fx_track));
+    stereo_in->get_l ().id_.track_name_hash_, ==,
+    track_get_name_hash (*fx_track));
   g_assert_cmpuint (
-    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (*fx_track));
+    stereo_in->get_r ().id_.track_name_hash_, ==,
+    track_get_name_hash (*fx_track));
   g_assert_true (send->track == ins_track);
   g_assert_true (channel_send_is_enabled (send));
   g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
@@ -1013,25 +1016,25 @@ _test_move_tracks (
   /* check that the stereo out of the audio fx
    * track points to the master track */
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->l->id,
-    &P_MASTER_TRACK->processor->stereo_in->l->id));
+    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_l ().id_,
+    &P_MASTER_TRACK->processor->stereo_in->get_l ().id_));
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->r->id,
-    &P_MASTER_TRACK->processor->stereo_in->r->id));
+    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_r ().id_,
+    &P_MASTER_TRACK->processor->stereo_in->get_r ().id_));
 
   /* TODO replace below */
 #  if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
-    fx_track->channel->stereo_out->l);
+    fx_track->channel->stereo_out->get_l ());
   port_verify_src_and_dests (
-    fx_track->channel->stereo_out->r);
+    fx_track->channel->stereo_out->get_r ());
 
   /* verify master track in ports */
   port_verify_src_and_dests (
-    P_MASTER_TRACK->processor->stereo_in->l);
+    P_MASTER_TRACK->processor->stereo_in->get_l ());
   port_verify_src_and_dests (
-    P_MASTER_TRACK->processor->stereo_in->r);
+    P_MASTER_TRACK->processor->stereo_in->get_r ());
 #  endif
 
   /* unswap tracks */
@@ -1048,9 +1051,11 @@ _test_move_tracks (
   send = ins_track->channel->sends[0];
   stereo_in = fx_track->processor->stereo_in;
   g_assert_cmpuint (
-    stereo_in->l->id.track_name_hash, ==, track_get_name_hash (*fx_track));
+    stereo_in->get_l ().id_.track_name_hash_, ==,
+    track_get_name_hash (*fx_track));
   g_assert_cmpuint (
-    stereo_in->r->id.track_name_hash, ==, track_get_name_hash (*fx_track));
+    stereo_in->get_r ().id_.track_name_hash_, ==,
+    track_get_name_hash (*fx_track));
   g_assert_true (send->track == ins_track);
   g_assert_true (channel_send_is_enabled (send));
   g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
@@ -1060,24 +1065,24 @@ _test_move_tracks (
   /* check that the stereo out of the audio fx
    * track points to the master track */
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->l->id,
-    &P_MASTER_TRACK->processor->stereo_in->l->id));
+    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_l ().id_,
+    &P_MASTER_TRACK->processor->stereo_in->get_l ().id_));
   g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->r->id,
-    &P_MASTER_TRACK->processor->stereo_in->r->id));
+    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_r ().id_,
+    &P_MASTER_TRACK->processor->stereo_in->get_r ().id_));
 
 #  if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
-    fx_track->channel->stereo_out->l);
+    fx_track->channel->stereo_out->get_l ());
   port_verify_src_and_dests (
-    fx_track->channel->stereo_out->r);
+    fx_track->channel->stereo_out->get_r ());
 
   /* verify master track in ports */
   port_verify_src_and_dests (
-    P_MASTER_TRACK->processor->stereo_in->l);
+    P_MASTER_TRACK->processor->stereo_in->get_l ());
   port_verify_src_and_dests (
-    P_MASTER_TRACK->processor->stereo_in->r);
+    P_MASTER_TRACK->processor->stereo_in->get_r ());
 #  endif
 }
 #endif
@@ -1334,10 +1339,10 @@ test_duplicate_w_output_and_send (void)
     new_track->channel->output_name_hash, ==,
     track_get_name_hash (*group_track));
   g_assert_true (
-    ports_connected (
-      new_track->channel->stereo_out->l, group_track->processor->stereo_in->l)
-    && ports_connected (
-      new_track->channel->stereo_out->r, group_track->processor->stereo_in->r));
+    new_track->channel->stereo_out->get_l ().is_connected_to (
+      &group_track->processor->stereo_in->get_l ())
+    && new_track->channel->stereo_out->get_r ().is_connected_to (
+      &group_track->processor->stereo_in->get_r ()));
 
   /* assert group of new group track is group of
    * original group track */
@@ -1347,12 +1352,10 @@ test_duplicate_w_output_and_send (void)
     new_group_track->channel->output_name_hash, ==,
     track_get_name_hash (*group_track2));
   g_assert_true (
-    ports_connected (
-      new_group_track->channel->stereo_out->l,
-      group_track2->processor->stereo_in->l)
-    && ports_connected (
-      new_group_track->channel->stereo_out->r,
-      group_track2->processor->stereo_in->r));
+    new_group_track->channel->stereo_out->get_l ().is_connected_to (
+      &group_track2->processor->stereo_in->get_l ())
+    && new_group_track->channel->stereo_out->get_r ().is_connected_to (
+      &group_track2->processor->stereo_in->get_r ()));
 
   /* assert new audio track sends connected */
   ChannelSend * send = new_track->channel->sends[0];

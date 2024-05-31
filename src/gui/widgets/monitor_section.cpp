@@ -185,7 +185,7 @@ static void
 on_mute_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  MONITOR_FADER->mute->control = active ? 1.f : 0.f;
+  MONITOR_FADER->mute->control_ = active ? 1.f : 0.f;
   g_settings_set_boolean (S_MONITOR, "mute", active);
 }
 

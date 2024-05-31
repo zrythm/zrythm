@@ -124,7 +124,8 @@ region_gen_name (
   if (base_name)
     orig_name = g_strdup (base_name);
   else if (at)
-    orig_name = g_strdup_printf ("%s - %s", track->name, at->port_id.label);
+    orig_name = g_strdup_printf (
+      "%s - %s", track->name, at->port_id.get_label_as_c_str ());
   else
     orig_name = g_strdup (track->name);
 
@@ -443,7 +444,8 @@ region_set_automation_track (Region * self, AutomationTrack * at)
   g_return_if_fail (IS_REGION (self) && at);
 
   g_debug (
-    "setting region automation track to %d %s", at->index, at->port_id.label);
+    "setting region automation track to %d %s", at->index,
+    at->port_id.get_label_as_c_str ());
 
   /* if clip editor region or region selected,
    * unselect it */
@@ -723,9 +725,8 @@ region_find (const RegionIdentifier * const id)
         {
           automation_tracklist_print_regions (atl);
           g_critical (
-            "Automation track for %s has less regions (%d) "
-            "than the given index %d",
-            at->port_id.label, at->num_regions, id->idx);
+            "Automation track for %s has less regions (%d) than the given index %d",
+            at->port_id.get_label_as_c_str (), at->num_regions, id->idx);
           return NULL;
         }
       Region * region = at->regions[id->idx];

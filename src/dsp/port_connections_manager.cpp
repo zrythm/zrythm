@@ -75,11 +75,11 @@ port_connections_manager_regenerate_hashtables (PortConnectionsManager * self)
    * size of 16 bits for guint used in the hash func. currently this doesn't
    * affect any major platform but it's not standards compliant */
   self->src_ht = g_hash_table_new_full (
-    port_identifier_get_hash, port_identifier_is_equal_func,
-    port_identifier_destroy_notify, free_connections);
+    PortIdentifier::get_hash, PortIdentifier::is_equal_func,
+    PortIdentifier::destroy_notify, free_connections);
   self->dest_ht = g_hash_table_new_full (
-    port_identifier_get_hash, port_identifier_is_equal_func,
-    port_identifier_destroy_notify, free_connections);
+    PortIdentifier::get_hash, PortIdentifier::is_equal_func,
+    PortIdentifier::destroy_notify, free_connections);
 
   for (int i = 0; i < self->num_connections; i++)
     {
@@ -135,24 +135,24 @@ port_connections_manager_predicate_is_send_of (
   Track * track = channel_send_get_track (send);
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
-  if (track->out_signal_type == ZPortType::Z_PORT_TYPE_AUDIO)
+  if (track->out_signal_type == PortType::Audio)
     {
       StereoPorts * self_stereo =
         channel_send_is_prefader (send)
           ? track->channel->prefader->stereo_out
           : track->channel->fader->stereo_out;
 
-      return conn->src_id->is_equal (self_stereo->l->id)
-             || conn->src_id->is_equal (self_stereo->r->id);
+      return conn->src_id->is_equal (self_stereo->get_l ().id_)
+             || conn->src_id->is_equal (self_stereo->get_r ().id_);
     }
-  else if (track->out_signal_type == ZPortType::Z_PORT_TYPE_EVENT)
+  else if (track->out_signal_type == PortType::Event)
     {
       Port * self_port =
         channel_send_is_prefader (send)
           ? track->channel->prefader->midi_out
           : track->channel->fader->midi_out;
 
-      return conn->src_id->is_equal (self_port->id);
+      return conn->src_id->is_equal (self_port->id_);
     }
 
   g_return_val_if_reached (false);
@@ -486,7 +486,7 @@ port_connections_manager_print_ht (GHashTable * ht)
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
       const PortIdentifier * pi = (const PortIdentifier *) key;
-      g_string_append_printf (gstr, "%s:\n", pi->label);
+      g_string_append_printf (gstr, "%s:\n", pi->get_label_as_c_str ());
       GPtrArray * conns = (GPtrArray *) value;
       for (size_t i = 0; i < conns->len; i++)
         {

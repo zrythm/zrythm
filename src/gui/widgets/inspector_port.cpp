@@ -35,8 +35,8 @@ G_DEFINE_TYPE (InspectorPortWidget, inspector_port_widget, GTK_TYPE_WIDGET)
 static void
 on_jack_toggled (GtkWidget * widget, InspectorPortWidget * self)
 {
-  port_set_expose_to_backend (
-    self->port, gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget)));
+  self->port->set_expose_to_backend (
+    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget)));
 }
 #endif
 
@@ -49,21 +49,21 @@ static bool
 get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 {
   if (
-    port->id.owner_type == PortIdentifier::OwnerType::PLUGIN
-    || port->id.owner_type == PortIdentifier::OwnerType::FADER
-    || port->id.owner_type == PortIdentifier::OwnerType::TRACK)
+    port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN
+    || port->id_.owner_type_ == PortIdentifier::OwnerType::FADER
+    || port->id_.owner_type_ == PortIdentifier::OwnerType::TRACK)
     {
       int num_midi_mappings =
         midi_mappings_get_for_port (MIDI_MAPPINGS, port, NULL);
 
       const char * star = (num_midi_mappings > 0 ? "*" : "");
-      char *       port_label = g_markup_escape_text (port->id.label, -1);
-      char         color_prefix[60];
+      char * port_label = g_markup_escape_text (port->id_.label_.c_str (), -1);
+      char   color_prefix[60];
       sprintf (color_prefix, "<span foreground=\"%s\">", self->hex_color);
       char color_suffix[40] = "</span>";
-      if (port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+      if (port->id_.flow_ == PortFlow::Input)
         {
-          int num_unlocked_srcs = port_get_num_unlocked_srcs (port);
+          int num_unlocked_srcs = port->get_num_unlocked_srcs ();
           sprintf (
             buf,
             "%s <small><sup>"
@@ -73,9 +73,9 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
           self->last_num_connections = num_unlocked_srcs;
           return true;
         }
-      else if (port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+      else if (port->id_.flow_ == PortFlow::Output)
         {
-          int num_unlocked_dests = port_get_num_unlocked_dests (port);
+          int num_unlocked_dests = port->get_num_unlocked_dests ();
           sprintf (
             buf,
             "%s <small><sup>"
@@ -102,7 +102,7 @@ show_context_menu (InspectorPortWidget * self, gdouble x, gdouble y)
 
   char tmp[600];
 
-  if (self->port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+  if (self->port->id_.type_ == PortType::Control)
     {
       sprintf (tmp, "app.reset-control::%p", self->port);
       menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
@@ -175,23 +175,24 @@ static float
 get_port_value (InspectorPortWidget * self)
 {
   Port * port = self->port;
-  switch (port->id.type)
+  switch (port->id_.type_)
     {
-    case ZPortType::Z_PORT_TYPE_AUDIO:
-    case ZPortType::Z_PORT_TYPE_EVENT:
+    case PortType::Audio:
+    case PortType::Event:
       {
         float val, max;
         meter_get_value (self->meter, AUDIO_VALUE_FADER, &val, &max);
         return val;
       }
       break;
-    case ZPortType::Z_PORT_TYPE_CV:
+    case PortType::CV:
       {
-        return port->buf[0];
+        return port->buf_[0];
       }
       break;
-    case ZPortType::Z_PORT_TYPE_CONTROL:
-      return control_port_real_val_to_normalized (port, port->unsnapped_control);
+    case PortType::Control:
+      return control_port_real_val_to_normalized (
+        port, port->unsnapped_control_);
       break;
     default:
       break;
@@ -203,19 +204,19 @@ static float
 get_snapped_port_value (InspectorPortWidget * self)
 {
   Port * port = self->port;
-  if (port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+  if (port->get_type () == PortType::Control)
     {
       /* optimization */
       if (
         G_LIKELY (self->last_port_val_set)
-        && math_floats_equal (self->last_real_val, port->control))
+        && math_floats_equal (self->last_real_val, port->control_))
         {
           return self->last_normalized_val;
         }
 
-      self->last_real_val = port->control;
+      self->last_real_val = port->control_;
       self->last_normalized_val =
-        control_port_real_val_to_normalized (port, port->control);
+        control_port_real_val_to_normalized (port, port->control_);
       self->last_port_val_set = true;
       return self->last_normalized_val;
     }
@@ -228,9 +229,9 @@ get_snapped_port_value (InspectorPortWidget * self)
 static void
 set_port_value (InspectorPortWidget * self, float val)
 {
-  port_set_control_value (
-    self->port, control_port_normalized_val_to_real (self->port, val),
-    F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+  self->port->set_control_value (
+    control_port_normalized_val_to_real (self->port, val), F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
 }
 
 static void
@@ -249,21 +250,20 @@ val_change_finished (InspectorPortWidget * self, float val)
   if (!math_floats_equal (val, self->normalized_init_port_val))
     {
       /* set port to previous val */
-      port_set_control_value (
-        self->port,
+      self->port->set_control_value (
         control_port_normalized_val_to_real (
           self->port, self->normalized_init_port_val),
         F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
       GError * err = NULL;
       bool     ret = port_action_perform (
-        PortActionType::PORT_ACTION_SET_CONTROL_VAL, &self->port->id, val,
+        PortActionType::PORT_ACTION_SET_CONTROL_VAL, &self->port->id_, val,
         F_NORMALIZED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, _ ("Failed to set control %s to %f"), self->port->id.label,
-            (double) val);
+            err, _ ("Failed to set control %s to %f"),
+            self->port->id_.label_.c_str (), (double) val);
         }
     }
 }
@@ -278,13 +278,13 @@ bar_slider_tick_cb (
    * changed */
   Port * port = self->port;
   int    num_connections = 0;
-  if (port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  if (port->get_flow () == PortFlow::Input)
     {
-      num_connections = port_get_num_unlocked_srcs (port);
+      num_connections = port->get_num_unlocked_srcs ();
     }
-  else if (port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  else if (port->get_flow () == PortFlow::Output)
     {
-      num_connections = port_get_num_unlocked_dests (port);
+      num_connections = port->get_num_unlocked_dests ();
     }
   if (num_connections != self->last_num_connections)
     {
@@ -298,32 +298,32 @@ bar_slider_tick_cb (
     {
       char str[2000];
       char full_designation[600];
-      port_get_full_designation (self->port, full_designation);
+      self->port->get_full_designation (full_designation);
       char * full_designation_escaped =
         g_markup_escape_text (full_designation, -1);
       char * comment_escaped = NULL;
-      if (self->port->id.comment)
+      if (!self->port->id_.comment_.empty ())
         {
-          comment_escaped =
-            g_markup_printf_escaped ("<i>%s</i>\n", self->port->id.comment);
+          comment_escaped = g_markup_printf_escaped (
+            "<i>%s</i>\n", self->port->id_.comment_.c_str ());
         }
       const char * src_or_dest_str =
-        self->port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT
+        self->port->id_.flow_ == PortFlow::Input
           ? _ ("Incoming signals")
           : _ ("Outgoing signals");
       sprintf (
         str,
         "<b>%s</b>\n"
         "%s"
-        "%s: <b>%d</b>\n"
+        "%s: <b>%zu</b>\n"
         "%s: <b>%f</b>\n"
         "%s: <b>%f</b> | "
         "%s: <b>%f</b>",
         full_designation_escaped, comment_escaped ? comment_escaped : "",
         src_or_dest_str,
-        self->port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT
-          ? self->port->num_srcs
-          : self->port->num_dests,
+        self->port->id_.flow_ == PortFlow::Input
+          ? self->port->srcs_.size ()
+          : self->port->dests_.size (),
         _ ("Current val"), (double) get_port_value (self), _ ("Min"),
         (double) self->minf, _ ("Max"), (double) self->maxf);
       g_free (full_designation_escaped);
@@ -357,7 +357,7 @@ inspector_port_widget_new (Port * port)
 
   char str[200];
   int  has_str = 0;
-  if (!port->id.label)
+  if (!port->has_label ())
     {
       g_warning ("No port label");
       goto inspector_port_new_end;
@@ -367,17 +367,17 @@ inspector_port_widget_new (Port * port)
 
   if (has_str)
     {
-      float minf = port->minf;
-      float maxf = port->maxf;
-      if (port->id.type == ZPortType::Z_PORT_TYPE_AUDIO)
+      float minf = port->minf_;
+      float maxf = port->maxf_;
+      if (port->get_type () == PortType::Audio)
         {
           /* use fader val for audio */
           maxf = 1.f;
         }
-      float zerof = port->zerof;
+      float zerof_ = port->zerof_;
       int   editable = 0;
       int   is_control = 0;
-      if (port->id.type == ZPortType::Z_PORT_TYPE_CONTROL)
+      if (port->get_type () == PortType::Control)
         {
           editable = 1;
           is_control = 1;
@@ -388,7 +388,7 @@ inspector_port_widget_new (Port * port)
         (GenericFloatSetter) set_port_value, (void *) self,
         /* use normalized vals for controls */
         is_control ? 0.f : minf, is_control ? 1.f : maxf, -1, 20,
-        is_control ? 0.f : zerof, 0, 2, UI_DRAG_MODE_CURSOR, str, "");
+        is_control ? 0.f : zerof_, 0, 2, UI_DRAG_MODE_CURSOR, str, "");
       self->bar_slider->snapped_getter =
         (GenericFloatGetter) get_snapped_port_value;
       self->bar_slider->show_value = 0;
@@ -398,7 +398,7 @@ inspector_port_widget_new (Port * port)
       gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;
-      self->zerof = zerof;
+      self->zerof_ = zerof_;
       strcpy (self->port_str, str);
 
       /* keep drawing the bar slider */
@@ -412,8 +412,8 @@ inspector_port_widget_new (Port * port)
   if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
     {
       if (
-        port->id.type == ZPortType::Z_PORT_TYPE_AUDIO
-        || port->id.type == ZPortType::Z_PORT_TYPE_EVENT)
+        port->get_type () == PortType::Audio
+        || port->get_type () == PortType::Event)
         {
           self->jack = z_gtk_toggle_button_new_with_icon ("expose-to-jack");
           gtk_widget_set_halign (GTK_WIDGET (self->jack), GTK_ALIGN_START);
@@ -423,7 +423,8 @@ inspector_port_widget_new (Port * port)
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->jack), _ ("Expose port to JACK"));
           gtk_overlay_add_overlay (self->overlay, GTK_WIDGET (self->jack));
-          if (port->data && port->internal_type == Port::InternalType::JackPort)
+          if (
+            port->data_ && port->internal_type_ == Port::InternalType::JackPort)
             {
               gtk_toggle_button_set_active (self->jack, 1);
             }

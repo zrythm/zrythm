@@ -5,6 +5,7 @@
 #include "actions/undo_manager.h"
 #include "dsp/control_port.h"
 #include "dsp/modulator_track.h"
+#include "dsp/port_identifier.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -40,7 +41,7 @@ get_modulator (ModulatorInnerWidget * self)
 static float
 get_snapped_control_value (Port * port)
 {
-  float val = port_get_control_value (port, F_NOT_NORMALIZED);
+  float val = port->get_control_value (F_NOT_NORMALIZED);
 
   return val;
 }
@@ -161,20 +162,19 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       Port * port = modulator->in_ports[i];
 
       if (
-        port->id.type != ZPortType::Z_PORT_TYPE_CONTROL
-        || port->id.flow != ZPortFlow::Z_PORT_FLOW_INPUT
+        port->id_.type_ != PortType::Control || port->id_.flow_ != PortFlow::Input
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id.flags,
+          PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::NOT_ON_GUI))
         continue;
 
       KnobWidget * knob = knob_widget_new_simple (
         control_port_get_val, control_port_get_default_val,
-        control_port_set_real_val, port, port->minf, port->maxf, 24,
-        port->zerof);
+        control_port_set_real_val, port, port->minf_, port->maxf_, 24,
+        port->zerof_);
       knob->snapped_getter = (GenericFloatGetter) get_snapped_control_value;
       KnobWithNameWidget * knob_with_name = knob_with_name_widget_new (
-        &port->id, port_identifier_get_label, NULL, knob,
+        &port->id_, PortIdentifier::get_label, NULL, knob,
         GTK_ORIENTATION_HORIZONTAL, false, 3);
 
       array_double_size_if_full (
@@ -196,7 +196,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
   for (int i = 0; i < modulator->num_out_ports; i++)
     {
       Port * port = modulator->out_ports[i];
-      if (port->id.type != ZPortType::Z_PORT_TYPE_CV)
+      if (port->id_.type_ != PortType::CV)
         continue;
 
       int index = self->num_waveforms++;

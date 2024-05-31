@@ -52,7 +52,7 @@ port_connections_popover_widget_refresh (
   z_gtk_widget_destroy_all_children (GTK_WIDGET (self->ports_box));
 
   /* set title and add ports */
-  if (self->port->id.flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+  if (self->port->id_.flow_ == PortFlow::Input)
     {
       if (GTK_IS_LABEL (self->title))
         {
@@ -61,7 +61,7 @@ port_connections_popover_widget_refresh (
 
       GPtrArray * srcs = g_ptr_array_new ();
       int         num_srcs = port_connections_manager_get_sources_or_dests (
-        PORT_CONNECTIONS_MGR, srcs, &self->port->id, true);
+        PORT_CONNECTIONS_MGR, srcs, &self->port->id_, true);
       for (int i = 0; i < num_srcs; i++)
         {
           PortConnection * conn =
@@ -75,7 +75,7 @@ port_connections_popover_widget_refresh (
         }
       g_ptr_array_unref (srcs);
     }
-  else if (self->port->id.flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+  else if (self->port->id_.flow_ == PortFlow::Output)
     {
       if (GTK_IS_LABEL (self->title))
         {
@@ -84,7 +84,7 @@ port_connections_popover_widget_refresh (
 
       GPtrArray * dests = g_ptr_array_new ();
       int         num_dests = port_connections_manager_get_sources_or_dests (
-        PORT_CONNECTIONS_MGR, dests, &self->port->id, false);
+        PORT_CONNECTIONS_MGR, dests, &self->port->id_, false);
       for (int i = 0; i < num_dests; i++)
         {
           PortConnection * conn =

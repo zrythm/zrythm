@@ -774,7 +774,7 @@ test_fill_midi_events_from_engine (void)
   g_message ("--- processing recording events...");
   Plugin *     pl = ins_track->channel->instrument;
   Port *       event_in = pl->in_ports[2];
-  MidiEvents * midi_events = event_in->midi_events;
+  MidiEvents * midi_events = event_in->midi_events_;
   g_assert_cmpint (midi_events->num_events, ==, 3);
   MidiEvent * ev = &midi_events->events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));

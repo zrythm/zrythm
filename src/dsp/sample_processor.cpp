@@ -164,10 +164,7 @@ sample_processor_process (
 {
   nframes_t j;
   nframes_t max_frames;
-  g_return_if_fail (
-    self && self->fader && self->fader->stereo_out && self->fader->stereo_out->l
-    && self->fader->stereo_out->l->buf && self->fader->stereo_out->r
-    && self->fader->stereo_out->r->buf);
+  g_return_if_fail (self && self->fader && self->fader->stereo_out);
 
   z_return_if_fail_cmp (self->num_current_samples, <, 256);
 
@@ -179,8 +176,8 @@ sample_processor_process (
       return;
     }
 
-  float * l = self->fader->stereo_out->l->buf;
-  float * r = self->fader->stereo_out->r->buf;
+  float * l = self->fader->stereo_out->get_l ().buf_.data ();
+  float * r = self->fader->stereo_out->get_r ().buf_.data ();
 
   /* process the samples in the queue */
   for (int i = self->num_current_samples - 1; i >= 0; i--)
@@ -263,7 +260,7 @@ sample_processor_process (
         {
           Track * track = self->tracklist->tracks[i];
 
-          float *audio_data_l = NULL, *audio_data_r = NULL;
+          float *audio_data_l = nullptr, *audio_data_r = nullptr;
 
           track_processor_clear_buffers (track->processor);
 
@@ -279,14 +276,14 @@ sample_processor_process (
             {
               track_processor_process (track->processor, &time_nfo);
 
-              audio_data_l = track->processor->stereo_out->l->buf;
-              audio_data_r = track->processor->stereo_out->l->buf;
+              audio_data_l = track->processor->stereo_out->get_l ().buf_.data ();
+              audio_data_r = track->processor->stereo_out->get_l ().buf_.data ();
             }
           else if (track->type == TrackType::TRACK_TYPE_MIDI)
             {
               track_processor_process (track->processor, &time_nfo);
               midi_events_append (
-                self->midi_events, track->processor->midi_out->midi_events,
+                self->midi_events, track->processor->midi_out->midi_events_,
                 cycle_offset, nframes, F_NOT_QUEUED);
             }
           else if (track->type == TrackType::TRACK_TYPE_INSTRUMENT)
@@ -297,21 +294,21 @@ sample_processor_process (
 
               plugin_prepare_process (ins);
               midi_events_append (
-                ins->midi_in_port->midi_events, self->midi_events, cycle_offset,
-                nframes, F_NOT_QUEUED);
+                ins->midi_in_port->midi_events_, self->midi_events,
+                cycle_offset, nframes, F_NOT_QUEUED);
               plugin_process (ins, &time_nfo);
-              audio_data_l = ins->l_out->buf;
-              audio_data_r = ins->r_out->buf;
+              audio_data_l = ins->l_out->buf_.data ();
+              audio_data_r = ins->r_out->buf_.data ();
             }
 
           if (audio_data_l && audio_data_r)
             {
               dsp_mix2 (
                 &l[cycle_offset], &audio_data_l[cycle_offset], 1.f,
-                self->fader->amp->control, nframes);
+                self->fader->amp->control_, nframes);
               dsp_mix2 (
                 &r[cycle_offset], &audio_data_r[cycle_offset], 1.f,
-                self->fader->amp->control, nframes);
+                self->fader->amp->control_, nframes);
             }
         }
     }

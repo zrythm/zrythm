@@ -5,10 +5,6 @@
 
 #include "dsp/port.h"
 #include "gui/widgets/dialogs/port_info.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/resources.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
@@ -25,7 +21,7 @@ set_values (
 {
   self->port = port;
 
-  PortIdentifier * id = &port->id;
+  PortIdentifier * id = &port->id_;
 
   AdwPreferencesGroup * pref_group =
     ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
@@ -46,36 +42,36 @@ set_values (
   adw_preferences_group_add (pref_group, GTK_WIDGET (row))
 
   PREPARE_ROW (_ ("Name"));
-  gtk_label_set_text (lbl, id->label);
+  gtk_label_set_text (lbl, id->label_.c_str ());
   ADD_ROW;
 
   PREPARE_ROW (_ ("Group"));
-  gtk_label_set_text (lbl, id->port_group);
+  gtk_label_set_text (lbl, id->port_group_.c_str ());
   ADD_ROW;
 
   PREPARE_ROW (_ ("Designation"));
-  port_get_full_designation (port, tmp);
+  port->get_full_designation (tmp);
   gtk_label_set_text (lbl, tmp);
   ADD_ROW;
 
   PREPARE_ROW (_ ("Type"));
-  gtk_label_set_text (lbl, ENUM_NAME (id->type));
+  gtk_label_set_text (lbl, ENUM_NAME (id->type_));
   ADD_ROW;
 
   PREPARE_ROW (_ ("Range"));
-  sprintf (tmp, _ ("%.1f to %.1f"), (double) port->minf, (double) port->maxf);
+  sprintf (tmp, _ ("%.1f to %.1f"), (double) port->minf_, (double) port->maxf_);
   gtk_label_set_text (lbl, tmp);
   ADD_ROW;
 
   PREPARE_ROW (_ ("Default Value"));
-  sprintf (tmp, "%.1f", (double) port->deff);
+  sprintf (tmp, "%.1f", (double) port->deff_);
   gtk_label_set_text (lbl, tmp);
   ADD_ROW;
 
   PREPARE_ROW (_ ("Current Value"));
-  if (id->type == ZPortType::Z_PORT_TYPE_CONTROL)
+  if (id->type_ == PortType::Control)
     {
-      sprintf (tmp, "%f", (double) port->control);
+      sprintf (tmp, "%f", (double) port->control_);
       gtk_label_set_text (lbl, tmp);
     }
   else
@@ -90,7 +86,7 @@ set_values (
     {
       if (
         !(ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id->flags,
+          PortIdentifier::Flags, id->flags_,
           ENUM_INT_TO_VALUE (PortIdentifier::Flags, 1 << i))))
         continue;
 
@@ -103,7 +99,7 @@ set_values (
     {
       if (
         !(ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id->flags2,
+          PortIdentifier::Flags2, id->flags2_,
           ENUM_INT_TO_VALUE (PortIdentifier::Flags2, 1 << i))))
         continue;
 

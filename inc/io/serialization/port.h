@@ -16,9 +16,9 @@
 
 #include <yyjson.h>
 
-TYPEDEF_STRUCT (PortIdentifier);
+struct PortIdentifier;
 class Port;
-TYPEDEF_STRUCT (StereoPorts);
+class StereoPorts;
 TYPEDEF_STRUCT (ExtPort);
 TYPEDEF_STRUCT (PortConnection);
 TYPEDEF_STRUCT (PortConnectionsManager);

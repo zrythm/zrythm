@@ -19,7 +19,7 @@
 #include <glib.h>
 
 class Port;
-typedef struct PortIdentifier PortIdentifier;
+struct PortIdentifier;
 typedef struct PortConnection PortConnection;
 
 /**

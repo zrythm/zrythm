@@ -237,18 +237,18 @@ on_track_added (void)
 static void
 on_automation_value_changed (Port * port)
 {
-  PortIdentifier * id = &port->id;
+  PortIdentifier * id = &port->id_;
 
   if (
     ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, id->flags2,
+      PortIdentifier::Flags2, id->flags2_,
       PortIdentifier::Flags2::CHANNEL_SEND_AMOUNT))
     {
-      Track * tr = port_get_track (port, true);
+      Track * tr = port->get_track (true);
       if (track_is_selected (tr))
         {
           gtk_widget_queue_draw (
-            GTK_WIDGET (MW_TRACK_INSPECTOR->sends->slots[id->port_index]));
+            GTK_WIDGET (MW_TRACK_INSPECTOR->sends->slots[id->port_index_]));
         }
     }
 }

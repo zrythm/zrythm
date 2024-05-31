@@ -40,8 +40,8 @@ sdl_callback (void * user_data, Uint8 * buf, int len)
   float * float_buf = (float *) buf;
   for (nframes_t i = 0; i < num_frames; i++)
     {
-      float_buf[i * 2] = self->monitor_out->l->buf[i];
-      float_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
+      float_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
+      float_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
     }
 }
 

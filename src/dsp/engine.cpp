@@ -31,6 +31,7 @@
 
 #include <cmath>
 #include <cstdlib>
+
 #include <signal.h>
 
 #include "dsp/automation_track.h"
@@ -54,6 +55,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/midi_mapping.h"
 #include "dsp/pool.h"
+#include "dsp/port.h"
 #include "dsp/recording_manager.h"
 #include "dsp/router.h"
 #include "dsp/sample_playback.h"
@@ -97,14 +99,6 @@ engine_audio_backend_to_string (AudioBackend backend)
   return audio_backend_str[ENUM_VALUE_TO_INT (backend)];
 }
 
-/**
- * Request the backend to set the buffer size.
- *
- * The backend is expected to call the buffer size
- * change callbacks.
- *
- * @see jack_set_buffer_size().
- */
 void
 engine_set_buffer_size (AudioEngine * self, uint32_t buf_size)
 {
@@ -348,21 +342,21 @@ engine_append_ports (AudioEngine * self, GPtrArray * ports)
   _ADD (self->control_room->monitor_fader->solo);
   _ADD (self->control_room->monitor_fader->listen);
   _ADD (self->control_room->monitor_fader->mono_compat_enabled);
-  _ADD (self->control_room->monitor_fader->stereo_in->l);
-  _ADD (self->control_room->monitor_fader->stereo_in->r);
-  _ADD (self->control_room->monitor_fader->stereo_out->l);
-  _ADD (self->control_room->monitor_fader->stereo_out->r);
+  _ADD (&self->control_room->monitor_fader->stereo_in->get_l ());
+  _ADD (&self->control_room->monitor_fader->stereo_in->get_r ());
+  _ADD (&self->control_room->monitor_fader->stereo_out->get_l ());
+  _ADD (&self->control_room->monitor_fader->stereo_out->get_r ());
 
-  _ADD (self->monitor_out->l);
-  _ADD (self->monitor_out->r);
+  _ADD (&self->monitor_out->get_l ());
+  _ADD (&self->monitor_out->get_r ());
   _ADD (self->midi_editor_manual_press);
   _ADD (self->midi_in);
 
   /* add fader ports */
-  _ADD (self->sample_processor->fader->stereo_in->l);
-  _ADD (self->sample_processor->fader->stereo_in->r);
-  _ADD (self->sample_processor->fader->stereo_out->l);
-  _ADD (self->sample_processor->fader->stereo_out->r);
+  _ADD (&self->sample_processor->fader->stereo_in->get_l ());
+  _ADD (&self->sample_processor->fader->stereo_in->get_r ());
+  _ADD (&self->sample_processor->fader->stereo_out->get_l ());
+  _ADD (&self->sample_processor->fader->stereo_out->get_r ());
 
   for (int i = 0; i < self->sample_processor->tracklist->num_tracks; i++)
     {
@@ -596,31 +590,26 @@ engine_setup (AudioEngine * self)
     {
       ui_show_message_literal (
         _ ("Invalid Backend Combination"),
-        _ ("Your selected combination of backends "
-           "may not work properly. If you want to "
-           "use JACK, please select JACK as both "
+        _ ("Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both "
            "your audio and MIDI backend."));
     }
 
   self->buf_size_set = false;
 
-  /* connect the sample processor to the engine
-   * output */
-  stereo_ports_connect (
-    self->sample_processor->fader->stereo_out,
-    self->control_room->monitor_fader->stereo_in, true);
+  /* connect the sample processor to the engine output */
+  self->sample_processor->fader->stereo_out->connect_to (
+    *self->control_room->monitor_fader->stereo_in, true);
 
   /* connect fader to monitor out */
-  stereo_ports_connect (
-    self->control_room->monitor_fader->stereo_out, self->monitor_out, true);
+  self->control_room->monitor_fader->stereo_out->connect_to (
+    *self->monitor_out, true);
 
   self->setup = true;
 
   /* Expose ports */
-  port_set_expose_to_backend (self->midi_in, true);
-  port_set_expose_to_backend (self->monitor_out->l, true);
-  port_set_expose_to_backend (self->monitor_out->r, true);
-  port_set_expose_to_backend (self->midi_clock_out, true);
+  self->midi_in->set_expose_to_backend (true);
+  self->monitor_out->set_expose_to_backend (true);
+  self->midi_clock_out->set_expose_to_backend (true);
 
   /* process any events now */
   g_message ("processing engine events");
@@ -717,9 +706,7 @@ init_common (AudioEngine * self)
 #endif
     default:
       self->audio_backend = AudioBackend::AUDIO_BACKEND_DUMMY;
-      g_warning (
-        "selected audio backend not found. "
-        "switching to dummy");
+      g_warning ("selected audio backend not found. switching to dummy");
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY));
@@ -778,9 +765,7 @@ init_common (AudioEngine * self)
 #endif
     default:
       self->midi_backend = MidiBackend::MIDI_BACKEND_DUMMY;
-      g_warning (
-        "selected midi backend not found. "
-        "switching to dummy");
+      g_warning ("selected midi backend not found. switching to dummy");
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
@@ -827,12 +812,11 @@ init_common (AudioEngine * self)
   mpmc_queue_reserve (
     self->ev_queue, (size_t) ENGINE_MAX_EVENTS * sizeof (AudioEngineEvent *));
 
-  self->midi_clock_out = port_new_with_type_and_owner (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    "MIDI Clock Out", PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE,
-    self);
-  self->midi_clock_out->midi_events = midi_events_new ();
-  self->midi_clock_out->id.flags2 |= PortIdentifier::Flags2::MIDI_CLOCK;
+  self->midi_clock_out = new Port (
+    PortType::Event, PortFlow::Output, "MIDI Clock Out",
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+  self->midi_clock_out->midi_events_ = midi_events_new ();
+  self->midi_clock_out->id_.flags2_ |= PortIdentifier::Flags2::MIDI_CLOCK;
 }
 
 bool
@@ -875,28 +859,28 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
   for (size_t i = 0; i < ports->len; i++)
     {
       Port *           port = (Port *) g_ptr_array_index (ports, i);
-      PortIdentifier * id = &port->id;
+      PortIdentifier * id = &port->id_;
       if (
-        id->owner_type
+        id->owner_type_
         == PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE)
         port->init_loaded (self);
-      else if (id->owner_type == PortIdentifier::OwnerType::HW)
+      else if (id->owner_type_ == PortIdentifier::OwnerType::HW)
         {
-          if (id->flow == ZPortFlow::Z_PORT_FLOW_OUTPUT)
+          if (id->flow_ == PortFlow::Output)
             port->init_loaded (self->hw_in_processor);
-          else if (id->flow == ZPortFlow::Z_PORT_FLOW_INPUT)
+          else if (id->flow_ == PortFlow::Input)
             port->init_loaded (self->hw_out_processor);
         }
-      else if (id->owner_type == PortIdentifier::OwnerType::FADER)
+      else if (id->owner_type_ == PortIdentifier::OwnerType::FADER)
         {
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags2, id->flags2,
+              PortIdentifier::Flags2, id->flags2_,
               PortIdentifier::Flags2::SAMPLE_PROCESSOR_FADER))
             port->init_loaded (self->sample_processor->fader);
           else if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags2, id->flags2,
+              PortIdentifier::Flags2, id->flags2_,
               PortIdentifier::Flags2::MonitorFader))
             port->init_loaded (self->control_room->monitor_fader);
         }
@@ -933,37 +917,34 @@ engine_new (Project * project)
   self->sample_processor = sample_processor_new (self);
 
   /* init midi editor manual press */
-  self->midi_editor_manual_press = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT,
-    "MIDI Editor Manual Press");
-  self->midi_editor_manual_press->id.sym = g_strdup ("midi_editor_manual_press");
-  self->midi_editor_manual_press->id.flags |=
+  self->midi_editor_manual_press =
+    new Port (PortType::Event, PortFlow::Input, "MIDI Editor Manual Press");
+  self->midi_editor_manual_press->id_.sym_ = "midi_editor_manual_press";
+  self->midi_editor_manual_press->id_.flags_ |=
     PortIdentifier::Flags::MANUAL_PRESS;
 
   /* init midi in */
-  self->midi_in = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_EVENT, ZPortFlow::Z_PORT_FLOW_INPUT, "MIDI in");
-  self->midi_in->id.sym = g_strdup ("midi_in");
+  self->midi_in = new Port (PortType::Event, PortFlow::Input, "MIDI in");
+  self->midi_in->id_.sym_.assign ("midi_in");
 
   /* init MIDI queues */
-  self->midi_editor_manual_press->midi_events = midi_events_new ();
-  self->midi_in->midi_events = midi_events_new ();
+  self->midi_editor_manual_press->midi_events_ = midi_events_new ();
+  self->midi_in->midi_events_ = midi_events_new ();
 
   /* create monitor out ports */
-  Port *monitor_out_l, *monitor_out_r;
-  monitor_out_l = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    "Monitor Out L");
-  monitor_out_l->id.sym = g_strdup ("monitor_out_l");
-  monitor_out_r = port_new_with_type (
-    ZPortType::Z_PORT_TYPE_AUDIO, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    "Monitor Out R");
-  monitor_out_r->id.sym = g_strdup ("monitor_out_r");
-  self->monitor_out =
-    stereo_ports_new_from_existing (monitor_out_l, monitor_out_r);
-  stereo_ports_set_owner (
-    self->monitor_out, PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE,
-    self);
+  {
+    Port *monitor_out_l, *monitor_out_r;
+    monitor_out_l =
+      new Port (PortType::Audio, PortFlow::Output, "Monitor Out L");
+    monitor_out_l->id_.sym_ = "monitor_out_l";
+    monitor_out_r =
+      new Port (PortType::Audio, PortFlow::Output, "Monitor Out R");
+    monitor_out_r->id_.sym_ = "monitor_out_r";
+    self->monitor_out =
+      new StereoPorts (std::move (*monitor_out_l), std::move (*monitor_out_r));
+  }
+  self->monitor_out->set_owner (
+    PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, self);
 
   self->hw_in_processor = hardware_processor_new (true, self);
   self->hw_out_processor = hardware_processor_new (false, self);
@@ -1257,7 +1238,7 @@ engine_realloc_port_buffers (AudioEngine * self, nframes_t nframes)
 #if 0
   /** reallocate port buffers to new size */
   GPtrArray * ports = g_ptr_array_new ();
-  port_get_all (ports);
+  Port::get_all (ports);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = (Port *) g_ptr_array_index (ports, i);
@@ -1324,8 +1305,7 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
     return;
 
   /* clear the monitor output (used by rtaudio) */
-  self->monitor_out->l->clear_buffer (*AUDIO_ENGINE);
-  self->monitor_out->r->clear_buffer (*AUDIO_ENGINE);
+  self->monitor_out->clear_buffer (*AUDIO_ENGINE);
   self->midi_clock_out->clear_buffer (*AUDIO_ENGINE);
 
   /* if not running, do not attempt to access any
@@ -1339,7 +1319,7 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
       Port * port =
         (Port *) g_ptr_array_index (ROUTER->graph->external_out_ports, i);
 
-      port_clear_external_buffer (port);
+      port->clear_external_buffer ();
     }
 }
 
@@ -1513,13 +1493,12 @@ receive_midi_events (AudioEngine * self, uint32_t nframes, int print)
     {
 #ifdef HAVE_JACK
     case MidiBackend::MIDI_BACKEND_JACK:
-      port_receive_midi_events_from_jack (self->midi_in, 0, nframes);
+      self->midi_in->receive_midi_events_from_jack (0, nframes);
       break;
 #endif
 #ifdef HAVE_ALSA
     case MidiBackend::MIDI_BACKEND_ALSA:
-      /*engine_alsa_receive_midi_events (*/
-      /*self, print);*/
+      /*engine_alsa_receive_midi_events (self, print);*/
       break;
 #endif
     default:
@@ -2016,6 +1995,16 @@ engine_reset_bounce_mode (AudioEngine * self)
   tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
 }
 
+bool
+engine_is_port_own (AudioEngine * self, const Port * port)
+{
+  return (
+    port == &MONITOR_FADER->stereo_in->get_l ()
+    || port == &MONITOR_FADER->stereo_in->get_r ()
+    || port == &MONITOR_FADER->stereo_out->get_l ()
+    || port == &MONITOR_FADER->stereo_out->get_r ());
+}
+
 /**
  * Detects the best backends on the system and
  * sets them to GSettings.
@@ -2127,16 +2116,17 @@ engine_clone (const AudioEngine * src)
   self->transport_type = src->transport_type;
   self->sample_rate = src->sample_rate;
   self->frames_per_tick = src->frames_per_tick;
-  self->monitor_out = stereo_ports_clone (src->monitor_out);
-  self->midi_editor_manual_press = port_clone (src->midi_editor_manual_press);
-  self->midi_in = port_clone (src->midi_in);
+  self->monitor_out = new StereoPorts (src->monitor_out->clone ());
+  self->midi_editor_manual_press =
+    new Port (src->midi_editor_manual_press->clone ());
+  self->midi_in = new Port (src->midi_in->clone ());
   self->transport = transport_clone (src->transport);
   self->pool = audio_pool_clone (src->pool);
   self->control_room = control_room_clone (src->control_room);
   self->sample_processor = sample_processor_clone (src->sample_processor);
   self->hw_in_processor = hardware_processor_clone (src->hw_in_processor);
   self->hw_out_processor = hardware_processor_clone (src->hw_out_processor);
-  self->midi_clock_out = port_clone (src->midi_clock_out);
+  self->midi_clock_out = new Port (src->midi_clock_out->clone ());
 
   return self;
 }
@@ -2192,15 +2182,15 @@ engine_free (AudioEngine * self)
     }
 
   if (self == AUDIO_ENGINE)
-    stereo_ports_disconnect (self->monitor_out);
-  object_free_w_func_and_null (stereo_ports_free, self->monitor_out);
+    self->monitor_out->disconnect ();
+  object_delete_and_null (self->monitor_out);
 
   if (self == AUDIO_ENGINE)
-    port_disconnect_all (self->midi_in);
-  object_free_w_func_and_null (port_free, self->midi_in);
+    self->midi_in->disconnect_all ();
+  object_delete_and_null (self->midi_in);
   if (self == AUDIO_ENGINE)
-    port_disconnect_all (self->midi_editor_manual_press);
-  object_free_w_func_and_null (port_free, self->midi_editor_manual_press);
+    self->midi_editor_manual_press->disconnect_all ();
+  object_delete_and_null (self->midi_editor_manual_press);
 
   object_free_w_func_and_null (sample_processor_free, self->sample_processor);
   object_free_w_func_and_null (metronome_free, self->metronome);
@@ -2214,7 +2204,7 @@ engine_free (AudioEngine * self)
   object_free_w_func_and_null (hardware_processor_free, self->hw_in_processor);
   object_free_w_func_and_null (hardware_processor_free, self->hw_out_processor);
 
-  object_free_w_func_and_null (port_free, self->midi_clock_out);
+  object_delete_and_null (self->midi_clock_out);
 
   object_zero_and_free (self);
 

@@ -95,27 +95,21 @@ inspector_plugin_widget_show (
     }
 
   ports_expander_widget_setup_plugin (
-    self->ctrl_ins, ZPortFlow::Z_PORT_FLOW_INPUT,
-    ZPortType::Z_PORT_TYPE_CONTROL, pl);
+    self->ctrl_ins, PortFlow::Input, PortType::Control, pl);
   ports_expander_widget_setup_plugin (
-    self->ctrl_outs, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    ZPortType::Z_PORT_TYPE_CONTROL, pl);
+    self->ctrl_outs, PortFlow::Output, PortType::Control, pl);
   ports_expander_widget_setup_plugin (
-    self->midi_ins, ZPortFlow::Z_PORT_FLOW_INPUT, ZPortType::Z_PORT_TYPE_EVENT,
-    pl);
+    self->midi_ins, PortFlow::Input, PortType::Event, pl);
   ports_expander_widget_setup_plugin (
-    self->midi_outs, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    ZPortType::Z_PORT_TYPE_EVENT, pl);
+    self->midi_outs, PortFlow::Output, PortType::Event, pl);
   ports_expander_widget_setup_plugin (
-    self->audio_ins, ZPortFlow::Z_PORT_FLOW_INPUT, ZPortType::Z_PORT_TYPE_AUDIO,
-    pl);
+    self->audio_ins, PortFlow::Input, PortType::Audio, pl);
   ports_expander_widget_setup_plugin (
-    self->audio_outs, ZPortFlow::Z_PORT_FLOW_OUTPUT,
-    ZPortType::Z_PORT_TYPE_AUDIO, pl);
+    self->audio_outs, PortFlow::Output, PortType::Audio, pl);
   ports_expander_widget_setup_plugin (
-    self->cv_ins, ZPortFlow::Z_PORT_FLOW_INPUT, ZPortType::Z_PORT_TYPE_CV, pl);
+    self->cv_ins, PortFlow::Input, PortType::CV, pl);
   ports_expander_widget_setup_plugin (
-    self->cv_outs, ZPortFlow::Z_PORT_FLOW_OUTPUT, ZPortType::Z_PORT_TYPE_CV, pl);
+    self->cv_outs, PortFlow::Output, PortType::CV, pl);
 
   plugin_properties_expander_widget_refresh (self->properties, pl);
 }
