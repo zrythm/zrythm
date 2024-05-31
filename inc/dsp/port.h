@@ -19,6 +19,7 @@
 #include "dsp/port_identifier.h"
 #include "utils/types.h"
 
+#include "juce/juce.h"
 #include "zix/sem.h"
 
 #ifdef HAVE_RTMIDI

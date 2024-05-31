@@ -20,7 +20,7 @@
 #include "ext/juce/juce.h"
 #include "zix/sem.h"
 
-typedef struct Project                Project;
+struct Project;
 typedef struct Symap                  Symap;
 typedef struct RecordingManager       RecordingManager;
 typedef struct EventManager           EventManager;

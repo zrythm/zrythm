@@ -687,19 +687,6 @@ ui_setup_audio_device_name_combo_row (
   bool          with_signal);
 
 /**
- * Sets up the VST paths entry.
- */
-void
-ui_setup_vst_paths_entry (GtkEntry * entry);
-
-/**
- * Updates the the VST paths in the gsettings from
- * the text in the entry.
- */
-void
-ui_update_vst_paths_from_entry (GtkEntry * entry);
-
-/**
  * Returns the "a locale for the language you have
  * selected..." text based on the given language.
  *

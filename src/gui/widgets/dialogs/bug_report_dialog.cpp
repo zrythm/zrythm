@@ -136,7 +136,7 @@ static AutomaticReportData *
 automatic_report_data_new (BugReportDialogWidget * self)
 {
   AutomaticReportData * data = object_new (AutomaticReportData);
-  data->progress_nfo = progress_info_new ();
+  data->progress_nfo = new ProgressInfo ();
   data->self = self;
   return data;
 }
@@ -144,7 +144,7 @@ automatic_report_data_new (BugReportDialogWidget * self)
 static void
 automatic_report_data_free (AutomaticReportData * data)
 {
-  object_free_w_func_and_null (progress_info_free, data->progress_nfo);
+  object_delete_and_null (data->progress_nfo);
   object_zero_and_free (data);
 }
 
@@ -161,13 +161,13 @@ send_data (AutomaticReportData * data)
     "log_file", self->log_file_path, "application/zstd", NULL);
   if (ret != 0)
     {
-      progress_info_mark_completed (
-        data->progress_nfo, PROGRESS_COMPLETED_HAS_ERROR, err->message);
+      data->progress_nfo->mark_completed (
+        ProgressInfo::CompletionType::HAS_ERROR, err->message);
       return NULL;
     }
 
-  progress_info_mark_completed (
-    data->progress_nfo, PROGRESS_COMPLETED_SUCCESS, _ ("Sent successfully"));
+  data->progress_nfo->mark_completed (
+    ProgressInfo::CompletionType::SUCCESS, _ ("Sent successfully"));
 
   return NULL;
 }
@@ -185,8 +185,8 @@ send_data_ready_cb (
   BugReportDialogWidget * self = data->self;
 
   if (
-    progress_info_get_completion_type (data->progress_nfo)
-    == PROGRESS_COMPLETED_SUCCESS)
+    data->progress_nfo->get_completion_type ()
+    == ProgressInfo::CompletionType::SUCCESS)
     {
       adw_alert_dialog_set_response_enabled (
         ADW_ALERT_DIALOG (self), "automatic", false);

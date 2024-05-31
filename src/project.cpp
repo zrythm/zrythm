@@ -80,6 +80,30 @@ GQuark
 z_project_error_quark (void);
 G_DEFINE_QUARK (z - project - error - quark, z_project_error)
 
+/**
+ * Project save data.
+ */
+struct ProjectSaveData
+{
+  /** Project clone (with memcpy). */
+  std::unique_ptr<Project> project;
+
+  /** Full path to save to. */
+  std::string project_file_path;
+
+  bool is_backup = false;
+
+  /** To be set to true when the thread finishes. */
+  bool finished = false;
+
+  bool show_notification = false;
+
+  /** Whether an error occurred during saving. */
+  bool has_error = false;
+
+  ProgressInfo progress_info;
+};
+
 bool
 project_make_project_dirs (Project * self, bool is_backup, GError ** error)
 {
@@ -733,25 +757,6 @@ project_new (Zrythm * owner)
   return self;
 }
 
-ProjectSaveData *
-project_save_data_new (void)
-{
-  ProjectSaveData * self = object_new_unresizable (ProjectSaveData);
-  self->progress_info = progress_info_new ();
-
-  return self;
-}
-
-void
-project_save_data_free (ProjectSaveData * self)
-{
-  g_free_and_null (self->project_file_path);
-  object_free_w_func_and_null (project_free, self->project);
-  object_free_w_func_and_null (progress_info_free, self->progress_info);
-
-  object_zero_and_free_unresizable (ProjectSaveData, self);
-}
-
 /**
  * Thread that does the serialization and saving.
  */
@@ -766,7 +771,7 @@ serialize_project_thread (ProjectSaveData * data)
   g_message ("serializing project to json...");
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
-  char *   json = project_serialize_to_json_str (data->project, &err);
+  char *   json = project_serialize_to_json_str (data->project.get (), &err);
   gint64   time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms", (long) (time_after - time_before) / 1000);
@@ -794,9 +799,11 @@ serialize_project_thread (ProjectSaveData * data)
 
   /* set file contents */
   g_message (
-    "%s: saving project file at %s...", __func__, data->project_file_path);
+    "%s: saving project file at %s...", __func__,
+    data->project_file_path.c_str ());
   g_file_set_contents (
-    data->project_file_path, compressed_json, (gssize) compressed_size, &err);
+    data->project_file_path.c_str (), compressed_json, (gssize) compressed_size,
+    &err);
   free (compressed_json);
   if (err != NULL)
     {
@@ -838,7 +845,7 @@ project_idle_saved_cb (ProjectSaveData * data)
     {
       if (!ZRYTHM_TESTING)
         {
-          gZrythm->add_to_recent_projects (data->project_file_path);
+          gZrythm->add_to_recent_projects (data->project_file_path.c_str ());
         }
       if (data->show_notification)
         ui_show_notification (_ ("Project saved."));
@@ -849,8 +856,8 @@ project_idle_saved_cb (ProjectSaveData * data)
       EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT);
     }
 
-  progress_info_mark_completed (
-    data->progress_info, PROGRESS_COMPLETED_SUCCESS, NULL);
+  data->progress_info.mark_completed (
+    ProgressInfo::CompletionType::SUCCESS, nullptr);
 
   return G_SOURCE_REMOVE;
 }
@@ -882,7 +889,7 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
    * */
   GPtrArray * arr = g_ptr_array_new ();
   plugin_get_all (PROJECT, arr, true);
-  plugin_get_all (data->project, arr, true);
+  plugin_get_all (data->project.get (), arr, true);
   for (size_t i = 0; i < arr->len; i++)
     {
       Plugin * pl = (Plugin *) g_ptr_array_index (arr, i);
@@ -1039,12 +1046,12 @@ project_save (
       return false;
     }
 
-  ProjectSaveData * data = project_save_data_new ();
+  ProjectSaveData * data = new ProjectSaveData ();
   data->project_file_path =
     project_get_path (self, ProjectPath::PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  data->project = project_clone (PROJECT, is_backup, &err);
+  data->project.reset (project_clone (PROJECT, is_backup, &err));
   if (!data->project)
     {
       PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to clone project"));
@@ -1109,7 +1116,7 @@ project_save (
       project_idle_saved_cb (data);
     }
 
-  object_free_w_func_and_null (project_save_data_free, data);
+  object_delete_and_null (data);
 
   /* write FINISHED file */
   {

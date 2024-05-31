@@ -2043,8 +2043,8 @@ arranger_selections_merge (ArrangerSelections * self)
   arranger_selections_get_all_objects (self, objs_arr);
 
   double ticks_length = arranger_selections_get_length_in_ticks (self);
-  unsigned_frame_t num_frames = (unsigned_frame_t) ceil (
-    (double) AUDIO_ENGINE->frames_per_tick * ticks_length);
+  unsigned_frame_t num_frames = static_cast<unsigned_frame_t> (
+    ceil ((double) AUDIO_ENGINE->frames_per_tick * ticks_length));
   Position pos, end_pos;
   arranger_selections_get_start_pos (self, &pos, F_GLOBAL);
   position_from_ticks (&end_pos, pos.ticks + ticks_length);
@@ -2086,11 +2086,11 @@ arranger_selections_merge (ArrangerSelections * self)
       break;
     case RegionType::REGION_TYPE_AUDIO:
       {
-        float lframes[num_frames];
-        float rframes[num_frames];
-        float frames[num_frames * 2];
-        dsp_fill (lframes, 0, (size_t) num_frames);
-        dsp_fill (rframes, 0, (size_t) num_frames);
+        std::vector<float> lframes (num_frames);
+        std::vector<float> rframes (num_frames);
+        std::vector<float> frames (num_frames * 2);
+        dsp_fill (lframes.data (), 0, (size_t) num_frames);
+        dsp_fill (rframes.data (), 0, (size_t) num_frames);
         AudioClip * first_r_clip = audio_region_get_clip (first_r);
         BitDepth    max_depth = first_r_clip->bit_depth;
         g_warn_if_fail (first_r_clip->name);
@@ -2105,7 +2105,7 @@ arranger_selections_merge (ArrangerSelections * self)
             /* add all audio data */
             AudioClip * clip = audio_region_get_clip (r);
             dsp_add2 (
-              &lframes[frames_diff], clip->ch_frames[0],
+              &lframes.data ()[frames_diff], clip->ch_frames[0],
               (size_t) r_frames_length);
 
             if (clip->bit_depth > max_depth)
@@ -2123,8 +2123,8 @@ arranger_selections_merge (ArrangerSelections * self)
 
         /* create new region using frames */
         new_r = audio_region_new (
-          -1, NULL, true, frames, num_frames, first_r_clip->name, 2, max_depth,
-          &pos, first_r->id.track_name_hash, first_r->id.lane_pos,
+          -1, NULL, true, frames.data (), num_frames, first_r_clip->name, 2,
+          max_depth, &pos, first_r->id.track_name_hash, first_r->id.lane_pos,
           first_r->id.idx, NULL);
       }
       break;

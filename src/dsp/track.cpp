@@ -1877,8 +1877,8 @@ freeze_progress_close_cb (ExportData * data)
   g_return_if_fail (!AUDIO_ENGINE->exporting);
 
   if (
-    progress_info_get_completion_type (data->info->progress_info)
-    == PROGRESS_COMPLETED_SUCCESS)
+    data->info->progress_info->get_completion_type ()
+    == ProgressInfo::CompletionType::SUCCESS)
     {
       /* move the temporary file to the pool */
       GError *    err = NULL;

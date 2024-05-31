@@ -10,80 +10,112 @@
 #ifndef __UTILS_PROGRESS_INFO_H__
 #define __UTILS_PROGRESS_INFO_H__
 
+#include <atomic>
+#include <mutex>
+#include <string>
+#include <utility>
+
+#include <glib.h>
+
 /**
  * @addtogroup utils
  *
  * @{
  */
 
-typedef enum ProgressStatus
+/**
+ * Generic progress info.
+ *
+ * @note Not realtime-safe.
+ */
+class ProgressInfo
 {
-  PROGRESS_STATUS_PENDING_START,
-  PROGRESS_STATUS_PENDING_CANCELLATION,
-  PROGRESS_STATUS_RUNNING,
-  PROGRESS_STATUS_COMPLETED,
-} ProgressStatus;
 
-typedef enum ProgressCompletionType
-{
-  PROGRESS_COMPLETED_CANCELLED,
-  PROGRESS_COMPLETED_HAS_WARNING,
-  PROGRESS_COMPLETED_HAS_ERROR,
-  PROGRESS_COMPLETED_SUCCESS,
-} ProgressCompletionType;
+public:
+  enum Status
+  {
+    PENDING_START,
+    PENDING_CANCELLATION,
+    RUNNING,
+    COMPLETED,
+  };
 
-typedef struct ProgressInfo ProgressInfo;
+  enum CompletionType
+  {
+    CANCELLED,
+    HAS_WARNING,
+    HAS_ERROR,
+    SUCCESS,
+  };
 
-ProgressInfo *
-progress_info_new (void);
+  Status get_status () const { return status_; };
 
-ProgressStatus
-progress_info_get_status (ProgressInfo * self);
+  CompletionType get_completion_type () const
+  {
+    g_return_val_if_fail (status_ == COMPLETED, HAS_ERROR);
+    return completion_type_;
+  }
 
-ProgressCompletionType
-progress_info_get_completion_type (ProgressInfo * self);
+  /**
+   * To be called by the task caller.
+   */
+  void request_cancellation ();
 
-/**
- * To be called by the task caller.
- */
-void
-progress_info_request_cancellation (ProgressInfo * self);
+  /**
+   * To be called by the task itself.
+   */
+  void mark_completed (CompletionType type, const char * msg);
 
-/**
- * To be called by the task itself.
- */
-void
-progress_info_mark_completed (
-  ProgressInfo *         self,
-  ProgressCompletionType type,
-  const char *           msg);
+  /**
+   * Returns a newly allocated string.
+   */
+  char * get_message () const { return g_strdup (completion_str_.c_str ()); }
 
-/**
- * Returns a newly allocated string.
- */
-char *
-progress_info_get_message (ProgressInfo * self);
+  /**
+   * To be called by the task caller.
+   */
+  std::tuple<double, std::string> get_progress ()
+  {
+    std::scoped_lock guard (m_);
 
-/**
- * To be called by the task caller.
- */
-void
-progress_info_get_progress (ProgressInfo * self, double * progress, char ** str);
+    return std::make_tuple (progress_, progress_str_);
+  }
 
-/**
- * To be called by the task itself.
- */
-void
-progress_info_update_progress (
-  ProgressInfo * self,
-  double         progress,
-  const char *   msg);
+  /**
+   * To be called by the task itself.
+   */
+  void update_progress (double progress, const char * msg);
 
-bool
-progress_info_pending_cancellation (ProgressInfo * self);
+  bool pending_cancellation () const
+  {
+    return status_ == PENDING_CANCELLATION;
+  };
 
-void
-progress_info_free (ProgressInfo * self);
+private:
+  /** Progress done (0.0 to 1.0). */
+  double progress_ = 0;
+
+  /** Current running status. */
+  Status status_ = (Status) 0;
+
+  /** Status to be checked after completion. */
+  CompletionType completion_type_ = (CompletionType) 0;
+
+  /** Message to show after completion (error or warning or
+   * success message). */
+  std::string completion_str_;
+
+  /** String to show during the action (can be updated multiple
+   * times until completion). */
+  std::string progress_str_;
+
+  /** String to show in the label when the action is complete
+   * (progress == 1.0). */
+  // std::string label_done_str;
+
+  /** Mutex to prevent concurrent access/edits. */
+  std::mutex m_;
+};
 
 /**
  * @}

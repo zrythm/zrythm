@@ -54,7 +54,8 @@ public:
   StringArray () : juce::StringArray (){};
   StringArray (const char * const * strs);
 
-  /** Returns the strings in a newly-allocated NULL-terminated array.
+  /**
+   * @brief Returns the strings in a newly-allocated NULL-terminated array.
    *
    * To be used for C APIs.
    */
@@ -90,15 +91,13 @@ int
 string_is_ascii (const char * string);
 
 /**
- * Returns the matched string if the string array
- * contains the given substring.
+ * Returns the matched string if the string array contains the given substring.
  */
 char *
 string_array_contains_substr (char ** str_array, int num_str, const char * substr);
 
 /**
- * Returns if the given string contains the given
- * substring.
+ * Returns if the given string contains the given substring.
  */
 bool
 string_contains_substr (const char * str, const char * substr);
@@ -107,21 +106,17 @@ bool
 string_contains_substr_case_insensitive (const char * str, const char * substr);
 
 /**
- * Converts the given string to uppercase in \ref
- * out.
+ * Converts the given string to uppercase in \ref out.
  *
- * Assumes \ref out is already allocated to as many
- * chars as \ref in.
+ * Assumes \ref out is already allocated to as many chars as \ref in.
  */
 void
 string_to_upper (const char * in, char * out);
 
 /**
- * Converts the given string to lowercase in \ref
- * out.
+ * Converts the given string to lowercase in \ref out.
  *
- * Assumes \ref out is already allocated to as many
- * chars as \ref in.
+ * Assumes \ref out is already allocated to as many chars as \ref in.
  */
 void
 string_to_lower (const char * in, char * out);
@@ -132,8 +127,7 @@ string_to_lower (const char * in, char * out);
 #define string_is_equal(str1, str2) (!g_strcmp0 (str1, str2))
 
 /**
- * Returns if the two strings are equal ignoring
- * case.
+ * Returns if the two strings are equal ignoring case.
  */
 bool
 string_is_equal_ignore_case (const char * str1, const char * str2);

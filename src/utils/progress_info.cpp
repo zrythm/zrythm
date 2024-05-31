@@ -3,176 +3,59 @@
 
 #include "utils/objects.h"
 #include "utils/progress_info.h"
+#include "utils/types.h"
 
-/**
- * Generic progress info.
- *
- * @note Not realtime-safe.
- */
-typedef struct ProgressInfo
-{
-  /** Progress done (0.0 to 1.0). */
-  double progress;
-
-  /** Current running status. */
-  ProgressStatus status;
-
-  /** Status to be checked after completion. */
-  ProgressCompletionType completion_type;
-
-  /** Message to show after completion (error or warning or
-   * success message). */
-  char * completion_str;
-
-  /** String to show during the action (can be updated multiple
-   * times until completion). */
-  char * progress_str;
-
-  /** String to show in the label when the action is complete
-   * (progress == 1.0). */
-  // char * label_done_str;
-
-  /** Mutex to prevent concurrent access/edits. */
-  GMutex mutex;
-} ProgressInfo;
-
-ProgressInfo *
-progress_info_new (void)
-{
-  ProgressInfo * self = object_new_unresizable (ProgressInfo);
-
-  g_mutex_init (&self->mutex);
-
-  return self;
-}
-
-ProgressStatus
-progress_info_get_status (ProgressInfo * self)
-{
-  return self->status;
-}
-
-ProgressCompletionType
-progress_info_get_completion_type (ProgressInfo * self)
-{
-  g_return_val_if_fail (
-    self->status == PROGRESS_STATUS_COMPLETED, PROGRESS_COMPLETED_HAS_ERROR);
-  return self->completion_type;
-}
-
-/**
- * To be called by the task caller.
- */
 void
-progress_info_request_cancellation (ProgressInfo * self)
+ProgressInfo::request_cancellation ()
 {
-  if (self->status == PROGRESS_STATUS_COMPLETED)
+  if (status_ == COMPLETED)
     {
       g_warning ("requested cancellation but task already completed");
       return;
     }
 
-  g_mutex_lock (&self->mutex);
+  std::scoped_lock guard (m_);
 
-  if (self->status != PROGRESS_STATUS_RUNNING)
+  if (status_ != RUNNING)
     {
-      g_critical ("invalid status %d", self->status);
-      g_mutex_unlock (&self->mutex);
+      g_critical ("invalid status %s", ENUM_NAME (status_));
       return;
     }
 
-  self->status = PROGRESS_STATUS_PENDING_CANCELLATION;
-
-  g_mutex_unlock (&self->mutex);
-}
-
-bool
-progress_info_pending_cancellation (ProgressInfo * self)
-{
-  return self->status == PROGRESS_STATUS_PENDING_CANCELLATION;
+  status_ = PENDING_CANCELLATION;
 }
 
 /**
  * To be called by the task itself.
  */
 void
-progress_info_mark_completed (
-  ProgressInfo *         self,
-  ProgressCompletionType type,
-  const char *           msg)
+ProgressInfo::mark_completed (CompletionType type, const char * msg)
 {
-  g_mutex_lock (&self->mutex);
+  std::scoped_lock guard (m_);
 
-  self->status = PROGRESS_STATUS_COMPLETED;
-  self->completion_type = type;
-  self->completion_str = g_strdup (msg);
+  status_ = COMPLETED;
+  completion_type_ = type;
+  completion_str_ = msg;
 
-  if (type == PROGRESS_COMPLETED_HAS_WARNING)
+  if (type == HAS_WARNING)
     {
       g_message ("progress warning: %s", msg);
     }
-  else if (type == PROGRESS_COMPLETED_HAS_ERROR)
+  else if (type == HAS_ERROR)
     {
       g_message ("progress error: %s", msg);
     }
-
-  g_mutex_unlock (&self->mutex);
 }
 
-/**
- * Returns a newly allocated string.
- */
-char *
-progress_info_get_message (ProgressInfo * self)
-{
-  return g_strdup (self->completion_str);
-}
-
-/**
- * To be called by the task caller.
- */
 void
-progress_info_get_progress (ProgressInfo * self, double * progress, char ** str)
+ProgressInfo::update_progress (double progress, const char * msg)
 {
-  g_mutex_lock (&self->mutex);
+  std::scoped_lock guard (m_);
 
-  if (str)
+  progress_str_ = msg;
+  progress_ = progress;
+  if (status_ == PENDING_START)
     {
-      *str = g_strdup (self->progress_str);
+      status_ = RUNNING;
     }
-  *progress = self->progress;
-
-  g_mutex_unlock (&self->mutex);
-}
-
-/**
- * To be called by the task itself.
- */
-void
-progress_info_update_progress (
-  ProgressInfo * self,
-  double         progress,
-  const char *   msg)
-{
-  g_mutex_lock (&self->mutex);
-
-  g_free_and_null (self->progress_str);
-  self->progress_str = g_strdup (msg);
-  self->progress = progress;
-  if (self->status == PROGRESS_STATUS_PENDING_START)
-    {
-      self->status = PROGRESS_STATUS_RUNNING;
-    }
-
-  g_mutex_unlock (&self->mutex);
-}
-
-void
-progress_info_free (ProgressInfo * self)
-{
-  g_return_if_fail (self->status == PROGRESS_STATUS_COMPLETED);
-  g_mutex_clear (&self->mutex);
-  g_free_and_null (self->completion_str);
-  g_free_and_null (self->progress_str);
-  object_zero_and_free_unresizable (ProgressInfo, self);
 }

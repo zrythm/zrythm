@@ -924,53 +924,6 @@ ui_setup_audio_device_name_combo_row (
     }
 }
 
-/**
- * Sets up the VST paths entry.
- */
-void
-ui_setup_vst_paths_entry (GtkEntry * entry)
-{
-  char ** paths =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst-search-paths-windows");
-  g_return_if_fail (paths);
-
-  int    path_idx = 0;
-  char * path;
-  char   delimited_paths[6000];
-  delimited_paths[0] = '\0';
-  while ((path = paths[path_idx++]) != NULL)
-    {
-      strcat (delimited_paths, path);
-      strcat (delimited_paths, ";");
-    }
-  delimited_paths[strlen (delimited_paths) - 1] = '\0';
-
-  gtk_editable_set_text (GTK_EDITABLE (entry), delimited_paths);
-}
-
-/**
- * Updates the the VST paths in the gsettings from
- * the text in the entry.
- */
-void
-ui_update_vst_paths_from_entry (GtkEntry * entry)
-{
-  const char * txt = gtk_editable_get_text (GTK_EDITABLE (entry));
-  g_return_if_fail (txt);
-  char ** paths = g_strsplit (txt, ";", 0);
-  g_settings_set_strv (
-    S_P_PLUGINS_PATHS, "vst-search-paths-windows", (const char * const *) paths);
-  g_free (paths);
-}
-
-/**
- * Returns the contrasting color (variation of
- * black or white) based on if the given color is
- * dark enough or not.
- *
- * @param src The source color.
- * @param dest The destination color to write to.
- */
 void
 ui_get_contrast_color (GdkRGBA * src, GdkRGBA * dest)
 {

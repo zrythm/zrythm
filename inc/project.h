@@ -103,7 +103,7 @@ enum class ProjectCompressionFlag
  * A project (or song), contains all the project data as opposed to zrythm_app.h
  * which manages global things like plugin descriptors and global settings.
  **/
-typedef struct Project
+struct Project
 {
 
   /**
@@ -282,37 +282,7 @@ typedef struct Project
   /** Used when deserializing projects. */
   int format_major;
   int format_minor;
-} Project;
-
-/**
- * Project save data.
- */
-typedef struct ProjectSaveData
-{
-  /** Project clone (with memcpy). */
-  Project * project;
-
-  /** Full path to save to. */
-  char * project_file_path;
-
-  bool is_backup;
-
-  /** To be set to true when the thread finishes. */
-  bool finished;
-
-  bool show_notification;
-
-  /** Whether an error occurred during saving. */
-  bool has_error;
-
-  ProgressInfo * progress_info;
-} ProjectSaveData;
-
-ProjectSaveData *
-project_save_data_new (void);
-
-void
-project_save_data_free (ProjectSaveData * self);
+};
 
 /**
  * Checks that everything is okay with the project.
@@ -391,15 +361,12 @@ project_init_selections (Project * self);
  * Compresses/decompress a project from a file/data
  * to a file/data.
  *
- * @param compress True to compress, false to
- *   decompress.
- * @param[out] _dest Pointer to a location to allocate
- *   memory.
- * @param[out] _dest_size Pointer to a location to
- *   store the size of the allocated memory.
+ * @param compress True to compress, false to decompress.
+ * @param[out] _dest Pointer to a location to allocate memory.
+ * @param[out] _dest_size Pointer to a location to store the size of the
+ * allocated memory.
  * @param _src Input buffer or filepath.
- * @param _src_size Input buffer size, if not
- *   filepath.
+ * @param _src_size Input buffer size, if not filepath.
  *
  * @return Whether successful.
  */

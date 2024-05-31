@@ -22,7 +22,7 @@
 /* pulled in from X11 */
 #undef Bool
 
-typedef struct Project                        Project;
+struct Project;
 typedef struct Channel                        Channel;
 typedef struct AutomationTrack                AutomationTrack;
 typedef struct _ModulatorWidget               ModulatorWidget;

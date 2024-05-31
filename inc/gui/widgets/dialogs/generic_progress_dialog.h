@@ -10,6 +10,8 @@
 #ifndef __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 
+#include "utils/types.h"
+
 #include <adwaita.h>
 
 #define GENERIC_PROGRESS_DIALOG_WIDGET_TYPE \
@@ -21,7 +23,7 @@ G_DECLARE_DERIVABLE_TYPE (
   GENERIC_PROGRESS_DIALOG_WIDGET,
   AdwAlertDialog)
 
-typedef struct ProgressInfo ProgressInfo;
+class ProgressInfo;
 
 /**
  * @addtogroup widgets

@@ -3048,8 +3048,8 @@ bounce_progress_close_cb (ExportData * data)
   exporter_post_export (data->info, data->conns, data->state);
 
   if (
-    progress_info_get_completion_type (data->info->progress_info)
-    == PROGRESS_COMPLETED_SUCCESS)
+    data->info->progress_info->get_completion_type ()
+    == ProgressInfo::CompletionType::SUCCESS)
     {
       /* create audio track with bounced material */
       Position first_pos;
@@ -4014,9 +4014,9 @@ bounce_selected_tracks_progress_close_cb (ExportData * data)
 
   exporter_post_export (data->info, data->conns, data->state);
 
-  ProgressInfo * pinfo = data->info->progress_info;
+  const ProgressInfo &pinfo = *data->info->progress_info;
 
-  if (progress_info_get_completion_type (pinfo) == PROGRESS_COMPLETED_SUCCESS)
+  if (pinfo.get_completion_type () == ProgressInfo::CompletionType::SUCCESS)
     {
       /* create audio track with bounced material */
       Marker *         m = marker_track_get_start_marker (P_MARKER_TRACK);

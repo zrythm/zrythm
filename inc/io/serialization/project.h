@@ -14,7 +14,7 @@
 
 #include <glib.h>
 
-TYPEDEF_STRUCT (Project);
+struct Project;
 
 char *
 project_serialize_to_json_str (const Project * project, GError ** error);

@@ -593,7 +593,7 @@ progress_close_cb (ExportData * data)
 
       /* stop if last stem not successful */
       ExportSettings * prev_info = data->info;
-      if (progress_info_get_status (prev_info->progress_info) == PROGRESS_STATUS_COMPLETED && (progress_info_get_completion_type (prev_info->progress_info) == PROGRESS_COMPLETED_SUCCESS || progress_info_get_completion_type (prev_info->progress_info) == PROGRESS_COMPLETED_HAS_WARNING))
+      if (prev_info->progress_info->get_status () == ProgressInfo::Status::COMPLETED && (prev_info->progress_info->get_completion_type () == ProgressInfo::CompletionType::SUCCESS || prev_info->progress_info->get_completion_type () == ProgressInfo::CompletionType::HAS_WARNING))
         {
           g_debug ("~ finished bouncing stem for %s ~", track->name);
 

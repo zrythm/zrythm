@@ -65,7 +65,7 @@ on_response_cb (
   if (string_is_equal (response, "cancel"))
     {
       g_debug ("accepting cancel response");
-      progress_info_request_cancellation (prv->progress_info);
+      prv->progress_info->request_cancellation ();
       run_callback_and_force_close (self);
     }
   else if (string_is_equal (response, "ok"))
@@ -101,17 +101,17 @@ tick_cb (
   GET_PRIVATE (self);
   ProgressInfo * info = prv->progress_info;
 
-  double progress;
-  progress_info_get_progress (info, &progress, NULL);
+  double      progress;
+  std::string progress_str;
+  std::tie (progress, progress_str) = info->get_progress ();
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (widget), progress);
 
-  ProgressStatus status = progress_info_get_status (info);
-  if (status == PROGRESS_STATUS_COMPLETED)
+  ProgressInfo::Status status = info->get_status ();
+  if (status == ProgressInfo::Status::COMPLETED)
     {
-      ProgressCompletionType compl_type =
-        progress_info_get_completion_type (info);
-      char * msg = progress_info_get_message (info);
-      if (compl_type == PROGRESS_COMPLETED_CANCELLED)
+      ProgressInfo::CompletionType compl_type = info->get_completion_type ();
+      char *                       msg = info->get_message ();
+      if (compl_type == ProgressInfo::CompletionType::CANCELLED)
         {
           g_debug ("cancelled");
           /* dialog is already closed at this point (pressing cancel or closing
@@ -140,7 +140,7 @@ tick_cb (
           gtk_progress_bar_set_text (prv->progress_bar, msg);
         }
 
-      if (compl_type == PROGRESS_COMPLETED_HAS_ERROR)
+      if (compl_type == ProgressInfo::CompletionType::HAS_ERROR)
         {
           ui_show_message_full (GTK_WIDGET (self), _ ("Error"), "%s", msg);
         }

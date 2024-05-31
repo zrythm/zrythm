@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: FSFAP
 ---
 CompileFlags:
-    Add: [-xc++, -Wall]
+    Add: [-xc++, -Wall, -fsanitize=address]
     Remove: -fanalyzer
     Compiler: clang++

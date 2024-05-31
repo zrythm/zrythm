@@ -20,6 +20,8 @@
 #include "plugins/plugin_identifier.h"
 #include "utils/types.h"
 
+#include "ext/juce/juce.h"
+
 /**
  * @addtogroup dsp
  *

@@ -117,7 +117,7 @@ export_audio (ExportSettings * info)
 {
   SF_INFO sfinfo = {};
 
-  ProgressInfo * pinfo = info->progress_info;
+  ProgressInfo &pinfo = *info->progress_info;
 
 #define EXPORT_CHANNELS 2
 
@@ -158,8 +158,7 @@ export_audio (ExportSettings * info)
 
         char * err_str =
           g_strdup_printf (_ ("Format %s not supported yet"), format);
-        progress_info_mark_completed (
-          pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+        pinfo.mark_completed (ProgressInfo::CompletionType::HAS_ERROR, err_str);
         g_warning ("%s", err_str);
         g_free (err_str);
 
@@ -224,8 +223,7 @@ export_audio (ExportSettings * info)
   if (!sf_format_check (&sfinfo))
     {
       char * err_str = g_strdup (_ ("SF INFO invalid"));
-      progress_info_mark_completed (
-        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+      pinfo.mark_completed (ProgressInfo::CompletionType::HAS_ERROR, err_str);
       g_warning ("%s", err_str);
       g_free (err_str);
 
@@ -251,8 +249,7 @@ export_audio (ExportSettings * info)
       char * err_str = g_strdup_printf (
         _ ("Couldn't open SNDFILE %s:\n%d: %s"), info->file_uri, error,
         error_str);
-      progress_info_mark_completed (
-        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+      pinfo.mark_completed (ProgressInfo::CompletionType::HAS_ERROR, err_str);
       g_free (err_str);
 
       return -1;
@@ -262,9 +259,7 @@ export_audio (ExportSettings * info)
       char * err_str = g_strdup_printf (
         _ ("Invalid SNDFILE format %s: 0x%08X != 0x%08X"), info->file_uri,
         sfinfo.format, type_major | type_minor);
-      progress_info_mark_completed (
-        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
-      g_free (err_str);
+      pinfo.mark_completed (ProgressInfo::CompletionType::HAS_ERROR, err_str);
 
       return -1;
     }
@@ -410,8 +405,7 @@ export_audio (ExportSettings * info)
               char * err_str = g_strdup_printf (
                 _ ("Export failed: Error seeking file at %ld"),
                 covered_frames);
-              progress_info_mark_completed (
-                pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+              pinfo.mark_completed (ProgressInfo::CompletionType::HAS_ERROR, err_str);
               g_free (err_str);
               return -1;
             }
@@ -426,8 +420,8 @@ export_audio (ExportSettings * info)
           char * err_str = g_strdup_printf (
             _ ("Export failed: %ld frames written (expected %d)"),
             written_frames, nframes);
-          progress_info_mark_completed (
-            pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+          pinfo.mark_completed (
+            ProgressInfo::CompletionType::HAS_ERROR, err_str);
           g_free (err_str);
           return -1;
         }
@@ -453,15 +447,14 @@ export_audio (ExportSettings * info)
       last_playhead_frames += nframes;
 #endif
 
-      progress_info_update_progress (
-        pinfo, (TRANSPORT->playhead_pos.ticks - start_pos.ticks) / total_ticks,
-        NULL);
+      pinfo.update_progress (
+        (TRANSPORT->playhead_pos.ticks - start_pos.ticks) / total_ticks, NULL);
     }
   while (
     TRANSPORT->playhead_pos.ticks < end_pos.ticks
-    && !progress_info_pending_cancellation (pinfo));
+    && !pinfo.pending_cancellation ());
 
-  if (!progress_info_pending_cancellation (pinfo))
+  if (!pinfo.pending_cancellation ())
     {
       g_warn_if_fail (
         math_floats_equal_epsilon (covered_ticks, total_ticks, 1.0));
@@ -469,7 +462,7 @@ export_audio (ExportSettings * info)
 
   /* TODO silence output */
 
-  progress_info_update_progress (pinfo, 1.0, NULL);
+  pinfo.update_progress (1.0, nullptr);
 
   /* set jack freewheeling mode and transport type */
 #ifdef HAVE_JACK
@@ -495,17 +488,17 @@ export_audio (ExportSettings * info)
   sf_close (sndfile);
 
   /* if cancelled, delete */
-  if (progress_info_pending_cancellation (pinfo))
+  if (pinfo.pending_cancellation ())
     {
       io_remove (info->file_uri);
     }
 
   /* if cancelled, delete */
-  if (progress_info_pending_cancellation (pinfo))
+  if (pinfo.pending_cancellation ())
     {
       g_message ("cancelled export to %s", info->file_uri);
 
-      progress_info_mark_completed (pinfo, PROGRESS_COMPLETED_CANCELLED, NULL);
+      pinfo.mark_completed (ProgressInfo::CompletionType::CANCELLED, NULL);
       return 0;
     }
   else
@@ -518,14 +511,14 @@ export_audio (ExportSettings * info)
           char * warn_str = g_strdup_printf (
             _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
             max_db);
-          progress_info_mark_completed (
-            pinfo, PROGRESS_COMPLETED_HAS_WARNING, warn_str);
+          pinfo.mark_completed (
+            ProgressInfo::CompletionType::HAS_WARNING, warn_str);
           g_free (warn_str);
           return 0;
         }
     }
 
-  progress_info_mark_completed (pinfo, PROGRESS_COMPLETED_SUCCESS, NULL);
+  pinfo.mark_completed (ProgressInfo::CompletionType::SUCCESS, NULL);
 
   return 0;
 }
@@ -587,16 +580,16 @@ export_midi (ExportSettings * info)
                   object_free_w_func_and_null (midi_events_free, events);
                 }
             }
-          progress_info_update_progress (
-            info->progress_info, (double) i / (double) TRACKLIST->num_tracks,
-            NULL);
+
+          info->progress_info->update_progress (
+            (double) i / (double) TRACKLIST->num_tracks, NULL);
         }
 
       midiFileClose (mf);
     }
 
-  progress_info_mark_completed (
-    info->progress_info, PROGRESS_COMPLETED_SUCCESS, NULL);
+  info->progress_info->mark_completed (
+    ProgressInfo::CompletionType::SUCCESS, NULL);
 
   return 0;
 }
@@ -611,7 +604,7 @@ export_settings_new (void)
 {
   ExportSettings * self = object_new_unresizable (ExportSettings);
 
-  self->progress_info = progress_info_new ();
+  self->progress_info.reset (new ProgressInfo ());
 
   return self;
 }
@@ -900,7 +893,7 @@ export_settings_free_members (ExportSettings * self)
   g_free_and_null (self->title);
   g_free_and_null (self->genre);
   g_free_and_null (self->file_uri);
-  object_free_w_func_and_null (progress_info_free, self->progress_info);
+  self->progress_info.reset ();
 }
 
 void
@@ -981,9 +974,8 @@ exporter_export (ExportSettings * info)
         !position_is_before (&info->custom_start, &info->custom_end)
         || !position_is_after_or_equal (&info->custom_start, &init_pos))
         {
-          progress_info_mark_completed (
-            info->progress_info, PROGRESS_COMPLETED_HAS_ERROR,
-            _ ("Invalid time range"));
+          info->progress_info->mark_completed (
+            ProgressInfo::CompletionType::HAS_ERROR, _ ("Invalid time range"));
           g_warning ("invalid time range");
           return -1;
         }

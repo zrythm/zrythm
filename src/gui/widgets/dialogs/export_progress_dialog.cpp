@@ -84,9 +84,9 @@ export_progress_dialog_widget_new (
   char * exporting_msg = g_strdup_printf (_ ("Exporting %s"), basename);
   g_free_and_null (basename);
   generic_progress_dialog_widget_setup (
-    generic_progress_dialog, _ ("Export Progress"), data->info->progress_info,
-    exporting_msg, autoclose, (GenericCallback) close_callback, self->data,
-    cancelable);
+    generic_progress_dialog, _ ("Export Progress"),
+    data->info->progress_info.get (), exporting_msg, autoclose,
+    (GenericCallback) close_callback, self->data, cancelable);
   g_free_and_null (exporting_msg);
 
   self->show_open_dir_btn = show_open_dir_btn;

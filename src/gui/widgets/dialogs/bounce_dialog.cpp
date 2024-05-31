@@ -41,10 +41,10 @@ progress_close_cb (ExportData * data)
 
   BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (data->parent_owner);
 
-  ProgressInfo * pinfo = data->info->progress_info;
+  const ProgressInfo &pinfo = *data->info->progress_info;
   if (
     !self->bounce_to_file
-    && progress_info_get_completion_type (pinfo) == PROGRESS_COMPLETED_SUCCESS)
+    && pinfo.get_completion_type () == ProgressInfo::CompletionType::SUCCESS)
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (data->info, &self->start_pos);

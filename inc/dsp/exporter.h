@@ -4,13 +4,15 @@
 #ifndef __AUDIO_EXPORT_H__
 #define __AUDIO_EXPORT_H__
 
+#include <memory>
+
 #include "dsp/position.h"
 #include "utils/audio.h"
 
 #include <glib/gi18n.h>
 
-typedef struct EngineState  EngineState;
-typedef struct ProgressInfo ProgressInfo;
+typedef struct EngineState EngineState;
+class ProgressInfo;
 
 /**
  * @addtogroup dsp
@@ -189,7 +191,7 @@ typedef struct ExportSettings
    * for progress calculation. */
   int num_files;
 
-  ProgressInfo * progress_info;
+  std::unique_ptr<ProgressInfo> progress_info;
 } ExportSettings;
 
 /**

@@ -21,12 +21,13 @@
 #include <sndfile.h>
 
 static void
-print_progress_and_sleep (ProgressInfo * info)
+print_progress_and_sleep (ProgressInfo &info)
 {
-  while (progress_info_get_status (info) != PROGRESS_STATUS_COMPLETED)
+  while (info.get_status () != ProgressInfo::Status::COMPLETED)
     {
-      double progress;
-      progress_info_get_progress (info, &progress, NULL);
+      double      progress;
+      std::string progress_str;
+      std::tie (progress, progress_str) = info.get_progress ();
       g_message ("progress: %.1f", progress * 100.0);
       g_usleep (10000);
     }
@@ -89,7 +90,7 @@ test_export_wav (void)
             "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
             settings);
 
-          print_progress_and_sleep (settings->progress_info);
+          print_progress_and_sleep (*settings->progress_info);
 
           g_thread_join (thread);
 
@@ -180,7 +181,7 @@ bounce_region (bool with_bpm_automation)
   GThread * thread = g_thread_new (
     "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (settings->progress_info);
+  print_progress_and_sleep (*settings->progress_info);
 
   g_thread_join (thread);
 
@@ -265,7 +266,7 @@ test_mixdown_midi_routed_to_instrument_track (void)
       GThread * thread = g_thread_new (
         "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-      print_progress_and_sleep (settings->progress_info);
+      print_progress_and_sleep (*settings->progress_info);
 
       g_thread_join (thread);
 
@@ -348,7 +349,7 @@ test_bounce_region_with_first_note (void)
       GThread * thread = g_thread_new (
         "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-      print_progress_and_sleep (settings->progress_info);
+      print_progress_and_sleep (*settings->progress_info);
 
       g_thread_join (thread);
 
@@ -428,7 +429,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   GThread * thread = g_thread_new (
     "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (settings->progress_info);
+  print_progress_and_sleep (*settings->progress_info);
 
   g_thread_join (thread);
 
@@ -532,7 +533,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
     GThread * thread = g_thread_new (
       "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-    print_progress_and_sleep (settings->progress_info);
+    print_progress_and_sleep (*settings->progress_info);
 
     g_thread_join (thread);
 
@@ -623,7 +624,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
     GThread * thread = g_thread_new (
       "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-    print_progress_and_sleep (settings->progress_info);
+    print_progress_and_sleep (*settings->progress_info);
 
     g_thread_join (thread);
 
@@ -699,7 +700,7 @@ test_bounce_with_note_at_start (void)
     GThread * thread = g_thread_new (
       "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-    print_progress_and_sleep (settings->progress_info);
+    print_progress_and_sleep (*settings->progress_info);
 
     g_thread_join (thread);
 
@@ -786,7 +787,7 @@ test_chord_routed_to_instrument (void)
       GThread * thread = g_thread_new (
         "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-      print_progress_and_sleep (settings->progress_info);
+      print_progress_and_sleep (*settings->progress_info);
 
       g_thread_join (thread);
 
@@ -872,7 +873,7 @@ test_export_send (void)
             "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
             settings);
 
-          print_progress_and_sleep (settings->progress_info);
+          print_progress_and_sleep (*settings->progress_info);
 
           g_thread_join (thread);
 
@@ -957,7 +958,7 @@ test_mixdown_midi (void)
   GThread * thread = g_thread_new (
     "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (settings->progress_info);
+  print_progress_and_sleep (*settings->progress_info);
 
   g_thread_join (thread);
 
@@ -1041,7 +1042,7 @@ test_export_midi_range (void)
   GThread * thread = g_thread_new (
     "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (settings->progress_info);
+  print_progress_and_sleep (*settings->progress_info);
 
   g_thread_join (thread);
 
