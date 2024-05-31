@@ -8,6 +8,7 @@
 #pragma GCC diagnostic ignored "-Wundef"
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wduplicated-branches"
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 #include "ext/juce/modules/juce_core/juce_core.h"
 #pragma GCC diagnostic pop

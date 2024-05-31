@@ -1220,6 +1220,10 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 
   if (gZrythm)
     {
+      if (gZrythm->project && gZrythm->project->audio_engine)
+        {
+          engine_activate (gZrythm->project->audio_engine, false);
+        }
       gZrythm.reset ();
     }
 
