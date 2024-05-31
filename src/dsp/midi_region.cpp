@@ -37,6 +37,7 @@
 #include "dsp/region.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"

@@ -3,6 +3,7 @@
 
 #include "dsp/chord_track.h"
 #include "dsp/scale_object.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/scale_object.h"

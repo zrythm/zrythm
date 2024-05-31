@@ -74,7 +74,7 @@ on_enabled_toggled (
         err,
         _ ("Failed to enable connection from %s to "
            "%s"),
-        src_port->id_.label_, dest_port->id_.label_);
+        src_port->get_label_as_c_str (), dest_port->get_label_as_c_str ());
     }
 }
 

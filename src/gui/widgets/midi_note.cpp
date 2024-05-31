@@ -12,6 +12,7 @@
 #include "dsp/instrument_track.h"
 #include "dsp/region.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"

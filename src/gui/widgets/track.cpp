@@ -957,8 +957,7 @@ click_pressed (
     }
   else
     {
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+      PROJECT->last_selection = Project::SelectionType::Tracklist;
       EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
 

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/tracklist.h"
 #include "io/serialization/actions.h"
 #include "io/serialization/arranger_objects.h"
 #include "io/serialization/engine.h"
@@ -897,7 +898,7 @@ project_deserialize_from_json_str (const char * json, GError ** error)
             doc, undo_manager_obj, self->undo_manager, error);
         }
     }
-  self->last_selection = (ProjectSelectionType) yyjson_get_int (
+  self->last_selection = (Project::SelectionType) yyjson_get_int (
     yyjson_obj_iter_get (&it, "lastSelection"));
 
   yyjson_doc_free (doc);

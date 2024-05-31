@@ -6,6 +6,7 @@
 #include "dsp/modulator_track.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"

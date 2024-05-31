@@ -13,6 +13,7 @@
 #include "dsp/recording_event.h"
 #include "dsp/recording_manager.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/arranger_object.h"
 #include "project.h"

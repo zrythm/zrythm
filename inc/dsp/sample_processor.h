@@ -20,7 +20,7 @@
 
 enum class MetronomeType;
 typedef struct SupportedFile SupportedFile;
-typedef struct Tracklist     Tracklist;
+struct Tracklist;
 typedef struct PluginSetting PluginSetting;
 typedef struct MidiEvents    MidiEvents;
 typedef struct ChordPreset   ChordPreset;

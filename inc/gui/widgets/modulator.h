@@ -19,7 +19,6 @@
 #include "gtk_wrapper.h"
 
 typedef struct _ModulatorInnerWidget ModulatorInnerWidget;
-typedef struct Modulator             Modulator;
 
 /**
  * @addtogroup widgets

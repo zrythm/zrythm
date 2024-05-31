@@ -4,6 +4,7 @@
 #include "dsp/engine.h"
 #include "dsp/exporter.h"
 #include "dsp/marker_track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/bounce_step_selector.h"

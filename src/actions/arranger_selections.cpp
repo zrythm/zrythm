@@ -11,6 +11,7 @@
 #include "dsp/port_identifier.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

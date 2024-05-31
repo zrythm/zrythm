@@ -61,6 +61,7 @@
 #include "dsp/sample_playback.h"
 #include "dsp/sample_processor.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

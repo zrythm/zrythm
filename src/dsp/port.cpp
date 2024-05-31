@@ -27,6 +27,7 @@
 #include "dsp/rtaudio_device.h"
 #include "dsp/rtmidi_device.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "dsp/windows_mme_device.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

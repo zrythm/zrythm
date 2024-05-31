@@ -10,6 +10,7 @@
 #include "dsp/router.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

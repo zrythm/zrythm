@@ -9,6 +9,7 @@
 #include "dsp/position.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"

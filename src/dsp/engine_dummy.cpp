@@ -8,6 +8,7 @@
 #include "dsp/port.h"
 #include "dsp/router.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "project.h"
 #include "zrythm_app.h"
 

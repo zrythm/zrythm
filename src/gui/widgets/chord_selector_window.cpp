@@ -7,6 +7,7 @@
 #include "dsp/chord_object.h"
 #include "dsp/chord_track.h"
 #include "dsp/scale_object.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/center_dock.h"

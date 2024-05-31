@@ -9,6 +9,7 @@
 #include "dsp/channel.h"
 #include "dsp/ditherer.h"
 #include "dsp/engine.h"
+#include "dsp/tracklist.h"
 #ifdef HAVE_JACK
 #  include "dsp/engine_jack.h"
 #endif

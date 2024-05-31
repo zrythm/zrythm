@@ -12,6 +12,7 @@
 #  include "dsp/port.h"
 #  include "dsp/router.h"
 #  include "dsp/tempo_track.h"
+#  include "dsp/tracklist.h"
 #  include "dsp/transport.h"
 #  include "gui/widgets/main_window.h"
 #  include "plugins/plugin.h"

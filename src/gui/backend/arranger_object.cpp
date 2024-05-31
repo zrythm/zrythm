@@ -11,7 +11,7 @@
 #include "dsp/marker_track.h"
 #include "dsp/midi_region.h"
 #include "dsp/router.h"
-#include "dsp/stretcher.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"

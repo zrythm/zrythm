@@ -21,11 +21,11 @@ G_DECLARE_FINAL_TYPE (TracklistWidget, tracklist_widget, Z, TRACKLIST_WIDGET, Gt
 
 #define MW_TRACKLIST MW_TIMELINE_PANEL->tracklist
 
-typedef struct _TrackWidget              TrackWidget;
-typedef struct _DragDestBoxWidget        DragDestBoxWidget;
-typedef struct _ChordTrackWidget         ChordTrackWidget;
-typedef struct Track                     InstrumentTrack;
-typedef struct Tracklist                 Tracklist;
+typedef struct _TrackWidget       TrackWidget;
+typedef struct _DragDestBoxWidget DragDestBoxWidget;
+typedef struct _ChordTrackWidget  ChordTrackWidget;
+typedef struct Track              InstrumentTrack;
+struct Tracklist;
 typedef struct _AddTrackMenuButtonWidget AddTrackMenuButtonWidget;
 
 /**

@@ -12,6 +12,8 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/tracklist.h"
+
 char *
 test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode);
 

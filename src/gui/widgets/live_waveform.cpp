@@ -4,6 +4,7 @@
 #include "dsp/engine.h"
 #include "dsp/master_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/track.h"
 #include "project.h"

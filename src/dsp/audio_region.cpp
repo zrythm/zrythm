@@ -11,6 +11,7 @@
 #include "dsp/stretcher.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"

@@ -108,15 +108,14 @@ do_insert (ModulatorImportData * data)
         {
           array_double_size_if_full (
             self->modulators, self->num_modulators, self->modulators_size,
-            Modulator *);
+            Plugin *);
           self->num_modulators++;
         }
     }
   else
     {
       array_double_size_if_full (
-        self->modulators, self->num_modulators, self->modulators_size,
-        Modulator *);
+        self->modulators, self->num_modulators, self->modulators_size, Plugin *);
 
       /* push other modulators forward (make
        * space for new modulator) */

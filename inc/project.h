@@ -1,14 +1,5 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * A project (or song), containing all the project
- * data as opposed to zrythm_app.h which manages
- * global things like plugin descriptors and global
- * settings.
- */
 
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
@@ -16,13 +7,10 @@
 #include "actions/undo_manager.h"
 #include "dsp/engine.h"
 #include "dsp/midi_mapping.h"
-#include "dsp/midi_note.h"
 #include "dsp/port.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/quantize_options.h"
-#include "dsp/region.h"
 #include "dsp/region_link_group_manager.h"
-#include "dsp/tracklist.h"
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
@@ -36,11 +24,12 @@
 #include "zrythm.h"
 
 #include "gtk_wrapper.h"
+#include <string_view>
 #include <zix/sem.h>
 
-typedef struct Timeline            Timeline;
-typedef struct Transport           Transport;
-typedef struct Tracklist           Tracklist;
+struct Timeline;
+typedef struct Transport Transport;
+struct Tracklist;
 typedef struct TracklistSelections TracklistSelections;
 
 /**
@@ -49,11 +38,11 @@ typedef struct TracklistSelections TracklistSelections;
  * @{
  */
 
-#define PROJECT_FORMAT_MAJOR 1
-#define PROJECT_FORMAT_MINOR 10
+constexpr unsigned int PROJECT_FORMAT_MAJOR = 1;
+constexpr unsigned int PROJECT_FORMAT_MINOR = 10;
 
-#define PROJECT gZrythm->project
-#define DEFAULT_PROJECT_NAME "Untitled Project"
+#define PROJECT (gZrythm->project)
+constexpr std::string_view DEFAULT_PROJECT_NAME = "Untitled Project";
 #define PROJECT_FILE "project.zpj"
 #define PROJECT_BACKUPS_DIR "backups"
 #define PROJECT_PLUGINS_DIR "plugins"
@@ -95,34 +84,6 @@ enum class ProjectPath
 };
 
 /**
- * Selection type, used for controlling which part of the interface is selected,
- * for copy-paste, displaying info in the inspector, etc.
- */
-enum class ProjectSelectionType
-{
-  /** Track selection in tracklist or mixer. */
-  Z_PROJECT_SELECTION_TYPE_TRACKLIST,
-
-  /** Timeline or pinned timeline. */
-  Z_PROJECT_SELECTION_TYPE_TIMELINE,
-
-  /** Insert selections in the mixer. */
-  Z_PROJECT_SELECTION_TYPE_INSERT,
-
-  /** MIDI FX selections in the mixer. */
-  Z_PROJECT_SELECTION_TYPE_MIDI_FX,
-
-  /** Instrument slot. */
-  Z_PROJECT_SELECTION_TYPE_INSTRUMENT,
-
-  /** Modulator slot. */
-  Z_PROJECT_SELECTION_TYPE_MODULATOR,
-
-  /** Editor arranger. */
-  Z_PROJECT_SELECTION_TYPE_EDITOR,
-};
-
-/**
  * Flag to pass to project_compress() and project_decompress().
  */
 enum class ProjectCompressionFlag
@@ -135,14 +96,45 @@ enum class ProjectCompressionFlag
 #define PROJECT_DECOMPRESS_DATA ProjectCompressionFlag::PROJECT_COMPRESS_DATA
 
 /**
- * Contains all of the info that will be serialized into a
- * project file.
+ * @brief Contains all of the info that will be serialized into a project file.
  *
- * TODO create a UserInterface struct and move things that are
- * only relevant to the UI there.
- */
+ * @todo Create a UserInterface struct and move things that are only relevant to
+ * the UI there.
+ *
+ * A project (or song), contains all the project data as opposed to zrythm_app.h
+ * which manages global things like plugin descriptors and global settings.
+ **/
 typedef struct Project
 {
+
+  /**
+   * Selection type, used for controlling which part of the interface is
+   * selected, for copy-paste, displaying info in the inspector, etc.
+   */
+  enum class SelectionType
+  {
+    /** Track selection in tracklist or mixer. */
+    Tracklist,
+
+    /** Timeline or pinned timeline. */
+    Timeline,
+
+    /** Insert selections in the mixer. */
+    Insert,
+
+    /** MIDI FX selections in the mixer. */
+    MidiFX,
+
+    /** Instrument slot. */
+    Instrument,
+
+    /** Modulator slot. */
+    Modulator,
+
+    /** Editor arranger. */
+    Editor,
+  };
+
   /** Project title. */
   char * title;
 
@@ -156,8 +148,7 @@ typedef struct Project
    * Backup dir to save the project during
    * the current save call.
    *
-   * For example, \ref Project.dir
-   * /backups/myproject.bak3.
+   * For example, \ref Project.dir /backups/myproject.bak3.
    */
   char * backup_dir;
 
@@ -267,7 +258,7 @@ typedef struct Project
    *
    * Used in inspector_widget_refresh.
    */
-  ProjectSelectionType last_selection;
+  Project::SelectionType last_selection;
 
   /** Zrythm version, for serialization */
   char * version;

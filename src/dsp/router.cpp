@@ -54,6 +54,7 @@
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
 #include "dsp/track_processor.h"
+#include "dsp/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/env.h"

@@ -13,6 +13,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"

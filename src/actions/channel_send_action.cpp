@@ -5,6 +5,7 @@
 #include "dsp/channel.h"
 #include "dsp/port_identifier.h"
 #include "dsp/router.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"

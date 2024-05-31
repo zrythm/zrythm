@@ -7,6 +7,7 @@
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "project.h"
 #include "utils/flags.h"

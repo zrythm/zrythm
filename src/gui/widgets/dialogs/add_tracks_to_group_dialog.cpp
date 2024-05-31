@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
 #include "utils/error.h"

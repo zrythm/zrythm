@@ -19,6 +19,7 @@
 #include "dsp/port.h"
 #include "dsp/recording_manager.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"

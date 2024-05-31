@@ -9,6 +9,7 @@
 #include "dsp/marker_track.h"
 #include "dsp/midi_event.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

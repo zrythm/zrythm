@@ -6,6 +6,7 @@
 #include "dsp/master_track.h"
 #include "dsp/meter.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
@@ -357,8 +358,7 @@ on_btn_release (
       gint64 cur_time = g_get_monotonic_time ();
       if (cur_time - self->last_plugin_press > 1000)
         {
-          PROJECT->last_selection =
-            ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+          PROJECT->last_selection = Project::SelectionType::Tracklist;
         }
 
       GdkModifierType state = gtk_event_controller_get_current_event_state (

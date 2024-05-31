@@ -8,6 +8,7 @@
 #include "dsp/chord_track.h"
 #include "dsp/exporter.h"
 #include "dsp/marker_track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

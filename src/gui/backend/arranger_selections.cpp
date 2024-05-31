@@ -13,6 +13,7 @@
 #include "dsp/marker.h"
 #include "dsp/marker_track.h"
 #include "dsp/scale_object.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/automation_selections.h"

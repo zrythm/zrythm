@@ -22,7 +22,8 @@
         "--compile-commands-dir=${workspaceFolder}/builddir",
         "--clang-tidy",
         "--enable-config",
-        "--header-insertion=never"
+        "--header-insertion=never",
+        "--query-driver=gcc,g++"
     ],
     "clangd.checkUpdates": true,
 }

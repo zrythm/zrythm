@@ -13,6 +13,7 @@
 #include "zrythm-test-config.h"
 
 #include "actions/tracklist_selections.h"
+#include "dsp/tracklist.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"

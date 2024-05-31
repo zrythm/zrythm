@@ -16,6 +16,7 @@
 #include "dsp/router.h"
 #include "dsp/stretcher.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -112,7 +113,7 @@ on_project_selection_type_changed (void)
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case Project::SelectionType::Tracklist:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top), klass);
       gtk_widget_remove_css_class (
@@ -120,18 +121,18 @@ on_project_selection_type_changed (void)
       gtk_widget_add_css_class (GTK_WIDGET (MW_MIXER), klass);
       gtk_widget_remove_css_class (GTK_WIDGET (MW_MIXER), selectable_class);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
+    case Project::SelectionType::Timeline:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), klass);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler), selectable_class);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSTRUMENT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MODULATOR:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
+    case Project::SelectionType::Instrument:
+    case Project::SelectionType::Modulator:
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Editor:
       gtk_widget_add_css_class (GTK_WIDGET (MW_CLIP_EDITOR_INNER), klass);
       gtk_widget_remove_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), selectable_class);
@@ -652,14 +653,10 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       /* only refresh the inspector if the tracklist selection changed by
        * clicking on a track or on a region */
       if (
-        PROJECT->last_selection
-          == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST
-        || PROJECT->last_selection
-             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT
-        || PROJECT->last_selection
-             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX
-        || PROJECT->last_selection
-             == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+        PROJECT->last_selection == Project::SelectionType::Tracklist
+        || PROJECT->last_selection == Project::SelectionType::Insert
+        || PROJECT->last_selection == Project::SelectionType::MidiFX
+        || PROJECT->last_selection == Project::SelectionType::Timeline)
         {
           left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
         }

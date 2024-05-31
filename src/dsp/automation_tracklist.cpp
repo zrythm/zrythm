@@ -7,6 +7,7 @@
 #include "dsp/automation_tracklist.h"
 #include "dsp/channel.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "plugins/plugin.h"

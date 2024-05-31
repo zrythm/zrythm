@@ -26,6 +26,7 @@
 #include "dsp/router.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/clipboard.h"
@@ -403,7 +404,7 @@ DEFINE_SIMPLE (activate_zoom_in)
         {
           switch (PROJECT->last_selection)
             {
-            case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+            case Project::SelectionType::Editor:
               ruler = EDITOR_RULER;
               break;
             default:
@@ -459,7 +460,7 @@ DEFINE_SIMPLE (activate_zoom_out)
         {
           switch (PROJECT->last_selection)
             {
-            case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+            case Project::SelectionType::Editor:
               ruler = EDITOR_RULER;
               break;
             default:
@@ -494,7 +495,7 @@ DEFINE_SIMPLE (activate_best_fit)
     {
       switch (PROJECT->last_selection)
         {
-        case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+        case Project::SelectionType::Editor:
           ruler = EDITOR_RULER;
           break;
         default:
@@ -585,7 +586,7 @@ DEFINE_SIMPLE (activate_original_size)
     {
       switch (PROJECT->last_selection)
         {
-        case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+        case Project::SelectionType::Editor:
           ruler = EDITOR_RULER;
           break;
         default:
@@ -600,9 +601,7 @@ DEFINE_SIMPLE (activate_original_size)
 
 DEFINE_SIMPLE (activate_loop_selection)
 {
-  if (
-    PROJECT->last_selection
-    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+  if (PROJECT->last_selection == Project::SelectionType::Timeline)
     {
       if (!arranger_selections_has_any ((ArrangerSelections *) TL_SELECTIONS))
         return;
@@ -1004,8 +1003,8 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Timeline:
+    case Project::SelectionType::Editor:
       if (sel && arranger_selections_has_any (sel))
         {
           GError * err = NULL;
@@ -1016,8 +1015,8 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
             }
         }
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
       if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           GError * err = NULL;
@@ -1043,8 +1042,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Timeline:
+    case Project::SelectionType::Editor:
       if (sel)
         {
           Clipboard * clipboard =
@@ -1070,8 +1069,8 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           g_warning ("no selections to copy");
         }
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
       if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           Clipboard * clipboard =
@@ -1087,7 +1086,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           ui_show_notification (_ ("Plugins copied to clipboard"));
         }
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case Project::SelectionType::Tracklist:
       {
         /* TODO fix crashes eg when copy pasting master */
         return;
@@ -1226,19 +1225,19 @@ activate_delete (
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case Project::SelectionType::Tracklist:
       g_message ("activating delete selected tracks");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-selected-tracks", NULL);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
       g_message ("activating delete mixer selections");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-mixer-selections", NULL);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Timeline:
+    case Project::SelectionType::Editor:
       if (
         sel && arranger_selections_has_any (sel)
         && !arranger_selections_contains_undeletable_object (sel))
@@ -1288,18 +1287,18 @@ activate_clear_selection (
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Timeline:
+    case Project::SelectionType::Editor:
       if (sel)
         {
           arranger_selections_clear (sel, F_NO_FREE, F_PUBLISH_EVENTS);
         }
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case Project::SelectionType::Tracklist:
       tracklist_select_all (TRACKLIST, F_NO_SELECT, F_PUBLISH_EVENTS);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
       {
         Track * track =
           tracklist_selections_get_lowest_track (TRACKLIST_SELECTIONS);
@@ -1308,9 +1307,7 @@ activate_clear_selection (
           {
             Channel *       ch = track_get_channel (track);
             ZPluginSlotType slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_INSERT;
-            if (
-              PROJECT->last_selection
-              == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
+            if (PROJECT->last_selection == Project::SelectionType::MidiFX)
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
@@ -1334,18 +1331,18 @@ activate_select_all (
 
   switch (PROJECT->last_selection)
     {
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR:
+    case Project::SelectionType::Timeline:
+    case Project::SelectionType::Editor:
       if (sel)
         {
           arranger_selections_select_all (sel, F_PUBLISH_EVENTS);
         }
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST:
+    case Project::SelectionType::Tracklist:
       tracklist_select_all (TRACKLIST, F_SELECT, F_PUBLISH_EVENTS);
       break;
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT:
-    case ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX:
+    case Project::SelectionType::Insert:
+    case Project::SelectionType::MidiFX:
       {
         Track * track =
           tracklist_selections_get_lowest_track (TRACKLIST_SELECTIONS);
@@ -1354,9 +1351,7 @@ activate_select_all (
           {
             Channel *       ch = track_get_channel (track);
             ZPluginSlotType slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_INSERT;
-            if (
-              PROJECT->last_selection
-              == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX)
+            if (PROJECT->last_selection == Project::SelectionType::MidiFX)
               {
                 slot_type = ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX;
               }
@@ -1541,9 +1536,7 @@ activate_snap_to_grid (
     }
   else if (string_is_equal (variant, "global"))
     {
-      if (
-        PROJECT->last_selection
-        == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+      if (PROJECT->last_selection == Project::SelectionType::Timeline)
         {
           GError * err = NULL;
           bool     ret = arranger_selections_action_perform_quantize (
@@ -2058,7 +2051,7 @@ do_quantize (const char * variant, bool quick)
 
   if (
     string_is_equal (variant, "timeline")
-    || (string_is_equal (variant, "global") && PROJECT->last_selection == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE))
+    || (string_is_equal (variant, "global") && PROJECT->last_selection == Project::SelectionType::Timeline))
     {
       if (quick)
         {
@@ -2082,7 +2075,7 @@ do_quantize (const char * variant, bool quick)
     }
   else if (
     string_is_equal (variant, "editor")
-    || (string_is_equal (variant, "global") && PROJECT->last_selection == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR))
+    || (string_is_equal (variant, "global") && PROJECT->last_selection == Project::SelectionType::Editor))
     {
       if (quick)
         {
@@ -2720,9 +2713,7 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
 {
   g_debug ("rename arranger object");
 
-  if (
-    PROJECT->last_selection
-    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE)
+  if (PROJECT->last_selection == Project::SelectionType::Timeline)
     {
       ArrangerSelections * sel = arranger_widget_get_selections (MW_TIMELINE);
       if (arranger_selections_get_num_objects (sel) == 1)
@@ -2738,9 +2729,7 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
             }
         }
     }
-  else if (
-    PROJECT->last_selection
-    == ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR)
+  else if (PROJECT->last_selection == Project::SelectionType::Editor)
     {
       /* nothing can be renamed yet */
     }

@@ -4,6 +4,7 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/midi_function.h"
+#include "dsp/tracklist.h"
 
 #include <glib.h>
 

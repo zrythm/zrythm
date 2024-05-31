@@ -13,8 +13,8 @@
 #include "dsp/region.h"
 #include "utils/yaml.h"
 
-typedef struct _TrackLaneWidget   TrackLaneWidget;
-typedef struct Tracklist          Tracklist;
+typedef struct _TrackLaneWidget TrackLaneWidget;
+struct Tracklist;
 typedef struct CustomButtonWidget CustomButtonWidget;
 typedef void                      MIDI_FILE;
 

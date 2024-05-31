@@ -51,9 +51,9 @@
 
 class StereoPorts;
 class Port;
-typedef struct Channel           Channel;
-typedef struct Plugin            Plugin;
-typedef struct Tracklist         Tracklist;
+typedef struct Channel Channel;
+typedef struct Plugin  Plugin;
+struct Tracklist;
 typedef struct ExtPort           ExtPort;
 typedef struct MidiMappings      MidiMappings;
 typedef struct WindowsMmeDevice  WindowsMmeDevice;

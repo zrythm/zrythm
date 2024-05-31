@@ -3,6 +3,7 @@
 
 #include "dsp/marker.h"
 #include "dsp/marker_track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"

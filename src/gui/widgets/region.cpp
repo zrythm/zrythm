@@ -13,6 +13,7 @@
 #include "dsp/instrument_track.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/automation_point.h"

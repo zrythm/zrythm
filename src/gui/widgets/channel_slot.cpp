@@ -446,13 +446,11 @@ on_press (
     {
       if (self->type == ZPluginSlotType::Z_PLUGIN_SLOT_INSERT)
         {
-          PROJECT->last_selection =
-            ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT;
+          PROJECT->last_selection = Project::SelectionType::Insert;
         }
       else if (self->type == ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX)
         {
-          PROJECT->last_selection =
-            ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX;
+          PROJECT->last_selection = Project::SelectionType::MidiFX;
         }
       EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
@@ -562,20 +560,16 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
   switch (self->type)
     {
     case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSERT;
+      PROJECT->last_selection = Project::SelectionType::Insert;
       break;
     case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_INSTRUMENT;
+      PROJECT->last_selection = Project::SelectionType::Instrument;
       break;
     case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MIDI_FX;
+      PROJECT->last_selection = Project::SelectionType::MidiFX;
       break;
     case ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR:
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_MODULATOR;
+      PROJECT->last_selection = Project::SelectionType::Modulator;
       break;
     default:
       g_return_if_reached ();

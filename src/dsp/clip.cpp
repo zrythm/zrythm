@@ -6,6 +6,7 @@
 #include "dsp/clip.h"
 #include "dsp/engine.h"
 #include "dsp/tempo_track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/main_window.h"
 #include "io/audio_file.h"
 #include "project.h"

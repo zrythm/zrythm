@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "dsp/midi_region.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/arranger_selections.h"
 #include "project.h"
 #include "utils/flags.h"

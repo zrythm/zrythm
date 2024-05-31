@@ -24,6 +24,7 @@
 #include "dsp/rtmidi_device.h"
 #include "dsp/track.h"
 #include "dsp/track_processor.h"
+#include "dsp/tracklist.h"
 #include "dsp/windows_mme_device.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

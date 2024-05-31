@@ -6,6 +6,7 @@
 #include "dsp/engine.h"
 #include "dsp/engine_jack.h"
 #include "dsp/fader.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"

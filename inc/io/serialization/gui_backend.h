@@ -17,7 +17,7 @@
 #include <yyjson.h>
 
 TYPEDEF_STRUCT (ClipEditor);
-TYPEDEF_STRUCT (Timeline);
+struct Timeline;
 TYPEDEF_STRUCT (SnapGrid);
 TYPEDEF_STRUCT (QuantizeOptions);
 

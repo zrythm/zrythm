@@ -5,6 +5,7 @@
 #include "dsp/exporter.h"
 #include "dsp/master_track.h"
 #include "dsp/router.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"

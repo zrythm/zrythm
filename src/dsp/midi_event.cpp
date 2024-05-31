@@ -38,6 +38,7 @@
 #include "dsp/engine.h"
 #include "dsp/midi_event.h"
 #include "dsp/router.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "project.h"
 #include "utils/objects.h"

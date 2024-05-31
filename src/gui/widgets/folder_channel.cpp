@@ -4,21 +4,16 @@
 #include <sys/time.h>
 
 #include "actions/tracklist_selections.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
-#include "dsp/master_track.h"
-#include "dsp/meter.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/editable_label.h"
-#include "gui/widgets/expander_box.h"
-#include "gui/widgets/fader.h"
 #include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/folder_channel.h"
 #include "gui/widgets/gtk_flipper.h"
@@ -343,8 +338,7 @@ on_btn_release (
   Track * track = self->track;
   if (self->n_press == 1)
     {
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+      PROJECT->last_selection = Project::SelectionType::Tracklist;
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;

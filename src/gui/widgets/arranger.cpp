@@ -28,7 +28,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include "actions/actions.h"
 #include "actions/arranger_selections.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -40,6 +39,7 @@
 #include "dsp/marker_track.h"
 #include "dsp/midi_region.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -1893,8 +1893,8 @@ click_pressed (
 
   PROJECT->last_selection =
     self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE
-      ? ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE
-      : ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
+      ? Project::SelectionType::Timeline
+      : Project::SelectionType::Editor;
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
@@ -2623,13 +2623,11 @@ drag_begin (
   /* set last project selection type */
   if (self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
     {
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TIMELINE;
+      PROJECT->last_selection = Project::SelectionType::Timeline;
     }
   else
     {
-      PROJECT->last_selection =
-        ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_EDITOR;
+      PROJECT->last_selection = Project::SelectionType::Editor;
     }
 
   self->drag_start_btn =

@@ -414,8 +414,7 @@ on_click_pressed (
   mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
   tracklist_selections_select_last_visible (TRACKLIST_SELECTIONS);
 
-  PROJECT->last_selection =
-    ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+  PROJECT->last_selection = Project::SelectionType::Tracklist;
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 

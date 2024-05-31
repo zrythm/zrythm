@@ -14,6 +14,7 @@
 #include "dsp/engine_jack.h"
 #include "dsp/master_track.h"
 #include "dsp/metronome.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/button_with_menu.h"

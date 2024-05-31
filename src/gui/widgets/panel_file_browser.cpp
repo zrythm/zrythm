@@ -8,6 +8,7 @@
  */
 
 #include "actions/tracklist_selections.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"

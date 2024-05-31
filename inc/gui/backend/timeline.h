@@ -23,17 +23,16 @@
 /**
  * Clip editor serializable backend.
  *
- * The actual widgets should reflect the
- * information here.
+ * The actual widgets should reflect the information here.
  */
-typedef struct Timeline
+struct Timeline
 {
   /** Settings for the timeline. */
   EditorSettings editor_settings;
 
   /** Width of the left side of the timeline panel. */
   int tracks_width;
-} Timeline;
+};
 
 /**
  * Inits the Timeline after a Project is loaded.

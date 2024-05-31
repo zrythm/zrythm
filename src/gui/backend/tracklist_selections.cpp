@@ -6,6 +6,7 @@
 #include "dsp/master_track.h"
 #include "dsp/position.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

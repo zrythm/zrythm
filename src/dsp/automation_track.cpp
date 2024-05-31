@@ -10,6 +10,7 @@
 #include "dsp/instrument_track.h"
 #include "dsp/port_identifier.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"

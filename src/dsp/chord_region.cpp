@@ -6,6 +6,7 @@
 #include "dsp/chord_object.h"
 #include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"

@@ -48,25 +48,21 @@ enum class TracklistPinOption
 };
 
 /**
- * The Tracklist contains all the tracks in the
- * Project.
+ * The Tracklist contains all the tracks in the Project.
  *
- * There should be a clear separation between the
- * Tracklist and the Mixer. The Tracklist should be
- * concerned with Tracks in the arranger, and the
- * Mixer should be concerned with Channels, routing
- * and Port connections.
+ * There should be a clear separation between the Tracklist and the Mixer. The
+ * Tracklist should be concerned with Tracks in the arranger, and the Mixer
+ * should be concerned with Channels, routing and Port connections.
  */
-typedef struct Tracklist
+struct Tracklist
 {
   /**
    * All tracks that exist.
    *
-   * These should always be sorted in the same way they should
-   * appear in the GUI and include hidden tracks.
+   * These should always be sorted in the same way they should appear in the GUI
+   * and include hidden tracks.
    *
-   * Pinned tracks should have lower indices. Ie, the sequence
-   * must be:
+   * Pinned tracks should have lower indices. Ie, the sequence must be:
    * {
    *   pinned track,
    *   pinned track,
@@ -121,7 +117,7 @@ typedef struct Tracklist
 
   /** Width of track widgets. */
   int width;
-} Tracklist;
+};
 
 /**
  * Initializes the tracklist when loading a project.

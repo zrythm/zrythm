@@ -591,8 +591,7 @@ create_default (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->master_track = track;
   tracklist_selections_add_track (self->tracklist_selections, track, 0);
-  self->last_selection =
-    ProjectSelectionType::Z_PROJECT_SELECTION_TYPE_TRACKLIST;
+  self->last_selection = Project::SelectionType::Tracklist;
 
   /* pre-setup engine */
   if (with_engine)

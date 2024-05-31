@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_PINNED_TRACKLIST MW_TIMELINE_PANEL->pinned_tracklist
 
-typedef struct Tracklist    Tracklist;
+struct Tracklist;
 typedef struct _TrackWidget TrackWidget;
 
 /**
