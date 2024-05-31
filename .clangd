@@ -1,0 +1,4 @@
+CompileFlags:
+    Add: [-xc++, -Wall]
+    Remove: -fanalyzer
+    Compiler: clang++

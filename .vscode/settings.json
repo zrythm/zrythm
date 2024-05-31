@@ -17,5 +17,12 @@
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,
-    "clang-tidy.buildPath": "builddir"
+    "clang-tidy.buildPath": "builddir",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/builddir",
+        "--clang-tidy",
+        "--enable-config",
+        "--header-insertion=never"
+    ],
+    "clangd.checkUpdates": true,
 }
