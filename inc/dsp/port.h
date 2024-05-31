@@ -656,7 +656,7 @@ public:
    */
   std::vector<RtAudioDevice *> rtaudio_ins_;
 #else
-  std::vectory<void *> rtaudio_ins_;
+  std::vector<void *> rtaudio_ins_;
 #endif
 
   /** Scale points. */
