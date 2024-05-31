@@ -42,7 +42,6 @@ constexpr unsigned int PROJECT_FORMAT_MAJOR = 1;
 constexpr unsigned int PROJECT_FORMAT_MINOR = 10;
 
 #define PROJECT (gZrythm->project)
-constexpr std::string_view DEFAULT_PROJECT_NAME = "Untitled Project";
 #define PROJECT_FILE "project.zpj"
 #define PROJECT_BACKUPS_DIR "backups"
 #define PROJECT_PLUGINS_DIR "plugins"
