@@ -1610,6 +1610,7 @@ test_split_large_audio_file (void)
   Track * track = track_new (
     TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (), "test track",
     F_WITH_LANE);
+  test_project_stop_dummy_engine ();
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   unsigned int track_name_hash = track_get_name_hash (*track);
