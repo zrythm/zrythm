@@ -295,3 +295,7 @@ option (
 option (
   'yaml_project_compatibility', type: 'feature', value: 'disabled',
   description: 'Compatibility with old CYAML-based projects (requires libcyaml).')
+
+option (
+  'static_tests', type: 'boolean', value: false,
+  description: 'Build tests statically (avoids an unsolved issue with gZrythm being NULL).')

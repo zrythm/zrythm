@@ -14,7 +14,9 @@
         // "-Dforce_fallback_for=gtk4,libadwaita,libpanel,xxhash,libcyaml,pangoft2,json-glib,gtksourceview5,rtmidi,rtaudio,zstd,pcre2,libsndfile,libsoxr,yyjson",
         "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml",
         "-Dyaml_project_compatibility=enabled",
-        "-Db_sanitize=none"
+        "-Db_sanitize=address",
+        "-Dstatic_tests=true",
+        "-Dbackend_max_links=3"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,
