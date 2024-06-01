@@ -2937,9 +2937,8 @@ do_or_undo (ArrangerSelectionsAction * self, bool _do, GError ** error)
   tracklist_set_caches (TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
 
   /* reset new_lane_created */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
       track->last_lane_created = 0;
       track->block_auto_creation_and_deletion = false;
       track_create_missing_lanes (track, track->num_lanes - 1);

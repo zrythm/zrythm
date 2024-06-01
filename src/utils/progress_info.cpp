@@ -35,14 +35,17 @@ ProgressInfo::mark_completed (CompletionType type, const char * msg)
 
   status_ = COMPLETED;
   completion_type_ = type;
-  completion_str_ = msg;
+  if (msg)
+    completion_str_ = msg;
 
   if (type == HAS_WARNING)
     {
+      g_return_if_fail (msg);
       g_message ("progress warning: %s", msg);
     }
   else if (type == HAS_ERROR)
     {
+      g_return_if_fail (msg);
       g_message ("progress error: %s", msg);
     }
 }
@@ -52,7 +55,10 @@ ProgressInfo::update_progress (double progress, const char * msg)
 {
   std::scoped_lock guard (m_);
 
-  progress_str_ = msg;
+  if (msg)
+    {
+      progress_str_ = msg;
+    }
   progress_ = progress;
   if (status_ == PENDING_START)
     {

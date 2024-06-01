@@ -24,7 +24,7 @@ test_fader_process_with_instrument (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, true, with_carla, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* send a note then wait for playback */
   midi_events_add_note_on (
@@ -110,15 +110,15 @@ test_solo (void)
   char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create audio track 2 */
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track2 = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 

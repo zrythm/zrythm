@@ -78,7 +78,7 @@ test_save_load_with_data (void)
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
   tempo_track_clear (P_TEMPO_TRACK);
-  for (int i = TRACKLIST->num_tracks - 1; i > P_MASTER_TRACK->pos; i--)
+  for (int i = TRACKLIST->tracks.size () - 1; i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (TRACKLIST, track, 1, 1, 0, 0);
@@ -235,7 +235,7 @@ test_save_backup_w_pool_and_plugins (void)
   Track * track = TRACKLIST->tracks[track_pos];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
   char * dir = g_strdup (PROJECT->dir);
 
@@ -299,8 +299,8 @@ test_load_with_plugin_after_backup (void)
   position_init (&pos);
   SupportedFile * file = supported_file_new_from_path (audio_file_path);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, TRACKLIST->num_tracks, 1, -1,
-    NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, TRACKLIST->tracks.size (), 1,
+    -1, NULL, NULL);
   object_free_w_func_and_null (supported_file_free, file);
 
   char * dir = g_strdup (PROJECT->dir);
@@ -382,7 +382,7 @@ test_exposed_ports_after_load (void)
   }
   test_project_save_and_reload ();
 
-  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   const Port &port = track->channel->stereo_out->get_l ();
   g_assert_true (port.is_exposed_to_backend ());
   assert_jack_port_exists (buf);

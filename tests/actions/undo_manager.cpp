@@ -23,7 +23,7 @@ perform_create_region_action (void)
   Position p1, p2;
   position_set_to_bar (&p1, 1);
   position_set_to_bar (&p2, 2);
-  int      track_pos = TRACKLIST->num_tracks - 1;
+  int      track_pos = TRACKLIST->tracks.size () - 1;
   Track *  track = TRACKLIST->tracks[track_pos];
   Region * r =
     automation_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
@@ -102,7 +102,7 @@ test_multi_actions (void)
   test_helper_zrythm_init ();
 
   int       max_actions = 3;
-  const int num_tracks_at_start = TRACKLIST->num_tracks;
+  const int num_tracks_at_start = TRACKLIST->tracks.size ();
   for (int i = 0; i < max_actions; i++)
     {
       track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
@@ -113,25 +113,27 @@ test_multi_actions (void)
         }
     }
 
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start + max_actions);
+  g_assert_cmpint (
+    TRACKLIST->tracks.size (), ==, num_tracks_at_start + max_actions);
   g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
   g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (TRACKLIST->tracks.size (), ==, num_tracks_at_start);
   g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
   g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start + max_actions);
+  g_assert_cmpint (
+    TRACKLIST->tracks.size (), ==, num_tracks_at_start + max_actions);
   g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
   g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (TRACKLIST->tracks.size (), ==, num_tracks_at_start);
   g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
   g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 

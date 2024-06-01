@@ -256,7 +256,7 @@ sample_processor_process (
   if (self->roll)
     {
       midi_events_clear (self->midi_events, F_NOT_QUEUED);
-      for (int i = self->tracklist->num_tracks - 1; i >= 1; i--)
+      for (int i = self->tracklist->tracks.size () - 1; i >= 1; i--)
         {
           Track * track = self->tracklist->tracks[i];
 
@@ -433,7 +433,7 @@ queue_file_or_chord_preset (
   zix_sem_wait (&self->rebuilding_sem);
 
   /* clear tracks */
-  for (int i = self->tracklist->num_tracks - 1; i >= 0; i--)
+  for (int i = self->tracklist->tracks.size () - 1; i >= 0; i--)
     {
       Track * track = self->tracklist->tracks[i];
 
@@ -461,7 +461,7 @@ queue_file_or_chord_preset (
   /* create master track */
   g_debug ("creating master track...");
   Track * track = track_new (
-    TrackType::TRACK_TYPE_MASTER, self->tracklist->num_tracks,
+    TrackType::TRACK_TYPE_MASTER, self->tracklist->tracks.size (),
     "Sample Processor Master", F_WITHOUT_LANE);
   self->tracklist->master_track = track;
   tracklist_insert_track (
@@ -471,7 +471,7 @@ queue_file_or_chord_preset (
     {
       g_debug ("creating audio track...");
       track = track_new (
-        TrackType::TRACK_TYPE_AUDIO, self->tracklist->num_tracks,
+        TrackType::TRACK_TYPE_AUDIO, self->tracklist->tracks.size (),
         "Sample processor audio", F_WITH_LANE);
       tracklist_insert_track (
         self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS,
@@ -506,7 +506,7 @@ queue_file_or_chord_preset (
       /* create an instrument track */
       g_debug ("creating instrument track...");
       Track * instrument_track = track_new (
-        TrackType::TRACK_TYPE_INSTRUMENT, self->tracklist->num_tracks,
+        TrackType::TRACK_TYPE_INSTRUMENT, self->tracklist->tracks.size (),
         "Sample processor instrument", F_WITH_LANE);
       tracklist_insert_track (
         self->tracklist, instrument_track, instrument_track->pos,
@@ -551,7 +551,7 @@ queue_file_or_chord_preset (
           char name[600];
           sprintf (name, "Sample processor MIDI %d", i);
           track = track_new (
-            TrackType::TRACK_TYPE_MIDI, self->tracklist->num_tracks, name,
+            TrackType::TRACK_TYPE_MIDI, self->tracklist->tracks.size (), name,
             F_WITH_LANE);
           tracklist_insert_track (
             self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS,

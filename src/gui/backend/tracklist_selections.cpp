@@ -293,11 +293,8 @@ tracklist_selections_handle_click (
 void
 tracklist_selections_select_all (TracklistSelections * ts, int visible_only)
 {
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (track->visible || !visible_only)
         {
           tracklist_selections_add_track (ts, track, 0);

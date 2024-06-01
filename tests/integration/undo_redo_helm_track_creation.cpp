@@ -35,7 +35,7 @@ _test (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* select it */
-  Track * helm_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * helm_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */

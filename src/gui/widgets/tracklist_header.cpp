@@ -18,7 +18,7 @@ tracklist_header_widget_refresh_track_count (TracklistHeaderWidget * self)
 {
   char buf[40];
   int  num_visible = tracklist_get_num_visible_tracks (TRACKLIST, 1);
-  sprintf (buf, "%d/%d", num_visible, TRACKLIST->num_tracks);
+  sprintf (buf, "%d/%zu", num_visible, TRACKLIST->tracks.size ());
   gtk_label_set_text (self->track_count_lbl, buf);
 }
 

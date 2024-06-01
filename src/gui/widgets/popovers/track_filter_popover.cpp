@@ -138,10 +138,8 @@ filter_func (void * gobj, void * user_data)
 static void
 refresh_track_col_view_items (TrackFilterPopoverWidget * self)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       WrappedObjectWithChangeSignal * wrapped_track =
         wrapped_object_with_change_signal_new (
           track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);

@@ -30,7 +30,7 @@ test_fill_stereo_ports (void)
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->num_tracks;
+  int             num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
@@ -84,7 +84,7 @@ test_change_samplerate (void)
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->num_tracks;
+  int             num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
@@ -131,7 +131,7 @@ test_load_project_with_selected_audio_region (void)
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->num_tracks;
+  int             num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
@@ -166,7 +166,7 @@ test_load_project_with_different_sample_rate (void)
       char * filepath =
         g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
       SupportedFile * file = supported_file_new_from_path (filepath);
-      int             num_tracks_before = TRACKLIST->num_tracks;
+      int             num_tracks_before = TRACKLIST->tracks.size ();
       track_create_with_action (
         TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
         NULL, NULL);
@@ -206,7 +206,7 @@ test_detect_bpm (void)
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->num_tracks;
+  int             num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);

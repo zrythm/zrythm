@@ -31,7 +31,7 @@ test_num_tracks_with_file (const char * filepath, const int num_tracks)
 {
   SupportedFile * file = supported_file_new_from_path (filepath);
 
-  int num_tracks_before = TRACKLIST->num_tracks;
+  int num_tracks_before = TRACKLIST->tracks.size ();
 
   bool ret = track_create_with_action (
     TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before, 1, -1,
@@ -44,7 +44,8 @@ test_num_tracks_with_file (const char * filepath, const int num_tracks)
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_before + num_tracks);
+  g_assert_cmpint (
+    TRACKLIST->tracks.size (), ==, num_tracks_before + num_tracks);
 }
 
 static void
@@ -64,7 +65,7 @@ test_create_from_midi_file (void)
   g_free (midi_file);
 
   g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]
       ->lanes[0]
       ->regions[0]
       ->num_midi_notes,
@@ -112,8 +113,8 @@ _test_port_and_plugin_track_pos_after_duplication (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
-  int src_track_pos = TRACKLIST->num_tracks - 1;
-  int dest_track_pos = TRACKLIST->num_tracks;
+  int src_track_pos = TRACKLIST->tracks.size () - 1;
+  int dest_track_pos = TRACKLIST->tracks.size ();
 
   /* select it */
   Track * src_track = TRACKLIST->tracks[src_track_pos];
@@ -160,7 +161,7 @@ _test_port_and_plugin_track_pos_after_duplication (
 
   /* duplicate it */
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
   Track * dest_track = TRACKLIST->tracks[dest_track_pos];
 
@@ -262,7 +263,7 @@ _test_undo_track_deletion (
   test_project_save_and_reload ();
 
   /* select it */
-  Track * helm_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * helm_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (helm_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* get an automation track */
@@ -315,7 +316,8 @@ _test_undo_track_deletion (
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  g_assert_true (track_validate (TRACKLIST->tracks[TRACKLIST->num_tracks - 1]));
+  g_assert_true (
+    track_validate (TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]));
 
   /* let the engine run */
   g_usleep (1000000);
@@ -510,9 +512,9 @@ test_track_deletion_with_sends (
   /* create an audio fx track and send both prefader
    * and postfader to a new audio fx track */
   Track * audio_fx_for_sending = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
   Track * audio_fx_for_receiving = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
 
   g_assert_cmpuint (
     audio_fx_for_receiving->channel->sends[0]->track_name_hash, ==,
@@ -678,7 +680,7 @@ test_audio_track_deletion (void)
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   g_assert_cmpfloat_with_epsilon (
     track->processor->input_gain->control_, 1.4f, 0.001f);
   g_assert_cmpfloat_with_epsilon (
@@ -699,7 +701,7 @@ test_track_deletion_with_lv2_worker (void)
     LSP_MULTISAMPLER_24_DO_BUNDLE, LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
 
   /* delete track and undo */
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   tracklist_selections_action_perform_delete (
@@ -726,7 +728,7 @@ test_track_deletion_with_plugin (void)
   g_assert_true (success);
 
   /* delete track and undo */
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   tracklist_selections_action_perform_delete (
@@ -762,7 +764,7 @@ test_ins_track_deletion_w_automation (void)
     NOIZE_MAKER_BUNDLE, NOIZE_MAKER_URI, true, false, 1);
 
   /* select the track */
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* add an effect */
@@ -842,7 +844,7 @@ test_ins_track_deletion_w_automation (void)
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   g_assert_true (track_validate (track));
 
   /* delete it */
@@ -858,7 +860,8 @@ test_ins_track_deletion_w_automation (void)
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  g_assert_true (track_validate (TRACKLIST->tracks[TRACKLIST->num_tracks - 1]));
+  g_assert_true (
+    track_validate (TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]));
 
   /* let the engine run */
   g_usleep (1000000);
@@ -873,9 +876,8 @@ test_no_visible_tracks_after_track_deletion (void)
   test_helper_zrythm_init ();
 
   /* hide all tracks */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
       track->visible = false;
     }
 
@@ -885,7 +887,7 @@ test_no_visible_tracks_after_track_deletion (void)
   g_assert_cmpint (TRACKLIST_SELECTIONS->num_tracks, >, 0);
 
   track_select (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1], F_SELECT, F_EXCLUSIVE,
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1], F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
   /* delete the track */
@@ -1117,7 +1119,7 @@ test_multi_track_duplicate (void)
 {
   test_helper_zrythm_init ();
 
-  int start_pos = TRACKLIST->num_tracks;
+  int start_pos = TRACKLIST->tracks.size ();
 
   /* create midi track, audio fx track and audio track */
   track_create_with_action (
@@ -1211,13 +1213,13 @@ test_delete_track_w_midi_file (void)
   g_free (midi_file);
 
   g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 2]
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]
       ->lanes[0]
       ->regions[0]
       ->num_midi_notes,
     ==, 7);
   g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]
       ->lanes[0]
       ->regions[0]
       ->num_midi_notes,
@@ -1273,7 +1275,7 @@ test_duplicate_w_output_and_send (void)
 {
   test_helper_zrythm_init ();
 
-  int start_pos = TRACKLIST->num_tracks;
+  int start_pos = TRACKLIST->tracks.size ();
 
   /* create audio track + audio group track + audio
    * fx track */
@@ -1415,13 +1417,13 @@ test_ins_track_duplicate_w_send (void)
   test_helper_zrythm_init ();
 
   /* create the instrument track */
-  int ins_track_pos = TRACKLIST->num_tracks;
+  int ins_track_pos = TRACKLIST->tracks.size ();
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[ins_track_pos];
 
   /* create an audio fx track */
-  int audio_fx_track_pos = TRACKLIST->num_tracks;
+  int audio_fx_track_pos = TRACKLIST->tracks.size ();
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, audio_fx_track_pos, 1,
     -1, NULL, NULL);
@@ -1479,44 +1481,44 @@ test_move_multiple_tracks (void)
     }
 
   /* move the first 2 tracks to the end */
-  Track * track1 = TRACKLIST->tracks[TRACKLIST->num_tracks - 5];
-  Track * track2 = TRACKLIST->tracks[TRACKLIST->num_tracks - 4];
-  Track * track3 = TRACKLIST->tracks[TRACKLIST->num_tracks - 3];
-  Track * track4 = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track * track5 = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track1 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 5];
+  Track * track2 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 4];
+  Track * track3 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 3];
+  Track * track4 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
+  Track * track5 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   track_select (track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (track1->pos, <, track2->pos);
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 1);
+    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   /* same (move first 2 tracks to end), but select
    * in different order */
@@ -1525,33 +1527,33 @@ test_move_multiple_tracks (void)
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 1);
+    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   /* move the last 2 tracks up */
   track_select (track4, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
@@ -1560,33 +1562,33 @@ test_move_multiple_tracks (void)
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks - 5, NULL);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 1);
+    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size () - 5, NULL);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   /* move the first and last tracks to the middle */
   track_select (track1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
@@ -1594,33 +1596,33 @@ test_move_multiple_tracks (void)
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks - 2, NULL);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 1);
+    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size () - 2, NULL);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1642,17 +1644,17 @@ _test_move_inside (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* move audio fx inside folder */
-  Track * folder = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track * folder = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
   g_assert_cmpint (folder->size, ==, 1);
-  Track * audio_fx = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * audio_fx = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (audio_fx, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_handle_move_or_copy (
     TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* validate */
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
   g_assert_cmpint (folder->size, ==, 2);
   GPtrArray * parents = g_ptr_array_new ();
   track_add_folder_parents (audio_fx, parents, false);
@@ -1673,9 +1675,9 @@ _test_move_inside (
   /* validate */
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->num_tracks - 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 3);
+  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
   parents = g_ptr_array_new ();
   track_add_folder_parents (audio_fx, parents, false);
   g_assert_cmpuint (parents->len, ==, 2);
@@ -1705,9 +1707,9 @@ _test_move_inside (
 
   /* validate */
   g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx3->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx3->pos, ==, TRACKLIST->tracks.size () - 1);
   parents = g_ptr_array_new ();
   track_add_folder_parents (audio_fx2, parents, false);
   g_assert_cmpuint (parents->len, ==, 1);
@@ -1730,9 +1732,9 @@ _test_move_inside (
   /* validate */
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->num_tracks - 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 3);
+  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
   parents = g_ptr_array_new ();
   track_add_folder_parents (audio_fx, parents, false);
   g_assert_cmpuint (parents->len, ==, 2);
@@ -2093,21 +2095,21 @@ test_move_multiple_inside (void)
     TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
   g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   /* create audio group */
   Track * audio_group =
@@ -2121,26 +2123,26 @@ test_move_multiple_inside (void)
     GDK_ACTION_MOVE);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 1);
 
   /*
    * [0] Chords
@@ -2249,48 +2251,48 @@ test_copy_multiple_inside (void)
     GDK_ACTION_COPY);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 8);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 7);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 6);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->num_tracks - 4);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 8);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 7);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 6);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 4);
   g_assert_cmpint (folder2->size, ==, 4);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 3]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 3]->type
     == TrackType::TRACK_TYPE_AUDIO_GROUP);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 2]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]->type
     == TrackType::TRACK_TYPE_FOLDER);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->type
     == TrackType::TRACK_TYPE_AUDIO_BUS);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 4);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 2);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 4);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
+  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->num_tracks - 8);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->num_tracks - 7);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->num_tracks - 6);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->num_tracks - 5);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->num_tracks - 4);
+  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 8);
+  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 7);
+  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 6);
+  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 5);
+  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 4);
   g_assert_cmpint (folder2->size, ==, 4);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 3]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 3]->type
     == TrackType::TRACK_TYPE_AUDIO_GROUP);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 2]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]->type
     == TrackType::TRACK_TYPE_FOLDER);
   g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->type
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->type
     == TrackType::TRACK_TYPE_AUDIO_BUS);
 
   /*
@@ -2561,7 +2563,7 @@ test_copy_multiple_inside (void)
   g_assert_cmpint (midi6->pos, ==, 16);
   g_assert_cmpint (audio_fx3->pos, ==, 17);
   g_assert_cmpint (midi4->pos, ==, 18);
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, 19);
+  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 19);
 
   /* undo */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -2575,7 +2577,7 @@ test_copy_multiple_inside (void)
   g_assert_cmpint (midi2->pos, ==, 14);
   g_assert_cmpint (audio_fx3->pos, ==, 15);
   g_assert_cmpint (midi4->pos, ==, 16);
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, 17);
+  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 17);
 
   tracklist_print_tracks (TRACKLIST);
 
@@ -2600,7 +2602,7 @@ test_copy_multiple_inside (void)
   g_assert_cmpint (midi3->pos, ==, 14);
   g_assert_cmpint (midi4->pos, ==, 15);
   g_assert_cmpint (audio_fx3->pos, ==, 16);
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, 17);
+  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 17);
 
   test_helper_zrythm_cleanup ();
 }
@@ -2633,7 +2635,7 @@ test_copy_after_uninstalling_plugin (void)
           ret = tracklist_selections_action_perform_copy (
             TRACKLIST_SELECTIONS,
 
-            PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, &err);
+            PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), &err);
           break;
         case 1:
           ret = tracklist_selections_action_perform_delete (
@@ -2658,7 +2660,7 @@ test_move_track_w_clip_editor_region (void)
     TESTS_SRCDIR, "1_empty_track_1_track_with_data.mid", NULL);
   SupportedFile * file = supported_file_new_from_path (midi_file);
   g_free (midi_file);
-  int  num_tracks_before = TRACKLIST->num_tracks;
+  int  num_tracks_before = TRACKLIST->tracks.size ();
   bool success = track_create_with_action (
     TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before, 1, -1,
     NULL, NULL);
@@ -2672,7 +2674,7 @@ test_move_track_w_clip_editor_region (void)
   Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
   g_assert_nonnull (clip_editor_region);
   tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
   clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
   g_assert_nonnull (clip_editor_region);
   undo_manager_undo (UNDO_MANAGER, NULL);

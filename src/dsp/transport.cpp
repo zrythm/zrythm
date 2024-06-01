@@ -266,10 +266,8 @@ transport_prepare_audio_regions_for_stretch (
     }
   else
     {
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (auto track : TRACKLIST->tracks)
         {
-          Track * track = TRACKLIST->tracks[i];
-
           if (track->type != TrackType::TRACK_TYPE_AUDIO)
             continue;
 
@@ -342,10 +340,8 @@ transport_stretch_regions (
     }
   else
     {
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (auto track : TRACKLIST->tracks)
         {
-          Track * track = TRACKLIST->tracks[i];
-
           if (track->type != TrackType::TRACK_TYPE_AUDIO)
             continue;
 
@@ -624,12 +620,9 @@ transport_move_playhead (
       return;
     }
 
-  /* send MIDI note off on currently playing timeline
-   * objects */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  /* send MIDI note off on currently playing timeline objects */
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       for (int k = 0; k < track->num_lanes; k++)
         {
           TrackLane * lane = track->lanes[k];

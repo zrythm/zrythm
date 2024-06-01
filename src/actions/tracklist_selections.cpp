@@ -239,7 +239,7 @@ tracklist_selections_action_new (
   else if (
     type == TracklistSelectionsActionType::TRACKLIST_SELECTIONS_ACTION_UNPIN)
     {
-      self->track_pos = TRACKLIST->num_tracks - 1;
+      self->track_pos = TRACKLIST->tracks.size () - 1;
     }
 
   self->pool_id = -1;
@@ -336,9 +336,8 @@ tracklist_selections_action_new (
             }
           tracklist_selections_sort (self->tls_before, true);
           self->foldable_tls_before = tracklist_selections_new (F_NOT_PROJECT);
-          for (int i = 0; i < TRACKLIST->num_tracks; i++)
+          for (auto tr : TRACKLIST->tracks)
             {
-              Track * tr = TRACKLIST->tracks[i];
               if (track_type_is_foldable (tr->type))
                 {
                   Track * clone_tr = track_clone (tr, &err);
@@ -404,9 +403,8 @@ tracklist_selections_action_new (
               self->out_tracks[k] = 0;
             }
 
-          for (int i = 0; i < TRACKLIST->num_tracks; i++)
+          for (auto cur_track : TRACKLIST->tracks)
             {
-              Track * cur_track = TRACKLIST->tracks[i];
               if (!track_type_has_channel (cur_track->type))
                 {
                   continue;
@@ -895,7 +893,7 @@ do_or_undo_create_or_delete (
           if (self->ival_after > -1)
             {
               g_return_val_if_fail (
-                self->ival_after < TRACKLIST->num_tracks, -1);
+                self->ival_after < TRACKLIST->tracks.size (), -1);
               Track * tr_to_disable = TRACKLIST->tracks[self->ival_after];
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_disable), -1);
               track_set_enabled (
@@ -1053,7 +1051,7 @@ do_or_undo_create_or_delete (
           if (self->ival_after > -1)
             {
               g_return_val_if_fail (
-                self->ival_after < TRACKLIST->num_tracks, -1);
+                self->ival_after < TRACKLIST->tracks.size (), -1);
               Track * tr_to_enable = TRACKLIST->tracks[self->ival_after];
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_enable), -1);
               track_set_enabled (
@@ -1215,8 +1213,7 @@ do_or_undo_move_or_copy (
                   /* move to given pos */
                   target_pos = self->track_pos;
 
-                  /* if moving inside, skip folder
-                   * track */
+                  /* if moving inside, skip folder track */
                   if (inside)
                     target_pos++;
                 }
@@ -1293,7 +1290,7 @@ do_or_undo_move_or_copy (
           Track *       outputs[num_tracks];
           ChannelSend * sends[num_tracks][STRIP_SIZE];
           GPtrArray *   send_conns[num_tracks][STRIP_SIZE];
-          for (int i = 0; i < num_tracks; i++)
+          for (size_t i = 0; i < num_tracks; i++)
             {
               Track * own_track = self->tls_before->tracks[i];
               if (own_track->channel)
@@ -1320,7 +1317,7 @@ do_or_undo_move_or_copy (
 
           /* create new tracks routed to master */
           Track * new_tracks[num_tracks];
-          for (int i = 0; i < num_tracks; i++)
+          for (size_t i = 0; i < num_tracks; i++)
             {
               Track * own_track = self->tls_before->tracks[i];
 
@@ -1367,9 +1364,8 @@ do_or_undo_move_or_copy (
                 track, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
             }
 
-          /* reroute new tracks to correct
-           * outputs & sends */
-          for (int i = 0; i < num_tracks; i++)
+          /* reroute new tracks to correct outputs & sends */
+          for (size_t i = 0; i < num_tracks; i++)
             {
               Track * track = new_tracks[i];
               if (outputs[i])
@@ -1812,9 +1808,8 @@ do_or_undo (TracklistSelectionsAction * self, bool _do, GError ** error)
 
   if (ZRYTHM_TESTING)
     {
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (auto track : TRACKLIST->tracks)
         {
-          Track * track = TRACKLIST->tracks[i];
           z_return_val_if_fail_cmp (
             (size_t) track->num_lanes, <=, track->lanes_size, -1);
         }

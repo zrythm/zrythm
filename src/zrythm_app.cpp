@@ -1415,7 +1415,7 @@ bool
 zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
 {
 #ifdef TRIAL_VER
-  if (PROJECT && TRACKLIST && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
+  if (PROJECT && TRACKLIST && TRACKLIST->tracks.size () >= TRIAL_MAX_TRACKS)
     {
       ui_show_error_message_printf (
         _ ("Track Limitation"),

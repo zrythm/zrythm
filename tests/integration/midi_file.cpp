@@ -31,7 +31,7 @@ test_midi_file_playback (void)
   test_helper_zrythm_init ();
 
   /* create a track for testing */
-  int      track_pos = TRACKLIST->num_tracks;
+  int      track_pos = TRACKLIST->tracks.size ();
   GError * err = NULL;
   tracklist_selections_action_perform_create_midi (track_pos, 1, &err);
   g_assert_null (err);
@@ -61,8 +61,8 @@ test_midi_file_playback (void)
 
       SupportedFile * file = supported_file_new_from_path (midi_file);
       track_create_with_action (
-        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks,
-        1, -1, NULL, NULL);
+        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+        TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
       supported_file_free (file);
       g_message ("testing %s", midi_file);
 

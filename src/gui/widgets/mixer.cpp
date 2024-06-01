@@ -33,9 +33,8 @@ mixer_widget_soft_refresh (MixerWidget * self)
 {
   Track *   track;
   Channel * ch;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
       if (!track_type_has_channel (track->type))
         continue;
 
@@ -60,10 +59,8 @@ mixer_widget_hard_refresh (MixerWidget * self)
   REF_AND_ADD_TO_ARRAY (self->channels_add);
 
   /* ref the channel widgets to make this faster */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       if (track->folder_ch_widget)
         {
           REF_AND_ADD_TO_ARRAY (track->folder_ch_widget);
@@ -83,10 +80,8 @@ mixer_widget_hard_refresh (MixerWidget * self)
   g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == NULL);
 
   /* add all channels */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       if (!track_get_should_be_visible (track))
         continue;
 

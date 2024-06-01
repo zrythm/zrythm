@@ -41,8 +41,8 @@ test_export_wav (void)
   char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
 
   char * tmp_dir = g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
   bool   success = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC, NULL);
@@ -148,7 +148,7 @@ bounce_region (bool with_bpm_automation)
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create midi region */
@@ -229,7 +229,7 @@ test_mixdown_midi_routed_to_instrument_track (void)
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   char * midi_file =
@@ -238,8 +238,8 @@ test_mixdown_midi_routed_to_instrument_track (void)
   /* create the MIDI track from a MIDI file */
   SupportedFile * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
@@ -298,7 +298,7 @@ test_bounce_region_with_first_note (void)
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create midi region */
@@ -390,7 +390,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   char * midi_file =
@@ -399,8 +399,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
   /* create the MIDI track from a MIDI file */
   SupportedFile * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
@@ -477,7 +477,7 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* CM Kleer Arp */
@@ -637,8 +637,8 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
 
   /* assert exported material starts at start
    * marker and ends at end marker */
-  Track *          audio_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  Region *         bounced_r = audio_track->lanes[0]->regions[0];
+  Track *  audio_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
+  Region * bounced_r = audio_track->lanes[0]->regions[0];
   ArrangerObject * bounce_r_obj = (ArrangerObject *) bounced_r;
   g_assert_cmppos (&start_marker_obj->pos, &bounce_r_obj->pos);
   g_assert_cmppos (&end_marker_obj->pos, &bounce_r_obj->end_pos);
@@ -665,7 +665,7 @@ test_bounce_with_note_at_start (void)
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* add region with note */
@@ -725,7 +725,7 @@ test_chord_routed_to_instrument (void)
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create the chords */
@@ -771,7 +771,7 @@ test_chord_routed_to_instrument (void)
       if (i == 1)
         {
           tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
-          for (int j = 0; j < TRACKLIST->num_tracks; j++)
+          for (int j = 0; j < TRACKLIST->tracks.size (); j++)
             {
               Track * track = TRACKLIST->tracks[j];
               track_mark_for_bounce (
@@ -814,15 +814,15 @@ test_export_send (void)
   char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   supported_file_free (file);
 
   /* create an audio FX track */
   Track * audio_fx_track = track_create_empty_at_idx_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, TRACKLIST->tracks.size (), NULL);
 
   /* on first iteration, there is no send connected
    * to the audio fx track so we expect it to be
@@ -967,8 +967,8 @@ test_mixdown_midi (void)
   /* create a MIDI track from the MIDI file */
   SupportedFile * file = supported_file_new_from_path (settings->file_uri);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * exported_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 
@@ -1051,8 +1051,8 @@ test_export_midi_range (void)
   /* create a MIDI track from the MIDI file */
   SupportedFile * file = supported_file_new_from_path (settings->file_uri);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * exported_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 

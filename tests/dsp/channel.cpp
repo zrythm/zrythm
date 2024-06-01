@@ -26,7 +26,7 @@ test_midi_fx_routing (void)
     TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true);
   g_assert_nonnull (setting);
   Track * track = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->tracks.size (), NULL);
   g_assert_nonnull (track);
 
   int num_dests = port_connections_manager_get_sources_or_dests (

@@ -201,7 +201,7 @@ setup_view (ChannelSendSelectorWidget * self)
   /* setup tracks */
   ChannelSend * send = self->send_widget->send;
   Track *       track = channel_send_get_track (send);
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (size_t i = 0; i < TRACKLIST->tracks.size (); ++i)
     {
       Track * target_track = TRACKLIST->tracks[i];
 
@@ -239,10 +239,8 @@ setup_view (ChannelSendSelectorWidget * self)
 
   /* setup plugin sidechain inputs */
   g_debug ("setting up sidechains");
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto target_track : TRACKLIST->tracks)
     {
-      Track * target_track = TRACKLIST->tracks[i];
-
       if (target_track == track || !track_type_has_channel (target_track->type))
         {
           continue;

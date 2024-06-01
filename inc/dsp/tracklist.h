@@ -73,50 +73,48 @@ struct Tracklist
    *   ...
    * }
    */
-  Track * tracks[MAX_TRACKS];
-
-  int num_tracks;
+  std::vector<Track *> tracks;
 
   /** The chord track, for convenience. */
-  Track * chord_track;
+  Track * chord_track = nullptr;
 
   /** The marker track, for convenience. */
-  Track * marker_track;
+  Track * marker_track = nullptr;
 
   /** The tempo track, for convenience. */
-  Track * tempo_track;
+  Track * tempo_track = nullptr;
 
   /** The modulator track, for convenience. */
-  Track * modulator_track;
+  Track * modulator_track = nullptr;
 
   /** The master track, for convenience. */
-  Track * master_track;
+  Track * master_track = nullptr;
 
   /** Non-pinned TracklistWidget. */
-  TracklistWidget * widget;
+  TracklistWidget * widget = nullptr;
 
   /** PinnedTracklistWidget. */
-  PinnedTracklistWidget * pinned_widget;
+  PinnedTracklistWidget * pinned_widget = nullptr;
 
   /**
    * Index starting from which tracks are unpinned.
    *
    * Tracks before this position will be considered as pinned.
    */
-  int pinned_tracks_cutoff;
+  int pinned_tracks_cutoff = 0;
 
   /** When this is true, some tracks may temporarily be moved
    * beyond num_tracks. */
-  bool swapping_tracks;
+  bool swapping_tracks = false;
 
   /** Pointer to owner sample processor, if any. */
-  SampleProcessor * sample_processor;
+  SampleProcessor * sample_processor = nullptr;
 
   /** Pointer to owner project, if any. */
-  Project * project;
+  Project * project = nullptr;
 
   /** Width of track widgets. */
-  int width;
+  int width = 0;
 };
 
 /**

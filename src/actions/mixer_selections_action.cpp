@@ -870,7 +870,7 @@ do_or_undo_move_or_copy (
           char * str =
             g_strdup_printf ("%s (Copy)", own_pl->setting->descr->name);
           to_tr = track_new (
-            TrackType::TRACK_TYPE_AUDIO_BUS, TRACKLIST->num_tracks, str,
+            TrackType::TRACK_TYPE_AUDIO_BUS, TRACKLIST->tracks.size (), str,
             F_WITH_LANE);
           g_free (str);
           g_return_val_if_fail (to_tr, -1);

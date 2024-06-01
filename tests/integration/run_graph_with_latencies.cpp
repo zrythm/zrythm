@@ -55,7 +55,7 @@ _test (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   int     orig_track_pos = track->pos;
 
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
@@ -104,7 +104,7 @@ _test (
   setting = test_plugin_manager_get_plugin_setting (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
   Track * new_track = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
 
   pl = new_track->channel->inserts[0];
   port = get_delay_port (pl);

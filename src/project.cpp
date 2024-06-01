@@ -373,11 +373,9 @@ project_fix_audio_regions (Project * self)
 {
   g_message ("fixing audio region positions...");
 
-  int         num_fixed = 0;
-  Tracklist * tl = self->tracklist;
-  for (int i = 0; i < tl->num_tracks; i++)
+  int num_fixed = 0;
+  for (auto track : self->tracklist->tracks)
     {
-      Track * track = tl->tracks[i];
       if (track->type != TrackType::TRACK_TYPE_AUDIO)
         continue;
 
@@ -734,7 +732,7 @@ project_new (Zrythm * owner)
 {
   g_message ("%s: Creating...", __func__);
 
-  Project * self = object_new (Project);
+  Project * self = new Project ();
 
   owner->project = self;
 
@@ -1172,7 +1170,7 @@ project_clone (const Project * src, bool for_backup, GError ** error)
   g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, NULL);
   g_message ("cloning project...");
 
-  Project * self = object_new (Project);
+  Project * self = new Project ();
   /*self->schema_version = PROJECT_SCHEMA_VERSION;*/
 
   self->title = g_strdup (src->title);
@@ -1304,7 +1302,7 @@ project_free (Project * self)
 
   zix_sem_destroy (&self->save_sem);
 
-  object_zero_and_free (self);
+  delete self;
 
   g_message ("%s: free'd project", __func__);
 }

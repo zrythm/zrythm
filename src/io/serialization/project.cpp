@@ -633,9 +633,8 @@ project_serialize_to_json_str (const Project * prj, GError ** error)
     doc, tracklist_obj, "pinnedTracksCutoff", tracklist->pinned_tracks_cutoff);
   yyjson_mut_val * tracks_arr =
     yyjson_mut_obj_add_arr (doc, tracklist_obj, "tracks");
-  for (int i = 0; i < tracklist->num_tracks; i++)
+  for (auto track : tracklist->tracks)
     {
-      Track *          track = tracklist->tracks[i];
       yyjson_mut_val * track_obj = yyjson_mut_arr_add_obj (doc, tracks_arr);
       track_serialize_to_json (doc, track_obj, track, error);
     }
@@ -744,7 +743,7 @@ tracklist_deserialize_from_json (
   while ((track_obj = yyjson_arr_iter_next (&tracks_it)))
     {
       Track * track = object_new (Track);
-      tracklist->tracks[tracklist->num_tracks++] = track;
+      tracklist->tracks.push_back (track);
       track_deserialize_from_json (doc, track_obj, track, error);
     }
   return true;
@@ -773,7 +772,7 @@ project_deserialize_from_json_str (const char * json, GError ** error)
       return NULL;
     }
 
-  Project * self = object_new (Project);
+  Project * self = new Project ();
 
   self->format_major = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMajor"));
   self->format_minor = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMinor"));
@@ -782,7 +781,7 @@ project_deserialize_from_json_str (const char * json, GError ** error)
     g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "datetime")));
   self->version =
     g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "version")));
-  self->tracklist = object_new (Tracklist);
+  self->tracklist = new Tracklist ();
   tracklist_deserialize_from_json (
     doc, yyjson_obj_iter_get (&it, "tracklist"), self->tracklist, error);
   yyjson_val * clip_editor_obj = yyjson_obj_iter_get (&it, "clipEditor");

@@ -116,11 +116,8 @@ timeline_arranger_widget_get_track_lane_at_y (ArrangerWidget * self, double y)
 Track *
 timeline_arranger_widget_get_track_at_y (ArrangerWidget * self, double y)
 {
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (
         /* ignore invisible tracks */
         !track->visible ||
@@ -1088,10 +1085,8 @@ timeline_arranger_widget_gen_context_menu (
 
               GMenu * tracks_submenu = g_menu_new ();
 
-              for (int i = 0; i < TRACKLIST->num_tracks; i++)
+              for (auto track : TRACKLIST->tracks)
                 {
-                  Track * track = TRACKLIST->tracks[i];
-
                   AutomationTracklist * atl =
                     track_get_automation_tracklist (track);
                   if (!atl)
@@ -1221,9 +1216,8 @@ highlight_timeline (
     {
       /* get y below the track */
       int y_after_last_track = 0;
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (auto t : TRACKLIST->tracks)
         {
-          Track * t = TRACKLIST->tracks[i];
           if (
             track_get_should_be_visible (t)
             && track_is_pinned (t) == self->is_pinned)

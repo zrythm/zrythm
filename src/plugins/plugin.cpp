@@ -1809,9 +1809,8 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup, GError ** error)
 void
 plugin_get_all (Project * prj, GPtrArray * arr, bool check_undo_manager)
 {
-  for (int i = 0; i < prj->tracklist->num_tracks; i++)
+  for (auto track : prj->tracklist->tracks)
     {
-      Track * track = prj->tracklist->tracks[i];
       track_get_plugins (track, arr);
     }
 

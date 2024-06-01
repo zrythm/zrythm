@@ -404,9 +404,8 @@ on_arranger_selections_removed (ArrangerSelections * sel)
 static void
 on_mixer_selections_changed (void)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
       if (!track_type_has_channel (track->type))
         continue;
 
@@ -776,9 +775,9 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       ruler_widget_refresh (Z_RULER_WIDGET (ev->arg));
       break;
     case EventType::ET_TRACK_STATE_CHANGED:
-      for (int j = 0; j < TRACKLIST->num_tracks; j++)
+      for (auto track : TRACKLIST->tracks)
         {
-          on_track_state_changed (TRACKLIST->tracks[j]);
+          on_track_state_changed (track);
         }
       monitor_section_widget_refresh (MW_MONITOR_SECTION);
       break;
@@ -958,9 +957,9 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_MAIN_WINDOW_LOADED:
       /* show all visible plugins */
-      for (int j = 0; j < TRACKLIST->num_tracks; j++)
+      for (auto track : TRACKLIST->tracks)
         {
-          Channel * ch = TRACKLIST->tracks[j]->channel;
+          Channel * ch = track->channel;
           if (!ch)
             continue;
 

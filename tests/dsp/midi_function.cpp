@@ -16,10 +16,10 @@ test_crescendo (void)
   test_helper_zrythm_init ();
 
   bool success = track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, NULL, NULL, TRACKLIST->num_tracks, 1, -1,
-    NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, NULL, NULL, TRACKLIST->tracks.size (), 1,
+    -1, NULL, NULL);
   g_assert_true (success);
-  Track *  midi_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  midi_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Position pos, end_pos;
   position_set_to_bar (&pos, 1);
   position_set_to_bar (&end_pos, 4);

@@ -52,18 +52,18 @@ test_swap_with_automation_regions (void)
   test_helper_zrythm_init ();
 
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
 
-  create_automation_region (TRACKLIST->num_tracks - 1);
+  create_automation_region (TRACKLIST->tracks.size () - 1);
 
   track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
 
-  create_automation_region (TRACKLIST->num_tracks - 1);
+  create_automation_region (TRACKLIST->tracks.size () - 1);
 
   /* swap tracks */
-  Track * track1 = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track * track2 = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track1 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
+  Track * track2 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, track1->pos, NULL);

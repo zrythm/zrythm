@@ -623,10 +623,8 @@ get_hit_objects (
         || type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
         {
           /* midi and audio regions */
-          for (int i = 0; i < TRACKLIST->num_tracks; i++)
+          for (auto track : TRACKLIST->tracks)
             {
-              Track * track = TRACKLIST->tracks[i];
-
               /* skip tracks if not visible or this is timeline and pin status
                * doesn't match */
               if (

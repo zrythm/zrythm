@@ -30,7 +30,7 @@ typedef struct TrackFixture
 static void
 fixture_set_up (TrackFixture * self)
 {
-  int      track_pos = TRACKLIST->num_tracks;
+  int      track_pos = TRACKLIST->tracks.size ();
   GError * err = NULL;
   tracklist_selections_action_perform_create_midi (track_pos, 1, &err);
   g_assert_null (err);
@@ -749,7 +749,7 @@ test_fill_midi_events_from_engine (void)
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   Region * r = prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;

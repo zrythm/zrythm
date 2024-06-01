@@ -20,7 +20,7 @@ test_new_track (void)
   test_helper_zrythm_init ();
 
   Track * track = track_new (
-    TrackType::TRACK_TYPE_INSTRUMENT, TRACKLIST->num_tracks,
+    TrackType::TRACK_TYPE_INSTRUMENT, TRACKLIST->tracks.size (),
     "Test Instrument Track 1", F_WITH_LANE);
   g_assert_true (IS_TRACK_AND_NONNULL (track));
 

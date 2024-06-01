@@ -44,7 +44,7 @@ test_fill_when_region_starts_on_loop_end (void)
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->num_tracks;
+  int             num_tracks_before = TRACKLIST->tracks.size ();
 
   transport_request_pause (TRANSPORT, true);
   track_create_with_action (

@@ -872,37 +872,12 @@ track_has_soloed_lanes (const Track * const self)
   return false;
 }
 
-/**
- * Returns the Track from the Project matching
- * \p name.
- *
- * @param name Name to search for.
- */
-Track *
-track_get_from_name (const char * name)
-{
-  g_return_val_if_fail (name, NULL);
-
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      Track * track = TRACKLIST->tracks[i];
-      if (string_is_equal (track->name, name))
-        {
-          return track;
-        }
-    }
-
-  g_return_val_if_reached (NULL);
-}
-
 Track *
 track_find_by_name (const char * name)
 {
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-      if (g_strcmp0 (track->name, name) == 0)
+      if (string_is_equal (track->name, name))
         return track;
     }
   return NULL;
@@ -1083,9 +1058,11 @@ track_validate (Track * self)
 void
 track_add_folder_parents (const Track * self, GPtrArray * parents, bool prepend)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto cur_track : TRACKLIST->tracks)
     {
-      Track * cur_track = TRACKLIST->tracks[i];
+      if (!cur_track)
+        continue;
+
       if (!track_type_is_foldable (cur_track->type))
         continue;
 
@@ -3726,10 +3703,8 @@ track_generate_channel_context_menu (Track * track)
   /* direct out targets */
   GMenu * target_submenu = g_menu_new ();
   bool    have_groups = false;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto cur_tr : TRACKLIST->tracks)
     {
-      Track * cur_tr = TRACKLIST->tracks[i];
-
       if (
         !TRACK_CAN_BE_GROUP_TARGET (cur_tr)
         || track->out_signal_type != cur_tr->in_signal_type || track == cur_tr)

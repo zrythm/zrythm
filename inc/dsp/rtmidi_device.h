@@ -63,12 +63,10 @@ typedef struct RtMidiDevice
   /** MIDI event ring buffer. */
   ZixRing * midi_ring;
 
-  /** Events enqueued at the beginning of each
-   * processing cycle from the ring. */
+  /** Events enqueued at the beginning of each processing cycle from the ring. */
   MidiEvents * events;
 
-  /** Semaphore for blocking writing events while
-   * events are being read. */
+  /** Semaphore for blocking writing events while events are being read. */
   ZixSem midi_ring_sem;
 
 } RtMidiDevice;

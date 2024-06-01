@@ -957,10 +957,8 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
                   /* TODO add "listen" buffer on fader struct and add listened
                    * tracks to it during processing instead of looping here */
                   float listen_amp = fader_get_amp (CONTROL_ROOM->listen_fader);
-                  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+                  for (auto t : TRACKLIST->tracks)
                     {
-                      Track * t = TRACKLIST->tracks[i];
-
                       if (
                         track_type_has_channel (t->type)
                         && t->out_signal_type == PortType::Audio

@@ -77,10 +77,21 @@ audio_clip_update_channel_caches (AudioClip * self, size_t start_from)
     }
 }
 
+/**
+ * @brief
+ *
+ * @param self
+ * @param full_path
+ * @param set_bpm Whether to set the BPM from the current tempo track.
+ * @param error
+ * @return true
+ * @return false
+ */
 static bool
 audio_clip_init_from_file (
   AudioClip *  self,
   const char * full_path,
+  bool         set_bpm,
   GError **    error)
 {
   g_return_val_if_fail (self, false);
@@ -168,7 +179,11 @@ audio_clip_init_from_file (
   char * basename = g_path_get_basename (full_path);
   self->name = io_file_strip_ext (basename);
   g_free (basename);
-  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  if (set_bpm)
+    {
+      g_return_val_if_fail (PROJECT && P_TEMPO_TRACK, false);
+      self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
+    }
   self->use_flac = audio_clip_use_flac (self->bit_depth);
   /*g_message (*/
   /*"\n\n num frames %ld \n\n", self->num_frames);*/
@@ -190,7 +205,7 @@ audio_clip_init_loaded (AudioClip * self, GError ** error)
 
   bpm_t    bpm = self->bpm;
   GError * err = NULL;
-  bool     success = audio_clip_init_from_file (self, filepath, &err);
+  bool     success = audio_clip_init_from_file (self, filepath, false, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -215,7 +230,7 @@ audio_clip_new_from_file (const char * full_path, GError ** error)
   AudioClip * self = _create ();
 
   GError * err = NULL;
-  bool     success = audio_clip_init_from_file (self, full_path, &err);
+  bool     success = audio_clip_init_from_file (self, full_path, true, &err);
   if (!success)
     {
       audio_clip_free (self);
@@ -587,9 +602,8 @@ audio_clip_write_to_file (
 bool
 audio_clip_is_in_use (AudioClip * self, bool check_undo_stack)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
       if (track->type != TrackType::TRACK_TYPE_AUDIO)
         continue;
 

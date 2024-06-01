@@ -42,7 +42,7 @@ constexpr unsigned int PROJECT_FORMAT_MAJOR = 1;
 constexpr unsigned int PROJECT_FORMAT_MINOR = 10;
 
 #define PROJECT (gZrythm->project)
-#define PROJECT_FILE "project.zpj"
+constexpr const char * PROJECT_FILE = "project.zpj";
 #define PROJECT_BACKUPS_DIR "backups"
 #define PROJECT_PLUGINS_DIR "plugins"
 #define PROJECT_PLUGIN_STATES_DIR "states"
@@ -135,13 +135,13 @@ struct Project
   };
 
   /** Project title. */
-  char * title;
+  char * title = nullptr;
 
   /** Datetime string to add to the project file. */
-  char * datetime_str;
+  char * datetime_str = nullptr;
 
   /** Path to save the project in. */
-  char * dir;
+  char * dir = nullptr;
 
   /**
    * Backup dir to save the project during
@@ -149,89 +149,89 @@ struct Project
    *
    * For example, \ref Project.dir /backups/myproject.bak3.
    */
-  char * backup_dir;
+  char * backup_dir = nullptr;
 
-  UndoManager * undo_manager;
+  UndoManager * undo_manager = nullptr;
 
-  Tracklist * tracklist;
+  Tracklist * tracklist = nullptr;
 
   /** Backend for the widget. */
-  ClipEditor * clip_editor;
+  ClipEditor * clip_editor = nullptr;
 
   /** Timeline widget backend. */
-  Timeline * timeline;
+  Timeline * timeline = nullptr;
 
   /** Snap/Grid info for the timeline. */
-  SnapGrid * snap_grid_timeline;
+  SnapGrid * snap_grid_timeline = nullptr;
 
   /** Snap/Grid info for the editor. */
-  SnapGrid * snap_grid_editor;
+  SnapGrid * snap_grid_editor = nullptr;
 
   /** Quantize info for the timeline. */
-  QuantizeOptions * quantize_opts_timeline;
+  QuantizeOptions * quantize_opts_timeline = nullptr;
 
   /** Quantize info for the piano roll. */
-  QuantizeOptions * quantize_opts_editor;
+  QuantizeOptions * quantize_opts_editor = nullptr;
 
   /**
    * Selected objects in the
    * AutomationArrangerWidget.
    */
-  AutomationSelections * automation_selections;
+  AutomationSelections * automation_selections = nullptr;
 
   /**
    * Selected objects in the audio editor.
    */
-  AudioSelections * audio_selections;
+  AudioSelections * audio_selections = nullptr;
 
   /**
    * Selected objects in the
    * ChordObjectArrangerWidget.
    */
-  ChordSelections * chord_selections;
+  ChordSelections * chord_selections = nullptr;
 
   /**
    * Selected objects in the TimelineArrangerWidget.
    */
-  TimelineSelections * timeline_selections;
+  TimelineSelections * timeline_selections = nullptr;
 
   /**
    * Selected MidiNote's in the MidiArrangerWidget.
    */
-  MidiArrangerSelections * midi_arranger_selections;
+  MidiArrangerSelections * midi_arranger_selections = nullptr;
 
   /**
    * Selected Track's.
    */
-  TracklistSelections * tracklist_selections;
+  TracklistSelections * tracklist_selections = nullptr;
 
   /**
    * Plugin selections in the Mixer.
    */
-  MixerSelections * mixer_selections;
+  MixerSelections * mixer_selections = nullptr;
 
   /** Zoom levels. TODO & move to clip_editor */
-  double timeline_zoom;
-  double piano_roll_zoom;
+  double timeline_zoom = 0;
+  double piano_roll_zoom = 0;
 
   /** Manager for region link groups. */
-  RegionLinkGroupManager * region_link_group_manager;
+  RegionLinkGroupManager * region_link_group_manager = nullptr;
 
-  PortConnectionsManager * port_connections_manager;
+  PortConnectionsManager * port_connections_manager = nullptr;
 
   /**
    * The audio backend.
    */
-  AudioEngine * audio_engine;
+  AudioEngine * audio_engine = nullptr;
 
   /** MIDI bindings. */
-  MidiMappings * midi_mappings;
+  MidiMappings * midi_mappings = nullptr;
 
   /**
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
    */
-  Tool tool;
+  Tool tool = (Tool) 0;
 
   /**
    * Whether the current is currently being loaded
@@ -241,47 +241,46 @@ struct Project
    * state and should be set to false after the
    * project is loaded.
    */
-  bool loading_from_backup;
+  bool loading_from_backup = false;
 
   /**
    * If a project is currently loaded or not.
    *
-   * This is useful so that we know if we need to
-   * tear down when loading a new project while
-   * another one is loaded.
+   * This is useful so that we know if we need to tear down when loading a new
+   * project while another one is loaded.
    */
-  bool loaded;
+  bool loaded = false;
 
   /**
    * The last thing selected in the GUI.
    *
    * Used in inspector_widget_refresh.
    */
-  Project::SelectionType last_selection;
+  Project::SelectionType last_selection = (SelectionType) 0;
 
   /** Zrythm version, for serialization */
-  char * version;
+  char * version = nullptr;
 
   /** Semaphore used to block saving. */
-  ZixSem save_sem;
+  ZixSem save_sem = {};
 
   /** Used to check if the project has unsaved
    * changes. */
-  UndoableAction * last_saved_action;
+  UndoableAction * last_saved_action = nullptr;
 
   /** Last successful autosave timestamp. */
-  gint64 last_successful_autosave_time;
+  gint64 last_successful_autosave_time = 0;
 
   /**
    * Last undoable action in the previous successful autosave.
    *
    * This is used to avoid saving unnecessary backups.
    */
-  UndoableAction * last_action_in_last_successful_autosave;
+  UndoableAction * last_action_in_last_successful_autosave = nullptr;
 
   /** Used when deserializing projects. */
-  int format_major;
-  int format_minor;
+  int format_major = 0;
+  int format_minor = 0;
 };
 
 /**
@@ -426,7 +425,7 @@ project_new (Zrythm * owner);
 /**
  * Tears down the project.
  */
-void
+NONNULL void
 project_free (Project * self);
 
 /**

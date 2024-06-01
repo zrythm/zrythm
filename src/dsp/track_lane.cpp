@@ -473,9 +473,8 @@ track_lane_calculate_lane_idx (const TrackLane * self)
   Track *     track = track_lane_get_track (self);
   Tracklist * tracklist = track_lane_get_tracklist (self);
   int         pos = 1;
-  for (int i = 0; i < tracklist->num_tracks; i++)
+  for (auto cur_track : tracklist->tracks)
     {
-      Track * cur_track = tracklist->tracks[i];
       if (cur_track == track)
         {
           pos += self->pos;

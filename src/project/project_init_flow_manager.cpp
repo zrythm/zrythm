@@ -460,10 +460,9 @@ project_activate (void)
 
   /* connect channel inputs to hardware and re-expose ports to
    * backend. has to be done after engine activation */
-  Channel * ch;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      ch = TRACKLIST->tracks[i]->channel;
+      Channel * ch = track->channel;
       if (!ch)
         continue;
 
@@ -540,7 +539,7 @@ create_default (
 
   /* chord */
   g_message ("adding chord track...");
-  Track * track = chord_track_new (TRACKLIST->num_tracks);
+  Track * track = chord_track_new (TRACKLIST->tracks.size ());
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->chord_track = track;
@@ -553,7 +552,7 @@ create_default (
 
   /* tempo */
   g_message ("adding tempo track...");
-  track = tempo_track_default (TRACKLIST->num_tracks);
+  track = tempo_track_default (TRACKLIST->tracks.size ());
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->tempo_track = track;
@@ -568,14 +567,14 @@ create_default (
 
   /* modulator */
   g_message ("adding modulator track...");
-  track = modulator_track_default (TRACKLIST->num_tracks);
+  track = modulator_track_default (TRACKLIST->tracks.size ());
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->modulator_track = track;
 
   /* marker */
   g_message ("adding marker track...");
-  track = marker_track_default (TRACKLIST->num_tracks);
+  track = marker_track_default (TRACKLIST->tracks.size ());
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->marker_track = track;
@@ -585,7 +584,7 @@ create_default (
   /* add master channel to mixer and tracklist */
   g_message ("adding master track...");
   track = track_new (
-    TrackType::TRACK_TYPE_MASTER, TRACKLIST->num_tracks, _ ("Master"),
+    TrackType::TRACK_TYPE_MASTER, TRACKLIST->tracks.size (), _ ("Master"),
     F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -970,10 +969,8 @@ continue_load_from_file_after_open_backup_response (
 
   /* set the tempo track */
   Tracklist * tracklist = self->tracklist;
-  for (int i = 0; i < tracklist->num_tracks; i++)
+  for (auto track : tracklist->tracks)
     {
-      Track * track = tracklist->tracks[i];
-
       if (track->type == TrackType::TRACK_TYPE_TEMPO)
         {
           tracklist->tempo_track = track;

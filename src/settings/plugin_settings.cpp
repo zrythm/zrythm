@@ -265,12 +265,12 @@ activate_finish (
         }
       num_actions++;
 
-      Track * group = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Track * group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
       /* create the plugin track */
       err = NULL;
       ret = track_create_for_plugin_at_idx_w_action (
-        type, self, TRACKLIST->num_tracks, &err);
+        type, self, TRACKLIST->tracks.size (), &err);
       if (!ret)
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to create track"));
@@ -278,7 +278,7 @@ activate_finish (
         }
       num_actions++;
 
-      Track * pl_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Track * pl_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
       Plugin * pl = pl_track->channel->instrument;
 
@@ -342,7 +342,7 @@ activate_finish (
             }
           num_actions++;
 
-          Track * fx_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+          Track * fx_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
           /* rename fx track */
           sprintf (name, _ ("%s %d"), self->descr->name, i + 1);
@@ -372,8 +372,8 @@ activate_finish (
           track_select (fx_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
           err = NULL;
           ret = tracklist_selections_action_perform_move (
-            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks,
-            &err);
+            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+            TRACKLIST->tracks.size (), &err);
           if (!ret)
             {
               HANDLE_ERROR (err, "%s", _ ("Failed to move track"));
@@ -431,7 +431,7 @@ activate_finish (
     {
       GError * err = NULL;
       bool     ret = track_create_for_plugin_at_idx_w_action (
-        type, self, TRACKLIST->num_tracks, &err);
+        type, self, TRACKLIST->tracks.size (), &err);
       if (!ret)
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to create track"));

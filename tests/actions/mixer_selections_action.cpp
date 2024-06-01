@@ -35,7 +35,7 @@ _test_copy_plugins (
 
   num_master_children++;
   g_assert_cmpint (P_MASTER_TRACK->num_children, ==, num_master_children);
-  Track * track = tracklist_get_track (TRACKLIST, TRACKLIST->num_tracks - 1);
+  Track * track = tracklist_get_track (TRACKLIST, TRACKLIST->tracks.size () - 1);
   g_assert_cmpuint (
     P_MASTER_TRACK->children[num_master_children - 1], ==,
     track_get_name_hash (*track));
@@ -47,7 +47,7 @@ _test_copy_plugins (
   test_project_save_and_reload ();
 
   g_assert_cmpint (P_MASTER_TRACK->num_children, ==, num_master_children);
-  track = tracklist_get_track (TRACKLIST, TRACKLIST->num_tracks - 1);
+  track = tracklist_get_track (TRACKLIST, TRACKLIST->tracks.size () - 1);
   g_assert_cmpuint (
     P_MASTER_TRACK->children[num_master_children - 1], ==,
     track_get_name_hash (*track));
@@ -56,15 +56,15 @@ _test_copy_plugins (
     P_MASTER_TRACK->children[0], ==, track_get_name_hash (*track));
 
   /* select track */
-  Track * selected_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * selected_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   bool ret = tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
   g_assert_true (ret);
   num_master_children++;
   g_assert_cmpint (P_MASTER_TRACK->num_children, ==, num_master_children);
-  track = tracklist_get_track (TRACKLIST, TRACKLIST->num_tracks - 1);
+  track = tracklist_get_track (TRACKLIST, TRACKLIST->tracks.size () - 1);
   g_assert_cmpuint (
     P_MASTER_TRACK->children[num_master_children - 1], ==,
     track_get_name_hash (*track));
@@ -74,7 +74,7 @@ _test_copy_plugins (
   track = tracklist_get_track (TRACKLIST, 6);
   g_assert_cmpuint (
     P_MASTER_TRACK->children[1], ==, track_get_name_hash (*track));
-  Track * new_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * new_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* if instrument, copy tracks, otherwise copy
    * plugins */
@@ -155,7 +155,7 @@ test_midi_fx_slot_deletion (void)
   int             slot = 0;
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  int     track_pos = TRACKLIST->num_tracks - 1;
+  int     track_pos = TRACKLIST->tracks.size () - 1;
   Track * track = TRACKLIST->tracks[track_pos];
   bool    ret = mixer_selections_action_perform_create (
     ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX, track_get_name_hash (*track), slot,
@@ -230,14 +230,14 @@ _test_create_plugins (
       /* create an instrument track from helm */
       track_create_with_action (
         TrackType::TRACK_TYPE_INSTRUMENT, setting, NULL, NULL,
-        TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+        TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
     }
   else
     {
       /* create an audio fx track and add the
        * plugin */
       track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-      int     track_pos = TRACKLIST->num_tracks - 1;
+      int     track_pos = TRACKLIST->tracks.size () - 1;
       Track * track = TRACKLIST->tracks[track_pos];
       bool    ret = mixer_selections_action_perform_create (
         ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*track), 0,
@@ -252,7 +252,7 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
-  int     src_track_pos = TRACKLIST->num_tracks - 1;
+  int     src_track_pos = TRACKLIST->tracks.size () - 1;
   Track * src_track = TRACKLIST->tracks[src_track_pos];
 
   if (is_instrument)
@@ -268,9 +268,9 @@ _test_create_plugins (
   track_select (src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   g_assert_true (track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
-  int     dest_track_pos = TRACKLIST->num_tracks - 1;
+  int     dest_track_pos = TRACKLIST->tracks.size () - 1;
   Track * dest_track = TRACKLIST->tracks[dest_track_pos];
 
   g_assert_true (track_validate (src_track));
@@ -370,13 +370,13 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* create an instrument track from helm */
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL, TRACKLIST->num_tracks,
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
 
   plugin_setting_free (setting);
 
-  int src_track_pos = TRACKLIST->num_tracks - 1;
-  int dest_track_pos = TRACKLIST->num_tracks;
+  int src_track_pos = TRACKLIST->tracks.size () - 1;
+  int dest_track_pos = TRACKLIST->tracks.size ();
 
   /* select it */
   Track * src_track = TRACKLIST->tracks[src_track_pos];
@@ -419,7 +419,7 @@ _test_port_and_plugin_track_pos_after_move (
   /* duplicate it */
   g_assert_true (track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
   Track * dest_track = TRACKLIST->tracks[dest_track_pos];
 
@@ -539,12 +539,12 @@ test_move_two_plugins_one_slot_up (void)
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false);
   g_return_if_fail (setting);
   track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
   plugin_setting_free (setting);
 
-  int track_pos = TRACKLIST->num_tracks - 1;
+  int track_pos = TRACKLIST->tracks.size () - 1;
 
   /* select it */
   Track * track = TRACKLIST->tracks[track_pos];
@@ -951,8 +951,8 @@ test_move_pl_after_duplicating_track (void)
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
 
-  Track *  ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  Track *  lsp_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track *  ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
+  Track *  lsp_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
   Plugin * lsp = lsp_track->channel->inserts[0];
 
   Port * sidechain_port = NULL;
@@ -980,9 +980,9 @@ test_move_pl_after_duplicating_track (void)
   /* duplicate instrument track */
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
-  Track * dest_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * dest_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* move lsp plugin to newly created track */
   mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
@@ -1008,7 +1008,7 @@ test_move_plugin_from_inserts_to_midi_fx (void)
 
   /* create a track with an insert */
   track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  int             track_pos = TRACKLIST->num_tracks - 1;
+  int             track_pos = TRACKLIST->tracks.size () - 1;
   Track *         track = TRACKLIST->tracks[track_pos];
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
@@ -1057,7 +1057,7 @@ test_undoing_deletion_of_multiple_inserts (void)
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
 
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* add 2 inserts */
   int             slot = 0;
@@ -1125,8 +1125,8 @@ _test_replace_instrument (
 
   /* create an instrument track */
   track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks, NULL);
-  int     src_track_pos = TRACKLIST->num_tracks - 1;
+    TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->tracks.size (), NULL);
+  int     src_track_pos = TRACKLIST->tracks.size () - 1;
   Track * src_track = TRACKLIST->tracks[src_track_pos];
   g_assert_true (track_validate (src_track));
 
@@ -1141,7 +1141,7 @@ _test_replace_instrument (
   /* create a port connection */
   int num_port_connection_actions =
     UNDO_MANAGER->undo_stack->num_port_connection_actions;
-  int            lsp_track_pos = TRACKLIST->num_tracks - 2;
+  int            lsp_track_pos = TRACKLIST->tracks.size () - 2;
   Track *        lsp_track = TRACKLIST->tracks[lsp_track_pos];
   Plugin *       lsp = lsp_track->channel->inserts[0];
   Port *         sidechain_port = NULL;
@@ -1297,9 +1297,9 @@ _test_replace_instrument (
   track_select (src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   g_assert_true (track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
-  int     dest_track_pos = TRACKLIST->num_tracks - 1;
+  int     dest_track_pos = TRACKLIST->tracks.size () - 1;
   Track * dest_track = TRACKLIST->tracks[dest_track_pos];
 
   g_assert_true (track_validate (src_track));

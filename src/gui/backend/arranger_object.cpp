@@ -1889,7 +1889,7 @@ arranger_object_validate_name (ArrangerObject * self, const char * name)
  * Returns the Track this ArrangerObject is in.
  */
 Track *
-arranger_object_get_track (const ArrangerObject * const self)
+arranger_object_get_track (const ArrangerObject * self)
 {
   g_return_val_if_fail (IS_ARRANGER_OBJECT (self), NULL);
 

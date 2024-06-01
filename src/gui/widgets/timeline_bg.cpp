@@ -53,16 +53,13 @@ timeline_bg_widget_draw (
   /* handle horizontal drawing for tracks */
   GtkWidget *   tw_widget;
   gint          track_start_offset;
-  Track *       track;
   TrackWidget * tw;
   int           line_y, i, j;
   int is_unpinned_timeline = prv->arranger == (ArrangerWidget *) (MW_TIMELINE);
   int is_pinned_timeline =
     prv->arranger == (ArrangerWidget *) (MW_PINNED_TIMELINE);
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       /* skip tracks in the other timeline (pinned/
        * non-pinned) */
       if (

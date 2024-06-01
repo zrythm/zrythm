@@ -105,10 +105,8 @@ on_dnd_leave (GtkDropTarget * drop_target, TracklistWidget * self)
 {
   remove_scroll_sources (self);
 
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
       if (track_get_should_be_visible (track) && track->widget)
         {
           track_widget_do_highlight (track->widget, 0, 0, 0);
@@ -156,10 +154,8 @@ on_dnd_motion (
   TracklistWidget * self)
 {
   TrackWidget * hit_tw = NULL;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       if (!track_get_should_be_visible (track))
         continue;
 
@@ -279,10 +275,8 @@ on_dnd_drop (
 
   /* get track widget at the x,y point */
   TrackWidget * hit_tw = NULL;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       if (!track_get_should_be_visible (track))
         continue;
 
@@ -407,9 +401,8 @@ TrackWidget *
 tracklist_widget_get_hit_track (TracklistWidget * self, double x, double y)
 {
   /* go through each child */
-  for (int i = 0; i < self->tracklist->num_tracks; i++)
+  for (auto track : self->tracklist->tracks)
     {
-      Track * track = self->tracklist->tracks[i];
       if (!track_get_should_be_visible (track) || track_is_pinned (track))
         continue;
 
@@ -554,9 +547,8 @@ void
 tracklist_widget_soft_refresh (TracklistWidget * self)
 {
   /** add pinned/unpinned tracks */
-  for (int i = 0; i < self->tracklist->num_tracks; i++)
+  for (auto track : self->tracklist->tracks)
     {
-      Track * track = self->tracklist->tracks[i];
       refresh_track_widget (track);
     }
 }
@@ -577,10 +569,8 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
   z_gtk_widget_remove_all_children (GTK_WIDGET (self->pinned_box));
 
   /** add pinned/unpinned tracks */
-  for (int i = 0; i < self->tracklist->num_tracks; i++)
+  for (auto track : self->tracklist->tracks)
     {
-      Track * track = self->tracklist->tracks[i];
-
       track->widget = NULL;
       refresh_track_widget (track);
 
@@ -613,10 +603,8 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
 void
 tracklist_widget_update_track_visibility (TracklistWidget * self)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : self->tracklist->tracks)
     {
-      Track * track = TRACKLIST->tracks[i];
-
       if (!GTK_IS_WIDGET (track->widget))
         continue;
 

@@ -127,7 +127,7 @@ _test_edit_tracks (
         track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
         undo_manager_undo (UNDO_MANAGER, NULL);
         undo_manager_redo (UNDO_MANAGER, NULL);
-        Track * audio_group = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+        Track * audio_group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
         track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
         tracklist_selections_action_perform_set_direct_out (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, audio_group, NULL);
@@ -428,7 +428,7 @@ test_edit_midi_direct_out_to_ins (void)
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   char ** midi_files = io_get_files_in_dir_ending_in (
@@ -438,9 +438,9 @@ test_edit_midi_direct_out_to_ins (void)
   /* create the MIDI track from a MIDI file */
   SupportedFile * file = supported_file_new_from_path (midi_files[0]);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
-  Track * midi_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
+  Track * midi_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   g_strfreev (midi_files);
 
@@ -466,7 +466,7 @@ test_edit_midi_direct_out_to_ins (void)
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
   direct_out = ch->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (direct_out == ins_track);
@@ -484,8 +484,8 @@ test_edit_multi_track_direct_out (void)
   /* create 2 instrument tracks */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 2);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track * ins_track2 = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
+  Track * ins_track2 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* create an audio group */
   Track * audio_group =
@@ -539,7 +539,7 @@ test_edit_multi_track_direct_out (void)
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  audio_group = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  audio_group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
   g_assert_true (IS_TRACK (direct_out));
@@ -562,8 +562,8 @@ test_rename_midi_track_with_events (void)
   g_assert_nonnull (midi_files);
   SupportedFile * file = supported_file_new_from_path (midi_files[0]);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
@@ -584,7 +584,7 @@ test_rename_midi_track_with_events (void)
 
   /* duplicate and let engine run */
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
 
   /* play and let engine run */
   transport_request_roll (TRANSPORT, true);

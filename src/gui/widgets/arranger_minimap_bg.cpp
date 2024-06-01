@@ -40,20 +40,15 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
     - ui_pos_to_px_timeline (&start_obj->pos, 1);
   /*int region_px;*/
 
-  int     total_track_height = 0;
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  int total_track_height = 0;
+  for (auto &track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (track->widget && track->visible)
         total_track_height += gtk_widget_get_height (GTK_WIDGET (track->widget));
     }
   int track_height;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto &track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (!track->widget || !track->visible)
         continue;
 

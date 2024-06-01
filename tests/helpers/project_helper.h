@@ -273,7 +273,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   marker_track_clear (P_MARKER_TRACK);
   tempo_track_clear (P_TEMPO_TRACK);
   // modulator_track_clear (P_MODULATOR_TRACK);
-  for (int i = TRACKLIST->num_tracks - 1; i > P_MASTER_TRACK->pos; i--)
+  for (int i = TRACKLIST->tracks.size () - 1; i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (
@@ -286,7 +286,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   position_set_to_bar (p1, 2);
   position_set_to_bar (p2, 4);
   Track * track = track_new (
-    TrackType::TRACK_TYPE_MIDI, TRACKLIST->num_tracks, MIDI_TRACK_NAME,
+    TrackType::TRACK_TYPE_MIDI, TRACKLIST->tracks.size (), MIDI_TRACK_NAME,
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -375,7 +375,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add an audio region */
   position_set_to_bar (p1, 2);
   track = track_new (
-    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, AUDIO_TRACK_NAME,
+    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (), AUDIO_TRACK_NAME,
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -401,13 +401,13 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
 
   /* create the target tracks */
   track = track_new (
-    TrackType::TRACK_TYPE_MIDI, TRACKLIST->num_tracks, TARGET_MIDI_TRACK_NAME,
-    F_WITH_LANE);
+    TrackType::TRACK_TYPE_MIDI, TRACKLIST->tracks.size (),
+    TARGET_MIDI_TRACK_NAME, F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   track = track_new (
-    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, TARGET_AUDIO_TRACK_NAME,
-    F_WITH_LANE);
+    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (),
+    TARGET_AUDIO_TRACK_NAME, F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 

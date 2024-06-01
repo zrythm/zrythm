@@ -1059,11 +1059,8 @@ midi_events_panic_all (const bool queued)
   midi_events_panic (
     AUDIO_ENGINE->midi_editor_manual_press->midi_events_, queued);
 
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (
         track_type_has_piano_roll (track->type)
         || track->type == TrackType::TRACK_TYPE_CHORD)

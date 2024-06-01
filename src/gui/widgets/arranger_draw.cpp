@@ -269,13 +269,11 @@ draw_timeline_bg (
 {
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
-  int         line_y, i, j;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  int         line_y, j;
+  for (auto const track : TRACKLIST->tracks)
     {
-      Track * const track = TRACKLIST->tracks[i];
-
-      /* skip tracks in the other timeline (pinned/
-       * non-pinned) or invisible tracks */
+      /* skip tracks in the other timeline (pinned/ non-pinned) or invisible
+       * tracks */
       if (
         !track_get_should_be_visible (track)
         || (!self->is_pinned && track_is_pinned (track))

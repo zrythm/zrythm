@@ -123,8 +123,8 @@ test_prepare_common (void)
   position_set_to_bar (&start, AUDIO_REGION_START_BAR);
   position_set_to_bar (&end, AUDIO_REGION_END_BAR);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &start, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, &start, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   audio_track_pos = audio_track->pos;
@@ -486,7 +486,7 @@ test_remove_range_w_start_marker (void)
   test_helper_zrythm_init ();
 
   /* create audio track */
-  audio_track_pos = TRACKLIST->num_tracks;
+  audio_track_pos = TRACKLIST->tracks.size ();
   SupportedFile * file = supported_file_new_from_path (TEST_WAV2);
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, NULL, audio_track_pos, 1, -1, NULL,
@@ -514,7 +514,7 @@ test_remove_range_w_objects_inside (void)
   test_helper_zrythm_init ();
 
   /* create midi track with region */
-  midi_track_pos = TRACKLIST->num_tracks;
+  midi_track_pos = TRACKLIST->tracks.size ();
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "1_track_with_data.mid", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);

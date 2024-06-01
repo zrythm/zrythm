@@ -66,7 +66,7 @@ test_loading_non_existing_plugin (void)
 static Port *
 get_skew_duty_port (void)
 {
-  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Plugin * pl = track->channel->instrument;
   Port *   port = NULL;
   for (int i = 0; i < pl->num_in_ports; i++)
@@ -150,7 +150,7 @@ test_bypass_state_after_project_load (void)
       /* create fx track */
       test_plugin_manager_create_tracks_from_plugin (
         LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, i == 1, 1);
-      Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
       Plugin * pl = track->channel->inserts[0];
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -161,7 +161,7 @@ test_bypass_state_after_project_load (void)
       /* reload project */
       test_project_save_and_reload ();
 
-      track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
       pl = track->channel->inserts[0];
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -181,7 +181,7 @@ test_plugin_without_outputs (void)
 
   test_plugin_manager_create_tracks_from_plugin (
     KXSTUDIO_LFO_BUNDLE, KXSTUDIO_LFO_URI, false, true, 1);
-  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 

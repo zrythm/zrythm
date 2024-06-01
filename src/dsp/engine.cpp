@@ -177,10 +177,9 @@ engine_update_frames_per_tick (
   /* update positions */
   transport_update_positions (self->transport, update_from_ticks);
 
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track_update_positions (
-        TRACKLIST->tracks[i], update_from_ticks, bpm_change);
+      track_update_positions (track, update_from_ticks, bpm_change);
     }
 
   self->updating_frames_per_tick = false;
@@ -359,9 +358,8 @@ engine_append_ports (AudioEngine * self, GPtrArray * ports)
   _ADD (&self->sample_processor->fader->stereo_out->get_l ());
   _ADD (&self->sample_processor->fader->stereo_out->get_r ());
 
-  for (int i = 0; i < self->sample_processor->tracklist->num_tracks; i++)
+  for (auto tr : self->sample_processor->tracklist->tracks)
     {
-      Track * tr = self->sample_processor->tracklist->tracks[i];
       g_warn_if_fail (track_is_auditioner (tr));
       track_append_ports (tr, ports, F_INCLUDE_PLUGINS);
     }
@@ -1256,11 +1254,10 @@ engine_realloc_port_buffers (AudioEngine * self, nframes_t nframes)
     g_ptr_array_unref, ports);
 #endif
 
-  /* TODO make function that fetches all plugins
-   * in the project */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  /* TODO make function that fetches all plugins in the project */
+  for (auto track : TRACKLIST->tracks)
     {
-      Channel * ch = TRACKLIST->tracks[i]->channel;
+      Channel * ch = track->channel;
 
       if (!ch)
         continue;
@@ -1471,11 +1468,9 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
   sample_processor_prepare_process (self->sample_processor, nframes);
 
   /* prepare channels for this cycle */
-  Channel * ch;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      ch = TRACKLIST->tracks[i]->channel;
-
+      Channel * ch = track->channel;
       if (ch)
         ch->prepare_process ();
     }

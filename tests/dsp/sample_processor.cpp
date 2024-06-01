@@ -95,7 +95,7 @@ test_queue_midi_and_roll_transport (void)
   g_message ("=============== queueing file =============");
 
   sample_processor_queue_file (SAMPLE_PROCESSOR, file);
-  g_assert_cmpint (SAMPLE_PROCESSOR->tracklist->num_tracks, ==, 3);
+  g_assert_cmpint (SAMPLE_PROCESSOR->tracklist->tracks.size (), ==, 3);
 
   g_message ("============= starting process ===========");
 

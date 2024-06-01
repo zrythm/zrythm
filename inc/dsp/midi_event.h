@@ -82,8 +82,7 @@ typedef struct MidiEvents
 } MidiEvents;
 
 /**
- * Used by Windows MME and RtMidi when adding events
- * to the ring.
+ * Used by Windows MME and RtMidi when adding events to the ring.
  */
 typedef struct MidiEventHeader
 {

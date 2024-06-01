@@ -1193,7 +1193,8 @@ paste_cb (GObject * source_object, GAsyncResult * res, gpointer data)
   else if (tracklist_sel)
     {
       tracklist_selections_post_deserialize (tracklist_sel);
-      tracklist_selections_paste_to_pos (tracklist_sel, TRACKLIST->num_tracks);
+      tracklist_selections_paste_to_pos (
+        tracklist_sel, TRACKLIST->tracks.size ());
     }
 
   if (incompatible)

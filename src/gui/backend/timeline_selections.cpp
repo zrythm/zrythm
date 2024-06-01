@@ -55,9 +55,8 @@ timeline_selections_new_for_range (
     }
 
   /* regions */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track *               track = TRACKLIST->tracks[i];
       AutomationTracklist * atl = track_get_automation_tracklist (track);
       for (int j = 0; j < track->num_lanes; j++)
         {

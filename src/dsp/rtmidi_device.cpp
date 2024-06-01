@@ -200,8 +200,7 @@ rtmidi_device_new (
       if (!self->in_handle->ok)
         {
           g_warning (
-            "An error occurred creating an RtMidi "
-            "in handle: %s",
+            "An error occurred creating an RtMidi in handle: %s",
             self->in_handle->msg);
           object_zero_and_free (self);
           return NULL;

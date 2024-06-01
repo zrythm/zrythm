@@ -36,8 +36,8 @@ test_export (void)
 
       SupportedFile * file = supported_file_new_from_path (midi_file);
       track_create_with_action (
-        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks,
-        1, -1, NULL, NULL);
+        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+        TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
       supported_file_free (file);
 
       Track * track = tracklist_get_last_track (
@@ -131,8 +131,8 @@ test_full_export (void)
 
   SupportedFile * file = supported_file_new_from_path (base_midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   supported_file_free (file);
 
   Track * track = tracklist_get_last_track (

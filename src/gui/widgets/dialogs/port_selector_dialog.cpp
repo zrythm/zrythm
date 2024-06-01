@@ -219,11 +219,8 @@ create_model_for_tracks (PortSelectorDialogWidget * self)
   list_store =
     gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      track = TRACKLIST->tracks[i];
-
       if (track->type != TrackType::TRACK_TYPE_MODULATOR && !track->channel)
         continue;
 

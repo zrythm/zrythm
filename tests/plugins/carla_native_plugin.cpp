@@ -51,7 +51,7 @@ test_vst_instrument_makes_sound (void)
       /* create instrument track */
       test_plugin_manager_create_tracks_from_plugin (
         pl_path, NULL, true, true, 1);
-      Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
       /* create midi note */
       Position pos, end_pos;
@@ -112,8 +112,8 @@ test_mono_plugin (void)
   char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   supported_file_free (file);
@@ -208,10 +208,10 @@ test_crash_handling (void)
 
   /* create a track from the plugin */
   track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
+    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
 
   Plugin * pl =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->channel->inserts[0];
+    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
@@ -235,7 +235,7 @@ test_process (void)
   test_plugin_manager_create_tracks_from_plugin (
     TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, true, 1);
 
-  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 

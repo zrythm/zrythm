@@ -539,16 +539,10 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
     self, GraphNodeType::ROUTE_NODE_TYPE_HW_PROCESSOR, HW_IN_PROCESSOR);
 
   /* add plugins */
-  Track *  tr;
   Plugin * pl;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto tr : TRACKLIST->tracks)
     {
-      tr = tracklist_get_track (TRACKLIST, i);
-      if (!tr)
-        {
-          g_warning ("track not found at %d", i);
-          return;
-        }
+      g_return_if_fail (tr);
 
       /* add the track */
       graph_create_node (self, GraphNodeType::ROUTE_NODE_TYPE_TRACK, tr);
@@ -738,11 +732,8 @@ graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
   graph_node_connect (node2, initial_processor_node);
 
   /* connect tracks */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      tr = TRACKLIST->tracks[i];
-
-      /* connect the track */
+  for (auto tr : TRACKLIST->tracks)
+    { /* connect the track */
       node = graph_find_node_from_track (self, tr, true);
       if (tr->in_signal_type == PortType::Audio)
         {

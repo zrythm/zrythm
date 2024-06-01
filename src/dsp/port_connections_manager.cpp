@@ -177,7 +177,7 @@ port_connections_manager_get_sources_or_dests (
   bool                           sources)
 {
   g_return_val_if_fail (self->dest_ht && self->src_ht, 0);
-  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, 0);
+  // g_return_val_if_fail ( ZRYTHM_APP_IS_GTK_THREAD, 0);
   /* note: we look at the opposite hashtable */
   GHashTable * ht = sources ? self->dest_ht : self->src_ht;
   GPtrArray *  res = (GPtrArray *) g_hash_table_lookup (ht, id);

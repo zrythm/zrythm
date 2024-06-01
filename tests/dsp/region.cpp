@@ -168,7 +168,7 @@ test_timeline_frames_to_local (void)
 {
   track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   Position pos, end_pos;
   position_init (&pos);

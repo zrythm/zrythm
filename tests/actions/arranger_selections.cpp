@@ -438,7 +438,7 @@ test_move_audio_region_and_lower_bpm (void)
   /* create audio track with region */
   Position pos;
   position_init (&pos);
-  int             track_pos = TRACKLIST->num_tracks;
+  int             track_pos = TRACKLIST->tracks.size ();
   SupportedFile * file = supported_file_new_from_path (audio_file_path);
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1, NULL, NULL);
@@ -499,7 +499,7 @@ test_move_audio_region_and_lower_samplerate (void)
   /* create audio track with region */
   Position pos;
   position_init (&pos);
-  int             track_pos = TRACKLIST->num_tracks;
+  int             track_pos = TRACKLIST->tracks.size ();
   SupportedFile * file = supported_file_new_from_path (audio_file_path);
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1, NULL, NULL);
@@ -1608,7 +1608,7 @@ test_split_large_audio_file (void)
   test_helper_zrythm_init ();
 
   Track * track = track_new (
-    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, "test track",
+    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (), "test track",
     F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -2334,7 +2334,7 @@ test_duplicate_audio_regions (void)
   /* create audio track with region */
   Position pos1;
   position_init (&pos1);
-  int             track_pos = TRACKLIST->num_tracks;
+  int             track_pos = TRACKLIST->tracks.size ();
   SupportedFile * file = supported_file_new_from_path (audio_file_path);
   track_create_with_action (
     TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos1, track_pos, 1, -1, NULL,
@@ -2695,8 +2695,8 @@ test_split_and_merge_audio_unlooped (void)
   SupportedFile * file_descr = supported_file_new_from_path (audio_file_path);
   position_set_to_bar (&pos, 2);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos, TRACKLIST->num_tracks,
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
@@ -2714,10 +2714,11 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmppos (&r_obj->pos, &pos);
 
   /* remember frames */
-  AudioClip *      clip = audio_region_get_clip (r);
-  unsigned_frame_t num_frames = clip->num_frames;
-  float            l_frames[num_frames];
-  dsp_copy (l_frames, clip->ch_frames[0], (size_t) num_frames);
+  AudioClip *        clip = audio_region_get_clip (r);
+  unsigned_frame_t   num_frames = clip->num_frames;
+  std::vector<float> l_frames (num_frames, 0);
+  g_return_if_fail (num_frames > 0);
+  dsp_copy (l_frames.data (), clip->ch_frames[0], (size_t) num_frames);
 
   /* split */
   r = lane->regions[0];
@@ -2901,7 +2902,7 @@ test_split_and_merge_audio_unlooped (void)
   clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, ==, num_frames);
   g_assert_true (audio_frames_equal (
-    clip->ch_frames[0], l_frames, (size_t) num_frames, 0.0001f));
+    clip->ch_frames[0], l_frames.data (), (size_t) num_frames, 0.0001f));
 
   g_assert_nonnull (clip_editor_get_region (CLIP_EDITOR));
 
@@ -2943,8 +2944,8 @@ test_resize_loop_l (void)
   SupportedFile * file_descr = supported_file_new_from_path (audio_file_path);
   position_set_to_bar (&pos, 3);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos, TRACKLIST->num_tracks,
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
@@ -3276,8 +3277,8 @@ test_move_region_from_lane_3_to_lane_1 (void)
   Position pos, end_pos;
   position_init (&pos);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, NULL, &pos, TRACKLIST->num_tracks, 1, -1,
-    NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, NULL, &pos, TRACKLIST->tracks.size (), 1,
+    -1, NULL, NULL);
   Track * track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   TrackLane * lane = track->lanes[0];
@@ -3393,6 +3394,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test split large audio file",
+    (GTestFunc) test_split_large_audio_file);
+  g_test_add_func (
     TEST_PREFIX "test link and delete", (GTestFunc) test_link_and_delete);
   g_test_add_func (
     TEST_PREFIX "test link timeline", (GTestFunc) test_link_timeline);
@@ -3425,9 +3429,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test cut automation region",
     (GTestFunc) test_cut_automation_region);
-  g_test_add_func (
-    TEST_PREFIX "test split large audio file",
-    (GTestFunc) test_split_large_audio_file);
   g_test_add_func (
     TEST_PREFIX "test move timeline", (GTestFunc) test_move_timeline);
   g_test_add_func (

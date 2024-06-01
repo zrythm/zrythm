@@ -59,16 +59,13 @@ tracklist_init_loaded (
   self->sample_processor = sample_processor;
 
   g_message ("initializing loaded Tracklist...");
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
       track_set_magic (track);
     }
 
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track->type == TrackType::TRACK_TYPE_CHORD)
         self->chord_track = track;
       else if (track->type == TrackType::TRACK_TYPE_MARKER)
@@ -84,23 +81,16 @@ tracklist_init_loaded (
     }
 }
 
-/**
- * Selects or deselects all tracks.
- *
- * @note When deselecting the last track will become
- *   selected (there must always be >= 1 tracks
- *   selected).
- */
 void
 tracklist_select_all (Tracklist * self, bool select, bool fire_events)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (int i = 0; i < self->tracks.size (); i++)
     {
       Track * track = self->tracks[i];
 
       track_select (track, select, F_NOT_EXCLUSIVE, fire_events);
 
-      if (!select && i == self->num_tracks - 1)
+      if (!select && i == self->tracks.size () - 1)
         {
           track_select (track, F_SELECT, F_EXCLUSIVE, fire_events);
         }
@@ -117,9 +107,8 @@ tracklist_get_visible_tracks (
   int *       num_visible)
 {
   *num_visible = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
       if (track_get_should_be_visible (track))
         {
           visible_tracks[*num_visible++] = track;
@@ -169,9 +158,8 @@ tracklist_get_visible_track_diff (
 int
 tracklist_contains_master_track (Tracklist * self)
 {
-  for (int i = 0; self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
       if (track->type == TrackType::TRACK_TYPE_MASTER)
         return 1;
     }
@@ -181,9 +169,8 @@ tracklist_contains_master_track (Tracklist * self)
 int
 tracklist_contains_chord_track (Tracklist * self)
 {
-  for (int i = 0; self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
       if (track->type == TrackType::TRACK_TYPE_CHORD)
         return 1;
     }
@@ -194,10 +181,9 @@ void
 tracklist_print_tracks (Tracklist * self)
 {
   g_message ("----- tracklist tracks ------");
-  Track * track;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (int i = 0; i < self->tracks.size (); i++)
     {
-      track = self->tracks[i];
+      Track * track = self->tracks[i];
       if (track)
         {
           char parent_str[200];
@@ -228,6 +214,7 @@ tracklist_print_tracks (Tracklist * self)
 static void
 swap_tracks (Tracklist * self, int src, int dest)
 {
+  g_return_if_fail (self->tracks.size () > std::max (src, dest));
   self->swapping_tracks = true;
 
   Track * src_track = self->tracks[src];
@@ -237,21 +224,10 @@ swap_tracks (Tracklist * self, int src, int dest)
     src_track ? src_track->name : "(null)", src,
     dest_track ? dest_track->name : "(null)", dest);
 
-  /* move src somewhere temporarily */
-  self->tracks[src] = NULL;
-  self->tracks[self->num_tracks + 1] = src_track;
-  if (src_track)
-    src_track->pos = self->num_tracks + 1;
+  std::iter_swap (self->tracks.begin () + src, self->tracks.begin () + dest);
 
-  /* move dest to src */
-  self->tracks[src] = dest_track;
-  self->tracks[dest] = NULL;
   if (dest_track)
     dest_track->pos = src;
-
-  /* move src from temp pos to dest */
-  self->tracks[dest] = src_track;
-  self->tracks[self->num_tracks + 1] = NULL;
   if (src_track)
     src_track->pos = dest;
 
@@ -291,7 +267,7 @@ tracklist_insert_track (
   track_set_name (track, track->name, F_NO_PUBLISH_EVENTS);
 
   /* append the track at the end */
-  array_append (self->tracks, self->num_tracks, track);
+  self->tracks.push_back (track);
   track->tracklist = self;
 
   /* add flags for auditioner track ports */
@@ -308,9 +284,9 @@ tracklist_insert_track (
     }
 
   /* if inserting it, swap until it reaches its position */
-  if (pos != self->num_tracks - 1)
+  if (pos != self->tracks.size () - 1)
     {
-      for (int i = self->num_tracks - 1; i > pos; i--)
+      for (int i = self->tracks.size () - 1; i > pos; i--)
         {
           swap_tracks (self, i, i - 1);
         }
@@ -367,9 +343,8 @@ tracklist_insert_track (
 
   if (ZRYTHM_TESTING)
     {
-      for (int i = 0; i < self->num_tracks; i++)
+      for (auto cur_track : TRACKLIST->tracks)
         {
-          Track * cur_track = self->tracks[i];
           if (track_type_has_channel (cur_track->type))
             {
               Channel * ch = cur_track->channel;
@@ -406,10 +381,8 @@ tracklist_insert_track (
 ChordTrack *
 tracklist_get_chord_track (const Tracklist * self)
 {
-  Track * track;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      track = self->tracks[i];
       if (track->type == TrackType::TRACK_TYPE_CHORD)
         {
           return (ChordTrack *) track;
@@ -432,9 +405,8 @@ tracklist_find_track_by_name (Tracklist * self, const char * name)
       return NULL;
     }
 
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = self->tracks[i];
       if (string_is_equal (name, track->name))
         return track;
     }
@@ -452,18 +424,16 @@ tracklist_find_track_by_name_hash (Tracklist * self, unsigned int hash)
     G_LIKELY (tracklist_is_in_active_project (self)) && ROUTER
     && router_is_processing_thread (ROUTER) && !tracklist_is_auditioner (self))
     {
-      for (int i = 0; i < self->num_tracks; i++)
+      for (auto track : self->tracks)
         {
-          Track * track = self->tracks[i];
           if (G_UNLIKELY (track->name_hash == hash))
             return track;
         }
     }
   else
     {
-      for (int i = 0; i < self->num_tracks; i++)
+      for (auto track : self->tracks)
         {
-          Track * track = self->tracks[i];
           if (ZRYTHM_TESTING)
             {
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
@@ -483,7 +453,7 @@ tracklist_append_track (
   int         recalc_graph)
 {
   tracklist_insert_track (
-    self, track, self->num_tracks, publish_events, recalc_graph);
+    self, track, self->tracks.size (), publish_events, recalc_graph);
 }
 
 /**
@@ -500,10 +470,8 @@ tracklist_multiply_track_heights (
   bool        check_only,
   bool        fire_events)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto tr : self->tracks)
     {
-      Track * tr = self->tracks[i];
-
       if (visible_only && !track_get_should_be_visible (tr))
         continue;
 
@@ -534,7 +502,7 @@ tracklist_multiply_track_heights (
 Track *
 tracklist_get_track (Tracklist * self, int idx)
 {
-  if (idx < 0 || idx >= self->num_tracks)
+  if (idx < 0 || idx >= self->tracks.size ())
     {
       g_warning ("invalid track idx %d", idx);
       return NULL;
@@ -549,8 +517,9 @@ tracklist_get_track (Tracklist * self, int idx)
 int
 tracklist_get_track_pos (Tracklist * self, Track * track)
 {
-  return array_index_of (
-    (void **) self->tracks, self->num_tracks, (void *) track);
+  auto it = std::find (self->tracks.cbegin (), self->tracks.cend (), track);
+  g_return_val_if_fail (it != self->tracks.cend (), -1);
+  return std::distance (self->tracks.cbegin (), it);
 }
 
 /**
@@ -560,9 +529,8 @@ tracklist_get_track_pos (Tracklist * self, Track * track)
 Track *
 tracklist_get_track_by_type (Tracklist * self, TrackType type)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
       if (track->type == type)
         return track;
     }
@@ -572,30 +540,44 @@ tracklist_get_track_by_type (Tracklist * self, TrackType type)
 bool
 tracklist_validate (Tracklist * self)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  /* this validates tracks in parallel */
+  std::vector<std::future<bool>> ret_vals;
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-      g_return_val_if_fail (track && track_is_in_active_project (track), false);
+      ret_vals.emplace_back (std::async ([self, track] () {
+        g_return_val_if_fail (
+          track && track_is_in_active_project (track), false);
 
-      if (!track_validate (track))
-        return false;
+        if (!track_validate (track))
+          return false;
 
-      /* validate size */
-      g_return_val_if_fail (track->pos + track->size <= self->num_tracks, false);
+        /* validate size */
+        g_return_val_if_fail (
+          track->pos + track->size <= self->tracks.size (), false);
 
-      /* validate connections */
-      if (track->channel)
-        {
-          Channel * ch = track->channel;
-          for (int j = 0; j < STRIP_SIZE; j++)
-            {
-              ChannelSend * send = ch->sends[j];
-              channel_send_validate (send);
-            }
-        }
+        /* validate connections */
+        if (track->channel)
+          {
+            Channel * ch = track->channel;
+            for (int j = 0; j < STRIP_SIZE; j++)
+              {
+                ChannelSend * send = ch->sends[j];
+                channel_send_validate (send);
+              }
+          }
+        return true;
+      }));
     }
 
-  return true;
+  bool valid = true;
+  for (auto &t : ret_vals)
+    {
+      bool res = t.get ();
+      if (!res)
+        valid = false;
+    }
+
+  return valid;
 }
 
 /**
@@ -612,7 +594,7 @@ tracklist_get_last_pos (
   const bool               visible_only)
 {
   Track * tr;
-  for (int i = self->num_tracks - 1; i >= 0; i--)
+  for (int i = self->tracks.size () - 1; i >= 0; i--)
     {
       tr = self->tracks[i];
 
@@ -636,18 +618,10 @@ tracklist_get_last_pos (
       return i;
     }
 
-  /* no track with given options found,
-   * select the last */
-  return self->num_tracks - 1;
+  /* no track with given options found, select the last */
+  return self->tracks.size () - 1;
 }
 
-/**
- * Returns the last Track.
- *
- * @param pin_opt Pin option.
- * @param visible_only Only consider visible
- *   Track's.
- */
 Track *
 tracklist_get_last_track (
   Tracklist *              self,
@@ -655,7 +629,7 @@ tracklist_get_last_track (
   const int                visible_only)
 {
   int idx = tracklist_get_last_pos (self, pin_opt, visible_only);
-  g_return_val_if_fail (idx >= 0 && idx < self->num_tracks, NULL);
+  g_return_val_if_fail (idx >= 0 && idx < self->tracks.size (), NULL);
   Track * tr = self->tracks[idx];
 
   return tr;
@@ -716,13 +690,11 @@ tracklist_get_visible_track_after_delta (
 Track *
 tracklist_get_first_visible_track (Tracklist * self, const int pinned)
 {
-  Track * tr;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto tr : self->tracks)
     {
-      tr = self->tracks[i];
       if (track_get_should_be_visible (tr) && track_is_pinned (tr) == pinned)
         {
-          return self->tracks[i];
+          return tr;
         }
     }
   g_warn_if_reached ();
@@ -755,11 +727,11 @@ tracklist_get_prev_visible_track (Tracklist * self, Track * track)
 Track *
 tracklist_get_next_visible_track (Tracklist * self, Track * track)
 {
-  Track * tr;
   for (
-    int i = tracklist_get_track_pos (self, track) + 1; i < self->num_tracks; i++)
+    int i = tracklist_get_track_pos (self, track) + 1; i < self->tracks.size ();
+    i++)
     {
-      tr = self->tracks[i];
+      Track * tr = self->tracks[i];
       if (track_get_should_be_visible (tr))
         {
           g_warn_if_fail (tr != track);
@@ -795,9 +767,9 @@ tracklist_remove_track (
     "%s: removing [%d] %s - remove plugins %d - "
     "free track %d - pub events %d - "
     "recalc graph %d - "
-    "num tracks before deletion: %d",
+    "num tracks before deletion: %zu",
     __func__, track->pos, track->name, rm_pl, free_track, publish_events,
-    recalc_graph, self->num_tracks);
+    recalc_graph, self->tracks.size ());
 
   Track * prev_visible = NULL;
   Track * next_visible = NULL;
@@ -810,13 +782,13 @@ tracklist_remove_track (
   /* remove/deselect all objects */
   track_clear (track);
 
-  int idx = array_index_of (self->tracks, self->num_tracks, track);
-  g_warn_if_fail (track->pos == idx);
+  int idx = tracklist_get_track_pos (self, track);
+  g_return_if_fail (track->pos == idx);
 
   track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
 
   /* move track to the end */
-  int end_pos = self->num_tracks - 1;
+  int end_pos = self->tracks.size () - 1;
   tracklist_move_track (
     self, track, end_pos, false, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
@@ -826,12 +798,12 @@ tracklist_remove_track (
         TRACKLIST_SELECTIONS, track, publish_events);
     }
 
-  array_delete (self->tracks, self->num_tracks, track);
+  self->tracks.erase (
+    std::remove (self->tracks.begin (), self->tracks.end (), track));
 
   if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
     {
-      /* if it was the only track selected, select
-       * the next one */
+      /* if it was the only track selected, select the next one */
       if (TRACKLIST_SELECTIONS->num_tracks == 0)
         {
           Track * track_to_select = NULL;
@@ -839,12 +811,15 @@ tracklist_remove_track (
             {
               track_to_select = next_visible ? next_visible : prev_visible;
             }
-          else
+          else if (self->tracks.size () > 0)
             {
               track_to_select = self->tracks[0];
             }
-          tracklist_selections_add_track (
-            TRACKLIST_SELECTIONS, track_to_select, publish_events);
+          if (track_to_select)
+            {
+              tracklist_selections_add_track (
+                TRACKLIST_SELECTIONS, track_to_select, publish_events);
+            }
         }
     }
 
@@ -853,7 +828,6 @@ tracklist_remove_track (
   if (free_track)
     {
       track_free (track);
-      self->tracks[end_pos] = NULL;
     }
 
   if (recalc_graph)
@@ -869,21 +843,6 @@ tracklist_remove_track (
   g_message ("%s: done", __func__);
 }
 
-/**
- * Moves a track from its current position to the
- * position given by \p pos.
- *
- * @param pos Position to insert at, or -1 to
- *   insert at the end.
- * @param always_before_pos Whether the track
- *   should always be put before the track currently
- *   at @ref pos. If this is true, when moving
- *   down, the resulting track position will be
- *   @ref pos - 1.
- * @param publish_events Push UI update events or
- *   not.
- * @param recalc_graph Recalculate routing graph.
- */
 void
 tracklist_move_track (
   Tracklist * self,
@@ -903,13 +862,21 @@ tracklist_move_track (
   Track * prev_visible = tracklist_get_prev_visible_track (self, track);
   Track * next_visible = tracklist_get_next_visible_track (self, track);
 
-  int idx = array_index_of (self->tracks, self->num_tracks, track);
-  g_warn_if_fail (track->pos == idx);
+  int idx = tracklist_get_track_pos (self, track);
+  g_return_if_fail (track->pos == idx);
+
+  /* the current implementation currently moves some tracks to tracks.size() + 1
+   * temporarily, so we expand the vector here and resize it back at the end */
+  bool expanded = false;
+  if (pos >= self->tracks.size ())
+    {
+      self->tracks.resize (pos + 1, nullptr);
+      expanded = true;
+    }
 
   if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
     {
-      /* clear the editor region if it exists and
-       * belongs to this track */
+      /* clear the editor region if it exists and belongs to this track */
       Region * region = clip_editor_get_region (CLIP_EDITOR);
       if (
         region && arranger_object_get_track ((ArrangerObject *) region) == track)
@@ -957,6 +924,12 @@ tracklist_move_track (
         }
     }
 
+  if (expanded)
+    {
+      /* resize back */
+      self->tracks.resize (self->tracks.size () - 1);
+    }
+
   if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
     {
       /* make the track the only selected track */
@@ -977,37 +950,25 @@ tracklist_move_track (
   g_debug ("%s: finished moving track", __func__);
 }
 
-/**
- * Returns 1 if the track name is not taken.
- *
- * @param track_to_skip Track to skip when searching.
- */
 bool
 tracklist_track_name_is_unique (
   Tracklist *  self,
   const char * name,
   Track *      track_to_skip)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      if (
-        string_is_equal (name, self->tracks[i]->name)
-        && self->tracks[i] != track_to_skip)
+      if (string_is_equal (name, track->name) && track != track_to_skip)
         return false;
     }
   return true;
 }
 
-/**
- * Returns if the tracklist has soloed tracks.
- */
 bool
 tracklist_has_soloed (const Tracklist * self)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track->channel && track_get_soloed (track))
         return true;
     }
@@ -1020,11 +981,8 @@ tracklist_has_soloed (const Tracklist * self)
 NONNULL bool
 tracklist_has_listened (const Tracklist * self)
 {
-  Track * track;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      track = self->tracks[i];
-
       if (track->channel && track_get_listened (track))
         return true;
     }
@@ -1035,10 +993,8 @@ int
 tracklist_get_num_muted_tracks (const Tracklist * self)
 {
   int count = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track_type_has_channel (track->type) && track_get_muted (track))
         {
           count++;
@@ -1052,10 +1008,8 @@ int
 tracklist_get_num_soloed_tracks (const Tracklist * self)
 {
   int count = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track_type_has_channel (track->type) && track_get_soloed (track))
         {
           count++;
@@ -1069,10 +1023,8 @@ int
 tracklist_get_num_listened_tracks (const Tracklist * self)
 {
   int count = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track_type_has_channel (track->type) && track_get_listened (track))
         {
           count++;
@@ -1082,18 +1034,13 @@ tracklist_get_num_listened_tracks (const Tracklist * self)
   return count;
 }
 
-/**
- * Fills in the given array (if non-NULL) with all
- * plugins in the tracklist and returns the number
- * of plugins.
- */
 int
 tracklist_get_plugins (const Tracklist * const self, GPtrArray * arr)
 {
   int total = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      total += track_get_plugins (self->tracks[i], arr);
+      total += track_get_plugins (track, arr);
     }
 
   return total;
@@ -1108,9 +1055,9 @@ tracklist_get_plugins (const Tracklist * const self, GPtrArray * arr)
 void
 tracklist_activate_all_plugins (Tracklist * self, bool activate)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      track_activate_all_plugins (self->tracks[i], activate);
+      track_activate_all_plugins (track, activate);
     }
 }
 
@@ -1121,10 +1068,8 @@ int
 tracklist_get_num_visible_tracks (Tracklist * self, int visible)
 {
   int ret = 0;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
-
       if (track_get_should_be_visible (track) == visible)
         ret++;
     }
@@ -1144,9 +1089,8 @@ tracklist_expose_ports_to_backend (Tracklist * self)
 {
   g_return_if_fail (self);
 
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
       g_return_if_fail (track);
 
       if (track_type_has_channel (track->type))
@@ -1406,7 +1350,7 @@ tracklist_import_files (
       position_init (&nfo->pos);
     }
   nfo->track_idx =
-    track ? track->pos : (index >= 0 ? index : TRACKLIST->num_tracks);
+    track ? track->pos : (index >= 0 ? index : TRACKLIST->tracks.size ());
   if (ZRYTHM_TESTING)
     {
       int          i = 0;
@@ -1505,10 +1449,9 @@ tracklist_handle_move_or_copy (
       if (next)
         pos = next->pos;
       /* else if last track, move to end */
-      else if (this_track->pos == TRACKLIST->num_tracks - 1)
-        pos = TRACKLIST->num_tracks;
-      /* else if last visible track but not last
-       * track */
+      else if (this_track->pos == TRACKLIST->tracks.size () - 1)
+        pos = TRACKLIST->tracks.size ();
+      /* else if last visible track but not last track */
       else
         pos = this_track->pos + 1;
     }
@@ -1547,7 +1490,7 @@ tracklist_handle_move_or_copy (
           TracklistSelections * after_tls = NULL;
           int                   diff_between_track_below_and_parent = 0;
           bool                  copied_inside = false;
-          if (pos < TRACKLIST->num_tracks)
+          if (pos < TRACKLIST->tracks.size ())
             {
               Track * track_below = TRACKLIST->tracks[pos];
               Track * track_below_parent =
@@ -1659,7 +1602,7 @@ tracklist_handle_move_or_copy (
           TracklistSelections * after_tls = NULL;
           int                   diff_between_track_below_and_parent = 0;
           bool                  moved_inside = false;
-          if (pos < TRACKLIST->num_tracks)
+          if (pos < TRACKLIST->tracks.size ())
             {
               Track * track_below = TRACKLIST->tracks[pos];
               Track * track_below_parent =
@@ -1739,9 +1682,8 @@ tracklist_handle_move_or_copy (
 void
 tracklist_mark_all_tracks_for_bounce (Tracklist * self, bool bounce)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
       track_mark_for_bounce (
         track, bounce, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
     }
@@ -1750,9 +1692,8 @@ tracklist_mark_all_tracks_for_bounce (Tracklist * self, bool bounce)
 void
 tracklist_get_total_bars (Tracklist * self, int * total_bars)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
       track_get_total_bars (track, total_bars);
     }
 }
@@ -1764,9 +1705,8 @@ tracklist_get_total_bars (Tracklist * self, int * total_bars)
 void
 tracklist_set_caches (Tracklist * self, CacheTypes types)
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (auto track : self->tracks)
     {
-      Track * track = self->tracks[i];
       track_set_caches (track, types);
     }
 }
@@ -1780,17 +1720,16 @@ tracklist_set_caches (Tracklist * self, CacheTypes types)
 Tracklist *
 tracklist_clone (Tracklist * src)
 {
-  Tracklist * self = object_new (Tracklist);
+  Tracklist * self = new Tracklist ();
 
   self->pinned_tracks_cutoff = src->pinned_tracks_cutoff;
 
-  self->num_tracks = src->num_tracks;
-  for (int i = 0; i < src->num_tracks; i++)
+  for (auto track : src->tracks)
     {
-      Track *  track = src->tracks[i];
       GError * err = NULL;
-      self->tracks[i] = track_clone (track, &err);
-      g_return_val_if_fail (self->tracks[i], NULL);
+      Track *  clone = track_clone (track, &err);
+      g_return_val_if_fail (clone, NULL);
+      self->tracks.push_back (clone);
     }
 
   return self;
@@ -1799,7 +1738,7 @@ tracklist_clone (Tracklist * src)
 Tracklist *
 tracklist_new (Project * project, SampleProcessor * sample_processor)
 {
-  Tracklist * self = object_new (Tracklist);
+  Tracklist * self = new Tracklist ();
   self->project = project;
   self->sample_processor = sample_processor;
 
@@ -1816,8 +1755,7 @@ tracklist_free (Tracklist * self)
 {
   g_message ("%s: freeing...", __func__);
 
-  int num_tracks = self->num_tracks;
-
+  size_t num_tracks = self->tracks.size ();
   for (int i = num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
@@ -1828,8 +1766,7 @@ tracklist_free (Tracklist * self)
           F_NO_RECALC_GRAPH);
     }
 
-  /* remove tempo track last (used when printing
-   * positions) */
+  /* remove tempo track last (used when printing positions) */
   if (self->tempo_track)
     {
       tracklist_remove_track (
@@ -1838,7 +1775,7 @@ tracklist_free (Tracklist * self)
       self->tempo_track = NULL;
     }
 
-  object_zero_and_free (self);
+  delete self;
 
   g_message ("%s: done", __func__);
 }

@@ -593,12 +593,12 @@ test_recording_takes (Track * ins_track, Track * audio_track, Track * master_tra
   int ins_track_pos = ins_track->pos;
   int audio_track_pos = audio_track->pos;
   int master_track_pos = master_track->pos;
-  g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
+  g_assert_cmpint (audio_track_pos, <, TRACKLIST->tracks.size ());
 
   prepare ();
   do_takes_no_loop_no_punch (ins_track, audio_track, master_track);
 
-  g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
+  g_assert_cmpint (audio_track_pos, <, TRACKLIST->tracks.size ());
   ins_track = TRACKLIST->tracks[ins_track_pos];
   audio_track = TRACKLIST->tracks[audio_track_pos];
   master_track = TRACKLIST->tracks[master_track_pos];
@@ -619,7 +619,7 @@ test_recording (void)
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* create an audio track */
   Track * audio_track =
@@ -647,7 +647,7 @@ test_automation_touch_recording (void)
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
 
-  int     ins_track_pos = TRACKLIST->num_tracks - 1;
+  int     ins_track_pos = TRACKLIST->tracks.size () - 1;
   Track * ins_track = TRACKLIST->tracks[ins_track_pos];
 
   prepare ();
@@ -946,7 +946,7 @@ test_long_audio_recording (void)
 
   /* load the region file and check that
    * frames are correct */
-  audio_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  audio_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);
   audio_r = audio_track->lanes[0]->regions[0];
   audio_r_obj = (ArrangerObject *) audio_r;
@@ -984,8 +984,8 @@ test_2nd_audio_recording (void)
   /* create an audio track from the file */
   SupportedFile * file = supported_file_new_from_path (TEST_WAV2);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->num_tracks, 1, -1,
-    NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->tracks.size (), 1,
+    -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 

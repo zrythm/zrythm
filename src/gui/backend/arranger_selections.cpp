@@ -1241,9 +1241,8 @@ arranger_selections_select_all (ArrangerSelections * self, bool fire_events)
     {
     case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
       /* midi/audio regions */
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (auto track : TRACKLIST->tracks)
         {
-          Track * track = TRACKLIST->tracks[i];
           for (int j = 0; j < track->num_lanes; j++)
             {
               TrackLane * lane = track->lanes[j];
@@ -2086,9 +2085,9 @@ arranger_selections_merge (ArrangerSelections * self)
       break;
     case RegionType::REGION_TYPE_AUDIO:
       {
-        std::vector<float> lframes (num_frames);
-        std::vector<float> rframes (num_frames);
-        std::vector<float> frames (num_frames * 2);
+        std::vector<float> lframes (num_frames, 0);
+        std::vector<float> rframes (num_frames, 0);
+        std::vector<float> frames (num_frames * 2, 0);
         dsp_fill (lframes.data (), 0, (size_t) num_frames);
         dsp_fill (rframes.data (), 0, (size_t) num_frames);
         AudioClip * first_r_clip = audio_region_get_clip (first_r);

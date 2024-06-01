@@ -108,7 +108,8 @@ port_connection_row_widget_new (
   Port * port = Port::find_from_identifier (port_id);
   if (!IS_PORT_AND_NONNULL (port))
     {
-      g_critical ("failed to find port for '%s'", port_id->label_);
+      g_critical (
+        "failed to find port for '%s'", port_id->get_label_as_c_str ());
       return NULL;
     }
   port->get_full_designation (designation);

@@ -142,7 +142,8 @@ _test_port_connection (
     {
       /* create an instrument track from helm */
       track_create_for_plugin_at_idx_w_action (
-        TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks, NULL);
+        TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->tracks.size (),
+        NULL);
     }
   else
     {
@@ -158,7 +159,7 @@ _test_port_connection (
 
   plugin_setting_free (setting);
 
-  Track * src_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * src_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
 
   /* connect a plugin CV out to the track's
    * balance */
@@ -281,8 +282,8 @@ test_cv_to_control_connection (void)
     LOWPASS_FILTER_BUNDLE, LOWPASS_FILTER_URI, false, true, 1);
   test_plugin_manager_create_tracks_from_plugin (
     AMS_LFO_BUNDLE, AMS_LFO_URI, false, true, 1);
-  Track *  lp_filter_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track *  ams_lfo_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  lp_filter_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
+  Track *  ams_lfo_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Plugin * lp_filter = lp_filter_track->channel->inserts[0];
   Plugin * ams_lfo = ams_lfo_track->channel->inserts[0];
 

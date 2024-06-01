@@ -556,7 +556,7 @@ export_midi (ExportSettings * info)
           midiTrackAddText (mf, 1, textTrackName, info->title);
         }
 
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+      for (int i = 0; i < TRACKLIST->tracks.size (); i++)
         {
           Track * track = TRACKLIST->tracks[i];
 
@@ -582,7 +582,7 @@ export_midi (ExportSettings * info)
             }
 
           info->progress_info->update_progress (
-            (double) i / (double) TRACKLIST->num_tracks, NULL);
+            (double) i / (double) TRACKLIST->tracks.size (), NULL);
         }
 
       midiFileClose (mf);
@@ -724,9 +724,8 @@ exporter_prepare_tracks_for_export (
       /* disconnect all track faders from their channel outputs so that sends
        * and custom connections will work */
       conns = g_ptr_array_new_full (100, (GDestroyNotify) port_connection_free);
-      for (int j = 0; j < TRACKLIST->num_tracks; j++)
+      for (auto cur_tr : TRACKLIST->tracks)
         {
-          Track * cur_tr = TRACKLIST->tracks[j];
           if (
             cur_tr->bounce || !track_type_has_channel (cur_tr->type)
             || cur_tr->out_signal_type != PortType::Audio)
@@ -807,9 +806,8 @@ exporter_post_export (
     }
 
   /* reset "bounce to master" on each track */
-  for (int j = 0; j < TRACKLIST->num_tracks; j++)
+  for (auto track : TRACKLIST->tracks)
     {
-      Track * track = TRACKLIST->tracks[j];
       track->bounce_to_master = false;
     }
 

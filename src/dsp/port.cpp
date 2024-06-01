@@ -1099,9 +1099,8 @@ Port::get_all (GPtrArray * ports)
 
   engine_append_ports (AUDIO_ENGINE, ports);
 
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (auto tr : TRACKLIST->tracks)
     {
-      Track * tr = TRACKLIST->tracks[i];
       track_append_ports (tr, ports, F_INCLUDE_PLUGINS);
     }
 
@@ -2884,7 +2883,7 @@ Port::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         float maxf, minf, depth_range, val_to_use;
         /* whether this is the first CV processed on this control port */
         bool first_cv = true;
-        for (int k = 0; k < srcs_.size (); k++)
+        for (size_t k = 0; k < srcs_.size (); k++)
           {
             const PortConnection * conn = src_connections_[k];
             if (G_UNLIKELY (!conn->enabled))

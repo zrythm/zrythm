@@ -1168,15 +1168,6 @@ track_set_name (Track * self, const char * name, bool pub_events);
 char *
 track_get_unique_name (Track * track_to_skip, const char * name);
 
-/**
- * Returns the Track from the Project matching
- * \p name.
- *
- * @param name Name to search for.
- */
-Track *
-track_get_from_name (const char * name);
-
 const char *
 track_stringize_type (TrackType type);
 
@@ -1474,7 +1465,7 @@ track_create_for_plugin_at_idx_w_action (
  * tracklist.
  */
 #define track_create_empty_with_action(type, error) \
-  track_create_empty_at_idx_with_action (type, TRACKLIST->num_tracks, error)
+  track_create_empty_at_idx_with_action (type, TRACKLIST->tracks.size (), error)
 
 GMenu *
 track_generate_edit_context_menu (Track * track, int num_selected);

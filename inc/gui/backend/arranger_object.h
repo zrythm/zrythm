@@ -747,7 +747,7 @@ arranger_object_add_ticks_to_children (ArrangerObject * self, const double ticks
  * Returns the Track this ArrangerObject is in.
  */
 HOT NONNULL Track *
-arranger_object_get_track (const ArrangerObject * const self);
+arranger_object_get_track (const ArrangerObject * self);
 
 static inline const char *
 arranger_object_get_type_as_string (ArrangerObjectType type)
