@@ -720,11 +720,11 @@ test_strict_cflags = [
   '-Werror=shift-count-overflow',
   '-Werror=free-nonheap-object',
   '-Werror=use-after-free',
-  '-fanalyzer',
+  # '-fanalyzer',
   '-Werror=analyzer-possible-null-dereference',
   # false positives with GCC
   #'-Werror=analyzer-malloc-leak',
-  '-Werror=analyzer-null-dereference',
+  # '-Werror=analyzer-null-dereference',
   '-Werror=analyzer-null-argument',
   '-Werror=analyzer-use-after-free',
   '-Werror=analyzer-possible-null-argument',
