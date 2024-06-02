@@ -44,7 +44,8 @@ z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)
     }
   else
     {
-      char * zrythm_libdir = gZrythm->dir_mgr->get_dir (SYSTEM_ZRYTHM_LIBDIR);
+      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+      char * zrythm_libdir = dir_mgr->get_dir (SYSTEM_ZRYTHM_LIBDIR);
       g_debug ("using zrythm_libdir: %s", zrythm_libdir);
       carla_discovery = g_build_filename (
         zrythm_libdir, "carla", carla_discovery_filename, NULL);

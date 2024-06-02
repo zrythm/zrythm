@@ -1172,7 +1172,8 @@ log_init_with_file (Log * self, const char * filepath, GError ** error)
   else
     {
       char * str_datetime = datetime_get_for_filename ();
-      char * user_log_dir = gZrythm->dir_mgr->get_dir (USER_LOG);
+      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+      char * user_log_dir = dir_mgr->get_dir (USER_LOG);
       self->log_filepath = g_strdup_printf (
         "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S, str_datetime);
       GError * err = NULL;

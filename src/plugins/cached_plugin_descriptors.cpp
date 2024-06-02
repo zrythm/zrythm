@@ -30,9 +30,8 @@ create_new (void)
 static char *
 get_cached_plugin_descriptors_file_path (void)
 {
-  g_return_val_if_fail (gZrythm != nullptr, NULL);
-  g_return_val_if_fail (gZrythm->dir_mgr != nullptr, NULL);
-  char * zrythm_dir = gZrythm->dir_mgr->get_dir (USER_TOP);
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  char * zrythm_dir = dir_mgr->get_dir (USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return g_build_filename (

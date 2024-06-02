@@ -445,7 +445,8 @@ _test_helper_zrythm_init (
   g_assert_true (gZrythm != nullptr);
   gZrythm->undo_stack_len = 64;
   g_message ("%s", gZrythm->version);
-  char * zrythm_dir = gZrythm->dir_mgr->get_dir (USER_TOP);
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  char * zrythm_dir = dir_mgr->get_dir (USER_TOP);
   g_assert_nonnull (zrythm_dir);
   g_message ("%s", zrythm_dir);
   gZrythm->init ();
@@ -499,8 +500,8 @@ _test_helper_zrythm_init (
 void
 test_helper_zrythm_cleanup (void)
 {
-  g_assert_nonnull (gZrythm->dir_mgr->testing_dir);
-  io_rmdir (gZrythm->dir_mgr->testing_dir, true);
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  dir_mgr->remove_testing_dir ();
   object_free_w_func_and_null (project_free, gZrythm->project);
   if (gZrythm->use_pipewire_in_tests)
     {
@@ -509,6 +510,8 @@ test_helper_zrythm_cleanup (void)
   gZrythm.reset ();
   object_free_w_func_and_null (log_free, LOG);
   object_zero_and_free (zrythm_app);
+
+  ZrythmDirectoryManager::deleteInstance ();
 }
 
 /**

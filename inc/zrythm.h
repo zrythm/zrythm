@@ -168,6 +168,22 @@ typedef enum ZrythmDirType
 class ZrythmDirectoryManager
 {
 public:
+  ZrythmDirectoryManager () = default;
+  ~ZrythmDirectoryManager ()
+  {
+    remove_testing_dir ();
+    clearSingletonInstance ();
+  }
+  /**
+   * Returns the prefix or in the case of Windows the root dir (C/program
+   * files/zrythm) or in the case of macos the bundle path.
+   *
+   * In all cases, "share" is expected to be found in this dir.
+   *
+   * @return A newly allocated string.
+   */
+  static char * get_prefix ();
+
   /**
    * Gets the zrythm directory, either from the settings if non-empty, or the
    * default ($XDG_DATA_DIR/zrythm).
@@ -186,15 +202,28 @@ public:
   char * get_default_user_dir ();
 
   /**
-   * Returns a Zrythm directory specified by
-   * \ref type.
+   * Returns a Zrythm directory specified by \ref type.
    *
    * @return A newly allocated string.
    */
   char * get_dir (ZrythmDirType type);
 
+  /** Clears @ref "testing_dir" and removes the testing dir from the disk. */
+  void remove_testing_dir ();
+
+private:
+  /**
+   * @brief Returns the current testing dir.
+   *
+   * If empty, this creates a new testing dir on the disk.
+   */
+  const char * get_testing_dir ();
+
   /** Zrythm directory used during unit tests. */
-  char * testing_dir = nullptr;
+  std::string testing_dir_;
+
+public:
+  JUCE_DECLARE_SINGLETON_SINGLETHREADED (ZrythmDirectoryManager, false)
 };
 
 /**
@@ -269,18 +298,6 @@ public:
    * reports).
    */
   static char * get_system_info ();
-
-  /**
-   * Returns the prefix or in the case of windows
-   * the root dir (C/program files/zrythm) or in the
-   * case of macos the bundle path.
-   *
-   * In all cases, "share" is expected to be found
-   * in this dir.
-   *
-   * @return A newly allocated string.
-   */
-  static char * get_prefix ();
 
   /**
    * Initializes/creates the default dirs/files in the user
@@ -359,8 +376,6 @@ public:
 
   /** Chord preset pack manager. */
   ChordPresetPackManager * chord_preset_pack_manager = nullptr;
-
-  std::unique_ptr<ZrythmDirectoryManager> dir_mgr;
 
   /**
    * String interner for internal things.

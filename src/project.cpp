@@ -66,6 +66,7 @@
 
 #include <glib/gi18n.h>
 
+#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 #include <time.h>
 #include <zstd.h>

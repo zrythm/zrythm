@@ -1007,9 +1007,9 @@ zrythm_app_startup (GApplication * app)
 
   /* --- add icon search paths --- */
 
-  /* prepend freedesktop system icons to search
-   * path, just in case */
-  char * parent_datadir = gZrythm->dir_mgr->get_dir (SYSTEM_PARENT_DATADIR);
+  /* prepend freedesktop system icons to search path, just in case */
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  char * parent_datadir = dir_mgr->get_dir (SYSTEM_PARENT_DATADIR);
   char * freedesktop_icon_theme_dir =
     g_build_filename (parent_datadir, "icons", NULL);
   gtk_icon_theme_add_search_path (icon_theme, freedesktop_icon_theme_dir);
@@ -1019,8 +1019,7 @@ zrythm_app_startup (GApplication * app)
 
   /* prepend zrythm system icons to search path */
   {
-    char * system_icon_theme_dir =
-      gZrythm->dir_mgr->get_dir (SYSTEM_THEMES_ICONS_DIR);
+    char * system_icon_theme_dir = dir_mgr->get_dir (SYSTEM_THEMES_ICONS_DIR);
     gtk_icon_theme_add_search_path (icon_theme, system_icon_theme_dir);
     g_message ("added icon theme search path: %s", system_icon_theme_dir);
     g_free (system_icon_theme_dir);
@@ -1028,7 +1027,7 @@ zrythm_app_startup (GApplication * app)
 
   /* prepend user custom icons to search path */
   {
-    char * user_icon_theme_dir = gZrythm->dir_mgr->get_dir (USER_THEMES_ICONS);
+    char * user_icon_theme_dir = dir_mgr->get_dir (USER_THEMES_ICONS);
     gtk_icon_theme_add_search_path (icon_theme, user_icon_theme_dir);
     g_message ("added icon theme search path: %s", user_icon_theme_dir);
     g_free (user_icon_theme_dir);
@@ -1091,7 +1090,7 @@ zrythm_app_startup (GApplication * app)
 
   /* get css theme file path */
   GtkCssProvider * css_provider = gtk_css_provider_new ();
-  char * user_themes_dir = gZrythm->dir_mgr->get_dir (USER_THEMES_CSS);
+  char *           user_themes_dir = dir_mgr->get_dir (USER_THEMES_CSS);
   char * css_theme_file = g_settings_get_string (S_P_UI_GENERAL, "css-theme");
   char * css_theme_path =
     g_build_filename (user_themes_dir, css_theme_file, NULL);
@@ -1100,8 +1099,7 @@ zrythm_app_startup (GApplication * app)
     {
       /* fallback to theme in system path */
       g_free (css_theme_path);
-      char * system_themes_dir =
-        gZrythm->dir_mgr->get_dir (SYSTEM_THEMES_CSS_DIR);
+      char * system_themes_dir = dir_mgr->get_dir (SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         g_build_filename (system_themes_dir, css_theme_file, NULL);
       g_free (system_themes_dir);
@@ -1110,8 +1108,7 @@ zrythm_app_startup (GApplication * app)
     {
       /* fallback to zrythm-theme.css */
       g_free (css_theme_path);
-      char * system_themes_dir =
-        gZrythm->dir_mgr->get_dir (SYSTEM_THEMES_CSS_DIR);
+      char * system_themes_dir = dir_mgr->get_dir (SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         g_build_filename (system_themes_dir, "zrythm-theme.css", NULL);
       g_free (system_themes_dir);
@@ -1480,6 +1477,8 @@ finalize (ZrythmApp * self)
 
   /* init curl */
   curl_global_cleanup ();
+
+  ZrythmDirectoryManager::deleteInstance ();
 
   g_message ("%s: done", __func__);
 }

@@ -422,7 +422,8 @@ make_control (
     KEY_IS ("UI", "General", "css-theme")
     || KEY_IS ("UI", "General", "icon-theme"))
     {
-      char * user_css_theme_path = gZrythm->dir_mgr->get_dir (
+      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+      char * user_css_theme_path = dir_mgr->get_dir (
         (KEY_IS ("UI", "General", "css-theme"))
           ? USER_THEMES_CSS
           : USER_THEMES_ICONS);

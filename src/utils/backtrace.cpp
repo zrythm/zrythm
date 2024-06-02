@@ -283,7 +283,8 @@ _backtrace_get (
       if (write_to_file && gZrythm)
         {
           char * str_datetime = datetime_get_for_filename ();
-          char * user_bt_dir = gZrythm->dir_mgr->get_dir (USER_BACKTRACE);
+          auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+          char * user_bt_dir = dir_mgr->get_dir (USER_BACKTRACE);
           char * backtrace_filepath = g_strdup_printf (
             "%s%sbacktrace_%s.txt", user_bt_dir, G_DIR_SEPARATOR_S,
             str_datetime);

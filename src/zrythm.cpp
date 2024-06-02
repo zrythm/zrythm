@@ -7,6 +7,8 @@
 #  include <sys/mman.h>
 #endif
 
+#include <memory>
+
 #include "dsp/recording_manager.h"
 #include "dsp/router.h"
 #include "gui/backend/event_manager.h"
@@ -59,7 +61,6 @@ Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
   this->error_domain_symap = symap_new ();
   recent_projects_ = std::make_unique<StringArray> ();
 
-  this->dir_mgr = std::make_unique<ZrythmDirectoryManager> ();
   this->settings = std::make_unique<Settings> ();
 }
 
@@ -321,18 +322,10 @@ Zrythm::is_latest_release (const char * remote_latest_release)
   return string_is_equal (remote_latest_release, PACKAGE_VERSION);
 }
 
-/**
- * Returns the prefix or in the case of windows
- * the root dir (C/program files/zrythm) or in the
- * case of macos the bundle path.
- *
- * In all cases, "share" is expected to be found
- * in this dir.
- *
- * @return A newly allocated string.
- */
+JUCE_IMPLEMENT_SINGLETON (ZrythmDirectoryManager)
+
 char *
-Zrythm::get_prefix (void)
+ZrythmDirectoryManager::get_prefix (void)
 {
 #if defined(_WIN32) && defined(INSTALLER_VER)
   return io_get_registry_string_val ("InstallPath");
@@ -349,17 +342,34 @@ Zrythm::get_prefix (void)
 #endif
 }
 
+void
+ZrythmDirectoryManager::remove_testing_dir ()
+{
+  if (testing_dir_.empty ())
+    return;
+
+  io_rmdir (testing_dir_.c_str (), true);
+  testing_dir_.clear ();
+}
+
+const char *
+ZrythmDirectoryManager::get_testing_dir ()
+{
+  if (testing_dir_.empty ())
+    {
+      char * new_testing_dir = g_dir_make_tmp ("zrythm_test_dir_XXXXXX", NULL);
+      testing_dir_ = new_testing_dir;
+      g_free (new_testing_dir);
+    }
+  return testing_dir_.c_str ();
+}
+
 char *
 ZrythmDirectoryManager::get_user_dir (bool force_default)
 {
   if (ZRYTHM_TESTING)
     {
-      if (!this->testing_dir)
-        {
-          this->testing_dir = g_dir_make_tmp ("zrythm_test_dir_XXXXXX", NULL);
-        }
-      g_debug ("returning user dir: %s", this->testing_dir);
-      return g_strdup (this->testing_dir);
+      return g_strdup (get_testing_dir ());
     }
 
   char * dir = NULL;
@@ -394,7 +404,7 @@ ZrythmDirectoryManager::get_dir (ZrythmDirType type)
   /* handle system dirs */
   if (type < USER_TOP)
     {
-      char * prefix = Zrythm::get_prefix ();
+      char * prefix = get_prefix ();
 
       switch (type)
         {
@@ -531,6 +541,8 @@ Zrythm::init_user_dirs_and_files (GError ** error)
   bool     success;
   GError * err = NULL;
 
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+
 #define MK_USER_DIR(x) \
   dir = dir_mgr->get_dir (USER_##x); \
   g_return_val_if_fail (dir, false); \
@@ -562,6 +574,7 @@ Zrythm::init_templates ()
 {
   g_message ("Initializing templates...");
 
+  auto *         dir_mgr = ZrythmDirectoryManager::getInstance ();
   GStrvBuilder * builder = g_strv_builder_new ();
   {
     char *  user_templates_dir = dir_mgr->get_dir (USER_TEMPLATES);
