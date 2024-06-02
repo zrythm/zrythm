@@ -1557,8 +1557,7 @@ carla_native_plugin_instantiate (
   self->carla_plugin_id = 0;
 
   /* set binary paths */
-  char * zrythm_libdir =
-    gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+  char * zrythm_libdir = gZrythm->dir_mgr->get_dir (SYSTEM_ZRYTHM_LIBDIR);
   char * carla_binaries_dir = g_build_filename (zrythm_libdir, "carla", NULL);
   g_message (
     "setting carla engine option [ENGINE_OPTION_PATH_BINARIES] to '%s'",

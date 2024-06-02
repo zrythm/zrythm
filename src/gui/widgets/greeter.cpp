@@ -773,7 +773,7 @@ greeter_widget_init (GreeterWidget * self)
   }
 
   /* set zrythm dir */
-  char * dir = gZrythm->dir_mgr->get_dir (ZRYTHM_DIR_USER_TOP);
+  char * dir = gZrythm->dir_mgr->get_dir (USER_TOP);
   {
     AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("User path"));

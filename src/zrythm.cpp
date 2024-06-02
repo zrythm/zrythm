@@ -392,79 +392,79 @@ ZrythmDirectoryManager::get_dir (ZrythmDirType type)
   char * res = NULL;
 
   /* handle system dirs */
-  if (type < ZRYTHM_DIR_USER_TOP)
+  if (type < USER_TOP)
     {
       char * prefix = Zrythm::get_prefix ();
 
       switch (type)
         {
-        case ZRYTHM_DIR_SYSTEM_PREFIX:
+        case SYSTEM_PREFIX:
           res = g_strdup (prefix);
           break;
-        case ZRYTHM_DIR_SYSTEM_BINDIR:
+        case SYSTEM_BINDIR:
           res = g_build_filename (prefix, "bin", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_PARENT_DATADIR:
+        case SYSTEM_PARENT_DATADIR:
           res = g_build_filename (prefix, "share", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR:
+        case SYSTEM_PARENT_LIBDIR:
           res = g_build_filename (prefix, LIBDIR_NAME, NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR:
+        case SYSTEM_ZRYTHM_LIBDIR:
           {
-            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR);
+            char * parent_path = get_dir (SYSTEM_PARENT_LIBDIR);
             res = g_build_filename (parent_path, "zrythm", NULL);
           }
           break;
-        case ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR:
+        case SYSTEM_BUNDLED_PLUGINSDIR:
           {
-            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+            char * parent_path = get_dir (SYSTEM_ZRYTHM_LIBDIR);
             res = g_build_filename (parent_path, "lv2", NULL);
           }
           break;
-        case ZRYTHM_DIR_SYSTEM_LOCALEDIR:
+        case SYSTEM_LOCALEDIR:
           res = g_build_filename (prefix, "share", "locale", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR:
+        case SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR:
           res = g_build_filename (
             prefix, "share", "gtksourceview-5", "language-specs", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR:
+        case SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR:
           res = g_build_filename (
             prefix, "share", "zrythm", "gtksourceview-5", "language-specs",
             NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR:
+        case SYSTEM_ZRYTHM_DATADIR:
           res = g_build_filename (prefix, "share", "zrythm", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_SAMPLESDIR:
+        case SYSTEM_SAMPLESDIR:
           res = g_build_filename (prefix, "share", "zrythm", "samples", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_SCRIPTSDIR:
+        case SYSTEM_SCRIPTSDIR:
           res = g_build_filename (prefix, "share", "zrythm", "scripts", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_THEMESDIR:
+        case SYSTEM_THEMESDIR:
           res = g_build_filename (prefix, "share", "zrythm", "themes", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR:
+        case SYSTEM_THEMES_CSS_DIR:
           {
-            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            char * parent_path = get_dir (SYSTEM_THEMESDIR);
             res = g_build_filename (parent_path, "css", NULL);
           }
           break;
-        case ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR:
+        case SYSTEM_THEMES_ICONS_DIR:
           {
-            char * parent_path = get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            char * parent_path = get_dir (SYSTEM_THEMESDIR);
             res = g_build_filename (parent_path, "icons", NULL);
           }
           break;
-        case ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
+        case SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
           res = g_build_filename (prefix, "share", "zrythm", "lv2", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_FONTSDIR:
+        case SYSTEM_FONTSDIR:
           res = g_build_filename (prefix, "share", "fonts", "zrythm", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_TEMPLATES:
+        case SYSTEM_TEMPLATES:
           res = g_build_filename (prefix, "share", "zrythm", "templates", NULL);
           break;
         default:
@@ -480,37 +480,37 @@ ZrythmDirectoryManager::get_dir (ZrythmDirType type)
 
       switch (type)
         {
-        case ZRYTHM_DIR_USER_TOP:
+        case USER_TOP:
           res = g_strdup (user_dir);
           break;
-        case ZRYTHM_DIR_USER_PROJECTS:
+        case USER_PROJECTS:
           res = g_build_filename (user_dir, ZRYTHM_PROJECTS_DIR, NULL);
           break;
-        case ZRYTHM_DIR_USER_TEMPLATES:
+        case USER_TEMPLATES:
           res = g_build_filename (user_dir, "templates", NULL);
           break;
-        case ZRYTHM_DIR_USER_LOG:
+        case USER_LOG:
           res = g_build_filename (user_dir, "log", NULL);
           break;
-        case ZRYTHM_DIR_USER_SCRIPTS:
+        case USER_SCRIPTS:
           res = g_build_filename (user_dir, "scripts", NULL);
           break;
-        case ZRYTHM_DIR_USER_THEMES:
+        case USER_THEMES:
           res = g_build_filename (user_dir, "themes", NULL);
           break;
-        case ZRYTHM_DIR_USER_THEMES_CSS:
+        case USER_THEMES_CSS:
           res = g_build_filename (user_dir, "themes", "css", NULL);
           break;
-        case ZRYTHM_DIR_USER_THEMES_ICONS:
+        case USER_THEMES_ICONS:
           res = g_build_filename (user_dir, "themes", "icons", NULL);
           break;
-        case ZRYTHM_DIR_USER_PROFILING:
+        case USER_PROFILING:
           res = g_build_filename (user_dir, "profiling", NULL);
           break;
-        case ZRYTHM_DIR_USER_GDB:
+        case USER_GDB:
           res = g_build_filename (user_dir, "gdb", NULL);
           break;
-        case ZRYTHM_DIR_USER_BACKTRACE:
+        case USER_BACKTRACE:
           res = g_build_filename (user_dir, "backtraces", NULL);
           break;
         default:
@@ -532,7 +532,7 @@ Zrythm::init_user_dirs_and_files (GError ** error)
   GError * err = NULL;
 
 #define MK_USER_DIR(x) \
-  dir = dir_mgr->get_dir (ZRYTHM_DIR_USER_##x); \
+  dir = dir_mgr->get_dir (USER_##x); \
   g_return_val_if_fail (dir, false); \
   success = io_mkdir (dir, &err); \
   if (!success) \
@@ -564,7 +564,7 @@ Zrythm::init_templates ()
 
   GStrvBuilder * builder = g_strv_builder_new ();
   {
-    char *  user_templates_dir = dir_mgr->get_dir (ZRYTHM_DIR_USER_TEMPLATES);
+    char *  user_templates_dir = dir_mgr->get_dir (USER_TEMPLATES);
     char ** user_templates = io_get_files_in_dir (user_templates_dir, true);
     g_free (user_templates_dir);
     g_return_if_fail (user_templates);
@@ -573,8 +573,7 @@ Zrythm::init_templates ()
   }
   if (!ZRYTHM_TESTING)
     {
-      char * system_templates_dir =
-        dir_mgr->get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
+      char *  system_templates_dir = dir_mgr->get_dir (SYSTEM_TEMPLATES);
       char ** system_templates =
         io_get_files_in_dir (system_templates_dir, true);
       g_free (system_templates_dir);

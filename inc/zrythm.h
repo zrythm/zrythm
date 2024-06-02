@@ -55,123 +55,113 @@ class StringArray;
 
 /**
  * Type of Zrythm directory.
+ *
+ * System* directories are directories that are determined during installation
+ * that contain immutable data.
+ *
+ * User* directories are directories determined based on the user or the user's
+ * preferences that contain user-modifiable data.
  */
 typedef enum ZrythmDirType
 {
-  /*
-   * ----
-   * System directories that ship with Zrythm
-   * and must not be changed.
-   * ----
-   */
-
   /**
    * The prefix, or in the case of windows installer the root dir (C/program
    * files/zrythm), or in the case of macos installer the bundle path.
    *
    * In all cases, "share" is expected to be found in this dir.
    */
-  ZRYTHM_DIR_SYSTEM_PREFIX,
+  SYSTEM_PREFIX,
 
-  /** "bin" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
-  ZRYTHM_DIR_SYSTEM_BINDIR,
+  /** "bin" under \ref SYSTEM_PREFIX. */
+  SYSTEM_BINDIR,
 
-  /** "share" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
-  ZRYTHM_DIR_SYSTEM_PARENT_DATADIR,
+  /** "share" under \ref SYSTEM_PREFIX. */
+  SYSTEM_PARENT_DATADIR,
 
   /** libdir name under
-   * \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
-  ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR,
+   * \ref SYSTEM_PREFIX. */
+  SYSTEM_PARENT_LIBDIR,
 
   /** libdir/zrythm */
-  ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR,
+  SYSTEM_ZRYTHM_LIBDIR,
 
   /** libdir/zrythm/lv2 */
-  ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR,
+  SYSTEM_BUNDLED_PLUGINSDIR,
 
   /** Localization under "share". */
-  ZRYTHM_DIR_SYSTEM_LOCALEDIR,
+  SYSTEM_LOCALEDIR,
 
   /**
-   * "gtksourceview-5/language-specs" under
-   * "share".
+   * "gtksourceview-5/language-specs" under "share".
    */
-  ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR,
+  SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR,
 
   /**
-   * "gtksourceview-5/language-specs" under
-   * "share/zrythm".
+   * "gtksourceview-5/language-specs" under "share/zrythm".
    */
-  ZRYTHM_DIR_SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR,
+  SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR,
 
   /** share/zrythm */
-  ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR,
+  SYSTEM_ZRYTHM_DATADIR,
 
   /** Samples. */
-  ZRYTHM_DIR_SYSTEM_SAMPLESDIR,
+  SYSTEM_SAMPLESDIR,
 
   /** Scripts. */
-  ZRYTHM_DIR_SYSTEM_SCRIPTSDIR,
+  SYSTEM_SCRIPTSDIR,
 
   /** Themes. */
-  ZRYTHM_DIR_SYSTEM_THEMESDIR,
+  SYSTEM_THEMESDIR,
 
   /** CSS themes. */
-  ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR,
+  SYSTEM_THEMES_CSS_DIR,
 
   /** Icon themes. */
-  ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR,
+  SYSTEM_THEMES_ICONS_DIR,
 
   /**
    * Special external Zrythm plugins path (not part of the Zrythm source code).
    *
    * Used for ZLFO and other plugins.
    */
-  ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR,
+  SYSTEM_SPECIAL_LV2_PLUGINS_DIR,
 
   /** The directory fonts/zrythm under datadir. */
-  ZRYTHM_DIR_SYSTEM_FONTSDIR,
+  SYSTEM_FONTSDIR,
 
   /** Project templates. */
-  ZRYTHM_DIR_SYSTEM_TEMPLATES,
+  SYSTEM_TEMPLATES,
 
   /* ************************************ */
 
-  /*
-   * ----
-   * Zrythm user directories that contain
-   * user-modifiable data.
-   * ----
-   */
-
   /** Main zrythm directory from gsettings. */
-  ZRYTHM_DIR_USER_TOP,
+  USER_TOP,
 
-  /** Subdirs of \ref ZRYTHM_DIR_USER_TOP. */
-  ZRYTHM_DIR_USER_PROJECTS,
-  ZRYTHM_DIR_USER_TEMPLATES,
-  ZRYTHM_DIR_USER_THEMES,
+  /** Subdirs of \ref USER_TOP. */
+  USER_PROJECTS,
+  USER_TEMPLATES,
+  USER_THEMES,
 
   /** User CSS themes. */
-  ZRYTHM_DIR_USER_THEMES_CSS,
+  USER_THEMES_CSS,
 
   /** User icon themes. */
-  ZRYTHM_DIR_USER_THEMES_ICONS,
+  USER_THEMES_ICONS,
 
   /** User scripts. */
-  ZRYTHM_DIR_USER_SCRIPTS,
+  USER_SCRIPTS,
 
   /** Log files. */
-  ZRYTHM_DIR_USER_LOG,
+  USER_LOG,
 
   /** Profiling files. */
-  ZRYTHM_DIR_USER_PROFILING,
+  USER_PROFILING,
 
   /** Gdb backtrace files. */
-  ZRYTHM_DIR_USER_GDB,
+  USER_GDB,
 
   /** Backtraces. */
-  ZRYTHM_DIR_USER_BACKTRACE,
+  USER_BACKTRACE,
 
 } ZrythmDirType;
 

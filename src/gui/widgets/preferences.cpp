@@ -424,8 +424,8 @@ make_control (
     {
       char * user_css_theme_path = gZrythm->dir_mgr->get_dir (
         (KEY_IS ("UI", "General", "css-theme"))
-          ? ZRYTHM_DIR_USER_THEMES_CSS
-          : ZRYTHM_DIR_USER_THEMES_ICONS);
+          ? USER_THEMES_CSS
+          : USER_THEMES_ICONS);
       char ** css_themes =
         io_get_files_in_dir_as_basenames (user_css_theme_path, true, true);
       const char * default_themes[] = {
