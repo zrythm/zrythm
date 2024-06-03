@@ -234,13 +234,13 @@ array_shuffle (void * _array, size_t n, size_t size)
   char * arr = static_cast<char *> (_array);
   size_t stride = size * sizeof (char);
 
+  auto rand = PCGRand::getInstance ();
   if (n > 1)
     {
       size_t i;
       for (i = 0; i < n - 1; ++i)
         {
-          size_t rnd =
-            (size_t) ((double) pcg_rand_uf (gZrythm->rand) * (double) RAND_MAX);
+          size_t rnd = (size_t) ((double) rand->uf () * (double) RAND_MAX);
           size_t j = i + rnd / (RAND_MAX / (n - i) + 1);
 
           memcpy (tmp, arr + j * stride, size);

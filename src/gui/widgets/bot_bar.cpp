@@ -30,6 +30,7 @@
 #include "gui/widgets/spectrum_analyzer.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"

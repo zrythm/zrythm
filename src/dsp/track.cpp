@@ -3384,15 +3384,15 @@ track_get_total_bars (Track * self, int * total_bars)
  */
 bool
 track_create_with_action (
-  TrackType             type,
-  const PluginSetting * pl_setting,
-  const SupportedFile * file_descr,
-  const Position *      pos,
-  int                   index,
-  int                   num_tracks,
-  int                   disable_track_idx,
-  TracksReadyCallback   ready_cb,
-  GError **             error)
+  TrackType              type,
+  const PluginSetting *  pl_setting,
+  const FileDescriptor * file_descr,
+  const Position *       pos,
+  int                    index,
+  int                    num_tracks,
+  int                    disable_track_idx,
+  TracksReadyCallback    ready_cb,
+  GError **              error)
 {
   z_return_val_if_fail_cmp (num_tracks, >, 0, NULL);
 

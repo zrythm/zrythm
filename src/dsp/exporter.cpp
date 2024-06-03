@@ -23,6 +23,7 @@
 #include "dsp/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
@@ -556,7 +557,7 @@ export_midi (ExportSettings * info)
           midiTrackAddText (mf, 1, textTrackName, info->title);
         }
 
-      for (int i = 0; i < TRACKLIST->tracks.size (); i++)
+      for (size_t i = 0; i < TRACKLIST->tracks.size (); i++)
         {
           Track * track = TRACKLIST->tracks[i];
 
@@ -918,7 +919,7 @@ exporter_create_audio_track_after_bounce (
   /* assert exporting is finished */
   g_return_if_fail (!AUDIO_ENGINE->exporting);
 
-  SupportedFile * descr = supported_file_new_from_path (settings->file_uri);
+  FileDescriptor * descr = new FileDescriptor (settings->file_uri);
 
   /* find next track */
   Track * last_track = NULL;

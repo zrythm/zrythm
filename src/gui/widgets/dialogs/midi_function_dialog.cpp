@@ -3,6 +3,7 @@
 
 #include "gui/widgets/dialogs/midi_function_dialog.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/gtk.h"

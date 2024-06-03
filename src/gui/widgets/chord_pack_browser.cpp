@@ -16,6 +16,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"

@@ -6,9 +6,9 @@
 
 #include "actions/undoable_action.h"
 #include "dsp/port_connections_manager.h"
-#include "dsp/supported_file.h"
 #include "dsp/track.h"
 #include "gui/backend/tracklist_selections.h"
+#include "io/file_descriptor.h"
 #include "settings/plugin_settings.h"
 
 /**
@@ -235,7 +235,7 @@ tracklist_selections_action_new (
   Track *                        track,
   TrackType                      track_type,
   const PluginSetting *          pl_setting,
-  const SupportedFile *          file_descr,
+  const FileDescriptor *         file_descr,
   int                            track_pos,
   int                            lane_pos,
   const Position *               pos,
@@ -557,7 +557,7 @@ tracklist_selections_action_perform (
   Track *                        track,
   TrackType                      track_type,
   const PluginSetting *          pl_setting,
-  const SupportedFile *          file_descr,
+  const FileDescriptor *         file_descr,
   int                            track_pos,
   int                            lane_pos,
   const Position *               pos,

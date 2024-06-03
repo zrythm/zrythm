@@ -17,17 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 
-#include "dsp/supported_file.h"
 #include "gui/backend/file_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
+#include "io/file_descriptor.h"
+#include "settings/g_settings_manager.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
-#include "utils/string.h"
 #include "utils/types.h"
 #include "zrythm.h"
 
@@ -35,8 +34,8 @@
 
 #include "gtk_wrapper.h"
 
-static void
-add_volume (FileManager * self, GVolume * vol)
+void
+FileManager::add_volume (GVolume * vol)
 {
   GMount * mount = g_volume_get_mount (vol);
   char *   name = g_volume_get_name (vol);
@@ -52,14 +51,11 @@ add_volume (FileManager * self, GVolume * vol)
 
   if (path && (!mount || !g_mount_is_shadowed (mount)))
     {
-      FileBrowserLocation * fl = file_browser_location_new ();
-      fl->label = g_strdup (name);
-      fl->path = g_strdup (path);
-      fl->special_location = FileManagerSpecialLocation::FILE_MANAGER_DRIVE;
-      file_browser_location_print (fl);
-      g_ptr_array_add (self->locations, fl);
+      FileBrowserLocation fl = FileBrowserLocation (
+        name, path, FileManagerSpecialLocation::FILE_MANAGER_DRIVE);
+      locations.push_back (fl);
 
-      g_debug ("  added location: %s", fl->path);
+      g_debug ("  added location: %s", fl.path_.c_str ());
     }
 
   object_free_w_func_and_null (g_object_unref, mount);
@@ -67,27 +63,16 @@ add_volume (FileManager * self, GVolume * vol)
   g_free_and_null (path);
 }
 
-/**
- * Creates the file manager.
- */
-FileManager *
-file_manager_new (void)
+FileManager::FileManager ()
 {
-  FileManager * self = object_new (FileManager);
-
-  self->files = g_ptr_array_new_full (400, (GDestroyNotify) supported_file_free);
-  self->locations = g_ptr_array_new_with_free_func (
-    (GDestroyNotify) file_browser_location_free);
-
   /* add standard locations */
-  FileBrowserLocation * fl = file_browser_location_new ();
-  /* TRANSLATORS: Home directory */
-  fl->label = g_strdup (_ ("Home"));
-  fl->path = g_strdup (g_get_home_dir ());
-  fl->special_location = FileManagerSpecialLocation::FILE_MANAGER_HOME;
-  g_ptr_array_add (self->locations, fl);
+  FileBrowserLocation fl = FileBrowserLocation (
+    /* TRANSLATORS: Home directory */
+    _ ("Home"), g_get_home_dir (),
+    FileManagerSpecialLocation::FILE_MANAGER_HOME);
+  locations.push_back (fl);
 
-  file_manager_set_selection (self, fl, false, false);
+  set_selection (fl, false, false);
 
 #if 0
   fl = file_browser_location_new ();
@@ -119,7 +104,7 @@ file_manager_new (void)
         {
           GList *   vn = vl->next;
           GVolume * vol = G_VOLUME (vl->data);
-          add_volume (self, vol);
+          add_volume (vol);
 
           vl = vn;
         }
@@ -144,7 +129,7 @@ file_manager_new (void)
           continue;
         }
 
-      add_volume (self, vol);
+      add_volume (vol);
     }
   g_list_free_full (volumes, g_object_unref);
   g_object_unref (vol_monitor);
@@ -157,86 +142,67 @@ file_manager_new (void)
       for (size_t i = 0; bookmarks[i] != NULL; i++)
         {
           char * bookmark = bookmarks[i];
-          fl = file_browser_location_new ();
-          fl->label = g_path_get_basename (bookmark);
-          fl->path = g_strdup (bookmark);
-          fl->special_location = FileManagerSpecialLocation::FILE_MANAGER_NONE;
-          g_ptr_array_add (self->locations, fl);
+          char * basename = g_path_get_basename (bookmark);
+          fl = FileBrowserLocation (
+            basename, bookmark, FileManagerSpecialLocation::FILE_MANAGER_NONE);
+          g_free (basename);
+          locations.push_back (fl);
         }
       g_strfreev (bookmarks);
 
       /* set remembered location */
-      FileBrowserLocation * loc = file_browser_location_new ();
-      loc->path = g_settings_get_string (S_UI_FILE_BROWSER, "last-location");
-      if (strlen (loc->path) > 0 && g_file_test (loc->path, G_FILE_TEST_IS_DIR))
+      FileBrowserLocation loc = FileBrowserLocation ();
+      char *              last_location =
+        g_settings_get_string (S_UI_FILE_BROWSER, "last-location");
+      loc.path_ = last_location;
+      if (
+        loc.path_.length () > 0
+        && g_file_test (last_location, G_FILE_TEST_IS_DIR))
         {
-          file_manager_set_selection (self, loc, true, false);
+          set_selection (loc, true, false);
         }
-      file_browser_location_free (loc);
+      g_free (last_location);
     }
-
-  return self;
 }
 
-static int
-alphaBetize (const void * _a, const void * _b)
+void
+FileManager::load_files_from_location (FileBrowserLocation &location)
 {
-  SupportedFile * a = *(SupportedFile * const *) _a;
-  SupportedFile * b = *(SupportedFile * const *) _b;
-  int             r = strcasecmp (a->label, b->label);
-  if (r)
-    return r;
-  /* if equal ignoring case, use opposite of strcmp()
-   * result to get lower before upper */
-  return -strcmp (a->label, b->label); /* aka: return strcmp(b, a); */
-}
+  locations.clear ();
 
-static void
-load_files_from_location (FileManager * self, FileBrowserLocation * location)
-{
-  const gchar *   file;
-  SupportedFile * fd;
-
-  g_ptr_array_remove_range (self->files, 0, self->files->len);
-
-  GDir * dir = g_dir_open (location->path, 0, NULL);
+  GDir * dir = g_dir_open (location.path_.c_str (), 0, NULL);
   if (!dir)
     {
-      g_warning ("Could not open dir %s", location->path);
+      g_warning ("Could not open dir %s", location.path_.c_str ());
       return;
     }
 
   /* create special parent dir entry */
-  fd = object_new (SupportedFile);
-  /*g_message ("pre path %s",*/
-  /*location->path);*/
-  fd->abs_path = io_path_get_parent_dir (location->path);
-  /*g_message ("after path %s",*/
-  /*fd->abs_path);*/
-  fd->type = ZFileType::FILE_TYPE_PARENT_DIR;
-  fd->hidden = 0;
-  fd->label = g_strdup ("..");
-  if (strlen (location->path) > 1)
-    {
-      g_ptr_array_add (self->files, fd);
-    }
-  else
-    {
-      supported_file_free (fd);
-      fd = NULL;
-    }
+  {
+    char * parent_dir = io_path_get_parent_dir (location.path_.c_str ());
+    auto   fd = FileDescriptor ();
+    fd.abs_path = parent_dir;
+    g_free (parent_dir);
+    fd.type = ZFileType::FILE_TYPE_PARENT_DIR;
+    fd.hidden = false;
+    fd.label = "..";
+    if (fd.abs_path.length () > 1)
+      {
+        files.push_back (fd);
+      }
+  }
 
-  while ((file = g_dir_read_name (dir)))
+  const gchar * file;
+  while ((file = g_dir_read_name (dir)) != nullptr)
     {
-      fd = object_new (SupportedFile);
-      /*fd->dnd_type = UI_DND_TYPE_FILE_DESCRIPTOR;*/
+      FileDescriptor fd = FileDescriptor ();
 
       /* set absolute path & label */
       char * absolute_path = g_strdup_printf (
-        "%s%s%s", strlen (location->path) == 1 ? "" : location->path,
+        "%s%s%s", location.path_.length () == 1 ? "" : location.path_.c_str (),
         G_DIR_SEPARATOR_S, file);
-      fd->abs_path = absolute_path;
-      fd->label = g_strdup (file);
+      fd.abs_path = absolute_path;
+      fd.label = file;
 
       GError *    err = NULL;
       GFile *     gfile = g_file_new_for_path (absolute_path);
@@ -249,7 +215,7 @@ load_files_from_location (FileManager * self, FileBrowserLocation * location)
         }
       else
         {
-          fd->hidden = g_file_info_get_is_hidden (info);
+          fd.hidden = g_file_info_get_is_hidden (info);
           g_object_unref (info);
         }
       g_object_unref (gfile);
@@ -257,94 +223,76 @@ load_files_from_location (FileManager * self, FileBrowserLocation * location)
       /* set type */
       if (g_file_test (absolute_path, G_FILE_TEST_IS_DIR))
         {
-          fd->type = ZFileType::FILE_TYPE_DIR;
+          fd.type = ZFileType::FILE_TYPE_DIR;
         }
       else
         {
-          fd->type = supported_file_get_type (file);
+          fd.type = FileDescriptor::get_type_from_path (file);
         }
 
       /* force hidden if starts with . */
       if (file[0] == '.')
-        fd->hidden = true;
+        fd.hidden = true;
 
-      g_ptr_array_add (self->files, fd);
-      /*g_message ("File found: %s (%d - %d)",*/
-      /*fd->abs_path,*/
-      /*fd->type,*/
-      /*fd->hidden);*/
+      /* add to list */
+      files.push_back (fd);
+
+      g_free (absolute_path);
     }
   g_dir_close (dir);
 
-  g_ptr_array_sort (self->files, (GCompareFunc) alphaBetize);
-  g_message ("Total files: %d", self->files->len);
+  /* sort alphabetically */
+  std::sort (
+    files.begin (), files.end (),
+    [] (const FileDescriptor &a, const FileDescriptor &b) {
+      return a.label < b.label;
+    });
+  g_message ("Total files: %zu", files.size ());
 }
 
-/**
- * Loads the files under the current selection.
- */
 void
-file_manager_load_files (FileManager * self)
+FileManager::load_files ()
 {
-  if (self->selection)
+  if (selection != nullptr)
     {
-      load_files_from_location (self, (FileBrowserLocation *) self->selection);
+      load_files_from_location (*selection);
     }
   else
     {
-      g_ptr_array_remove_range (self->files, 0, self->files->len);
+      locations.clear ();
     }
 }
 
-/**
- * @param save_to_settings Whether to save this
- *   location to GSettings.
- */
 void
-file_manager_set_selection (
-  FileManager *         self,
-  FileBrowserLocation * sel,
-  bool                  load_files,
-  bool                  save_to_settings)
+FileManager::set_selection (
+  FileBrowserLocation &sel,
+  bool                 _load_files,
+  bool                 save_to_settings)
 {
-  g_debug ("setting selection to %s", sel->path);
+  g_debug ("setting selection to %s", sel.path_.c_str ());
 
-  if (self->selection)
-    file_browser_location_free (self->selection);
-
-  self->selection = file_browser_location_clone (sel);
-  if (load_files)
+  selection.reset (new FileBrowserLocation (sel));
+  if (_load_files)
     {
-      file_manager_load_files (self);
+      load_files ();
     }
   if (save_to_settings)
     {
       g_settings_set_string (
-        S_UI_FILE_BROWSER, "last-location", self->selection->path);
+        S_UI_FILE_BROWSER, "last-location", selection->path_.c_str ());
     }
 }
 
-static bool
-file_browser_location_equal_func (
-  const FileBrowserLocation * a,
-  const FileBrowserLocation * b)
-{
-  bool ret = string_is_equal (a->path, b->path);
-  return ret;
-}
-
-static void
-save_locations (FileManager * self)
+void
+FileManager::save_locations ()
 {
   GStrvBuilder * strv_builder = g_strv_builder_new ();
-  for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
+  for (auto &loc : locations)
     {
-      FileBrowserLocation * loc =
-        (FileBrowserLocation *) g_ptr_array_index (FILE_MANAGER->locations, i);
-      if (loc->special_location > FileManagerSpecialLocation::FILE_MANAGER_NONE)
+      if (loc.special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
         continue;
 
-      g_strv_builder_add (strv_builder, loc->path);
+      g_strv_builder_add (strv_builder, loc.path_.c_str ());
     }
 
   char ** strings = g_strv_builder_end (strv_builder);
@@ -353,50 +301,37 @@ save_locations (FileManager * self)
   g_strfreev (strings);
 }
 
-/**
- * Adds a location and saves the settings.
- */
 void
-file_manager_add_location_and_save (FileManager * self, const char * abs_path)
+FileManager::add_location_and_save (const char * abs_path)
 {
-  FileBrowserLocation * loc = file_browser_location_new ();
-  loc->path = g_strdup (abs_path);
-  loc->label = g_path_get_basename (loc->path);
+  auto loc = FileBrowserLocation ();
+  loc.path_ = abs_path;
+  char * tmp = g_path_get_basename (abs_path);
+  loc.label_ = tmp;
+  g_free (tmp);
 
-  g_ptr_array_add (self->locations, loc);
-
-  save_locations (self);
+  locations.push_back (loc);
+  save_locations ();
 }
 
-/**
- * Removes the given location (bookmark) from the
- * saved locations.
- *
- * @param skip_if_standard Skip removal if the
- *   given location is a standard location.
- */
 void
-file_manager_remove_location_and_save (
-  FileManager * self,
-  const char *  location,
-  bool          skip_if_standard)
+FileManager::remove_location_and_save (
+  const char * location,
+  bool         skip_if_standard)
 {
-  FileBrowserLocation * loc = file_browser_location_new ();
-  loc->path = g_strdup (location);
+  auto it = std::find_if (locations.begin (), locations.end (), [&] (auto &loc) {
+    return loc.path_ == location;
+  });
 
-  unsigned int idx;
-  bool         ret = g_ptr_array_find_with_equal_func (
-    self->locations, loc, (GEqualFunc) file_browser_location_equal_func, &idx);
-  if (ret)
+  if (it != locations.end ())
     {
-      FileBrowserLocation * existing_loc =
-        (FileBrowserLocation *) g_ptr_array_index (self->locations, idx);
+      const auto &existing_loc = *it;
       if (
         !skip_if_standard
-        || existing_loc->special_location
+        || existing_loc.special_location_
              == FileManagerSpecialLocation::FILE_MANAGER_NONE)
         {
-          g_ptr_array_remove_index (self->locations, idx);
+          locations.erase (it);
         }
     }
   else
@@ -404,49 +339,19 @@ file_manager_remove_location_and_save (
       g_warning ("%s not found", location);
     }
 
-  file_browser_location_free (loc);
-
-  save_locations (self);
-}
-
-/**
- * Frees the file manager.
- */
-void
-file_manager_free (FileManager * self)
-{
-  g_ptr_array_free (self->files, true);
-  g_ptr_array_free (self->locations, true);
-
-  object_zero_and_free (self);
-}
-
-FileBrowserLocation *
-file_browser_location_new (void)
-{
-  return object_new (FileBrowserLocation);
-}
-
-FileBrowserLocation *
-file_browser_location_clone (FileBrowserLocation * loc)
-{
-  FileBrowserLocation * self = file_browser_location_new ();
-  self->path = g_strdup (loc->path);
-  self->label = g_strdup (loc->label);
-
-  return self;
+  save_locations ();
 }
 
 void
-file_browser_location_print (const FileBrowserLocation * loc)
+FileBrowserLocation::print () const
 {
   g_message (
-    "[FileBrowserLocation] %s: '%s', special: %s", loc->label, loc->path,
-    ENUM_NAME (loc->special_location));
+    "[FileBrowserLocation] %s: '%s', special: %s", label_.c_str (),
+    path_.c_str (), ENUM_NAME (special_location_));
 }
 
 GMenuModel *
-file_browser_location_generate_context_menu (const FileBrowserLocation * self)
+FileBrowserLocation::generate_context_menu () const
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -456,12 +361,4 @@ file_browser_location_generate_context_menu (const FileBrowserLocation * self)
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
-}
-
-void
-file_browser_location_free (FileBrowserLocation * loc)
-{
-  g_free_and_null (loc->label);
-  g_free_and_null (loc->path);
-  object_zero_and_free (loc);
 }

@@ -3,6 +3,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 
 #include "tests/helpers/zrythm_helper.h"
@@ -13,7 +14,7 @@ test_append_to_strv (void)
   test_helper_zrythm_init ();
 
   GSettings settings;
-  settings_append_to_strv (&settings, "test-key", "test-val", false);
+  GSettingsManager::append_to_strv (&settings, "test-key", "test-val", false);
 
   test_helper_zrythm_cleanup ();
 }

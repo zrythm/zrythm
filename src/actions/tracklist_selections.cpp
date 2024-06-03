@@ -6,14 +6,15 @@
 #include "dsp/foldable_track.h"
 #include "dsp/group_target_track.h"
 #include "dsp/router.h"
-#include "dsp/supported_file.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "io/file_descriptor.h"
 #include "io/midi_file.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
@@ -145,7 +146,7 @@ tracklist_selections_action_new (
   Track *                        track,
   TrackType                      track_type,
   const PluginSetting *          pl_setting,
-  const SupportedFile *          file_descr,
+  const FileDescriptor *         file_descr,
   int                            track_pos,
   int                            lane_pos,
   const Position *               pos,
@@ -252,7 +253,8 @@ tracklist_selections_action_new (
   /* calculate number of tracks */
   if (file_descr && track_type == TrackType::TRACK_TYPE_MIDI)
     {
-      self->num_tracks = midi_file_get_num_tracks (file_descr->abs_path, true);
+      self->num_tracks =
+        midi_file_get_num_tracks (file_descr->abs_path.c_str (), true);
     }
   else
     {
@@ -270,11 +272,11 @@ tracklist_selections_action_new (
           uint8_t * data = NULL;
           size_t    length = 0;
           if (!g_file_get_contents (
-                file_descr->abs_path, (gchar **) &data, &length, &err))
+                file_descr->abs_path.c_str (), (gchar **) &data, &length, &err))
             {
               PROPAGATE_PREFIXED_ERROR (
                 error, err, _ ("Failed getting contents for %s"),
-                file_descr->abs_path);
+                file_descr->abs_path.c_str ());
               return NULL;
             }
           self->base64_midi = g_base64_encode (data, length);
@@ -283,12 +285,12 @@ tracklist_selections_action_new (
         {
           GError *    err = NULL;
           AudioClip * clip =
-            audio_clip_new_from_file (file_descr->abs_path, &err);
+            audio_clip_new_from_file (file_descr->abs_path.c_str (), &err);
           if (!clip)
             {
               PROPAGATE_PREFIXED_ERROR (
                 error, err, _ ("Failed creating audio clip from file at %s"),
-                file_descr->abs_path);
+                file_descr->abs_path.c_str ());
               return NULL;
             }
           self->pool_id = audio_pool_add_clip (AUDIO_POOL, clip);
@@ -298,7 +300,7 @@ tracklist_selections_action_new (
           g_return_val_if_reached (NULL);
         }
 
-      self->file_basename = g_path_get_basename (file_descr->abs_path);
+      self->file_basename = g_path_get_basename (file_descr->abs_path.c_str ());
     }
 
   bool need_full_selections = true;
@@ -602,7 +604,7 @@ tracklist_selections_action_perform (
   Track *                        track,
   TrackType                      track_type,
   const PluginSetting *          pl_setting,
-  const SupportedFile *          file_descr,
+  const FileDescriptor *         file_descr,
   int                            track_pos,
   int                            lane_pos,
   const Position *               pos,
@@ -893,7 +895,8 @@ do_or_undo_create_or_delete (
           if (self->ival_after > -1)
             {
               g_return_val_if_fail (
-                self->ival_after < TRACKLIST->tracks.size (), -1);
+                self->ival_after < static_cast<int> (TRACKLIST->tracks.size ()),
+                -1);
               Track * tr_to_disable = TRACKLIST->tracks[self->ival_after];
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_disable), -1);
               track_set_enabled (
@@ -1051,7 +1054,8 @@ do_or_undo_create_or_delete (
           if (self->ival_after > -1)
             {
               g_return_val_if_fail (
-                self->ival_after < TRACKLIST->tracks.size (), -1);
+                self->ival_after < static_cast<int> (TRACKLIST->tracks.size ()),
+                -1);
               Track * tr_to_enable = TRACKLIST->tracks[self->ival_after];
               g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_enable), -1);
               track_set_enabled (

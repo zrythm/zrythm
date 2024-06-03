@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_stack.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/mem.h"

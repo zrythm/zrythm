@@ -28,6 +28,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/color.h"

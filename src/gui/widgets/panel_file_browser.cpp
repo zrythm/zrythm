@@ -11,27 +11,16 @@
 #include "dsp/tracklist.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/file_auditioner_controls.h"
 #include "gui/widgets/file_browser_filters.h"
 #include "gui/widgets/item_factory.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/mixer.h"
 #include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/right_dock_edge.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/tracklist.h"
 #include "plugins/plugin.h"
-#include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -57,17 +46,18 @@ create_model_for_locations (PanelFileBrowserWidget * self)
   GListStore * list_store =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
-    {
-      FileBrowserLocation * loc = static_cast<FileBrowserLocation *> (
-        g_ptr_array_index (FILE_MANAGER->locations, i));
-
-      /* add row to model */
+  std::for_each (
+    gZrythm->get_file_manager ().locations.begin (),
+    gZrythm->get_file_manager ().locations.end (), [list_store] (auto &loc) {
       WrappedObjectWithChangeSignal * wobj =
-        wrapped_object_with_change_signal_new (
-          loc, WrappedObjectType::WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION);
+        wrapped_object_with_change_signal_new_with_free_func (
+          new FileBrowserLocation (loc),
+          WrappedObjectType::WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION,
+          [] (void * obj) {
+            delete reinterpret_cast<FileBrowserLocation *> (obj);
+          });
       g_list_store_append (list_store, wobj);
-    }
+    });
 
   GtkSingleSelection * sel =
     gtk_single_selection_new (G_LIST_MODEL (list_store));
@@ -91,7 +81,7 @@ files_filter_func (GObject * item, gpointer user_data)
   PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
+  FileDescriptor * descr = (FileDescriptor *) wrapped_obj->obj;
 
   bool show_audio =
     gtk_toggle_button_get_active (self->filters_toolbar->toggle_audio);
@@ -106,7 +96,7 @@ files_filter_func (GObject * item, gpointer user_data)
     gtk_editable_get_text (GTK_EDITABLE (self->file_search_entry));
   if (
     text && strlen (text) > 0
-    && !string_contains_substr_case_insensitive (descr->label, text))
+    && !string_contains_substr_case_insensitive (descr->label.c_str (), text))
     {
       return false;
     }
@@ -193,17 +183,17 @@ create_model_for_files (PanelFileBrowserWidget * self)
   /* file name, index */
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  for (size_t i = 0; i < FILE_MANAGER->files->len; i++)
-    {
-      SupportedFile * descr =
-        (SupportedFile *) g_ptr_array_index (FILE_MANAGER->files, i);
-
-      WrappedObjectWithChangeSignal * wrapped_descr =
-        wrapped_object_with_change_signal_new (
-          descr, WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE);
-
-      g_list_store_append (store, wrapped_descr);
-    }
+  /* add all files */
+  std::for_each (
+    gZrythm->get_file_manager ().files.begin (),
+    gZrythm->get_file_manager ().files.end (), [store] (auto &descr) {
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new_with_free_func (
+          new FileDescriptor (descr),
+          WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE,
+          [] (void * obj) { delete reinterpret_cast<FileDescriptor *> (obj); });
+      g_list_store_append (store, wobj);
+    });
 
   self->files_filter =
     gtk_custom_filter_new ((GtkCustomFilterFunc) files_filter_func, self, NULL);
@@ -237,23 +227,23 @@ on_files_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
+  auto descr = (FileDescriptor *) wrapped_obj->obj;
   self->cur_file = descr;
 
   g_ptr_array_remove_range (self->selected_files, 0, self->selected_files->len);
   g_ptr_array_add (self->selected_files, descr);
 
   /* return if file does not exist */
-  if (!g_file_test (descr->abs_path, G_FILE_TEST_EXISTS))
+  if (!g_file_test (descr->abs_path.c_str (), G_FILE_TEST_EXISTS))
     return;
 
-  char * label = supported_file_get_info_text_for_label (descr);
-  g_message ("selected file: %s", descr->abs_path);
+  char * label = descr->get_info_text_for_label ();
+  g_message ("selected file: %s", descr->abs_path.c_str ());
   update_file_info_label (self, label);
 
   if (
     g_settings_get_boolean (S_UI_FILE_BROWSER, "autoplay")
-    && supported_file_should_autoplay (descr))
+    && descr->should_autoplay ())
     {
       sample_processor_queue_file (SAMPLE_PROCESSOR, descr);
     }
@@ -300,7 +290,7 @@ on_bookmark_row_activated (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   FileBrowserLocation * loc = (FileBrowserLocation *) wrapped_obj->obj;
 
-  file_manager_set_selection (FILE_MANAGER, loc, true, true);
+  gZrythm->get_file_manager ().set_selection (*loc, true, true);
   self->files_selection_model =
     GTK_SINGLE_SELECTION (create_model_for_files (self));
   files_list_view_setup (
@@ -332,24 +322,25 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
+  FileDescriptor * descr = (FileDescriptor *) wrapped_obj->obj;
 
   if (
     descr->type == ZFileType::FILE_TYPE_DIR
     || descr->type == ZFileType::FILE_TYPE_PARENT_DIR)
     {
-      /* FIXME free unnecessary stuff */
-      FileBrowserLocation * loc = object_new (FileBrowserLocation);
-      loc->path = descr->abs_path;
-      loc->label = g_path_get_basename (loc->path);
-      file_manager_set_selection (FILE_MANAGER, loc, true, true);
+      auto loc = FileBrowserLocation ();
+      loc.path_ = descr->abs_path;
+      char * basename = g_path_get_basename (loc.path_.c_str ());
+      loc.label_ = basename;
+      g_free (basename);
+      gZrythm->get_file_manager ().set_selection (loc, true, true);
       self->files_selection_model =
         GTK_SINGLE_SELECTION (create_model_for_files (self));
       files_list_view_setup (
         self, self->files_list_view,
         GTK_SELECTION_MODEL (self->files_selection_model));
     }
-  else if (supported_file_type_is_supported (descr->type))
+  else if (FileDescriptor::is_type_supported (descr->type))
     {
       if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
         return;

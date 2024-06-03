@@ -13,6 +13,7 @@
 #include "gui/widgets/volume.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -39,7 +40,7 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
 
       if (btn == self->toggle_audio)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_FILE_BROWSER, "filter",
             ENUM_VALUE_TO_INT (FileBrowserFilterType::FILE_BROWSER_FILTER_AUDIO));
           gtk_toggle_button_set_active (self->toggle_midi, 0);
@@ -47,7 +48,7 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
         }
       else if (btn == self->toggle_midi)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_FILE_BROWSER, "filter",
             ENUM_VALUE_TO_INT (FileBrowserFilterType::FILE_BROWSER_FILTER_MIDI));
           gtk_toggle_button_set_active (self->toggle_audio, 0);
@@ -55,7 +56,7 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
         }
       else if (btn == self->toggle_presets)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_FILE_BROWSER, "filter",
             ENUM_VALUE_TO_INT (
               FileBrowserFilterType::FILE_BROWSER_FILTER_PRESET));
@@ -72,7 +73,7 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
     }
   else
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_FILE_BROWSER, "filter",
         ENUM_VALUE_TO_INT (FileBrowserFilterType::FILE_BROWSER_FILTER_NONE));
     }

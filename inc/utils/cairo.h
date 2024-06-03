@@ -14,8 +14,6 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct Dictionary Dictionary;
-
 /**
  * @addtogroup utils
  *
@@ -23,48 +21,14 @@ typedef struct Dictionary Dictionary;
  */
 
 /**
- * Caches for cairo.
- */
-typedef struct CairoCaches
-{
-  /**
-   * Icon surface dictionary:
-   *   icon name: cairo_surface_t
-   */
-  Dictionary * icon_surface_dict;
-} CairoCaches;
-
-#define CAIRO_CACHES (gZrythm->cairo_caches)
-
-/**
  * Default font for drawing pango text.
  */
 #define Z_CAIRO_FONT "Bold 9"
 
 /**
- * Padding to leave from the top/left edges when
- * drawing text.
+ * Padding to leave from the top/left edges when drawing text.
  */
 #define Z_CAIRO_TEXT_PADDING 2
-
-#if 0
-void
-z_cairo_draw_selection_with_color (
-  cairo_t * cr,
-  GdkRGBA * color,
-  double    start_x,
-  double    start_y,
-  double    offset_x,
-  double    offset_y);
-
-void
-z_cairo_draw_selection (
-  cairo_t * cr,
-  double    start_x,
-  double    start_y,
-  double    offset_x,
-  double    offset_y);
-#endif
 
 void
 z_cairo_draw_horizontal_line (
@@ -170,12 +134,6 @@ z_cairo_diamond (cairo_t * cr, double x, double y, double width, double height)
 }
 
 /**
- * Returns a surface for the icon name.
- */
-cairo_surface_t *
-z_cairo_get_surface_from_icon_name (const char * icon_name, int size, int scale);
-
-/**
  * Creates a PangoLayout to be cached in widgets
  * based on the given settings.
  */
@@ -202,31 +160,6 @@ z_cairo_create_pango_layout_from_description (
  */
 PangoLayout *
 z_cairo_create_default_pango_layout (GtkWidget * widget);
-
-/**
- * Resets a surface and cairo_t with a new surface
- * and cairo_t based on the given rectangle and
- * cairo_t.
- *
- * To be used inside draw calls of widgets that
- * use caching.
- *
- * @param width New surface width.
- * @param height New surface height.
- */
-void
-z_cairo_reset_caches (
-  cairo_t **         cr_cache,
-  cairo_surface_t ** surface_cache,
-  int                width,
-  int                height,
-  cairo_t *          new_cr);
-
-CairoCaches *
-z_cairo_caches_new (void);
-
-void
-z_cairo_caches_free (CairoCaches * self);
 
 /**
  * @}

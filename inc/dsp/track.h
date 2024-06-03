@@ -39,7 +39,7 @@ typedef struct MusicalScale         MusicalScale;
 typedef struct Marker               Marker;
 typedef struct PluginDescriptor     PluginDescriptor;
 struct Tracklist;
-typedef struct SupportedFile       SupportedFile;
+struct FileDescriptor;
 typedef struct TracklistSelections TracklistSelections;
 enum class PassthroughProcessorType;
 enum class FaderType;
@@ -1440,15 +1440,15 @@ typedef void (*TracksReadyCallback) (const FileImportInfo *, const GError *);
  */
 bool
 track_create_with_action (
-  TrackType             type,
-  const PluginSetting * pl_setting,
-  const SupportedFile * file_descr,
-  const Position *      pos,
-  int                   index,
-  int                   num_tracks,
-  int                   disable_track_idx,
-  TracksReadyCallback   ready_cb,
-  GError **             error);
+  TrackType              type,
+  const PluginSetting *  pl_setting,
+  const FileDescriptor * file_descr,
+  const Position *       pos,
+  int                    index,
+  int                    num_tracks,
+  int                    disable_track_idx,
+  TracksReadyCallback    ready_cb,
+  GError **              error);
 
 Track *
 track_create_empty_at_idx_with_action (TrackType type, int index, GError ** error);

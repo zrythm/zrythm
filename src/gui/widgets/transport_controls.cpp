@@ -9,6 +9,7 @@
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"

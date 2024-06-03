@@ -23,6 +23,7 @@
 #include "gui/widgets/center_dock.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/math.h"

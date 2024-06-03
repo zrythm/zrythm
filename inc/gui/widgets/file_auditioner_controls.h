@@ -15,7 +15,7 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/supported_file.h"
+#include "io/file_descriptor.h"
 
 #include "gtk_wrapper.h"
 

@@ -30,9 +30,9 @@ test_queue_file (void)
       processed_frames += 256;
     }
 
-  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  sample_processor_queue_file (SAMPLE_PROCESSOR, file);
+  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  FileDescriptor file = FileDescriptor (filepath);
+  sample_processor_queue_file (SAMPLE_PROCESSOR, &file);
 
   g_assert_cmpint (SAMPLE_PROCESSOR->playhead.frames, ==, 0);
 
@@ -66,7 +66,6 @@ test_queue_file (void)
     &SAMPLE_PROCESSOR->fader->stereo_out->get_l ().buf_[0],
     &MONITOR_FADER->stereo_out->get_l ().buf_[0], 256, 0.0000001f));
 
-  supported_file_free (file);
   g_free (filepath);
 
   test_helper_zrythm_cleanup ();
@@ -87,14 +86,14 @@ test_queue_midi_and_roll_transport (void)
 
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "1_track_with_data.mid", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  FileDescriptor file = FileDescriptor (filepath);
   g_free (filepath);
 
   transport_request_roll (TRANSPORT, true);
 
   g_message ("=============== queueing file =============");
 
-  sample_processor_queue_file (SAMPLE_PROCESSOR, file);
+  sample_processor_queue_file (SAMPLE_PROCESSOR, &file);
   g_assert_cmpint (SAMPLE_PROCESSOR->tracklist->tracks.size (), ==, 3);
 
   g_message ("============= starting process ===========");
@@ -105,8 +104,6 @@ test_queue_midi_and_roll_transport (void)
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
   g_message ("============= done process ===========");
-
-  supported_file_free (file);
 
   test_helper_zrythm_cleanup ();
 #endif

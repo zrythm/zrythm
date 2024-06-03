@@ -5,6 +5,7 @@
 
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/main_window.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/string.h"
 #include "zrythm_app.h"

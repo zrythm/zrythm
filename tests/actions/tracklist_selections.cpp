@@ -29,12 +29,12 @@
 static void
 test_num_tracks_with_file (const char * filepath, const int num_tracks)
 {
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  FileDescriptor file = FileDescriptor (filepath);
 
   int num_tracks_before = TRACKLIST->tracks.size ();
 
   bool ret = track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD, num_tracks_before, 1, -1,
     NULL, NULL);
   g_assert_true (ret);
 
@@ -2658,11 +2658,11 @@ test_move_track_w_clip_editor_region (void)
 
   char * midi_file = g_build_filename (
     TESTS_SRCDIR, "1_empty_track_1_track_with_data.mid", NULL);
-  SupportedFile * file = supported_file_new_from_path (midi_file);
+  FileDescriptor file = FileDescriptor (midi_file);
   g_free (midi_file);
   int  num_tracks_before = TRACKLIST->tracks.size ();
   bool success = track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD, num_tracks_before, 1, -1,
     NULL, NULL);
   g_assert_true (success);
   Track * first_track = TRACKLIST->tracks[num_tracks_before];

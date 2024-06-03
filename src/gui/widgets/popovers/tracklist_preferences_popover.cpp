@@ -7,6 +7,7 @@
 #include "dsp/tracklist.h"
 #include "gui/widgets/popovers/tracklist_preferences_popover.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

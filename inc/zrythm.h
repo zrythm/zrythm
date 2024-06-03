@@ -14,6 +14,10 @@
 
 #include <memory>
 
+#include "gui/backend/file_manager.h"
+#include "utils/string.h"
+#include "utils/symap.h"
+
 #include <gio/gio.h>
 #include <glib.h>
 
@@ -21,17 +25,12 @@
 #include "zix/sem.h"
 
 struct Project;
-typedef struct Symap                  Symap;
 typedef struct RecordingManager       RecordingManager;
 typedef struct EventManager           EventManager;
 typedef struct PluginManager          PluginManager;
-typedef struct FileManager            FileManager;
 typedef struct ChordPresetPackManager ChordPresetPackManager;
 class Settings;
-typedef struct Log         Log;
-typedef struct CairoCaches CairoCaches;
-typedef struct PCGRand     PCGRand;
-class StringArray;
+typedef struct Log Log;
 
 /**
  * @addtogroup general
@@ -312,8 +311,10 @@ public:
    */
   void init_templates ();
 
+  FileManager &get_file_manager () { return file_manager; }
+
   /** argv[0]. */
-  const char * exe_path_ = nullptr;
+  std::string exe_path_;
 
   /**
    * Manages plugins (loading, instantiating, etc.)
@@ -335,17 +336,17 @@ public:
   Project * project = nullptr;
 
   /** +1 to ensure last element is NULL in case full. */
-  std::unique_ptr<StringArray> recent_projects_;
+  StringArray recent_projects_;
 
   /** NULL terminated array of project template absolute paths. */
-  char ** templates = nullptr;
+  StringArray templates_;
 
   /**
    * Demo project template used when running for the first time.
    *
    * This is a copy of one of the strings in Zrythm.templates.
    */
-  char * demo_template = nullptr;
+  std::string demo_template;
 
   /** Whether the open file is a template to be used to create a new project
    * from. */
@@ -355,16 +356,14 @@ public:
   bool creating_project = false;
 
   /** Path to create a project in, including its title. */
-  char * create_project_path = nullptr;
+  std::string create_project_path;
 
   /**
-   * Filename to open passed through the command
-   * line.
+   * Filename to open passed through the command line.
    *
-   * Used only when a filename is passed.
-   * E.g., zrytm myproject.xml
+   * Used only when a filename is passed, eg, zrytm myproject.zpj
    */
-  char * open_filename = nullptr;
+  std::string open_filename;
 
   EventManager * event_manager = nullptr;
 
@@ -372,7 +371,7 @@ public:
   RecordingManager * recording_manager = nullptr;
 
   /** File manager. */
-  FileManager * file_manager = nullptr;
+  FileManager file_manager;
 
   /** Chord preset pack manager. */
   ChordPresetPackManager * chord_preset_pack_manager = nullptr;
@@ -380,15 +379,7 @@ public:
   /**
    * String interner for internal things.
    */
-  Symap * symap = nullptr;
-
-  /**
-   * String interner for error domains.
-   */
-  Symap * error_domain_symap = nullptr;
-
-  /** Random number generator. */
-  PCGRand * rand = nullptr;
+  Symap symap;
 
   /**
    * In debug mode or not (determined by GSetting).
@@ -406,13 +397,8 @@ public:
   /** Whether to use optimized DSP when available. */
   bool use_optimized_dsp = false;
 
-  CairoCaches * cairo_caches = nullptr;
-
   /** Undo stack length, used during tests. */
   int undo_stack_len = 0;
-
-  /** Cached version (without 'v'). */
-  char * version = nullptr;
 
   /**
    * Whether to open a newer backup if found.

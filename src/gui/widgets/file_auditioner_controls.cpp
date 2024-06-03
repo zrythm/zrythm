@@ -17,6 +17,7 @@
 #include "io/serialization/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -45,7 +46,7 @@ on_play_clicked (GtkButton * toolbutton, FileAuditionerControlsWidget * self)
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
       sample_processor_queue_file (
-        SAMPLE_PROCESSOR, (SupportedFile *) wrapped_obj->obj);
+        SAMPLE_PROCESSOR, (FileDescriptor *) wrapped_obj->obj);
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET:
       sample_processor_queue_chord_preset (

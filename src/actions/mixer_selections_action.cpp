@@ -12,6 +12,7 @@
 #include "gui/backend/mixer_selections.h"
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"

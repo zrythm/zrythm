@@ -59,6 +59,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/right_dock_edge.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/io.h"

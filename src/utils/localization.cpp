@@ -11,6 +11,7 @@
 #include "zrythm-config.h"
 
 #include "gui/widgets/main_window.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/io.h"
 #include "utils/localization.h"

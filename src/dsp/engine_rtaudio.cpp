@@ -8,6 +8,7 @@
 #  include "dsp/engine.h"
 #  include "dsp/engine_rtaudio.h"
 #  include "project.h"
+#  include "settings/g_settings_manager.h"
 #  include "settings/settings.h"
 #  include "utils/dsp.h"
 #  include "utils/string.h"

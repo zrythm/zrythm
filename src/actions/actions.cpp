@@ -97,6 +97,7 @@
 #include "project.h"
 #include "project/project_init_flow_manager.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/dialogs.h"
@@ -3645,13 +3646,13 @@ DEFINE_SIMPLE (activate_port_connection_remove)
 
 DEFINE_SIMPLE (activate_panel_file_browser_add_bookmark)
 {
-  gsize           size;
-  const char *    str = g_variant_get_string (variant, &size);
-  SupportedFile * sfile = NULL;
+  gsize            size;
+  const char *     str = g_variant_get_string (variant, &size);
+  FileDescriptor * sfile = NULL;
   sscanf (str, "%p", &sfile);
   g_return_if_fail (sfile != NULL);
 
-  file_manager_add_location_and_save (FILE_MANAGER, sfile->abs_path);
+  gZrythm->get_file_manager ().add_location_and_save (sfile->abs_path.c_str ());
 
   EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
 }
@@ -3664,7 +3665,7 @@ on_bookmark_delete_response (
 {
   if (string_is_equal (response, "delete"))
     {
-      file_manager_remove_location_and_save (FILE_MANAGER, path, true);
+      gZrythm->get_file_manager ().remove_location_and_save (path, true);
 
       EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_DELETED, NULL);
     }
@@ -3676,7 +3677,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
     panel_file_browser_widget_get_selected_bookmark (MW_PANEL_FILE_BROWSER);
   g_return_if_fail (loc);
 
-  if (loc->special_location > FileManagerSpecialLocation::FILE_MANAGER_NONE)
+  if (loc->special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
     {
       ui_show_error_message (
         _ ("Cannot Delete Bookmark"), _ ("Cannot delete standard bookmark"));
@@ -3695,7 +3696,8 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
     ADW_MESSAGE_DIALOG (dialog), "cancel");
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
   g_signal_connect (
-    dialog, "response", G_CALLBACK (on_bookmark_delete_response), loc->path);
+    dialog, "response", G_CALLBACK (on_bookmark_delete_response),
+    (gpointer) (loc->path_.c_str ()));
   gtk_window_present (GTK_WINDOW (dialog));
 }
 

@@ -436,10 +436,10 @@ test_edit_midi_direct_out_to_ins (void)
   g_assert_nonnull (midi_files);
 
   /* create the MIDI track from a MIDI file */
-  SupportedFile * file = supported_file_new_from_path (midi_files[0]);
+  FileDescriptor file = FileDescriptor (midi_files[0]);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * midi_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   g_strfreev (midi_files);
@@ -560,10 +560,10 @@ test_rename_midi_track_with_events (void)
   char ** midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
   g_assert_nonnull (midi_files);
-  SupportedFile * file = supported_file_new_from_path (midi_files[0]);
+  FileDescriptor file = FileDescriptor (midi_files[0]);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);

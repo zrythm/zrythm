@@ -29,10 +29,10 @@ test_fill_stereo_ports (void)
   /* create audio track with region */
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (filepath);
+  int            num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
 
   Track *     track = TRACKLIST->tracks[num_tracks_before];
@@ -83,10 +83,10 @@ test_change_samplerate (void)
   /* create audio track with region */
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (filepath);
+  int            num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
 
   /*Track * track =*/
@@ -130,10 +130,10 @@ test_load_project_with_selected_audio_region (void)
   /* create audio track with region */
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (filepath);
+  int            num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
 
   /* select region */
@@ -165,11 +165,11 @@ test_load_project_with_different_sample_rate (void)
       /* create audio track with region */
       char * filepath =
         g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-      SupportedFile * file = supported_file_new_from_path (filepath);
-      int             num_tracks_before = TRACKLIST->tracks.size ();
+      FileDescriptor file = FileDescriptor (filepath);
+      int            num_tracks_before = TRACKLIST->tracks.size ();
       track_create_with_action (
-        TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
-        NULL, NULL);
+        TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1,
+        -1, NULL, NULL);
 
       Track * audio_track = TRACKLIST->tracks[num_tracks_before];
       arranger_object_print (
@@ -205,13 +205,12 @@ test_detect_bpm (void)
   /* create audio track with region */
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (filepath);
+  int            num_tracks_before = TRACKLIST->tracks.size ();
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1, -1,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
     NULL, NULL);
   Track * track = tracklist_get_track (TRACKLIST, num_tracks_before);
-  supported_file_free (file);
 
   /* select region */
   Region * r = track->lanes[0]->regions[0];

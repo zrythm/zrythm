@@ -42,6 +42,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/debug.h"

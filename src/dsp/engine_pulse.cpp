@@ -17,6 +17,7 @@
 #  include "dsp/transport.h"
 #  include "gui/widgets/main_window.h"
 #  include "project.h"
+#  include "settings/g_settings_manager.h"
 #  include "settings/settings.h"
 #  include "utils/ui.h"
 #  include "zrythm_app.h"

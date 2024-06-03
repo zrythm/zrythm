@@ -47,6 +47,7 @@
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "schemas/project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"

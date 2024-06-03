@@ -438,10 +438,11 @@ test_move_audio_region_and_lower_bpm (void)
   /* create audio track with region */
   Position pos;
   position_init (&pos);
-  int             track_pos = TRACKLIST->tracks.size ();
-  SupportedFile * file = supported_file_new_from_path (audio_file_path);
+  int            track_pos = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (audio_file_path);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, track_pos, 1, -1, NULL,
+    NULL);
   Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
   /* move the region */
@@ -499,10 +500,11 @@ test_move_audio_region_and_lower_samplerate (void)
   /* create audio track with region */
   Position pos;
   position_init (&pos);
-  int             track_pos = TRACKLIST->tracks.size ();
-  SupportedFile * file = supported_file_new_from_path (audio_file_path);
+  int            track_pos = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (audio_file_path);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, track_pos, 1, -1, NULL,
+    NULL);
   Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
   /* move the region */
@@ -2335,10 +2337,10 @@ test_duplicate_audio_regions (void)
   /* create audio track with region */
   Position pos1;
   position_init (&pos1);
-  int             track_pos = TRACKLIST->tracks.size ();
-  SupportedFile * file = supported_file_new_from_path (audio_file_path);
+  int            track_pos = TRACKLIST->tracks.size ();
+  FileDescriptor file = FileDescriptor (audio_file_path);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos1, track_pos, 1, -1, NULL,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos1, track_pos, 1, -1, NULL,
     NULL);
   Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
@@ -2693,15 +2695,14 @@ test_split_and_merge_audio_unlooped (void)
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-  SupportedFile * file_descr = supported_file_new_from_path (audio_file_path);
+  FileDescriptor file_descr = FileDescriptor (audio_file_path);
   position_set_to_bar (&pos, 2);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file_descr, &pos,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
-  supported_file_free (file_descr);
   g_assert_nonnull (audio_track);
   g_assert_cmpint (audio_track->num_lanes, ==, 2);
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);
@@ -2942,15 +2943,14 @@ test_resize_loop_l (void)
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-  SupportedFile * file_descr = supported_file_new_from_path (audio_file_path);
+  FileDescriptor file_descr = FileDescriptor (audio_file_path);
   position_set_to_bar (&pos, 3);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file_descr, &pos,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
-  supported_file_free (file_descr);
   g_assert_nonnull (audio_track);
   g_assert_cmpint (audio_track->num_lanes, ==, 2);
   g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);

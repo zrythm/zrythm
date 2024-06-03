@@ -20,6 +20,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"

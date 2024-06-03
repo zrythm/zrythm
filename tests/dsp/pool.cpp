@@ -30,11 +30,11 @@ test_remove_unused (void)
        * the first few off the undo stack */
       char * filepath =
         g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-      SupportedFile * file = supported_file_new_from_path (filepath);
-      int             num_tracks_before = TRACKLIST->tracks.size ();
+      FileDescriptor file = FileDescriptor (filepath);
+      int            num_tracks_before = TRACKLIST->tracks.size ();
       track_create_with_action (
-        TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, num_tracks_before, 1,
-        -1, NULL, NULL);
+        TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD, num_tracks_before,
+        1, -1, NULL, NULL);
 
       /* save and reload the project */
       test_project_save_and_reload ();
@@ -85,7 +85,7 @@ test_remove_unused (void)
       for (int j = 0; j < (gZrythm->undo_stack_len + 4); j++)
         {
           track_create_with_action (
-            TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+            TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
             TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
         }
 

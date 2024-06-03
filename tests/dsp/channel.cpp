@@ -37,11 +37,10 @@ test_midi_fx_routing (void)
   char ** midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
   g_assert_nonnull (midi_files);
-  SupportedFile * file = supported_file_new_from_path (midi_files[0]);
-  bool            success = tracklist_import_files (
-    TRACKLIST, NULL, file, track, track->lanes[0], -1, PLAYHEAD, NULL, NULL);
+  FileDescriptor file = FileDescriptor (midi_files[0]);
+  bool           success = tracklist_import_files (
+    TRACKLIST, NULL, &file, track, track->lanes[0], -1, PLAYHEAD, NULL, NULL);
   g_assert_true (success);
-  supported_file_free (file);
   g_strfreev (midi_files);
 
   /* export loop and check that there is audio */

@@ -5,7 +5,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "dsp/exporter.h"
-#include "dsp/supported_file.h"
+#include "io/file_descriptor.h"
 #include "project.h"
 #include "utils/chromaprint.h"
 #include "utils/math.h"
@@ -38,10 +38,10 @@ test_export_wav (void)
 {
   test_helper_zrythm_init ();
 
-  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  FileDescriptor file = FileDescriptor (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
 
   char * tmp_dir = g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
@@ -236,7 +236,7 @@ test_mixdown_midi_routed_to_instrument_track (void)
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
 
   /* create the MIDI track from a MIDI file */
-  SupportedFile * file = supported_file_new_from_path (midi_file);
+  FileDescriptor * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
     TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
     1, -1, NULL, NULL);
@@ -397,7 +397,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
     g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
 
   /* create the MIDI track from a MIDI file */
-  SupportedFile * file = supported_file_new_from_path (midi_file);
+  FileDescriptor * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
     TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
     1, -1, NULL, NULL);
@@ -811,14 +811,13 @@ test_export_send (void)
   test_helper_zrythm_init ();
 
   /* create an audio track */
-  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  FileDescriptor file = FileDescriptor (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  supported_file_free (file);
 
   /* create an audio FX track */
   Track * audio_fx_track = track_create_empty_at_idx_with_action (
@@ -965,10 +964,10 @@ test_mixdown_midi (void)
   exporter_post_export (settings, conns, &state);
 
   /* create a MIDI track from the MIDI file */
-  SupportedFile * file = supported_file_new_from_path (settings->file_uri);
+  FileDescriptor file = FileDescriptor (settings->file_uri);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * exported_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 
@@ -1049,10 +1048,10 @@ test_export_midi_range (void)
   exporter_post_export (settings, conns, &state);
 
   /* create a MIDI track from the MIDI file */
-  SupportedFile * file = supported_file_new_from_path (settings->file_uri);
+  FileDescriptor file = FileDescriptor (settings->file_uri);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * exported_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 

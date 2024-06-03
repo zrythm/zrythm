@@ -34,11 +34,10 @@ test_export (void)
 
       test_helper_zrythm_init ();
 
-      SupportedFile * file = supported_file_new_from_path (midi_file);
+      FileDescriptor file = FileDescriptor (midi_file);
       track_create_with_action (
-        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+        TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
         TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
-      supported_file_free (file);
 
       Track * track = tracklist_get_last_track (
         TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, true);
@@ -129,11 +128,10 @@ test_full_export (void)
 
   test_helper_zrythm_init ();
 
-  SupportedFile * file = supported_file_new_from_path (base_midi_file);
+  FileDescriptor file = FileDescriptor (base_midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
-  supported_file_free (file);
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
+    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
 
   Track * track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, true);

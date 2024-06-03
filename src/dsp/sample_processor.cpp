@@ -17,6 +17,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset.h"
+#include "settings/g_settings_manager.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
@@ -426,9 +427,9 @@ sample_processor_queue_sample_from_file (
 
 static void
 queue_file_or_chord_preset (
-  SampleProcessor *     self,
-  const SupportedFile * file,
-  const ChordPreset *   chord_pset)
+  SampleProcessor *      self,
+  const FileDescriptor * file,
+  const ChordPreset *    chord_pset)
 {
   zix_sem_wait (&self->rebuilding_sem);
 
@@ -467,7 +468,7 @@ queue_file_or_chord_preset (
   tracklist_insert_track (
     self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
-  if (file && supported_file_type_is_audio (file->type))
+  if (file && file->is_audio ())
     {
       g_debug ("creating audio track...");
       track = track_new (
@@ -481,7 +482,7 @@ queue_file_or_chord_preset (
        * track */
       GError * err = NULL;
       Region * ar = audio_region_new (
-        -1, file->abs_path, false, NULL, 0, NULL, 0,
+        -1, file->abs_path.c_str (), false, NULL, 0, NULL, 0,
         ENUM_INT_TO_VALUE (BitDepth, 0), &start_pos, 0, 0, 0, &err);
       if (!ar)
         {
@@ -500,8 +501,7 @@ queue_file_or_chord_preset (
       position_set_to_pos (&self->file_end_pos, &obj->end_pos);
     }
   else if (
-    ((file && supported_file_type_is_midi (file->type)) || chord_pset)
-    && self->instrument_setting)
+    ((file && file->is_midi ()) || chord_pset) && self->instrument_setting)
     {
       /* create an instrument track */
       g_debug ("creating instrument track...");
@@ -543,7 +543,7 @@ queue_file_or_chord_preset (
       int num_tracks = 1;
       if (file)
         {
-          num_tracks = midi_file_get_num_tracks (file->abs_path, true);
+          num_tracks = midi_file_get_num_tracks (file->abs_path.c_str (), true);
         }
       g_debug ("creating %d MIDI tracks...", num_tracks);
       for (int i = 0; i < num_tracks; i++)
@@ -564,11 +564,10 @@ queue_file_or_chord_preset (
 
           if (file)
             {
-              /* create a MIDI region from the MIDI
-               * file & add to track */
+              /* create a MIDI region from the MIDI file & add to track */
               Region * mr = midi_region_new_from_midi_file (
-                &start_pos, file->abs_path, track_get_name_hash (*track), 0, 0,
-                i);
+                &start_pos, file->abs_path.c_str (),
+                track_get_name_hash (*track), 0, 0, i);
               if (mr)
                 {
                   err = NULL;
@@ -598,9 +597,8 @@ queue_file_or_chord_preset (
               else
                 {
                   g_message (
-                    "Failed to create MIDI region from "
-                    "file %s",
-                    file->abs_path);
+                    "Failed to create MIDI region from file %s",
+                    file->abs_path.c_str ());
                 }
             }
           else if (chord_pset)
@@ -694,7 +692,7 @@ queue_file_or_chord_preset (
  * Adds a file (audio or MIDI) to the queue.
  */
 void
-sample_processor_queue_file (SampleProcessor * self, const SupportedFile * file)
+sample_processor_queue_file (SampleProcessor * self, const FileDescriptor * file)
 {
   queue_file_or_chord_preset (self, file, NULL);
 }

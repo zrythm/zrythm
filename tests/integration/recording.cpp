@@ -982,10 +982,10 @@ test_2nd_audio_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track from the file */
-  SupportedFile * file = supported_file_new_from_path (TEST_WAV2);
+  FileDescriptor file = FileDescriptor (TEST_WAV2);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->tracks.size (), 1,
-    -1, NULL, NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, NULL, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 

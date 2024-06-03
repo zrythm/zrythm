@@ -4,9 +4,13 @@
 #ifndef __GUI_BACKEND_FILE_MANAGER_H__
 #define __GUI_BACKEND_FILE_MANAGER_H__
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "gtk_wrapper.h"
 
-typedef struct SupportedFile SupportedFile;
+struct FileDescriptor;
 
 /**
  * @addtogroup gui_backend
@@ -25,8 +29,6 @@ enum class FileManagerSpecialLocation
   FILE_MANAGER_DRIVE,
 };
 
-#define FILE_MANAGER (gZrythm->file_manager)
-
 /**
  * Locations to be used in the file browser.
  *
@@ -38,18 +40,48 @@ enum class FileManagerSpecialLocation
  * "Documents" -> /home/user/Documents
  * "Samples" -> (some arbitrary path)
  */
-typedef struct FileBrowserLocation
+struct FileBrowserLocation
 {
+  FileBrowserLocation (
+    const char *               label,
+    const char *               path,
+    FileManagerSpecialLocation special_location)
+  {
+    label_ = label;
+    path_ = path;
+    special_location_ = special_location;
+  }
+  FileBrowserLocation () = default;
+
+  const char * get_icon_name () const
+  {
+    switch (special_location_)
+      {
+      case FileManagerSpecialLocation::FILE_MANAGER_NONE:
+        return "folder";
+      case FileManagerSpecialLocation::FILE_MANAGER_HOME:
+        return "user-home";
+      case FileManagerSpecialLocation::FILE_MANAGER_DESKTOP:
+        return "desktop";
+      case FileManagerSpecialLocation::FILE_MANAGER_DRIVE:
+        return "drive-harddisk-symbolic";
+      }
+    return "folder";
+  }
+
+  void print () const;
+
+  GMenuModel * generate_context_menu () const;
+
   /** Human readable label. */
-  char * label;
+  std::string label_;
 
   /** Absolute path. */
-  char * path;
+  std::string path_;
 
-  /** Whether this is a standard (undeletable)
-   * location. */
-  FileManagerSpecialLocation special_location;
-} FileBrowserLocation;
+  /** Whether this is a standard (undeletable) location. */
+  FileManagerSpecialLocation special_location_ = {};
+};
 
 /**
  * Current selection in the top window.
@@ -60,120 +92,82 @@ enum class FileBrowserSelectionType
   FB_SELECTION_TYPE_LOCATIONS,
 };
 
-typedef struct FileManager
+/**
+ * Manages the file browser functionality, including loading files, setting the
+ * current selection, adding and removing locations (bookmarks), and saving
+ * the locations.
+ */
+class FileManager
 {
+public:
+  FileManager ();
+
   /**
-   * Descriptors for files under the current
-   * collection / location.
+   * Loads the files under the current selection.
+   */
+  void load_files ();
+
+  /**
+   * Sets the current selection and optionally loads the files and saves the
+   * location to the settings.
    *
-   * To be updated every time location / collection
-   * selection changes.
+   * @param sel The new file browser location to select.
+   * @param load_files Whether to load the files under the new selection.
+   * @param save_to_settings Whether to save the new selection to the settings.
+   */
+  void
+  set_selection (FileBrowserLocation &sel, bool load_files, bool save_to_settings);
+
+  /**
+   * Adds a new location (bookmark) to the saved locations and saves the
+   * settings.
    *
-   * Array of SupportedFile.
+   * @param abs_path The absolute path of the new location to add.
    */
-  GPtrArray * files;
-
-#if 0
-  /**
-   * User collections.
-   */
-  char *                   collections[50];
-  int                      num_collections;
-#endif
+  void add_location_and_save (const char * abs_path);
 
   /**
-   * Default locations & user defined locations.
+   * Removes the given location (bookmark) from the saved locations and saves
+   * the settings.
    *
-   * Array of FileBrowserLocation.
+   * @param location The location to remove.
+   * @param skip_if_standard Whether to skip removal if the location is a
+   * standard location.
    */
-  GPtrArray * locations;
+  void remove_location_and_save (const char * location, bool skip_if_standard);
+
+private:
+  /**
+   * Saves the current locations (bookmarks) to the settings.
+   */
+  void save_locations ();
 
   /**
-   * Current selection in the top window.
+   * Loads the files from the given file browser location.
+   *
+   * @param location The location to load the files from.
    */
-  FileBrowserLocation * selection;
+  void load_files_from_location (FileBrowserLocation &location);
 
-} FileManager;
+  void add_volume (GVolume * vol);
 
-/**
- * Creates the file manager.
- */
-FileManager *
-file_manager_new (void);
+public:
+  /**
+   * The file descriptors for the files under the current collection/location.
+   * This is updated whenever the location or collection selection changes.
+   */
+  std::vector<FileDescriptor> files;
 
-/**
- * Loads the files under the current selection.
- */
-void
-file_manager_load_files (FileManager * self);
+  /**
+   * The default and user-defined locations (bookmarks).
+   */
+  std::vector<FileBrowserLocation> locations;
 
-/**
- * @param save_to_settings Whether to save this
- *   location to GSettings.
- */
-NONNULL void
-file_manager_set_selection (
-  FileManager *         self,
-  FileBrowserLocation * sel,
-  bool                  load_files,
-  bool                  save_to_settings);
-
-/**
- * Frees the file manager.
- */
-void
-file_manager_free (FileManager * self);
-
-FileBrowserLocation *
-file_browser_location_new (void);
-
-static inline const char *
-file_browser_location_get_icon_name (const FileBrowserLocation * loc)
-{
-  switch (loc->special_location)
-    {
-    case FileManagerSpecialLocation::FILE_MANAGER_NONE:
-      return "folder";
-    case FileManagerSpecialLocation::FILE_MANAGER_HOME:
-      return "user-home";
-    case FileManagerSpecialLocation::FILE_MANAGER_DESKTOP:
-      return "desktop";
-    case FileManagerSpecialLocation::FILE_MANAGER_DRIVE:
-      return "drive-harddisk-symbolic";
-    }
-  return "folder";
-}
-
-FileBrowserLocation *
-file_browser_location_clone (FileBrowserLocation * loc);
-
-void
-file_browser_location_print (const FileBrowserLocation * loc);
-
-/**
- * Adds a location and saves the settings.
- */
-void
-file_manager_add_location_and_save (FileManager * self, const char * abs_path);
-
-/**
- * Removes the given location (bookmark) from the
- * saved locations.
- *
- * @param skip_if_standard Skip removal if the
- *   given location is a standard location.
- */
-void
-file_manager_remove_location_and_save (
-  FileManager * self,
-  const char *  location,
-  bool          skip_if_standard);
-
-GMenuModel *
-file_browser_location_generate_context_menu (const FileBrowserLocation * self);
-
-NONNULL void
-file_browser_location_free (FileBrowserLocation * loc);
+  /**
+   * The current selection in the top window.
+   */
+  std::unique_ptr<FileBrowserLocation> selection;
+};
 
 /**
  * @}

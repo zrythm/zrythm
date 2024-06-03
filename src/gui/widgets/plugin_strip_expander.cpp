@@ -8,6 +8,7 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "zrythm_app.h"

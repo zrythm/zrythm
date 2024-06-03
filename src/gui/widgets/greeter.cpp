@@ -20,6 +20,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "project/project_init_flow_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
@@ -122,8 +123,11 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           engine_wait_for_pause (AUDIO_ENGINE, &state, true, false);
 
           project_init_flow_manager_load_or_create_default_project (
-            gZrythm->open_filename, gZrythm->opening_template,
-            project_ready_while_zrythm_running_cb, NULL);
+            gZrythm->open_filename.empty ()
+              ? nullptr
+              : gZrythm->open_filename.c_str (),
+            gZrythm->opening_template, project_ready_while_zrythm_running_cb,
+            NULL);
         }
       else
         {
@@ -144,8 +148,8 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
   g_debug ("activated %s", nfo->filename);
 
   gZrythm->open_filename = nfo->filename;
-  g_return_if_fail (gZrythm->open_filename);
-  g_message ("Loading project: %s", gZrythm->open_filename);
+  g_return_if_fail (!gZrythm->open_filename.empty ());
+  g_message ("Loading project: %s", gZrythm->open_filename.c_str ());
   gZrythm->creating_project = false;
 
   post_finish (self, self->zrythm_already_running, false);
@@ -402,7 +406,7 @@ open_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, GreeterWidget * self)
   g_object_unref (file);
 
   gZrythm->open_filename = path;
-  g_message ("Loading project: %s", gZrythm->open_filename);
+  g_message ("Loading project: %s", gZrythm->open_filename.c_str ());
 
   post_finish (self, self->zrythm_already_running, false);
 }
@@ -415,7 +419,7 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   gZrythm->create_project_path = g_build_filename (
     str, gtk_editable_get_text (GTK_EDITABLE (self->project_title_row)), NULL);
   g_free (str);
-  g_message ("creating project at: %s", gZrythm->create_project_path);
+  g_message ("creating project at: %s", gZrythm->create_project_path.c_str ());
 
   GObject * template_gobj =
     G_OBJECT (adw_combo_row_get_selected_item (self->templates_combo_row));
@@ -428,13 +432,14 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   /* if we are loading a blank template */
   if (selected_template->filename[0] == '-')
     {
-      gZrythm->open_filename = NULL;
+      gZrythm->open_filename.clear ();
       g_message ("Creating blank project");
     }
   else
     {
       gZrythm->open_filename = selected_template->filename;
-      g_message ("Creating project from template: %s", gZrythm->open_filename);
+      g_message (
+        "Creating project from template: %s", gZrythm->open_filename.c_str ());
       gZrythm->opening_template = true;
     }
 
@@ -522,9 +527,9 @@ greeter_widget_select_project (
   gtk_stack_set_visible_child_name (self->stack, "project-selector");
 
   /* fill recent projects */
-  for (int i = 0; i < gZrythm->recent_projects_->size (); i++)
+  for (int i = 0; i < gZrythm->recent_projects_.size (); i++)
     {
-      const char * recent_prj = (*gZrythm->recent_projects_)[i];
+      const char * recent_prj = gZrythm->recent_projects_[i];
       char *       recent_dir = io_get_dir (recent_prj);
       char *       project_name = g_path_get_basename (recent_dir);
 
@@ -554,20 +559,17 @@ greeter_widget_select_project (
   {
     ProjectInfo * blank_template = project_info_new (_ ("Blank project"), NULL);
     g_ptr_array_add (self->templates_arr, blank_template);
-    int    count = 0;
-    char * template_str;
-    while ((template_str = gZrythm->templates[count]) != NULL)
+    for (auto &template_str : gZrythm->templates_)
       {
-        char * name = g_path_get_basename (template_str);
-        char * filename = g_build_filename (template_str, PROJECT_FILE, NULL);
+        char * name = g_path_get_basename (template_str.toRawUTF8 ());
+        char * filename =
+          g_build_filename (template_str.toRawUTF8 (), PROJECT_FILE, NULL);
 
         ProjectInfo * template_nfo = project_info_new (name, filename);
         g_ptr_array_add (self->templates_arr, template_nfo);
 
         g_free (name);
         g_free (filename);
-
-        count++;
       }
   }
 

@@ -46,6 +46,7 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"

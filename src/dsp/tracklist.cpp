@@ -84,7 +84,7 @@ tracklist_init_loaded (
 void
 tracklist_select_all (Tracklist * self, bool select, bool fire_events)
 {
-  for (int i = 0; i < self->tracks.size (); i++)
+  for (size_t i = 0; i < self->tracks.size (); i++)
     {
       Track * track = self->tracks[i];
 
@@ -1218,7 +1218,7 @@ finish_import_regions:
  * empty space in the tracklist.
  *
  * @param uri_list URI list, if URI list was dropped.
- * @param file File, if SupportedFile was dropped.
+ * @param file File, if FileDescriptor was dropped.
  * @param track Track, if any.
  * @param lane TrackLane, if any.
  * @param index Index to insert new tracks at, or -1 to insert
@@ -1230,22 +1230,20 @@ finish_import_regions:
  */
 bool
 tracklist_import_files (
-  Tracklist *           self,
-  char **               uri_list,
-  const SupportedFile * orig_file,
-  Track *               track,
-  TrackLane *           lane,
-  int                   index,
-  const Position *      pos,
-  TracksReadyCallback   ready_cb,
-  GError **             error)
+  Tracklist *            self,
+  char **                uri_list,
+  const FileDescriptor * orig_file,
+  Track *                track,
+  TrackLane *            lane,
+  int                    index,
+  const Position *       pos,
+  TracksReadyCallback    ready_cb,
+  GError **              error)
 {
-  GPtrArray * file_arr =
-    g_ptr_array_new_with_free_func ((GDestroyNotify) supported_file_free);
+  std::vector<FileDescriptor> file_arr;
   if (orig_file)
     {
-      SupportedFile * file = supported_file_clone (orig_file);
-      g_ptr_array_add (file_arr, file);
+      file_arr.push_back (*orig_file);
     }
   else
     {
@@ -1259,54 +1257,46 @@ tracklist_import_files (
           if (!string_contains_substr (uri, "file://"))
             continue;
 
-          GError *        err = NULL;
-          SupportedFile * file = supported_file_new_from_uri (uri, &err);
+          GError * err = NULL;
+          auto     file = FileDescriptor::new_from_uri (uri, &err);
           if (!file)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
                 error, err, "Failed to create a FileImport instance");
-              g_ptr_array_unref (file_arr);
               return false;
             }
-          g_ptr_array_add (file_arr, file);
+          file_arr.push_back (*file);
         }
     }
 
-  if (file_arr->len == 0)
+  if (file_arr.size () == 0)
     {
       g_set_error_literal (
         error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
         _ ("No file was found"));
-      g_ptr_array_unref (file_arr);
       return false;
     }
-  else if (track && file_arr->len > 1)
+  else if (track && file_arr.size () > 1)
     {
       g_set_error_literal (
         error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
         _ ("Can only drop 1 file at a time on existing tracks"));
-      g_ptr_array_unref (file_arr);
       return false;
     }
 
-  for (size_t i = 0; i < file_arr->len; i++)
+  for (auto &file : file_arr)
     {
-      SupportedFile * file = (SupportedFile *) g_ptr_array_index (file_arr, i);
-      if (
-        supported_file_type_is_supported (file->type)
-        && supported_file_type_is_audio (file->type))
+      if (file.is_supported () && file.is_audio ())
         {
           if (track && track->type != TrackType::TRACK_TYPE_AUDIO)
             {
               g_set_error_literal (
                 error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
-                _ ("Can only drop audio files on "
-                   "audio tracks"));
-              g_ptr_array_unref (file_arr);
+                _ ("Can only drop audio files on audio tracks"));
               return false;
             }
         }
-      else if (supported_file_type_is_midi (file->type))
+      else if (file.is_midi ())
         {
           if (
             track && track->type != TrackType::TRACK_TYPE_MIDI
@@ -1315,27 +1305,24 @@ tracklist_import_files (
               g_set_error_literal (
                 error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
                 _ ("Can only drop MIDI files on MIDI/instrument tracks"));
-              g_ptr_array_unref (file_arr);
               return false;
             }
         }
       else
         {
-          char * descr = supported_file_type_get_description (file->type);
+          char * descr = FileDescriptor::get_type_description (file.type);
           g_set_error (
             error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
             _ ("Unsupported file type %s"), descr);
           g_free (descr);
-          g_ptr_array_unref (file_arr);
           return false;
         }
     }
 
   GStrvBuilder * builder = g_strv_builder_new ();
-  for (size_t i = 0; i < file_arr->len; i++)
+  for (auto &file : file_arr)
     {
-      SupportedFile * file = (SupportedFile *) g_ptr_array_index (file_arr, i);
-      g_strv_builder_add (builder, file->abs_path);
+      g_strv_builder_add (builder, file.abs_path.c_str ());
     }
   char **          filepaths = g_strv_builder_end (builder);
   FileImportInfo * nfo = file_import_info_new ();
@@ -1387,7 +1374,6 @@ tracklist_import_files (
     }
   g_strfreev (filepaths);
   file_import_info_free (nfo);
-  g_ptr_array_unref (file_arr);
   return true;
 }
 

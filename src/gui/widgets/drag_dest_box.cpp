@@ -94,7 +94,7 @@ on_dnd_motion_value_ready (
       return;
     }
 
-  SupportedFile *    supported_file = NULL;
+  FileDescriptor *   supported_file = NULL;
   Track *            dropped_track = NULL;
   Plugin *           pl = NULL;
   PluginDescriptor * pl_descr = NULL;
@@ -106,7 +106,7 @@ on_dnd_motion_value_ready (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          supported_file = (SupportedFile *) wrapped_obj->obj;
+          supported_file = (FileDescriptor *) wrapped_obj->obj;
         }
       else if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
@@ -202,7 +202,7 @@ on_dnd_drop (
 
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
-  SupportedFile *    file = NULL;
+  FileDescriptor *   file = NULL;
   PluginDescriptor * pd = NULL;
   Plugin *           pl = NULL;
   Track *            track = NULL;
@@ -214,7 +214,7 @@ on_dnd_drop (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          file = (SupportedFile *) wrapped_obj->obj;
+          file = (FileDescriptor *) wrapped_obj->obj;
         }
       else if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)

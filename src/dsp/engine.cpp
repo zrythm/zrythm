@@ -70,6 +70,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"

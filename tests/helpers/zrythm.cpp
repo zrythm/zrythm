@@ -31,6 +31,9 @@
  * ---
  */
 
+#include "settings/g_settings_manager.h"
+#include "utils/pcg_rand.h"
+
 #include "tests/helpers/zrythm_helper.h"
 
 #include "gtk_wrapper.h"
@@ -380,7 +383,6 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
   g_object_unref (css_provider);
   g_message ("set default css provider");
 
-  CAIRO_CACHES = z_cairo_caches_new ();
   UI_CACHES = ui_caches_new ();
 }
 
@@ -444,7 +446,9 @@ _test_helper_zrythm_init (
   gZrythm.reset (new Zrythm (nullptr, false, optimized));
   g_assert_true (gZrythm != nullptr);
   gZrythm->undo_stack_len = 64;
-  g_message ("%s", gZrythm->version);
+  char * version = Zrythm::get_version (false);
+  g_message ("%s", version);
+  g_free (version);
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
   char * zrythm_dir = dir_mgr->get_dir (USER_TOP);
   g_assert_nonnull (zrythm_dir);
@@ -512,6 +516,8 @@ test_helper_zrythm_cleanup (void)
   object_zero_and_free (zrythm_app);
 
   ZrythmDirectoryManager::deleteInstance ();
+  PCGRand::deleteInstance ();
+  GSettingsManager::deleteInstance ();
 }
 
 /**

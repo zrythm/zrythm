@@ -96,12 +96,12 @@ test_handle_drop_empty_midi_file (void)
 
   char * path =
     g_build_filename (TESTS_SRCDIR, "empty_midi_file_type1.mid", NULL);
-  SupportedFile * file = supported_file_new_from_path (path);
+  FileDescriptor file = FileDescriptor (path);
   g_free (path);
 
   GError * err = NULL;
   bool     success = tracklist_import_files (
-    TRACKLIST, NULL, file, NULL, NULL, -1, PLAYHEAD, NULL, &err);
+    TRACKLIST, NULL, &file, NULL, NULL, -1, PLAYHEAD, NULL, &err);
   g_assert_false (success);
 
   test_helper_zrythm_cleanup ();

@@ -12,19 +12,17 @@
 #include "dsp/recording_manager.h"
 #include "dsp/router.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/file_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
-#include "utils/cairo.h"
 #include "utils/curl.h"
 #include "utils/env.h"
 #include "utils/error.h"
 #include "utils/io.h"
 #include "utils/objects.h"
-#include "utils/pcg_rand.h"
 #include "utils/string.h"
 #include "utils/symap.h"
 #include "zrythm.h"
@@ -47,21 +45,13 @@ z_zrythm_error_quark (void);
 G_DEFINE_QUARK (z - zrythm - error - quark, z_zrythm_error)
 
 Zrythm::Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp)
+    : have_ui_ (have_ui), use_optimized_dsp (optimized_dsp),
+      settings (std::make_unique<Settings> ())
 {
-  this->exe_path_ = g_strdup (exe_path);
+  if (exe_path)
+    this->exe_path_ = exe_path;
 
-  this->version = get_version (false);
-  this->have_ui_ = have_ui;
-  this->use_optimized_dsp = optimized_dsp;
   this->debug = env_get_int ("ZRYTHM_DEBUG", 0);
-
-  /* these don't depend on anything external for sure */
-  this->rand = pcg_rand_new ();
-  this->symap = symap_new ();
-  this->error_domain_symap = symap_new ();
-  recent_projects_ = std::make_unique<StringArray> ();
-
-  this->settings = std::make_unique<Settings> ();
 }
 
 void
@@ -70,10 +60,8 @@ Zrythm::init (void)
   settings->init ();
   this->recording_manager = recording_manager_new ();
   this->plugin_manager = plugin_manager_new ();
-  this->file_manager = file_manager_new ();
   this->chord_preset_pack_manager =
     chord_preset_pack_manager_new (have_ui_ && !ZRYTHM_TESTING);
-  this->cairo_caches = z_cairo_caches_new ();
 
   if (have_ui_)
     {
@@ -84,15 +72,15 @@ Zrythm::init (void)
 void
 Zrythm::add_to_recent_projects (const char * _filepath)
 {
-  recent_projects_->insert (0, _filepath);
+  recent_projects_.insert (0, _filepath);
 
   /* if we are at max projects, remove the last one */
-  if (recent_projects_->size () > MAX_RECENT_PROJECTS)
+  if (recent_projects_.size () > MAX_RECENT_PROJECTS)
     {
-      recent_projects_->remove (MAX_RECENT_PROJECTS);
+      recent_projects_.remove (MAX_RECENT_PROJECTS);
     }
 
-  char ** tmp = recent_projects_->getNullTerminated ();
+  char ** tmp = recent_projects_.getNullTerminated ();
   g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
   g_strfreev (tmp);
 }
@@ -100,9 +88,9 @@ Zrythm::add_to_recent_projects (const char * _filepath)
 void
 Zrythm::remove_recent_project (char * filepath)
 {
-  recent_projects_->removeString (filepath);
+  recent_projects_.removeString (filepath);
 
-  char ** tmp = recent_projects_->getNullTerminated ();
+  char ** tmp = recent_projects_.getNullTerminated ();
   g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
   g_strfreev (tmp);
 }
@@ -594,16 +582,19 @@ Zrythm::init_templates ()
       g_strv_builder_addv (builder, (const char **) system_templates);
       g_strfreev (system_templates);
     }
-  this->templates = g_strv_builder_end (builder);
-  g_return_if_fail (this->templates);
 
-  for (int i = 0; this->templates[i] != NULL; i++)
+  {
+    char ** strs = g_strv_builder_end (builder);
+    this->templates_ = StringArray (strs);
+    g_strfreev (strs);
+  }
+
+  for (auto &tmpl : this->templates_)
     {
-      const char * tmpl = this->templates[i];
-      g_message ("Template found: %s", tmpl);
-      if (string_contains_substr (tmpl, "demo_zsong01"))
+      g_message ("Template found: %s", tmpl.toRawUTF8 ());
+      if (tmpl.contains ("demo_zsong01"))
         {
-          this->demo_template = g_strdup (tmpl);
+          this->demo_template = tmpl.toStdString ();
         }
     }
 
@@ -618,18 +609,11 @@ Zrythm::~Zrythm ()
 
   this->have_ui_ = false;
 
-  object_free_w_func_and_null (z_cairo_caches_free, this->cairo_caches);
   object_free_w_func_and_null (recording_manager_free, this->recording_manager);
   object_free_w_func_and_null (plugin_manager_free, this->plugin_manager);
   object_free_w_func_and_null (event_manager_free, this->event_manager);
-  object_free_w_func_and_null (file_manager_free, this->file_manager);
   object_free_w_func_and_null (
     chord_preset_pack_manager_free, this->chord_preset_pack_manager);
-
-  object_free_w_func_and_null (symap_free, this->symap);
-  object_free_w_func_and_null (symap_free, this->error_domain_symap);
-
-  object_free_w_func_and_null (g_strfreev, this->templates);
 
   g_message ("%s: done", __func__);
 }

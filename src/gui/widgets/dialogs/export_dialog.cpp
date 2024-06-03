@@ -13,6 +13,7 @@
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/color.h"
@@ -1198,7 +1199,7 @@ setup_dither (AdwActionRow * dither_row, GtkSwitch * dither_switch)
   gtk_switch_set_active (
     dither_switch, g_settings_get_boolean (S_EXPORT_AUDIO, "dither"));
 
-  char * descr = settings_get_description (S_EXPORT_AUDIO, "dither");
+  char * descr = GSettingsManager::get_description (S_EXPORT_AUDIO, "dither");
   adw_action_row_set_subtitle (dither_row, descr);
   g_free (descr);
 }

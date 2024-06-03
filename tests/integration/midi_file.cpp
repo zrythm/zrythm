@@ -59,11 +59,10 @@ test_midi_file_playback (void)
       /*continue;*/
       g_message ("testing %s", midi_file);
 
-      SupportedFile * file = supported_file_new_from_path (midi_file);
+      FileDescriptor file = FileDescriptor (midi_file);
       track_create_with_action (
-        TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+        TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
         TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
-      supported_file_free (file);
       g_message ("testing %s", midi_file);
 
       Track * track = tracklist_get_last_track (

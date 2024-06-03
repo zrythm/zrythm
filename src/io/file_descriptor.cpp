@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // clang-format on
 
@@ -7,37 +7,28 @@
 
 #include <inttypes.h>
 
-#include "dsp/supported_file.h"
 #include "io/audio_file.h"
+#include "io/file_descriptor.h"
 #include "utils/error.h"
 #include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-/**
- * Creates a new SupportedFile from the given absolute
- * path.
- */
-SupportedFile *
-supported_file_new_from_path (const char * path)
+FileDescriptor::FileDescriptor (const char * _abs_path)
 {
-  g_return_val_if_fail (path, NULL);
-  SupportedFile * self = object_new (SupportedFile);
-
-  g_debug ("creating new SupportedFile for %s", path);
-  self->abs_path = g_strdup (path);
-  self->type = supported_file_get_type (path);
-  self->label = g_path_get_basename (path);
-
-  return self;
+  // g_debug ("creating new FileDescriptor for %s", path);
+  this->abs_path = _abs_path;
+  this->type = get_type_from_path (_abs_path);
+  char * tmp = g_path_get_basename (_abs_path);
+  this->label = tmp;
+  g_free (tmp);
 }
 
-SupportedFile *
-supported_file_new_from_uri (const char * uri, GError ** error)
+std::unique_ptr<FileDescriptor>
+FileDescriptor::new_from_uri (const char * uri, GError ** error)
 {
   GError * err = NULL;
   char *   path = g_filename_from_uri (uri, NULL, &err);
@@ -45,77 +36,46 @@ supported_file_new_from_uri (const char * uri, GError ** error)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "Error getting file path from URI <%s>", uri);
-      return NULL;
+      return nullptr;
     }
 
-  SupportedFile * self = supported_file_new_from_path (path);
+  auto self = std::make_unique<FileDescriptor> (path);
   g_free (path);
 
   return self;
 }
 
-/**
- * Returns if the given type is supported.
- */
-int
-supported_file_type_is_supported (ZFileType type)
+bool
+FileDescriptor::is_type_supported (ZFileType type)
 {
-  if (supported_file_type_is_audio (type))
+  if (is_type_audio (type))
     {
       if (
         type == ZFileType::FILE_TYPE_FLAC || type == ZFileType::FILE_TYPE_OGG
         || type == ZFileType::FILE_TYPE_WAV || type == ZFileType::FILE_TYPE_MP3)
-        return 1;
+        return true;
     }
-  if (supported_file_type_is_midi (type))
-    return 1;
+  if (is_type_midi (type))
+    return true;
 
-  return 0;
+  return false;
 }
 
-/**
- * Returns if the SupportedFile is an audio file.
- */
-int
-supported_file_type_is_audio (ZFileType type)
+bool
+FileDescriptor::is_type_audio (ZFileType type)
 {
   return type == ZFileType::FILE_TYPE_MP3 || type == ZFileType::FILE_TYPE_FLAC
          || type == ZFileType::FILE_TYPE_OGG || type == ZFileType::FILE_TYPE_WAV;
 }
 
-/**
- * Returns if the SupportedFile is a midi file.
- */
-int
-supported_file_type_is_midi (ZFileType type)
+bool
+FileDescriptor::is_type_midi (ZFileType type)
 {
   return type == ZFileType::FILE_TYPE_MIDI;
 }
 
-/**
- * Clones the given SupportedFile.
- */
-SupportedFile *
-supported_file_clone (const SupportedFile * src)
-{
-  SupportedFile * dest = object_new (SupportedFile);
-
-  dest->type = src->type;
-  dest->abs_path = g_strdup (src->abs_path);
-  dest->hidden = src->hidden;
-  dest->label = g_strdup (src->label);
-
-  return dest;
-}
-
-/**
- * Returns a human readable description of the given
- * file type.
- *
- * Example: wav -> "Wave file".
- */
 char *
-supported_file_type_get_description (ZFileType type)
+FileDescriptor::get_type_description (ZFileType type)
 {
   switch (type)
     {
@@ -148,11 +108,8 @@ supported_file_type_get_description (ZFileType type)
     }
 }
 
-/**
- * Returns the file type of the given file path.
- */
 ZFileType
-supported_file_get_type (const char * file)
+FileDescriptor::get_type_from_path (const char * file)
 {
   const char * ext = io_file_get_ext (file);
   ZFileType    type = ZFileType::FILE_TYPE_OTHER;
@@ -181,24 +138,24 @@ supported_file_get_type (const char * file)
 }
 
 const char *
-supported_file_type_get_ext (ZFileType type)
+FileDescriptor::get_type_ext (ZFileType type)
 {
   switch (type)
     {
     case ZFileType::FILE_TYPE_MIDI:
-      return g_strdup ("mid");
+      return "mid";
       break;
     case ZFileType::FILE_TYPE_MP3:
-      return g_strdup ("mp3");
+      return "mp3";
       break;
     case ZFileType::FILE_TYPE_FLAC:
-      return g_strdup ("flac");
+      return "flac";
       break;
     case ZFileType::FILE_TYPE_OGG:
-      return g_strdup ("ogg");
+      return "ogg";
       break;
     case ZFileType::FILE_TYPE_WAV:
-      return g_strdup ("wav");
+      return "wav";
       break;
     case ZFileType::FILE_TYPE_PARENT_DIR:
       return NULL;
@@ -214,24 +171,18 @@ supported_file_type_get_ext (ZFileType type)
     }
 }
 
-/**
- * Returns whether the given file should auto-play
- * (shorter than 1 min).
- */
 bool
-supported_file_should_autoplay (const SupportedFile * self)
+FileDescriptor::should_autoplay () const
 {
   bool autoplay = true;
 
   /* no autoplay if not audio/MIDI */
-  if (
-    !supported_file_type_is_audio (self->type)
-    && !supported_file_type_is_midi (self->type))
+  if (!is_audio () && !is_midi ())
     return false;
 
-  if (supported_file_type_is_audio (self->type))
+  if (is_audio ())
     {
-      AudioFile * af = audio_file_new (self->abs_path);
+      AudioFile * af = audio_file_new (this->abs_path.c_str ());
       GError *    err = NULL;
       bool        success = audio_file_read_metadata (af, &err);
       if (!success)
@@ -251,17 +202,14 @@ supported_file_should_autoplay (const SupportedFile * self)
   return autoplay;
 }
 
-/**
- * Returns a pango markup to be used in GTK labels.
- */
 char *
-supported_file_get_info_text_for_label (const SupportedFile * self)
+FileDescriptor::get_info_text_for_label () const
 {
-  char * file_type_label = supported_file_type_get_description (self->type);
-  char * label = NULL;
-  if (supported_file_type_is_audio (self->type))
+  char * file_type_label = get_type_description (this->type);
+  char * label_str = NULL;
+  if (is_audio ())
     {
-      AudioFile * af = audio_file_new (self->abs_path);
+      AudioFile * af = audio_file_new (this->abs_path.c_str ());
       GError *    err = NULL;
       bool        success = audio_file_read_metadata (af, &err);
       if (!success)
@@ -272,39 +220,36 @@ supported_file_get_info_text_for_label (const SupportedFile * self)
             _ ("Failed reading metadata for %s"), af->filepath);
         }
 
-      label = g_markup_printf_escaped (
+      label_str = g_markup_printf_escaped (
         _ ("<b>%s</b>\n"
            "Sample rate: %d\n"
            "Length: %" PRId64 "s "
            "%" PRId64 " ms | BPM: %.1f\n"
            "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
            "Bit depth: %d bits"),
-        self->label, af->metadata.samplerate, af->metadata.length / 1000,
-        af->metadata.length % 1000, (double) af->metadata.bpm,
-        af->metadata.channels, af->metadata.bit_rate / 1000,
-        (af->metadata.bit_rate % 1000) / 100, af->metadata.bit_depth);
+        this->label.c_str (), af->metadata.samplerate,
+        af->metadata.length / 1000, af->metadata.length % 1000,
+        (double) af->metadata.bpm, af->metadata.channels,
+        af->metadata.bit_rate / 1000, (af->metadata.bit_rate % 1000) / 100,
+        af->metadata.bit_depth);
 
       audio_file_free (af);
     }
   else
-    label = g_markup_printf_escaped (
+    label_str = g_markup_printf_escaped (
       "<b>%s</b>\n"
       "Type: %s",
-      self->label, file_type_label);
+      this->label.c_str (), file_type_label);
 
   g_free (file_type_label);
 
-  return label;
+  return label_str;
 }
 
-/**
- * Gets the corresponding icon name for the given
- * SupportedFile's type.
- */
 const char *
-supported_file_get_icon_name (const SupportedFile * const self)
+FileDescriptor::get_icon_name () const
 {
-  switch (self->type)
+  switch (this->type)
     {
     case ZFileType::FILE_TYPE_MIDI:
       return "audio-midi";
@@ -322,18 +267,4 @@ supported_file_get_icon_name (const SupportedFile * const self)
     default:
       return "";
     }
-}
-
-/**
- * Frees the instance and all its members.
- */
-void
-supported_file_free (SupportedFile * self)
-{
-  if (self->abs_path)
-    g_free (self->abs_path);
-  if (self->label)
-    g_free (self->label);
-
-  free (self);
 }

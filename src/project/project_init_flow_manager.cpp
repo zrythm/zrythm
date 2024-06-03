@@ -888,12 +888,12 @@ continue_load_from_file_after_open_backup_response (
     {
       char * prev_pool_dir =
         g_build_filename (flow_mgr->dir, PROJECT_POOL_DIR, NULL);
-      char * new_pool_dir =
-        g_build_filename (gZrythm->create_project_path, PROJECT_POOL_DIR, NULL);
+      char * new_pool_dir = g_build_filename (
+        gZrythm->create_project_path.c_str (), PROJECT_POOL_DIR, NULL);
       char * prev_plugins_dir =
         g_build_filename (flow_mgr->dir, PROJECT_PLUGINS_DIR, NULL);
       char * new_plugins_dir = g_build_filename (
-        gZrythm->create_project_path, PROJECT_PLUGINS_DIR, NULL);
+        gZrythm->create_project_path.c_str (), PROJECT_PLUGINS_DIR, NULL);
       bool success = io_copy_dir (
         new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
       if (!success)
@@ -921,7 +921,7 @@ continue_load_from_file_after_open_backup_response (
       g_free (new_plugins_dir);
 
       g_free (flow_mgr->dir);
-      flow_mgr->dir = g_strdup (gZrythm->create_project_path);
+      flow_mgr->dir = g_strdup (gZrythm->create_project_path.c_str ());
     }
 
   /* FIXME this is a hack, make sure none of this extra copying is needed */
@@ -1269,7 +1269,7 @@ project_init_flow_manager_load_or_create_default_project (
     {
       GError *  err = NULL;
       Project * created_prj = create_default (
-        PROJECT, gZrythm->create_project_path, false, true, &err);
+        PROJECT, gZrythm->create_project_path.c_str (), false, true, &err);
       if (!created_prj)
         {
           GError * error = NULL;

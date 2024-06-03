@@ -4,13 +4,13 @@
 #ifndef __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 #define __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 
-#include "dsp/supported_file.h"
+#include "io/file_descriptor.h"
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (FileAuditionerControlsWidget);
-TYPEDEF_STRUCT (FileBrowserLocation);
+struct FileBrowserLocation;
 TYPEDEF_STRUCT_UNDERSCORED (FileBrowserFiltersWidget);
 TYPEDEF_STRUCT (ItemFactory);
 
@@ -53,7 +53,7 @@ typedef struct _PanelFileBrowserWidget
   ItemFactory *        files_item_factory;
   GtkListView *        files_list_view;
 
-  /** Array of SupportedFile. */
+  /** Array of FileDescriptor. */
   GPtrArray * selected_locations;
   GPtrArray * selected_files;
 
@@ -62,7 +62,7 @@ typedef struct _PanelFileBrowserWidget
   FileAuditionerControlsWidget * auditioner_controls;
 
   /** Temp. */
-  const SupportedFile * cur_file;
+  const FileDescriptor * cur_file;
 
   bool first_draw;
 

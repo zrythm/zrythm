@@ -19,6 +19,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/color.h"

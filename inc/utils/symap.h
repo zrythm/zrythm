@@ -1,4 +1,9 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
   Copyright 2011-2014 David Robillard <http://drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
@@ -29,60 +34,80 @@
 #define SYMAP_H
 
 #include <cstdint>
+#include <utility>
 
 #define ZSYMAP (ZRYTHM->symap)
 
-typedef struct Symap
+/**
+ * @brief A string interner (Symbol Map).
+ *
+ */
+class Symap
 {
+public:
+  Symap () = default;
+  Symap (const Symap &other) { *this = other; }
+  Symap &operator= (const Symap &other)
+  {
+    Symap tmp (other);
+    swap (*this, tmp);
+    return *this;
+  }
+  Symap (Symap &&other) { *this = std::move (other); }
+  Symap &operator= (Symap &&other)
+  {
+    Symap tmp (std::move (other));
+    swap (*this, tmp);
+    return *this;
+  }
+  ~Symap ();
+
+  friend void swap (Symap &first, Symap &second) // nothrow
+  {
+    using std::swap;
+
+    swap (first.index, second.index);
+    swap (first.size, second.size);
+    swap (first.symbols, second.symbols);
+  }
+
+  /**
+     Map a string to a symbol ID if it is already mapped, otherwise return 0.
+  */
+  uint32_t try_map (const char * sym);
+
+  /**
+     Map a string to a symbol ID.
+
+     Note that 0 is never a valid symbol ID.
+  */
+  uint32_t map (const char * sym);
+
+  /**
+     Unmap a symbol ID back to a symbol, or NULL if no such ID exists.
+
+     Note that 0 is never a valid symbol ID.
+  */
+  const char * unmap (uint32_t id);
+
+private:
+  uint32_t search (const char * sym, bool * exact) const;
+
   /**
      Unsorted array of strings, such that the symbol for ID i is found
      at symbols[i - 1].
   */
-  char ** symbols;
+  char ** symbols = nullptr;
 
   /**
      Array of IDs, sorted by corresponding string in `symbols`.
   */
-  uint32_t * index;
+  uint32_t * index = nullptr;
 
   /**
      Number of symbols (number of items in `symbols` and `index`).
   */
-  uint32_t size;
-} Symap;
-
-/**
-   Create a new symbol map.
-*/
-Symap *
-symap_new (void);
-
-/**
-   Free a symbol map.
-*/
-void
-symap_free (Symap * map);
-
-/**
-   Map a string to a symbol ID if it is already mapped, otherwise return 0.
-*/
-uint32_t
-symap_try_map (Symap * map, const char * sym);
-
-/**
-   Map a string to a symbol ID.
-
-   Note that 0 is never a valid symbol ID.
-*/
-uint32_t
-symap_map (Symap * map, const char * sym);
-
-/**
-   Unmap a symbol ID back to a symbol, or NULL if no such ID exists.
-
-   Note that 0 is never a valid symbol ID.
-*/
-const char *
-symap_unmap (Symap * map, uint32_t id);
+  uint32_t size = 0;
+};
 
 #endif /* SYMAP_H */

@@ -18,6 +18,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/error.h"

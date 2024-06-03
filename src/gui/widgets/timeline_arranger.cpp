@@ -1261,7 +1261,7 @@ on_dnd_drop (
     "highlighted %d)",
     self->is_highlighted);
 
-  SupportedFile *   file = NULL;
+  FileDescriptor *  file = NULL;
   ChordDescriptor * chord_descr = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
@@ -1271,7 +1271,7 @@ on_dnd_drop (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          file = (SupportedFile *) wrapped_obj->obj;
+          file = (FileDescriptor *) wrapped_obj->obj;
         }
       if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_DESCR)
@@ -1389,7 +1389,7 @@ on_dnd_motion (
 
   const GValue *    value = gtk_drop_target_get_value (drop_target);
   ChordDescriptor * chord_descr = NULL;
-  SupportedFile *   supported_file = NULL;
+  FileDescriptor *  supported_file = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
@@ -1398,7 +1398,7 @@ on_dnd_motion (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          supported_file = (SupportedFile *) wrapped_obj->obj;
+          supported_file = (FileDescriptor *) wrapped_obj->obj;
         }
       else if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_DESCR)

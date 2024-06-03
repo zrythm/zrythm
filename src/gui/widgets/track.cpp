@@ -1625,7 +1625,7 @@ on_dnd_drop (
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (drop_target);
 
-  SupportedFile *    file = NULL;
+  FileDescriptor *    file = NULL;
   PluginDescriptor * pd = NULL;
   Plugin *           pl = NULL;
   if (G_VALUE_HOLDS (
@@ -1635,7 +1635,7 @@ on_dnd_drop (
         g_value_get_object (value);
       if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          file = (SupportedFile *) wrapped_obj->obj;
+          file = (FileDescriptor *) wrapped_obj->obj;
         }
       else if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
         {

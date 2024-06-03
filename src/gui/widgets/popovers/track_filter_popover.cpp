@@ -12,6 +12,7 @@
 #include "gui/widgets/multi_selection.h"
 #include "gui/widgets/popovers/track_filter_popover.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/string.h"

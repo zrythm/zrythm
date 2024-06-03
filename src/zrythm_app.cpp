@@ -33,6 +33,8 @@
 
 #include "zrythm-config.h"
 
+#include "utils/pcg_rand.h"
+
 #ifdef _WIN32
 #  include <stdio.h> // for _setmaxstdio
 #else
@@ -51,6 +53,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "project/project_init_flow_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "settings/user_shortcuts.h"
 #include "utils/backtrace.h"
@@ -204,7 +207,8 @@ check_for_updates_latest_release_ver_ready (
    * CHANGELOG */
   if (
     is_latest_release
-    && !settings_strv_contains_str (S_GENERAL, "run-versions", PACKAGE_VERSION))
+    && !GSettingsManager::strv_contains_str (
+      S_GENERAL, "run-versions", PACKAGE_VERSION))
     {
       AdwMessageDialog * dialog = dialogs_get_basic_ok_message_dialog (NULL);
       adw_message_dialog_format_heading (dialog, "%s", _ ("Changelog"));
@@ -212,7 +216,8 @@ check_for_updates_latest_release_ver_ready (
         dialog, _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
         PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
       gtk_window_present (GTK_WINDOW (dialog));
-      settings_append_to_strv (S_GENERAL, "run-versions", PACKAGE_VERSION, true);
+      GSettingsManager::append_to_strv (
+        S_GENERAL, "run-versions", PACKAGE_VERSION, true);
     }
 #endif /* HAVE_CHANGELOG */
 
@@ -273,12 +278,12 @@ init_recent_projects (void)
 
   gchar ** recent_projects = g_settings_get_strv (S_GENERAL, "recent-projects");
 
-  gZrythm->recent_projects_.reset (
-    new StringArray ((const char * const *) recent_projects));
-  gZrythm->recent_projects_->removeDuplicates (false);
+  gZrythm->recent_projects_ =
+    StringArray ((const char * const *) recent_projects);
+  gZrythm->recent_projects_.removeDuplicates (false);
 
   /* save the new list */
-  char ** tmp = gZrythm->recent_projects_->getNullTerminated ();
+  char ** tmp = gZrythm->recent_projects_.getNullTerminated ();
   g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
   g_strfreev (tmp);
 
@@ -368,13 +373,12 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
     self->greeter, NULL, _ ("Loading Project"), 0.99);
 
   g_debug (
-    "on_load_project called | open filename '%s' "
-    "| opening template %d",
-    gZrythm->open_filename, gZrythm->opening_template);
+    "on_load_project called | open filename '%s' | opening template %d",
+    gZrythm->open_filename.c_str (), gZrythm->opening_template);
   g_application_hold (g_application_get_default ());
   project_init_flow_manager_load_or_create_default_project (
-    gZrythm->open_filename, gZrythm->opening_template,
-    project_load_or_create_ready_cb, NULL);
+    gZrythm->open_filename.empty () ? nullptr : gZrythm->open_filename.c_str (),
+    gZrythm->opening_template, project_load_or_create_ready_cb, NULL);
 }
 
 static void
@@ -434,7 +438,7 @@ zrythm_app_init_thread (ZrythmApp * self)
 
   greeter_widget_set_progress_and_status (
     self->greeter, NULL, _ ("Initializing file manager"), 0.06);
-  file_manager_load_files (FILE_MANAGER);
+  gZrythm->get_file_manager ().load_files ();
 
   greeter_widget_set_progress_and_status (
     self->greeter, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
@@ -474,7 +478,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 
   ZrythmApp * self = zrythm_app;
 
-  if (gZrythm->open_filename)
+  if (!gZrythm->open_filename.empty ())
     {
       g_action_group_activate_action (
         G_ACTION_GROUP (self), "load_project", NULL);
@@ -483,7 +487,8 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
     {
       /* if running for the first time (even after the GSetting is set to false)
        * run the demo project, otherwise ask the user for a project */
-      bool use_demo_template = self->is_first_run && gZrythm->demo_template;
+      bool use_demo_template =
+        self->is_first_run && !gZrythm->demo_template.empty ();
 #ifdef _WIN32
       /* crashes on windows -- fix first then re-enable */
       use_demo_template = false;
@@ -495,7 +500,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 
       greeter_widget_select_project (
         self->greeter, false, false,
-        use_demo_template ? gZrythm->demo_template : NULL);
+        use_demo_template ? gZrythm->demo_template.c_str () : NULL);
 
 #ifdef __APPLE__
       /* possibly not necessary / working, forces app window on top */
@@ -545,7 +550,7 @@ zrythm_app_open (
 
   GFile * file = files[0];
   gZrythm->open_filename = g_file_get_path (file);
-  g_message ("open %s", gZrythm->open_filename);
+  g_message ("open %s", gZrythm->open_filename.c_str ());
 
   g_message ("done");
 }
@@ -1252,7 +1257,7 @@ static bool
 print_settings (ZrythmApp * self)
 {
   localization_init (false, false, false);
-  settings_print (self->pretty_print);
+  GSettingsManager::print_all_settings (self->pretty_print);
 
   exit (EXIT_SUCCESS);
 }
@@ -1260,7 +1265,7 @@ print_settings (ZrythmApp * self)
 static bool
 reset_to_factory (void)
 {
-  settings_reset_to_factory (true, true);
+  GSettingsManager::reset_to_factory (true, true);
 
   exit (EXIT_SUCCESS);
 }
@@ -1479,6 +1484,8 @@ finalize (ZrythmApp * self)
   curl_global_cleanup ();
 
   ZrythmDirectoryManager::deleteInstance ();
+  PCGRand::deleteInstance ();
+  GSettingsManager::deleteInstance ();
 
   g_message ("%s: done", __func__);
 }

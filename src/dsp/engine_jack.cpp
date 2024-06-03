@@ -17,6 +17,7 @@
 #  include "gui/widgets/main_window.h"
 #  include "plugins/plugin.h"
 #  include "project.h"
+#  include "settings/g_settings_manager.h"
 #  include "settings/settings.h"
 #  include "utils/backtrace.h"
 #  include "utils/error.h"

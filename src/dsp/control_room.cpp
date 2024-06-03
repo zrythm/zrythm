@@ -8,6 +8,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
@@ -35,11 +36,11 @@ init_common (ControlRoom * self)
   self->mute_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 0.f
-      : (float) settings_get_default_value_double (
+      : (float) GSettingsManager::get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol");
   if (!ZRYTHM_TESTING)
     {
-      settings_get_range_double (
+      GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol", &lower, &upper);
       self->mute_fader->amp->minf_ = (float) lower;
       self->mute_fader->amp->maxf_ = (float) upper;
@@ -53,12 +54,12 @@ init_common (ControlRoom * self)
   self->listen_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 1.f
-      : (float) settings_get_default_value_double (
+      : (float) GSettingsManager::get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol");
   fader_set_amp (self->listen_fader, amp);
   if (!ZRYTHM_TESTING)
     {
-      settings_get_range_double (
+      GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol", &lower, &upper);
       self->listen_fader->amp->minf_ = (float) lower;
       self->listen_fader->amp->maxf_ = (float) upper;
@@ -71,11 +72,11 @@ init_common (ControlRoom * self)
   self->dim_fader->amp->deff_ =
     ZRYTHM_TESTING
       ? 0.1f
-      : (float) settings_get_default_value_double (
+      : (float) GSettingsManager::get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol");
   if (!ZRYTHM_TESTING)
     {
-      settings_get_range_double (
+      GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol", &lower, &upper);
       self->dim_fader->amp->minf_ = (float) lower;
       self->dim_fader->amp->maxf_ = (float) upper;

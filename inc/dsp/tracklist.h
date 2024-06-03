@@ -18,7 +18,7 @@ typedef struct Track                  Track;
 typedef struct _TracklistWidget       TracklistWidget;
 typedef struct _PinnedTracklistWidget PinnedTracklistWidget;
 typedef struct Track                  ChordTrack;
-typedef struct SupportedFile          SupportedFile;
+struct FileDescriptor;
 TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 
 /**
@@ -385,7 +385,7 @@ tracklist_import_regions (
  * in the tracklist.
  *
  * @param uri_list URI list, if URI list was dropped.
- * @param file File, if SupportedFile was dropped.
+ * @param file File, if FileDescriptor was dropped.
  * @param track Track, if any.
  * @param lane TrackLane, if any.
  * @param index Index to insert new tracks at, or -1 to insert
@@ -395,15 +395,15 @@ tracklist_import_regions (
  */
 bool
 tracklist_import_files (
-  Tracklist *           self,
-  char **               uri_list,
-  const SupportedFile * orig_file,
-  Track *               track,
-  TrackLane *           lane,
-  int                   index,
-  const Position *      pos,
-  TracksReadyCallback   ready_cb,
-  GError **             error);
+  Tracklist *            self,
+  char **                uri_list,
+  const FileDescriptor * orig_file,
+  Track *                track,
+  TrackLane *            lane,
+  int                    index,
+  const Position *       pos,
+  TracksReadyCallback    ready_cb,
+  GError **              error);
 
 /**
  * Handles a move or copy action based on a drag.

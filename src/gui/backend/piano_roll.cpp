@@ -20,6 +20,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"

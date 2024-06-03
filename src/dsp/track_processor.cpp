@@ -21,6 +21,7 @@
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"

@@ -27,6 +27,7 @@
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"

@@ -19,7 +19,7 @@
 #include <zix/sem.h>
 
 enum class MetronomeType;
-typedef struct SupportedFile SupportedFile;
+struct FileDescriptor;
 struct Tracklist;
 typedef struct PluginSetting PluginSetting;
 typedef struct MidiEvents    MidiEvents;
@@ -156,7 +156,7 @@ sample_processor_queue_sample_from_file (
  * Adds a file (audio or MIDI) to the queue.
  */
 void
-sample_processor_queue_file (SampleProcessor * self, const SupportedFile * file);
+sample_processor_queue_file (SampleProcessor * self, const FileDescriptor * file);
 
 /**
  * Adds a chord preset to the queue.

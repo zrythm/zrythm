@@ -10,6 +10,7 @@
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -149,7 +150,7 @@ reset_to_factory_response_cb (
 {
   if (string_is_equal (response, "reset"))
     {
-      settings_reset_to_factory (false, false);
+      GSettingsManager::reset_to_factory (false, false);
       adw_dialog_force_close (preferences_window);
 
       ui_show_notification_idle (_ (

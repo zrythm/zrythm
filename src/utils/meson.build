@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 util_srcs = [
@@ -14,7 +14,6 @@ util_srcs = [
   'curl.cpp',
   'datetime.cpp',
   'dialogs.cpp',
-  'dictionary.cpp',
   'env.cpp',
   'error.cpp',
   'file.cpp',

@@ -3,6 +3,7 @@
 
 io_srcs = files([
   'audio_file.cpp',
+  'file_descriptor.cpp',
   'file_import.cpp',
   'midi_file.cpp',
   ])

@@ -22,6 +22,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -334,15 +335,14 @@ plugin_filter_func (GObject * item, gpointer user_data)
         return false;
     }
 
-  /* not visible if author selected and plugin doesn't
-   * match */
+  /* not visible if author selected and plugin doesn't match */
   if (self->selected_authors->len > 0)
     {
       if (!descr->author)
         return false;
 
       visible = false;
-      uint32_t author_sym = symap_map (self->symap, descr->author);
+      uint32_t author_sym = self->symap->map (descr->author);
       for (guint i = 0; i < self->selected_authors->len; i++)
         {
           uint32_t * sym = &g_array_index (self->selected_authors, uint32_t, i);
@@ -517,7 +517,7 @@ update_internal_selections (
           GtkStringObject * str_obj = GTK_STRING_OBJECT (
             g_list_model_get_item (G_LIST_MODEL (selection_model), idx));
           uint32_t sym =
-            symap_map (self->symap, gtk_string_object_get_string (str_obj));
+            self->symap->map (gtk_string_object_get_string (str_obj));
           g_array_append_val (self->selected_authors, sym);
         }
 
@@ -780,25 +780,25 @@ on_visible_child_changed (
 
   if (child == GTK_WIDGET (self->collection_box))
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_PLUGIN_BROWSER, "plugin-browser-tab",
         ENUM_VALUE_TO_INT (PluginBrowserTab::PLUGIN_BROWSER_TAB_COLLECTION));
     }
   else if (child == GTK_WIDGET (self->author_box))
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_PLUGIN_BROWSER, "plugin-browser-tab",
         ENUM_VALUE_TO_INT (PluginBrowserTab::PLUGIN_BROWSER_TAB_AUTHOR));
     }
   else if (child == GTK_WIDGET (self->category_box))
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_PLUGIN_BROWSER, "plugin-browser-tab",
         ENUM_VALUE_TO_INT (PluginBrowserTab::PLUGIN_BROWSER_TAB_CATEGORY));
     }
   else if (child == GTK_WIDGET (self->protocol_box))
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_PLUGIN_BROWSER, "plugin-browser-tab",
         ENUM_VALUE_TO_INT (PluginBrowserTab::PLUGIN_BROWSER_TAB_PROTOCOL));
     }
@@ -823,7 +823,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
 
       if (btn == self->toggle_instruments)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
             ENUM_VALUE_TO_INT (
               PluginBrowserFilter::PLUGIN_BROWSER_FILTER_INSTRUMENT));
@@ -833,7 +833,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
         }
       else if (btn == self->toggle_effects)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
             ENUM_VALUE_TO_INT (
               PluginBrowserFilter::PLUGIN_BROWSER_FILTER_EFFECT));
@@ -843,7 +843,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
         }
       else if (btn == self->toggle_modulators)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
             ENUM_VALUE_TO_INT (
               PluginBrowserFilter::PLUGIN_BROWSER_FILTER_MODULATOR));
@@ -853,7 +853,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
         }
       else if (btn == self->toggle_midi_modifiers)
         {
-          S_SET_ENUM (
+          g_settings_set_enum (
             S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
             ENUM_VALUE_TO_INT (
               PluginBrowserFilter::PLUGIN_BROWSER_FILTER_MIDI_EFFECT));
@@ -873,7 +873,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
     }
   else
     {
-      S_SET_ENUM (
+      g_settings_set_enum (
         S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
         ENUM_VALUE_TO_INT (PluginBrowserFilter::PLUGIN_BROWSER_FILTER_NONE));
     }
@@ -991,7 +991,7 @@ plugin_browser_widget_new (void)
   PluginBrowserWidget * self = static_cast<PluginBrowserWidget *> (
     g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL));
 
-  self->symap = symap_new ();
+  self->symap = new Symap ();
 
   /* setup collections */
   GtkSelectionModel * model = create_model_for_collections ();
@@ -1028,10 +1028,11 @@ plugin_browser_widget_new (void)
 
   /* set the selected values */
   PluginBrowserTab tab = ENUM_INT_TO_VALUE (
-    PluginBrowserTab, S_GET_ENUM (S_UI_PLUGIN_BROWSER, "plugin-browser-tab"));
+    PluginBrowserTab,
+    g_settings_get_enum (S_UI_PLUGIN_BROWSER, "plugin-browser-tab"));
   PluginBrowserFilter filter = ENUM_INT_TO_VALUE (
     PluginBrowserFilter,
-    S_GET_ENUM (S_UI_PLUGIN_BROWSER, "plugin-browser-filter"));
+    g_settings_get_enum (S_UI_PLUGIN_BROWSER, "plugin-browser-filter"));
   restore_selections (self);
 
   switch (tab)
@@ -1113,7 +1114,7 @@ dispose (PluginBrowserWidget * self)
 static void
 finalize (PluginBrowserWidget * self)
 {
-  object_free_w_func_and_null (symap_free, self->symap);
+  object_delete_and_null (self->symap);
   object_free_w_func_and_null (g_array_unref, self->selected_authors);
   object_free_w_func_and_null (g_array_unref, self->selected_categories);
   object_free_w_func_and_null (g_array_unref, self->selected_protocols);

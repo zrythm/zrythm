@@ -17,6 +17,7 @@
 #include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

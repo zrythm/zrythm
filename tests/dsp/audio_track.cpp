@@ -43,12 +43,12 @@ test_fill_when_region_starts_on_loop_end (void)
   /* create audio track with region */
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
-  int             num_tracks_before = TRACKLIST->tracks.size ();
+  auto file = FileDescriptor (filepath);
+  int  num_tracks_before = TRACKLIST->tracks.size ();
 
   transport_request_pause (TRANSPORT, true);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &TRANSPORT->loop_end_pos,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &TRANSPORT->loop_end_pos,
     num_tracks_before, 1, -1, NULL, NULL);
   Track * track = tracklist_get_track (TRACKLIST, num_tracks_before);
   /*transport_request_roll (TRANSPORT);*/

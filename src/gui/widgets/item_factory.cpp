@@ -504,7 +504,7 @@ add_plugin_descr_context_menu (
 static void
 add_supported_file_context_menu (
   PopoverMenuBinWidget * bin,
-  SupportedFile *        descr)
+  FileDescriptor *       descr)
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -563,7 +563,7 @@ add_file_browser_location_context_menu (
   PopoverMenuBinWidget *      bin,
   const FileBrowserLocation * loc)
 {
-  GMenuModel * model = file_browser_location_generate_context_menu (loc);
+  GMenuModel * model = loc->generate_context_menu ();
 
   if (model)
     {
@@ -906,11 +906,10 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
             {
-              SupportedFile * descr = (SupportedFile *) obj->obj;
+              FileDescriptor * descr = (FileDescriptor *) obj->obj;
 
-              gtk_image_set_from_icon_name (
-                img, supported_file_get_icon_name (descr));
-              gtk_label_set_text (lbl, descr->label);
+              gtk_image_set_from_icon_name (img, descr->get_icon_name ());
+              gtk_label_set_text (lbl, descr->label.c_str ());
 
               /* set as drag source */
               GtkDragSource * drag_source = gtk_drag_source_new ();
@@ -966,10 +965,10 @@ item_factory_bind_cb (
             {
               FileBrowserLocation * loc = (FileBrowserLocation *) obj->obj;
 
-              const char * icon_name = file_browser_location_get_icon_name (loc);
+              const char * icon_name = loc->get_icon_name ();
               gtk_image_set_from_icon_name (img, icon_name);
 
-              gtk_label_set_text (lbl, loc->label);
+              gtk_label_set_text (lbl, loc->label_.c_str ());
               add_file_browser_location_context_menu (bin, loc);
             }
             break;

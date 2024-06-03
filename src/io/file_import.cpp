@@ -3,9 +3,9 @@
 
 #include "dsp/audio_region.h"
 #include "dsp/midi_region.h"
-#include "dsp/supported_file.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
+#include "io/file_descriptor.h"
 #include "io/file_import.h"
 #include "io/midi_file.h"
 #include "project.h"
@@ -75,31 +75,27 @@ file_import_thread_func (
 {
   FileImport * self = Z_FILE_IMPORT (task_data);
 
-  TrackType       track_type;
-  SupportedFile * file = supported_file_new_from_path (self->filepath);
-  if (
-    supported_file_type_is_supported (file->type)
-    && supported_file_type_is_audio (file->type))
+  TrackType      track_type;
+  FileDescriptor file = FileDescriptor (self->filepath);
+  if (file.is_supported () && file.is_audio ())
     {
       track_type = TrackType::TRACK_TYPE_AUDIO;
     }
-  else if (supported_file_type_is_midi (file->type))
+  else if (file.is_midi ())
     {
       track_type = TrackType::TRACK_TYPE_MIDI;
     }
   else
     {
-      char *   descr = supported_file_type_get_description (file->type);
+      char *   descr = FileDescriptor::get_type_description (file.type);
       GError * err = NULL;
       g_set_error (
         &err, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
         _ ("Unsupported file type %s"), descr);
       g_free (descr);
-      supported_file_free (file);
       g_task_return_error (task, err);
       return;
     }
-  object_free_w_func_and_null (supported_file_free, file);
 
   int num_nonempty_midi_tracks = 0;
   if (track_type == TrackType::TRACK_TYPE_MIDI)

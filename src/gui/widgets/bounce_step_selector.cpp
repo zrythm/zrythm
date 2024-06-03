@@ -4,6 +4,7 @@
 #include "dsp/exporter.h"
 #include "gui/widgets/bounce_step_selector.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"

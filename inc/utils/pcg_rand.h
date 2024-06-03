@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -15,20 +12,31 @@
 
 #include <cstdint>
 
-typedef struct PCGRand PCGRand;
+#include "ext/juce/juce.h"
 
-PCGRand *
-pcg_rand_new (void);
+/**
+ * @brief Random number generator.
+ */
+class PCGRand
+{
+public:
+  PCGRand ();
+  ~PCGRand () { clearSingletonInstance (); }
 
-/* unsigned float [0..1] */
-float
-pcg_rand_uf (PCGRand * self);
+  /* unsigned float [0..1] */
+  float uf ();
 
-/* signed float [-1..+1] */
-float
-pcg_rand_sf (PCGRand * self);
+  /* signed float [-1..+1] */
+  float sf ();
 
-uint32_t
-pcg_rand_u32 (PCGRand * self);
+  uint32_t u32 ();
+
+private:
+  uint64_t _state = 0;
+  uint64_t _inc = 0;
+
+public:
+  JUCE_DECLARE_SINGLETON_SINGLETHREADED (PCGRand, true)
+};
 
 #endif

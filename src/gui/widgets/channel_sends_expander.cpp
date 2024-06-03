@@ -8,6 +8,7 @@
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_sends_expander.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "zrythm_app.h"

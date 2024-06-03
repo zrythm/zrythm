@@ -12,6 +12,7 @@
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/monitor_section.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"

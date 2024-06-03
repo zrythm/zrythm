@@ -13,6 +13,7 @@
 #include "dsp/transport.h"
 #include "io/audio_file.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/audio.h"
 #include "utils/debug.h"

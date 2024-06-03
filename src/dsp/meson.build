@@ -84,7 +84,6 @@ audio_srcs = files([
   'scale_object.cpp',
   'snap_grid.cpp',
   'stretcher.cpp',
-  'supported_file.cpp',
   'tempo_track.cpp',
   'track.cpp',
   'track_lane.cpp',

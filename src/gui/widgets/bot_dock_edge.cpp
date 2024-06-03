@@ -15,6 +15,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
 #include "project.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"

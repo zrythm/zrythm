@@ -119,7 +119,7 @@ static LV2_URID
 map_uri (LV2_URID_Map_Handle handle, const char * uri)
 {
   LV2Apply *     lv2apply = (LV2Apply *) handle;
-  const LV2_URID id = symap_map (lv2apply->symap, uri);
+  const LV2_URID id = lv2apply->symap->map (uri);
   return id;
 }
 
@@ -127,7 +127,7 @@ static const char *
 unmap_uri (LV2_URID_Unmap_Handle handle, LV2_URID urid)
 {
   LV2Apply *   lv2apply = (LV2Apply *) handle;
-  const char * uri = symap_unmap (lv2apply->symap, urid);
+  const char * uri = lv2apply->symap->unmap (urid);
   return uri;
 }
 
@@ -186,7 +186,7 @@ cleanup (int status, LV2Apply * self)
   lilv_world_free (self->world);
   free (self->ports);
   free (self->params);
-  symap_free (self->symap);
+  delete (self->symap);
   free (self->feature_list);
   return status;
 }
@@ -311,15 +311,14 @@ print_usage (int status)
 static void
 init_urids (LV2Apply * self)
 {
-  self->symap = symap_new ();
-  self->urids.atom_Float = symap_map (self->symap, LV2_ATOM__Float);
-  self->urids.atom_Int = symap_map (self->symap, LV2_ATOM__Int);
+  self->symap = new Symap ();
+  self->urids.atom_Float = self->symap->map (LV2_ATOM__Float);
+  self->urids.atom_Int = self->symap->map (LV2_ATOM__Int);
   self->urids.bufsz_maxBlockLength =
-    symap_map (self->symap, LV2_BUF_SIZE__maxBlockLength);
+    self->symap->map (LV2_BUF_SIZE__maxBlockLength);
   self->urids.bufsz_minBlockLength =
-    symap_map (self->symap, LV2_BUF_SIZE__minBlockLength);
-  self->urids.param_sampleRate =
-    symap_map (self->symap, LV2_PARAMETERS__sampleRate);
+    self->symap->map (LV2_BUF_SIZE__minBlockLength);
+  self->urids.param_sampleRate = self->symap->map (LV2_PARAMETERS__sampleRate);
 }
 
 static void

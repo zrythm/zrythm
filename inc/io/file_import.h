@@ -14,8 +14,6 @@
 
 #include <glib.h>
 
-TYPEDEF_STRUCT (SupportedFile);
-
 G_BEGIN_DECLS
 
 /**

@@ -14,6 +14,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "project/project_init_flow_manager.h"
+#include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
@@ -167,9 +168,10 @@ test_new_from_template (void)
   char * orig_dir = g_strdup (PROJECT->dir);
   g_return_if_fail (orig_dir);
   char * filepath = g_build_filename (orig_dir, "project.zpj", NULL);
-  g_free_and_null (gZrythm->create_project_path);
-  gZrythm->create_project_path =
-    g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
+  gZrythm->create_project_path.clear ();
+  char * tmp = g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
+  gZrythm->create_project_path = tmp;
+  g_free (tmp);
   project_init_flow_manager_load_or_create_default_project (
     filepath, true, test_helper_project_init_done_cb, NULL);
   io_rmdir (orig_dir, true);
@@ -297,11 +299,10 @@ test_load_with_plugin_after_backup (void)
   char *   audio_file_path = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   Position pos;
   position_init (&pos);
-  SupportedFile * file = supported_file_new_from_path (audio_file_path);
+  FileDescriptor file = FileDescriptor (audio_file_path);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &pos, TRACKLIST->tracks.size (), 1,
-    -1, NULL, NULL);
-  object_free_w_func_and_null (supported_file_free, file);
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, TRACKLIST->tracks.size (),
+    1, -1, NULL, NULL);
 
   char * dir = g_strdup (PROJECT->dir);
 

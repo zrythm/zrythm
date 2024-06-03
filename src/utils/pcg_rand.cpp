@@ -13,53 +13,44 @@
  * ---
  */
 
-#include "utils/objects.h"
 #include "utils/pcg_rand.h"
 
 #include <glib.h>
 
 #include <time.h>
 
-typedef struct PCGRand
+PCGRand::PCGRand ()
 {
-  uint64_t _state;
-  uint64_t _inc;
-} PCGRand;
-
-PCGRand *
-pcg_rand_new (void)
-{
-  PCGRand * self = object_new (PCGRand);
-  int       foo = 0;
-  uint64_t  initseq = (uint64_t) (intptr_t) &foo;
-  self->_state = 0;
-  self->_inc = (initseq << 1) | 1;
-  pcg_rand_u32 (self);
-  self->_state += (uint64_t) (time (NULL) ^ (intptr_t) self);
-  pcg_rand_u32 (self);
-
-  return self;
+  int      foo = 0;
+  uint64_t initseq = (uint64_t) (intptr_t) &foo;
+  this->_state = 0;
+  this->_inc = (initseq << 1) | 1;
+  u32 ();
+  this->_state += (uint64_t) (time (NULL) ^ (intptr_t) this);
+  u32 ();
 }
+
+JUCE_IMPLEMENT_SINGLETON (PCGRand)
 
 /* unsigned float [0..1] */
 float
-pcg_rand_uf (PCGRand * self)
+PCGRand::uf ()
 {
-  return (float) pcg_rand_u32 (self) / 4294967295.f;
+  return (float) u32 () / 4294967295.f;
 }
 
 /* signed float [-1..+1] */
 float
-pcg_rand_sf (PCGRand * self)
+PCGRand::sf ()
 {
-  return ((float) pcg_rand_u32 (self) / 2147483647.5f) - 1.f;
+  return ((float) u32 () / 2147483647.5f) - 1.f;
 }
 
 uint32_t
-pcg_rand_u32 (PCGRand * self)
+PCGRand::u32 ()
 {
-  uint64_t oldstate = self->_state;
-  self->_state = oldstate * 6364136223846793005ULL + self->_inc;
+  uint64_t oldstate = this->_state;
+  this->_state = oldstate * 6364136223846793005ULL + this->_inc;
   uint32_t xorshifted = (uint32_t) (((oldstate >> 18u) ^ oldstate) >> 27u);
   uint32_t rot = (uint32_t) (oldstate >> 59u);
   return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));

@@ -107,17 +107,17 @@ test_solo (void)
   test_helper_zrythm_init ();
 
   /* create audio track */
-  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  FileDescriptor file = FileDescriptor (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create audio track 2 */
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
     TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
   Track * audio_track2 = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);

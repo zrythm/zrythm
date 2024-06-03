@@ -117,13 +117,13 @@ test_prepare_common (void)
   ADD_MREGION (MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
 
   /* create audio track with region */
-  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  FileDescriptor file = FileDescriptor (filepath);
   g_free (filepath);
   position_set_to_bar (&start, AUDIO_REGION_START_BAR);
   position_set_to_bar (&end, AUDIO_REGION_END_BAR);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, &start, TRACKLIST->tracks.size (),
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &start, TRACKLIST->tracks.size (),
     1, -1, NULL, NULL);
   Track * audio_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
@@ -487,10 +487,10 @@ test_remove_range_w_start_marker (void)
 
   /* create audio track */
   audio_track_pos = TRACKLIST->tracks.size ();
-  SupportedFile * file = supported_file_new_from_path (TEST_WAV2);
+  FileDescriptor file = FileDescriptor (TEST_WAV2);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, file, NULL, audio_track_pos, 1, -1, NULL,
-    NULL);
+    TrackType::TRACK_TYPE_AUDIO, NULL, &file, NULL, audio_track_pos, 1, -1,
+    NULL, NULL);
 
   /* remove range */
   Position start, end;
@@ -517,9 +517,9 @@ test_remove_range_w_objects_inside (void)
   midi_track_pos = TRACKLIST->tracks.size ();
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "1_track_with_data.mid", NULL);
-  SupportedFile * file = supported_file_new_from_path (filepath);
+  FileDescriptor file = FileDescriptor (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, NULL, midi_track_pos, 1, -1, NULL,
+    TrackType::TRACK_TYPE_MIDI, NULL, &file, NULL, midi_track_pos, 1, -1, NULL,
     NULL);
   Track * midi_track = tracklist_get_track (TRACKLIST, midi_track_pos);
 
