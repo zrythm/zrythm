@@ -106,15 +106,18 @@ if os_gnu or os_freebsd
 endif # gnu or freebsd
 
 # appdata
+gen_appdata_xml_py_filename = 'gen-appdata-xml.py'
+gen_appdata_xml_py = configure_file (
+  output: gen_appdata_xml_py_filename,
+  input: gen_appdata_xml_py_filename,
+  configuration: scripts_conf
+  )
 appdata_file_in_unformatted = custom_target (
   'appdata-xml-in-tmp',
-  input: gen_appdata_xml_wrap,
-  depend_files: gen_appdata_xml_wrap,
+  input: gen_appdata_xml_py,
   output: '@0@.appdata.xml.in.in'.format (app_id),
   command: [
-    bash, '-c', '@INPUT@' + ' "$1" "$2"',
-    '_ignored',
-    meson_build_root / '@OUTPUT@',  app_id,
+    python3, '@INPUT@', meson_build_root / '@OUTPUT@', app_id
     ])
 appdata_file_in = custom_target (
   'appdata-xml-in',

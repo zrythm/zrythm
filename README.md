@@ -8,21 +8,23 @@ Zrythm
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 
-*a highly automated and intuitive digital audio
-workstation*
+*a highly automated and intuitive digital audio workstation*
 
 ![screenshot](https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png)
 
-Zrythm is a digital audio workstation designed to be
-featureful and easy to use.
-It offers streamlined editing workflows with flexible
-tools, limitless automation capabilities, powerful
-mixing features, chord assistance and support for
-various plugin and file formats.
+Zrythm is a digital audio workstation tailored for both professionals and beginners, offering an intuitive interface and robust functionality.
+
+Key features include:
+* Streamlined editing workflows
+* Flexible tools for creative expression
+* Limitless automation capabilities
+* Powerful mixing features
+* Chord assistance for musical composition
+* Support for various plugin and file formats
 
 Zrythm is
 [free software](https://www.gnu.org/philosophy/free-sw.html)
-written in C using the
+written in C/C++ using the
 [GTK4](https://docs.gtk.org/gtk4/overview.html)
 toolkit.
 

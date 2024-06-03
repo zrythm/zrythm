@@ -80,15 +80,6 @@ gen_gtk_resources_xml_wrap = configure_file (
     'SCRIPT_NAME': src_script },
   )
 
-src_script = 'gen-appdata-xml.scm'
-gen_appdata_xml_wrap = configure_file (
-  output: 'gen-appdata-xml.sh',
-  input: generic_guile_wrap_name,
-  depfile: src_script,
-  configuration: scripts_conf + {
-    'SCRIPT_NAME': src_script },
-  )
-
 gen_completions_sh = configure_file (
   output: 'gen_completions.sh',
   input: 'gen_completions.sh',
