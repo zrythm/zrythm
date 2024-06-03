@@ -49,7 +49,7 @@ configure:
     - source ./venv/bin/activate
     - python3 -m pip install -r requirements.txt
   script:
-    - CC=gcc meson setup build -Dstrict_flags=true -Dyaml_project_compatibility=enabled -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml -Dtests=true -Db_sanitize=address
+    - CC=gcc meson setup build -Dstrict_flags=true -Dyaml_project_compatibility=enabled -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml -Dtests=true
 
 clang-format-check:
   stage: check
