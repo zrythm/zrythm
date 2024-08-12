@@ -1,29 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Track logic specific to bus tracks.
- */
-
-#include <cstdlib>
-
-#include "dsp/automation_tracklist.h"
 #include "dsp/midi_bus_track.h"
-#include "project.h"
 
-void
-midi_bus_track_init (Track * self)
+MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
+    : Track (Track::Type::MidiBus, name, pos, PortType::Event, PortType::Event)
 {
-  self->type = TrackType::TRACK_TYPE_MIDI_BUS;
-  /* GTK color picker color */
-  gdk_rgba_parse (&self->color, "#F5C211");
-  self->icon_name = g_strdup ("signal-midi");
-}
-
-void
-midi_bus_track_setup (MidiBusTrack * self)
-{
-  channel_track_setup ((ChannelTrack *) self);
+  color_ = Color ("#F5C211");
+  icon_name_ = "signal-midi";
 }

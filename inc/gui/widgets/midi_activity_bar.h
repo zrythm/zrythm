@@ -8,7 +8,7 @@
 #define __GUI_WIDGETS_MIDI_ACTIVITY_BAR_H__
 
 /**
- * \file
+ * @file
  *
  * MIDI activity bar for tracks.
  */
@@ -23,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   MIDI_ACTIVITY_BAR_WIDGET,
   GtkWidget)
 
-typedef struct Track Track;
+class Track;
 
 /**
  * @addtogroup widgets

@@ -1,31 +1,11 @@
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
- */
 
-/**
- * \file
- *
- * Track logic specific to MIDI group tracks.
- */
-
-#include <cstdlib>
-
-#include "dsp/automation_tracklist.h"
 #include "dsp/midi_group_track.h"
-#include "project.h"
 
-void
-midi_group_track_init (Track * self)
+MidiGroupTrack::MidiGroupTrack (const std::string &name, int pos)
+    : Track (Track::Type::MidiGroup, name, pos, PortType::Event, PortType::Event)
 {
-  self->type = TrackType::TRACK_TYPE_MIDI_GROUP;
-  /* GTK color picker color */
-  gdk_rgba_parse (&self->color, "#E66100");
-  self->icon_name = g_strdup ("signal-midi");
-}
-
-void
-midi_group_track_setup (Track * self)
-{
-  channel_track_setup ((ChannelTrack *) self);
+  color_ = Color ("#E66100");
+  icon_name_ = "signal-midi";
 }

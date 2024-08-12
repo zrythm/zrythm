@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_MIDI_MAPPING_ACTION_H__
@@ -6,8 +6,8 @@
 
 #include "actions/undoable_action.h"
 #include "dsp/ext_port.h"
-#include "dsp/midi_mapping.h"
 #include "dsp/port_identifier.h"
+#include "utils/icloneable.h"
 #include "utils/types.h"
 
 /**
@@ -16,96 +16,76 @@
  * @{
  */
 
-enum class MidiMappingActionType
-{
-  MIDI_MAPPING_ACTION_BIND,
-  MIDI_MAPPING_ACTION_UNBIND,
-  MIDI_MAPPING_ACTION_ENABLE,
-  MIDI_MAPPING_ACTION_DISABLE,
-};
-
 /**
  * MIDI mapping action.
  */
-typedef struct MidiMappingAction
+class MidiMappingAction final
+    : public UndoableAction,
+      public ICloneable<MidiMappingAction>,
+      public ISerializable<MidiMappingAction>
 {
-  UndoableAction parent_instance;
+public:
+  enum class Type
+  {
+    Bind,
+    Unbind,
+    Enable,
+    Disable,
+  };
 
+public:
+  MidiMappingAction () : UndoableAction (UndoableAction::Type::MidiMapping) { }
+
+  /**
+   * @brief Create a new action for enabling/disabling a MIDI mapping.
+   *
+   * @param enable
+   */
+  MidiMappingAction (int idx_to_enable_or_disable, bool enable);
+
+  /**
+   * @brief Construct a new action for unbinding a MIDI mapping.
+   */
+  MidiMappingAction (int idx_to_unbind);
+
+  /**
+   * @brief Construct a new action for binding a MIDI mapping.
+   *
+   * @param buf
+   * @param device_port
+   * @param dest_port
+   */
+  MidiMappingAction (
+    const std::array<midi_byte_t, 3> buf,
+    const ExtPort *                  device_port,
+    const Port                      &dest_port);
+
+  std::string to_string () const override;
+
+  void init_after_cloning (const MidiMappingAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override { }
+  void perform_impl () override;
+  void undo_impl () override;
+
+  void bind_or_unbind (bool bind);
+
+public:
   /** Index of mapping, if enable/disable. */
-  int idx;
+  int idx_ = -1;
 
   /** Action type. */
-  MidiMappingActionType type;
+  Type type_ = (Type) 0;
 
-  PortIdentifier * dest_port_id;
+  std::unique_ptr<PortIdentifier> dest_port_id_;
 
-  ExtPort * dev_port;
+  std::unique_ptr<ExtPort> dev_port_;
 
-  midi_byte_t buf[3];
-
-} MidiMappingAction;
-
-void
-midi_mapping_action_init_loaded (MidiMappingAction * self);
-
-/**
- * Creates a new action.
- */
-WARN_UNUSED_RESULT UndoableAction *
-midi_mapping_action_new_enable (int idx, bool enable, GError ** error);
-
-/**
- * Creates a new action.
- */
-WARN_UNUSED_RESULT UndoableAction *
-midi_mapping_action_new_bind (
-  midi_byte_t * buf,
-  ExtPort *     device_port,
-  Port *        dest_port,
-  GError **     error);
-
-/**
- * Creates a new action.
- */
-WARN_UNUSED_RESULT UndoableAction *
-midi_mapping_action_new_unbind (int idx, GError ** error);
-
-NONNULL MidiMappingAction *
-midi_mapping_action_clone (const MidiMappingAction * src);
-
-/**
- * Wrapper of midi_mapping_action_new_enable().
- */
-bool
-midi_mapping_action_perform_enable (int idx, bool enable, GError ** error);
-
-/**
- * Wrapper of midi_mapping_action_new_bind().
- */
-bool
-midi_mapping_action_perform_bind (
-  midi_byte_t * buf,
-  ExtPort *     device_port,
-  Port *        dest_port,
-  GError **     error);
-
-/**
- * Wrapper of midi_mapping_action_new_unbind().
- */
-bool
-midi_mapping_action_perform_unbind (int idx, GError ** error);
-
-int
-midi_mapping_action_do (MidiMappingAction * self, GError ** error);
-
-int
-midi_mapping_action_undo (MidiMappingAction * self, GError ** error);
-
-char *
-midi_mapping_action_stringize (MidiMappingAction * self);
-
-void
-midi_mapping_action_free (MidiMappingAction * self);
+  std::array<midi_byte_t, 3> buf_;
+};
 
 /**
  * @}

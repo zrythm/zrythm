@@ -7,11 +7,11 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/meter.h"
 #include "project.h"
-#include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_WIDGET)
@@ -85,7 +85,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
   GdkRGBA color;
-  if (peak_amp > 1.f && self->meter->port->id_.type_ == PortType::Audio)
+  if (peak_amp > 1.f && self->meter->port_->id_.type_ == PortType::Audio)
     {
       /* make higher peak brighter */
       color.red = 0.6f + 0.4f * peak;
@@ -132,11 +132,11 @@ static gboolean
 tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, MeterWidget * self)
 {
   if (
-    gtk_widget_get_mapped (GTK_WIDGET (self)) && AUDIO_ENGINE->activated
-    && engine_get_run (AUDIO_ENGINE))
+    gtk_widget_get_mapped (GTK_WIDGET (self)) && AUDIO_ENGINE->activated_
+    && AUDIO_ENGINE->run_.load ())
     {
-      meter_get_value (
-        self->meter, AUDIO_VALUE_FADER, &self->meter_val, &self->meter_peak);
+      self->meter->get_value (
+        AudioValueFormat::Fader, &self->meter_val, &self->meter_peak);
     }
   else
     {
@@ -191,11 +191,8 @@ meter_timeout (
 void
 meter_widget_setup (MeterWidget * self, Port * port, bool small)
 {
-  if (self->meter)
-    {
-      meter_free (self->meter);
-    }
-  self->meter = meter_new_for_port (port);
+  object_delete_and_null (self->meter);
+  self->meter = new Meter (*port);
   g_return_if_fail (self->meter);
 
   /* set size */
@@ -218,11 +215,9 @@ meter_widget_setup (MeterWidget * self, Port * port, bool small)
   (void) on_crossing;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, nullptr);
 
-  char buf[1200];
-  port->get_full_designation (buf);
-  /*g_debug ("meter widget set up for %s", buf);*/
+  z_trace ("meter widget set up for {}", port->get_full_designation ());
 }
 
 /**
@@ -234,7 +229,7 @@ MeterWidget *
 meter_widget_new (Port * port, int width)
 {
   MeterWidget * self =
-    static_cast<MeterWidget *> (g_object_new (METER_WIDGET_TYPE, NULL));
+    static_cast<MeterWidget *> (g_object_new (METER_WIDGET_TYPE, nullptr));
 
   meter_widget_setup (self, port, true);
 
@@ -244,7 +239,7 @@ meter_widget_new (Port * port, int width)
 static void
 finalize (MeterWidget * self)
 {
-  object_free_w_func_and_null (meter_free, self->meter);
+  object_delete_and_null (self->meter);
 
   G_OBJECT_CLASS (meter_widget_parent_class)->finalize (G_OBJECT (self));
 }

@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Piano keyboard widget.
  */
@@ -23,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   PIANO_KEYBOARD_WIDGET,
   GtkDrawingArea)
 
-typedef struct ChordDescriptor ChordDescriptor;
+class ChordDescriptor;
 
 /**
  * @addtogroup widgets

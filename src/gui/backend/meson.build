@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 backend_srcs = [
-  'arranger_object.cpp',
   'arranger_selections.cpp',
   'audio_clip_editor.cpp',
   'audio_selections.cpp',
@@ -16,7 +15,7 @@ backend_srcs = [
   'event.cpp',
   'event_manager.cpp',
   'file_manager.cpp',
-  'midi_arranger_selections.cpp',
+  'midi_selections.cpp',
   'mixer_selections.cpp',
   'piano_roll.cpp',
   'timeline.cpp',

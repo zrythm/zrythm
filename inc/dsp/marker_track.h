@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Object to hold information for the Marker track.
  */
@@ -10,8 +10,7 @@
 #ifndef __AUDIO_MARKER_TRACK_H__
 #define __AUDIO_MARKER_TRACK_H__
 
-#include <cstdint>
-
+#include "dsp/marker.h"
 #include "dsp/track.h"
 
 /**
@@ -20,66 +19,71 @@
  * @{
  */
 
-#define P_MARKER_TRACK (TRACKLIST->marker_track)
+#define P_MARKER_TRACK (TRACKLIST->marker_track_)
 
-typedef struct Marker             Marker;
-typedef struct _MarkerTrackWidget MarkerTrackWidget;
+class MarkerTrack final
+    : public Track,
+      public ICloneable<MarkerTrack>,
+      public ISerializable<MarkerTrack>
+{
+public:
+  MarkerTrack () = default;
+  MarkerTrack (int track_pos);
 
-/** MarkerTrack is just a Track. */
-typedef struct Track MarkerTrack;
+  using MarkerPtr = std::shared_ptr<Marker>;
 
-/**
- * Creates the default marker track.
- */
-MarkerTrack *
-marker_track_default (int track_pos);
+  void init_loaded () override;
 
-/**
- * Inits the marker track.
- */
-void
-marker_track_init (Track * track);
+  /**
+   * Inserts a marker to the track.
+   */
+  MarkerPtr insert_marker (MarkerPtr marker, int pos);
 
-/**
- * Inserts a marker to the track.
- */
-void
-marker_track_insert_marker (MarkerTrack * self, Marker * marker, int pos);
+  /**
+   * Adds a marker to the track.
+   */
+  MarkerPtr add_marker (MarkerPtr marker)
+  {
+    return insert_marker (marker, markers_.size ());
+  }
 
-/**
- * Adds a marker to the track.
- */
-void
-marker_track_add_marker (MarkerTrack * self, Marker * marker);
+  /**
+   * Removes all objects from the marker track.
+   *
+   * Mainly used in testing.
+   */
+  void clear_objects () override;
 
-/**
- * Removes all objects from the marker track.
- *
- * Mainly used in testing.
- */
-void
-marker_track_clear (MarkerTrack * self);
+  /**
+   * Removes a marker.
+   */
+  MarkerPtr remove_marker (Marker &marker, bool fire_events);
 
-/**
- * Removes a marker, optionally freeing it.
- */
-void
-marker_track_remove_marker (MarkerTrack * self, Marker * marker, int free);
+  bool validate () const override;
 
-bool
-marker_track_validate (MarkerTrack * self);
+  /**
+   * Returns the start marker.
+   */
+  MarkerPtr get_start_marker () const;
 
-/**
- * Returns the start marker.
- */
-Marker *
-marker_track_get_start_marker (const Track * track);
+  /**
+   * Returns the end marker.
+   */
+  MarkerPtr get_end_marker () const;
 
-/**
- * Returns the end marker.
- */
-Marker *
-marker_track_get_end_marker (const Track * track);
+  void init_after_cloning (const MarkerTrack &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void set_playback_caches () override;
+
+public:
+  std::vector<MarkerPtr> markers_;
+
+  /** Snapshots used during playback TODO unimplemented. */
+  std::vector<std::unique_ptr<Marker>> marker_snapshots_;
+};
 
 /**
  * @}

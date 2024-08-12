@@ -1,4 +1,6 @@
 {
+    // note: run the following right after configure:
+    // compdb -p builddir list > /tmp/compile_commands.json && cp /tmp/compile_commands.json builddir/compile_commands.json
     "mesonbuild.configureOptions": [
         "-Ddebug=true",
         "-Doptimization=0",
@@ -14,12 +16,16 @@
         // "-Dforce_fallback_for=gtk4,libadwaita,libpanel,xxhash,libcyaml,pangoft2,json-glib,gtksourceview5,rtmidi,rtaudio,zstd,pcre2,libsndfile,libsoxr,yyjson",
         "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml",
         "-Dyaml_project_compatibility=enabled",
-        "-Db_sanitize=address",
+        // "-Db_sanitize=address",
         "-Dstatic_tests=true",
         "-Dbackend_max_links=3"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,
+    "mesonbuild.configureEnvironment": {
+        "CC": "clang",
+        "CXX": "clang++",
+    },
     "clang-tidy.buildPath": "builddir",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/builddir",
@@ -29,4 +35,7 @@
         "--query-driver=gcc,g++"
     ],
     "clangd.checkUpdates": true,
+    "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` and references instead of pointers where possible. Prefer the `z_*` logging/debug functions instead of `g_*` and avoid `.c_str()` if not needed. prefer glibmm instead of C GLib where possible. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
+    "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` where possible.",
+    "cody.codebase": "https://github.com/zrythm/zrythm",
 }

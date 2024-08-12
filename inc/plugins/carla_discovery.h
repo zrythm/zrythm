@@ -1,29 +1,22 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-/**
- * \file
- *
- * Carla discovery.
- */
 
 #ifndef __PLUGINS_CARLA_DISCOVERY_H__
 #define __PLUGINS_CARLA_DISCOVERY_H__
 
 #include "zrythm-config.h"
 
+#include <filesystem>
+
 #ifdef HAVE_CARLA
 
 #  include "plugins/plugin_descriptor.h"
-#  include "settings/plugin_settings.h"
 #  include "utils/types.h"
 
-#  include <CarlaUtils.h>
+#  include "carla_wrapper.h"
 
-TYPEDEF_STRUCT (PluginDescriptor);
-TYPEDEF_STRUCT (PluginManager);
+class PluginDescriptor;
+class PluginManager;
 
 /**
  * @addtogroup plugins
@@ -31,47 +24,52 @@ TYPEDEF_STRUCT (PluginManager);
  * @{
  */
 
-typedef struct ZCarlaDiscovery
+class ZCarlaDiscovery
 {
+public:
+  ZCarlaDiscovery (PluginManager &owner);
+
+  void start (BinaryType btype, PluginProtocol protocol);
+
   /**
-   * Array of CarlaPluginDiscoveryHandle.
+   * @return Whether done.
    */
-  GPtrArray * handles;
+  bool idle ();
 
-  /** Array of booleans. */
-  GArray * handles_done;
+  /**
+   * Create a descriptor for the given AU plugin.
+   */
+  static std::unique_ptr<PluginDescriptor>
+  create_au_descriptor_from_info (const CarlaCachedPluginInfo * info);
 
-  PluginManager * owner;
-} ZCarlaDiscovery;
+  static std::unique_ptr<PluginDescriptor> descriptor_from_discovery_info (
+    const CarlaPluginDiscoveryInfo * info,
+    std::string_view                 sha1);
 
-ZCarlaDiscovery *
-z_carla_discovery_new (PluginManager * owner);
+private:
+  /**
+   * @brief Returns the absolute path to the carla-discovery binary.
+   *
+   * @param arch
+   * @return The path, or an empty path if an issue occurred.
+   */
+  static fs::path get_discovery_path (PluginArchitecture arch);
 
-void
-z_carla_discovery_free (ZCarlaDiscovery * self);
+public:
+  /**
+   * Array of CarlaPluginDiscoveryHandle's and a boolean whether done.
+   */
+  std::vector<std::pair<CarlaPluginDiscoveryHandle, bool>> handles_;
 
-void
-z_carla_discovery_start (
-  ZCarlaDiscovery * self,
-  BinaryType        btype,
-  ZPluginProtocol   protocol);
-
-/**
- * @return Whether done.
- */
-bool
-z_carla_discovery_idle (ZCarlaDiscovery * self);
-
-/**
- * Create a descriptor for the given AU plugin.
- */
-PluginDescriptor *
-z_carla_discovery_create_au_descriptor_from_info (
-  const CarlaCachedPluginInfo * info);
+  /**
+   * @brief Pointer to owner.
+   */
+  PluginManager * owner_ = nullptr;
+};
 
 /**
  * @}
  */
 
-#endif
-#endif
+#endif // HAVE_CARLA
+#endif // __PLUGINS_CARLA_DISCOVERY_H__

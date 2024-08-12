@@ -1,28 +1,21 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * API for Region's specific to instrument Track's.
- */
-
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
-#include <cstddef>
-#include <cstdint>
-
+#include "dsp/lane_owned_object.h"
+#include "dsp/midi_note.h"
+#include "dsp/region.h"
 #include "utils/types.h"
 
-typedef struct Track           Track;
-typedef struct Position        Position;
-typedef struct MidiNote        MidiNote;
-typedef struct Region          Region;
-typedef struct MidiEvents      MidiEvents;
-typedef struct ChordDescriptor ChordDescriptor;
-typedef struct Velocity        Velocity;
-typedef void                   MIDI_FILE;
+class Track;
+class Position;
+class MidiNote;
+class MidiEventVector;
+class ChordDescriptor;
+class Velocity;
+using MIDI_FILE = void;
 
 /**
  * @addtogroup dsp
@@ -31,280 +24,309 @@ typedef void                   MIDI_FILE;
  */
 
 /**
- * Creates a new Region for MIDI notes.
- */
-Region *
-midi_region_new (
-  const Position * start_pos,
-  const Position * end_pos,
-  unsigned int     track_name_hash,
-  int              lane_pos,
-  int              idx_inside_lane);
-
-/**
- * Creates a MIDI region from the given MIDI
- * file path, starting at the given Position.
+ * @brief A Region containing MIDI events.
  *
- * @param idx The index of this track, starting from
- *   0. This will be sequential, ie, if idx 1 is
- *   requested and the MIDI file only has tracks
- *   5 and 7, it will use track 7.
+ * MidiRegion represents a region in the timeline that holds MIDI note and
+ * controller data. It is specific to instrument/MIDI tracks and can be
+ * constructed from a MIDI file or a chord descriptor.
  */
-Region *
-midi_region_new_from_midi_file (
-  const Position * start_pos,
-  const char *     abs_path,
-  unsigned int     track_name_hash,
-  int              lane_pos,
-  int              idx_inside_lane,
-  int              idx);
+class MidiRegion final
+    : public LaneOwnedObjectImpl<MidiRegion>,
+      public RegionImpl<MidiRegion>,
+      public ICloneable<MidiRegion>,
+      public ISerializable<MidiRegion>
+{
+public:
+  // Rule of 0
+  MidiRegion () = default;
 
-/**
- * Create a region from the chord descriptor.
- *
- * Default size will be timeline snap and default
- * notes size will be editor snap.
- */
-Region *
-midi_region_new_from_chord_descr (
-  const Position *  pos,
-  ChordDescriptor * descr,
-  unsigned int      track_name_hash,
-  int               lane_pos,
-  int               idx_inside_lane);
+  /**
+   * @brief Construct a new Midi Region object
+   *
+   * @param start_pos
+   * @param end_pos
+   * @param track_name_hash
+   * @param lane_pos
+   * @param idx_inside_lane
+   */
+  MidiRegion (
+    const Position &start_pos,
+    const Position &end_pos,
+    unsigned int    track_name_hash,
+    int             lane_pos,
+    int             idx_inside_lane);
 
-/**
- * Adds the MidiNote to the given Region.
- *
- * @param pub_events Publish UI events or not.
- */
-#define midi_region_add_midi_note(region, midi_note, pub_events) \
-  midi_region_insert_midi_note ( \
-    region, midi_note, ((Region *) (region))->num_midi_notes, pub_events)
+  /**
+   * Creates a MIDI region from the given MIDI file path, starting at the given
+   * Position.
+   *
+   * @param idx The index of this track, starting from 0. This will be
+   * sequential, ie, if idx 1 is requested and the MIDI file only has tracks 5
+   * and 7, it will use track 7.
+   *
+   * @throw ZrythmException on I/O error.
+   */
+  MidiRegion (
+    const Position    &start_pos,
+    const std::string &abs_path,
+    unsigned int       track_name_hash,
+    int                lane_pos,
+    int                idx_inside_lane,
+    int                idx);
 
-/**
- * Inserts the MidiNote to the given Region.
- *
- * @param idx Index to insert at.
- * @param pub_events Publish UI events or not.
- */
-void
-midi_region_insert_midi_note (
-  Region *   region,
-  MidiNote * midi_note,
-  int        idx,
-  int        pub_events);
+  /**
+   * Create a region from the chord descriptor.
+   *
+   * Default size will be timeline snap and default
+   * notes size will be editor snap.
+   */
+  MidiRegion (
+    const Position  &pos,
+    ChordDescriptor &descr,
+    unsigned int     track_name_hash,
+    int              lane_pos,
+    int              idx_inside_lane);
 
-/**
- * Starts an unended note with the given pitch and
- * velocity and adds it to \ref Region.midi_notes.
- *
- * @param end_pos If this is NULL, it will be set to
- *   1 tick after the start_pos.
- */
-void
-midi_region_start_unended_note (
-  Region *   self,
-  Position * start_pos,
-  Position * end_pos,
-  int        pitch,
-  int        vel,
-  int        pub_events);
+  void init_loaded () override
+  {
+    for (auto &note : midi_notes_)
+      {
+        note->init_loaded ();
+      }
+  }
 
-/**
- * Returns the midi note with the given pitch from
- * the unended notes.
- *
- * Used when recording.
- *
- * @param pitch The pitch. If -1, it returns any
- *   unended note. This is useful when the loop
- *   point is met and we want to end them all.
- */
-MidiNote *
-midi_region_pop_unended_note (Region * self, int pitch);
+  /**
+   * Starts an unended note with the given pitch and velocity and adds it to
+   * @ref midi_notes_.
+   *
+   * @param end_pos If this is nullptr, it will be set to 1 tick after the
+   * start_pos.
+   */
+  void start_unended_note (
+    Position * start_pos,
+    Position * end_pos,
+    int        pitch,
+    int        vel,
+    bool       pub_events);
 
-/**
- * Fills MIDI event queue from the region.
- *
- * The events are dequeued right after the call to this function.
- *
- * @note The caller already splits calls to this function at each sub-loop
- *   inside the region, so region loop related logic is not needed.
- *
- * @param note_off_at_end Whether a note off should be added at the end frame
- *   (eg, when the caller knows there is a region loop or the region ends).
- * @param is_note_off_for_loop_or_region_end Whether @p note_off_at_end is
- *   for a region loop end or the region's end (in this case normal note offs
- *   will be sent, otherwise a single ALL NOTES OFF event will be sent).
- * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
- */
-OPTIMIZE_O3
-REALTIME
-void
-midi_region_fill_midi_events (
-  Region *                            self,
-  const EngineProcessTimeInfo * const time_nfo,
-  bool                                note_off_at_end,
-  bool                                is_note_off_for_loop_or_region_end,
-  MidiEvents *                        midi_events);
+  /**
+   * Returns the midi note with the given pitch from the unended notes.
+   *
+   * Used when recording.
+   *
+   * @param pitch The pitch. If -1, it returns any unended note. This is useful
+   * when the loop point is met and we want to end them all.
+   */
+  MidiNote * pop_unended_note (int pitch);
 
-/**
- * Prints the MidiNotes in the Region.
- *
- * Used for debugging.
- */
-void
-midi_region_print_midi_notes (Region * self);
+  /**
+   * Prints the MidiNotes in the Region.
+   *
+   * Used for debugging.
+   */
+  void print_midi_notes () const;
 
-/**
- * Gets first midi note
- */
-MidiNote *
-midi_region_get_first_midi_note (Region * region);
+  /**
+   * Gets first midi note
+   */
+  MidiNote * get_first_midi_note ();
 
-/**
- * Gets last midi note
- */
-MidiNote *
-midi_region_get_last_midi_note (Region * region);
+  /**
+   * Gets last midi note
+   */
+  MidiNote * get_last_midi_note ();
 
-/**
- * Gets highest midi note
- */
-MidiNote *
-midi_region_get_highest_midi_note (Region * region);
+  /**
+   * Gets highest midi note
+   */
+  MidiNote * get_highest_midi_note ();
 
-/**
- * Gets lowest midi note
- */
-MidiNote *
-midi_region_get_lowest_midi_note (Region * region);
+  /**
+   * Gets lowest midi note
+   */
+  MidiNote * get_lowest_midi_note ();
 
-/**
- * Removes the MIDI note from the Region.
- *
- * @param free Also free the MidiNote.
- * @param pub_event Publish an event.
- */
-void
-midi_region_remove_midi_note (
-  Region *   region,
-  MidiNote * midi_note,
-  int        free,
-  int        pub_event);
+  /**
+   * Exports the Region to an existing MIDI file instance.
+   *
+   * This must only be called when exporting single regions.
+   *
+   * @param add_region_start Add the region start offset to the positions.
+   * @param export_full Traverse loops and export the MIDI file as it would be
+   * played inside Zrythm. If this is 0, only the original region (from true
+   * start to true end) is exported.
+   * @param lanes_as_tracks Export lanes as separate tracks (only possible with
+   * MIDI type 1). This will calculate a unique MIDI track number for the
+   * region's lane.
+   * @param use_track_or_lane_pos Whether to use the track/lane position in the
+   * MIDI data. The MIDI track will be set to 1 if false.
+   */
+  NONNULL_ARGS (2)
+  void write_to_midi_file (
+    MIDI_FILE * mf,
+    const bool  add_region_start,
+    bool        export_full) const;
 
-/**
- * Removes all MIDI ntoes and their components
- * completely.
- */
-void
-midi_region_remove_all_midi_notes (Region * region);
+  /**
+   * Exports the Region to a specified MIDI file.
+   *
+   * @param full_path Absolute path to the MIDI file.
+   * @param export_full Traverse loops and export the
+   *   MIDI file as it would be played inside Zrythm.
+   *   If this is 0, only the original region (from
+   *   true start to true end) is exported.
+   */
+  void export_to_midi_file (
+    const std::string &full_path,
+    int                midi_version,
+    const bool         export_full) const;
 
-/**
- * Exports the Region to an existing MIDI file instance.
- *
- * This must only be called when exporting single regions.
- *
- * @param add_region_start Add the region start
- *   offset to the positions.
- * @param export_full Traverse loops and export the
- *   MIDI file as it would be played inside Zrythm.
- *   If this is 0, only the original region (from
- *   true start to true end) is exported.
- * @param lanes_as_tracks Export lanes as separate
- *   tracks (only possible with MIDI type 1). This
- *   will calculate a unique MIDI track number for
- *   the region's lane.
- * @param use_track_or_lane_pos Whether to use the
- *   track/lane position in the MIDI data. The
- *   MIDI track will be set to 1 if false.
- */
-NONNULL_ARGS (1, 2)
-void midi_region_write_to_midi_file (
-  const Region * self,
-  MIDI_FILE *    mf,
-  const bool     add_region_start,
-  bool           export_full);
+  /**
+   * Returns the MIDI channel that this region should be played on, starting
+   * from 1.
+   */
+  uint8_t get_midi_ch () const;
 
-/**
- * Exports the Region to a specified MIDI file.
- *
- * @param full_path Absolute path to the MIDI file.
- * @param export_full Traverse loops and export the
- *   MIDI file as it would be played inside Zrythm.
- *   If this is 0, only the original region (from
- *   true start to true end) is exported.
- */
-NONNULL void
-midi_region_export_to_midi_file (
-  const Region * self,
-  const char *   full_path,
-  int            midi_version,
-  const bool     export_full);
+  /**
+   * Returns whether the given note is not muted and starts within any
+   * playable part of the region.
+   */
+  bool is_note_playable (const MidiNote &midi_note) const;
 
-/**
- * Returns the MIDI channel that this region should
- * be played on, starting from 1.
- */
-uint8_t
-midi_region_get_midi_ch (const Region * self);
+  /**
+   * Adds the contents of the region converted into events.
+   *
+   * @param add_region_start Add the region start offset to the
+   *   positions.
+   * @param export_full Traverse loops and export the MIDI file
+   *   as it would be played inside Zrythm. If this is 0, only
+   *   the original region (from true start to true end) is
+   *   exported.
+   * @param start Events before this (global) position will be skipped.
+   * @param end Events after this (global) position will be skipped.
+   */
+  void add_events (
+    MidiEventVector &events,
+    const Position * start,
+    const Position * end,
+    const bool       add_region_start,
+    const bool       full) const;
 
-/**
- * Returns whether the given note is not muted and starts within any
- * playable part of the region.
- */
-bool
-midi_region_is_note_playable (const Region * self, const MidiNote * midi_note);
+  /**
+   * Fills in the array with all the velocities in the project that are within
+   * or outside the range given.
+   *
+   * @param inside Whether to find velocities inside the range (true) or
+   * outside (false).
+   */
+  void get_velocities_in_range (
+    const Position *         start_pos,
+    const Position *         end_pos,
+    std::vector<Velocity *> &velocities,
+    bool                     inside);
 
-/**
- * Adds the contents of the region converted into events.
- *
- * @param add_region_start Add the region start offset to the
- *   positions.
- * @param export_full Traverse loops and export the MIDI file
- *   as it would be played inside Zrythm. If this is 0, only
- *   the original region (from true start to true end) is
- *   exported.
- * @param start Events before this (global) position will be
- *   skipped.
- * @param end Events after this (global) position will be
- *   skipped.
- */
-void
-midi_region_add_events (
-  const Region *   self,
-  MidiEvents *     events,
-  const Position * start,
-  const Position * end,
-  const bool       add_region_start,
-  const bool       full);
+  /**
+   * @copydoc ArrangerObject::print_to_str()
+   */
+  std::string print_to_str () const override;
 
-/**
- * Fills in the array with all the velocities in
- * the project that are within or outside the
- * range given.
- *
- * @param inside Whether to find velocities inside
- *   the range (1) or outside (0).
- */
-void
-midi_region_get_velocities_in_range (
-  const Region *   self,
-  const Position * start_pos,
-  const Position * end_pos,
-  Velocity ***     velocities,
-  int *            num_velocities,
-  size_t *         velocities_size,
-  int              inside);
+  void append_children (
+    std::vector<RegionOwnedObjectImpl<MidiRegion> *> &children) const override
+  {
+    for (const auto &mn : midi_notes_)
+      {
+        children.push_back (mn.get ());
+      }
+  }
 
-/**
- * Frees members only but not the midi region itself.
- *
- * Regions should be free'd using region_free().
- */
-void
-midi_region_free_members (Region * self);
+  void add_ticks_to_children (const double ticks) override
+  {
+    for (auto &mn : midi_notes_)
+      {
+        mn->move (ticks);
+      }
+  }
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  ArrangerSelections * get_arranger_selections () const override;
+  ArrangerWidget *     get_arranger_for_children () const override;
+
+  void init_after_cloning (const MidiRegion &other) override
+  {
+    clone_unique_ptr_container (midi_notes_, other.midi_notes_);
+    LaneOwnedObjectImpl::copy_members_from (other);
+    Region::copy_members_from (other);
+    TimelineObject::copy_members_from (other);
+    NameableObject::copy_members_from (other);
+    LoopableObject::copy_members_from (other);
+    MuteableObject::copy_members_from (other);
+    LengthableObject::copy_members_from (other);
+    ColoredObject::copy_members_from (other);
+    ArrangerObject::copy_members_from (other);
+  }
+
+  /**
+   * Set positions to the exact values in the export region as it is played
+   * inside Zrythm.
+   *
+   * @param[in,out] start_pos start position of the event
+   * @param[in,out] end_pos end position of the event
+   * @param repeat_index repetition counter for loop offset
+   */
+  void get_note_positions_in_export (
+    Position * start_pos,
+    Position * end_pos,
+    int        repeat_index) const;
+
+  /**
+   * Returns if the given positions are in a given
+   * region as it is played inside Zrythm.
+   *
+   * @param offset_in_ticks Offset value if note is
+   * repeated inside a loop
+   */
+  bool is_note_export_start_pos_in_full_region (const Position start_pos) const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  /**
+   * MIDI notes.
+   */
+  std::vector<std::shared_ptr<MidiNote>> midi_notes_;
+
+  /**
+   * Unended notes started in recording with MIDI NOTE ON signal but haven't
+   * received a NOTE OFF yet.
+   *
+   * This is also used temporarily when reading from MIDI files.
+   *
+   * @note These are present in @ref midi_notes_ and must not be deleted
+   * separately.
+   */
+  std::vector<MidiNote *> unended_notes_ = std::vector<MidiNote *> (12000);
+};
+
+inline bool
+operator== (const MidiRegion &lhs, const MidiRegion &rhs)
+{
+  return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
+         && static_cast<const TimelineObject &> (lhs)
+              == static_cast<const TimelineObject &> (rhs)
+         && static_cast<const NameableObject &> (lhs)
+              == static_cast<const NameableObject &> (rhs)
+         && static_cast<const LoopableObject &> (lhs)
+              == static_cast<const LoopableObject &> (rhs)
+         && static_cast<const ColoredObject &> (lhs)
+              == static_cast<const ColoredObject &> (rhs)
+         && static_cast<const MuteableObject &> (lhs)
+              == static_cast<const MuteableObject &> (rhs)
+         && static_cast<const LengthableObject &> (lhs)
+              == static_cast<const LengthableObject &> (rhs)
+         && static_cast<const ArrangerObject &> (lhs)
+              == static_cast<const ArrangerObject &> (rhs);
+}
 
 /**
  * @}

@@ -1,341 +1,219 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "io/serialization/plugin.h"
 #include "plugins/cached_plugin_descriptors.h"
-#include "utils/error.h"
-#include "utils/file.h"
-#include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#define CACHED_PLUGIN_DESCRIPTORS_JSON_TYPE "Zrythm Cached Plugins"
-#define CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME "cached-plugins.json"
+#include <giomm.h>
 
-static CachedPluginDescriptors *
-create_new (void)
-{
-  CachedPluginDescriptors * self = object_new (CachedPluginDescriptors);
-  self->descriptors =
-    g_ptr_array_new_full (100, (GDestroyNotify) plugin_descriptor_free);
-  self->blacklisted_sha1s = g_ptr_array_new_full (100, (GDestroyNotify) g_free);
+constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
+  "cached-plugins.json";
 
-  return self;
-}
-
-static char *
-get_cached_plugin_descriptors_file_path (void)
+fs::path
+CachedPluginDescriptors::get_file_path ()
 {
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  char * zrythm_dir = dir_mgr->get_dir (USER_TOP);
-  g_return_val_if_fail (zrythm_dir, NULL);
+  auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  z_return_val_if_fail (!zrythm_dir.empty (), "");
 
-  return g_build_filename (
-    zrythm_dir, CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME, NULL);
+  return fs::path (zrythm_dir) / CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME;
 }
 
 void
-cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self)
+CachedPluginDescriptors::define_fields (const Context &ctx)
 {
-  g_message ("Serializing cached plugin descriptors...");
-
-  /* create a mutable doc */
-  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
-  yyjson_mut_val * root = yyjson_mut_obj (doc);
-  g_return_if_fail (root);
-  yyjson_mut_doc_set_root (doc, root);
-
-  yyjson_mut_obj_add_str (
-    doc, root, "type", CACHED_PLUGIN_DESCRIPTORS_JSON_TYPE);
-  yyjson_mut_obj_add_int (
-    doc, root, "format", CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION);
-
-  yyjson_mut_val * descriptors_arr =
-    yyjson_mut_obj_add_arr (doc, root, "descriptors");
-  for (size_t i = 0; i < self->descriptors->len; i++)
-    {
-      const PluginDescriptor * descr =
-        (const PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
-      yyjson_mut_val * descr_obj = yyjson_mut_arr_add_obj (doc, descriptors_arr);
-      GError * err = NULL;
-      plugin_descriptor_serialize_to_json (doc, descr_obj, descr, &err);
-      g_return_if_fail (err == NULL);
-    }
-  yyjson_mut_val * blacklisted_sha1s_arr =
-    yyjson_mut_obj_add_arr (doc, root, "blacklistedSha1s");
-  for (size_t i = 0; i < self->blacklisted_sha1s->len; i++)
-    {
-      const char * str =
-        (const char *) g_ptr_array_index (self->blacklisted_sha1s, i);
-      yyjson_mut_arr_add_str (doc, blacklisted_sha1s_arr, str);
-    }
-
-  /* to string */
-  char * json = yyjson_mut_write (doc, YYJSON_WRITE_PRETTY_TWO_SPACES, NULL);
-  yyjson_mut_doc_free (doc);
-  g_message ("done writing json to string");
-  g_return_if_fail (json);
-
-  char * path = get_cached_plugin_descriptors_file_path ();
-  g_return_if_fail (path && strlen (path) > 2);
-  g_message ("Writing cached plugin descriptors to %s...", path);
-  GError * err = NULL;
-  g_file_set_contents (path, json, -1, &err);
-  if (err != NULL)
-    {
-      g_warning ("Unable to write cached plugins file: %s", err->message);
-      g_error_free (err);
-      g_free (path);
-      g_free (json);
-      g_return_if_reached ();
-    }
-
-  g_free (path);
-  g_free (json);
+  using T = ISerializable<CachedPluginDescriptors>;
+  T::serialize_fields (
+    ctx, T::make_field ("descriptors", descriptors_),
+    T::make_field ("blacklistedSha1s", blacklisted_sha1s_));
 }
 
-static CachedPluginDescriptors *
-deserialize_from_json_str (const char * json, GError ** error)
+void
+CachedPluginDescriptors::serialize_to_file ()
 {
-  yyjson_doc * doc =
-    yyjson_read_opts ((char *) json, strlen (json), 0, NULL, NULL);
-  yyjson_val * root = yyjson_doc_get_root (doc);
-  if (!root)
+  z_info ("Serializing cached plugin descriptors...");
+
+  auto json_str = serialize_to_json_string ();
+
+  auto path = get_file_path ();
+  z_return_if_fail (
+    !path.empty () && path.is_absolute () && path.has_parent_path ());
+  z_debug ("Writing cached plugin descriptors to {}...", path);
+  try
     {
-      g_set_error_literal (error, 0, 0, "Failed to create root obj");
-      return NULL;
+      Glib::file_set_contents (path, json_str.c_str ());
     }
-
-  yyjson_obj_iter it = yyjson_obj_iter_with (root);
-  if (!yyjson_equals_str (
-        yyjson_obj_iter_get (&it, "type"), CACHED_PLUGIN_DESCRIPTORS_JSON_TYPE))
+  catch (const Glib::FileError &e)
     {
-      g_set_error_literal (error, 0, 0, "Not a valid cached plugins file");
-      return NULL;
+      throw ZrythmException (format_str (
+        "Unable to write cached plugin descriptors: {}", e.what ()));
     }
-
-  int format = yyjson_get_int (yyjson_obj_iter_get (&it, "format"));
-  if (format != CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION)
-    {
-      g_set_error_literal (error, 0, 0, "Invalid version");
-      return NULL;
-    }
-
-  CachedPluginDescriptors * self = create_new ();
-
-  yyjson_val *    descriptors_arr = yyjson_obj_iter_get (&it, "descriptors");
-  yyjson_arr_iter descriptors_it = yyjson_arr_iter_with (descriptors_arr);
-  yyjson_val *    descr_obj = NULL;
-  while ((descr_obj = yyjson_arr_iter_next (&descriptors_it)))
-    {
-      PluginDescriptor * descr = plugin_descriptor_new ();
-      g_ptr_array_add (self->descriptors, descr);
-      plugin_descriptor_deserialize_from_json (doc, descr_obj, descr, error);
-    }
-  yyjson_val * blacklisted_sha1s_arr =
-    yyjson_obj_iter_get (&it, "blacklistedSha1s");
-  yyjson_arr_iter blacklisted_sha1s_it =
-    yyjson_arr_iter_with (blacklisted_sha1s_arr);
-  yyjson_val * blacklisted_sha1_obj = NULL;
-  while ((blacklisted_sha1_obj = yyjson_arr_iter_next (&blacklisted_sha1s_it)))
-    {
-      g_ptr_array_add (
-        self->blacklisted_sha1s,
-        g_strdup (yyjson_get_str (blacklisted_sha1_obj)));
-    }
-
-  yyjson_doc_free (doc);
-
-  return self;
 }
 
-CachedPluginDescriptors *
-cached_plugin_descriptors_read_or_new (void)
+std::unique_ptr<CachedPluginDescriptors>
+CachedPluginDescriptors::read_or_new ()
 {
-  GError * err = NULL;
-  char *   path = get_cached_plugin_descriptors_file_path ();
-  if (!file_exists (path))
+  auto ret = std::unique_ptr<CachedPluginDescriptors> ();
+  auto path = get_file_path ();
+  if (!fs::exists (path))
     {
-      g_message ("Cached plugin descriptors file at %s does not exist", path);
-return_new_instance:
-      g_free (path);
-      CachedPluginDescriptors * self = create_new ();
-      return self;
-    }
-  char * json = NULL;
-  g_file_get_contents (path, &json, NULL, &err);
-  if (err != NULL)
-    {
-      g_critical ("Failed to create CachedPluginDescriptors from %s", path);
-      g_free (err);
-      g_free (path);
-      return NULL;
+      z_info ("Cached plugin descriptors file at {} does not exist", path);
+      return ret;
     }
 
-  CachedPluginDescriptors * self = deserialize_from_json_str (json, &err);
-  if (!self)
+  std::string json;
+  try
     {
-      g_message (
-        "Found invalid cached plugin descriptor file (error: %s). "
+      json = Glib::file_get_contents (path);
+    }
+  catch (const Glib::Error &e)
+    {
+      z_warning ("Failed to create CachedPluginDescriptors from {}", path);
+      return ret;
+    }
+
+  try
+    {
+      ret->deserialize_from_json_string (json.c_str ());
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning (
+        "Found invalid cached plugin descriptor file (error: {}). "
         "Purging file and creating a new one.",
-        err->message);
-      g_error_free (err);
-      GFile * file = g_file_new_for_path (path);
-      g_file_delete (file, NULL, NULL);
-      g_object_unref (file);
-      g_free (json);
-      goto return_new_instance;
-    }
-  g_free (json);
-  g_free (path);
+        e.what ());
 
-  for (size_t i = 0; i < self->descriptors->len; i++)
-    {
-      PluginDescriptor * descr =
-        (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
-      descr->category =
-        plugin_descriptor_string_to_category (descr->category_str);
+      try
+        {
+          delete_file ();
+        }
+      catch (const ZrythmException &e)
+        {
+          z_warning (e.what ());
+        }
+
+      return {};
     }
 
-  return self;
+// FIXME: do this in the deserialize override of PluginDescriptor
+#if 0
+for (size_t i = 0; i < self->descriptors->len; i++)
+  {
+    PluginDescriptor * descr =
+      (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
+    descr->category = plugin_descriptor_string_to_category (descr->category_str);
+  }
+#endif
+
+  return ret;
 }
 
-static void
-delete_file (void)
+void
+CachedPluginDescriptors::delete_file ()
 {
-  char *  path = get_cached_plugin_descriptors_file_path ();
-  GFile * file = g_file_new_for_path (path);
-  if (!g_file_delete (file, NULL, NULL))
+  auto path = get_file_path ();
+  z_return_if_fail (
+    !path.empty () && path.is_absolute () && path.has_parent_path ());
+  try
     {
-      g_warning ("Failed to delete cached plugin descriptors file");
+      fs::remove (path);
     }
-  g_free (path);
-  g_object_unref (file);
+  catch (const fs::filesystem_error &e)
+    {
+      throw ZrythmException (format_str (
+        "Failed to remove invalid cached plugin descriptors file: {}",
+        e.what ()));
+    }
 }
 
 bool
-cached_plugin_descriptors_is_blacklisted (
-  CachedPluginDescriptors * self,
-  const char *              sha1)
+CachedPluginDescriptors::is_blacklisted (std::string_view sha1)
 {
-  for (size_t i = 0; i < self->blacklisted_sha1s->len; i++)
+  return std::any_of (
+    blacklisted_sha1s_.begin (), blacklisted_sha1s_.end (),
+    [sha1] (const auto &blacklisted_sha1) { return blacklisted_sha1 == sha1; });
+}
+
+std::vector<PluginDescriptor>
+CachedPluginDescriptors::get_valid_descriptors_for_sha1 (std::string_view sha1)
+{
+  z_return_val_if_fail (!sha1.empty (), {});
+
+  auto sha1_exists = [sha1] (const auto &descr) { return descr.sha1_ == sha1; };
+
+  std::vector<PluginDescriptor> res;
+  std::ranges::copy_if (descriptors_, std::back_inserter (res), sha1_exists);
+  return res;
+}
+
+bool
+CachedPluginDescriptors::contains_sha1 (
+  std::string_view sha1,
+  bool             check_valid,
+  bool             check_blacklisted)
+{
+  z_return_val_if_fail (!sha1.empty (), false);
+  if (check_valid)
     {
-      const char * cur_sha1 =
-        (const char *) g_ptr_array_index (self->blacklisted_sha1s, i);
-      if (string_is_equal (cur_sha1, sha1))
+      if (
+        std::any_of (
+          descriptors_.begin (), descriptors_.end (),
+          [sha1] (const auto &cur_descr) { return cur_descr.sha1_ == sha1; }))
         {
           return true;
         }
     }
+  if (check_blacklisted)
+    {
+      if (
+        std::any_of (
+          blacklisted_sha1s_.begin (), blacklisted_sha1s_.end (),
+          [sha1] (const auto &cur_sha1) { return cur_sha1 == sha1; }))
+        {
+          return true;
+        }
+    }
+
   return false;
 }
 
-unsigned int
-cached_plugin_descriptors_find (
-  CachedPluginDescriptors * self,
-  GPtrArray *               arr,
-  const PluginDescriptor *  descr,
-  const char *              sha1,
-  bool                      check_valid,
-  bool                      check_blacklisted)
+void
+CachedPluginDescriptors::blacklist (std::string_view sha1, bool serialize)
 {
-  unsigned int num_found = 0;
-  if (check_valid)
-    {
-      for (size_t i = 0; i < self->descriptors->len; i++)
-        {
-          PluginDescriptor * cur_descr =
-            (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
-          if (
-            (sha1 && string_is_equal (cur_descr->sha1, sha1))
-            || (descr && plugin_descriptor_is_same_plugin (cur_descr, descr)))
-            {
-              g_ptr_array_add (arr, cur_descr);
-              num_found++;
-            }
-        }
-    }
-  if (check_blacklisted)
-    {
-      for (size_t i = 0; i < self->blacklisted_sha1s->len; i++)
-        {
-          char * cur_sha1 =
-            (char *) g_ptr_array_index (self->blacklisted_sha1s, i);
-          if (sha1 && string_is_equal (cur_sha1, sha1))
-            {
-              g_ptr_array_add (arr, cur_sha1);
-              num_found++;
-            }
-        }
-    }
+  z_return_if_fail (!sha1.empty ());
 
-  return num_found;
+  blacklisted_sha1s_.push_back (std::string (sha1));
+  if (serialize)
+    {
+      serialize_to_file_no_throw ();
+    }
 }
 
 void
-cached_plugin_descriptors_blacklist (
-  CachedPluginDescriptors * self,
-  const char *              sha1,
-  bool                      _serialize)
+CachedPluginDescriptors::add (const PluginDescriptor &descr, bool serialize)
 {
-  g_return_if_fail (sha1 && self);
-
-  g_ptr_array_add (self->blacklisted_sha1s, g_strdup (sha1));
-  if (_serialize)
+  PluginDescriptor new_descr = descr;
+  if (!descr.path_.empty ())
     {
-      cached_plugin_descriptors_serialize_to_file (self);
+      auto file = Gio::File::create_for_path (descr.path_);
+      new_descr.ghash_ = file->hash ();
+    }
+  descriptors_.push_back (new_descr);
+
+  if (serialize)
+    {
+      serialize_to_file_no_throw ();
     }
 }
 
-/**
- * Appends a descriptor to the cache.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- */
 void
-cached_plugin_descriptors_add (
-  CachedPluginDescriptors * self,
-  const PluginDescriptor *  descr,
-  int                       _serialize)
+CachedPluginDescriptors::clear ()
 {
-  PluginDescriptor * new_descr = plugin_descriptor_clone (descr);
-  if (descr->path)
-    {
-      GFile * file = g_file_new_for_path (descr->path);
-      new_descr->ghash = g_file_hash (file);
-      g_object_unref (file);
-    }
-  g_ptr_array_add (self->descriptors, new_descr);
-
-  if (_serialize)
-    {
-      cached_plugin_descriptors_serialize_to_file (self);
-    }
-}
-
-/**
- * Clears the descriptors and removes the cache file.
- */
-void
-cached_plugin_descriptors_clear (CachedPluginDescriptors * self)
-{
-  g_ptr_array_remove_range (self->descriptors, 0, self->descriptors->len);
-  g_ptr_array_remove_range (
-    self->blacklisted_sha1s, 0, self->blacklisted_sha1s->len);
-
+  descriptors_.clear ();
+  blacklisted_sha1s_.clear ();
   delete_file ();
-}
-
-void
-cached_plugin_descriptors_free (CachedPluginDescriptors * self)
-{
-  object_free_w_func_and_null (g_ptr_array_unref, self->descriptors);
-  object_free_w_func_and_null (g_ptr_array_unref, self->blacklisted_sha1s);
-
-  object_zero_and_free (self);
 }

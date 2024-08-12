@@ -1,14 +1,12 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_track.h"
 #include "dsp/scale_object.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/scale_object.h"
 #include "project.h"
-#include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -21,18 +19,17 @@
 void
 scale_object_recreate_pango_layouts (ScaleObject * self)
 {
-  ArrangerObject * obj = (ArrangerObject *) self;
-
-  if (!PANGO_IS_LAYOUT (self->layout))
+  if (!PANGO_IS_LAYOUT (self->layout_.get ()))
     {
       PangoFontDescription * desc;
-      self->layout = gtk_widget_create_pango_layout (
-        GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
+      self->layout_ = PangoLayoutUniquePtr (gtk_widget_create_pango_layout (
+        GTK_WIDGET (self->get_arranger ()), nullptr));
       desc = pango_font_description_from_string (SCALE_OBJECT_NAME_FONT);
-      pango_layout_set_font_description (self->layout, desc);
+      pango_layout_set_font_description (self->layout_.get (), desc);
       pango_font_description_free (desc);
     }
-  pango_layout_get_pixel_size (self->layout, &obj->textw, &obj->texth);
+  pango_layout_get_pixel_size (
+    self->layout_.get (), &self->textw_, &self->texth_);
 }
 
 /**
@@ -41,42 +38,39 @@ scale_object_recreate_pango_layouts (ScaleObject * self)
 void
 scale_object_draw (ScaleObject * self, GtkSnapshot * snapshot)
 {
-  ArrangerObject * obj = (ArrangerObject *) self;
-  ArrangerWidget * arranger = arranger_object_get_arranger (obj);
+  ArrangerWidget * arranger = self->get_arranger ();
 
   /* set color */
-  GdkRGBA color = P_CHORD_TRACK->color;
-  ui_get_arranger_object_color (
-    &color, arranger->hovered_object == obj, scale_object_is_selected (self),
-    false, false);
+  auto color = Color::get_arranger_object_color (
+    P_CHORD_TRACK->color_, self->is_hovered (), self->is_selected (), false,
+    false);
 
   /* create clip */
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
-    (float) obj->full_rect.x, (float) obj->full_rect.y,
-    (float) obj->full_rect.width, (float) obj->full_rect.height);
+    (float) self->full_rect_.x, (float) self->full_rect_.y,
+    (float) self->full_rect_.width, (float) self->full_rect_.height);
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, (float) obj->full_rect.height / 6.0f);
+    &rounded_rect, &graphene_rect, (float) self->full_rect_.height / 6.0f);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill */
-  gtk_snapshot_append_color (snapshot, &color, &graphene_rect);
+  z_gtk_snapshot_append_color (snapshot, color, &graphene_rect);
 
-  char * str = musical_scale_to_string (self->scale);
+  auto str = self->scale_.to_string ();
 
-  GdkRGBA c2;
-  ui_get_contrast_color (&color, &c2);
+  auto c2 = color.get_contrast_color ();
 
   gtk_snapshot_save (snapshot);
   {
     graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
-      (float) obj->full_rect.x + SCALE_OBJECT_NAME_PADDING,
-      (float) obj->full_rect.y + SCALE_OBJECT_NAME_PADDING);
+      (float) self->full_rect_.x + SCALE_OBJECT_NAME_PADDING,
+      (float) self->full_rect_.y + SCALE_OBJECT_NAME_PADDING);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
-  pango_layout_set_text (self->layout, str, -1);
-  g_free (str);
-  gtk_snapshot_append_layout (snapshot, self->layout, &c2);
+  pango_layout_set_text (self->layout_.get (), str.c_str (), -1);
+  auto c2_rgba = c2.to_gdk_rgba ();
+  gtk_snapshot_append_layout (snapshot, self->layout_.get (), &c2_rgba);
   gtk_snapshot_restore (snapshot);
 
   /* pop clip */

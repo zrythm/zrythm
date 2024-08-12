@@ -1,21 +1,17 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Hardware processor for the routing graph.
- */
 
 #ifndef __AUDIO_HARDWARE_PROCESSOR_H__
 #define __AUDIO_HARDWARE_PROCESSOR_H__
 
+#include "dsp/audio_port.h"
 #include "dsp/ext_port.h"
-#include "dsp/port.h"
+#include "dsp/midi_port.h"
+#include "utils/icloneable.h"
 
 #include "gtk_wrapper.h"
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * @addtogroup dsp
@@ -23,140 +19,122 @@ typedef struct AudioEngine AudioEngine;
  * @{
  */
 
-#define HW_PROCESSOR_SCHEMA_VERSION 1
-
-#define HW_IN_PROCESSOR (AUDIO_ENGINE->hw_in_processor)
-#define HW_OUT_PROCESSOR (AUDIO_ENGINE->hw_out_processor)
-
-#define hw_processor_is_in_active_project(self) \
-  (self->engine && engine_is_in_active_project ((self)->engine))
+#define HW_IN_PROCESSOR (AUDIO_ENGINE->hw_in_processor_)
+#define HW_OUT_PROCESSOR (AUDIO_ENGINE->hw_out_processor_)
 
 /**
  * Hardware processor.
  */
-typedef struct HardwareProcessor
+class HardwareProcessor final
+    : public ICloneable<HardwareProcessor>,
+      public ISerializable<HardwareProcessor>
 {
-  int schema_version;
+public:
+  // Rule of 0
+  HardwareProcessor () = default;
+
+  HardwareProcessor (bool input, AudioEngine * engine);
+
+  void init_loaded (AudioEngine * engine);
+
+  bool is_in_active_project () const;
 
   /**
-   * Whether this is the processor at the start of
-   * the graph (input) or at the end (output).
-   */
-  bool is_input;
-
-  /**
-   * Ports selected by the user in the preferences
-   * to enable.
+   * Rescans the hardware ports and appends any missing ones.
    *
-   * To be cached at startup (need restart for changes
-   * to take effect).
+   * @note This is a GSource callback.
+   */
+  static bool rescan_ext_ports (HardwareProcessor * self);
+
+  /**
+   * Finds an ext port from its ID (type + full name).
+   *
+   * @see ExtPort.get_id()
+   */
+  ExtPort * find_ext_port (const std::string &id);
+
+  /**
+   * Finds a port from its ID (type + full name).
+   *
+   * @see ExtPort.get_id()
+   */
+  template <typename T = Port> T * find_port (const std::string &id);
+
+  /**
+   * Sets up the ports but does not start them.
+   */
+  void setup ();
+
+  /**
+   * Starts or stops the ports.
+   *
+   * @param activate True to activate, false to deactivate
+   */
+  void activate (bool activate);
+
+  /**
+   * Processes the data.
+   */
+  REALTIME
+  void process (nframes_t nframes);
+
+  /**
+   * To be used during serialization.
+   */
+  void init_after_cloning (const HardwareProcessor &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  template <typename T>
+  std::unique_ptr<T>
+  create_port_for_ext_port (const ExtPort &ext_port, PortFlow flow);
+
+public:
+  /**
+   * Whether this is the processor at the start of the graph (input) or at the
+   * end (output).
+   */
+  bool is_input_ = false;
+
+  /**
+   * Ports selected by the user in the preferences to enable.
+   *
+   * To be cached at startup (need restart for changes to take effect).
    *
    * This is only for inputs.
    */
-  char ** selected_midi_ports;
-  int     num_selected_midi_ports;
-  char ** selected_audio_ports;
-  int     num_selected_audio_ports;
+  std::vector<std::string> selected_midi_ports_;
+  std::vector<std::string> selected_audio_ports_;
 
   /**
    * All known external ports.
    */
-  ExtPort ** ext_audio_ports;
-  int        num_ext_audio_ports;
-  size_t     ext_audio_ports_size;
-  ExtPort ** ext_midi_ports;
-  int        num_ext_midi_ports;
-  size_t     ext_midi_ports_size;
+  std::vector<std::unique_ptr<ExtPort>> ext_audio_ports_;
+  std::vector<std::unique_ptr<ExtPort>> ext_midi_ports_;
 
   /**
-   * Ports to be used by Zrythm, corresponding to the
-   * external ports.
+   * Ports to be used by Zrythm, corresponding to the external ports.
    */
-  Port ** audio_ports;
-  int     num_audio_ports;
-  Port ** midi_ports;
-  int     num_midi_ports;
+  std::vector<std::unique_ptr<AudioPort>> audio_ports_;
+  std::vector<std::unique_ptr<MidiPort>>  midi_ports_;
 
   /** Whether set up already. */
-  bool setup;
+  bool setup_ = false;
 
   /** Whether currently active. */
-  bool activated;
+  bool activated_ = false;
 
-  guint rescan_timeout_id;
+  guint rescan_timeout_id_ = 0;
 
   /** Pointer to owner engine, if any. */
-  AudioEngine * engine;
+  AudioEngine * engine_ = nullptr;
+};
 
-} HardwareProcessor;
-
-COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
-  HardwareProcessor * self,
-  AudioEngine *       engine);
-
-/**
- * Returns a new empty instance.
- */
-COLD WARN_UNUSED_RESULT HardwareProcessor *
-hardware_processor_new (bool input, AudioEngine * engine);
-
-/**
- * Rescans the hardware ports and appends any missing
- * ones.
- *
- * @note This is a GSource callback.
- */
-bool
-hardware_processor_rescan_ext_ports (HardwareProcessor * self);
-
-/**
- * Finds an ext port from its ID (type + full name).
- *
- * @see ext_port_get_id()
- */
-ExtPort *
-hardware_processor_find_ext_port (HardwareProcessor * self, const char * id);
-
-/**
- * Finds a port from its ID (type + full name).
- *
- * @see ext_port_get_id()
- */
-Port *
-hardware_processor_find_port (HardwareProcessor * self, const char * id);
-
-/**
- * Sets up the ports but does not start them.
- *
- * @return Non-zero on fail.
- */
-int
-hardware_processor_setup (HardwareProcessor * self);
-
-/**
- * Starts or stops the ports.
- *
- * @param activate True to activate, false to
- *   deactivate
- */
-void
-hardware_processor_activate (HardwareProcessor * self, bool activate);
-
-/**
- * Processes the data.
- */
-REALTIME
-void
-hardware_processor_process (HardwareProcessor * self, nframes_t nframes);
-
-/**
- * To be used during serialization.
- */
-HardwareProcessor *
-hardware_processor_clone (const HardwareProcessor * src);
-
-void
-hardware_processor_free (HardwareProcessor * self);
+extern template std::unique_ptr<MidiPort>
+HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
+extern template std::unique_ptr<AudioPort>
+HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 
 /**
  * @}

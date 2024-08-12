@@ -1,239 +1,135 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <cstdlib>
 
 #include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
-#include "dsp/scale.h"
 #include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-/**
- * Inits a chord track (e.g. when cloning).
- */
-void
-chord_track_init (Track * self)
+ChordTrack::ChordTrack (int pos)
+    : Track (Track::Type::Chord, _ ("Chords"), pos, PortType::Event, PortType::Event)
 {
-  self->type = TrackType::TRACK_TYPE_CHORD;
-  /* GTK color picker color */
-  gdk_rgba_parse (&self->color, "#1C71D8");
-  self->icon_name = g_strdup ("minuet-chords");
+  color_ = Color ("#1C71D8");
+  icon_name_ = "minuet-chords";
 }
 
-/**
- * Creates a new chord track.
- */
-ChordTrack *
-chord_track_new (int track_pos)
-{
-  ChordTrack * self = track_new (
-    TrackType::TRACK_TYPE_CHORD, track_pos, _ ("Chords"), F_WITHOUT_LANE);
-
-  return self;
-}
-
-/**
- * Inserts a chord region to the Track at the given
- * index.
- */
 void
-chord_track_insert_chord_region (Track * self, Region * region, int idx)
+ChordTrack::init_loaded ()
 {
-  g_return_if_fail (idx >= 0);
-  array_double_size_if_full (
-    self->chord_regions, self->num_chord_regions, self->chord_regions_size,
-    Region *);
-  for (int i = self->num_chord_regions; i > idx; i--)
+  for (auto &scale : scales_)
     {
-      self->chord_regions[i] = self->chord_regions[i - 1];
-      self->chord_regions[i]->id.idx = i;
-      region_update_identifier (self->chord_regions[i]);
+      scale->init_loaded ();
     }
-  self->num_chord_regions++;
-  self->chord_regions[idx] = region;
-  region->id.idx = idx;
-  region_update_identifier (region);
-}
-
-/**
- * Inserts a scale to the track.
- */
-void
-chord_track_insert_scale (ChordTrack * self, ScaleObject * scale, int pos)
-{
-  g_warn_if_fail (self->type == TrackType::TRACK_TYPE_CHORD && scale);
-
-  array_double_size_if_full (
-    self->scales, self->num_scales, self->scales_size, ScaleObject *);
-  array_insert (self->scales, self->num_scales, pos, scale);
-
-  for (int i = pos; i < self->num_scales; i++)
+  for (auto &chord_region : regions_)
     {
-      ScaleObject * m = self->scales[i];
-      scale_object_set_index (m, i);
+      chord_region->track_name_hash_ =
+        dynamic_cast<Track &> (*this).get_name_hash ();
+      chord_region->init_loaded ();
     }
-
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, scale);
 }
 
-/**
- * Adds a scale to the track.
- */
-void
-chord_track_add_scale (ChordTrack * self, ScaleObject * scale)
+std::shared_ptr<ScaleObject>
+ChordTrack::insert_scale (std::shared_ptr<ScaleObject> scale, int idx)
 {
-  chord_track_insert_scale (self, scale, self->num_scales);
+  assert (idx >= 0);
+  scales_.insert (scales_.begin () + idx, std::move (scale));
+  for (size_t i = 0; i < scales_.size (); i++)
+    {
+      auto &s = scales_[i];
+      s->set_index_in_chord_track (i);
+    }
+  auto &ret = scales_[idx];
+
+  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
+
+  return ret;
 }
 
-/**
- * Returns the ScaleObject at the given Position
- * in the TimelineArranger.
- */
 ScaleObject *
-chord_track_get_scale_at_pos (const Track * ct, const Position * pos)
+ChordTrack::get_scale_at_pos (const Position pos) const
 {
-  ScaleObject *    scale = NULL;
-  ArrangerObject * s_obj;
-  for (int i = ct->num_scales - 1; i >= 0; i--)
-    {
-      scale = ct->scales[i];
-      s_obj = (ArrangerObject *) scale;
-      if (position_is_before_or_equal (&s_obj->pos, pos))
-        return scale;
-    }
-  return NULL;
+  auto it = std::ranges::find_if (
+    scales_ | std::views::reverse,
+    [&pos] (const auto &scale) { return scale->pos_ <= pos; });
+
+  return it != scales_.rend () ? (*it).get () : nullptr;
 }
 
-/**
- * Returns the ChordObject at the given Position
- * in the TimelineArranger.
- */
 ChordObject *
-chord_track_get_chord_at_pos (const Track * ct, const Position * pos)
+ChordTrack::get_chord_at_pos (const Position pos) const
 {
-  Region * region = track_get_region_at_pos (ct, pos, false);
-
+  auto region = get_region_at_pos (pos, false);
   if (!region)
     {
-      return NULL;
+      return nullptr;
     }
 
-  signed_frame_t local_frames = (signed_frame_t)
-    region_timeline_frames_to_local (region, pos->frames, F_NORMALIZE);
+  auto local_frames = (signed_frame_t) region->timeline_frames_to_local (
+    pos.frames_, F_NORMALIZE);
 
-  ChordObject *    chord = NULL;
-  ArrangerObject * c_obj;
-  int              i;
-  for (i = region->num_chord_objects - 1; i >= 0; i--)
-    {
-      chord = region->chord_objects[i];
-      c_obj = (ArrangerObject *) chord;
-      if (c_obj->pos.frames <= local_frames)
-        return chord;
-    }
-  return NULL;
+  auto it = std::ranges::find_if (
+    region->chord_objects_ | std::views::reverse,
+    [local_frames] (const auto &co) {
+      return co->pos_.frames_ <= local_frames;
+    });
+
+  return it != region->chord_objects_.rend () ? (*it).get () : nullptr;
 }
 
-/**
- * Removes all objects from the chord track.
- *
- * Mainly used in testing.
- */
 void
-chord_track_clear (ChordTrack * self)
+ChordTrack::remove_scale (ScaleObject &scale)
 {
-  g_return_if_fail (
-    IS_TRACK (self) && self->type == TrackType::TRACK_TYPE_CHORD);
+  // Deselect the scale
+  scale.select (false, false, false);
 
-  for (int i = 0; i < self->num_scales; i++)
+  // Find and remove the scale from the vector
+  auto it =
+    std::find_if (scales_.begin (), scales_.end (), [&scale] (const auto &s) {
+      return s.get () == &scale;
+    });
+  z_return_if_fail (it != scales_.end ());
+
+  int pos = std::distance (scales_.begin (), it);
+  scales_.erase (it);
+
+  scale.index_in_chord_track_ = -1;
+
+  // Update indices of remaining scales
+  for (size_t i = pos; i < scales_.size (); i++)
     {
-      ScaleObject * scale = self->scales[i];
-      chord_track_remove_scale (self, scale, 1);
-    }
-  for (int i = 0; i < self->num_chord_regions; i++)
-    {
-      Region * region = self->chord_regions[i];
-      track_remove_region (self, region, 0, 1);
-    }
-}
-
-bool
-chord_track_validate (Track * self)
-{
-  for (int i = 0; i < self->num_scales; i++)
-    {
-      ScaleObject * m = self->scales[i];
-      g_return_val_if_fail (m->index == i, false);
-    }
-
-  for (int i = 0; i < self->num_chord_regions; i++)
-    {
-      Region * r = self->chord_regions[i];
-      g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
-      g_return_val_if_fail (chord_region_validate (r), false);
-    }
-
-  return true;
-}
-
-/**
- * Removes a scale from the chord Track.
- */
-void
-chord_track_remove_scale (ChordTrack * self, ScaleObject * scale, bool free)
-{
-  g_return_if_fail (IS_TRACK (self) && IS_SCALE_OBJECT (scale));
-
-  /* deselect */
-  arranger_object_select (
-    (ArrangerObject *) scale, F_NO_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-
-  int pos = -1;
-  array_delete_return_pos (self->scales, self->num_scales, scale, pos);
-  g_return_if_fail (pos >= 0);
-
-  scale->index = -1;
-
-  for (int i = pos; i < self->num_scales; i++)
-    {
-      ScaleObject * m = self->scales[i];
-      scale_object_set_index (m, i);
-    }
-
-  if (free)
-    {
-      arranger_object_free ((ArrangerObject *) scale);
+      scales_[i]->set_index_in_chord_track (static_cast<int> (i));
     }
 
   EVENTS_PUSH (
-    EventType::ET_ARRANGER_OBJECT_REMOVED,
-    ArrangerObjectType::ARRANGER_OBJECT_TYPE_SCALE_OBJECT);
+    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::ScaleObject);
 }
 
-/**
- * Removes a region from the chord track.
- */
-void
-chord_track_remove_region (ChordTrack * self, Region * region)
+bool
+ChordTrack::validate () const
 {
-  g_return_if_fail (IS_TRACK (self) && IS_REGION (region));
+  if (!ChannelTrack::validate ())
+    return false;
 
-  array_delete (self->chord_regions, self->num_chord_regions, region);
-
-  for (int i = region->id.idx; i < self->num_chord_regions; i++)
+  for (const auto &region : regions_)
     {
-      Region * r = self->chord_regions[i];
-      r->id.idx = i;
-      region_update_identifier (r);
+      z_return_val_if_fail (
+        region->validate (Track::is_in_active_project (), 0), false);
     }
+
+  for (size_t i = 0; i < scales_.size (); i++)
+    {
+      auto &m = scales_[i];
+      z_return_val_if_fail (
+        m->index_in_chord_track_ == static_cast<int> (i), false);
+    }
+
+  return true;
 }

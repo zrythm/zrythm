@@ -1,14 +1,16 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_TRACK_CANVAS_H__
 #define __GUI_WIDGETS_TRACK_CANVAS_H__
 
 /**
- * \file
+ * @file
  *
  * Track canvas.
  */
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -20,9 +22,9 @@ G_DECLARE_FINAL_TYPE (
   TRACK_CANVAS_WIDGET,
   GtkWidget)
 
-typedef struct _TrackWidget TrackWidget;
+TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 
-typedef struct _TrackCanvasWidget
+using TrackCanvasWidget = struct _TrackCanvasWidget
 {
   GtkWidget parent_instance;
 
@@ -41,10 +43,10 @@ typedef struct _TrackCanvasWidget
   int last_width;
   int last_height;
 
-  char * last_track_icon_name;
+  std::string last_track_icon_name;
 
   GdkTexture * track_icon;
-} TrackCanvasWidget;
+};
 
 void
 track_canvas_widget_setup (TrackCanvasWidget * self, TrackWidget * parent);

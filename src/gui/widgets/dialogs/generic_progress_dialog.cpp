@@ -1,20 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Generic dialog.
- */
-
 #include <cstdio>
 
-#include "dsp/engine.h"
 #include "gui/widgets/dialogs/generic_progress_dialog.h"
-#include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/io.h"
-#include "utils/math.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -188,7 +178,7 @@ GenericProgressDialogWidget *
 generic_progress_dialog_widget_new (void)
 {
   return Z_GENERIC_PROGRESS_DIALOG_WIDGET (
-    g_object_new (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE, NULL));
+    g_object_new (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE, nullptr));
 }
 
 /**
@@ -222,7 +212,7 @@ generic_progress_dialog_widget_setup (
     }
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (prv->progress_bar), (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (prv->progress_bar), (GtkTickCallback) tick_cb, self, nullptr);
 }
 
 static void

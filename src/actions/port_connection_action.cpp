@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
@@ -7,108 +7,81 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 void
-port_connection_action_init_loaded (PortConnectionAction * self)
+PortConnectionAction::init_after_cloning (const PortConnectionAction &other)
 {
-  /* no need */
+  UndoableAction::copy_members_from (other);
+  type_ = other.type_;
+  connection_ =
+    other.connection_
+      ? std::make_unique<PortConnection> (*other.connection_)
+      : nullptr;
+  val_ = other.val_;
 }
 
-/**
- * Create a new action.
- */
-UndoableAction *
-port_connection_action_new (
-  PortConnectionActionType type,
-  PortIdentifier *         src_id,
-  PortIdentifier *         dest_id,
-  float                    new_val,
-  GError **                error)
+PortConnectionAction::PortConnectionAction (
+  Type                   type,
+  const PortIdentifier * src_id,
+  const PortIdentifier * dest_id,
+  float                  new_val)
+    : type_ (type), val_ (new_val)
 {
-  PortConnectionAction * self = object_new (PortConnectionAction);
-  UndoableAction *       ua = (UndoableAction *) self;
-  undoable_action_init (ua, UndoableActionType::UA_PORT_CONNECTION);
-
-  /* check for existing connection to get values */
-  const PortConnection * conn = port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, src_id, dest_id);
+  const PortConnection * conn =
+    PORT_CONNECTIONS_MGR->find_connection (*src_id, *dest_id);
   if (conn)
-    self->connection = port_connection_clone (conn);
+    connection_ = std::make_unique<PortConnection> (*conn);
   else
-    self->connection =
-      port_connection_new (src_id, dest_id, 1.f, F_NOT_LOCKED, F_ENABLE);
-  self->type = type;
-  self->val = new_val;
-
-  return ua;
+    connection_ =
+      std::make_unique<PortConnection> (*src_id, *dest_id, 1.f, false, true);
 }
 
-PortConnectionAction *
-port_connection_action_clone (const PortConnectionAction * src)
+void
+PortConnectionAction::undo_impl ()
 {
-  PortConnectionAction * self = object_new (PortConnectionAction);
-  self->parent_instance = src->parent_instance;
-
-  self->type = src->type;
-  self->connection = port_connection_clone (src->connection);
-  self->val = src->val;
-
-  return self;
+  do_or_undo (false);
 }
 
-bool
-port_connection_action_perform (
-  PortConnectionActionType type,
-  PortIdentifier *         src_id,
-  PortIdentifier *         dest_id,
-  float                    new_val,
-  GError **                error)
+void
+PortConnectionAction::perform_impl ()
 {
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_connection_action_new, error, type, src_id, dest_id, new_val, error);
+  do_or_undo (true);
 }
 
-static int
-port_connection_action_do_or_undo (
-  PortConnectionAction * self,
-  bool                   _do,
-  GError **              error)
+void
+PortConnectionAction::do_or_undo (bool _do)
 {
-  Port * src = Port::find_from_identifier (self->connection->src_id);
-  Port * dest = Port::find_from_identifier (self->connection->dest_id);
-  g_return_val_if_fail (src && dest, -1);
-  PortConnection * prj_connection = port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, self->connection->src_id, self->connection->dest_id);
+  Port * src = Port::find_from_identifier (connection_->src_id_);
+  Port * dest = Port::find_from_identifier (connection_->dest_id_);
+  z_return_if_fail (src && dest);
+  auto prj_connection = PORT_CONNECTIONS_MGR->find_connection (
+    connection_->src_id_, connection_->dest_id_);
 
-  switch (self->type)
+  switch (type_)
     {
-    case PortConnectionActionType::PORT_CONNECTION_CONNECT:
-    case PortConnectionActionType::PORT_CONNECTION_DISCONNECT:
-      if (
-        (self->type == PortConnectionActionType::PORT_CONNECTION_CONNECT && _do)
-        || (self->type == PortConnectionActionType::PORT_CONNECTION_DISCONNECT && !_do))
+    case Type::Connect:
+    case Type::Disconnect:
+      if ((type_ == Type::Connect && _do) || (type_ == Type::Disconnect && !_do))
         {
-          if (!src->can_be_connected_to (dest))
+          if (!src->can_be_connected_to (*dest))
             {
               g_warning ("ports cannot be connected");
-              return -1;
+              return;
             }
-          port_connections_manager_ensure_connect (
-            PORT_CONNECTIONS_MGR, &src->id_, &dest->id_, 1.f, F_NOT_LOCKED,
-            F_ENABLE);
+          PORT_CONNECTIONS_MGR->ensure_connect (
+            src->id_, dest->id_, 1.f, false, true);
           if (ZRYTHM_TESTING)
             {
-              int num_dests = port_connections_manager_get_sources_or_dests (
-                PORT_CONNECTIONS_MGR, NULL, &src->id_, false);
-              g_return_val_if_fail (num_dests > 0, -1);
-              int num_srcs = port_connections_manager_get_sources_or_dests (
-                PORT_CONNECTIONS_MGR, NULL, &dest->id_, true);
-              g_return_val_if_fail (num_srcs > 0, -1);
+              int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
+                nullptr, src->id_, false);
+              g_return_if_fail (num_dests > 0);
+              int num_srcs = PORT_CONNECTIONS_MGR->get_sources_or_dests (
+                nullptr, dest->id_, true);
+              g_return_if_fail (num_srcs > 0);
             }
 
           /* set base value if cv -> control */
@@ -116,80 +89,51 @@ port_connection_action_do_or_undo (
             src->id_.type_ == PortType::CV
             && dest->id_.type_ == PortType::Control)
             {
-              dest->base_value_ = dest->control_;
+              auto dest_control_port = dynamic_cast<ControlPort *> (dest);
+              dest_control_port->base_value_ = dest_control_port->control_;
             }
         }
       else
         {
-          port_connections_manager_ensure_disconnect (
-            PORT_CONNECTIONS_MGR, &src->id_, &dest->id_);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (src->id_, dest->id_);
         }
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
       break;
-    case PortConnectionActionType::PORT_CONNECTION_ENABLE:
-      prj_connection->enabled = _do ? true : false;
+    case Type::Enable:
+      prj_connection->enabled_ = _do;
       break;
-    case PortConnectionActionType::PORT_CONNECTION_DISABLE:
-      prj_connection->enabled = _do ? false : true;
+    case Type::Disable:
+      prj_connection->enabled_ = !_do;
       break;
-    case PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER:
+    case Type::ChangeMultiplier:
       {
-        float val_before = prj_connection->multiplier;
-        prj_connection->multiplier = self->val;
-        self->val = val_before;
+        float val_before = prj_connection->multiplier_;
+        prj_connection->multiplier_ = val_;
+        val_ = val_before;
       }
       break;
-    default:
-      break;
     }
 
-  EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, NULL);
-
-  return 0;
+  EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr);
 }
 
-int
-port_connection_action_do (PortConnectionAction * self, GError ** error)
+std::string
+PortConnectionAction::to_string () const
 {
-  return port_connection_action_do_or_undo (self, true, error);
-}
-
-int
-port_connection_action_undo (PortConnectionAction * self, GError ** error)
-{
-  return port_connection_action_do_or_undo (self, false, error);
-}
-
-char *
-port_connection_action_stringize (PortConnectionAction * self)
-{
-  switch (self->type)
+  switch (type_)
     {
-    case PortConnectionActionType::PORT_CONNECTION_CONNECT:
-      return g_strdup (_ ("Connect ports"));
-      break;
-    case PortConnectionActionType::PORT_CONNECTION_DISCONNECT:
-      return g_strdup (_ ("Disconnect ports"));
-      break;
-    case PortConnectionActionType::PORT_CONNECTION_ENABLE:
-      return g_strdup (_ ("Enable port connection"));
-      break;
-    case PortConnectionActionType::PORT_CONNECTION_DISABLE:
-      return g_strdup (_ ("Disable port connection"));
-      break;
-    case PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER:
-      return g_strdup (_ ("Change port connection"));
-      break;
+    case Type::Connect:
+      return _ ("Connect ports");
+    case Type::Disconnect:
+      return _ ("Disconnect ports");
+    case Type::Enable:
+      return _ ("Enable port connection");
+    case Type::Disable:
+      return _ ("Disable port connection");
+    case Type::ChangeMultiplier:
+      return _ ("Change port connection");
     default:
       g_warn_if_reached ();
+      return "";
     }
-  g_return_val_if_reached (NULL);
-}
-
-void
-port_connection_action_free (PortConnectionAction * self)
-{
-  object_free_w_func_and_null (port_connection_free, self->connection);
-
-  object_zero_and_free (self);
 }

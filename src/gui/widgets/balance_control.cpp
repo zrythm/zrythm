@@ -1,19 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <cmath>
-#include <cstdlib>
 
 #include "actions/tracklist_selections.h"
 #include "dsp/port.h"
 #include "gui/widgets/balance_control.h"
-#include "gui/widgets/bot_bar.h"
-#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/track.h"
-#include "project.h"
-#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/ui.h"
@@ -24,12 +16,32 @@
 
 G_DEFINE_TYPE (BalanceControlWidget, balance_control_widget, GTK_TYPE_WIDGET)
 
-#define GET_VAL ((*self->getter) (self->object))
-#define SET_VAL(real) ((*self->setter) (self->object, real))
+#define GET_VAL (self->getter (self->object))
+#define SET_VAL(real) (self->setter (self->object, real))
 
 #define TEXT_FONT "Bold 8"
 #define TEXT_PADDING 3.0
 #define LINE_WIDTH 3.0
+
+static void
+perform_action (
+  BalanceControlWidget * self,
+  ChannelTrack *         track,
+  float                  before,
+  float                  after,
+  bool                   already_edited)
+{
+  try
+    {
+      UNDO_MANAGER->perform (std::make_unique<SingleTrackFloatAction> (
+        SingleTrackFloatAction::EditType::Pan, track, before, after,
+        already_edited));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to change balance"));
+    }
+}
 
 /**
  * Returns the pan string.
@@ -66,7 +78,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float half_width = (float) width / 2.f;
 
   /* draw filled bg */
-  GdkRGBA color = UI_COLORS->matcha;
+  GdkRGBA color = UI_COLORS->matcha.to_gdk_rgba ();
   color.alpha = 0.4f;
   if (self->hovered || self->dragged)
     {
@@ -105,11 +117,9 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw text */
   PangoLayout *  layout = self->layout;
   PangoRectangle pangorect;
-  color = Z_GDK_RGBA_INIT (
-    UI_COLORS->bright_text.red, UI_COLORS->bright_text.green,
-    UI_COLORS->bright_text.blue, color.alpha);
+  color = UI_COLORS->bright_text.to_gdk_rgba_with_alpha (color.alpha);
   pango_layout_set_text (layout, "L", -1);
-  pango_layout_get_pixel_extents (layout, NULL, &pangorect);
+  pango_layout_get_pixel_extents (layout, nullptr, &pangorect);
 
   gtk_snapshot_save (snapshot);
   {
@@ -121,7 +131,7 @@ balance_control_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_restore (snapshot);
 
   pango_layout_set_text (layout, "R", -1);
-  pango_layout_get_pixel_extents (layout, NULL, &pangorect);
+  pango_layout_get_pixel_extents (layout, nullptr, &pangorect);
 
   gtk_snapshot_save (snapshot);
   {
@@ -234,16 +244,9 @@ on_drag_end (
     IS_CHANNEL ((Channel *) self->object)
     && !math_floats_equal_epsilon (self->balance_at_start, GET_VAL, 0.0001f))
     {
-      Channel * ch = static_cast<Channel *> (self->object);
-      Track    &track = ch->get_track ();
-      GError *  err = NULL;
-      bool      ret = tracklist_selections_action_perform_edit_single_float (
-        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track,
-        self->balance_at_start, GET_VAL, true, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
-        }
+      auto * ch = static_cast<Channel *> (self->object);
+      auto   track = ch->get_track ();
+      perform_action (self, track, self->balance_at_start, GET_VAL, true);
     }
 }
 
@@ -257,7 +260,7 @@ show_context_menu (BalanceControlWidget * self, double x, double y)
 
   char tmp[600];
   sprintf (tmp, "app.reset-stereo-balance::%p", self->port);
-  menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("Reset"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", self->port);
@@ -282,13 +285,13 @@ on_right_click (
 }
 
 static void
-set_val_with_action (void * object, const char * str)
+set_val_with_action (void * object, const std::string &str)
 {
-  BalanceControlWidget * self = (BalanceControlWidget *) object;
+  auto *                 self = (BalanceControlWidget *) object;
   float                  val;
   const char *           err_value_msg =
     _ ("Please enter a decimal number between -100 and 100");
-  if (math_is_string_valid_float (str, &val))
+  if (math_is_string_valid_float (str.c_str (), &val))
     {
       if (val <= 100.f && val >= -100.f)
         {
@@ -309,20 +312,13 @@ set_val_with_action (void * object, const char * str)
 
   if (!math_floats_equal_epsilon (val, GET_VAL, 0.0001f))
     {
-      Channel * ch = static_cast<Channel *> (self->object);
-      Track    &track = ch->get_track ();
-      GError *  err = NULL;
-      bool      ret = tracklist_selections_action_perform_edit_single_float (
-        EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track, GET_VAL, val,
-        false, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
-        }
+      auto * ch = static_cast<Channel *> (self->object);
+      auto   track = ch->get_track ();
+      perform_action (self, track, GET_VAL, val, false);
     }
 }
 
-static const char *
+static std::string
 get_val_as_string (void * object)
 {
   static char str[60];
@@ -347,16 +343,9 @@ on_click (
         GTK_EVENT_CONTROLLER (gesture));
       if (state & GDK_CONTROL_MASK)
         {
-          Channel * ch = static_cast<Channel *> (self->object);
-          Track    &track = ch->get_track ();
-          GError *  err = NULL;
-          bool ret = tracklist_selections_action_perform_edit_single_float (
-            EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, &track, GET_VAL,
-            0.5f, false, &err);
-          if (!ret)
-            {
-              HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
-            }
+          auto * ch = static_cast<Channel *> (self->object);
+          auto   track = ch->get_track ();
+          perform_action (self, track, GET_VAL, 0.5f, false);
         }
     }
   else if (n_press == 2)
@@ -395,11 +384,12 @@ balance_control_widget_new (
   GenericFloatGetter getter,
   GenericFloatSetter setter,
   void *             object,
-  Port *             port,
+  ControlPort *      port,
   int                height)
 {
   BalanceControlWidget * self = static_cast<BalanceControlWidget *> (g_object_new (
-    BALANCE_CONTROL_WIDGET_TYPE, "visible", 1, "height-request", height, NULL));
+    BALANCE_CONTROL_WIDGET_TYPE, "visible", 1, "height-request", height,
+    nullptr));
   self->getter = getter;
   self->setter = setter;
   self->object = object;
@@ -469,7 +459,8 @@ balance_control_widget_init (BalanceControlWidget * self)
   gdk_rgba_parse (&self->start_color, "rgba(0%,100%,0%,1.0)");
   gdk_rgba_parse (&self->end_color, "rgba(0%,50%,50%,1.0)");
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_margin_start (GTK_WIDGET (self), 2);
@@ -480,13 +471,13 @@ balance_control_widget_init (BalanceControlWidget * self)
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   PangoFontDescription * desc;
-  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
   desc = pango_font_description_from_string (TEXT_FONT);
   pango_layout_set_font_description (self->layout, desc);
   pango_font_description_free (desc);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), balance_control_tick_cb, self, NULL);
+    GTK_WIDGET (self), balance_control_tick_cb, self, nullptr);
 }
 
 static void

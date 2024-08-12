@@ -5,66 +5,52 @@
 
 #include <cstdlib>
 
+#include "actions/tracklist_selections.h"
 #include "dsp/foldable_track.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-void
-foldable_track_init (Track * self)
-{
-  if (self->type == TrackType::TRACK_TYPE_FOLDER)
-    {
-      /* GTK color picker color */
-      gdk_rgba_parse (&self->color, "#865E3C");
-      self->icon_name = g_strdup ("fluentui-folder-regular");
-    }
-}
-
-/**
- * Used to check if soloed/muted/etc.
- */
 bool
-foldable_track_is_status (Track * self, FoldableTrackMixerStatus status)
+FoldableTrack::is_status (MixerStatus status) const
 {
-  g_return_val_if_fail (self->tracklist, false);
-  bool all_soloed = self->size > 1;
+  z_return_val_if_fail (tracklist_, false);
+  bool all_soloed = size_ > 1;
   bool has_channel_tracks = false;
-  for (int i = 1; i < self->size; i++)
+  for (int i = 1; i < size_; i++)
     {
-      int     pos = self->pos + i;
-      Track * child = tracklist_get_track (self->tracklist, pos);
+      int     pos = pos_ + i;
+      Track * child = tracklist_->get_track (pos);
       g_return_val_if_fail (IS_TRACK_AND_NONNULL (child), false);
 
-      if (track_type_has_channel (child->type))
+      if (child->has_channel ())
         has_channel_tracks = true;
       else
         continue;
 
+      auto ch_child = dynamic_cast<ChannelTrack *> (child);
       switch (status)
         {
-        case FoldableTrackMixerStatus::FOLDABLE_TRACK_MIXER_STATUS_MUTED:
-          if (!track_get_muted (child))
+        case MixerStatus::Muted:
+          if (!ch_child->get_muted ())
             return false;
           break;
-        case FoldableTrackMixerStatus::FOLDABLE_TRACK_MIXER_STATUS_SOLOED:
-          if (!track_get_soloed (child))
+        case MixerStatus::Soloed:
+          if (!ch_child->get_soloed ())
             return false;
           break;
-        case FoldableTrackMixerStatus::FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED:
-          if (!track_get_implied_soloed (child))
+        case MixerStatus::ImpliedSoloed:
+          if (!ch_child->get_implied_soloed ())
             return false;
           break;
-        case FoldableTrackMixerStatus::FOLDABLE_TRACK_MIXER_STATUS_LISTENED:
-          if (!track_get_listened (child))
+        case MixerStatus::Listened:
+          if (!ch_child->get_listened ())
             return false;
           break;
         }
@@ -72,74 +58,94 @@ foldable_track_is_status (Track * self, FoldableTrackMixerStatus status)
   return has_channel_tracks && all_soloed;
 }
 
-/**
- * Returns whether @p child is a folder child of
- * @p self.
- */
 bool
-foldable_track_is_direct_child (Track * self, Track * child)
+FoldableTrack::is_direct_child (const Track &child) const
 {
-  GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (child, parents, true);
+  std::vector<FoldableTrack *> parents;
+  child.add_folder_parents (parents, true);
 
-  bool match = parents->len > 0;
+  bool match = !parents.empty ();
   if (match)
     {
-      Track * parent = (Track *) g_ptr_array_index (parents, 0);
-      if (parent != self)
+      auto parent = parents.front ();
+      if (parent != this)
         {
           match = false;
         }
     }
-  g_ptr_array_unref (parents);
 
   return match;
 }
 
-/**
- * Returns whether @p child is a folder child of
- * @p self.
- */
 bool
-foldable_track_is_child (Track * self, Track * child)
+FoldableTrack::is_child (const Track &child) const
 {
-  GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (child, parents, false);
+  std::vector<FoldableTrack *> parents;
+  child.add_folder_parents (parents, false);
 
   bool match = false;
-  for (size_t i = 0; i < parents->len; i++)
+  for (auto parent : parents)
     {
-      Track * parent = (Track *) g_ptr_array_index (parents, i);
-      if (parent == self)
+      if (parent == this)
         {
           match = true;
           break;
         }
     }
-  g_ptr_array_unref (parents);
 
   return match;
 }
 
-/**
- * Adds to the size recursively.
- *
- * This must only be called from the lowest-level
- * foldable track.
- */
 void
-foldable_track_add_to_size (Track * self, int delta)
+FoldableTrack::add_to_size (int delta)
 {
-  GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (self, parents, false);
+  std::vector<FoldableTrack *> parents;
+  add_folder_parents (parents, false);
 
-  self->size += delta;
-  g_debug ("new %s size: %d (added %d)", self->name, self->size, delta);
-  for (size_t i = 0; i < parents->len; i++)
+  size_ += delta;
+  z_debug ("new %s size: %d (added %d)", name_, size_, delta);
+  for (auto parent : parents)
     {
-      Track * parent = (Track *) g_ptr_array_index (parents, i);
-      parent->size += delta;
-      g_debug ("new %s size: %d (added %d)", parent->name, parent->size, delta);
+      parent->size_ += delta;
+      z_debug (
+        "new {} size: {} (added {})", parent->name_, parent->size_, delta);
     }
-  g_ptr_array_unref (parents);
+}
+
+void
+FoldableTrack::
+  set_folded (bool folded, bool trigger_undo, bool auto_select, bool fire_events)
+{
+  z_info ("Setting track %s folded (%d)", name_, folded);
+  if (auto_select)
+    {
+      select (F_SELECT, F_EXCLUSIVE, fire_events);
+    }
+
+  if (trigger_undo)
+    {
+      z_return_if_fail (
+        TRACKLIST_SELECTIONS->get_num_tracks () == 1
+        && TRACKLIST_SELECTIONS->get_highest_track () == this);
+
+      try
+        {
+          UNDO_MANAGER->perform (std::make_unique<FoldTracksAction> (
+            TRACKLIST_SELECTIONS->gen_tracklist_selections ().get (), folded));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (_ ("Cannot set track folded"));
+          return;
+        }
+    }
+  else
+    {
+      folded_ = folded;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (EventType::ET_TRACK_FOLD_CHANGED, this);
+        }
+    }
 }

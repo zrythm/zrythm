@@ -1,18 +1,16 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-#include "dsp/engine.h"
 #include "dsp/midi_function.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 /**
@@ -21,17 +19,13 @@
 char *
 midi_function_type_to_string_id (MidiFunctionType type)
 {
-  const char * type_str = midi_function_type_to_string (type);
-  char *       ret = g_strdup (type_str);
-  g_return_val_if_fail (ret, NULL);
-  for (size_t i = 0; i < strlen (ret); i++)
-    {
-      ret[i] = g_ascii_tolower (ret[i]);
-      if (ret[i] == ' ')
-        ret[i] = '-';
-    }
+  const auto type_str = MidiFunctionType_to_string (type);
+  char *     type_str_lower = g_strdup (type_str.c_str ());
+  string_to_lower (type_str.c_str (), type_str_lower);
+  char * substituted = string_replace (type_str_lower, " ", "-");
+  g_free (type_str_lower);
 
-  return ret;
+  return substituted;
 }
 
 /**
@@ -41,8 +35,8 @@ MidiFunctionType
 midi_function_string_id_to_type (const char * id)
 {
   for (
-    size_t i = ENUM_VALUE_TO_INT (MidiFunctionType::MIDI_FUNCTION_CRESCENDO);
-    i <= ENUM_VALUE_TO_INT (MidiFunctionType::MIDI_FUNCTION_STRUM); i++)
+    size_t i = ENUM_VALUE_TO_INT (MidiFunctionType::Crescendo);
+    i <= ENUM_VALUE_TO_INT (MidiFunctionType::Strum); i++)
     {
       MidiFunctionType cur = ENUM_INT_TO_VALUE (MidiFunctionType, i);
       char *           str = midi_function_type_to_string_id (cur);
@@ -51,224 +45,199 @@ midi_function_string_id_to_type (const char * id)
       if (eq)
         return cur;
     }
-  g_return_val_if_reached (MidiFunctionType::MIDI_FUNCTION_CRESCENDO);
+  g_return_val_if_reached (MidiFunctionType::Crescendo);
 }
 
-/**
- * Applies the given action to the given selections.
- *
- * @param sel Selections to edit.
- * @param type Function type.
- */
-int
+void
 midi_function_apply (
-  ArrangerSelections * sel,
-  MidiFunctionType     type,
-  MidiFunctionOpts     opts,
-  GError **            error)
+  ArrangerSelections &sel,
+  MidiFunctionType    type,
+  MidiFunctionOpts    opts)
 {
   /* TODO */
-  g_message ("applying %s...", midi_function_type_to_string (type));
+  z_debug ("applying %s...", MidiFunctionType_to_string (type));
 
-  MidiArrangerSelections * mas = (MidiArrangerSelections *) sel;
+  auto * mas = (MidiSelections *) &sel;
 
   switch (type)
     {
-    case MidiFunctionType::MIDI_FUNCTION_CRESCENDO:
+    case MidiFunctionType::Crescendo:
       {
         CurveOptions curve_opts;
-        curve_opts_init (&curve_opts);
-        curve_opts.algo = opts.curve_algo;
-        curve_opts.curviness = opts.curviness;
-        int        vel_interval = abs (opts.end_vel - opts.start_vel);
-        MidiNote * first_note =
-          (MidiNote *) arranger_selections_get_first_object (sel);
-        MidiNote * last_note =
-          (MidiNote *) arranger_selections_get_last_object (sel, false);
+        curve_opts.algo_ = opts.curve_algo_;
+        curve_opts.curviness_ = opts.curviness_;
+        int vel_interval = std::abs (opts.end_vel_ - opts.start_vel_);
+        auto [first_obj, first_pos] = mas->get_first_object_and_pos (false);
+        auto first_note = dynamic_cast<MidiNote *> (first_obj);
+        auto [last_obj, last_pos] = mas->get_last_object_and_pos (false, false);
+        auto last_note = dynamic_cast<MidiNote *> (last_obj);
         if (first_note == last_note)
           {
-            first_note->vel->vel = opts.start_vel;
+            first_note->vel_->vel_ = opts.start_vel_;
             break;
           }
 
-        double total_ticks =
-          last_note->base.pos.ticks - first_note->base.pos.ticks;
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        double total_ticks = last_pos.ticks_ - first_pos.ticks_;
+        for (auto mn : mas->objects_ | type_is<MidiNote> ())
           {
-            MidiNote * mn = mas->midi_notes[i];
-            double     mn_ticks_from_start =
-              mn->base.pos.ticks - first_note->base.pos.ticks;
-            double vel_multiplier = curve_get_normalized_y (
-              mn_ticks_from_start / total_ticks, &curve_opts,
-              opts.start_vel > opts.end_vel);
-            mn->vel->vel =
-              (midi_byte_t) ((double) MIN (opts.start_vel, opts.end_vel)
+            double mn_ticks_from_start = mn->pos_.ticks_ - first_pos.ticks_;
+            double vel_multiplier = curve_opts.get_normalized_y (
+              mn_ticks_from_start / total_ticks,
+              opts.start_vel_ > opts.end_vel_);
+            mn->vel_->vel_ =
+              (midi_byte_t) ((double) std::min (opts.start_vel_, opts.end_vel_)
                              + (vel_interval * vel_multiplier));
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_FLAM:
+    case MidiFunctionType::Flam:
       {
         /* currently MIDI functions assume no new notes are
          * added so currently disabled */
         break;
-        MidiNote * new_midi_notes[mas->num_midi_notes];
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        std::vector<std::shared_ptr<MidiNote>> new_midi_notes;
+        for (auto mn : mas->objects_ | type_is<MidiNote> ())
           {
-            MidiNote *       mn = mas->midi_notes[i];
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            double           len = arranger_object_get_length_in_ticks (mn_obj);
-            MidiNote *       new_mn = (MidiNote *) arranger_object_clone (
-              mn_obj); // midi_note_new (&mn_obj->region_id, &mn->base.pos,
-                             // &mn->base.end_pos, mn->val, mn->vel->vel);
-            ArrangerObject * new_mn_obj = (ArrangerObject *) new_mn;
-            new_midi_notes[i] = new_mn;
-            double opt_ticks = position_ms_to_ticks ((signed_ms_t) opts.time);
-            arranger_object_move (new_mn_obj, opt_ticks);
-            if (opts.time >= 0)
+            double len = mn->get_length_in_ticks ();
+            auto   new_mn = mn->clone_shared ();
+            new_midi_notes.push_back (new_mn);
+            double opt_ticks = Position::ms_to_ticks ((signed_ms_t) opts.time_);
+            new_mn->move (opt_ticks);
+            if (opts.time_ >= 0)
               {
-                /* make new note as long as existing note was
-                 * and make existing note up to the new note */
-                position_add_ticks (&new_mn_obj->end_pos, len - opt_ticks);
-                position_add_ticks (
-                  &mn_obj->end_pos,
-                  (-(new_mn_obj->end_pos.ticks - new_mn_obj->pos.ticks)) + 1);
+                /* make new note as long as existing note was and make existing
+                 * note up to the new note */
+                new_mn->end_pos_.add_ticks (len - opt_ticks);
+                mn->end_pos_.add_ticks (
+                  (-(new_mn->end_pos_.ticks_ - new_mn->pos_.ticks_)) + 1);
               }
             else
               {
                 /* make new note up to the existing note */
-                position_set_to_pos (&new_mn_obj->end_pos, &new_mn_obj->pos);
-                position_add_ticks (
-                  &new_mn_obj->end_pos,
-                  ((mn_obj->end_pos.ticks - mn_obj->pos.ticks) - opt_ticks) - 1);
+                new_mn->end_pos_ = new_mn->pos_;
+                new_mn->end_pos_.add_ticks (
+                  ((mn->end_pos_.ticks_ - mn->pos_.ticks_) - opt_ticks) - 1);
               }
           }
-        int prev_num_midi_notes = mas->num_midi_notes;
-        for (int i = 0; i < prev_num_midi_notes; i++)
+        for (auto &mn : new_midi_notes)
           {
-            MidiNote *       mn = new_midi_notes[i];
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            Region *         r = region_find (&mn_obj->region_id);
-            midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+            auto r = MidiRegion::find (mn->region_id_);
+            r->append_object (mn, false);
             /* clone again because the selections are supposed to hold clones */
-            ArrangerObject * mn_clone = arranger_object_clone (mn_obj);
-            arranger_selections_add_object (sel, mn_clone);
+            sel.add_object_owned (mn->clone_unique ());
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_FLIP_VERTICAL:
+    case MidiFunctionType::FlipVertical:
       {
-        MidiNote * highest_note =
-          midi_arranger_selections_get_highest_note (mas);
-        MidiNote * lowest_note = midi_arranger_selections_get_lowest_note (mas);
-        g_return_val_if_fail (highest_note && lowest_note, -1);
-        int highest_pitch = highest_note->val;
-        int lowest_pitch = lowest_note->val;
+        auto highest_note = mas->get_highest_note ();
+        auto lowest_note = mas->get_lowest_note ();
+        z_return_if_fail (highest_note && lowest_note);
+        int highest_pitch = highest_note->val_;
+        int lowest_pitch = lowest_note->val_;
         int diff = highest_pitch - lowest_pitch;
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        for (auto mn : mas->objects_ | type_is<MidiNote> ())
           {
-            MidiNote * mn = mas->midi_notes[i];
-            uint8_t    new_val = diff - (mn->val - lowest_pitch);
+            uint8_t new_val = diff - (mn->val_ - lowest_pitch);
             new_val += lowest_pitch;
-            mn->val = new_val;
+            mn->val_ = new_val;
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_FLIP_HORIZONTAL:
+    case MidiFunctionType::FlipHorizontal:
       {
-        arranger_selections_sort_by_positions (sel, false);
-        Position poses[mas->num_midi_notes];
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        mas->sort_by_positions (false);
+        std::vector<Position> poses;
+        for (auto mn : mas->objects_ | type_is<MidiNote> ())
           {
-            MidiNote * mn = mas->midi_notes[i];
-            position_set_to_pos (&poses[i], &mn->base.pos);
-            position_print (&poses[i]);
+            poses.push_back (mn->pos_);
           }
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        int i = 0;
+        for (auto mn : mas->objects_ | type_is<MidiNote> ())
           {
-            MidiNote *       mn = mas->midi_notes[i];
-            ArrangerObject * obj = (ArrangerObject *) mn;
-            double           ticks = arranger_object_get_length_in_ticks (obj);
-            position_set_to_pos (
-              &obj->pos, &poses[(mas->num_midi_notes - i) - 1]);
-            position_set_to_pos (&obj->end_pos, &obj->pos);
-            position_print (&obj->pos);
-            position_add_ticks (&obj->end_pos, ticks);
+            double ticks = mn->get_length_in_ticks ();
+            mn->pos_ = poses[(mas->objects_.size () - i) - 1];
+            mn->end_pos_ = mn->pos_;
+            mn->end_pos_.add_ticks (ticks);
+            ++i;
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_LEGATO:
+    case MidiFunctionType::Legato:
       {
-        arranger_selections_sort_by_positions (sel, false);
-        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+        mas->sort_by_positions (false);
+        for (
+          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
+          ++it)
           {
-            MidiNote *       mn = mas->midi_notes[i];
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            MidiNote *       next_mn = mas->midi_notes[i + 1];
-            position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
+            auto mn = dynamic_pointer_cast<MidiNote> (*it);
+            auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
+            mn->end_pos_ = next_mn->pos_;
             /* make sure the note has a length */
-            if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
+            if (mn->end_pos_.ticks_ - mn->pos_.ticks_ < 1.0)
               {
-                position_add_ms (&mn_obj->end_pos, 40.0);
+                mn->end_pos_.add_ms (40.0);
               }
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_PORTATO:
+    case MidiFunctionType::Portato:
       {
-        /* do the same as legato but leave some space between
-         * the notes */
-        arranger_selections_sort_by_positions (sel, false);
-        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+        /* do the same as legato but leave some space between the notes */
+        sel.sort_by_positions (false);
+
+        for (
+          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
+          ++it)
           {
-            MidiNote *       mn = mas->midi_notes[i];
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            MidiNote *       next_mn = mas->midi_notes[i + 1];
-            position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
-            position_add_ms (&mn_obj->end_pos, -80.0);
+            auto mn = dynamic_pointer_cast<MidiNote> (*it);
+            auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
+            mn->end_pos_ = next_mn->pos_;
+            mn->end_pos_.add_ms (-80.0);
             /* make sure the note has a length */
-            if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
+            if (mn->end_pos_.ticks_ - mn->pos_.ticks_ < 1.0)
               {
-                position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
-                position_add_ms (&mn_obj->end_pos, 40.0);
+                mn->end_pos_ = next_mn->pos_;
+                mn->end_pos_.add_ms (40.0);
               }
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_STACCATO:
+    case MidiFunctionType::Staccato:
       {
-        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+        for (
+          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
+          ++it)
           {
-            MidiNote *       mn = mas->midi_notes[i];
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
-            position_add_ms (&mn_obj->end_pos, 140.0);
+            auto mn = dynamic_pointer_cast<MidiNote> (*it);
+            mn->end_pos_ = mn->pos_;
+            mn->end_pos_.add_ms (140.0);
           }
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_STRUM:
+    case MidiFunctionType::Strum:
       {
         CurveOptions curve_opts;
-        curve_opts_init (&curve_opts);
-        curve_opts.algo = opts.curve_algo;
-        curve_opts.curviness = opts.curviness;
+        curve_opts.algo_ = opts.curve_algo_;
+        curve_opts.curviness_ = opts.curviness_;
 
-        midi_arranger_selections_sort_by_pitch (mas, !opts.ascending);
-        for (int i = 0; i < mas->num_midi_notes; i++)
+        mas->sort_by_pitch (!opts.ascending_);
+        const auto first_mn =
+          dynamic_pointer_cast<MidiNote> (mas->objects_.front ());
+        for (auto it = mas->objects_.begin (); it != mas->objects_.end (); ++it)
           {
-            MidiNote * first_mn = mas->midi_notes[0];
-            MidiNote * mn = mas->midi_notes[i];
-            double     ms_multiplier = curve_get_normalized_y (
-              (double) i / (double) mas->num_midi_notes, &curve_opts,
-              !opts.ascending);
-            double ms_to_add = ms_multiplier * opts.time;
-            g_message ("multi %f, ms %f", ms_multiplier, ms_to_add);
-            ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            double len_ticks = arranger_object_get_length_in_ticks (mn_obj);
-            position_set_to_pos (&mn_obj->pos, &first_mn->base.pos);
-            position_add_ms (&mn_obj->pos, ms_to_add);
-            position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
-            position_add_ticks (&mn_obj->end_pos, len_ticks);
+            auto   mn = dynamic_pointer_cast<MidiNote> (*it);
+            double ms_multiplier = curve_opts.get_normalized_y (
+              (double) std::distance (mas->objects_.begin (), it)
+                / (double) mas->get_num_objects (),
+              !opts.ascending_);
+            double ms_to_add = ms_multiplier * opts.time_;
+            z_trace ("multi %f, ms %f", ms_multiplier, ms_to_add);
+            double len_ticks = mn->get_length_in_ticks ();
+            mn->pos_ = first_mn->pos_;
+            mn->pos_.add_ms (ms_to_add);
+            mn->end_pos_ = mn->pos_;
+            mn->end_pos_.add_ticks (len_ticks);
           }
       }
       break;
@@ -282,7 +251,5 @@ midi_function_apply (
       g_settings_set_int (S_UI, "midi-function", ENUM_VALUE_TO_INT (type));
     }
 
-  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, NULL);
-
-  return 0;
+  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

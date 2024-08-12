@@ -79,8 +79,9 @@ left_dock_edge_widget_refresh (LeftDockEdgeWidget * self)
   g_debug ("refreshing left dock edge...");
 
   inspector_track_widget_show_tracks (
-    self->track_inspector, TRACKLIST_SELECTIONS, false);
-  inspector_plugin_widget_show (self->plugin_inspector, MIXER_SELECTIONS, false);
+    self->track_inspector, TRACKLIST_SELECTIONS.get (), false);
+  inspector_plugin_widget_show (
+    self->plugin_inspector, MIXER_SELECTIONS.get (), false);
 
   /* TODO load from workspaces */
 #if 0
@@ -97,7 +98,8 @@ left_dock_edge_widget_refresh (LeftDockEdgeWidget * self)
 void
 left_dock_edge_widget_setup (LeftDockEdgeWidget * self)
 {
-  inspector_track_widget_setup (self->track_inspector, TRACKLIST_SELECTIONS);
+  inspector_track_widget_setup (
+    self->track_inspector, TRACKLIST_SELECTIONS.get ());
 }
 
 static GtkScrolledWindow *

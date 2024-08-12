@@ -1,18 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Quantize options.
- */
 
 #ifndef __AUDIO_QUANTIZE_OPTIONS_H__
 #define __AUDIO_QUANTIZE_OPTIONS_H__
 
 #include "dsp/position.h"
 #include "dsp/snap_grid.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup dsp
@@ -20,116 +13,122 @@
  * @{
  */
 
-#define QUANTIZE_OPTIONS_SCHEMA_VERSION 1
-
-#define QUANTIZE_OPTIONS_IS_EDITOR(qo) (PROJECT->quantize_opts_editor == qo)
-#define QUANTIZE_OPTIONS_IS_TIMELINE(qo) (PROJECT->quantize_opts_timeline == qo)
-#define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline)
-#define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor)
+#define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
+  (PROJECT->quantize_opts_editor_.get () == qo)
+#define QUANTIZE_OPTIONS_IS_TIMELINE(qo) \
+  (PROJECT->quantize_opts_timeline_.get () == qo)
+#define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline_)
+#define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor_)
 
 #define MAX_SNAP_POINTS 120096
 
-typedef struct QuantizeOptions
+class QuantizeOptions final : public ISerializable<QuantizeOptions>
 {
-  /** See SnapGrid. */
-  NoteLength note_length;
+  // Rule of 0
+public:
+  QuantizeOptions () = default;
+  QuantizeOptions (NoteLength note_length) { init (note_length); }
 
-  /** See SnapGrid. */
-  NoteType note_type;
+  void init (NoteLength note_length);
 
-  /** Percentage to apply quantize (0-100). */
-  float amount;
+  /**
+   * Updates snap points.
+   */
+  void update_quantize_points ();
 
-  /** Adjust start position or not (only applies to
-   * objects with length. */
-  int adj_start;
+  float        get_swing ();
+  static float swing_getter (void * data)
+  {
+    return ((QuantizeOptions *) data)->get_swing ();
+  }
 
-  /** Adjust end position or not (only applies to
-   * objects with length. */
-  int adj_end;
+  float        get_amount ();
+  static float amount_getter (void * data)
+  {
+    return ((QuantizeOptions *) data)->get_amount ();
+  }
 
-  /** Swing amount (0-100). */
-  float swing;
+  float        get_randomization ();
+  static float randomization_getter (void * data)
+  {
+    return ((QuantizeOptions *) data)->get_randomization ();
+  }
 
-  /** Number of ticks for randomization. */
-  double rand_ticks;
+  void        set_swing (float swing);
+  static void swing_setter (void * data, float swing)
+  {
+    ((QuantizeOptions *) data)->set_swing (swing);
+  }
 
+  void        set_amount (float amount);
+  static void amount_setter (void * data, float amount)
+  {
+    ((QuantizeOptions *) data)->set_amount (amount);
+  }
+
+  void        set_randomization (float randomization);
+  static void randomization_setter (void * data, float randomization)
+  {
+    ((QuantizeOptions *) data)->set_randomization (randomization);
+  }
+
+  /**
+   * Returns the grid intensity as a human-readable string.
+   */
+  static std::string to_string (NoteLength note_length, NoteType note_type);
+
+  /**
+   * Quantizes the given Position using the given
+   * QuantizeOptions.
+   *
+   * This assumes that the start/end check has been
+   * done already and it ignores the adjust_start and
+   * adjust_end options.
+   *
+   * @return The amount of ticks moved (negative for
+   *   backwards).
+   */
+  double quantize_position (Position * pos);
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  const Position * get_prev_point (Position * pos) const;
+  const Position * get_next_point (Position * pos) const;
+
+public:
   /**
    * Quantize points.
    *
-   * These only take into account note_length,
-   * note_type and swing. They don't take into
-   * account the amount % or randomization ticks.
+   * These only take into account note_length, note_type and swing. They don't
+   * take into account the amount % or randomization ticks.
    *
    * Not to be serialized.
    */
-  Position q_points[MAX_SNAP_POINTS];
-  int      num_q_points;
-} QuantizeOptions;
+  std::vector<Position> q_points_;
 
-void
-quantize_options_init (QuantizeOptions * self, NoteLength note_length);
+  /** See SnapGrid. */
+  NoteLength note_length_ = (NoteLength) 0;
 
-/**
- * Updates snap points.
- */
-void
-quantize_options_update_quantize_points (QuantizeOptions * self);
+  /** See SnapGrid. */
+  NoteType note_type_ = (NoteType) 0;
 
-float
-quantize_options_get_swing (QuantizeOptions * self);
+  /** Percentage to apply quantize (0-100). */
+  float amount_ = 100.f;
 
-float
-quantize_options_get_amount (QuantizeOptions * self);
+  /** Adjust start position or not (only applies to objects with length. */
+  bool adj_start_ = true;
 
-float
-quantize_options_get_randomization (QuantizeOptions * self);
+  /** Adjust end position or not (only applies to
+   * objects with length. */
+  int adj_end_ = false;
 
-void
-quantize_options_set_swing (QuantizeOptions * self, float swing);
+  /** Swing amount (0-100). */
+  float swing_ = 0.f;
 
-void
-quantize_options_set_amount (QuantizeOptions * self, float amount);
-
-void
-quantize_options_set_randomization (QuantizeOptions * self, float randomization);
-
-/**
- * Returns the grid intensity as a human-readable string.
- *
- * Must be free'd.
- */
-char *
-quantize_options_stringize (NoteLength note_length, NoteType note_type);
-
-/**
- * Quantizes the given Position using the given
- * QuantizeOptions.
- *
- * This assumes that the start/end check has been
- * done already and it ignores the adjust_start and
- * adjust_end options.
- *
- * @return The amount of ticks moved (negative for
- *   backwards).
- */
-double
-quantize_options_quantize_position (QuantizeOptions * self, Position * pos);
-
-/**
- * Clones the QuantizeOptions.
- */
-QuantizeOptions *
-quantize_options_clone (const QuantizeOptions * src);
-
-QuantizeOptions *
-quantize_options_new (void);
-
-/**
- * Free's the QuantizeOptions.
- */
-void
-quantize_options_free (QuantizeOptions * self);
+  /** Number of ticks for randomization. */
+  double rand_ticks_ = 0.f;
+};
 
 /**
  * @}

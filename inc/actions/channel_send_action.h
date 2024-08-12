@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_CHANNEL_SEND_ACTION_H__
@@ -14,146 +14,150 @@
  * @{
  */
 
-enum class ChannelSendActionType
-{
-  CHANNEL_SEND_ACTION_CONNECT_STEREO,
-  CHANNEL_SEND_ACTION_CONNECT_MIDI,
-  CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
-  CHANNEL_SEND_ACTION_CHANGE_AMOUNT,
-  CHANNEL_SEND_ACTION_CHANGE_PORTS,
-  CHANNEL_SEND_ACTION_DISCONNECT,
-};
-
 /**
  * Action for channel send changes.
  */
-typedef struct ChannelSendAction
+class ChannelSendAction
+    : public UndoableAction,
+      public ICloneable<ChannelSendAction>,
+      public ISerializable<ChannelSendAction>
 {
-  UndoableAction parent_instance;
+public:
+  enum class Type
+  {
+    ConnectStereo,
+    ConnectMidi,
+    ConnectSidechain,
+    ChangeAmount,
+    ChangePorts,
+    Disconnect,
+  };
 
-  ChannelSend * send_before;
+public:
+  ChannelSendAction () : UndoableAction (UndoableAction::Type::ChannelSend) { }
 
-  float amount;
+  /**
+   * Creates a new action.
+   *
+   * @param port MIDI port, if connecting MIDI.
+   * @param stereo Stereo ports, if connecting audio.
+   * @param port_connections_mgr Port connections
+   *   manager at the start of the action, if needed.
+   */
+  ChannelSendAction (
+    Type                           type,
+    const ChannelSend             &send,
+    const Port *                   port,
+    const StereoPorts *            stereo,
+    float                          amount,
+    const PortConnectionsManager * port_connections_mgr);
+
+  std::string to_string () const override;
+
+  void init_after_cloning (const ChannelSendAction &other) override
+  {
+    UndoableAction::copy_members_from (other);
+    send_before_ = other.send_before_->clone_unique ();
+    amount_ = other.amount_;
+    l_id_ =
+      other.l_id_ ? std::make_unique<PortIdentifier> (*other.l_id_) : nullptr;
+    r_id_ =
+      other.r_id_ ? std::make_unique<PortIdentifier> (*other.r_id_) : nullptr;
+    midi_id_ =
+      other.midi_id_ ? std::make_unique<PortIdentifier> (*other.midi_id_) : nullptr;
+    send_action_type_ = other.send_action_type_;
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override { }
+  void perform_impl () override;
+  void undo_impl () override;
+
+  bool connect_or_disconnect (bool connect, bool do_it);
+
+public:
+  std::unique_ptr<ChannelSend> send_before_;
+
+  float amount_ = 0.f;
 
   /** Target port identifiers. */
-  PortIdentifier * l_id;
-  PortIdentifier * r_id;
-  PortIdentifier * midi_id;
-
-  /** A clone of the port connections at the
-   * start of the action. */
-  PortConnectionsManager * connections_mgr_before;
-
-  /** A clone of the port connections after
-   * applying the action. */
-  PortConnectionsManager * connections_mgr_after;
+  std::unique_ptr<PortIdentifier> l_id_;
+  std::unique_ptr<PortIdentifier> r_id_;
+  std::unique_ptr<PortIdentifier> midi_id_;
 
   /** Action type. */
-  ChannelSendActionType type;
+  Type send_action_type_ = Type ();
+};
 
-} ChannelSendAction;
+class ChannelSendDisconnectAction final : public ChannelSendAction
+{
+public:
+  ChannelSendDisconnectAction (
+    const ChannelSend            &send,
+    const PortConnectionsManager &port_connections_mgr)
+      : ChannelSendAction (Type::Disconnect, send, nullptr, nullptr, 0.f, &port_connections_mgr)
+  {
+  }
+};
 
-void
-channel_send_action_init_loaded (ChannelSendAction * self);
+class ChannelSendConnectMidiAction final : public ChannelSendAction
+{
+public:
+  ChannelSendConnectMidiAction (
+    const ChannelSend            &send,
+    const Port                   &midi,
+    const PortConnectionsManager &port_connections_mgr)
+      : ChannelSendAction (Type::ConnectMidi, send, &midi, nullptr, 0.f, &port_connections_mgr)
+  {
+  }
+};
 
-/**
- * Creates a new action.
- *
- * @param port MIDI port, if connecting MIDI.
- * @param stereo Stereo ports, if connecting audio.
- * @param port_connections_mgr Port connections
- *   manager at the start of the action, if needed.
- */
-WARN_UNUSED_RESULT UndoableAction *
-channel_send_action_new (
-  ChannelSend *                  send,
-  ChannelSendActionType          type,
-  Port *                         port,
-  StereoPorts *                  stereo,
-  float                          amount,
-  const PortConnectionsManager * port_connections_mgr,
-  GError **                      error);
+class ChannelSendConnectStereoAction final : public ChannelSendAction
+{
+public:
+  ChannelSendConnectStereoAction (
+    const ChannelSend            &send,
+    const StereoPorts            &stereo,
+    const PortConnectionsManager &port_connections_mgr)
+      : ChannelSendAction (
+        Type::ConnectStereo,
+        send,
+        nullptr,
+        &stereo,
+        0.f,
+        &port_connections_mgr)
+  {
+  }
+};
 
-#define channel_send_action_new_disconnect(send, error) \
-  channel_send_action_new ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
+class ChannelSendConnectSidechainAction final : public ChannelSendAction
+{
+public:
+  ChannelSendConnectSidechainAction (
+    const ChannelSend            &send,
+    const StereoPorts            &sidechain,
+    const PortConnectionsManager &port_connections_mgr)
+      : ChannelSendAction (
+        Type::ConnectSidechain,
+        send,
+        nullptr,
+        &sidechain,
+        0.f,
+        &port_connections_mgr)
+  {
+  }
+};
 
-#define channel_send_action_new_connect_midi(send, midi, error) \
-  channel_send_action_new ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_new_connect_audio(send, stereo, error) \
-  channel_send_action_new ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_new_connect_sidechain(send, stereo, error) \
-  channel_send_action_new ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_new_change_amount(send, amt, error) \
-  channel_send_action_new ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
-    NULL, amt, NULL, error)
-
-NONNULL ChannelSendAction *
-channel_send_action_clone (const ChannelSendAction * src);
-
-/**
- * Wrapper to create action and perform it.
- *
- * @param port_connections_mgr Port connections
- *   manager at the start of the action, if needed.
- */
-bool
-channel_send_action_perform (
-  ChannelSend *                  send,
-  ChannelSendActionType          type,
-  Port *                         port,
-  StereoPorts *                  stereo,
-  float                          amount,
-  const PortConnectionsManager * port_connections_mgr,
-  GError **                      error);
-
-#define channel_send_action_perform_disconnect(send, error) \
-  channel_send_action_perform ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_perform_connect_midi(send, midi, error) \
-  channel_send_action_perform ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_perform_connect_audio(send, stereo, error) \
-  channel_send_action_perform ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_perform_connect_sidechain(send, stereo, error) \
-  channel_send_action_perform ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
-
-#define channel_send_action_perform_change_amount(send, amt, error) \
-  channel_send_action_perform ( \
-    send, ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
-    NULL, amt, NULL, error)
-
-int
-channel_send_action_do (ChannelSendAction * self, GError ** error);
-
-int
-channel_send_action_undo (ChannelSendAction * self, GError ** error);
-
-char *
-channel_send_action_stringize (ChannelSendAction * self);
-
-void
-channel_send_action_free (ChannelSendAction * self);
+class ChannelSendChangeAmountAction final : public ChannelSendAction
+{
+public:
+  ChannelSendChangeAmountAction (const ChannelSend &send, float amount)
+      : ChannelSendAction (Type::ChangeAmount, send, nullptr, nullptr, amount, nullptr)
+  {
+  }
+};
 
 /**
  * @}

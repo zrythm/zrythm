@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "actions/arranger_selections.h"
+#include "dsp/audio_region.h"
 #include "dsp/position.h"
 #include "dsp/snap_grid.h"
 #include "gui/backend/audio_selections.h"
@@ -8,14 +10,10 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "project.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 void
@@ -24,111 +22,82 @@ audio_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos)
   if (self->resizing_range_start)
     {
       /* set range 1 at current point */
-      ui_px_to_pos_editor (self->start_x, &AUDIO_SELECTIONS->sel_start, true);
-      if (SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held)
+      AUDIO_SELECTIONS->sel_start_ = ui_px_to_pos_editor (self->start_x, true);
+      if (self->snap_grid->any_snap () && !self->shift_held)
         {
-          position_snap_simple (&AUDIO_SELECTIONS->sel_start, SNAP_GRID_EDITOR);
+          AUDIO_SELECTIONS->sel_start_.snap_simple (*SNAP_GRID_EDITOR);
         }
-      position_set_to_pos (
-        &AUDIO_SELECTIONS->sel_end, &AUDIO_SELECTIONS->sel_start);
+      AUDIO_SELECTIONS->sel_end_ = AUDIO_SELECTIONS->sel_start_;
 
       self->resizing_range_start = false;
     }
 
   /* set range */
-  if (SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held)
+  if (self->snap_grid->any_snap () && !self->shift_held)
     {
-      position_snap_simple (pos, SNAP_GRID_EDITOR);
+      pos->snap_simple (*SNAP_GRID_EDITOR);
     }
-  position_set_to_pos (&AUDIO_SELECTIONS->sel_end, pos);
-  audio_selections_set_has_range (AUDIO_SELECTIONS, true);
+  AUDIO_SELECTIONS->sel_end_ = *pos;
+  AUDIO_SELECTIONS->set_has_range (true);
 }
 
-/**
- * Returns whether the cursor is inside a fade
- * area.
- *
- * @param fade_in True to check for fade in, false
- *   to check for fade out.
- * @param resize True to check for whether resizing
- *   the fade (left <=> right), false to check
- *   for whether changing the fade curviness up/down.
- */
 bool
 audio_arranger_widget_is_cursor_in_fade (
-  ArrangerWidget * self,
-  double           x,
-  double           y,
-  bool             fade_in,
-  bool             resize)
+  const ArrangerWidget &self,
+  double                x,
+  double                y,
+  bool                  fade_in,
+  bool                  resize)
 {
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
+  auto r = CLIP_EDITOR->get_region<AudioRegion> ();
+  z_return_val_if_fail (r, false);
 
-  const int start_px = ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  const int end_px = ui_pos_to_px_editor (&r_obj->end_pos, F_PADDING);
-  const int fade_in_px =
-    start_px + ui_pos_to_px_editor (&r_obj->fade_in_pos, F_PADDING);
+  const int start_px = ui_pos_to_px_editor (r->pos_, true);
+  const int end_px = ui_pos_to_px_editor (r->end_pos_, true);
+  const int fade_in_px = start_px + ui_pos_to_px_editor (r->fade_in_pos_, true);
   const int fade_out_px =
-    start_px + ui_pos_to_px_editor (&r_obj->fade_out_pos, F_PADDING);
+    start_px + ui_pos_to_px_editor (r->fade_out_pos_, true);
 
-  const int resize_padding = 4;
-
-#if 0
-  g_message (
-    "x %f start px %d end px %d fade in px %d "
-    "fade out px %d",
-    x, start_px, end_px, fade_in_px, fade_out_px);
-#endif
+  constexpr int resize_padding = 4;
 
   int fade_in_px_w_padding = fade_in_px + resize_padding;
   int fade_out_px_w_padding = fade_out_px - resize_padding;
 
   if (fade_in && x >= start_px && x <= fade_in_px_w_padding)
     {
-      if (resize)
-        return x >= fade_in_px - resize_padding;
-      else
-        return true;
+      return resize ? x >= fade_in_px - resize_padding : true;
     }
   if (!fade_in && x >= fade_out_px_w_padding && x < end_px)
     {
-      if (resize)
-        return x <= fade_out_px + resize_padding;
-      else
-        return true;
+      return resize ? x <= fade_out_px + resize_padding : true;
     }
 
   return false;
 }
 
-NONNULL static double
-get_region_gain_y (ArrangerWidget * self, Region * region)
+static double
+get_region_gain_y (const ArrangerWidget &self, const AudioRegion &region)
 {
-  int   height = gtk_widget_get_height (GTK_WIDGET (self));
-  float gain_fader_val = math_get_fader_val_from_amp (region->gain);
-  return height * (1.0 - (double) gain_fader_val);
+  int   height = gtk_widget_get_height (GTK_WIDGET (&self));
+  float gain_fader_val = math_get_fader_val_from_amp (region.gain_);
+  return height * (1.0 - static_cast<double> (gain_fader_val));
 }
 
-/**
- * Returns whether the cursor touches the gain line.
- */
 bool
-audio_arranger_widget_is_cursor_gain (ArrangerWidget * self, double x, double y)
+audio_arranger_widget_is_cursor_gain (
+  const ArrangerWidget * self,
+  double                 x,
+  double                 y)
 {
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
+  auto r = CLIP_EDITOR->get_region<AudioRegion> ();
+  z_return_val_if_fail (r, false);
 
-  const int start_px = ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  const int end_px = ui_pos_to_px_editor (&r_obj->end_pos, F_PADDING);
+  const int start_px = ui_pos_to_px_editor (r->pos_, true);
+  const int end_px = ui_pos_to_px_editor (r->end_pos_, true);
 
-  double gain_y = get_region_gain_y (self, r);
+  double gain_y = get_region_gain_y (*self, *r);
 
-  const int padding = 4;
-
-  /*g_message ("y %f gain y %f", y, gain_y);*/
+  constexpr int padding = 4;
 
   return x >= start_px && x < end_px && y >= gain_y - padding
          && y <= gain_y + padding;
@@ -137,169 +106,249 @@ audio_arranger_widget_is_cursor_gain (ArrangerWidget * self, double x, double y)
 UiOverlayAction
 audio_arranger_widget_get_action_on_drag_begin (ArrangerWidget * self)
 {
-  self->action = UI_OVERLAY_ACTION_NONE;
-  ArrangerCursor   cursor = arranger_widget_get_cursor (self);
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_val_if_fail (IS_REGION_AND_NONNULL (r), UI_OVERLAY_ACTION_NONE);
+  self->action = UiOverlayAction::NONE;
+  ArrangerCursor cursor = arranger_widget_get_cursor (self);
+  const auto     r = CLIP_EDITOR->get_region<AudioRegion> ();
+  z_return_val_if_fail (r, UiOverlayAction::NONE);
 
   switch (cursor)
     {
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP:
-      self->fval_at_start = r->gain;
-      return UI_OVERLAY_ACTION_RESIZING_UP;
+      self->fval_at_start = r->gain_;
+      return UiOverlayAction::RESIZING_UP;
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_IN:
-      self->dval_at_start = r_obj->fade_in_opts.curviness;
-      return UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN;
+      self->dval_at_start = r->fade_in_opts_.curviness_;
+      return UiOverlayAction::RESIZING_UP_FADE_IN;
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_OUT:
-      self->dval_at_start = r_obj->fade_out_opts.curviness;
-      return UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT;
+      self->dval_at_start = r->fade_out_opts_.curviness_;
+      return UiOverlayAction::RESIZING_UP_FADE_OUT;
     /* note cursor is opposite */
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_FADE:
-      position_set_to_pos (&self->fade_pos_at_start, &r_obj->fade_in_pos);
-      return UI_OVERLAY_ACTION_RESIZING_L_FADE;
+      self->fade_pos_at_start = r->fade_in_pos_;
+      return UiOverlayAction::RESIZING_L_FADE;
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_FADE:
-      position_set_to_pos (&self->fade_pos_at_start, &r_obj->fade_out_pos);
-      return UI_OVERLAY_ACTION_RESIZING_R_FADE;
+      self->fade_pos_at_start = r->fade_out_pos_;
+      return UiOverlayAction::RESIZING_R_FADE;
     case ArrangerCursor::ARRANGER_CURSOR_RANGE:
-      return UI_OVERLAY_ACTION_RESIZING_R;
+      return UiOverlayAction::RESIZING_R;
     case ArrangerCursor::ARRANGER_CURSOR_SELECT:
-      return UI_OVERLAY_ACTION_STARTING_SELECTION;
+      return UiOverlayAction::STARTING_SELECTION;
     default:
       break;
     }
-
-  g_return_val_if_reached (UI_OVERLAY_ACTION_SELECTING);
+  z_return_val_if_reached (UiOverlayAction::SELECTING)
 }
 
-/**
- * Handle fade in/out curviness drag.
- */
 void
 audio_arranger_widget_fade_up (
   ArrangerWidget * self,
   double           offset_y,
   bool             fade_in)
 {
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+  auto r = CLIP_EDITOR->get_region<AudioRegion> ();
+  if (!r)
+    return;
 
-  CurveOptions * opts = fade_in ? &r_obj->fade_in_opts : &r_obj->fade_out_opts;
-  double         delta = (self->last_offset_y - offset_y) * 0.008;
-  opts->curviness = CLAMP (opts->curviness + delta, -1.0, 1.0);
+  auto  &opts = fade_in ? r->fade_in_opts_ : r->fade_out_opts_;
+  double delta = (self->last_offset_y - offset_y) * 0.008;
+  opts.curviness_ = std::clamp (opts.curviness_ + delta, -1.0, 1.0);
 
-  if (fade_in)
-    {
-      EVENTS_PUSH (EventType::ET_AUDIO_REGION_FADE_IN_CHANGED, r);
-    }
-  else
-    {
-      EVENTS_PUSH (EventType::ET_AUDIO_REGION_FADE_OUT_CHANGED, r);
-    }
+  EVENTS_PUSH (
+    fade_in
+      ? EventType::ET_AUDIO_REGION_FADE_IN_CHANGED
+      : EventType::ET_AUDIO_REGION_FADE_OUT_CHANGED,
+    r);
 }
 
 void
 audio_arranger_widget_update_gain (ArrangerWidget * self, double offset_y)
 {
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+  auto r = CLIP_EDITOR->get_region<AudioRegion> ();
+  z_return_if_fail (r);
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* get current Y value */
   double gain_y = self->start_y + offset_y;
 
-  /* convert to fader value (0.0 - 1.0) and clamp
-   * to limits */
-  double gain_fader = CLAMP (1.0 - gain_y / height, 0.02, 1.0);
+  /* convert to fader value (0.0 - 1.0) and clamp to limits */
+  double gain_fader = std::clamp (1.0 - gain_y / height, 0.02, 1.0);
 
   /* set */
-  r->gain = math_get_amp_val_from_fader ((float) gain_fader);
+  r->gain_ = math_get_amp_val_from_fader (static_cast<float> (gain_fader));
 
   EVENTS_PUSH (EventType::ET_AUDIO_REGION_GAIN_CHANGED, r);
 }
 
-/**
- * Updates the fade position during drag update.
- *
- * @param pos Absolute position in the editor.
- * @param fade_in Whether we are resizing the fade in
- *   or fade out position.
- * @parram dry_run Don't resize; just check
- *   if the resize is allowed.
- *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
- */
-int
+bool
 audio_arranger_widget_snap_fade (
   ArrangerWidget * self,
-  Position *       pos,
+  Position        &pos,
   bool             fade_in,
   bool             dry_run)
 {
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_val_if_fail (IS_REGION_AND_NONNULL (r), -1);
+  auto r = CLIP_EDITOR->get_region<AudioRegion> ();
+  if (!r)
+    return false;
 
   /* get delta with region's start pos */
-  double delta = position_to_ticks (pos) - (position_to_ticks (&r_obj->pos) + position_to_ticks (fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos));
+  double delta =
+    pos.ticks_
+    - (r->pos_.ticks_ + (fade_in ? r->fade_in_pos_ : r->fade_out_pos_).ticks_);
 
-  /* new start pos, calculated by
-   * adding delta to the region's original start
+  /* new start pos, calculated by adding delta to the region's original start
    * pos */
-  Position new_pos;
-  position_set_to_pos (
-    &new_pos, fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos);
-  position_add_ticks (&new_pos, delta);
+  Position new_pos = fade_in ? r->fade_in_pos_ : r->fade_out_pos_;
+  new_pos.add_ticks (delta);
 
   /* negative positions not allowed */
-  if (!position_is_positive (&new_pos))
-    return -1;
+  if (!new_pos.is_positive ())
+    return false;
 
-  if (SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held)
+  if (self->snap_grid->any_snap () && !self->shift_held)
     {
-      Track * track = arranger_object_get_track (r_obj);
-      position_snap (
-        &self->fade_pos_at_start, &new_pos, track, NULL, self->snap_grid);
+      auto track = r->get_track ();
+      z_return_val_if_fail (track, false);
+      new_pos.snap (&self->fade_pos_at_start, track, nullptr, *self->snap_grid);
     }
 
   if (
-    !arranger_object_is_position_valid (
-      r_obj, &new_pos,
-      fade_in
-        ? ArrangerObjectPositionType::ARRANGER_OBJECT_POSITION_TYPE_FADE_IN
-        : ArrangerObjectPositionType::ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT))
+    !r->is_position_valid (
+      new_pos,
+      fade_in ? ArrangerObject::PositionType::FadeIn
+              : ArrangerObject::PositionType::FadeOut))
     {
-      return -1;
+      return false;
     }
 
   if (!dry_run)
     {
       double diff =
-        position_to_ticks (&new_pos)
-        - position_to_ticks (
-          fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos);
-      GError * err = NULL;
-      bool     success = arranger_object_resize (
-        r_obj, fade_in, ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_FADE,
-        diff, true, &err);
-      if (!success)
+        new_pos.ticks_ - (fade_in ? r->fade_in_pos_ : r->fade_out_pos_).ticks_;
+      try
         {
-          HANDLE_ERROR_LITERAL (err, "Failed to resize object");
-          return -1;
+          r->resize (
+            fade_in, ArrangerObject::ResizeType::RESIZE_FADE, diff, true);
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to resize object");
+          return false;
         }
     }
 
-  if (fade_in)
-    {
-      EVENTS_PUSH (EventType::ET_AUDIO_REGION_FADE_IN_CHANGED, r);
-    }
-  else
-    {
-      EVENTS_PUSH (EventType::ET_AUDIO_REGION_FADE_OUT_CHANGED, r);
-    }
+  EVENTS_PUSH (
+    fade_in
+      ? EventType::ET_AUDIO_REGION_FADE_IN_CHANGED
+      : EventType::ET_AUDIO_REGION_FADE_OUT_CHANGED,
+    r);
 
-  return 0;
+  return true;
+}
+
+void
+audio_arranger_on_drag_end (ArrangerWidget * self)
+{
+  try
+    {
+      switch (self->action)
+        {
+        case UiOverlayAction::RESIZING_R:
+          {
+            /* if start range selection is after end, fix it */
+            if (
+              AUDIO_SELECTIONS->has_selection_
+              && AUDIO_SELECTIONS->sel_start_ > AUDIO_SELECTIONS->sel_end_)
+              {
+                Position tmp = AUDIO_SELECTIONS->sel_start_;
+                AUDIO_SELECTIONS->sel_start_ = AUDIO_SELECTIONS->sel_end_;
+                AUDIO_SELECTIONS->sel_end_ = tmp;
+              }
+          }
+          break;
+        case UiOverlayAction::RESIZING_L_FADE:
+        case UiOverlayAction::RESIZING_R_FADE:
+          {
+            auto region = CLIP_EDITOR->get_region<AudioRegion> ();
+            z_return_if_fail (region);
+            bool is_fade_in = self->action == UiOverlayAction::RESIZING_L_FADE;
+            double ticks_diff =
+              (is_fade_in
+                 ? region->fade_in_pos_.ticks_
+                 : region->fade_out_pos_.ticks_)
+              - self->fade_pos_at_start.ticks_;
+
+            auto sel = TimelineSelections ();
+            sel.add_object_owned (region->clone_unique ());
+            auto sel_at_start = sel.clone_unique ();
+            auto [obj_at_start, pos_at_start] =
+              sel_at_start->get_first_object_and_pos (false);
+            auto ar_at_start = dynamic_cast<AudioRegion *> (obj_at_start);
+            if (is_fade_in)
+              {
+                ar_at_start->fade_in_pos_ = self->fade_pos_at_start;
+              }
+            else
+              {
+                ar_at_start->fade_out_pos_ = self->fade_pos_at_start;
+              }
+
+            UNDO_MANAGER->perform (
+              std::make_unique<ArrangerSelectionsAction::ResizeAction> (
+                *sel_at_start, &sel,
+                is_fade_in
+                  ? ArrangerSelectionsAction::ResizeType::LFade
+                  : ArrangerSelectionsAction::ResizeType::RFade,
+                ticks_diff));
+          }
+          break;
+        case UiOverlayAction::RESIZING_UP_FADE_IN:
+        case UiOverlayAction::RESIZING_UP_FADE_OUT:
+        case UiOverlayAction::RESIZING_UP:
+          {
+            auto region = CLIP_EDITOR->get_region<AudioRegion> ();
+            z_return_if_fail (region);
+
+            /* prepare current selections */
+            auto sel = TimelineSelections ();
+            sel.add_object_owned (region->clone_unique ());
+
+            ArrangerSelectionsAction::EditType edit_type;
+
+            /* prepare selections before */
+            auto sel_before = TimelineSelections ();
+            auto clone_r = region->clone_unique ();
+            if (self->action == UiOverlayAction::RESIZING_UP_FADE_IN)
+              {
+                clone_r->fade_in_opts_.curviness_ = self->dval_at_start;
+                edit_type = ArrangerSelectionsAction::EditType::Fades;
+              }
+            else if (self->action == UiOverlayAction::RESIZING_UP_FADE_OUT)
+              {
+                clone_r->fade_out_opts_.curviness_ = self->dval_at_start;
+                edit_type = ArrangerSelectionsAction::EditType::Fades;
+              }
+            else if (self->action == UiOverlayAction::RESIZING_UP)
+              {
+                clone_r->gain_ = self->fval_at_start;
+                edit_type = ArrangerSelectionsAction::EditType::Primitive;
+              }
+            else
+              {
+                z_return_if_reached ();
+              }
+            sel_before.add_object_owned (std::move (clone_r));
+            UNDO_MANAGER->perform (
+              std::make_unique<ArrangerSelectionsAction::EditAction> (
+                sel_before, &sel, edit_type, true));
+          }
+          break;
+        default:
+          break;
+        }
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to perform action"));
+    }
 }

@@ -13,7 +13,7 @@
 #include "schemas/dsp/track.h"
 #include "utils/yaml.h"
 
-typedef struct TracklistSelections TracklistSelections;
+// typedef struct TracklistSelections TracklistSelections;
 
 typedef struct TracklistSelections_v1
 {

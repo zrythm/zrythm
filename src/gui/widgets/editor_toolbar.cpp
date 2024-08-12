@@ -1,24 +1,19 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/actions.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/audio_function.h"
+#include "dsp/automation_function.h"
+#include "dsp/midi_function.h"
 #include "dsp/quantize_options.h"
-#include "gui/backend/event_manager.h"
-#include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/zoom_buttons.h"
-#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -32,10 +27,8 @@ on_highlighting_changed (
   GParamSpec *  pspec,
   gpointer      user_data)
 {
-  piano_roll_set_highlighting (
-    PIANO_ROLL,
-    ENUM_INT_TO_VALUE (
-      PianoRollHighlighting, gtk_drop_down_get_selected (dropdown)));
+  PIANO_ROLL->set_highlighting (ENUM_INT_TO_VALUE (
+    PianoRoll::Highlighting, gtk_drop_down_get_selected (dropdown)));
 }
 
 static void
@@ -56,26 +49,28 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
 {
   self->audio_functions_menu = G_MENU_MODEL (g_menu_new ());
   for (
-    unsigned int i = ENUM_VALUE_TO_INT (AudioFunctionType::AUDIO_FUNCTION_INVERT);
-    i < ENUM_VALUE_TO_INT (AudioFunctionType::AUDIO_FUNCTION_CUSTOM_PLUGIN); i++)
+    unsigned int i = ENUM_VALUE_TO_INT (AudioFunctionType::Invert);
+    i < ENUM_VALUE_TO_INT (AudioFunctionType::CustomPlugin); i++)
     {
       /* not implemented yet */
       if (
-        i == ENUM_VALUE_TO_INT (AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_RMS)
-        || i == ENUM_VALUE_TO_INT (AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_LUFS))
+        i == ENUM_VALUE_TO_INT (AudioFunctionType::NormalizeRMS)
+        || i == ENUM_VALUE_TO_INT (AudioFunctionType::NormalizeLUFS))
         continue;
 
       char * detailed_action = audio_function_get_detailed_action_for_type (
         ENUM_INT_TO_VALUE (AudioFunctionType, i),
         "editor-toolbar.editor-function");
       GMenuItem * item = g_menu_item_new (
-        audio_function_type_to_string (ENUM_INT_TO_VALUE (AudioFunctionType, i)),
+        AudioFunctionType_to_string (
+          ENUM_INT_TO_VALUE (AudioFunctionType, i), true)
+          .c_str (),
         detailed_action);
       g_free (detailed_action);
       const char * icon_name = audio_function_get_icon_name_for_type (
         ENUM_INT_TO_VALUE (AudioFunctionType, i));
       g_menu_item_set_attribute (
-        item, G_MENU_ATTRIBUTE_ICON, "s", icon_name, NULL);
+        item, G_MENU_ATTRIBUTE_ICON, "s", icon_name, nullptr);
       g_menu_append_item (G_MENU (self->audio_functions_menu), item);
     }
 
@@ -93,7 +88,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
           || !plugin_descriptor_is_effect (descr)
           || descr->num_audio_ins != 2
           || descr->num_audio_outs != 2
-          || descr->category == Z_PLUGIN_CATEGORY_ANALYZER)
+          || descr->category == ANALYZER)
         continue;
 
       /* skip if open with carla by default */
@@ -101,7 +96,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
         plugin_setting_new_default (descr);
       g_return_if_fail (setting);
       bool skip = false;
-      if (setting->open_with_carla)
+      if (setting->open_with_carla_)
         {
           skip = true;
         }
@@ -117,7 +112,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
           descr->name, detailed_action);
       g_menu_item_set_attribute (
         item, G_MENU_ATTRIBUTE_ICON,
-        "s", "logo-lv2", NULL);
+        "s", "logo-lv2", nullptr);
       g_menu_append_item (
         G_MENU (plugins_menu), item);
     }
@@ -153,7 +148,7 @@ update_automation_funcs_menu (EditorToolbarWidget * self)
 void
 editor_toolbar_widget_refresh (EditorToolbarWidget * self)
 {
-  Region * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = CLIP_EDITOR->get_region ();
   if (!region)
     {
       return;
@@ -164,24 +159,21 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
   gtk_widget_set_visible (GTK_WIDGET (self->sep_after_chord_highlight), false);
   gtk_widget_set_visible (GTK_WIDGET (self->ghost_notes_btn), false);
 
-  switch (region->id.type)
+  switch (region->id_.type_)
     {
-    case RegionType::REGION_TYPE_MIDI:
+    case RegionType::Midi:
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "midi-page");
         MidiFunctionType type = ENUM_INT_TO_VALUE (
           MidiFunctionType, g_settings_get_int (S_UI, "midi-function"));
-        char * str = g_strdup_printf (
-          _ ("Apply %s"), _ (midi_function_type_to_string (type)));
-        char * tooltip_str = g_strdup_printf (
-          _ ("Apply %s with previous settings"),
-          _ (midi_function_type_to_string (type)));
-        adw_split_button_set_label (self->midi_functions_btn, str);
+        auto type_str = MidiFunctionType_to_string (type, true);
+        auto str = format_str (_ ("Apply %s"), type_str);
+        auto tooltip_str =
+          format_str (_ ("Apply %s with previous settings"), type_str);
+        adw_split_button_set_label (self->midi_functions_btn, str.c_str ());
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->midi_functions_btn), tooltip_str);
-        g_free (str);
-        g_free (tooltip_str);
+          GTK_WIDGET (self->midi_functions_btn), tooltip_str.c_str ());
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (GTK_WIDGET (self->chord_highlight_box), true);
@@ -190,41 +182,36 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
         gtk_widget_set_visible (GTK_WIDGET (self->ghost_notes_btn), true);
       }
       break;
-    case RegionType::REGION_TYPE_AUTOMATION:
+    case RegionType::Automation:
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "automation-page");
         AutomationFunctionType type = ENUM_INT_TO_VALUE (
           AutomationFunctionType,
           g_settings_get_int (S_UI, "automation-function"));
-        char * str = g_strdup_printf (
-          _ ("Apply %s"), _ (automation_function_type_to_string (type)));
-        char * tooltip_str = g_strdup_printf (
-          _ ("Apply %s with previous settings"),
-          _ (automation_function_type_to_string (type)));
-        adw_split_button_set_label (self->automation_functions_btn, str);
+        auto type_str = AutomationFunctionType_to_string (type, true);
+        auto str = format_str (_ ("Apply %s"), type_str);
+        auto tooltip_str =
+          format_str (_ ("Apply %s with previous settings"), type_str);
+        adw_split_button_set_label (
+          self->automation_functions_btn, str.c_str ());
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->automation_functions_btn), tooltip_str);
-        g_free (str);
-        g_free (tooltip_str);
+          GTK_WIDGET (self->automation_functions_btn), tooltip_str.c_str ());
       }
       break;
-    case RegionType::REGION_TYPE_AUDIO:
+    case RegionType::Audio:
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "audio-page");
         AudioFunctionType type = ENUM_INT_TO_VALUE (
           AudioFunctionType, g_settings_get_int (S_UI, "audio-function"));
-        char * str = g_strdup_printf (
-          _ ("Apply %s"), _ (audio_function_type_to_string (type)));
-        char * tooltip_str = g_strdup_printf (
-          _ ("Apply %s with previous settings"),
-          _ (audio_function_type_to_string (type)));
-        adw_split_button_set_label (self->audio_functions_btn, str);
+        auto type_str = AudioFunctionType_to_string (type, true);
+        auto str = format_str (_ ("Apply %s"), type_str);
+        auto tooltip_str =
+          format_str (_ ("Apply %s with previous settings"), type_str);
+        adw_split_button_set_label (self->audio_functions_btn, str.c_str ());
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->audio_functions_btn), tooltip_str);
-        g_free (str);
-        g_free (tooltip_str);
+          GTK_WIDGET (self->audio_functions_btn), tooltip_str.c_str ());
       }
       break;
     default:
@@ -234,22 +221,22 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
     }
 }
 
-typedef enum HighlightColumns
+using HighlightColumns = enum HighlightColumns
 {
   ICON_NAME_COL,
   LABEL_COL,
   ACTION_COL,
-} HighlightColumns;
+};
 
 void
 editor_toolbar_widget_setup (EditorToolbarWidget * self)
 {
   /* setup bot toolbar */
-  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_EDITOR);
-  quantize_box_widget_setup (self->quantize_box, QUANTIZE_OPTIONS_EDITOR);
+  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_EDITOR.get ());
+  quantize_box_widget_setup (self->quantize_box, QUANTIZE_OPTIONS_EDITOR.get ());
 
   /* setup highlighting */
-  GtkStringList * slist = gtk_string_list_new (NULL);
+  GtkStringList * slist = gtk_string_list_new (nullptr);
   gtk_string_list_append (slist, _ ("No Highlight"));
   gtk_string_list_append (slist, _ ("Highlight Chord"));
   gtk_string_list_append (slist, _ ("Highlight Scale"));
@@ -257,7 +244,7 @@ editor_toolbar_widget_setup (EditorToolbarWidget * self)
   GtkDropDown * dropdown = GTK_DROP_DOWN (self->chord_highlighting);
   gtk_drop_down_set_model (dropdown, G_LIST_MODEL (slist));
   gtk_drop_down_set_selected (
-    dropdown, ENUM_VALUE_TO_INT (PIANO_ROLL->highlighting));
+    dropdown, ENUM_VALUE_TO_INT (PIANO_ROLL->highlighting_));
 
   /* setup signals */
   g_signal_connect (
@@ -294,7 +281,7 @@ editor_toolbar_widget_init (EditorToolbarWidget * self)
     {"editor-function", activate_app_action_wrapper, "s"},
   };
   g_action_map_add_action_entries (
-    G_ACTION_MAP (action_group), entries, G_N_ELEMENTS (entries), NULL);
+    G_ACTION_MAP (action_group), entries, G_N_ELEMENTS (entries), nullptr);
   gtk_widget_insert_action_group (
     GTK_WIDGET (self), "editor-toolbar", G_ACTION_GROUP (action_group));
 

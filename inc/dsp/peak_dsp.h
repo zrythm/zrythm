@@ -28,8 +28,29 @@
 #ifndef __AUDIO_PEAK_DSP__
 #define __AUDIO_PEAK_DSP__
 
-typedef struct PeakDsp
+class PeakDsp
 {
+public:
+  /**
+   * Process.
+   *
+   * @param p Frame array.
+   * @param n Number of samples.
+   */
+  HOT void process (float * p, int n);
+
+  float read_f ();
+
+  void read (float * rms, float * peak);
+
+  void reset ();
+
+  /**
+   * Init with the samplerate.
+   */
+  void init (float samplerate);
+
+public:
   float rms;  // max rms value since last read()
   float peak; // max peak value since last read()
   int   cnt;  // digital peak hold counter
@@ -39,37 +60,6 @@ typedef struct PeakDsp
 
   int   hold;  // peak hold timeoute
   float fsamp; // sample-rate
-} PeakDsp;
-
-/**
- * Process.
- *
- * @param p Frame array.
- * @param n Number of samples.
- */
-HOT void
-peak_dsp_process (PeakDsp * self, float * p, int n);
-
-float
-peak_dsp_read_f (PeakDsp * self);
-
-void
-peak_dsp_read (PeakDsp * self, float * rms, float * peak);
-
-void
-peak_dsp_reset (PeakDsp * self);
-
-/**
- * Init with the samplerate.
- */
-void
-peak_dsp_init (PeakDsp * self, float samplerate);
-
-MALLOC
-PeakDsp *
-peak_dsp_new (void);
-
-void
-peak_dsp_free (PeakDsp * self);
+};
 
 #endif

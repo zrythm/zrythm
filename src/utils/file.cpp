@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -31,6 +31,8 @@
 #include <cstring>
 
 #include <errno.h>
+
+#include "utils/exceptions.h"
 #ifdef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/stat.h>
@@ -50,6 +52,20 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+
+#include <glibmm.h>
+
+bool
+file_path_exists (const std::string &path)
+{
+  return Glib::file_test (path, Glib::FileTest::EXISTS);
+}
+
+bool
+file_dir_exists (const std::string &dir_path)
+{
+  return Glib::file_test (dir_path, Glib::FileTest::IS_DIR);
+}
 
 char *
 file_path_relative_to (const char * path, const char * base)
@@ -125,23 +141,19 @@ file_symlink (const char * old_path, const char * new_path)
   return ret;
 }
 
-/**
- * Do cp --reflink from \ref src to \ref dest.
- *
- * @return Non-zero on error.
- */
-int
-file_reflink (const char * dest, const char * src)
+void
+file_reflink (const std::string &dest, const std::string &src)
 {
 #ifdef __linux__
-  int src_fd = g_open (src, O_RDONLY);
+  int src_fd = g_open (src.c_str (), O_RDONLY);
   if (src_fd == -1)
-    return src_fd;
-  int dest_fd = g_open (dest, O_RDWR | O_CREAT, 0644);
+    throw ZrythmException ("Failed to open source file");
+  int dest_fd = g_open (dest.c_str (), O_RDWR | O_CREAT, 0644);
   if (dest_fd == -1)
-    return src_fd;
-  return ioctl (dest_fd, FICLONE, src_fd);
+    throw ZrythmException ("Failed to open destination file");
+  if (ioctl (dest_fd, FICLONE, src_fd) != 0)
+    throw ZrythmException ("Failed to reflink");
 #else
-  return -1;
+  throw ZrythmException ("Reflink not supported on this platform");
 #endif
 }

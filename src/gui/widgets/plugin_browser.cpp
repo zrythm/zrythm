@@ -4,14 +4,7 @@
 
 #include "zrythm-config.h"
 
-#include "actions/tracklist_selections.h"
-#include "dsp/engine.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/dialogs/string_entry_dialog.h"
-#include "gui/widgets/expander_box.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_browser.h"
@@ -21,21 +14,16 @@
 #include "plugins/collections.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
-#include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
 
 G_DEFINE_TYPE (PluginBrowserWidget, plugin_browser_widget, GTK_TYPE_WIDGET)
 
@@ -74,32 +62,25 @@ update_plugin_info_label (PluginBrowserWidget * self)
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
 
-  char * type_label = g_strdup_printf (
-    "%s • %s%s", descr->category_str, plugin_protocol_to_str (descr->protocol),
-    descr->arch == ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32
-      ? " (32-bit)"
-      : "");
-  char * audio_label =
-    g_strdup_printf ("%d, %d", descr->num_audio_ins, descr->num_audio_outs);
-  char * midi_label =
-    g_strdup_printf ("%d, %d", descr->num_midi_ins, descr->num_midi_outs);
-  char * ctrl_label =
-    g_strdup_printf ("%d, %d", descr->num_ctrl_ins, descr->num_ctrl_outs);
-  char * cv_label =
-    g_strdup_printf ("%d, %d", descr->num_cv_ins, descr->num_cv_outs);
+  auto type_label = fmt::format (
+    "{} • {}{}", descr->category_str_,
+    PluginDescriptor::plugin_protocol_to_str (descr->protocol_),
+    descr->arch_ == PluginArchitecture::ARCH_32_BIT ? " (32-bit)" : "");
+  auto audio_label =
+    fmt::sprintf ("%d, %d", descr->num_audio_ins_, descr->num_audio_outs_);
+  auto midi_label =
+    fmt::sprintf ("%d, %d", descr->num_midi_ins_, descr->num_midi_outs_);
+  auto ctrl_label =
+    fmt::sprintf ("%d, %d", descr->num_ctrl_ins_, descr->num_ctrl_outs_);
+  auto cv_label =
+    fmt::format ("{}, {}", descr->num_cv_ins_, descr->num_cv_outs_);
 
-  gtk_label_set_text (self->plugin_author_label, descr->author);
-  gtk_label_set_text (self->plugin_type_label, type_label);
-  gtk_label_set_text (self->plugin_audio_label, audio_label);
-  gtk_label_set_text (self->plugin_midi_label, midi_label);
-  gtk_label_set_text (self->plugin_ctrl_label, ctrl_label);
-  gtk_label_set_text (self->plugin_cv_label, cv_label);
-
-  g_free (type_label);
-  g_free (audio_label);
-  g_free (midi_label);
-  g_free (ctrl_label);
-  g_free (cv_label);
+  gtk_label_set_text (self->plugin_author_label, descr->author_.c_str ());
+  gtk_label_set_text (self->plugin_type_label, type_label.c_str ());
+  gtk_label_set_text (self->plugin_audio_label, audio_label.c_str ());
+  gtk_label_set_text (self->plugin_midi_label, midi_label.c_str ());
+  gtk_label_set_text (self->plugin_ctrl_label, ctrl_label.c_str ());
+  gtk_label_set_text (self->plugin_cv_label, cv_label.c_str ());
 }
 
 static PluginBrowserSortStyle
@@ -121,10 +102,10 @@ update_stack_switcher_emblems (PluginBrowserWidget * self)
   adw_view_stack_page_set_badge_number (page, num); \
   adw_view_stack_page_set_needs_attention (page, num > 0)
 
-  SET_EMBLEM (collection, self->selected_collections->len);
-  SET_EMBLEM (author, self->selected_authors->len);
-  SET_EMBLEM (category, self->selected_categories->len);
-  SET_EMBLEM (protocol, self->selected_protocols->len);
+  SET_EMBLEM (collection, self->selected_collections.size ());
+  SET_EMBLEM (author, self->selected_authors.size ());
+  SET_EMBLEM (category, self->selected_categories.size ());
+  SET_EMBLEM (protocol, self->selected_protocols.size ());
 
 #undef SET_EMBLEM
 }
@@ -186,7 +167,7 @@ restore_selection (
   for (i = 0; selection_paths[i] != NULL; i++)
     {
       char *  selection_path = selection_paths[i];
-      guint64 val64 = g_ascii_strtoull (selection_path, NULL, 10);
+      guint64 val64 = g_ascii_strtoull (selection_path, nullptr, 10);
       guint   val = (guint) val64;
       g_signal_handlers_block_by_func (
         selection, (gpointer) on_selection_changed, self);
@@ -244,7 +225,8 @@ on_plugin_row_activated (
   sprintf (tmp, "%p", descr);
   GVariant * variant = g_variant_new_string (tmp);
   g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app), "plugin-browser-add-to-project", variant);
+    G_ACTION_GROUP (zrythm_app.get ()), "plugin-browser-add-to-project",
+    variant);
 }
 
 /**
@@ -276,15 +258,15 @@ plugin_filter_func (GObject * item, gpointer user_data)
     gtk_editable_get_text (GTK_EDITABLE (self->plugin_search_entry));
   if (
     text && strlen (text) > 0
-    && !string_contains_substr_case_insensitive (descr->name, text))
+    && !string_contains_substr_case_insensitive (descr->name_.c_str (), text))
     {
       return false;
     }
 
   /* no filter, all visible */
   if (
-    self->selected_categories->len == 0 && self->selected_authors->len == 0
-    && self->selected_protocols->len == 0 && self->selected_collections->len == 0
+    self->selected_categories.empty () && self->selected_authors.empty ()
+    && self->selected_protocols.empty () && self->selected_collections.empty ()
     && !self->current_search && !instruments_active && !effects_active
     && !modulators_active && !midi_modifiers_active)
     {
@@ -293,16 +275,13 @@ plugin_filter_func (GObject * item, gpointer user_data)
 
   bool visible = false;
 
-  /* not visible if plugin protocol is not one of
-   * selected protocols */
-  if (self->selected_protocols->len > 0)
+  /* not visible if plugin protocol is not one of selected protocols */
+  if (!self->selected_protocols.empty ())
     {
       visible = false;
-      for (guint i = 0; i < self->selected_protocols->len; i++)
+      for (auto prot : self->selected_protocols)
         {
-          ZPluginProtocol * prot =
-            &g_array_index (self->selected_protocols, ZPluginProtocol, i);
-          if (descr->protocol == *prot)
+          if (descr->protocol_ == prot)
             {
               visible = true;
               break;
@@ -313,16 +292,13 @@ plugin_filter_func (GObject * item, gpointer user_data)
         return false;
     }
 
-  /* not visible if category selected and plugin doesn't
-   * match */
-  if (self->selected_categories->len > 0)
+  /* not visible if category selected and plugin doesn't match */
+  if (!self->selected_categories.empty ())
     {
       visible = false;
-      for (guint i = 0; i < self->selected_categories->len; i++)
+      for (auto &cat : self->selected_categories)
         {
-          ZPluginCategory * cat =
-            &g_array_index (self->selected_categories, ZPluginCategory, i);
-          if (descr->category == *cat)
+          if (descr->category_ == cat)
             {
               visible = true;
               break;
@@ -336,17 +312,16 @@ plugin_filter_func (GObject * item, gpointer user_data)
     }
 
   /* not visible if author selected and plugin doesn't match */
-  if (self->selected_authors->len > 0)
+  if (!self->selected_authors.empty ())
     {
-      if (!descr->author)
+      if (descr->author_.empty ())
         return false;
 
       visible = false;
-      uint32_t author_sym = self->symap->map (descr->author);
-      for (guint i = 0; i < self->selected_authors->len; i++)
+      uint32_t author_sym = self->symap->map (descr->author_.c_str ());
+      for (auto &sym : self->selected_authors)
         {
-          uint32_t * sym = &g_array_index (self->selected_authors, uint32_t, i);
-          if (*sym == author_sym)
+          if (sym == author_sym)
             {
               visible = true;
               break;
@@ -359,17 +334,13 @@ plugin_filter_func (GObject * item, gpointer user_data)
         return false;
     }
 
-  /* not visible if plugin is not part of
-   * selected collection */
-  if (self->selected_collections->len > 0)
+  /* not visible if plugin is not part of selected collection */
+  if (!self->selected_collections.empty ())
     {
       visible = false;
-      for (guint i = 0; i < self->selected_collections->len; i++)
+      for (auto &coll : self->selected_collections)
         {
-          PluginCollection * coll = (PluginCollection *) g_ptr_array_index (
-            self->selected_collections, i);
-
-          if (plugin_collection_contains_descriptor (coll, descr, false))
+          if (coll->contains_descriptor (*descr))
             {
               visible = true;
               break;
@@ -381,19 +352,19 @@ plugin_filter_func (GObject * item, gpointer user_data)
     }
 
   /* not visible if plugin type doesn't match */
-  if (instruments_active && !plugin_descriptor_is_instrument (descr))
+  if (instruments_active && !descr->is_instrument ())
     return false;
-  if (effects_active && !plugin_descriptor_is_effect (descr))
+  if (effects_active && !descr->is_effect ())
     return false;
-  if (modulators_active && !plugin_descriptor_is_modulator (descr))
+  if (modulators_active && !descr->is_modulator ())
     return false;
-  if (midi_modifiers_active && !plugin_descriptor_is_midi_modifier (descr))
+  if (midi_modifiers_active && !descr->is_midi_modifier ())
     return false;
 
   if (
     self->current_search
     && !string_contains_substr_case_insensitive (
-      descr->name, self->current_search))
+      descr->name_.c_str (), self->current_search))
     {
       return false;
     }
@@ -440,12 +411,13 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
   PluginBrowserSortStyle sort_style = get_sort_style ();
   if (sort_style == PluginBrowserSortStyle::PLUGIN_BROWSER_SORT_ALPHA)
     {
-      return string_utf8_strcasecmp (descr_a->name, descr_b->name);
+      return string_utf8_strcasecmp (
+        descr_a->name_.c_str (), descr_b->name_.c_str ());
     }
   else
     {
-      PluginSetting * setting_a = plugin_setting_new_default (descr_a);
-      PluginSetting * setting_b = plugin_setting_new_default (descr_b);
+      PluginSetting setting_a (*descr_a);
+      PluginSetting setting_b (*descr_b);
 
       int ret = -1;
 
@@ -453,8 +425,8 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
       if (sort_style == PluginBrowserSortStyle::PLUGIN_BROWSER_SORT_LAST_USED)
         {
           gint64 ret64 =
-            setting_b->last_instantiated_time
-            - setting_a->last_instantiated_time;
+            setting_b.last_instantiated_time_
+            - setting_a.last_instantiated_time_;
           if (ret64 == 0)
             ret = 0;
           else if (ret64 > 0)
@@ -465,15 +437,12 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
       else if (
         sort_style == PluginBrowserSortStyle::PLUGIN_BROWSER_SORT_MOST_USED)
         {
-          ret = setting_b->num_instantiations - setting_a->num_instantiations;
+          ret = setting_b.num_instantiations_ - setting_a.num_instantiations_;
         }
       else
         {
           g_return_val_if_reached (-1);
         }
-
-      plugin_setting_free (setting_a);
-      plugin_setting_free (setting_b);
 
       return ret;
     }
@@ -492,13 +461,12 @@ update_internal_selections (
 
   if (selection_model == gtk_list_view_get_model (self->category_list_view))
     {
-      g_array_remove_range (
-        self->selected_categories, 0, self->selected_categories->len);
+      self->selected_categories.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint           idx = gtk_bitset_get_nth (bitset, i);
           ZPluginCategory cat = ENUM_INT_TO_VALUE (ZPluginCategory, idx);
-          g_array_append_val (self->selected_categories, cat);
+          self->selected_categories.push_back (cat);
         }
 
       if (update_ui)
@@ -509,8 +477,7 @@ update_internal_selections (
     }
   else if (selection_model == gtk_list_view_get_model (self->author_list_view))
     {
-      g_array_remove_range (
-        self->selected_authors, 0, self->selected_authors->len);
+      self->selected_authors.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint             idx = gtk_bitset_get_nth (bitset, i);
@@ -518,7 +485,7 @@ update_internal_selections (
             g_list_model_get_item (G_LIST_MODEL (selection_model), idx));
           uint32_t sym =
             self->symap->map (gtk_string_object_get_string (str_obj));
-          g_array_append_val (self->selected_authors, sym);
+          self->selected_authors.push_back (sym);
         }
 
       if (update_ui)
@@ -529,13 +496,12 @@ update_internal_selections (
     }
   else if (selection_model == gtk_list_view_get_model (self->protocol_list_view))
     {
-      g_array_remove_range (
-        self->selected_protocols, 0, self->selected_protocols->len);
+      self->selected_protocols.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint           idx = gtk_bitset_get_nth (bitset, i);
-          ZPluginProtocol prot = ENUM_INT_TO_VALUE (ZPluginProtocol, idx);
-          g_array_append_val (self->selected_protocols, prot);
+          PluginProtocol  prot = ENUM_INT_TO_VALUE (PluginProtocol, idx);
+          self->selected_protocols.push_back (prot);
         }
 
       if (update_ui)
@@ -547,22 +513,21 @@ update_internal_selections (
   else if (
     selection_model == gtk_list_view_get_model (self->collection_list_view))
     {
-      g_ptr_array_remove_range (
-        self->selected_collections, 0, self->selected_collections->len);
+      self->selected_collections.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint                           idx = gtk_bitset_get_nth (bitset, i);
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
               g_list_model_get_item (G_LIST_MODEL (selection_model), idx));
-          const PluginCollection * coll = (const PluginCollection *) wobj->obj;
+          auto * coll = (PluginCollection *) wobj->obj;
           if (coll)
             {
-              g_ptr_array_add (self->selected_collections, (gpointer) coll);
+              self->selected_collections.push_back (coll);
             }
           else
             {
-              g_critical ("collection not found");
+              z_error ("collection not found");
             }
         }
 
@@ -612,17 +577,14 @@ create_model_for_collections (void)
   GListStore * list_store =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  PluginCollections * collections = PLUGIN_MANAGER->collections;
-  g_return_val_if_fail (collections, NULL);
-  for (size_t i = 0; i < collections->collections->len; i++)
+  auto &collections = PLUGIN_MANAGER->collections_;
+  g_return_val_if_fail (collections, nullptr);
+  for (auto &collection : collections->collections_)
     {
-      PluginCollection * collection = static_cast<PluginCollection *> (
-        g_ptr_array_index (collections->collections, i));
-
       /* add row to model */
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new (
-          collection, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION);
+          &collection, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION);
       g_list_store_append (list_store, wobj);
     }
 
@@ -634,12 +596,12 @@ create_model_for_collections (void)
 static GtkSelectionModel *
 create_model_for_categories (void)
 {
-  GtkStringList * string_list = gtk_string_list_new (NULL);
+  GtkStringList * string_list = gtk_string_list_new (nullptr);
   for (size_t i = 0; i < ENUM_COUNT (ZPluginCategory); i++)
     {
-      const char * name =
-        plugin_category_to_string (ENUM_INT_TO_VALUE (ZPluginCategory, i));
-      gtk_string_list_append (string_list, name);
+      std::string name = PluginDescriptor::category_to_string (
+        ENUM_INT_TO_VALUE (ZPluginCategory, i));
+      gtk_string_list_append (string_list, name.c_str ());
     }
 
   GtkMultiSelection * sel = gtk_multi_selection_new (G_LIST_MODEL (string_list));
@@ -650,11 +612,10 @@ create_model_for_categories (void)
 static GtkSelectionModel *
 create_model_for_authors (void)
 {
-  GtkStringList * string_list = gtk_string_list_new (NULL);
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugin_authors; i++)
+  GtkStringList * string_list = gtk_string_list_new (nullptr);
+  for (auto &author : PLUGIN_MANAGER->plugin_authors_)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_authors[i];
-      gtk_string_list_append (string_list, name);
+      gtk_string_list_append (string_list, author.c_str ());
     }
 
   GtkMultiSelection * sel = gtk_multi_selection_new (G_LIST_MODEL (string_list));
@@ -665,12 +626,12 @@ create_model_for_authors (void)
 static GtkSelectionModel *
 create_model_for_protocols (void)
 {
-  GtkStringList * string_list = gtk_string_list_new (NULL);
-  for (size_t i = 0; i < ENUM_COUNT (ZPluginProtocol); i++)
+  GtkStringList * string_list = gtk_string_list_new (nullptr);
+  for (size_t i = 0; i < ENUM_COUNT (PluginProtocol); i++)
     {
-      const char * name =
-        plugin_protocol_to_str (ENUM_INT_TO_VALUE (ZPluginProtocol, i));
-      gtk_string_list_append (string_list, name);
+      std::string name = PluginDescriptor::plugin_protocol_to_str (
+        ENUM_INT_TO_VALUE (PluginProtocol, i));
+      gtk_string_list_append (string_list, name.c_str ());
     }
 
   GtkMultiSelection * sel = gtk_multi_selection_new (G_LIST_MODEL (string_list));
@@ -682,26 +643,25 @@ static GtkSelectionModel *
 create_model_for_plugins (PluginBrowserWidget * self)
 {
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  for (size_t i = 0; i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
+  for (auto &descr : PLUGIN_MANAGER->plugin_descriptors_)
     {
-      PluginDescriptor * descr = static_cast<PluginDescriptor *> (
-        g_ptr_array_index (PLUGIN_MANAGER->plugin_descriptors, i));
-
       WrappedObjectWithChangeSignal * wrapped_descr =
-        wrapped_object_with_change_signal_new (
-          descr, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
+        wrapped_object_with_change_signal_new_with_free_func (
+          new PluginDescriptor (descr),
+          WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR,
+          [] (void * ptr) { delete static_cast<PluginDescriptor *> (ptr); });
 
       g_list_store_append (store, wrapped_descr);
     }
 
   /* create sorter */
-  self->plugin_sorter = gtk_custom_sorter_new (plugin_sort_func, self, NULL);
+  self->plugin_sorter = gtk_custom_sorter_new (plugin_sort_func, self, nullptr);
   self->plugin_sort_model = gtk_sort_list_model_new (
     G_LIST_MODEL (store), GTK_SORTER (self->plugin_sorter));
 
   /* create filter */
   self->plugin_filter = gtk_custom_filter_new (
-    (GtkCustomFilterFunc) plugin_filter_func, self, NULL);
+    (GtkCustomFilterFunc) plugin_filter_func, self, nullptr);
   self->plugin_filter_model = gtk_filter_list_model_new (
     G_LIST_MODEL (self->plugin_sort_model), GTK_FILTER (self->plugin_filter));
 
@@ -727,32 +687,34 @@ list_view_setup (
         list_view == self->plugin_list_view
         || list_view == self->collection_list_view)
         {
-          ItemFactory * factory = item_factory_new (
+          auto factory = std::make_unique<ItemFactory> (
             self->plugin_list_view == list_view
-              ? ItemFactoryType::ITEM_FACTORY_ICON_AND_TEXT
-              : ItemFactoryType::ITEM_FACTORY_TEXT,
-            false, NULL);
-          gtk_list_view_set_factory (list_view, factory->list_item_factory);
-          g_ptr_array_add (self->item_factories, factory);
+              ? ItemFactory::Type::IconAndText
+              : ItemFactory::Type::Text,
+            false, nullptr);
+          gtk_list_view_set_factory (list_view, factory->list_item_factory_);
+          self->item_factories.emplace_back (std::move (factory));
         }
       else if (list_view == self->author_list_view)
         {
           gtk_list_view_set_factory (
-            list_view, string_list_item_factory_new (NULL));
+            list_view, string_list_item_factory_new (nullptr));
         }
       else if (list_view == self->category_list_view)
         {
           gtk_list_view_set_factory (
-            list_view,
-            string_list_item_factory_new ((
-              StringListItemFactoryEnumStringGetter) plugin_category_to_string));
+            list_view, string_list_item_factory_new ([] (int value) {
+              return PluginDescriptor::category_to_string (
+                static_cast<ZPluginCategory> (value));
+            }));
         }
       else if (list_view == self->protocol_list_view)
         {
           gtk_list_view_set_factory (
-            list_view,
-            string_list_item_factory_new (
-              (StringListItemFactoryEnumStringGetter) plugin_protocol_to_str));
+            list_view, string_list_item_factory_new ([] (int value) {
+              return PluginDescriptor::plugin_protocol_to_str (
+                static_cast<PluginProtocol> (value));
+            }));
         }
     }
 
@@ -765,8 +727,7 @@ void
 plugin_browser_widget_refresh_collections (PluginBrowserWidget * self)
 {
   GtkSelectionModel * model = create_model_for_collections ();
-  g_ptr_array_remove_range (
-    self->selected_collections, 0, self->selected_collections->len);
+  self->selected_collections.clear ();
   list_view_setup (self, self->collection_list_view, model, false);
 }
 
@@ -989,7 +950,7 @@ PluginBrowserWidget *
 plugin_browser_widget_new (void)
 {
   PluginBrowserWidget * self = static_cast<PluginBrowserWidget *> (
-    g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL));
+    g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, nullptr));
 
   self->symap = new Symap ();
 
@@ -1021,7 +982,7 @@ plugin_browser_widget_new (void)
     self->plugin_search_entry, GTK_WIDGET (self->plugin_list_view));
   g_object_set (
     G_OBJECT (self->plugin_search_entry), "placeholder-text", _ ("Search..."),
-    NULL);
+    nullptr);
   g_signal_connect (
     G_OBJECT (self->plugin_search_entry), "search-changed",
     G_CALLBACK (on_plugin_search_changed), self);
@@ -1114,12 +1075,13 @@ dispose (PluginBrowserWidget * self)
 static void
 finalize (PluginBrowserWidget * self)
 {
+  std::construct_at (&self->selected_authors);
+  std::construct_at (&self->selected_categories);
+  std::construct_at (&self->selected_protocols);
+  std::construct_at (&self->selected_collections);
+  std::construct_at (&self->item_factories);
+
   object_delete_and_null (self->symap);
-  object_free_w_func_and_null (g_array_unref, self->selected_authors);
-  object_free_w_func_and_null (g_array_unref, self->selected_categories);
-  object_free_w_func_and_null (g_array_unref, self->selected_protocols);
-  object_free_w_func_and_null (g_ptr_array_unref, self->selected_collections);
-  object_free_w_func_and_null (g_ptr_array_unref, self->item_factories);
 
   G_OBJECT_CLASS (plugin_browser_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -1183,9 +1145,16 @@ plugin_browser_widget_class_init (PluginBrowserWidgetClass * _klass)
 static void
 plugin_browser_widget_init (PluginBrowserWidget * self)
 {
+  std::construct_at (&self->selected_authors);
+  std::construct_at (&self->selected_categories);
+  std::construct_at (&self->selected_protocols);
+  std::construct_at (&self->selected_collections);
+  std::construct_at (&self->item_factories);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->stack_switcher = ADW_VIEW_SWITCHER (adw_view_switcher_new ());
@@ -1216,14 +1185,6 @@ plugin_browser_widget_init (PluginBrowserWidget * self)
       gtk_toggle_button_set_active (self->most_used_sort_btn, true);
       break;
     }
-
-  self->selected_authors = g_array_new (false, true, sizeof (uint32_t));
-  self->selected_categories =
-    g_array_new (false, true, sizeof (ZPluginCategory));
-  self->selected_protocols = g_array_new (false, true, sizeof (ZPluginProtocol));
-  self->selected_collections = g_ptr_array_new ();
-
-  self->item_factories = g_ptr_array_new_with_free_func (item_factory_free_func);
 
   /* add callback when sort style changed */
   g_signal_connect (

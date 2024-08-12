@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * PianoRoll selection info.
  */
@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_MAS_INFO MW_CLIP_EDITOR->editor_selections
 
 typedef struct _SelectionInfoWidget   SelectionInfoWidget;
-typedef struct MidiArrangerSelections MidiArrangerSelections;
+class MidiSelections;
 
 /**
  * A widget for showing info about the current
@@ -51,6 +51,6 @@ typedef struct _EditorSelectionInfoWidget
 void
 editor_selection_info_widget_refresh (
   EditorSelectionInfoWidget * self,
-  MidiArrangerSelections *    mas);
+  MidiSelections *            mas);
 
 #endif

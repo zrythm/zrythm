@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * System utils.
  */
@@ -24,7 +24,7 @@
  *
  * This assumes that the process will exit within a
  * few milliseconds from when the first output is
- * printed, unless \ref always_wait is true, in
+ * printed, unless @ref always_wait is true, in
  * which case the process will only be
  * reaped after the waiting time.
  *

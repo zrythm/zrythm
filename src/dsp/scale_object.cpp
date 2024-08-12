@@ -1,50 +1,65 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-#include <cmath>
-#include <cstdlib>
-
+#include "dsp/arranger_object.h"
 #include "dsp/chord_track.h"
 #include "dsp/position.h"
 #include "dsp/scale_object.h"
-#include "gui/backend/arranger_object.h"
+#include "dsp/tracklist.h"
 #include "project.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "zrythm.h"
 
-/**
- * Creates a ScaleObject.
- */
-ScaleObject *
-scale_object_new (MusicalScale * descr)
+#include <fmt/format.h>
+
+ScaleObject::ScaleObject (const MusicalScale &descr)
+    : ArrangerObject (ArrangerObject::Type::ScaleObject), scale_ (descr)
 {
-  ScaleObject * self = object_new (ScaleObject);
+}
 
-  self->magic = SCALE_OBJECT_MAGIC;
+std::string
+ScaleObject::print_to_str () const
+{
+  return fmt::format (
+    "ScaleObject: {} | {}", "TODO print scale", pos_.to_string ());
+}
 
-  ArrangerObject * obj = (ArrangerObject *) self;
-  obj->type = ArrangerObjectType::ARRANGER_OBJECT_TYPE_SCALE_OBJECT;
+ScaleObject::ArrangerObjectPtr
+ScaleObject::find_in_project () const
+{
+  z_return_val_if_fail (
+    index_in_chord_track_ < (int) P_CHORD_TRACK->scales_.size (), nullptr);
+  auto &ret = P_CHORD_TRACK->scales_[index_in_chord_track_];
+  z_return_val_if_fail (*ret == *this, nullptr);
+  return ret;
+}
 
-  self->scale = descr;
+std::string
+ScaleObject::gen_human_friendly_name () const
+{
+  return scale_.to_string ();
+}
 
-  arranger_object_init (obj);
+ScaleObject::ArrangerObjectPtr
+ScaleObject::add_clone_to_project (bool fire_events) const
+{
+  return P_CHORD_TRACK->add_scale (clone_shared ());
+}
 
-  return self;
+ScaleObject::ArrangerObjectPtr
+ScaleObject::insert_clone_to_project () const
+{
+  return P_CHORD_TRACK->insert_scale (clone_shared (), index_in_chord_track_);
 }
 
 void
-scale_object_set_index (ScaleObject * self, int index)
+ScaleObject::set_index_in_chord_track (int index)
 {
-  self->index = index;
+  index_in_chord_track_ = index;
 }
 
-int
-scale_object_is_equal (ScaleObject * a, ScaleObject * b)
+bool
+ScaleObject::validate (bool is_project, double frames_per_tick) const
 {
-  ArrangerObject * obj_a = (ArrangerObject *) a;
-  ArrangerObject * obj_b = (ArrangerObject *) b;
-  return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
-         && a->index == b->index && musical_scale_is_equal (a->scale, b->scale);
+  // TODO
+  return true;
 }

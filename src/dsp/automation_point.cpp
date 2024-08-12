@@ -1,11 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/** \file
- */
 
 #include <cmath>
 
+#include "actions/arranger_selections.h"
 #include "dsp/automation_point.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -19,143 +17,124 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_point.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
-#include "utils/string.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-static AutomationPoint *
-_create_new (const Position * pos)
-{
-  AutomationPoint * self = object_new (AutomationPoint);
+#include <fmt/printf.h>
 
-  ArrangerObject * obj = (ArrangerObject *) self;
-  arranger_object_init (obj);
-  obj->pos = *pos;
-  obj->type = ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT;
-  curve_opts_init (&self->curve_opts);
-  self->curve_opts.curviness = 0;
-  self->curve_opts.algo =
+AutomationPoint::AutomationPoint (const Position &pos)
+    : ArrangerObject (Type::AutomationPoint)
+{
+  pos_ = pos;
+  curve_opts_.algo_ =
     ZRYTHM_TESTING
-      ? CurveAlgorithm::SUPERELLIPSE
-      : (CurveAlgorithm) g_settings_get_enum (
+      ? CurveOptions::Algorithm::SuperEllipse
+      : (CurveOptions::Algorithm) g_settings_get_enum (
         S_P_EDITING_AUTOMATION, "curve-algorithm");
-
-  self->index = -1;
-
-  return self;
 }
 
-/**
- * Sets the Region and the index in the
- * region that the AutomationPoint
- * belongs to, in all its counterparts.
- */
-void
-automation_point_set_region_and_index (
-  AutomationPoint * ap,
-  Region *          region,
-  int               index)
+AutomationPoint::AutomationPoint (
+  const float     value,
+  const float     normalized_val,
+  const Position &pos)
+    : AutomationPoint (pos)
 {
-  g_return_if_fail (ap && region);
-  ArrangerObject * obj = (ArrangerObject *) ap;
-  region_identifier_copy (&obj->region_id, &region->id);
-  ap->index = index;
-
-  /* set the info to the transient too */
-  if (
-    (ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded && obj->transient
-    && arranger_object_should_orig_be_visible (obj, NULL))
-    {
-      ArrangerObject *  trans_obj = obj->transient;
-      AutomationPoint * trans_ap = (AutomationPoint *) trans_obj;
-      region_identifier_copy (&trans_obj->region_id, &region->id);
-      trans_ap->index = index;
-    }
-}
-
-int
-automation_point_is_equal (AutomationPoint * a, AutomationPoint * b)
-{
-  ArrangerObject * a_obj = (ArrangerObject *) a;
-  ArrangerObject * b_obj = (ArrangerObject *) b;
-  return position_is_equal_ticks (&a_obj->pos, &b_obj->pos)
-         && math_floats_equal_epsilon (a->fvalue, b->fvalue, 0.001f);
-}
-
-/**
- * Creates an AutomationPoint in the given
- * AutomationTrack at the given Position.
- */
-AutomationPoint *
-automation_point_new_float (
-  const float      value,
-  const float      normalized_val,
-  const Position * pos)
-{
-  AutomationPoint * self = _create_new (pos);
-
   if (ZRYTHM_TESTING)
     {
       math_assert_nonnann (value);
       math_assert_nonnann (normalized_val);
     }
 
-  self->fvalue = value;
-  self->normalized_val = normalized_val;
-
-  return self;
+  fvalue_ = value;
+  normalized_val_ = normalized_val;
 }
 
-/**
- * Returns if the curve of the AutomationPoint
- * curves upwards as you move right on the x axis.
- */
-bool
-automation_point_curves_up (AutomationPoint * self)
+std::string
+AutomationPoint::print_to_str () const
 {
-  Region * region = arranger_object_get_region ((ArrangerObject *) self);
-  AutomationPoint * next_ap =
-    automation_region_get_next_ap (region, self, true, true);
+  return fmt::format (
+    "AutomationPoint(fvalue={}, normalized_val={}, pos={})", fvalue_,
+    normalized_val_, pos_.to_string ());
+}
+
+ArrangerObject::ArrangerObjectPtr
+AutomationPoint::find_in_project () const
+{
+  auto region = AutomationRegion::find (region_id_);
+  z_return_val_if_fail (region && (int) region->aps_.size () > index_, nullptr);
+
+  auto &ap = region->aps_[index_];
+  z_return_val_if_fail (*this == *ap, nullptr);
+
+  return ap;
+}
+
+void
+AutomationPoint::init_after_cloning (const AutomationPoint &other)
+{
+  if (ZRYTHM_TESTING)
+    {
+      z_return_if_fail (
+        math_assert_nonnann (other.normalized_val_)
+        && math_assert_nonnann (other.fvalue_));
+    }
+
+  AutomationPoint (other.fvalue_, other.normalized_val_, other.pos_);
+  curve_opts_ = other.curve_opts_;
+  region_id_ = other.region_id_;
+  index_ = other.index_;
+  RegionOwnedObject::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+}
+
+ArrangerObject::ArrangerObjectPtr
+AutomationPoint::add_clone_to_project (bool fire_events) const
+{
+  return get_region ()->append_object (clone_shared (), true);
+}
+
+ArrangerObject::ArrangerObjectPtr
+AutomationPoint::insert_clone_to_project () const
+{
+  return get_region ()->insert_object (clone_shared (), index_, true);
+}
+
+bool
+AutomationPoint::curves_up () const
+{
+  auto              region = dynamic_cast<AutomationRegion *> (get_region ());
+  AutomationPoint * next_ap = region->get_next_ap (*this, true, true);
 
   if (!next_ap)
     return false;
 
   /* fvalue can be equal in non-float automation even though there is a curve.
    * use the normalized value instead */
-  if (next_ap->normalized_val > self->normalized_val)
+  if (next_ap->normalized_val_ > normalized_val_)
     return true;
   else
     return false;
 }
 
-/**
- * Sets the value from given real or normalized
- * value and notifies interested parties.
- *
- * @param is_normalized Whether the given value is
- *   normalized.
- */
 void
-automation_point_set_fvalue (
-  AutomationPoint * self,
-  float             real_val,
-  bool              is_normalized,
-  bool              pub_events)
+AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events)
 {
-  g_return_if_fail (self);
-
-  Port * port = automation_point_get_port (self);
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  auto port = get_port ();
+  z_return_if_fail (port);
 
   if (ZRYTHM_TESTING)
     {
@@ -167,29 +146,27 @@ automation_point_set_fvalue (
     {
       g_message ("received normalized val %f", (double) real_val);
       normalized_val = CLAMP (real_val, 0.f, 1.f);
-      real_val = control_port_normalized_val_to_real (port, normalized_val);
+      real_val = port->normalized_val_to_real (normalized_val);
     }
   else
     {
       g_message ("reveived real val %f", (double) real_val);
       real_val = CLAMP (real_val, port->minf_, port->maxf_);
-      normalized_val = control_port_real_val_to_normalized (port, real_val);
+      normalized_val = port->real_val_to_normalized (real_val);
     }
   g_message ("setting to %f", (double) real_val);
-  self->fvalue = real_val;
-  self->normalized_val = normalized_val;
+  fvalue_ = real_val;
+  normalized_val_ = normalized_val;
 
   if (ZRYTHM_TESTING)
     {
-      math_assert_nonnann (self->fvalue);
-      math_assert_nonnann (self->normalized_val);
+      math_assert_nonnann (fvalue_);
+      math_assert_nonnann (normalized_val_);
     }
 
-  Region * region = arranger_object_get_region ((ArrangerObject *) self);
-  g_return_if_fail (region);
+  g_return_if_fail (get_region ());
 
-  /* don't set value - wait for engine to process
-   * it */
+  /* don't set value - wait for engine to process it */
 #if 0
   control_port_set_val_from_normalized (
     port, self->normalized_val, Z_F_AUTOMATING);
@@ -197,31 +174,26 @@ automation_point_set_fvalue (
 
   if (pub_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, self);
+      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
     }
 }
 
-const char *
-automation_point_get_fvalue_as_string (AutomationPoint * self)
+std::string
+AutomationPoint::get_fvalue_as_string (void * self)
 {
-  if (self->tmp_str)
-    g_free (self->tmp_str);
-
-  self->tmp_str = g_strdup_printf ("%f", self->fvalue);
-
-  return self->tmp_str;
+  AutomationPoint * ap = static_cast<AutomationPoint *> (self);
+  return fmt::sprintf ("%f", ap->fvalue_);
 }
 
 void
-automation_point_set_fvalue_with_action (
-  AutomationPoint * self,
-  const char *      fval_str)
+AutomationPoint::set_fvalue_with_action (void * self, const std::string &fval_str)
 {
-  Port * port = automation_point_get_port (self);
+  auto * ap = static_cast<AutomationPoint *> (self);
+  Port * port = ap->get_port ();
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   float val;
-  int   res = sscanf (fval_str, "%f", &val);
+  int   res = sscanf (fval_str.c_str (), "%f", &val);
   if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
     {
       ui_show_error_message_printf (
@@ -230,92 +202,79 @@ automation_point_set_fvalue_with_action (
       return;
     }
 
-  ArrangerObject * obj = (ArrangerObject *) self;
-  arranger_object_edit_begin (obj);
-  automation_point_set_fvalue (self, val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
-  arranger_object_edit_finish (
-    obj,
-    ArrangerSelectionsActionEditType::ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+  ap->edit_begin ();
+  ap->set_fvalue (val, false, false);
+  ap->edit_finish ((int) ArrangerSelectionsAction::EditType::Primitive);
 }
 
-/**
- * The function to return a point on the curve.
- *
- * See
- * https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
- *
- * @param ap The start point (0, 0).
- * @param region region The automation region (if known),
- *   otherwise the non-cached region will be used.
- * @param x Normalized x.
- */
 double
-automation_point_get_normalized_value_in_curve (
-  AutomationPoint * self,
-  Region *          region,
-  double            x)
+AutomationPoint::get_normalized_value_in_curve (
+  AutomationRegion * region,
+  double             x) const
 {
-  g_return_val_if_fail (self && x >= 0.0 && x <= 1.0, 0.0);
+  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
 
   if (!region)
     {
-      region = arranger_object_get_region ((ArrangerObject *) self);
+      region = dynamic_cast<AutomationRegion *> (get_region ());
     }
-  g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.0);
-  AutomationPoint * next_ap =
-    automation_region_get_next_ap (region, self, true, true);
+  g_return_val_if_fail (region, 0.0);
+  AutomationPoint * next_ap = region->get_next_ap (*this, true, true);
   if (!next_ap)
     {
-      return self->fvalue;
+      return fvalue_;
     }
 
   double dy;
 
-  int start_higher = next_ap->normalized_val < self->normalized_val;
-  dy = curve_get_normalized_y (x, &self->curve_opts, start_higher);
+  int start_higher = next_ap->normalized_val_ < normalized_val_;
+  dy = curve_opts_.get_normalized_y (x, start_higher);
   return dy;
 }
 
-/**
- * Sets the curviness of the AutomationPoint.
- */
 void
-automation_point_set_curviness (
-  AutomationPoint * self,
-  const curviness_t curviness)
+AutomationPoint::set_curviness (const curviness_t curviness)
 {
-  if (math_doubles_equal (self->curve_opts.curviness, curviness))
+  if (math_doubles_equal (curve_opts_.curviness_, curviness))
     return;
 
-  self->curve_opts.curviness = curviness;
+  curve_opts_.curviness_ = curviness;
 }
 
-/**
- * Convenience function to return the control port
- * that this AutomationPoint is for.
- */
-Port *
-automation_point_get_port (const AutomationPoint * const self)
+ControlPort *
+AutomationPoint::get_port () const
 {
-  const AutomationTrack * const at =
-    automation_point_get_automation_track (self);
-  g_return_val_if_fail (at, NULL);
-  Port * port = Port::find_from_identifier (&at->port_id);
-  g_return_val_if_fail (port, NULL);
+  const AutomationTrack * const at = get_automation_track ();
+  z_return_val_if_fail (at, nullptr);
+  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  z_return_val_if_fail (port, nullptr);
 
   return port;
 }
 
-/**
- * Convenience function to return the
- * AutomationTrack that this AutomationPoint is in.
- */
-AutomationTrack *
-automation_point_get_automation_track (const AutomationPoint * const self)
+ArrangerWidget *
+AutomationPoint::get_arranger () const
 {
-  g_return_val_if_fail (self, NULL);
-  const Region * const region =
-    arranger_object_get_region ((const ArrangerObject *) (self));
-  g_return_val_if_fail (region, NULL);
-  return region_get_automation_track (region);
+  return (ArrangerWidget *) (MW_AUTOMATION_ARRANGER);
+}
+
+AutomationTrack *
+AutomationPoint::get_automation_track () const
+{
+  const auto region = dynamic_cast<AutomationRegion *> (get_region ());
+  g_return_val_if_fail (region, nullptr);
+  return region->get_automation_track ();
+}
+
+bool
+AutomationPoint::validate (bool is_project, double frames_to_tick) const
+{
+  // TODO
+  return true;
+}
+
+AutomationPoint::~AutomationPoint ()
+{
+  object_free_w_func_and_null (gsk_render_node_unref, cairo_node_);
+  object_free_w_func_and_null (gsk_render_node_unref, cairo_node_tl_);
 }

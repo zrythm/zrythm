@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 
+#include "gui/widgets/item_factory.h"
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
@@ -17,7 +18,8 @@ G_DECLARE_FINAL_TYPE (
   AUTOMATABLE_SELECTOR_POPOVER_WIDGET,
   GtkPopover);
 
-TYPEDEF_STRUCT (ItemFactory);
+class ControlPort;
+class AutomationTrack;
 
 /**
  * @addtogroup widgets
@@ -73,10 +75,9 @@ enum class AutomatableSelectorType
 };
 
 /**
- * A popover for selecting the automation track
- * to automate.
+ * A popover for selecting the automation track to automate.
  */
-typedef struct _AutomatableSelectorPopoverWidget
+using AutomatableSelectorPopoverWidget = struct _AutomatableSelectorPopoverWidget
 {
   GtkPopover parent_instance;
 
@@ -86,7 +87,7 @@ typedef struct _AutomatableSelectorPopoverWidget
   GtkListView * type_listview;
   GtkListView * port_listview;
 
-  ItemFactory * port_factory;
+  std::unique_ptr<ItemFactory> port_factory;
 
   GtkLabel * info;
 
@@ -97,8 +98,8 @@ typedef struct _AutomatableSelectorPopoverWidget
    * closing so that it can hide the current AutomationTrack and create/show
    * the one corresponding to this Automatable.
    */
-  Port * selected_port;
-} AutomatableSelectorPopoverWidget;
+  ControlPort * selected_port;
+};
 
 /**
  * Creates the popover.

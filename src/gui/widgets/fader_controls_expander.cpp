@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -34,7 +34,7 @@ fader_controls_expander_widget_refresh (FaderControlsExpanderWidget * self)
 void
 fader_controls_expander_widget_setup (
   FaderControlsExpanderWidget * self,
-  Track *                       track)
+  ChannelTrack *                track)
 {
   /* set name and icon */
   expander_box_widget_set_label (Z_EXPANDER_BOX_WIDGET (self), _ ("Fader"));

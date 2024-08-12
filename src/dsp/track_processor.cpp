@@ -28,26 +28,41 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
+#include "utils/midi.h"
 #include "utils/mpmc_queue.h"
-#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
 #include <fmt/format.h>
 
-static void
-init_common (TrackProcessor * self)
+void
+TrackProcessor::init_loaded (ProcessableTrack * track)
 {
-  if (self->midi_cc[0])
+  track_ = track;
+
+  std::vector<Port*> ports;
+  append_ports (ports);
+  for (auto  port : ports)
     {
-      self->cc_mappings = midi_mappings_new ();
+      port->init_loaded (this);
+    }
+
+  init_common ();
+}
+
+void
+TrackProcessor::init_common ()
+{
+  if (midi_cc_[0])
+    {
+      cc_mappings_ = std::make_unique<MidiMappings> ();
 
       for (size_t i = 0; i < 16; i++)
         {
           for (size_t j = 0; j < 128; j++)
             {
-              Port * cc_port = self->midi_cc[i * 128 + j];
+              auto &cc_port = midi_cc_[i * 128 + j];
               g_return_if_fail (cc_port);
 
               /* set caches */
@@ -58,21 +73,20 @@ init_common (TrackProcessor * self)
                * [0] = ctrl change + channel
                * [1] = controller
                * [2] (unused) = control */
-              midi_byte_t buf[3];
+              std::array<midi_byte_t,3> buf;
               buf[0] = (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
               buf[1] = (midi_byte_t) j;
               buf[2] = 0;
 
               /* bind */
-              midi_mappings_bind_track (
-                self->cc_mappings, buf, cc_port, F_NO_PUBLISH_EVENTS);
+              cc_mappings_->bind_track (buf, *cc_port, false);
             } /* endforeach 0..127 */
 
-          Port * pb = self->pitch_bend[i];
+          auto &pb = pitch_bend_[i];
           g_return_if_fail (pb);
-          Port * kp = self->poly_key_pressure[i];
+          auto &kp = poly_key_pressure_[i];
           g_return_if_fail (kp);
-          Port * cp = self->channel_pressure[i];
+          auto &cp = channel_pressure_[i];
           g_return_if_fail (cp);
 
           /* set caches */
@@ -81,74 +95,44 @@ init_common (TrackProcessor * self)
           cp->midi_channel_ = i + 1;
 
         } /* endforeach 0..15 */
-    }
 
-  self->updated_midi_automatable_ports = mpmc_queue_new ();
-  mpmc_queue_reserve (self->updated_midi_automatable_ports, 128 * 16);
+      updated_midi_automatable_ports_ =
+        std::make_unique<MPMCQueue<ControlPort *>> (128 * 16);
+    }
 }
 
-/**
- * Inits fader after a project is loaded.
- */
 void
-track_processor_init_loaded (TrackProcessor * self, Track * track)
-{
-  self->magic = TRACK_PROCESSOR_MAGIC;
-  self->track = track;
-
-  GPtrArray * ports = g_ptr_array_new ();
-  track_processor_append_ports (self, ports);
-  for (size_t i = 0; i < ports->len; i++)
-    {
-      Port * port = (Port *) g_ptr_array_index (ports, i);
-      port->init_loaded (self);
-    }
-  object_free_w_func_and_null (g_ptr_array_unref, ports);
-
-  init_common (self);
-}
-
-/**
- * Inits the MIDI In port of the Channel while
- * exposing it to JACK.
- *
- * This assumes the caller already checked that
- * this channel should have the given MIDI port
- * enabled.
- *
- * @param in 1 for input, 0 for output.
- * @param loading 1 if loading a channel, 0 if
- *   new.
- */
-static void
-init_midi_port (TrackProcessor * self, int in)
+TrackProcessor::init_midi_port (bool in)
 {
   if (in)
     {
-      self->midi_in = new Port (
-        PortType::Event, PortFlow::Input, "TP MIDI in",
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      self->midi_in->id_.sym_ = ("track_processor_midi_in");
-      g_warn_if_fail (IS_PORT (self->midi_in));
-      self->midi_in->id_.flags_ |= PortIdentifier::Flags::SEND_RECEIVABLE;
+      midi_in_ = std::make_unique<MidiPort> (
+        "TP MIDI in", PortFlow::Input,
+        PortIdentifier::OwnerType::TrackProcessor, this);
+      midi_in_->id_.sym_ = ("track_processor_midi_in");
+      midi_in_->id_.flags_ |= PortIdentifier::Flags::SendReceivable;
     }
   else
     {
-      self->midi_out = new Port (
-        PortType::Event, PortFlow::Output, "TP MIDI out",
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      self->midi_out->id_.sym_ = ("track_processor_midi_out");
-      g_warn_if_fail (IS_PORT (self->midi_out));
+      midi_out_ = std::make_unique<MidiPort> (
+        "TP MIDI out", PortFlow::Output,
+        PortIdentifier::OwnerType::TrackProcessor, this);
+      midi_out_->id_.sym_ = ("track_processor_midi_out");
     }
 }
 
-static void
-init_midi_cc_ports (TrackProcessor * self, int loading)
+void
+TrackProcessor::init_midi_cc_ports (bool loading)
 {
 #define INIT_MIDI_PORT(x, idx) \
-  x->id_.flags_ |= PortIdentifier::Flags::MIDI_AUTOMATABLE; \
-  x->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE; \
+  x->id_.flags_ |= PortIdentifier::Flags::MidiAutomatable; \
+  x->id_.flags_ |= PortIdentifier::Flags::Automatable; \
   x->id_.port_index_ = idx;
+
+  midi_cc_.resize(16 * 128);
+  pitch_bend_.resize(16);
+  poly_key_pressure_.resize(16);
+  channel_pressure_.resize(16);
 
   char name[400];
   for (int i = 0; i < 16; i++)
@@ -159,243 +143,257 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
       for (int j = 0; j < 128; j++)
         {
           sprintf (name, "Ch%d %s", channel, midi_get_controller_name (j));
-          Port * cc = new Port (
-            PortType::Control, PortFlow::Input, name,
-            PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
+          auto cc = std::make_unique<ControlPort> (
+            name, PortIdentifier::OwnerType::TrackProcessor, this);
           INIT_MIDI_PORT (cc, i * 128 + j);
           cc->id_.sym_ = fmt::format ("midi_controller_ch{}_{}", channel, j + 1);
-          self->midi_cc[i * 128 + j] = cc;
+          midi_cc_[i * 128 + j] = std::move (cc);
         }
 
       sprintf (name, "Ch%d Pitch bend", i + 1);
-      Port * cc = new Port (
-        PortType::Control, PortFlow::Input, name,
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      cc->id_.sym_ = fmt::format ("ch{}_pitch_bend", i + 1);
-      INIT_MIDI_PORT (cc, i);
-      cc->maxf_ = 8191.f;
-      cc->minf_ = -8192.f;
-      cc->deff_ = 0.f;
-      cc->zerof_ = 0.f;
-      cc->id_.flags2_ |= PortIdentifier::Flags2::MIDI_PITCH_BEND;
-      self->pitch_bend[i] = cc;
+      pitch_bend_[i] = std::make_unique<ControlPort> (
+        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      pitch_bend_[i]->id_.sym_ = fmt::format ("ch{}_pitch_bend", i + 1);
+      INIT_MIDI_PORT (pitch_bend_[i], i);
+      pitch_bend_[i]->maxf_ = 8191.f;
+      pitch_bend_[i]->minf_ = -8192.f;
+      pitch_bend_[i]->deff_ = 0.f;
+      pitch_bend_[i]->zerof_ = 0.f;
+      pitch_bend_[i]->id_.flags2_ |= PortIdentifier::Flags2::MidiPitchBend;
 
       sprintf (name, "Ch%d Poly key pressure", i + 1);
-      cc = new Port (
-        PortType::Control, PortFlow::Input, name,
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      cc->id_.sym_ = fmt::format ("ch{}_poly_key_pressure", i + 1);
-      INIT_MIDI_PORT (cc, i);
-      cc->id_.flags2_ |= PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE;
-      self->poly_key_pressure[i] = cc;
+      poly_key_pressure_[i] = std::make_unique<ControlPort> (
+        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      poly_key_pressure_[i]->id_.sym_ =
+        fmt::format ("ch{}_poly_key_pressure", i + 1);
+      INIT_MIDI_PORT (poly_key_pressure_[i], i);
+      poly_key_pressure_[i]->id_.flags2_ |=
+        PortIdentifier::Flags2::MidiPolyKeyPressure;
 
       sprintf (name, "Ch%d Channel pressure", i + 1);
-      cc = new Port (
-        PortType::Control, PortFlow::Input, name,
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      cc->id_.sym_ = fmt::format ("ch{}_channel_pressure", i + 1);
-      INIT_MIDI_PORT (cc, i);
-      cc->id_.flags2_ |= PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE;
-      self->channel_pressure[i] = cc;
+      channel_pressure_[i] = std::make_unique<ControlPort> (
+        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      channel_pressure_[i]->id_.sym_ =
+        fmt::format ("ch{}_channel_pressure", i + 1);
+      INIT_MIDI_PORT (channel_pressure_[i], i);
+      channel_pressure_[i]->id_.flags2_ |=
+        PortIdentifier::Flags2::MidiChannelPressure;
     }
 
 #undef INIT_MIDI_PORT
 }
 
-/**
- * Inits the stereo ports of the Channel while
- * exposing them to the backend.
- *
- * This assumes the caller already checked that
- * this channel should have the given ports
- * enabled.
- *
- * @param in 1 for input, 0 for output.
- * @param loading 1 if loading a channel, 0 if
- *   new.
- */
-static void
-init_stereo_out_ports (TrackProcessor * self, bool in)
+void
+TrackProcessor::init_stereo_out_ports (bool in)
 {
-  StereoPorts ** sp = in ? &self->stereo_in : &self->stereo_out;
   PortFlow       flow = in ? PortFlow::Input : PortFlow::Output;
-
-  Port l = Port (
-    PortType::Audio, flow, in ? "TP Stereo in L" : "TP Stereo out L",
-    PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
+  AudioPort      l (
+    in ? "TP Stereo in L" : "TP Stereo out L", flow,
+    PortIdentifier::OwnerType::TrackProcessor, this);
   l.id_.sym_ = ("track_processor_stereo_out_l");
-
-  Port r = Port (
-    PortType::Audio, flow, in ? "TP Stereo in R" : "TP Stereo out R",
-    PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
+  AudioPort r (
+    in ? "TP Stereo in R" : "TP Stereo out R", flow,
+    PortIdentifier::OwnerType::TrackProcessor, this);
   r.id_.sym_ = ("track_processor_stereo_out_r");
-
   if (in)
     {
-      l.id_.flags_ |= PortIdentifier::Flags::SEND_RECEIVABLE;
-      r.id_.flags_ |= PortIdentifier::Flags::SEND_RECEIVABLE;
+      l.id_.flags_ |= PortIdentifier::Flags::SendReceivable;
+      r.id_.flags_ |= PortIdentifier::Flags::SendReceivable;
     }
 
-  *sp = new StereoPorts (std::move (l), std::move (r));
+  auto &sp = in ? stereo_in_ : stereo_out_;
+  sp = std::make_unique<StereoPorts> (std::move (l), std::move (r));
 }
 
-/**
- * Creates a new track processor for the given
- * track.
- */
-TrackProcessor *
-track_processor_new (Track * tr)
+TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
 {
-  TrackProcessor * self = object_new (TrackProcessor);
-  self->magic = TRACK_PROCESSOR_MAGIC;
-  self->track = tr;
-
-  self->l_port_db = 0.f;
-  self->r_port_db = 0.f;
-
-  switch (tr->in_signal_type)
+  switch (tr->in_signal_type_)
     {
     case PortType::Event:
-      init_midi_port (self, 0);
-      init_midi_port (self, 1);
+      init_midi_port (false);
+      init_midi_port (true);
 
       /* set up piano roll port */
       if (
-        track_type_has_piano_roll (tr->type)
-        || tr->type == TrackType::TRACK_TYPE_CHORD)
+        tr->has_piano_roll() || tr->is_chord())
         {
-          self->piano_roll = new Port (
-            PortType::Event, PortFlow::Input, "TP Piano Roll",
-            PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-          self->piano_roll->id_.sym_ = ("track_processor_piano_roll");
-          self->piano_roll->id_.flags_ = PortIdentifier::Flags::PianoRoll;
-          if (tr->type != TrackType::TRACK_TYPE_CHORD)
+          piano_roll_ = std::make_unique<MidiPort> (
+            "TP Piano Roll", PortFlow::Input,
+            PortIdentifier::OwnerType::TrackProcessor, this);
+          piano_roll_->id_.sym_ = "track_processor_piano_roll";
+          piano_roll_->id_.flags_ = PortIdentifier::Flags::PianoRoll;
+          if (!tr->is_chord())
             {
-              init_midi_cc_ports (self, false);
+              init_midi_cc_ports (false);
             }
         }
       break;
     case PortType::Audio:
-      init_stereo_out_ports (self, false);
-      init_stereo_out_ports (self, true);
-      if (tr->type == TrackType::TRACK_TYPE_AUDIO)
+      init_stereo_out_ports (false);
+      init_stereo_out_ports (true);
+      if (tr->type_ == Track::Type::Audio)
         {
-          self->mono = new Port (
-            PortType::Control, PortFlow::Input, "TP Mono Toggle",
-            PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-          self->mono->id_.sym_ = g_strdup ("track_processor_mono_toggle");
-          self->mono->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
-          self->mono->id_.flags_ |= PortIdentifier::Flags::TP_MONO;
-          self->input_gain = new Port (
-            PortType::Control, PortFlow::Input, "TP Input Gain",
-            PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-          self->input_gain->id_.sym_ = g_strdup ("track_processor_input_gain");
-          self->input_gain->minf_ = 0.f;
-          self->input_gain->maxf_ = 4.f;
-          self->input_gain->zerof_ = 0.f;
-          self->input_gain->deff_ = 1.f;
-          self->input_gain->id_.flags_ |= PortIdentifier::Flags::TP_INPUT_GAIN;
-          self->input_gain->set_control_value (
-            1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+          mono_ = std::make_unique<ControlPort> (
+            "TP Mono Toggle", PortIdentifier::OwnerType::TrackProcessor, this);
+          mono_->id_.sym_ = "track_processor_mono_toggle";
+          mono_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+          mono_->id_.flags_ |= PortIdentifier::Flags::TpMono;
+          input_gain_ = std::make_unique<ControlPort> (
+            "TP Input Gain", PortIdentifier::OwnerType::TrackProcessor, this);
+          input_gain_->id_.sym_ = "track_processor_input_gain";
+          input_gain_->minf_ = 0.f;
+          input_gain_->maxf_ = 4.f;
+          input_gain_->zerof_ = 0.f;
+          input_gain_->deff_ = 1.f;
+          input_gain_->id_.flags_ |= PortIdentifier::Flags::TpInputGain;
+          input_gain_->set_control_value (1.f, false, false);
         }
       break;
     default:
       break;
     }
 
-  if (tr->type == TrackType::TRACK_TYPE_AUDIO)
+  if (tr->type_ == Track::Type::Audio)
     {
-      self->output_gain = new Port (
-        PortType::Control, PortFlow::Input, "TP Output Gain",
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      self->output_gain->id_.sym_ = g_strdup ("track_processor_output_gain");
-      self->output_gain->minf_ = 0.f;
-      self->output_gain->maxf_ = 4.f;
-      self->output_gain->zerof_ = 0.f;
-      self->output_gain->deff_ = 1.f;
-      self->output_gain->id_.flags2_ |= PortIdentifier::Flags2::TP_OUTPUT_GAIN;
-      self->output_gain->set_control_value (
-        1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+      output_gain_ = std::make_unique<ControlPort> (
+        "TP Output Gain", PortIdentifier::OwnerType::TrackProcessor, this);
+      output_gain_->id_.sym_ = "track_processor_output_gain";
+      output_gain_->minf_ = 0.f;
+      output_gain_->maxf_ = 4.f;
+      output_gain_->zerof_ = 0.f;
+      output_gain_->deff_ = 1.f;
+      output_gain_->id_.flags2_ |= PortIdentifier::Flags2::TpOutputGain;
+      output_gain_->set_control_value (1.f, false, false);
 
-      self->monitor_audio = new Port (
-        PortType::Control, PortFlow::Input, "Monitor audio",
-        PortIdentifier::OwnerType::TRACK_PROCESSOR, self);
-      self->monitor_audio->id_.sym_ = g_strdup ("track_processor_monitor_audio");
-      self->monitor_audio->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
-      self->monitor_audio->id_.flags2_ |=
-        PortIdentifier::Flags2::TP_MONITOR_AUDIO;
-      self->monitor_audio->set_control_value (
-        0.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+      monitor_audio_ = std::make_unique<ControlPort> (
+        "Monitor audio", PortIdentifier::OwnerType::TrackProcessor, this);
+      monitor_audio_->id_.sym_ = "track_processor_monitor_audio";
+      monitor_audio_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+      monitor_audio_->id_.flags2_ |= PortIdentifier::Flags2::TpMonitorAudio;
+      monitor_audio_->set_control_value (0.f, false, false);
     }
 
-  init_common (self);
+  init_common ();
+}
 
-  return self;
+bool
+TrackProcessor::is_in_active_project () const
+{
+  return track_ && track_->is_in_active_project ();
 }
 
 void
-track_processor_append_ports (TrackProcessor * self, GPtrArray * ports)
+TrackProcessor::init_after_cloning (const TrackProcessor & other)
 {
-#define _ADD(port) g_ptr_array_add (ports, (port))
+  if (other.stereo_in_)
+    stereo_in_ = other.stereo_in_->clone_unique ();
+  if (other.mono_)
+    mono_ = other.mono_->clone_unique ();
+  if (other.input_gain_)
+    input_gain_ = other.input_gain_->clone_unique ();
+  if (other.output_gain_)
+    output_gain_ = other.output_gain_->clone_unique ();
+  if (other.stereo_out_)
+    stereo_out_ = other.stereo_out_->clone_unique ();
+  if (other.midi_in_)
+    midi_in_ = other.midi_in_->clone_unique ();
+  if (other.midi_out_)
+    midi_out_ = other.midi_out_->clone_unique ();
+  if (other.piano_roll_)
+    piano_roll_ = other.piano_roll_->clone_unique ();
+  if (other.monitor_audio_)
+    monitor_audio_ = other.monitor_audio_->clone_unique ();
+  if (other.cc_mappings_)
+    cc_mappings_ = other.cc_mappings_->clone_unique ();
+  for (size_t i = 0; i < other.midi_cc_.size (); i++)
+    {
+      if (!other.midi_cc_[i])
+        break;
+      midi_cc_[i] = (other.midi_cc_[i]->clone_unique ());
+    }
+  for (size_t i = 0; i < other.pitch_bend_.size (); i++)
+    {
+      if (!other.pitch_bend_[i])
+        break;
+      pitch_bend_[i] = (other.pitch_bend_[i]->clone_unique ());
+    }
+  for (size_t i = 0; i < other.poly_key_pressure_.size (); i++)
+    {
+      if (!other.poly_key_pressure_[i])
+        break;
+      poly_key_pressure_[i] =
+        (other.poly_key_pressure_[i]->clone_unique ());
+    }
+  for (size_t i = 0; i < other.channel_pressure_.size (); i++)
+    {
+      if (!other.channel_pressure_[i])
+        break;
+      channel_pressure_[i] =
+        (other.channel_pressure_[i]->clone_unique ());
+    }
+}
 
-  if (self->stereo_in)
+void
+TrackProcessor::append_ports (std::vector<Port *> &ports)
+{
+  if (stereo_in_)
     {
-      _ADD (&self->stereo_in->get_l ());
-      _ADD (&self->stereo_in->get_r ());
+      ports.push_back (&stereo_in_->get_l ());
+      ports.push_back (&stereo_in_->get_r ());
     }
-  if (self->mono)
+  if (mono_)
     {
-      _ADD (self->mono);
+      ports.push_back (mono_.get ());
     }
-  if (self->input_gain)
+  if (input_gain_)
     {
-      _ADD (self->input_gain);
+      ports.push_back (input_gain_.get ());
     }
-  if (self->output_gain)
+  if (output_gain_)
     {
-      _ADD (self->output_gain);
+      ports.push_back (output_gain_.get ());
     }
-  if (self->monitor_audio)
+  if (monitor_audio_)
     {
-      _ADD (self->monitor_audio);
+      ports.push_back (monitor_audio_.get ());
     }
-  if (self->stereo_out)
+  if (stereo_out_)
     {
-      _ADD (&self->stereo_out->get_l ());
-      _ADD (&self->stereo_out->get_r ());
+      ports.push_back (&stereo_out_->get_l ());
+      ports.push_back (&stereo_out_->get_r ());
     }
-  if (self->midi_in)
+  if (midi_in_)
     {
-      _ADD (self->midi_in);
+      ports.push_back (midi_in_.get ());
     }
-  if (self->midi_out)
+  if (midi_out_)
     {
-      _ADD (self->midi_out);
+      ports.push_back (midi_out_.get ());
     }
-  if (self->piano_roll)
+  if (piano_roll_)
     {
-      _ADD (self->piano_roll);
+      ports.push_back (piano_roll_.get ());
     }
   for (int i = 0; i < 16; i++)
     {
       for (int j = 0; j < 128; j++)
         {
-          if (self->midi_cc[i * 128 + j])
+          if (midi_cc_[i * 128 + j])
             {
-              _ADD (self->midi_cc[i * 128 + j]);
+              ports.push_back (midi_cc_[i * 128 + j].get ());
             }
         }
-      if (self->pitch_bend[i])
+      if (pitch_bend_[i])
         {
-          _ADD (self->pitch_bend[i]);
+          ports.push_back (pitch_bend_[i].get ());
         }
-      if (self->poly_key_pressure[i])
+      if (poly_key_pressure_[i])
         {
-          _ADD (self->poly_key_pressure[i]);
+          ports.push_back (poly_key_pressure_[i].get ());
         }
-      if (self->channel_pressure[i])
+      if (channel_pressure_[i])
         {
-          _ADD (self->channel_pressure[i]);
+          ports.push_back (channel_pressure_[i].get ());
         }
     }
 }
@@ -404,30 +402,27 @@ track_processor_append_ports (TrackProcessor * self, GPtrArray * ports)
  * Clears all buffers.
  */
 void
-track_processor_clear_buffers (TrackProcessor * self)
+TrackProcessor::clear_buffers ()
 {
-  /*Track * track =*/
-  /*track_processor_get_track (self);*/
-
-  if (self->stereo_in)
+  if (stereo_in_)
     {
-      self->stereo_in->clear_buffer (*AUDIO_ENGINE);
+      stereo_in_->clear_buffer (*AUDIO_ENGINE);
     }
-  if (self->stereo_out)
+  if (stereo_out_)
     {
-      self->stereo_out->clear_buffer (*AUDIO_ENGINE);
+      stereo_out_->clear_buffer (*AUDIO_ENGINE);
     }
-  if (self->midi_in)
+  if (midi_in_)
     {
-      self->midi_in->clear_buffer (*AUDIO_ENGINE);
+      midi_in_->clear_buffer (*AUDIO_ENGINE);
     }
-  if (self->midi_out)
+  if (midi_out_)
     {
-      self->midi_out->clear_buffer (*AUDIO_ENGINE);
+      midi_out_->clear_buffer (*AUDIO_ENGINE);
     }
-  if (self->piano_roll)
+  if (piano_roll_)
     {
-      self->piano_roll->clear_buffer (*AUDIO_ENGINE);
+      piano_roll_->clear_buffer (*AUDIO_ENGINE);
     }
 }
 
@@ -436,94 +431,80 @@ track_processor_clear_buffers (TrackProcessor * self)
  * TrackProcessor.
  */
 void
-track_processor_disconnect_all (TrackProcessor * self)
+TrackProcessor::disconnect_all ()
 {
-  Track * track = track_processor_get_track (self);
+  auto track = get_track ();
   g_return_if_fail (track);
 
-  switch (track->in_signal_type)
+  switch (track->in_signal_type_)
     {
     case PortType::Audio:
-      self->mono->disconnect_all ();
-      self->input_gain->disconnect_all ();
-      self->output_gain->disconnect_all ();
-      self->monitor_audio->disconnect_all ();
-      self->stereo_in->get_l ().disconnect_all ();
-      self->stereo_in->get_r ().disconnect_all ();
-      self->stereo_out->get_l ().disconnect_all ();
-      self->stereo_out->get_r ().disconnect_all ();
+      mono_->disconnect_all ();
+      input_gain_->disconnect_all ();
+      output_gain_->disconnect_all ();
+      monitor_audio_->disconnect_all ();
+      stereo_in_->get_l ().disconnect_all ();
+      stereo_in_->get_r ().disconnect_all ();
+      stereo_out_->get_l ().disconnect_all ();
+      stereo_out_->get_r ().disconnect_all ();
       break;
     case PortType::Event:
-      self->midi_in->disconnect_all ();
-      self->midi_out->disconnect_all ();
-      if (track_type_has_piano_roll (track->type))
-        self->piano_roll->disconnect_all ();
+      midi_in_->disconnect_all ();
+      midi_out_->disconnect_all ();
+      if (track->has_piano_roll())
+        piano_roll_->disconnect_all ();
       break;
     default:
       break;
     }
 }
 
-/**
- * Splits the cycle and handles recording for each
- * slot.
- */
-static void
-handle_recording (
-  const TrackProcessor *              self,
-  const EngineProcessTimeInfo * const time_nfo)
+void
+TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 {
-#if 0
-  g_message ("handle recording %ld %" PRIu32,
-    g_start_frames, nframes);
-#endif
-
   unsigned_frame_t split_points[6];
   nframes_t        each_nframes[6];
   int              num_split_points = 1;
 
-  unsigned_frame_t start_frames = time_nfo->g_start_frame_w_offset;
-  unsigned_frame_t end_frames = time_nfo->g_start_frame + time_nfo->nframes;
+  unsigned_frame_t start_frames = time_nfo.g_start_frame_w_offset_;
+  unsigned_frame_t end_frames = time_nfo.g_start_frame_ + time_nfo.nframes_;
 
   /* split the cycle at loop and punch points and
    * record */
   bool loop_hit = false;
   bool punch_in_hit = false;
-  /*bool punch_out_hit = false;*/
-  /*int loop_end_idx = -1;*/
   split_points[0] = start_frames;
-  each_nframes[0] = time_nfo->nframes;
-  if (TRANSPORT->loop)
+  each_nframes[0] = time_nfo.nframes_;
+  if (TRANSPORT->loop_)
     {
-      if ((unsigned_frame_t) TRANSPORT->loop_end_pos.frames == end_frames)
+      if ((unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_ == end_frames)
         {
           loop_hit = true;
           num_split_points = 3;
 
           /* adjust start slot until loop end */
           each_nframes[0] =
-            (unsigned_frame_t) TRANSPORT->loop_end_pos.frames - start_frames;
-          /*loop_end_idx = 0;*/
+            (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_ - start_frames;
 
           /* add loop end pause */
-          split_points[1] = (unsigned_frame_t) TRANSPORT->loop_end_pos.frames;
+          split_points[1] = (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_;
           each_nframes[1] = 0;
 
           /* add part after looping */
-          split_points[2] = (unsigned_frame_t) TRANSPORT->loop_start_pos.frames;
+          split_points[2] =
+            (unsigned_frame_t) TRANSPORT->loop_start_pos_.frames_;
           each_nframes[2] =
-            (unsigned_frame_t) time_nfo->nframes - each_nframes[0];
+            (unsigned_frame_t) time_nfo.nframes_ - each_nframes[0];
         }
     }
-  if (TRANSPORT->punch_mode)
+  if (TRANSPORT->punch_mode_)
     {
       if (loop_hit)
         {
           /* before loop */
           if (
-            position_between_frames_excl2 (
-              &TRANSPORT->punch_in_pos, (signed_frame_t) start_frames,
-              TRANSPORT->loop_end_pos.frames))
+            TRANSPORT->punch_in_pos_.is_between_frames_excluding_2nd (
+              (signed_frame_t) start_frames, TRANSPORT->loop_end_pos_.frames_))
             {
               punch_in_hit = true;
               num_split_points = 4;
@@ -536,22 +517,19 @@ handle_recording (
 
               /* add punch in pos */
               split_points[1] =
-                (unsigned_frame_t) TRANSPORT->punch_in_pos.frames;
+                (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
               each_nframes[1] =
-                (unsigned_frame_t) TRANSPORT->loop_end_pos.frames
-                - (unsigned_frame_t) TRANSPORT->punch_in_pos.frames;
-              /*loop_end_idx = 1;*/
+                (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
+                - (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
 
               /* adjust num frames for initial
                * pos */
               each_nframes[0] -= each_nframes[1];
             }
           if (
-            position_between_frames_excl2 (
-              &TRANSPORT->punch_out_pos, (signed_frame_t) start_frames,
-              TRANSPORT->loop_end_pos.frames))
+            TRANSPORT->punch_out_pos_.is_between_frames_excluding_2nd (
+              (signed_frame_t) start_frames, TRANSPORT->loop_end_pos_.frames_))
             {
-              /*punch_out_hit = true;*/
               if (punch_in_hit)
                 {
                   num_split_points = 6;
@@ -564,15 +542,14 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
                   each_nframes[2] =
-                    (unsigned_frame_t) TRANSPORT->loop_end_pos.frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
 
                   /* add pause */
                   split_points[3] = split_points[2] + each_nframes[2];
                   each_nframes[3] = 0;
-                  /*loop_end_idx = 2;*/
 
                   /* adjust num frames for punch in
                    * pos */
@@ -590,11 +567,10 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
                   each_nframes[1] =
-                    (unsigned_frame_t) TRANSPORT->loop_end_pos.frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
-                  /*loop_end_idx = 1;*/
+                    (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
 
                   /* add pause */
                   split_points[2] = split_points[1] + each_nframes[1];
@@ -608,40 +584,35 @@ handle_recording (
         }
       else /* loop not hit */
         {
-          if (
-            position_between_frames_excl2 (
-              &TRANSPORT->punch_in_pos, (signed_frame_t) start_frames,
-              (signed_frame_t) end_frames))
+          if (TRANSPORT->punch_in_pos_.is_between_frames_excluding_2nd (
+                (signed_frame_t) start_frames, (signed_frame_t) end_frames))
             {
               punch_in_hit = true;
               num_split_points = 2;
 
               /* add punch in pos */
               split_points[1] =
-                (unsigned_frame_t) TRANSPORT->punch_in_pos.frames;
+                (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
               each_nframes[1] =
-                end_frames - (unsigned_frame_t) TRANSPORT->punch_in_pos.frames;
+                end_frames - (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
 
               /* adjust num frames for initial
                * pos */
               each_nframes[0] -= each_nframes[1];
             }
-          if (
-            position_between_frames_excl2 (
-              &TRANSPORT->punch_out_pos, (signed_frame_t) start_frames,
-              (signed_frame_t) end_frames))
+          if (TRANSPORT->punch_out_pos_.is_between_frames_excluding_2nd (
+                (signed_frame_t) start_frames, (signed_frame_t) end_frames))
             {
-              /*punch_out_hit = true;*/
               if (punch_in_hit)
                 {
                   num_split_points = 4;
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
                   each_nframes[2] =
                     end_frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
 
                   /* add pause */
                   split_points[3] = split_points[2] + each_nframes[2];
@@ -657,10 +628,10 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
                   each_nframes[1] =
                     end_frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos.frames;
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
 
                   /* add pause */
                   split_points[2] = split_points[1] + each_nframes[1];
@@ -675,7 +646,6 @@ handle_recording (
     }
 
   unsigned_frame_t split_point = 0;
-  /*bool is_loop_end_idx = false;*/
   for (int i = 0; i < num_split_points; i++)
     {
       /* skip if same as previous point */
@@ -684,53 +654,37 @@ handle_recording (
 
       split_point = split_points[i];
 
-      /*is_loop_end_idx =*/
-      /*loop_hit && i == loop_end_idx;*/
-
-#if 0
-      g_debug (
-        "sending %ld for %ld frames", split_point, each_nframes[i]);
-#endif
-
       EngineProcessTimeInfo cur_time_nfo = {
-        .g_start_frame = split_point,
-        .g_start_frame_w_offset = split_point,
-        .local_offset = 0,
-        .nframes = each_nframes[i],
+        .g_start_frame_ = split_point,
+        .g_start_frame_w_offset_ = split_point,
+        .local_offset_ = 0,
+        .nframes_ = each_nframes[i],
       };
-      recording_manager_handle_recording (
-        RECORDING_MANAGER, self, &cur_time_nfo);
+      RECORDING_MANAGER->handle_recording (this, &cur_time_nfo);
     }
 }
 
-/**
- * Adds events to midi out based on any changes in
- * MIDI CC control ports.
- */
-static inline void
-add_events_from_midi_cc_control_ports (
-  const TrackProcessor * self,
-  const nframes_t        local_offset)
+void
+TrackProcessor::add_events_from_midi_cc_control_ports (
+  const nframes_t local_offset)
 {
-  Port * cc;
-  while (
-    mpmc_queue_dequeue (self->updated_midi_automatable_ports, (void **) &cc))
+  ControlPort * cc;
+  while (updated_midi_automatable_ports_->pop_front (cc))
     {
       /*port_identifier_print (&cc->id_);*/
       if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, cc->id_.flags2_,
-          PortIdentifier::Flags2::MIDI_PITCH_BEND))
+          PortIdentifier::Flags2::MidiPitchBend))
         {
-          midi_events_add_pitchbend (
-            self->midi_out->midi_events_, cc->midi_channel_,
-            math_round_float_to_signed_32 (cc->control_) + 0x2000, local_offset,
-            F_NOT_QUEUED);
+          midi_out_->midi_events_.queued_events_.add_pitchbend (
+            cc->midi_channel_,
+            math_round_float_to_signed_32 (cc->control_) + 0x2000, local_offset);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, cc->id_.flags2_,
-          PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE))
+          PortIdentifier::Flags2::MidiPolyKeyPressure))
         {
 #if ZRYTHM_TARGET_VER_MAJ > 1
           /* TODO - unsupported in v1 */
@@ -739,67 +693,65 @@ add_events_from_midi_cc_control_ports (
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, cc->id_.flags2_,
-          PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE))
+          PortIdentifier::Flags2::MidiChannelPressure))
         {
-          midi_events_add_channel_pressure (
-            self->midi_out->midi_events_, cc->midi_channel_,
+          midi_out_->midi_events_.queued_events_.add_channel_pressure (
+            cc->midi_channel_,
             (midi_byte_t) math_round_float_to_signed_32 (cc->control_ * 127.f),
-            local_offset, F_NOT_QUEUED);
+            local_offset);
         }
       else
         {
-          midi_events_add_control_change (
-            self->midi_out->midi_events_, cc->midi_channel_, cc->midi_cc_no_,
+          midi_out_->midi_events_.queued_events_.add_control_change (
+            cc->midi_channel_, cc->midi_cc_no_,
             (midi_byte_t) math_round_float_to_signed_32 (cc->control_ * 127.f),
-            local_offset, false);
+            local_offset);
         }
     }
 }
 
 void
-track_processor_process (
-  TrackProcessor *                    self,
-  const EngineProcessTimeInfo * const time_nfo)
+TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 {
-  Track * tr = self->track;
+  auto tr = track_;
+  auto track_type = tr->type_;
 
   /* if frozen or disabled, skip */
-  if (tr->frozen || !track_is_enabled (tr))
+  if (tr->frozen_ || !tr->is_enabled ())
     {
       return;
     }
 
   /* set the audio clip contents to stereo out */
-  if (tr->type == TrackType::TRACK_TYPE_AUDIO)
+  if (track_type == Track::Type::Audio)
     {
-      track_fill_events (tr, time_nfo, NULL, self->stereo_out);
+      auto audio_track = dynamic_cast<AudioTrack *> (tr);
+      audio_track->fill_events (time_nfo, *stereo_out_);
     }
 
   /* set the piano roll contents to midi out */
-  if (
-    track_type_has_piano_roll (tr->type)
-    || tr->type == TrackType::TRACK_TYPE_CHORD)
+  if (tr->has_piano_roll() || tr->is_chord())
     {
-      Port * pr = self->piano_roll;
+      auto &pr = piano_roll_;
 
       /* panic MIDI if necessary */
-      if (g_atomic_int_get (&AUDIO_ENGINE->panic))
+      if (AUDIO_ENGINE->panic_.load ())
         {
-          midi_events_panic (pr->midi_events_, F_QUEUED);
+          pr->midi_events_.queued_events_.panic ();
         }
       /* get events from track if playing */
-      else if (
-        TRANSPORT->play_state == PlayState::PLAYSTATE_ROLLING
-        || track_is_auditioner (tr))
+      else if (TRANSPORT->is_rolling () || tr->is_auditioner ())
         {
           /* fill midi events from piano roll data */
+          auto * piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
 #if 0
           g_message (
             "filling midi events for %s from %ld", tr->name, time_nfo->g_start_frame_w_offset);
 #endif
-          track_fill_events (tr, time_nfo, pr->midi_events_, NULL);
+          piano_roll_track->fill_events (
+            time_nfo, pr->midi_events_.queued_events_);
         }
-      midi_events_dequeue (pr->midi_events_);
+      pr->midi_events_.dequeue ();
 #if 0
       if (pr->midi_events->num_events > 0)
         {
@@ -812,11 +764,11 @@ track_processor_process (
 
       /* append midi events from modwheel and pitchbend control ports to MIDI
        * out */
-      if (tr->type != TrackType::TRACK_TYPE_CHORD)
+      if (!tr->is_chord())
         {
-          add_events_from_midi_cc_control_ports (self, time_nfo->local_offset);
+          add_events_from_midi_cc_control_ports (time_nfo.local_offset_);
         }
-      if (self->midi_out->midi_events_->num_events > 0)
+      if (midi_out_->midi_events_.active_events_.has_any ())
         {
 #if 0
           g_debug (
@@ -826,9 +778,9 @@ track_processor_process (
         }
 
       /* append the midi events from piano roll to MIDI out */
-      midi_events_append (
-        self->midi_out->midi_events_, pr->midi_events_, time_nfo->local_offset,
-        time_nfo->nframes, false);
+      midi_out_->midi_events_.active_events_.append (
+        pr->midi_events_.active_events_, time_nfo.local_offset_,
+        time_nfo.nframes_);
 
 #if 0
       if (pr->midi_events->num_events > 0)
@@ -845,135 +797,135 @@ track_processor_process (
 #endif
     } /* if has piano roll or is chord track */
 
-  /* if currently active track on the piano roll,
-   * fetch events */
-  if (tr->in_signal_type == PortType::Event && CLIP_EDITOR->has_region)
+  /* if currently active track on the piano roll, fetch events */
+  auto in_signal_type = tr->in_signal_type_;
+  if (in_signal_type == PortType::Event && CLIP_EDITOR->has_region_)
     {
-      Track * clip_editor_track = clip_editor_get_track (CLIP_EDITOR);
+      Track * clip_editor_track = CLIP_EDITOR->get_track();
       if (clip_editor_track == tr)
         {
-          /* if not set to "all channels",
-           * filter-append */
-          if (!tr->channel->all_midi_channels)
+          auto channel_track = dynamic_cast<ChannelTrack *> (tr);
+          /* if not set to "all channels", filter-append */
+          if (!channel_track->channel_->all_midi_channels_)
             {
-              midi_events_append_w_filter (
-                self->midi_in->midi_events_,
-                AUDIO_ENGINE->midi_editor_manual_press->midi_events_,
-                tr->channel->midi_channels, time_nfo->local_offset,
-                time_nfo->nframes, F_NOT_QUEUED);
+              midi_in_->midi_events_.active_events_.append_w_filter (
+                AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
+                  .active_events_,
+                channel_track->channel_->midi_channels_, time_nfo.local_offset_,
+                time_nfo.nframes_);
             }
           /* otherwise append normally */
           else
             {
-              midi_events_append (
-                self->midi_in->midi_events_,
-                AUDIO_ENGINE->midi_editor_manual_press->midi_events_,
-                time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
+              midi_in_->midi_events_.active_events_.append (
+                AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
+                  .active_events_,
+                time_nfo.local_offset_, time_nfo.nframes_);
             }
         }
     }
 
   /* add inputs to outputs */
-  switch (tr->in_signal_type)
+  if (in_signal_type == PortType::Audio)
     {
-    case PortType::Audio:
-      if (tr->type != TrackType::TRACK_TYPE_AUDIO || (tr->type == TrackType::TRACK_TYPE_AUDIO && control_port_is_toggled (self->monitor_audio)))
+      if (
+        track_type != Track::Type::Audio
+        || (track_type == Track::Type::Audio && monitor_audio_->is_toggled ()))
         {
           dsp_mix2 (
-            &self->stereo_out->get_l ().buf_[time_nfo->local_offset],
-            &self->stereo_in->get_l ().buf_[time_nfo->local_offset], 1.f,
-            self->input_gain ? self->input_gain->control_ : 1.f,
-            time_nfo->nframes);
+            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
+            &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
+            input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
 
-          if (self->mono && control_port_is_toggled (self->mono))
+          if (mono_ && mono_->is_toggled ())
             {
               dsp_mix2 (
-                &self->stereo_out->get_r ().buf_[time_nfo->local_offset],
-                &self->stereo_in->get_l ().buf_[time_nfo->local_offset], 1.f,
-                self->input_gain ? self->input_gain->control_ : 1.f,
-                time_nfo->nframes);
+                &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
+                input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
             }
           else
             {
               dsp_mix2 (
-                &self->stereo_out->get_r ().buf_[time_nfo->local_offset],
-                &self->stereo_in->get_r ().buf_[time_nfo->local_offset], 1.f,
-                self->input_gain ? self->input_gain->control_ : 1.f,
-                time_nfo->nframes);
+                &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                &stereo_in_->get_r ().buf_[time_nfo.local_offset_], 1.f,
+                input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
             }
         }
-      break;
-    case PortType::Event:
-      /* change the MIDI channel on the midi input
-       * to the channel set on the track */
-      if (!tr->passthrough_midi_input)
+    }
+  else if (in_signal_type == PortType::Event)
+    {
+      /* change the MIDI channel on the midi input to the channel set on the
+       * track
+       */
+      if (!tr->is_chord())
         {
-          midi_events_set_channel (
-            self->midi_in->midi_events_, F_NOT_QUEUED, tr->midi_ch);
+          auto * piano_roll_track =
+            dynamic_cast<PianoRollTrack *> (tr);
+          if (!piano_roll_track->passthrough_midi_input_)
+            {
+              midi_in_->midi_events_.active_events_.set_channel (
+                piano_roll_track->midi_ch_);
+            }
         }
 
       /* process midi bindings */
-      if (self->cc_mappings && TRANSPORT->recording)
+      if (cc_mappings_ && TRANSPORT->recording_)
         {
-          midi_mappings_apply_from_cc_events (
-            self->cc_mappings, self->midi_in->midi_events_, F_NOT_QUEUED);
+          cc_mappings_->apply_from_cc_events (
+            midi_in_->midi_events_.active_events_);
         }
 
-      /* if chord track, transform MIDI input to
-       * appropriate MIDI notes */
-      if (tr->type == TrackType::TRACK_TYPE_CHORD)
+      /* if chord track, transform MIDI input to appropriate MIDI notes */
+      if (tr->is_chord())
         {
-          midi_events_transform_chord_and_append (
-            self->midi_out->midi_events_, self->midi_in->midi_events_,
-            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
+          midi_out_->midi_events_.active_events_.transform_chord_and_append (
+            midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
+            time_nfo.nframes_);
         }
-      /* else if not chord track, simply pass the
-       * input MIDI data to the output port */
+      /* else if not chord track, simply pass the input MIDI data to the output
+       * port */
       else
         {
-          midi_events_append (
-            self->midi_out->midi_events_, self->midi_in->midi_events_,
-            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
+          midi_out_->midi_events_.active_events_.append (
+            midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
+            time_nfo.nframes_);
         }
 
       /* if pending a panic message, append it */
-      if (self->pending_midi_panic)
+      if (pending_midi_panic_)
         {
-          midi_events_panic_without_lock (
-            self->midi_out->midi_events_, F_NOT_QUEUED);
-          self->pending_midi_panic = false;
+          midi_out_->midi_events_.active_events_.panic_without_lock ();
+          pending_midi_panic_ = false;
         }
-
-      break;
-    default:
-      break;
     }
 
   if (
-    !track_is_auditioner (tr) && TRANSPORT->preroll_frames_remaining == 0
-    && (track_type_can_record (tr->type) || tr->automation_tracklist.num_ats > 0))
+    !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
+    && (tr->can_record () || !tr->automation_tracklist_->ats_.empty ()))
     {
       /* handle recording. this will only create events in regions. it will not
        * copy the input content to the output ports. this will also create
        * automation for MIDI CC, if any (see midi_mappings_apply_cc_events
        * above) */
-      handle_recording (self, time_nfo);
+      handle_recording (time_nfo);
     }
 
   /* apply output gain */
-  if (tr->type == TrackType::TRACK_TYPE_AUDIO)
+  if (track_type == Track::Type::Audio)
     {
       dsp_mul_k2 (
-        &self->stereo_out->get_l ().buf_[time_nfo->local_offset],
-        self->output_gain->control_, time_nfo->nframes);
+        &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
+        output_gain_->control_, time_nfo.nframes_);
       dsp_mul_k2 (
-        &self->stereo_out->get_r ().buf_[time_nfo->local_offset],
-        self->output_gain->control_, time_nfo->nframes);
+        &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+        output_gain_->control_, time_nfo.nframes_);
     }
 }
 
+#if 0
 /**
- * Copy port values from \ref src to \ref dest.
+ * Copy port values from @ref src to @ref dest.
  */
 void
 track_processor_copy_values (TrackProcessor * dest, TrackProcessor * src)
@@ -995,35 +947,29 @@ track_processor_copy_values (TrackProcessor * dest, TrackProcessor * src)
       dest->mono->control_ = src->mono->control_;
     }
 }
+#endif
 
-/**
- * Disconnect stereo in ports from the fader.
- *
- * Used when there is no plugin in the channel.
- */
 void
-track_processor_disconnect_from_prefader (TrackProcessor * self)
+TrackProcessor::disconnect_from_prefader ()
 {
-  Track * tr = track_processor_get_track (self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  auto tr = dynamic_cast<ChannelTrack *> (get_track ());
+  g_return_if_fail (tr);
 
-  Fader * prefader = tr->channel->prefader;
-  switch (tr->in_signal_type)
+  auto &prefader = tr->channel_->prefader_;
+  switch (tr->in_signal_type_)
     {
     case PortType::Audio:
-      if (tr->out_signal_type == PortType::Audio)
+      if (tr->out_signal_type_ == PortType::Audio)
         {
-          self->stereo_out->get_l ().disconnect_from (
-            prefader->stereo_in->get_l ());
+          stereo_out_->get_l ().disconnect_from (prefader->stereo_in_->get_l ());
 
-          self->stereo_out->get_r ().disconnect_from (
-            prefader->stereo_in->get_r ());
+          stereo_out_->get_r ().disconnect_from (prefader->stereo_in_->get_r ());
         }
       break;
     case PortType::Event:
-      if (tr->out_signal_type == PortType::Event)
+      if (tr->out_signal_type_ == PortType::Event)
         {
-          self->midi_out->disconnect_from (*prefader->midi_in);
+          midi_out_->disconnect_from (*prefader->midi_in_);
         }
       break;
     default:
@@ -1031,111 +977,92 @@ track_processor_disconnect_from_prefader (TrackProcessor * self)
     }
 }
 
-/**
- * Connects the TrackProcessor's stereo out ports to
- * the Channel's prefader in ports.
- *
- * Used when deleting the only plugin left.
- */
 void
-track_processor_connect_to_prefader (TrackProcessor * self)
+TrackProcessor::connect_to_prefader ()
 {
-  Track * tr = track_processor_get_track (self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  auto tr = dynamic_cast<ChannelTrack *> (get_track ());
+  g_return_if_fail (tr);
 
-  Fader * prefader = tr->channel->prefader;
-  g_return_if_fail (IS_FADER (prefader));
-
-  /* connect only if signals match */
-  if (
-    tr->in_signal_type == PortType::Audio
-    && tr->out_signal_type == PortType::Audio)
+  auto &prefader = tr->channel_->prefader_;
+  switch (tr->in_signal_type_)
     {
+    case PortType::Audio:
+      if (tr->out_signal_type_ == PortType::Audio)
+        {
+          stereo_out_->get_l ().connect_to (
+            prefader->stereo_in_->get_l (), true);
 
-      self->stereo_out->get_l ().connect_to (prefader->stereo_in->get_l (), 1);
-
-      self->stereo_out->get_r ().connect_to (prefader->stereo_in->get_r (), 1);
-    }
-  if (
-    tr->in_signal_type == PortType::Event
-    && tr->out_signal_type == PortType::Event)
-    {
-      self->midi_out->connect_to (*prefader->midi_in, 1);
+          stereo_out_->get_r ().connect_to (
+            prefader->stereo_in_->get_r (), true);
+        }
+      break;
+    case PortType::Event:
+      if (tr->out_signal_type_ == PortType::Event)
+        {
+          midi_out_->connect_to (*prefader->midi_in_, 1);
+        }
+      break;
+    default:
+      break;
     }
 }
 
-/**
- * Disconnect the TrackProcessor's out ports
- * from the Plugin's input ports.
- */
 void
-track_processor_disconnect_from_plugin (TrackProcessor * self, Plugin * pl)
+TrackProcessor::disconnect_from_plugin (Plugin &pl)
 {
-  Track * tr = track_processor_get_track (self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  auto tr = get_track ();
+  g_return_if_fail (tr);
 
-  Port *   in_port;
-  PortType type = tr->in_signal_type;
-
-  for (int i = 0; i < pl->num_in_ports; i++)
+  for (auto &in_port : pl.in_ports_)
     {
-      in_port = pl->in_ports[i];
-
-      if (type == PortType::Audio)
+      if (tr->in_signal_type_ == PortType::Audio)
         {
           if (in_port->id_.type_ != PortType::Audio)
             continue;
 
-          if (self->stereo_out->get_l ().is_connected_to (in_port))
-            self->stereo_out->get_l ().disconnect_from (*in_port);
-          if (self->stereo_out->get_r ().is_connected_to (in_port))
-            self->stereo_out->get_r ().disconnect_from (*in_port);
+          if (stereo_out_->get_l ().is_connected_to (*in_port))
+            stereo_out_->get_l ().disconnect_from (*in_port);
+          if (stereo_out_->get_r ().is_connected_to (*in_port))
+            stereo_out_->get_r ().disconnect_from (*in_port);
         }
-      else if (type == PortType::Event)
+      else if (tr->in_signal_type_ == PortType::Event)
         {
           if (in_port->id_.type_ != PortType::Event)
             continue;
 
-          if (self->midi_out->is_connected_to (in_port))
-            self->midi_out->disconnect_from (*in_port);
+          if (midi_out_->is_connected_to (*in_port))
+            midi_out_->disconnect_from (*in_port);
         }
     }
 }
 
-/**
- * Connect the TrackProcessor's out ports to the
- * Plugin's input ports.
- */
 void
-track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl)
+TrackProcessor::connect_to_plugin (Plugin &pl)
 {
-  Track * tr = track_processor_get_track (self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  auto tr = get_track ();
+  g_return_if_fail (tr);
 
-  int    last_index, num_ports_to_connect, i;
-  Port * in_port;
+  size_t last_index, num_ports_to_connect, i;
 
-  if (tr->in_signal_type == PortType::Event)
+  if (tr->in_signal_type_ == PortType::Event)
     {
-      /* Connect MIDI port to the plugin */
-      for (i = 0; i < pl->num_in_ports; i++)
+      for (i = 0; i < pl.in_ports_.size (); i++)
         {
-          in_port = pl->in_ports[i];
+          auto &in_port = pl.in_ports_[i];
           if (
             in_port->id_.type_ == PortType::Event
             && in_port->id_.flow_ == PortFlow::Input)
             {
-              self->midi_out->connect_to (*in_port, 1);
+              midi_out_->connect_to (*in_port, true);
             }
         }
     }
-  else if (tr->in_signal_type == PortType::Audio)
+  else if (tr->in_signal_type_ == PortType::Audio)
     {
-      /* get actual port counts */
       int num_pl_audio_ins = 0;
-      for (i = 0; i < pl->num_in_ports; i++)
+      for (i = 0; i < pl.in_ports_.size (); i++)
         {
-          Port * port = pl->in_ports[i];
+          auto &port = pl.in_ports_[i];
           if (port->id_.type_ == PortType::Audio)
             num_pl_audio_ins++;
         }
@@ -1153,20 +1080,20 @@ track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl)
       last_index = 0;
       for (i = 0; i < num_ports_to_connect; i++)
         {
-          for (; last_index < pl->num_in_ports; last_index++)
+          for (; last_index < pl.in_ports_.size (); last_index++)
             {
-              in_port = pl->in_ports[last_index];
+              auto &in_port = pl.in_ports_[last_index];
               if (in_port->id_.type_ == PortType::Audio)
                 {
                   if (i == 0)
                     {
-                      self->stereo_out->get_l ().connect_to (*in_port, 1);
+                      stereo_out_->get_l ().connect_to (*in_port, true);
                       last_index++;
                       break;
                     }
                   else if (i == 1)
                     {
-                      self->stereo_out->get_r ().connect_to (*in_port, 1);
+                      stereo_out_->get_r ().connect_to (*in_port, true);
                       last_index++;
                       break;
                     }
@@ -1174,92 +1101,4 @@ track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl)
             }
         }
     }
-}
-
-/**
- * Frees the members of the TrackProcessor.
- */
-void
-track_processor_free (TrackProcessor * self)
-{
-  object_free_w_func_and_null (midi_mappings_free, self->cc_mappings);
-
-  if (IS_PORT_AND_NONNULL (self->mono))
-    {
-      self->mono->disconnect_all ();
-      object_delete_and_null (self->mono);
-    }
-  if (IS_PORT_AND_NONNULL (self->input_gain))
-    {
-      self->input_gain->disconnect_all ();
-      object_delete_and_null (self->input_gain);
-    }
-  if (IS_PORT_AND_NONNULL (self->output_gain))
-    {
-      self->output_gain->disconnect_all ();
-      object_delete_and_null (self->output_gain);
-    }
-  if (IS_PORT_AND_NONNULL (self->monitor_audio))
-    {
-      self->monitor_audio->disconnect_all ();
-      object_delete_and_null (self->monitor_audio);
-    }
-  if (self->stereo_in)
-    {
-      self->stereo_in->disconnect ();
-      object_delete_and_null (self->stereo_in);
-    }
-  if (IS_PORT_AND_NONNULL (self->midi_in))
-    {
-      self->midi_in->disconnect_all ();
-      object_delete_and_null (self->midi_in);
-    }
-  if (IS_PORT_AND_NONNULL (self->piano_roll))
-    {
-      self->piano_roll->disconnect_all ();
-      object_delete_and_null (self->piano_roll);
-    }
-
-  auto free_cc = [] (Port * cc) {
-    if (cc)
-      {
-        cc->disconnect_all ();
-        delete cc;
-      }
-  };
-
-  for (int i = 0; i < 16; i++)
-    {
-      Port * cc = NULL;
-      for (int j = 0; j < 128; j++)
-        {
-          cc = self->midi_cc[i * 128 + j];
-          free_cc (cc);
-        }
-
-      cc = self->pitch_bend[i];
-      free_cc (cc);
-
-      cc = self->poly_key_pressure[i];
-      free_cc (cc);
-
-      cc = self->channel_pressure[i];
-      free_cc (cc);
-    }
-
-  if (self->stereo_out)
-    {
-      self->stereo_out->disconnect ();
-      object_delete_and_null (self->stereo_out);
-    }
-  if (IS_PORT_AND_NONNULL (self->midi_out))
-    {
-      self->midi_out->disconnect_all ();
-      object_delete_and_null (self->midi_out);
-    }
-
-  object_free_w_func_and_null (
-    mpmc_queue_free, self->updated_midi_automatable_ports);
-
-  object_zero_and_free (self);
 }

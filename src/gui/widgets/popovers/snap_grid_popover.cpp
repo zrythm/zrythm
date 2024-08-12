@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/snap_grid.h"
@@ -24,18 +24,18 @@ static void
 refresh (SnapGridPopoverWidget * self)
 {
   SnapGrid * sg = self->owner->snap_grid;
-  bool       snap_controls_visible = !sg->snap_adaptive;
+  bool       snap_controls_visible = !sg->snap_adaptive_;
   gtk_widget_set_visible (GTK_WIDGET (self->snap_length), snap_controls_visible);
 
   bool object_length_visible =
-    sg->length_type == NoteLengthType::NOTE_LENGTH_CUSTOM;
+    sg->length_type_ == NoteLengthType::NOTE_LENGTH_CUSTOM;
   gtk_widget_set_visible (
     GTK_WIDGET (self->object_length), object_length_visible);
   gtk_widget_set_visible (
     GTK_WIDGET (self->object_length_type_custom), object_length_visible);
 
   /* set sensitivity */
-  bool snap_sensitive = sg->snap_to_grid;
+  bool snap_sensitive = sg->snap_to_grid_;
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->adaptive_snap_row), snap_sensitive);
   gtk_widget_set_sensitive (GTK_WIDGET (self->snap_length), snap_sensitive);
@@ -60,7 +60,7 @@ on_snap_to_grid_active_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   GtkSwitch *             sw = GTK_SWITCH (gobject);
 
-  sg->snap_to_grid = gtk_switch_get_active (sw);
+  sg->snap_to_grid_ = gtk_switch_get_active (sw);
 
   refresh (self);
 }
@@ -75,7 +75,7 @@ on_adaptive_snap_active_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   GtkSwitch *             sw = GTK_SWITCH (gobject);
 
-  sg->snap_adaptive = gtk_switch_get_active (sw);
+  sg->snap_adaptive_ = gtk_switch_get_active (sw);
 
   refresh (self);
 }
@@ -90,7 +90,7 @@ on_keep_offset_active_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   GtkSwitch *             sw = GTK_SWITCH (gobject);
 
-  sg->snap_to_grid_keep_offset = gtk_switch_get_active (sw);
+  sg->snap_to_grid_keep_offset_ = gtk_switch_get_active (sw);
 
   refresh (self);
 }
@@ -105,7 +105,7 @@ on_snap_to_events_active_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   GtkSwitch *             sw = GTK_SWITCH (gobject);
 
-  sg->snap_to_events = gtk_switch_get_active (sw);
+  sg->snap_to_events_ = gtk_switch_get_active (sw);
 
   refresh (self);
 }
@@ -120,7 +120,7 @@ on_snap_length_selection_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   AdwComboRow *           cr = ADW_COMBO_ROW (gobject);
 
-  sg->snap_note_length =
+  sg->snap_note_length_ =
     ENUM_INT_TO_VALUE (NoteLength, adw_combo_row_get_selected (cr));
 
   refresh (self);
@@ -136,7 +136,7 @@ on_snap_type_selection_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   AdwComboRow *           cr = ADW_COMBO_ROW (gobject);
 
-  sg->snap_note_type =
+  sg->snap_note_type_ =
     ENUM_INT_TO_VALUE (NoteType, adw_combo_row_get_selected (cr));
 
   refresh (self);
@@ -152,7 +152,7 @@ on_object_length_type_selection_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   AdwComboRow *           cr = ADW_COMBO_ROW (gobject);
 
-  sg->length_type =
+  sg->length_type_ =
     ENUM_INT_TO_VALUE (NoteLengthType, adw_combo_row_get_selected (cr));
 
   refresh (self);
@@ -168,7 +168,7 @@ on_object_length_selection_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   AdwComboRow *           cr = ADW_COMBO_ROW (gobject);
 
-  sg->default_note_length =
+  sg->default_note_length_ =
     ENUM_INT_TO_VALUE (NoteLength, adw_combo_row_get_selected (cr));
 
   refresh (self);
@@ -184,7 +184,7 @@ on_object_length_type_custom_selection_changed (
   SnapGrid *              sg = self->owner->snap_grid;
   AdwComboRow *           cr = ADW_COMBO_ROW (gobject);
 
-  sg->default_note_type =
+  sg->default_note_type_ =
     ENUM_INT_TO_VALUE (NoteType, adw_combo_row_get_selected (cr));
 
   refresh (self);
@@ -197,7 +197,7 @@ SnapGridPopoverWidget *
 snap_grid_popover_widget_new (SnapGridWidget * owner)
 {
   SnapGridPopoverWidget * self = Z_SNAP_GRID_POPOVER_WIDGET (
-    g_object_new (SNAP_GRID_POPOVER_WIDGET_TYPE, NULL));
+    g_object_new (SNAP_GRID_POPOVER_WIDGET_TYPE, nullptr));
 
   self->owner = owner;
   SnapGrid * sg = self->owner->snap_grid;
@@ -210,14 +210,14 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_preferences_group_set_title (
     self->snap_position_group, _ ("Position Snap"));
   self->snap_to_grid = GTK_SWITCH (gtk_switch_new ());
-  gtk_switch_set_active (self->snap_to_grid, sg->snap_to_grid);
+  gtk_switch_set_active (self->snap_to_grid, sg->snap_to_grid_);
   gtk_widget_set_valign (GTK_WIDGET (self->snap_to_grid), GTK_ALIGN_CENTER);
   adw_preferences_group_set_header_suffix (
     self->snap_position_group, GTK_WIDGET (self->snap_to_grid));
 
   /* adjustive snap */
   self->adaptive_snap = GTK_SWITCH (gtk_switch_new ());
-  gtk_switch_set_active (self->adaptive_snap, sg->snap_adaptive);
+  gtk_switch_set_active (self->adaptive_snap, sg->snap_adaptive_);
   gtk_widget_set_valign (GTK_WIDGET (self->adaptive_snap), GTK_ALIGN_CENTER);
   self->adaptive_snap_row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_action_row_add_suffix (
@@ -239,7 +239,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   self->snap_length = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->snap_length, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (
-    self->snap_length, ENUM_VALUE_TO_INT (sg->snap_note_length));
+    self->snap_length, ENUM_VALUE_TO_INT (sg->snap_note_length_));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->snap_length), _ ("Snap to"));
   adw_action_row_set_subtitle (
@@ -254,7 +254,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   self->snap_type = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->snap_type, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (
-    self->snap_type, ENUM_VALUE_TO_INT (sg->snap_note_type));
+    self->snap_type, ENUM_VALUE_TO_INT (sg->snap_note_type_));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->snap_type), _ ("Note Type"));
   adw_preferences_group_add (
@@ -262,7 +262,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* keep offset */
   self->keep_offset = GTK_SWITCH (gtk_switch_new ());
-  gtk_switch_set_active (self->keep_offset, sg->snap_to_grid_keep_offset);
+  gtk_switch_set_active (self->keep_offset, sg->snap_to_grid_keep_offset_);
   gtk_widget_set_valign (GTK_WIDGET (self->keep_offset), GTK_ALIGN_CENTER);
   self->keep_offset_row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_action_row_add_suffix (
@@ -279,7 +279,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
 
   /* snap to events */
   self->snap_to_events = GTK_SWITCH (gtk_switch_new ());
-  gtk_switch_set_active (self->snap_to_events, sg->snap_to_events);
+  gtk_switch_set_active (self->snap_to_events, sg->snap_to_events_);
   gtk_widget_set_valign (GTK_WIDGET (self->snap_to_events), GTK_ALIGN_CENTER);
   self->snap_to_events_row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_action_row_add_suffix (
@@ -303,13 +303,13 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     _ ("Link to snap"),
     _ ("Last object"),
     _ ("Custom"),
-    NULL,
+    nullptr,
   };
   strlist = gtk_string_list_new (strings);
   self->object_length_type = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->object_length_type, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (
-    self->object_length_type, ENUM_VALUE_TO_INT (sg->length_type));
+    self->object_length_type, ENUM_VALUE_TO_INT (sg->length_type_));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length_type), _ ("Object Length Type"));
   adw_action_row_set_subtitle (
@@ -325,7 +325,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   self->object_length = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (self->object_length, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (
-    self->object_length, ENUM_VALUE_TO_INT (sg->default_note_length));
+    self->object_length, ENUM_VALUE_TO_INT (sg->default_note_length_));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length), _ ("Length"));
   adw_preferences_group_add (
@@ -339,7 +339,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_combo_row_set_model (
     self->object_length_type_custom, G_LIST_MODEL (strlist));
   adw_combo_row_set_selected (
-    self->object_length_type_custom, ENUM_VALUE_TO_INT (sg->default_note_type));
+    self->object_length_type_custom, ENUM_VALUE_TO_INT (sg->default_note_type_));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length_type_custom), _ ("Note Type"));
   adw_preferences_group_add (

@@ -49,11 +49,13 @@
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/error.h"
+#include "utils/exceptions.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "utils/system.h"
 #include "zrythm_app.h"
@@ -61,6 +63,7 @@
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
 
 G_DEFINE_TYPE (MainWindowWidget, main_window_widget, ADW_TYPE_APPLICATION_WINDOW)
 
@@ -73,17 +76,16 @@ on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
 {
   g_message ("main window destroy %p", self);
 
-  event_manager_process_now (EVENT_MANAGER);
+  EVENT_MANAGER->process_now ();
 
-  /* if this is the current main window and a project
-   * is loaded, quit the application (check needed
-   * because this is also called right after loading
-   * a project) */
-  if (PROJECT->loaded && zrythm_app->main_window == self)
+  /* if this is the current main window and a project is loaded, quit the
+   * application (check needed because this is also called right after loading a
+   * project) */
+  if (PROJECT->loaded_ && zrythm_app->main_window == self)
     {
-      event_manager_stop_events (EVENT_MANAGER);
+      EVENT_MANAGER->stop_events ();
 
-      object_free_w_func_and_null (project_free, PROJECT);
+      PROJECT.reset ();
 
 #if 0
       /* stop engine */
@@ -96,7 +98,7 @@ on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
       /* close any plugin windows */
 #endif
 
-      g_application_quit (G_APPLICATION (zrythm_app));
+      g_application_quit (G_APPLICATION (zrythm_app.get ()));
     }
 
   g_message ("main window destroy called");
@@ -112,13 +114,15 @@ save_on_quit_response_cb (
     {
       /* save project */
       g_message ("saving project...");
-      GError * err = NULL;
-      bool     successful = project_save (
-        PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC,
-        &err);
-      if (!successful)
+      try
         {
-          HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
+          PROJECT->save (
+            PROJECT->dir_, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
+        }
+      catch (const ZrythmException &ex)
+        {
+          ui_show_error_message (
+            _ ("Project Save Failed"), _ ("Error saving the project"));
         }
       g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, self);
     }
@@ -143,7 +147,7 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
   g_debug ("%s: main window delete event called", __func__);
 
   /* ask for save if project has unsaved changes */
-  if (project_has_unsaved_changes (PROJECT))
+  if (PROJECT->has_unsaved_changes ())
     {
       AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
         window, _ ("Save Changes?"),
@@ -152,7 +156,7 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
            "changes will be lost.")));
       adw_message_dialog_add_responses (
         dialog, "cancel", _ ("_Cancel"), "quit-no-save", _ ("_Discard"),
-        "save-quit", _ ("_Save"), NULL);
+        "save-quit", _ ("_Save"), nullptr);
       adw_message_dialog_set_close_response (dialog, "cancel");
       adw_message_dialog_set_response_appearance (
         dialog, "quit-no-save", ADW_RESPONSE_DESTRUCTIVE);
@@ -177,7 +181,7 @@ main_window_widget_new (ZrythmApp * _app)
 {
   MainWindowWidget * self = static_cast<MainWindowWidget *> (g_object_new (
     MAIN_WINDOW_WIDGET_TYPE, "application", G_APPLICATION (_app), "title",
-    PROGRAM_NAME, NULL));
+    PROGRAM_NAME, nullptr));
 
   return self;
 }
@@ -209,7 +213,7 @@ on_key_pressed (
       if (!GTK_IS_EDITABLE (focus_child))
         {
           g_action_group_activate_action (
-            G_ACTION_GROUP (zrythm_app), "play-pause", NULL);
+            G_ACTION_GROUP (zrythm_app.get ()), "play-pause", nullptr);
           return true;
         }
     }
@@ -260,19 +264,19 @@ refresh_undo_or_redo_button (MainWindowWidget * self, bool redo)
   g_warn_if_fail (UNDO_MANAGER);
 
   AdwSplitButton * split_btn = redo ? self->redo_btn : self->undo_btn;
-  UndoStack * stack = redo ? UNDO_MANAGER->redo_stack : UNDO_MANAGER->undo_stack;
+  auto &stack = redo ? UNDO_MANAGER->redo_stack_ : UNDO_MANAGER->undo_stack_;
 
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (split_btn), !undo_stack_is_empty (stack));
+  gtk_widget_set_sensitive (GTK_WIDGET (split_btn), !stack->is_empty ());
 
-#define SET_TOOLTIP(tooltip) \
-  z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (split_btn), (tooltip))
+  auto set_tooltip = [&] (const auto &tooltip) {
+    z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (split_btn), tooltip);
+  };
 
   const char * undo_or_redo_str = redo ? _ ("Redo") : _ ("Undo");
   GMenu *      menu = NULL;
-  if (undo_stack_is_empty (stack))
+  if (stack->is_empty ())
     {
-      SET_TOOLTIP (undo_or_redo_str);
+      set_tooltip (undo_or_redo_str);
     }
   else
     {
@@ -280,37 +284,34 @@ refresh_undo_or_redo_button (MainWindowWidget * self, bool redo)
       GMenuItem * menuitem;
 
       /* fill 8 actions */
-      int max_actions = MIN (8, stack->stack->top + 1);
+      int max_actions = MIN (8, stack->size ());
       for (int i = 0; i < max_actions;)
         {
-          UndoableAction * ua = static_cast<UndoableAction *> (
-            stack->stack->elements[g_atomic_int_get (&stack->stack->top) - i]);
+          auto &ua = stack->actions_[stack->actions_.size () - i - 1];
 
-          char * action_str = undoable_action_to_string (ua);
+          auto action_str = ua->to_string ();
 
-          char tmp[600];
-          sprintf (tmp, "app.%s_n", redo ? "redo" : "undo");
-          menuitem = z_gtk_create_menu_item (action_str, NULL, tmp);
+          auto tmp = fmt::format ("app.%s_n", redo ? "redo" : "undo");
+          menuitem =
+            z_gtk_create_menu_item (action_str.c_str (), nullptr, tmp.c_str ());
           g_menu_item_set_action_and_target_value (
-            menuitem, tmp, g_variant_new_int32 (i));
+            menuitem, tmp.c_str (), g_variant_new_int32 (i));
           g_menu_append_item (menu, menuitem);
 
           if (i == 0)
             {
-              char tooltip[800];
-              sprintf (tooltip, "%s %s", undo_or_redo_str, action_str);
-              if (ua->num_actions > 1)
+              auto tooltip = fmt::format ("%s %s", undo_or_redo_str, action_str);
+              if (ua->num_actions_ > 1)
                 {
-                  char num_actions_str[100];
-                  sprintf (num_actions_str, " (x%d)", ua->num_actions);
-                  strcat (tooltip, num_actions_str);
+                  auto num_actions_str =
+                    fmt::format (" (x{})", ua->num_actions_);
+                  tooltip += num_actions_str;
                 }
-              SET_TOOLTIP (tooltip);
+              set_tooltip (tooltip.c_str ());
             }
-          g_free (action_str);
 
-          g_return_if_fail (ua->num_actions >= 1);
-          i += ua->num_actions;
+          z_return_if_fail (ua->num_actions_ >= 1);
+          i += ua->num_actions_;
         }
     }
 #undef SET_TOOLTIP
@@ -368,18 +369,19 @@ main_window_widget_setup (MainWindowWidget * self)
   bot_bar_widget_setup (self->bot_bar);
 
   /* setup mixer */
-  g_warn_if_fail (P_MASTER_TRACK && P_MASTER_TRACK->channel);
-  mixer_widget_setup (MW_MIXER, P_MASTER_TRACK->channel);
+  z_return_if_fail (P_MASTER_TRACK && P_MASTER_TRACK->channel_);
+  mixer_widget_setup (MW_MIXER, P_MASTER_TRACK->channel_.get ());
 
   gtk_window_maximize (GTK_WINDOW (self));
 
   /* show track selection info */
-  g_warn_if_fail (TRACKLIST_SELECTIONS->tracks[0]);
-  EVENTS_PUSH (EventType::ET_TRACK_CHANGED, TRACKLIST_SELECTIONS->tracks[0]);
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
+  z_return_if_fail (!TRACKLIST_SELECTIONS->track_names_.empty ());
+  EVENTS_PUSH (
+    EventType::ET_TRACK_CHANGED, TRACKLIST_SELECTIONS->get_highest_track ());
+  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
   event_viewer_widget_refresh (MW_TIMELINE_EVENT_VIEWER, false);
 
-  EVENTS_PUSH (EventType::ET_MAIN_WINDOW_LOADED, NULL);
+  EVENTS_PUSH (EventType::ET_MAIN_WINDOW_LOADED, nullptr);
 
   g_idle_add ((GSourceFunc) show_startup_errors, self);
 
@@ -387,7 +389,7 @@ main_window_widget_setup (MainWindowWidget * self)
 
   self->setup = true;
 
-  event_manager_process_now (EVENT_MANAGER);
+  EVENT_MANAGER->process_now ();
 
   g_message ("done");
 }
@@ -395,18 +397,10 @@ main_window_widget_setup (MainWindowWidget * self)
 void
 main_window_widget_set_project_title (MainWindowWidget * self, Project * prj)
 {
-  char * prj_title;
-  if (project_has_unsaved_changes (prj))
-    {
-      prj_title = g_strdup_printf ("%s*", prj->title);
-    }
-  else
-    {
-      prj_title = g_strdup (prj->title);
-    }
-  adw_window_title_set_title (self->window_title, prj_title);
-  adw_window_title_set_subtitle (self->window_title, prj->dir);
-  g_free (prj_title);
+  std::string prj_title =
+    prj->has_unsaved_changes () ? fmt::sprintf ("%s*", prj->title_) : prj->title_;
+  adw_window_title_set_title (self->window_title, prj_title.c_str ());
+  adw_window_title_set_subtitle (self->window_title, prj->dir_.c_str ());
 }
 
 static void
@@ -440,7 +434,7 @@ main_window_widget_tear_down (MainWindowWidget * self)
       center_dock_widget_tear_down (self->center_dock);
     }
 
-  gtk_window_set_application (GTK_WINDOW (self), NULL);
+  gtk_window_set_application (GTK_WINDOW (self), nullptr);
 
   g_message ("done tearing down main window");
 }
@@ -555,20 +549,20 @@ main_window_widget_init (MainWindowWidget * self)
     { "remove-range", activate_remove_range },
 
  /* playhead actions */
-    { "timeline-playhead-scroll-edges", NULL, NULL,
+    { "timeline-playhead-scroll-edges", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "timeline-playhead-scroll-edges")
         ? "true"
         : "false",
      change_state_timeline_playhead_scroll_edges },
-    { "timeline-playhead-follow", NULL, NULL,
+    { "timeline-playhead-follow", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "timeline-playhead-follow") ? "true" : "false",
      change_state_timeline_playhead_follow },
-    { "editor-playhead-scroll-edges", NULL, NULL,
+    { "editor-playhead-scroll-edges", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "editor-playhead-scroll-edges")
         ? "true"
         : "false",
      change_state_editor_playhead_scroll_edges },
-    { "editor-playhead-follow", NULL, NULL,
+    { "editor-playhead-follow", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "editor-playhead-follow") ? "true" : "false",
      change_state_editor_playhead_follow },
 
@@ -576,7 +570,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "merge-selection", activate_merge_selection },
 
  /* musical mode */
-    { "toggle-musical-mode", NULL, NULL,
+    { "toggle-musical-mode", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "musical-mode") ? "true" : "false",
      change_state_musical_mode },
 
@@ -600,10 +594,10 @@ main_window_widget_init (MainWindowWidget * self)
     { "audition-mode", activate_audition_mode },
 
  /* transport */
-    { "toggle-metronome", NULL, NULL,
+    { "toggle-metronome", nullptr, nullptr,
      g_settings_get_boolean (S_TRANSPORT, "metronome-enabled") ? "true" : "false",
      change_state_metronome },
-    { "toggle-loop", NULL, NULL,
+    { "toggle-loop", nullptr, nullptr,
      g_settings_get_boolean (S_TRANSPORT, "loop") ? "true" : "false",
      change_state_loop },
     { "goto-start-marker", activate_goto_start_marker },
@@ -661,21 +655,21 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* piano roll */
     { "toggle-drum-mode", activate_toggle_drum_mode },
-    { "toggle-listen-notes", NULL, NULL,
+    { "toggle-listen-notes", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "listen-notes") ? "true" : "false",
      change_state_listen_notes },
     { "midi-editor.highlighting", activate_midi_editor_highlighting, "s" },
-    { "toggle-ghost-notes", NULL, NULL,
+    { "toggle-ghost-notes", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "ghost-notes") ? "true" : "false",
      change_state_ghost_notes },
 
  /* automation */
-    { "show-automation-values", NULL, NULL,
+    { "show-automation-values", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "show-automation-values") ? "true" : "false",
      change_state_show_automation_values },
 
  /* control room */
-    { "toggle-dim-output", NULL, NULL, "true", change_state_dim_output },
+    { "toggle-dim-output", nullptr, nullptr, "true", change_state_dim_output },
 
  /* show/hide event viewers */
     { "toggle-timeline-event-viewer", activate_toggle_timeline_event_viewer },
@@ -761,7 +755,7 @@ main_window_widget_init (MainWindowWidget * self)
      activate_plugin_browser_add_to_project_bridged_ui, "s" },
     { "plugin-browser-add-to-project-bridged-full",
      activate_plugin_browser_add_to_project_bridged_full, "s" },
-    { "plugin-browser-toggle-generic-ui", NULL, NULL, "false",
+    { "plugin-browser-toggle-generic-ui", nullptr, nullptr, "false",
      change_state_plugin_browser_toggle_generic_ui },
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
@@ -785,7 +779,8 @@ main_window_widget_init (MainWindowWidget * self)
     G_N_ELEMENTS (actions), self);
 #endif
   g_action_map_add_action_entries (
-    G_ACTION_MAP (zrythm_app), actions, G_N_ELEMENTS (actions), zrythm_app);
+    G_ACTION_MAP (zrythm_app.get ()), actions, G_N_ELEMENTS (actions),
+    zrythm_app.get ());
 
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);
@@ -795,7 +790,7 @@ main_window_widget_init (MainWindowWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_DOCK(child) \
-  g_object_set (G_OBJECT (child), "dock", self->center_dock->dock, NULL)
+  g_object_set (G_OBJECT (child), "dock", self->center_dock->dock, nullptr)
 
   SET_DOCK (self->start_dock_switcher);
   SET_DOCK (self->end_dock_switcher);

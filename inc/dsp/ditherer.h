@@ -20,7 +20,7 @@
 // clang-format on
 
 /**
- * \file
+ * @file
  *
  * Ditherer.
  */
@@ -67,6 +67,15 @@ ditherer_process (
   float *    frames,
   size_t     n_frames,
   channels_t channels);
+
+/**
+ * Dither given audio for a single channgel.
+ *
+ * @param n_frames Number of frames.
+ * @param channels Number of channels.
+ */
+void
+ditherer_process (Ditherer * self, float * frames, size_t n_frames);
 
 /**
  * @}

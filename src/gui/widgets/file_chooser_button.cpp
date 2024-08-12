@@ -63,7 +63,7 @@ file_chooser_button_widget_std_response (
 {
   g_debug ("std response - setting label and hiding dialog");
 
-  update_btn_label (self, NULL, GTK_FILE_CHOOSER (dialog));
+  update_btn_label (self, nullptr, GTK_FILE_CHOOSER (dialog));
   gtk_native_dialog_destroy (GTK_NATIVE_DIALOG (dialog));
 }
 
@@ -82,20 +82,21 @@ file_chooser_button_widget_set_response_callback (
 static void
 on_btn_clicked (GtkButton * btn, FileChooserButtonWidget * self)
 {
-  GtkFileChooserNative * fc_native = GTK_FILE_CHOOSER_NATIVE (
-    gtk_file_chooser_native_new (self->title, NULL, self->action, NULL, NULL));
+  GtkFileChooserNative * fc_native =
+    GTK_FILE_CHOOSER_NATIVE (gtk_file_chooser_native_new (
+      self->title, nullptr, self->action, nullptr, nullptr));
 
   if (self->path)
     {
       GFile * file = g_file_new_for_path (self->path);
-      gtk_file_chooser_set_file (GTK_FILE_CHOOSER (fc_native), file, NULL);
+      gtk_file_chooser_set_file (GTK_FILE_CHOOSER (fc_native), file, nullptr);
       g_object_unref (file);
     }
   if (self->current_dir)
     {
       GFile * gfile = g_file_new_for_path (self->current_dir);
       gtk_file_chooser_set_current_folder (
-        GTK_FILE_CHOOSER (fc_native), gfile, NULL);
+        GTK_FILE_CHOOSER (fc_native), gfile, nullptr);
       g_object_unref (gfile);
     }
   gtk_native_dialog_set_modal (GTK_NATIVE_DIALOG (fc_native), true);
@@ -142,7 +143,7 @@ file_chooser_button_widget_set_path (
   g_free_and_null (self->path);
   self->path = g_strdup (path);
 
-  update_btn_label (self, path, NULL);
+  update_btn_label (self, path, nullptr);
 }
 
 void
@@ -164,7 +165,7 @@ file_chooser_button_widget_new (
   GtkFileChooserAction action)
 {
   FileChooserButtonWidget * self = static_cast<FileChooserButtonWidget *> (
-    g_object_new (FILE_CHOOSER_BUTTON_WIDGET_TYPE, NULL));
+    g_object_new (FILE_CHOOSER_BUTTON_WIDGET_TYPE, nullptr));
 
   file_chooser_button_widget_setup (self, parent, title, action);
 

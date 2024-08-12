@@ -1,221 +1,153 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-#include <cstdlib>
-
-#include "dsp/engine.h"
 #include "dsp/position.h"
 #include "dsp/quantize_options.h"
 #include "dsp/snap_grid.h"
 #include "dsp/transport.h"
 #include "project.h"
 #include "utils/algorithms.h"
-#include "utils/objects.h"
 #include "utils/pcg_rand.h"
 #include "zrythm.h"
 
 #include "gtk_wrapper.h"
 
-/**
- * Updates snap points.
- */
 void
-quantize_options_update_quantize_points (QuantizeOptions * self)
+QuantizeOptions::update_quantize_points ()
 {
   Position tmp, end_pos;
-  position_init (&tmp);
-  position_set_to_bar (&end_pos, TRANSPORT->total_bars + 1);
-  self->num_q_points = 0;
-  position_set_to_pos (&self->q_points[self->num_q_points++], &tmp);
-  long ticks = snap_grid_get_ticks_from_length_and_type (
-    self->note_length, self->note_type);
-  long swing_offset =
-    (long) (((float) self->swing / 100.f) * (float) ticks / 2.f);
-  while (position_is_before (&tmp, &end_pos))
+  end_pos.set_to_bar (TRANSPORT->total_bars_ + 1);
+  q_points_.clear ();
+  q_points_.push_back (tmp);
+  double ticks =
+    SnapGrid::get_ticks_from_length_and_type (note_length_, note_type_);
+  double swing_offset = (swing_ / 100.0) * ticks / 2.0;
+  while (tmp < end_pos)
     {
-      position_add_ticks (&tmp, ticks);
+      tmp.add_ticks (ticks);
 
       /* delay every second point by swing */
-      if ((self->num_q_points + 1) % 2 == 0)
+      if ((q_points_.size () + 1) % 2 == 0)
         {
-          position_add_ticks (&tmp, swing_offset);
+          tmp.add_ticks (swing_offset);
         }
 
-      position_set_to_pos (&self->q_points[self->num_q_points++], &tmp);
+      q_points_.push_back (tmp);
     }
 }
 
 void
-quantize_options_init (QuantizeOptions * self, NoteLength note_length)
+QuantizeOptions::init (NoteLength note_length)
 {
-  self->note_length = note_length;
-  self->num_q_points = 0;
-  self->note_type = NoteType::NOTE_TYPE_NORMAL;
-  self->amount = 100;
-  self->adj_start = 1;
-  self->adj_end = 0;
-  self->swing = 0;
-  self->rand_ticks = 0;
+  note_length_ = note_length;
+  q_points_.clear ();
+  note_type_ = NoteType::NOTE_TYPE_NORMAL;
+  amount_ = 100.f;
+  adj_start_ = true;
+  adj_end_ = false;
+  swing_ = 0.f;
+  rand_ticks_ = 0.0;
 }
 
 float
-quantize_options_get_swing (QuantizeOptions * self)
+QuantizeOptions::get_swing ()
 {
-  return self->swing;
+  return swing_;
 }
 
 float
-quantize_options_get_amount (QuantizeOptions * self)
+QuantizeOptions::get_amount ()
 {
-  return self->amount;
+  return amount_;
 }
 
 float
-quantize_options_get_randomization (QuantizeOptions * self)
+QuantizeOptions::get_randomization ()
 {
-  return (float) self->rand_ticks;
+  return (float) rand_ticks_;
 }
 
 void
-quantize_options_set_swing (QuantizeOptions * self, float swing)
+QuantizeOptions::set_swing (float swing)
 {
-  self->swing = swing;
+  swing_ = swing;
 }
 
 void
-quantize_options_set_amount (QuantizeOptions * self, float amount)
+QuantizeOptions::set_amount (float amount)
 {
-  self->amount = amount;
+  amount_ = amount;
 }
 
 void
-quantize_options_set_randomization (QuantizeOptions * self, float randomization)
+QuantizeOptions::set_randomization (float randomization)
 {
-  self->rand_ticks = (unsigned int) round (randomization);
+  rand_ticks_ = (double) randomization;
 }
 
-/**
- * Returns the current options as a human-readable
- * string.
- *
- * Must be free'd.
- */
-char *
-quantize_options_stringize (NoteLength note_length, NoteType note_type)
+std::string
+QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
 {
-  return snap_grid_stringize_length_and_type (note_length, note_type);
+  return SnapGrid::stringize_length_and_type (note_length, note_type);
 }
 
-static Position *
-get_prev_point (QuantizeOptions * self, Position * pos)
+const Position *
+QuantizeOptions::get_prev_point (Position * pos) const
 {
-  g_return_val_if_fail (pos->frames >= 0 && pos->ticks >= 0, NULL);
+  g_return_val_if_fail (pos->is_positive (), nullptr);
 
   Position * prev_point = (Position *) algorithms_binary_search_nearby (
-    pos, self->q_points, (size_t) self->num_q_points, sizeof (Position),
-    position_cmp_func, true, true);
+    pos, q_points_.data (), q_points_.size (), sizeof (Position),
+    Position::compare_frames_cmpfunc, true, true);
 
   return prev_point;
 }
 
-static Position *
-get_next_point (QuantizeOptions * self, Position * pos)
+const Position *
+QuantizeOptions::get_next_point (Position * pos) const
 {
-  g_return_val_if_fail (pos->frames >= 0 && pos->ticks >= 0, NULL);
+  g_return_val_if_fail (pos->is_positive (), nullptr);
 
   Position * next_point = (Position *) algorithms_binary_search_nearby (
-    pos, self->q_points, (size_t) self->num_q_points, sizeof (Position),
-    position_cmp_func, false, true);
+    pos, q_points_.data (), q_points_.size (), sizeof (Position),
+    Position::compare_frames_cmpfunc, false, true);
 
   return next_point;
 }
 
-/**
- * Quantizes the given Position using the given
- * QuantizeOptions.
- *
- * This assumes that the start/end check has been
- * done already and it ignores the adjust_start and
- * adjust_end options.
- *
- * @return The amount of ticks moved (negative for
- *   backwards).
- */
 double
-quantize_options_quantize_position (QuantizeOptions * self, Position * pos)
+QuantizeOptions::quantize_position (Position * pos)
 {
-  Position * prev_point = get_prev_point (self, pos);
-  Position * next_point = get_next_point (self, pos);
+  auto prev_point = get_prev_point (pos);
+  auto next_point = get_next_point (pos);
   g_return_val_if_fail (prev_point && next_point, 0);
 
-  const double upper = self->rand_ticks;
-  const double lower = -self->rand_ticks;
+  const double upper = rand_ticks_;
+  const double lower = -rand_ticks_;
   auto         rand = PCGRand::getInstance ();
   double       rand_double = (double) rand->u32 ();
   double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
   double diff;
-  if (pos->ticks - prev_point->ticks <= next_point->ticks - pos->ticks)
+  if (pos->ticks_ - prev_point->ticks_ <= next_point->ticks_ - pos->ticks_)
     {
-      diff = prev_point->ticks - pos->ticks;
+      diff = prev_point->ticks_ - pos->ticks_;
     }
   /* if next point is closer */
   else
     {
-      diff = next_point->ticks - pos->ticks;
+      diff = next_point->ticks_ - pos->ticks_;
     }
 
   /* multiply by amount */
-  diff = (diff * (double) (self->amount / 100.f));
+  diff = (diff * (double) (amount_ / 100.f));
 
   /* add random ticks */
   diff += rand_ticks;
 
   /* quantize position */
-  position_add_ticks (pos, diff);
+  pos->add_ticks (diff);
 
   return diff;
-}
-
-/**
- * Clones the QuantizeOptions.
- */
-QuantizeOptions *
-quantize_options_clone (const QuantizeOptions * src)
-{
-  QuantizeOptions * opts = object_new (QuantizeOptions);
-
-  opts->note_length = src->note_length;
-  opts->note_type = src->note_type;
-  opts->amount = src->amount;
-  opts->adj_start = src->adj_start;
-  opts->adj_end = src->adj_end;
-  opts->swing = src->swing;
-  opts->rand_ticks = src->rand_ticks;
-
-  quantize_options_update_quantize_points (opts);
-
-  return opts;
-}
-
-QuantizeOptions *
-quantize_options_new (void)
-{
-  QuantizeOptions * opts = object_new (QuantizeOptions);
-
-  return opts;
-}
-
-/**
- * Free's the QuantizeOptions.
- */
-void
-quantize_options_free (QuantizeOptions * self)
-{
-  object_zero_and_free (self);
 }

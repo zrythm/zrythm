@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Basic knob widget, taken from Ardour.
- */
 
 #ifndef __GUI_WIDGETS_KNOB_H__
 #define __GUI_WIDGETS_KNOB_H__
@@ -36,7 +30,12 @@ enum class KnobType
 
 class Port;
 
-typedef struct _KnobWidget
+/**
+ * @brief Basic knob widget
+ *
+ * @note Originally taken from Ardour.
+ */
+using KnobWidget = struct _KnobWidget
 {
   GtkWidget parent_instance;
 
@@ -62,7 +61,7 @@ typedef struct _KnobWidget
   GenericFloatSetter end_setter;
 
   /** Value to show when hovering (optional). */
-  GenericStringCopyGetter hover_str_getter;
+  GenericStringGetter hover_str_getter;
 
   /** Object to call get/set with. */
   void * object;
@@ -105,7 +104,7 @@ typedef struct _KnobWidget
 
   /** To be optionally used for context menus. */
   GtkPopoverMenu * popover_menu;
-} KnobWidget;
+};
 
 /**
  * Creates a knob widget with the given options and
@@ -143,8 +142,8 @@ _knob_widget_new (
  */
 #define knob_widget_new_port(conn, size) \
   _knob_widget_new ( \
-    NULL, NULL, (void *) conn, KnobType::KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, \
-    size, 0.f)
+    nullptr, nullptr, (void *) conn, KnobType::KNOB_TYPE_PORT_MULTIPLIER, 0.f, \
+    1.f, size, 0.f)
 
 /**
  * @}

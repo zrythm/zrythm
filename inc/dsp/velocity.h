@@ -1,22 +1,16 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Velocities for MidiNote's.
- */
 
 #ifndef __AUDIO_VELOCITY_H__
 #define __AUDIO_VELOCITY_H__
 
-#include <cstdint>
+#include "dsp/arranger_object.h"
+#include "dsp/region_owned_object.h"
+#include "utils/icloneable.h"
 
-#include "dsp/region_identifier.h"
-#include "gui/backend/arranger_object.h"
-
-typedef struct MidiNote        MidiNote;
-typedef struct _VelocityWidget VelocityWidget;
+class MidiNote;
+class MidiRegion;
+TYPEDEF_STRUCT_UNDERSCORED (VelocityWidget);
 
 /**
  * @addtogroup dsp
@@ -30,74 +24,89 @@ typedef struct _VelocityWidget VelocityWidget;
 /**
  * Default velocity.
  */
-#define VELOCITY_DEFAULT 90
+constexpr uint8_t VELOCITY_DEFAULT = 90;
 
 /**
  * The MidiNote velocity.
- *
- * @extends ArrangerObject
  */
-typedef struct Velocity
+class Velocity final
+    : public RegionOwnedObjectImpl<MidiRegion>,
+      public ICloneable<Velocity>,
+      public ISerializable<Velocity>
 {
-  /** Base struct. */
-  ArrangerObject base;
+public:
+  // Rule of 0
+  Velocity () : ArrangerObject (Type::Velocity){};
+  /**
+   * Creates a new Velocity with the given value.
+   */
+  Velocity (MidiNote * midi_note, const uint8_t vel);
+
+  /**
+   * Sets the velocity to the given value.
+   *
+   * The given value may exceed the bounds 0-127, and will be clamped.
+   */
+  void set_val (const int val);
+
+  /**
+   * Returns the owner MidiNote.
+   */
+  MidiNote * get_midi_note () const;
+
+  static const char * setting_enum_to_str (guint index);
+
+  static guint setting_str_to_enum (const char * str);
+
+  ArrangerWidget * get_arranger () const override;
+
+  ArrangerObjectPtr find_in_project () const override;
+
+  std::string print_to_str () const override;
+
+  /* these do not apply to velocities */
+  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override
+  {
+    throw ZrythmException ("Cannot add a velocity clone to a project");
+  }
+
+  ArrangerObjectPtr insert_clone_to_project () const override
+  {
+    throw ZrythmException ("Cannot add a velocity clone to a project");
+  }
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  void init_after_cloning (const Velocity &other) override
+  {
+    vel_ = other.vel_;
+    vel_at_start_ = other.vel_at_start_;
+    RegionOwnedObject::copy_members_from (other);
+    ArrangerObject::copy_members_from (other);
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  /** Pointer back to the MIDI note. */
+  MidiNote * midi_note_;
 
   /** Velocity value (0-127). */
-  uint8_t vel;
+  uint8_t vel_ = 0;
 
-  /** Velocity at drag begin - used for ramp
-   * actions only. */
-  uint8_t vel_at_start;
+  /** Velocity at drag begin - used for ramp actions only. */
+  uint8_t vel_at_start_ = 0;
+};
 
-  /** Pointer back to the MIDI note. */
-  MidiNote * midi_note;
-} Velocity;
-
-/**
- * Creates a new Velocity with the given value.
- */
-Velocity *
-velocity_new (MidiNote * midi_note, const uint8_t vel);
-
-/**
- * Sets the MidiNote the Velocity belongs to.
- */
-void
-velocity_set_midi_note (Velocity * velocity, MidiNote * midi_note);
-
-/**
- * Returns 1 if the Velocity's match, 0 if not.
- */
-int
-velocity_is_equal (Velocity * src, Velocity * dest);
-
-/**
- * Changes the Velocity by the given amount of
- * values (delta).
- */
-void
-velocity_shift (Velocity * self, const int delta);
-
-/**
- * Sets the velocity to the given value.
- *
- * The given value may exceed the bounds 0-127,
- * and will be clamped.
- */
-void
-velocity_set_val (Velocity * self, const int val);
-
-/**
- * Returns the owner MidiNote.
- */
-MidiNote *
-velocity_get_midi_note (const Velocity * const self);
-
-const char *
-velocity_setting_enum_to_str (guint index);
-
-guint
-velocity_setting_str_to_enum (const char * str);
+inline bool
+operator== (const Velocity &lhs, const Velocity &rhs)
+{
+  return lhs.vel_ == rhs.vel_
+         && static_cast<const RegionOwnedObject &> (lhs)
+              == static_cast<const RegionOwnedObject &> (rhs)
+         && static_cast<const ArrangerObject &> (lhs)
+              == static_cast<const ArrangerObject &> (rhs);
+}
 
 /**
  * @}

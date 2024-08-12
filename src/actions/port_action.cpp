@@ -1,147 +1,74 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_action.h"
 #include "dsp/control_port.h"
 #include "dsp/port.h"
-#include "dsp/router.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
-#include "zrythm_app.h"
+#include "utils/format.h"
 
 #include <glib/gi18n.h>
 
 void
-port_action_init_loaded (PortAction * self)
+PortAction::init_after_cloning (const PortAction &other)
 {
-  /* no need */
+  UndoableAction::copy_members_from (other);
+  type_ = other.type_;
+  port_id_ = other.port_id_;
+  val_ = other.val_;
 }
 
-/**
- * Create a new action.
- */
-UndoableAction *
-port_action_new (
-  PortActionType   type,
-  PortIdentifier * port_id,
-  float            val,
-  bool             is_normalized,
-  GError **        error)
+PortAction::PortAction (
+  Type                  type,
+  const PortIdentifier &port_id,
+  float                 val,
+  bool                  is_normalized)
+    : type_ (type), port_id_ (port_id),
+      val_ (
+        is_normalized
+          ? Port::find_from_identifier<ControlPort> (port_id)
+              ->normalized_val_to_real (val)
+          : val)
 {
-  PortAction *     self = object_new (PortAction);
-  UndoableAction * ua = (UndoableAction *) self;
-  undoable_action_init (ua, UndoableActionType::UA_PORT);
-
-  self->port_id = *port_id;
-  self->type = type;
-  if (is_normalized)
-    {
-      Port * port = Port::find_from_identifier (port_id);
-      self->val = control_port_normalized_val_to_real (port, val);
-    }
-  else
-    {
-      self->val = val;
-    }
-
-  return ua;
 }
 
-/**
- * Create a new action.
- */
-UndoableAction *
-port_action_new_reset_control (PortIdentifier * port_id, GError ** error)
-{
-  Port * port = Port::find_from_identifier (port_id);
+  void
+  PortAction::do_or_undo (bool do_it)
+  {
+    auto port = Port::find_from_identifier<ControlPort> (port_id_);
 
-  return port_action_new (
-    PortActionType::PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff_,
-    F_NOT_NORMALIZED, error);
-}
-
-PortAction *
-port_action_clone (const PortAction * src)
-{
-  PortAction * self = object_new (PortAction);
-  self->parent_instance = src->parent_instance;
-
-  self->type = src->type;
-  self->port_id = src->port_id;
-  self->val = src->val;
-
-  return self;
-}
-
-bool
-port_action_perform (
-  PortActionType   type,
-  PortIdentifier * port_id,
-  float            val,
-  bool             is_normalized,
-  GError **        error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new, error, type, port_id, val, is_normalized, error);
-}
-
-bool
-port_action_perform_reset_control (PortIdentifier * port_id, GError ** error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new_reset_control, error, port_id, error);
-}
-
-static int
-port_action_do_or_undo (PortAction * self, bool _do)
-{
-  Port * port = Port::find_from_identifier (&self->port_id);
-
-  switch (self->type)
-    {
-    case PortActionType::PORT_ACTION_SET_CONTROL_VAL:
+    switch (type_)
       {
-        float val_before = control_port_get_val (port);
-        port->set_control_value (self->val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-        self->val = val_before;
+      case Type::SetControlValue:
+        {
+          float val_before = port->get_val ();
+          port->set_control_value (val_, false, true);
+          val_ = val_before;
+        }
+        break;
+      default:
+        break;
       }
-      break;
-    default:
-      break;
-    }
-
-  return 0;
-}
-
-int
-port_action_do (PortAction * self, GError ** error)
-{
-  return port_action_do_or_undo (self, true);
-}
-
-int
-port_action_undo (PortAction * self, GError ** error)
-{
-  return port_action_do_or_undo (self, false);
-}
-
-char *
-port_action_stringize (PortAction * self)
-{
-  switch (self->type)
-    {
-    case PortActionType::PORT_ACTION_SET_CONTROL_VAL:
-      return g_strdup (_ ("Set control value"));
-      break;
-    default:
-      g_warn_if_reached ();
-    }
-  g_return_val_if_reached (NULL);
 }
 
 void
-port_action_free (PortAction * self)
+PortAction::perform_impl ()
 {
-  object_zero_and_free (self);
+  do_or_undo (true);
+}
+
+void
+PortAction::undo_impl ()
+{
+  do_or_undo (false);
+}
+
+std::string
+PortAction::to_string () const
+{
+  switch (type_)
+    {
+    case Type::SetControlValue:
+      return format_str (_ ("Set {} to {}"), port_id_.get_label (), val_);
+      break;
+    }
 }

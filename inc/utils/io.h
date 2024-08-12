@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __UTILS_IO_H__
@@ -11,6 +11,10 @@
 #include "zrythm-config.h"
 
 #include <cstdio>
+#include <optional>
+#include <string>
+
+#include "utils/string.h"
 
 #include <glib.h>
 
@@ -21,36 +25,33 @@
  */
 
 /**
- * Gets directory part of filename. MUST be freed.
+ * Gets directory part of filename.
  *
  * @param filename Filename containing directory.
  */
-NONNULL char *
-io_get_dir (const char * filename);
+std::string
+io_get_dir (const std::string &filename);
 
 /**
- * Makes directory if doesn't exist.
+ * @brief Makes directory with parents if doesn't exist.
  *
- * @return True if the directory exists or was successfully
- *   created, false if error was occurred and errno is set.
- */
-WARN_UNUSED_RESULT NONNULL_ARGS (
-  1) bool io_mkdir (const char * dir, GError ** error);
-
-/**
- * Creates the file if doesn't exist
- */
-NONNULL FILE *
-io_create_file (const char * filename);
-
-/**
- * Touches a file similar to UNIX touch.
+ * @throw ZrythmException Failed to make directory with parents.
  */
 void
-io_touch_file (const char * filename);
+io_mkdir (const std::string &dir);
 
+/**
+ * @brief Touches a file similar to UNIX touch.
+ *
+ * @return Whether successful.
+ */
+bool
+io_touch_file (const std::string &file_path);
+
+#if 0
 NONNULL char *
 io_path_get_parent_dir (const char * path);
+#endif
 
 /**
  * Strips extensions from given filename.
@@ -84,76 +85,87 @@ io_file_get_creation_datetime (const char * filename);
 NONNULL gint64
 io_file_get_last_modified_datetime (const char * filename);
 
-NONNULL char *
-io_file_get_last_modified_datetime_as_str (const char * filename);
+NONNULL std::string
+        io_file_get_last_modified_datetime_as_str (const char * filename);
 
 /**
  * Removes the given file.
+ *
+ * @param path The path to the file to remove.
+ *
+ * @throw ZrythmException If an error occurred while attempting to remove @ref
+ * path.
+ *
+ * @return True if the file was deleted, false if it didn't exist.
  */
-NONNULL int
-io_remove (const char * path);
+bool
+io_remove (const std::string &path);
 
 /**
  * Removes a dir, optionally forcing deletion.
  *
- * For safety reasons, this only accepts an
- * absolute path with length greater than 20 if
- * forced.
+ * For safety reasons, this only accepts an absolute path with length greater
+ * than 20 if forced.
  */
-NONNULL int
-io_rmdir (const char * path, bool force);
-
-char **
-io_get_files_in_dir_as_basenames (
-  const char * dir,
-  bool         allow_empty,
-  bool         with_ext);
+int
+io_rmdir (const std::string &path, bool force);
 
 /**
- * Returns a list of the files in the given directory.
+ * @brief
  *
- * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev(), or NULL if
- *   no files were found.
+ * @param _dir
+ * @throw ZrythmException If @ref dir cannot be opened.
+ * @return StringArray
  */
-#define io_get_files_in_dir(dir, allow_empty) \
-  io_get_files_in_dir_ending_in (dir, 0, NULL, allow_empty)
+StringArray
+io_get_files_in_dir_as_basenames (const std::string &_dir);
 
 /**
- * Returns a list of the files in the given directory.
+ * Returns a list of the files in the given directory as absolute paths.
  *
  * @param dir The directory to look for.
- * @param allow_empty Whether to allow returning
- *   an empty array that has only NULL, otherwise
- *   return NULL if empty.
  *
- * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev() or NULL.
+ * @throw ZrythmException If @ref dir cannot be opened.
+ *
+ * @return a StringArray.
  */
-char **
+StringArray
 io_get_files_in_dir_ending_in (
-  const char * _dir,
-  const int    recursive,
-  const char * end_string,
-  bool         allow_empty);
+  const std::string                &_dir,
+  bool                              recursive,
+  const std::optional<std::string> &end_string);
+
+std::string
+io_create_tmp_dir (const std::string template_name = "zrythm_generic_XXXXXX");
+
+/**
+ * Returns a list of the files in the given directory.
+ *
+ * @see io_get_files_in_dir_ending_in().
+ */
+static inline StringArray
+io_get_files_in_dir (const std::string &_dir)
+{
+  return io_get_files_in_dir_ending_in (_dir, false, std::nullopt);
+}
 
 /**
  * Copies a directory.
  *
- * @note This will not work if \ref destdir_str has
- *   a file with the same filename as a directory
- *   in \ref srcdir_str.
+ * @note This will not work if @p destdir_str has a file with the same filename
+ * as a directory in @p srcdir_str.
  *
  * @see
  * https://stackoverflow.com/questions/16453739/how-do-i-recursively-copy-a-directory-using-vala
+ *
+ * @throw ZrythmException on error.
  */
-WARN_UNUSED_RESULT bool
+void
 io_copy_dir (
-  const char * destdir_str,
-  const char * srcdir_str,
-  bool         follow_symlinks,
-  bool         recursive,
-  GError **    error);
+  const std::string_view destdir_str,
+  const std::string_view srcdir_str,
+  bool                   follow_symlinks,
+  bool                   recursive);
 
 /**
  * Returns a newly allocated path that is either
@@ -174,13 +186,30 @@ NONNULL void
 io_open_directory (const char * path);
 
 /**
- * Returns a clone of the given string after
- * removing forbidden characters.
+ * Returns the given file name with any illegal characters removed.
+ *
+ * @note This will remove path separators like slashes.
+ *
+ * @see io_get_legal_path_name().
  */
-NONNULL void
-io_escape_dir_name (char * dest, const char * dir);
+std::string
+io_get_legal_file_name (const std::string &file_name);
 
-#define io_write_file g_file_set_contents
+/**
+ * Returns the given path with any illegal characters removed.
+ */
+std::string
+io_get_legal_path_name (const std::string &path);
+
+/**
+ * @brief Writes the data to @p file_path atomically.
+ *
+ * @param file_path
+ * @param data
+ * @throw ZrythmException On error.
+ */
+void
+io_write_file_atomic (const std::string &file_path, const std::string &data);
 
 #ifdef _WIN32
 char *

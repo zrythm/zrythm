@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * The backend for a timeline track.
  */
@@ -11,42 +11,22 @@
 #define __AUDIO_TRACK_H__
 
 #include "dsp/automation_tracklist.h"
-#include "dsp/channel.h"
-#include "dsp/chord_object.h"
-#include "dsp/marker.h"
-#include "dsp/modulator_macro_processor.h"
+#include "dsp/fader.h"
 #include "dsp/region.h"
-#include "dsp/scale.h"
-#include "dsp/scale_object.h"
 #include "dsp/track_lane.h"
-#include "dsp/track_processor.h"
 #include "plugins/plugin.h"
+#include "utils/format.h"
 
 #include <glib/gi18n.h>
 
-typedef struct AutomationTracklist  AutomationTracklist;
-typedef struct Region               Region;
-typedef struct Position             Position;
-typedef struct _TrackWidget         TrackWidget;
-typedef struct _FolderChannelWidget FolderChannelWidget;
-typedef struct Channel              Channel;
-typedef struct MidiEvents           MidiEvents;
-typedef struct AutomationTrack      AutomationTrack;
-typedef struct Automatable          Automatable;
-typedef struct AutomationPoint      AutomationPoint;
-typedef struct ChordObject          ChordObject;
-typedef struct MusicalScale         MusicalScale;
-typedef struct Marker               Marker;
-typedef struct PluginDescriptor     PluginDescriptor;
-struct Tracklist;
-struct FileDescriptor;
-typedef struct TracklistSelections TracklistSelections;
-enum class PassthroughProcessorType;
-enum class FaderType;
-typedef void                                  MIDI_FILE;
-typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
+class FileDescriptor;
+class TracklistSelections;
+class FoldableTrack;
+struct FileImportInfo;
+// class AudioRegion;
+// class ChordRegion;
 
-TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
+TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 
 /**
  * @addtogroup dsp
@@ -54,24 +34,12 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
  * @{
  */
 
-#define TRACK_MIN_HEIGHT 24
-#define TRACK_DEF_HEIGHT 48
+constexpr int TRACK_MIN_HEIGHT = 24;
+constexpr int TRACK_DEF_HEIGHT = 48;
 
-#define TRACK_MAGIC 21890135
-#define IS_TRACK(x) (((Track *) x)->magic == TRACK_MAGIC)
+constexpr int TRACK_MAGIC = 21890135;
+#define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
-
-#define TRACK_MAX_MODULATOR_MACROS 128
-
-#define TRACK_DND_PREFIX Z_DND_STRING_PREFIX "Track::"
-
-#define track_is_in_active_project(self) \
-  ((self)->tracklist && tracklist_is_in_active_project ((self)->tracklist))
-
-/** Whether this track is part of the
- * SampleProcessor auditioner tracklist. */
-#define track_is_auditioner(self) \
-  ((self)->tracklist && tracklist_is_auditioner ((self)->tracklist))
 
 /**
  * The Track's type.
@@ -79,159 +47,918 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 enum class TrackType
 {
   /**
-   * Instrument tracks must have an Instrument
-   * plugin at the first slot and they produce
-   * audio output.
+   * Instrument tracks must have an Instrument plugin at the first slot and
+   * they produce audio output.
    */
-  TRACK_TYPE_INSTRUMENT,
+  Instrument,
 
   /**
-   * Audio tracks can record and contain audio
-   * clips. Other than that their channel strips
-   * are similar to buses.
+   * Audio tracks can record and contain audio clips. Other than that their
+   * channel strips are similar to buses.
    */
-  TRACK_TYPE_AUDIO,
+  Audio,
 
   /**
-   * The master track is a special type of group
-   * track.
+   * The master track is a special type of group track.
    */
-  TRACK_TYPE_MASTER,
+  Master,
 
   /**
-   * The chord track contains chords that can be
-   * used to modify midi in real time or to color
-   * the piano roll.
+   * The chord track contains chords that can be used to modify midi in real
+   * time or to color the piano roll.
    */
-  TRACK_TYPE_CHORD,
+  Chord,
 
   /**
-   * Marker Track's contain named markers at
-   * specific Position's in the song.
+   * Marker Track's contain named markers at specific Position's in the song.
    */
-  TRACK_TYPE_MARKER,
+  Marker,
 
   /**
-   * Special track for BPM (tempo) and time
-   * signature events.
+   * Special track for BPM (tempo) and time signature events.
    */
-  TRACK_TYPE_TEMPO,
+  Tempo,
 
   /**
    * Special track to contain global Modulator's.
    */
-  TRACK_TYPE_MODULATOR,
+  Modulator,
 
   /**
-   * Buses are channels that receive audio input
-   * and have effects on their channel strip. They
-   * are similar to Group Tracks, except that they
-   * cannot be routed to directly. Buses are used
-   * for send effects.
+   * Buses are channels that receive audio input and have effects on their
+   * channel strip. They are similar to Group Tracks, except that they
+   * cannot be routed to directly. Buses are used for send effects.
    */
-  TRACK_TYPE_AUDIO_BUS,
+  AudioBus,
 
   /**
-   * Group Tracks are used for grouping audio
-   * signals, for example routing multiple drum
-   * tracks to a "Drums" group track. Like buses,
-   * they only contain effects but unlike buses
-   * they can be routed to.
+   * Group Tracks are used for grouping audio signals, for example routing
+   * multiple drum tracks to a "Drums" group track. Like buses, they only
+   * contain effects but unlike buses they can be routed to.
    */
-  TRACK_TYPE_AUDIO_GROUP,
+  AudioGroup,
 
   /**
-   * Midi tracks can only have MIDI effects in the
-   * strip and produce MIDI output that can be
-   * routed to instrument channels or hardware.
+   * Midi tracks can only have MIDI effects in the strip and produce MIDI
+   * output that can be routed to instrument channels or hardware.
    */
-  TRACK_TYPE_MIDI,
+  Midi,
 
   /** Same with audio bus but for MIDI signals. */
-  TRACK_TYPE_MIDI_BUS,
+  MidiBus,
 
   /** Same with audio group but for MIDI signals. */
-  TRACK_TYPE_MIDI_GROUP,
+  MidiGroup,
 
   /** Foldable track used for visual grouping. */
-  TRACK_TYPE_FOLDER,
-};
-
-static const char * track_type_strings[] = {
-  N_ ("Instrument"),  N_ ("Audio"), N_ ("Master"),    N_ ("Chord"),
-  N_ ("Marker"),      N_ ("Tempo"), N_ ("Modulator"), N_ ("Audio FX"),
-  N_ ("Audio Group"), N_ ("MIDI"),  N_ ("MIDI FX"),   N_ ("MIDI Group"),
-  N_ ("Folder"),
+  Folder,
 };
 
 /**
- * Track to be inserted into the Project's Tracklist.
- *
- * Each Track contains a Channel with Plugins.
- *
- * Tracks shall be identified by their position (index) in the Tracklist.
+ * Called when track(s) are actually imported into the project.
  */
-typedef struct Track
+using TracksReadyCallback = void (*) (const FileImportInfo *);
+
+/**
+ * @brief Represents a track in the project.
+ *
+ * The `Track` class is the base class for all types of tracks in the
+ * project. It provides common functionality and properties shared by
+ * all track types, such as the track's position in the tracklist, its label,
+ * and whether it is muted.
+ *
+ * Subclasses of `Track` represent specific types of tracks, such as
+ * MIDI tracks, instrument tracks, and audio tracks.
+ */
+class Track : public ISerializable<Track>
 {
+public:
+  using Type = TrackType;
+
+  /**
+   * Returns the prefader type.
+   */
+  static inline Fader::Type type_get_prefader_type (const Type type)
+  {
+    switch (type)
+      {
+      case Type::Midi:
+      case Type::MidiBus:
+      case Type::Chord:
+      case Type::MidiGroup:
+        return Fader::Type::MidiChannel;
+      case Type::Instrument:
+      case Type::Audio:
+      case Type::AudioBus:
+      case Type::Master:
+      case Type::AudioGroup:
+        return Fader::Type::AudioChannel;
+      case Type::Marker:
+        return Fader::Type::None;
+      default:
+        z_return_val_if_reached (Fader::Type::None);
+      }
+  }
+
+  static inline bool type_has_processor (const Type type)
+  {
+    return type != Type::Tempo && type != Type::Marker;
+  }
+
+  static bool type_has_lanes (const Type type)
+  {
+    return type == Type::Audio || type == Type::Instrument || type == Type::Midi;
+  }
+
+  /**
+   * Returns if the given Type is a type of Track that has a Channel.
+   */
+  static bool type_has_channel (Type type)
+  {
+    switch (type)
+      {
+      case Type::Marker:
+      case Type::Tempo:
+      case Type::Modulator:
+      case Type::Folder:
+        return false;
+      default:
+        break;
+      }
+
+    return true;
+  }
+
+  static bool type_can_have_direct_out (Type type)
+  {
+    return type != Type::Master;
+  }
+
+  static bool type_can_have_region_type (Type type, RegionType region_type)
+  {
+    switch (region_type)
+      {
+      case RegionType::Audio:
+        return type == Type::Audio;
+      case RegionType::Midi:
+        return type == Type::Midi || type == Type::Instrument;
+      case RegionType::Chord:
+        return type == Type::Chord;
+      case RegionType::Automation:
+        return true;
+      }
+
+    g_return_val_if_reached (false);
+  }
+
+  static bool type_is_foldable (Type type)
+  {
+    return type == Type::Folder || type == Type::MidiGroup
+           || type == Type::AudioGroup;
+  }
+
+  static bool type_is_copyable (Type type)
+  {
+    return type != Type::Master && type != Type::Tempo && type != Type::Chord
+           && type != Type::Modulator && type != Type::Marker;
+  }
+
+  /**
+   * Returns whether a track of the given type should be deletable by the user.
+   */
+  static bool type_is_deletable (Type type) { return type_is_copyable (type); }
+
+  static Type type_get_from_plugin_descriptor (const PluginDescriptor &descr);
+
+  /**
+   * Returns if the given Type can host the given RegionType.
+   */
+  static bool type_can_host_region_type (const Type tt, const RegionType rt);
+
+  static bool type_has_mono_compat_switch (const Type tt)
+  {
+    return tt == Type::AudioGroup || tt == Type::Master;
+  }
+
+#define type_is_audio_group type_has_mono_compat_switch
+
+  static bool type_is_fx (const Type type)
+  {
+    return type == Type::AudioBus || type == Type::MidiBus;
+  }
+
+  /**
+   * Returns if the Track can record.
+   */
+  static int type_can_record (const Type type)
+  {
+    return type == Type::Audio || type == Type::Midi || type == Type::Chord
+           || type == Type::Instrument;
+  }
+
+  static bool type_has_automation (const Type type)
+  {
+    return type != Type::Marker && type != Type::Folder;
+  }
+
+  /**
+   * Returns if regions in tracks from @p type1 can be moved to @p type2.
+   */
+  static bool type_is_compatible_for_moving (const Type type1, const Type type2)
+  {
+    return type1 == type2 || (type1 == Type::Midi && type2 == Type::Instrument)
+           || (type1 == Type::Instrument && type2 == Type::Midi);
+  }
+
+  /**
+   * Returns if the Track should have a piano roll.
+   */
+  CONST
+  static inline bool type_has_piano_roll (const Type type)
+  {
+    return type == Type::Midi || type == Type::Instrument;
+  }
+
+  /**
+   * Returns if the Track should have an inputs selector.
+   */
+  static inline int type_has_inputs (const Type type)
+  {
+    return type == Type::Midi || type == Type::Instrument || type == Type::Audio;
+  }
+
+  /**
+   * @brief Returns if the Track can be a direct route target.
+   *
+   * @param type
+   * @return true
+   * @return false
+   */
+  static bool type_can_be_group_target (const Type type)
+  {
+    return type == Type::AudioGroup || type == Type::MidiGroup
+           || type == Type::Instrument || type == Type::Master;
+  }
+
+  template <typename T> static consteval Type get_type_for_class ()
+  {
+    if constexpr (std::is_same_v<T, MidiTrack>)
+      return Type::Midi;
+    else if constexpr (std::is_same_v<T, AudioTrack>)
+      return Type::Audio;
+    else if constexpr (std::is_same_v<T, ChordTrack>)
+      return Type::Chord;
+    else if constexpr (std::is_same_v<T, InstrumentTrack>)
+      return Type::Instrument;
+    else if constexpr (std::is_same_v<T, AudioBusTrack>)
+      return Type::AudioBus;
+    else if constexpr (std::is_same_v<T, MidiBusTrack>)
+      return Type::MidiBus;
+    else if constexpr (std::is_same_v<T, MasterTrack>)
+      return Type::Master;
+    else if constexpr (std::is_same_v<T, TempoTrack>)
+      return Type::Tempo;
+    else if constexpr (std::is_same_v<T, ModulatorTrack>)
+      return Type::Modulator;
+    else if constexpr (std::is_same_v<T, MarkerTrack>)
+      return Type::Marker;
+    else if constexpr (std::is_same_v<T, FolderTrack>)
+      return Type::Folder;
+    else if constexpr (std::is_same_v<T, MarkerTrack>)
+      return Type::Marker;
+    else if constexpr (std::is_same_v<T, AudioGroupTrack>)
+      return Type::AudioGroup;
+    else if constexpr (std::is_same_v<T, MidiGroupTrack>)
+      return Type::MidiGroup;
+    else
+      {
+        static_assert (false, "Unknown track type");
+      }
+  }
+
+public:
+  // Rule of 0
+  Track () = default;
+  virtual ~Track () = default;
+
+  static std::unique_ptr<Track> create_unique_from_type (Type type);
+
+protected:
+  /**
+   * Constructor to be used by subclasses.
+   *
+   * @param pos Position in the Tracklist.
+   */
+  Track (
+    Type        type,
+    std::string name,
+    int         pos,
+    PortType    in_signal_type = PortType::Unknown,
+    PortType    out_signal_type = PortType::Unknown)
+      : pos_ (pos), type_ (type), name_ (std::move (name)),
+        in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
+  {
+    z_debug ("creating track '%s'", name_);
+  }
+
+public:
+  /**
+   * @brief Adds additional metadata to track members after deserialization.
+   *
+   * @note Each implementor must chain up to its direct superclass.
+   */
+  virtual void init_loaded () = 0;
+
+  virtual guint get_name_hash () const final
+  {
+    return g_str_hash (name_.c_str ());
+  }
+
+  Tracklist * get_tracklist () const;
+
+  bool has_channel () const { return type_has_channel (type_); }
+
+  bool has_piano_roll () const { return type_has_piano_roll (type_); }
+
+  bool can_record () const { return type_can_record (type_); }
+
+  /**
+   * Returns whether the track should be visible.
+   *
+   * Takes into account Track.visible and whether any of the track's foldable
+   * parents are folded.
+   */
+  bool should_be_visible () const;
+
+  bool is_foldable () const { return type_is_foldable (type_); }
+
+  bool is_automatable () const { return type_has_automation (type_); }
+
+  bool is_tempo () const { return type_ == Type::Tempo; }
+  bool is_folder () const { return type_ == Type::Folder; }
+  bool is_audio_group () const { return type_ == Type::AudioGroup; }
+  bool is_midi_group () const { return type_ == Type::MidiGroup; }
+  bool is_audio_bus () const { return type_ == Type::AudioBus; }
+  bool is_midi_bus () const { return type_ == Type::MidiBus; }
+  bool is_modulator () const { return type_ == Type::Modulator; }
+  bool is_chord () const { return type_ == Type::Chord; }
+  bool is_marker () const { return type_ == Type::Marker; }
+  bool is_audio () const { return type_ == Type::Audio; }
+  bool is_instrument () const { return type_ == Type::Instrument; }
+  bool is_midi () const { return type_ == Type::Midi; }
+  bool is_master () const { return type_ == Type::Master; }
+
+  bool has_lanes () const { return type_has_lanes (type_); }
+
+  bool is_deletable () const { return type_is_deletable (type_); }
+  bool is_copyable () const { return type_is_copyable (type_); }
+  bool has_automation () const { return type_has_automation (type_); }
+
+  /**
+   * Returns the full visible height (main height + height of all visible
+   * automation tracks + height of all visible lanes).
+   */
+  double get_full_visible_height () const;
+
+  bool multiply_heights (double multiplier, bool visible_only, bool check_only);
+
+  /** Whether this track is part of the SampleProcessor auditioner tracklist. */
+  bool is_auditioner () const;
+
+  /**
+   * Returns if Track is in TracklistSelections.
+   */
+  bool is_selected () const;
+
+  /**
+   * Returns whether the track is pinned.
+   */
+  bool is_pinned () const;
+
+  bool can_be_group_target () const { return type_can_be_group_target (type_); }
+
+  /**
+   * Inserts a Region to the given lane or AutomationTrack of the track, at
+   * the given index.
+   *
+   * The Region must be the main region (see ArrangerObjectInfo).
+   *
+   * @param at The AutomationTrack of this Region, if automation region.
+   * @param lane_pos The position of the lane to add to, if applicable.
+   * @param idx The index to insert the region at inside its parent, or -1 to
+   * append.
+   * @param gen_name Generate a unique region name or not. This will be 0 if
+   * the caller already generated a unique name.
+   *
+   * @throw ZrythmException if the insertion fails.
+   */
+  template <FinalRegionSubclass T>
+  std::shared_ptr<T> insert_region (
+    std::shared_ptr<T> region,
+    AutomationTrack *  at,
+    int                lane_pos,
+    int                idx,
+    bool               gen_name,
+    bool               fire_events);
+
+  /**
+   * Appends a Region to the given lane or AutomationTrack of the track.
+   *
+   * @see insert_region().
+   *
+   * @throw ZrythmException if the insertion fails.
+   */
+  template <FinalRegionSubclass T>
+  std::shared_ptr<T> add_region (
+    std::shared_ptr<T> region,
+    AutomationTrack *  at,
+    int                lane_pos,
+    bool               gen_name,
+    bool               fire_events)
+  {
+    return insert_region<T> (
+      std::move (region), at, lane_pos, -1, gen_name, fire_events);
+  }
+
+  std::shared_ptr<Region> add_region_plain (
+    std::shared_ptr<Region> region,
+    AutomationTrack *       at,
+    int                     lane_pos,
+    bool                    gen_name,
+    bool                    fire_events);
+
+  /**
+   * Appends the Track to the selections.
+   *
+   * @param exclusive Select only this track.
+   * @param fire_events Fire events to update the UI.
+   */
+  void select (bool select, bool exclusive, bool fire_events);
+
+  /**
+   * @brief Appends all the objects in the track to @p objects.
+   *
+   * This only appends top-level objects. For example, region children will
+   * not be added.
+   *
+   * @param objects
+   */
+  void append_objects (std::vector<ArrangerObject *> &objects) const;
+
+  /**
+   * Unselects all arranger objects in the track.
+   */
+  void unselect_all ();
+
+  bool contains_uninstantiated_plugin () const;
+
+  /**
+   * Removes all objects recursively from the track.
+   */
+  virtual void clear_objects (){};
+
+  /**
+   * Verifies the identifiers on a live Track (in the project, not a clone).
+   *
+   * @return True if pass.
+   */
+  virtual bool validate () const { return true; };
+
+  /**
+   * Adds the track's folder parents to the given vector.
+   *
+   * @param prepend Whether to prepend instead of append.
+   */
+  void
+  add_folder_parents (std::vector<FoldableTrack *> &parents, bool prepend) const;
+
+  /**
+   * Returns the closest foldable parent or NULL.
+   */
+  FoldableTrack * get_direct_folder_parent () const
+  {
+    std::vector<FoldableTrack *> parents;
+    add_folder_parents (parents, true);
+    if (!parents.empty ())
+      {
+        return parents.front ();
+      }
+    return nullptr;
+  }
+
+  /**
+   * Remove the track from all folders.
+   *
+   * Used when deleting tracks.
+   */
+  void remove_from_folder_parents ();
+
+  template <typename T = Track>
+  static T * find_by_name (const std::string &name);
+
+  /**
+   * Getter for the track name.
+   */
+  std::string get_name () const { return name_; };
+
+  static std::string name_getter (void * track)
+  {
+    return static_cast<Track *> (track)->get_name ();
+    }
+
+  /**
+   * Internally called by set_name_with_action().
+   */
+  bool set_name_with_action_full (const std::string &name);
+
+  /**
+   * Setter to be used by the UI to create an undoable action.
+   */
+  void set_name_with_action (const std::string &name);
+
+  static void name_setter_with_action (void * track, const std::string &name)
+  {
+    static_cast<Track *> (track)->set_name_with_action (name);
+  }
+
+  /**
+   * Setter for the track name.
+   *
+   * If a track with that name already exists, it adds a number at the end.
+   *
+   * Must only be called from the GTK thread.
+   */
+  void set_name (const std::string &name, bool pub_events);
+
+  /**
+   * Returns a unique name for a new track based on the given name.
+   */
+  static std::string
+  get_unique_name (Track * track_to_skip, const std::string &name);
+
+  /**
+   * Updates the frames/ticks of each position in each child of the track
+   * recursively.
+   *
+   * @param from_ticks Whether to update the positions based on ticks (true)
+   * or frames (false).
+   */
+  void update_positions (bool from_ticks, bool bpm_change);
+
+  /**
+   * Returns all the regions inside the given range, or all the regions if both
+   * @ref p1 and @ref p2 are NULL.
+   *
+   * @return The number of regions returned.
+   */
+  virtual void get_regions_in_range (
+    std::vector<Region *> &regions,
+    const Position *       p1,
+    const Position *       p2)
+  {
+  }
+
+  /**
+   * Fills in the given array with all plugins in the track.
+   */
+  void get_plugins (std::vector<Plugin *> &arr) const;
+
+  /**
+   * Activate or deactivate all plugins.
+   *
+   * This is useful for exporting: deactivating and reactivating a plugin will
+   * reset its state.
+   */
+  void activate_all_plugins (bool activate);
+
+  /**
+   * Comment setter.
+   *
+   * @note This creates an undoable action.
+   */
+  static void comment_setter (void * track, const std::string &comment)
+  {
+    static_cast<Track *> (track)->set_comment (comment, true);
+  }
+  static std::string comment_getter (void * track)
+  {
+    return static_cast<Track *> (track)->comment_;
+  }
+
+  /**
+   * @param undoable Create an undable action.
+   */
+  void set_comment (const std::string &comment, bool undoable);
+
+  /**
+   * Sets the track color.
+   */
+  void set_color (const Color &color, bool undoable, bool fire_events);
+
+  /**
+   * Sets the track icon.
+   */
+  void set_icon (const std::string &icon_name, bool undoable, bool fire_events);
+
+  /**
+   * Returns the plugin at the given slot, if any.
+   *
+   * @param slot The slot (ignored if instrument is selected.
+   */
+  Plugin * get_plugin_at_slot (PluginSlotType slot_type, int slot) const;
+
+  /**
+   * Marks the track for bouncing.
+   *
+   * @param mark_children Whether to mark all children tracks as well. Used
+   * when exporting stems on the specific track stem only. IMPORTANT:
+   * Track.bounce_to_master must be set beforehand if this is true.
+   * @param mark_parents Whether to mark all parent tracks as well.
+   */
+  void mark_for_bounce (
+    bool bounce,
+    bool mark_regions,
+    bool mark_children,
+    bool mark_parents);
+
+  /**
+   * Appends all channel ports and optionally plugin ports to the array.
+   */
+  void append_ports (std::vector<Port *> &ports, bool include_plugins) const;
+
+  /**
+   * Freezes or unfreezes the track.
+   *
+   * When a track is frozen, it is bounced with effects to a temporary file in
+   * the pool, which is played back directly from disk.
+   *
+   * When the track is unfrozen, this file will be removed from the pool and
+   * the track will be played normally again.
+   *
+   * @remark Unimplemented/not used.
+   *
+   * @throw ZrythmException on error.
+   */
+  void track_freeze (bool freeze);
+
+  /**
+   * Wrapper over Channel.add_plugin() and ModulatorTrack.insert_modulator().
+   *
+   * @param instantiate_plugin Whether to attempt to instantiate the plugin.
+   */
+  template <typename T = Plugin>
+  T * insert_plugin (
+    std::unique_ptr<T> &&pl,
+    PluginSlotType       slot_type,
+    int                  slot,
+    bool                 instantiate_plugin,
+    bool                 replacing_plugin,
+    bool                 moving_plugin,
+    bool                 confirm,
+    bool                 gen_automatables,
+    bool                 recalc_graph,
+    bool                 fire_events);
+
+  /**
+   * Wrapper over channel_remove_plugin() and
+   * modulator_track_remove_modulator().
+   */
+  void remove_plugin (
+    PluginSlotType slot_type,
+    int            slot,
+    bool           replacing_plugin,
+    bool           moving_plugin,
+    bool           deleting_plugin,
+    bool           deleting_track,
+    bool           recalc_graph);
+
+  /**
+   * Disconnects the track from the processing chain.
+   *
+   * This should be called immediately when the track is getting deleted, and
+   * track_free should be designed to be called later after an arbitrary delay.
+   *
+   * @param remove_pl Remove the Plugin from the Channel. Useful when deleting
+   * the channel.
+   * @param recalc_graph Recalculate mixer graph.
+   */
+  void disconnect (bool remove_pl, bool recalc_graph);
+
+  bool is_enabled () const { return enabled_; }
+
+  void set_enabled (
+    bool enabled,
+    bool trigger_undo,
+    bool auto_select,
+    bool fire_events);
+
+  /** TODO: document why it's a pointer. */
+  int get_total_bars (int total_bars) const;
+
+  /**
+   * Set various caches (snapshots, track name hash, plugin input/output
+   * ports, etc).
+   */
+  void set_caches (CacheType types);
+
+  /**
+   * @brief Creates a new track with the given parameters.
+   *
+   * @param disable_track_idx Track index to disable, or -1.
+   * @param ready_cb Callback to be called when the tracks are ready (added to
+   * the project).
+   *
+   * @throw ZrythmException on error.
+   */
+  static void create_with_action (
+    Type                   type,
+    const PluginSetting *  pl_setting,
+    const FileDescriptor * file_descr,
+    const Position *       pos,
+    int                    index,
+    int                    num_tracks,
+    int                    disable_track_idx,
+    TracksReadyCallback    ready_cb);
+
+  /**
+   * @brief Creates a new empty track at the given index.
+   *
+   * @param type
+   * @param index
+   * @param error
+   * @return Track*
+   * @throw ZrythmException on error.
+   */
+  static Track * create_empty_at_idx_with_action (Type type, int index);
+
+  /**
+   * @brief Creates a new track for the given plugin at the given index.
+   *
+   * @param type
+   * @param pl_setting
+   * @param index
+   * @param error
+   * @return Track*
+   * @throw ZrythmException on error.
+   */
+  static Track * create_for_plugin_at_idx_w_action (
+    Type                  type,
+    const PluginSetting * pl_setting,
+    int                   index);
+
+  template <typename T = Track>
+  static T *
+  create_for_plugin_at_idx_w_action (const PluginSetting * pl_setting, int index)
+  {
+    return dynamic_cast<T *> (create_for_plugin_at_idx_w_action (
+      get_type_for_class<T> (), pl_setting, index));
+  }
+
+  /**
+   * @brief Creates a new empty track at the end of the tracklist.
+   *
+   * @param type
+   * @return Track*
+   * @throw ZrythmException on error.
+   */
+  static Track * create_empty_with_action (Type type);
+
+  template <typename T = Track> static T * create_empty_with_action ()
+  {
+    return dynamic_cast<T *> (
+      create_empty_with_action (get_type_for_class<T> ()));
+  }
+
+  /**
+   * @brief Create a track of the given type with the given name and position.
+   *
+   * @note Only works for non-singleton tracks.
+   * @param name
+   * @param pos
+   * @return std::unique_ptr<Track>
+   */
+  static std::unique_ptr<Track>
+  create_track (Type type, const std::string &name, int pos);
+
+  GMenu * generate_edit_context_menu (int num_selected);
+
+  bool is_in_active_project () const;
+
+  virtual bool get_muted () const { return false; }
+
+  virtual bool get_listened () const { return false; }
+
+  /**
+   * Returns whether the track is not soloed on its own but its direct out (or
+   * its direct out's direct out, etc.) is soloed.
+   */
+  virtual bool get_implied_soloed () const { return false; }
+
+  virtual bool get_soloed () const { return false; }
+
+protected:
+  void copy_members_from (const Track &other)
+  {
+    pos_ = other.pos_;
+    type_ = other.type_;
+    name_ = other.name_;
+    name_hash_ = other.name_hash_;
+    icon_name_ = other.icon_name_;
+    visible_ = other.visible_;
+    filtered_ = other.filtered_;
+    main_height_ = other.main_height_;
+    enabled_ = other.enabled_;
+    color_ = other.color_;
+    trigger_midi_activity_ = other.trigger_midi_activity_;
+    in_signal_type_ = other.in_signal_type_;
+    out_signal_type_ = other.out_signal_type_;
+    comment_ = other.comment_;
+    bounce_ = other.bounce_;
+    bounce_to_master_ = other.bounce_to_master_;
+    frozen_ = other.frozen_;
+    pool_id_ = other.pool_id_;
+    disconnecting_ = other.disconnecting_;
+  }
+
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+
+  /**
+   * @brief Set the playback caches for a track.
+   *
+   * This is called by @ref set_caches().
+   */
+  virtual void set_playback_caches () { }
+
+  void add_region_if_in_range (
+    const Position *       p1,
+    const Position *       p2,
+    std::vector<Region *> &regions,
+    Region *               region);
+
+  /**
+   * @brief Called by @ref set_name() when the track is renamed to update the
+   * name hash in internals.
+   *
+   * FIXME: This is a bit messy, some things are changed via here and some via
+   * Track::set_name().
+   *
+   * @param new_name_hash
+   */
+  virtual void update_name_hash (unsigned int new_name_hash) { }
+
+private:
+  /**
+   * @brief Create a new track.
+   *
+   * @param type
+   * @param pl_setting
+   * @param index
+   * @return void*
+   * @throw ZrythmException on error.
+   */
+  static Track * create_without_file_with_action (
+    Type                  type,
+    const PluginSetting * pl_setting,
+    int                   index);
+
+  static void instantiate_templates ();
+
+public:
   /**
    * Position in the Tracklist.
    *
-   * This is also used in the Mixer for the Channels. If a track doesn't have
-   * a Channel, the Mixer can just skip.
+   * This is also used in the Mixer for the Channels.
+   * If a track doesn't have a Channel, the Mixer can just skip.
    */
-  int pos;
+  int pos_ = 0;
 
   /** The type of track this is. */
-  TrackType type;
+  Type type_ = {};
 
   /** Track name, used in channel too. */
-  char * name;
+  std::string name_;
 
   /** Cache calculated when adding to graph. */
-  unsigned int name_hash;
+  unsigned int name_hash_ = 0;
 
   /** Icon name of the track. */
-  char * icon_name;
+  std::string icon_name_;
 
   /**
    * Track Widget created dynamically.
+   *
    * 1 track has 1 widget.
    */
-  TrackWidget * widget;
-
-  /**
-   * Widget used for foldable tracks in the mixer.
-   */
-  FolderChannelWidget * folder_ch_widget;
-
-  /** Flag to set automations visible or not. */
-  bool automation_visible;
-
-  /** Flag to set track lanes visible or not. */
-  bool lanes_visible;
+  TrackWidget * widget_ = nullptr;
 
   /** Whole Track is visible or not. */
-  bool visible;
+  bool visible_ = true;
 
-  /** Track will be hidden if true (temporary and not
-   * serializable). */
-  bool filtered;
+  /** Track will be hidden if true (temporary and not serializable). */
+  bool filtered_ = false;
 
   /** Height of the main part (without lanes). */
-  double main_height;
-
-  /** Recording or not. */
-  Port * recording;
-
-  /**
-   * Whether record was set automatically when
-   * the channel was selected.
-   *
-   * This is so that it can be unset when selecting
-   * another track. If we don't do this all the
-   * tracks end up staying on record mode.
-   */
-  bool record_set_automatically;
+  double main_height_ = TRACK_DEF_HEIGHT;
 
   /**
    * Active (enabled) or not.
@@ -239,1249 +966,135 @@ typedef struct Track
    * Disabled tracks should be ignored in routing.
    * Similar to Plugin.enabled (bypass).
    */
-  bool enabled;
+  bool enabled_ = true;
 
   /**
    * Track color.
    *
    * This is used in the channels as well.
    */
-  GdkRGBA color;
-
-  /* ==== INSTRUMENT/MIDI/AUDIO TRACK ==== */
-
-  /** Lanes in this track containing Regions. */
-  TrackLane ** lanes;
-  int          num_lanes;
-  size_t       lanes_size;
-
-  /** Snapshots used during playback. */
-  TrackLane ** lane_snapshots;
-  int          num_lane_snapshots;
-
-  /** MIDI channel (MIDI/Instrument track only). */
-  uint8_t midi_ch;
+  Color color_ = {};
 
   /**
-   * Whether drum mode in the piano roll is
-   * enabled for this track.
+   * Flag to tell the UI that this channel had MIDI activity.
    *
-   * Only used for tracks that have a piano roll.
+   * When processing this and setting it to 0, the UI should create a separate
+   * event using EVENTS_PUSH.
    */
-  bool drum_mode;
+  bool trigger_midi_activity_ = false;
 
   /**
-   * If set to 1, the input received will not be
-   * changed to the selected MIDI channel.
-   *
-   * If this is 0, all input received will have its
-   * channel changed to the selected MIDI channel.
+   * The input signal type (eg audio bus tracks have audio input signals).
    */
-  int passthrough_midi_input;
+  PortType in_signal_type_ = {};
 
   /**
-   * Region currently recording on.
-   *
-   * This must only be set by the RecordingManager
-   * when processing an event and should not
-   * be touched by anything else.
+   * The output signal type (eg midi tracks have MIDI output signals).
    */
-  Region * recording_region;
-
-  /**
-   * This is a flag to let the recording manager
-   * know that a START signal was already sent for
-   * recording.
-   *
-   * This is because \ref Track.recording_region
-   * takes a cycle or 2 to become non-NULL.
-   */
-  bool recording_start_sent;
-
-  /**
-   * This is a flag to let the recording manager
-   * know that a STOP signal was already sent for
-   * recording.
-   *
-   * This is because \ref Track.recording_region
-   * takes a cycle or 2 to become NULL.
-   */
-  bool recording_stop_sent;
-
-  /**
-   * This must only be set by the RecordingManager
-   * when temporarily pausing recording, eg when
-   * looping or leaving the punch range.
-   *
-   * See \ref
-   * RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING.
-   */
-  bool recording_paused;
-
-  /** Lane index of region before recording
-   * paused. */
-  int last_lane_idx;
-
-  /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
-
-  /* ==== AUDIO TRACK ==== */
-
-  /** Real-time time stretcher. */
-  Stretcher * rt_stretcher;
-
-  /* ==== AUDIO TRACK END ==== */
-
-  /* ==== CHORD TRACK ==== */
-
-  /**
-   * ChordObject's.
-   *
-   * Note: these must always be sorted by Position.
-   */
-  Region ** chord_regions;
-  int       num_chord_regions;
-  size_t    chord_regions_size;
-
-  /** Snapshots used during playback. */
-  Region ** chord_region_snapshots;
-  int       num_chord_region_snapshots;
-
-  /**
-   * ScaleObject's.
-   *
-   * Note: these must always be sorted by Position.
-   */
-  ScaleObject ** scales;
-  int            num_scales;
-  size_t         scales_size;
-
-  /** Snapshots used during playback TODO unimplemented. */
-  ScaleObject ** scale_snapshots;
-  int            num_scale_snapshots;
-
-  /* ==== CHORD TRACK END ==== */
-
-  /* ==== MARKER TRACK ==== */
-
-  Marker ** markers;
-  int       num_markers;
-  size_t    markers_size;
-
-  /** Snapshots used during playback TODO unimplemented. */
-  Marker ** marker_snapshots;
-  int       num_marker_snapshots;
-
-  /* ==== MARKER TRACK END ==== */
-
-  /* ==== TEMPO TRACK ==== */
-
-  /** Automatable BPM control. */
-  Port * bpm_port;
-
-  /** Automatable beats per bar port. */
-  Port * beats_per_bar_port;
-
-  /** Automatable beat unit port. */
-  Port * beat_unit_port;
-
-  /* ==== TEMPO TRACK END ==== */
-
-  /* ==== FOLDABLE TRACK ==== */
-
-  /**
-   * Number of tracks inside this track.
-   *
-   * Should be 1 unless foldable.
-   */
-  int size;
-
-  /** Whether currently folded. */
-  bool folded;
-
-  /* ==== FOLDABLE TRACK END ==== */
-
-  /* ==== MODULATOR TRACK ==== */
-
-  /** Modulators. */
-  Plugin ** modulators;
-  int       num_modulators;
-  size_t    modulators_size;
-
-  /** Modulator macros. */
-  ModulatorMacroProcessor * modulator_macros[TRACK_MAX_MODULATOR_MACROS];
-  int                       num_modulator_macros;
-  int                       num_visible_modulator_macros;
-
-  /* ==== MODULATOR TRACK END ==== */
-
-  /* ==== CHANNEL TRACK ==== */
-
-  /** 1 Track has 0 or 1 Channel. */
-  Channel * channel;
-
-  /* ==== CHANNEL TRACK END ==== */
-
-  /**
-   * The TrackProcessor, used for processing.
-   *
-   * This is the starting point when processing
-   * a Track.
-   */
-  TrackProcessor * processor;
-
-  AutomationTracklist automation_tracklist;
-
-  /**
-   * Flag to tell the UI that this channel had
-   * MIDI activity.
-   *
-   * When processing this and setting it to 0,
-   * the UI should create a separate event using
-   * EVENTS_PUSH.
-   */
-  bool trigger_midi_activity;
-
-  /**
-   * The input signal type (eg audio bus tracks have
-   * audio input signals).
-   */
-  PortType in_signal_type;
-
-  /**
-   * The output signal type (eg midi tracks have
-   * MIDI output signals).
-   */
-  PortType out_signal_type;
+  PortType out_signal_type_ = {};
 
   /** User comments. */
-  char * comment;
+  std::string comment_;
 
   /**
-   * Set to ON during bouncing if this
-   * track should be included.
+   * Set to ON during bouncing if this track should be included.
    *
    * Only relevant for tracks that output audio.
    */
-  bool bounce;
+  bool bounce_ = false;
 
   /**
-   * Whether to temporarily route the output to master (e.g.,
-   * when bouncing the track on its own without its parents).
+   * Whether to temporarily route the output to master (e.g., when bouncing
+   * the track on its own without its parents).
    */
-  bool bounce_to_master;
-
-  /**
-   * Name hashes of tracks that are routed to this track, if
-   * group track.
-   *
-   * This is used when undoing track deletion.
-   */
-  unsigned int * children;
-  int            num_children;
-  size_t         children_size;
+  bool bounce_to_master_ = false;
 
   /** Whether the track is currently frozen. */
-  bool frozen;
+  bool frozen_ = false;
 
   /** Pool ID of the clip if track is frozen. */
-  int pool_id;
+  int pool_id_ = 0;
 
-  int magic;
+  int magic_ = TRACK_MAGIC;
 
   /** Whether currently disconnecting. */
-  bool disconnecting;
+  bool disconnecting_ = false;
 
   /** Pointer to owner tracklist, if any. */
-  Tracklist * tracklist;
+  Tracklist * tracklist_ = nullptr;
 
   /** Pointer to owner tracklist selections, if any. */
-  TracklistSelections * ts;
-
-  /**
-   * Last lane created during this drag.
-   *
-   * This is used to prevent creating infinite lanes when you
-   * want to track a region from the last lane to the track
-   * below. Only 1 new lane will be created in case the
-   * user wants to move the region to a new lane instead of
-   * the track below.
-   *
-   * Used when moving regions vertically.
-   */
-  int last_lane_created;
-
-  /** Block auto-creating or deleting lanes. */
-  bool block_auto_creation_and_deletion;
+  // TracklistSelections * ts_ = nullptr;
 
   /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj;
-} Track;
+  WrappedObjectWithChangeSignal * gobj_ = nullptr;
+};
 
-COLD NONNULL_ARGS (1) void track_init_loaded (
-  Track *               self,
-  Tracklist *           tracklist,
-  TracklistSelections * ts);
-
-/**
- * Inits the Track, optionally adding a single
- * lane.
- *
- * @param add_lane Add a lane. This should be used
- *   for new Tracks. When cloning, the lanes should
- *   be cloned so this should be 0.
- */
-void
-track_init (Track * self, const int add_lane);
-
-/**
- * Creates a track with the given label and returns
- * it.
- *
- * If the TrackType is one that needs a Channel,
- * then a Channel is also created for the track.
- *
- * @param pos Position in the Tracklist.
- * @param with_lane Init the Track with a lane.
- */
-Track *
-track_new (TrackType type, int pos, const char * label, const int with_lane);
-
-/**
- * Clones the track and returns the clone.
- *
- * @param error To be filled if an error occurred.
- */
-NONNULL_ARGS (1) Track * track_clone (Track * track, GError ** error);
-
-/**
- * Returns if the given TrackType is a type of
- * Track that has a Channel.
- */
-bool
-track_type_has_channel (TrackType type);
-
-static inline bool
-track_type_can_have_direct_out (TrackType type)
+#if 0
+template <typename TrackT> class TrackImpl : virtual public Track
 {
-  return type != TrackType::TRACK_TYPE_MASTER;
+};
+#endif
+
+inline bool
+operator< (const Track &lhs, const Track &rhs)
+{
+  return lhs.pos_ < rhs.pos_;
 }
 
-static inline bool
-track_type_can_have_region_type (TrackType type, RegionType region_type)
-{
-  switch (region_type)
-    {
-    case RegionType::REGION_TYPE_AUDIO:
-      return type == TrackType::TRACK_TYPE_AUDIO;
-    case RegionType::REGION_TYPE_MIDI:
-      return type == TrackType::TRACK_TYPE_MIDI
-             || type == TrackType::TRACK_TYPE_INSTRUMENT;
-    case RegionType::REGION_TYPE_CHORD:
-      return type == TrackType::TRACK_TYPE_CHORD;
-    case RegionType::REGION_TYPE_AUTOMATION:
-      return true;
-    }
-
-  g_return_val_if_reached (false);
-}
-
-static inline bool
-track_type_is_foldable (TrackType type)
-{
-  return type == TrackType::TRACK_TYPE_FOLDER
-         || type == TrackType::TRACK_TYPE_MIDI_GROUP
-         || type == TrackType::TRACK_TYPE_AUDIO_GROUP;
-}
-
-static inline bool
-track_type_is_copyable (TrackType type)
-{
-  return type != TrackType::TRACK_TYPE_MASTER && type != TrackType::TRACK_TYPE_TEMPO
-         && type != TrackType::TRACK_TYPE_CHORD
-         && type != TrackType::TRACK_TYPE_MODULATOR
-         && type != TrackType::TRACK_TYPE_MARKER;
-}
-
-/**
- * Sets magic on objects recursively.
- */
-NONNULL void
-track_set_magic (Track * self);
-
-static inline guint
-track_get_name_hash (Track &self)
-{
-  return g_str_hash (self.name);
-}
-
-/**
- * Sets track muted and optionally adds the action
- * to the undo stack.
- */
-NONNULL void
-track_set_muted (
-  Track * track,
-  bool    mute,
-  bool    trigger_undo,
-  bool    auto_select,
-  bool    fire_events);
-
-/**
- * Sets track folded and optionally adds the action
- * to the undo stack.
- */
-NONNULL void
-track_set_folded (
-  Track * self,
-  bool    folded,
-  bool    trigger_undo,
-  bool    auto_select,
-  bool    fire_events);
-
-NONNULL TrackType
-track_get_type_from_plugin_descriptor (PluginDescriptor * descr);
-
-/**
- * Returns whether the track type is deletable
- * by the user.
- */
-NONNULL bool
-track_type_is_deletable (TrackType type);
-
-NONNULL Tracklist *
-track_get_tracklist (Track * self);
-
-/**
- * Returns whether the track should be visible.
- *
- * Takes into account Track.visible and whether
- * any of the track's foldable parents are folded.
- */
-NONNULL bool
-track_get_should_be_visible (const Track * self);
-
-/**
- * Returns the full visible height (main height + height of
- * all visible automation tracks + height of all visible
- * lanes).
- *
- * @memberof Track
- */
-NONNULL double
-track_get_full_visible_height (Track * const self);
-
-bool
-track_multiply_heights (
-  Track * self,
-  double  multiplier,
-  bool    visible_only,
-  bool    check_only);
-
-/**
- * Returns if the track is soloed.
- */
-HOT NONNULL bool
-track_get_soloed (Track * self);
-
-/**
- * Returns whether the track is not soloed on its
- * own but its direct out (or its direct out's direct
- * out, etc.) is soloed.
- */
-NONNULL bool
-track_get_implied_soloed (Track * self);
-
-/**
- * Returns if the track is muted.
- */
-NONNULL bool
-track_get_muted (Track * self);
-
-/**
- * Returns if the track is listened.
- */
-NONNULL bool
-track_get_listened (Track * self);
-
-/**
- * Returns whether monitor audio is on.
- */
-NONNULL bool
-track_get_monitor_audio (Track * self);
-
-/**
- * Sets whether monitor audio is on.
- */
-NONNULL void
-track_set_monitor_audio (
-  Track * self,
-  bool    monitor,
-  bool    auto_select,
-  bool    fire_events);
-
-/**
- * Sets track soloed, updates UI and optionally
- * adds the action to the undo stack.
- *
- * @param auto_select Makes this track the only
- *   selection in the tracklist. Useful when
- *   listening to a single track.
- * @param trigger_undo Create and perform an
- *   undoable action.
- * @param fire_events Fire UI events.
- */
-NONNULL void
-track_set_listened (
-  Track * self,
-  bool    listen,
-  bool    trigger_undo,
-  bool    auto_select,
-  bool    fire_events);
-
-HOT NONNULL bool
-track_get_recording (const Track * const track);
-
-/**
- * Sets recording and connects/disconnects the
- * JACK ports.
- */
-NONNULL void
-track_set_recording (Track * track, bool recording, bool fire_events);
-
-/**
- * Sets track soloed, updates UI and optionally
- * adds the action to the undo stack.
- *
- * @param auto_select Makes this track the only
- *   selection in the tracklist. Useful when soloing
- *   a single track.
- * @param trigger_undo Create and perform an
- *   undoable action.
- * @param fire_events Fire UI events.
- */
-NONNULL void
-track_set_soloed (
-  Track * self,
-  bool    solo,
-  bool    trigger_undo,
-  bool    auto_select,
-  bool    fire_events);
-
-/**
- * Returns whether the track has any soloed lanes.
- */
-NONNULL bool
-track_has_soloed_lanes (const Track * const self);
-
-/**
- * Returns if Track is in TracklistSelections.
- */
-NONNULL int
-track_is_selected (Track * self);
-
-/**
- * Returns whether the track is pinned.
- */
-#define track_is_pinned(x) (x->pos < TRACKLIST->pinned_tracks_cutoff)
-
-/**
- * Adds a Region to the given lane or
- * AutomationTrack of the track.
- *
- * The Region must be the main region (see
- * ArrangerObjectInfo).
- *
- * @param at The AutomationTrack of this Region, if
- *   automation region.
- * @param lane_pos The position of the lane to add
- *   to, if applicable.
- * @param gen_name Generate a unique region name or
- *   not. This will be 0 if the caller already
- *   generated a unique name.
- */
-#define track_add_region( \
-  self, region, at, lane_pos, gen_name, fire_events, error) \
-  track_insert_region ( \
-    self, region, at, lane_pos, -1, gen_name, fire_events, error)
-
-/**
- * Inserts a Region to the given lane or
- * AutomationTrack of the track, at the given
- * index.
- *
- * The Region must be the main region (see
- * ArrangerObjectInfo).
- *
- * @param at The AutomationTrack of this Region, if
- *   automation region.
- * @param lane_pos The position of the lane to add
- *   to, if applicable.
- * @param idx The index to insert the region at
- *   inside its parent, or -1 to append.
- * @param gen_name Generate a unique region name or
- *   not. This will be 0 if the caller already
- *   generated a unique name.
- *
- * @return Whether successful.
- */
-bool
-track_insert_region (
-  Track *           track,
-  Region *          region,
-  AutomationTrack * at,
-  int               lane_pos,
-  int               idx,
-  int               gen_name,
-  int               fire_events,
-  GError **         error);
-
-/**
- * Writes the track to the given MIDI file.
- *
- * @param use_track_pos Whether to use the track position in
- *   the MIDI data. The track will be set to 1 if false.
- * @param events Track events, if not using lanes as tracks or
- *   using track position.
- * @param start Events before this position will be skipped.
- * @param end Events after this position will be skipped.
- */
-NONNULL_ARGS (1, 2)
-void track_write_to_midi_file (
-  const Track *    self,
-  MIDI_FILE *      mf,
-  MidiEvents *     events,
-  const Position * start,
-  const Position * end,
-  bool             lanes_as_tracks,
-  bool             use_track_pos);
-
-/**
- * Appends the Track to the selections.
- *
- * @param exclusive Select only this track.
- * @param fire_events Fire events to update the
- *   UI.
- */
-NONNULL void
-track_select (Track * self, bool select, bool exclusive, bool fire_events);
-
-/**
- * Unselects all arranger objects in the track.
- */
-NONNULL void
-track_unselect_all (Track * self);
-
-NONNULL bool
-track_contains_uninstantiated_plugin (const Track * const self);
-
-/**
- * Removes all objects recursively from the track.
- */
-NONNULL void
-track_clear (Track * self);
-
-/**
- * Only removes the region from the track.
- *
- * @pararm free Also free the Region.
- */
-NONNULL void
-track_remove_region (Track * self, Region * region, bool fire_events, bool free);
-
-/**
- * Wrapper for audio and MIDI/instrument tracks to fill in
- * MidiEvents or StereoPorts from the timeline data.
- *
- * @note The engine splits the cycle so transport loop
- *   related logic is not needed.
- *
- * @param stereo_ports StereoPorts to fill.
- * @param midi_events MidiEvents to fill (from Piano Roll Port
- *   for example).
- */
-void
-track_fill_events (
-  const Track *                       self,
-  const EngineProcessTimeInfo * const time_nfo,
-  MidiEvents *                        midi_events,
-  StereoPorts *                       stereo_ports);
-
-/**
- * Verifies the identifiers on a live Track
- * (in the project, not a clone).
- *
- * @return True if pass.
- */
-bool
-track_validate (Track * self);
-
-/**
- * Adds the track's folder parents to the given
- * array.
- *
- * @param prepend Whether to prepend instead of
- *   append.
- */
-void
-track_add_folder_parents (const Track * self, GPtrArray * parents, bool prepend);
-
-/**
- * Returns the closest foldable parent or NULL.
- */
-Track *
-track_get_direct_folder_parent (Track * track);
-
-/**
- * Remove the track from all folders.
- *
- * Used when deleting tracks.
- */
-void
-track_remove_from_folder_parents (Track * self);
-
-/**
- * Returns the region at the given position, or
- * NULL.
- *
- * @param include_region_end Whether to include the
- *   region's end in the calculation.
- */
-Region *
-track_get_region_at_pos (
-  const Track *    track,
-  const Position * pos,
-  bool             include_region_end);
-
-/**
- * Returns the last Region in the
- * track, or NULL.
- */
-Region *
-track_get_last_region (Track * track);
-
-/**
- * Set track lanes visible and fire events.
- */
-void
-track_set_lanes_visible (Track * track, const int visible);
-
-/**
- * Set automation visible and fire events.
- */
-void
-track_set_automation_visible (Track * track, const bool visible);
-
-/**
- * Returns if the given TrackType can host the
- * given RegionType.
- */
-int
-track_type_can_host_region_type (const TrackType tt, const RegionType rt);
-
-static inline bool
-track_type_has_mono_compat_switch (const TrackType tt)
-{
-  return tt == TrackType::TRACK_TYPE_AUDIO_GROUP
-         || tt == TrackType::TRACK_TYPE_MASTER;
-}
-
-#define track_type_is_audio_group track_type_has_mono_compat_switch
-
-static inline bool
-track_type_is_fx (const TrackType type)
-{
-  return type == TrackType::TRACK_TYPE_AUDIO_BUS
-         || type == TrackType::TRACK_TYPE_MIDI_BUS;
-}
-
-/**
- * Returns if the Track can record.
- */
-static inline int
-track_type_can_record (const TrackType type)
-{
-  return type == TrackType::TRACK_TYPE_AUDIO || type == TrackType::TRACK_TYPE_MIDI
-         || type == TrackType::TRACK_TYPE_CHORD
-         || type == TrackType::TRACK_TYPE_INSTRUMENT;
-}
-
-/**
- * Generates automatables for the track.
- *
- * Should be called as soon as the track is
- * created.
- */
-void
-track_generate_automation_tracks (Track * track);
-
-/**
- * Wrapper.
- */
-void
-track_setup (Track * track);
-
-/**
- * Returns the automation tracklist if the track type has one,
- * or NULL if it doesn't (like chord tracks).
- */
-static inline AutomationTracklist *
-track_get_automation_tracklist (Track * const track)
-{
-  g_return_val_if_fail (IS_TRACK (track), NULL);
-
-  switch (track->type)
-    {
-    case TrackType::TRACK_TYPE_MARKER:
-    case TrackType::TRACK_TYPE_FOLDER:
-      break;
-    case TrackType::TRACK_TYPE_CHORD:
-    case TrackType::TRACK_TYPE_AUDIO_BUS:
-    case TrackType::TRACK_TYPE_AUDIO_GROUP:
-    case TrackType::TRACK_TYPE_MIDI_BUS:
-    case TrackType::TRACK_TYPE_MIDI_GROUP:
-    case TrackType::TRACK_TYPE_INSTRUMENT:
-    case TrackType::TRACK_TYPE_AUDIO:
-    case TrackType::TRACK_TYPE_MASTER:
-    case TrackType::TRACK_TYPE_MIDI:
-    case TrackType::TRACK_TYPE_TEMPO:
-    case TrackType::TRACK_TYPE_MODULATOR:
-      return &track->automation_tracklist;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-  return NULL;
-}
-
-/**
- * Returns the channel of the track, if the track
- * type has a channel, or NULL if it doesn't.
- */
-NONNULL static inline Channel *
-track_get_channel (const Track * const track)
-{
-  switch (track->type)
-    {
-    case TrackType::TRACK_TYPE_MASTER:
-    case TrackType::TRACK_TYPE_INSTRUMENT:
-    case TrackType::TRACK_TYPE_AUDIO:
-    case TrackType::TRACK_TYPE_AUDIO_BUS:
-    case TrackType::TRACK_TYPE_AUDIO_GROUP:
-    case TrackType::TRACK_TYPE_MIDI_BUS:
-    case TrackType::TRACK_TYPE_MIDI_GROUP:
-    case TrackType::TRACK_TYPE_MIDI:
-    case TrackType::TRACK_TYPE_CHORD:
-      return track->channel;
-    default:
-      return NULL;
-    }
-}
-
-/**
- * Updates the track's children.
- *
- * Used when changing track positions.
- */
-void
-track_update_children (Track * self);
-
-/**
- * Returns if the Track should have a piano roll.
- */
-CONST
-static inline bool
-track_type_has_piano_roll (const TrackType type)
-{
-  return type == TrackType::TRACK_TYPE_MIDI
-         || type == TrackType::TRACK_TYPE_INSTRUMENT;
-}
-
-/**
- * Returns if the Track should have an inputs
- * selector.
- */
-static inline int
-track_has_inputs (const Track * track)
-{
-  return track->type == TrackType::TRACK_TYPE_MIDI
-         || track->type == TrackType::TRACK_TYPE_INSTRUMENT
-         || track->type == TrackType::TRACK_TYPE_AUDIO;
-}
-
-Track *
-track_find_by_name (const char * name);
-
-/**
- * Fills in the array with all the velocities in
- * the project that are within or outside the
- * range given.
- *
- * @param inside Whether to find velocities inside
- *   the range (1) or outside (0).
- */
-void
-track_get_velocities_in_range (
-  const Track *    track,
-  const Position * start_pos,
-  const Position * end_pos,
-  Velocity ***     velocities,
-  int *            num_velocities,
-  size_t *         velocities_size,
-  int              inside);
-
-/**
- * Getter for the track name.
- */
-const char *
-track_get_name (Track * track);
-
-/**
- * Internally called by
- * track_set_name_with_action().
- */
-NONNULL bool
-track_set_name_with_action_full (Track * track, const char * name);
-
-/**
- * Setter to be used by the UI to create an
- * undoable action.
- */
-void
-track_set_name_with_action (Track * track, const char * name);
-
-/**
- * Setter for the track name.
- *
- * If a track with that name already exists, it
- * adds a number at the end.
- *
- * Must only be called from the GTK thread.
- */
-void
-track_set_name (Track * self, const char * name, bool pub_events);
-
-/**
- * Returns a unique name for a new track based on
- * the given name.
- */
-char *
-track_get_unique_name (Track * track_to_skip, const char * name);
-
-const char *
-track_stringize_type (TrackType type);
-
-/**
- * Returns if regions in tracks from type1 can
- * be moved to type2.
- */
-static inline int
-track_type_is_compatible_for_moving (const TrackType type1, const TrackType type2)
-{
-  return type1 == type2
-         || (type1 == TrackType::TRACK_TYPE_MIDI && type2 == TrackType::TRACK_TYPE_INSTRUMENT)
-         || (type1 == TrackType::TRACK_TYPE_INSTRUMENT && type2 == TrackType::TRACK_TYPE_MIDI);
-}
-
-/**
- * Updates the frames/ticks of each position in
- * each child of the track recursively.
- *
- * @param from_ticks Whether to update the
- *   positions based on ticks (true) or frames
- *   (false).
- */
-void
-track_update_positions (Track * self, bool from_ticks, bool bpm_change);
-
-/**
- * Returns the Fader (if applicable).
- *
- * @param post_fader True to get post fader,
- *   false to get pre fader.
- */
-Fader *
-track_get_fader (Track * track, bool post_fader);
-
-/**
- * Returns the FaderType corresponding to the given
- * Track.
- */
-FaderType
-track_get_fader_type (const Track * track);
-
-/**
- * Returns the prefader type
- * corresponding to the given Track.
- */
-FaderType
-track_type_get_prefader_type (TrackType type);
-
-/**
- * Creates missing TrackLane's until pos.
- *
- * @return Whether a new lane was created.
- */
-bool
-track_create_missing_lanes (Track * self, const int pos);
-
-/**
- * Removes the empty last lanes of the Track
- * (except the last one).
- */
-void
-track_remove_empty_last_lanes (Track * self);
-
-/**
- * Returns all the regions inside the given range,
- * or all the regions if both @ref p1 and @ref p2
- * are NULL.
- *
- * @return The number of regions returned.
- */
-int
-track_get_regions_in_range (
-  Track *    self,
-  Position * p1,
-  Position * p2,
-  Region **  regions);
-
-/**
- * Fills in the given array (if non-NULL) with all
- * plugins in the track and returns the number of
- * plugins.
- */
-int
-track_get_plugins (const Track * const self, GPtrArray * arr);
-
-void
-track_activate_all_plugins (Track * track, bool activate);
-
-/**
- * Comment setter.
- *
- * @note This creates an undoable action.
- */
-void
-track_comment_setter (void * track, const char * comment);
-
-/**
- * @param undoable Create an undable action.
- */
-void
-track_set_comment (Track * self, const char * comment, bool undoable);
-
-/**
- * Comment getter.
- */
-const char *
-track_get_comment (void * track);
-
-/**
- * Sets the track color.
- */
-void
-track_set_color (
-  Track *         self,
-  const GdkRGBA * color,
-  bool            undoable,
-  bool            fire_events);
-
-/**
- * Sets the track icon.
- */
-void
-track_set_icon (
-  Track *      self,
-  const char * icon_name,
-  bool         undoable,
-  bool         fire_events);
-
-/**
- * Returns the plugin at the given slot, if any.
- *
- * @param slot The slot (ignored if instrument is
- *   selected.
- */
-Plugin *
-track_get_plugin_at_slot (Track * track, ZPluginSlotType slot_type, int slot);
-
-/**
- * Marks the track for bouncing.
- *
- * @param mark_children Whether to mark all children tracks
- *   as well. Used when exporting stems on the specific track
- *   stem only.
- *   IMPORTANT: Track.bounce_to_master must be set beforehand
- *   if this is true.
- * @param mark_parents Whether to mark all parent tracks as
- *   well.
- */
-void
-track_mark_for_bounce (
-  Track * self,
-  bool    bounce,
-  bool    mark_regions,
-  bool    mark_children,
-  bool    mark_parents);
-
-/**
- * Appends all channel ports and optionally
- * plugin ports to the array.
- */
-void
-track_append_ports (Track * self, GPtrArray * ports, bool include_plugins);
-
-/**
- * Freezes or unfreezes the track.
- *
- * When a track is frozen, it is bounced with
- * effects to a temporary file in the pool, which
- * is played back directly from disk.
- *
- * When the track is unfrozen, this file will be
- * removed from the pool and the track will be
- * played normally again.
- *
- * @return Whether successful.
- */
-bool
-track_freeze (Track * self, bool freeze, GError ** error);
-
-/**
- * Wrapper over channel_add_plugin() and
- * modulator_track_insert_modulator().
- *
- * @param instantiate_plugin Whether to attempt to
- *   instantiate the plugin.
- */
-void
-track_insert_plugin (
-  Track *         self,
-  Plugin *        pl,
-  ZPluginSlotType slot_type,
-  int             slot,
-  bool            instantiate_plugin,
-  bool            replacing_plugin,
-  bool            moving_plugin,
-  bool            confirm,
-  bool            gen_automatables,
-  bool            recalc_graph,
-  bool            fire_events);
-
-/**
- * Wrapper over channel_remove_plugin() and
- * modulator_track_remove_modulator().
- */
-void
-track_remove_plugin (
-  Track *         self,
-  ZPluginSlotType slot_type,
-  int             slot,
-  bool            replacing_plugin,
-  bool            moving_plugin,
-  bool            deleting_plugin,
-  bool            deleting_track,
-  bool            recalc_graph);
-
-/**
- * Disconnects the track from the processing chain.
- *
- * This should be called immediately when the track is getting deleted, and
- * track_free should be designed to be called later after an arbitrary delay.
- *
- * @param remove_pl Remove the Plugin from the
- *   Channel. Useful when deleting the channel.
- * @param recalc_graph Recalculate mixer graph.
- */
-void
-track_disconnect (Track * self, bool remove_pl, bool recalc_graph);
-
-NONNULL bool
-track_is_enabled (Track * self);
-
-NONNULL void
-track_set_enabled (
-  Track * self,
-  bool    enabled,
-  bool    trigger_undo,
-  bool    auto_select,
-  bool    fire_events);
-
-static inline const char *
-track_type_to_string (TrackType type)
-{
-  return track_type_strings[static_cast<int> (type)];
-}
-
-TrackType
-track_type_get_from_string (const char * str);
-
-void
-track_get_total_bars (Track * self, int * total_bars);
-
-/**
- * Set various caches (snapshots, track name hash, plugin
- * input/output ports, etc).
- */
-void
-track_set_caches (Track * self, CacheTypes types);
-
-/**
- * Called when track(s) are actually imported into the
- * project.
- */
-typedef void (*TracksReadyCallback) (const FileImportInfo *, const GError *);
-
-/**
- * @param disable_track_idx Track index to disable, or -1.
- * @param ready_cb Callback to be called when the tracks are
- *   ready (added to the project).
- */
-bool
-track_create_with_action (
-  TrackType              type,
-  const PluginSetting *  pl_setting,
-  const FileDescriptor * file_descr,
-  const Position *       pos,
-  int                    index,
-  int                    num_tracks,
-  int                    disable_track_idx,
-  TracksReadyCallback    ready_cb,
-  GError **              error);
-
-Track *
-track_create_empty_at_idx_with_action (TrackType type, int index, GError ** error);
-
-Track *
-track_create_for_plugin_at_idx_w_action (
-  TrackType             type,
-  const PluginSetting * pl_setting,
-  int                   index,
-  GError **             error);
-
-/**
- * Creates a new empty track at the end of the
- * tracklist.
- */
-#define track_create_empty_with_action(type, error) \
-  track_create_empty_at_idx_with_action (type, TRACKLIST->tracks.size (), error)
-
-GMenu *
-track_generate_edit_context_menu (Track * track, int num_selected);
-
-/**
- * Generates a menu to be used for channel-related items, eg,
- * fader buttons, direct out, etc.
- */
-GMenu *
-track_generate_channel_context_menu (Track * track);
-
-/**
- * Wrapper for each track type.
- */
-void
-track_free (Track * track);
+DEFINE_ENUM_FORMATTER (
+  Track::Type,
+  Track_Type,
+  N_ ("Instrument"),
+  N_ ("Audio"),
+  N_ ("Master"),
+  N_ ("Chord"),
+  N_ ("Marker"),
+  N_ ("Tempo"),
+  N_ ("Modulator"),
+  N_ ("Audio FX"),
+  N_ ("Audio Group"),
+  N_ ("MIDI"),
+  N_ ("MIDI FX"),
+  N_ ("MIDI Group"),
+  N_ ("Folder"));
+
+template <typename T> concept TrackSubclass = std::derived_from<T, Track>;
+
+template <typename TrackT>
+concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
+
+extern template FoldableTrack *
+Track::find_by_name (const std::string &);
+class RecordableTrack;
+extern template RecordableTrack *
+Track::find_by_name (const std::string &);
+extern template AutomatableTrack *
+Track::find_by_name (const std::string &);
+extern template Plugin *
+Track::insert_plugin (
+  std::unique_ptr<Plugin> &&pl,
+  PluginSlotType            slot_type,
+  int                       slot,
+  bool                      instantiate_plugin,
+  bool                      replacing_plugin,
+  bool                      moving_plugin,
+  bool                      confirm,
+  bool                      gen_automatables,
+  bool                      recalc_graph,
+  bool                      fire_events);
+extern template CarlaNativePlugin *
+Track::insert_plugin (
+  std::unique_ptr<CarlaNativePlugin> &&pl,
+  PluginSlotType                       slot_type,
+  int                                  slot,
+  bool                                 instantiate_plugin,
+  bool                                 replacing_plugin,
+  bool                                 moving_plugin,
+  bool                                 confirm,
+  bool                                 gen_automatables,
+  bool                                 recalc_graph,
+  bool                                 fire_events);
 
 /**
  * @}

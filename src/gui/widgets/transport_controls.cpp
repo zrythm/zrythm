@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_event.h"
@@ -6,15 +6,15 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/button_with_menu.h"
-#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -26,13 +26,13 @@ G_DEFINE_TYPE (TransportControlsWidget, transport_controls_widget, GTK_TYPE_BOX)
 static void
 play_clicked_cb (GtkButton * button, gpointer user_data)
 {
-  if (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLLING)
+  if (TRANSPORT->is_rolling ())
     {
-      position_set_to_pos (&TRANSPORT->playhead_pos, &TRANSPORT->cue_pos);
+      TRANSPORT->playhead_pos_ = TRANSPORT->cue_pos_;
     }
   else
     {
-      transport_request_roll (TRANSPORT, true);
+      TRANSPORT->request_roll (true);
     }
 }
 
@@ -51,7 +51,7 @@ play_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->roll);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->roll_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -73,7 +73,7 @@ stop_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->stop);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->stop_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -95,7 +95,7 @@ backward_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->backward);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->backward_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -117,7 +117,7 @@ forward_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->forward);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->forward_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -139,7 +139,7 @@ loop_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->loop_toggle);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->loop_toggle_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -161,7 +161,7 @@ rec_rb_released (
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->rec_toggle);
+  sprintf (tmp, "app.bind-midi-cc::%p", TRANSPORT->rec_toggle_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -172,33 +172,33 @@ static void
 stop_clicked_cb (GtkButton * button, gpointer user_data)
 {
   /*g_message ("playstate %d", TRANSPORT->play_state);*/
-  if (TRANSPORT->play_state == PlayState::PLAYSTATE_PAUSED)
+  if (TRANSPORT->play_state_ == Transport::PlayState::Paused)
     {
-      transport_set_playhead_pos (TRANSPORT, &TRANSPORT->cue_pos);
+      TRANSPORT->set_playhead_pos (TRANSPORT->cue_pos_);
     }
   else
-    transport_request_pause (TRANSPORT, true);
+    TRANSPORT->request_pause (true);
 
-  midi_events_panic_all (F_QUEUED);
+  MidiEvents::panic_all ();
 }
 
 static void
 record_toggled_cb (GtkToggleButton * tg, gpointer user_data)
 {
-  transport_set_recording (
-    TRANSPORT, gtk_toggle_button_get_active (tg), true, F_PUBLISH_EVENTS);
+  TRANSPORT->set_recording (
+    gtk_toggle_button_get_active (tg), true, F_PUBLISH_EVENTS);
 }
 
 static void
 forward_clicked_cb (GtkButton * forward, gpointer user_data)
 {
-  transport_move_forward (TRANSPORT, true);
+  TRANSPORT->move_forward (true);
 }
 
 static void
 backward_clicked_cb (GtkButton * backward, gpointer user_data)
 {
-  transport_move_backward (TRANSPORT, true);
+  TRANSPORT->move_backward (true);
 }
 
 static void
@@ -208,11 +208,11 @@ change_state_punch_mode (
   gpointer        user_data)
 {
   bool value = g_variant_get_boolean (variant);
-  transport_set_punch_mode_enabled (TRANSPORT, value);
+  TRANSPORT->set_punch_mode_enabled (value);
   g_message ("setting punch mode to %d", value);
   g_simple_action_set_state (action, variant);
 
-  EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, NULL);
+  EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, nullptr);
 }
 
 static void
@@ -222,7 +222,7 @@ change_start_on_midi_input (
   gpointer        user_data)
 {
   bool value = g_variant_get_boolean (variant);
-  transport_set_start_playback_on_midi_input (TRANSPORT, value);
+  TRANSPORT->set_start_playback_on_midi_input (value);
   g_message ("setting start on MIDI input to %d", value);
   g_simple_action_set_state (action, variant);
 }
@@ -240,23 +240,19 @@ activate_recording_mode (
   g_simple_action_set_state (action, _variant);
   if (string_is_equal (variant, "overwrite"))
     {
-      transport_set_recording_mode (
-        TRANSPORT, TransportRecordingMode::RECORDING_MODE_OVERWRITE_EVENTS);
+      TRANSPORT->set_recording_mode (Transport::RecordingMode::OverwriteEvents);
     }
   else if (string_is_equal (variant, "merge"))
     {
-      transport_set_recording_mode (
-        TRANSPORT, TransportRecordingMode::RECORDING_MODE_MERGE_EVENTS);
+      TRANSPORT->set_recording_mode (Transport::RecordingMode::MergeEvents);
     }
   else if (string_is_equal (variant, "takes"))
     {
-      transport_set_recording_mode (
-        TRANSPORT, TransportRecordingMode::RECORDING_MODE_TAKES);
+      TRANSPORT->set_recording_mode (Transport::RecordingMode::Takes);
     }
   else if (string_is_equal (variant, "takes-muted"))
     {
-      transport_set_recording_mode (
-        TRANSPORT, TransportRecordingMode::RECORDING_MODE_TAKES_MUTED);
+      TRANSPORT->set_recording_mode (Transport::RecordingMode::TakesMuted);
     }
   else
     {
@@ -307,8 +303,8 @@ transport_controls_widget_refresh (TransportControlsWidget * self)
     g_strdup (gtk_actionable_get_action_name (GTK_ACTIONABLE (self->loop)));
   gtk_actionable_set_action_name (GTK_ACTIONABLE (self->loop), "");
 
-  gtk_toggle_button_set_active (self->trans_record_btn, TRANSPORT->recording);
-  gtk_toggle_button_set_active (self->loop, TRANSPORT->loop);
+  gtk_toggle_button_set_active (self->trans_record_btn, TRANSPORT->recording_);
+  gtk_toggle_button_set_active (self->loop, TRANSPORT->loop_);
   g_debug ("action name %s", loop_action_name);
 
   g_signal_handler_unblock (
@@ -373,13 +369,13 @@ setup_record_btn (TransportControlsWidget * self)
     "'four'",
   };
   GActionEntry actions[] = {
-    { "punch-mode", NULL, NULL, (TRANSPORT->punch_mode ? "true" : "false"),
-     change_state_punch_mode },
-    { "start-on-midi-input", NULL, NULL,
-     (TRANSPORT->start_playback_on_midi_input ? "true" : "false"),
+    { "punch-mode", nullptr, nullptr,
+     (TRANSPORT->punch_mode_ ? "true" : "false"), change_state_punch_mode },
+    { "start-on-midi-input", nullptr, nullptr,
+     (TRANSPORT->start_playback_on_midi_input_ ? "true" : "false"),
      change_start_on_midi_input },
     { "recording-mode", activate_recording_mode, "s",
-     recording_modes[ENUM_VALUE_TO_INT (TRANSPORT->recording_mode)] },
+     recording_modes[ENUM_VALUE_TO_INT (TRANSPORT->recording_mode_)] },
     { "preroll", activate_preroll, "s",
      preroll_types[g_settings_get_enum (S_TRANSPORT, "recording-preroll")] },
   };
@@ -424,7 +420,8 @@ transport_controls_widget_init (TransportControlsWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* setup record button */
@@ -441,18 +438,18 @@ transport_controls_widget_init (TransportControlsWidget * self)
     G_SETTINGS_BIND_DEFAULT);
 
   g_signal_connect (
-    GTK_WIDGET (self->play), "clicked", G_CALLBACK (play_clicked_cb), NULL);
+    GTK_WIDGET (self->play), "clicked", G_CALLBACK (play_clicked_cb), nullptr);
   g_signal_connect (
-    GTK_WIDGET (self->stop), "clicked", G_CALLBACK (stop_clicked_cb), NULL);
+    GTK_WIDGET (self->stop), "clicked", G_CALLBACK (stop_clicked_cb), nullptr);
   self->rec_toggled_handler_id = g_signal_connect (
     GTK_WIDGET (self->trans_record_btn), "toggled",
-    G_CALLBACK (record_toggled_cb), NULL);
+    G_CALLBACK (record_toggled_cb), nullptr);
   g_signal_connect (
     GTK_WIDGET (self->forward), "clicked", G_CALLBACK (forward_clicked_cb),
-    NULL);
+    nullptr);
   g_signal_connect (
     GTK_WIDGET (self->backward), "clicked", G_CALLBACK (backward_clicked_cb),
-    NULL);
+    nullptr);
 
   /* add context menus */
   GtkGesture * mp = GTK_GESTURE (gtk_gesture_click_new ());

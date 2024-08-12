@@ -1,16 +1,13 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/dialogs/midi_function_dialog.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/error.h"
+#include "actions/arranger_selections.h"
 #include "utils/gtk.h"
-#include "utils/io.h"
 #include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/ui.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -32,7 +29,7 @@ get_g_settings_schema_id (MidiFunctionType type)
 }
 
 /**
- * Fills in \ref opts with the current options in the dialog
+ * Fills in @ref opts with the current options in the dialog
  * (fetched from gsettings).
  */
 void
@@ -44,25 +41,27 @@ midi_function_dialog_widget_get_opts (
 
   switch (self->type)
     {
-    case MidiFunctionType::MIDI_FUNCTION_CRESCENDO:
-      opts->start_vel = g_settings_get_int (self->settings, "start-velocity");
-      opts->end_vel = g_settings_get_int (self->settings, "end-velocity");
-      opts->curve_algo = ENUM_INT_TO_VALUE (
-        CurveAlgorithm, g_settings_get_enum (self->settings, "curve-algo"));
-      opts->curviness =
+    case MidiFunctionType::Crescendo:
+      opts->start_vel_ = g_settings_get_int (self->settings, "start-velocity");
+      opts->end_vel_ = g_settings_get_int (self->settings, "end-velocity");
+      opts->curve_algo_ = ENUM_INT_TO_VALUE (
+        CurveOptions::Algorithm,
+        g_settings_get_enum (self->settings, "curve-algo"));
+      opts->curviness_ =
         ((double) g_settings_get_int (self->settings, "curviness") / 100.0) * 2.0
         - 1.0;
       break;
-    case MidiFunctionType::MIDI_FUNCTION_FLAM:
-      opts->time = g_settings_get_double (self->settings, "time");
-      opts->vel = g_settings_get_int (self->settings, "velocity");
+    case MidiFunctionType::Flam:
+      opts->time_ = g_settings_get_double (self->settings, "time");
+      opts->vel_ = g_settings_get_int (self->settings, "velocity");
       break;
-    case MidiFunctionType::MIDI_FUNCTION_STRUM:
-      opts->ascending = g_settings_get_boolean (self->settings, "ascending");
-      opts->time = g_settings_get_double (self->settings, "total-time");
-      opts->curve_algo = ENUM_INT_TO_VALUE (
-        CurveAlgorithm, g_settings_get_enum (self->settings, "curve-algo"));
-      opts->curviness =
+    case MidiFunctionType::Strum:
+      opts->ascending_ = g_settings_get_boolean (self->settings, "ascending");
+      opts->time_ = g_settings_get_double (self->settings, "total-time");
+      opts->curve_algo_ = ENUM_INT_TO_VALUE (
+        CurveOptions::Algorithm,
+        g_settings_get_enum (self->settings, "curve-algo"));
+      opts->curviness_ =
         ((double) g_settings_get_int (self->settings, "curviness") / 100.0) * 2.0
         - 1.0;
       break;
@@ -84,7 +83,7 @@ init_fields (MidiFunctionDialogWidget * self)
 
   switch (self->type)
     {
-    case MidiFunctionType::MIDI_FUNCTION_CRESCENDO:
+    case MidiFunctionType::Crescendo:
       {
         row = ADW_ACTION_ROW (adw_spin_row_new_with_range (1, 127, 1));
         adw_preferences_row_set_title (
@@ -111,15 +110,15 @@ init_fields (MidiFunctionDialogWidget * self)
 
         row = ADW_ACTION_ROW (adw_combo_row_new ());
         adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Curve"));
-        GtkStringList * slist = gtk_string_list_new (NULL);
+        GtkStringList * slist = gtk_string_list_new (nullptr);
         for (
-          unsigned int i = ENUM_VALUE_TO_INT (CurveAlgorithm::EXPONENT);
-          i < ENUM_COUNT (CurveAlgorithm); i++)
+          unsigned int i = ENUM_VALUE_TO_INT (CurveOptions::Algorithm::Exponent);
+          i < ENUM_COUNT (CurveOptions::Algorithm); i++)
           {
-            CurveAlgorithm algo = ENUM_INT_TO_VALUE (CurveAlgorithm, i);
-            char           buf[600];
-            curve_algorithm_get_localized_name (algo, buf);
-            gtk_string_list_append (slist, buf);
+            CurveOptions::Algorithm algo =
+              ENUM_INT_TO_VALUE (CurveOptions::Algorithm, i);
+            auto buf = CurveOptions_Algorithm_to_string (algo, true);
+            gtk_string_list_append (slist, buf.c_str ());
           }
         adw_combo_row_set_model (ADW_COMBO_ROW (row), G_LIST_MODEL (slist));
         adw_combo_row_set_selected (
@@ -129,7 +128,7 @@ init_fields (MidiFunctionDialogWidget * self)
           self->settings, "curve-algo", row, "selected", G_SETTINGS_BIND_DEFAULT,
           (GSettingsBindGetMapping) curve_algorithm_get_g_settings_mapping,
           (GSettingsBindSetMapping) curve_algorithm_set_g_settings_mapping,
-          NULL, NULL);
+          nullptr, nullptr);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
         row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
@@ -143,7 +142,7 @@ init_fields (MidiFunctionDialogWidget * self)
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_FLAM:
+    case MidiFunctionType::Flam:
       {
         adw_preferences_group_set_description (
           pgroup, _ ("Note: Flam is currently unimplemented"));
@@ -168,7 +167,7 @@ init_fields (MidiFunctionDialogWidget * self)
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
       }
       break;
-    case MidiFunctionType::MIDI_FUNCTION_STRUM:
+    case MidiFunctionType::Strum:
       {
         row = ADW_ACTION_ROW (adw_switch_row_new ());
         adw_preferences_row_set_title (
@@ -182,15 +181,15 @@ init_fields (MidiFunctionDialogWidget * self)
 
         row = ADW_ACTION_ROW (adw_combo_row_new ());
         adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Curve"));
-        GtkStringList * slist = gtk_string_list_new (NULL);
+        GtkStringList * slist = gtk_string_list_new (nullptr);
         for (
-          unsigned int i = ENUM_VALUE_TO_INT (CurveAlgorithm::EXPONENT);
-          i < ENUM_COUNT (CurveAlgorithm); i++)
+          unsigned int i = ENUM_VALUE_TO_INT (CurveOptions::Algorithm::Exponent);
+          i < ENUM_COUNT (CurveOptions::Algorithm); i++)
           {
-            CurveAlgorithm algo = ENUM_INT_TO_VALUE (CurveAlgorithm, i);
-            char           buf[600];
-            curve_algorithm_get_localized_name (algo, buf);
-            gtk_string_list_append (slist, buf);
+            CurveOptions::Algorithm algo =
+              ENUM_INT_TO_VALUE (CurveOptions::Algorithm, i);
+            gtk_string_list_append (
+              slist, CurveOptions_Algorithm_to_string (algo, true).c_str ());
           }
         adw_combo_row_set_model (ADW_COMBO_ROW (row), G_LIST_MODEL (slist));
         adw_combo_row_set_selected (
@@ -200,7 +199,7 @@ init_fields (MidiFunctionDialogWidget * self)
           self->settings, "curve-algo", row, "selected", G_SETTINGS_BIND_DEFAULT,
           (GSettingsBindGetMapping) curve_algorithm_get_g_settings_mapping,
           (GSettingsBindSetMapping) curve_algorithm_set_g_settings_mapping,
-          NULL, NULL);
+          nullptr, nullptr);
         adw_preferences_group_add (pgroup, GTK_WIDGET (row));
 
         row = ADW_ACTION_ROW (adw_spin_row_new_with_range (0, 100, 1));
@@ -232,22 +231,24 @@ init_fields (MidiFunctionDialogWidget * self)
 static void
 on_ok_clicked (GtkButton * btn, MidiFunctionDialogWidget * self)
 {
-  ArrangerSelections * sel = (ArrangerSelections *) MA_SELECTIONS;
-  if (!arranger_selections_has_any (sel))
+  if (!MIDI_SELECTIONS->has_any ())
     {
-      g_message ("no selections, doing nothing");
+      z_debug ("no selections, doing nothing");
       return;
     }
 
   MidiFunctionOpts opts;
   midi_function_dialog_widget_get_opts (self, &opts);
 
-  GError * err = NULL;
-  bool     ret = arranger_selections_action_perform_edit_midi_function (
-    sel, self->type, opts, &err);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to apply MIDI function"));
+      UNDO_MANAGER->perform (
+        std::make_unique<ArrangerSelectionsAction::EditAction> (
+          *MIDI_SELECTIONS, self->type, opts));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to apply MIDI function"));
     }
 
   gtk_window_close (GTK_WINDOW (self));
@@ -261,12 +262,12 @@ MidiFunctionDialogWidget *
 midi_function_dialog_widget_new (GtkWindow * parent, MidiFunctionType type)
 {
   MidiFunctionDialogWidget * self = Z_MIDI_FUNCTION_DIALOG_WIDGET (
-    g_object_new (MIDI_FUNCTION_DIALOG_WIDGET_TYPE, NULL));
+    g_object_new (MIDI_FUNCTION_DIALOG_WIDGET_TYPE, nullptr));
 
   self->type = type;
 
   gtk_window_set_title (
-    GTK_WINDOW (self), _ (midi_function_type_to_string (type)));
+    GTK_WINDOW (self), MidiFunctionType_to_string (type, true).c_str ());
 
   if (parent)
     {

@@ -3,13 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include <memory>
-
-#include "zrythm.h"
 #include "zrythm_app.h"
 
-/** This is declared extern in zrythm.h. */
-std::unique_ptr<Zrythm> gZrythm = nullptr;
-
 /** This is declared extern in zrythm_app.h. */
-ZrythmApp * zrythm_app = NULL;
+std::unique_ptr<ZrythmApp, ZrythmAppDeleter> zrythm_app;

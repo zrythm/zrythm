@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_QUANTIZE_BOX_H__
@@ -30,8 +30,8 @@ G_DECLARE_FINAL_TYPE (
 #define MW_QUANTIZE_BOX MW_TIMELINE_TOOLBAR->quantize_box
 
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct SnapGrid        SnapGrid;
-typedef struct QuantizeOptions QuantizeOptions;
+class SnapGrid;
+class QuantizeOptions;
 
 typedef struct _QuantizeBoxWidget
 {

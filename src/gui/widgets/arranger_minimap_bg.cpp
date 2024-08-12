@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/marker_track.h"
 #include "dsp/track.h"
@@ -16,6 +14,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
@@ -31,62 +30,66 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  Marker *         start = marker_track_get_start_marker (P_MARKER_TRACK);
-  ArrangerObject * start_obj = (ArrangerObject *) start;
-  Marker *         end = marker_track_get_end_marker (P_MARKER_TRACK);
-  ArrangerObject * end_obj = (ArrangerObject *) end;
-  int              song_px =
-    ui_pos_to_px_timeline (&end_obj->pos, 1)
-    - ui_pos_to_px_timeline (&start_obj->pos, 1);
+  auto start = P_MARKER_TRACK->get_start_marker ();
+  auto end = (P_MARKER_TRACK->get_end_marker ());
+  int  song_px =
+    ui_pos_to_px_timeline (end->pos_, 1)
+    - ui_pos_to_px_timeline (start->pos_, 1);
   /*int region_px;*/
 
   int total_track_height = 0;
-  for (auto &track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (track->widget && track->visible)
-        total_track_height += gtk_widget_get_height (GTK_WIDGET (track->widget));
+      if (track->widget_ && track->visible_)
+        total_track_height +=
+          gtk_widget_get_height (GTK_WIDGET (track->widget_));
     }
   int track_height;
-  for (auto &track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (!track->widget || !track->visible)
+      if (!track->widget_ || !track->visible_)
         continue;
 
       graphene_point_t wpt;
       graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0, 0);
       bool             success = gtk_widget_compute_point (
-        GTK_WIDGET (track->widget), GTK_WIDGET (MW_TRACKLIST->unpinned_box),
+        GTK_WIDGET (track->widget_), GTK_WIDGET (MW_TRACKLIST->unpinned_box),
         &tmp_pt, &wpt);
       g_return_if_fail (success);
-      track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
+      track_height = gtk_widget_get_height (GTK_WIDGET (track->widget_));
 
-      GdkRGBA color = track->color;
-      color.alpha = 0.6f;
-
-      TrackLane *      lane;
-      ArrangerObject * r_obj;
-      for (int j = 0; j < track->num_lanes; j++)
+      if (track->has_lanes ())
         {
-          lane = track->lanes[j];
+          auto laned_track = dynamic_cast<LanedTrack *> (track.get ());
+          auto variant = convert_to_variant<LanedTrackPtrVariant> (laned_track);
+          std::visit (
+            [&] (const auto &t) {
+              GdkRGBA color = t->color_.to_gdk_rgba ();
+              color.alpha = 0.6f;
 
-          for (int k = 0; k < lane->num_regions; k++)
-            {
-              r_obj = (ArrangerObject *) lane->regions[k];
+              for (auto &lane : t->lanes_)
+                {
+                  for (auto &region : lane->regions_)
+                    {
+                      int px_start = ui_pos_to_px_timeline (region->pos_, true);
+                      int px_end =
+                        ui_pos_to_px_timeline (region->end_pos_, true);
+                      int px_length = px_end - px_start;
 
-              int px_start = ui_pos_to_px_timeline (&r_obj->pos, 1);
-              int px_end = ui_pos_to_px_timeline (&r_obj->end_pos, 1);
-              int px_length = px_end - px_start;
-
-              {
-                graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
-                  ((float) px_start / (float) song_px) * (float) width,
-                  ((float) wpt.y / (float) total_track_height) * (float) height,
-                  ((float) px_length / (float) song_px) * (float) width,
-                  ((float) track_height / (float) total_track_height)
-                    * (float) height);
-                gtk_snapshot_append_color (snapshot, &color, &tmp_r);
-              }
-            }
+                      {
+                        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+                          ((float) px_start / (float) song_px) * (float) width,
+                          ((float) wpt.y / (float) total_track_height)
+                            * (float) height,
+                          ((float) px_length / (float) song_px) * (float) width,
+                          ((float) track_height / (float) total_track_height)
+                            * (float) height);
+                        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+                      }
+                    }
+                }
+            },
+            variant);
         }
     }
 }
@@ -94,7 +97,7 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
 static void
 arranger_minimap_bg_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  if (!PROJECT->loaded)
+  if (!PROJECT->loaded_)
     return;
 
   ArrangerMinimapBgWidget * self = Z_ARRANGER_MINIMAP_BG_WIDGET (widget);
@@ -124,7 +127,7 @@ ArrangerMinimapBgWidget *
 arranger_minimap_bg_widget_new (ArrangerMinimapWidget * owner)
 {
   ArrangerMinimapBgWidget * self = static_cast<ArrangerMinimapBgWidget *> (
-    g_object_new (ARRANGER_MINIMAP_BG_WIDGET_TYPE, NULL));
+    g_object_new (ARRANGER_MINIMAP_BG_WIDGET_TYPE, nullptr));
 
   self->owner = owner;
 
@@ -143,5 +146,5 @@ static void
 arranger_minimap_bg_widget_init (ArrangerMinimapBgWidget * self)
 {
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), arranger_minimap_bg_tick_cb, self, NULL);
+    GTK_WIDGET (self), arranger_minimap_bg_tick_cb, self, nullptr);
 }

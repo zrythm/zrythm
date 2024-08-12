@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Zrythm settings.
  */
@@ -10,10 +10,13 @@
 #ifndef __SETTINGS_SETTINGS_H__
 #define __SETTINGS_SETTINGS_H__
 
+#include <memory>
+
+#include "settings/user_shortcuts.h"
+
 #include "gtk_wrapper.h"
 
-typedef struct PluginSettings PluginSettings;
-typedef struct UserShortcuts  UserShortcuts;
+class PluginSettings;
 
 /**
  * @addtogroup project Settings
@@ -21,26 +24,23 @@ typedef struct UserShortcuts  UserShortcuts;
  * @{
  */
 
-#define SETTINGS (gZrythm->settings)
+#define SETTINGS (gZrythm->settings_)
 
-#define S_PLUGIN_SETTINGS (SETTINGS->plugin_settings)
+#define S_PLUGIN_SETTINGS (SETTINGS->plugin_settings_)
 
-#define S_USER_SHORTCUTS (SETTINGS->user_shortcuts)
+#define S_USER_SHORTCUTS (SETTINGS->user_shortcuts_)
 
 class Settings
 {
 public:
-  Settings (){};
-  ~Settings ();
-
   /**
    * Initializes settings.
    */
   void init ();
 
-  PluginSettings * plugin_settings = nullptr;
+  std::unique_ptr<PluginSettings> plugin_settings_;
 
-  UserShortcuts * user_shortcuts = nullptr;
+  UserShortcuts user_shortcuts_;
 };
 
 /**

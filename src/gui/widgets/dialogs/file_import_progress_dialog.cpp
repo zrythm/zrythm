@@ -1,20 +1,16 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/audio_region.h"
-#include "dsp/engine.h"
-#include "dsp/midi_region.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
-#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/dialogs/file_import_progress_dialog.h"
 #include "io/file_import.h"
 #include "project.h"
 #include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -72,17 +68,16 @@ response_cb (
 static void
 handle_regions (FileImportProgressDialog * self)
 {
-  GError * err = NULL;
-  bool     success = tracklist_import_regions (
-    self->region_arrays, self->import_info, self->tracks_ready_cb, &err);
-  if (success)
+  try
     {
+      TRACKLIST->import_regions (
+        self->region_arrays, self->import_info, self->tracks_ready_cb);
       ui_show_notification_idle_printf (
         _ ("Imported %d files"), self->num_files_total);
     }
-  else
+  catch (const ZrythmException &e)
     {
-      HANDLE_ERROR_LITERAL (err, _ ("Failed to import regions"));
+      e.handle (_ ("Failed to import regions"));
     }
   adw_message_dialog_response (ADW_MESSAGE_DIALOG (self), "ok");
 }
@@ -100,13 +95,13 @@ import_async_ready_cb (GObject * source_object, GAsyncResult * res, gpointer dat
     Z_FILE_IMPORT_PROGRESS_DIALOG (source_object);
   GError *     err = NULL;
   FileImport * fi = Z_FILE_IMPORT (data);
-  GPtrArray *  regions = file_import_finish (fi, res, &err);
+  auto         regions = file_import_finish (fi, res, &err);
   self->num_files_remaining--;
   g_debug ("async ready: files remaining %d", self->num_files_remaining);
-  if (regions)
+  if (!err)
     {
-      g_message ("Imported regions for %s", fi->filepath);
-      g_ptr_array_add (self->region_arrays, regions);
+      z_info ("Imported regions for %s", fi->filepath);
+      self->region_arrays.push_back (regions);
     }
   else
     {
@@ -140,7 +135,7 @@ file_import_progress_dialog_run (FileImportProgressDialog * self)
 {
   int          i = 0;
   const char * filepath;
-  while ((filepath = self->filepaths[i++]) != NULL)
+  while ((filepath = self->filepaths[i++]) != nullptr)
     {
       FileImport * fi = file_import_new (filepath, self->import_info);
       g_ptr_array_add (self->file_imports, fi);
@@ -163,11 +158,11 @@ file_import_progress_dialog_new (
   GtkWidget *         parent)
 {
   FileImportProgressDialog * self = Z_FILE_IMPORT_PROGRESS_DIALOG (
-    g_object_new (FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE, NULL));
+    g_object_new (FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE, nullptr));
 
-  self->import_info = file_import_info_clone (import_info);
+  self->import_info = new FileImportInfo (*import_info);
   self->filepaths = string_array_clone (filepaths);
-  while (filepaths[self->num_files_total] != NULL)
+  while (filepaths[self->num_files_total] != nullptr)
     {
       self->num_files_total++;
       self->num_files_remaining++;
@@ -206,9 +201,9 @@ finalize (GObject * obj)
 
   g_debug ("finalizing import dialog...");
 
+  std::destroy_at (&self->region_arrays);
   object_free_w_func_and_null (g_strfreev, self->filepaths);
-  object_free_w_func_and_null (file_import_info_free, self->import_info);
-  object_free_w_func_and_null (g_ptr_array_unref, self->region_arrays);
+  object_delete_and_null (self->import_info);
 
   G_OBJECT_CLASS (file_import_progress_dialog_parent_class)->finalize (obj);
 }
@@ -225,14 +220,13 @@ file_import_progress_dialog_class_init (FileImportProgressDialogClass * klass)
 static void
 file_import_progress_dialog_init (FileImportProgressDialog * self)
 {
+  std::construct_at (&self->region_arrays);
   self->cancellable = g_cancellable_new ();
   self->file_imports = g_ptr_array_new_with_free_func (g_object_unref);
-  self->region_arrays =
-    g_ptr_array_new_with_free_func ((GDestroyNotify) g_ptr_array_unref);
 
   adw_message_dialog_set_heading (ADW_MESSAGE_DIALOG (self), _ ("File Import"));
   adw_message_dialog_add_responses (
-    ADW_MESSAGE_DIALOG (self), "cancel", _ ("_Cancel"), NULL);
+    ADW_MESSAGE_DIALOG (self), "cancel", _ ("_Cancel"), nullptr);
 
   gtk_window_set_modal (GTK_WINDOW (self), true);
 

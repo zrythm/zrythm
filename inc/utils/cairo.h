@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Cairo utilities.
  */
@@ -12,7 +10,11 @@
 #ifndef __UTILS_CAIRO_H__
 #define __UTILS_CAIRO_H__
 
+#include "utils/pango.h"
+
 #include "gtk_wrapper.h"
+
+class Color;
 
 /**
  * @addtogroup utils
@@ -137,7 +139,7 @@ z_cairo_diamond (cairo_t * cr, double x, double y, double width, double height)
  * Creates a PangoLayout to be cached in widgets
  * based on the given settings.
  */
-PangoLayout *
+PangoLayoutUniquePtr
 z_cairo_create_pango_layout_from_string (
   GtkWidget *        widget,
   const char *       font,
@@ -148,7 +150,7 @@ z_cairo_create_pango_layout_from_string (
  * Creates a PangoLayout to be cached in widgets
  * based on the given settings.
  */
-PangoLayout *
+PangoLayoutUniquePtr
 z_cairo_create_pango_layout_from_description (
   GtkWidget *            widget,
   PangoFontDescription * descr,
@@ -160,6 +162,9 @@ z_cairo_create_pango_layout_from_description (
  */
 PangoLayout *
 z_cairo_create_default_pango_layout (GtkWidget * widget);
+
+void
+z_cairo_set_source_color (cairo_t * cr, Color color);
 
 /**
  * @}

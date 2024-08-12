@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_AUDIO_ARRANGER_H__
 #define __GUI_WIDGETS_AUDIO_ARRANGER_H__
@@ -37,17 +34,20 @@ audio_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos);
  */
 bool
 audio_arranger_widget_is_cursor_in_fade (
-  ArrangerWidget * self,
-  double           x,
-  double           y,
-  bool             fade_in,
-  bool             resize);
+  const ArrangerWidget &self,
+  double                x,
+  double                y,
+  bool                  fade_in,
+  bool                  resize);
 
 /**
  * Returns whether the cursor touches the gain line.
  */
 bool
-audio_arranger_widget_is_cursor_gain (ArrangerWidget * self, double x, double y);
+audio_arranger_widget_is_cursor_gain (
+  const ArrangerWidget * self,
+  double                 x,
+  double                 y);
 
 UiOverlayAction
 audio_arranger_widget_get_action_on_drag_begin (ArrangerWidget * self);
@@ -73,15 +73,17 @@ audio_arranger_widget_update_gain (ArrangerWidget * self, double offset_y);
  * @parram dry_run Don't resize; just check
  *   if the resize is allowed.
  *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
+ * @return Whether successful.
  */
-int
+bool
 audio_arranger_widget_snap_fade (
   ArrangerWidget * self,
-  Position *       pos,
+  Position        &pos,
   bool             fade_in,
   bool             dry_run);
+
+void
+audio_arranger_on_drag_end (ArrangerWidget * self);
 
 /**
  * @}

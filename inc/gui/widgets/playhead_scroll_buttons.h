@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_PLAYHEAD_SCROLL_BUTTONS_H__

@@ -1,17 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Audio clip editor backend.
- */
 
 #ifndef __AUDIO_AUDIO_CLIP_EDITOR_H__
 #define __AUDIO_AUDIO_CLIP_EDITOR_H__
 
 #include "gui/backend/editor_settings.h"
-#include "utils/yaml.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend
@@ -19,32 +13,26 @@
  * @{
  */
 
-#define AUDIO_CLIP_EDITOR_SCHEMA_VERSION 1
-
-#define AUDIO_CLIP_EDITOR (CLIP_EDITOR->audio_clip_editor)
+#define AUDIO_CLIP_EDITOR (CLIP_EDITOR->audio_clip_editor_)
 
 /**
  * Audio clip editor serializable backend.
  *
- * The actual widgets should reflect the
- * information here.
+ * The actual widgets should reflect the* information here.
  */
-typedef struct AudioClipEditor
+class AudioClipEditor final
+    : public EditorSettings,
+      public ICloneable<AudioClipEditor>,
+      public ISerializable<AudioClipEditor>
 {
-  EditorSettings editor_settings;
-} AudioClipEditor;
+public:
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-void
-audio_clip_editor_init (AudioClipEditor * self);
-
-AudioClipEditor *
-audio_clip_editor_clone (AudioClipEditor * src);
-
-AudioClipEditor *
-audio_clip_editor_new (void);
-
-void
-audio_clip_editor_free (AudioClipEditor * self);
+void init_after_cloning (const AudioClipEditor &other) override
+{
+  *this = other;
+}
+};
 
 /**
  * @}

@@ -1,24 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- */
-
-#include "dsp/engine.h"
-#include "dsp/engine_alsa.h"
-#include "dsp/engine_jack.h"
 #include "dsp/engine_pa.h"
+#include "dsp/midi_region.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/localization.h"
-#include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -63,17 +50,18 @@ on_response (GtkNativeDialog * native, int response)
 
       const TimelineSelections * sel = (const TimelineSelections *)
         g_object_get_data (G_OBJECT (native), "sel");
-      if (sel->num_regions == 1)
+      if (sel->contains_single_region<MidiRegion> ())
         {
-          midi_region_export_to_midi_file (
-            sel->regions[0], filename, midi_format, export_full);
+          auto [r_obj, pos] = sel->get_first_object_and_pos (true);
+          auto r = dynamic_cast<MidiRegion *> (r_obj);
+          r->export_to_midi_file (filename, midi_format, export_full);
 
           ui_show_notification (_ ("MIDI region exported."));
         }
       else
         {
-          bool ret = timeline_selections_export_to_midi_file (
-            sel, filename, midi_format, export_full, lanes_as_separate_tracks);
+          bool ret = sel->export_to_midi_file (
+            filename, midi_format, export_full, lanes_as_separate_tracks);
           if (ret)
             {
               ui_show_notification (_ ("MIDI regions exported."));
@@ -103,8 +91,7 @@ export_midi_file_dialog_widget_run (
   GtkWindow *                parent,
   const TimelineSelections * sel)
 {
-  g_return_if_fail (timeline_selections_contains_only_region_types (
-    sel, RegionType::REGION_TYPE_MIDI));
+  z_return_if_fail (sel->contains_only_region_types (RegionType::Midi));
 
   GtkFileChooserNative * fc_native =
     GTK_FILE_CHOOSER_NATIVE (gtk_file_chooser_native_new (
@@ -168,14 +155,15 @@ export_midi_file_dialog_widget_run (
   gtk_file_filter_add_suffix (filter, "midi");
   gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (fc_native), filter);
 
-  Region * r = sel->regions[0];
-  char *   tmp = g_strdup_printf ("%s.mid", r->name);
-  char *   file = string_convert_to_filename (tmp);
-  g_free (tmp);
+  auto [r_obj, pos] = sel->get_first_object_and_pos (true);
+  auto r = dynamic_cast<MidiRegion *> (r_obj);
+  z_return_if_fail (r);
+  auto tmp = fmt::format ("%s.mid", r->name_);
+  auto file = string_convert_to_filename (tmp.c_str ());
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (fc_native), file);
   g_free (file);
 
-  g_signal_connect (fc_native, "response", G_CALLBACK (on_response), NULL);
+  g_signal_connect (fc_native, "response", G_CALLBACK (on_response), nullptr);
 
   g_object_set_data (G_OBJECT (fc_native), "sel", (void *) sel);
 

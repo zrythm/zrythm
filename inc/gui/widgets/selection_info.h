@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Widget for showing info about the current
  * selection.

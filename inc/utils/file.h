@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * File utilities.
  */
@@ -11,6 +11,7 @@
 #define __UTILS_FILE_H__
 
 #include <cstdio>
+#include <string>
 
 /**
  * @addtogroup utils
@@ -19,9 +20,13 @@
  */
 
 /**
- * Returns 1 if the file/dir exists.
+ * Returns whether the file/dir exists.
  */
-#define file_exists(file) g_file_test (file, G_FILE_TEST_EXISTS)
+bool
+file_path_exists (const std::string &path);
+
+bool
+file_dir_exists (const std::string &dir_path);
 
 char *
 file_path_relative_to (const char * path, const char * base);
@@ -30,12 +35,12 @@ int
 file_symlink (const char * old_path, const char * new_path);
 
 /**
- * Do cp --reflink from \ref src to \ref dest.
+ * Do cp --reflink from @ref src to @ref dest.
  *
- * @return Non-zero on error.
+ * @throw ZrythmException if reflink fails.
  */
-int
-file_reflink (const char * dest, const char * src);
+void
+file_reflink (const std::string &dest, const std::string &src);
 
 /**
  * @}

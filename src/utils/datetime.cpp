@@ -1,61 +1,52 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019, 2022-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "utils/datetime.h"
 
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
+#include <glibmm.h>
 #include <time.h>
 
-/**
- * Returns the current datetime as a string.
- *
- * Must be free()'d by caller.
- */
-char *
-datetime_get_current_as_string (void)
+std::string
+datetime_get_current_as_string ()
 {
 
-  time_t t = time (NULL);
+  time_t t = time (nullptr);
 #ifdef HAVE_LOCALTIME_R
   struct tm   tm;
   struct tm * ret = localtime_r (&t, &tm);
-  g_return_val_if_fail (ret, NULL);
+  g_return_val_if_fail (ret, "");
 #else
   struct tm tm = *localtime (&t);
 #endif
 
-  char * str = g_strdup_printf (
+  auto str = g_strdup_printf (
     "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
     tm.tm_hour, tm.tm_min, tm.tm_sec);
-
-  return str;
+  auto ret = std::string (str);
+  g_free (str);
+  return ret;
 }
 
-char *
-datetime_epoch_to_str (gint64 epoch, const char * format)
+std::string
+datetime_epoch_to_str (gint64 epoch, const std::string &format)
 {
   GDateTime * dt = g_date_time_new_from_unix_local (epoch);
-  g_return_val_if_fail (dt, NULL);
-  char * str = g_date_time_format (dt, format ? format : "%Y-%m-%d %H:%M:%S");
+  g_return_val_if_fail (dt, "");
+  char * str = g_date_time_format (dt, format.c_str ());
   g_date_time_unref (dt);
-
-  g_return_val_if_fail (str, NULL);
-
-  return str;
+  g_return_val_if_fail (str, "");
+  std::string ret = str;
+  g_free (str);
+  return ret;
 }
 
-/**
- * Get the current datetime to be used in filenames,
- * eg, for the log file.
- */
-char *
-datetime_get_for_filename (void)
+std::string
+datetime_get_for_filename ()
 {
-  GDateTime * datetime = g_date_time_new_now_local ();
-  char *      str_datetime = g_date_time_format (datetime, "%F_%H-%M-%S");
-  g_date_time_unref (datetime);
+  Glib::DateTime datetime = Glib::DateTime::create_now_local ();
+  std::string    str_datetime = datetime.format ("%F_%H-%M-%S");
 
   return str_datetime;
 }

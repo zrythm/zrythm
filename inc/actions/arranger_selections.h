@@ -1,34 +1,27 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Action for a group of ArrangerObject's.
- */
 
 #ifndef __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 #define __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 
-#include <cstdint>
+#include <memory>
+#include <vector>
 
 #include "actions/undoable_action.h"
 #include "dsp/audio_function.h"
 #include "dsp/automation_function.h"
+#include "dsp/lengthable_object.h"
 #include "dsp/midi_function.h"
+#include "dsp/midi_region.h"
 #include "dsp/port_identifier.h"
 #include "dsp/position.h"
 #include "dsp/quantize_options.h"
+#include "dsp/region.h"
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
-#include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/midi_selections.h"
 #include "gui/backend/timeline_selections.h"
-
-typedef struct ArrangerSelections ArrangerSelections;
-typedef struct ArrangerObject     ArrangerObject;
-typedef struct Position           Position;
-typedef struct QuantizeOptions    QuantizeOptions;
 
 /**
  * @addtogroup actions
@@ -36,611 +29,681 @@ typedef struct QuantizeOptions    QuantizeOptions;
  * @{
  */
 
-enum class ArrangerSelectionsActionType
-{
-  AS_ACTION_AUTOMATION_FILL,
-  AS_ACTION_CREATE,
-  AS_ACTION_DELETE,
-  AS_ACTION_DUPLICATE,
-  AS_ACTION_EDIT,
-  AS_ACTION_LINK,
-  AS_ACTION_MERGE,
-  AS_ACTION_MOVE,
-  AS_ACTION_QUANTIZE,
-  AS_ACTION_RECORD,
-  AS_ACTION_RESIZE,
-  AS_ACTION_SPLIT,
-};
-
 /**
- * Type used when the action is a RESIZE action.
+ * @brief An action that performs changes to the arranger selections.
+ *
+ * This class represents an undoable action that can be performed on the
+ * arranger selections, such as creating, deleting, moving, or resizing selected
+ * objects.
+ *
+ * The action has a Type enum that specifies the type of action being performed,
+ * such as Create, Delete, Move, or Resize. For Resize actions, there is a
+ * ResizeType enum that specifies the type of resize operation. For Edit
+ * actions, there is an EditType enum that specifies the type of edit operation,
+ * such as changing the name or position of the selected objects.
  */
-enum class ArrangerSelectionsActionResizeType
+class ArrangerSelectionsAction
+    : public UndoableAction,
+      public ICloneable<ArrangerSelectionsAction>,
+      public ISerializable<ArrangerSelectionsAction>
 {
-  ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-  ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-  ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
-  ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-  ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
-  ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
-  ARRANGER_SELECTIONS_ACTION_STRETCH_L,
-  ARRANGER_SELECTIONS_ACTION_STRETCH_R,
-};
-
-/**
- * Type used when the action is an EDIT action.
- */
-enum class ArrangerSelectionsActionEditType
-{
-  /** Edit the name of the ArrangerObject's in the
-   * selection. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+public:
+  enum class Type
+  {
+    AutomationFill,
+    Create,
+    Delete,
+    Duplicate,
+    Edit,
+    Link,
+    Merge,
+    Move,
+    Quantize,
+    Record,
+    Resize,
+    Split,
+  };
 
   /**
-   * Edit a Position of the ArrangerObject's in
-   * the selection.
-   *
-   * This will just set all of the positions on the
-   * object.
+   * Type used when the action is a RESIZE action.
    */
-  ARRANGER_SELECTIONS_ACTION_EDIT_POS,
+  enum class ResizeType
+  {
+    L, //< Resize the left side of the `ArrangerObject`s in the selection.
+    R, //< Resize the right side of the `ArrangerObject`s in the selection.
+    LLoop,
+    RLoop,
+    LFade,
+    RFade,
+    LStretch,
+    RStretch,
+  };
 
   /**
-   * Edit a primitive (int, etc) member of
-   * ArrangerObject's in the selection.
-   *
-   * This will simply set all relevant primitive
-   * values in an ArrangerObject when doing/undoing.
+   * Type used when the action is an EDIT action.
    */
-  ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+  enum class EditType
+  {
+    /** Edit the name of objects in the selection. */
+    Name,
 
-  /** For editing the MusicalScale inside
-   * ScaleObject's. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
+    /**
+     * Edit a Position of objects in the selection.
+     *
+     * This will just set all of the positions on the object.
+     */
+    Position,
 
-  /** Editing fade positions or curve options. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
+    /**
+     * Edit a primitive (int, etc) member of objects in the selection.
+     *
+     * This will simply set all relevant primitive values in an ArrangerObject
+     * when doing/undoing.
+     */
+    Primitive,
 
-  /** Change mute status. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+    /** For editing the MusicalScale inside `ScaleObject`s. */
+    Scale,
 
-  /** For ramping MidiNote velocities or
-   * AutomationPoint values.
-   * (this is handled by EDIT_PRIMITIVE) */
-  // ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
+    /** Editing fade positions or curve options. */
+    Fades,
 
-  /** MIDI function. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-};
+    /** Change mute status. */
+    Mute,
 
-/**
- * The action.
- */
-typedef struct ArrangerSelectionsAction
-{
-  UndoableAction parent_instance;
+    /** For ramping MidiNote velocities or AutomationPoint values.
+     * (this is handled by EDIT_PRIMITIVE) */
+    // ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
 
+    /** MIDI function. */
+    EditorFunction,
+  };
+
+  // Rule of 0
+  ArrangerSelectionsAction () = default;
+  virtual ~ArrangerSelectionsAction () = default;
+
+  class CreateOrDeleteAction;
+  class CreateAction;
+  class DeleteAction;
+  class RecordAction;
+  class MoveOrDuplicateAction;
+  class MoveOrDuplicateTimelineAction;
+  class MoveOrDuplicateMidiAction;
+  class MoveOrDuplicateAutomationAction;
+  class MoveOrDuplicateChordAction;
+  class MoveByTicksAction;
+  class MoveMidiAction;
+  class MoveChordAction;
+  class LinkAction;
+  class EditAction;
+  class AutomationFillAction;
+  class SplitAction;
+  class MergeAction;
+  class ResizeAction;
+  class QuantizeAction;
+
+  bool contains_clip (const AudioClip &clip) const override;
+
+  void init_after_cloning (const ArrangerSelectionsAction &other) final
+  {
+    type_ = other.type_;
+    if (other.sel_)
+      sel_ = clone_unique_with_variant<ArrangerSelectionsVariant> (
+        other.sel_.get ());
+    if (other.sel_after_)
+      sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant> (
+        other.sel_after_.get ());
+    edit_type_ = other.edit_type_;
+    ticks_ = other.ticks_;
+    delta_tracks_ = other.delta_tracks_;
+    delta_lanes_ = other.delta_lanes_;
+    delta_chords_ = other.delta_chords_;
+    delta_pitch_ = other.delta_pitch_;
+    delta_vel_ = other.delta_vel_;
+    delta_normalized_amount_ = other.delta_normalized_amount_;
+    if (other.target_port_)
+      target_port_ = std::make_unique<PortIdentifier> (*other.target_port_);
+    str_ = other.str_;
+    pos_ = other.pos_;
+    for (auto &r : other.r1_)
+      {
+        r1_.push_back (
+          clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
+      }
+    for (auto &r : other.r2_)
+      {
+        r2_.push_back (
+          clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
+      }
+    num_split_objs_ = other.num_split_objs_;
+    first_run_ = other.first_run_;
+    if (other.opts_)
+      opts_ = std::make_unique<QuantizeOptions> (*other.opts_);
+    if (other.region_before_)
+      region_before_ =
+        clone_unique_with_variant<RegionVariant> (other.region_before_.get ());
+    if (other.region_after_)
+      region_after_ =
+        clone_unique_with_variant<RegionVariant> (other.region_after_.get ());
+    resize_type_ = other.resize_type_;
+  }
+
+  bool needs_transport_total_bar_update (bool perform) const override
+  {
+    if (
+      (perform && type_ == Type::Create) || (!perform && type_ == Type::Delete)
+      || (perform && type_ == Type::Duplicate)
+      || (perform && type_ == Type::Link))
+      return false;
+
+    return true;
+  }
+
+  bool needs_pause () const override
+  {
+    /* always needs a pause to update the track playback snapshots */
+    return true;
+  }
+
+  bool can_contain_clip () const override { return true; }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+protected:
+  /**
+   * @brief Generic constructor to be used by others
+   *
+   * Internally calls @ref set_before_selections().
+   *
+   * @param before_sel Selections before the change.
+   */
+  ArrangerSelectionsAction (const ArrangerSelections &before_sel, Type type);
+
+  /**
+   * @brief Sets @ref sel_ to a clone of @p src.
+   *
+   * @param src
+   */
+  void set_before_selections (const ArrangerSelections &src);
+
+  /**
+   * @brief Sets @ref sel_after_ to a clone of @p src.
+   *
+   * @param src
+   */
+  void set_after_selections (const ArrangerSelections &src);
+
+  char * arranger_selections_action_stringize (ArrangerSelectionsAction * self);
+
+  std::string to_string () const final;
+
+private:
+  /** Common logic for perform/undo. */
+  void do_or_undo (bool do_it);
+
+  void do_or_undo_duplicate_or_link (bool link, bool do_it);
+  void do_or_undo_move (bool do_it);
+  void do_or_undo_create_or_delete (bool do_it, bool create);
+  void do_or_undo_record (bool do_it);
+  void do_or_undo_edit (bool do_it);
+  void do_or_undo_automation_fill (bool do_it);
+  void do_or_undo_split (bool do_it);
+  void do_or_undo_merge (bool do_it);
+  void do_or_undo_resize (bool do_it);
+  void do_or_undo_quantize (bool do_it);
+
+  /**
+   * Finds all corresponding objects in the project and calls
+   * Region.update_link_group().
+   */
+  void update_region_link_groups (const auto &objects);
+
+  /**
+   * @brief Moves a project object by tracks and/or labes.
+   *
+   * @param obj An object that already exists in the project.
+   * @param tracks_diff
+   * @param lanes_diff
+   * @param use_index_in_prev_lane
+   * @param index_in_prev_lane
+   */
+  void move_obj_by_tracks_and_lanes (
+    ArrangerObject &obj,
+    int             tracks_diff,
+    int             lanes_diff,
+    bool            use_index_in_prev_lane,
+    int             index_in_prev_lane);
+
+  ArrangerSelections * get_actual_arranger_selections () const;
+
+  void init_loaded_impl () final;
+  void perform_impl () final;
+  void undo_impl () final;
+
+public:
   /** Action type. */
-  ArrangerSelectionsActionType type;
+  Type type_ = (Type) 0;
 
   /** A clone of the ArrangerSelections before the change. */
-  ArrangerSelections * sel;
+  std::unique_ptr<ArrangerSelections> sel_;
 
   /**
-   * A clone of the ArrangerSelections after the change (used in the EDIT action
-   * and quantize).
+   * A clone of the ArrangerSelections after the change (used in the EDIT
+   * action and quantize).
    */
-  ArrangerSelections * sel_after;
+  std::unique_ptr<ArrangerSelections> sel_after_;
 
   /** Type of edit action, if an Edit action. */
-  ArrangerSelectionsActionEditType edit_type;
-
-  ArrangerSelectionsActionResizeType resize_type;
+  EditType edit_type_ = (EditType) 0;
 
   /** Ticks diff. */
-  double ticks;
+  double ticks_ = 0.0;
   /** Tracks moved. */
-  int delta_tracks;
+  int delta_tracks_ = 0;
   /** Lanes moved. */
-  int delta_lanes;
+  int delta_lanes_ = 0;
   /** Chords moved (up/down in the Chord editor). */
-  int delta_chords;
+  int delta_chords_ = 0;
   /** Delta of MidiNote pitch. */
-  int delta_pitch;
+  int delta_pitch_ = 0;
   /** Delta of MidiNote velocity. */
-  int delta_vel;
+  int delta_vel_ = 0;
   /**
    * Difference in a normalized amount, such as
    * automation point normalized value.
    */
-  double delta_normalized_amount;
+  double delta_normalized_amount_ = 0.0;
 
-  /** Target port (used to find corresponding automation track
-   * when moving/copying automation regions to another
-   * automation track/another track). */
-  PortIdentifier * target_port;
+  /** Target port (used to find corresponding automation track when
+   * moving/copying automation regions to another automation track/another
+   * track). */
+  std::unique_ptr<PortIdentifier> target_port_;
 
   /** String, when changing a string. */
-  char * str;
+  std::string str_;
 
   /** Position, when changing a Position. */
-  Position pos;
+  Position pos_;
 
-  /** Used when splitting - these are the split
-   * ArrangerObject's. */
-  ArrangerObject * r1[800];
-  ArrangerObject * r2[800];
+  /** Used when splitting - these are the split ArrangerObject's. */
+  std::vector<std::unique_ptr<LengthableObject>> r1_;
+  std::vector<std::unique_ptr<LengthableObject>> r2_;
 
-  /** Number of split objects inside r1 and r2
-   * each. */
-  int num_split_objs;
+  /** Number of split objects. */
+  size_t num_split_objs_ = 0;
 
   /**
    * If this is true, the first "do" call does nothing in some cases.
    *
-   * Set internally and either used or ignored.
+   * Can be ignored depending on the action.
    */
-  bool first_run;
+  bool first_run_ = true;
 
   /** QuantizeOptions clone, if quantizing. */
-  QuantizeOptions * opts;
-
-  /* --- below for serialization only --- */
-  ChordSelections *        chord_sel;
-  ChordSelections *        chord_sel_after;
-  TimelineSelections *     tl_sel;
-  TimelineSelections *     tl_sel_after;
-  MidiArrangerSelections * ma_sel;
-  MidiArrangerSelections * ma_sel_after;
-  AutomationSelections *   automation_sel;
-  AutomationSelections *   automation_sel_after;
-  AudioSelections *        audio_sel;
-  AudioSelections *        audio_sel_after;
-
-  /* arranger objects that can be split */
-  Region *   region_r1[800];
-  Region *   region_r2[800];
-  MidiNote * mn_r1[800];
-  MidiNote * mn_r2[800];
+  std::unique_ptr<QuantizeOptions> opts_;
 
   /** Used for automation autofill action. */
-  Region * region_before;
-  Region * region_after;
+  std::unique_ptr<Region> region_before_;
+  std::unique_ptr<Region> region_after_;
 
-} ArrangerSelectionsAction;
+  /** Used by the resize action. */
+  ResizeType resize_type_ = (ResizeType) 0;
+};
 
-void
-arranger_selections_action_init_loaded (ArrangerSelectionsAction * self);
+class ArrangerSelectionsAction::CreateOrDeleteAction
+    : virtual public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for creating/deleting objects.
+   *
+   * @param create If this is true, the action will create objects. If false, it
+   * will delete them.
+   */
+  CreateOrDeleteAction (const ArrangerSelections &sel, bool create);
+};
 
-/**
- * Creates a new action for creating/deleting
- * objects.
- *
- * @param create 1 to create 0 to delete.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_create_or_delete (
-  ArrangerSelections * sel,
-  const bool           create,
-  GError **            error);
+class ArrangerSelectionsAction::CreateAction final : public CreateOrDeleteAction
+{
+public:
+  CreateAction (const ArrangerSelections &sel)
+      : CreateOrDeleteAction (sel, true){};
+};
 
-#define arranger_selections_action_new_create(sel, error) \
-  arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, true, error)
+class ArrangerSelectionsAction::DeleteAction final : public CreateOrDeleteAction
+{
+public:
+  DeleteAction (const ArrangerSelections &sel)
+      : CreateOrDeleteAction (sel, false){};
+};
 
-#define arranger_selections_action_new_delete(sel, error) \
-  arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, false, error)
+class ArrangerSelectionsAction::RecordAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * @brief Construct a new action for recording.
+   *
+   * @param sel_before
+   * @param sel_after
+   * @param already_recorded
+   */
+  RecordAction (
+    const ArrangerSelections &sel_before,
+    const ArrangerSelections &sel_after,
+    bool                      already_recorded);
+};
 
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_record (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const bool           already_recorded,
-  GError **            error);
+class ArrangerSelectionsAction::MoveOrDuplicateAction
+    : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for moving or duplicating objects.
+   *
+   * @param already_moved If this is true, the first DO will do nothing.
+   * @param delta_normalized_amount Difference in a normalized amount, such as
+   * automation point normalized value.
+   */
+  MoveOrDuplicateAction (
+    const ArrangerSelections &sel,
+    bool                      move,
+    double                    ticks,
+    int                       delta_chords,
+    int                       delta_pitch,
+    int                       delta_tracks,
+    int                       delta_lanes,
+    double                    delta_normalized_amount,
+    const PortIdentifier *    tgt_port_id,
+    bool                      already_moved);
+};
 
-/**
- * Creates a new action for moving or duplicating
- * objects.
- *
- * @param move True to move, false to duplicate.
- * @param already_moved If this is true, the first
- *   DO will do nothing.
- * @param delta_normalized_amount Difference in a
- *   normalized amount, such as automation point
- *   normalized value.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_move_or_duplicate (
-  ArrangerSelections *   sel,
-  const bool             move,
-  const double           ticks,
-  const int              delta_chords,
-  const int              delta_pitch,
-  const int              delta_tracks,
-  const int              delta_lanes,
-  const double           delta_normalized_amount,
-  const PortIdentifier * tgt_port_id,
-  const bool             already_moved,
-  GError **              error);
+class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveOrDuplicateTimelineAction (
+    const TimelineSelections &sel,
+    bool                      move,
+    double                    ticks,
+    int                       delta_tracks,
+    int                       delta_lanes,
+    const PortIdentifier *    tgt_port_id,
+    bool                      already_moved)
+      : MoveOrDuplicateAction (
+        dynamic_cast<const ArrangerSelections &> (sel),
+        move,
+        ticks,
+        0,
+        0,
+        delta_tracks,
+        delta_lanes,
+        0,
+        tgt_port_id,
+        already_moved){};
+};
 
-#define arranger_selections_action_new_move( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
-  error) \
-  arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 1, ticks, chords, pitch, tracks, lanes, \
-    norm_amt, port_id, already_moved, error)
-#define arranger_selections_action_new_duplicate( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
-  error) \
-  arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 0, ticks, chords, pitch, tracks, lanes, \
-    norm_amt, port_id, already_moved, error)
+class ArrangerSelectionsAction::MoveOrDuplicateMidiAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveOrDuplicateMidiAction (
+    const MidiSelections &sel,
+    bool                  move,
+    double                ticks,
+    int                   delta_pitch,
+    bool                  already_moved)
+      : MoveOrDuplicateAction (
+        dynamic_cast<const ArrangerSelections &> (sel),
+        move,
+        ticks,
+        0,
+        delta_pitch,
+        0,
+        0,
+        0,
+        nullptr,
+        already_moved){};
+};
 
-#define arranger_selections_action_new_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
-    error)
-#define arranger_selections_action_new_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
-    error)
+class ArrangerSelectionsAction::MoveOrDuplicateChordAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveOrDuplicateChordAction (
+    ChordSelections &sel,
+    bool             move,
+    double           ticks,
+    int              delta_chords,
+    bool             already_moved)
+      : MoveOrDuplicateAction (
+        dynamic_cast<ArrangerSelections &> (sel),
+        move,
+        ticks,
+        delta_chords,
+        0,
+        0,
+        0,
+        0,
+        nullptr,
+        already_moved){};
+};
 
-#define arranger_selections_action_new_move_midi( \
-  sel, ticks, delta_pitch, already_moved, error) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_new_duplicate_midi( \
-  sel, ticks, delta_pitch, already_moved, error) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_new_move_chord( \
-  sel, ticks, delta_chords, already_moved, error) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_new_duplicate_chord( \
-  sel, ticks, delta_chords, already_moved, error) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
+class ArrangerSelectionsAction::MoveOrDuplicateAutomationAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveOrDuplicateAutomationAction (
+    AutomationSelections &sel,
+    bool                  move,
+    double                ticks,
+    int                   delta_normalized_amount,
+    bool                  already_moved)
+      : MoveOrDuplicateAction (
+        dynamic_cast<ArrangerSelections &> (sel),
+        move,
+        ticks,
+        0,
+        0,
+        0,
+        0,
+        delta_normalized_amount,
+        nullptr,
+        already_moved){};
+};
 
-#define arranger_selections_action_new_move_automation( \
-  sel, ticks, norm_amt, already_moved, error) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
-#define arranger_selections_action_new_duplicate_automation( \
-  sel, ticks, norm_amt, already_moved, error) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
+class ArrangerSelectionsAction::MoveByTicksAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveByTicksAction (
+    const ArrangerSelections &sel,
+    double                    ticks,
+    bool                      already_moved)
+      : MoveOrDuplicateAction (sel, true, ticks, 0, 0, 0, 0, 0, nullptr, already_moved)
+  {
+  }
+};
 
-/**
- * Creates a new action for linking regions.
- *
- * @param already_moved If this is true, the first
- *   DO will do nothing.
- * @param sel_before Original selections.
- * @param sel_after Selections after duplication.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_link (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const double         ticks,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const bool           already_moved,
-  GError **            error);
+class ArrangerSelectionsAction::MoveMidiAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveMidiAction (
+    const MidiSelections &sel,
+    double                ticks,
+    int                   delta_pitch,
+    bool                  already_moved)
+      : MoveOrDuplicateAction (sel, true, ticks, 0, delta_pitch, 0, 0, 0, nullptr, already_moved)
+  {
+  }
+};
 
-/**
- * Creates a new action for editing properties
- * of an object.
- *
- * @param sel_before The selections before the
- *   change.
- * @param sel_after The selections after the
- *   change.
- * @param type Indication of which field has changed.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_edit (
-  ArrangerSelections *             sel_before,
-  ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error);
+class ArrangerSelectionsAction::MoveChordAction
+    : public ArrangerSelectionsAction::MoveOrDuplicateAction
+{
+public:
+  MoveChordAction (
+    const ChordSelections &sel,
+    double                 ticks,
+    int                    delta_chords,
+    bool                   already_moved)
+      : MoveOrDuplicateAction (sel, true, ticks, delta_chords, 0, 0, 0, 0, nullptr, already_moved)
+  {
+  }
+};
 
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_edit_single_obj (
-  const ArrangerObject *           obj_before,
-  const ArrangerObject *           obj_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error);
+class ArrangerSelectionsAction::LinkAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for linking regions.
+   *
+   * @param already_moved If this is true, the first DO will do nothing.
+   * @param sel_before Original selections.
+   * @param sel_after Selections after duplication.
+   */
+  LinkAction (
+    const ArrangerSelections &sel_before,
+    const ArrangerSelections &sel_after,
+    double                    ticks,
+    int                       delta_tracks,
+    int                       delta_lanes,
+    bool                      already_moved);
+};
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for MIDI
- * functions.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_edit_midi_function (
-  ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type,
-  MidiFunctionOpts     opts,
-  GError **            error);
+class ArrangerSelectionsAction::EditAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for editing properties of an object.
+   *
+   * @param sel_before The selections before the change.
+   * @param sel_after The selections after the change.
+   * @param type Indication of which field has changed.
+   */
+  EditAction (
+    const ArrangerSelections  &sel_before,
+    const ArrangerSelections * sel_after,
+    EditType                   type,
+    bool                       already_edited);
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for
- * automation functions.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_edit_automation_function (
-  ArrangerSelections *   sel_before,
-  AutomationFunctionType automation_func_type,
-  GError **              error);
+  /**
+   * @brief Wrapper for a single object.
+   */
+  EditAction (
+    const ArrangerObject &obj_before,
+    const ArrangerObject &obj_after,
+    EditType              type,
+    bool                  already_edited);
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for
- * automation functions.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_edit_audio_function (
-  ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error);
+  /**
+   * @brief Wrapper for MIDI functions.
+   */
+  EditAction (
+    const MidiSelections &sel_before,
+    MidiFunctionType      midi_func_type,
+    MidiFunctionOpts      opts);
 
-/**
- * Creates a new action for automation autofill.
- *
- * @param region_before The region before the
- *   change.
- * @param region_after The region after the
- *   change.
- * @param already_changed Whether the change was
- *   already made.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_automation_fill (
-  Region *  region_before,
-  Region *  region_after,
-  bool      already_changed,
-  GError ** error);
+  /**
+   * @brief Wrapper for automation functions.
+   */
+  EditAction (
+    const AutomationSelections &sel_before,
+    AutomationFunctionType      automation_func_type);
 
-/**
- * Creates a new action for splitting
- * ArrangerObject's.
- *
- * @param pos Global position to split at.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_split (
-  ArrangerSelections * sel,
-  const Position *     pos,
-  GError **            error);
+  /**
+   * @brief Wrapper for audio functions.
+   */
+  EditAction (
+    const AudioSelections &sel_before,
+    AudioFunctionType      audio_func_type,
+    AudioFunctionOpts      opts,
+    const std::string *    uri);
+};
 
-/**
- * Creates a new action for merging
- * ArrangerObject's.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_merge (ArrangerSelections * sel, GError ** error);
+class ArrangerSelectionsAction::AutomationFillAction
+    : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for automation autofill.
+   *
+   * @param region_before The region before the change.
+   * @param region_after The region after the change.
+   * @param already_changed Whether the change was already made.
+   */
+  AutomationFillAction (
+    const Region &region_before,
+    const Region &region_after,
+    bool          already_changed);
+};
 
-/**
- * Creates a new action for resizing ArrangerObject's.
- *
- * @param sel_after Optional selections after resizing (if already resized).
- * @param ticks How many ticks to add to the resizing edge.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_resize (
-  ArrangerSelections *               sel_before,
-  ArrangerSelections *               sel_after,
-  ArrangerSelectionsActionResizeType type,
-  const double                       ticks,
-  GError **                          error);
+class ArrangerSelectionsAction::SplitAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for splitting regions.
+   *
+   * @param pos Global position to split at.
+   */
+  SplitAction (const ArrangerSelections &sel, Position pos);
+};
 
-/**
- * Creates a new action for quantizing
- * ArrangerObject's.
- *
- * @param opts Quantize options.
- */
-WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_quantize (
-  ArrangerSelections * sel,
-  QuantizeOptions *    opts,
-  GError **            error);
+class ArrangerSelectionsAction::MergeAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for merging objects.
+   */
+  MergeAction (const ArrangerSelections &sel)
+      : ArrangerSelectionsAction (sel, Type::Merge)
+  {
+  }
+};
 
-NONNULL ArrangerSelectionsAction *
-arranger_selections_action_clone (const ArrangerSelectionsAction * src);
+class ArrangerSelectionsAction::ResizeAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for resizing ArrangerObject's.
+   *
+   * @param sel_after Optional selections after resizing (if already resized).
+   * @param ticks How many ticks to add to the resizing edge.
+   */
+  ResizeAction (
+    const ArrangerSelections  &sel_before,
+    const ArrangerSelections * sel_after,
+    ResizeType                 type,
+    double                     ticks);
+};
 
-bool
-arranger_selections_action_perform_create_or_delete (
-  ArrangerSelections * sel,
-  const bool           create,
-  GError **            error);
+class ArrangerSelectionsAction::QuantizeAction : public ArrangerSelectionsAction
+{
+public:
+  /**
+   * Creates a new action for quantizing ArrangerObject's.
+   *
+   * @param opts Quantize options.
+   */
+  QuantizeAction (const ArrangerSelections &sel, QuantizeOptions opts)
+      : ArrangerSelectionsAction (sel, Type::Quantize)
+  {
+    opts_ = std::make_unique<QuantizeOptions> (opts);
+  }
+};
 
-#define arranger_selections_action_perform_create(sel, error) \
-  arranger_selections_action_perform_create_or_delete ( \
-    (ArrangerSelections *) sel, true, error)
-
-#define arranger_selections_action_perform_delete(sel, error) \
-  arranger_selections_action_perform_create_or_delete ( \
-    (ArrangerSelections *) sel, false, error)
-
-bool
-arranger_selections_action_perform_record (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const bool           already_recorded,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_move_or_duplicate (
-  ArrangerSelections *   sel,
-  const bool             move,
-  const double           ticks,
-  const int              delta_chords,
-  const int              delta_pitch,
-  const int              delta_tracks,
-  const int              delta_lanes,
-  const double           delta_normalized_amount,
-  const PortIdentifier * port_id,
-  const bool             already_moved,
-  GError **              error);
-
-#define arranger_selections_action_perform_move( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
-  error) \
-  arranger_selections_action_perform_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 1, ticks, chords, pitch, tracks, lanes, \
-    norm_amt, port_id, already_moved, error)
-#define arranger_selections_action_perform_duplicate( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
-  error) \
-  arranger_selections_action_perform_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 0, ticks, chords, pitch, tracks, lanes, \
-    norm_amt, port_id, already_moved, error)
-
-#define arranger_selections_action_perform_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
-  arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
-    error)
-#define arranger_selections_action_perform_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
-  arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
-    error)
-
-#define arranger_selections_action_perform_move_midi( \
-  sel, ticks, delta_pitch, already_moved, error) \
-  arranger_selections_action_perform_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_perform_duplicate_midi( \
-  sel, ticks, delta_pitch, already_moved, error) \
-  arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_perform_move_chord( \
-  sel, ticks, delta_chords, already_moved, error) \
-  arranger_selections_action_perform_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
-#define arranger_selections_action_perform_duplicate_chord( \
-  sel, ticks, delta_chords, already_moved, error) \
-  arranger_selections_action_perform_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
-
-#define arranger_selections_action_perform_move_automation( \
-  sel, ticks, norm_amt, already_moved, error) \
-  arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
-#define arranger_selections_action_perform_duplicate_automation( \
-  sel, ticks, norm_amt, already_moved, error) \
-  arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
-
-bool
-arranger_selections_action_perform_link (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const double         ticks,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const bool           already_moved,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_edit (
-  ArrangerSelections *             sel_before,
-  ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error);
-
-bool
-arranger_selections_action_perform_edit_single_obj (
-  const ArrangerObject *           obj_before,
-  const ArrangerObject *           obj_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error);
-
-bool
-arranger_selections_action_perform_edit_midi_function (
-  ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type,
-  MidiFunctionOpts     opts,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_edit_automation_function (
-  ArrangerSelections *   sel_before,
-  AutomationFunctionType automation_func_type,
-  GError **              error);
-
-bool
-arranger_selections_action_perform_edit_audio_function (
-  ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_automation_fill (
-  Region *  region_before,
-  Region *  region_after,
-  bool      already_changed,
-  GError ** error);
-
-bool
-arranger_selections_action_perform_split (
-  ArrangerSelections * sel,
-  const Position *     pos,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_merge (
-  ArrangerSelections * sel,
-  GError **            error);
-
-bool
-arranger_selections_action_perform_resize (
-  ArrangerSelections *               sel_before,
-  ArrangerSelections *               sel_after,
-  ArrangerSelectionsActionResizeType type,
-  const double                       ticks,
-  GError **                          error);
-
-bool
-arranger_selections_action_perform_quantize (
-  ArrangerSelections * sel,
-  QuantizeOptions *    opts,
-  GError **            error);
-
-int
-arranger_selections_action_do (ArrangerSelectionsAction * self, GError ** error);
-
-int
-arranger_selections_action_undo (
-  ArrangerSelectionsAction * self,
-  GError **                  error);
-
-char *
-arranger_selections_action_stringize (ArrangerSelectionsAction * self);
-
-bool
-arranger_selections_action_contains_clip (
-  ArrangerSelectionsAction * self,
-  AudioClip *                clip);
-
-void
-arranger_selections_action_free (ArrangerSelectionsAction * self);
+DEFINE_ENUM_FORMATTER (
+  ArrangerSelectionsAction::ResizeType,
+  ArrangerSelectionsAction_ResizeType,
+  "Resize L",
+  "Resize R",
+  "Resize L (loop)",
+  "Resize R (loop)",
+  "Resize L (fade)",
+  "Resize R (fade)",
+  "Stretch L",
+  "Stretch R");
 
 /**
  * @}

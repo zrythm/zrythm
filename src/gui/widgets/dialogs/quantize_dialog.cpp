@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
@@ -7,9 +7,8 @@
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/digital_meter.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/io.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -21,13 +20,13 @@ G_DEFINE_TYPE (QuantizeDialogWidget, quantize_dialog_widget, GTK_TYPE_DIALOG)
 static void
 on_adjust_end_toggled (GtkToggleButton * toggle, QuantizeDialogWidget * self)
 {
-  self->opts->adj_end = gtk_toggle_button_get_active (toggle);
+  self->opts->adj_end_ = gtk_toggle_button_get_active (toggle);
 }
 
 static void
 on_adjust_start_toggled (GtkToggleButton * toggle, QuantizeDialogWidget * self)
 {
-  self->opts->adj_start = gtk_toggle_button_get_active (toggle);
+  self->opts->adj_start_ = gtk_toggle_button_get_active (toggle);
 }
 
 static void
@@ -39,35 +38,27 @@ on_cancel_clicked (GtkButton * btn, QuantizeDialogWidget * self)
 static void
 on_quantize_clicked (GtkButton * btn, QuantizeDialogWidget * self)
 {
-  if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
+  try
     {
-      ArrangerSelections * sel =
-        clip_editor_get_arranger_selections (CLIP_EDITOR);
-      g_return_if_fail (sel);
-
-      GError * err = NULL;
-      bool     ret =
-        arranger_selections_action_perform_quantize (sel, self->opts, &err);
-      if (!ret)
+      if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
         {
-          HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to quantize editor "
-               "selections"));
+          ArrangerSelections * sel = CLIP_EDITOR->get_arranger_selections ();
+          g_return_if_fail (sel);
+
+          UNDO_MANAGER->perform (
+            std::make_unique<ArrangerSelectionsAction::QuantizeAction> (
+              *sel, *self->opts));
+        }
+      else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
+        {
+          UNDO_MANAGER->perform (
+            std::make_unique<ArrangerSelectionsAction::QuantizeAction> (
+              *TL_SELECTIONS, *self->opts));
         }
     }
-  else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
+  catch (const ZrythmException &e)
     {
-      GError * err = NULL;
-      bool     ret = arranger_selections_action_perform_quantize (
-        (ArrangerSelections *) TL_SELECTIONS, self->opts, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to quantize timeline "
-               "selections"));
-        }
+      e.handle (_ ("Failed to quantize selections"));
     }
 }
 
@@ -78,12 +69,12 @@ QuantizeDialogWidget *
 quantize_dialog_widget_new (QuantizeOptions * opts)
 {
   QuantizeDialogWidget * self = static_cast<QuantizeDialogWidget *> (
-    g_object_new (QUANTIZE_DIALOG_WIDGET_TYPE, NULL));
+    g_object_new (QUANTIZE_DIALOG_WIDGET_TYPE, nullptr));
 
   self->opts = opts;
 
-  gtk_toggle_button_set_active (self->adjust_start, opts->adj_start);
-  gtk_toggle_button_set_active (self->adjust_end, opts->adj_end);
+  gtk_toggle_button_set_active (self->adjust_start, opts->adj_start_);
+  gtk_toggle_button_set_active (self->adjust_end, opts->adj_end_);
 
   g_signal_connect (
     G_OBJECT (self->adjust_start), "toggled",
@@ -93,27 +84,27 @@ quantize_dialog_widget_new (QuantizeOptions * opts)
     self);
 
   self->note_length = digital_meter_widget_new (
-    DigitalMeterType::DIGITAL_METER_TYPE_NOTE_LENGTH, &opts->note_length,
-    &opts->note_type, _ ("note length"));
+    DigitalMeterType::DIGITAL_METER_TYPE_NOTE_LENGTH, &opts->note_length_,
+    &opts->note_type_, _ ("note length"));
   gtk_box_append (
     GTK_BOX (self->note_length_box), GTK_WIDGET (self->note_length));
   self->note_type = digital_meter_widget_new (
-    DigitalMeterType::DIGITAL_METER_TYPE_NOTE_TYPE, &opts->note_length,
-    &opts->note_type, _ ("note type"));
+    DigitalMeterType::DIGITAL_METER_TYPE_NOTE_TYPE, &opts->note_length_,
+    &opts->note_type_, _ ("note type"));
   gtk_box_append (GTK_BOX (self->note_type_box), GTK_WIDGET (self->note_type));
 
   int w = 100, h = -1;
   self->amount = bar_slider_widget_new (
-    quantize_options_get_amount, quantize_options_set_amount, opts, 0, 100, w,
-    h, 0, 0, UI_DRAG_MODE_CURSOR, "%");
+    QuantizeOptions::amount_getter, QuantizeOptions::amount_setter, opts, 0,
+    100, w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (GTK_BOX (self->amount_box), GTK_WIDGET (self->amount));
   self->swing = bar_slider_widget_new (
-    quantize_options_get_swing, quantize_options_set_swing, opts, 0, 100, w, h,
-    0, 0, UI_DRAG_MODE_CURSOR, "%");
+    QuantizeOptions::swing_getter, QuantizeOptions::swing_setter, opts, 0, 100,
+    w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (GTK_BOX (self->swing_box), GTK_WIDGET (self->swing));
   self->randomization = bar_slider_widget_new (
-    quantize_options_get_randomization, quantize_options_set_randomization,
-    opts, 0.f, 100.f, w, h, 0, 0, UI_DRAG_MODE_CURSOR, " ticks");
+    QuantizeOptions::randomization_getter, QuantizeOptions::randomization_setter,
+    opts, 0.f, 100.f, w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, " ticks");
   gtk_box_append (
     GTK_BOX (self->randomization_box), GTK_WIDGET (self->randomization));
 

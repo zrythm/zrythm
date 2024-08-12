@@ -1,18 +1,14 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-/**
- * \file
- *
- * ChordDescriptor selector popover.
- */
 
 #ifndef __GUI_WIDGETS_CHORD_SELECTOR_WINDOW_H__
 #define __GUI_WIDGETS_CHORD_SELECTOR_WINDOW_H__
 
-#include <adwaita.h>
+#include <memory>
+
+#include "dsp/chord_descriptor.h"
+
+#include "libadwaita_wrapper.h"
 
 #define CHORD_SELECTOR_WINDOW_WIDGET_TYPE \
   (chord_selector_window_widget_get_type ())
@@ -29,14 +25,14 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct ChordObject ChordObject;
-typedef struct ScaleObject ScaleObject;
+class ChordObject;
+class ScaleObject;
 
 /**
  * A GtkPopover to create a ChordDescriptor for use in the ChordTrack's
  * ChordObject's.
  */
-typedef struct _ChordSelectorWindowWidget
+using ChordSelectorWindowWidget = struct _ChordSelectorWindowWidget
 {
   AdwDialog parent_instance;
 
@@ -127,8 +123,7 @@ typedef struct _ChordSelectorWindowWidget
 
   /** The index of the chord in the chord editor. */
   int chord_idx;
-
-} ChordSelectorWindowWidget;
+};
 
 /**
  * Creates the popover.

@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2018-2019, 2022-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/tracklist.h"
 #include "gui/widgets/popovers/track_filter_popover.h"
@@ -9,6 +7,7 @@
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (TracklistHeaderWidget, tracklist_header_widget, GTK_TYPE_WIDGET)
@@ -16,10 +15,9 @@ G_DEFINE_TYPE (TracklistHeaderWidget, tracklist_header_widget, GTK_TYPE_WIDGET)
 void
 tracklist_header_widget_refresh_track_count (TracklistHeaderWidget * self)
 {
-  char buf[40];
-  int  num_visible = tracklist_get_num_visible_tracks (TRACKLIST, 1);
-  sprintf (buf, "%d/%zu", num_visible, TRACKLIST->tracks.size ());
-  gtk_label_set_text (self->track_count_lbl, buf);
+  int  num_visible = TRACKLIST->get_num_visible_tracks (true);
+  auto buf = fmt::format ("{}/{}", num_visible, TRACKLIST->tracks_.size ());
+  gtk_label_set_text (self->track_count_lbl, buf.c_str ());
 }
 
 void
@@ -50,9 +48,9 @@ tracklist_header_widget_init (TracklistHeaderWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_menu_button_set_create_popup_func (
-    self->filter_menu_btn, create_filter_popup, self, NULL);
+    self->filter_menu_btn, create_filter_popup, self, nullptr);
   gtk_menu_button_set_create_popup_func (
-    self->tracklist_pref_btn, create_tracklist_preferences_popup, self, NULL);
+    self->tracklist_pref_btn, create_tracklist_preferences_popup, self, nullptr);
 
   /* hack - this will cause the tracklist to get filtered */
   TrackFilterPopoverWidget * track_filter_popover =

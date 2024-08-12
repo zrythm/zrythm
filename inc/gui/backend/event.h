@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * UI event.
  */
@@ -451,32 +451,35 @@ enum class EventType
 /**
  * A Zrythm event.
  */
-typedef struct ZEvent
+class ZEvent
 {
+public:
+  ZEvent () = default;
+  ~ZEvent ();
+
+public:
   /** Event type. */
-  EventType type;
+  EventType type_{};
+
+  /* FIXME: cannot be copied */
+  ZEvent &operator= (const ZEvent &other) = delete;
+  ZEvent (const ZEvent &other) = delete;
 
   /** Argument. */
-  void * arg;
+  void * arg_ = nullptr;
 
   /** Source file initialized from. */
-  const char * file;
+  const char * file_ = nullptr;
 
   /** Function initialized from. */
-  const char * func;
+  const char * func_ = nullptr;
 
   /** Line no initialized from. */
-  int lineno;
+  int lineno_ = 0;
 
   /** Backtrace. */
-  char * backtrace;
-} ZEvent;
-
-ZEvent *
-event_new (void);
-
-void
-event_free (ZEvent * self);
+  char * backtrace_ = nullptr;
+};
 
 /**
  * @}

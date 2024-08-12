@@ -1,8 +1,9 @@
+
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Common logic for tracks that can be group targets.
  */
@@ -10,71 +11,92 @@
 #ifndef __AUDIO_GROUP_TARGET_TRACK_H__
 #define __AUDIO_GROUP_TARGET_TRACK_H__
 
-typedef struct Track Track;
-
-#define TRACK_CAN_BE_GROUP_TARGET(tr) \
-  (IS_TRACK (tr) \
-   && (tr->type == TrackType::TRACK_TYPE_AUDIO_GROUP || tr->type == TrackType::TRACK_TYPE_MIDI_GROUP || tr->type == TrackType::TRACK_TYPE_INSTRUMENT || tr->type == TrackType::TRACK_TYPE_MASTER))
-
-void
-group_target_track_init_loaded (Track * self);
-
-void
-group_target_track_init (Track * track);
+#include "dsp/channel_track.h"
 
 /**
- * Removes a child track from the list of children.
- */
-void
-group_target_track_remove_child (
-  Track *      self,
-  unsigned int child_name_hash,
-  bool         disconnect,
-  bool         recalc_graph,
-  bool         pub_events);
-
-/**
- * Remove all known children.
+ * @brief Abstract base class for a track that can be routed to.
  *
- * @param disconnect Also route the children to "None".
+ * Children are always `ChannelTrack`s since they require a channel to route to
+ * a target.
  */
-void
-group_target_track_remove_all_children (
-  Track * self,
-  bool    disconnect,
-  bool    recalc_graph,
-  bool    pub_events);
+class GroupTargetTrack
+    : virtual public ChannelTrack,
+      public ISerializable<GroupTargetTrack>
+{
+public:
+  // Rule of 0
+  virtual ~GroupTargetTrack () = default;
 
-/**
- * Adds a child track to the list of children.
- *
- * @param connect Connect the child to the group track.
- */
-void
-group_target_track_add_child (
-  Track *      self,
-  unsigned int child_name_hash,
-  bool         connect,
-  bool         recalc_graph,
-  bool         pub_events);
+  /**
+   * Updates the track's children.
+   *
+   * Used when changing track positions.
+   */
+  virtual void update_children () final;
 
-bool
-group_target_track_validate (Track * self);
+  /**
+   * Removes a child track from the list of children.
+   */
+  virtual void remove_child (
+    unsigned int child_name_hash,
+    bool         disconnect,
+    bool         recalc_graph,
+    bool         pub_events) final;
 
-void
-group_target_track_add_children (
-  Track *        self,
-  unsigned int * children,
-  int            num_children,
-  bool           connect,
-  bool           recalc_graph,
-  bool           pub_events);
+  /**
+   * Remove all known children.
+   *
+   * @param disconnect Also route the children to "None".
+   */
+  void
+  remove_all_children (bool disconnect, bool recalc_graph, bool pub_events);
 
-/**
- * Returns the index of the child matching the
- * given hash.
- */
-NONNULL int
-group_target_track_find_child (Track * self, unsigned int track_name_hash);
+  /**
+   * Adds a child track to the list of children.
+   *
+   * @param connect Connect the child to the group track.
+   */
+  void add_child (
+    unsigned int child_name_hash,
+    bool         connect,
+    bool         recalc_graph,
+    bool         pub_events);
+
+  bool validate () const override;
+
+  void add_children (
+    const std::vector<unsigned int> &children,
+    bool                             connect,
+    bool                             recalc_graph,
+    bool                             pub_events);
+
+  /**
+   * Returns the index of the child matching the given hash.
+   */
+  int find_child (unsigned int track_name_hash);
+
+protected:
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+
+private:
+  /**
+   * Updates the output of the child channel (where the Channel routes to).
+   */
+  static void update_child_output (
+    Channel *          ch,
+    GroupTargetTrack * output,
+    bool               recalc_graph,
+    bool               pub_events);
+
+  bool contains_child (unsigned int child_name_hash);
+
+public:
+  /**
+   * Name hashes of tracks that are routed to this track, if group track.
+   *
+   * This is used when undoing track deletion.
+   */
+  std::vector<unsigned int> children_;
+};
 
 #endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

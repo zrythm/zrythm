@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Plugin manager.
  */
@@ -10,15 +10,15 @@
 #ifndef __PLUGINS_PLUGIN_MANAGER_H__
 #define __PLUGINS_PLUGIN_MANAGER_H__
 
+#include <filesystem>
+
+#include "plugins/cached_plugin_descriptors.h"
+#include "plugins/carla_discovery.h"
+#include "plugins/collections.h"
 #include "plugins/plugin_descriptor.h"
-#include "utils/symap.h"
 #include "utils/types.h"
 
-#include "zix/sem.h"
-
-TYPEDEF_STRUCT (CachedPluginDescriptors);
-TYPEDEF_STRUCT (PluginCollections);
-TYPEDEF_STRUCT (ZCarlaDiscovery);
+class ZCarlaDiscovery;
 
 /**
  * @addtogroup plugins
@@ -26,134 +26,128 @@ TYPEDEF_STRUCT (ZCarlaDiscovery);
  * @{
  */
 
-#define PLUGIN_MANAGER (gZrythm->plugin_manager)
-
-typedef struct PluginDescriptor PluginDescriptor;
+#define PLUGIN_MANAGER (gZrythm->plugin_manager_)
 
 /**
- * The PluginManager is responsible for scanning
- * and keeping track of available Plugin's.
+ * The PluginManager is responsible for scanning and keeping track of available
+ * Plugin's.
  */
-typedef struct PluginManager
+class PluginManager
 {
+public:
+  PluginManager ()
+      : cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
+        collections_ (PluginCollections::read_or_new ()),
+        carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
+  {
+  }
+
+  static std::vector<fs::path>
+  get_paths_for_protocol (const PluginProtocol protocol);
+
+  static std::string
+  get_paths_for_protocol_separated (const PluginProtocol protocol);
+
+  /**
+   * Searches in the known paths for this plugin protocol for the given relative
+   * path of the plugin and returns the absolute path.
+   */
+  fs::path find_plugin_from_rel_path (
+    const PluginProtocol   protocol,
+    const std::string_view rel_path) const;
+
+  void begin_scan (
+    const double    max_progress,
+    double *        progress,
+    GenericCallback cb,
+    void *          user_data);
+
+  /**
+   * Adds a new descriptor.
+   */
+  void add_descriptor (const PluginDescriptor &descr);
+
+  /**
+   * Updates the text in the greeter.
+   */
+  void set_currently_scanning_plugin (const char * filename, const char * sha1);
+
+  /**
+   * Returns a PluginDescriptor for the given URI.
+   */
+  std::unique_ptr<PluginDescriptor>
+  find_plugin_from_uri (std::string_view uri) const;
+
+  /**
+   * Finds and returns a PluginDescriptor matching the given descriptor.
+   */
+  std::unique_ptr<PluginDescriptor>
+  find_from_descriptor (const PluginDescriptor &src_descr) const;
+
+  /**
+   * Returns if the plugin manager supports the given plugin protocol.
+   */
+  static bool supports_protocol (PluginProtocol protocol);
+
+  /**
+   * Returns an instrument plugin, if any.
+   */
+  std::unique_ptr<PluginDescriptor> pick_instrument () const;
+
+  void clear_plugins ();
+
+private:
+  /**
+   * @brief Adds the given category and author to the lists of plugin categories
+   * and authors, if not already present.
+   */
+  void
+  add_category_and_author (std::string_view category, std::string_view author);
+
+  /**
+   * @brief Source func.
+   */
+  bool call_carla_discovery_idle ();
+
+  static StringArray get_lv2_paths ();
+  static StringArray get_vst2_paths ();
+  static StringArray get_vst3_paths ();
+  static StringArray get_sf_paths (bool sf2);
+  static StringArray get_dssi_paths ();
+  static StringArray get_ladspa_paths ();
+  static StringArray get_clap_paths ();
+  static StringArray get_jsfx_paths ();
+  static StringArray get_au_paths ();
+
+public:
   /**
    * Scanned plugin descriptors.
    */
-  GPtrArray * plugin_descriptors;
+  std::vector<PluginDescriptor> plugin_descriptors_;
 
   /** Plugin categories. */
-  char * plugin_categories[500];
-  int    num_plugin_categories;
+  std::vector<std::string> plugin_categories_;
 
   /** Plugin authors. */
-  char * plugin_authors[6000];
-  int    num_plugin_authors;
+  std::vector<std::string> plugin_authors_;
 
   /** Cached descriptors */
-  CachedPluginDescriptors * cached_plugin_descriptors;
+  std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;
 
   /** Plugin collections. */
-  PluginCollections * collections;
+  std::unique_ptr<PluginCollections> collections_;
 
-  ZCarlaDiscovery * carla_discovery;
+  std::unique_ptr<ZCarlaDiscovery> carla_discovery_;
 
-  GenericCallback scan_done_cb;
-  void *          scan_done_cb_data;
+  GenericCallback scan_done_cb_ = nullptr;
+  void *          scan_done_cb_data_ = nullptr;
 
   /** Whether the plugin manager has been set up already. */
-  bool setup;
+  bool setup_ = false;
 
   /** Number of newly scanned (newly cached) plugins. */
-  int num_new_plugins;
-
-} PluginManager;
-
-PluginManager *
-plugin_manager_new (void);
-
-char **
-plugin_manager_get_paths_for_protocol (
-  const PluginManager * self,
-  const ZPluginProtocol protocol);
-
-char *
-plugin_manager_get_paths_for_protocol_separated (
-  const PluginManager * self,
-  const ZPluginProtocol protocol);
-
-/**
- * Searches in the known paths for this plugin protocol for the given relative
- * path of the plugin and returns the absolute path.
- */
-char *
-plugin_manager_find_plugin_from_rel_path (
-  const PluginManager * self,
-  const ZPluginProtocol protocol,
-  const char *          rel_path);
-
-void
-plugin_manager_begin_scan (
-  PluginManager * self,
-  const double    max_progress,
-  double *        progress,
-  GenericCallback cb,
-  void *          user_data);
-
-/**
- * Adds a new descriptor.
- */
-void
-plugin_manager_add_descriptor (PluginManager * self, PluginDescriptor * descr);
-
-/**
- * Updates the text in the greeter.
- */
-void
-plugin_manager_set_currently_scanning_plugin (
-  PluginManager * self,
-  const char *    filename,
-  const char *    sha1);
-
-/**
- * Returns the PluginDescriptor instance for the
- * given URI.
- *
- * This instance is held by the plugin manager and
- * must not be free'd.
- */
-PluginDescriptor *
-plugin_manager_find_plugin_from_uri (PluginManager * self, const char * uri);
-
-/**
- * Finds and returns the PluginDescriptor instance
- * matching the given descriptor.
- *
- * This instance is held by the plugin manager and
- * must not be free'd.
- */
-PluginDescriptor *
-plugin_manager_find_from_descriptor (
-  PluginManager *          self,
-  const PluginDescriptor * src_descr);
-
-/**
- * Returns if the plugin manager supports the given
- * plugin protocol.
- */
-bool
-plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol);
-
-/**
- * Returns an instrument plugin, if any.
- */
-PluginDescriptor *
-plugin_manager_pick_instrument (PluginManager * self);
-
-void
-plugin_manager_clear_plugins (PluginManager * self);
-
-void
-plugin_manager_free (PluginManager * self);
+  int num_new_plugins_ = 0;
+};
 
 /**
  * @}

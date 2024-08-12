@@ -5,18 +5,16 @@
 #define __AUDIO_EXT_PORT_H__
 
 /**
- * \file
+ * @file
  *
  * External ports.
  */
 
 #include "zrythm-config.h"
 
-#include "dsp/fader.h"
-#include "plugins/plugin.h"
-#include "utils/audio.h"
+#include "dsp/port.h"
+#include "io/serialization/iserializable.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
 #include <gdk/gdk.h>
 
@@ -28,8 +26,8 @@
 #  include <rtmidi_c.h>
 #endif
 
-typedef struct WindowsMmeDevice  WindowsMmeDevice;
-typedef struct HardwareProcessor HardwareProcessor;
+class WindowsMmeDevice;
+class HardwareProcessor;
 
 /**
  * @addtogroup dsp
@@ -37,181 +35,78 @@ typedef struct HardwareProcessor HardwareProcessor;
  * @{
  */
 
-#define EXT_PORT_SCHEMA_VERSION 1
-
 /**
  * Maximum external ports.
  *
  * Used for fixed-size arrays.
  */
-#define EXT_PORTS_MAX 1024
-
-#define ext_port_is_in_active_project(self) \
-  (self->hw_processor \
-   && hw_processor_is_in_active_project ((self)->hw_processor))
-
-/**
- * External port type.
- */
-enum class ExtPortType
-{
-  EXT_PORT_TYPE_JACK,
-  EXT_PORT_TYPE_ALSA,
-  EXT_PORT_TYPE_WINDOWS_MME,
-  EXT_PORT_TYPE_RTMIDI,
-  EXT_PORT_TYPE_RTAUDIO,
-};
+constexpr int EXT_PORTS_MAX = 1024;
 
 /**
  * External port.
  */
-typedef struct ExtPort
+class ExtPort final : public ISerializable<ExtPort>
 {
-  int schema_version;
+public:
+  /**
+   * External port type.
+   */
+  enum class Type
+  {
+    JACK,
+    ALSA,
+    WindowsMME,
+    RtMidi,
+    RtAudio,
+  };
 
-  /** JACK port. */
+public:
+  ExtPort () = default;
 #ifdef HAVE_JACK
-  jack_port_t * jport;
-#else
-  void * jport;
-#endif
+  ExtPort (jack_port_t * jport);
+#endif /* HAVE_JACK */
 
-  /** Full port name, used also as ID. */
-  char * full_name;
-
-  /** Short port name. */
-  char * short_name;
-
-  /** Alias #1 if any. */
-  char * alias1;
-
-  /** Alias #2 if any. */
-  char * alias2;
-
-  int num_aliases;
-
-#ifdef _WIN32
-  /**
-   * Pointer to a WindowsMmeDevice.
-   *
-   * This must be one of the devices in AudioEngine.
-   * It must NOT be allocated or free'd.
-   */
-  WindowsMmeDevice * mme_dev;
-#else
-  void * mme_dev;
-#endif
-
-  /** RtAudio channel index. */
-  unsigned int rtaudio_channel_idx;
-
-  /** RtAudio device name. */
-  char * rtaudio_dev_name;
-
-  /** RtAudio device ID (NOT index!!!). */
-  unsigned int rtaudio_id;
-
-  /** Whether the channel is input. */
-  bool rtaudio_is_input;
-  bool rtaudio_is_duplex;
-
-#ifdef HAVE_RTAUDIO
-  RtAudioDevice * rtaudio_dev;
-#else
-  void * rtaudio_dev;
-#endif
-
-  /** RtMidi port index. */
-  unsigned int rtmidi_id;
-
-#ifdef HAVE_RTMIDI
-  RtMidiDevice * rtmidi_dev;
-#else
-  void * rtmidi_dev;
-#endif
-
-  ExtPortType type;
-
-  /** True if MIDI, false if audio. */
-  bool is_midi;
-
-  /** Index in the HW processor (cache for real-time
-   * use) */
-  int hw_processor_index;
-
-  /** Pointer to owner hardware processor, if any. */
-  HardwareProcessor * hw_processor;
-
-  /** Whether the port is active and receiving events (for use by hw processor).
-   */
-  bool active;
+  bool is_in_active_project () const;
 
   /**
-   * Set to true when a hardware port is
-   * disconnected.
-   *
-   * Hardware processor will then attempt to
-   * reconnect next scan.
+   * Inits the ExtPort after loading a project.
    */
-  bool pending_reconnect;
+  COLD void init_loaded (HardwareProcessor * hw_processor)
+  {
+    hw_processor_ = hw_processor;
+  }
 
   /**
-   * Temporary port to receive data.
+   * Prints the port info.
    */
-  Port * port;
-} ExtPort;
+  void print () const;
 
-/**
- * Inits the ExtPort after loading a project.
- */
-COLD NONNULL_ARGS (1) void ext_port_init_loaded (
-  ExtPort *           self,
-  HardwareProcessor * hw_processor);
+  /**
+   * Returns if the ext port matches the current backend.
+   */
+  bool matches_backend () const;
 
-/**
- * Prints the port info.
- */
-void
-ext_port_print (ExtPort * self);
+  /**
+   * Returns a unique identifier (full name prefixed with backend type).
+   */
+  std::string get_id () const;
 
-/**
- * Returns if the ext port matches the current
- * backend.
- */
-bool
-ext_port_matches_backend (ExtPort * self);
+  friend bool operator== (const ExtPort &a, const ExtPort &b);
 
-/**
- * Returns a unique identifier (full name prefixed with backend type).
- *
- * @memberof ExtPort
- */
-MALLOC
-NONNULL char *
-ext_port_get_id (ExtPort * ext_port);
+  /**
+   * Returns a user-friendly display name (eg, to be used in dropdowns).
+   */
+  std::string get_friendly_name () const;
 
-NONNULL bool
-ext_ports_equal (const ExtPort * a, const ExtPort * b);
+  /**
+   * Returns the buffer of the external port.
+   */
+  float * get_buffer (nframes_t nframes) const;
 
-/**
- * Returns a user-friendly display name (eg, to be used in dropdowns).
- *
- * @memberof ExtPort
- */
-NONNULL char *
-ext_port_get_friendly_name (ExtPort * self);
-
-/**
- * Returns the buffer of the external port.
- */
-float *
-ext_port_get_buffer (ExtPort * ext_port, nframes_t nframes);
-
-/**
- * Clears the buffer of the external port.
- */
-void
-ext_port_clear_buffer (ExtPort * ext_port, nframes_t nframes);
+  /**
+   * Clears the buffer of the external port.
+   */
+  void clear_buffer (nframes_t nframes);
 
 #if 0
 /**
@@ -223,19 +118,10 @@ ext_port_clear_buffer (ExtPort * ext_port, nframes_t nframes);
  *   it is the destination.
  */
 void
-ext_port_connect (
-  ExtPort * ext_port,
+connect (
   Port *    port,
   int       src);
 #endif
-
-#ifdef HAVE_JACK
-/**
- * Creates an ExtPort from a JACK port.
- */
-ExtPort *
-ext_port_new_from_jack_port (jack_port_t * jport);
-#endif /* HAVE_JACK */
 
 /**
  * Disconnects the Port from the ExtPort.
@@ -243,59 +129,143 @@ ext_port_new_from_jack_port (jack_port_t * jport);
  * @param src 1 if the ext_port is the source, 0 if it
  *   is the destination.
  */
-void
-ext_port_disconnect (ExtPort * ext_port, Port * port, int src);
+  void disconnect (Port * port, int src);
 
-/**
- * Activates the port (starts receiving data) or
- * deactivates it.
- *
- * @param port Port to send the output to.
- *
- * @return Non-zero if fail.
- */
-int
-ext_port_activate (ExtPort * self, Port * port, bool activate);
+  /**
+   * Activates the port (starts receiving data) or deactivates it.
+   *
+   * @param port Port to send the output to.
+   *
+   * @return Whether successful.
+   */
+  bool activate (Port * port, bool activate);
 
-/**
- * Checks in the GSettings whether this port is
- * marked as enabled by the user.
- *
- * @note Not realtime safe.
- *
- * @return Whether the port is enabled.
- */
-bool
-ext_port_get_enabled (ExtPort * self);
+  /**
+   * Checks in the GSettings whether this port is marked as enabled by the user.
+   *
+   * @note Not realtime safe.
+   *
+   * @return Whether the port is enabled.
+   */
+  bool get_enabled () const;
 
-/**
- * Collects external ports of the given type.
- *
- * @param flow The signal flow. Note that this is inverse to what Zrythm sees.
- * E.g., to get MIDI inputs like MIDI keyboards, pass \ref Z_PORT_FLOW_OUTPUT
- * here.
- * @param hw Hardware or not.
- */
-void
-ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports);
+  /**
+   * Collects external ports of the given type.
+   *
+   * @param flow The signal flow. Note that this is inverse to what Zrythm sees.
+   * E.g., to get MIDI inputs like MIDI keyboards, pass @ref Z_PORT_FLOW_OUTPUT
+   * here.
+   * @param hw Hardware or not.
+   */
+  static void ext_ports_get (
+    PortType              type,
+    PortFlow              flow,
+    bool                  hw,
+    std::vector<ExtPort> &ports);
 
-/**
- * Creates a shallow clone of the port.
- */
-ExtPort *
-ext_port_clone (ExtPort * ext_port);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-/**
- * Frees an array of ExtPort pointers.
- */
-void
-ext_ports_free (ExtPort ** ext_port, int size);
+public:
+/** JACK port. */
+#ifdef HAVE_JACK
+  jack_port_t * jport_;
+#else
+  void * jport_;
+#endif
 
-/**
- * Frees the ext_port.
- */
-void
-ext_port_free (ExtPort * ext_port);
+  /** Full port name, used also as ID. */
+  std::string full_name_;
+
+  /** Short port name. */
+  std::string short_name_;
+
+  /** Alias #1 if any. */
+  std::string alias1_;
+
+  /** Alias #2 if any. */
+  std::string alias2_;
+
+  int num_aliases_ = 0;
+
+#ifdef _WIN32
+  /**
+   * Pointer to a WindowsMmeDevice.
+   *
+   * This must be one of the devices in AudioEngine.
+   * It must NOT be allocated or free'd.
+   */
+  WindowsMmeDevice * mme_dev_ = nullptr;
+#else
+  void * mme_dev_ = nullptr;
+#endif
+
+  /** RtAudio channel index. */
+  unsigned int rtaudio_channel_idx_ = 0;
+
+  /** RtAudio device name. */
+  std::string rtaudio_dev_name_;
+
+  /** RtAudio device ID (NOT index!!!). */
+  unsigned int rtaudio_id_ = 0;
+
+  /** Whether the channel is input. */
+  bool rtaudio_is_input_ = false;
+  bool rtaudio_is_duplex_ = false;
+
+  std::shared_ptr<
+#ifdef HAVE_RTAUDIO
+    RtAudioDevice
+#else
+    int
+#endif
+    >
+    rtaudio_dev_;
+
+  /** RtMidi port index. */
+  unsigned int rtmidi_id_ = 0;
+
+  std::shared_ptr<
+#ifdef HAVE_RTMIDI
+    RtMidiDevice
+#else
+    int
+#endif
+    >
+    rtmidi_dev_;
+
+  Type type_ = (Type) 0;
+
+  /** True if MIDI, false if audio. */
+  bool is_midi_ = false;
+
+  /** Index in the HW processor (cache for real-time use) */
+  int hw_processor_index_ = -1;
+
+  /** Pointer to owner hardware processor, if any. */
+  HardwareProcessor * hw_processor_ = nullptr;
+
+  /** Whether the port is active and receiving events (for use by hw processor).
+   */
+  bool active_ = false;
+
+  /**
+   * Set to true when a hardware port is disconnected.
+   *
+   * Hardware processor will then attempt to reconnect next scan.
+   */
+  bool pending_reconnect_ = false;
+
+  /**
+   * Temporary port to receive data.
+   */
+  Port * port_ = nullptr;
+};
+
+inline bool
+operator== (const ExtPort &a, const ExtPort &b)
+{
+  return a.type_ == b.type_ && a.full_name_ == b.full_name_;
+}
 
 /**
  * @}

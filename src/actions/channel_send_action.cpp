@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/channel_send_action.h"
@@ -8,159 +8,68 @@
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/main_window.h"
-#include "plugins/plugin.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-void
-channel_send_action_init_loaded (ChannelSendAction * self)
-{
-}
-
-/**
- * Creates a new action.
- *
- * @param port MIDI port, if connecting MIDI.
- * @param stereo Stereo ports, if connecting audio.
- * @param port_connections_mgr Port connections
- *   manager at the start of the action, if needed.
- */
-UndoableAction *
-channel_send_action_new (
-  ChannelSend *                  send,
-  ChannelSendActionType          type,
-  Port *                         port,
-  StereoPorts *                  stereo,
+ChannelSendAction::ChannelSendAction (
+  Type                           type,
+  const ChannelSend             &send,
+  const Port *                   port,
+  const StereoPorts *            stereo,
   float                          amount,
-  const PortConnectionsManager * port_connections_mgr,
-  GError **                      error)
+  const PortConnectionsManager * port_connections_mgr)
+    : send_before_ (send.clone_unique ()), amount_ (amount),
+      send_action_type_ (type)
 {
-  ChannelSendAction * self = object_new (ChannelSendAction);
-  UndoableAction *    ua = (UndoableAction *) self;
-  undoable_action_init (ua, UndoableActionType::UA_CHANNEL_SEND);
-
-  self->type = type;
-  self->send_before = channel_send_clone (send);
-  self->amount = amount;
+  ChannelSendAction ();
 
   if (port)
-    self->midi_id = new PortIdentifier (port->id_);
+    midi_id_ = std::make_unique<PortIdentifier> (port->id_);
 
   if (stereo)
     {
-      self->l_id = new PortIdentifier (stereo->get_l ().id_);
-      self->r_id = new PortIdentifier (stereo->get_r ().id_);
+      l_id_ = std::make_unique<PortIdentifier> (stereo->get_l ().id_);
+      r_id_ = std::make_unique<PortIdentifier> (stereo->get_r ().id_);
     }
 
   if (port_connections_mgr)
     {
-      self->connections_mgr_before =
-        port_connections_manager_clone (port_connections_mgr);
+      port_connections_before_ = port_connections_mgr->clone_unique ();
     }
-
-  return ua;
 }
 
-ChannelSendAction *
-channel_send_action_clone (const ChannelSendAction * src)
-{
-  ChannelSendAction * self = object_new (ChannelSendAction);
-  self->parent_instance = src->parent_instance;
-
-  self->send_before = channel_send_clone (src->send_before);
-  self->type = src->type;
-  self->amount = src->amount;
-
-  if (src->connections_mgr_before)
-    self->connections_mgr_before =
-      port_connections_manager_clone (src->connections_mgr_before);
-  if (src->connections_mgr_after)
-    self->connections_mgr_after =
-      port_connections_manager_clone (src->connections_mgr_after);
-
-  return self;
-}
-
-/**
- * Wrapper to create action and perform it.
- *
- * @param port_connections_mgr Port connections
- *   manager at the start of the action, if needed.
- */
 bool
-channel_send_action_perform (
-  ChannelSend *                  send,
-  ChannelSendActionType          type,
-  Port *                         port,
-  StereoPorts *                  stereo,
-  float                          amount,
-  const PortConnectionsManager * port_connections_mgr,
-  GError **                      error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    channel_send_action_new, error, send, type, port, stereo, amount,
-    port_connections_mgr, error);
-}
-
-static bool
-connect_or_disconnect (
-  ChannelSendAction * self,
-  bool                connect,
-  bool                _do,
-  GError **           error)
+ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
 {
   /* get the actual channel send from the project */
-  ChannelSend * send = channel_send_find (self->send_before);
+  auto send = send_before_->find_in_project ();
 
-  channel_send_disconnect (send, F_NO_RECALC_GRAPH);
+  send->disconnect (false);
 
-  if (_do)
+  if (do_it)
     {
       if (connect)
         {
-          Track * track = channel_send_get_track (send);
-          switch (track->out_signal_type)
+          auto track = send->get_track ();
+          switch (track->out_signal_type_)
             {
             case PortType::Event:
               {
-                Port *   port = Port::find_from_identifier (self->midi_id);
-                GError * err = NULL;
-                bool     connected = channel_send_connect_midi (
-                  send, port, F_NO_RECALC_GRAPH, F_VALIDATE, &err);
-                if (!connected)
-                  {
-                    PROPAGATE_PREFIXED_ERROR (
-                      error, err, "%s",
-                      _ ("Failed to connect MIDI "
-                         "send"));
-                    return false;
-                  }
+                auto port = Port::find_from_identifier<MidiPort> (*midi_id_);
+                send->connect_midi (*port, false, true);
               }
               break;
             case PortType::Audio:
               {
-                Port *   l = Port::find_from_identifier (self->l_id);
-                Port *   r = Port::find_from_identifier (self->r_id);
-                GError * err = NULL;
-                bool     connected = channel_send_connect_stereo (
-                  send, NULL, l, r,
-                  self->type
-                    == ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
-                  F_NO_RECALC_GRAPH, F_VALIDATE, &err);
-                if (!connected)
-                  {
-                    PROPAGATE_PREFIXED_ERROR (
-                      error, err, "%s",
-                      _ ("Failed to connect audio "
-                         "send"));
-                    return false;
-                  }
+                auto l = Port::find_from_identifier<AudioPort> (*l_id_);
+                auto r = Port::find_from_identifier<AudioPort> (*r_id_);
+                send->connect_stereo (
+                  nullptr, l, r, send_action_type_ == Type::ConnectSidechain,
+                  false, true);
               }
               break;
             default:
@@ -171,41 +80,39 @@ connect_or_disconnect (
   /* else if not doing */
   else
     {
-      /* copy the values - connections will be
-       * reverted later when resetting the
+      /* copy the values - connections will be reverted later when resetting the
        * connections manager */
-      channel_send_copy_values (send, self->send_before);
+      send->copy_values_from (*send_before_);
     }
 
   return true;
 }
 
-int
-channel_send_action_do (ChannelSendAction * self, GError ** error)
+void
+ChannelSendAction::perform_impl ()
 {
   /* get the actual channel send from the project */
-  ChannelSend * send = channel_send_find (self->send_before);
+  ChannelSend * send = send_before_->find_in_project ();
 
   bool need_restore_and_recalc = false;
 
-  bool     successful = false;
-  GError * err = NULL;
-  switch (self->type)
+  bool successful = false;
+  switch (send_action_type_)
     {
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_MIDI:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_STEREO:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_PORTS:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful = connect_or_disconnect (self, true, true, &err);
+    case Type::ConnectMidi:
+    case Type::ConnectStereo:
+    case Type::ChangePorts:
+    case Type::ConnectSidechain:
+      successful = connect_or_disconnect (true, true);
       need_restore_and_recalc = true;
       break;
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_DISCONNECT:
-      successful = connect_or_disconnect (self, false, true, &err);
+    case Type::Disconnect:
+      successful = connect_or_disconnect (false, true);
       need_restore_and_recalc = true;
       break;
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
+    case Type::ChangeAmount:
       successful = true;
-      channel_send_set_amount (send, self->amount);
+      send->set_amount (amount_);
       break;
     default:
       break;
@@ -213,120 +120,83 @@ channel_send_action_do (ChannelSendAction * self, GError ** error)
 
   if (!successful)
     {
-      g_return_val_if_fail (err, -1);
-
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to perform channel send action: %s"),
-        err->message);
-      return -1;
+      throw ZrythmException ("Channel send operation failed");
     }
 
   if (need_restore_and_recalc)
     {
-      undoable_action_save_or_load_port_connections (
-        (UndoableAction *) self, true, &self->connections_mgr_before,
-        &self->connections_mgr_after);
+      save_or_load_port_connections (true);
 
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
 
   EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send);
-
-  return 0;
-}
-
-/**
- * Edits the plugin.
- */
-int
-channel_send_action_undo (ChannelSendAction * self, GError ** error)
-{
-  /* get the actual channel send from the project */
-  ChannelSend * send = channel_send_find (self->send_before);
-
-  bool need_restore_and_recalc = false;
-
-  bool     successful = false;
-  GError * err = NULL;
-  switch (self->type)
-    {
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_MIDI:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_STEREO:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful = connect_or_disconnect (self, false, true, &err);
-      need_restore_and_recalc = true;
-      break;
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_PORTS:
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_DISCONNECT:
-      successful = connect_or_disconnect (self, true, false, &err);
-      need_restore_and_recalc = true;
-      break;
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
-      channel_send_set_amount (send, self->send_before->amount->control_);
-      successful = true;
-      break;
-    default:
-      break;
-    }
-
-  if (!successful)
-    {
-      g_return_val_if_fail (err, -1);
-
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to perform channel send action: %s"),
-        err->message);
-      return -1;
-    }
-
-  if (need_restore_and_recalc)
-    {
-      undoable_action_save_or_load_port_connections (
-        (UndoableAction *) self, false, &self->connections_mgr_before,
-        &self->connections_mgr_after);
-
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
-
-      tracklist_validate (TRACKLIST);
-    }
-
-  EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send);
-
-  return 0;
-}
-
-char *
-channel_send_action_stringize (ChannelSendAction * self)
-{
-  switch (self->type)
-    {
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      return g_strdup (_ ("Connect sidechain"));
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_STEREO:
-      return g_strdup (_ ("Connect stereo"));
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CONNECT_MIDI:
-      return g_strdup (_ ("Connect MIDI"));
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_DISCONNECT:
-      return g_strdup (_ ("Disconnect"));
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
-      return g_strdup (_ ("Change amount"));
-    case ChannelSendActionType::CHANNEL_SEND_ACTION_CHANGE_PORTS:
-      return g_strdup (_ ("Change ports"));
-    }
-  g_return_val_if_reached (g_strdup (_ ("Channel send connection")));
 }
 
 void
-channel_send_action_free (ChannelSendAction * self)
+ChannelSendAction::undo_impl ()
 {
-  object_free_w_func_and_null (channel_send_free, self->send_before);
-  object_delete_and_null (self->l_id);
-  object_delete_and_null (self->r_id);
-  object_delete_and_null (self->midi_id);
-  object_free_w_func_and_null (
-    port_connections_manager_free, self->connections_mgr_before);
-  object_free_w_func_and_null (
-    port_connections_manager_free, self->connections_mgr_after);
+  /* get the actual channel send from the project */
+  ChannelSend * send = send_before_->find_in_project ();
 
-  object_zero_and_free (self);
+  bool need_restore_and_recalc = false;
+
+  bool successful = false;
+  switch (send_action_type_)
+    {
+    case Type::ConnectMidi:
+    case Type::ConnectStereo:
+    case Type::ConnectSidechain:
+      successful = connect_or_disconnect (false, true);
+      need_restore_and_recalc = true;
+      break;
+    case Type::ChangePorts:
+    case Type::Disconnect:
+      successful = connect_or_disconnect (true, false);
+      need_restore_and_recalc = true;
+      break;
+    case Type::ChangeAmount:
+      send->set_amount (send_before_->amount_->control_);
+      successful = true;
+      break;
+    default:
+      break;
+    }
+
+  if (!successful)
+    {
+      throw ZrythmException ("Failed to undo channel send action");
+    }
+
+  if (need_restore_and_recalc)
+    {
+      save_or_load_port_connections (false);
+
+      ROUTER->recalc_graph (false);
+
+      TRACKLIST->validate ();
+    }
+
+  EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send);
+}
+
+std::string
+ChannelSendAction::to_string () const
+{
+  switch (send_action_type_)
+    {
+    case Type::ConnectSidechain:
+      return _ ("Connect sidechain");
+    case Type::ConnectStereo:
+      return _ ("Connect stereo");
+    case Type::ConnectMidi:
+      return _ ("Connect MIDI");
+    case Type::Disconnect:
+      return _ ("Disconnect");
+    case Type::ChangeAmount:
+      return _ ("Change amount");
+    case Type::ChangePorts:
+      return _ ("Change ports");
+    }
+  return _ ("Channel send connection");
 }

@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "zrythm-config.h"
 
@@ -11,114 +9,109 @@
 #  include "plugins/carla_discovery.h"
 #  include "plugins/plugin_descriptor.h"
 #  include "plugins/plugin_manager.h"
-#  include "utils/file.h"
-#  include "utils/gtk.h"
-#  include "utils/objects.h"
 #  include "utils/string.h"
 #  include "zrythm.h"
 #  include "zrythm_app.h"
 
-#  include <CarlaBackend.h>
-#  include <stdlib.h>
+#  include "carla_wrapper.h"
 
-static char *
-z_carla_discovery_get_discovery_path (ZPluginArchitecture arch)
+ZCarlaDiscovery::ZCarlaDiscovery (PluginManager &owner)
 {
-  char carla_discovery_filename[60];
-  strcpy (
-    carla_discovery_filename,
+  owner_ = &owner;
+}
+
+fs::path
+ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
+{
+  std::string carla_discovery_filename;
+  carla_discovery_filename =
 #  ifdef _WIN32
-    arch == ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32
+    arch == PluginArchitecture::ARCH_32_BIT
       ? "carla-discovery-win32"
-      : "carla-discovery-native"
+      : "carla-discovery-native";
 #  else
-    "carla-discovery-native"
+    "carla-discovery-native";
 #  endif
-  );
-  strcat (carla_discovery_filename, BIN_SUFFIX);
-  char * carla_discovery;
+  carla_discovery_filename += BIN_SUFFIX;
+  fs::path carla_discovery_parent_dir;
   if (ZRYTHM_TESTING)
     {
-      carla_discovery =
-        g_build_filename (CARLA_BINARIES_DIR, carla_discovery_filename, NULL);
+      carla_discovery_parent_dir = fs::path (CARLA_BINARIES_DIR);
     }
   else
     {
       auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-      char * zrythm_libdir = dir_mgr->get_dir (SYSTEM_ZRYTHM_LIBDIR);
-      g_debug ("using zrythm_libdir: %s", zrythm_libdir);
-      carla_discovery = g_build_filename (
-        zrythm_libdir, "carla", carla_discovery_filename, NULL);
-      g_free (zrythm_libdir);
+      std::string zrythm_libdir =
+        dir_mgr->get_dir (ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR);
+      z_debug ("using zrythm_libdir: %s", zrythm_libdir);
+      carla_discovery_parent_dir = fs::path (zrythm_libdir) / "carla";
     }
-  g_return_val_if_fail (file_exists (carla_discovery), NULL);
 
-  return carla_discovery;
+  fs::path carla_discovery_abs_path =
+    carla_discovery_parent_dir / carla_discovery_filename;
+  z_return_val_if_fail (
+    carla_discovery_abs_path.is_absolute ()
+      && fs::exists (carla_discovery_abs_path),
+    "");
+  return carla_discovery_abs_path;
 }
 
-/**
- * Create a descriptor for the given AU plugin.
- *
- * FIXME merge with
- * carla_native_plugin_get_descriptor_from_cached().
- */
-PluginDescriptor *
-z_carla_discovery_create_au_descriptor_from_info (
+std::unique_ptr<PluginDescriptor>
+ZCarlaDiscovery::create_au_descriptor_from_info (
   const CarlaCachedPluginInfo * info)
 {
   if (!info || !info->valid)
     return NULL;
 
-  PluginDescriptor * descr = plugin_descriptor_new ();
-  descr->name = g_strdup (info->name);
-  g_return_val_if_fail (descr->name, NULL);
-  descr->author = g_strdup (info->maker);
-  descr->num_audio_ins = (int) info->audioIns;
-  descr->num_audio_outs = (int) info->audioOuts;
-  descr->num_cv_ins = (int) info->cvIns;
-  descr->num_cv_outs = (int) info->cvOuts;
-  descr->num_ctrl_ins = (int) info->parameterIns;
-  descr->num_ctrl_outs = (int) info->parameterOuts;
-  descr->num_midi_ins = (int) info->midiIns;
-  descr->num_midi_outs = (int) info->midiOuts;
+  auto ret = std::make_unique<PluginDescriptor> ();
+  ret->name_ = info->name;
+  z_return_val_if_fail (!ret->name_.empty (), nullptr);
+  ret->author_ = info->maker;
+  ret->num_audio_ins_ = info->audioIns;
+  ret->num_audio_outs_ = info->audioOuts;
+  ret->num_cv_ins_ = info->cvIns;
+  ret->num_cv_outs_ = info->cvOuts;
+  ret->num_ctrl_ins_ = info->parameterIns;
+  ret->num_ctrl_outs_ = info->parameterOuts;
+  ret->num_midi_ins_ = info->midiIns;
+  ret->num_midi_outs_ = info->midiOuts;
 
   /* get category */
   if (info->hints & CarlaBackend::PLUGIN_IS_SYNTH)
     {
-      descr->category = ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
+      ret->category_ = ZPluginCategory::INSTRUMENT;
     }
   else
     {
-      descr->category =
-        plugin_descriptor_get_category_from_carla_category (info->category);
+      ret->category_ =
+        PluginDescriptor::get_category_from_carla_category (info->category);
     }
-  descr->category_str = plugin_descriptor_category_to_string (descr->category);
+  ret->category_str_ = PluginDescriptor::category_to_string (ret->category_);
 
-  descr->protocol = ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU;
-  descr->arch = ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_64;
-  descr->path = NULL;
-  descr->min_bridge_mode = plugin_descriptor_get_min_bridge_mode (descr);
-  descr->has_custom_ui = info->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
+  ret->protocol_ = PluginProtocol::AU;
+  ret->arch_ = PluginArchitecture::ARCH_64_BIT;
+  ret->path_ = "";
+  ret->min_bridge_mode_ = ret->get_min_bridge_mode ();
+  ret->has_custom_ui_ = info->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
 
-  return descr;
+  return ret;
 }
 
-static PluginDescriptor *
-descriptor_from_discovery_info (
+std::unique_ptr<PluginDescriptor>
+ZCarlaDiscovery::descriptor_from_discovery_info (
   const CarlaPluginDiscoveryInfo * info,
-  const char *                     sha1)
+  const std::string_view           sha1)
 {
-  g_return_val_if_fail (info, NULL);
+  g_return_val_if_fail (info, nullptr);
   const CarlaPluginDiscoveryMetadata * meta = &info->metadata;
 
-  PluginDescriptor * descr = plugin_descriptor_new ();
-  descr->protocol =
-    plugin_descriptor_get_protocol_from_carla_plugin_type (info->ptype);
-  g_return_val_if_fail (
-    descr->protocol > ZPluginProtocol::Z_PLUGIN_PROTOCOL_DUMMY, NULL);
+  auto descr = std::make_unique<PluginDescriptor> ();
+  descr->protocol_ =
+    PluginDescriptor::get_protocol_from_carla_plugin_type (info->ptype);
+  g_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
   const char * path = NULL;
   const char * uri = NULL;
-  if (descr->protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ)
+  if (descr->protocol_ == PluginProtocol::SFZ)
     {
       path = info->label;
       uri = meta->name;
@@ -131,44 +124,44 @@ descriptor_from_discovery_info (
 
   if (path && !string_is_equal (path, ""))
     {
-      descr->path = g_strdup (path);
-      if (descr->path)
+      descr->path_ = g_strdup (path);
+      if (!descr->path_.empty ())
         {
           /* ghash only used for compatibility with older projects */
-          GFile * file = g_file_new_for_path (descr->path);
-          descr->ghash = g_file_hash (file);
+          GFile * file = g_file_new_for_path (descr->path_.c_str ());
+          descr->ghash_ = g_file_hash (file);
           g_object_unref (file);
         }
     }
-  descr->uri = g_strdup (uri);
-  descr->unique_id = (int64_t) info->uniqueId;
-  descr->name = g_strdup (meta->name);
-  descr->author = g_strdup (meta->maker);
-  descr->category =
-    plugin_descriptor_get_category_from_carla_category (meta->category);
+  descr->uri_ = uri;
+  descr->unique_id_ = (int64_t) info->uniqueId;
+  descr->name_ = meta->name;
+  descr->author_ = meta->maker;
+  descr->category_ =
+    PluginDescriptor::get_category_from_carla_category (meta->category);
   if (
     meta->hints & CarlaBackend::PLUGIN_IS_SYNTH
-    && descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE)
+    && descr->category_ == ZPluginCategory::NONE)
     {
-      descr->category = ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
+      descr->category_ = ZPluginCategory::INSTRUMENT;
     }
-  descr->category_str = plugin_descriptor_category_to_string (descr->category);
-  descr->sha1 = g_strdup (sha1);
+  descr->category_str_ = PluginDescriptor::category_to_string (descr->category_);
+  descr->sha1_ = sha1;
   const CarlaPluginDiscoveryIO * io = &info->io;
-  descr->num_audio_ins = (int) io->audioIns;
-  descr->num_audio_outs = (int) io->audioOuts;
-  descr->num_cv_ins = (int) io->cvIns;
-  descr->num_cv_outs = (int) io->cvOuts;
-  descr->num_midi_ins = (int) io->midiIns;
-  descr->num_midi_outs = (int) io->midiOuts;
-  descr->num_ctrl_ins = (int) io->parameterIns;
-  descr->num_ctrl_outs = (int) io->parameterOuts;
-  descr->arch =
+  descr->num_audio_ins_ = (int) io->audioIns;
+  descr->num_audio_outs_ = (int) io->audioOuts;
+  descr->num_cv_ins_ = (int) io->cvIns;
+  descr->num_cv_outs_ = (int) io->cvOuts;
+  descr->num_midi_ins_ = (int) io->midiIns;
+  descr->num_midi_outs_ = (int) io->midiOuts;
+  descr->num_ctrl_ins_ = (int) io->parameterIns;
+  descr->num_ctrl_outs_ = (int) io->parameterOuts;
+  descr->arch_ =
     info->btype == CarlaBackend::BINARY_NATIVE
-      ? ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_64
-      : ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32;
-  descr->has_custom_ui = meta->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
-  descr->min_bridge_mode = CarlaBridgeMode::Full;
+      ? PluginArchitecture::ARCH_64_BIT
+      : PluginArchitecture::ARCH_32_BIT;
+  descr->has_custom_ui_ = meta->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
+  descr->min_bridge_mode_ = CarlaBridgeMode::Full;
 
   return descr;
 }
@@ -190,28 +183,28 @@ z_carla_discovery_plugin_scanned_cb (
       return;
     }
 
+  auto  pm = self->owner_;
+  auto &cached_descriptors = pm->cached_plugin_descriptors_;
+
   /* if discovery is expensive and this binary contains no plugins, remember it
    * (as blacklisted) */
   if (!nfo && sha1)
     {
-      if (!cached_plugin_descriptors_is_blacklisted (
-            self->owner->cached_plugin_descriptors, sha1))
+      if (!cached_descriptors->is_blacklisted (sha1))
         {
-          cached_plugin_descriptors_blacklist (
-            self->owner->cached_plugin_descriptors, sha1, false);
+          cached_descriptors->blacklist (sha1, false);
         }
       return;
     }
 
-  PluginDescriptor * descr = descriptor_from_discovery_info (nfo, sha1);
-  g_debug ("scanned %s", descr->uri);
-  plugin_manager_add_descriptor (self->owner, descr);
+  auto descr = ZCarlaDiscovery::descriptor_from_discovery_info (nfo, sha1);
+  z_debug ("scanned %s", descr->uri_);
+  pm->add_descriptor (*descr);
 
   /* only cache expensive plugins */
   if (sha1)
     {
-      cached_plugin_descriptors_add (
-        self->owner->cached_plugin_descriptors, descr, false);
+      cached_descriptors->add (*descr, false);
     }
 }
 
@@ -223,52 +216,36 @@ z_carla_discovery_plugin_check_cache_cb (
 {
   g_return_val_if_fail (ptr && filename && sha1, true);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
-  g_debug ("check cache for: filename: %s | sha1: %s", filename, sha1);
-  GPtrArray * found_descriptors = g_ptr_array_new ();
-  cached_plugin_descriptors_find (
-    self->owner->cached_plugin_descriptors, found_descriptors, NULL, sha1, true,
-    true);
-  if (found_descriptors->len > 0)
+  z_debug ("check cache for: filename: %s | sha1: %s", filename, sha1);
+  auto  pl_mgr = self->owner_;
+  auto &caches = pl_mgr->cached_plugin_descriptors_;
+  if (caches->contains_sha1 (sha1, true, true))
     {
-      GPtrArray * found_non_blacklisted_descriptors = g_ptr_array_new ();
-      cached_plugin_descriptors_find (
-        self->owner->cached_plugin_descriptors,
-        found_non_blacklisted_descriptors, NULL, sha1, true, false);
-      for (size_t i = 0; i < found_non_blacklisted_descriptors->len; i++)
+      auto descrs = caches->get_valid_descriptors_for_sha1 (sha1);
+      for (auto &descr : descrs)
         {
-          const PluginDescriptor * descr = (PluginDescriptor *)
-            g_ptr_array_index (found_non_blacklisted_descriptors, i);
-          PluginDescriptor * descr_clone = plugin_descriptor_clone (descr);
-          plugin_manager_add_descriptor (self->owner, descr_clone);
+          pl_mgr->add_descriptor (descr);
         }
-
-      g_ptr_array_unref (found_descriptors);
-      g_ptr_array_unref (found_non_blacklisted_descriptors);
-
       return true;
     }
 
-  plugin_manager_set_currently_scanning_plugin (self->owner, filename, sha1);
-
-  g_ptr_array_unref (found_descriptors);
+  pl_mgr->set_currently_scanning_plugin (filename, sha1);
 
   return false;
 }
 
 bool
-z_carla_discovery_idle (ZCarlaDiscovery * self)
+ZCarlaDiscovery::idle ()
 {
   bool all_done = true;
-  for (size_t i = 0; i < self->handles->len; i++)
+  for (auto [handle, done] : handles_)
     {
-      void * handle = g_ptr_array_index (self->handles, i);
-      bool * done = &g_array_index (self->handles_done, bool, i);
-      g_return_val_if_fail (handle, true);
-      if (*done)
+      z_return_val_if_fail (handle, true);
+      if (done)
         continue;
 
-      *done = carla_plugin_discovery_idle (handle) == false;
-      if (*done)
+      done = carla_plugin_discovery_idle (handle) == false;
+      if (done)
         {
           carla_plugin_discovery_stop (handle);
         }
@@ -282,55 +259,27 @@ z_carla_discovery_idle (ZCarlaDiscovery * self)
 }
 
 void
-z_carla_discovery_start (
-  ZCarlaDiscovery * self,
-  BinaryType        btype,
-  ZPluginProtocol   protocol)
+ZCarlaDiscovery::start (BinaryType btype, PluginProtocol protocol)
 {
-  char * discovery_tool = z_carla_discovery_get_discovery_path (
+  auto discovery_tool = get_discovery_path (
     btype == CarlaBackend::BINARY_NATIVE
-      ? ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_64
-      : ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32);
-  char * paths_separated =
-    plugin_manager_get_paths_for_protocol_separated (self->owner, protocol);
+      ? PluginArchitecture::ARCH_64_BIT
+      : PluginArchitecture::ARCH_32_BIT);
+  auto paths_separated = owner_->get_paths_for_protocol_separated (protocol);
   PluginType ptype =
-    plugin_descriptor_get_carla_plugin_type_from_protocol (protocol);
+    PluginDescriptor::get_carla_plugin_type_from_protocol (protocol);
   void * handle = carla_plugin_discovery_start (
-    discovery_tool, btype, ptype, paths_separated,
+    discovery_tool.c_str (), btype, ptype, paths_separated.c_str (),
     z_carla_discovery_plugin_scanned_cb,
-    z_carla_discovery_plugin_check_cache_cb, self);
+    z_carla_discovery_plugin_check_cache_cb, this);
   if (!handle)
     {
-      g_message (
+      z_debug (
         "no plugins to scan for %s (given paths: %s)", ENUM_NAME (protocol),
         paths_separated);
-      g_free (paths_separated);
       return;
     }
-  g_free (paths_separated);
-  g_return_if_fail (handle);
-  g_ptr_array_add (self->handles, handle);
-  bool var = false;
-  g_array_append_val (self->handles_done, var);
-}
-
-ZCarlaDiscovery *
-z_carla_discovery_new (PluginManager * owner)
-{
-  ZCarlaDiscovery * self = object_new (ZCarlaDiscovery);
-  self->owner = owner;
-  self->handles = g_ptr_array_new ();
-  self->handles_done = g_array_new (false, true, sizeof (bool));
-  return self;
-}
-
-void
-z_carla_discovery_free (ZCarlaDiscovery * self)
-{
-  object_free_w_func_and_null (g_ptr_array_unref, self->handles);
-  object_free_w_func_and_null (g_array_unref, self->handles_done);
-
-  object_zero_and_free (self);
+  handles_.push_back ({ handle, false });
 }
 
 #endif

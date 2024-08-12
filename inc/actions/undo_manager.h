@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Undo manager.
  */
@@ -12,9 +12,7 @@
 
 #include "actions/undo_stack.h"
 
-#include "zix/sem.h"
-
-typedef struct AudioClip AudioClip;
+class AudioClip;
 
 /**
  * @addtogroup actions
@@ -22,115 +20,103 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
-#define UNDO_MANAGER (PROJECT->undo_manager)
+#define UNDO_MANAGER (PROJECT->undo_manager_)
 
 /**
  * Undo manager.
  */
-typedef struct UndoManager
+class UndoManager final
+    : public ICloneable<UndoManager>,
+      public ISerializable<UndoManager>
 {
-  UndoStack * undo_stack;
-  UndoStack * redo_stack;
+public:
+  UndoManager ()
+  {
+    undo_stack_ = std::make_unique<UndoStack> ();
+    redo_stack_ = std::make_unique<UndoStack> ();
+  }
+
+  /**
+   * Inits the undo manager by populating the undo/redo stacks.
+   */
+  void init_loaded ();
+
+  /**
+   * Undo last action.
+   *
+   * @throw ZrythmException on error.
+   */
+  void undo ();
+
+  /**
+   * Redo last undone action.
+   *
+   * @throw ZrythmException on error.
+   */
+  void redo ();
+
+  /**
+   * Performs the action and pushes it to the undo stack.
+   *
+   * @throw ZrythmException If the action couldn't be performed.
+   */
+  void perform (std::unique_ptr<UndoableAction> &&action);
+
+  /**
+   * Returns whether the given clip is used by any
+   * stack.
+   */
+  bool contains_clip (const AudioClip &clip) const;
+
+  /**
+   * Returns all plugins in the undo stacks.
+   *
+   * Used when cleaning up state dirs.
+   */
+  void get_plugins (std::vector<Plugin *> &arr) const;
+
+  /**
+   * Returns the last performed action, or NULL if
+   * the stack is empty.
+   */
+  UndoableAction * get_last_action () const;
+
+  /**
+   * Clears the undo and redo stacks.
+   */
+  void clear_stacks ();
+
+  void init_after_cloning (const UndoManager &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  /**
+   * @brief Does or undoes the given action.
+   *
+   * @param action An action, when performing, otherwise NULL if undoing/redoing.
+   * @param main_stack Undo stack if undoing, redo stack if doing.
+   * @throw ZrythmException on error.
+   */
+  void do_or_undo_action (
+    std::unique_ptr<UndoableAction> &&action,
+    UndoStack                        &main_stack,
+    UndoStack                        &opposite_stack);
+
+public:
+  std::unique_ptr<UndoStack> undo_stack_;
+  std::unique_ptr<UndoStack> redo_stack_;
 
   /**
    * Whether the redo stack is currently locked.
    *
-   * This is used as a hack when cancelling arranger
-   * drags.
+   * This is used as a hack when cancelling arranger drags.
    */
-  bool redo_stack_locked;
+  bool redo_stack_locked_ = false;
 
   /** Semaphore for performing actions. */
-  ZixSem action_sem;
-} UndoManager;
-
-/**
- * Inits the undo manager by populating the
- * undo/redo stacks.
- */
-NONNULL void
-undo_manager_init_loaded (UndoManager * self);
-
-/**
- * Inits the undo manager by creating the undo/redo
- * stacks.
- */
-WARN_UNUSED_RESULT UndoManager *
-undo_manager_new (void);
-
-/**
- * Undo last action.
- */
-NONNULL_ARGS (1) int undo_manager_undo (UndoManager * self, GError ** error);
-
-/**
- * Redo last undone action.
- */
-NONNULL_ARGS (1) int undo_manager_redo (UndoManager * self, GError ** error);
-
-/**
- * Performs the action and pushes it to the undo
- * stack.
- *
- * @return Non-zero if error.
- */
-NONNULL_ARGS (1, 2)
-int undo_manager_perform (
-  UndoManager *    self,
-  UndoableAction * action,
-  GError **        error);
-
-/**
- * Second and last argument given must be a
- * GError **.
- */
-#define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR(action, err, ...) \
-  { \
-    g_return_val_if_fail ( \
-      router_is_processing_thread (ROUTER) == false, false); \
-    UndoableAction * ua = action (__VA_ARGS__); \
-    if (ua) \
-      { \
-        int ret = undo_manager_perform (UNDO_MANAGER, ua, err); \
-        if (ret == 0) \
-          return true; \
-      } \
-    return false; \
-  }
-
-/**
- * Returns whether the given clip is used by any
- * stack.
- */
-NONNULL bool
-undo_manager_contains_clip (UndoManager * self, AudioClip * clip);
-
-/**
- * Returns all plugins in the undo stacks.
- *
- * Used when cleaning up state dirs.
- */
-NONNULL void
-undo_manager_get_plugins (UndoManager * self, GPtrArray * arr);
-
-/**
- * Returns the last performed action, or NULL if
- * the stack is empty.
- */
-NONNULL UndoableAction *
-undo_manager_get_last_action (UndoManager * self);
-
-/**
- * Clears the undo and redo stacks.
- */
-NONNULL void
-undo_manager_clear_stacks (UndoManager * self, bool free);
-
-NONNULL UndoManager *
-undo_manager_clone (const UndoManager * src);
-
-NONNULL void
-undo_manager_free (UndoManager * self);
+  std::binary_semaphore action_sem_{ 1 };
+};
 
 /**
  * @}

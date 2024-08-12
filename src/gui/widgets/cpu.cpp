@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/** \file
+/** @file
  */
 
 #include "zrythm-config.h"
@@ -16,6 +16,7 @@
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 #ifdef __APPLE__
 #  include <mach/mach_error.h>
@@ -128,18 +129,18 @@ refresh_dsp_load (CpuWidget * self)
       return G_SOURCE_CONTINUE;
     }
 
-  if (g_atomic_int_get (&AUDIO_ENGINE->run))
+  if (AUDIO_ENGINE->run_.load ())
     {
       gint64 block_latency =
-        (AUDIO_ENGINE->block_length * 1000000) / AUDIO_ENGINE->sample_rate;
+        (AUDIO_ENGINE->block_length_ * 1000000) / AUDIO_ENGINE->sample_rate_;
       self->dsp =
-        (int) ((double) AUDIO_ENGINE->max_time_taken * 100.0
+        (int) ((double) AUDIO_ENGINE->max_time_taken_ * 100.0
                / (double) block_latency);
     }
   else
     self->dsp = 0;
 
-  AUDIO_ENGINE->max_time_taken = 0;
+  AUDIO_ENGINE->max_time_taken_ = 0;
 
   return G_SOURCE_CONTINUE;
 }

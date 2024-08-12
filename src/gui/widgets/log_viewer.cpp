@@ -7,7 +7,7 @@
 #include "gui/widgets/log_viewer.h"
 #include "project.h"
 #include "utils/io.h"
-#include "utils/log.h"
+#include "utils/logger.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -32,7 +32,7 @@ result_func (
 {
   gboolean success = FALSE;
 
-  success = gtk_source_file_loader_load_finish (loader, res, NULL);
+  success = gtk_source_file_loader_load_finish (loader, res, nullptr);
   g_return_if_fail (success);
 }
 
@@ -43,11 +43,11 @@ LogViewerWidget *
 log_viewer_widget_new (void)
 {
   LogViewerWidget * self = static_cast<LogViewerWidget *> (
-    g_object_new (LOG_VIEWER_WIDGET_TYPE, NULL));
+    g_object_new (LOG_VIEWER_WIDGET_TYPE, nullptr));
 
   g_return_val_if_fail (LOG->log_filepath, self);
 
-  GtkSourceBuffer * buf = gtk_source_buffer_new (NULL);
+  GtkSourceBuffer * buf = gtk_source_buffer_new (nullptr);
   self->src_view = GTK_SOURCE_VIEW (gtk_source_view_new_with_buffer (buf));
   GtkSourceFile * src_file = gtk_source_file_new ();
   GFile *         file = g_file_new_for_path (LOG->log_filepath);
@@ -55,13 +55,14 @@ log_viewer_widget_new (void)
   g_object_unref (file);
   GtkSourceFileLoader * file_loader = gtk_source_file_loader_new (buf, src_file);
   gtk_source_file_loader_load_async (
-    file_loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL,
+    file_loader, G_PRIORITY_DEFAULT, nullptr, nullptr, nullptr, nullptr,
     (GAsyncReadyCallback) result_func, self);
   gtk_widget_set_visible (GTK_WIDGET (self->src_view), true);
 
   gtk_box_append (GTK_BOX (self->source_view_box), GTK_WIDGET (self->src_view));
 
-  g_signal_connect (G_OBJECT (self), "destroy", G_CALLBACK (on_destroy), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "destroy", G_CALLBACK (on_destroy), nullptr);
 
   return self;
 }

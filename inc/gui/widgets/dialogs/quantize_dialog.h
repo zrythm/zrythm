@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Quantize dialog.
  */
@@ -23,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   QUANTIZE_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct QuantizeOptions     QuantizeOptions;
+class QuantizeOptions;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _BarSliderWidget    BarSliderWidget;
 

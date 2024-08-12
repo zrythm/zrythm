@@ -73,7 +73,7 @@ vamp_get_simple_fixed_tempo_estimator_descriptor (void)
         }
     }
 
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 ZVampPlugin *
@@ -86,7 +86,7 @@ vamp_get_plugin (ZVampPluginType type, float samplerate)
     case Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR:
       return new FixedTempoEstimator (samplerate);
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
     }
 }
 
@@ -316,7 +316,7 @@ vamp_plugin_output_print (ZVampOutputDescriptor * self)
 void
 vamp_feature_print (ZVampFeature * self)
 {
-  GString * gstr = g_string_new (NULL);
+  GString * gstr = g_string_new (nullptr);
   g_string_append_printf (
     gstr,
     "Has timestamp: %d\n"

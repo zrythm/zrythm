@@ -26,7 +26,8 @@ knob_with_name_widget_new (
   int                 spacing)
 {
   KnobWithNameWidget * self = static_cast<KnobWithNameWidget *> (g_object_new (
-    KNOB_WITH_NAME_WIDGET_TYPE, "orientation", orientation, "spacing", 2, NULL));
+    KNOB_WITH_NAME_WIDGET_TYPE, "orientation", orientation, "spacing", 2,
+    nullptr));
 
   EditableLabelWidget * label =
     editable_label_widget_new (obj, name_getter, name_setter, -1);
@@ -63,6 +64,7 @@ knob_with_name_widget_class_init (KnobWithNameWidgetClass * _klass)
 static void
 knob_with_name_widget_init (KnobWithNameWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 }

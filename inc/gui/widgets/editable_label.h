@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_EDITABLE_LABEL_H__

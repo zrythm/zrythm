@@ -1,13 +1,11 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __GUI_WIDGETS_LIVE_WAVEFORM_H__
 #define __GUI_WIDGETS_LIVE_WAVEFORM_H__
 
 /**
- * \file
+ * @file
  *
  * Live waveform display like LMMS.
  */
@@ -22,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
   LIVE_WAVEFORM_WIDGET,
   GtkDrawingArea)
 
-class Port;
+class AudioPort;
 
 /**
  * @addtogroup widgets
@@ -36,7 +34,7 @@ enum class LiveWaveformType
   LIVE_WAVEFORM_PORT,
 };
 
-typedef struct _LiveWaveformWidget
+using LiveWaveformWidget = struct _LiveWaveformWidget
 {
   GtkDrawingArea parent_instance;
 
@@ -51,9 +49,8 @@ typedef struct _LiveWaveformWidget
   size_t buf_sz[2];
 
   /** Port, if port. */
-  Port * port;
-
-} LiveWaveformWidget;
+  AudioPort * port;
+};
 
 /**
  * Creates a LiveWaveformWidget for the AudioEngine.
@@ -65,7 +62,7 @@ live_waveform_widget_setup_engine (LiveWaveformWidget * self);
  * Creates a LiveWaveformWidget for a port.
  */
 LiveWaveformWidget *
-live_waveform_widget_new_port (Port * port);
+live_waveform_widget_new_port (AudioPort * port);
 
 /**
  * @}

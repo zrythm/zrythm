@@ -1,19 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Port identifier.
- */
-
 #ifndef __SCHEMAS_AUDIO_PORT_IDENTIFIER_H__
 #define __SCHEMAS_AUDIO_PORT_IDENTIFIER_H__
 
 #include "schemas/plugins/plugin_identifier.h"
 #include "utils/yaml.h"
-
-typedef struct PortIdentifier PortIdentifier;
 
 typedef enum PortFlow_v1
 {

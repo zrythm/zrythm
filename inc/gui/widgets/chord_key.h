@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_CHORD_KEY_H__

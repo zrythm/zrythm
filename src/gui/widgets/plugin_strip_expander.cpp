@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -11,6 +11,8 @@
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -34,8 +36,8 @@ plugin_strip_expander_widget_redraw_slot (
 {
   switch (self->slot_type)
     {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
+    case PluginSlotType::Insert:
+    case PluginSlotType::MidiFx:
       gtk_widget_queue_draw (GTK_WIDGET (self->slots[slot]));
       break;
     default:
@@ -54,17 +56,17 @@ plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self)
     {
       switch (self->slot_type)
         {
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
+        case PluginSlotType::Insert:
           {
-            Channel * ch = track_get_channel (self->track);
-            g_return_if_fail (ch);
+            auto ch = self->track->get_channel ();
+            z_return_if_fail (ch);
             gtk_widget_queue_draw (GTK_WIDGET (self->slots[i]));
           }
           break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
+        case PluginSlotType::MidiFx:
           {
-            Channel * ch = track_get_channel (self->track);
-            g_return_if_fail (ch);
+            auto ch = self->track->get_channel ();
+            z_return_if_fail (ch);
             gtk_widget_queue_draw (GTK_WIDGET (self->slots[i]));
           }
           break;
@@ -82,16 +84,18 @@ on_reveal_changed (
 {
   if (self->position == PluginStripExpanderPosition::PSE_POSITION_CHANNEL)
     {
-      Channel * ch = track_get_channel (self->track);
-      if (self->slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSERT)
+      auto ch = self->track->get_channel ();
+      if (self->slot_type == PluginSlotType::Insert)
         {
           g_settings_set_boolean (S_UI_MIXER, "inserts-expanded", revealed);
-          EVENTS_PUSH (EventType::ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED, ch);
+          EVENTS_PUSH (
+            EventType::ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED, ch.get ());
         }
-      else if (self->slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX)
+      else if (self->slot_type == PluginSlotType::MidiFx)
         {
           g_settings_set_boolean (S_UI_MIXER, "midi-fx-expanded", revealed);
-          EVENTS_PUSH (EventType::ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED, ch);
+          EVENTS_PUSH (
+            EventType::ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED, ch.get ());
         }
     }
 }
@@ -102,9 +106,9 @@ on_reveal_changed (
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  ZPluginSlotType             slot_type,
+  PluginSlotType              slot_type,
   PluginStripExpanderPosition position,
-  Track *                     track)
+  ChannelTrack *              track)
 {
   g_return_if_fail (track);
 
@@ -113,11 +117,11 @@ plugin_strip_expander_widget_setup (
   bool is_midi = false;
   switch (slot_type)
     {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
+    case PluginSlotType::Insert:
       strcpy (fullstr, _ ("Inserts"));
-      is_midi = track && track->out_signal_type == PortType::Event;
+      is_midi = track && track->out_signal_type_ == PortType::Event;
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
+    case PluginSlotType::MidiFx:
       strcpy (fullstr, "MIDI FX");
       is_midi = true;
       break;
@@ -145,7 +149,7 @@ plugin_strip_expander_widget_setup (
       /* remove children */
       z_gtk_widget_destroy_all_children (GTK_WIDGET (self->box));
 
-      Channel * ch = track_get_channel (track);
+      auto ch = track->get_channel ();
       g_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
@@ -157,8 +161,8 @@ plugin_strip_expander_widget_setup (
 
           switch (slot_type)
             {
-            case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-            case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
+            case PluginSlotType::Insert:
+            case PluginSlotType::MidiFx:
               {
                 ChannelSlotWidget * csw = channel_slot_widget_new (
                   i, track, slot_type,
@@ -188,8 +192,8 @@ plugin_strip_expander_widget_setup (
     case PluginStripExpanderPosition::PSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (GTK_WIDGET (self->scroll), -1, -1);
       if (
-        slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSERT
-        || slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX)
+        slot_type == PluginSlotType::Insert
+        || slot_type == PluginSlotType::MidiFx)
         {
           expander_box_widget_set_reveal_callback (
             Z_EXPANDER_BOX_WIDGET (self),
@@ -216,7 +220,7 @@ plugin_strip_expander_widget_init (PluginStripExpanderWidget * self)
   /*gtk_scrolled_window_set_shadow_type (*/
   /*self->scroll, GTK_SHADOW_ETCHED_IN);*/
 
-  self->viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  self->viewport = GTK_VIEWPORT (gtk_viewport_new (nullptr, nullptr));
   gtk_viewport_set_scroll_to_focus (self->viewport, false);
   gtk_widget_set_name (
     GTK_WIDGET (self->viewport), "plugin-strip-expander-viewport");

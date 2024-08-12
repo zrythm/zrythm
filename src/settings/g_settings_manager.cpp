@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * GSettings Manager implementation.
  */
@@ -129,7 +129,7 @@ print_or_reset (int print_only, int pretty_print, int exit_on_finish)
 {
   GSettingsSchemaSource * source = g_settings_schema_source_get_default ();
   char **                 non_relocatable;
-  g_settings_schema_source_list_schemas (source, 1, &non_relocatable, NULL);
+  g_settings_schema_source_list_schemas (source, 1, &non_relocatable, nullptr);
   int    i = 0;
   char * schema_str;
   while ((schema_str = non_relocatable[i++]))
@@ -246,7 +246,7 @@ char *
 GSettingsManager::get_summary (GSettings * settings, const char * key)
 {
   GSettingsSchema * settings_schema;
-  g_object_get (settings, "settings-schema", &settings_schema, NULL);
+  g_object_get (settings, "settings-schema", &settings_schema, nullptr);
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (settings_schema, key);
   char * descr = g_strdup (g_settings_schema_key_get_summary (schema_key));
@@ -260,7 +260,7 @@ char *
 GSettingsManager::get_description (GSettings * settings, const char * key)
 {
   GSettingsSchema * settings_schema;
-  g_object_get (settings, "settings-schema", &settings_schema, NULL);
+  g_object_get (settings, "settings-schema", &settings_schema, nullptr);
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (settings_schema, key);
   char * descr = g_strdup (g_settings_schema_key_get_description (schema_key));

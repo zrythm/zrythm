@@ -1,8 +1,6 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert dot panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/tracklist.h"
@@ -30,7 +28,7 @@ AddTrackMenuButtonWidget *
 add_track_menu_button_widget_new (void)
 {
   return (AddTrackMenuButtonWidget *) g_object_new (
-    ADD_TRACK_MENU_BUTTON_WIDGET_TYPE, NULL);
+    ADD_TRACK_MENU_BUTTON_WIDGET_TYPE, nullptr);
 }
 
 static void

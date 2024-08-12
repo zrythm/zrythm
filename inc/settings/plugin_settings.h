@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Plugin settings.
  */
@@ -12,7 +12,12 @@
 
 #include "zrythm-config.h"
 
+#include <memory>
+
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_identifier.h"
+
+class Plugin;
 
 /**
  * @addtogroup settings
@@ -23,127 +28,183 @@
 /**
  * A setting for a specific plugin descriptor.
  */
-typedef struct PluginSetting
+class PluginSetting final : public ISerializable<PluginSetting>
 {
+public:
+  PluginSetting () = default;
+
+  /**
+   * Creates a plugin setting with the recommended settings for the given plugin
+   * descriptor based on the current setup.
+   */
+  PluginSetting (const PluginDescriptor &descr);
+
+  enum class HostingType
+  {
+    /**
+     * @brief Plugin hosted via Carla Host.
+     */
+    Carla,
+
+    // below unimplemented
+
+    /**
+     * @brief Plugin hosted via JUCE.
+     */
+    JUCE,
+
+    /**
+     * @brief Plugin hosted via custom CLAP implementation.
+     */
+    CLAP
+  };
+
+public:
+  void validate () { validate (false); }
+
+  /**
+   * Makes sure the setting is valid in the current run and changes any fields
+   * to make it conform.
+   *
+   * For example, if the setting is set to not open with carla but the
+   * descriptor is for a VST plugin, this will set \ref
+   * PluginSetting.open_with_carla to true.
+   */
+  void validate (bool print_result);
+
+  void print () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+  /**
+   * Creates necessary tracks at the end of the tracklist.
+   *
+   * This may happen asynchronously so the caller should not expect the
+   * setting to be activated on return.
+   */
+  void activate () const;
+
+  /**
+   * @note This also serializes all plugin settings.
+   */
+  void increment_num_instantiations ();
+
+  static void free_closure (void * self, GClosure * closure)
+  {
+    delete static_cast<PluginSetting *> (self);
+  }
+
+  std::string get_name () const { return descr_.name_; }
+
+  /**
+   * @brief Creates a plugin instance from this setting.
+   *
+   * @param track_name_hash
+   * @param slot_type
+   * @param slot
+   * @return std::unique_ptr<Plugin>
+   */
+  std::unique_ptr<Plugin> create_plugin (
+    unsigned int   track_name_hash = 0,
+    PluginSlotType slot_type = PluginSlotType::Insert,
+    int            slot = 0);
+
+  /**
+   * Finishes activating a plugin setting.
+   */
+  void activate_finish (bool autoroute_multiout, bool has_stereo_outputs) const;
+
+public:
   /** The descriptor of the plugin this setting is for. */
-  PluginDescriptor * descr;
+  PluginDescriptor descr_ = {};
+
+  HostingType hosting_type_ = HostingType::Carla;
 
   /** Whether to instantiate this plugin with carla. */
-  bool open_with_carla;
+  bool open_with_carla_ = false;
 
   /** Whether to force a generic UI. */
-  bool force_generic_ui;
+  bool force_generic_ui_ = false;
 
   /** Requested carla bridge mode. */
-  CarlaBridgeMode bridge_mode;
+  CarlaBridgeMode bridge_mode_ = (CarlaBridgeMode) 0;
 
-  /** Last datetime instantiated (number of microseconds since
-   * January 1, 1970 UTC). */
-  gint64 last_instantiated_time;
+  /** Last datetime instantiated (number of microseconds since January 1, 1970
+   * UTC). */
+  gint64 last_instantiated_time_ = 0;
 
   /** Number of times this plugin has been instantiated. */
-  int num_instantiations;
-} PluginSetting;
+  int num_instantiations_ = 0;
+};
 
-typedef struct PluginSettings
+class PluginSettings final : public ISerializable<PluginSettings>
 {
+public:
+  /**
+   * Reads the file and fills up the object, or creates an empty object if the
+   * file could not be read.
+   */
+  static std::unique_ptr<PluginSettings> read_or_new ();
+
+  /**
+   * Serializes the current settings.
+   *
+   * @throw ZrythmException on error.
+   */
+  void serialize_to_file ();
+
+  /**
+   * @brief Wrapper over @ref serialize_to_file that ignores exceptions.
+   *
+   */
+  void serialize_to_file_no_throw ()
+  {
+    try
+      {
+        serialize_to_file ();
+      }
+    catch (const ZrythmException &e)
+      {
+        z_warning (e.what ());
+      }
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+  int         get_format_major_version () const override { return 7; }
+  int         get_format_minor_version () const override { return 0; }
+  std::string get_document_type () const override { return "PluginSettings"; }
+
+  /**
+   * Finds a setting for the given plugin descriptor.
+   *
+   * @return The found setting or NULL.
+   */
+  PluginSetting * find (const PluginDescriptor &descr);
+
+  /**
+   * Replaces a setting or appends a setting to the cache.
+   *
+   * This clones the setting before adding it.
+   *
+   * @param serialize Whether to serialize the updated cache now.
+   */
+  void set (const PluginSetting &setting, bool serialize);
+
+private:
+  static fs::path get_file_path ();
+
+  /**
+   * @brief Deletes the cache file.
+   *
+   * @throw ZrythmException if an error occurred while deleting the file.
+   */
+  static void delete_file ();
+
+public:
   /** Settings. */
-  GPtrArray * settings;
-} PluginSettings;
-
-/**
- * Creates a plugin setting with the recommended
- * settings for the given plugin descriptor based
- * on the current setup.
- */
-PluginSetting * NONNULL
-plugin_setting_new_default (const PluginDescriptor * descr);
-
-PluginSetting * NONNULL
-plugin_setting_clone (const PluginSetting * src, bool validate);
-
-bool
-plugin_setting_is_equal (const PluginSetting * a, const PluginSetting * b);
-
-/**
- * Makes sure the setting is valid in the current
- * run and changes any fields to make it conform.
- *
- * For example, if the setting is set to not open
- * with carla but the descriptor is for a VST plugin,
- * this will set \ref PluginSetting.open_with_carla
- * to true.
- */
-NONNULL void
-plugin_setting_validate (PluginSetting * self, bool print_result);
-
-NONNULL void
-plugin_setting_print (const PluginSetting * self);
-
-/**
- * Creates necessary tracks at the end of the tracklist.
- *
- * This may happen asynchronously so the caller should not
- * expect the setting to be activated on return.
- */
-NONNULL void
-plugin_setting_activate (const PluginSetting * self);
-
-/**
- * Increments the number of times this plugin has been
- * instantiated.
- *
- * @note This also serializes all plugin settings.
- */
-NONNULL void
-plugin_setting_increment_num_instantiations (PluginSetting * self);
-
-/**
- * Frees the plugin setting.
- */
-NONNULL void
-plugin_setting_free (PluginSetting * self);
-
-void
-plugin_setting_free_closure (void * self, GClosure * closure);
-
-/**
- * Reads the file and fills up the object.
- */
-PluginSettings *
-plugin_settings_read_or_new (void);
-
-/**
- * Serializes the current settings.
- */
-NONNULL void
-plugin_settings_serialize_to_file (PluginSettings * self);
-
-/**
- * Finds a setting for the given plugin descriptor.
- *
- * @return The found setting or NULL.
- */
-NONNULL PluginSetting *
-plugin_settings_find (PluginSettings * self, const PluginDescriptor * descr);
-
-/**
- * Replaces a setting or appends a setting to the
- * cache.
- *
- * This clones the setting before adding it.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- */
-NONNULL void
-plugin_settings_set (
-  PluginSettings * self,
-  PluginSetting *  setting,
-  bool             _serialize);
-
-NONNULL void
-plugin_settings_free (PluginSettings * self);
+  std::vector<PluginSetting> settings_;
+};
 
 /**
  * @}

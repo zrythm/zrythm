@@ -5,117 +5,135 @@
 
 #include "dsp/track.h"
 #include "plugins/carla_native_plugin.h"
-#include "plugins/collection.h"
 #include "plugins/collections.h"
-#include "plugins/plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
-#include "utils/string.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-static const char * plugin_protocol_strings[] = {
+constexpr const char * plugin_protocol_strings[] = {
   "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
   "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
 };
 
-PluginDescriptor *
-plugin_descriptor_new (void)
+std::string
+PluginDescriptor::get_icon_name_for_protocol (PluginProtocol prot)
 {
-  PluginDescriptor * self = object_new (PluginDescriptor);
-  self->schema_version = PLUGIN_DESCRIPTOR_SCHEMA_VERSION;
-
-  return self;
+  std::string icon;
+  switch (prot)
+    {
+    case PluginProtocol::LV2:
+      icon = "logo-lv2";
+      break;
+    case PluginProtocol::LADSPA:
+      icon = "logo-ladspa";
+      break;
+    case PluginProtocol::AU:
+      icon = "logo-au";
+      break;
+    case PluginProtocol::VST:
+    case PluginProtocol::VST3:
+      icon = "logo-vst";
+      break;
+    case PluginProtocol::SFZ:
+    case PluginProtocol::SF2:
+      icon = "file-music-line";
+      break;
+    default:
+      icon = "plug";
+      break;
+    }
+  return icon;
 }
 
-const char *
-plugin_protocol_to_str (ZPluginProtocol prot)
+std::string
+PluginDescriptor::plugin_protocol_to_str (PluginProtocol prot)
 {
   return plugin_protocol_strings[ENUM_VALUE_TO_INT (prot)];
 }
 
-ZPluginProtocol
-plugin_protocol_from_str (const char * str)
+PluginProtocol
+PluginDescriptor::plugin_protocol_from_str (const std::string &str)
 {
   for (size_t i = 0; i < G_N_ELEMENTS (plugin_protocol_strings); i++)
     {
-      if (string_is_equal (plugin_protocol_strings[i], str))
+      if (plugin_protocol_strings[i] == str)
         {
-          return (ZPluginProtocol) i;
+          return (PluginProtocol) i;
         }
     }
-  g_return_val_if_reached (ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2);
+  g_return_val_if_reached (PluginProtocol::LV2);
 }
 
-ZPluginProtocol
-plugin_descriptor_get_protocol_from_carla_plugin_type (PluginType ptype)
+PluginProtocol
+PluginDescriptor::get_protocol_from_carla_plugin_type (PluginType ptype)
 {
   switch (ptype)
     {
     case CarlaBackend::PLUGIN_LV2:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2;
+      return PluginProtocol::LV2;
     case CarlaBackend::PLUGIN_AU:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU;
+      return PluginProtocol::AU;
     case CarlaBackend::PLUGIN_VST2:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST;
+      return PluginProtocol::VST;
     case CarlaBackend::PLUGIN_VST3:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3;
+      return PluginProtocol::VST3;
     case CarlaBackend::PLUGIN_SFZ:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ;
+      return PluginProtocol::SFZ;
     case CarlaBackend::PLUGIN_SF2:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2;
+      return PluginProtocol::SF2;
     case CarlaBackend::PLUGIN_DSSI:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI;
+      return PluginProtocol::DSSI;
     case CarlaBackend::PLUGIN_LADSPA:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA;
+      return PluginProtocol::LADSPA;
 #ifdef CARLA_HAVE_CLAP_SUPPORT
     case CarlaBackend::PLUGIN_CLAP:
 #else
     case (PluginType) 14:
 #endif
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP;
+      return PluginProtocol::CLAP;
     case CarlaBackend::PLUGIN_JSFX:
-      return ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX;
+      return PluginProtocol::JSFX;
     default:
-      g_return_val_if_reached (ENUM_INT_TO_VALUE (ZPluginProtocol, 0));
+      g_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
     }
 
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (ZPluginProtocol, 0));
+  g_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
 }
 
 PluginType
-plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol)
+PluginDescriptor::get_carla_plugin_type_from_protocol (PluginProtocol protocol)
 {
   switch (protocol)
     {
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
+    case PluginProtocol::LV2:
       return CarlaBackend::PLUGIN_LV2;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
+    case PluginProtocol::AU:
       return CarlaBackend::PLUGIN_AU;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
+    case PluginProtocol::VST:
       return CarlaBackend::PLUGIN_VST2;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
+    case PluginProtocol::VST3:
       return CarlaBackend::PLUGIN_VST3;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ:
+    case PluginProtocol::SFZ:
       return CarlaBackend::PLUGIN_SFZ;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2:
+    case PluginProtocol::SF2:
       return CarlaBackend::PLUGIN_SF2;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI:
+    case PluginProtocol::DSSI:
       return CarlaBackend::PLUGIN_DSSI;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA:
+    case PluginProtocol::LADSPA:
       return CarlaBackend::PLUGIN_LADSPA;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP:
+    case PluginProtocol::CLAP:
 #ifdef CARLA_HAVE_CLAP_SUPPORT
       return CarlaBackend::PLUGIN_CLAP;
 #else
       return (PluginType) 14;
 #endif
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX:
+    case PluginProtocol::JSFX:
       return CarlaBackend::PLUGIN_JSFX;
     default:
       g_return_val_if_reached ((PluginType) 0);
@@ -125,51 +143,53 @@ plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol)
 }
 
 ZPluginCategory
-plugin_descriptor_get_category_from_carla_category_str (const char * category)
+PluginDescriptor::get_category_from_carla_category_str (
+  const std::string &category)
 {
-#define EQUALS(x) string_is_equal (category, x)
+#define EQUALS(x) (category == x)
 
   if (EQUALS ("synth"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
+    return ZPluginCategory::INSTRUMENT;
   else if (EQUALS ("delay"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_DELAY;
+    return ZPluginCategory::DELAY;
   else if (EQUALS ("eq"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_EQ;
+    return ZPluginCategory::EQ;
   else if (EQUALS ("filter"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_FILTER;
+    return ZPluginCategory::FILTER;
   else if (EQUALS ("distortion"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_DISTORTION;
+    return ZPluginCategory::DISTORTION;
   else if (EQUALS ("dynamics"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_DYNAMICS;
+    return ZPluginCategory::DYNAMICS;
   else if (EQUALS ("modulator"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_MODULATOR;
+    return ZPluginCategory::MODULATOR;
   else if (EQUALS ("utility"))
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_UTILITY;
+    return ZPluginCategory::UTILITY;
   else
-    return ZPluginCategory::Z_PLUGIN_CATEGORY_NONE;
+    return ZPluginCategory::NONE;
 
 #undef EQUALS
 }
 
 ZPluginCategory
-plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat)
+PluginDescriptor::get_category_from_carla_category (
+  CarlaBackend::PluginCategory carla_cat)
 {
   switch (carla_cat)
     {
     case CarlaBackend::PLUGIN_CATEGORY_SYNTH:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
+      return ZPluginCategory::INSTRUMENT;
     case CarlaBackend::PLUGIN_CATEGORY_DELAY:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_DELAY;
+      return ZPluginCategory::DELAY;
     case CarlaBackend::PLUGIN_CATEGORY_EQ:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_EQ;
+      return ZPluginCategory::EQ;
     case CarlaBackend::PLUGIN_CATEGORY_FILTER:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_FILTER;
+      return ZPluginCategory::FILTER;
     case CarlaBackend::PLUGIN_CATEGORY_DISTORTION:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_DISTORTION;
+      return ZPluginCategory::DISTORTION;
     case CarlaBackend::PLUGIN_CATEGORY_DYNAMICS:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_DYNAMICS;
+      return ZPluginCategory::DYNAMICS;
     case CarlaBackend::PLUGIN_CATEGORY_MODULATOR:
-      return ZPluginCategory::Z_PLUGIN_CATEGORY_MODULATOR;
+      return ZPluginCategory::MODULATOR;
     case CarlaBackend::PLUGIN_CATEGORY_UTILITY:
       break;
     case CarlaBackend::PLUGIN_CATEGORY_OTHER:
@@ -177,148 +197,86 @@ plugin_descriptor_get_category_from_carla_category (PluginCategory carla_cat)
     default:
       break;
     }
-  return ZPluginCategory::Z_PLUGIN_CATEGORY_NONE;
+  return ZPluginCategory::NONE;
 }
 
 bool
-plugin_protocol_is_supported (ZPluginProtocol protocol)
+PluginDescriptor::protocol_is_supported (PluginProtocol protocol)
 {
 #ifndef __APPLE__
-  if (protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU)
+  if (protocol == PluginProtocol::AU)
     return false;
 #endif
 #if defined(_WIN32) || defined(__APPLE__)
-  if (
-    protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA
-    || protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI)
+  if (protocol == PluginProtocol::LADSPA || protocol == PluginProtocol::DSSI)
     return false;
 #endif
 #ifndef CARLA_HAVE_CLAP_SUPPORT
-  if (protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP)
+  if (protocol == PluginProtocol::CLAP)
     return false;
 #endif
   return true;
 }
 
-/**
- * Clones the plugin descriptor.
- */
-void
-plugin_descriptor_copy (PluginDescriptor * dest, const PluginDescriptor * src)
-{
-  /*g_return_if_fail (src->schema_version > 0);*/
-  dest->schema_version = src->schema_version;
-  dest->author = g_strdup (src->author);
-  dest->name = g_strdup (src->name);
-  dest->website = g_strdup (src->website);
-  dest->category_str = g_strdup (src->category_str);
-  dest->category = src->category;
-  dest->num_audio_ins = src->num_audio_ins;
-  dest->num_midi_ins = src->num_midi_ins;
-  dest->num_audio_outs = src->num_audio_outs;
-  dest->num_midi_outs = src->num_midi_outs;
-  dest->num_ctrl_ins = src->num_ctrl_ins;
-  dest->num_ctrl_outs = src->num_ctrl_outs;
-  dest->num_cv_ins = src->num_cv_ins;
-  dest->num_cv_outs = src->num_cv_outs;
-  dest->arch = src->arch;
-  dest->protocol = src->protocol;
-  dest->path = g_strdup (src->path);
-  dest->sha1 = g_strdup (src->sha1);
-  dest->uri = g_strdup (src->uri);
-  dest->min_bridge_mode = src->min_bridge_mode;
-  dest->has_custom_ui = src->has_custom_ui;
-  dest->ghash = src->ghash;
-}
+#define IS_CAT(x) (category_ == ZPluginCategory::x)
 
-/**
- * Clones the plugin descriptor.
- */
-PluginDescriptor *
-plugin_descriptor_clone (const PluginDescriptor * src)
-{
-  PluginDescriptor * self = object_new (PluginDescriptor);
-
-  plugin_descriptor_copy (self, src);
-
-  return self;
-}
-
-#define IS_CAT(x) (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_##x)
-
-/**
- * Returns if the Plugin is an instrument or not.
- */
 bool
-plugin_descriptor_is_instrument (const PluginDescriptor * const descr)
+PluginDescriptor::is_instrument () const
 {
-  if (descr->num_midi_ins == 0 || descr->num_audio_outs == 0)
+  if (this->num_midi_ins_ == 0 || this->num_audio_outs_ == 0)
     {
       return false;
     }
 
-  if (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT)
+  if (this->category_ == ZPluginCategory::INSTRUMENT)
     {
       return true;
     }
   else
     {
       return
-        /* if VSTs are instruments their category
-         * must be INSTRUMENT, otherwise they are
-         * not */
-        descr->protocol != ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST
-        && descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE
-        && descr->num_midi_ins > 0 && descr->num_audio_outs > 0;
+        /* if VSTs are instruments their category must be INSTRUMENT, otherwise
+           they are not */
+        this->protocol_ != PluginProtocol::VST
+        && this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0
+        && this->num_audio_outs_ > 0;
     }
 }
 
-/**
- * Returns if the Plugin is an effect or not.
- */
 bool
-plugin_descriptor_is_effect (const PluginDescriptor * const descr)
+PluginDescriptor::is_effect () const
 {
-
-  return (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE
+  return (this->category_ > ZPluginCategory::NONE
           && (IS_CAT (DELAY) || IS_CAT (REVERB) || IS_CAT (DISTORTION) || IS_CAT (WAVESHAPER) || IS_CAT (DYNAMICS) || IS_CAT (AMPLIFIER) || IS_CAT (COMPRESSOR) || IS_CAT (ENVELOPE) || IS_CAT (EXPANDER) || IS_CAT (GATE) || IS_CAT (LIMITER) || IS_CAT (FILTER) || IS_CAT (ALLPASS_FILTER) || IS_CAT (BANDPASS_FILTER) || IS_CAT (COMB_FILTER) || IS_CAT (EQ) || IS_CAT (MULTI_EQ) || IS_CAT (PARA_EQ) || IS_CAT (HIGHPASS_FILTER) || IS_CAT (LOWPASS_FILTER) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (CHORUS) || IS_CAT (FLANGER) || IS_CAT (PHASER) || IS_CAT (SIMULATOR) || IS_CAT (SIMULATOR_REVERB) || IS_CAT (SPATIAL) || IS_CAT (SPECTRAL) || IS_CAT (PITCH) || IS_CAT (UTILITY) || IS_CAT (ANALYZER) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION) || IS_CAT (MIXER)))
-         || (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->num_audio_ins > 0 && descr->num_audio_outs > 0);
+         || (this->category_ == ZPluginCategory::NONE && this->num_audio_ins_ > 0 && this->num_audio_outs_ > 0);
 }
 
-/**
- * Returns if the Plugin is a modulator or not.
- */
-int
-plugin_descriptor_is_modulator (const PluginDescriptor * const descr)
+bool
+PluginDescriptor::is_modulator () const
 {
-  return (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE
-          || (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
-         && descr->num_cv_outs > 0;
+  return (this->category_ == ZPluginCategory::NONE
+          || (this->category_ > ZPluginCategory::NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
+         && this->num_cv_outs_ > 0;
 }
 
-/**
- * Returns if the Plugin is a midi modifier or not.
- */
-int
-plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr)
+bool
+PluginDescriptor::is_midi_modifier () const
 {
-  return (descr->category > ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_MIDI) || (descr->category == ZPluginCategory::Z_PLUGIN_CATEGORY_NONE && descr->num_midi_ins > 0 && descr->num_midi_outs > 0 && descr->protocol != ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST);
+  return (this->category_ > ZPluginCategory::NONE
+          && this->category_ == ZPluginCategory::MIDI)
+         || (this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != PluginProtocol::VST);
 }
 
 #undef IS_CAT
 
-/**
- * Returns the ZPluginCategory matching the given
- * string.
- */
 ZPluginCategory
-plugin_descriptor_string_to_category (const char * str)
+PluginDescriptor::string_to_category (const std::string &str)
 {
-  ZPluginCategory category = ZPluginCategory::Z_PLUGIN_CATEGORY_NONE;
+  ZPluginCategory category = ZPluginCategory::NONE;
 
 #define CHECK_CAT(term, cat) \
-  if (g_strrstr (str, term)) \
-  category = ZPluginCategory::Z_PLUGIN_CATEGORY_##cat
+  if (g_strrstr (str.c_str (), term)) \
+  category = ZPluginCategory::cat
 
   /* add category */
   CHECK_CAT ("Delay", DELAY);
@@ -368,12 +326,12 @@ plugin_descriptor_string_to_category (const char * str)
   return category;
 }
 
-const char *
-plugin_category_to_string (ZPluginCategory category)
+std::string
+PluginDescriptor::category_to_string (ZPluginCategory category)
 {
 
 #define RET_STRING(term, cat) \
-  if (category == ZPluginCategory::Z_PLUGIN_CATEGORY_##cat) \
+  if (category == ZPluginCategory::cat) \
   return term
 
   /* add category */
@@ -424,39 +382,27 @@ plugin_category_to_string (ZPluginCategory category)
   return "Plugin";
 }
 
-char *
-plugin_descriptor_category_to_string (ZPluginCategory category)
-{
-  return g_strdup (plugin_category_to_string (category));
-}
-
-/**
- * Returns if the given plugin identifier can be
- * dropped in a slot of the given type.
- */
 bool
-plugin_descriptor_is_valid_for_slot_type (
-  const PluginDescriptor * self,
-  ZPluginSlotType          slot_type,
-  TrackType                track_type)
+PluginDescriptor::is_valid_for_slot_type (
+  PluginSlotType slot_type,
+  Track::Type    track_type) const
 {
   switch (slot_type)
     {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-      if (track_type == TrackType::TRACK_TYPE_MIDI)
+    case PluginSlotType::Insert:
+      if (track_type == Track::Type::Midi)
         {
-          return self->num_midi_outs > 0;
+          return num_midi_outs_ > 0;
         }
       else
         {
-          return self->num_audio_outs > 0;
+          return num_audio_outs_ > 0;
         }
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-      return self->num_midi_outs > 0;
+    case PluginSlotType::MidiFx:
+      return num_midi_outs_ > 0;
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-      return track_type == TrackType::TRACK_TYPE_INSTRUMENT
-             && plugin_descriptor_is_instrument (self);
+    case PluginSlotType::Instrument:
+      return track_type == Track::Type::Instrument && is_instrument ();
     default:
       break;
     }
@@ -464,37 +410,19 @@ plugin_descriptor_is_valid_for_slot_type (
   g_return_val_if_reached (false);
 }
 
-/**
- * Returns whether the two descriptors describe
- * the same plugin, ignoring irrelevant fields.
- */
 bool
-plugin_descriptor_is_same_plugin (
-  const PluginDescriptor * a,
-  const PluginDescriptor * b)
+PluginDescriptor::has_custom_ui () const
 {
-  return a->arch == b->arch && a->protocol == b->protocol
-         && a->unique_id == b->unique_id && a->ghash == b->ghash
-         && string_is_equal (a->sha1, b->sha1) && string_is_equal (a->uri, b->uri);
-}
-
-/**
- * Returns if the Plugin has a supported custom
- * UI.
- */
-bool
-plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
-{
-  switch (self->protocol)
+  switch (protocol_)
     {
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX:
+    case PluginProtocol::LV2:
+    case PluginProtocol::VST:
+    case PluginProtocol::VST3:
+    case PluginProtocol::AU:
+    case PluginProtocol::CLAP:
+    case PluginProtocol::JSFX:
 #ifdef HAVE_CARLA
-      return carla_native_plugin_has_custom_ui (self);
+      return CarlaNativePlugin::has_custom_ui (*this);
 #else
       return false;
 #endif
@@ -507,16 +435,12 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
   g_return_val_if_reached (false);
 }
 
-/**
- * Returns the minimum bridge mode required for this
- * plugin.
- */
 CarlaBridgeMode
-plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
+PluginDescriptor::get_min_bridge_mode () const
 {
   CarlaBridgeMode mode = CarlaBridgeMode::None;
 
-  if (self->arch == ZPluginArchitecture::Z_PLUGIN_ARCHITECTURE_32)
+  if (arch_ == PluginArchitecture::ARCH_32_BIT)
     {
       mode = CarlaBridgeMode::Full;
     }
@@ -524,18 +448,8 @@ plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self)
   return mode;
 }
 
-/**
- * Returns whether the plugin is known to work, so it should
- * be whitelisted.
- *
- * Non-whitelisted plugins will run in full bridge mode. This
- * is to prevent crashes when Zrythm is not at fault.
- *
- * These must all be free-software plugins so that they can
- * be debugged if issues arise.
- */
 bool
-plugin_descriptor_is_whitelisted (const PluginDescriptor * self)
+PluginDescriptor::is_whitelisted () const
 {
   /* on wayland nothing is whitelisted */
   if (z_gtk_is_wayland ())
@@ -601,18 +515,18 @@ plugin_descriptor_is_whitelisted (const PluginDescriptor * self)
     "Zrythm DAW",
   };
 
-  if (!self->author)
+  if (author_.empty ())
     {
       return false;
     }
 
   for (size_t i = 0; i < G_N_ELEMENTS (authors); i++)
     {
-      if (string_is_equal (self->author, authors[i]))
+      if (author_ == authors[i])
         {
 #if 0
           g_debug (
-            "author '%s' is whitelisted", self->author);
+            "author '%s' is whitelisted", this->author);
 #endif
           return true;
         }
@@ -621,26 +535,22 @@ plugin_descriptor_is_whitelisted (const PluginDescriptor * self)
   return false;
 }
 
-/**
- * Gets an appropriate icon name for the given
- * descriptor.
- */
-const char *
-plugin_descriptor_get_icon_name (const PluginDescriptor * const self)
+std::string
+PluginDescriptor::get_icon_name () const
 {
-  if (plugin_descriptor_is_instrument (self))
+  if (is_instrument ())
     {
       return "instrument";
     }
-  else if (plugin_descriptor_is_modulator (self))
+  else if (is_modulator ())
     {
       return "modulator";
     }
-  else if (plugin_descriptor_is_midi_modifier (self))
+  else if (is_midi_modifier ())
     {
       return "signal-midi";
     }
-  else if (plugin_descriptor_is_effect (self))
+  else if (is_effect ())
     {
       return "bars";
     }
@@ -651,7 +561,7 @@ plugin_descriptor_get_icon_name (const PluginDescriptor * const self)
 }
 
 GMenuModel *
-plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
+PluginDescriptor::generate_context_menu () const
 {
   GMenu * menu = g_menu_new ();
 
@@ -661,47 +571,46 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* TODO */
 #if 0
   /* add option for native generic LV2 UI */
-  if (self->protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2
+  if (this->protocol == PluginProtocol::LV2
       &&
-      self->min_bridge_mode == CarlaBridgeMode::None)
+      this->min_bridge_mode_ == CarlaBridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
           _("Add to project (native generic UI)"),
-          NULL,
+          nullptr,
           "app.plugin-browser-add-to-project");
       g_menu_append_item (menu, menuitem);
     }
 #endif
 
 #ifdef HAVE_CARLA
-  sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", self);
-  menuitem = z_gtk_create_menu_item (_ ("Add to project"), NULL, tmp);
+  sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", this);
+  menuitem = z_gtk_create_menu_item (_ ("Add to project"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
-  PluginSetting * new_setting = plugin_setting_new_default (self);
+  PluginSetting new_setting (*this);
   if (
-    self->has_custom_ui && self->min_bridge_mode == CarlaBridgeMode::None
-    && !new_setting->force_generic_ui)
+    has_custom_ui_ && this->min_bridge_mode_ == CarlaBridgeMode::None
+    && !new_setting.force_generic_ui_)
     {
       sprintf (
         tmp,
         "app.plugin-browser-add-to-project-"
         "bridged-ui::%p",
-        self);
-      menuitem =
-        z_gtk_create_menu_item (_ ("Add to project (bridged UI)"), NULL, tmp);
+        this);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Add to project (bridged UI)"), nullptr, tmp);
       g_menu_append_item (menu, menuitem);
     }
-  plugin_setting_free (new_setting);
 
   sprintf (
     tmp,
     "app.plugin-browser-add-to-project-bridged-"
     "full::%p",
-    self);
+    this);
   menuitem =
-    z_gtk_create_menu_item (_ ("Add to project (bridged full)"), NULL, tmp);
+    z_gtk_create_menu_item (_ ("Add to project (bridged full)"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 #endif
 
@@ -716,23 +625,21 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
     new_setting->force_generic_ui);
   g_signal_connect (
     G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_use_generic_ui_toggled), self);
+    G_CALLBACK (on_use_generic_ui_toggled), this);
 #endif
 
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
   int     num_added = 0;
-  for (size_t i = 0; i < PLUGIN_MANAGER->collections->collections->len; i++)
+  for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
     {
-      PluginCollection * coll = (PluginCollection *) g_ptr_array_index (
-        PLUGIN_MANAGER->collections->collections, i);
-      if (plugin_collection_contains_descriptor (coll, self, false))
+      if (coll.contains_descriptor (*this))
         {
           continue;
         }
 
-      sprintf (tmp, "app.plugin-browser-add-to-collection::%p,%p", coll, self);
-      menuitem = z_gtk_create_menu_item (coll->name, NULL, tmp);
+      sprintf (tmp, "app.plugin-browser-add-to-collection::%p,%p", &coll, this);
+      menuitem = z_gtk_create_menu_item (coll.name_.c_str (), nullptr, tmp);
       g_menu_append_item (add_collections_submenu, menuitem);
       num_added++;
     }
@@ -749,18 +656,16 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   /* remove from collection */
   GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (size_t i = 0; i < PLUGIN_MANAGER->collections->collections->len; i++)
+  for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
     {
-      PluginCollection * coll = (PluginCollection *) g_ptr_array_index (
-        PLUGIN_MANAGER->collections->collections, i);
-      if (!plugin_collection_contains_descriptor (coll, self, false))
+      if (!coll.contains_descriptor (*this))
         {
           continue;
         }
 
       sprintf (
-        tmp, "app.plugin-browser-remove-from-collection::%p,%p", coll, self);
-      menuitem = z_gtk_create_menu_item (coll->name, NULL, tmp);
+        tmp, "app.plugin-browser-remove-from-collection::%p,%p", &coll, this);
+      menuitem = z_gtk_create_menu_item (coll.name_.c_str (), nullptr, tmp);
       g_menu_append_item (remove_collections_submenu, menuitem);
       num_added++;
     }
@@ -778,23 +683,14 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
   return G_MENU_MODEL (menu);
 }
 
-void
-plugin_descriptor_free (PluginDescriptor * self)
+bool PluginDescriptor::is_same_plugin (const PluginDescriptor & other) const
 {
-  g_free_and_null (self->author);
-  g_free_and_null (self->name);
-  g_free_and_null (self->website);
-  g_free_and_null (self->category_str);
-  g_free_and_null (self->path);
-  g_free_and_null (self->sha1);
-  g_free_and_null (self->uri);
-
-  object_zero_and_free (self);
+  return *this == other;
 }
 
 void
-plugin_descriptor_free_closure (void * data, GClosure * closure)
+PluginDescriptor::free_closure (void * data, GClosure * closure)
 {
   PluginDescriptor * self = (PluginDescriptor *) data;
-  plugin_descriptor_free (self);
+  delete self;
 }

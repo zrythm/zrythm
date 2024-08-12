@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Ports expander widget.
  */
@@ -19,8 +19,8 @@
 #include "gtk_wrapper.h"
 
 typedef struct _EditableLabelWidget EditableLabelWidget;
-typedef struct Track                Track;
-typedef struct Plugin               Plugin;
+class Track;
+class Plugin;
 
 #define PORTS_EXPANDER_WIDGET_TYPE (ports_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

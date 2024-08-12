@@ -10,9 +10,10 @@
 #ifndef __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 
+#include "dsp/track.h"
 #include "utils/types.h"
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 #define FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE \
   (file_import_progress_dialog_get_type ())
@@ -23,7 +24,7 @@ G_DECLARE_FINAL_TYPE (
   FILE_IMPORT_PROGRESS_DIALOG,
   AdwMessageDialog);
 
-TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
+struct FileImportInfo;
 TYPEDEF_STRUCT_UNDERSCORED (FileImport);
 
 /**
@@ -35,7 +36,7 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImport);
 /**
  * A progress dialog for file import.
  */
-typedef struct _FileImportProgressDialog
+using FileImportProgressDialogWidget = struct _FileImportProgressDialog
 {
   AdwMessageDialog parent_instance;
 
@@ -49,10 +50,10 @@ typedef struct _FileImportProgressDialog
   GPtrArray * file_imports;
 
   /** Returned arrays of regions. */
-  GPtrArray * region_arrays;
+  std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
 
   TracksReadyCallback tracks_ready_cb;
-} FileImportProgressDialogWidget;
+};
 
 /**
  * Creates an instance of FileImportProgressDialog for the

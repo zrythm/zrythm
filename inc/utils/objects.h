@@ -41,12 +41,12 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 }
 
 /**
- * Allocates memory for an object of type \ref type.
+ * Allocates memory for an object of type @ref type.
  */
 #define object_new(type) (type *) g_malloc0 (sizeof (type))
 
 /**
- * Allocates memory for an object of type \ref type.
+ * Allocates memory for an object of type @ref type.
  *
  * This is more efficient than object_new() but does not
  * support resizing.
@@ -64,7 +64,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 #define object_new_n_sizeof(n, sz) g_malloc0_n (n, sz)
 
 /**
- * Calloc \ref n blocks for type \ref type.
+ * Calloc @ref n blocks for type @ref type.
  */
 #define object_new_n(n, type) \
   (static_cast<type *> (object_new_n_sizeof (n, sizeof (type))))
@@ -73,7 +73,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
   realloc_zero (obj, prev_sz, sz)
 
 /**
- * Reallocate memory for \ref obj.
+ * Reallocate memory for @ref obj.
  *
  * @param prev_n Previous number of blocks.
  * @param n New number of blocks.
@@ -83,7 +83,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
     object_realloc_n_sizeof (obj, prev_n * sizeof (type), n * sizeof (type)))
 
 /**
- * Zero's out the struct pointed to by \ref ptr.
+ * Zero's out the struct pointed to by @ref ptr.
  *
  * @param ptr A pointer to a struct.
  */
@@ -97,7 +97,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 #define object_free_unresizable(type, obj) free (obj)
 
 /**
- * Zero's out a struct pointed to by \ref ptr and
+ * Zero's out a struct pointed to by @ref ptr and
  * frees the object.
  */
 #define object_zero_and_free(ptr) \
@@ -107,8 +107,8 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
   _object_zero_and_free_unresizable ((void **) &(ptr), sizeof (type))
 
 /**
- * Call the function \ref _func to free \ref _obj
- * and set \ref _obj to NULL.
+ * Call the function @ref _func to free @ref _obj
+ * and set @ref _obj to NULL.
  */
 #define object_free_w_func_and_null(_func, _obj) \
   if (_obj) \
@@ -147,10 +147,11 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
     }
 
 #define g_source_remove_and_zero(src_id) \
-  { \
-    g_source_remove (src_id); \
-    src_id = 0; \
-  }
+  if (src_id != 0) \
+    { \
+      g_source_remove (src_id); \
+      src_id = 0; \
+    }
 
 /**
  * @}

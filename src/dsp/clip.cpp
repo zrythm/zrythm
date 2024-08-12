@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
+#include "dsp/audio_region.h"
+#include "dsp/audio_track.h"
 #include "dsp/clip.h"
 #include "dsp/engine.h"
 #include "dsp/tempo_track.h"
@@ -13,464 +13,264 @@
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/error.h"
+#include "utils/exceptions.h"
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/hash.h"
 #include "utils/io.h"
-#include "utils/math.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
-#include "utils/resampler.h"
-#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
+#include <giomm.h>
+#include <glibmm.h>
 
-typedef enum
-{
-  Z_AUDIO_CLIP_ERROR_SAVING_FAILED,
-  Z_AUDIO_CLIP_ERROR_CANCELLED,
-} ZAudioClipError;
-
-#define Z_AUDIO_CLIP_ERROR z_audio_clip_error_quark ()
-GQuark
-z_audio_clip_error_quark (void);
-G_DEFINE_QUARK (
-  z - audio - clip - error - quark,
-  z_audio_clip_error)
-
-static AudioClip *
-_create (void)
-{
-  AudioClip * self = object_new (AudioClip);
-  self->schema_version = AUDIO_CLIP_SCHEMA_VERSION;
-
-  return self;
-}
-
-/**
- * Updates the channel caches.
- *
- * See @ref AudioClip.ch_frames.
- *
- * @param start_from Frames to start from (per
- *   channel. The previous frames will be kept.
- */
 void
-audio_clip_update_channel_caches (AudioClip * self, size_t start_from)
+AudioClip::update_channel_caches (size_t start_from)
 {
-  z_return_if_fail_cmp (self->channels, >, 0);
-  z_return_if_fail_cmp (self->num_frames, >, 0);
+  auto num_channels = get_num_channels ();
+  z_return_if_fail_cmp (num_channels, >, 0);
+  z_return_if_fail_cmp (num_frames_, >, 0);
 
   /* copy the frames to the channel caches */
-  for (unsigned int i = 0; i < self->channels; i++)
+  ch_frames_.setSize (num_channels, num_frames_, true, false, false);
+  const auto frames_read_ptr =
+    frames_.getReadPointer (0, start_from * num_channels);
+  auto frames_to_write = num_frames_ - start_from;
+  for (typeof (num_channels) i = 0; i < num_channels; ++i)
     {
-      self->ch_frames[i] = (float *) g_realloc (
-        self->ch_frames[i], sizeof (float) * (size_t) self->num_frames);
-      for (size_t j = start_from; j < (size_t) self->num_frames; j++)
+      auto ch_frames_write_ptr = ch_frames_.getWritePointer (i, start_from);
+      for (typeof (frames_to_write) j = 0; j < frames_to_write; ++j)
         {
-          self->ch_frames[i][j] = self->frames[j * self->channels + i];
+          ch_frames_write_ptr[j] = frames_read_ptr[j * num_channels + i];
         }
     }
 }
 
-/**
- * @brief
- *
- * @param self
- * @param full_path
- * @param set_bpm Whether to set the BPM from the current tempo track.
- * @param error
- * @return true
- * @return false
- */
-static bool
-audio_clip_init_from_file (
-  AudioClip *  self,
-  const char * full_path,
-  bool         set_bpm,
-  GError **    error)
+void
+AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
 {
-  g_return_val_if_fail (self, false);
-
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
-  g_return_val_if_fail (self->samplerate > 0, false);
-
-  GError * err = NULL;
+  samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
+  g_return_if_fail (samplerate_ > 0);
 
   /* read metadata */
-  AudioFile * af = audio_file_new (full_path);
-  bool        success = audio_file_read_metadata (af, &err);
-  if (!success)
+  AudioFile file (full_path);
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error reading metadata from %s", full_path);
-      return false;
+      file.read_metadata ();
     }
-  self->num_frames = (unsigned_frame_t) af->metadata.num_frames;
-  self->channels = (channels_t) af->metadata.channels;
-  switch (af->metadata.bit_depth)
+  catch (ZrythmException &e)
     {
-    case 16:
-      self->bit_depth = BitDepth::BIT_DEPTH_16;
-      break;
-    case 24:
-      self->bit_depth = BitDepth::BIT_DEPTH_24;
-      break;
-    case 32:
-      self->bit_depth = BitDepth::BIT_DEPTH_32;
-      break;
-    default:
-      g_debug ("unknown bit depth: %d", af->metadata.bit_depth);
-      self->bit_depth = BitDepth::BIT_DEPTH_32;
+      throw ZrythmException (
+        fmt::sprintf ("Failed to read metadata from file '%s'", full_path));
     }
+  num_frames_ = file.metadata_.num_frames;
+  channels_ = file.metadata_.channels;
+  bit_depth_ = audio_bit_depth_int_to_enum (file.metadata_.bit_depth);
+  bpm_ = file.metadata_.bpm;
 
-  /* read frames in file's sample rate */
-  size_t arr_size = self->num_frames * self->channels;
-  self->frames = (float *) g_realloc (self->frames, arr_size * sizeof (float));
-  success = audio_file_read_samples (
-    af, false, self->frames, 0, self->num_frames, &err);
-  if (!success)
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error reading frames from %s", full_path);
-      return false;
+      /* read frames into project's samplerate */
+      file.read_full (ch_frames_, samplerate_);
     }
+  catch (ZrythmException &e)
+    {
+      throw ZrythmException (
+        fmt::sprintf ("Failed to read frames from file '%s'", full_path));
+    }
+  num_frames_ = ch_frames_.getNumSamples ();
+  channels_ = ch_frames_.getNumChannels ();
 
-  /* resample to project's sample rate */
-  Resampler * r = resampler_new (
-    self->frames, self->num_frames, af->metadata.samplerate, self->samplerate,
-    self->channels, RESAMPLER_QUALITY_VERY_HIGH, &err);
-  if (!r)
-    {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, "Failed to create resampler");
-      return false;
-    }
-  while (!resampler_is_done (r))
-    {
-      success = resampler_process (r, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Resampler failed to process");
-          return false;
-        }
-    }
-  self->num_frames = r->num_out_frames;
-  arr_size = self->num_frames * self->channels;
-  self->frames = (float *) g_realloc (self->frames, arr_size * sizeof (float));
-  dsp_copy (self->frames, r->out_frames, arr_size);
-  object_free_w_func_and_null (resampler_free, r);
-
-  success = audio_file_finish (af, &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, "Failed to finish audio file usage");
-      return false;
-    }
-  object_free_w_func_and_null (audio_file_free, af);
-
-  g_free_and_null (self->name);
-  char * basename = g_path_get_basename (full_path);
-  self->name = io_file_strip_ext (basename);
-  g_free (basename);
+  name_ = juce::File (full_path).getFileNameWithoutExtension ().toStdString ();
   if (set_bpm)
     {
-      g_return_val_if_fail (PROJECT && P_TEMPO_TRACK, false);
-      self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
+      g_return_if_fail (PROJECT && P_TEMPO_TRACK);
+      bpm_ = P_TEMPO_TRACK->get_current_bpm ();
     }
-  self->use_flac = audio_clip_use_flac (self->bit_depth);
-  /*g_message (*/
-  /*"\n\n num frames %ld \n\n", self->num_frames);*/
-  audio_clip_update_channel_caches (self, 0);
+  use_flac_ = use_flac (bit_depth_);
 
-  return true;
+  /* interleave into frames_ */
+  frames_ = ch_frames_;
+  AudioFile::interleave_buffer (frames_);
 }
 
-/**
- * Inits after loading a Project.
- */
-bool
-audio_clip_init_loaded (AudioClip * self, GError ** error)
+void
+AudioClip::init_loaded ()
 {
-  g_debug ("%s: %p", __func__, self);
+  g_debug ("%s: %p", __func__, this);
 
-  char * filepath = audio_clip_get_path_in_pool_from_name (
-    self->name, self->use_flac, F_NOT_BACKUP);
+  std::string filepath =
+    get_path_in_pool_from_name (name_, use_flac_, F_NOT_BACKUP);
 
-  bpm_t    bpm = self->bpm;
-  GError * err = NULL;
-  bool     success = audio_clip_init_from_file (self, filepath, false, &err);
-  if (!success)
+  bpm_t bpm = bpm_;
+  try
     {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, _ ("Failed to initialize audio file"));
-      return false;
+      init_from_file (filepath, false);
     }
-  self->bpm = bpm;
-
-  g_free (filepath);
-
-  return true;
+  catch (ZrythmException &e)
+    {
+      throw ZrythmException (
+        fmt::sprintf ("Failed to initialize audio file: %s", e.what ()));
+    }
+  bpm_ = bpm;
 }
 
-/**
- * Creates an audio clip from a file.
- *
- * The name used is the basename of the file.
- */
-AudioClip *
-audio_clip_new_from_file (const char * full_path, GError ** error)
+AudioClip::AudioClip (const std::string &full_path)
 {
-  AudioClip * self = _create ();
+  init_from_file (full_path, false);
 
-  GError * err = NULL;
-  bool     success = audio_clip_init_from_file (self, full_path, true, &err);
-  if (!success)
-    {
-      audio_clip_free (self);
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to initialize audio file at %s"), full_path);
-      return NULL;
-    }
-
-  self->pool_id = -1;
-  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-
-  return self;
+  pool_id_ = -1;
+  bpm_ = P_TEMPO_TRACK->get_current_bpm ();
 }
 
-/**
- * Creates an audio clip by copying the given float
- * array.
- *
- * @param name A name for this clip.
- */
-AudioClip *
-audio_clip_new_from_float_array (
+AudioClip::AudioClip (
   const float *          arr,
   const unsigned_frame_t nframes,
   const channels_t       channels,
   BitDepth               bit_depth,
-  const char *           name)
+  const std::string     &name)
 {
-  AudioClip * self = _create ();
-
-  self->frames = object_new_n ((size_t) (nframes * channels), sample_t);
-  self->num_frames = nframes;
-  self->channels = channels;
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
-  g_return_val_if_fail (self->samplerate > 0, NULL);
-  self->name = g_strdup (name);
-  self->bit_depth = bit_depth;
-  self->use_flac = audio_clip_use_flac (bit_depth);
-  self->pool_id = -1;
-  dsp_copy (self->frames, arr, (size_t) nframes * (size_t) channels);
-  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  audio_clip_update_channel_caches (self, 0);
-
-  return self;
+  frames_.setSize (1, nframes * channels, true, false, false);
+  num_frames_ = nframes;
+  channels_ = channels;
+  samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
+  g_return_if_fail (samplerate_ > 0);
+  name_ = name;
+  bit_depth_ = bit_depth;
+  use_flac_ = use_flac (bit_depth);
+  pool_id_ = -1;
+  dsp_copy (
+    frames_.getWritePointer (0), arr, (size_t) nframes * (size_t) channels);
+  bpm_ = P_TEMPO_TRACK->get_current_bpm ();
+  update_channel_caches (0);
 }
 
-/**
- * Create an audio clip while recording.
- *
- * The frames will keep getting reallocated until
- * the recording is finished.
- *
- * @param nframes Number of frames to allocate. This
- *   should be the current cycle's frames when
- *   called during recording.
- */
-AudioClip *
-audio_clip_new_recording (
+AudioClip::AudioClip (
   const channels_t       channels,
   const unsigned_frame_t nframes,
-  const char *           name)
+  const std::string     &name)
 {
-  AudioClip * self = _create ();
-
-  self->channels = channels;
-  self->frames = object_new_n ((size_t) (nframes * self->channels), sample_t);
-  self->num_frames = nframes;
-  self->name = g_strdup (name);
-  self->pool_id = -1;
-  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
-  self->bit_depth = BitDepth::BIT_DEPTH_32;
-  self->use_flac = false;
-  g_return_val_if_fail (self->samplerate > 0, NULL);
+  channels_ = channels;
+  frames_.setSize (nframes * channels, 1, true, false, false);
+  num_frames_ = nframes;
+  name_ = name;
+  pool_id_ = -1;
+  bpm_ = P_TEMPO_TRACK->get_current_bpm ();
+  samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
+  bit_depth_ = BitDepth::BIT_DEPTH_32;
+  use_flac_ = false;
+  g_return_if_fail (samplerate_ > 0);
   dsp_fill (
-    self->frames, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
-    (size_t) nframes * (size_t) channels);
-  audio_clip_update_channel_caches (self, 0);
-
-  return self;
+    frames_.getWritePointer (0), DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
+    (size_t) nframes * (size_t) channels_);
+  update_channel_caches (0);
 }
 
-/**
- * Gets the path of a clip matching \ref name from
- * the pool.
- *
- * @param use_flac Whether to look for a FLAC file
- *   instead of a wav file.
- * @param is_backup Whether writing to a backup
- *   project.
- */
-char *
-audio_clip_get_path_in_pool_from_name (
-  const char * name,
-  bool         use_flac,
-  bool         is_backup)
+std::string
+AudioClip::get_path_in_pool_from_name (
+  const std::string &name,
+  bool               use_flac,
+  bool               is_backup)
 {
-  char * prj_pool_dir =
-    project_get_path (PROJECT, ProjectPath::PROJECT_PATH_POOL, is_backup);
-  if (!file_exists (prj_pool_dir))
+  std::string prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  if (!file_path_exists (prj_pool_dir))
     {
-      g_critical ("%s does not exist", prj_pool_dir);
-      return NULL;
+      z_error ("%s does not exist", prj_pool_dir);
+      return "";
     }
-  char * without_ext = io_file_strip_ext (name);
-  char * basename =
-    g_strdup_printf ("%s.%s", without_ext, use_flac ? "FLAC" : "wav");
-  char * new_path = g_build_filename (prj_pool_dir, basename, NULL);
-  g_free (without_ext);
-  g_free (basename);
-  g_free (prj_pool_dir);
-
-  return new_path;
+  std::string basename =
+    juce::File (name).getFileNameWithoutExtension ().toStdString ()
+    + (use_flac ? ".FLAC" : ".wav");
+  return Glib::build_filename (prj_pool_dir, basename);
 }
 
-/**
- * Gets the path of the given clip from the pool.
- *
- * @param is_backup Whether writing to a backup
- *   project.
- */
-char *
-audio_clip_get_path_in_pool (AudioClip * self, bool is_backup)
+std::string
+AudioClip::get_path_in_pool (bool is_backup) const
 {
-  return audio_clip_get_path_in_pool_from_name (
-    self->name, self->use_flac, is_backup);
+  return get_path_in_pool_from_name (name_, use_flac_, is_backup);
 }
 
-/**
- * Writes the clip to the pool as a wav file.
- *
- * @param parts If true, only write new data. @see
- *   AudioClip.frames_written.
- * @param is_backup Whether writing to a backup
- *   project.
- *
- * @return Whether successful.
- */
-bool
-audio_clip_write_to_pool (
-  AudioClip * self,
-  bool        parts,
-  bool        is_backup,
-  GError **   error)
+void
+AudioClip::write_to_pool (bool parts, bool is_backup)
 {
-  AudioClip * pool_clip = audio_pool_get_clip (AUDIO_POOL, self->pool_id);
-  g_return_val_if_fail (pool_clip, false);
-  g_return_val_if_fail (pool_clip == self, false);
+  AudioClip * pool_clip = AUDIO_POOL->get_clip (pool_id_);
+  g_return_if_fail (pool_clip == this);
 
-  audio_pool_print (AUDIO_POOL);
-  g_message (
-    "attempting to write clip %s (%d) to pool...", self->name, self->pool_id);
+  AUDIO_POOL->print ();
+  z_debug ("attempting to write clip %s (%d) to pool...", name_, pool_id_);
 
-  /* generate a copy of the given filename in the
-   * project dir */
-  char * path_in_main_project = audio_clip_get_path_in_pool (self, F_NOT_BACKUP);
-  char * new_path = audio_clip_get_path_in_pool (self, is_backup);
-  g_return_val_if_fail (path_in_main_project, false);
-  g_return_val_if_fail (new_path, false);
+  /* generate a copy of the given filename in the project dir */
+  std::string path_in_main_project = get_path_in_pool (F_NOT_BACKUP);
+  std::string new_path = get_path_in_pool (is_backup);
+  g_return_if_fail (!path_in_main_project.empty ());
+  g_return_if_fail (!new_path.empty ());
 
   /* whether a new write is needed */
   bool need_new_write = true;
 
   /* skip if file with same hash already exists */
-  if (file_exists (new_path) && !parts)
+  if (file_path_exists (new_path) && !parts)
     {
-      char * existing_file_hash =
-        hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
       bool same_hash =
-        self->file_hash && string_is_equal (self->file_hash, existing_file_hash);
-      g_free (existing_file_hash);
+        !file_hash_.empty ()
+        && file_hash_
+             == hash_get_from_file (new_path.c_str (), HASH_ALGORITHM_XXH3_64);
 
       if (same_hash)
         {
-          g_debug (
-            "skipping writing to existing clip %s "
-            "in pool",
-            new_path);
+          z_debug ("skipping writing to existing clip %s in pool", new_path);
           need_new_write = false;
         }
-#if 0
-      else
-        {
-          g_critical (
-            "attempted to overwrite %s with a "
-            "different clip",
-            new_path);
-          return;
-        }
-#endif
     }
 
-  /* if writing to backup and same file exists in
-   * main project dir, copy (first try reflink) */
-  if (need_new_write && self->file_hash && is_backup)
+  /* if writing to backup and same file exists in main project dir, copy (first
+   * try reflink) */
+  if (need_new_write && !file_hash_.empty () && is_backup)
     {
       bool exists_in_main_project = false;
-      if (file_exists (path_in_main_project))
+      if (file_path_exists (path_in_main_project))
         {
-          char * existing_file_hash =
-            hash_get_from_file (path_in_main_project, HASH_ALGORITHM_XXH3_64);
           exists_in_main_project =
-            string_is_equal (self->file_hash, existing_file_hash);
-          g_free (existing_file_hash);
+            file_hash_
+            == hash_get_from_file (path_in_main_project, HASH_ALGORITHM_XXH3_64);
         }
 
       if (exists_in_main_project)
         {
           /* try reflink */
-          g_debug (
-            "reflinking clip from main project "
-            "('%s' to '%s')",
+          z_debug (
+            "reflinking clip from main project ('{}' to '{}')",
             path_in_main_project, new_path);
 
-          if (file_reflink (path_in_main_project, new_path) != 0)
+          try
             {
-              g_message (
-                "failed to reflink, copying "
-                "instead");
+              file_reflink (path_in_main_project, new_path);
+            }
+          catch (const ZrythmException &e)
+            {
+              z_debug ("failed to reflink ({}), copying instead", e.what ());
 
               /* copy */
-              GFile *  src_file = g_file_new_for_path (path_in_main_project);
-              GFile *  dest_file = g_file_new_for_path (new_path);
-              GError * err = NULL;
-              g_debug (
-                "copying clip from main project "
-                "('%s' to '%s')",
+              auto src_file = Gio::File::create_for_path (path_in_main_project);
+              auto dest_file = Gio::File::create_for_path (new_path);
+              z_debug (
+                "copying clip from main project ('{}}' to '{}')",
                 path_in_main_project, new_path);
-              if (
-                g_file_copy (
-                  src_file, dest_file, (GFileCopyFlags) 0, NULL, NULL, NULL,
-                  &err))
+              try
                 {
-                  need_new_write = false;
+                  src_file->copy (dest_file);
                 }
-              else /* else if failed */
+              catch (const Gio::Error &e)
                 {
-                  g_warning (
-                    "Failed to copy '%s' to '%s': %s", path_in_main_project,
-                    new_path, err->message);
+                  throw ZrythmException (fmt::format (
+                    "Failed to copy '{}' to '{}': {}", path_in_main_project,
+                    new_path, e.what ()));
                 }
             } /* endif reflink fail */
         }
@@ -478,146 +278,89 @@ audio_clip_write_to_pool (
 
   if (need_new_write)
     {
-      g_debug (
-        "writing clip %s to pool "
-        "(parts %d, is backup  %d): '%s'",
-        self->name, parts, is_backup, new_path);
-      GError * err = NULL;
-      bool     success = audio_clip_write_to_file (self, new_path, parts, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, _ ("Failed to write audio clip to file: %s"), new_path);
-          return false;
-        }
-
+      z_debug (
+        "writing clip %s to pool (parts %d, is backup  %d): '%s'", name_, parts,
+        is_backup, new_path);
+      write_to_file (new_path, parts);
       if (!parts)
         {
           /* store file hash */
-          g_free_and_null (self->file_hash);
-          self->file_hash =
-            hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
+          file_hash_ = hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
         }
     }
 
-  g_free (path_in_main_project);
-  g_free (new_path);
-
-  audio_pool_print (AUDIO_POOL);
-
-  return true;
+  AUDIO_POOL->print ();
 }
 
-/**
- * Writes the given audio clip data to a file.
- *
- * @param parts If true, only write new data. @see
- *   AudioClip.frames_written.
- *
- * @return Whether successful.
- */
-bool
-audio_clip_write_to_file (
-  AudioClip *  self,
-  const char * filepath,
-  bool         parts,
-  GError **    error)
+void
+AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
-  g_return_val_if_fail (self->samplerate > 0, false);
-  g_return_val_if_fail (self->frames_written < SIZE_MAX, false);
-  size_t           before_frames = (size_t) self->frames_written;
-  unsigned_frame_t ch_offset = parts ? self->frames_written : 0;
-  unsigned_frame_t offset = ch_offset * self->channels;
+  g_return_if_fail (samplerate_ > 0);
+  g_return_if_fail (frames_written_ < SIZE_MAX);
+  size_t           before_frames = (size_t) frames_written_;
+  unsigned_frame_t ch_offset = parts ? frames_written_ : 0;
+  unsigned_frame_t offset = ch_offset * channels_;
 
   size_t nframes;
   if (parts)
     {
-      z_return_val_if_fail_cmp (
-        self->num_frames, >=, self->frames_written, false);
-      unsigned_frame_t _nframes = self->num_frames - self->frames_written;
-      z_return_val_if_fail_cmp (_nframes, <, SIZE_MAX, false);
+      z_return_if_fail_cmp (num_frames_, >=, frames_written_);
+      unsigned_frame_t _nframes = num_frames_ - frames_written_;
+      z_return_if_fail_cmp (_nframes, <, SIZE_MAX);
       nframes = _nframes;
     }
   else
     {
-      z_return_val_if_fail_cmp (self->num_frames, <, SIZE_MAX, false);
-      nframes = self->num_frames;
+      z_return_if_fail_cmp (num_frames_, <, SIZE_MAX);
+      nframes = num_frames_;
     }
-  GError * err = NULL;
-  bool     success = audio_write_raw_file (
-    &self->frames[offset], ch_offset, nframes, (uint32_t) self->samplerate,
-    self->use_flac, self->bit_depth, self->channels, filepath, &err);
-  if (!success)
+  try
     {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, _ ("Failed to write audio file"));
-      return false;
+      audio_write_raw_file (
+        frames_.getReadPointer (0) + offset, ch_offset, nframes,
+        (uint32_t) samplerate_, use_flac_, bit_depth_, channels_, filepath);
     }
-  audio_clip_update_channel_caches (self, before_frames);
-
-  if (parts && success)
+  catch (const ZrythmException &e)
     {
-      self->frames_written = self->num_frames;
-      self->last_write = g_get_monotonic_time ();
+      throw ZrythmException (
+        fmt::format ("Failed to write audio file '{}'", filepath));
+    }
+  update_channel_caches (before_frames);
+
+  if (parts)
+    {
+      frames_written_ = num_frames_;
+      last_write_ = g_get_monotonic_time ();
     }
 
-  /* TODO move this to a unit test for this
-   * function */
+  /* TODO move this to a unit test for this function */
   if (ZRYTHM_TESTING)
     {
-      err = NULL;
-      AudioClip * new_clip = audio_clip_new_from_file (filepath, &err);
-      if (!new_clip)
+      AudioClip new_clip (filepath);
+      if (num_frames_ != new_clip.num_frames_)
         {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, _ ("Failed to create audio clip from file"));
-          return false;
-        }
-
-      if (self->num_frames != new_clip->num_frames)
-        {
-          g_warning ("%zu != %zu", self->num_frames, new_clip->num_frames);
+          z_warning ("%zu != %zu", num_frames_, new_clip.num_frames_);
         }
       float epsilon = 0.0001f;
       g_warn_if_fail (audio_frames_equal (
-        self->ch_frames[0], new_clip->ch_frames[0],
-        (size_t) new_clip->num_frames, epsilon));
+        ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
+        (size_t) new_clip.num_frames_, epsilon));
       g_warn_if_fail (audio_frames_equal (
-        self->frames, new_clip->frames,
-        (size_t) new_clip->num_frames * new_clip->channels, epsilon));
-      audio_clip_free (new_clip);
+        frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
+        (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon));
     }
-
-  return true;
 }
 
-/**
- * Returns whether the clip is used inside the
- * project.
- *
- * @param check_undo_stack If true, this checks both
- *   project regions and the undo stack. If false,
- *   this only checks actual project regions only.
- */
 bool
-audio_clip_is_in_use (AudioClip * self, bool check_undo_stack)
+AudioClip::is_in_use (bool check_undo_stack) const
 {
-  for (auto track : TRACKLIST->tracks)
+  for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack>{})
     {
-      if (track->type != TrackType::TRACK_TYPE_AUDIO)
-        continue;
-
-      for (int j = 0; j < track->num_lanes; j++)
+      for (auto &lane : track->lanes_)
         {
-          TrackLane * lane = track->lanes[j];
-
-          for (int k = 0; k < lane->num_regions; k++)
+          for (auto region : lane->regions_ | type_is<AudioRegion>{})
             {
-              Region * r = lane->regions[k];
-              if (r->id.type != RegionType::REGION_TYPE_AUDIO)
-                continue;
-
-              if (r->pool_id == self->pool_id)
+              if (region->pool_id_ == pool_id_)
                 return true;
             }
         }
@@ -625,7 +368,7 @@ audio_clip_is_in_use (AudioClip * self, bool check_undo_stack)
 
   if (check_undo_stack)
     {
-      if (undo_manager_contains_clip (UNDO_MANAGER, self))
+      if (UNDO_MANAGER->contains_clip (*this))
         {
           return true;
         }
@@ -653,7 +396,7 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
   GList *  file_list = NULL;
   file_list = g_list_append (file_list, data->file);
   GAppInfo * app_nfo = gtk_app_chooser_get_app_info (data->app_chooser);
-  bool       success = g_app_info_launch (app_nfo, file_list, NULL, &err);
+  bool       success = g_app_info_launch (app_nfo, file_list, nullptr, &err);
   g_list_free (file_list);
   if (!success)
     {
@@ -661,56 +404,42 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
     }
 }
 
-/**
- * Shows a dialog with info on how to edit a file,
- * with an option to open an app launcher.
- *
- * When the user closes the dialog, the clip is
- * assumed to have been edited.
- *
- * The given audio clip will be free'd.
- *
- * @note This must not be used on pool clips.
- *
- * @return A new instance of AudioClip if successful,
- *   NULL, if not.
- */
-AudioClip *
-audio_clip_edit_in_ext_program (AudioClip * self, GError ** error)
+std::unique_ptr<AudioClip>
+AudioClip::edit_in_ext_program ()
 {
   GError * err = NULL;
   char *   tmp_dir = g_dir_make_tmp ("zrythm-audio-clip-tmp-XXXXXX", &err);
   if (!tmp_dir)
     {
-      PROPAGATE_PREFIXED_ERROR (error, err, "%s", "Failed to create tmp dir");
-      return NULL;
+      throw ZrythmException (
+        fmt::sprintf ("Failed to create tmp dir: %s", err->message));
     }
-  char * abs_path = g_build_filename (tmp_dir, "tmp.wav", NULL);
-  bool   success = audio_clip_write_to_file (self, abs_path, false, &err);
-  audio_clip_free (self);
-  if (!success)
+  std::string abs_path = Glib::build_filename (tmp_dir, "tmp.wav");
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", "Failed to write clip to file");
-      return NULL;
+      write_to_file (abs_path, false);
+    }
+  catch (ZrythmException &e)
+    {
+      throw ZrythmException (
+        fmt::sprintf ("Failed to write audio file '%s'", abs_path));
     }
 
-  GFile *     file = g_file_new_for_path (abs_path);
+  GFile *     file = g_file_new_for_path (abs_path.c_str ());
   GFileInfo * file_info = g_file_query_info (
-    file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, G_FILE_QUERY_INFO_NONE, NULL,
-    &err);
+    file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, G_FILE_QUERY_INFO_NONE,
+    nullptr, &err);
   if (!file_info)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to query file info for %s", abs_path);
-      return NULL;
+      throw ZrythmException (
+        fmt::sprintf ("Failed to query file info for %s", abs_path));
     }
   const char * content_type = g_file_info_get_content_type (file_info);
 
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
     _ ("Edit in external app"), GTK_WINDOW (MAIN_WINDOW),
     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, _ ("_OK"),
-    GTK_RESPONSE_ACCEPT, _ ("_Cancel"), GTK_RESPONSE_REJECT, NULL);
+    GTK_RESPONSE_ACCEPT, _ ("_Cancel"), GTK_RESPONSE_REJECT, nullptr);
 
   /* populate content area */
   GtkWidget * content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
@@ -724,9 +453,7 @@ audio_clip_edit_in_ext_program (AudioClip * self, GError ** error)
   GtkWidget * lbl = gtk_label_new ("");
   gtk_label_set_selectable (GTK_LABEL (lbl), true);
   char * markup = g_markup_printf_escaped (
-    _ ("Edit the file at <u>%s</u>, then "
-       "press OK"),
-    abs_path);
+    _ ("Edit the file at <u>%s</u>, then press OK"), abs_path.c_str ());
   gtk_label_set_markup (GTK_LABEL (lbl), markup);
   gtk_box_append (GTK_BOX (main_box), lbl);
 
@@ -747,75 +474,19 @@ audio_clip_edit_in_ext_program (AudioClip * self, GError ** error)
   int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (ret != GTK_RESPONSE_ACCEPT)
     {
-      g_set_error_literal (
-        error, Z_AUDIO_CLIP_ERROR, Z_AUDIO_CLIP_ERROR_CANCELLED,
-        "Operation cancelled");
-      return NULL;
+      g_debug ("operation cancelled");
+      return nullptr;
     }
 
   /* ok - reload from file */
-  err = NULL;
-  self = audio_clip_new_from_file (abs_path, &err);
-  if (!self)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to create audio clip from file at %s"), abs_path);
-      return NULL;
-    }
-
-  return self;
+  return std::make_unique<AudioClip> (abs_path);
 }
 
-/**
- * To be called by audio_pool_remove_clip().
- *
- * Removes the file associated with the clip and
- * frees the instance.
- *
- * @param backup Whether to remove from backup
- *   directory.
- */
 void
-audio_clip_remove_and_free (AudioClip * self, bool backup)
+AudioClip::remove (bool backup)
 {
-  char * path = audio_clip_get_path_in_pool (self, backup);
-  g_message ("removing clip at %s", path);
-  g_return_if_fail (path);
+  std::string path = get_path_in_pool (backup);
+  z_debug ("removing clip at %s", path);
+  g_return_if_fail (path.length () > 0);
   io_remove (path);
-
-  audio_clip_free (self);
-}
-
-AudioClip *
-audio_clip_clone (AudioClip * src)
-{
-  AudioClip * self = object_new (AudioClip);
-  self->schema_version = AUDIO_CLIP_SCHEMA_VERSION;
-
-  self->name = g_strdup (src->name);
-  self->file_hash = g_strdup (src->file_hash);
-  self->bpm = src->bpm;
-  self->bit_depth = src->bit_depth;
-  self->use_flac = src->use_flac;
-  self->samplerate = src->samplerate;
-  self->pool_id = src->pool_id;
-
-  return self;
-}
-
-/**
- * Frees the audio clip.
- */
-void
-audio_clip_free (AudioClip * self)
-{
-  object_zero_and_free (self->frames);
-  for (unsigned int i = 0; i < self->channels; i++)
-    {
-      object_zero_and_free_if_nonnull (self->ch_frames[i]);
-    }
-  g_free_and_null (self->name);
-  g_free_and_null (self->file_hash);
-
-  object_zero_and_free (self);
 }

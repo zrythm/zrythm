@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Digital meter used for displaying Position,
  * BPM, etc.
@@ -26,7 +26,7 @@ G_DECLARE_FINAL_TYPE (
 
 enum class NoteLength;
 enum class NoteType;
-typedef struct Position Position;
+class Position;
 
 /**
  * @addtogroup widgets
@@ -43,7 +43,7 @@ enum class DigitalMeterType
   DIGITAL_METER_TYPE_NOTE_LENGTH,
 };
 
-typedef struct SnapGrid SnapGrid;
+class SnapGrid;
 
 typedef struct _DigitalMeterWidget
 {

@@ -1,25 +1,34 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __MIDI_MIDI_GROUP_TRACK_H__
 #define __MIDI_MIDI_GROUP_TRACK_H__
 
-#include "dsp/channel_track.h"
-#include "dsp/track.h"
+#include "dsp/automatable_track.h"
+#include "dsp/foldable_track.h"
+#include "dsp/group_target_track.h"
 
-typedef struct Position        Position;
-typedef struct _TrackWidget    TrackWidget;
-typedef struct Channel         Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable     Automatable;
+class MidiGroupTrack final
+    : public FoldableTrack,
+      public GroupTargetTrack,
+      public ICloneable<MidiGroupTrack>,
+      public ISerializable<MidiGroupTrack>
+{
+public:
+  // Rule of 0
+  MidiGroupTrack () = default;
+  MidiGroupTrack (const std::string &name, int pos);
 
-void
-midi_group_track_init (Track * track);
+  void init_after_cloning (const MidiGroupTrack &other) override
+  {
+    FoldableTrack::copy_members_from (other);
+    ChannelTrack::copy_members_from (other);
+    ProcessableTrack::copy_members_from (other);
+    AutomatableTrack::copy_members_from (other);
+    Track::copy_members_from (other);
+  }
 
-void
-midi_group_track_setup (Track * self);
+  DECLARE_DEFINE_FIELDS_METHOD ();
+};
 
 #endif // __MIDI_MIDI_BUS_TRACK_H__

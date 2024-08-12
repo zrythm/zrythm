@@ -6,7 +6,6 @@
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -21,7 +20,7 @@ response_cb (AdwAlertDialog * self, gchar * response, gpointer user_data)
 
   if (is_yes)
     {
-      zrythm_app_check_for_updates (zrythm_app);
+      zrythm_app_check_for_updates (zrythm_app.get ());
     }
 }
 
@@ -29,11 +28,11 @@ void
 ask_to_check_for_updates_dialog_run_async (GtkWidget * parent)
 {
   AdwAlertDialog * dialog =
-    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Check for Updates?"), NULL));
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Check for Updates?"), nullptr));
   adw_alert_dialog_format_body (
     dialog, _ ("Do you want %s to check for updates on startup?"), PROGRAM_NAME);
   adw_alert_dialog_add_responses (
-    dialog, "yes", _ ("_Yes"), "no", _ ("_No"), NULL);
+    dialog, "yes", _ ("_Yes"), "no", _ ("_No"), nullptr);
   adw_alert_dialog_set_response_appearance (
     ADW_ALERT_DIALOG (dialog), "yes", ADW_RESPONSE_SUGGESTED);
 
@@ -42,5 +41,6 @@ ask_to_check_for_updates_dialog_run_async (GtkWidget * parent)
 
   g_signal_connect (dialog, "response", G_CALLBACK (response_cb), dialog);
 
-  adw_alert_dialog_choose (dialog, GTK_WIDGET (parent), NULL, NULL, NULL);
+  adw_alert_dialog_choose (
+    dialog, GTK_WIDGET (parent), nullptr, nullptr, nullptr);
 }

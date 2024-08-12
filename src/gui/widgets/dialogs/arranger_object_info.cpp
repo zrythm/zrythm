@@ -1,14 +1,9 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-#include "gui/backend/arranger_object.h"
+#include "dsp/arranger_object.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"
 #include "project.h"
-#include "utils/io.h"
-#include "utils/resources.h"
-#include "utils/ui.h"
 
 #include <glib/gi18n.h>
 
@@ -38,12 +33,10 @@ set_basic_info (
   /* name */
   row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Name"));
-  lbl = GTK_LABEL (gtk_label_new (NULL));
-  char         tmp[600];
-  const char * name = arranger_object_get_name (obj);
-  if (name)
+  lbl = GTK_LABEL (gtk_label_new (nullptr));
+  if (auto nameable_obj = dynamic_cast<NameableObject *> (obj))
     {
-      gtk_label_set_text (lbl, name);
+      gtk_label_set_text (lbl, nameable_obj->get_name ().c_str ());
     }
   else
     {
@@ -54,22 +47,22 @@ set_basic_info (
 
   row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Owner"));
-  lbl = GTK_LABEL (gtk_label_new (NULL));
-  if (arranger_object_owned_by_region (obj))
+  lbl = GTK_LABEL (gtk_label_new (nullptr));
+  if (auto region_owned_obj = dynamic_cast<RegionOwnedObject *> (obj))
     {
-      Region * region = arranger_object_get_region (obj);
-      g_return_if_fail (region);
-      sprintf (
-        tmp, "%s [tr %u, ln %d, at %d, idx %d]", region->name,
-        region->id.track_name_hash, region->id.lane_pos, region->id.at_idx,
-        region->id.idx);
-      gtk_label_set_text (lbl, tmp);
+      auto region = region_owned_obj->get_region ();
+      z_return_if_fail (region);
+      auto tmp = fmt::format (
+        "{} [tr {}, ln {}, at {}, idx {}]", region->name_,
+        region->id_.track_name_hash_, region->id_.lane_pos_,
+        region->id_.at_idx_, region->id_.idx_);
+      gtk_label_set_text (lbl, tmp.c_str ());
     }
   else
     {
-      Track * track = arranger_object_get_track (obj);
-      g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-      gtk_label_set_text (lbl, track->name);
+      Track * track = obj->get_track ();
+      z_return_if_fail (track);
+      gtk_label_set_text (lbl, track->name_.c_str ());
     }
   adw_action_row_add_suffix (row, GTK_WIDGET (lbl));
   adw_preferences_group_add (pref_group, GTK_WIDGET (row));
@@ -82,7 +75,7 @@ ArrangerObjectInfoDialogWidget *
 arranger_object_info_dialog_widget_new (ArrangerObject * object)
 {
   ArrangerObjectInfoDialogWidget * self = Z_ARRANGER_OBJECT_INFO_DIALOG_WIDGET (
-    g_object_new (ARRANGER_OBJECT_INFO_DIALOG_WIDGET_TYPE, NULL));
+    g_object_new (ARRANGER_OBJECT_INFO_DIALOG_WIDGET_TYPE, nullptr));
 
   AdwPreferencesPage * pref_page =
     ADW_PREFERENCES_PAGE (adw_preferences_page_new ());

@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Object with change signal.
- */
-
 #ifndef __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 #define __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 

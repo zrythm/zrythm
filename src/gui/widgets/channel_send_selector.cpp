@@ -11,8 +11,8 @@
 #include "gui/widgets/item_factory.h"
 #include "plugins/plugin_identifier.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/objects.h"
+#include "utils/logger.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -22,30 +22,35 @@ G_DEFINE_TYPE (
   channel_send_selector_widget,
   GTK_TYPE_POPOVER)
 
-static Track *
-get_track_from_target (ChannelSendTarget * target)
+static ProcessableTrack *
+get_track_from_target (ChannelSend::Target * target)
 {
-  if (target->type == ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_NONE)
-    return NULL;
+  if (target->type == ChannelSend::TargetType::None)
+    return nullptr;
 
-  return TRACKLIST->tracks[target->track_pos];
+  auto ret = dynamic_cast<ProcessableTrack *> (
+    TRACKLIST->tracks_[target->track_pos].get ());
+  z_return_val_if_fail (ret, nullptr);
+  return ret;
 }
 
-static StereoPorts *
-get_sidechain_from_target (ChannelSendTarget * target)
+static std::unique_ptr<StereoPorts>
+get_sidechain_from_target (ChannelSend::Target * target)
 {
-  if (
-    target->type
-    != ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN)
+  if (target->type != ChannelSend::TargetType::PluginSidechain)
     {
-      return NULL;
+      return nullptr;
     }
 
-  Plugin * pl = plugin_find (&target->pl_id);
-  g_return_val_if_fail (pl, NULL);
-  Port l = plugin_get_port_in_group (pl, target->port_group, true)->clone ();
-  Port r = plugin_get_port_in_group (pl, target->port_group, false)->clone ();
-  return new StereoPorts (std::move (l), std::move (r));
+  Plugin * pl = Plugin::find (target->pl_id);
+  z_return_val_if_fail (pl, nullptr);
+  auto l =
+    static_cast<AudioPort *> (pl->get_port_in_group (target->port_group, true))
+      ->clone_unique ();
+  auto r =
+    static_cast<AudioPort *> (pl->get_port_in_group (target->port_group, false))
+      ->clone_unique ();
+  return std::make_unique<StereoPorts> (std::move (l), std::move (r));
 }
 
 /**
@@ -75,73 +80,82 @@ on_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChannelSendTarget * target = (ChannelSendTarget *) wrapped_obj->obj;
+  auto * target = (ChannelSend::Target *) wrapped_obj->obj;
 
   ChannelSend * send = self->send_widget->send;
-  bool          is_empty = channel_send_is_empty (send);
+  bool          is_empty = send->is_empty ();
 
-  Track *          src_track = channel_send_get_track (send);
-  Track *          dest_track = NULL;
-  StereoPorts *    dest_sidechain = NULL;
-  PortConnection * conn = NULL;
-  ;
+  auto               src_track = send->get_track ();
+  ProcessableTrack * dest_track = nullptr;
+  PortConnection *   conn = nullptr;
   switch (target->type)
     {
-    case ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_NONE:
-      if (channel_send_is_enabled (send))
+    case ChannelSend::TargetType::None:
+      if (send->is_enabled ())
         {
-          GError * err = NULL;
-          bool     ret = channel_send_action_perform_disconnect (
-            self->send_widget->send, &err);
-          if (!ret)
+          try
             {
-              HANDLE_ERROR (err, "%s", _ ("Failed to disconnect send"));
+              UNDO_MANAGER->perform (
+                std::make_unique<ChannelSendDisconnectAction> (
+                  *self->send_widget->send, *PORT_CONNECTIONS_MGR));
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to disconnect send"));
             }
         }
       break;
-    case ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_TRACK:
+    case ChannelSend::TargetType::Track:
       dest_track = get_track_from_target (target);
-      switch (src_track->out_signal_type)
+      switch (src_track->out_signal_type_)
         {
         case PortType::Event:
           if (
-            port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL, &send->midi_out->id_, false)
+            PORT_CONNECTIONS_MGR->get_sources_or_dests (
+              nullptr, send->midi_out_->id_, false)
             == 1)
             {
-              conn = port_connections_manager_get_source_or_dest (
-                PORT_CONNECTIONS_MGR, &send->midi_out->id_, false);
+              conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+                send->midi_out_->id_, false);
             }
           if (
             is_empty
-            || (conn && !conn->dest_id->is_equal (dest_track->processor->midi_in->id_)))
+            || (conn && conn->dest_id_ != dest_track->processor_->midi_in_->id_))
             {
-              GError * err = NULL;
-              bool     ret = channel_send_action_perform_connect_midi (
-                send, dest_track->processor->midi_in, &err);
-              if (!ret)
+              try
                 {
-                  HANDLE_ERROR (err, "%s", _ ("Failed to connect send"));
+                  UNDO_MANAGER->perform (
+                    std::make_unique<ChannelSendConnectMidiAction> (
+                      *send, *dest_track->processor_->midi_in_,
+                      *PORT_CONNECTIONS_MGR));
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle (_ ("Failed to connect send"));
                 }
             }
           break;
         case PortType::Audio:
           if (
-            port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->get_l ().id_, false)
+            PORT_CONNECTIONS_MGR->get_sources_or_dests (
+              nullptr, send->stereo_out_->get_l ().id_, false)
             == 1)
             {
-              conn = port_connections_manager_get_source_or_dest (
-                PORT_CONNECTIONS_MGR, &send->stereo_out->get_l ().id_, false);
+              conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+                send->stereo_out_->get_l ().id_, false);
             }
-          if (is_empty || (conn && !conn->dest_id->is_equal(dest_track->processor->stereo_in->get_l().id_)))
+          if (is_empty || (conn && conn->dest_id_ != dest_track->processor_->stereo_in_->get_l().id_))
             {
-              GError * err = NULL;
-              bool     ret = channel_send_action_perform_connect_audio (
-                send, dest_track->processor->stereo_in, &err);
-              if (!ret)
+              try
                 {
-                  HANDLE_ERROR (err, "%s", _ ("Failed to connect send"));
+                  UNDO_MANAGER->perform (
+                    std::make_unique<ChannelSendConnectStereoAction> (
+                      *send, *dest_track->processor_->stereo_in_,
+                      *PORT_CONNECTIONS_MGR));
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle (_ ("Failed to connect send"));
                 }
             }
           break;
@@ -149,28 +163,30 @@ on_selection_changed (
           break;
         }
       break;
-    case ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN:
+    case ChannelSend::TargetType::PluginSidechain:
       {
-        dest_sidechain = get_sidechain_from_target (target);
+        auto dest_sidechain = get_sidechain_from_target (target);
         if (
-          port_connections_manager_get_sources_or_dests (
-            PORT_CONNECTIONS_MGR, NULL, &send->stereo_out->get_l ().id_, false)
+          PORT_CONNECTIONS_MGR->get_sources_or_dests (
+            nullptr, send->stereo_out_->get_l ().id_, false)
           == 1)
           {
-            conn = port_connections_manager_get_source_or_dest (
-              PORT_CONNECTIONS_MGR, &send->stereo_out->get_l ().id_, false);
+            conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+              send->stereo_out_->get_l ().id_, false);
           }
-        if (dest_sidechain && (is_empty || !send->is_sidechain || (conn && !conn->dest_id->is_equal(dest_sidechain->get_l().id_))))
+        if (dest_sidechain && (is_empty || !send->is_sidechain_ || (conn && conn->dest_id_ != dest_sidechain->get_l().id_)))
           {
-            GError * err = NULL;
-            bool     ret = channel_send_action_perform_connect_sidechain (
-              send, dest_sidechain, &err);
-            if (!ret)
+            try
               {
-                HANDLE_ERROR (err, "%s", _ ("Failed to connect send"));
+                UNDO_MANAGER->perform (
+                  std::make_unique<ChannelSendConnectSidechainAction> (
+                    *send, *dest_sidechain, *PORT_CONNECTIONS_MGR));
+              }
+            catch (const ZrythmException &e)
+              {
+                e.handle (_ ("Failed to connect send"));
               }
           }
-        object_zero_and_free (dest_sidechain);
       }
       break;
     }
@@ -186,12 +202,12 @@ setup_view (ChannelSendSelectorWidget * self)
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   {
-    ChannelSendTarget * target = object_new (ChannelSendTarget);
-    target->type = ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_NONE;
+    auto * target = new ChannelSend::Target ();
+    target->type = ChannelSend::TargetType::None;
     WrappedObjectWithChangeSignal * wobj =
       wrapped_object_with_change_signal_new_with_free_func (
         target, WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-        (ObjectFreeFunc) channel_send_target_free);
+        ChannelSend::Target::free_func);
     g_list_store_append (list_store, wobj);
   }
 
@@ -200,37 +216,35 @@ setup_view (ChannelSendSelectorWidget * self)
 
   /* setup tracks */
   ChannelSend * send = self->send_widget->send;
-  Track *       track = channel_send_get_track (send);
-  for (size_t i = 0; i < TRACKLIST->tracks.size (); ++i)
+  auto          track = send->get_track ();
+  for (size_t i = 0; i < TRACKLIST->tracks_.size (); ++i)
     {
-      Track * target_track = TRACKLIST->tracks[i];
+      auto target_track = TRACKLIST->tracks_[i].get ();
 
-      g_debug ("target %s", target_track->name);
+      z_trace ("target %s", target_track->name_);
 
       /* skip tracks with non-matching signal types */
       if (
         target_track == track
-        || track->out_signal_type != target_track->in_signal_type
-        || !track_type_is_fx (target_track->type))
+        || track->out_signal_type_ != target_track->in_signal_type_
+        || !Track::type_is_fx (target_track->type_))
         continue;
-      g_message ("adding %s", target_track->name);
+      z_debug ("adding %s", target_track->name_);
 
       /* create target */
-      ChannelSendTarget * target = object_new (ChannelSendTarget);
-      target = object_new (ChannelSendTarget);
-      target->type = ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_TRACK;
+      auto * target = new ChannelSend::Target ();
+      target->type = ChannelSend::TargetType::Track;
       target->track_pos = i;
 
       /* add it to list */
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new_with_free_func (
           target, WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-          (ObjectFreeFunc) channel_send_target_free);
+          ChannelSend::Target::free_func);
       g_list_store_append (list_store, wobj);
 
       if (
-        channel_send_is_enabled (send)
-        && target_track == channel_send_get_target_track (send, NULL))
+        send->is_enabled () && target_track == send->get_target_track (nullptr))
         {
           select_idx = count;
         }
@@ -238,61 +252,59 @@ setup_view (ChannelSendSelectorWidget * self)
     }
 
   /* setup plugin sidechain inputs */
-  g_debug ("setting up sidechains");
-  for (auto target_track : TRACKLIST->tracks)
+  z_debug ("setting up sidechains");
+  for (auto target_track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
     {
-      if (target_track == track || !track_type_has_channel (target_track->type))
+      if (target_track == track)
         {
           continue;
         }
 
-      Channel * ch = target_track->channel;
+      auto ch = target_track->channel_.get ();
 
-      Plugin * plugins[300];
-      int      num_plugins = ch->get_plugins (plugins);
+      std::vector<Plugin *> pls;
+      ch->get_plugins (pls);
 
-      for (int j = 0; j < num_plugins; j++)
+      for (auto pl : pls)
         {
-          Plugin * pl = plugins[j];
-          g_debug ("plugin %s", pl->setting->descr->name);
+          z_debug ("plugin %s", pl->get_name ());
 
-          for (int k = 0; k < pl->num_in_ports; k++)
+          for (auto &port : pl->in_ports_)
             {
-              Port * port = pl->in_ports[k];
-              g_debug ("port %s", port->id_.label_.c_str ());
+              z_debug ("port %s", port->get_label ());
 
               if (
                 !(ENUM_BITSET_TEST (
                   PortIdentifier::Flags, port->id_.flags_,
-                  PortIdentifier::Flags::SIDECHAIN))
+                  PortIdentifier::Flags::Sidechain))
                 || port->id_.type_ != PortType::Audio
                 || port->id_.port_group_.empty ()
                 || !(ENUM_BITSET_TEST (
                   PortIdentifier::Flags, port->id_.flags_,
-                  PortIdentifier::Flags::STEREO_L)))
+                  PortIdentifier::Flags::StereoL)))
                 {
                   continue;
                 }
 
               /* find corresponding port in the same port group (e.g., if this
                * is left, find right and vice versa) */
-              Port * other_channel = plugin_get_port_in_same_group (pl, port);
+              Port * other_channel = pl->get_port_in_same_group (*port);
               if (!other_channel)
                 {
                   continue;
                 }
-              g_debug ("other channel %s", other_channel->id_.label_.c_str ());
+              z_debug ("other channel %s", other_channel->get_label ());
 
-              Port *l = NULL, *r = NULL;
+              Port *l = nullptr, *r = NULL;
               if (
                 ENUM_BITSET_TEST (
                   PortIdentifier::Flags, port->id_.flags_,
-                  PortIdentifier::Flags::STEREO_L)
+                  PortIdentifier::Flags::StereoL)
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags, other_channel->id_.flags_,
-                  PortIdentifier::Flags::STEREO_R))
+                  PortIdentifier::Flags::StereoR))
                 {
-                  l = port;
+                  l = port.get ();
                   r = other_channel;
                 }
               if (!l || !r)
@@ -301,11 +313,10 @@ setup_view (ChannelSendSelectorWidget * self)
                 }
 
               /* create target */
-              ChannelSendTarget * target = object_new (ChannelSendTarget);
-              target->type =
-                ChannelSendTargetType::CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN;
-              target->track_pos = target_track->pos;
-              target->pl_id = pl->id;
+              auto * target = new ChannelSend::Target ();
+              target->type = ChannelSend::TargetType::PluginSidechain;
+              target->track_pos = target_track->pos_;
+              target->pl_id = pl->id_;
               target->port_group = g_strdup (l->id_.port_group_.c_str ());
 
               /* add it to list */
@@ -313,17 +324,16 @@ setup_view (ChannelSendSelectorWidget * self)
                 wrapped_object_with_change_signal_new_with_free_func (
                   target,
                   WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-                  (ObjectFreeFunc) channel_send_target_free);
+                  ChannelSend::Target::free_func);
               g_list_store_append (list_store, wobj);
 
-              if (channel_send_is_target_sidechain (send))
+              if (send->is_target_sidechain ())
                 {
-                  StereoPorts * sp = channel_send_get_target_sidechain (send);
-                  if (&sp->get_l () == l && &sp->get_r () == r)
+                  auto sp = send->get_target_sidechain ();
+                  if (sp->get_l ().id_ == l->id_ && sp->get_r ().id_ == r->id_)
                     {
                       select_idx = count;
                     }
-                  object_zero_and_free (sp);
                 }
               count++;
             }
@@ -332,9 +342,9 @@ setup_view (ChannelSendSelectorWidget * self)
 
   self->view_model = gtk_single_selection_new (G_LIST_MODEL (list_store));
   gtk_list_view_set_model (self->view, GTK_SELECTION_MODEL (self->view_model));
-  self->item_factory =
-    item_factory_new (ItemFactoryType::ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
-  gtk_list_view_set_factory (self->view, self->item_factory->list_item_factory);
+  self->item_factory = std::make_unique<ItemFactory> (
+    ItemFactory::Type::IconAndText, false, nullptr);
+  gtk_list_view_set_factory (self->view, self->item_factory->list_item_factory_);
 
   gtk_selection_model_select_item (
     GTK_SELECTION_MODEL (self->view_model), select_idx, true);
@@ -353,21 +363,34 @@ channel_send_selector_widget_setup (ChannelSendSelectorWidget * self)
 ChannelSendSelectorWidget *
 channel_send_selector_widget_new (ChannelSendWidget * send)
 {
-  ChannelSendSelectorWidget * self = static_cast<ChannelSendSelectorWidget *> (
-    g_object_new (CHANNEL_SEND_SELECTOR_WIDGET_TYPE, NULL));
+  auto * self = static_cast<ChannelSendSelectorWidget *> (
+    g_object_new (CHANNEL_SEND_SELECTOR_WIDGET_TYPE, nullptr));
   self->send_widget = send;
 
   return self;
 }
 
 static void
+channel_send_selector_widget_finalize (ChannelSendSelectorWidget * self)
+{
+  self->item_factory.~unique_ptr<ItemFactory> ();
+
+  G_OBJECT_CLASS (channel_send_selector_widget_parent_class)
+    ->finalize (G_OBJECT (self));
+}
+
+static void
 channel_send_selector_widget_class_init (ChannelSendSelectorWidgetClass * klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) channel_send_selector_widget_finalize;
 }
 
 static void
 channel_send_selector_widget_init (ChannelSendSelectorWidget * self)
 {
+  new (&self->item_factory) std::unique_ptr<ItemFactory> ();
+
   /* create box */
   self->vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_popover_set_child (GTK_POPOVER (self), GTK_WIDGET (self->vbox));
@@ -382,7 +405,7 @@ channel_send_selector_widget_init (ChannelSendSelectorWidget * self)
   gtk_box_append (GTK_BOX (self->vbox), scroll);
 
   /* add view */
-  self->view = GTK_LIST_VIEW (gtk_list_view_new (NULL, NULL));
+  self->view = GTK_LIST_VIEW (gtk_list_view_new (nullptr, nullptr));
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (self->view));
   g_signal_connect (

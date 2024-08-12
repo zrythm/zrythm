@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/chord_object.h"
@@ -17,6 +15,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -31,24 +30,25 @@ G_DEFINE_TYPE (
 static void
 on_closed (AdwDialog * dialog, ChordSelectorWindowWidget * self)
 {
-  chord_descriptor_update_notes (self->descr_clone);
+  self->descr_clone->update_notes ();
 
   /* if chord changed, perform undoable action */
-  if (chord_descriptor_is_equal (
-        self->descr_clone, CHORD_EDITOR->chords[self->chord_idx]))
+  if (*self->descr_clone == CHORD_EDITOR->chords_[self->chord_idx])
     {
-      g_debug ("no chord change");
+      z_debug ("no chord change");
     }
   else
     {
-      chord_editor_apply_single_chord (
-        CHORD_EDITOR, self->descr_clone, self->chord_idx, F_UNDOABLE);
+      CHORD_EDITOR->apply_single_chord (
+        *self->descr_clone, self->chord_idx, F_UNDOABLE);
 
       EVENTS_PUSH (
-        EventType::ET_CHORD_KEY_CHANGED, CHORD_EDITOR->chords[self->chord_idx]);
+        EventType::ET_CHORD_KEY_CHANGED,
+        &CHORD_EDITOR->chords_[self->chord_idx]);
     }
 
-  chord_descriptor_free (self->descr_clone);
+  delete self->descr_clone;
+  self->descr_clone = nullptr;
 }
 
 /**
@@ -74,12 +74,10 @@ get_type_from_creator_types (
   GtkFlowBoxChild *           child)
 {
   for (
-    int i = ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ);
-    i <= ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_AUG); i++)
+    int i = ENUM_VALUE_TO_INT (ChordType::Major);
+    i <= ENUM_VALUE_TO_INT (ChordType::Augmented); i++)
     {
-      if (
-        self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ)]
-        == child)
+      if (self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::Major)] == child)
         {
           return ENUM_INT_TO_VALUE (ChordType, i);
         }
@@ -138,7 +136,7 @@ creator_select_root_note (
   GtkFlowBoxChild *           child,
   ChordSelectorWindowWidget * self)
 {
-  self->descr_clone->root_note = get_note_from_creator_root_notes (self, child);
+  self->descr_clone->root_note_ = get_note_from_creator_root_notes (self, child);
 }
 
 static void
@@ -148,15 +146,13 @@ creator_select_type (
   ChordSelectorWindowWidget * self)
 {
   for (
-    int i = ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ);
-    i <= ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_AUG); i++)
+    int i = ENUM_VALUE_TO_INT (ChordType::Major);
+    i <= ENUM_VALUE_TO_INT (ChordType::Augmented); i++)
     {
-      if (
-        self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ)]
-        != child)
+      if (self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::Major)] != child)
         continue;
 
-      self->descr_clone->type = ENUM_INT_TO_VALUE (ChordType, i);
+      self->descr_clone->type_ = ENUM_INT_TO_VALUE (ChordType, i);
     }
 }
 
@@ -171,8 +167,8 @@ creator_select_bass_note (
       if (self->creator_bass_notes[i] != child)
         continue;
 
-      self->descr_clone->has_bass = true;
-      self->descr_clone->bass_note = ENUM_INT_TO_VALUE (MusicalNote, i);
+      self->descr_clone->has_bass_ = true;
+      self->descr_clone->bass_note_ = ENUM_INT_TO_VALUE (MusicalNote, i);
       g_debug ("bass note %s", ENUM_NAME_FROM_INT (MusicalNote, i));
       return;
     }
@@ -227,15 +223,15 @@ on_creator_accent_child_activated (
       ChordAccent accent = (ChordAccent) (i + 1);
 
       /* if selected, deselect it */
-      if (self->descr_clone->accent == accent)
+      if (self->descr_clone->accent_ == accent)
         {
           gtk_flow_box_unselect_child (flowbox, child);
-          self->descr_clone->accent = ChordAccent::CHORD_ACC_NONE;
+          self->descr_clone->accent_ = ChordAccent::None;
         }
       /* else select it */
       else
         {
-          self->descr_clone->accent = accent;
+          self->descr_clone->accent_ = accent;
         }
     }
 }
@@ -255,14 +251,14 @@ on_creator_bass_note_selected_children_changed (
   else
     {
       g_debug ("removing bass");
-      self->descr_clone->has_bass = false;
+      self->descr_clone->has_bass_ = false;
     }
 }
 
 static void
 setup_creator_tab (ChordSelectorWindowWidget * self)
 {
-  ChordDescriptor * descr = self->descr_clone;
+  auto &descr = self->descr_clone;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -271,22 +267,22 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
   /* set root note */
   SELECT_CHILD (
     creator_root_note_flowbox,
-    creator_root_notes[ENUM_VALUE_TO_INT (descr->root_note)]);
+    creator_root_notes[ENUM_VALUE_TO_INT (descr->root_note_)]);
 
 #define SELECT_CHORD_TYPE(uppercase, lowercase) \
-  case ChordType::CHORD_TYPE_##uppercase: \
+  case ChordType::uppercase: \
     SELECT_CHILD (creator_type_flowbox, creator_type_##lowercase); \
     break
 
   /* set chord type */
-  switch (descr->type)
+  switch (descr->type_)
     {
-      SELECT_CHORD_TYPE (MAJ, maj);
-      SELECT_CHORD_TYPE (MIN, min);
-      SELECT_CHORD_TYPE (DIM, dim);
-      SELECT_CHORD_TYPE (SUS4, sus4);
-      SELECT_CHORD_TYPE (SUS2, sus2);
-      SELECT_CHORD_TYPE (AUG, aug);
+      SELECT_CHORD_TYPE (Major, maj);
+      SELECT_CHORD_TYPE (Minor, min);
+      SELECT_CHORD_TYPE (Diminished, dim);
+      SELECT_CHORD_TYPE (SuspendedFourth, sus4);
+      SELECT_CHORD_TYPE (SuspendedSecond, sus2);
+      SELECT_CHORD_TYPE (Augmented, aug);
     default:
       /* TODO */
       break;
@@ -295,22 +291,22 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
 #undef SELECT_CHORD_TYPE
 
 #define SELECT_CHORD_ACC(uppercase, lowercase) \
-  case ChordAccent::CHORD_ACC_##uppercase: \
+  case ChordAccent::uppercase: \
     SELECT_CHILD (creator_accent_flowbox, creator_accent_##lowercase); \
     break
 
   /* set accent */
-  switch (descr->accent)
+  switch (descr->accent_)
     {
-      SELECT_CHORD_ACC (7, 7);
-      SELECT_CHORD_ACC (j7, j7);
-      SELECT_CHORD_ACC (b9, b9);
-      SELECT_CHORD_ACC (9, 9);
-      SELECT_CHORD_ACC (S9, s9);
-      SELECT_CHORD_ACC (11, 11);
-      SELECT_CHORD_ACC (b5_S11, b5_s11);
-      SELECT_CHORD_ACC (S5_b13, s5_b13);
-      SELECT_CHORD_ACC (6_13, 6_13);
+      SELECT_CHORD_ACC (Seventh, 7);
+      SELECT_CHORD_ACC (MajorSeventh, j7);
+      SELECT_CHORD_ACC (FlatNinth, b9);
+      SELECT_CHORD_ACC (Ninth, 9);
+      SELECT_CHORD_ACC (SharpNinth, s9);
+      SELECT_CHORD_ACC (Eleventh, 11);
+      SELECT_CHORD_ACC (FlatFifthSharpEleventh, b5_s11);
+      SELECT_CHORD_ACC (SharpFifthFlatThirteenth, s5_b13);
+      SELECT_CHORD_ACC (SixthThirteenth, 6_13);
     default:
       break;
     }
@@ -318,17 +314,17 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
 #undef SELECT_CHORD_ACC
 
   /* set bass note */
-  if (descr->has_bass)
+  if (descr->has_bass_)
     {
       SELECT_CHILD (
         creator_bass_note_flowbox,
-        creator_bass_notes[ENUM_VALUE_TO_INT (descr->bass_note)]);
+        creator_bass_notes[ENUM_VALUE_TO_INT (descr->bass_note_)]);
     }
 
 #undef SELECT_CHILD
 
   gtk_widget_set_sensitive (
-    GTK_WIDGET (self->creator_visibility_in_scale), self->scale != NULL);
+    GTK_WIDGET (self->creator_visibility_in_scale), self->scale != nullptr);
 
   gtk_flow_box_set_activate_on_single_click (self->creator_accent_flowbox, true);
 
@@ -352,9 +348,9 @@ setup_diatonic_tab (ChordSelectorWindowWidget * self)
 {
   if (self->scale)
     {
-      MusicalScale * scale = self->scale->scale;
+      auto &scale = self->scale->scale_;
       /* major */
-      if (scale->type == MusicalScaleType::SCALE_IONIAN)
+      if (scale.type_ == MusicalScale::Type::Ionian)
         {
           gtk_label_set_text (self->diatonic_i_lbl, "I");
           gtk_label_set_text (self->diatonic_ii_lbl, "ii");
@@ -365,7 +361,7 @@ setup_diatonic_tab (ChordSelectorWindowWidget * self)
           gtk_label_set_text (self->diatonic_vii_lbl, "vii\u00B0");
         }
       /* minor */
-      else if (scale->type == MusicalScaleType::SCALE_AEOLIAN)
+      else if (scale.type_ == MusicalScale::Type::Aeolian)
         {
           gtk_label_set_text (self->diatonic_i_lbl, "i");
           gtk_label_set_text (self->diatonic_ii_lbl, "ii\u00B0");
@@ -404,8 +400,8 @@ creator_filter (GtkFlowBoxChild * child, ChordSelectorWindowWidget * self)
           if (child != self->creator_root_notes[i])
             continue;
 
-          bool ret = musical_scale_contains_note (
-            self->scale->scale, ENUM_INT_TO_VALUE (MusicalNote, i));
+          bool ret = self->scale->scale_.contains_note (
+            ENUM_INT_TO_VALUE (MusicalNote, i));
           return ret;
         }
 
@@ -415,8 +411,8 @@ creator_filter (GtkFlowBoxChild * child, ChordSelectorWindowWidget * self)
           if (child != self->creator_bass_notes[i])
             continue;
 
-          return musical_scale_contains_note (
-            self->scale->scale, ENUM_INT_TO_VALUE (MusicalNote, i));
+          return self->scale->scale_.contains_note (
+            ENUM_INT_TO_VALUE (MusicalNote, i));
         }
 
       /* accents */
@@ -433,19 +429,18 @@ creator_filter (GtkFlowBoxChild * child, ChordSelectorWindowWidget * self)
           if ((int) note == -1 || (int) type == -1)
             return 0;
 
-          bool ret = musical_scale_is_accent_in_scale (
-            self->scale->scale, note, type,
-            ENUM_INT_TO_VALUE (ChordAccent, i + 1));
+          bool ret = self->scale->scale_.is_accent_in_scale (
+            note, type, ENUM_INT_TO_VALUE (ChordAccent, i + 1));
           return ret;
         }
 
       /* type */
       for (
-        unsigned int i = ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ);
-        i <= ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_AUG); i++)
+        unsigned int i = ENUM_VALUE_TO_INT (ChordType::Major);
+        i <= ENUM_VALUE_TO_INT (ChordType::Augmented); i++)
         {
           if (
-            self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::CHORD_TYPE_MAJ)]
+            self->creator_types[i - ENUM_VALUE_TO_INT (ChordType::Major)]
             != child)
             continue;
 
@@ -454,12 +449,11 @@ creator_filter (GtkFlowBoxChild * child, ChordSelectorWindowWidget * self)
           if ((int) note == -1)
             return true;
 
-          ChordDescriptor * chord = chord_descriptor_new (
+          ChordDescriptor chord (
             note, 0, ENUM_INT_TO_VALUE (MusicalNote, 0),
-            ENUM_INT_TO_VALUE (ChordType, i), ChordAccent::CHORD_ACC_NONE, 0);
+            ENUM_INT_TO_VALUE (ChordType, i), ChordAccent::None, 0);
 
-          int ret = musical_scale_contains_chord (self->scale->scale, chord);
-          chord_descriptor_free (chord);
+          int ret = self->scale->scale_.contains_chord (chord);
 
           return ret;
         }
@@ -488,30 +482,41 @@ on_group_changed (GtkCheckButton * check_btn, ChordSelectorWindowWidget * self)
 void
 chord_selector_window_widget_present (const int chord_idx, GtkWidget * parent)
 {
-  ChordSelectorWindowWidget * self = static_cast<ChordSelectorWindowWidget *> (
-    g_object_new (CHORD_SELECTOR_WINDOW_WIDGET_TYPE, NULL));
+  auto * self = static_cast<ChordSelectorWindowWidget *> (
+    g_object_new (CHORD_SELECTOR_WINDOW_WIDGET_TYPE, nullptr));
 
   self->chord_idx = chord_idx;
-  const ChordDescriptor * descr = CHORD_EDITOR->chords[chord_idx];
-  self->descr_clone = chord_descriptor_clone (descr);
+  const auto &descr = CHORD_EDITOR->chords_[chord_idx];
+  self->descr_clone = new ChordDescriptor (descr);
 
 #if 0
   ArrangerObject * region_obj =
     (ArrangerObject *)
-    clip_editor_get_region (CLIP_EDITOR);
-  g_return_val_if_fail (region_obj, NULL);
+    CLIP_EDITOR->get_region ();
+  g_return_val_if_fail (region_obj, nullptr);
 
   self->scale =
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK,
       &region_obj->pos);
 #endif
-  self->scale = chord_track_get_scale_at_pos (P_CHORD_TRACK, PLAYHEAD);
+  self->scale = P_CHORD_TRACK->get_scale_at_pos (PLAYHEAD);
 
   adw_dialog_present (ADW_DIALOG (self), parent);
 
   setup_creator_tab (self);
   setup_diatonic_tab (self);
+}
+
+static void
+chord_selector_window_widget_finalize (GObject * obj)
+{
+  auto self = Z_CHORD_SELECTOR_WINDOW_WIDGET (obj);
+
+  if (self->descr_clone)
+    delete self->descr_clone;
+
+  G_OBJECT_CLASS (chord_selector_window_widget_parent_class)->finalize (obj);
 }
 
 static void
@@ -586,6 +591,9 @@ chord_selector_window_widget_class_init (ChordSelectorWindowWidgetClass * _klass
   BIND_CHILD (creator_visibility_in_scale);
 
 #undef BIND_CHILD
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize = chord_selector_window_widget_finalize;
 }
 
 static void
@@ -648,16 +656,16 @@ chord_selector_window_widget_init (ChordSelectorWindowWidget * self)
   /* set filter functions */
   gtk_flow_box_set_filter_func (
     self->creator_root_note_flowbox, (GtkFlowBoxFilterFunc) creator_filter,
-    self, NULL);
+    self, nullptr);
   gtk_flow_box_set_filter_func (
     self->creator_type_flowbox, (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    nullptr);
   gtk_flow_box_set_filter_func (
     self->creator_accent_flowbox, (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    nullptr);
   gtk_flow_box_set_filter_func (
     self->creator_bass_note_flowbox, (GtkFlowBoxFilterFunc) creator_filter,
-    self, NULL);
+    self, nullptr);
 
   /* set signals */
   g_signal_connect (

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Audio utils.
  */
@@ -12,8 +12,11 @@
 
 #include <cstdarg>
 
+#include "utils/format.h"
+#include "utils/logger.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
+
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup utils
@@ -63,11 +66,12 @@ audio_bit_depth_int_to_enum (int depth)
     }
 }
 
-BitDepth
-audio_bit_depth_from_pretty_str (const char * str);
-
-const char *
-audio_bit_depth_to_pretty_str (BitDepth depth);
+DEFINE_ENUM_FORMATTER (
+  BitDepth,
+  BitDepth,
+  N_ ("16 bit"),
+  N_ ("24 bit"),
+  N_ ("32 bit"));
 
 /**
  * Number of plugin slots per channel.
@@ -78,24 +82,23 @@ audio_bit_depth_to_pretty_str (BitDepth depth);
  * Writes the buffer as a raw file to the given path.
  *
  * @param size The number of frames per channel.
- * @param samplerate The samplerate of \ref buff.
+ * @param samplerate The samplerate of @ref buff.
  * @param frames_already_written Frames (per channel) already
  *   written. If this is non-zero and the file exists, it will
  *   append to the existing file.
  *
- * @return Whether successful.
+ * @throw ZrythmException on error.
  */
-WARN_UNUSED_RESULT bool
+void
 audio_write_raw_file (
-  float *      buff,
-  size_t       frames_already_written,
-  size_t       nframes,
-  uint32_t     samplerate,
-  bool         flac,
-  BitDepth     bit_depth,
-  channels_t   channels,
-  const char * filename,
-  GError **    error);
+  const float *      buff,
+  size_t             frames_already_written,
+  size_t             nframes,
+  uint32_t           samplerate,
+  bool               flac,
+  BitDepth           bit_depth,
+  channels_t         channels,
+  const std::string &filename);
 
 /**
  * Returns the number of frames in the given audio
@@ -140,10 +143,10 @@ audio_frames_empty (float * src, size_t num_frames);
  */
 float
 audio_detect_bpm (
-  float *      src,
-  size_t       num_frames,
-  unsigned int samplerate,
-  GArray *     candidates);
+  const float *       src,
+  size_t              num_frames,
+  unsigned int        samplerate,
+  std::vector<float> &candidates);
 
 bool
 audio_file_is_silent (const char * filepath);
@@ -152,7 +155,7 @@ audio_file_is_silent (const char * filepath);
  * Returns the number of CPU cores.
  */
 int
-audio_get_num_cores (void);
+audio_get_num_cores ();
 
 /**
  * @}

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * PluginProperties expander widget.
  */
@@ -17,8 +17,8 @@
 
 typedef struct _EditableLabelWidget        EditableLabelWidget;
 typedef struct _PluginPresetSelectorWidget PluginPresetSelectorWidget;
-typedef struct Track                       Track;
-typedef struct Plugin                      Plugin;
+class Track;
+class Plugin;
 
 #define PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE \
   (plugin_properties_expander_widget_get_type ())

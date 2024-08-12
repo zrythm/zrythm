@@ -19,7 +19,7 @@
  * Gets the minimum of the buffer.
  */
 float
-dsp_min (float * buf, size_t size)
+dsp_min (const float * buf, size_t size)
 {
   float min = 1000.f;
 #ifdef HAVE_LSP_DSP
@@ -48,7 +48,7 @@ dsp_min (float * buf, size_t size)
  * Gets the maximum of the buffer.
  */
 float
-dsp_max (float * buf, size_t size)
+dsp_max (const float * buf, size_t size)
 {
   float max = -1000.f;
 #ifdef HAVE_LSP_DSP

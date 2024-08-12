@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/clip_editor.h"
@@ -51,7 +51,7 @@ refresh_editor_ruler_and_arranger (void * user_data)
    * correct px when calling ui_* functions */
   ruler_widget_refresh ((RulerWidget *) EDITOR_RULER);
 
-  CLIP_EDITOR->region_changed = 0;
+  CLIP_EDITOR->region_changed_ = false;
 
   return FALSE;
 }
@@ -62,7 +62,7 @@ refresh_editor_ruler_and_arranger (void * user_data)
 void
 clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 {
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = CLIP_EDITOR->get_region ();
 
   if (r)
     {
@@ -71,12 +71,12 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 
       clip_editor_inner_widget_refresh (MW_CLIP_EDITOR_INNER);
 
-      g_idle_add (refresh_editor_ruler_and_arranger, NULL);
+      g_idle_add (refresh_editor_ruler_and_arranger, nullptr);
 
       /* update the toolbar */
       editor_toolbar_widget_refresh (self->editor_toolbar);
 
-      if (r->id.type == RegionType::REGION_TYPE_MIDI)
+      if (r->is_midi ())
         {
           /* FIXME remember ID and remove the source function
            * when this widget is disposed to avoid calling on
@@ -105,31 +105,34 @@ clip_editor_widget_navigate_to_region_start (
   ClipEditorWidget * self,
   bool               center_contents_if_already_at_start)
 {
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  int              px = ui_pos_to_px_editor (&r_obj->pos, false);
-  ArrangerWidget * arranger = region_get_arranger_for_children (r);
-  EditorSettings * settings = arranger_widget_get_editor_settings (arranger);
-  if (px == settings->scroll_start_x)
-    {
-      /* execute the best fit action to center contents */
-      GAction * action =
-        g_action_map_lookup_action (G_ACTION_MAP (zrythm_app), "best-fit");
-      GVariant * var = g_variant_new_string ("editor");
-      g_action_activate (action, var);
-    }
-  else
-    {
-      editor_settings_set_scroll_start_x (settings, px, F_NO_VALIDATE);
-    }
+  Region * r = CLIP_EDITOR->get_region ();
+  z_return_if_fail (r);
+  int              px = ui_pos_to_px_editor (r->pos_, false);
+  ArrangerWidget * arranger = r->get_arranger_for_children ();
+  auto             settings = arranger_widget_get_editor_settings (arranger);
+  std::visit (
+    [&] (auto &&settings) {
+      if (px == settings->scroll_start_x_)
+        {
+          /* execute the best fit action to center contents */
+          GAction * action = g_action_map_lookup_action (
+            G_ACTION_MAP (zrythm_app.get ()), "best-fit");
+          GVariant * var = g_variant_new_string ("editor");
+          g_action_activate (action, var);
+        }
+      else
+        {
+          settings->set_scroll_start_x (px, false);
+        }
+    },
+    settings);
 }
 
 ClipEditorWidget *
 clip_editor_widget_new (void)
 {
-  ClipEditorWidget * self = static_cast<ClipEditorWidget *> (
-    g_object_new (CLIP_EDITOR_WIDGET_TYPE, NULL));
+  auto * self = static_cast<ClipEditorWidget *> (
+    g_object_new (CLIP_EDITOR_WIDGET_TYPE, nullptr));
 
   return self;
 }

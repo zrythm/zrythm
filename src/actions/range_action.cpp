@@ -1,122 +1,55 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/range_action.h"
-#include "dsp/channel.h"
-#include "dsp/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/main_window.h"
-#include "plugins/plugin.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 void
-range_action_init_loaded (RangeAction * self)
+RangeAction::init_after_cloning (const RangeAction &other)
 {
-  if (self->sel_before)
-    {
-      arranger_selections_init_loaded (
-        (ArrangerSelections *) self->sel_before, F_NOT_PROJECT,
-        (UndoableAction *) self);
-    }
-  if (self->sel_after)
-    {
-      arranger_selections_init_loaded (
-        (ArrangerSelections *) self->sel_after, F_NOT_PROJECT,
-        (UndoableAction *) self);
-    }
-
-  transport_init_loaded (self->transport, NULL, NULL);
+  UndoableAction::copy_members_from (other);
+  start_pos_ = other.start_pos_;
+  end_pos_ = other.end_pos_;
+  type_ = other.type_;
+  sel_before_ = other.sel_before_->clone_unique ();
+  sel_after_ = other.sel_after_->clone_unique ();
+  transport_ = other.transport_->clone_unique ();
+  first_run_ = other.first_run_;
 }
 
-/**
- * Creates a new action.
- *
- * @param start_pos Range start.
- * @param end_pos Range end.
- */
-UndoableAction *
-range_action_new (
-  RangeActionType type,
-  Position *      start_pos,
-  Position *      end_pos,
-  GError **       error)
+RangeAction::RangeAction (Type type, Position start_pos, Position end_pos)
+    : start_pos_ (start_pos), end_pos_ (end_pos), type_ (type), first_run_ (true)
 {
-  RangeAction *    self = object_new (RangeAction);
-  UndoableAction * ua = (UndoableAction *) self;
-  undoable_action_init (ua, UndoableActionType::UA_RANGE);
-
-  g_return_val_if_fail (
-    position_validate (start_pos) && position_validate (end_pos), NULL);
-
-  self->type = type;
-  position_set_to_pos (&self->start_pos, start_pos);
-  self->end_pos = *end_pos;
-  self->first_run = true;
+  RangeAction ();
+  z_return_if_fail (start_pos.validate () && end_pos.validate ());
 
   /* create selections for overlapping objects */
   Position inf;
-  position_set_to_bar (&inf, POSITION_MAX_BAR);
-  self->sel_before =
-    timeline_selections_new_for_range (start_pos, &inf, F_CLONE);
-  self->sel_after = (TimelineSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  inf.set_to_bar (POSITION_MAX_BAR);
+  sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
+  sel_after_ = std::make_unique<TimelineSelections> ();
 
-  self->transport = transport_clone (TRANSPORT);
-
-  return ua;
-}
-
-RangeAction *
-range_action_clone (const RangeAction * src)
-{
-  RangeAction * self = object_new (RangeAction);
-  self->parent_instance = src->parent_instance;
-
-  self->start_pos = src->start_pos;
-  self->end_pos = src->end_pos;
-  self->type = src->type;
-  self->sel_before = (TimelineSelections *) arranger_selections_clone (
-    (ArrangerSelections *) src->sel_before);
-  self->sel_after = (TimelineSelections *) arranger_selections_clone (
-    (ArrangerSelections *) src->sel_after);
-  self->first_run = src->first_run;
-  self->transport = transport_clone (src->transport);
-
-  return self;
-}
-
-bool
-range_action_perform (
-  RangeActionType type,
-  Position *      start_pos,
-  Position *      end_pos,
-  GError **       error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    range_action_new, error, type, start_pos, end_pos, error);
+  transport_ = TRANSPORT->clone_unique ();
 }
 
 #define _MOVE_TRANSPORT_MARKER(x, _ticks, _do) \
   if ( \
-    self->type == RangeActionType::RANGE_ACTION_REMOVE \
-    && position_is_after_or_equal (&TRANSPORT->x, &self->start_pos) \
-    && position_is_before_or_equal (&TRANSPORT->x, &self->end_pos)) \
+    type_ == RangeAction::Type::Remove && TRANSPORT->x >= start_pos_ \
+    && TRANSPORT->x <= end_pos_) \
     { \
-      /* move position to range start or back to \
-       * original pos */ \
-      position_set_to_pos ( \
-        &TRANSPORT->x, _do ? &self->start_pos : &self->transport->x); \
+      /* move position to range start or back to  original pos */ \
+      TRANSPORT->x = _do ? start_pos_ : transport_->x; \
     } \
-  else if (position_is_after_or_equal (&TRANSPORT->x, &self->start_pos)) \
+  else if (TRANSPORT->x >= start_pos_) \
     { \
-      position_add_ticks (&TRANSPORT->x, _ticks); \
+      TRANSPORT->x.add_ticks (_ticks); \
     }
 
 #define MOVE_TRANSPORT_MARKER(x, _do) \
@@ -126,434 +59,310 @@ range_action_perform (
   _MOVE_TRANSPORT_MARKER (x, -range_size_ticks, _do)
 
 #define MOVE_TRANSPORT_MARKERS(_do) \
-  MOVE_TRANSPORT_MARKER (playhead_pos, _do); \
-  MOVE_TRANSPORT_MARKER (cue_pos, _do); \
-  MOVE_TRANSPORT_MARKER (loop_start_pos, _do); \
-  MOVE_TRANSPORT_MARKER (loop_end_pos, _do)
+  MOVE_TRANSPORT_MARKER (playhead_pos_, _do); \
+  MOVE_TRANSPORT_MARKER (cue_pos_, _do); \
+  MOVE_TRANSPORT_MARKER (loop_start_pos_, _do); \
+  MOVE_TRANSPORT_MARKER (loop_end_pos_, _do)
 
 #define UNMOVE_TRANSPORT_MARKERS(_do) \
-  UNMOVE_TRANSPORT_MARKER (playhead_pos, _do); \
-  UNMOVE_TRANSPORT_MARKER (cue_pos, _do); \
-  UNMOVE_TRANSPORT_MARKER (loop_start_pos, _do); \
-  UNMOVE_TRANSPORT_MARKER (loop_end_pos, _do)
+  UNMOVE_TRANSPORT_MARKER (playhead_pos_, _do); \
+  UNMOVE_TRANSPORT_MARKER (cue_pos_, _do); \
+  UNMOVE_TRANSPORT_MARKER (loop_start_pos_, _do); \
+  UNMOVE_TRANSPORT_MARKER (loop_end_pos_, _do)
 
-static void
-add_to_sel_after (
-  RangeAction *     self,
-  ArrangerObject ** prj_objs,
-  ArrangerObject ** after_objs_for_prj,
-  int *             num_prj_objs,
-  ArrangerObject *  prj_obj,
-  ArrangerObject *  after_obj)
+void
+RangeAction::add_to_sel_after (
+  std::vector<ArrangerObject *>                &prj_objs,
+  std::vector<std::shared_ptr<ArrangerObject>> &after_objs_for_prj,
+  ArrangerObject                               &prj_obj,
+  std::shared_ptr<ArrangerObject>             &&after_obj)
 {
-  prj_objs[*num_prj_objs] = prj_obj;
-  g_debug ("adding to sel after (num prj objs %d)", *num_prj_objs);
-  arranger_object_print (prj_obj);
-  after_objs_for_prj[(*num_prj_objs)++] = after_obj;
-  arranger_selections_add_object (
-    (ArrangerSelections *) self->sel_after, after_obj);
+  prj_objs.push_back (&prj_obj);
+  z_debug ("adding to sel after (num prj objs {})", prj_objs.size ());
+  prj_obj.print ();
+  after_objs_for_prj.emplace_back (std::move (after_obj));
+  sel_after_->add_object_owned (clone_unique_with_variant<ArrangerObjectVariant> (
+    after_objs_for_prj.back ().get ()));
 }
 
-int
-range_action_do (RangeAction * self, GError ** error)
+void
+RangeAction::perform_impl ()
 {
   /* sort the selections in ascending order */
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self->sel_before, false);
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self->sel_after, false);
+  sel_before_->sort_by_indices (false);
+  sel_after_->sort_by_indices (false);
 
-  GPtrArray * before_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    (ArrangerSelections *) self->sel_before, before_objs_arr);
-  GPtrArray * after_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    (ArrangerSelections *) self->sel_after, after_objs_arr);
-  double range_size_ticks =
-    position_to_ticks (&self->end_pos) - position_to_ticks (&self->start_pos);
+  auto  &before_objs_arr = sel_before_->objects_;
+  auto  &after_objs_arr = sel_after_->objects_;
+  double range_size_ticks = end_pos_.ticks_ - start_pos_.ticks_;
 
-  /* temporary place to store project objects, so
-   * we can get their final identifiers at the end */
-  ArrangerObject * prj_objs[before_objs_arr->len * 2];
-  int              num_prj_objs = 0;
+  /* temporary place to store project objects, so we can get their final
+   * identifiers at the end */
+  std::vector<ArrangerObject *> prj_objs;
+  prj_objs.reserve (before_objs_arr.size () * 2);
 
   /* after objects corresponding to the above */
-  ArrangerObject * after_objs_for_prj[before_objs_arr->len * 2];
+  std::vector<std::shared_ptr<ArrangerObject>> after_objs_for_prj;
+  after_objs_for_prj.reserve (before_objs_arr.size () * 2);
 
-#define ADD_AFTER(_prj_obj, _after_obj) \
-  add_to_sel_after ( \
-    self, prj_objs, after_objs_for_prj, &num_prj_objs, _prj_obj, _after_obj)
+  auto add_after =
+    [&] (ArrangerObject &prj_obj, std::shared_ptr<ArrangerObject> &&after_obj) {
+      add_to_sel_after (
+        prj_objs, after_objs_for_prj, prj_obj, std::move (after_obj));
+    };
 
-  switch (self->type)
+  /* returns whether the object is hit (starts before or at and ends after) at
+   * the given position (and thus we need to split the object at the range start
+   * position) */
+  auto need_split_at_pos = [] (ArrangerObject &prj_obj, Position start_pos) {
+    auto prj_obj_lo = dynamic_cast<LengthableObject *> (&prj_obj);
+    return prj_obj_lo && prj_obj_lo->is_hit (start_pos);
+  };
+
+  switch (type_)
     {
-    case RangeActionType::RANGE_ACTION_INSERT_SILENCE:
-      if (self->first_run)
+    case Type::InsertSilence:
+      if (first_run_)
         {
-          for (int i = (int) before_objs_arr->len - 1; i >= 0; i--)
+          for (auto &obj : std::ranges::reverse_view (before_objs_arr))
             {
-              ArrangerObject * obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-              g_message (
-                "looping backwards. "
-                "current object %d:",
-                i);
-              arranger_object_print (obj);
+              z_debug (
+                "looping backwards. current object {}:", obj->print_to_str ());
 
-              obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              obj->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* get project object */
-              ArrangerObject * prj_obj = arranger_object_find (obj);
+              auto prj_obj = obj->find_in_project ();
 
-              /* object starts before the range and
-               * ends after the range start -
-               * split at range start */
-              if (
-                arranger_object_is_hit (prj_obj, &self->start_pos, NULL)
-                && position_is_before (&prj_obj->pos, &self->start_pos))
+              /* if need split, split at range start */
+              if (need_split_at_pos (*prj_obj, start_pos_))
                 {
-                  /* split at range start */
-                  ArrangerObject *part1, *part2;
-                  GError *        err = NULL;
-                  bool            success = arranger_object_split (
-                    obj, &self->start_pos, false, &part1, &part2, false, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to unsplit object");
-                      return -1;
-                    }
+                  std::visit (
+                    [&] (auto &&prj_obj_ptr) {
+                      using T = base_type<decltype (prj_obj_ptr)>;
+                      auto lo_prj_obj = dynamic_pointer_cast<T> (prj_obj);
 
-                  /* move part2 by the range
-                   * amount */
-                  arranger_object_move (part2, range_size_ticks);
+                      /* split at range start */
+                      auto [part1, part2] = LengthableObject::split (
+                        *lo_prj_obj, start_pos_, false, false);
 
-                  /* remove previous object */
-                  arranger_object_remove_from_project (prj_obj);
+                      /* move part2 by the range amount */
+                      part2->move (range_size_ticks);
 
-                  /* create clones and add to
-                   * project */
-                  ArrangerObject * prj_part1 = arranger_object_clone (part1);
-                  success = arranger_object_add_to_project (
-                    prj_part1, F_NO_PUBLISH_EVENTS, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to add object to project");
-                      return -1;
-                    }
+                      /* remove previous object */
+                      prj_obj->remove_from_project ();
 
-                  ArrangerObject * prj_part2 = arranger_object_clone (part2);
-                  success = arranger_object_add_to_project (
-                    prj_part2, F_NO_PUBLISH_EVENTS, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to add object to project");
-                      return -1;
-                    }
+                      /* create clones and add to project */
+                      auto prj_part1 = part1->add_clone_to_project (false);
+                      auto prj_part2 = part2->add_clone_to_project (false);
 
-                  g_message (
-                    "object split and moved into the"
-                    " following objects");
-                  arranger_object_print (prj_part1);
-                  arranger_object_print (prj_part2);
+                      z_debug (
+                        "object split and moved into the following objects");
+                      prj_part1->print ();
+                      prj_part2->print ();
 
-                  ADD_AFTER (prj_part1, part1);
-                  ADD_AFTER (prj_part2, part2);
+                      add_after (*prj_part1, std::move (part1));
+                      add_after (*prj_part2, std::move (part2));
+                    },
+                    convert_to_variant<LengthableObjectPtrVariant> (
+                      prj_obj.get ()));
                 }
               /* object starts at or after range
                * start - only needs a move */
               else
                 {
-                  arranger_object_move (prj_obj, range_size_ticks);
+                  prj_obj->move (range_size_ticks);
+
+                  z_debug ("moved to object:");
+                  prj_obj->print ();
 
                   /* clone and add to sel_after */
-                  ArrangerObject * obj_clone = arranger_object_clone (prj_obj);
-
-                  g_message ("moved to object:");
-                  arranger_object_print (prj_obj);
-
-                  ADD_AFTER (prj_obj, obj_clone);
+                  add_after (
+                    *prj_obj,
+                    clone_shared_with_variant<ArrangerObjectVariant> (
+                      prj_obj.get ()));
                 }
             }
-          self->first_run = false;
+          first_run_ = false;
         }
       else /* not first run */
         {
-          /* remove all matching project objects
-           * from sel_before */
-          for (int i = (int) before_objs_arr->len - 1; i >= 0; i--)
+          /* remove all matching project objects from sel_before_ */
+          for (auto &obj : std::ranges::reverse_view (before_objs_arr))
             {
-              ArrangerObject * obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-
-              /* get project object and remove it
-               * from the project */
-              ArrangerObject * prj_obj = arranger_object_find (obj);
-              arranger_object_remove_from_project (prj_obj);
+              auto prj_obj = obj->find_in_project ();
+              prj_obj->remove_from_project ();
             }
-          /* add all objects from sel_after */
-          for (size_t i = 0; i < after_objs_arr->len; i++)
+          /* insert clones of all objects from sel_after_ to the project */
+          for (auto &obj : after_objs_arr)
             {
-              ArrangerObject * obj = static_cast<ArrangerObject *> (
-                g_ptr_array_index (after_objs_arr, i));
-
-              /* clone object and add to project */
-              ArrangerObject * prj_obj = arranger_object_clone (obj);
-              GError *         err = NULL;
-              bool success = arranger_object_insert_to_project (prj_obj, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to insert object to project");
-                  return -1;
-                }
+              obj->insert_clone_to_project ();
             }
         }
 
       /* move transport markers */
       MOVE_TRANSPORT_MARKERS (true);
       break;
-    case RangeActionType::RANGE_ACTION_REMOVE:
-      if (self->first_run)
+    case Type::Remove:
+      if (first_run_)
         {
-          for (int i = (int) before_objs_arr->len - 1; i >= 0; i--)
+          for (auto &obj : std::ranges::reverse_view (before_objs_arr))
             {
-              ArrangerObject * obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-              g_message (
-                "looping backwards. "
-                "current object %d:",
-                i);
-              arranger_object_print (obj);
+              z_debug (
+                "looping backwards. current object {}", obj->print_to_str ());
 
-              obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              obj->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* get project object */
-              ArrangerObject * prj_obj = arranger_object_find (obj);
+              auto prj_obj = obj->find_in_project ();
 
               bool ends_inside_range = false;
-              if (arranger_object_type_has_length (prj_obj->type))
+              if (prj_obj->has_length ())
                 {
+                  auto prj_lo_obj =
+                    dynamic_pointer_cast<LengthableObject> (prj_obj);
                   ends_inside_range =
-                    position_is_after_or_equal (&prj_obj->pos, &self->start_pos)
-                    && position_is_before (&prj_obj->end_pos, &self->end_pos);
+                    prj_obj->pos_ >= start_pos_
+                    && prj_lo_obj->end_pos_ < end_pos_;
                 }
               else
                 {
                   ends_inside_range =
-                    position_is_after_or_equal (&prj_obj->pos, &self->start_pos)
-                    && position_is_before (&prj_obj->pos, &self->end_pos);
+                    prj_obj->pos_ >= start_pos_ && prj_obj->pos_ < end_pos_;
                 }
 
-              /* object starts before the range and
-               * ends after the range start -
+              /* object starts before the range and ends after the range start -
                * split at range start */
-              if (
-                arranger_object_is_hit (prj_obj, &self->start_pos, NULL)
-                && position_is_before (&prj_obj->pos, &self->start_pos))
+              if (need_split_at_pos (*prj_obj, start_pos_))
                 {
-                  /* split at range start */
-                  GError *        err = NULL;
-                  ArrangerObject *part1, *part2;
-                  bool            success = arranger_object_split (
-                    obj, &self->start_pos, false, &part1, &part2, false, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to split object");
-                      return -1;
-                    }
+                  std::visit (
+                    [&] (auto &&prj_obj_ptr) {
+                      using T = base_type<decltype (prj_obj_ptr)>;
+                      auto lo_obj = dynamic_cast<T *> (obj.get ());
 
-                  /* if part 2 extends beyond the
-                   * range end, split it  and
-                   * remove the part before range
-                   * end */
-                  if (arranger_object_is_hit (part2, &self->end_pos, NULL))
-                    {
-                      ArrangerObject *part3, *part4;
-                      success = arranger_object_split (
-                        part2, &self->end_pos, false, &part3, &part4, false,
-                        &err);
-                      if (!success)
+                      /* split at range start */
+                      auto [part1, part2] = LengthableObject::split (
+                        *lo_obj, start_pos_, false, false);
+
+                      /* if part 2 extends beyond the range end, split it and
+                       * remove the part before range end */
+                      if (need_split_at_pos (*part2, end_pos_))
                         {
-                          PROPAGATE_PREFIXED_ERROR_LITERAL (
-                            error, err, "Failed to split o bject");
-                          return -1;
+                          // part3 will be discared
+                          auto [part3, part4] = LengthableObject::split (
+                            *part2, end_pos_, false, false);
+                          part2.reset ();
+                          part2 = std::move (part4);
                         }
-                      arranger_object_free (part2);
-                      arranger_object_free (part3);
-                      part2 = part4;
-                    }
-                  /* otherwise remove the whole
-                   * part2 */
-                  else
-                    {
-                      arranger_object_free (part2);
-                      part2 = NULL;
-                    }
-
-                  /* if a part2 exists, move it
-                   * back */
-                  if (part2)
-                    {
-                      arranger_object_move (part2, -range_size_ticks);
-                    }
-
-                  /* remove previous object */
-                  arranger_object_remove_from_project (prj_obj);
-
-                  /* create clones and add to
-                   * project */
-                  ArrangerObject * prj_part1 = arranger_object_clone (part1);
-                  success = arranger_object_add_to_project (
-                    prj_part1, F_NO_PUBLISH_EVENTS, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to add object to project");
-                      return -1;
-                    }
-                  ADD_AFTER (prj_part1, part1);
-
-                  if (part2)
-                    {
-                      ArrangerObject * prj_part2 = arranger_object_clone (part2);
-                      success = arranger_object_add_to_project (
-                        prj_part2, F_NO_PUBLISH_EVENTS, &err);
-                      if (!success)
+                      /* otherwise remove the whole part2 */
+                      else
                         {
-                          PROPAGATE_PREFIXED_ERROR_LITERAL (
-                            error, err, "Failed to add object to project");
-                          return -1;
+                          part2.reset ();
                         }
-                      g_message (
-                        "object split to the "
-                        "following:");
-                      arranger_object_print (prj_part1);
-                      arranger_object_print (prj_part2);
 
-                      ADD_AFTER (prj_part2, part2);
-                    }
-                  else
-                    {
-                      g_message ("object split to just:");
-                      arranger_object_print (prj_part1);
-                    }
+                      /* if a part2 exists, move it back */
+                      if (part2)
+                        {
+                          part2->move (-range_size_ticks);
+                        }
+
+                      /* remove previous object */
+                      prj_obj->remove_from_project ();
+
+                      /* create clones and add to project */
+                      auto prj_part1 = part1->add_clone_to_project (false);
+                      add_after (*prj_part1, std::move (part1));
+
+                      if (part2)
+                        {
+                          auto prj_part2 = part2->add_clone_to_project (false);
+                          z_debug ("object split to the following:");
+                          prj_part1->print ();
+                          prj_part2->print ();
+
+                          add_after (*prj_part2, std::move (part2));
+                        }
+                      else
+                        {
+                          z_debug ("object split to just:");
+                          prj_part1->print ();
+                        }
+                    },
+                    convert_to_variant<LengthableObjectPtrVariant> (
+                      prj_obj.get ()));
                 }
-              /* object starts before the range end
-               * and ends after the range end -
-               * split at range end */
-              else if (
-                arranger_object_is_hit (prj_obj, &self->end_pos, NULL)
-                && position_is_after (&prj_obj->end_pos, &self->end_pos))
+              /* object starts before the range end and ends after the range end
+               * - split at range end */
+              else if (need_split_at_pos (*prj_obj, end_pos_))
                 {
-                  /* split at range end */
-                  ArrangerObject *part1, *part2;
-                  GError *        err = NULL;
-                  bool            success = arranger_object_split (
-                    obj, &self->end_pos, false, &part1, &part2, false, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to split object");
-                      return -1;
-                    }
+                  std::visit (
+                    [&] (auto &&prj_obj_ptr) {
+                      using T = base_type<decltype (prj_obj_ptr)>;
 
-                  /* move part2 by the range
-                   * amount */
-                  arranger_object_move (part2, -range_size_ticks);
+                      /* split at range end */
+                      auto lo_obj = dynamic_cast<T *> (obj.get ());
+                      // part1 will be discarded
+                      auto [part1, part2] = LengthableObject::split (
+                        *lo_obj, end_pos_, false, false);
 
-                  /* discard part before range end */
-                  object_free_w_func_and_null (arranger_object_free, part1);
+                      /* move part2 by the range amount */
+                      part2->move (-range_size_ticks);
 
-                  /* remove previous object */
-                  arranger_object_remove_from_project (prj_obj);
+                      /* remove previous object */
+                      prj_obj->remove_from_project ();
 
-                  /* create clones and add to
-                   * project */
-                  ArrangerObject * prj_part2 = arranger_object_clone (part2);
-                  success = arranger_object_add_to_project (
-                    prj_part2, F_NO_PUBLISH_EVENTS, &err);
-                  if (!success)
-                    {
-                      PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err, "Failed to add object to project");
-                      return -1;
-                    }
-                  ADD_AFTER (prj_part2, part2);
+                      /* create clones and add to project */
+                      auto prj_part2 = part2->add_clone_to_project (false);
+                      add_after (*prj_part2, std::move (part2));
 
-                  g_message ("object split to just:");
-                  arranger_object_print (prj_part2);
+                      z_debug ("object split to just:");
+                      prj_part2->print ();
+                    },
+                    convert_to_variant<LengthableObjectPtrVariant> (
+                      prj_obj.get ()));
                 }
-              /* object starts and ends inside range
-               * and not marker start/end - delete */
-              else if (ends_inside_range && !(prj_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER && (((Marker *) prj_obj)->type == MarkerType::MARKER_TYPE_START || (((Marker *) prj_obj)->type == MarkerType::MARKER_TYPE_END))))
+              /* object starts and ends inside range and not marker start/end -
+               * delete */
+              else if (ends_inside_range 
+              && !(prj_obj->is_marker() && (dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::Start || dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::End)))
                 {
-                  g_debug ("removing object:");
-                  arranger_object_print (prj_obj);
-                  arranger_object_remove_from_project (prj_obj);
+                  z_debug ("removing object:");
+                  prj_obj->print ();
+                  prj_obj->remove_from_project ();
                 }
-              /* object starts at or after range
-               * start - only needs a move */
+              /* object starts at or after range start - only needs a move */
               else
                 {
-                  arranger_object_move (prj_obj, -range_size_ticks);
+                  prj_obj->move (-range_size_ticks);
 
-                  /* move objects to bar 1 if
-                   * negative pos */
+                  /* move objects to bar 1 if negative pos */
                   Position init_pos;
-                  position_init (&init_pos);
-                  if (position_is_before (&prj_obj->pos, &init_pos))
+                  if (prj_obj->pos_ < init_pos)
                     {
-                      g_debug ("moving object back");
-                      arranger_object_move (prj_obj, -prj_obj->pos.ticks);
+                      z_debug ("moving object back");
+                      prj_obj->move (-prj_obj->pos_.ticks_);
                     }
 
                   /* clone and add to sel_after */
-                  ArrangerObject * obj_clone = arranger_object_clone (prj_obj);
-                  g_debug ("object moved to:");
-                  arranger_object_print (prj_obj);
-
-                  ADD_AFTER (prj_obj, obj_clone);
+                  add_after (
+                    *prj_obj,
+                    clone_shared_with_variant<ArrangerObjectVariant> (
+                      prj_obj.get ()));
                 }
             }
-          self->first_run = false;
+          first_run_ = false;
         }
       else /* not first run */
+           /* remove all matching project objects from sel_before_ */
+        for (auto &obj : std::ranges::reverse_view (before_objs_arr))
+          {
+            auto prj_obj = obj->find_in_project ();
+            prj_obj->remove_from_project ();
+          }
+      /* insert clones of all objects from sel_after_ to the project */
+      for (auto &obj : after_objs_arr)
         {
-          /* remove all matching project objects
-           * from sel_before */
-          for (int i = (int) before_objs_arr->len - 1; i >= 0; i--)
-            {
-              ArrangerObject * obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-
-              /* get project object and remove it
-               * from the project */
-              ArrangerObject * prj_obj = arranger_object_find (obj);
-              arranger_object_remove_from_project (prj_obj);
-            }
-          /* add all objects from sel_after */
-          for (size_t i = 0; i < after_objs_arr->len; i++)
-            {
-              ArrangerObject * obj = static_cast<ArrangerObject *> (
-                g_ptr_array_index (after_objs_arr, i));
-
-              /* clone object and add to project */
-              ArrangerObject * prj_obj = arranger_object_clone (obj);
-
-              GError * err = NULL;
-              bool success = arranger_object_insert_to_project (prj_obj, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to insert object to project");
-                  return -1;
-                }
-            }
+          obj->insert_clone_to_project ();
         }
 
       /* move transport markers */
@@ -562,128 +371,76 @@ range_action_do (RangeAction * self, GError ** error)
     default:
       break;
     }
-  g_ptr_array_unref (before_objs_arr);
-  g_ptr_array_unref (after_objs_arr);
 
-#undef ADD_AFTER
-
-  for (int i = 0; i < num_prj_objs; i++)
+  for (size_t i = 0; i < prj_objs.size (); ++i)
     {
-      g_message ("copying %d", i);
-      arranger_object_print (prj_objs[i]);
-      arranger_object_copy_identifier (after_objs_for_prj[i], prj_objs[i]);
+      z_debug ("copying %d", i);
+      prj_objs[i]->print ();
+      after_objs_for_prj[i]->copy_identifier (*prj_objs[i]);
     }
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, NULL);
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
-
-  return 0;
+  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, nullptr);
+  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
 }
 
-int
-range_action_undo (RangeAction * self, GError ** error)
+void
+RangeAction::undo_impl ()
 {
   /* sort the selections in ascending order */
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self->sel_before, false);
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self->sel_after, false);
+  sel_before_->sort_by_indices (false);
+  sel_after_->sort_by_indices (false);
 
-  GPtrArray * before_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    (ArrangerSelections *) self->sel_before, before_objs_arr);
-  GPtrArray * after_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    (ArrangerSelections *) self->sel_after, after_objs_arr);
-  double range_size_ticks =
-    position_to_ticks (&self->end_pos) - position_to_ticks (&self->start_pos);
+  auto  &before_objs_arr = sel_before_->objects_;
+  auto  &after_objs_arr = sel_after_->objects_;
+  double range_size_ticks = end_pos_.ticks_ - start_pos_.ticks_;
 
-  /* remove all matching project objects from
-   * sel_after */
-  for (int i = (int) after_objs_arr->len - 1; i >= 0; i--)
+  /* remove all matching project objects from sel_after */
+  for (auto &obj : std::ranges::reverse_view (after_objs_arr))
     {
-      ArrangerObject * obj =
-        (ArrangerObject *) g_ptr_array_index (after_objs_arr, i);
+      /* get project object and remove it from the project */
+      auto prj_obj = obj->find_in_project ();
+      prj_obj->remove_from_project ();
 
-      /* get project object and remove it from
-       * the project */
-      ArrangerObject * prj_obj = arranger_object_find (obj);
-      arranger_object_remove_from_project (prj_obj);
-
-      g_message ("removing");
-      arranger_object_print (obj);
+      z_debug ("removing");
+      obj->print ();
     }
   /* add all objects from sel_before */
-  for (size_t i = 0; i < before_objs_arr->len; i++)
+  for (auto &obj : before_objs_arr)
     {
-      ArrangerObject * obj =
-        (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-
       /* clone object and add to project */
-      ArrangerObject * prj_obj = arranger_object_clone (obj);
+      auto prj_obj = obj->insert_clone_to_project ();
 
-      GError * err = NULL;
-      bool     success = arranger_object_insert_to_project (prj_obj, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Failed to insert object to project");
-          return -1;
-        }
-
-      g_message ("adding");
-      arranger_object_print (obj);
-      g_message ("after adding");
-      arranger_object_print (prj_obj);
+      z_debug ("adding");
+      obj->print ();
+      z_debug ("after adding");
+      prj_obj->print ();
     }
 
   /* move transport markers */
-  switch (self->type)
+  switch (type_)
     {
-    case RangeActionType::RANGE_ACTION_INSERT_SILENCE:
+    case Type::InsertSilence:
       UNMOVE_TRANSPORT_MARKERS (false);
       break;
-    case RangeActionType::RANGE_ACTION_REMOVE:
+    case Type::Remove:
       MOVE_TRANSPORT_MARKERS (false);
       break;
     default:
       break;
     }
-  g_ptr_array_unref (before_objs_arr);
-  g_ptr_array_unref (after_objs_arr);
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, NULL);
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
-
-  return 0;
+  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, nullptr);
+  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
 }
 
-char *
-range_action_stringize (RangeAction * self)
+std::string
+RangeAction::to_string () const
 {
-  switch (self->type)
+  switch (type_)
     {
-    case RangeActionType::RANGE_ACTION_INSERT_SILENCE:
-      return g_strdup (_ ("Insert silence"));
-      break;
-    case RangeActionType::RANGE_ACTION_REMOVE:
-      return g_strdup (_ ("Delete range"));
-      break;
-    default:
-      g_return_val_if_reached (NULL);
+    case Type::InsertSilence:
+      return _ ("Insert silence");
+    case Type::Remove:
+      return _ ("Delete range");
     }
-  g_return_val_if_reached (NULL);
-}
-
-void
-range_action_free (RangeAction * self)
-{
-  object_free_w_func_and_null_cast (
-    arranger_selections_free_full, ArrangerSelections *, self->sel_before);
-  object_free_w_func_and_null_cast (
-    arranger_selections_free_full, ArrangerSelections *, self->sel_after);
-
-  object_free_w_func_and_null (transport_free, self->transport);
-
-  object_zero_and_free (self);
 }

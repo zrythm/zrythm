@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Preferences widget.
  */
@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_PREFERENCES_H__
 #define __GUI_WIDGETS_PREFERENCES_H__
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 #define PREFERENCES_WIDGET_TYPE (preferences_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -20,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
   PREFERENCES_WIDGET,
   AdwPreferencesDialog)
 
-typedef struct Preferences             Preferences;
+class Preferences;
 typedef struct _MidiControllerMbWidget MidiControllerMbWidget;
 
 /**

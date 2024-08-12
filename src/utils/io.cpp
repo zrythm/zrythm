@@ -26,6 +26,11 @@
 
 #include "zrythm-config.h"
 
+#include <filesystem>
+
+#include "utils/exceptions.h"
+#include "utils/logger.h"
+
 #define _XOPEN_SOURCE 500
 #include <cstdio>
 
@@ -53,7 +58,11 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
+#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include <fmt/format.h>
+#include <giomm.h>
+#include <glibmm.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -72,46 +81,47 @@ GQuark
 z_utils_io_error_quark (void);
 G_DEFINE_QUARK (z - utils - io - error - quark, z_utils_io_error)
 
-/**
- * Gets directory part of filename. MUST be freed.
- *
- * @param filename Filename containing directory.
- */
-char *
-io_get_dir (const char * filename)
+std::string
+io_get_dir (const std::string &filename)
 {
-  return g_path_get_dirname (filename);
+  return Glib::path_get_dirname (filename);
 }
 
-/**
- * Makes directory if doesn't exist.
- *
- * @return True if the directory exists or was successfully
- *   created, false if error was occurred and errno is set.
- */
-bool
-io_mkdir (const char * dir, GError ** error)
+void
+io_mkdir (const std::string &dir)
 {
-  g_return_val_if_fail (error == NULL || *error == NULL, false);
-
-  g_message ("Creating directory: %s", dir);
-  struct stat st = {};
-  if (stat (dir, &st) == -1)
+  // this is called during logger instantiation so check if logger exists
+  if (Logger::getInstanceWithoutCreating()) {
+  z_debug ("Creating directory: %s", dir);
+  }
+  try
     {
-      int ret = g_mkdir_with_parents (dir, 0700);
-      if (ret == 0)
-        {
-          return true;
-        }
-      else
-        {
-          g_set_error (
-            error, Z_UTILS_IO_ERROR, Z_UTILS_IO_ERROR_FAILED,
-            "Failed to make directory with parents: %s", strerror (errno));
-          return false;
-        }
+      Gio::File::create_for_path (dir)->make_directory_with_parents ();
     }
-  return true;
+  catch (const Glib::Error &ex)
+    {
+      if (ex.code () == Gio::Error::EXISTS)
+        {
+          // OK if file exists
+          return;
+        }
+      throw ZrythmException (
+        fmt::format ("Failed to make directory {} with parents", dir));
+    }
+}
+
+std::string
+io_create_tmp_dir (const std::string template_name)
+{
+  std::string temp_dir_template = Glib::build_filename (
+    std::filesystem::temp_directory_path ().string (), template_name);
+  std::string temp_dir =
+    std::filesystem::path (mkdtemp (temp_dir_template.data ())).string ();
+  if (temp_dir.empty ())
+    throw ZrythmException (std::format (
+      "Failed to create temporary directory: {}", temp_dir_template));
+
+  return temp_dir;
 }
 
 /**
@@ -127,28 +137,20 @@ io_file_get_ext (const char * filename)
   return dot + 1;
 }
 
-/**
- * Creates the file if doesn't exist
- */
-FILE *
-io_create_file (const char * filename)
+bool
+io_touch_file (const std::string &file_path)
 {
-  return fopen (filename, "ab+");
-}
-
-/**
- * Touches a file similar to UNIX touch.
- */
-void
-io_touch_file (const char * filename)
-{
-  FILE * f = io_create_file (filename);
-  if (!f)
+  juce::File file (file_path);
+  if (file.exists ())
     {
-      g_warning ("failed to create file: %s", filename);
-      return;
+      // Update the file's modification time to the current time
+      return file.setLastModificationTime (juce::Time::getCurrentTime ());
     }
-  fclose (f);
+  else
+    {
+      // Create a new empty file
+      return file.replaceWithData (nullptr, 0);
+    }
 }
 
 /**
@@ -196,38 +198,40 @@ io_path_get_basename_without_ext (const char * filename)
   return no_ext;
 }
 
+#if 0
 char *
 io_path_get_parent_dir (const char * path)
 {
-#ifdef _WIN32
-#  define PATH_SEP "\\\\"
-#  define ROOT_REGEX "[A-Z]:" PATH_SEP
-#else
-#  define PATH_SEP "/"
-#  define ROOT_REGEX "/"
-#endif
+#  ifdef _WIN32
+#    define PATH_SEP "\\\\"
+#    define ROOT_REGEX "[A-Z]:" PATH_SEP
+#  else
+#    define PATH_SEP "/"
+#    define ROOT_REGEX "/"
+#  endif
   char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent = string_get_regex_group (path, regex, 1);
-#if 0
+#  if 0
   g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
     __func__, path, regex, parent);
-#endif
+#  endif
 
   if (!parent)
     {
       strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
       parent = string_get_regex_group (path, regex, 1);
-#if 0
+#  if 0
       g_message ("path: %s\nregex: %s\nparent: %s",
         path, regex, parent);
-#endif
+#  endif
     }
 
-#undef PATH_SEP
-#undef ROOT_REGEX
+#  undef PATH_SEP
+#  undef ROOT_REGEX
 
   return parent;
 }
+#endif
 
 char *
 io_file_get_creation_datetime (const char * filename)
@@ -252,7 +256,7 @@ io_file_get_last_modified_datetime (const char * filename)
   return -1;
 }
 
-char *
+std::string
 io_file_get_last_modified_datetime_as_str (const char * filename)
 {
   gint64 secs = io_file_get_last_modified_datetime (filename);
@@ -262,17 +266,28 @@ io_file_get_last_modified_datetime_as_str (const char * filename)
   return datetime_epoch_to_str (secs, "%Y-%m-%d %H:%M:%S");
 }
 
-/**
- * Removes the given file.
- */
-int
-io_remove (const char * path)
+bool
+io_remove (const std::string &path)
 {
   if (gZrythm)
     {
-      g_message ("Removing %s...", path);
+      z_debug ("Removing %s...", path);
     }
-  return g_remove (path);
+
+  juce::File file (path);
+  if (!file.exists ())
+    return false;
+
+  if (file.isDirectory ())
+    throw ZrythmException (fmt::format ("Cannot remove directory {}", path));
+
+  bool success = file.deleteFile ();
+  if (success)
+    return true;
+  else
+    {
+      throw ZrythmException (fmt::format ("Failed to remove {}", path));
+    };
 }
 
 static int
@@ -290,245 +305,159 @@ unlink_cb (
   return rv;
 }
 
-/**
- * Removes a dir, optionally forcing deletion.
- *
- * For safety reasons, this only accepts an
- * absolute path with length greater than 20 if
- * forced.
- */
 int
-io_rmdir (const char * path, bool force)
+io_rmdir (const std::string &path, bool force)
 {
   if (force)
     {
-      g_return_val_if_fail (g_path_is_absolute (path) && strlen (path) > 20, -1);
-      nftw (path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+      z_return_val_if_fail (
+        Glib::path_is_absolute (path) && strlen (path.c_str ()) > 20, -1);
+      nftw (path.c_str (), unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
     }
 
-  g_message ("Removing %s", path);
-  return g_rmdir (path);
+  z_info ("Removing {}", path);
+  return g_rmdir (path.c_str ());
 }
 
 /**
- * Appends files to the given array from the given
- * dir if they end in the given string.
+ * Appends files to the given array from the given dir if they end in the given
+ * string.
  *
- * @param end_string If empty, appends all files.
+ * @param opt_end_string If empty, appends all files.
  */
 static void
 append_files_from_dir_ending_in (
-  char ***     files,
-  int *        num_files,
-  const int    recursive,
-  const char * _dir,
-  const char * end_string)
+  StringArray                      &files,
+  bool                              recursive,
+  const std::string                &_dir,
+  const std::optional<std::string> &opt_end_string)
 {
-  GDir *        dir;
-  GError *      error = NULL;
-  const gchar * filename;
-  char *        full_path;
+  try
+    {
+      Glib::Dir dir (_dir);
 
-  dir = g_dir_open (_dir, 0, &error);
-  if (error)
+      for (const auto &filename : dir)
+        {
+          auto full_path = Glib::build_filename (_dir, filename);
+
+          /* recurse if necessary */
+          if (recursive && juce::File (full_path).isDirectory ())
+            {
+              append_files_from_dir_ending_in (
+                files, recursive, full_path, opt_end_string);
+            }
+
+          /* append file if we should */
+          if (
+            !opt_end_string || Glib::str_has_suffix (full_path, *opt_end_string))
+            {
+              files.add (full_path);
+            }
+        }
+    }
+  catch (const Glib::Error &ex)
     {
       if (ZRYTHM_TESTING)
         {
-          /* this is needed because
-           * g_test_expect_message() doesn't work
+          /* this is needed because g_test_expect_message() doesn't work
            * with below */
           g_warn_if_reached ();
+          return;
         }
       else
         {
-          g_warning ("Failed opening directory %s: %s", _dir, error->message);
+          throw ZrythmException (
+            fmt::format ("Failed to open directory {}", _dir));
         }
-      return;
     }
-
-  while ((filename = g_dir_read_name (dir)))
-    {
-      full_path = g_build_filename (_dir, filename, NULL);
-
-      /* recurse if necessary */
-      if (recursive && g_file_test (full_path, G_FILE_TEST_IS_DIR))
-        {
-          append_files_from_dir_ending_in (
-            files, num_files, recursive, full_path, end_string);
-        }
-
-      if (
-        !end_string || (end_string && g_str_has_suffix (full_path, end_string)))
-        {
-          *files = static_cast<char **> (
-            g_realloc (*files, sizeof (char *) * (size_t) (*num_files + 2)));
-          (*files)[(*num_files)] = g_strdup (full_path);
-          (*num_files)++;
-        }
-
-      g_free (full_path);
-    }
-  g_dir_close (dir);
-
-  /* NULL terminate */
-  (*files)[*num_files] = NULL;
 }
 
-bool
+void
 io_copy_dir (
-  const char * destdir_str,
-  const char * srcdir_str,
-  bool         follow_symlinks,
-  bool         recursive,
-  GError **    error)
+  const std::string_view destdir_str,
+  const std::string_view srcdir_str,
+  bool                   follow_symlinks,
+  bool                   recursive)
 {
 
-  g_debug (
-    "attempting to copy dir '%s' to '%s' "
-    "(recursive: %d)",
-    srcdir_str, destdir_str, recursive);
+  z_debug (
+    "attempting to copy dir '%s' to '%s' (recursive: %d)", srcdir_str,
+    destdir_str, recursive);
 
   GError * err = NULL;
-  GDir *   srcdir = g_dir_open (srcdir_str, 0, &err);
+  GDir *   srcdir = g_dir_open (srcdir_str.data (), 0, &err);
   if (!srcdir)
     {
-      if (ZRYTHM_TESTING)
-        {
-          /* this is needed because
-           * g_test_expect_message() doesn't work
-           * with below */
-          g_warn_if_reached ();
-        }
-      else
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed opening directory %s", srcdir_str);
-        }
-      return false;
+      throw ZrythmException (fmt::format (
+        "Failed opening directory {}: {}", srcdir_str, err->message));
     }
 
-  bool success = io_mkdir (destdir_str, &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed creating directory %s", destdir_str);
-      return false;
-    }
+  io_mkdir (destdir_str.data ());
 
   const gchar * filename;
   while ((filename = g_dir_read_name (srcdir)))
     {
-      char * src_full_path = g_build_filename (srcdir_str, filename, NULL);
-      char * dest_full_path = g_build_filename (destdir_str, filename, NULL);
+      auto src_full_path = Glib::build_filename (srcdir_str.data (), filename);
+      auto dest_full_path = Glib::build_filename (destdir_str.data (), filename);
 
-      bool is_dir = g_file_test (src_full_path, G_FILE_TEST_IS_DIR);
+      bool is_dir = Glib::file_test (src_full_path, Glib::FileTest::IS_DIR);
 
       /* recurse if necessary */
       if (recursive && is_dir)
         {
-          success = io_copy_dir (
-            dest_full_path, src_full_path, follow_symlinks, recursive, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "Failed copying directory %s to %s", src_full_path,
-                dest_full_path);
-              return false;
-            }
+          io_copy_dir (
+            dest_full_path, src_full_path, follow_symlinks, recursive);
         }
       /* otherwise if not dir, copy file */
       else if (!is_dir)
         {
-          GFile * src_file = g_file_new_for_path (src_full_path);
-          GFile * dest_file = g_file_new_for_path (dest_full_path);
-          g_return_val_if_fail (src_file && dest_file, false);
+          GFile * src_file = g_file_new_for_path (src_full_path.c_str ());
+          GFile * dest_file = g_file_new_for_path (dest_full_path.c_str ());
+          z_return_if_fail (src_file && dest_file);
           int flags = (int) G_FILE_COPY_OVERWRITE;
           if (!follow_symlinks)
             {
               flags |= (int) G_FILE_COPY_NOFOLLOW_SYMLINKS;
             }
-          success = g_file_copy (
-            src_file, dest_file, (GFileCopyFlags) flags, NULL, NULL, NULL, &err);
+          bool success = g_file_copy (
+            src_file, dest_file, (GFileCopyFlags) flags, nullptr, nullptr,
+            nullptr, &err);
           if (!success)
             {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "Failed copying file %s to %s", src_full_path,
-                dest_full_path);
-              return false;
+              throw ZrythmException (fmt::format (
+                "Failed copying file {} to {}", src_full_path, dest_full_path,
+                err->message));
             }
 
           g_object_unref (src_file);
           g_object_unref (dest_file);
         }
-
-      g_free (src_full_path);
-      g_free (dest_full_path);
     }
   g_dir_close (srcdir);
-
-  return true;
 }
 
-char **
-io_get_files_in_dir_as_basenames (
-  const char * dir,
-  bool         allow_empty,
-  bool         with_ext)
+StringArray
+io_get_files_in_dir_as_basenames (const std::string &_dir)
 {
-  if (!with_ext)
+  StringArray files = io_get_files_in_dir (_dir);
+
+  StringArray files_as_basenames;
+  for (const auto &filename : files)
     {
-      g_critical ("unimplemented");
-      return NULL;
+      files_as_basenames.add (Glib::path_get_basename (filename.toStdString ()));
     }
 
-  char ** files = io_get_files_in_dir (dir, allow_empty);
-  if (!files)
-    return NULL;
-
-  int            i = 0;
-  GStrvBuilder * builder = g_strv_builder_new ();
-  char *         f;
-  while ((f = files[i++]))
-    {
-      char * new_str = g_path_get_basename (f);
-      g_strv_builder_add (builder, new_str);
-      g_free (new_str);
-    }
-  g_strfreev (files);
-
-  return g_strv_builder_end (builder);
+  return files_as_basenames;
 }
 
-/**
- * Returns a list of the files in the given
- * directory.
- *
- * @param dir The directory to look for.
- * @param allow_empty Whether to allow returning
- *   an empty array that has only NULL, otherwise
- *   return NULL if empty.
- *
- * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev() or NULL.
- */
-char **
+StringArray
 io_get_files_in_dir_ending_in (
-  const char * _dir,
-  const int    recursive,
-  const char * end_string,
-  bool         allow_empty)
+  const std::string                &_dir,
+  bool                              recursive,
+  const std::optional<std::string> &end_string)
 {
-  char ** arr = object_new_n (1, char *);
-  int     count = 0;
-
-  append_files_from_dir_ending_in (&arr, &count, recursive, _dir, end_string);
-
-  if (count == 0 && !allow_empty)
-    {
-      free (arr);
-      return NULL;
-    }
-
+  StringArray arr;
+  append_files_from_dir_ending_in (arr, recursive, _dir, end_string);
   return arr;
 }
 
@@ -547,7 +476,7 @@ io_get_next_available_filepath (const char * filepath)
   char *       file_without_ext = io_file_strip_ext (filepath);
   const char * file_ext = io_file_get_ext (filepath);
   char *       new_path = g_strdup (filepath);
-  while (file_exists (new_path))
+  while (file_path_exists (new_path))
     {
       if (g_file_test (new_path, G_FILE_TEST_IS_DIR))
         {
@@ -577,7 +506,7 @@ io_open_directory (const char * path)
 
   char command[800];
 #ifdef _WIN32
-  char * canonical_path = g_canonicalize_filename (path, NULL);
+  char * canonical_path = g_canonicalize_filename (path, nullptr);
   char * new_path = string_replace (canonical_path, "\\", "\\\\");
   g_free (canonical_path);
   sprintf (command, OPEN_DIR_CMD " \"%s\"", new_path);
@@ -589,28 +518,29 @@ io_open_directory (const char * path)
   g_message ("executed: %s", command);
 }
 
-/**
- * Returns a clone of the given string after
- * removing forbidden characters.
- */
 void
-io_escape_dir_name (char * dest, const char * dir)
+io_write_file_atomic (const std::string &file_path, const std::string &data)
 {
-  int len = strlen (dir);
-  strcpy (dest, dir);
-  for (int i = len - 1; i >= 0; i--)
+  try
     {
-      if (
-        dest[i] == '/' || dest[i] == '>' || dest[i] == '<' || dest[i] == '|'
-        || dest[i] == ':' || dest[i] == '&' || dest[i] == '(' || dest[i] == ')'
-        || dest[i] == ';' || dest[i] == '\\')
-        {
-          for (int j = i; j < len; j++)
-            {
-              dest[j] = dest[j + 1];
-            }
-        }
+      Glib::file_set_contents (file_path, data);
     }
+  catch (const std::exception &e)
+    {
+      throw ZrythmException (std::format ("Error writing file: %s", e.what ()));
+    }
+}
+
+std::string
+io_get_legal_file_name (const std::string &file_name)
+{
+  return juce::File::createLegalFileName (file_name).toStdString ();
+}
+
+std::string
+io_get_legal_path_name (const std::string &path)
+{
+  return juce::File::createLegalPathName (path).toStdString ();
 }
 
 #ifdef _WIN32
@@ -622,8 +552,8 @@ io_get_registry_string_val (const char * path)
   char  prefix[500];
   sprintf (prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME, PROGRAM_NAME);
   RegGetValue (
-    HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, NULL, (PVOID) &value,
-    &BufferSize);
+    HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, nullptr,
+    (PVOID) &value, &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);
 }
@@ -659,7 +589,7 @@ io_traverse_path (const char * abs_path)
 {
   /* TODO handle on other platforms as well */
 #if defined(__linux__) || defined(__FreeBSD__)
-  char * traversed_path = realpath (abs_path, NULL);
+  char * traversed_path = realpath (abs_path, nullptr);
   if (traversed_path)
     {
       if (!string_is_equal (traversed_path, abs_path))

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Box used as destination for DnD.
  */
@@ -31,6 +31,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -61,9 +62,9 @@ on_dnd_leave_value_ready (
   if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK)
     {
       /* unhighlight bottom part of last track */
-      Track * track = tracklist_get_last_track (
-        TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
-      track_widget_do_highlight (track->widget, 0, 0, 0);
+      Track * track =
+        TRACKLIST->get_last_track (Tracklist::PinOption::UnpinnedOnly, true);
+      track_widget_do_highlight (track->widget_, 0, 0, 0);
     }
 }
 
@@ -75,7 +76,7 @@ on_dnd_leave (GtkDropTarget * drop_target, DragDestBoxWidget * self)
     return;
 
   gdk_drop_read_value_async (
-    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, 0, NULL,
+    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, 0, nullptr,
     on_dnd_leave_value_ready, self);
 }
 
@@ -161,10 +162,10 @@ on_dnd_motion_value_ready (
       /*gtk_drag_unhighlight (widget);*/
 
       /* highlight bottom part of last track */
-      Track * track = tracklist_get_last_track (
-        TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
-      int track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
-      track_widget_do_highlight (track->widget, 0, track_height - 1, 1);
+      Track * track =
+        TRACKLIST->get_last_track (Tracklist::PinOption::UnpinnedOnly, true);
+      int track_height = gtk_widget_get_height (GTK_WIDGET (track->widget_));
+      track_widget_do_highlight (track->widget_, 0, track_height - 1, 1);
     }
   else
     {
@@ -185,7 +186,7 @@ on_dnd_motion (
   GdkDrop * drop = gtk_drop_target_get_current_drop (drop_target);
   /* FIXME just use gtk_drop_target_get_value() */
   gdk_drop_read_value_async (
-    drop, G_TYPE_OBJECT, 0, NULL, on_dnd_motion_value_ready, self);
+    drop, G_TYPE_OBJECT, 0, nullptr, on_dnd_motion_value_ready, self);
 
   return GDK_ACTION_MOVE;
 }
@@ -260,14 +261,17 @@ on_dnd_drop (
           uris = g_strv_builder_end (uris_builder);
         }
 
-      if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+      if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
         {
-          GError * err = NULL;
-          bool     success = tracklist_import_files (
-            TRACKLIST, uris, file, NULL, NULL, -1, NULL, NULL, &err);
-          if (!success)
+          StringArray uris_array (uris);
+          try
             {
-              HANDLE_ERROR_LITERAL (err, _ ("Failed to import files"));
+              TRACKLIST->import_files (
+                &uris_array, file, nullptr, nullptr, -1, nullptr, nullptr);
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to import files"));
             }
         }
       return true;
@@ -278,98 +282,93 @@ on_dnd_drop (
         self->type == DragDestBoxType::DRAG_DEST_BOX_TYPE_MIXER
         || self->type == DragDestBoxType::DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
-          PluginSetting * setting = plugin_setting_new_default (pd);
+          PluginSetting setting (*pd);
 
-          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
             {
-              plugin_setting_activate (setting);
+              setting.activate ();
             }
-
-          plugin_setting_free (setting);
         }
       else
         {
-          PluginSetting * setting = plugin_setting_new_default (pd);
-          GError *        err = NULL;
-          bool            ret = mixer_selections_action_perform_create (
-            ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR,
-            track_get_name_hash (*P_MODULATOR_TRACK),
-            P_MODULATOR_TRACK->num_modulators, setting, 1, &err);
-          if (!ret)
+          PluginSetting setting (*pd);
+          try
             {
-              HANDLE_ERROR (err, "%s", _ ("Failed to create plugin"));
+              UNDO_MANAGER->perform (
+                std::make_unique<MixerSelectionsCreateAction> (
+                  PluginSlotType::Modulator, *P_MODULATOR_TRACK,
+                  P_MODULATOR_TRACK->modulators_.size (), setting));
             }
-          plugin_setting_free (setting);
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to create plugin"));
+            }
         }
 
       return true;
     }
   else if (pl)
     {
-      /* NOTE this is a cloned pointer, don't use
-       * it */
-      g_warn_if_fail (pl);
-
-      GError * err = NULL;
-      bool     ret;
-      if (action == GDK_ACTION_COPY)
+      try
         {
-          ret = mixer_selections_action_perform_copy (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-            ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, 0, 0, &err);
+          if (action == GDK_ACTION_COPY)
+            {
+              UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
+                *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+                PluginSlotType::Insert, nullptr, 0));
+            }
+          else if (action == GDK_ACTION_MOVE)
+            {
+              UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
+                *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+                PluginSlotType::Insert, nullptr, 0));
+            }
+          else
+            g_return_val_if_reached (true);
         }
-      else if (action == GDK_ACTION_MOVE)
+      catch (const ZrythmException &e)
         {
-          ret = mixer_selections_action_perform_move (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-            ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, 0, 0, &err);
-        }
-      else
-        g_return_val_if_reached (true);
-
-      if (!ret)
-        {
-          HANDLE_ERROR (err, "%s", _ ("Failed to move or copy plugin"));
+          e.handle (_ ("Failed to move or copy plugin"));
         }
 
       return true;
     }
   else if (track)
     {
-      tracklist_selections_select_foldable_children (TRACKLIST_SELECTIONS);
-      int pos = tracklist_get_last_pos (
-        TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
+      TRACKLIST_SELECTIONS->select_foldable_children ();
+      int pos =
+        TRACKLIST->get_last_pos (Tracklist::PinOption::UnpinnedOnly, true);
       pos++;
 
-      GError * err = NULL;
-      bool     ret = false;
-      if (action == GDK_ACTION_COPY)
+      try
         {
-          if (
-            tracklist_selections_contains_uncopyable_track (TRACKLIST_SELECTIONS))
+          if (action == GDK_ACTION_COPY)
             {
-              g_message (
-                "cannot copy - track selection "
-                "contains uncopyable track");
-              return false;
+              if (TRACKLIST_SELECTIONS->contains_uncopyable_track ())
+                {
+                  z_info (
+                    "cannot copy - track selection contains uncopyable track");
+                  return false;
+                }
+              if (
+                !zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+                {
+                  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+                    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+                    *PORT_CONNECTIONS_MGR, pos));
+                }
             }
-          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+          else if (action == GDK_ACTION_MOVE)
             {
-              ret = tracklist_selections_action_perform_copy (
-                TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
+              UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+                *TRACKLIST_SELECTIONS->gen_tracklist_selections (), pos));
             }
+          else
+            g_return_val_if_reached (true);
         }
-      else if (action == GDK_ACTION_MOVE)
+      catch (const ZrythmException &e)
         {
-          ret = tracklist_selections_action_perform_move (
-            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
-        }
-      else
-        g_return_val_if_reached (true);
-
-      if (!ret)
-        {
-          HANDLE_ERROR (err, "%s", _ ("Failed to move or copy track"));
+          e.handle (_ ("Failed to move or copy track"));
         }
 
       return true;
@@ -411,11 +410,11 @@ on_click_pressed (
   gdouble             y,
   DragDestBoxWidget * self)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
-  tracklist_selections_select_last_visible (TRACKLIST_SELECTIONS);
+  MIXER_SELECTIONS->clear (true);
+  TRACKLIST_SELECTIONS->select_last_visible ();
 
-  PROJECT->last_selection = Project::SelectionType::Tracklist;
-  EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
+  PROJECT->last_selection_ = Project::SelectionType::Tracklist;
+  EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
 }
 
 static void
@@ -449,7 +448,7 @@ drag_dest_box_widget_new (
 {
   /* create */
   DragDestBoxWidget * self = static_cast<DragDestBoxWidget *> (
-    g_object_new (DRAG_DEST_BOX_WIDGET_TYPE, NULL));
+    g_object_new (DRAG_DEST_BOX_WIDGET_TYPE, nullptr));
 
   self->type = type;
 
@@ -479,7 +478,8 @@ drag_dest_box_widget_new (
 static void
 drag_dest_box_widget_init (DragDestBoxWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());

@@ -1,108 +1,49 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_connection.h"
 #include "dsp/port_identifier.h"
 #include "dsp/tracklist.h"
 #include "project.h"
-#include "utils/objects.h"
+#include "utils/logger.h"
 #include "zrythm.h"
 
-PortConnection *
-port_connection_new (
-  const PortIdentifier * src,
-  const PortIdentifier * dest,
-  float                  multiplier,
-  bool                   locked,
-  bool                   enabled)
-{
-  PortConnection * self = object_new (PortConnection);
-
-  self->src_id = new PortIdentifier (*src);
-  self->dest_id = new PortIdentifier (*dest);
-  port_connection_update (self, multiplier, locked, enabled);
-
-  return self;
-}
-
-void
-port_connection_update (
-  PortConnection * self,
-  float            multiplier,
-  bool             locked,
-  bool             enabled)
-{
-  self->multiplier = multiplier;
-  self->locked = locked;
-  self->enabled = enabled;
-}
+#include <fmt/format.h>
 
 bool
-port_connection_is_send (const PortConnection * self)
+PortConnection::is_send () const
 {
-  return self->src_id->owner_type_ == PortIdentifier::OwnerType::CHANNEL_SEND;
+  return src_id_.owner_type_ == PortIdentifier::OwnerType::ChannelSend;
 }
 
-void
-port_connection_print_to_str (
-  const PortConnection * self,
-  char *                 buf,
-  size_t                 buf_sz)
+std::string
+PortConnection::print_to_str () const
 {
-  bool         is_send = port_connection_is_send (self);
+  bool         is_send = this->is_send ();
   const char * send_str = is_send ? " (send)" : "";
-  if (
-    gZrythm && PROJECT
-    && port_connections_manager_contains_connection (PORT_CONNECTIONS_MGR, self))
+  if (gZrythm && PROJECT && PORT_CONNECTIONS_MGR->contains_connection (*this))
     {
-      Track * src_track = tracklist_find_track_by_name_hash (
-        TRACKLIST, self->src_id->track_name_hash_);
-      Track * dest_track = tracklist_find_track_by_name_hash (
-        TRACKLIST, self->dest_id->track_name_hash_);
-      snprintf (
-        buf, buf_sz, "[%s (%u)] %s => [%s (%u)] %s%s",
-        src_track ? src_track->name : "(none)", self->src_id->track_name_hash_,
-        self->src_id->get_label_as_c_str (),
-        dest_track ? dest_track->name : "(none)",
-        self->dest_id->track_name_hash_, self->dest_id->get_label_as_c_str (),
-        send_str);
+      Track * src_track =
+        TRACKLIST->find_track_by_name_hash (src_id_.track_name_hash_);
+      Track * dest_track =
+        TRACKLIST->find_track_by_name_hash (dest_id_.track_name_hash_);
+      return fmt::format (
+        "[%s (%u)] %s => [%s (%u)] %s%s",
+        src_track ? src_track->name_ : "(none)", src_id_.track_name_hash_,
+        src_id_.get_label (), dest_track ? dest_track->name_ : "(none)",
+        dest_id_.track_name_hash_, dest_id_.get_label (), send_str);
     }
   else
     {
-      snprintf (
-        buf, buf_sz, "[track %u] %s => [track %u] %s%s",
-        self->src_id->track_name_hash_, self->src_id->get_label_as_c_str (),
-        self->dest_id->track_name_hash_, self->dest_id->get_label_as_c_str (),
+      return fmt::format (
+        "[track %u] %s => [track %u] %s%s", src_id_.track_name_hash_,
+        src_id_.get_label (), dest_id_.track_name_hash_, dest_id_.get_label (),
         send_str);
     }
 }
 
 void
-port_connection_print (const PortConnection * self)
+PortConnection::print () const
 {
-  char buf[200];
-  port_connection_print_to_str (self, buf, 200);
-  g_message ("%s", buf);
-}
-
-/**
- * To be used during serialization.
- */
-NONNULL PortConnection *
-port_connection_clone (const PortConnection * src)
-{
-  PortConnection * self = port_connection_new (
-    src->src_id, src->dest_id, src->multiplier, src->locked, src->enabled);
-  return self;
-}
-
-/**
- * Deletes port, doing required cleanup and updating counters.
- */
-NONNULL void
-port_connection_free (PortConnection * self)
-{
-  object_delete_and_null (self->src_id);
-  object_delete_and_null (self->dest_id);
-  object_zero_and_free (self);
+  z_debug ("%s", print_to_str ());
 }

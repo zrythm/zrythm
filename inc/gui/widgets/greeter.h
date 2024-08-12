@@ -5,11 +5,10 @@
 #define __GUI_WIDGETS_GREETER_H__
 
 #include "gui/widgets/cc-list-row-info-button.h"
+#include "gui/widgets/item_factory.h"
 #include "utils/types.h"
 
-#include <adwaita.h>
-
-#include <zix/sem.h>
+#include "libadwaita_wrapper.h"
 
 #define GREETER_WIDGET_TYPE (greeter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (GreeterWidget, greeter_widget, Z, GREETER_WIDGET, AdwWindow)
@@ -27,14 +26,14 @@ TYPEDEF_STRUCT_UNDERSCORED (CcListRowInfoButton);
 /**
  * Project file information.
  */
-typedef struct ProjectInfo
+struct ProjectInfo
 {
   char * name;
   /** Full path. */
   char * filename;
   gint64 modified;
   char * modified_str;
-} ProjectInfo;
+};
 
 /**
  * This widget handles the UI part of the initialization of Zrythm and presents
@@ -42,7 +41,7 @@ typedef struct ProjectInfo
  *
  * Projects are opened in a MainWindowWidget when this widget is disposed.
  */
-typedef struct _GreeterWidget
+using GreeterWidget = struct _GreeterWidget
 {
   AdwWindow parent_instance;
 
@@ -78,7 +77,7 @@ typedef struct _GreeterWidget
   GtkProgressBar * progress_bar;
 
   /** Semaphore for setting the progress from multiple threads. */
-  ZixSem progress_status_lock;
+  std::binary_semaphore progress_status_lock;
 
   /** Progress done (0.0 ~ 1.0). */
   double progress;
@@ -92,7 +91,7 @@ typedef struct _GreeterWidget
 
   AdwPreferencesGroup * recent_projects_pref_group;
   GPtrArray *           project_infos_arr;
-  GPtrArray *           recent_projects_item_factories;
+  ItemFactoryPtrVector  recent_projects_item_factories;
   GtkButton *           create_new_project_btn;
   GtkButton *           select_folder_btn;
 
@@ -103,7 +102,7 @@ typedef struct _GreeterWidget
   AdwComboRow *         templates_combo_row;
   CcListRowInfoButton * templates_info_button;
   GPtrArray *           templates_arr;
-  GPtrArray *           templates_item_factories;
+  ItemFactoryPtrVector  templates_item_factories;
   AdwPreferencesGroup * templates_pref_group;
   GtkButton *           create_project_confirm_btn;
 
@@ -117,7 +116,7 @@ typedef struct _GreeterWidget
 
   /** Initialization thread. */
   GThread * init_thread;
-} GreeterWidget;
+};
 
 /**
  * Creates a greeter widget.

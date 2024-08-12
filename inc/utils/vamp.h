@@ -58,7 +58,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Vamp plugin utils.
  *

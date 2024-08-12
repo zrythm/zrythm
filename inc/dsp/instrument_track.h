@@ -1,17 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Instrument track backend.
- */
 
 #ifndef __AUDIO_INSTRUMENT_TRACK_H__
 #define __AUDIO_INSTRUMENT_TRACK_H__
 
-typedef struct Track  Track;
-typedef struct Plugin Plugin;
+#include "dsp/group_target_track.h"
+#include "dsp/piano_roll_track.h"
 
 /**
  * @addtogroup dsp
@@ -19,31 +13,51 @@ typedef struct Plugin Plugin;
  * @{
  */
 
-/**
- * Initializes an instrument track.
- */
-void
-instrument_track_init (Track * track);
+class InstrumentTrack final
+    : public GroupTargetTrack,
+      public PianoRollTrack,
+      public ICloneable<InstrumentTrack>,
+      public ISerializable<InstrumentTrack>
+{
+public:
+  // Rule of 0
+  InstrumentTrack () = default;
 
-void
-instrument_track_setup (Track * self);
+  /**
+   * @brief Main constructor.
+   *
+   * @param name Track name.
+   * @param pos Track position.
+   */
+  InstrumentTrack (const std::string &name, int pos);
 
-Plugin *
-instrument_track_get_instrument (Track * self);
+  void init_loaded () override;
 
-/**
- * Returns if the first plugin's UI in the
- * instrument track is visible.
- */
-int
-instrument_track_is_plugin_visible (Track * self);
+  void init_after_cloning (const InstrumentTrack &other) override;
 
-/**
- * Toggles whether the first plugin's UI in the
- * instrument Track is visible.
- */
-void
-instrument_track_toggle_plugin_visible (Track * self);
+  Plugin * get_instrument ();
+
+  const Plugin * get_instrument () const;
+
+  /**
+   * Returns if the first plugin's UI in the instrument track is visible.
+   */
+  bool is_plugin_visible () const;
+
+  /**
+   * Toggles whether the first plugin's UI in the instrument Track is visible.
+   */
+  void toggle_plugin_visible ();
+
+  bool validate () const override
+  {
+    return GroupTargetTrack::validate () && PianoRollTrack::validate ();
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+};
 
 /**
  * @}

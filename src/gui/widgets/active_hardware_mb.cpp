@@ -91,7 +91,7 @@ ActiveHardwareMbWidget *
 active_hardware_mb_widget_new (void)
 {
   ActiveHardwareMbWidget * self = (ActiveHardwareMbWidget *) g_object_new (
-    ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+    ACTIVE_HARDWARE_MB_WIDGET_TYPE, nullptr);
 
   return self;
 }
@@ -126,5 +126,5 @@ active_hardware_mb_widget_init (ActiveHardwareMbWidget * self)
   gtk_menu_button_set_label (self->mbutton, _ ("Select..."));
 
   gtk_menu_button_set_create_popup_func (
-    self->mbutton, on_create_popover, self, NULL);
+    self->mbutton, on_create_popover, self, nullptr);
 }

@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Wrapper over arranger widget
  */
@@ -36,7 +34,7 @@ TYPEDEF_STRUCT_UNDERSCORED (ArrangerMinimapWidget);
 /**
  * Wraps the arranger widget in a box with scrollbars.
  */
-typedef struct _ArrangerWrapperWidget
+using ArrangerWrapperWidget = struct _ArrangerWrapperWidget
 {
   GtkWidget parent_instance;
 
@@ -46,14 +44,13 @@ typedef struct _ArrangerWrapperWidget
   GtkScrollbar *          right_scrollbar;
   ArrangerWidget *        child;
   ArrangerMinimapWidget * minimap;
-
-} ArrangerWrapperWidget;
+};
 
 void
 arranger_wrapper_widget_setup (
-  ArrangerWrapperWidget * self,
-  ArrangerWidgetType      type,
-  SnapGrid *              snap_grid);
+  ArrangerWrapperWidget *   self,
+  ArrangerWidgetType        type,
+  std::shared_ptr<SnapGrid> snap_grid);
 
 /**
  * @}

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -85,7 +85,7 @@ clip_editor_inner_widget_get_visible_arranger (ClipEditorInnerWidget * self)
     }
   else
     {
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
     }
 }
 
@@ -94,16 +94,17 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
 {
   g_message ("refreshing...");
 
-  Region *         r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  Track *          track = NULL;
+  Region * r = CLIP_EDITOR->get_region ();
+  if (!r)
+    return;
 
-  if (r)
-    {
-      track = arranger_object_get_track (r_obj);
+  auto r_variant = convert_to_variant<RegionPtrVariant> (r);
+  std::visit (
+    [&] (auto &&r) {
+      auto track = r->get_track ();
 
-      color_area_widget_set_color (self->color_bar, &track->color);
-      gtk_label_set_markup (self->track_name_lbl, r->name);
+      color_area_widget_set_color (self->color_bar, track->color_);
+      gtk_label_set_markup (self->track_name_lbl, r->name_.c_str ());
 
       /* remove all from the size group */
       GtkWidget * visible_w = gtk_stack_get_visible_child (self->editor_stack);
@@ -138,9 +139,9 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
       gtk_widget_set_visible (GTK_WIDGET (self->show_automation_values), false);
 
       /* add one to the size group */
-      switch (r->id.type)
+      if constexpr (std::is_same_v<std::decay_t<decltype (r)>, MidiRegion>)
         {
-        case RegionType::REGION_TYPE_MIDI:
+          auto pr_track = dynamic_cast<PianoRollTrack *> (track);
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (self->midi_editor_space));
           midi_editor_space_widget_update_size_group (
@@ -148,27 +149,32 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           midi_editor_space_widget_refresh (self->midi_editor_space);
           gtk_widget_set_visible (GTK_WIDGET (self->toggle_notation), true);
           gtk_actionable_set_action_name (
-            GTK_ACTIONABLE (self->toggle_notation), NULL);
-          gtk_toggle_button_set_active (self->toggle_notation, track->drum_mode);
+            GTK_ACTIONABLE (self->toggle_notation), nullptr);
+          gtk_toggle_button_set_active (
+            self->toggle_notation, pr_track->drum_mode_);
           gtk_actionable_set_action_name (
             GTK_ACTIONABLE (self->toggle_notation), "app.toggle-drum-mode");
           gtk_widget_set_visible (GTK_WIDGET (self->toggle_listen_notes), true);
-          break;
-        case RegionType::REGION_TYPE_AUDIO:
+        }
+      else if constexpr (std::is_same_v<std::decay_t<decltype (r)>, AudioRegion>)
+        {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
           audio_editor_space_widget_update_size_group (
             self->audio_editor_space, true);
           audio_editor_space_widget_refresh (self->audio_editor_space);
-          break;
-        case RegionType::REGION_TYPE_CHORD:
+        }
+      else if constexpr (std::is_same_v<std::decay_t<decltype (r)>, ChordRegion>)
+        {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_CHORD_EDITOR_SPACE));
           chord_editor_space_widget_update_size_group (
             self->chord_editor_space, true);
           chord_editor_space_widget_refresh (self->chord_editor_space);
-          break;
-        case RegionType::REGION_TYPE_AUTOMATION:
+        }
+      else if constexpr (
+        std::is_same_v<std::decay_t<decltype (r)>, AutomationRegion>)
+        {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_AUTOMATION_EDITOR_SPACE));
           automation_editor_space_widget_update_size_group (
@@ -178,11 +184,9 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           gtk_widget_set_visible (
             GTK_WIDGET (self->show_automation_values), true);
 #endif
-          break;
         }
-    }
-
-  g_message ("done");
+    },
+    r_variant);
 }
 
 void
@@ -224,7 +228,7 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
 
   /* add all arrangers and the ruler to the same
    * size group */
-  self->ruler->type = RulerWidgetType::RULER_WIDGET_TYPE_EDITOR;
+  self->ruler->type = RulerWidgetType::Editor;
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group, GTK_WIDGET (self->ruler));
   gtk_size_group_add_widget (
@@ -252,7 +256,7 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
-  color_area_widget_set_color (self->color_bar, &color);
+  color_area_widget_set_color (self->color_bar, Color (color));
 
   zoom_buttons_widget_setup (
     self->zoom_buttons, false, GTK_ORIENTATION_VERTICAL);

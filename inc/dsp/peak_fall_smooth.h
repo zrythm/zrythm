@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -13,35 +13,23 @@
  */
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __AUDIO_PEAK_FALL_SMOOTH_H__
 #define __AUDIO_PEAK_FALL_SMOOTH_H__
 
-typedef struct PeakFallSmooth
+class PeakFallSmooth
 {
-  float history;
-  float value;
-  float coeff;
-} PeakFallSmooth;
+public:
+  void  calculate_coeff (float frequency, float sample_rate);
+  void  set_value (float val);
+  float get_smoothed_value () const;
 
-PeakFallSmooth *
-peak_fall_smooth_new (void);
-
-void
-peak_fall_smooth_calculate_coeff (
-  PeakFallSmooth * self,
-  const float      frequency,
-  const float      sample_rate);
-
-void
-peak_fall_smooth_set_value (PeakFallSmooth * self, const float val);
-
-float
-peak_fall_smooth_get_smoothed_value (PeakFallSmooth * self);
-
-void
-peak_fall_smooth_free (PeakFallSmooth * self);
+private:
+  mutable float history_ = 0.f;
+  float         value_ = 0.f;
+  float         coeff_ = 0.f;
+};
 
 #endif

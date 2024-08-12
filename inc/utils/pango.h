@@ -13,6 +13,8 @@
 #ifndef __UTILS_PANGO_H__
 #define __UTILS_PANGO_H__
 
+#include <memory>
+
 #include "gtk_wrapper.h"
 
 /**
@@ -21,7 +23,16 @@
  * @{
  */
 
-PangoLayout *
+struct PangoLayoutDeleter
+{
+  PangoLayoutDeleter (){};
+
+  void operator() (PangoLayout * layout) const { g_object_unref (layout); };
+};
+
+using PangoLayoutUniquePtr = std::unique_ptr<PangoLayout, PangoLayoutDeleter>;
+
+PangoLayoutUniquePtr
 z_pango_create_layout_from_description (
   GtkWidget *            widget,
   PangoFontDescription * descr);

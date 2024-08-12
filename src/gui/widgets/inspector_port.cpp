@@ -1,11 +1,10 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "zrythm-config.h"
 
 #include "actions/midi_mapping_action.h"
+#include "actions/port_action.h"
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
 #include "dsp/meter.h"
@@ -17,14 +16,13 @@
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/popovers/port_connections_popover.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
-#include "utils/midi.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -49,17 +47,16 @@ static bool
 get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 {
   if (
-    port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN
-    || port->id_.owner_type_ == PortIdentifier::OwnerType::FADER
-    || port->id_.owner_type_ == PortIdentifier::OwnerType::TRACK)
+    port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin
+    || port->id_.owner_type_ == PortIdentifier::OwnerType::Fader
+    || port->id_.owner_type_ == PortIdentifier::OwnerType::Track)
     {
-      int num_midi_mappings =
-        midi_mappings_get_for_port (MIDI_MAPPINGS, port, NULL);
+      int num_midi_mappings = MIDI_MAPPINGS->get_for_port (*port, nullptr);
 
       const char * star = (num_midi_mappings > 0 ? "*" : "");
       char * port_label = g_markup_escape_text (port->id_.label_.c_str (), -1);
-      char   color_prefix[60];
-      sprintf (color_prefix, "<span foreground=\"%s\">", self->hex_color);
+      auto         color_prefix =
+        fmt::format ("<span foreground=\"{}\">", self->hex_color);
       char color_suffix[40] = "</span>";
       if (port->id_.flow_ == PortFlow::Input)
         {
@@ -69,7 +66,8 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
             "%s <small><sup>"
             "%s%d%s%s"
             "</sup></small>",
-            port_label, color_prefix, num_unlocked_srcs, star, color_suffix);
+            port_label, color_prefix.c_str (), num_unlocked_srcs, star,
+            color_suffix);
           self->last_num_connections = num_unlocked_srcs;
           return true;
         }
@@ -81,7 +79,8 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
             "%s <small><sup>"
             "%s%d%s%s"
             "</sup></small>",
-            port_label, color_prefix, num_unlocked_dests, star, color_suffix);
+            port_label, color_prefix.c_str (), num_unlocked_dests, star,
+            color_suffix);
           self->last_num_connections = num_unlocked_dests;
           return true;
         }
@@ -105,7 +104,7 @@ show_context_menu (InspectorPortWidget * self, gdouble x, gdouble y)
   if (self->port->id_.type_ == PortType::Control)
     {
       sprintf (tmp, "app.reset-control::%p", self->port);
-      menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+      menuitem = z_gtk_create_menu_item (_ ("Reset"), nullptr, tmp);
       g_menu_append_item (menu, menuitem);
 
       sprintf (tmp, "app.bind-midi-cc::%p", self->port);
@@ -114,7 +113,7 @@ show_context_menu (InspectorPortWidget * self, gdouble x, gdouble y)
     }
 
   sprintf (tmp, "app.port-view-info::%p", self->port);
-  menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("View info"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
@@ -172,8 +171,9 @@ on_double_click (
 /*static const float MAX_TIME = 250000.f;*/
 
 static float
-get_port_value (InspectorPortWidget * self)
+get_port_value (void * data)
 {
+  auto   self = static_cast<InspectorPortWidget *> (data);
   Port * port = self->port;
   switch (port->id_.type_)
     {
@@ -181,7 +181,7 @@ get_port_value (InspectorPortWidget * self)
     case PortType::Event:
       {
         float val, max;
-        meter_get_value (self->meter, AUDIO_VALUE_FADER, &val, &max);
+        self->meter->get_value (AudioValueFormat::Fader, &val, &max);
         return val;
       }
       break;
@@ -191,8 +191,10 @@ get_port_value (InspectorPortWidget * self)
       }
       break;
     case PortType::Control:
-      return control_port_real_val_to_normalized (
-        port, port->unsnapped_control_);
+      {
+        auto ctrl = dynamic_cast<ControlPort *> (port);
+        return ctrl->real_val_to_normalized (ctrl->unsnapped_control_);
+      }
       break;
     default:
       break;
@@ -201,22 +203,24 @@ get_port_value (InspectorPortWidget * self)
 }
 
 static float
-get_snapped_port_value (InspectorPortWidget * self)
+get_snapped_port_value (void * data)
 {
+  auto   self = static_cast<InspectorPortWidget *> (data);
   Port * port = self->port;
   if (port->get_type () == PortType::Control)
     {
+      auto control_port = dynamic_cast<ControlPort *> (port);
       /* optimization */
       if (
         G_LIKELY (self->last_port_val_set)
-        && math_floats_equal (self->last_real_val, port->control_))
+        && math_floats_equal (self->last_real_val, control_port->control_))
         {
           return self->last_normalized_val;
         }
 
-      self->last_real_val = port->control_;
+      self->last_real_val = control_port->control_;
       self->last_normalized_val =
-        control_port_real_val_to_normalized (port, port->control_);
+        control_port->real_val_to_normalized (control_port->control_);
       self->last_port_val_set = true;
       return self->last_normalized_val;
     }
@@ -227,43 +231,47 @@ get_snapped_port_value (InspectorPortWidget * self)
 }
 
 static void
-set_port_value (InspectorPortWidget * self, float val)
+set_port_value (void * data, float val)
 {
-  self->port->set_control_value (
-    control_port_normalized_val_to_real (self->port, val), F_NOT_NORMALIZED,
-    F_PUBLISH_EVENTS);
+  auto self = static_cast<InspectorPortWidget *> (data);
+  auto ctrl = dynamic_cast<ControlPort *> (self->port);
+  ctrl->set_control_value (
+    ctrl->normalized_val_to_real (val), F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 }
 
 static void
-set_init_port_value (InspectorPortWidget * self, float val)
+set_init_port_value (void * data, float val)
 {
+  auto self = static_cast<InspectorPortWidget *> (data);
   /*g_message (*/
   /*"val change started: %f", (double) val);*/
   self->normalized_init_port_val = val;
 }
 
 static void
-val_change_finished (InspectorPortWidget * self, float val)
+val_change_finished (void * data, float val)
 {
+  auto self = static_cast<InspectorPortWidget *> (data);
   /*g_message (*/
   /*"val change finished: %f", (double) val);*/
   if (!math_floats_equal (val, self->normalized_init_port_val))
     {
+      auto ctrl = dynamic_cast<ControlPort *> (self->port);
       /* set port to previous val */
-      self->port->set_control_value (
-        control_port_normalized_val_to_real (
-          self->port, self->normalized_init_port_val),
+      ctrl->set_control_value (
+        ctrl->normalized_val_to_real (self->normalized_init_port_val),
         F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
-      GError * err = NULL;
-      bool     ret = port_action_perform (
-        PortActionType::PORT_ACTION_SET_CONTROL_VAL, &self->port->id_, val,
-        F_NORMALIZED, &err);
-      if (!ret)
+      try
         {
-          HANDLE_ERROR (
-            err, _ ("Failed to set control %s to %f"),
-            self->port->id_.label_.c_str (), (double) val);
+          UNDO_MANAGER->perform (std::make_unique<PortAction> (
+            PortAction::Type::SetControlValue, self->port->id_, val, true));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (format_str (
+            _ ("Failed to set control %s to %f"), self->port->id_.label_,
+            (double) val));
         }
     }
 }
@@ -297,10 +305,9 @@ bar_slider_tick_cb (
   if (now - self->last_tooltip_change > 100000)
     {
       char str[2000];
-      char full_designation[600];
-      self->port->get_full_designation (full_designation);
+      auto   full_designation = self->port->get_full_designation ();
       char * full_designation_escaped =
-        g_markup_escape_text (full_designation, -1);
+        g_markup_escape_text (full_designation.c_str (), -1);
       char * comment_escaped = NULL;
       if (!self->port->id_.comment_.empty ())
         {
@@ -350,10 +357,10 @@ InspectorPortWidget *
 inspector_port_widget_new (Port * port)
 {
   InspectorPortWidget * self = static_cast<InspectorPortWidget *> (
-    g_object_new (INSPECTOR_PORT_WIDGET_TYPE, NULL));
+    g_object_new (INSPECTOR_PORT_WIDGET_TYPE, nullptr));
 
   self->port = port;
-  self->meter = meter_new_for_port (port);
+  self->meter = std::make_unique<Meter> (*port);
 
   char str[200];
   int  has_str = 0;
@@ -383,33 +390,32 @@ inspector_port_widget_new (Port * port)
           is_control = 1;
         }
       self->bar_slider = _bar_slider_widget_new (
-        BarSliderType::BAR_SLIDER_TYPE_NORMAL,
-        (GenericFloatGetter) get_port_value,
-        (GenericFloatSetter) set_port_value, (void *) self,
+        BarSliderType::BAR_SLIDER_TYPE_NORMAL, get_port_value, set_port_value,
+        (void *) self,
         /* use normalized vals for controls */
         is_control ? 0.f : minf, is_control ? 1.f : maxf, -1, 20,
-        is_control ? 0.f : zerof_, 0, 2, UI_DRAG_MODE_CURSOR, str, "");
-      self->bar_slider->snapped_getter =
-        (GenericFloatGetter) get_snapped_port_value;
+        is_control ? 0.f : zerof_, 0, 2, UiDragMode::UI_DRAG_MODE_CURSOR, str,
+        "");
+      self->bar_slider->snapped_getter = get_snapped_port_value;
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
-      self->bar_slider->init_setter = (GenericFloatSetter) set_init_port_value;
-      self->bar_slider->end_setter = (GenericFloatSetter) val_change_finished;
+      self->bar_slider->init_setter = set_init_port_value;
+      self->bar_slider->end_setter = val_change_finished;
       gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;
       self->zerof_ = zerof_;
-      strcpy (self->port_str, str);
+      self->port_str = str;
 
       /* keep drawing the bar slider */
       gtk_widget_add_tick_callback (
         GTK_WIDGET (self->bar_slider), (GtkTickCallback) bar_slider_tick_cb,
-        self, NULL);
+        self, nullptr);
     }
 
     /* jack button */
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       if (
         port->get_type () == PortType::Audio
@@ -469,8 +475,9 @@ inspector_port_new_end:
 static void
 finalize (InspectorPortWidget * self)
 {
-  if (self->meter)
-    meter_free (self->meter);
+  std::destroy_at (&self->port_str);
+  std::destroy_at (&self->hex_color);
+  std::destroy_at (&self->meter);
 
   G_OBJECT_CLASS (inspector_port_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -517,10 +524,15 @@ inspector_port_widget_class_init (InspectorPortWidgetClass * klass)
 static void
 inspector_port_widget_init (InspectorPortWidget * self)
 {
+  std::construct_at (&self->port_str);
+  std::construct_at (&self->hex_color);
+  std::construct_at (&self->meter);
+
   self->overlay = GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (GTK_WIDGET (self->overlay), GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->connections_popover =
@@ -530,5 +542,5 @@ inspector_port_widget_init (InspectorPortWidget * self)
   /*g_object_ref_sink (self->connections_popover);*/
   /*g_object_ref (self->connections_popover);*/
 
-  ui_gdk_rgba_to_hex (&UI_COLORS->bright_orange, self->hex_color);
+  self->hex_color = UI_COLORS->bright_orange.to_hex ();
 }

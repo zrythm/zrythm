@@ -1,32 +1,26 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/channel.h"
+#include "dsp/channel_track.h"
 #include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/channel_slot_activate_button.h"
-#include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "project.h"
 #include "utils/cairo.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/symap.h"
-#include "utils/ui.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -39,31 +33,10 @@ Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
   g_return_val_if_fail (
-    self->type == ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT
-      || IS_TRACK (self->track),
-    NULL);
+    self->type == PluginSlotType::Instrument || IS_TRACK (self->track), nullptr);
 
-  Plugin * plugin = NULL;
-  switch (self->type)
-    {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-      return self->track->channel->inserts[self->slot_index];
-      break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-      return self->track->channel->midi_fx[self->slot_index];
-      break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-      if (self->track && self->track->channel)
-        return self->track->channel->instrument;
-      break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR:
-      return self->track->modulators[self->slot_index];
-      break;
-    default:
-      g_return_val_if_reached (NULL);
-      break;
-    }
-
+  Plugin * plugin =
+    self->track->channel_->get_plugin_at_slot (self->slot_index, self->type);
   return plugin;
 }
 
@@ -74,7 +47,7 @@ update_pango_layouts (ChannelSlotWidget * self, bool force)
     {
       object_free_w_func_and_null (g_object_unref, self->txt_layout);
       PangoLayout * layout =
-        gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+        gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
       self->txt_layout = layout;
@@ -107,16 +80,16 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   if (plugin)
     {
-      const PluginDescriptor * descr = plugin->setting->descr;
+      const PluginDescriptor &descr = plugin->get_descriptor ();
 
       /* fill text */
-      if (plugin->instantiation_failed)
+      if (plugin->instantiation_failed_)
         {
-          snprintf (txt, MAX_LEN, "(!) %s", descr->name);
+          snprintf (txt, MAX_LEN, "(!) %s", descr.name_.c_str ());
         }
       else
         {
-          strncpy (txt, descr->name, MAX_LEN);
+          strncpy (txt, descr.name_.c_str (), MAX_LEN);
           txt[MAX_LEN - 1] = '\0';
         }
       int w, h;
@@ -135,11 +108,11 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
-      if (!self->pl_name || !g_strcmp0 (descr->name, self->pl_name))
+      if (!self->pl_name || !g_strcmp0 (descr.name_.c_str (), self->pl_name))
         {
           if (self->pl_name)
             g_free (self->pl_name);
-          self->pl_name = g_strdup (descr->name);
+          self->pl_name = g_strdup (descr.name_.c_str ());
           gtk_widget_set_tooltip_text (widget, self->pl_name);
         }
     }
@@ -147,7 +120,7 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       /* fill text */
       int w, h;
-      if (self->type == ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+      if (self->type == PluginSlotType::Instrument)
         {
           snprintf (txt, MAX_LEN, "%s", _ ("No instrument"));
         }
@@ -221,8 +194,8 @@ on_dnd_drop (
       pl = (Plugin *) wrapped_obj->obj;
     }
 
-  self->track->channel->handle_plugin_import (
-    pl, MIXER_SELECTIONS, descr, self->slot_index, self->type,
+  self->track->channel_->handle_plugin_import (
+    pl, MIXER_SELECTIONS.get (), descr, self->slot_index, self->type,
     action == GDK_ACTION_COPY, true);
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -235,7 +208,7 @@ on_dnd_drop (
 static inline void
 select_no_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
+  MIXER_SELECTIONS->clear (fire_events);
 }
 
 /**
@@ -243,7 +216,7 @@ select_no_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 static inline void
 select_no_ctrl_no_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
+  MIXER_SELECTIONS->clear (fire_events);
 }
 
 /**
@@ -251,11 +224,10 @@ select_no_ctrl_no_pl_ch (ChannelSlotWidget * self, bool fire_events)
 static inline void
 select_no_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->clear (false);
 
-  mixer_selections_add_slot (
-    MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
-    fire_events);
+  MIXER_SELECTIONS->add_slot (
+    *self->track, self->type, self->slot_index, fire_events);
 }
 
 /**
@@ -265,14 +237,12 @@ select_no_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* if plugin is not selected, make it the only
    * selection otherwise do nothing */
-  if (!mixer_selections_contains_slot (
-        MIXER_SELECTIONS, self->type, self->slot_index))
+  if (!MIXER_SELECTIONS->contains_slot (self->type, self->slot_index))
     {
-      mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+      MIXER_SELECTIONS->clear (false);
 
-      mixer_selections_add_slot (
-        MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
-        fire_events);
+      MIXER_SELECTIONS->add_slot (
+        *self->track, self->type, self->slot_index, fire_events);
     }
 }
 
@@ -281,7 +251,7 @@ select_no_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 static inline void
 select_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
+  MIXER_SELECTIONS->clear (fire_events);
 }
 
 /**
@@ -289,7 +259,7 @@ select_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 static inline void
 select_ctrl_no_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
+  MIXER_SELECTIONS->clear (fire_events);
 }
 
 /**
@@ -298,10 +268,9 @@ static inline void
 select_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* make it the only selection */
-  mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
-  mixer_selections_add_slot (
-    MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
-    fire_events);
+  MIXER_SELECTIONS->clear (F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (
+    *self->track, self->type, self->slot_index, fire_events);
 }
 
 /**
@@ -311,18 +280,15 @@ select_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* if already selected, deselect it, otherwise
    * add it to selections */
-  if (mixer_selections_contains_slot (
-        MIXER_SELECTIONS, self->type, self->slot_index))
+  if (MIXER_SELECTIONS->contains_slot (self->type, self->slot_index))
     {
-      mixer_selections_remove_slot (
-        MIXER_SELECTIONS, self->slot_index, self->type, fire_events);
+      MIXER_SELECTIONS->remove_slot (self->slot_index, self->type, fire_events);
       /*self->deselected = 1;*/
     }
   else
     {
-      mixer_selections_add_slot (
-        MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
-        fire_events);
+      MIXER_SELECTIONS->add_slot (
+        *self->track, self->type, self->slot_index, fire_events);
     }
 }
 
@@ -356,8 +322,8 @@ select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
   /* if same channel as selections */
   g_return_if_fail (self->track);
   if (
-    self->track->channel
-    && track_get_name_hash (*self->track) == MIXER_SELECTIONS->track_name_hash)
+    self->track->channel_
+    && self->track->get_name_hash () == MIXER_SELECTIONS->track_name_hash_)
     ch = true;
 
   if (!ctrl && !pl && !ch)
@@ -380,8 +346,7 @@ select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
   /* select channel */
   if (self->track)
     {
-      tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, self->track, fire_events);
+      TRACKLIST_SELECTIONS->select_single (*self->track, fire_events);
     }
 }
 
@@ -398,12 +363,10 @@ drag_end (
   Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl && self->n_press == 2)
     {
-      bool new_visible = !pl->visible;
-      g_message (
-        "%s: setting plugin %s visible %d", __func__, pl->setting->descr->name,
-        new_visible);
-      g_warn_if_fail (pl->instantiated);
-      pl->visible = new_visible;
+      bool new_visible = !pl->visible_;
+      z_debug ("setting plugin %s visible %d", pl->get_name (), new_visible);
+      g_warn_if_fail (pl->instantiated_);
+      pl->visible_ = new_visible;
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
   else if (self->n_press == 1)
@@ -421,10 +384,10 @@ drag_end (
 
   if (pl)
     {
-      g_return_if_fail (self->track);
-      g_return_if_fail (self->track->channel);
-      g_return_if_fail (self->track->channel->widget);
-      self->track->channel->widget->last_plugin_press = g_get_monotonic_time ();
+      z_return_if_fail (self->track);
+      z_return_if_fail (self->track->channel_);
+      z_return_if_fail (self->track->channel_->widget_);
+      self->track->channel_->widget_->last_plugin_press = SteadyClock::now ();
     }
   g_message ("%s: drag end %d press", __func__, self->n_press);
 }
@@ -442,17 +405,17 @@ on_press (
 
   if (
     self->open_plugin_inspector_on_click
-    && self->type != ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+    && self->type != PluginSlotType::Instrument)
     {
-      if (self->type == ZPluginSlotType::Z_PLUGIN_SLOT_INSERT)
+      if (self->type == PluginSlotType::Insert)
         {
-          PROJECT->last_selection = Project::SelectionType::Insert;
+          PROJECT->last_selection_ = Project::SelectionType::Insert;
         }
-      else if (self->type == ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX)
+      else if (self->type == PluginSlotType::MidiFx)
         {
-          PROJECT->last_selection = Project::SelectionType::MidiFX;
+          PROJECT->last_selection_ = Project::SelectionType::MidiFX;
         }
-      EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
+      EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
     }
 }
 
@@ -470,13 +433,12 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
       gtk_widget_set_sensitive (GTK_WIDGET (self->activate_btn), true);
       if (
         gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->activate_btn))
-        != plugin_is_enabled (pl, false))
+        != pl->is_enabled (false))
         {
           g_signal_handler_block (
             self->activate_btn, self->activate_btn->toggled_id);
           gtk_toggle_button_set_active (
-            GTK_TOGGLE_BUTTON (self->activate_btn),
-            plugin_is_enabled (pl, false));
+            GTK_TOGGLE_BUTTON (self->activate_btn), pl->is_enabled (false));
           g_signal_handler_unblock (
             self->activate_btn, self->activate_btn->toggled_id);
         }
@@ -505,17 +467,17 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
       | static_cast<int> (GTK_STATE_FLAG_CHECKED)));
   if (plugin)
     {
-      bool is_selected = plugin_is_selected (plugin);
+      bool is_selected = plugin->is_selected ();
       if (is_selected)
         {
           gtk_widget_set_state_flags (
             GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, false);
         }
-      if (!plugin_is_enabled (plugin, false))
+      if (!plugin->is_enabled (false))
         {
           gtk_widget_add_css_class (GTK_WIDGET (self), "disabled");
         }
-      if (plugin->visible)
+      if (plugin->visible_)
         {
           gtk_widget_set_state_flags (
             GTK_WIDGET (self), GTK_STATE_FLAG_CHECKED, false);
@@ -528,10 +490,10 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->bridge_icon),
-    plugin && plugin->setting->bridge_mode != CarlaBridgeMode::None);
+    plugin && plugin->setting_.bridge_mode_ != CarlaBridgeMode::None);
   if (plugin)
     {
-      switch (plugin->setting->bridge_mode)
+      switch (plugin->setting_.bridge_mode_)
         {
         case CarlaBridgeMode::Full:
           gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");
@@ -559,23 +521,23 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
 
   switch (self->type)
     {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-      PROJECT->last_selection = Project::SelectionType::Insert;
+    case PluginSlotType::Insert:
+      PROJECT->last_selection_ = Project::SelectionType::Insert;
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-      PROJECT->last_selection = Project::SelectionType::Instrument;
+    case PluginSlotType::Instrument:
+      PROJECT->last_selection_ = Project::SelectionType::Instrument;
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-      PROJECT->last_selection = Project::SelectionType::MidiFX;
+    case PluginSlotType::MidiFx:
+      PROJECT->last_selection_ = Project::SelectionType::MidiFX;
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR:
-      PROJECT->last_selection = Project::SelectionType::Modulator;
+    case PluginSlotType::Modulator:
+      PROJECT->last_selection_ = Project::SelectionType::Modulator;
       break;
     default:
       g_return_if_reached ();
       break;
     }
-  EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
+  EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
 
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -610,7 +572,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   GMenu * edit_submenu = g_menu_new ();
-  if (self->type != ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != PluginSlotType::Instrument)
     {
       menuitem = CREATE_CUT_MENU_ITEM ("app.cut");
       g_menu_append_item (edit_submenu, menuitem);
@@ -621,16 +583,16 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   /* if plugin exists */
-  if (pl && self->type != ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+  if (pl && self->type != PluginSlotType::Instrument)
     {
       /* add delete item */
       menuitem = CREATE_DELETE_MENU_ITEM ("app.mixer-selections-delete");
       g_menu_append_item (edit_submenu, menuitem);
     }
 
-  g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
+  g_menu_append_section (menu, nullptr, G_MENU_MODEL (edit_submenu));
 
-  if (self->type != ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != PluginSlotType::Instrument)
     {
       GMenu * select_submenu = g_menu_new ();
 
@@ -639,7 +601,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
       menuitem = CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
       g_menu_append_item (select_submenu, menuitem);
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
+      g_menu_append_section (menu, nullptr, G_MENU_MODEL (select_submenu));
     }
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
@@ -709,7 +671,9 @@ finalize (ChannelSlotWidget * self)
 }
 
 void
-channel_slot_widget_set_instrument (ChannelSlotWidget * self, Track * track)
+channel_slot_widget_set_instrument (
+  ChannelSlotWidget * self,
+  ChannelTrack *      track)
 {
   self->track = track;
 }
@@ -737,7 +701,7 @@ on_dnd_drag_prepare (
 static void
 setup_dnd (ChannelSlotWidget * self)
 {
-  if (self->type != ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+  if (self->type != PluginSlotType::Instrument)
     {
       /* set as drag source for plugin */
       GtkDragSource * drag_source = gtk_drag_source_new ();
@@ -773,13 +737,13 @@ setup_dnd (ChannelSlotWidget * self)
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int             slot_index,
-  Track *         track,
-  ZPluginSlotType type,
-  bool            open_plugin_inspector_on_click)
+  int            slot_index,
+  ChannelTrack * track,
+  PluginSlotType type,
+  bool           open_plugin_inspector_on_click)
 {
   ChannelSlotWidget * self = static_cast<ChannelSlotWidget *> (
-    g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL));
+    g_object_new (CHANNEL_SLOT_WIDGET_TYPE, nullptr));
   self->slot_index = slot_index;
   self->type = type;
   self->track = track;
@@ -797,8 +761,8 @@ channel_slot_widget_new (
 ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
-  ChannelSlotWidget * self = channel_slot_widget_new (
-    -1, NULL, ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT, false);
+  ChannelSlotWidget * self =
+    channel_slot_widget_new (-1, nullptr, PluginSlotType::Instrument, false);
 
   return self;
 }
@@ -837,7 +801,8 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("empty slot"));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -879,7 +844,7 @@ channel_slot_widget_init (ChannelSlotWidget * self)
     GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Channel slot", -1);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, nullptr);
 
   self->bridge_icon =
     GTK_IMAGE (gtk_image_new_from_icon_name ("iconoir-bridge3d"));

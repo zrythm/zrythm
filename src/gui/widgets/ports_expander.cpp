@@ -6,96 +6,57 @@
 #include "dsp/port_identifier.h"
 #include "dsp/track.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/editable_label.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/string.h"
 
-#include <adwaita.h>
 #include <glib/gi18n.h>
+
+#include "libadwaita_wrapper.h"
 
 G_DEFINE_TYPE (
   PortsExpanderWidget,
   ports_expander_widget,
   TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
-/**
- * Refreshes each field.
- */
 void
 ports_expander_widget_refresh (PortsExpanderWidget * self)
 {
-  /* set visibility */
-  /* FIXME the port counts used don't take into
-   * account invisible (notOnGUI) ports */
-  if (self->owner_type == PortIdentifier::OwnerType::PLUGIN)
+  /* FIXME the port counts used don't take into account invisible (notOnGUI)
+   * ports */
+  if (self->owner_type == PortIdentifier::OwnerType::Plugin)
     {
-      if (self->type == PortType::Control)
+      if (!self->plugin)
         {
-          if (self->flow == PortFlow::Input)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_ctrl_ins > 0);
-            }
-          else if (self->flow == PortFlow::Output)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_ctrl_outs > 0);
-            }
+          gtk_widget_set_visible (GTK_WIDGET (self), false);
+          return;
         }
-      else if (self->type == PortType::Audio)
-        {
-          if (self->flow == PortFlow::Input)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_audio_ins > 0);
-            }
-          else if (self->flow == PortFlow::Output)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_audio_outs > 0);
-            }
-        }
-      else if (self->type == PortType::Event)
-        {
-          if (self->flow == PortFlow::Input)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_midi_ins > 0);
-            }
-          else if (self->flow == PortFlow::Output)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_midi_outs > 0);
-            }
-        }
-      else if (self->type == PortType::CV)
-        {
-          if (self->flow == PortFlow::Input)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_cv_ins > 0);
-            }
-          else if (self->flow == PortFlow::Output)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self),
-                self->plugin && self->plugin->setting->descr->num_cv_outs > 0);
-            }
-        }
+
+      const auto &descr = self->plugin->setting_.descr_;
+
+      auto get_port_count = [&descr] (PortType type, PortFlow flow) {
+        switch (type)
+          {
+          case PortType::Control:
+            return flow == PortFlow::Input ? descr.num_ctrl_ins_ : descr.num_ctrl_outs_;
+          case PortType::Audio:
+            return flow == PortFlow::Input
+                     ? descr.num_audio_ins_
+                     : descr.num_audio_outs_;
+          case PortType::Event:
+            return flow == PortFlow::Input ? descr.num_midi_ins_ : descr.num_midi_outs_;
+          case PortType::CV:
+            return flow == PortFlow::Input ? descr.num_cv_ins_ : descr.num_cv_outs_;
+          default:
+            return 0;
+          }
+      };
+
+      bool visible = get_port_count (self->type, self->flow) > 0;
+      gtk_widget_set_visible (GTK_WIDGET (self), visible);
     }
-  else if (self->owner_type == PortIdentifier::OwnerType::TRACK)
+  else if (self->owner_type == PortIdentifier::OwnerType::Track)
     {
     }
 }
@@ -117,29 +78,14 @@ set_icon_from_port_type (PortsExpanderWidget * self, PortType type)
       Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-wrench-wide-symbolic");
 }
 
-typedef struct PortGroup
+struct PortGroup
 {
-  char *      group_name;
-  GPtrArray * ports;
-} PortGroup;
+  PortGroup () = default;
+  PortGroup (std::string name) : group_name (std::move (name)) { }
 
-static void
-free_port_group (void * data)
-{
-  PortGroup * self = (PortGroup *) data;
-  g_free_and_null (self->group_name);
-  object_free_w_func_and_null (g_ptr_array_unref, self->ports);
-  object_zero_and_free (self);
-}
-
-static PortGroup *
-port_group_new (const char * name)
-{
-  PortGroup * self = object_new (PortGroup);
-  self->group_name = g_strdup (name);
-  self->ports = g_ptr_array_sized_new (50);
-  return self;
-}
+  std::string         group_name;
+  std::vector<Port *> ports;
+};
 
 static void
 item_factory_setup_cb (
@@ -171,7 +117,7 @@ item_factory_unbind_cb (
   gpointer                   user_data)
 {
   AdwBin * bin = ADW_BIN (gtk_list_item_get_child (listitem));
-  adw_bin_set_child (bin, NULL);
+  adw_bin_set_child (bin, nullptr);
 }
 
 static void
@@ -180,7 +126,7 @@ item_factory_teardown_cb (
   GtkListItem *              listitem,
   gpointer                   user_data)
 {
-  gtk_list_item_set_child (listitem, NULL);
+  gtk_list_item_set_child (listitem, nullptr);
 }
 
 /**
@@ -195,7 +141,7 @@ ports_expander_widget_setup_plugin (
 {
   self->flow = flow;
   self->type = type;
-  self->owner_type = PortIdentifier::OwnerType::PLUGIN;
+  self->owner_type = PortIdentifier::OwnerType::Plugin;
 
   /* if same plugin, do nothing (already set up) */
   if (self->plugin == pl)
@@ -241,196 +187,72 @@ ports_expander_widget_setup_plugin (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
   gtk_widget_set_vexpand_set (GTK_WIDGET (prv->content), 1);
 
-  GArray * ports = g_array_new (false, true, sizeof (Port *));
-
-  Port *           port;
-  PortIdentifier * pi;
-  if (pl && type == PortType::Control && flow == PortFlow::Input)
+  std::vector<Port *> ports;
+  if (pl)
     {
-      for (int i = 0; i < pl->num_in_ports; i++)
+      const auto &source_ports =
+        (flow == PortFlow::Input) ? pl->in_ports_ : pl->out_ports_;
+      for (const auto &port : source_ports)
         {
-          port = pl->in_ports[i];
-          pi = &port->id_;
+          const auto &pi = port->id_;
           if (
-            pi->type_ != PortType::Control
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
+            pi.type_ == type
+            && !ENUM_BITSET_TEST (
+              PortIdentifier::Flags, pi.flags_, PortIdentifier::Flags::NotOnGui))
+            {
+              ports.push_back (port.get ());
+            }
         }
     }
-  else if (pl && type == PortType::Control && flow == PortFlow::Output)
-    {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          port = pl->out_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::Control
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
+  std::sort (ports.begin (), ports.end (), PortIdentifier::port_group_cmp);
 
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::CV && flow == PortFlow::Input)
-    {
-      for (int i = 0; i < pl->num_in_ports; i++)
-        {
-          port = pl->in_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::CV
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::CV && flow == PortFlow::Output)
-    {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          port = pl->out_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::CV
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::Audio && flow == PortFlow::Input)
-    {
-      for (int i = 0; i < pl->num_in_ports; i++)
-        {
-          port = pl->in_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::Audio
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::Audio && flow == PortFlow::Output)
-    {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          port = pl->out_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::Audio
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::Event && flow == PortFlow::Input)
-    {
-      for (int i = 0; i < pl->num_in_ports; i++)
-        {
-          port = pl->in_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::Event
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  else if (pl && type == PortType::Event && flow == PortFlow::Output)
-    {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          port = pl->out_ports[i];
-          pi = &port->id_;
-          if (
-            pi->type_ != PortType::Event
-            || ENUM_BITSET_TEST (
-              PortIdentifier::Flags, pi->flags_,
-              PortIdentifier::Flags::NOT_ON_GUI))
-            continue;
-
-          g_array_append_val (ports, port);
-        }
-    }
-  g_array_sort (ports, PortIdentifier::port_group_cmp);
-
-  g_debug (
+  z_debug (
     "adding ports for plugin %s, type %s flow %s...",
-    pl ? pl->setting->descr->name : "(none)", ENUM_NAME (type),
-    ENUM_NAME (flow));
+    pl ? pl->get_name () : "(none)", ENUM_NAME (type), ENUM_NAME (flow));
 
   /* temporary array */
-  GPtrArray * port_groups = g_ptr_array_new_with_free_func (free_port_group);
+  std::vector<PortGroup> port_groups;
 
   /* Add ports in group order */
-  std::string last_group = NULL;
-  int         num_ports = (int) ports->len;
-  for (int i = 0; i < num_ports; ++i)
+  std::string last_group;
+  // int         num_ports = (int) ports->len;
+  for (auto port : ports)
     {
-      port = g_array_index (ports, Port *, i);
       const std::string group = port->id_.port_group_;
 
-      PortGroup * port_group = NULL;
+      PortGroup * port_group = nullptr;
 
       /* Check group and add new heading if necessary */
       if (group != last_group)
         {
-          const char * group_name =
-            group.empty () ? _ ("Ungrouped") : group.c_str ();
+          const auto group_name =
+            group.empty () ? std::string (_ ("Ungrouped")) : group;
 
-          port_group = port_group_new (group_name);
-          g_ptr_array_add (port_groups, port_group);
+          port_groups.emplace_back (group_name);
+          port_group = &port_groups.back ();
         }
       last_group = group;
 
       if (!port_group)
         {
-          if (port_groups->len > 0)
+          if (port_groups.empty ())
             {
-              port_group = static_cast<PortGroup *> (
-                g_ptr_array_index (port_groups, port_groups->len - 1));
+              port_groups.emplace_back (group);
             }
-          else
-            {
-              port_group = port_group_new (group.c_str ());
-              g_ptr_array_add (port_groups, port_group);
-            }
+
+          port_group = &port_groups.back ();
         }
 
-      g_ptr_array_add (port_group->ports, port);
+      port_group->ports.push_back (port);
     }
 
   /* foreach port group */
-  for (size_t i = 0; i < port_groups->len; i++)
+  for (auto &pg : port_groups)
     {
-      PortGroup * pg =
-        static_cast<PortGroup *> (g_ptr_array_index (port_groups, i));
-
       /* add the header */
-      if (pg->group_name)
+      if (!pg.group_name.empty ())
         {
-          GtkWidget * group_label = gtk_label_new (pg->group_name);
+          GtkWidget * group_label = gtk_label_new (pg.group_name.c_str ());
           gtk_widget_set_name (
             GTK_WIDGET (group_label),
             "ports-expander-inspector-port-group-label");
@@ -445,9 +267,8 @@ ports_expander_widget_setup_plugin (
       /* add the list view of ports */
       GListStore * store =
         g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-      for (size_t j = 0; j < pg->ports->len; j++)
+      for (auto &p : pg.ports)
         {
-          Port * p = static_cast<Port *> (g_ptr_array_index (pg->ports, j));
           WrappedObjectWithChangeSignal * wrapped_obj =
             wrapped_object_with_change_signal_new (
               p, WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT);
@@ -471,7 +292,7 @@ ports_expander_widget_setup_plugin (
         G_CALLBACK (item_factory_teardown_cb), self);
       GtkListView * list_view = GTK_LIST_VIEW (gtk_list_view_new (
         GTK_SELECTION_MODEL (no_selection), list_item_factory));
-      if (pg->ports->len > 100)
+      if (pg.ports.size () > 100)
         {
           GtkScrolledWindow * scroll =
             GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
@@ -489,8 +310,6 @@ ports_expander_widget_setup_plugin (
             (TwoColExpanderBoxWidget *) self, (GtkWidget *) list_view);
         }
     }
-
-  g_ptr_array_unref (port_groups);
 
   g_debug ("added ports");
 
@@ -510,16 +329,13 @@ ports_expander_widget_setup_track (
   Track *                    tr,
   PortsExpanderTrackPortType type)
 {
-  self->owner_type = PortIdentifier::OwnerType::TRACK;
+  self->owner_type = PortIdentifier::OwnerType::Track;
   self->track = tr;
 
   /*PortType in_type =*/
   /*self->track->in_signal_type;*/
-  PortType out_type;
-  if (tr)
-    out_type = self->track->out_signal_type;
-  else
-    out_type = PortType::Audio;
+  PortType out_type =
+    tr ? out_type = self->track->out_signal_type_ : out_type = PortType::Audio;
 
   switch (type)
     {
@@ -538,19 +354,19 @@ ports_expander_widget_setup_track (
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("Stereo In"));
       self->flow = PortFlow::Input;
-      self->owner_type = PortIdentifier::OwnerType::TRACK;
+      self->owner_type = PortIdentifier::OwnerType::Track;
       break;
     case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
-      self->owner_type = PortIdentifier::OwnerType::TRACK;
+      self->owner_type = PortIdentifier::OwnerType::Track;
       self->flow = PortFlow::Input;
       self->type = PortType::Event;
       break;
     case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_OUT:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI Out"));
-      self->owner_type = PortIdentifier::OwnerType::TRACK;
+      self->owner_type = PortIdentifier::OwnerType::Track;
       self->flow = PortFlow::Output;
       self->type = PortType::Event;
       break;
@@ -571,40 +387,40 @@ ports_expander_widget_setup_track (
   two_col_expander_box_widget_add_single ( \
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (ip))
 
-  if (tr)
+  if (auto ch_track = dynamic_cast<ChannelTrack *> (tr))
     {
       InspectorPortWidget * ip;
       switch (type)
         {
         case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_CONTROLS:
-          ADD_SINGLE (tr->channel->fader->amp);
-          ADD_SINGLE (tr->channel->fader->balance);
-          ADD_SINGLE (tr->channel->fader->mute);
+          ADD_SINGLE (ch_track->channel_->fader_->amp_.get ());
+          ADD_SINGLE (ch_track->channel_->fader_->balance_.get ());
+          ADD_SINGLE (ch_track->channel_->fader_->mute_.get ());
           break;
         case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_SENDS:
           if (out_type == PortType::Audio)
             {
-              ADD_SINGLE (&tr->channel->prefader->stereo_out->get_l ());
-              ADD_SINGLE (&tr->channel->prefader->stereo_out->get_r ());
-              ADD_SINGLE (&tr->channel->fader->stereo_out->get_l ());
-              ADD_SINGLE (&tr->channel->fader->stereo_out->get_r ());
+              ADD_SINGLE (&ch_track->channel_->prefader_->stereo_out_->get_l ());
+              ADD_SINGLE (&ch_track->channel_->prefader_->stereo_out_->get_r ());
+              ADD_SINGLE (&ch_track->channel_->fader_->stereo_out_->get_l ());
+              ADD_SINGLE (&ch_track->channel_->fader_->stereo_out_->get_r ());
             }
           else if (out_type == PortType::Event)
             {
-              ADD_SINGLE (tr->channel->prefader->midi_out);
-              ADD_SINGLE (tr->channel->fader->midi_out);
+              ADD_SINGLE (ch_track->channel_->prefader_->midi_out_.get ());
+              ADD_SINGLE (ch_track->channel_->fader_->midi_out_.get ());
             }
           break;
           break;
         case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_STEREO_IN:
-          ADD_SINGLE (&tr->processor->stereo_in->get_l ());
-          ADD_SINGLE (&tr->processor->stereo_in->get_r ());
+          ADD_SINGLE (&ch_track->processor_->stereo_in_->get_l ());
+          ADD_SINGLE (&ch_track->processor_->stereo_in_->get_r ());
           break;
         case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_IN:
-          ADD_SINGLE (tr->processor->midi_in);
+          ADD_SINGLE (ch_track->processor_->midi_in_.get ());
           break;
         case PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_MIDI_OUT:
-          ADD_SINGLE (tr->channel->midi_out);
+          ADD_SINGLE (ch_track->channel_->midi_out_.get ());
           break;
         }
     }

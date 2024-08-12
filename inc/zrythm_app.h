@@ -1,37 +1,28 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
 
-/**
- * \file
- *
- * The Zrythm GTK application.
- */
-
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
 #include "zrythm-config.h"
 
-#include <memory>
-
 #include "utils/types.h"
-
-#include <adwaita.h>
+#include "utils/ui.h"
 
 #include "gtk_wrapper.h"
-#include <zix/sem.h>
+#include "libadwaita_wrapper.h"
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
 
 #define ZRYTHM_APP_IS_GTK_THREAD \
-  (zrythm_app && zrythm_app->gtk_thread == g_thread_self ())
+  (zrythm_app && zrythm_app->gtk_thread_id == current_thread_id.get ())
 
 TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 TYPEDEF_STRUCT_UNDERSCORED (BugReportDialogWidget);
 TYPEDEF_STRUCT_UNDERSCORED (GreeterWidget);
-TYPEDEF_STRUCT (UiCaches);
 class ZrythmDirectoryManager;
+class ProjectInitFlowManager;
 
 /**
  * @addtogroup general
@@ -42,11 +33,11 @@ class ZrythmDirectoryManager;
 /**
  * UI message for the message queue.
  */
-typedef struct ZrythmAppUiMessage
+struct ZrythmAppUiMessage
 {
   GtkMessageType type;
   char *         msg;
-} ZrythmAppUiMessage;
+};
 
 ZrythmAppUiMessage *
 zrythm_app_ui_message_new (GtkMessageType type, const char * msg);
@@ -55,10 +46,9 @@ void
 zrythm_app_ui_message_free (ZrythmAppUiMessage * self);
 
 /**
- * The global struct.
+ * The Zrythm GTK application.
  *
- * Contains data that is only relevant to the GUI
- * or command line.
+ * Contains data that is only relevant to the GUI or command line.
  */
 struct _ZrythmApp
 {
@@ -76,12 +66,12 @@ struct _ZrythmApp
   /**
    * The GTK thread where the main GUI loop runs.
    *
-   * This is stored for identification purposes
-   * in other threads.
+   * This is stored for identification purposes in other threads.
    */
-  GThread * gtk_thread;
+  // GThread * gtk_thread;
+  unsigned int gtk_thread_id = std::numeric_limits<unsigned int>::max ();
 
-  UiCaches * ui_caches;
+  std::unique_ptr<UiCaches> ui_caches;
 
   /** Flag to set when initialization has
    * finished. */
@@ -147,20 +137,27 @@ struct _ZrythmApp
   /** Currently opened bug report dialog. */
   BugReportDialogWidget * bug_report_dialog;
 
+  std::unique_ptr<ProjectInitFlowManager> project_init_flow_mgr;
+
   guint project_autosave_source_id;
+};
+
+struct ZrythmAppDeleter
+{
+  void operator() (ZrythmApp * self) { g_object_unref (self); }
 };
 
 /**
  * Global variable, should be available to all files.
  */
-extern ZrythmApp * zrythm_app;
+extern std::unique_ptr<ZrythmApp, ZrythmAppDeleter> zrythm_app;
 
 /**
  * Creates the Zrythm GApplication.
  *
  * This also initializes the Zrythm struct.
  */
-ZrythmApp *
+std::unique_ptr<ZrythmApp, ZrythmAppDeleter>
 zrythm_app_new (int argc, const char ** argv);
 
 void

@@ -8,7 +8,7 @@
 #define __GUI_WIDGETS_BOUNCE_STEP_SELECTOR_H__
 
 /**
- * \file
+ * @file
  *
  * Bounce step selector.
  */

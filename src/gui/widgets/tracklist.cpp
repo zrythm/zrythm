@@ -1,21 +1,14 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/audio_bus_track.h"
 #include "dsp/channel.h"
-#include "dsp/chord_track.h"
-#include "dsp/instrument_track.h"
-#include "dsp/scale.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/add_track_menu_button.h"
-#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
@@ -24,12 +17,11 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
-#include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -64,37 +56,37 @@ tracklist_widget_generate_add_track_menu (void)
   GMenuItem * menuitem;
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Add _MIDI Track"), NULL, "app.create-midi-track");
+    _ ("Add _MIDI Track"), nullptr, "app.create-midi-track");
   g_menu_append_item (menu, menuitem);
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Add Audio Track"), NULL, "app.create-audio-track");
+    _ ("Add Audio Track"), nullptr, "app.create-audio-track");
   g_menu_append_item (menu, menuitem);
 
   menuitem =
-    z_gtk_create_menu_item (_ ("Import File..."), NULL, "app.import-file");
+    z_gtk_create_menu_item (_ ("Import File..."), nullptr, "app.import-file");
   g_menu_append_item (menu, menuitem);
 
   GMenu * bus_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
-    _ ("Add Audio FX Track"), NULL, "app.create-audio-bus-track");
+    _ ("Add Audio FX Track"), nullptr, "app.create-audio-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
   menuitem = z_gtk_create_menu_item (
-    _ ("Add MIDI FX Track"), NULL, "app.create-midi-bus-track");
+    _ ("Add MIDI FX Track"), nullptr, "app.create-midi-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
-  g_menu_append_section (menu, NULL, G_MENU_MODEL (bus_submenu));
+  g_menu_append_section (menu, nullptr, G_MENU_MODEL (bus_submenu));
 
   GMenu * group_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
-    _ ("Add Audio Group Track"), NULL, "app.create-audio-group-track");
+    _ ("Add Audio Group Track"), nullptr, "app.create-audio-group-track");
   g_menu_append_item (group_submenu, menuitem);
   menuitem = z_gtk_create_menu_item (
-    _ ("Add MIDI Group Track"), NULL, "app.create-midi-group-track");
+    _ ("Add MIDI Group Track"), nullptr, "app.create-midi-group-track");
   g_menu_append_item (group_submenu, menuitem);
-  g_menu_append_section (menu, NULL, G_MENU_MODEL (group_submenu));
+  g_menu_append_section (menu, nullptr, G_MENU_MODEL (group_submenu));
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Add Folder Track"), NULL, "app.create-folder-track");
+    _ ("Add Folder Track"), nullptr, "app.create-folder-track");
   g_menu_append_item (menu, menuitem);
 
   return menu;
@@ -105,11 +97,11 @@ on_dnd_leave (GtkDropTarget * drop_target, TracklistWidget * self)
 {
   remove_scroll_sources (self);
 
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (track_get_should_be_visible (track) && track->widget)
+      if (track->should_be_visible () && track->widget_)
         {
-          track_widget_do_highlight (track->widget, 0, 0, 0);
+          track_widget_do_highlight (track->widget_, 0, 0, 0);
         }
     }
 }
@@ -154,22 +146,22 @@ on_dnd_motion (
   TracklistWidget * self)
 {
   TrackWidget * hit_tw = NULL;
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (!track_get_should_be_visible (track))
+      if (!track->should_be_visible ())
         continue;
 
-      if (!track->widget)
+      if (!track->widget_)
         continue;
 
       if (ui_is_child_hit (
-            GTK_WIDGET (self), GTK_WIDGET (track->widget), 1, 1, x, y, 0, 1))
+            GTK_WIDGET (self), GTK_WIDGET (track->widget_), 1, 1, x, y, 0, 1))
         {
-          hit_tw = track->widget;
+          hit_tw = track->widget_;
         }
       else
         {
-          track_widget_do_highlight (track->widget, (int) x, (int) y, 0);
+          track_widget_do_highlight (track->widget_, (int) x, (int) y, 0);
         }
     }
 
@@ -254,9 +246,8 @@ on_drop_instrument_onto_midi_track (
 
   if (string_is_equal (response, "create"))
     {
-      PluginSetting * setting = plugin_setting_new_default (descr);
-      plugin_setting_activate (setting);
-      plugin_setting_free (setting);
+      PluginSetting setting (*descr);
+      setting.activate ();
     }
 }
 
@@ -275,19 +266,19 @@ on_dnd_drop (
 
   /* get track widget at the x,y point */
   TrackWidget * hit_tw = NULL;
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (!track_get_should_be_visible (track))
+      if (!track->should_be_visible ())
         continue;
 
       if (ui_is_child_hit (
-            GTK_WIDGET (self), GTK_WIDGET (track->widget), 1, 1, x, y, 0, 1))
+            GTK_WIDGET (self), GTK_WIDGET (track->widget_), 1, 1, x, y, 0, 1))
         {
-          hit_tw = track->widget;
+          hit_tw = track->widget_;
         }
       else
         {
-          track_widget_do_highlight (track->widget, (int) x, (int) y, 0);
+          track_widget_do_highlight (track->widget_, (int) x, (int) y, 0);
         }
     }
 
@@ -314,9 +305,7 @@ on_dnd_drop (
         case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
           {
             PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
-            if (
-              plugin_descriptor_is_instrument (descr)
-              && this_track->type == TrackType::TRACK_TYPE_MIDI)
+            if (descr->is_instrument () && this_track->is_midi ())
               {
                 /* TODO convert track to instrument */
                 AdwMessageDialog * dialog =
@@ -327,7 +316,7 @@ on_dnd_drop (
                        "Create a new instrument track instead?")));
                 adw_message_dialog_add_responses (
                   ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"),
-                  "create", _ ("Create _Instrument Track"), NULL);
+                  "create", _ ("Create _Instrument Track"), nullptr);
                 adw_message_dialog_set_response_appearance (
                   ADW_MESSAGE_DIALOG (dialog), "create", ADW_RESPONSE_SUGGESTED);
                 adw_message_dialog_set_default_response (
@@ -335,18 +324,18 @@ on_dnd_drop (
                 adw_message_dialog_set_close_response (
                   ADW_MESSAGE_DIALOG (dialog), "cancel");
 
-                PluginDescriptor * descr_clone = plugin_descriptor_clone (descr);
+                PluginDescriptor * descr_clone = new PluginDescriptor (*descr);
                 g_signal_connect_data (
                   dialog, "response",
                   G_CALLBACK (on_drop_instrument_onto_midi_track), descr_clone,
-                  plugin_descriptor_free_closure, (GConnectFlags) 0);
+                  PluginDescriptor::free_closure, (GConnectFlags) 0);
 
                 gtk_window_present (GTK_WINDOW (dialog));
                 return true;
               }
             else if (
-              plugin_descriptor_is_effect (descr)
-              && this_track->out_signal_type == PortType::Audio)
+              descr->is_effect ()
+              && this_track->out_signal_type_ == PortType::Audio)
               {
                 /* TODO append insert if space left */
               }
@@ -392,7 +381,7 @@ on_dnd_drop (
   TrackWidgetHighlight location =
     track_widget_get_highlight_location (hit_tw, (int) wpt.y);
 
-  tracklist_handle_move_or_copy (TRACKLIST, this_track, location, action);
+  TRACKLIST->handle_move_or_copy (*this_track, location, action);
 
   return true;
 }
@@ -401,12 +390,12 @@ TrackWidget *
 tracklist_widget_get_hit_track (TracklistWidget * self, double x, double y)
 {
   /* go through each child */
-  for (auto track : self->tracklist->tracks)
+  for (auto &track : self->tracklist->tracks_)
     {
-      if (!track_get_should_be_visible (track) || track_is_pinned (track))
+      if (!track->should_be_visible () || track->is_pinned ())
         continue;
 
-      TrackWidget * tw = track->widget;
+      TrackWidget * tw = track->widget_;
 
       /* return it if hit */
       if (ui_is_child_hit (GTK_WIDGET (self), GTK_WIDGET (tw), 0, 1, x, y, 0, 0))
@@ -425,7 +414,7 @@ on_key_pressed (
 {
   if (state & GDK_CONTROL_MASK && keyval == GDK_KEY_a)
     {
-      tracklist_selections_select_all (TRACKLIST_SELECTIONS, 1);
+      TRACKLIST_SELECTIONS->select_all (true);
 
       return true;
     }
@@ -474,15 +463,13 @@ tracklist_widget_handle_vertical_zoom_scroll (
       size_after = size_before * multiplier;
     }
 
-  bool can_resize = tracklist_multiply_track_heights (
-    self->tracklist, delta_y > 0 ? 1 / multiplier : multiplier, false, true,
-    false);
+  bool can_resize = self->tracklist->multiply_track_heights (
+    delta_y > 0 ? 1 / multiplier : multiplier, false, true, false);
   g_debug ("can resize: %d", can_resize);
   if (can_resize)
     {
-      tracklist_multiply_track_heights (
-        self->tracklist, delta_y > 0 ? 1 / multiplier : multiplier, false,
-        false, true);
+      self->tracklist->multiply_track_heights (
+        delta_y > 0 ? 1 / multiplier : multiplier, false, false, true);
 
       /* get updated adjustment and set its value
        at the same offset as before */
@@ -529,15 +516,15 @@ static void
 refresh_track_widget (Track * track)
 {
   /* create widget */
-  if (!GTK_IS_WIDGET (track->widget))
-    track->widget = track_widget_new (track);
+  if (!GTK_IS_WIDGET (track->widget_))
+    track->widget_ = track_widget_new (track);
 
   gtk_widget_set_visible (
-    (GtkWidget *) track->widget, track_get_should_be_visible (track));
+    (GtkWidget *) track->widget_, track->should_be_visible ());
 
-  track_widget_recreate_group_colors (track->widget);
-  track_widget_update_icons (track->widget);
-  track_widget_update_size (track->widget);
+  track_widget_recreate_group_colors (track->widget_);
+  track_widget_update_icons (track->widget_);
+  track_widget_update_size (track->widget_);
 }
 
 /**
@@ -547,9 +534,9 @@ void
 tracklist_widget_soft_refresh (TracklistWidget * self)
 {
   /** add pinned/unpinned tracks */
-  for (auto track : self->tracklist->tracks)
+  for (auto &track : self->tracklist->tracks_)
     {
-      refresh_track_widget (track);
+      refresh_track_widget (track.get ());
     }
 }
 
@@ -569,25 +556,25 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
   z_gtk_widget_remove_all_children (GTK_WIDGET (self->pinned_box));
 
   /** add pinned/unpinned tracks */
-  for (auto track : self->tracklist->tracks)
+  for (auto &track : self->tracklist->tracks_)
     {
-      track->widget = NULL;
-      refresh_track_widget (track);
+      track->widget_ = nullptr;
+      refresh_track_widget (track.get ());
 
-      if (track_is_pinned (track))
-        gtk_box_append (GTK_BOX (self->pinned_box), GTK_WIDGET (track->widget));
+      if (track->is_pinned ())
+        gtk_box_append (GTK_BOX (self->pinned_box), GTK_WIDGET (track->widget_));
       else
         gtk_box_append (
-          GTK_BOX (self->unpinned_box), GTK_WIDGET (track->widget));
+          GTK_BOX (self->unpinned_box), GTK_WIDGET (track->widget_));
     }
 
   /* re-add chanel_add */
   g_return_if_fail (
-    gtk_widget_get_parent (GTK_WIDGET (self->channel_add)) == NULL);
+    gtk_widget_get_parent (GTK_WIDGET (self->channel_add)) == nullptr);
   gtk_box_append (GTK_BOX (self->unpinned_box), GTK_WIDGET (self->channel_add));
 
   /* re-add ddbox */
-  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == NULL);
+  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
   gtk_box_append (GTK_BOX (self->unpinned_box), GTK_WIDGET (self->ddbox));
 
   g_object_unref (self->channel_add);
@@ -603,25 +590,24 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
 void
 tracklist_widget_update_track_visibility (TracklistWidget * self)
 {
-  for (auto track : self->tracklist->tracks)
+  for (auto &track : self->tracklist->tracks_)
     {
-      if (!GTK_IS_WIDGET (track->widget))
+      if (!GTK_IS_WIDGET (track->widget_))
         continue;
 
       gtk_widget_set_visible (
-        GTK_WIDGET (track->widget), track_get_should_be_visible (track));
+        GTK_WIDGET (track->widget_), track->should_be_visible ());
 
-      track_widget_update_icons (track->widget);
-      track_widget_update_size (track->widget);
+      track_widget_update_icons (track->widget_);
+      track_widget_update_size (track->widget_);
     }
 }
 
 static void
 on_unpinned_scroll_hadj_changed (GtkAdjustment * adj, TracklistWidget * self)
 {
-  editor_settings_set_scroll_start_y (
-    &PRJ_TIMELINE->editor_settings, (int) gtk_adjustment_get_value (adj),
-    F_VALIDATE);
+  PRJ_TIMELINE->set_scroll_start_y (
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
 }
 
 /**
@@ -644,7 +630,7 @@ tracklist_widget_setup (TracklistWidget * self, Tracklist * tracklist)
   g_return_if_fail (tracklist);
 
   self->tracklist = tracklist;
-  tracklist->widget = self;
+  tracklist->widget_ = self;
 
   tracklist_widget_hard_refresh (self);
 
@@ -698,7 +684,7 @@ tracklist_tick_cb (
 
   GtkAdjustment * vadj =
     gtk_scrolled_window_get_vadjustment (self->unpinned_scroll);
-  gtk_adjustment_set_value (vadj, PRJ_TIMELINE->editor_settings.scroll_start_y);
+  gtk_adjustment_set_value (vadj, PRJ_TIMELINE->scroll_start_y_);
 
   return G_SOURCE_CONTINUE;
 }
@@ -733,7 +719,7 @@ tracklist_widget_init (TracklistWidget * self)
 
   /* add scrolled window */
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->unpinned_scroll));
-  GtkViewport * viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  GtkViewport * viewport = GTK_VIEWPORT (gtk_viewport_new (nullptr, nullptr));
   gtk_viewport_set_child (viewport, GTK_WIDGET (self->unpinned_box));
   gtk_viewport_set_scroll_to_focus (viewport, false);
   gtk_scrolled_window_set_child (
@@ -787,7 +773,7 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (self), 164, -1);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), tracklist_tick_cb, self, NULL);
+    GTK_WIDGET (self), tracklist_tick_cb, self, nullptr);
 }
 
 static void

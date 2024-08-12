@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * The main Zrythm struct.
- */
-
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 
@@ -14,23 +8,21 @@
 
 #include <memory>
 
+#include "dsp/recording_manager.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/file_manager.h"
+#include "plugins/plugin_manager.h"
+#include "project.h"
+#include "settings/chord_preset_pack_manager.h"
+#include "settings/settings.h"
 #include "utils/string.h"
 #include "utils/symap.h"
 
 #include <gio/gio.h>
 #include <glib.h>
 
+#include "doctest_wrapper.h"
 #include "ext/juce/juce.h"
-#include "zix/sem.h"
-
-struct Project;
-typedef struct RecordingManager       RecordingManager;
-typedef struct EventManager           EventManager;
-typedef struct PluginManager          PluginManager;
-typedef struct ChordPresetPackManager ChordPresetPackManager;
-class Settings;
-typedef struct Log Log;
 
 /**
  * @addtogroup general
@@ -41,13 +33,13 @@ typedef struct Log Log;
 #define ZRYTHM_PROJECTS_DIR "projects"
 
 #define MAX_RECENT_PROJECTS 20
-#define DEBUGGING (G_UNLIKELY (gZrythm && gZrythm->debug))
-#define ZRYTHM_TESTING (g_test_initialized ())
-#define ZRYTHM_GENERATING_PROJECT (gZrythm->generating_project)
+#define DEBUGGING (G_UNLIKELY (gZrythm && gZrythm->debug_))
+#define ZRYTHM_TESTING (doctest::is_running_in_test)
+#define ZRYTHM_GENERATING_PROJECT (gZrythm->generating_project_)
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
 
 #ifdef HAVE_LSP_DSP
-#  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (gZrythm->use_optimized_dsp))
+#  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (gZrythm->use_optimized_dsp_))
 #else
 #  define ZRYTHM_USE_OPTIMIZED_DSP false
 #endif
@@ -61,7 +53,7 @@ typedef struct Log Log;
  * User* directories are directories determined based on the user or the user's
  * preferences that contain user-modifiable data.
  */
-typedef enum ZrythmDirType
+enum class ZrythmDirType
 {
   /**
    * The prefix, or in the case of windows installer the root dir (C/program
@@ -71,14 +63,14 @@ typedef enum ZrythmDirType
    */
   SYSTEM_PREFIX,
 
-  /** "bin" under \ref SYSTEM_PREFIX. */
+  /** "bin" under @ref SYSTEM_PREFIX. */
   SYSTEM_BINDIR,
 
-  /** "share" under \ref SYSTEM_PREFIX. */
+  /** "share" under @ref SYSTEM_PREFIX. */
   SYSTEM_PARENT_DATADIR,
 
   /** libdir name under
-   * \ref SYSTEM_PREFIX. */
+   * @ref SYSTEM_PREFIX. */
   SYSTEM_PARENT_LIBDIR,
 
   /** libdir/zrythm */
@@ -136,7 +128,7 @@ typedef enum ZrythmDirType
   /** Main zrythm directory from gsettings. */
   USER_TOP,
 
-  /** Subdirs of \ref USER_TOP. */
+  /** Subdirs of @ref USER_TOP. */
   USER_PROJECTS,
   USER_TEMPLATES,
   USER_THEMES,
@@ -161,13 +153,11 @@ typedef enum ZrythmDirType
 
   /** Backtraces. */
   USER_BACKTRACE,
-
-} ZrythmDirType;
+};
 
 class ZrythmDirectoryManager
 {
 public:
-  ZrythmDirectoryManager () = default;
   ~ZrythmDirectoryManager ()
   {
     remove_testing_dir ();
@@ -181,7 +171,7 @@ public:
    *
    * @return A newly allocated string.
    */
-  static char * get_prefix ();
+  std::string get_prefix ();
 
   /**
    * Gets the zrythm directory, either from the settings if non-empty, or the
@@ -191,32 +181,34 @@ public:
    *
    * Must be free'd by caller.
    */
-  char * get_user_dir (bool force_default);
+  std::string get_user_dir (bool force_default);
 
   /**
    * Returns the default user "zrythm" dir.
    *
    * This is used when resetting or when the dir is not selected by the user yet.
    */
-  char * get_default_user_dir ();
+  std::string get_default_user_dir ();
 
   /**
-   * Returns a Zrythm directory specified by \ref type.
+   * Returns a Zrythm directory specified by @ref type.
    *
    * @return A newly allocated string.
    */
-  char * get_dir (ZrythmDirType type);
+  std::string get_dir (ZrythmDirType type);
 
   /** Clears @ref "testing_dir" and removes the testing dir from the disk. */
   void remove_testing_dir ();
 
 private:
+  ZrythmDirectoryManager () = default;
+
   /**
    * @brief Returns the current testing dir.
    *
    * If empty, this creates a new testing dir on the disk.
    */
-  const char * get_testing_dir ();
+  const std::string &get_testing_dir ();
 
   /** Zrythm directory used during unit tests. */
   std::string testing_dir_;
@@ -234,18 +226,20 @@ class Zrythm
 {
 public:
   /**
+   * @brief Called before @ref init().
+   *
+   * TODO: check if can be merged into init().
+   *
    * @param have_ui Whether Zrythm is instantiated with a UI (false if headless).
    * @param testing Whether this is a unit test.
    */
-  explicit Zrythm (const char * exe_path, bool have_ui, bool optimized_dsp);
-
-  ~Zrythm ();
+  void pre_init (const char * exe_path, bool have_ui, bool optimized_dsp);
 
   void init ();
 
-  void add_to_recent_projects (const char * filepath);
+  void add_to_recent_projects (const std::string &filepath);
 
-  void remove_recent_project (char * filepath);
+  void remove_recent_project (const std::string &filepath);
 
   /**
    * Returns the version string.
@@ -299,41 +293,30 @@ public:
   static char * get_system_info ();
 
   /**
-   * Initializes/creates the default dirs/files in the user
-   * directory.
+   * Initializes/creates the default dirs/files in the user directory.
    *
-   * @return Whether successful.
+   * @throw ZrythmException If an error occured.
    */
-  bool init_user_dirs_and_files (GError ** error);
+  void init_user_dirs_and_files ();
 
   /**
    * Initializes the array of project templates.
    */
   void init_templates ();
 
-  FileManager &get_file_manager () { return file_manager; }
+  FileManager &get_file_manager () { return file_manager_; }
 
+private:
+  Zrythm () = default;
+
+public:
   /** argv[0]. */
   std::string exe_path_;
 
   /**
-   * Manages plugins (loading, instantiating, etc.)
-   */
-  PluginManager * plugin_manager = nullptr;
-
-  /**
    * Application settings
    */
-  std::unique_ptr<Settings> settings;
-
-  /**
-   * Project data.
-   *
-   * This is what should be exported/imported when saving/loading projects.
-   *
-   * The only reason this is a pointer is to easily deserialize.
-   */
-  Project * project = nullptr;
+  std::unique_ptr<Settings> settings_;
 
   /** +1 to ensure last element is NULL in case full. */
   StringArray recent_projects_;
@@ -346,66 +329,58 @@ public:
    *
    * This is a copy of one of the strings in Zrythm.templates.
    */
-  std::string demo_template;
+  std::string demo_template_;
 
   /** Whether the open file is a template to be used to create a new project
    * from. */
-  bool opening_template = false;
+  bool opening_template_ = false;
 
   /** Whether creating a new project, either from a template or blank. */
-  bool creating_project = false;
+  bool creating_project_ = false;
 
   /** Path to create a project in, including its title. */
-  std::string create_project_path;
+  std::string create_project_path_;
 
   /**
    * Filename to open passed through the command line.
    *
    * Used only when a filename is passed, eg, zrytm myproject.zpj
    */
-  std::string open_filename;
-
-  EventManager * event_manager = nullptr;
-
-  /** Recording manager. */
-  RecordingManager * recording_manager = nullptr;
+  std::string open_filename_;
 
   /** File manager. */
-  FileManager file_manager;
-
-  /** Chord preset pack manager. */
-  ChordPresetPackManager * chord_preset_pack_manager = nullptr;
+  FileManager file_manager_;
 
   /**
    * String interner for internal things.
    */
-  Symap symap;
+  Symap symap_;
 
   /**
    * In debug mode or not (determined by GSetting).
    */
-  bool debug = false;
+  bool debug_ = false;
 
   /** Whether this is a dummy instance used when
    * generating projects. */
-  bool generating_project = false;
+  bool generating_project_ = false;
 
   /** 1 if Zrythm has a UI, 0 if headless (eg, when
    * unit-testing). */
   bool have_ui_ = false;
 
   /** Whether to use optimized DSP when available. */
-  bool use_optimized_dsp = false;
+  bool use_optimized_dsp_ = false;
 
   /** Undo stack length, used during tests. */
-  int undo_stack_len = 0;
+  int undo_stack_len_ = 0;
 
   /**
    * Whether to open a newer backup if found.
    *
    * This is only used during tests where there is no UI to choose.
    */
-  bool open_newer_backup = false;
+  bool open_newer_backup_ = false;
 
   /**
    * Whether to use pipewire in tests.
@@ -415,18 +390,39 @@ public:
    * Some tests do sample rate changes so it's more convenient
    * to use the dummy engine instead.
    */
-  bool use_pipewire_in_tests = false;
+  bool use_pipewire_in_tests_ = false;
 
   /** Process ID for pipewire (used in tests). */
-  GPid pipewire_pid = 0;
+  GPid pipewire_pid_ = 0;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Zrythm)
+  /** Chord preset pack manager. */
+  std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
+
+  std::unique_ptr<EventManager> event_manager_;
+
+  /**
+   * Manages plugins (loading, instantiating, etc.)
+   */
+  std::unique_ptr<PluginManager> plugin_manager_;
+
+  /** Recording manager. */
+  std::unique_ptr<RecordingManager> recording_manager_;
+
+  /**
+   * Project data.
+   *
+   * This is what should be exported/imported when saving/loading projects.
+   *
+   * The only reason this is a pointer is to easily deserialize.
+   *
+   * Should be free'd first, therefore it is the last member.
+   */
+  std::unique_ptr<Project> project_;
+
+  JUCE_DECLARE_SINGLETON_SINGLETHREADED (Zrythm, false)
 };
 
-/**
- * Global variable, should be available to all files.
- */
-extern std::unique_ptr<Zrythm> gZrythm;
+#define gZrythm (Zrythm::getInstanceWithoutCreating ())
 
 /**
  * @}

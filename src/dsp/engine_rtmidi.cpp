@@ -35,7 +35,7 @@
 int
 engine_rtmidi_setup (AudioEngine * self)
 {
-  self->midi_buf_size = 4096;
+  self->midi_buf_size_ = 4096;
 
   g_message ("Rtmidi set up");
 
@@ -48,13 +48,16 @@ engine_rtmidi_setup (AudioEngine * self)
 unsigned int
 engine_rtmidi_get_num_in_ports (AudioEngine * self)
 {
-  RtMidiDevice * dev = rtmidi_device_new (1, NULL, 0, NULL);
-  if (!dev)
-    return 0;
-  unsigned int num_ports = rtmidi_get_port_count (dev->in_handle);
-  rtmidi_device_free (dev);
-
-  return num_ports;
+  try
+    {
+      RtMidiDevice dev (true, 0, nullptr);
+      return rtmidi_get_port_count (dev.in_handle_);
+    }
+  catch (const ZrythmException &e)
+    {
+      g_warning ("%s", e.what ());
+      return 0;
+    }
 }
 
 /**
@@ -75,7 +78,7 @@ void
 engine_rtmidi_tear_down (AudioEngine * self)
 {
   /* init semaphore */
-  zix_sem_init (&self->port_operation_lock, 1);
+  // zix_sem_init (&self->port_operation_lock, 1);
 }
 
 int

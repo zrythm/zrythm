@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * ArrangerObject related functions for the GUI.
  */
@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_ARRANGER_OBJECT_H__
 #define __GUI_WIDGETS_ARRANGER_OBJECT_H__
 
-#include "gui/backend/arranger_object.h"
+#include "dsp/arranger_object.h"
 #include "utils/ui.h"
 
 #include "gtk_wrapper.h"
@@ -32,7 +32,7 @@
  * @param x X in local coordinates.
  * @param only_handle Whether to only check if this
  *   is inside the fade handle. If this is false,
- *   \ref only_outer will be considered.
+ *   @ref only_outer will be considered.
  * @param only_outer Whether to only check if this
  *   is inside the fade's outer (unplayed) region.
  *   If this is false, the whole fade area will
@@ -125,7 +125,7 @@ arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed);
 int
 arranger_object_get_full_rect_x_for_region_child (
   ArrangerObject * self,
-  Region *         region,
+  Region          &region,
   GdkRectangle *   full_rect);
 
 void
@@ -177,8 +177,8 @@ arranger_object_draw (
  */
 NONNULL_ARGS (1)
 OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
-  ArrangerObject * self,
-  ArrangerWidget * arranger);
+  const ArrangerObject * self,
+  const ArrangerWidget * arranger);
 
 /**
  * Whether the object is currently hovered.
@@ -186,7 +186,9 @@ OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
  * @param arranger Owner arranger. Should be passed to speed up calculation.
  */
 bool
-arranger_object_is_hovered (ArrangerObject * self, ArrangerWidget * arranger);
+arranger_object_is_hovered (
+  const ArrangerObject * self,
+  const ArrangerWidget * arranger);
 
 /**
  * Whether hovered or the start object of the current action in the arranger.
@@ -195,8 +197,8 @@ arranger_object_is_hovered (ArrangerObject * self, ArrangerWidget * arranger);
  */
 bool
 arranger_object_is_hovered_or_start_object (
-  ArrangerObject * self,
-  ArrangerWidget * arranger);
+  const ArrangerObject * self,
+  const ArrangerWidget * arranger);
 
 /**
  * @}

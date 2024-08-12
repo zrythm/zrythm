@@ -1,16 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
 #include "dsp/scale.h"
 #include "dsp/scale_object.h"
-#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/scale_selector_window.h"
-#include "gui/widgets/timeline_arranger.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -25,30 +23,25 @@ G_DEFINE_TYPE (
 static gboolean
 on_close_request (GtkWindow * window, ScaleSelectorWindowWidget * self)
 {
-  arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) self->scale);
+  self->scale->select (true, false, false);
 
-  ArrangerSelections * before =
-    arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
-  ArrangerSelections * after =
-    arranger_selections_clone ((ArrangerSelections *) TL_SELECTIONS);
-  TimelineSelections * tl_after = (TimelineSelections *) after;
-  tl_after->scale_objects[0]->scale = musical_scale_clone (self->descr);
+  auto before = TL_SELECTIONS->clone_unique ();
+  auto after = TL_SELECTIONS->clone_unique ();
 
-  GError * err = NULL;
-  bool     ret = arranger_selections_action_perform_edit (
-    before, after,
-    ArrangerSelectionsActionEditType::ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
-    F_NOT_ALREADY_EDITED, &err);
-  if (!ret)
+  auto scale = dynamic_cast<ScaleObject *> (after->objects_[0].get ());
+  scale->scale_ = **self->descr;
+
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to edit scale"));
+      UNDO_MANAGER->perform (
+        std::make_unique<ArrangerSelectionsAction::EditAction> (
+          *before, after.get (), ArrangerSelectionsAction::EditType::Scale,
+          false));
     }
-
-  arranger_selections_free_full (before);
-  arranger_selections_free_full (after);
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to edit scale"));
+    }
 
   return false;
 }
@@ -59,16 +52,13 @@ creator_select_root_note (
   GtkFlowBoxChild *           child,
   ScaleSelectorWindowWidget * self)
 {
-  MusicalScale * clone;
   for (int i = 0; i < 12; i++)
     {
       if (self->creator_root_notes[i] != child)
         continue;
 
-      clone = musical_scale_new (
-        self->descr->type, ENUM_INT_TO_VALUE (MusicalNote, i));
-      musical_scale_free (self->descr);
-      self->descr = clone;
+      *self->descr = std::make_unique<MusicalScale> (
+        (*self->descr)->type_, ENUM_INT_TO_VALUE (MusicalNote, i));
       break;
     }
 }
@@ -79,17 +69,15 @@ creator_select_type (
   GtkFlowBoxChild *           child,
   ScaleSelectorWindowWidget * self)
 {
-  MusicalScale * clone;
   for (
-    unsigned int i = ENUM_VALUE_TO_INT (MusicalScaleType::SCALE_CHROMATIC);
-    i <= ENUM_VALUE_TO_INT (MusicalScaleType::SCALE_JAPANESE2); i++)
+    unsigned int i = ENUM_VALUE_TO_INT (MusicalScale::Type::Chromatic);
+    i <= ENUM_VALUE_TO_INT (MusicalScale::Type::Japanese2); i++)
     {
       if (self->creator_types[i] != child)
         continue;
-      clone = musical_scale_new (
-        ENUM_INT_TO_VALUE (MusicalScaleType, i), self->descr->root_key);
-      musical_scale_free (self->descr);
-      self->descr = clone;
+
+      *self->descr = std::make_unique<MusicalScale> (
+        ENUM_INT_TO_VALUE (MusicalScale::Type, i), (*self->descr)->root_key_);
       break;
     }
 }
@@ -128,7 +116,7 @@ on_creator_type_selected_children_changed (
 static void
 setup_creator_tab (ScaleSelectorWindowWidget * self)
 {
-  MusicalScale * descr = self->scale->scale;
+  const auto &descr = self->scale->scale_;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -138,12 +126,12 @@ setup_creator_tab (ScaleSelectorWindowWidget * self)
   gtk_flow_box_select_child (
     GTK_FLOW_BOX (self->creator_root_note_flowbox),
     GTK_FLOW_BOX_CHILD (
-      self->creator_root_notes[ENUM_VALUE_TO_INT (descr->root_key)]));
+      self->creator_root_notes[ENUM_VALUE_TO_INT (descr.root_key_)]));
 
   /* select scale */
   gtk_flow_box_select_child (
     GTK_FLOW_BOX (self->creator_type_flowbox),
-    GTK_FLOW_BOX_CHILD (self->creator_types[ENUM_VALUE_TO_INT (descr->type)]));
+    GTK_FLOW_BOX_CHILD (self->creator_types[ENUM_VALUE_TO_INT (descr.type_)]));
 
   /* setup signals */
   g_signal_connect (
@@ -164,7 +152,7 @@ ScaleSelectorWindowWidget *
 scale_selector_window_widget_new (ScaleObject * owner)
 {
   ScaleSelectorWindowWidget * self = Z_SCALE_SELECTOR_WINDOW_WIDGET (
-    g_object_new (SCALE_SELECTOR_WINDOW_WIDGET_TYPE, NULL));
+    g_object_new (SCALE_SELECTOR_WINDOW_WIDGET_TYPE, nullptr));
 
   self->scale = owner;
 
@@ -172,9 +160,19 @@ scale_selector_window_widget_new (ScaleObject * owner)
 
   setup_creator_tab (self);
 
-  self->descr = musical_scale_clone (owner->scale);
+  *self->descr = std::make_unique<MusicalScale> (owner->scale_);
 
   return self;
+}
+
+static void
+scale_selector_window_widget_finalize (GObject * data)
+{
+  ScaleSelectorWindowWidget * self = Z_SCALE_SELECTOR_WINDOW_WIDGET (data);
+  delete self->descr;
+
+  G_OBJECT_CLASS (scale_selector_window_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -203,11 +201,16 @@ scale_selector_window_widget_class_init (ScaleSelectorWindowWidgetClass * _klass
   BIND_CHILD (creator_type_other_flowbox);
 
 #undef BIND_CHILD
+
+  GObjectClass * object_class = G_OBJECT_CLASS (_klass);
+  object_class->finalize = scale_selector_window_widget_finalize;
 }
 
 static void
 scale_selector_window_widget_init (ScaleSelectorWindowWidget * self)
 {
+  self->descr = new std::unique_ptr<MusicalScale> ();
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->creator_root_notes[0] = self->creator_root_note_c;
@@ -226,17 +229,17 @@ scale_selector_window_widget_init (ScaleSelectorWindowWidget * self)
   gtk_flow_box_set_min_children_per_line (self->creator_root_note_flowbox, 12);
 
   for (
-    unsigned int i = ENUM_VALUE_TO_INT (MusicalScaleType::SCALE_CHROMATIC);
-    i <= ENUM_VALUE_TO_INT (MusicalScaleType::SCALE_JAPANESE2); i++)
+    unsigned int i = ENUM_VALUE_TO_INT (MusicalScale::Type::Chromatic);
+    i <= ENUM_VALUE_TO_INT (MusicalScale::Type::Japanese2); i++)
     {
       GtkFlowBoxChild * fb_child =
         GTK_FLOW_BOX_CHILD (gtk_flow_box_child_new ());
-      const char * str =
-        musical_scale_type_to_string (ENUM_INT_TO_VALUE (MusicalScaleType, i));
+      const auto str = MusicalScale::type_to_string (
+        ENUM_INT_TO_VALUE (MusicalScale::Type, i));
       GtkWidget * lbl = gtk_label_new (str);
       gtk_flow_box_child_set_child (fb_child, lbl);
       gtk_widget_set_focusable (GTK_WIDGET (fb_child), true);
-      if (i <= ENUM_VALUE_TO_INT (MusicalScaleType::SCALE_OCTATONIC_WHOLE_HALF))
+      if (i <= ENUM_VALUE_TO_INT (MusicalScale::Type::OctatonicWholeHalf))
         {
           gtk_flow_box_append (
             self->creator_type_flowbox, GTK_WIDGET (fb_child));

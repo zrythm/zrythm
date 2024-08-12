@@ -124,7 +124,7 @@ cc_list_row_info_button_class_init (CcListRowInfoButtonClass * klass)
   object_class->set_property = cc_list_row_info_button_set_property;
 
   properties[PROP_TEXT] = g_param_spec_string (
-    "text", "Text", "Set text for the popover label", NULL,
+    "text", "Text", "Set text for the popover label", nullptr,
     static_cast<GParamFlags> (
       static_cast<int> (G_PARAM_READWRITE)
       | static_cast<int> (G_PARAM_STATIC_STRINGS)));

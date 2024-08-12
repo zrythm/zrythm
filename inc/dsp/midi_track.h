@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_MIDI_TRACK_H__
 #define __AUDIO_MIDI_TRACK_H__
 
-typedef struct Position   Position;
-typedef struct MidiEvents MidiEvents;
-typedef struct Track      Track;
+#include "dsp/automatable_track.h"
+#include "dsp/channel_track.h"
+#include "dsp/piano_roll_track.h"
 
 /**
  * @addtogroup dsp
@@ -14,53 +14,41 @@ typedef struct Track      Track;
  * @{
  */
 
-/**
- * Initializes an midi track.
- */
-void
-midi_track_init (Track * track);
+class MidiTrack final
+    : public PianoRollTrack,
+      public ChannelTrack,
+      public ICloneable<MidiTrack>,
+      public ISerializable<MidiTrack>
+{
+public:
+  // Rule of 0
+  MidiTrack () = default;
 
-void
-midi_track_setup (Track * self);
+  MidiTrack (const std::string &label, int pos);
 
-/**
- * Fills MIDI event queue from track.
- *
- * The events are dequeued right after the call to
- * this function.
- *
- * @note The engine splits the cycle so transport
- *   loop related logic is not needed.
- *
- * Caveats:
- * - This will not work properly if the loop sizes
- *   (region or transport) are smaller than nframes,
- *   so small sizes should not be allowed.
- *
- * @param g_start_frames Global start frame.
- * @param local_start_frame The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
- * @param midi_events MidiEvents to fill (from
- *   Piano Roll Port for example).
- */
-REALTIME
-void
-midi_track_fill_midi_events (
-  Track *         track,
-  const long      g_start_frames,
-  const nframes_t local_start_frame,
-  nframes_t       nframes,
-  MidiEvents *    midi_events);
+  void init_loaded () override
+  {
+    PianoRollTrack::init_loaded ();
+    ChannelTrack::init_loaded ();
+  }
 
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-midi_track_free (Track * track);
+  bool validate () const override
+  {
+    return ChannelTrack::validate () && PianoRollTrack::validate ();
+  }
+
+  void init_after_cloning (const MidiTrack &other) override
+  {
+    PianoRollTrack::copy_members_from (other);
+    ChannelTrack::copy_members_from (other);
+    ProcessableTrack::copy_members_from (other);
+    AutomatableTrack::copy_members_from (other);
+    RecordableTrack::copy_members_from (other);
+    LanedTrackImpl::copy_members_from (other);
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+};
 
 /**
  * @}

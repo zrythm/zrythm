@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/playhead_scroll_buttons.h"

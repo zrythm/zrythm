@@ -6,11 +6,9 @@
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
-#include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
-#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -25,12 +23,11 @@ G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_WIDGET)
 static void
 recreate_icon_texture (ColorAreaWidget * self)
 {
-  g_return_if_fail (self->track);
+  z_return_if_fail (self->track);
   object_free_w_func_and_null (g_object_unref, self->track_icon);
   self->track_icon = z_gdk_texture_new_from_icon_name (
-    self->track->icon_name, icon_texture_size, icon_texture_size, 1);
-  object_free_w_func_and_null (g_free, self->last_track_icon_name);
-  self->last_track_icon_name = g_strdup (self->track->icon_name);
+    self->track->icon_name_.c_str (), icon_texture_size, icon_texture_size, 1);
+  self->last_track_icon_name = self->track->icon_name_;
 }
 
 /**
@@ -44,20 +41,20 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  GdkRGBA color;
-  color.alpha = 1.0;
+  Color color;
+  color.alpha_ = 1.0;
   if (self->type == ColorAreaType::COLOR_AREA_TYPE_TRACK)
     {
-      Track * track = self->track;
-      if (track_is_enabled (track))
+      auto track = self->track;
+      if (track->is_enabled ())
         {
-          color = self->track->color;
+          color = self->track->color_;
         }
       else
         {
-          color.red = 0.5;
-          color.green = 0.5;
-          color.blue = 0.5;
+          color.red_ = 0.5;
+          color.green_ = 0.5;
+          color.blue_ = 0.5;
         }
     }
   else
@@ -65,13 +62,14 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   if (self->hovered)
     {
-      color_brighten_default (&color);
+      color.brighten_default ();
     }
 
   {
     graphene_rect_t tmp_r =
       Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+    auto color_rgba = color.to_gdk_rgba ();
+    gtk_snapshot_append_color (snapshot, &color_rgba, &tmp_r);
   }
 
   if (self->type == ColorAreaType::COLOR_AREA_TYPE_TRACK)
@@ -79,32 +77,25 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       Track * track = self->track;
 
       /* draw each parent */
-      if (self->parents)
-        {
-          g_ptr_array_remove_range (self->parents, 0, self->parents->len);
-        }
-      else
-        {
-          self->parents = g_ptr_array_sized_new (8);
-        }
-      track_add_folder_parents (track, self->parents, false);
+      std::vector<FoldableTrack *> parents;
+      track->add_folder_parents (parents, false);
 
-      size_t len = self->parents->len + 1;
-      for (size_t i = 0; i < self->parents->len; i++)
+      size_t len = parents.size () + 1;
+      for (size_t i = 0; i < parents.size (); i++)
         {
-          Track * parent_track =
-            static_cast<Track *> (g_ptr_array_index (self->parents, i));
+          auto parent_track = parents[i];
 
           double start_y = ((double) i / (double) len) * (double) height;
           double h = (double) height / (double) len;
 
-          color = parent_track->color;
+          color = parent_track->color_;
           if (self->hovered)
-            color_brighten_default (&color);
+            color.brighten_default ();
           {
             graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
               0.f, (float) start_y, (float) width, (float) h);
-            gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+            auto color_rgba = color.to_gdk_rgba ();
+            gtk_snapshot_append_color (snapshot, &color_rgba, &tmp_r);
           }
         }
 
@@ -112,22 +103,20 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       if (width >= icon_texture_size && height >= icon_texture_size)
         {
           if (
-            !self->track_icon
-            || !string_is_equal (self->last_track_icon_name, track->icon_name))
+            !self->track_icon || self->last_track_icon_name != track->icon_name_)
             {
               recreate_icon_texture (self);
             }
 
           /* TODO figure out how to draw dark colors */
-          GdkRGBA c2;
-          ui_get_contrast_color (&track->color, &c2);
+          auto              c2 = track->color_.get_contrast_color ();
           graphene_matrix_t color_matrix;
           const float       float_arr[16] = {
-            1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, c2.alpha
+            1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, c2.alpha_
           };
           graphene_matrix_init_from_float (&color_matrix, float_arr);
           graphene_vec4_t color_offset;
-          graphene_vec4_init (&color_offset, c2.red, c2.green, c2.blue, 0);
+          graphene_vec4_init (&color_offset, c2.red_, c2.green_, c2.blue_, 0);
 
           gtk_snapshot_push_color_matrix (
             snapshot, &color_matrix, &color_offset);
@@ -156,7 +145,7 @@ multipress_pressed (
   if (n_press == 1 && self->track)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW), self->track, NULL, NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track, nullptr, nullptr);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -186,7 +175,7 @@ on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
  * color pointer.
  */
 void
-color_area_widget_setup_generic (ColorAreaWidget * self, GdkRGBA * color)
+color_area_widget_setup_generic (ColorAreaWidget * self, Color * color)
 {
   self->color = *color;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -213,9 +202,9 @@ color_area_widget_setup_track (ColorAreaWidget * self, Track * track)
  * color is read directly from the Track.
  */
 void
-color_area_widget_set_color (ColorAreaWidget * self, GdkRGBA * color)
+color_area_widget_set_color (ColorAreaWidget * self, Color color)
 {
-  self->color = *color;
+  self->color = color;
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -223,9 +212,9 @@ color_area_widget_set_color (ColorAreaWidget * self, GdkRGBA * color)
 static void
 finalize (ColorAreaWidget * self)
 {
-  object_free_w_func_and_null (g_ptr_array_unref, self->parents);
+  self->last_track_icon_name.~basic_string ();
+
   object_free_w_func_and_null (g_object_unref, self->track_icon);
-  object_free_w_func_and_null (g_free, self->last_track_icon_name);
 
   G_OBJECT_CLASS (color_area_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -233,6 +222,8 @@ finalize (ColorAreaWidget * self)
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
+  new (&self->last_track_icon_name) std::string ();
+
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 

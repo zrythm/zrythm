@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * The master track.
  */
@@ -10,15 +10,7 @@
 #ifndef __AUDIO_MASTER_TRACK_H__
 #define __AUDIO_MASTER_TRACK_H__
 
-#include "dsp/audio_bus_track.h"
-#include "dsp/track.h"
-
-typedef struct Position        Position;
-typedef struct _TrackWidget    TrackWidget;
-typedef struct Channel         Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable     Automatable;
-typedef struct Track           MasterTrack;
+#include "dsp/group_target_track.h"
 
 /**
  * @addtogroup dsp
@@ -26,13 +18,22 @@ typedef struct Track           MasterTrack;
  * @{
  */
 
-#define P_MASTER_TRACK (TRACKLIST->master_track)
+#define P_MASTER_TRACK (TRACKLIST->master_track_)
 
-void
-master_track_init (Track * track);
+class MasterTrack final
+    : public GroupTargetTrack,
+      public ICloneable<MasterTrack>,
+      public ISerializable<MasterTrack>
+{
+public:
+  // Rule of 0
+  MasterTrack () = default;
+  MasterTrack (int pos);
 
-void
-master_track_setup (Track * self);
+  void init_after_cloning (const MasterTrack &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+};
 
 /**
  * @}

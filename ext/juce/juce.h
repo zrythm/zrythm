@@ -11,6 +11,9 @@
 #  pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 #include "ext/juce/modules/juce_core/juce_core.h"
+#include "ext/juce/modules/juce_audio_basics/juce_audio_basics.h"
+//#include "ext/juce/modules/juce_dsp/juce_dsp.h"
+#include "ext/juce/modules/juce_audio_formats/juce_audio_formats.h"
 #pragma GCC diagnostic pop
 
 #endif /* __ZRYTHM_JUCE_H__ */

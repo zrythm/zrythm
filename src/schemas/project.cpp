@@ -1,7 +1,6 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "io/serialization/extra.h"
 #include "schemas/project.h"
 #include "utils/objects.h"
 
@@ -16,6 +15,20 @@ typedef enum
 GQuark
 z_schemas_project_error_quark (void);
 G_DEFINE_QUARK (z - schemas - project - error - quark, z_schemas_project_error)
+
+bool
+gdk_rgba_serialize_to_json (
+  yyjson_mut_doc * doc,
+  yyjson_mut_val * rgba_obj,
+  const GdkRGBA *  rgba,
+  GError **        error)
+{
+  yyjson_mut_obj_add_real (doc, rgba_obj, "red", rgba->red);
+  yyjson_mut_obj_add_real (doc, rgba_obj, "green", rgba->green);
+  yyjson_mut_obj_add_real (doc, rgba_obj, "blue", rgba->blue);
+  yyjson_mut_obj_add_real (doc, rgba_obj, "alpha", rgba->alpha);
+  return true;
+}
 
 static bool
 position_v1_serialize_to_json (

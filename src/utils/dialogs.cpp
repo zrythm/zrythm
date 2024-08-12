@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2019, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/main_window.h"
 #include "project.h"
@@ -24,7 +22,7 @@ dialogs_get_overwrite_plugin_dialog (GtkWindow * parent)
     _ ("A plugin already exists at the selected slot. Overwrite it?")));
   adw_message_dialog_add_responses (
     ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "overwrite",
-    _ ("_Overwrite"), NULL);
+    _ ("_Overwrite"), nullptr);
   adw_message_dialog_set_response_appearance (
     ADW_MESSAGE_DIALOG (dialog), "overwrite", ADW_RESPONSE_DESTRUCTIVE);
   adw_message_dialog_set_default_response (
@@ -36,9 +34,9 @@ dialogs_get_overwrite_plugin_dialog (GtkWindow * parent)
 AdwMessageDialog *
 dialogs_get_basic_ok_message_dialog (GtkWindow * parent_window)
 {
-  GtkWidget * dialog = adw_message_dialog_new (parent_window, NULL, NULL);
+  GtkWidget * dialog = adw_message_dialog_new (parent_window, nullptr, nullptr);
   adw_message_dialog_add_responses (
-    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), nullptr);
   adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");

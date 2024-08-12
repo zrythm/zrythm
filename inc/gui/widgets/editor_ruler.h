@@ -1,11 +1,8 @@
-/*
- * SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * MIDI ruler.
  */
@@ -14,7 +11,6 @@
 #define __GUI_WIDGETS_EDITOR_RULER_H__
 
 #include "gui/widgets/ruler.h"
-#include "utils/ui.h"
 
 #include "gtk_wrapper.h"
 
@@ -25,14 +21,6 @@
  */
 
 #define EDITOR_RULER MW_CLIP_EDITOR_INNER->ruler
-
-/**
- * Called from RulerWidget to draw the markers
- * specific to the editor, such as region loop
- * points.
- */
-void
-editor_ruler_widget_draw_markers (RulerWidget * self);
 
 /**
  * Called from ruler drag begin.
@@ -52,12 +40,12 @@ editor_ruler_on_drag_update (
 void
 editor_ruler_on_drag_end (RulerWidget * self);
 
-int
+void
 editor_ruler_get_regions_in_range (
-  RulerWidget * self,
-  double        x_start,
-  double        x_end,
-  Region **     regions);
+  RulerWidget *          self,
+  double                 x_start,
+  double                 x_end,
+  std::vector<Region *> &regions);
 
 /**
  * @}

@@ -1,20 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_H__
 
-#include "dsp/position.h"
-#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
-
-#include "gtk_wrapper.h"
-
-TYPEDEF_STRUCT_UNDERSCORED (ArrangerWrapperWidget);
-typedef struct MidiNote        MidiNote;
-typedef struct SnapGrid        SnapGrid;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct Channel         Channel;
 
 /**
  * @addtogroup widgets
@@ -25,52 +15,46 @@ typedef struct Channel         Channel;
 #define MW_MIDI_ARRANGER (MW_MIDI_EDITOR_SPACE->arranger_wrapper->child)
 
 /**
- * Called on drag begin in parent when background is double
- * clicked (i.e., a note is created).
+ * Called on drag begin in parent when background is double clicked (i.e., a
+ * note is created).
  */
 void
 midi_arranger_widget_create_note (
   ArrangerWidget * self,
-  Position *       pos,
+  const Position   pos,
   int              note,
-  Region *         region);
+  MidiRegion      &region);
 
 /**
- * Called during drag_update in the parent when
- * resizing the selection. It sets the start
- * Position of the selected MidiNote's.
+ * Called during drag_update in the parent when resizing the selection. It sets
+ * the start Position of the selected MidiNote's.
  *
  * @param pos Absolute position in the arrranger.
- * @parram dry_run Don't resize notes; just check
- *   if the resize is allowed (check if invalid
- *   resizes will happen)
+ * @param dry_run Don't resize notes; just check if the resize is allowed (check
+ * if invalid resizes will happen)
  *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
+ * @return Whether successful.
  */
-int
+bool
 midi_arranger_widget_snap_midi_notes_l (
   ArrangerWidget * self,
-  Position *       pos,
+  const Position   pos,
   bool             dry_run);
 
 /**
- * Called during drag_update in the parent when
- * resizing the selection. It sets the end
- * Position of the selected MidiNote's.
+ * Called during drag_update in the parent when resizing the selection. It sets
+ * the end Position of the selected MidiNote's.
  *
  * @param pos Absolute position in the arrranger.
- * @parram dry_run Don't resize notes; just check
- *   if the resize is allowed (check if invalid
- *   resizes will happen)
+ * @parram dry_run Don't resize notes; just check if the resize is allowed
+ * (check if invalid resizes will happen)
  *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
+ * @return Whether successful.
  */
-int
+bool
 midi_arranger_widget_snap_midi_notes_r (
   ArrangerWidget * self,
-  Position *       pos,
+  const Position   pos,
   bool             dry_run);
 
 /**
@@ -123,11 +107,7 @@ midi_arranger_listen_notes (ArrangerWidget * self, bool listen);
  * @return The given updated menu or a new menu.
  */
 GMenu *
-midi_arranger_widget_gen_context_menu (
-  ArrangerWidget * self,
-  GMenu *          menu,
-  double           x,
-  double           y);
+midi_arranger_widget_gen_context_menu (ArrangerWidget * self, double x, double y);
 
 void
 midi_arranger_handle_vertical_zoom_action (ArrangerWidget * self, bool zoom_in);
@@ -140,6 +120,9 @@ midi_arranger_handle_vertical_zoom_scroll (
   ArrangerWidget *           self,
   GtkEventControllerScroll * scroll_controller,
   double                     dy);
+
+void
+midi_arranger_on_drag_end (ArrangerWidget * self);
 
 /**
  * @}

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * AUDIO functions.
  *
@@ -12,10 +12,13 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
+#include "utils/format.h"
+#include "utils/logger.h"
+
 #include <glib/gi18n.h>
 
-typedef struct ArrangerSelections ArrangerSelections;
-typedef struct Plugin             Plugin;
+class ArrangerSelections;
+class Plugin;
 
 /**
  * @addtogroup dsp
@@ -25,53 +28,39 @@ typedef struct Plugin             Plugin;
 
 enum class AudioFunctionType
 {
-  AUDIO_FUNCTION_INVERT,
-  AUDIO_FUNCTION_NORMALIZE_PEAK,
-  AUDIO_FUNCTION_NORMALIZE_RMS,
-  AUDIO_FUNCTION_NORMALIZE_LUFS,
-  AUDIO_FUNCTION_LINEAR_FADE_IN,
-  AUDIO_FUNCTION_LINEAR_FADE_OUT,
-  AUDIO_FUNCTION_NUDGE_LEFT,
-  AUDIO_FUNCTION_NUDGE_RIGHT,
-  AUDIO_FUNCTION_REVERSE,
-  AUDIO_FUNCTION_PITCH_SHIFT,
-  AUDIO_FUNCTION_COPY_L_TO_R,
+  Invert,
+  NormalizePeak,
+  NormalizeRMS,
+  NormalizeLUFS,
+  LinearFadeIn,
+  LinearFadeOut,
+  NudgeLeft,
+  NudgeRight,
+  Reverse,
+  PitchShift,
+  CopyLtoR,
 
   /** External program. */
-  AUDIO_FUNCTION_EXT_PROGRAM,
+  ExternalProgram,
 
-  /** Guile script. */
-  AUDIO_FUNCTION_GUILE_SCRIPT,
+  /** Guile script (currently unavailable). */
+  Script,
 
   /** Custom plugin. */
-  AUDIO_FUNCTION_CUSTOM_PLUGIN,
+  CustomPlugin,
 
   /* reserved */
-  AUDIO_FUNCTION_INVALID,
+  Invalid,
 };
 
-static const char * audio_function_type_strings[] = {
-  N_ ("Invert"),         N_ ("Normalize peak"), N_ ("Normalize RMS"),
-  N_ ("Normalize LUFS"), N_ ("Linear fade in"), N_ ("Linear fade out"),
-  N_ ("Nudge left"),     N_ ("Nudge right"),    N_ ("Reverse"),
-  N_ ("Pitch shift"),    N_ ("Copy L to R"),    N_ ("External program"),
-  N_ ("Guile script"),   N_ ("Custom plugin"),  N_ ("Invalid"),
-};
-
-typedef struct AudioFunctionOpts
+class AudioFunctionOpts
 {
+public:
   /**
    * Amount related to the current function (e.g. pitch shift).
    */
-  double amount;
-
-} AudioFunctionOpts;
-
-static inline const char *
-audio_function_type_to_string (AudioFunctionType type)
-{
-  return audio_function_type_strings[static_cast<int> (type)];
-}
+  double amount_ = 0;
+};
 
 char *
 audio_function_get_action_target_for_type (AudioFunctionType type);
@@ -112,24 +101,39 @@ audio_function_get_plugin_uri_for_type (AudioFunctionType type)
 /**
  * Applies the given action to the given selections.
  *
- * This will save a file in the pool and store the pool ID in
- * the selections.
+ * This will save a file in the pool and store the pool ID in the selections.
  *
  * @param sel Selections to edit.
- * @param type Function type. If invalid is passed, this will
- *   simply add the audio file in the pool for the unchanged
- *   audio material (used in audio selection actions for the
- *   selections before the change).
- *
- * @return Whether successful.
+ * @param type Function type. If invalid is passed, this will simply add the
+ * audio file in the pool for the unchanged audio material (used in audio
+ * selection actions for the selections before the change).
+ * @throw ZrythmException on error.
  */
-bool
+void
 audio_function_apply (
-  ArrangerSelections * sel,
-  AudioFunctionType    type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error);
+  ArrangerSelections &sel,
+  AudioFunctionType   type,
+  AudioFunctionOpts   opts,
+  const std::string * uri);
+
+DEFINE_ENUM_FORMATTER (
+  AudioFunctionType,
+  AudioFunctionType,
+  N_ ("Invert"),
+  N_ ("Normalize peak"),
+  N_ ("Normalize RMS"),
+  N_ ("Normalize LUFS"),
+  N_ ("Linear fade in"),
+  N_ ("Linear fade out"),
+  N_ ("Nudge left"),
+  N_ ("Nudge right"),
+  N_ ("Reverse"),
+  N_ ("Pitch shift"),
+  N_ ("Copy L to R"),
+  N_ ("External program"),
+  N_ ("Guile script"),
+  N_ ("Custom plugin"),
+  N_ ("Invalid"));
 
 /**
  * @}

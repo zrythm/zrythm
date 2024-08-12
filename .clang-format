@@ -63,7 +63,7 @@ BreakConstructorInitializers: BeforeColon
 BreakStringLiterals: false
 ContinuationIndentWidth: 2
 ColumnLimit: 80
-CommentPragmas: '^ IWYU pragma:'
+CommentPragmas: '^ SPDX-FileCopyrightText:|^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
@@ -85,7 +85,7 @@ IncludeCategories:
     Priority:        -6
     CaseSensitive:   false
   # C++ standard headers
-  - Regex:           '<([a-z])+>'
+  - Regex:           '<([a-z_])+>'
     Priority:        -4
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2

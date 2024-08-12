@@ -43,16 +43,16 @@ on_drag_begin_w_object ()
   static void on_drag_end_##sc##_##pos_name (cc * sc) \
   { \
     Position new_pos; \
-    position_set_to_pos (&new_pos, &sc->pos_name); \
+    new_pos = sc->pos_name; \
     /* set the actual pos back to the prev pos */ \
     position_set_to_pos ( \
       &TL_SELECTIONS->sc##s[0]->pos_name, &tl_clone->sc##s[0]->pos_name); \
     timeline_selections_free (tl_clone); \
-    if (position_is_equal (&TL_SELECTIONS->sc##s[0]->pos_name, &new_pos)) \
+    if (TL_SELECTIONS->sc##s[0]->pos_name == new_pos) \
       return; \
     UndoableAction * ua = \
       (UndoableAction *) edit_timeline_selections_action_new ( \
-        TL_SELECTIONS, ETS_##caps##_##pos_name_caps, 0, NULL, &new_pos); \
+        TL_SELECTIONS, ETS_##caps##_##pos_name_caps, 0, nullptr, &new_pos); \
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
@@ -64,19 +64,18 @@ DEFINE_DRAG_END_POS_SET (REGION, Region, region, LOOP_END_POS, loop_end_pos);
   static void on_drag_end_##sc##_resize_l (cc * sc) \
   { \
     Position new_pos; \
-    position_set_to_pos (&new_pos, &sc->start_pos); \
+    new_pos = sc->start_pos; \
     /* set the actual pos back to the prev pos */ \
     position_set_to_pos ( \
       &TL_SELECTIONS->sc##s[0]->start_pos, &tl_clone->sc##s[0]->start_pos); \
     timeline_selections_free (tl_clone); \
-    if (position_is_equal (&TL_SELECTIONS->sc##s[0]->start_pos, &new_pos)) \
+    if (TL_SELECTIONS->sc##s[0]->start_pos == new_pos) \
       return; \
     long ticks_diff = \
-      position_to_ticks (&new_pos) \
-      - position_to_ticks (&TL_SELECTIONS->sc##s[0]->start_pos); \
+      new_pos.ticks_ - TL_SELECTIONS->sc##s[0]->start_pos.ticks_; \
     UndoableAction * ua = \
       (UndoableAction *) edit_timeline_selections_action_new ( \
-        TL_SELECTIONS, ETS_RESIZE_L, ticks_diff, NULL, NULL); \
+        TL_SELECTIONS, ETS_RESIZE_L, ticks_diff, nullptr, nullptr); \
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
@@ -86,19 +85,18 @@ DEFINE_DRAG_END_POS_RESIZE_L (Region, region);
   static void on_drag_end_##sc##_resize_r (cc * sc) \
   { \
     Position new_pos; \
-    position_set_to_pos (&new_pos, &sc->end_pos); \
+    new_pos = sc->end_pos_; \
     /* set the actual pos back to the prev pos */ \
     position_set_to_pos ( \
-      &TL_SELECTIONS->sc##s[0]->end_pos, &tl_clone->sc##s[0]->end_pos); \
+      &TL_SELECTIONS->sc##s[0]->end_pos_, &tl_clone->sc##s[0]->end_pos_); \
     timeline_selections_free (tl_clone); \
-    if (position_is_equal (&TL_SELECTIONS->sc##s[0]->end_pos, &new_pos)) \
+    if (TL_SELECTIONS->sc##s[0]->end_pos_ == new_pos) \
       return; \
     long ticks_diff = \
-      position_to_ticks (&new_pos) \
-      - position_to_ticks (&TL_SELECTIONS->sc##s[0]->end_pos); \
+      new_pos.ticks_ - TL_SELECTIONS->sc##s[0]->end_pos_.ticks_; \
     UndoableAction * ua = \
       (UndoableAction *) edit_timeline_selections_action_new ( \
-        TL_SELECTIONS, ETS_RESIZE_R, ticks_diff, NULL, NULL); \
+        TL_SELECTIONS, ETS_RESIZE_R, ticks_diff, nullptr, nullptr); \
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
@@ -117,8 +115,7 @@ on_drag_end ()
 {
   Position start_pos;
   timeline_selections_get_start_pos (TL_SELECTIONS, &start_pos, F_NO_TRANSIENTS);
-  long ticks_diff =
-    position_to_ticks (&start_pos) - position_to_ticks (&earliest_start_pos);
+  long ticks_diff = start_pos.ticks_ - earliest_start_pos.ticks_;
   /* remove the diff since it will get added
    * in the moving action */
   timeline_selections_add_ticks (TL_SELECTIONS, -ticks_diff, 0, AO_UPDATE_ALL);
@@ -163,7 +160,7 @@ timeline_selection_info_widget_refresh (
 
 #define ADD_WIDGET(widget) \
   selection_info_widget_add_info ( \
-    self->selection_info, NULL, GTK_WIDGET (widget));
+    self->selection_info, nullptr, GTK_WIDGET (widget));
 
   /* if only object selected, show its specifics */
   if (only_object)
@@ -288,7 +285,7 @@ timeline_selection_info_widget_init (TimelineSelectionInfoWidget * self)
   self->no_selection_label =
     GTK_LABEL (gtk_label_new (_ ("No object selected")));
   gtk_widget_set_visible (GTK_WIDGET (self->no_selection_label), 1);
-  self->selection_info = g_object_new (SELECTION_INFO_WIDGET_TYPE, NULL);
+  self->selection_info = g_object_new (SELECTION_INFO_WIDGET_TYPE, nullptr);
   gtk_widget_set_visible (GTK_WIDGET (self->selection_info), 1);
 
   gtk_stack_add_named (

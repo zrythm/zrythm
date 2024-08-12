@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
+#include "actions/transport_action.h"
 #include "dsp/automation_track.h"
 #include "dsp/port.h"
 #include "dsp/router.h"
@@ -11,144 +10,98 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
-#include "utils/objects.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-/**
- * Inits the tempo track.
- */
-void
-tempo_track_init (Track * self)
+TempoTrack::TempoTrack (int track_pos)
+    : Track (
+      Track::Type::Tempo,
+      _ ("Tempo"),
+      track_pos,
+      PortType::Unknown,
+      PortType::Unknown)
 {
-  self->type = TrackType::TRACK_TYPE_TEMPO;
-  self->main_height = TRACK_DEF_HEIGHT / 2;
+  main_height_ = TRACK_DEF_HEIGHT / 2;
 
-  gdk_rgba_parse (&self->color, "#2f6c52");
-  self->icon_name = g_strdup ("filename-bpm-amarok");
+  color_ = Color ("#2f6c52");
+  icon_name_ = "filename-bpm-amarok";
 
   /* create bpm port */
-  self->bpm_port = new Port (
-    PortType::Control, PortFlow::Input, _ ("BPM"),
-    PortIdentifier::OwnerType::TRACK, self);
-  self->bpm_port->id_.sym_ = "bpm";
-  self->bpm_port->minf_ = 60.f;
-  self->bpm_port->maxf_ = 360.f;
-  self->bpm_port->deff_ = 140.f;
-  self->bpm_port->set_control_value (self->bpm_port->deff_, false, false);
-  self->bpm_port->id_.flags_ |= PortIdentifier::Flags::BPM;
-  self->bpm_port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
+  bpm_port_ = std::make_unique<ControlPort> (
+    _ ("BPM"), PortIdentifier::OwnerType::Track, this);
+  bpm_port_->id_.sym_ = "bpm";
+  bpm_port_->minf_ = 60.f;
+  bpm_port_->maxf_ = 360.f;
+  bpm_port_->deff_ = 140.f;
+  bpm_port_->set_control_value (bpm_port_->deff_, false, false);
+  bpm_port_->id_.flags_ |= PortIdentifier::Flags::Bpm;
+  bpm_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
 
   /* create time sig ports */
-  self->beats_per_bar_port = new Port (
-    PortType::Control, PortFlow::Input, _ ("Beats per bar"),
-    PortIdentifier::OwnerType::TRACK, self);
-  self->beats_per_bar_port->id_.sym_ = ("beats_per_bar");
-  self->beats_per_bar_port->minf_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
-  self->beats_per_bar_port->maxf_ = TEMPO_TRACK_MAX_BEATS_PER_BAR;
-  self->beats_per_bar_port->deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
-  self->beats_per_bar_port->set_control_value (
+  beats_per_bar_port_ = std::make_unique<ControlPort> (
+    _ ("Beats per bar"), PortIdentifier::OwnerType::Track, this);
+  beats_per_bar_port_->id_.sym_ = ("beats_per_bar");
+  beats_per_bar_port_->minf_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
+  beats_per_bar_port_->maxf_ = TEMPO_TRACK_MAX_BEATS_PER_BAR;
+  beats_per_bar_port_->deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
+  beats_per_bar_port_->set_control_value (
     TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-  self->beats_per_bar_port->id_.flags2_ |= PortIdentifier::Flags2::BEATS_PER_BAR;
-  self->beats_per_bar_port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
-  self->beats_per_bar_port->id_.flags_ |= PortIdentifier::Flags::INTEGER;
+  beats_per_bar_port_->id_.flags2_ |= PortIdentifier::Flags2::BeatsPerBar;
+  beats_per_bar_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
+  beats_per_bar_port_->id_.flags_ |= PortIdentifier::Flags::Integer;
 
-  self->beat_unit_port = new Port (
-    PortType::Control, PortFlow::Input, _ ("Beat unit"),
-    PortIdentifier::OwnerType::TRACK, self);
-  self->beat_unit_port->id_.sym_ = ("beat_unit");
-  self->beat_unit_port->minf_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
-  self->beat_unit_port->maxf_ = static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT);
-  self->beat_unit_port->deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
-  self->beat_unit_port->set_control_value (
+  beat_unit_port_ = std::make_unique<ControlPort> (
+    _ ("Beat unit"), PortIdentifier::OwnerType::Track, this);
+  beat_unit_port_->id_.sym_ = ("beat_unit");
+  beat_unit_port_->minf_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
+  beat_unit_port_->maxf_ = static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT);
+  beat_unit_port_->deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
+  beat_unit_port_->set_control_value (
     static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
-  self->beat_unit_port->id_.flags2_ |= PortIdentifier::Flags2::BEAT_UNIT;
-  self->beat_unit_port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
-  self->beat_unit_port->id_.flags_ |= PortIdentifier::Flags::INTEGER;
+  beat_unit_port_->id_.flags2_ |= PortIdentifier::Flags2::BeatUnit;
+  beat_unit_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
+  beat_unit_port_->id_.flags_ |= PortIdentifier::Flags::Integer;
 
   /* set invisible */
-  self->visible = false;
+  visible_ = false;
 }
 
-/**
- * Creates the default tempo track.
- */
-Track *
-tempo_track_default (int track_pos)
-{
-  Track * self = track_new (
-    TrackType::TRACK_TYPE_TEMPO, track_pos, _ ("Tempo"), F_WITHOUT_LANE);
-
-  return self;
-}
-
-/**
- * Returns the BPM at the given pos.
- */
 bpm_t
-tempo_track_get_bpm_at_pos (Track * self, Position * pos)
+TempoTrack::get_bpm_at_pos (const Position pos)
 {
-  AutomationTrack * at =
-    automation_track_find_from_port_id (&self->bpm_port->id_, false);
-  return automation_track_get_val_at_pos (
-    at, pos, false, false, Z_F_NO_USE_SNAPSHOTS);
+  auto at = AutomationTrack::find_from_port_id (bpm_port_->id_, false);
+  return at->get_val_at_pos (pos, false, false, Z_F_NO_USE_SNAPSHOTS);
 }
 
-/**
- * Returns the current BPM.
- */
 bpm_t
-tempo_track_get_current_bpm (Track * self)
+TempoTrack::get_current_bpm () const
 {
-  return self->bpm_port->get_control_value (false);
+  return bpm_port_->get_control_value (false);
 }
 
-const char *
-tempo_track_get_current_bpm_as_str (void * self)
+std::string
+TempoTrack::get_current_bpm_as_str (void * self)
 {
-  Track * t = (Track *) self;
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (t), NULL);
+  auto t = (TempoTrack *) self;
+  z_return_val_if_fail (t, nullptr);
 
-  static char * bpm_str = NULL;
-  if (bpm_str)
-    g_free (bpm_str);
-
-  bpm_t bpm = tempo_track_get_current_bpm (t);
-  bpm_str = g_strdup_printf ("%.2f", bpm);
-
-  return bpm_str;
+  auto bpm = t->get_current_bpm ();
+  return fmt::format ("{:.2f}", bpm);
 }
 
-/**
- * Sets the BPM.
- *
- * @param update_snap_points Whether to update the
- *   snap points.
- * @param stretch_audio_region Whether to stretch
- *   audio regions. This should only be true when
- *   the BPM change is final.
- * @param start_bpm The BPM at the start of the
- *   action, if not temporary.
- */
 void
-tempo_track_set_bpm (
-  Track * self,
-  bpm_t   bpm,
-  bpm_t   start_bpm,
-  bool    temporary,
-  bool    fire_events)
+TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_events)
 {
   if (
-    AUDIO_ENGINE->transport_type
-    == AudioEngineJackTransportType::AUDIO_ENGINE_NO_JACK_TRANSPORT)
+    AUDIO_ENGINE->transport_type_
+    == AudioEngine::JackTransportType::NoJackTransport)
     {
       g_debug (
         "%s: bpm <%f>, temporary <%d>", __func__, (double) bpm, temporary);
@@ -165,32 +118,34 @@ tempo_track_set_bpm (
 
   if (temporary)
     {
-      self->bpm_port->set_control_value (bpm, false, false);
+      bpm_port_->set_control_value (bpm, false, false);
     }
   else
     {
-      GError * err = NULL;
-      bool     ret =
-        transport_action_perform_bpm_change (start_bpm, bpm, false, &err);
-      if (!ret)
+      try
         {
-          HANDLE_ERROR (err, "%s", _ ("Failed to change BPM"));
+          UNDO_MANAGER->perform (
+            std::make_unique<TransportAction> (start_bpm, bpm, false));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (_ ("Failed to change BPM"));
         }
     }
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_BPM_CHANGED, NULL);
+      EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
     }
 }
 
 void
-tempo_track_set_bpm_from_str (void * _self, const char * str)
+TempoTrack::set_bpm_from_str (void * _self, const std::string &str)
 {
-  Track * self = (Track *) _self;
-  g_return_if_fail (IS_TRACK_AND_NONNULL (self));
+  auto * self = (TempoTrack *) _self;
+  z_return_if_fail (self);
 
-  bpm_t bpm = (float) atof (str);
+  auto bpm = (float) atof (str.c_str ());
   if (math_floats_equal (bpm, 0))
     {
       ui_show_error_message (
@@ -198,120 +153,85 @@ tempo_track_set_bpm_from_str (void * _self, const char * str)
       return;
     }
 
-  tempo_track_set_bpm (
-    self, bpm, tempo_track_get_current_bpm (self), Z_F_NOT_TEMPORARY,
-    F_PUBLISH_EVENTS);
-}
-
-int
-tempo_track_beat_unit_enum_to_int (ZBeatUnit ebeat_unit)
-{
-  int bu = 0;
-  switch (ebeat_unit)
-    {
-    case ZBeatUnit::Z_BEAT_UNIT_2:
-      bu = 2;
-      break;
-    case ZBeatUnit::Z_BEAT_UNIT_4:
-      bu = 4;
-      break;
-    case ZBeatUnit::Z_BEAT_UNIT_8:
-      bu = 8;
-      break;
-    case ZBeatUnit::Z_BEAT_UNIT_16:
-      bu = 16;
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-  return bu;
+  self->set_bpm (bpm, self->get_current_bpm (), false, true);
 }
 
 void
-tempo_track_set_beat_unit_from_enum (Track * self, ZBeatUnit ebeat_unit)
+TempoTrack::set_beat_unit_from_enum (BeatUnit ebeat_unit)
 {
-  g_return_if_fail (
-    !engine_get_run (AUDIO_ENGINE)
-    || (ROUTER && router_is_processing_kickoff_thread (ROUTER)));
+  z_return_if_fail (
+    !AUDIO_ENGINE->run_.load ()
+    || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
-  self->beat_unit_port->set_control_value (
+  beat_unit_port_->set_control_value (
     static_cast<float> (ebeat_unit), F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, NULL);
+  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
-ZBeatUnit
-tempo_track_beat_unit_to_enum (int beat_unit)
+BeatUnit
+TempoTrack::beat_unit_to_enum (int beat_unit)
 {
   switch (beat_unit)
     {
     case 2:
-      return ZBeatUnit::Z_BEAT_UNIT_2;
+      return BeatUnit::Two;
     case 4:
-      return ZBeatUnit::Z_BEAT_UNIT_4;
+      return BeatUnit::Four;
     case 8:
-      return ZBeatUnit::Z_BEAT_UNIT_8;
+      return BeatUnit::Eight;
     case 16:
-      return ZBeatUnit::Z_BEAT_UNIT_16;
+      return BeatUnit::Sixteen;
       ;
     default:
       break;
     }
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (ZBeatUnit, 0));
-}
-
-ZBeatUnit
-tempo_track_get_beat_unit_enum (Track * self)
-{
-  return tempo_track_beat_unit_to_enum (tempo_track_get_beat_unit (self));
+  g_return_val_if_reached (ENUM_INT_TO_VALUE (BeatUnit, 0));
 }
 
 void
-tempo_track_set_beat_unit (Track * self, int beat_unit)
+TempoTrack::set_beat_unit (int beat_unit)
 {
-  ZBeatUnit ebu = tempo_track_beat_unit_to_enum (beat_unit);
-  tempo_track_set_beat_unit_from_enum (self, ebu);
+  set_beat_unit_from_enum (beat_unit_to_enum (beat_unit));
 }
 
-/**
- * Updates beat unit and anything depending on it.
- */
 void
-tempo_track_set_beats_per_bar (Track * self, int beats_per_bar)
+TempoTrack::set_beats_per_bar (int beats_per_bar)
 {
   g_return_if_fail (
-    !engine_get_run (AUDIO_ENGINE)
-    || (ROUTER && router_is_processing_kickoff_thread (ROUTER)));
+    !AUDIO_ENGINE->run_.load ()
+    || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
-  self->beats_per_bar_port->set_control_value (
+  beats_per_bar_port_->set_control_value (
     beats_per_bar, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, NULL);
+  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
 int
-tempo_track_get_beats_per_bar (Track * self)
+TempoTrack::get_beats_per_bar () const
 {
-  return (int) math_round_float_to_signed_32 (
-    self->beats_per_bar_port->control_);
+  return (int) math_round_float_to_signed_32 (beats_per_bar_port_->control_);
 }
 
 int
-tempo_track_get_beat_unit (Track * self)
+TempoTrack::get_beat_unit () const
 {
-  ZBeatUnit ebu =
-    (ZBeatUnit) math_round_float_to_signed_32 (self->beat_unit_port->control_);
-  return tempo_track_beat_unit_enum_to_int (ebu);
+  BeatUnit ebu =
+    (BeatUnit) math_round_float_to_signed_32 (beat_unit_port_->control_);
+  return beat_unit_enum_to_int (ebu);
 }
 
-/**
- * Removes all objects from the tempo track.
- *
- * Mainly used in testing.
- */
 void
-tempo_track_clear (Track * self)
+TempoTrack::clear_objects ()
 {
   /* TODO */
-  /*g_warn_if_reached ();*/
+}
+
+void
+TempoTrack::init_after_cloning (const TempoTrack &other)
+{
+  bpm_port_ = other.bpm_port_->clone_unique ();
+  beats_per_bar_port_ = other.beats_per_bar_port_->clone_unique ();
+  beat_unit_port_ = other.beat_unit_port_->clone_unique ();
+  Track::copy_members_from (other);
+  AutomatableTrack::copy_members_from (other);
 }

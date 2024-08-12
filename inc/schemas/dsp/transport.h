@@ -16,8 +16,6 @@
 #include "schemas/dsp/position.h"
 #include "utils/types.h"
 
-#include "zix/sem.h"
-
 typedef struct Transport_v1
 {
   int         schema_version;

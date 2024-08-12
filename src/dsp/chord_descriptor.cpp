@@ -9,21 +9,21 @@
 #include "utils/objects.h"
 
 /**
- * @param notes 36 notes.
+ * This edits the last 36 notes, skipping the first 12.
  */
 static void
-invert_chord (int * notes, int inversion)
+invert_chord (std::vector<bool> &notes, int inversion)
 {
   if (inversion > 0)
     {
       for (int i = 0; i < inversion; i++)
         {
-          for (int j = 0; j < 36; j++)
+          for (int j = 12; j < CHORD_DESCRIPTOR_MAX_NOTES; j++)
             {
               if (notes[j])
                 {
-                  notes[j] = 0;
-                  notes[j + 12] = 1;
+                  notes[j] = false;
+                  notes[j + 12] = true;
                   break;
                 }
             }
@@ -33,12 +33,12 @@ invert_chord (int * notes, int inversion)
     {
       for (int i = 0; i < -inversion; i++)
         {
-          for (int j = 35; j >= 0; j--)
+          for (int j = CHORD_DESCRIPTOR_MAX_NOTES - 1; j >= 12; j--)
             {
               if (notes[j])
                 {
-                  notes[j] = 0;
-                  notes[j - 12] = 1;
+                  notes[j] = false;
+                  notes[j - 12] = true;
                   break;
                 }
             }
@@ -51,98 +51,97 @@ invert_chord (int * notes, int inversion)
  * settings.
  */
 void
-chord_descriptor_update_notes (ChordDescriptor * self)
+ChordDescriptor::update_notes ()
 {
-  if (self->type == ChordType::CHORD_TYPE_CUSTOM)
+  if (type_ == ChordType::Custom)
     return;
 
-  memset (self->notes, 0, sizeof (self->notes));
+  notes_.assign (CHORD_DESCRIPTOR_MAX_NOTES, false);
 
-  if (self->type == ChordType::CHORD_TYPE_NONE)
+  if (type_ == ChordType::None)
     return;
 
-  int root = ENUM_VALUE_TO_INT (self->root_note);
-  int bass = ENUM_VALUE_TO_INT (self->bass_note);
+  int root = ENUM_VALUE_TO_INT (root_note_);
+  int bass = ENUM_VALUE_TO_INT (bass_note_);
 
   /* add bass note */
-  if (self->has_bass)
+  if (has_bass_)
     {
-      self->notes[bass] = 1;
+      notes_[bass] = true;
     }
 
   /* add root note */
-  self->notes[12 + root] = 1;
+  notes_[12 + root] = true;
 
   /* add 2 more notes for triad */
-  switch (self->type)
+  switch (type_)
     {
-    case ChordType::CHORD_TYPE_MAJ:
-      self->notes[12 + root + 4] = 1;
-      self->notes[12 + root + 4 + 3] = 1;
+    case ChordType::Major:
+      notes_[12 + root + 4] = true;
+      notes_[12 + root + 4 + 3] = true;
       break;
-    case ChordType::CHORD_TYPE_MIN:
-      self->notes[12 + root + 3] = 1;
-      self->notes[12 + root + 3 + 4] = 1;
+    case ChordType::Minor:
+      notes_[12 + root + 3] = true;
+      notes_[12 + root + 3 + 4] = true;
       break;
-    case ChordType::CHORD_TYPE_DIM:
-      self->notes[12 + root + 3] = 1;
-      self->notes[12 + root + 3 + 3] = 1;
+    case ChordType::Diminished:
+      notes_[12 + root + 3] = true;
+      notes_[12 + root + 3 + 3] = true;
       break;
-    case ChordType::CHORD_TYPE_AUG:
-      self->notes[12 + root + 4] = 1;
-      self->notes[12 + root + 4 + 4] = 1;
+    case ChordType::Augmented:
+      notes_[12 + root + 4] = true;
+      notes_[12 + root + 4 + 4] = true;
       break;
-    case ChordType::CHORD_TYPE_SUS2:
-      self->notes[12 + root + 2] = 1;
-      self->notes[12 + root + 2 + 5] = 1;
+    case ChordType::SuspendedSecond:
+      notes_[12 + root + 2] = true;
+      notes_[12 + root + 2 + 5] = true;
       break;
-    case ChordType::CHORD_TYPE_SUS4:
-      self->notes[12 + root + 5] = 1;
-      self->notes[12 + root + 5 + 2] = 1;
+    case ChordType::SuspendedFourth:
+      notes_[12 + root + 5] = true;
+      notes_[12 + root + 5 + 2] = true;
       break;
     default:
       g_warning ("chord unimplemented");
       break;
     }
 
-  unsigned int min_seventh_sems =
-    self->type == ChordType::CHORD_TYPE_DIM ? 9 : 10;
+  unsigned int min_seventh_sems = type_ == ChordType::Diminished ? 9 : 10;
 
   /* add accents */
-  unsigned int root_note_int = ENUM_VALUE_TO_INT (self->root_note);
-  switch (self->accent)
+  unsigned int root_note_int = ENUM_VALUE_TO_INT (root_note_);
+  switch (accent_)
     {
-    case ChordAccent::CHORD_ACC_NONE:
+    case ChordAccent::None:
       break;
-    case ChordAccent::CHORD_ACC_7:
-      self->notes[12 + root_note_int + min_seventh_sems] = 1;
+    case ChordAccent::Seventh:
+      notes_[12 + root_note_int + min_seventh_sems] = true;
       break;
-    case ChordAccent::CHORD_ACC_j7:
-      self->notes[12 + root_note_int + 11] = 1;
+    case ChordAccent::MajorSeventh:
+      notes_[12 + root_note_int + 11] = true;
       break;
-    case ChordAccent::CHORD_ACC_b9:
-      self->notes[12 + root_note_int + 13] = 1;
+    case ChordAccent::FlatNinth:
+      notes_[12 + root_note_int + 13] = true;
       break;
-    case ChordAccent::CHORD_ACC_9:
-      self->notes[12 + root_note_int + 14] = 1;
+    case ChordAccent::Ninth:
+      notes_[12 + root_note_int + 14] = true;
       break;
-    case ChordAccent::CHORD_ACC_S9:
-      self->notes[12 + root_note_int + 15] = 1;
+    case ChordAccent::SharpNinth:
+      notes_[12 + root_note_int + 15] = true;
       break;
-    case ChordAccent::CHORD_ACC_11:
-      self->notes[12 + root_note_int + 17] = 1;
+    case ChordAccent::Eleventh:
+      notes_[12 + root_note_int + 17] = true;
       break;
-    case ChordAccent::CHORD_ACC_b5_S11:
-      self->notes[12 + root_note_int + 6] = 1;
-      self->notes[12 + root_note_int + 18] = 1;
+    case ChordAccent::FlatFifthSharpEleventh:
+      notes_[12 + root_note_int + 6] = true;
+      notes_[12 + root_note_int + 18] = true;
       break;
-    case ChordAccent::CHORD_ACC_S5_b13:
-      self->notes[12 + root_note_int + 8] = 1;
-      self->notes[12 + root_note_int + 16] = 1;
+    case ChordAccent::SharpFifthFlatThirteenth:
+      notes_[12 + root_note_int + 8] = true;
+      notes_[12 + root_note_int + 16] = true;
       break;
-    case ChordAccent::CHORD_ACC_6_13:
-      self->notes[12 + root_note_int + 9] = 1;
-      self->notes[12 + root_note_int + 21] = 1;
+    case ChordAccent::SixthThirteenth:
+      notes_[12 + root_note_int + 9] = true;
+      notes_[12 + root_note_int + 21] = true;
       break;
     default:
       g_warning ("chord unimplemented");
@@ -151,67 +150,19 @@ chord_descriptor_update_notes (ChordDescriptor * self)
 
   /* add the 7th to accents > 7 */
   if (
-    self->accent >= ChordAccent::CHORD_ACC_b9
-    && self->accent <= ChordAccent::CHORD_ACC_6_13)
+    accent_ >= ChordAccent::FlatNinth && accent_ <= ChordAccent::SixthThirteenth)
     {
-      self->notes[12 + root_note_int + min_seventh_sems] = 1;
+      notes_[12 + root_note_int + min_seventh_sems] = true;
     }
 
-  invert_chord (&self->notes[12], self->inversion);
-}
-
-/**
- * Creates a ChordDescriptor.
- */
-ChordDescriptor *
-chord_descriptor_new (
-  MusicalNote root,
-  int         has_bass,
-  MusicalNote bass,
-  ChordType   type,
-  ChordAccent accent,
-  int         inversion)
-{
-  ChordDescriptor * self = object_new (ChordDescriptor);
-
-  self->root_note = root;
-  self->has_bass = has_bass;
-  if (has_bass)
-    self->bass_note = bass;
-  self->type = type;
-  self->accent = accent;
-  self->inversion = inversion;
-
-  chord_descriptor_update_notes (self);
-
-  return self;
-}
-
-/**
- * Clones the given ChordDescriptor.
- */
-ChordDescriptor *
-chord_descriptor_clone (const ChordDescriptor * src)
-{
-  ChordDescriptor * cd = chord_descriptor_new (
-    src->root_note, src->has_bass, src->bass_note, src->type, src->accent,
-    src->inversion);
-
-  return cd;
-}
-
-void
-chord_descriptor_copy (ChordDescriptor * dest, const ChordDescriptor * src)
-{
-  /* no allocated memory so memcpy is enough */
-  memcpy (dest, src, sizeof (ChordDescriptor));
+  invert_chord (notes_, inversion_);
 }
 
 /**
  * Returns the musical note as a string (eg. "C3").
  */
 const char *
-chord_descriptor_note_to_string (MusicalNote note)
+ChordDescriptor::note_to_string (MusicalNote note)
 {
   return midi_get_note_name ((midi_byte_t) note);
 }
@@ -220,7 +171,7 @@ chord_descriptor_note_to_string (MusicalNote note)
  * Returns the chord type as a string (eg. "aug").
  */
 const char *
-chord_descriptor_chord_type_to_string (ChordType type)
+ChordDescriptor::chord_type_to_string (ChordType type)
 {
   static const char * chord_type_strings[] = {
     "Invalid", "Maj", "min", "dim", "sus4", "sus2", "aug", "custom",
@@ -232,7 +183,7 @@ chord_descriptor_chord_type_to_string (ChordType type)
  * Returns the chord accent as a string (eg. "j7").
  */
 const char *
-chord_descriptor_chord_accent_to_string (ChordAccent accent)
+ChordDescriptor::chord_accent_to_string (ChordAccent accent)
 {
   static const char * chord_accent_strings[] = {
     "None",
@@ -250,41 +201,40 @@ chord_descriptor_chord_accent_to_string (ChordAccent accent)
 }
 
 /**
- * Returns if @ref key is the bass or root note of
- * @ref chord.
+ * Returns if @ref key is the bass or root note of @ref chord.
  *
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_bass (ChordDescriptor * chord, MusicalNote key)
+ChordDescriptor::is_key_bass (MusicalNote key) const
 {
-  if (chord->has_bass)
+  if (has_bass_)
     {
-      return chord->bass_note == key;
+      return bass_note_ == key;
     }
   else
     {
-      return chord->root_note == key;
+      return root_note_ == key;
     }
 }
 
 /**
- * Returns if the given key is in the chord
- * represented by the given ChordDescriptor.
+ * Returns if the given key is in the chord represented by the given
+ * ChordDescriptor.
  *
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_in_chord (ChordDescriptor * chord, MusicalNote key)
+ChordDescriptor::is_key_in_chord (MusicalNote key) const
 {
-  if (chord_descriptor_is_key_bass (chord, key))
+  if (is_key_bass (key))
     {
       return true;
     }
 
-  for (int i = 0; i < 36; i++)
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
     {
-      if (chord->notes[i] == 1 && i % 12 == (int) key)
+      if (notes_[i] && i % 12 == (int) key)
         return true;
     }
   return false;
@@ -292,49 +242,29 @@ chord_descriptor_is_key_in_chord (ChordDescriptor * chord, MusicalNote key)
 
 /**
  * Returns the chord in human readable string.
- *
- * MUST be free'd by caller.
  */
-char *
-chord_descriptor_to_new_string (const ChordDescriptor * chord)
+std::string
+ChordDescriptor::to_string () const
 {
-  char tmp[100];
-  chord_descriptor_to_string (chord, tmp);
-  return g_strdup (tmp);
-}
+  std::string str = note_to_string (root_note_);
+  str += chord_type_to_string (type_);
 
-/**
- * Returns the chord in human readable string.
- */
-void
-chord_descriptor_to_string (const ChordDescriptor * chord, char * str)
-{
-  sprintf (
-    str, "%s%s", chord_descriptor_note_to_string (chord->root_note),
-    chord_descriptor_chord_type_to_string (chord->type));
-
-  if (chord->accent > ChordAccent::CHORD_ACC_NONE)
+  if (accent_ > ChordAccent::None)
     {
-      strcat (str, " ");
-      strcat (str, chord_descriptor_chord_accent_to_string (chord->accent));
+      str += " ";
+      str += chord_accent_to_string (accent_);
     }
-  if (chord->has_bass && (chord->bass_note != chord->root_note))
+  if (has_bass_ && (bass_note_ != root_note_))
     {
-      strcat (str, "/");
-      strcat (str, chord_descriptor_note_to_string (chord->bass_note));
+      str += "/";
+      str += note_to_string (bass_note_);
     }
 
-  if (chord->inversion != 0)
+  if (inversion_ != 0)
     {
-      strcat (str, " ");
-      char inv_str[6];
-      sprintf (inv_str, "i%d", chord->inversion);
-      strcat (str, inv_str);
+      str += " i";
+      str += std::to_string (inversion_);
     }
-}
 
-void
-chord_descriptor_free (ChordDescriptor * self)
-{
-  free (self);
+  return str;
 }

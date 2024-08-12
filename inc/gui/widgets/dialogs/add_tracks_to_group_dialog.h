@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Dialog for routing track selections to a group.
- */
 
 #ifndef __GUI_WIDGETS_ADD_TRACKS_TO_GROUP_DIALOG_H__
 #define __GUI_WIDGETS_ADD_TRACKS_TO_GROUP_DIALOG_H__
@@ -23,7 +17,8 @@ G_DECLARE_FINAL_TYPE (
   ADD_TRACKS_TO_GROUP_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct TracklistSelections TracklistSelections;
+class TracklistSelections;
+class GroupTargetTrack;
 
 /**
  * @addtogroup widgets
@@ -32,12 +27,12 @@ typedef struct TracklistSelections TracklistSelections;
  */
 
 /**
- * The add_tracks_to_group dialog.
+ * Dialog for routing track selections to a group.
  */
-typedef struct _AddTracksToGroupDialogWidget
+using AddTracksToGroupDialogWidget = struct _AddTracksToGroupDialogWidget
 {
   GtkDialog parent_instance;
-} AddTracksToGroupDialogWidget;
+};
 
 /**
  * Creates an add_tracks_to_group dialog widget and displays it.
@@ -45,7 +40,7 @@ typedef struct _AddTracksToGroupDialogWidget
  * @return The new group track, after a create tracks action
  *   has been executed, or NULL if failure.
  */
-Track *
+GroupTargetTrack *
 add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel);
 
 /**

@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format off
 
 #include <cmath>
 
@@ -23,15 +21,15 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
-
 #include <limits.h>
 
-#define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) (self->target == RW_TARGET_##x)
+#define ACTION_IS(x) (self->action == UiOverlayAction::x)
+#define TARGET_IS(x) (self->target == RWTarget::RW_TARGET_##x)
 
 #define RESIZE_HANDLE_WIDTH 4
 
@@ -51,15 +49,15 @@ on_drag_begin_range_hit (
 
   if (
     is_loop_range
-      ? ruler_widget_is_loop_range_hit (self, RulerWidgetRangeType::RW_RANGE_START, x, 0)
-      : ruler_widget_is_range_hit (self, RulerWidgetRangeType::RW_RANGE_START, x, 0))
+      ? ruler_widget_is_loop_range_hit (self, RulerWidgetRangeType::Start, x, 0)
+      : ruler_widget_is_range_hit (self, RulerWidgetRangeType::Start, x, 0))
     {
       resize_l = true;
     }
   if (
     is_loop_range
-      ? ruler_widget_is_loop_range_hit (self, RulerWidgetRangeType::RW_RANGE_END, x, 0)
-      : ruler_widget_is_range_hit (self, RulerWidgetRangeType::RW_RANGE_END, x, 0))
+      ? ruler_widget_is_loop_range_hit (self, RulerWidgetRangeType::End, x, 0)
+      : ruler_widget_is_range_hit (self, RulerWidgetRangeType::End, x, 0))
     {
       resize_r = true;
     }
@@ -67,23 +65,21 @@ on_drag_begin_range_hit (
   /* update arranger action */
   if (resize_l)
     {
-      self->action = UI_OVERLAY_ACTION_RESIZING_L;
+      self->action = UiOverlayAction::RESIZING_L;
     }
   else if (resize_r)
     {
-      self->action = UI_OVERLAY_ACTION_RESIZING_R;
+      self->action = UiOverlayAction::RESIZING_R;
     }
   else
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UiOverlayAction::STARTING_MOVING;
     }
 
-  position_set_to_pos (
-    &self->range1_start_pos,
-    is_loop_range ? &TRANSPORT->loop_start_pos : &TRANSPORT->range_1);
-  position_set_to_pos (
-    &self->range2_start_pos,
-    is_loop_range ? &TRANSPORT->loop_end_pos : &TRANSPORT->range_2);
+  self->range1_start_pos =
+    is_loop_range ? TRANSPORT->loop_start_pos_ : TRANSPORT->range_1_;
+  self->range2_start_pos =
+    is_loop_range ? TRANSPORT->loop_end_pos_ : TRANSPORT->range_2_;
 
   if (is_loop_range)
     {
@@ -101,12 +97,12 @@ timeline_ruler_on_drag_end (RulerWidget * self)
   /*self->playhead, 0);*/
   if (
     (ACTION_IS (MOVING) || ACTION_IS (STARTING_MOVING))
-    && self->target == RWTarget::RW_TARGET_PLAYHEAD)
+    && self->target == RWTarget::Playhead)
     {
       /* set cue point */
-      position_set_to_pos (&TRANSPORT->cue_pos, &self->last_set_pos);
+      TRANSPORT->cue_pos_ = self->last_set_pos;
 
-      EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+      EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
     }
 }
 
@@ -120,23 +116,21 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   /* if lower 3/4ths */
   if (start_y > (height * 1) / 4)
     {
-      Position pos;
-      ui_px_to_pos_timeline (start_x, &pos, 1);
-      if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+      Position pos = ui_px_to_pos_timeline (start_x, true);
+      if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
         {
-          position_snap (&pos, &pos, NULL, NULL, SNAP_GRID_TIMELINE);
+          pos.snap (&pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
         }
 
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_PLAYHEAD;
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::Playhead;
       if (self->ctrl_held)
         {
           /* check if range is hit */
-          Position cur_pos;
-          ui_px_to_pos_timeline (start_x, &cur_pos, true);
-          bool range_hit =
-            position_is_after_or_equal (&cur_pos, &TRANSPORT->loop_start_pos)
-            && position_is_before_or_equal (&cur_pos, &TRANSPORT->loop_end_pos);
+          Position cur_pos = ui_px_to_pos_timeline (start_x, true);
+          bool     range_hit =
+            cur_pos >= TRANSPORT->loop_start_pos_
+            && cur_pos <= TRANSPORT->loop_end_pos_;
 
           g_message ("loop range hit %d", range_hit);
 
@@ -144,13 +138,13 @@ timeline_ruler_on_drag_begin_no_marker_hit (
           if (range_hit)
             {
               on_drag_begin_range_hit (self, start_x, &cur_pos, true);
-              self->target = RWTarget::RW_TARGET_LOOP_RANGE;
+              self->target = RWTarget::LoopRange;
             }
         }
       else
         {
-          transport_move_playhead (
-            TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+          TRANSPORT->move_playhead (
+            &pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
         }
       self->drag_start_pos = pos;
       self->last_set_pos = pos;
@@ -158,42 +152,34 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   else /* if upper 1/4th */
     {
       /* check if range is hit */
-      Position cur_pos;
-      ui_px_to_pos_timeline (start_x, &cur_pos, true);
-      Position first_range, last_range;
-      transport_get_range_pos (TRANSPORT, true, &first_range);
-      transport_get_range_pos (TRANSPORT, false, &last_range);
-      bool range_hit =
-        position_is_after_or_equal (&cur_pos, &first_range)
-        && position_is_before_or_equal (&cur_pos, &last_range);
+      Position cur_pos = ui_px_to_pos_timeline (start_x, true);
+      auto [first_range, last_range] = TRANSPORT->get_range_positions ();
+      bool range_hit = cur_pos >= first_range && cur_pos <= last_range;
 
-      g_message (
-        "%s: has range %d range hit %d", __func__, TRANSPORT->has_range,
-        range_hit);
-      position_print (&first_range);
-      position_print (&last_range);
-      position_print (&cur_pos);
+      z_debug ("has range %d range hit %d", TRANSPORT->has_range_, range_hit);
+      first_range.print ();
+      last_range.print ();
+      cur_pos.print ();
 
       /* if within existing range */
-      if (TRANSPORT->has_range && range_hit)
+      if (TRANSPORT->has_range_ && range_hit)
         {
           on_drag_begin_range_hit (self, start_x, &cur_pos, false);
         }
       else
         {
           /* set range if project doesn't have range or range is not hit*/
-          transport_set_has_range (TRANSPORT, true);
-          self->action = UI_OVERLAY_ACTION_RESIZING_R;
-          ui_px_to_pos_timeline (start_x, &TRANSPORT->range_1, true);
-          if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+          TRANSPORT->set_has_range (true);
+          self->action = UiOverlayAction::RESIZING_R;
+          TRANSPORT->range_1_ = ui_px_to_pos_timeline (start_x, true);
+          if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
             {
-              position_snap (
-                &TRANSPORT->range_1, &TRANSPORT->range_1, NULL, NULL,
-                SNAP_GRID_TIMELINE);
+              TRANSPORT->range_1_.snap (
+                &TRANSPORT->range_1_, nullptr, nullptr, *SNAP_GRID_TIMELINE);
             }
-          position_set_to_pos (&TRANSPORT->range_2, &TRANSPORT->range_1);
+          TRANSPORT->range_2_ = TRANSPORT->range_1_;
         }
-      self->target = RWTarget::RW_TARGET_RANGE;
+      self->target = RWTarget::Range;
     }
 }
 
@@ -207,12 +193,11 @@ timeline_ruler_on_drag_update (
   /* handle x */
   switch (self->action)
     {
-    case UI_OVERLAY_ACTION_RESIZING_L:
-    case UI_OVERLAY_ACTION_RESIZING_R:
-      if (self->target == RWTarget::RW_TARGET_RANGE)
+    case UiOverlayAction::RESIZING_L:
+    case UiOverlayAction::RESIZING_R:
+      if (self->target == RWTarget::Range)
         {
-          Position tmp;
-          ui_px_to_pos_timeline (self->start_x + offset_x, &tmp, true);
+          Position tmp = ui_px_to_pos_timeline (self->start_x + offset_x, true);
           const Position * start_pos;
           const bool       snap = !self->shift_held;
           bool             range1 = true;
@@ -228,28 +213,25 @@ timeline_ruler_on_drag_update (
               start_pos = &self->range2_start_pos;
               range1 = false;
             }
-          transport_set_range (TRANSPORT, range1, start_pos, &tmp, snap);
-          EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, NULL);
+          TRANSPORT->set_range (range1, start_pos, &tmp, snap);
+          EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, nullptr);
         }
       break;
-    case UI_OVERLAY_ACTION_MOVING:
-      if (self->target == RWTarget::RW_TARGET_RANGE)
+    case UiOverlayAction::MOVING:
+      if (self->target == RWTarget::Range)
         {
-          Position diff_pos;
-          ui_px_to_pos_timeline (fabs (offset_x), &diff_pos, 0);
-          double ticks_diff = position_to_ticks (&diff_pos);
+          Position diff_pos = ui_px_to_pos_timeline (fabs (offset_x), false);
+          double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
               /*g_message ("offset %f", offset_x);*/
               ticks_diff = -ticks_diff;
             }
-          double r1_ticks = position_to_ticks ((&TRANSPORT->range_1));
-          double r2_ticks = position_to_ticks ((&TRANSPORT->range_2));
+          double r1_ticks = TRANSPORT->range_1_.ticks_;
+          double r2_ticks = TRANSPORT->range_2_.ticks_;
           {
-            double r1_start_ticks =
-              position_to_ticks ((&self->range1_start_pos));
-            double r2_start_ticks =
-              position_to_ticks ((&self->range2_start_pos));
+            double r1_start_ticks = self->range1_start_pos.ticks_;
+            double r2_start_ticks = self->range2_start_pos.ticks_;
             /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks
              * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
@@ -268,49 +250,46 @@ timeline_ruler_on_drag_update (
 
           if (self->range1_first)
             {
-              position_set_to_pos (&TRANSPORT->range_1, &self->range1_start_pos);
-              position_add_ticks (&TRANSPORT->range_1, ticks_diff);
-              if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+              TRANSPORT->range_1_ = self->range1_start_pos;
+              TRANSPORT->range_1_.add_ticks (ticks_diff);
+              if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
                 {
-                  position_snap (
-                    &self->range1_start_pos, &TRANSPORT->range_1, NULL, NULL,
-                    SNAP_GRID_TIMELINE);
+                  TRANSPORT->range_1_.snap (
+                    &self->range1_start_pos, nullptr, nullptr,
+                    *SNAP_GRID_TIMELINE);
                 }
-              position_set_to_pos (&TRANSPORT->range_2, &TRANSPORT->range_1);
-              position_add_ticks (&TRANSPORT->range_2, ticks_length);
+              TRANSPORT->range_2_ = TRANSPORT->range_1_;
+              TRANSPORT->range_2_.add_ticks (ticks_length);
             }
           else /* range_2 first */
             {
-              position_set_to_pos (&TRANSPORT->range_2, &self->range2_start_pos);
-              position_add_ticks (&TRANSPORT->range_2, ticks_diff);
-              if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+              TRANSPORT->range_2_ = self->range2_start_pos;
+              TRANSPORT->range_2_.add_ticks (ticks_diff);
+              if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
                 {
-                  position_snap (
-                    &self->range2_start_pos, &TRANSPORT->range_2, NULL, NULL,
-                    SNAP_GRID_TIMELINE);
+                  TRANSPORT->range_2_.snap (
+                    &self->range2_start_pos, nullptr, nullptr,
+                    *SNAP_GRID_TIMELINE);
                 }
-              position_set_to_pos (&TRANSPORT->range_1, &TRANSPORT->range_2);
-              position_add_ticks (&TRANSPORT->range_1, ticks_length);
+              TRANSPORT->range_1_ = TRANSPORT->range_2_;
+              TRANSPORT->range_1_.add_ticks (ticks_length);
             }
-          EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, NULL);
+          EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, nullptr);
         }
-      else if (self->target == RWTarget::RW_TARGET_LOOP_RANGE)
+      else if (self->target == RWTarget::LoopRange)
         {
-          Position diff_pos;
-          ui_px_to_pos_timeline (fabs (offset_x), &diff_pos, 0);
-          double ticks_diff = position_to_ticks (&diff_pos);
+          Position diff_pos = ui_px_to_pos_timeline (fabs (offset_x), false);
+          double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
               /*g_message ("offset %f", offset_x);*/
               ticks_diff = -ticks_diff;
             }
-          double r1_ticks = position_to_ticks ((&TRANSPORT->loop_start_pos));
-          double r2_ticks = position_to_ticks ((&TRANSPORT->loop_end_pos));
+          double r1_ticks = TRANSPORT->loop_start_pos_.ticks_;
+          double r2_ticks = TRANSPORT->loop_end_pos_.ticks_;
           {
-            double r1_start_ticks =
-              position_to_ticks ((&self->range1_start_pos));
-            double r2_start_ticks =
-              position_to_ticks ((&self->range2_start_pos));
+            double r1_start_ticks = self->range1_start_pos.ticks_;
+            double r2_start_ticks = self->range2_start_pos.ticks_;
             /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks
              * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
@@ -327,104 +306,92 @@ timeline_ruler_on_drag_update (
 
           if (self->range1_first)
             {
-              position_set_to_pos (
-                &TRANSPORT->loop_start_pos, &self->range1_start_pos);
-              position_add_ticks (&TRANSPORT->loop_start_pos, ticks_diff);
-              if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+              TRANSPORT->loop_start_pos_ = self->range1_start_pos;
+              TRANSPORT->loop_start_pos_.add_ticks (ticks_diff);
+              if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
                 {
-                  position_snap (
-                    &self->range1_start_pos, &TRANSPORT->loop_start_pos, NULL,
-                    NULL, SNAP_GRID_TIMELINE);
+                  TRANSPORT->loop_start_pos_.snap (
+                    &self->range1_start_pos, nullptr, nullptr,
+                    *SNAP_GRID_TIMELINE);
                 }
-              position_set_to_pos (
-                &TRANSPORT->loop_end_pos, &TRANSPORT->loop_start_pos);
-              position_add_ticks (&TRANSPORT->loop_end_pos, ticks_length);
+              TRANSPORT->loop_end_pos_ = TRANSPORT->loop_start_pos_;
+              TRANSPORT->loop_end_pos_.add_ticks (ticks_length);
             }
-          EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, NULL);
+          EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, nullptr);
         }
       else /* not range */
         {
           /* set some useful positions */
-          Position tmp;
           Position timeline_start, timeline_end;
-          position_init (&timeline_start);
-          position_init (&timeline_end);
-          position_set_to_bar (&timeline_end, POSITION_MAX_BAR);
+          timeline_end.set_to_bar (POSITION_MAX_BAR);
 
           /* convert px to position */
-          ui_px_to_pos_timeline (self->start_x + offset_x, &tmp, F_HAS_PADDING);
+          Position tmp = ui_px_to_pos_timeline (self->start_x + offset_x, true);
 
           /* snap if not shift held */
-          if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+          if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
             {
-              position_snap (
-                &self->drag_start_pos, &tmp, NULL, NULL, SNAP_GRID_TIMELINE);
+              tmp.snap (
+                &self->drag_start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
             }
 
-          if (self->target == RWTarget::RW_TARGET_PLAYHEAD)
+          if (self->target == RWTarget::Playhead)
             {
               /* if position is acceptable */
-              if (
-                position_is_after_or_equal (&tmp, &timeline_start)
-                && position_is_before_or_equal (&tmp, &timeline_end))
+              if (tmp >= timeline_start && tmp <= timeline_end)
                 {
-                  transport_move_playhead (
-                    TRANSPORT, &tmp, F_PANIC, F_NO_SET_CUE_POINT,
-                    F_PUBLISH_EVENTS);
+                  TRANSPORT->move_playhead (
+                    &tmp, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
                   self->last_set_pos = tmp;
                 }
 
               /*ruler_marker_widget_update_tooltip (*/
               /*self->playhead, 1);*/
             }
-          else if (self->target == RWTarget::RW_TARGET_PUNCH_IN)
+          else if (self->target == RWTarget::PunchIn)
             {
               g_message ("moving punch in");
               /* if position is acceptable */
-              if (
-                position_is_after_or_equal (&tmp, &timeline_start)
-                && position_is_before (&tmp, &TRANSPORT->punch_out_pos))
+              if (tmp >= timeline_start && tmp < TRANSPORT->punch_out_pos_)
                 {
-                  position_set_to_pos (&TRANSPORT->punch_in_pos, &tmp);
-                  transport_update_positions (TRANSPORT, true);
-                  EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, NULL);
+                  TRANSPORT->punch_in_pos_ = tmp;
+                  TRANSPORT->update_positions (true);
+                  EVENTS_PUSH (
+                    EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, nullptr);
                 }
             }
-          else if (self->target == RWTarget::RW_TARGET_PUNCH_OUT)
+          else if (self->target == RWTarget::PunchOut)
             {
               /* if position is acceptable */
-              if (
-                position_is_before_or_equal (&tmp, &timeline_end)
-                && position_is_after (&tmp, &TRANSPORT->punch_in_pos))
+              if (tmp <= timeline_end && tmp > TRANSPORT->punch_in_pos_)
                 {
-                  position_set_to_pos (&TRANSPORT->punch_out_pos, &tmp);
-                  transport_update_positions (TRANSPORT, true);
-                  EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, NULL);
+                  TRANSPORT->punch_out_pos_ = tmp;
+                  TRANSPORT->update_positions (true);
+                  EVENTS_PUSH (
+                    EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, nullptr);
                 }
             }
-          else if (self->target == RWTarget::RW_TARGET_LOOP_START)
+          else if (self->target == RWTarget::LoopStart)
             {
               g_message ("moving loop start");
               /* if position is acceptable */
-              if (
-                position_is_after_or_equal (&tmp, &timeline_start)
-                && position_is_before (&tmp, &TRANSPORT->loop_end_pos))
+              if (tmp >= timeline_start && tmp < TRANSPORT->loop_end_pos_)
                 {
-                  position_set_to_pos (&TRANSPORT->loop_start_pos, &tmp);
-                  transport_update_positions (TRANSPORT, true);
-                  EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, NULL);
+                  TRANSPORT->loop_start_pos_ = tmp;
+                  TRANSPORT->update_positions (true);
+                  EVENTS_PUSH (
+                    EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, nullptr);
                 }
             }
-          else if (self->target == RWTarget::RW_TARGET_LOOP_END)
+          else if (self->target == RWTarget::LoopEnd)
             {
               /* if position is acceptable */
-              if (
-                position_is_before_or_equal (&tmp, &timeline_end)
-                && position_is_after (&tmp, &TRANSPORT->loop_start_pos))
+              if (tmp <= timeline_end && tmp > TRANSPORT->loop_start_pos_)
                 {
-                  position_set_to_pos (&TRANSPORT->loop_end_pos, &tmp);
-                  transport_update_positions (TRANSPORT, true);
-                  EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, NULL);
+                  TRANSPORT->loop_end_pos_ = tmp;
+                  TRANSPORT->update_positions (true);
+                  EVENTS_PUSH (
+                    EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, nullptr);
                 }
             }
         }

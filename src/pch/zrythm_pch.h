@@ -8,21 +8,35 @@
 #  include <windows.h>
 #endif
 
+#include <algorithm>
+#include <atomic>
+#include <cinttypes>
 #include <cmath>
+#include <concepts>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <ranges>
+#include <semaphore>
+#include <string>
+#include <type_traits>
+#include <variant>
+#include <vector>
 
-#include <glib.h>
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
+#include <glibmm.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
 #include <magic_enum_all.hpp>
 #pragma GCC diagnostic pop
+
+#include "doctest_wrapper.h"
+#include <fmt/format.h>
+#include <fmt/printf.h>
 
 /* This also includes all native platform headers. */
 /* FIXME compilation fails with internal compiler errors if this is included */

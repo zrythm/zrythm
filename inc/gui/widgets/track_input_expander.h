@@ -1,16 +1,11 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-/**
- * \file
- */
 
 #ifndef __GUI_WIDGETS_TRACK_INPUT_EXPANDER_H__
 #define __GUI_WIDGETS_TRACK_INPUT_EXPANDER_H__
 
 #include "gui/widgets/two_col_expander_box.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -23,9 +18,9 @@ G_DECLARE_FINAL_TYPE (
   TRACK_INPUT_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
-typedef struct _EditableLabelWidget EditableLabelWidget;
-typedef struct Track                Track;
-typedef struct _KnobWidget          KnobWidget;
+class ChannelTrack;
+TYPEDEF_STRUCT_UNDERSCORED (EditableLabelWidget);
+TYPEDEF_STRUCT_UNDERSCORED (KnobWidget);
 
 /**
  * @addtogroup widgets
@@ -33,7 +28,7 @@ typedef struct _KnobWidget          KnobWidget;
  * @{
  */
 
-typedef struct _TrackInputExpanderWidget
+using TrackInputExpanderWidget = struct _TrackInputExpanderWidget
 {
   TwoColExpanderBoxWidget parent_instance;
 
@@ -60,8 +55,8 @@ typedef struct _TrackInputExpanderWidget
   KnobWidget * gain;
 
   /** Track the TrackInputExpanderWidget is associated with. */
-  Track * track;
-} TrackInputExpanderWidget;
+  ChannelTrack * track;
+};
 
 /**
  * Refreshes each field.
@@ -71,7 +66,7 @@ typedef struct _TrackInputExpanderWidget
 void
 track_input_expander_widget_refresh (
   TrackInputExpanderWidget * self,
-  Track *                    track);
+  ChannelTrack *             track);
 
 /**
  * Sets up the TrackInputExpanderWidget.
@@ -79,7 +74,7 @@ track_input_expander_widget_refresh (
 void
 track_input_expander_widget_setup (
   TrackInputExpanderWidget * self,
-  Track *                    track);
+  ChannelTrack *             track);
 
 /**
  * @}

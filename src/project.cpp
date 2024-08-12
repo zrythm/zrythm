@@ -1,66 +1,40 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
-#include <sys/stat.h>
+#include <filesystem>
 
 #include "dsp/audio_region.h"
-#include "dsp/automation_point.h"
-#include "dsp/automation_track.h"
-#include "dsp/channel.h"
+#include "dsp/audio_track.h"
 #include "dsp/chord_track.h"
 #include "dsp/engine.h"
 #include "dsp/marker_track.h"
 #include "dsp/master_track.h"
-#include "dsp/midi_note.h"
 #include "dsp/modulator_track.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/router.h"
 #include "dsp/tempo_track.h"
-#include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
-#include "gui/widgets/audio_arranger.h"
-#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
-#include "gui/widgets/automation_editor_space.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord_arranger.h"
-#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
-#include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_editor_space.h"
-#include "gui/widgets/region.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_panel.h"
-#include "gui/widgets/timeline_ruler.h"
-#include "gui/widgets/track.h"
-#include "io/serialization/project.h"
-#include "plugins/carla_native_plugin.h"
 #include "project.h"
-#include "schemas/project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
-#include "utils/debug.h"
-#include "utils/error.h"
+#include "utils/exceptions.h"
 #include "utils/file.h"
-#include "utils/flags.h"
-#include "utils/general.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
-#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -69,104 +43,120 @@
 
 #include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
+#include <glibmm.h>
 #include <time.h>
 #include <zstd.h>
 
-typedef enum
+Project::Project ()
+    : version_ (Zrythm::get_version (false)),
+      port_connections_manager_ (std::make_unique<PortConnectionsManager> ()),
+      tracklist_selections_ (std::make_unique<SimpleTracklistSelections> ()),
+      quantize_opts_editor_ (
+        std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_8)),
+      quantize_opts_timeline_ (
+        std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_1)),
+      snap_grid_editor_ (
+        std::make_unique<
+          SnapGrid> (SnapGrid::Type::Editor, NoteLength::NOTE_LENGTH_1_8, true)),
+      snap_grid_timeline_ (std::make_unique<SnapGrid> (
+        SnapGrid::Type::Timeline,
+        NoteLength::NOTE_LENGTH_BAR,
+        true)),
+      timeline_ (std::make_unique<Timeline> ()),
+      midi_mappings_ (std::make_unique<MidiMappings> ()),
+      tracklist_ (std::make_shared<Tracklist> (*this)),
+      undo_manager_ (std::make_unique<UndoManager> ())
 {
-  Z_PROJECT_ERROR_FAILED,
-} ZProjectError;
-
-#define Z_PROJECT_ERROR z_project_error_quark ()
-GQuark
-z_project_error_quark (void);
-G_DEFINE_QUARK (z - project - error - quark, z_project_error)
-
-/**
- * Project save data.
- */
-struct ProjectSaveData
-{
-  /** Project clone (with memcpy). */
-  std::unique_ptr<Project> project;
-
-  /** Full path to save to. */
-  std::string project_file_path;
-
-  bool is_backup = false;
-
-  /** To be set to true when the thread finishes. */
-  bool finished = false;
-
-  bool show_notification = false;
-
-  /** Whether an error occurred during saving. */
-  bool has_error = false;
-
-  ProgressInfo progress_info;
-};
-
-bool
-project_make_project_dirs (Project * self, bool is_backup, GError ** error)
-{
-#define MK_PROJECT_DIR(_path) \
-  { \
-    char * tmp = \
-      project_get_path (self, ProjectPath::PROJECT_PATH_##_path, is_backup); \
-    if (!tmp) \
-      { \
-        g_set_error_literal ( \
-          error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED, \
-          "Failed to get path for " #_path); \
-        return false; \
-      } \
-    GError * err = NULL; \
-    bool     success = io_mkdir (tmp, &err); \
-    if (!success) \
-      { \
-        PROPAGATE_PREFIXED_ERROR ( \
-          error, err, "Failed to create directory %s", tmp); \
-        return false; \
-      } \
-    g_free_and_null (tmp); \
-  }
-
-  MK_PROJECT_DIR (EXPORTS);
-  MK_PROJECT_DIR (EXPORTS_STEMS);
-  MK_PROJECT_DIR (POOL);
-  MK_PROJECT_DIR (PLUGIN_STATES);
-  MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
-  MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
-
-  return true;
+  init_selections ();
+  audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
-/**
- * Compresses/decompress a project from a file/data
- * to a file/data.
- *
- * @param compress True to compress, false to
- *   decompress.
- * @param[out] _dest Pointer to a location to allocate
- *   memory.
- * @param[out] _dest_size Pointer to a location to
- *   store the size of the allocated memory.
- * @param _src Input buffer or filepath.
- * @param _src_size Input buffer size, if not
- *   filepath.
- *
- * @return Whether successful.
- */
-bool
-_project_compress (
+std::string
+Project::get_newer_backup ()
+{
+  std::string filepath = get_path (ProjectPath::PROJECT_FILE, false);
+  z_return_val_if_fail (!filepath.empty (), "");
+
+  std::filesystem::file_time_type original_time;
+  if (std::filesystem::exists (filepath))
+    {
+      original_time = std::filesystem::last_write_time (filepath);
+    }
+  else
+    {
+      z_warning ("Failed to get last modified for {}", filepath);
+      return {};
+    }
+
+  std::string result;
+  std::string backups_dir = get_path (ProjectPath::BACKUPS, false);
+
+  try
+    {
+      for (const auto &entry : std::filesystem::directory_iterator (backups_dir))
+        {
+          auto full_path = entry.path () / PROJECT_FILE;
+          z_debug ("{}", full_path.string ());
+
+          if (std::filesystem::exists (full_path))
+            {
+              auto backup_time = std::filesystem::last_write_time (full_path);
+              if (backup_time > original_time)
+                {
+                  result = entry.path ().string ();
+                  original_time = backup_time;
+                }
+            }
+          else
+            {
+              z_warning (
+                "Failed to get last modified for {}", full_path.string ());
+              return {};
+            }
+        }
+    }
+  catch (const std::filesystem::filesystem_error &e)
+    {
+      z_warning ("Error accessing backup directory: {}", e.what ());
+      return {};
+    }
+
+  return result;
+}
+
+void
+Project::make_project_dirs (bool is_backup)
+{
+  for (
+    auto type :
+    { ProjectPath::EXPORTS, ProjectPath::EXPORTS_STEMS, ProjectPath::POOL,
+      ProjectPath::PluginStates, ProjectPath::PLUGIN_EXT_COPIES,
+      ProjectPath::PLUGIN_EXT_LINKS })
+    {
+      std::string dir = get_path (type, is_backup);
+      g_return_if_fail (dir.length () > 0);
+      try
+        {
+          io_mkdir (dir);
+        }
+      catch (ZrythmException &e)
+        {
+          throw ZrythmException (
+            fmt::sprintf ("Failed to create directory %s", dir));
+        }
+    }
+}
+
+void
+Project::compress_or_decompress (
   bool                   compress,
   char **                _dest,
   size_t *               _dest_size,
   ProjectCompressionFlag dest_type,
   const char *           _src,
   const size_t           _src_size,
-  ProjectCompressionFlag src_type,
-  GError **              error)
+  ProjectCompressionFlag src_type)
 {
   g_message (
     "using zstd v%d.%d.%d", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
@@ -182,10 +172,14 @@ _project_compress (
       break;
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
-        bool ret = g_file_get_contents (_src, &src, &src_size, error);
-        if (!ret)
+        GError * err = NULL;
+        bool     success = g_file_get_contents (_src, &src, &src_size, &err);
+        if (!success)
           {
-            return false;
+            std::string msg = err->message;
+            g_error_free_and_null (err);
+            throw ZrythmException (fmt::sprintf (
+              "Failed to get contents from file '%s': %s", _src, msg));
           }
       }
       break;
@@ -202,12 +196,9 @@ _project_compress (
       if (ZSTD_isError (dest_size))
         {
           free (dest);
-
-          g_set_error (
-            error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED,
+          throw ZrythmException (fmt::sprintf (
             "Failed to compress project file: %s",
-            ZSTD_getErrorName (dest_size));
-          return false;
+            ZSTD_getErrorName (dest_size)));
         }
     }
   else /* decompress */
@@ -222,38 +213,26 @@ _project_compress (
       if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
 #endif
         {
-          g_set_error_literal (
-            error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED,
-            "Project not compressed by zstd");
-          return false;
+          throw ZrythmException ("Project not compressed by zstd");
         }
       dest = (char *) malloc ((size_t) frame_content_size);
       dest_size = ZSTD_decompress (dest, frame_content_size, src, src_size);
       if (ZSTD_isError (dest_size))
         {
           free (dest);
-
-          g_set_error (
-            error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED,
+          throw ZrythmException (format_str (
             "Failed to decompress project file: %s",
-            ZSTD_getErrorName (dest_size));
-          return false;
+            ZSTD_getErrorName (dest_size)));
         }
       if (dest_size != frame_content_size)
         {
           free (dest);
-
-          /* impossible because zstd will check
-           * this condition */
-          g_set_error_literal (
-            error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED,
-            "uncompressed_size != "
-            "frame_content_size");
-          return false;
+          /* impossible because zstd will check this condition */
+          throw ZrythmException ("uncompressed_size != frame_content_size");
         }
     }
 
-  g_message (
+  z_debug (
     "%s : %u bytes -> %u bytes", compress ? "Compression" : "Decompression",
     (unsigned) src_size, (unsigned) dest_size);
 
@@ -265,80 +244,136 @@ _project_compress (
       break;
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
-        bool ret = g_file_set_contents (*_dest, dest, (gssize) dest_size, error);
-        if (!ret)
-          return false;
+        GError * err = NULL;
+        bool     success =
+          g_file_set_contents (*_dest, dest, (gssize) dest_size, &err);
+        if (!success)
+          {
+            std::string msg = err->message;
+            g_error_free_and_null (err);
+            throw ZrythmException (
+              fmt::sprintf ("Failed to write project file", msg));
+          }
       }
       break;
     }
-
-  return true;
 }
 
-static void
-set_datetime_str (Project * self)
+void
+Project::set_and_create_next_available_backup_dir ()
 {
-  if (self->datetime_str)
-    g_free (self->datetime_str);
-  self->datetime_str = datetime_get_current_as_string ();
-}
-
-/**
- * Sets the next available backup dir to use for
- * saving a backup during this call.
- *
- * @return Whether successful.
- */
-static bool
-set_and_create_next_available_backup_dir (Project * self, GError ** error)
-{
-  if (self->backup_dir)
-    g_free (self->backup_dir);
-
-  char * backups_dir =
-    project_get_path (self, ProjectPath::PROJECT_PATH_BACKUPS, false);
+  std::string backups_dir = get_path (ProjectPath::BACKUPS, false);
 
   int i = 0;
   do
     {
       if (i > 0)
         {
-          g_free (self->backup_dir);
-          char * bak_title = g_strdup_printf ("%s.bak%d", self->title, i);
-          self->backup_dir = g_build_filename (backups_dir, bak_title, NULL);
-          g_free (bak_title);
+          std::string bak_title = fmt::sprintf ("%s.bak%d", title_, i);
+          backup_dir_ = Glib::build_filename (backups_dir, bak_title);
         }
       else
         {
-          char * bak_title = g_strdup_printf ("%s.bak", self->title);
-          self->backup_dir = g_build_filename (backups_dir, bak_title, NULL);
-          g_free (bak_title);
+          std::string bak_title = fmt::sprintf ("%s.bak", title_);
+          backup_dir_ = Glib::build_filename (backups_dir, bak_title);
         }
       i++;
     }
-  while (file_exists (self->backup_dir));
-  g_free (backups_dir);
+  while (file_path_exists (backup_dir_));
 
-  GError * err = NULL;
-  bool     success = io_mkdir (self->backup_dir, &err);
-  if (!success)
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to create backup directory %s"),
-        self->backup_dir);
-      return false;
+      io_mkdir (backup_dir_);
     }
-
-  return true;
+  catch (ZrythmException &e)
+    {
+      throw ZrythmException (
+        format_str (_ ("Failed to create backup directory %s"), backup_dir_));
+    }
 }
 
-/**
- * Checks that everything is okay with the project.
- */
 void
-project_validate (Project * self)
+Project::activate ()
 {
-  g_message ("%s: validating...", __func__);
+  z_debug ("Activating project %s (%p)...", title_, fmt::ptr (this));
+
+  last_saved_action_ = undo_manager_->get_last_action ();
+
+  audio_engine_->activate (true);
+
+  /* pause engine */
+  AudioEngine::State state;
+  audio_engine_->wait_for_pause (state, true, false);
+
+  /* connect channel inputs to hardware and re-expose ports to
+   * backend. has to be done after engine activation */
+  for (auto track : tracklist_->tracks_ | type_is<ChannelTrack> ())
+    {
+      track->channel_->reconnect_ext_input_ports ();
+    }
+  tracklist_->expose_ports_to_backend ();
+
+  /* reconnect graph */
+  audio_engine_->router_->recalc_graph (false);
+
+  /* fix audio regions in case running under a new sample rate */
+  fix_audio_regions ();
+
+  /* resume engine */
+  audio_engine_->resume (state);
+
+  z_debug ("Project %s (%p) activated", title_, fmt::ptr (this));
+}
+
+void
+Project::add_default_tracks ()
+{
+  /* init pinned tracks */
+
+  auto add_track = [&] (auto track_type) {
+    using T = decltype (track_type);
+    static_assert (std::derived_from<T, Track>, "T must be derived from Track");
+
+    z_debug ("adding {} track...", typeid (T).name ());
+    tracklist_->append_track (
+      std::make_unique<T> (tracklist_->tracks_.size ()), false, false);
+  };
+
+  /* chord */
+  add_track (ChordTrack{});
+
+  /* add a scale */
+  auto scale = std::make_unique<ScaleObject> (
+    MusicalScale (MusicalScale::Type::Aeolian, MusicalNote::A));
+  tracklist_->chord_track_->add_scale (std::move (scale));
+
+  /* tempo */
+  add_track (TempoTrack{});
+  int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
+  int   beat_unit = tracklist_->tempo_track_->get_beat_unit ();
+  bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
+  audio_engine_->transport_->update_caches (beats_per_bar, beat_unit);
+  audio_engine_->update_frames_per_tick (
+    beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
+
+  /* modulator */
+  add_track (ModulatorTrack{});
+
+  /* marker */
+  add_track (MarkerTrack{});
+
+  tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
+
+  /* add master channel to mixer and tracklist */
+  add_track (MasterTrack{});
+  tracklist_selections_->add_track (*tracklist_->master_track_, false);
+  last_selection_ = SelectionType::Tracklist;
+}
+
+bool
+Project::validate () const
+{
+  z_debug ("validating project...");
 
 #if 0
   size_t max_size = 20;
@@ -357,44 +392,38 @@ project_validate (Project * self)
   free (ports);
 #endif
 
-  tracklist_validate (self->tracklist);
+  if (!tracklist_->validate ())
+    return false;
 
-  region_link_group_manager_validate (self->region_link_group_manager);
+  region_link_group_manager_.validate ();
 
   /* TODO add arranger_object_get_all and check
    * positions (arranger_object_validate) */
 
-  g_message ("%s: done", __func__);
+  z_debug ("project validation passed");
+
+  return true;
 }
 
-/**
- * @return Whether positions were adjusted.
- */
 bool
-project_fix_audio_regions (Project * self)
+Project::fix_audio_regions ()
 {
-  g_message ("fixing audio region positions...");
+  z_debug ("fixing audio region positions...");
 
   int num_fixed = 0;
-  for (auto track : self->tracklist->tracks)
+  for (const auto &track : tracklist_->tracks_ | type_is<AudioTrack> ())
     {
-      if (track->type != TrackType::TRACK_TYPE_AUDIO)
-        continue;
-
-      for (int j = 0; j < track->num_lanes; j++)
+      for (const auto &lane : track->lanes_)
         {
-          TrackLane * lane = track->lanes[j];
-
-          for (int k = 0; k < lane->num_regions; k++)
+          for (const auto &region : lane->regions_ | type_is<AudioRegion> ())
             {
-              Region * r = lane->regions[k];
-              if (audio_region_fix_positions (r, 0))
+              if (region->fix_positions (0))
                 num_fixed++;
             }
         }
     }
 
-  g_message ("done fixing %d audio region positions", num_fixed);
+  z_debug ("done fixing %d audio region positions", num_fixed);
 
   return num_fixed > 0;
 }
@@ -405,7 +434,7 @@ project_get_arranger_for_last_selection (
   Project * self)
 {
   Region * r =
-    clip_editor_get_region (CLIP_EDITOR);
+    CLIP_EDITOR->get_region ();
   switch (self->last_selection)
     {
     case Project::SelectionType::Timeline:
@@ -421,7 +450,7 @@ project_get_arranger_for_last_selection (
             case RegionType::REGION_TYPE_AUTOMATION:
               return AUTOMATION_SELECTIONS;
             case RegionType::REGION_TYPE_MIDI:
-              return MA_SELECTIONS;
+              return MIDI_SELECTIONS;
             case RegionType::REGION_TYPE_CHORD:
               return CHORD_SELECTIONS;
             }
@@ -436,28 +465,18 @@ project_get_arranger_for_last_selection (
 #endif
 
 ArrangerSelections *
-project_get_arranger_selections_for_last_selection (Project * self)
+Project::get_arranger_selections_for_last_selection ()
 {
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
-  switch (self->last_selection)
+  auto r = CLIP_EDITOR->get_region ();
+  switch (last_selection_)
     {
     case Project::SelectionType::Timeline:
-      return (ArrangerSelections *) TL_SELECTIONS;
+      return TL_SELECTIONS.get ();
       break;
     case Project::SelectionType::Editor:
       if (r)
         {
-          switch (r->id.type)
-            {
-            case RegionType::REGION_TYPE_AUDIO:
-              return (ArrangerSelections *) AUDIO_SELECTIONS;
-            case RegionType::REGION_TYPE_AUTOMATION:
-              return (ArrangerSelections *) AUTOMATION_SELECTIONS;
-            case RegionType::REGION_TYPE_MIDI:
-              return (ArrangerSelections *) MA_SELECTIONS;
-            case RegionType::REGION_TYPE_CHORD:
-              return (ArrangerSelections *) CHORD_SELECTIONS;
-            }
+          return r->get_arranger_selections ();
         }
       break;
     default:
@@ -467,53 +486,46 @@ project_get_arranger_selections_for_last_selection (Project * self)
   return NULL;
 }
 
-/**
- * Initializes the selections in the project.
- *
- * @note
- * Not meant to be used anywhere besides tests and project.c
- */
 void
-project_init_selections (Project * self)
+Project::init_selections ()
 {
-  self->automation_selections = (AutomationSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION);
-  self->audio_selections = (AudioSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO);
-  self->chord_selections = (ChordSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD);
-  self->timeline_selections = (TimelineSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  self->midi_arranger_selections =
-    (MidiArrangerSelections *) arranger_selections_new (
-      ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI);
-  self->mixer_selections = mixer_selections_new ();
-  mixer_selections_init (self->mixer_selections);
+  automation_selections_ = std::make_unique<AutomationSelections> ();
+  audio_selections_ = std::make_unique<AudioSelections> ();
+  chord_selections_ = std::make_unique<ChordSelections> ();
+  timeline_selections_ = std::make_unique<TimelineSelections> ();
+  midi_selections_ = std::make_unique<MidiSelections> ();
+  mixer_selections_ = std::make_unique<ProjectMixerSelections> ();
+}
+
+void
+Project::get_all_ports (std::vector<Port *> &ports) const
+{
+  audio_engine_->append_ports (ports);
+
+  for (const auto &tr : tracklist_->tracks_)
+    {
+      tr->append_ports (ports, true);
+    }
 }
 
 char *
-project_get_existing_uncompressed_text (
-  Project * self,
-  bool      backup,
-  GError ** error)
+Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
-  char * project_file_path =
-    project_get_path (self, ProjectPath::PROJECT_PATH_PROJECT_FILE, backup);
-  g_return_val_if_fail (project_file_path, NULL);
-  g_message (
-    "%s: getting text for project file %s", __func__, project_file_path);
+  std::string project_file_path = get_path (ProjectPath::PROJECT_FILE, backup);
+  z_debug ("getting text for project file %s", project_file_path);
 
   char *   compressed_pj;
   gsize    compressed_pj_size;
   GError * err = NULL;
   g_file_get_contents (
-    project_file_path, &compressed_pj, &compressed_pj_size, &err);
-  if (err != NULL)
+    project_file_path.c_str (), &compressed_pj, &compressed_pj_size, &err);
+  if (err != nullptr)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Unable to read file at %s"), project_file_path);
-      return NULL;
+      std::string msg = err->message;
+      g_error_free_and_null (err);
+      throw ZrythmException (format_str (
+        _ ("Unable to read file at %s: %s"), project_file_path, msg));
     }
 
   /* decompress */
@@ -521,17 +533,18 @@ project_get_existing_uncompressed_text (
   char * text = NULL;
   size_t text_size;
   err = NULL;
-  bool ret = project_decompress (
-    &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj,
-    compressed_pj_size, PROJECT_DECOMPRESS_DATA, &err);
-  g_free (compressed_pj);
-  if (!ret)
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to decompress project file at %s"),
-        project_file_path);
-      return NULL;
+      decompress (
+        &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj,
+        compressed_pj_size, PROJECT_DECOMPRESS_DATA);
     }
+  catch (ZrythmException &e)
+    {
+      throw ZrythmException (fmt::sprintf (
+        _ ("Unable to decompress project file at %s"), project_file_path));
+    }
+  g_free (compressed_pj);
 
   /* make string null-terminated */
   text = (char *) g_realloc (text, text_size + sizeof (char));
@@ -540,20 +553,12 @@ project_get_existing_uncompressed_text (
   return text;
 }
 
-/**
- * Autosave callback.
- *
- * This will keep getting called at regular short intervals,
- * and if enough time has passed and it's okay to save it will
- * autosave, otherwise it will wait until the next interval and
- * check again.
- */
 int
-project_autosave_cb (void * data)
+Project::autosave_cb (void * data)
 {
   if (
-    !PROJECT || !PROJECT->loaded || !PROJECT->dir || !PROJECT->datetime_str
-    || !MAIN_WINDOW || !MAIN_WINDOW->setup)
+    !PROJECT || !PROJECT->loaded_ || PROJECT->dir_.empty ()
+    || PROJECT->datetime_str_.empty () || !MAIN_WINDOW || !MAIN_WINDOW->setup)
     return G_SOURCE_CONTINUE;
 
   unsigned int autosave_interval_mins =
@@ -563,281 +568,213 @@ project_autosave_cb (void * data)
   if (autosave_interval_mins <= 0)
     return G_SOURCE_CONTINUE;
 
-  StereoPorts * out_ports;
-  gint64        cur_time = g_get_monotonic_time ();
-  gint64        microsec_to_autosave =
-    (gint64) autosave_interval_mins * 60 * 1000000 -
-    /* subtract 4 seconds because the time
-     * this gets called is not exact */
-    4 * 1000000;
+  auto &out_ports =
+    PROJECT->tracklist_->master_track_->get_channel ()->stereo_out_;
+  auto cur_time = SteadyClock::now ();
+  /* subtract 4 seconds because the time this gets called is not exact (this is
+   * an old comment and I don't remember why this is done) */
+  auto autosave_interval =
+    std::chrono::minutes (autosave_interval_mins) - std::chrono::seconds (4);
 
   /* skip if semaphore busy */
-  if (zix_sem_try_wait (&PROJECT->save_sem) != ZIX_STATUS_SUCCESS)
+  SemaphoreRAII sem (PROJECT->save_sem_);
+  if (!sem.is_acquired ())
     {
-      g_message (
-        "can't acquire project lock - skipping "
-        "autosave");
+      z_debug ("can't acquire project lock - skipping autosave");
       return G_SOURCE_CONTINUE;
     }
 
-  GError *         err = NULL;
-  bool             success;
-  UndoableAction * last_action =
-    undo_manager_get_last_action (PROJECT->undo_manager);
+  auto * last_action = PROJECT->undo_manager_->get_last_action ();
 
   /* skip if bad time to save or rolling */
-  if (cur_time - PROJECT->last_successful_autosave_time < microsec_to_autosave || TRANSPORT_IS_ROLLING || (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLL_REQUESTED && (TRANSPORT->preroll_frames_remaining > 0 || TRANSPORT->countin_frames_remaining > 0)))
+  if (cur_time - PROJECT->last_successful_autosave_time_ < autosave_interval || TRANSPORT->is_rolling() || (TRANSPORT->play_state_ == Transport::PlayState::RollRequested && (TRANSPORT->preroll_frames_remaining_ > 0 || TRANSPORT->countin_frames_remaining_ > 0)))
     {
-      goto post_save_sem_and_continue;
+      return G_SOURCE_CONTINUE;
     }
 
   /* skip if sound is playing */
-  out_ports = P_MASTER_TRACK->channel->stereo_out;
   if (
-    out_ports->get_l ().peak_ >= 0.0001f || out_ports->get_r ().peak_ >= 0.0001f)
+    out_ports->get_l ().get_peak () >= 0.0001f
+    || out_ports->get_r ().get_peak () >= 0.0001f)
     {
-      g_debug ("sound is playing, skipping autosave");
-      goto post_save_sem_and_continue;
+      z_debug ("sound is playing, skipping autosave");
+      return G_SOURCE_CONTINUE;
     }
 
   /* skip if currently performing action */
   if (arranger_widget_any_doing_action ())
     {
-      g_debug (
-        "in the middle of an action, skipping "
-        "autosave");
-      goto post_save_sem_and_continue;
+      z_debug ("in the middle of an action, skipping autosave");
+      return G_SOURCE_CONTINUE;
     }
 
-  if (PROJECT->last_action_in_last_successful_autosave == last_action)
+  if (PROJECT->last_action_in_last_successful_autosave_ == last_action)
     {
-      g_debug (
-        "last action is same as previous backup - skipping "
-        "autosave");
-      goto post_save_sem_and_continue;
+      z_debug ("last action is same as previous backup - skipping autosave");
+      return G_SOURCE_CONTINUE;
     }
 
   /* skip if any modal window is open */
   if (ZRYTHM_HAVE_UI)
     {
-      GListModel * toplevels = gtk_window_get_toplevels ();
-      guint        num_toplevels = g_list_model_get_n_items (toplevels);
+      auto toplevels = gtk_window_get_toplevels ();
+      auto num_toplevels = g_list_model_get_n_items (toplevels);
       for (guint i = 0; i < num_toplevels; i++)
         {
-
-          GtkWindow * window = GTK_WINDOW (g_list_model_get_item (toplevels, i));
+          auto window = GTK_WINDOW (g_list_model_get_item (toplevels, i));
           if (
             gtk_widget_get_visible (GTK_WIDGET (window))
             && (gtk_window_get_modal (window) || gtk_window_get_transient_for (window) == GTK_WINDOW (MAIN_WINDOW)))
             {
-              g_debug ("modal/transient windows exist - skipping autosave");
+              z_debug ("modal/transient windows exist - skipping autosave");
               z_gtk_widget_print_hierarchy (GTK_WIDGET (window));
-              goto post_save_sem_and_continue;
+              return G_SOURCE_CONTINUE;
             }
         }
     }
 
   /* ok to save */
-  success = project_save (
-    PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION, F_ASYNC, &err);
-  if (success)
+  try
     {
-      PROJECT->last_successful_autosave_time = cur_time;
+      PROJECT->save (PROJECT->dir_, true, true, true);
+      PROJECT->last_successful_autosave_time_ = cur_time;
     }
-  else
+  catch (const ZrythmException &e)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
+      if (ZRYTHM_HAVE_UI)
+        {
+          e.handle (_ ("Failed to save the project"));
+        }
+      else
+        {
+          z_warning ("%s", e.what ());
+        }
     }
-
-post_save_sem_and_continue:
-  zix_sem_post (&PROJECT->save_sem);
 
   return G_SOURCE_CONTINUE;
 }
 
-/**
- * Returns the requested project path as a newly
- * allocated string.
- *
- * @param backup Whether to get the path for the
- *   current backup instead of the main project.
- */
-char *
-project_get_path (Project * self, ProjectPath path, bool backup)
+std::string
+Project::get_path (ProjectPath path, bool backup)
 {
-  g_return_val_if_fail (self->dir, NULL);
-  char * dir = backup ? self->backup_dir : self->dir;
+  auto &dir = backup ? backup_dir_ : dir_;
   switch (path)
     {
-    case ProjectPath::PROJECT_PATH_BACKUPS:
-      return g_build_filename (dir, PROJECT_BACKUPS_DIR, NULL);
-    case ProjectPath::PROJECT_PATH_EXPORTS:
-      return g_build_filename (dir, PROJECT_EXPORTS_DIR, NULL);
-    case ProjectPath::PROJECT_PATH_EXPORTS_STEMS:
-      return g_build_filename (
-        dir, PROJECT_EXPORTS_DIR, PROJECT_STEMS_DIR, NULL);
-    case ProjectPath::PROJECT_PATH_PLUGINS:
-      return g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
-    case ProjectPath::PROJECT_PATH_PLUGIN_STATES:
+    case ProjectPath::BACKUPS:
+      return Glib::build_filename (dir, PROJECT_BACKUPS_DIR);
+    case ProjectPath::EXPORTS:
+      return Glib::build_filename (dir, PROJECT_EXPORTS_DIR);
+    case ProjectPath::EXPORTS_STEMS:
+      return Glib::build_filename (dir, PROJECT_EXPORTS_DIR, PROJECT_STEMS_DIR);
+    case ProjectPath::PLUGINS:
+      return Glib::build_filename (dir, PROJECT_PLUGINS_DIR);
+    case ProjectPath::PluginStates:
       {
-        char * plugins_dir =
-          project_get_path (self, ProjectPath::PROJECT_PATH_PLUGINS, backup);
-        char * ret =
-          g_build_filename (plugins_dir, PROJECT_PLUGIN_STATES_DIR, NULL);
-        g_free (plugins_dir);
-        return ret;
+        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_STATES_DIR);
       }
       break;
-    case ProjectPath::PROJECT_PATH_PLUGIN_EXT_COPIES:
+    case ProjectPath::PLUGIN_EXT_COPIES:
       {
-        char * plugins_dir =
-          project_get_path (self, ProjectPath::PROJECT_PATH_PLUGINS, backup);
-        char * ret =
-          g_build_filename (plugins_dir, PROJECT_PLUGIN_EXT_COPIES_DIR, NULL);
-        g_free (plugins_dir);
-        return ret;
+        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_EXT_COPIES_DIR);
       }
       break;
-    case ProjectPath::PROJECT_PATH_PLUGIN_EXT_LINKS:
+    case ProjectPath::PLUGIN_EXT_LINKS:
       {
-        char * plugins_dir =
-          project_get_path (self, ProjectPath::PROJECT_PATH_PLUGINS, backup);
-        char * ret =
-          g_build_filename (plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR, NULL);
-        g_free (plugins_dir);
-        return ret;
+        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR);
       }
       break;
-    case ProjectPath::PROJECT_PATH_POOL:
-      return g_build_filename (dir, PROJECT_POOL_DIR, NULL);
-    case ProjectPath::PROJECT_PATH_PROJECT_FILE:
-      return g_build_filename (dir, PROJECT_FILE, NULL);
-    case ProjectPath::PROJECT_PATH_FINISHED_FILE:
-      return g_build_filename (dir, PROJECT_FINISHED_FILE, NULL);
+    case ProjectPath::POOL:
+      return Glib::build_filename (dir, PROJECT_POOL_DIR);
+    case ProjectPath::PROJECT_FILE:
+      return Glib::build_filename (dir, PROJECT_FILE);
+    case ProjectPath::FINISHED_FILE:
+      return Glib::build_filename (dir, PROJECT_FINISHED_FILE);
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached ("");
     }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached ("");
 }
 
 void
-project_init_common (Project * self)
-{
-  zix_sem_init (&self->save_sem, 1);
-}
-
-/**
- * Creates an empty project object.
- */
-Project *
-project_new (Zrythm * owner)
-{
-  g_message ("%s: Creating...", __func__);
-
-  Project * self = new Project ();
-
-  owner->project = self;
-
-  self->version = Zrythm::get_version (0);
-  self->clip_editor = clip_editor_new ();
-  self->timeline = timeline_new ();
-  self->snap_grid_timeline = snap_grid_new ();
-  self->snap_grid_editor = snap_grid_new ();
-  self->quantize_opts_timeline = quantize_options_new ();
-  self->quantize_opts_editor = quantize_options_new ();
-  self->tracklist_selections = tracklist_selections_new (true);
-  self->region_link_group_manager = region_link_group_manager_new ();
-  self->port_connections_manager = port_connections_manager_new ();
-  self->midi_mappings = midi_mappings_new ();
-
-  project_init_common (self);
-
-  g_message ("%s: done", __func__);
-
-  return self;
-}
-
-/**
- * Thread that does the serialization and saving.
- */
-static void *
-serialize_project_thread (ProjectSaveData * data)
+Project::serialize_project_thread (std::stop_token stop_token, SaveContext &ctx)
 {
   char * compressed_json;
   size_t compressed_size;
-  bool   ret;
 
   /* generate json */
-  g_message ("serializing project to json...");
-  GError * err = NULL;
-  gint64   time_before = g_get_monotonic_time ();
-  char *   json = project_serialize_to_json_str (data->project.get (), &err);
-  gint64   time_after = g_get_monotonic_time ();
-  g_message (
-    "time to serialize: %ldms", (long) (time_after - time_before) / 1000);
-  if (!json)
+  z_debug ("serializing project to json...");
+  auto                       time_before = g_get_monotonic_time ();
+  gint64                     time_after;
+  std::optional<CStringRAII> json;
+  try
     {
-      HANDLE_ERROR_LITERAL (err, _ ("Failed to serialize project"));
-      data->has_error = true;
+      json = ctx.project_->serialize_to_json_string ();
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle ("Failed to serialize project");
+      ctx.has_error_ = true;
       goto serialize_end;
     }
+  time_after = g_get_monotonic_time ();
+  z_debug ("time to serialize: {}ms", (time_after - time_before) / 1000);
 
   /* compress */
-  err = NULL;
-  ret = project_compress (
-    &compressed_json, &compressed_size,
-    ProjectCompressionFlag::PROJECT_COMPRESS_DATA, json,
-    strlen (json) * sizeof (char),
-    ProjectCompressionFlag::PROJECT_COMPRESS_DATA, &err);
-  g_free (json);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to compress project file"));
-      data->has_error = true;
+      compress (
+        &compressed_json, &compressed_size,
+        ProjectCompressionFlag::PROJECT_COMPRESS_DATA, json->c_str (),
+        strlen (json->c_str ()) * sizeof (char),
+        ProjectCompressionFlag::PROJECT_COMPRESS_DATA);
+    }
+  catch (const ZrythmException &ex)
+    {
+      ex.handle (_ ("Failed to compress project file"));
+      ctx.has_error_ = true;
       goto serialize_end;
     }
 
   /* set file contents */
-  g_message (
-    "%s: saving project file at %s...", __func__,
-    data->project_file_path.c_str ());
-  g_file_set_contents (
-    data->project_file_path.c_str (), compressed_json, (gssize) compressed_size,
-    &err);
-  free (compressed_json);
-  if (err != NULL)
+  z_debug ("saving project file at {}...", ctx.project_file_path_);
+  try
     {
-      g_critical (
-        "%s: Unable to write project file: %s", __func__, err->message);
-      g_error_free (err);
-      data->has_error = true;
+      Glib::file_set_contents (
+        ctx.project_file_path_, compressed_json,
+        static_cast<gssize> (compressed_size));
+      g_free (compressed_json);
+    }
+  catch (const Glib::Error &e)
+    {
+      ctx.has_error_ = true;
+      z_error ("Unable to write project file: {}", e.what ());
     }
 
-  g_message ("%s: successfully saved project", __func__);
+  z_debug ("successfully saved project");
 
 serialize_end:
-  zix_sem_post (&UNDO_MANAGER->action_sem);
-  data->finished = true;
-  return NULL;
+  UNDO_MANAGER->action_sem_.release ();
+  ctx.finished_ = true;
 }
 
-/**
- * Idle func to check if the project has finished
- * saving and show a notification.
- */
-static int
-project_idle_saved_cb (ProjectSaveData * data)
+int
+Project::idle_saved_callback (SaveContext * ctx)
 {
-  if (!data->finished)
+  if (!ctx->finished_)
     {
       return G_SOURCE_CONTINUE;
     }
 
-  if (data->is_backup)
+  if (ctx->is_backup_)
     {
-      g_message (_ ("Backup saved."));
+
+      z_debug ("Backup saved.");
       if (ZRYTHM_HAVE_UI)
         {
+
           ui_show_notification (_ ("Backup saved."));
         }
     }
@@ -845,466 +782,280 @@ project_idle_saved_cb (ProjectSaveData * data)
     {
       if (!ZRYTHM_TESTING)
         {
-          gZrythm->add_to_recent_projects (data->project_file_path.c_str ());
+
+          gZrythm->add_to_recent_projects (ctx->project_file_path_);
         }
-      if (data->show_notification)
+      if (ctx->show_notification_)
+
         ui_show_notification (_ ("Project saved."));
     }
 
-  if (ZRYTHM_HAVE_UI && PROJECT->loaded && MAIN_WINDOW)
+  if (ZRYTHM_HAVE_UI && PROJECT->loaded_ && MAIN_WINDOW)
     {
-      EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT);
+      EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT.get ());
     }
 
-  data->progress_info.mark_completed (
+  ctx->progress_info_.mark_completed (
     ProgressInfo::CompletionType::SUCCESS, nullptr);
 
   return G_SOURCE_REMOVE;
 }
 
-/**
- * Cleans up unnecessary plugin state dirs from the
- * main project.
- */
-static void
-cleanup_plugin_state_dirs (ProjectSaveData * data)
+void
+Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 {
-  g_debug (
-    "cleaning plugin state dirs%s...", data->is_backup ? " for backup" : "");
+  z_debug ("cleaning plugin state dirs%s...", is_backup ? " for backup" : "");
 
-  /* if saving backup, the temporary state dirs
-   * created during clone() are not needed by
-   * the main project so we just check what is
-   * needed from the main project and delete the
-   * rest.
-   * if saving the main project, the newly copied
-   * state dirs are used instead of the old ones,
-   * so we check the cloned project and delete
-   * the rest
-   *
-   * that said, there is still an issue
-   * (see https://todo.sr.ht/~alextee/zrythm-bug/1047)
-   * so just don't delete any plugins in either the clone
-   * or the current/main project
-   * */
-  GPtrArray * arr = g_ptr_array_new ();
-  plugin_get_all (PROJECT, arr, true);
-  plugin_get_all (data->project.get (), arr, true);
-  for (size_t i = 0; i < arr->len; i++)
+  std::vector<Plugin *> plugins;
+  Plugin::get_all (main_project, plugins, true);
+  Plugin::get_all (*this, plugins, true);
+
+  for (size_t i = 0; i < plugins.size (); i++)
     {
-      Plugin * pl = (Plugin *) g_ptr_array_index (arr, i);
-      g_debug ("plugin %zu: %s", i, pl->state_dir);
+      z_debug ("plugin %zu: %s", i, plugins[i]->state_dir_.c_str ());
     }
 
-  char * plugin_states_path = project_get_path (
-    PROJECT, ProjectPath::PROJECT_PATH_PLUGIN_STATES, F_NOT_BACKUP);
+  auto plugin_states_path =
+    main_project.get_path (ProjectPath::PluginStates, false);
 
-  /* get existing plugin state dirs */
-  GDir *   dir;
-  GError * error = NULL;
-  dir = g_dir_open (plugin_states_path, 0, &error);
-  g_return_if_fail (error == NULL);
-  const char * filename;
-  while ((filename = g_dir_read_name (dir)))
+  try
     {
-      char * full_path = g_build_filename (plugin_states_path, filename, NULL);
-
-      /* skip non-dirs */
-      if (!g_file_test (full_path, G_FILE_TEST_IS_DIR))
+      Glib::Dir dir (plugin_states_path);
+      for (auto filename : dir)
         {
-          g_free (full_path);
-          continue;
-        }
+          auto full_path = Glib::build_filename (plugin_states_path, filename);
 
-      /*g_debug ("filename to check: %s", filename);*/
-
-      /* if not found in the current plugins,
-       * remove the dir */
-      bool found = false;
-      for (size_t i = 0; i < arr->len; i++)
-        {
-          Plugin * pl = (Plugin *) g_ptr_array_index (arr, i);
-          if (string_is_equal (filename, pl->state_dir))
+          if (!Glib::file_test (full_path, Glib::FileTest::IS_DIR))
             {
-              found = true;
-              /*g_debug ("found");*/
-              break;
+              continue;
+            }
+
+          bool found = std::any_of (
+            plugins.begin (), plugins.end (), [&filename] (const auto &pl) {
+              return pl->state_dir_ == filename;
+            });
+          if (!found)
+            {
+              z_debug ("removing unused plugin state in %s", full_path);
+              io_rmdir (full_path, true);
             }
         }
-
-      if (!found)
-        {
-          g_message ("removing unused plugin state in %s", full_path);
-          io_rmdir (full_path, Z_F_FORCE);
-        }
-
-      g_free (full_path);
     }
-  g_dir_close (dir);
+  catch (const Glib::Error &e)
+    {
+      z_critical ("Failed to open directory: %s", e.what ());
+      return;
+    }
 
-  g_ptr_array_unref (arr);
-
-  g_free (plugin_states_path);
-
-  g_debug ("cleaned plugin state dirs");
+  z_debug ("cleaned plugin state directories");
 }
 
-/**
- * Saves the project to a project file in the
- * given dir.
- *
- * @param is_backup 1 if this is a backup. Backups
- *   will be saved as <original filename>.bak<num>.
- * @param show_notification Show a notification
- *   in the UI that the project was saved.
- * @param async Save asynchronously in another
- *   thread.
- *
- * @return Whether successful.
- */
-bool
-project_save (
-  Project *    self,
-  const char * _dir,
-  const bool   is_backup,
-  const bool   show_notification,
-  const bool   async,
-  GError **    error)
+void
+Project::save (
+  const std::string &_dir,
+  const bool         is_backup,
+  const bool         show_notification,
+  const bool         async)
 {
   /* pause engine */
-  EngineState state;
-  bool        engine_paused = false;
-  if (AUDIO_ENGINE->activated)
+  AudioEngine::State state;
+  bool               engine_paused = false;
+  if (audio_engine_->activated_)
     {
-      engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+      audio_engine_->wait_for_pause (state, false, true);
       engine_paused = true;
     }
 
+  /* if async, lock the undo manager */
   if (async)
     {
-      zix_sem_wait (&UNDO_MANAGER->action_sem);
+      undo_manager_->action_sem_.acquire ();
     }
 
-  project_validate (self);
+  validate ();
 
-  char * dir = g_strdup (_dir);
+  std::string dir = _dir;
 
-  /* set the dir and create it if it doesn't
-   * exist */
-  g_free_and_null (self->dir);
-  self->dir = g_strdup (dir);
-  GError * err = NULL;
-  bool     success = io_mkdir (PROJECT->dir, &err);
-  if (!success)
+  /* set the dir and create it if it doesn't exist */
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to create project directory %s", PROJECT->dir);
-      return false;
+      io_mkdir (dir_);
+    }
+
+  catch (const ZrythmException &e)
+    {
+      throw ZrythmException (
+
+        fmt::format ("Failed to create project directory {}", dir_));
     }
 
   /* set the title */
-  char * basename = g_path_get_basename (dir);
-  g_free_and_null (self->title);
-  self->title = g_strdup (basename);
-  g_free (basename);
-  g_free (dir);
+  title_ = Glib::path_get_basename (dir);
 
   /* save current datetime */
-  set_datetime_str (self);
+  datetime_str_ = datetime_get_current_as_string ();
 
   /* set the project version */
-  g_free_and_null (self->version);
-  self->version = Zrythm::get_version (false);
+  version_ = Zrythm::get_version (false);
 
   /* if backup, get next available backup dir */
   if (is_backup)
     {
-      success = set_and_create_next_available_backup_dir (self, &err);
-      if (!success)
+      try
         {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Failed to create backup directory");
-          return false;
+          set_and_create_next_available_backup_dir ();
+        }
+
+      catch (const ZrythmException &e)
+        {
+          throw ZrythmException (_ ("Failed to create backup directory"));
         }
     }
 
-  success = project_make_project_dirs (self, is_backup, &err);
-  if (!success)
+  try
     {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, "Failed to create project directories");
-      return false;
+      make_project_dirs (is_backup);
+    }
+
+  catch (const ZrythmException &e)
+    {
+      throw ZrythmException (_ ("Failed to create project directories"));
     }
 
   /* write the pool */
-  audio_pool_remove_unused (AUDIO_POOL, is_backup);
-  success = audio_pool_write_to_disk (AUDIO_POOL, is_backup, &err);
-  if (!success)
+  audio_engine_->pool_->remove_unused (is_backup);
+  try
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to write audio pool to disk"));
-      return false;
+      audio_engine_->pool_->write_to_disk (is_backup);
+    }
+  catch (const ZrythmException &e)
+    {
+      throw ZrythmException (_ ("Failed to write audio pool to disk"));
     }
 
-  ProjectSaveData * data = new ProjectSaveData ();
-  data->project_file_path =
-    project_get_path (self, ProjectPath::PROJECT_PATH_PROJECT_FILE, is_backup);
-  data->show_notification = show_notification;
-  data->is_backup = is_backup;
-  data->project.reset (project_clone (PROJECT, is_backup, &err));
-  if (!data->project)
-    {
-      PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to clone project"));
-      return false;
-    }
-  g_return_val_if_fail (data->project->tracklist_selections, false);
-  data->project->tracklist_selections->free_tracks = true;
+  auto ctx = std::make_unique<SaveContext> ();
+  ctx->project_file_path_ = get_path (ProjectPath::PROJECT_FILE, is_backup);
+  ctx->show_notification_ = show_notification;
+  ctx->is_backup_ = is_backup;
+  ctx->project_ = clone (is_backup);
 
   if (is_backup)
     {
       /* copy plugin states */
-      char * prj_pl_states_dir = project_get_path (
-        PROJECT, ProjectPath::PROJECT_PATH_PLUGINS, F_NOT_BACKUP);
-      char * prj_backup_pl_states_dir =
-        project_get_path (PROJECT, ProjectPath::PROJECT_PATH_PLUGINS, F_BACKUP);
-      success = io_copy_dir (
-        prj_backup_pl_states_dir, prj_pl_states_dir, F_NO_FOLLOW_SYMLINKS,
-        F_RECURSIVE, &err);
-      if (!success)
+      auto prj_pl_states_dir = get_path (ProjectPath::PLUGINS, false);
+      auto prj_backup_pl_states_dir = get_path (ProjectPath::PLUGINS, true);
+      try
         {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Failed to copy plugin states");
-          return false;
+          io_copy_dir (prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
+        }
+      catch (const ZrythmException &e)
+        {
+          throw ZrythmException (_ ("Failed to copy plugin states"));
         }
     }
 
   if (!is_backup)
     {
-      /* cleanup unused plugin states (or do it when executing
-       * mixer/tracklist selection actions) */
-      cleanup_plugin_state_dirs (data);
+      /* cleanup unused plugin states */
+      ctx->project_->cleanup_plugin_state_dirs (*this, is_backup);
     }
 
   /* TODO verify all plugin states exist */
 
   if (async)
     {
-      g_thread_new (
-        "serialize_project_thread", (GThreadFunc) serialize_project_thread,
-        data);
+      std::jthread save_thread (serialize_project_thread, std::ref (*ctx));
 
       /* TODO: show progress dialog */
       if (ZRYTHM_HAVE_UI && false)
         {
-          g_idle_add ((GSourceFunc) project_idle_saved_cb, data);
+          g_idle_add ((GSourceFunc) idle_saved_callback, ctx.get ());
 
           /* show progress while saving (TODO) */
         }
       else
         {
-          while (!data->finished)
+          while (!ctx->finished_)
             {
-              g_usleep (1000);
+              std::this_thread::sleep_for (std::chrono::milliseconds (1));
             }
-          project_idle_saved_cb (data);
+          idle_saved_callback (ctx.get ());
         }
     }
   else /* else if no async */
     {
       /* call synchronously */
-      serialize_project_thread (data);
-      project_idle_saved_cb (data);
+      serialize_project_thread (std::stop_token{}, *ctx);
+      idle_saved_callback (ctx.get ());
     }
-
-  object_delete_and_null (data);
 
   /* write FINISHED file */
   {
-    char * finished_file_path = project_get_path (
-      self, ProjectPath::PROJECT_PATH_FINISHED_FILE, is_backup);
+    auto finished_file_path = get_path (ProjectPath::FINISHED_FILE, is_backup);
     io_touch_file (finished_file_path);
-    g_free (finished_file_path);
   }
 
   if (ZRYTHM_TESTING)
-    tracklist_validate (self->tracklist);
+    tracklist_->validate ();
 
-  UndoableAction * last_action =
-    undo_manager_get_last_action (self->undo_manager);
+  auto last_action = undo_manager_->get_last_action ();
   if (is_backup)
     {
-      self->last_action_in_last_successful_autosave = last_action;
+      last_action_in_last_successful_autosave_ = last_action;
     }
   else
     {
-      self->last_saved_action = last_action;
+      last_saved_action_ = last_action;
     }
 
   if (engine_paused)
     {
-      engine_resume (AUDIO_ENGINE, &state);
+      audio_engine_->resume (state);
     }
-
-  return true;
 }
 
 bool
-project_has_unsaved_changes (const Project * self)
+Project::has_unsaved_changes () const
 {
-  /* simply check if the last performed action matches the
-   * last action when the project was last saved/loaded */
-  UndoableAction * last_performed_action =
-    undo_manager_get_last_action (self->undo_manager);
-  return last_performed_action != self->last_saved_action;
+  /* simply check if the last performed action matches the last action when the
+   * project was last saved/loaded */
+  auto last_performed_action = undo_manager_->get_last_action ();
+  return last_performed_action != last_saved_action_;
 }
 
-/**
- * Deep-clones the given project.
- *
- * To be used during save on the main thread.
- *
- * @param for_backup Whether the resulting project
- *   is for a backup.
- */
-Project *
-project_clone (const Project * src, bool for_backup, GError ** error)
-{
-  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, NULL);
-  g_message ("cloning project...");
-
-  Project * self = new Project ();
-  /*self->schema_version = PROJECT_SCHEMA_VERSION;*/
-
-  self->title = g_strdup (src->title);
-  self->datetime_str = g_strdup (src->datetime_str);
-  self->version = g_strdup (src->version);
-  self->tracklist = tracklist_clone (src->tracklist);
-  self->clip_editor = clip_editor_clone (src->clip_editor);
-  self->timeline = timeline_clone (src->timeline);
-  self->snap_grid_timeline = snap_grid_clone (src->snap_grid_timeline);
-  self->snap_grid_editor = snap_grid_clone (src->snap_grid_editor);
-  self->quantize_opts_timeline =
-    quantize_options_clone (src->quantize_opts_timeline);
-  self->quantize_opts_editor =
-    quantize_options_clone (src->quantize_opts_editor);
-  self->audio_engine = engine_clone (src->audio_engine);
-  self->mixer_selections =
-    mixer_selections_clone (src->mixer_selections, F_PROJECT);
-  self->timeline_selections = (TimelineSelections *) arranger_selections_clone (
-    (ArrangerSelections *) src->timeline_selections);
-  self->midi_arranger_selections =
-    (MidiArrangerSelections *) arranger_selections_clone (
-      (ArrangerSelections *) src->midi_arranger_selections);
-  self->chord_selections = (ChordSelections *) arranger_selections_clone (
-    (ArrangerSelections *) src->chord_selections);
-  self->automation_selections = (AutomationSelections *)
-    arranger_selections_clone ((ArrangerSelections *) src->automation_selections);
-  self->audio_selections = (AudioSelections *) arranger_selections_clone (
-    (ArrangerSelections *) src->audio_selections);
-  GError * err = NULL;
-  self->tracklist_selections =
-    tracklist_selections_clone (src->tracklist_selections, &err);
-  if (!self->tracklist_selections)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", "Failed to clone track selections");
-      return NULL;
-    }
-  self->tracklist_selections->is_project = true;
-  self->region_link_group_manager =
-    region_link_group_manager_clone (src->region_link_group_manager);
-  self->port_connections_manager =
-    port_connections_manager_clone (src->port_connections_manager);
-  self->midi_mappings = midi_mappings_clone (src->midi_mappings);
-
-  /* no undo history in backups */
-  if (!for_backup)
-    {
-      self->undo_manager = undo_manager_clone (src->undo_manager);
-    }
-
-  g_message ("finished cloning project");
-
-  return self;
-}
-
-/**
- * Frees the selections in the project.
- */
-static void
-free_arranger_selections (Project * self)
-{
-  object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *, self->automation_selections);
-  object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *, self->audio_selections);
-  object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *, self->chord_selections);
-  object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *, self->timeline_selections);
-  object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *,
-    self->midi_arranger_selections);
-}
-
-/**
- * Tears down the project.
- */
 void
-project_free (Project * self)
+Project::init_after_cloning (const Project &other)
 {
-  g_message ("%s: tearing down...", __func__);
+  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_debug ("cloning project...");
 
-  self->loaded = false;
+  title_ = other.title_;
+  datetime_str_ = other.datetime_str_;
+  version_ = other.version_;
+  tracklist_ = other.tracklist_->clone_shared ();
+  clip_editor_ = other.clip_editor_;
+  timeline_ = std::make_unique<Timeline> (*other.timeline_);
+  snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
+  snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);
+  quantize_opts_timeline_ =
+    std::make_unique<QuantizeOptions> (*other.quantize_opts_timeline_);
+  quantize_opts_editor_ =
+    std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
+  audio_engine_ = audio_engine_->clone_unique ();
+  mixer_selections_ =
+    std::make_unique<ProjectMixerSelections> (*other.mixer_selections_);
+  timeline_selections_ = other.timeline_selections_->clone_unique ();
+  midi_selections_ = other.midi_selections_->clone_unique ();
+  chord_selections_ = other.chord_selections_->clone_unique ();
+  automation_selections_ = other.automation_selections_->clone_unique ();
+  audio_selections_ = other.audio_selections_->clone_unique ();
+  tracklist_selections_ =
+    std::make_unique<SimpleTracklistSelections> (*other.tracklist_selections_);
+  tracklist_selections_->tracklist_ = tracklist_.get ();
+  region_link_group_manager_ = other.region_link_group_manager_;
+  port_connections_manager_ = other.port_connections_manager_->clone_unique ();
+  midi_mappings_ = other.midi_mappings_->clone_unique ();
+  undo_manager_ = other.undo_manager_->clone_unique ();
 
-  g_free_and_null (self->title);
-
-  if (self->audio_engine && self->audio_engine->activated)
-    {
-      engine_activate (self->audio_engine, false);
-    }
-  /* remove region from clip editor to avoid
-   * lookups for it when removing regions from
-   * track */
-  self->clip_editor->has_region = false;
-
-  object_free_w_func_and_null (undo_manager_free, self->undo_manager);
-
-  /* must be free'd before tracklist selections,
-   * mixer selections, engine, and port connection
-   * manager */
-  object_free_w_func_and_null (tracklist_free, self->tracklist);
-
-  object_free_w_func_and_null (midi_mappings_free, self->midi_mappings);
-  object_free_w_func_and_null (clip_editor_free, self->clip_editor);
-  object_free_w_func_and_null (timeline_free, self->timeline);
-  object_free_w_func_and_null (snap_grid_free, self->snap_grid_timeline);
-  object_free_w_func_and_null (snap_grid_free, self->snap_grid_editor);
-  object_free_w_func_and_null (
-    quantize_options_free, self->quantize_opts_timeline);
-  object_free_w_func_and_null (
-    quantize_options_free, self->quantize_opts_editor);
-  object_free_w_func_and_null (
-    region_link_group_manager_free, self->region_link_group_manager);
-
-  object_free_w_func_and_null (
-    tracklist_selections_free, self->tracklist_selections);
-
-  free_arranger_selections (self);
-
-  object_free_w_func_and_null (engine_free, self->audio_engine);
-
-  /* must be free'd after engine */
-  object_free_w_func_and_null (
-    port_connections_manager_free, self->port_connections_manager);
-
-  /* must be free'd after port connections
-   * manager */
-  object_free_w_func_and_null (mixer_selections_free, self->mixer_selections);
-
-  zix_sem_destroy (&self->save_sem);
-
-  delete self;
-
-  g_message ("%s: free'd project", __func__);
+  z_debug ("finished cloning project");
 }

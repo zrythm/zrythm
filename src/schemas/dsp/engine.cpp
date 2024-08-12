@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
 #include "schemas/dsp/engine.h"
 #include "utils/objects.h"
 

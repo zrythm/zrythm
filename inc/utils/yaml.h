@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * YAML utils.
  */
@@ -111,7 +111,7 @@
  * int                ids_size;
  * @endcode@
  *
- * @note \ref schema must be declared as
+ * @note @ref schema must be declared as
  *   CYAML_VALUE_MAPPING with the flag
  *   CYAML_FLAG_DEFAULT.
  */
@@ -157,7 +157,7 @@
  * int   ids_size;
  * @endcode@
  *
- * @note \ref schema must be declared as
+ * @note @ref schema must be declared as
  *   CYAML_VALUE_MAPPING with the flag
  *   CYAML_FLAG_DEFAULT.
  */

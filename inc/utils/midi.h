@@ -23,7 +23,7 @@
 // clang-format on
 
 /**
- * \file
+ * @file
  *
  * MIDI utils.
  */
@@ -47,24 +47,24 @@
  */
 
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */
-#define MIDI_CH1_NOTE_ON 0x90
-#define MIDI_CH1_NOTE_OFF 0x80
+static constexpr uint8_t MIDI_CH1_NOTE_ON = 0x90;
+static constexpr uint8_t MIDI_CH1_NOTE_OFF = 0x80;
 /** Also known as Polyphonic Key Pressure. */
-#define MIDI_CH1_POLY_AFTERTOUCH 0xA0
-#define MIDI_CH1_CTRL_CHANGE 0xB0
-#define MIDI_CH1_PROG_CHANGE 0xC0
+static constexpr uint8_t MIDI_CH1_POLY_AFTERTOUCH = 0xA0;
+static constexpr uint8_t MIDI_CH1_CTRL_CHANGE = 0xB0;
+static constexpr uint8_t MIDI_CH1_PROG_CHANGE = 0xC0;
 /** Also known as Channel Pressure. */
-#define MIDI_CH1_CHAN_AFTERTOUCH 0xD0
-#define MIDI_CH1_PITCH_WHEEL_RANGE 0xE0
-#define MIDI_ALL_NOTES_OFF 0x7B
-#define MIDI_ALL_SOUND_OFF 0x78
-#define MIDI_SYSTEM_MESSAGE 0xF0
-#define MIDI_SONG_POSITION 0xF2
-#define MIDI_CLOCK_START 0xFA
-#define MIDI_CLOCK_CONTINUE 0xFB
-#define MIDI_CLOCK_BEAT 0xF8
-#define MIDI_CLOCK_STOP 0xFC
-#define MIDI_META_EVENT 0xFF
+static constexpr uint8_t MIDI_CH1_CHAN_AFTERTOUCH = 0xD0;
+static constexpr uint8_t MIDI_CH1_PITCH_WHEEL_RANGE = 0xE0;
+static constexpr uint8_t MIDI_ALL_NOTES_OFF = 0x7B;
+static constexpr uint8_t MIDI_ALL_SOUND_OFF = 0x78;
+static constexpr uint8_t MIDI_SYSTEM_MESSAGE = 0xF0;
+static constexpr uint8_t MIDI_SONG_POSITION = 0xF2;
+static constexpr uint8_t MIDI_CLOCK_START = 0xFA;
+static constexpr uint8_t MIDI_CLOCK_CONTINUE = 0xFB;
+static constexpr uint8_t MIDI_CLOCK_BEAT = 0xF8;
+static constexpr uint8_t MIDI_CLOCK_STOP = 0xFC;
+static constexpr uint8_t MIDI_META_EVENT = 0xFF;
 
 /**
  * Return the name of the given cc (0-127).

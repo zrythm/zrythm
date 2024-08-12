@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -62,7 +62,7 @@ get_real_val (KnobWidget * self, bool snapped)
     case KnobType::KNOB_TYPE_PORT_MULTIPLIER:
       {
         PortConnection * conn = (PortConnection *) self->object;
-        return conn->multiplier;
+        return conn->multiplier_;
       }
       break;
     }
@@ -90,12 +90,12 @@ set_real_val (KnobWidget * self, float real_val)
 {
   if (self->type == KnobType::KNOB_TYPE_NORMAL)
     {
-      (*self->setter) (self->object, real_val);
+      self->setter (self->object, real_val);
     }
   else
     {
       PortConnection * conn = (PortConnection *) self->object;
-      conn->multiplier = real_val;
+      conn->multiplier_ = real_val;
     }
 }
 
@@ -323,15 +323,14 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       if (self->hover_str_getter)
         {
           /* draw text */
-          char str[50];
-          self->hover_str_getter (self->object, str);
+          auto str = self->hover_str_getter (self->object);
           cairo_set_source_rgba (cr, 1, 1, 1, 1);
           int we, he;
           z_cairo_get_text_extents_for_widget (
-            widget, self->layout, str, &we, &he);
+            widget, self->layout, str.c_str (), &we, &he);
           cairo_move_to (cr, -we / 2, -he / 2);
           z_cairo_draw_text_full (
-            cr, widget, self->layout, str, width / 2 - we / 2,
+            cr, widget, self->layout, str.c_str (), width / 2 - we / 2,
             height / 2 - he / 2);
         }
     }
@@ -357,7 +356,7 @@ static void
 on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   KnobWidget * self = Z_KNOB_WIDGET (user_data);
-  if (!gtk_gesture_drag_get_offset (self->drag, NULL, NULL))
+  if (!gtk_gesture_drag_get_offset (self->drag, nullptr, nullptr))
     self->hover = false;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -451,7 +450,7 @@ _knob_widget_new (
   g_warn_if_fail (object);
 
   KnobWidget * self =
-    static_cast<KnobWidget *> (g_object_new (KNOB_WIDGET_TYPE, NULL));
+    static_cast<KnobWidget *> (g_object_new (KNOB_WIDGET_TYPE, nullptr));
   /*self->value = value;*/
   self->getter = get_val;
   self->default_getter = get_default_val;
@@ -491,7 +490,7 @@ _knob_widget_new (
     G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, nullptr);
 
   return self;
 }
@@ -516,15 +515,18 @@ finalize (KnobWidget * self)
 static void
 knob_widget_init (KnobWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
-  self->layout = z_cairo_create_pango_layout_from_string (
-    (GtkWidget *) self, "7", PANGO_ELLIPSIZE_NONE, -1);
+  self->layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "7", PANGO_ELLIPSIZE_NONE, -1)
+      .release ();
 }
 
 static void

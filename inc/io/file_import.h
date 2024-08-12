@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -10,6 +10,9 @@
 #ifndef __IO_FILE_IMPORT_H__
 #define __IO_FILE_IMPORT_H__
 
+#include <utility>
+
+#include "dsp/position.h"
 #include "utils/types.h"
 
 #include <glib.h>
@@ -25,8 +28,20 @@ G_BEGIN_DECLS
 #define FILE_IMPORT_TYPE (file_import_get_type ())
 G_DECLARE_FINAL_TYPE (FileImport, file_import, Z, FILE_IMPORT, GObject);
 
-typedef struct _FileImportInfo
+struct FileImportInfo
 {
+public:
+  FileImportInfo () = default;
+  FileImportInfo (
+    unsigned int track_name_hash,
+    int          lane,
+    Position     pos,
+    int          track_idx)
+      : track_name_hash (track_name_hash), lane (lane), pos (std::move (pos)),
+        track_idx (track_idx)
+  {
+  }
+
   /** Track to import on, if any, or 0. */
   unsigned int track_name_hash;
 
@@ -38,29 +53,20 @@ typedef struct _FileImportInfo
 
   /** Track index to start the import at. */
   int track_idx;
-} FileImportInfo;
-
-FileImportInfo *
-file_import_info_new (void);
-
-FileImportInfo *
-file_import_info_clone (const FileImportInfo * src);
-
-void
-file_import_info_free (FileImportInfo * self);
+};
 
 /**
  * An object used for importing files asynchronously.
  */
-typedef struct _FileImport
+using FileImport = struct _FileImport
 {
   GObject parent_instance;
 
   /** File path. */
-  char * filepath;
+  std::string filepath;
 
   /** Return value. */
-  GPtrArray * regions;
+  std::vector<std::shared_ptr<Region>> regions;
 
   /**
    * Owner of this FileImport instance, set to the GTask.
@@ -72,14 +78,16 @@ typedef struct _FileImport
   GObject * owner;
 
   /** Import info. */
-  FileImportInfo * import_info;
-} FileImport;
+  std::unique_ptr<FileImportInfo> import_info;
+};
+
+G_END_DECLS
 
 /**
  * Returns a new FileImport instance.
  */
 FileImport *
-file_import_new (const char * filepath, const FileImportInfo * import_nfo);
+file_import_new (const std::string &filepath, const FileImportInfo * import_nfo);
 
 /**
  * Begins file import for a single file.
@@ -97,7 +105,7 @@ file_import_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data);
 
-GPtrArray *
+std::vector<std::shared_ptr<Region>>
 file_import_sync (FileImport * self, GError ** error);
 
 /**
@@ -105,16 +113,13 @@ file_import_sync (FileImport * self, GError ** error);
  * retun values and error details, passing the GAsyncResult
  * which was passed to the callback.
  *
- * @return A pointer array of regions. The caller is
- *   responsible for freeing the pointer array and the regions.
+ * @return A pointer array of regions
  */
-GPtrArray *
+std::vector<std::shared_ptr<Region>>
 file_import_finish (FileImport * self, GAsyncResult * result, GError ** error);
 
 /**
  * @}
  */
-
-G_END_DECLS
 
 #endif

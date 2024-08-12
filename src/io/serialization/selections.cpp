@@ -1,464 +1,265 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
-#include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/midi_selections.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
-#include "io/serialization/arranger_objects.h"
-#include "io/serialization/extra.h"
-#include "io/serialization/plugin.h"
-#include "io/serialization/selections.h"
-#include "io/serialization/track.h"
-#include "utils/objects.h"
 
-typedef enum
+void
+MixerSelections::define_base_fields (const Context &ctx)
 {
-  Z_IO_SERIALIZATION_SELECTIONS_ERROR_FAILED,
-} ZIOSerializationSelectionsError;
-
-#define Z_IO_SERIALIZATION_SELECTIONS_ERROR \
-  z_io_serialization_selections_error_quark ()
-GQuark
-z_io_serialization_selections_error_quark (void);
-G_DEFINE_QUARK (z - io - serialization - selections - error - quark, z_io_serialization_selections_error)
-
-bool
-mixer_selections_serialize_to_json (
-  yyjson_mut_doc *        doc,
-  yyjson_mut_val *        sel_obj,
-  const MixerSelections * sel,
-  GError **               error)
-{
-  yyjson_mut_obj_add_int (doc, sel_obj, "type", (int64_t) sel->type);
-  yyjson_mut_val * slots_arr = yyjson_mut_obj_add_arr (doc, sel_obj, "slots");
-  for (int i = 0; i < sel->num_slots; i++)
-    {
-      yyjson_mut_arr_add_int (doc, slots_arr, sel->slots[i]);
-    }
-  yyjson_mut_val * plugins_arr =
-    yyjson_mut_obj_add_arr (doc, sel_obj, "plugins");
-  for (int i = 0; i < sel->num_slots; i++)
-    {
-      yyjson_mut_val * plugin_obj = yyjson_mut_arr_add_obj (doc, plugins_arr);
-      plugin_serialize_to_json (doc, plugin_obj, sel->plugins[i], error);
-    }
-  yyjson_mut_obj_add_uint (doc, sel_obj, "trackNameHash", sel->track_name_hash);
-  yyjson_mut_obj_add_bool (doc, sel_obj, "hasAny", sel->has_any);
-  return true;
+  using T = ISerializable<MixerSelections>;
+  T::serialize_fields (
+    ctx, T::make_field ("type", type_), T::make_field ("slots", slots_),
+    T::make_field ("trackNameHash", track_name_hash_));
 }
 
-bool
-arranger_selections_serialize_to_json (
-  yyjson_mut_doc *           doc,
-  yyjson_mut_val *           sel_obj,
-  const ArrangerSelections * sel,
-  GError **                  error)
+void
+MixerSelections::define_fields (const Context &ctx)
 {
-  yyjson_mut_obj_add_int (doc, sel_obj, "type", (int64_t) sel->type);
-  return true;
+  using T = ISerializable<MixerSelections>;
+  T::call_all_base_define_fields<MixerSelections> (ctx);
 }
 
-bool
-timeline_selections_serialize_to_json (
-  yyjson_mut_doc *           doc,
-  yyjson_mut_val *           sel_obj,
-  const TimelineSelections * sel,
-  GError **                  error)
+void
+FullMixerSelections::define_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "base");
-  arranger_selections_serialize_to_json (doc, base_obj, &sel->base, error);
-  if (sel->regions)
+  using T = ISerializable<FullMixerSelections>;
+  const_cast<FullMixerSelections *> (this)
+    ->T::call_all_base_define_fields<MixerSelections> (ctx);
+
+  if (ctx.is_serializing ())
     {
-      yyjson_mut_val * regions_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "regions");
-      for (int i = 0; i < sel->num_regions; i++)
+      T::serialize_field<decltype (plugins_), PluginPtrVariant> (
+        "plugins", plugins_, ctx);
+    }
+  else
+    {
+      yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+      yyjson_val *    arr = yyjson_obj_iter_get (&it, "plugins");
+      if (!arr)
         {
-          Region *         r = sel->regions[i];
-          yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, regions_arr);
-          region_serialize_to_json (doc, r_obj, r, error);
+          throw ZrythmException ("No plugins array");
+        }
+      yyjson_arr_iter pl_arr_it = yyjson_arr_iter_with (arr);
+      yyjson_val *    pl_obj = NULL;
+      while ((pl_obj = yyjson_arr_iter_next (&pl_arr_it)))
+        {
+          auto          pl_it = yyjson_obj_iter_with (pl_obj);
+          auto          setting_obj = yyjson_obj_iter_get (&pl_it, "setting");
+          PluginSetting setting;
+          setting.deserialize (Context (setting_obj, ctx));
+          auto pl =
+            Plugin::create_unique_from_hosting_type (setting.hosting_type_);
+          std::visit (
+            [&] (auto &&pl) {
+              using PluginT = base_type<decltype (pl)>;
+              pl->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
+            },
+            convert_to_variant<PluginPtrVariant> (pl.get ()));
+          plugins_.emplace_back (std::move (pl));
         }
     }
-  if (sel->scale_objects)
+}
+
+void
+ArrangerSelections::define_base_fields (const Context &ctx)
+{
+  using T = ISerializable<ArrangerSelections>;
+  T::serialize_fields (ctx, T::make_field ("type", type_));
+
+  if (ctx.is_serializing ())
     {
-      yyjson_mut_val * scale_objects_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "scaleObjects");
-      for (int i = 0; i < sel->num_scale_objects; i++)
+      T::serialize_field<decltype (objects_), ArrangerObjectPtrVariant> (
+        "objects", objects_, ctx);
+    }
+  else
+    {
+      auto it = yyjson_obj_iter_with (ctx.obj_);
+      deserialize_field (it, "type", type_, ctx);
+
+      yyjson_val * arr = yyjson_obj_iter_get (&it, "objects");
+      if (!arr)
         {
-          ScaleObject *    r = sel->scale_objects[i];
-          yyjson_mut_val * r_obj =
-            yyjson_mut_arr_add_obj (doc, scale_objects_arr);
-          scale_object_serialize_to_json (doc, r_obj, r, error);
+          throw ZrythmException ("No objects array");
+        }
+      yyjson_arr_iter arranger_obj_arr_it = yyjson_arr_iter_with (arr);
+      yyjson_val *    arranger_obj_obj = nullptr;
+      while ((arranger_obj_obj = yyjson_arr_iter_next (&arranger_obj_arr_it)))
+        {
+          auto arranger_obj_it = yyjson_obj_iter_with (arranger_obj_obj);
+          auto type =
+            yyjson_get_int (yyjson_obj_iter_get (&arranger_obj_it, "type"));
+          try
+            {
+              auto create_obj = [&]<typename ObjType> () {
+                auto obj = std::make_shared<ObjType> ();
+                obj->ISerializable<ObjType>::deserialize (
+                  Context (arranger_obj_obj, ctx));
+                objects_.emplace_back (std::move (obj));
+              };
+
+              auto type_enum = ENUM_INT_TO_VALUE (ArrangerObject::Type, type);
+              switch (type_enum)
+                {
+                case ArrangerObject::Type::AutomationPoint:
+                  create_obj.template operator()<AutomationPoint> ();
+                  break;
+                case ArrangerObject::Type::MidiNote:
+                  create_obj.template operator()<MidiNote> ();
+                  break;
+                case ArrangerObject::Type::Marker:
+                  create_obj.template operator()<Marker> ();
+                  break;
+                case ArrangerObject::Type::ScaleObject:
+                  create_obj.template operator()<ScaleObject> ();
+                  break;
+                case ArrangerObject::Type::Velocity:
+                  create_obj.template operator()<Velocity> ();
+                  break;
+                case ArrangerObject::Type::ChordObject:
+                  create_obj.template operator()<ChordObject> ();
+                  break;
+                case ArrangerObject::Type::Region:
+                  {
+                    auto region_id =
+                      yyjson_obj_iter_get (&arranger_obj_it, "id");
+                    RegionIdentifier r_id;
+                    r_id.deserialize (Context (region_id, ctx));
+                    switch (r_id.type_)
+                      {
+                      case RegionType::Midi:
+                        {
+                          create_obj.template operator()<MidiRegion> ();
+                        }
+                        break;
+                      case RegionType::Audio:
+                        {
+                          create_obj.template operator()<AudioRegion> ();
+                          break;
+                        }
+                      case RegionType::Chord:
+                        {
+                          create_obj.template operator()<ChordRegion> ();
+                          break;
+                        }
+                      case RegionType::Automation:
+                        {
+                          create_obj.template operator()<AutomationRegion> ();
+                          break;
+                        }
+                      default:
+                        throw ZrythmException ("Unknown region type");
+                      }
+                    break;
+                  }
+                default:
+                  throw ZrythmException ("Unknown arranger object type");
+                }
+            }
+          catch (std::runtime_error &e)
+            {
+              throw ZrythmException (e.what ());
+            }
         }
     }
-  if (sel->markers)
+}
+
+void
+TimelineSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<TimelineSelections>;
+  T::call_all_base_define_fields<ArrangerSelections> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("regionTrackVisibilityIndex", region_track_vis_index_),
+    T::make_field ("chordTrackVisibilityIndex", chord_track_vis_index_),
+    T::make_field ("markerTrackVisibilityIndex", marker_track_vis_index_));
+}
+
+void
+MidiSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<MidiSelections>;
+  T::call_all_base_define_fields<ArrangerSelections> (ctx);
+}
+
+void
+ChordSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<ChordSelections>;
+  T::call_all_base_define_fields<ArrangerSelections> (ctx);
+}
+
+void
+AudioSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<AudioSelections>;
+  T::call_all_base_define_fields<ArrangerSelections> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("hasSelection", has_selection_),
+    T::make_field ("selStart", sel_start_), T::make_field ("selEnd", sel_end_),
+    T::make_field ("poolId", pool_id_), T::make_field ("regionId", region_id_));
+}
+
+void
+AutomationSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<AutomationSelections>;
+  T::call_all_base_define_fields<ArrangerSelections> (ctx);
+}
+
+void
+TracklistSelections::define_fields (const Context &ctx)
+{
+  using T = ISerializable<TracklistSelections>;
+
+  if (ctx.is_serializing ())
     {
-      yyjson_mut_val * markers_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "markers");
-      for (int i = 0; i < sel->num_markers; i++)
+      T::serialize_field<decltype (tracks_), TrackPtrVariant> (
+        "tracks", tracks_, ctx);
+    }
+  else
+    {
+      yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+
+      yyjson_val * arr = yyjson_obj_iter_get (&it, "tracks");
+      if (!arr)
         {
-          Marker *         r = sel->markers[i];
-          yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, markers_arr);
-          marker_serialize_to_json (doc, r_obj, r, error);
+          throw ZrythmException ("No tracks array");
+        }
+      yyjson_arr_iter track_arr_it = yyjson_arr_iter_with (arr);
+      yyjson_val *    track_obj = nullptr;
+      while ((track_obj = yyjson_arr_iter_next (&track_arr_it)))
+        {
+          auto track_it = yyjson_obj_iter_with (track_obj);
+          auto type = yyjson_get_int (yyjson_obj_iter_get (&track_it, "type"));
+          try
+            {
+              auto type_enum = ENUM_INT_TO_VALUE (Track::Type, type);
+              auto track = Track::create_unique_from_type (type_enum);
+              std::visit (
+                [&] (auto &&track) {
+                  using TrackT = base_type<decltype (track)>;
+                  track->ISerializable<TrackT>::deserialize (
+                    Context (track_obj, ctx));
+                },
+                convert_to_variant<TrackPtrVariant> (track.get ()));
+              tracks_.emplace_back (std::move (track));
+            }
+          catch (std::runtime_error &e)
+            {
+              throw ZrythmException (e.what ());
+            }
         }
     }
-  yyjson_mut_obj_add_int (
-    doc, sel_obj, "regionTrackVisibilityIndex", sel->region_track_vis_index);
-  yyjson_mut_obj_add_int (
-    doc, sel_obj, "chordTrackVisibilityIndex", sel->chord_track_vis_index);
-  yyjson_mut_obj_add_int (
-    doc, sel_obj, "markerTrackVisibilityIndex", sel->marker_track_vis_index);
-  return true;
 }
 
-bool
-midi_arranger_selections_serialize_to_json (
-  yyjson_mut_doc *               doc,
-  yyjson_mut_val *               sel_obj,
-  const MidiArrangerSelections * sel,
-  GError **                      error)
+void
+SimpleTracklistSelections::define_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "base");
-  arranger_selections_serialize_to_json (doc, base_obj, &sel->base, error);
-  if (sel->midi_notes)
-    {
-      yyjson_mut_val * midi_notes_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "midiNotes");
-      for (int i = 0; i < sel->num_midi_notes; i++)
-        {
-          MidiNote *       r = sel->midi_notes[i];
-          yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, midi_notes_arr);
-          midi_note_serialize_to_json (doc, r_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-chord_selections_serialize_to_json (
-  yyjson_mut_doc *        doc,
-  yyjson_mut_val *        sel_obj,
-  const ChordSelections * sel,
-  GError **               error)
-{
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "base");
-  arranger_selections_serialize_to_json (doc, base_obj, &sel->base, error);
-  if (sel->chord_objects)
-    {
-      yyjson_mut_val * chord_objects_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "chordObjects");
-      for (int i = 0; i < sel->num_chord_objects; i++)
-        {
-          ChordObject *    r = sel->chord_objects[i];
-          yyjson_mut_val * r_obj =
-            yyjson_mut_arr_add_obj (doc, chord_objects_arr);
-          chord_object_serialize_to_json (doc, r_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-automation_selections_serialize_to_json (
-  yyjson_mut_doc *             doc,
-  yyjson_mut_val *             sel_obj,
-  const AutomationSelections * sel,
-  GError **                    error)
-{
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "base");
-  arranger_selections_serialize_to_json (doc, base_obj, &sel->base, error);
-  if (sel->automation_points)
-    {
-      yyjson_mut_val * automation_points_arr =
-        yyjson_mut_obj_add_arr (doc, sel_obj, "automationPoints");
-      for (int i = 0; i < sel->num_automation_points; i++)
-        {
-          AutomationPoint * r = sel->automation_points[i];
-          yyjson_mut_val *  r_obj =
-            yyjson_mut_arr_add_obj (doc, automation_points_arr);
-          automation_point_serialize_to_json (doc, r_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-audio_selections_serialize_to_json (
-  yyjson_mut_doc *        doc,
-  yyjson_mut_val *        sel_obj,
-  const AudioSelections * sel,
-  GError **               error)
-{
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "base");
-  arranger_selections_serialize_to_json (doc, base_obj, &sel->base, error);
-  yyjson_mut_obj_add_bool (doc, sel_obj, "hasSelection", sel->has_selection);
-  yyjson_mut_val * sel_start_obj =
-    yyjson_mut_obj_add_obj (doc, sel_obj, "selStart");
-  position_serialize_to_json (doc, sel_start_obj, &sel->sel_start, error);
-  yyjson_mut_val * sel_end_obj = yyjson_mut_obj_add_obj (doc, sel_obj, "selEnd");
-  position_serialize_to_json (doc, sel_end_obj, &sel->sel_end, error);
-  yyjson_mut_obj_add_int (doc, sel_obj, "poolId", sel->pool_id);
-  yyjson_mut_val * region_id_obj =
-    yyjson_mut_obj_add_obj (doc, sel_obj, "regionId");
-  region_identifier_serialize_to_json (
-    doc, region_id_obj, &sel->region_id, error);
-  return true;
-}
-
-bool
-tracklist_selections_serialize_to_json (
-  yyjson_mut_doc *            doc,
-  yyjson_mut_val *            sel_obj,
-  const TracklistSelections * sel,
-  GError **                   error)
-{
-  yyjson_mut_obj_add_bool (doc, sel_obj, "isProject", sel->is_project);
-  yyjson_mut_val * tracks_arr = yyjson_mut_obj_add_arr (doc, sel_obj, "tracks");
-  for (int i = 0; i < sel->num_tracks; i++)
-    {
-      Track *          track = sel->tracks[i];
-      yyjson_mut_val * track_obj = yyjson_mut_arr_add_obj (doc, tracks_arr);
-      track_serialize_to_json (doc, track_obj, track, error);
-    }
-  return true;
-}
-
-bool
-mixer_selections_deserialize_from_json (
-  yyjson_doc *      doc,
-  yyjson_val *      sel_obj,
-  MixerSelections * sel,
-  GError **         error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  sel->type =
-    (ZPluginSlotType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  yyjson_val *    slots_arr = yyjson_obj_iter_get (&it, "slots");
-  yyjson_arr_iter slot_it = yyjson_arr_iter_with (slots_arr);
-  yyjson_val *    slot_obj = NULL;
-  while ((slot_obj = yyjson_arr_iter_next (&slot_it)))
-    {
-      sel->slots[sel->num_slots++] = yyjson_get_int (slot_obj);
-    }
-  yyjson_val *    plugins_arr = yyjson_obj_iter_get (&it, "plugins");
-  yyjson_arr_iter plugin_it = yyjson_arr_iter_with (plugins_arr);
-  yyjson_val *    plugin_obj = NULL;
-  size_t          count = 0;
-  while ((plugin_obj = yyjson_arr_iter_next (&plugin_it)))
-    {
-      Plugin * pl = object_new (Plugin);
-      sel->plugins[count++] = pl;
-      plugin_deserialize_from_json (doc, plugin_obj, pl, error);
-    }
-  sel->track_name_hash =
-    yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
-  sel->has_any = yyjson_get_bool (yyjson_obj_iter_get (&it, "hasAny"));
-  return true;
-}
-
-bool
-arranger_selections_deserialize_from_json (
-  yyjson_doc *         doc,
-  yyjson_val *         sel_obj,
-  ArrangerSelections * sel,
-  GError **            error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  sel->type =
-    (ArrangerSelectionsType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  return true;
-}
-
-bool
-timeline_selections_deserialize_from_json (
-  yyjson_doc *         doc,
-  yyjson_val *         sel_obj,
-  TimelineSelections * sel,
-  GError **            error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_selections_deserialize_from_json (doc, base_obj, &sel->base, error);
-  yyjson_val * regions_arr = yyjson_obj_iter_get (&it, "regions");
-  sel->regions_size = yyjson_arr_size (regions_arr);
-  if (sel->regions_size > 0)
-    {
-      sel->regions = object_new_n (sel->regions_size, Region *);
-      yyjson_arr_iter region_it = yyjson_arr_iter_with (regions_arr);
-      yyjson_val *    region_obj = NULL;
-      while ((region_obj = yyjson_arr_iter_next (&region_it)))
-        {
-          Region * r = object_new (Region);
-          sel->regions[sel->num_regions++] = r;
-          region_deserialize_from_json (doc, region_obj, r, error);
-        }
-    }
-  yyjson_val * scale_objects_arr = yyjson_obj_iter_get (&it, "scaleObjects");
-  sel->scale_objects_size = yyjson_arr_size (scale_objects_arr);
-  if (sel->scale_objects_size > 0)
-    {
-      sel->scale_objects = object_new_n (sel->scale_objects_size, ScaleObject *);
-      yyjson_arr_iter scale_object_it = yyjson_arr_iter_with (scale_objects_arr);
-      yyjson_val * scale_object_obj = NULL;
-      while ((scale_object_obj = yyjson_arr_iter_next (&scale_object_it)))
-        {
-          ScaleObject * r = object_new (ScaleObject);
-          sel->scale_objects[sel->num_scale_objects++] = r;
-          scale_object_deserialize_from_json (doc, scale_object_obj, r, error);
-        }
-    }
-  yyjson_val * markers_arr = yyjson_obj_iter_get (&it, "markers");
-  sel->markers_size = yyjson_arr_size (markers_arr);
-  if (sel->markers_size > 0)
-    {
-      sel->markers = object_new_n (sel->markers_size, Marker *);
-      yyjson_arr_iter marker_it = yyjson_arr_iter_with (markers_arr);
-      yyjson_val *    marker_obj = NULL;
-      while ((marker_obj = yyjson_arr_iter_next (&marker_it)))
-        {
-          Marker * r = object_new (Marker);
-          sel->markers[sel->num_markers++] = r;
-          marker_deserialize_from_json (doc, marker_obj, r, error);
-        }
-    }
-  sel->region_track_vis_index =
-    yyjson_get_int (yyjson_obj_iter_get (&it, "regionTrackVisibilityIndex"));
-  sel->chord_track_vis_index =
-    yyjson_get_int (yyjson_obj_iter_get (&it, "chordTrackVisibilityIndex"));
-  sel->marker_track_vis_index =
-    yyjson_get_int (yyjson_obj_iter_get (&it, "markerTrackVisibilityIndex"));
-  return true;
-}
-
-bool
-midi_arranger_selections_deserialize_from_json (
-  yyjson_doc *             doc,
-  yyjson_val *             sel_obj,
-  MidiArrangerSelections * sel,
-  GError **                error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_selections_deserialize_from_json (doc, base_obj, &sel->base, error);
-  yyjson_val * midi_notes_arr = yyjson_obj_iter_get (&it, "midiNotes");
-  sel->midi_notes_size = yyjson_arr_size (midi_notes_arr);
-  if (sel->midi_notes_size > 0)
-    {
-      sel->midi_notes = object_new_n (sel->midi_notes_size, MidiNote *);
-      yyjson_arr_iter midi_note_it = yyjson_arr_iter_with (midi_notes_arr);
-      yyjson_val *    midi_note_obj = NULL;
-      while ((midi_note_obj = yyjson_arr_iter_next (&midi_note_it)))
-        {
-          MidiNote * r = object_new (MidiNote);
-          sel->midi_notes[sel->num_midi_notes++] = r;
-          midi_note_deserialize_from_json (doc, midi_note_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-chord_selections_deserialize_from_json (
-  yyjson_doc *      doc,
-  yyjson_val *      sel_obj,
-  ChordSelections * sel,
-  GError **         error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_selections_deserialize_from_json (doc, base_obj, &sel->base, error);
-  yyjson_val * chord_objects_arr = yyjson_obj_iter_get (&it, "chordObjects");
-  sel->chord_objects_size = yyjson_arr_size (chord_objects_arr);
-  if (sel->chord_objects_size > 0)
-    {
-      sel->chord_objects = object_new_n (sel->chord_objects_size, ChordObject *);
-      yyjson_arr_iter chord_object_it = yyjson_arr_iter_with (chord_objects_arr);
-      yyjson_val * chord_object_obj = NULL;
-      while ((chord_object_obj = yyjson_arr_iter_next (&chord_object_it)))
-        {
-          ChordObject * r = object_new (ChordObject);
-          sel->chord_objects[sel->num_chord_objects++] = r;
-          chord_object_deserialize_from_json (doc, chord_object_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-automation_selections_deserialize_from_json (
-  yyjson_doc *           doc,
-  yyjson_val *           sel_obj,
-  AutomationSelections * sel,
-  GError **              error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_selections_deserialize_from_json (doc, base_obj, &sel->base, error);
-  yyjson_val * automation_points_arr =
-    yyjson_obj_iter_get (&it, "automationPoints");
-  sel->automation_points_size = yyjson_arr_size (automation_points_arr);
-  if (sel->automation_points_size > 0)
-    {
-      sel->automation_points =
-        object_new_n (sel->automation_points_size, AutomationPoint *);
-      yyjson_arr_iter automation_point_it =
-        yyjson_arr_iter_with (automation_points_arr);
-      yyjson_val * automation_point_obj = NULL;
-      while (
-        (automation_point_obj = yyjson_arr_iter_next (&automation_point_it)))
-        {
-          AutomationPoint * r = object_new (AutomationPoint);
-          sel->automation_points[sel->num_automation_points++] = r;
-          automation_point_deserialize_from_json (
-            doc, automation_point_obj, r, error);
-        }
-    }
-  return true;
-}
-
-bool
-audio_selections_deserialize_from_json (
-  yyjson_doc *      doc,
-  yyjson_val *      sel_obj,
-  AudioSelections * sel,
-  GError **         error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_selections_deserialize_from_json (doc, base_obj, &sel->base, error);
-  sel->has_selection =
-    yyjson_get_bool (yyjson_obj_iter_get (&it, "hasSelection"));
-  yyjson_val * sel_start_obj = yyjson_obj_iter_get (&it, "selStart");
-  position_deserialize_from_json (doc, sel_start_obj, &sel->sel_start, error);
-  yyjson_val * sel_end_obj = yyjson_obj_iter_get (&it, "selEnd");
-  position_deserialize_from_json (doc, sel_end_obj, &sel->sel_end, error);
-  sel->pool_id = yyjson_get_int (yyjson_obj_iter_get (&it, "poolId"));
-  yyjson_val * region_id_obj = yyjson_obj_iter_get (&it, "regionId");
-  region_identifier_deserialize_from_json (
-    doc, region_id_obj, &sel->region_id, error);
-  return true;
-}
-
-bool
-tracklist_selections_deserialize_from_json (
-  yyjson_doc *          doc,
-  yyjson_val *          sel_obj,
-  TracklistSelections * sel,
-  GError **             error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (sel_obj);
-  sel->is_project = yyjson_get_bool (yyjson_obj_iter_get (&it, "isProject"));
-  yyjson_val *    tracks_arr = yyjson_obj_iter_get (&it, "tracks");
-  yyjson_arr_iter track_it = yyjson_arr_iter_with (tracks_arr);
-  yyjson_val *    track_obj = NULL;
-  while ((track_obj = yyjson_arr_iter_next (&track_it)))
-    {
-      Track * track = object_new (Track);
-      sel->tracks[sel->num_tracks++] = track;
-      track_deserialize_from_json (doc, track_obj, track, error);
-    }
-  return true;
+  serialize_fields (ctx, make_field ("trackNames", track_names_));
 }

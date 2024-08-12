@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/arranger_minimap.h"
 #include "gui/widgets/arranger_minimap_selection.h"
@@ -73,7 +71,7 @@ on_motion (
   gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
   if (x < UI_RESIZE_CURSOR_SPACE)
     {
-      self->cursor = UI_CURSOR_STATE_RESIZE_L;
+      self->cursor = UiCursorState::UI_CURSOR_STATE_RESIZE_L;
       if (
         self->parent->action
         != ArrangerMinimapAction::ARRANGER_MINIMAP_ACTION_MOVING)
@@ -81,7 +79,7 @@ on_motion (
     }
   else if (x > width - UI_RESIZE_CURSOR_SPACE)
     {
-      self->cursor = UI_CURSOR_STATE_RESIZE_R;
+      self->cursor = UiCursorState::UI_CURSOR_STATE_RESIZE_R;
       if (
         self->parent->action
         != ArrangerMinimapAction::ARRANGER_MINIMAP_ACTION_MOVING)
@@ -89,7 +87,7 @@ on_motion (
     }
   else
     {
-      self->cursor = UI_CURSOR_STATE_DEFAULT;
+      self->cursor = UiCursorState::UI_CURSOR_STATE_DEFAULT;
       if (
         self->parent->action
           != ArrangerMinimapAction::ARRANGER_MINIMAP_ACTION_MOVING
@@ -110,7 +108,7 @@ arranger_minimap_selection_widget_new (ArrangerMinimapWidget * parent)
 {
   ArrangerMinimapSelectionWidget * self =
     static_cast<ArrangerMinimapSelectionWidget *> (
-      g_object_new (ARRANGER_MINIMAP_SELECTION_WIDGET_TYPE, NULL));
+      g_object_new (ARRANGER_MINIMAP_SELECTION_WIDGET_TYPE, nullptr));
 
   self->parent = parent;
 

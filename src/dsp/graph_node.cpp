@@ -24,148 +24,119 @@
 #include "utils/arrays.h"
 #include "utils/debug.h"
 #include "utils/mpmc_queue.h"
-#include "utils/objects.h"
+#include "zrythm.h"
 
 #include "gtk_wrapper.h"
+#include <fmt/printf.h>
 
-/**
- * Returns a human friendly name of the node.
- *
- * Must be free'd.
- */
-char *
-graph_node_get_name (GraphNode * node)
+std::string
+GraphNode::get_name () const
 {
-  char str[600];
-  switch (node->type)
+  switch (type_)
     {
-    case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
+    case Type::Plugin:
       {
-        Track * track = plugin_get_track (node->pl);
-        return g_strdup_printf (
-          "%s/%s (Plugin)", track->name, node->pl->setting->descr->name);
+        Track * _track = pl_->get_track ();
+        return fmt::format ("{}/{} (Plugin)", _track->name_, pl_->get_name ());
       }
-    case GraphNodeType::ROUTE_NODE_TYPE_PORT:
-      node->port->get_full_designation (str);
-      return g_strdup (str);
-    case GraphNodeType::ROUTE_NODE_TYPE_FADER:
+    case Type::Port:
+      return port_->get_full_designation ();
+    case Type::Fader:
       {
-        Track * track = fader_get_track (node->fader);
-        return g_strdup_printf ("%s Fader", track->name);
+        Track * _track = fader_->get_track ();
+        return fmt::format ("%s Fader", _track->name_);
       }
-    case GraphNodeType::ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+    case Type::ModulatorMacroProcessor:
       {
-        ModulatorMacroProcessor * mmp = node->modulator_macro_processor;
-        Track *                   track = mmp->cv_in->get_track (true);
-        return g_strdup_printf ("%s Modulator Macro Processor", track->name);
+        ModulatorMacroProcessor * mmp = modulator_macro_processor_;
+        Track *                   _track = mmp->cv_in_->get_track (true);
+        return fmt::sprintf ("%s Modulator Macro Processor", _track->name_);
       }
-    case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
-      return g_strdup (node->track->name);
-    case GraphNodeType::ROUTE_NODE_TYPE_PREFADER:
+    case Type::Track:
+      return track_->name_;
+    case Type::Prefader:
       {
-        Track * track = fader_get_track (node->prefader);
-        return g_strdup_printf ("%s Pre-Fader", track->name);
+        Track * track = prefader_->get_track ();
+        return fmt::sprintf ("%s Pre-Fader", track->name_);
       }
-    case GraphNodeType::ROUTE_NODE_TYPE_MONITOR_FADER:
-      return g_strdup ("Monitor Fader");
-    case GraphNodeType::ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
-      return g_strdup ("Sample Processor");
-    case GraphNodeType::ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
-      return g_strdup ("Initial Processor");
-    case GraphNodeType::ROUTE_NODE_TYPE_HW_PROCESSOR:
-      return g_strdup ("HW Processor");
-    case GraphNodeType::ROUTE_NODE_TYPE_CHANNEL_SEND:
+    case Type::MonitorFader:
+      return "Monitor Fader";
+    case Type::SampleProcessor:
+      return "Sample Processor";
+    case Type::InitialProcessor:
+      return "Initial Processor";
+    case Type::HardwareProcessor:
+      return "HW Processor";
+    case Type::ChannelSend:
       {
-        Track * track = channel_send_get_track (node->send);
-        return g_strdup_printf (
-          "%s/Channel Send %d", track->name, node->send->slot + 1);
+        auto _track = send_->get_track ();
+        return fmt::sprintf (
+          "%s/Channel Send %d", _track->name_, send_->slot_ + 1);
       }
     }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached ("");
 }
 
 void *
-graph_node_get_pointer (GraphNode * node)
+GraphNode::get_pointer () const
 {
-  switch (node->type)
+  switch (type_)
     {
-    case GraphNodeType::ROUTE_NODE_TYPE_PORT:
-      return node->port;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
-      return node->pl;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
-      return node->track;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_FADER:
-    case GraphNodeType::ROUTE_NODE_TYPE_MONITOR_FADER:
-      return node->fader;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PREFADER:
-      return node->prefader;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
-      return node->sample_processor;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
-      return NULL;
-    case GraphNodeType::ROUTE_NODE_TYPE_HW_PROCESSOR:
-      return node->hw_processor;
-    case GraphNodeType::ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
-      return node->modulator_macro_processor;
-    case GraphNodeType::ROUTE_NODE_TYPE_CHANNEL_SEND:
-      return node->send;
+    case Type::Port:
+      return port_;
+    case Type::Plugin:
+      return pl_;
+    case Type::Track:
+      return track_;
+    case Type::Fader:
+    case Type::MonitorFader:
+      return fader_;
+    case Type::Prefader:
+      return prefader_;
+    case Type::SampleProcessor:
+      return sample_processor_;
+    case Type::InitialProcessor:
+      return nullptr;
+    case Type::HardwareProcessor:
+      return hw_processor_;
+    case Type::ModulatorMacroProcessor:
+      return modulator_macro_processor_;
+    case Type::ChannelSend:
+      return send_;
     }
-  g_return_val_if_reached (NULL);
+  return nullptr; // Unreachable, but silences compiler warning
 }
 
-void
-graph_node_print_to_str (GraphNode * node, char * buf, size_t buf_sz)
+std::string
+GraphNode::print_to_str () const
 {
-  GraphNode * dest;
-  if (!node)
+  std::string name = get_name ();
+  std::string str1 = fmt::format (
+    "node [({}) {}] refcount: {} | terminal: {} | initial: {} | playback latency: {}",
+    id_, name, refcount_.load (), terminal_, initial_, playback_latency_);
+  std::string str2;
+  for (const auto dest : childnodes_)
     {
-      g_message ("(null) node");
-      return;
-    }
-
-  char * name = graph_node_get_name (node);
-  char * str1 = g_strdup_printf (
-    "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %d",
-    node->id, name, node->refcount, node->terminal ? "yes" : "no",
-    node->initial ? "yes" : "no", node->playback_latency);
-  g_free (name);
-  char * str2;
-  for (int j = 0; j < node->n_childnodes; j++)
-    {
-      dest = node->childnodes[j];
-      name = graph_node_get_name (dest);
-      str2 = g_strdup_printf ("%s (dest [(%d) %s])", str1, dest->id, name);
-      g_free (str1);
-      g_free (name);
+      name = dest->get_name ();
+      str2 = fmt::format ("{} (dest [({}) {}])", str1, dest->id_, name);
       str1 = str2;
     }
-  strncpy (buf, str1, buf_sz);
-  g_free (str1);
+  return str1;
 }
 
 void
-graph_node_print (GraphNode * node)
+GraphNode::print () const
 {
-  size_t sz = 2000;
-  char   str[sz];
-  graph_node_print_to_str (node, str, sz);
-  g_message ("%s", str);
+  z_info (print_to_str ());
 }
 
-HOT static void
-on_node_finish (GraphNode * self)
+void
+GraphNode::on_finish (GraphThread &thread)
 {
-  int feeds = 0;
+  bool feeds = false;
 
   /* notify downstream nodes that depend on this node */
-  for (int i = 0; i < self->n_childnodes; ++i)
+  for (auto child_node : childnodes_)
     {
 #if 0
       /* set the largest playback latency of this
@@ -177,8 +148,8 @@ on_node_finish (GraphNode * self)
           /*self->childnodes[i]->*/
             /*route_playback_latency);*/
 #endif
-      graph_node_trigger (self->childnodes[i]);
-      feeds = 1;
+      child_node->trigger ();
+      feeds = true;
     }
 
   /* if there are no outgoing edges, this is a
@@ -186,79 +157,66 @@ on_node_finish (GraphNode * self)
   if (!feeds)
     {
       /* notify parent graph */
-      graph_on_reached_terminal_node (self->graph);
+      thread.on_reached_terminal_node ();
     }
 }
 
-HOT static void
-process_node (const GraphNode * node, const EngineProcessTimeInfo time_nfo)
+void
+GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
 {
   z_return_if_fail_cmp (
-    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
-  switch (node->type)
+    time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
+  switch (type_)
     {
-    case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
-      plugin_process (node->pl, &time_nfo);
+    case Type::Plugin:
+      pl_->process (time_nfo);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_FADER:
-    case GraphNodeType::ROUTE_NODE_TYPE_MONITOR_FADER:
-      fader_process (node->fader, &time_nfo);
+    case Type::Fader:
+    case Type::MonitorFader:
+      fader_->process (time_nfo);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
-      modulator_macro_processor_process (
-        node->modulator_macro_processor, &time_nfo);
+    case Type::ModulatorMacroProcessor:
+      modulator_macro_processor_->process (time_nfo);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PREFADER:
-      fader_process (node->prefader, &time_nfo);
+    case Type::Prefader:
+      prefader_->process (time_nfo);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
-      sample_processor_process (
-        node->sample_processor, time_nfo.local_offset, time_nfo.nframes);
+    case Type::SampleProcessor:
+      sample_processor_->process (time_nfo.local_offset_, time_nfo.nframes_);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_CHANNEL_SEND:
-      channel_send_process (node->send, time_nfo.local_offset, time_nfo.nframes);
+    case Type::ChannelSend:
+      send_->process (time_nfo.local_offset_, time_nfo.nframes_);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
+    case Type::Track:
       {
-        Track * track = node->track;
-        if (!IS_TRACK (track))
+        z_return_if_fail (track_);
+        if (track_->type_has_processor (track_->type_))
           {
-            g_return_if_reached ();
-          }
-        if (
-          track->type != TrackType::TRACK_TYPE_TEMPO
-          && track->type != TrackType::TRACK_TYPE_MARKER)
-          {
-            track_processor_process (track->processor, &time_nfo);
+            auto * processable_track = dynamic_cast<ProcessableTrack *> (track_);
+            z_return_if_fail (processable_track);
+            processable_track->processor_->process (time_nfo);
           }
       }
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PORT:
+    case Type::Port:
       {
-        /* decide what to do based on what port it
-         * is */
-        Port * port = node->port;
+        /* decide what to do based on what port it is */
         /*PortIdentifier * id = &port->id_;*/
 
         /* if midi editor manual press */
-        if (port == AUDIO_ENGINE->midi_editor_manual_press)
+        if (port_ == AUDIO_ENGINE->midi_editor_manual_press_.get ())
           {
-            g_return_if_fail (
-              AUDIO_ENGINE->midi_editor_manual_press->midi_events_);
-            midi_events_dequeue (
-              AUDIO_ENGINE->midi_editor_manual_press->midi_events_);
+            AUDIO_ENGINE->midi_editor_manual_press_->midi_events_.dequeue ();
           }
 
-        /* if exporting and the port is not a
-         * project port, ignore it */
-        else if (
-          engine_is_port_own (AUDIO_ENGINE, port) && AUDIO_ENGINE->exporting)
+        /* if exporting and the port is not a project port, ignore it */
+        else if (AUDIO_ENGINE->is_port_own (*port_) && AUDIO_ENGINE->exporting_)
           {
           }
 
         else
           {
-            port->process (time_nfo, false);
+            port_->process (time_nfo, false);
           }
       }
       break;
@@ -267,32 +225,27 @@ process_node (const GraphNode * node, const EngineProcessTimeInfo time_nfo)
     }
 }
 
-/**
- * Processes the GraphNode.
- */
 OPTIMIZE_O3
 void
-graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
+GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
 {
-  g_return_if_fail (node && node->graph && node->graph->router);
+  z_return_if_fail (graph_ && graph_->router_);
 
-  /*g_message (*/
-  /*"processing %s", graph_node_get_name (node));*/
+  /*g_message ("processing %s", graph_node_get_name (node));*/
 
   /* skip BPM during cycle (already processed in router_start_cycle()) */
   if (
-    G_UNLIKELY (
-      node->graph->router->callback_in_progress && node->port
-      && node->port == P_TEMPO_TRACK->bpm_port))
+    graph_->router_->callback_in_progress_ && port_
+    && port_ == P_TEMPO_TRACK->bpm_port_.get ()) [[unlikely]]
     {
       goto node_process_finish;
     }
 
   /* figure out if we are doing a no-roll */
-  if (node->route_playback_latency < AUDIO_ENGINE->remaining_latency_preroll)
+  if (route_playback_latency_ < AUDIO_ENGINE->remaining_latency_preroll_)
     {
       /* no roll */
-      if (node->type == GraphNodeType::ROUTE_NODE_TYPE_PLUGIN)
+      if (type_ == Type::Plugin)
         {
           /*g_message (*/
           /*"-- not processing: %s "*/
@@ -312,7 +265,7 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
     }
 
   /* only compensate latency when rolling */
-  if (TRANSPORT->play_state == PlayState::PLAYSTATE_ROLLING)
+  if (TRANSPORT->play_state_ == Transport::PlayState::Rolling)
     {
       /* if the playhead is before the loop-end point and the
        * latency-compensated position is after the loop-end point it means that
@@ -321,25 +274,24 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
        * if the position is before loop-end and position + frames is after loop
        * end (there is a loop inside the range), that should be handled by the
        * ports/processors instead */
-      Position playhead_copy = *PLAYHEAD;
-      g_warn_if_fail (
-        node->route_playback_latency >= AUDIO_ENGINE->remaining_latency_preroll);
-      transport_position_add_frames (
-        TRANSPORT, &playhead_copy,
-        node->route_playback_latency - AUDIO_ENGINE->remaining_latency_preroll);
-      time_nfo.g_start_frame = (unsigned_frame_t) playhead_copy.frames;
-      time_nfo.g_start_frame_w_offset =
-        (unsigned_frame_t) playhead_copy.frames + time_nfo.local_offset;
+      Position playhead_copy = PLAYHEAD;
+      z_warn_if_fail (
+        route_playback_latency_ >= AUDIO_ENGINE->remaining_latency_preroll_);
+      TRANSPORT->position_add_frames (
+        &playhead_copy,
+        route_playback_latency_ - AUDIO_ENGINE->remaining_latency_preroll_);
+      time_nfo.g_start_frame_ = (unsigned_frame_t) playhead_copy.frames_;
+      time_nfo.g_start_frame_w_offset_ =
+        (unsigned_frame_t) playhead_copy.frames_ + time_nfo.local_offset_;
     }
 
   /* split at loop points */
   for (
     nframes_t num_processable_frames = 0;
-    (num_processable_frames = MIN (
-       transport_is_loop_point_met (
-         TRANSPORT, (signed_frame_t) time_nfo.g_start_frame_w_offset,
-         time_nfo.nframes),
-       time_nfo.nframes))
+    (num_processable_frames = std::min (
+       TRANSPORT->is_loop_point_met (
+         (signed_frame_t) time_nfo.g_start_frame_w_offset_, time_nfo.nframes_),
+       time_nfo.nframes_))
     != 0;)
     {
 #if 0
@@ -352,109 +304,93 @@ graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo)
 
       /* temporarily change the nframes to avoid having to declare a separate
        * EngineProcessTimeInfo */
-      nframes_t orig_nframes = time_nfo.nframes;
-      time_nfo.nframes = num_processable_frames;
-      process_node (node, time_nfo);
+      nframes_t orig_nframes = time_nfo.nframes_;
+      time_nfo.nframes_ = num_processable_frames;
+      process_internal (time_nfo);
 
       /* calculate the remaining frames */
-      time_nfo.nframes = orig_nframes - num_processable_frames;
+      time_nfo.nframes_ = orig_nframes - num_processable_frames;
 
       /* loop back to loop start */
       unsigned_frame_t frames_to_add =
         (num_processable_frames
-         + (unsigned_frame_t) TRANSPORT->loop_start_pos.frames)
-        - (unsigned_frame_t) TRANSPORT->loop_end_pos.frames;
-      time_nfo.g_start_frame_w_offset += frames_to_add;
-      time_nfo.g_start_frame += frames_to_add;
-      time_nfo.local_offset += num_processable_frames;
+         + (unsigned_frame_t) TRANSPORT->loop_start_pos_.frames_)
+        - (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_;
+      time_nfo.g_start_frame_w_offset_ += frames_to_add;
+      time_nfo.g_start_frame_ += frames_to_add;
+      time_nfo.local_offset_ += num_processable_frames;
     }
 
   z_return_if_fail_cmp (
-    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
+    time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
-  if (time_nfo.nframes > 0)
+  if (time_nfo.nframes_ > 0)
     {
-      process_node (node, time_nfo);
+      process_internal (time_nfo);
     }
 
 node_process_finish:
-  if (node->graph->router->callback_in_progress)
+  if (graph_->router_->callback_in_progress_)
     {
-      on_node_finish (node);
+      on_finish (thread);
     }
 }
 
-/**
- * Called by an upstream node when it has completed
- * processing.
- */
 void
-graph_node_trigger (GraphNode * self)
+GraphNode::trigger ()
 {
   /* check if we can run */
-  if (g_atomic_int_dec_and_test (&self->refcount))
+  if (refcount_.fetch_sub (1) == 1)
     {
       /* reset reference count for next cycle */
-      g_atomic_int_set (&self->refcount, (unsigned int) self->init_refcount);
+      refcount_.store (init_refcount_);
 
-      /* all nodes that feed this node have
-       * completed, so this node be processed
+      /* all nodes that feed this node have completed, so this node be processed
        * now. */
-      g_atomic_int_inc (&self->graph->trigger_queue_size);
+      graph_->trigger_queue_size_.fetch_add (1);
       /*g_message ("triggering node, pushing back");*/
-      mpmc_queue_push_back_node (self->graph->trigger_queue, self);
+      graph_->trigger_queue_.push_back (this);
     }
 }
 
-static void
-add_feeds (GraphNode * self, GraphNode * dest)
+void
+GraphNode::add_feeds (GraphNode &dest)
 {
   /* return if already added */
-  for (int i = 0; i < self->n_childnodes; i++)
+  for (auto child : childnodes_)
     {
-      if (self->childnodes[i] == dest)
+      if (child == &dest)
         {
           return;
         }
     }
 
-  self->childnodes = (GraphNode **) g_realloc (
-    self->childnodes, (size_t) (1 + self->n_childnodes) * sizeof (GraphNode *));
-  self->childnodes[self->n_childnodes++] = dest;
+  childnodes_.push_back (&dest);
 
-  self->terminal = false;
+  terminal_ = false;
 }
 
-static void
-add_depends (GraphNode * self, GraphNode * src)
+void
+GraphNode::add_depends (GraphNode &src)
 {
-  ++self->init_refcount;
-  self->refcount = self->init_refcount;
+  ++init_refcount_;
+  refcount_ = init_refcount_;
 
   /* add parent nodes */
-  self->parentnodes = (GraphNode **) g_realloc (
-    self->parentnodes, (size_t) (self->init_refcount) * sizeof (GraphNode *));
+  parentnodes_.push_back (&src);
 
-  self->parentnodes[self->init_refcount - 1] = src;
-
-  self->initial = false;
+  initial_ = false;
 }
 
-/**
- * Returns the latency of only the given port, without adding
- * the previous/next latencies.
- *
- * It returns the plugin's latency if plugin, otherwise 0.
- */
 nframes_t
-graph_node_get_single_playback_latency (GraphNode * node)
+GraphNode::get_single_playback_latency () const
 {
-  switch (node->type)
+  switch (type_)
     {
-    case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
+    case Type::Plugin:
       /* latency is already set at this point */
-      return node->pl->latency;
-    case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
+      return pl_->latency_;
+    case Type::Track:
       return 0;
     default:
       break;
@@ -463,24 +399,15 @@ graph_node_get_single_playback_latency (GraphNode * node)
   return 0;
 }
 
-/**
- * Sets the playback latency of the given node
- * recursively.
- *
- * Used only when (re)creating the graph.
- *
- * @param dest_latency The total destination
- * latency so far.
- */
 void
-graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency)
+GraphNode::set_route_playback_latency (nframes_t dest_latency)
 {
   /*long max_latency = 0, parent_latency;*/
 
   /* set route playback latency */
-  if (dest_latency > node->route_playback_latency)
+  if (dest_latency > route_playback_latency_)
     {
-      node->route_playback_latency = dest_latency;
+      route_playback_latency_ = dest_latency;
     }
   else
     {
@@ -490,11 +417,9 @@ graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency)
       return;
     }
 
-  for (int i = 0; i < node->init_refcount; i++)
+  for (auto parent : parentnodes_)
     {
-      GraphNode * parent = node->parentnodes[i];
-      graph_node_set_route_playback_latency (
-        parent, node->route_playback_latency);
+      parent->set_route_playback_latency (route_playback_latency_);
 #if 0
       g_message (
         "added %d route playback latency from node %s to "
@@ -508,73 +433,57 @@ graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency)
 }
 
 void
-graph_node_connect (GraphNode * from, GraphNode * to)
+GraphNode::connect_to (GraphNode &target)
 {
-  g_return_if_fail (from && to);
-  if (array_contains (from->childnodes, from->n_childnodes, to))
+  if (
+    std::find (childnodes_.begin (), childnodes_.end (), &target)
+    != childnodes_.end ())
     return;
 
-  add_feeds (from, to);
-  add_depends (to, from);
+  add_feeds (target);
+  target.add_depends (*this);
 
-  g_warn_if_fail (!from->terminal && !to->initial);
+  z_warn_if_fail (!terminal_ && !target.initial_);
 }
 
-GraphNode *
-graph_node_new (Graph * graph, GraphNodeType type, void * data)
+GraphNode::GraphNode (Graph * graph, Type type, void * data)
+    : id_ (graph->setup_graph_nodes_map_.size ()), graph_ (graph), type_ (type)
 {
-  GraphNode * node = object_new (GraphNode);
-  node->id = (int) g_hash_table_size (graph->setup_graph_nodes);
-  node->graph = graph;
-  node->type = type;
   switch (type)
     {
-    case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
-      node->pl = (Plugin *) data;
+    case Type::Plugin:
+      pl_ = static_cast<Plugin *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PORT:
-      node->port = (Port *) data;
+    case Type::Port:
+      port_ = static_cast<Port *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_FADER:
-      node->fader = (Fader *) data;
+    case Type::Fader:
+    case Type::MonitorFader:
+      fader_ = static_cast<Fader *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_MONITOR_FADER:
-      node->fader = (Fader *) data;
+    case Type::Prefader:
+      prefader_ = static_cast<Fader *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_PREFADER:
-      node->prefader = (Fader *) data;
+    case Type::SampleProcessor:
+      sample_processor_ = static_cast<SampleProcessor *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
-      node->sample_processor = (SampleProcessor *) data;
-      break;
-    case GraphNodeType::ROUTE_NODE_TYPE_TRACK:
-      node->track = (Track *) data;
+    case Type::Track:
+      track_ = static_cast<Track *> (data);
       /* set cache */
-      node->track->name_hash = track_get_name_hash (*node->track);
+      track_->name_hash_ = track_->get_name_hash ();
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
+    case Type::InitialProcessor:
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_HW_PROCESSOR:
-      node->hw_processor = (HardwareProcessor *) data;
+    case Type::HardwareProcessor:
+      hw_processor_ = static_cast<HardwareProcessor *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
-      node->modulator_macro_processor = (ModulatorMacroProcessor *) data;
+    case Type::ModulatorMacroProcessor:
+      modulator_macro_processor_ = static_cast<ModulatorMacroProcessor *> (data);
       break;
-    case GraphNodeType::ROUTE_NODE_TYPE_CHANNEL_SEND:
-      node->send = (ChannelSend *) data;
+    case Type::ChannelSend:
+      send_ = static_cast<ChannelSend *> (data);
       break;
     default:
-      g_return_val_if_reached (node);
+      z_return_if_reached ();
     }
-
-  return node;
-}
-
-void
-graph_node_free (GraphNode * self)
-{
-  free (self->childnodes);
-  free (self->parentnodes);
-
-  object_zero_and_free (self);
 }

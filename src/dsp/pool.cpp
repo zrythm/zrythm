@@ -17,140 +17,88 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-/**
- * Inits after loading a project.
- */
-bool
-audio_pool_init_loaded (AudioPool * self, GError ** error)
-{
-  self->clips_size = (size_t) self->num_clips;
-
-  for (int i = 0; i < self->num_clips; i++)
-    {
-      AudioClip * clip = self->clips[i];
-      if (clip)
-        {
-          GError * err = NULL;
-          bool     success = audio_clip_init_loaded (clip, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "Failed to initialize audio clip '%s'", clip->name);
-              return false;
-            }
-        }
-    }
-  return true;
-}
-
-/**
- * Creates a new audio pool.
- */
-AudioPool *
-audio_pool_new (void)
-{
-  AudioPool * self = object_new (AudioPool);
-
-  self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
-
-  self->clips_size = 2;
-  self->clips = object_new_n (self->clips_size, AudioClip *);
-
-  return self;
-}
-
-static bool
-name_exists (AudioPool * self, const char * name)
-{
-  AudioClip * clip;
-  for (int i = 0; i < self->num_clips; i++)
-    {
-      clip = self->clips[i];
-      if (clip && string_is_equal (clip->name, name))
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-/**
- * Ensures that the name of the clip is unique.
- *
- * The clip must not be part of the pool yet.
- *
- * If the clip name is not unique, it will be
- * replaced by a unique name.
- */
 void
-audio_pool_ensure_unique_clip_name (AudioPool * self, AudioClip * clip)
+AudioPool::init_loaded ()
 {
-  bool   is_backup = false;
-  char * orig_name_without_ext = io_file_strip_ext (clip->name);
-  char * orig_path_in_pool = audio_clip_get_path_in_pool (clip, is_backup);
-  char * new_name = g_strdup (orig_name_without_ext);
-  g_return_if_fail (new_name);
+  for (auto &clip : clips_)
+    {
+      if (clip)
+        clip->init_loaded ();
+    }
+}
+
+bool
+AudioPool::name_exists (const std::string &name) const
+{
+  return std::any_of (clips_.begin (), clips_.end (), [&name] (const auto &clip) {
+    return clip && clip->name_ == name;
+  });
+}
+
+void
+AudioPool::ensure_unique_clip_name (AudioClip &clip)
+{
+  constexpr bool is_backup = false;
+  auto        orig_name_without_ext = io_file_strip_ext (clip.name_.c_str ());
+  auto        orig_path_in_pool = clip.get_path_in_pool (is_backup);
+  std::string new_name = orig_name_without_ext;
+  z_return_if_fail (!new_name.empty ());
 
   bool changed = false;
-  while (name_exists (self, new_name))
+  while (name_exists (new_name))
     {
-      char *       prev_new_name = new_name;
-      const char * regex = "^.*\\((\\d+)\\)$";
-      char *       cur_val_str = string_get_regex_group (new_name, regex, 1);
-      int cur_val = string_get_regex_group_as_int (new_name, regex, 1, 0);
+      const auto     prev_new_name = new_name;
+      constexpr auto regex = R"(^.*\((\d+)\)$)";
+      char * cur_val_str = string_get_regex_group (new_name.c_str (), regex, 1);
+      int    cur_val =
+        string_get_regex_group_as_int (new_name.c_str (), regex, 1, 0);
       if (cur_val == 0)
         {
-          new_name = g_strdup_printf ("%s (1)", new_name);
+          new_name = fmt::format ("{} (1)", new_name);
         }
       else
         {
           size_t len =
-            strlen (new_name) -
+            strlen (new_name.c_str ()) -
             /* + 2 for the parens */
             (strlen (cur_val_str) + 2);
           /* + 1 for the terminating NULL */
           size_t tmp_len = len + 1;
           char   tmp[tmp_len];
           memset (tmp, 0, tmp_len * sizeof (char));
-          memcpy (tmp, new_name, len == 0 ? 0 : len - 1);
-          new_name = g_strdup_printf ("%s (%d)", tmp, cur_val + 1);
+          memcpy (tmp, new_name.c_str (), len == 0 ? 0 : len - 1);
+          new_name = fmt::format ("{} ({})", std::string (tmp), cur_val + 1);
         }
       g_free (cur_val_str);
-      g_free (prev_new_name);
       changed = true;
     }
 
-  char * new_path_in_pool =
-    audio_clip_get_path_in_pool_from_name (new_name, clip->use_flac, is_backup);
+  auto new_path_in_pool =
+    AudioClip::get_path_in_pool_from_name (new_name, clip.use_flac_, is_backup);
   if (changed)
     {
-      g_return_if_fail (!string_is_equal (new_path_in_pool, orig_path_in_pool));
+      z_return_if_fail (new_path_in_pool != orig_path_in_pool);
     }
 
-  g_free (clip->name);
-  g_free (orig_path_in_pool);
-  g_free (new_path_in_pool);
-  clip->name = new_name;
+  clip.name_ = new_name;
 }
 
-/**
- * Returns the next available ID.
- */
-static int
-get_next_id (AudioPool * self)
+int
+AudioPool::get_next_id () const
 {
   int next_id = -1;
-  for (int i = 0; i < self->num_clips; i++)
+  for (size_t i = 0; i < clips_.size (); ++i)
     {
-      AudioClip * clip = self->clips[i];
+      const auto &clip = clips_[i];
       if (clip)
         {
-          next_id = MAX (clip->pool_id, next_id);
+          next_id = std::max (clip->pool_id_, next_id);
         }
       else
         {
@@ -161,266 +109,183 @@ get_next_id (AudioPool * self)
   return next_id + 1;
 }
 
-/**
- * Adds an audio clip to the pool.
- *
- * Changes the name of the clip if another clip with
- * the same name already exists.
- */
 int
-audio_pool_add_clip (AudioPool * self, AudioClip * clip)
+AudioPool::add_clip (std::unique_ptr<AudioClip> &&clip)
 {
-  g_return_val_if_fail (clip && clip->name, -1);
+  z_return_val_if_fail (!clip->name_.empty (), -1);
 
-  g_message ("adding clip <%s> to pool...", clip->name);
+  z_debug ("adding clip <%s> to pool...", clip->name_);
 
-  array_double_size_if_full (
-    self->clips, self->num_clips, self->clips_size, AudioClip *);
+  ensure_unique_clip_name (*clip);
 
-  audio_pool_ensure_unique_clip_name (self, clip);
+  int next_id = get_next_id ();
+  z_return_val_if_fail (next_id >= 0 && next_id <= (int) clips_.size (), -1);
 
-  int next_id = get_next_id (self);
-  g_return_val_if_fail (self->clips[next_id] == NULL, -1);
-
-  clip->pool_id = next_id;
-  self->clips[next_id] = clip;
-  if (next_id == self->num_clips)
-    self->num_clips++;
-
-  g_message ("added clip <%s> to pool", clip->name);
-
-  audio_pool_print (self);
-
-  return clip->pool_id;
-}
-
-/**
- * Returns the clip for the given ID.
- */
-AudioClip *
-audio_pool_get_clip (AudioPool * self, int clip_id)
-{
-  g_return_val_if_fail (self && clip_id >= 0 && clip_id < self->num_clips, NULL);
-
-  for (int i = 0; i < self->num_clips; i++)
+  clip->pool_id_ = next_id;
+  if (next_id == (int) clips_.size ())
     {
-      AudioClip * clip = self->clips[i];
-      if (clip && clip->pool_id == clip_id)
-        {
-          return self->clips[i];
-        }
+      clips_.emplace_back (std::move (clip));
+    }
+  else
+    {
+      z_return_val_if_fail (clips_[next_id] == nullptr, -1);
+      clips_[next_id] = std::move (clip);
     }
 
-  g_return_val_if_reached (NULL);
+  z_debug ("added clip <{}> to pool", clips_[next_id]->name_);
+  print ();
+
+  return next_id;
 }
 
-/**
- * Duplicates the clip with the given ID and returns
- * the duplicate.
- *
- * @param write_file Whether to also write the file.
- *
- * @return The ID in the pool, or -1 if an error occurred.
- */
-int
-audio_pool_duplicate_clip (
-  AudioPool * self,
-  int         clip_id,
-  bool        write_file,
-  GError **   error)
+AudioClip *
+AudioPool::get_clip (int clip_id)
 {
-  AudioClip * clip = audio_pool_get_clip (self, clip_id);
-  g_return_val_if_fail (clip, -1);
+  z_return_val_if_fail (clip_id >= 0 && clip_id < (int) clips_.size (), nullptr);
 
-  AudioClip * new_clip = audio_clip_new_from_float_array (
-    clip->frames, clip->num_frames, clip->channels, clip->bit_depth, clip->name);
-  audio_pool_add_clip (self, new_clip);
+  auto it =
+    std::find_if (clips_.begin (), clips_.end (), [clip_id] (const auto &clip) {
+      return clip && clip->pool_id_ == clip_id;
+    });
+  z_return_val_if_fail (it != clips_.end (), nullptr);
+  return (*it).get ();
+}
 
-  g_message ("duplicating clip %s to %s...", clip->name, new_clip->name);
+int
+AudioPool::duplicate_clip (int clip_id, bool write_file)
+{
+  const auto clip = get_clip (clip_id);
+  z_return_val_if_fail (clip, -1);
+
+  auto new_id = add_clip (std::make_unique<AudioClip> (
+    clip->frames_.getReadPointer (0), clip->num_frames_, clip->channels_,
+    clip->bit_depth_, clip->name_));
+  auto new_clip = get_clip (new_id);
+
+  z_debug ("duplicating clip %s to %s...", clip->name_, new_clip->name_);
 
   /* assert clip names are not the same */
-  g_return_val_if_fail (!string_is_equal (clip->name, new_clip->name), -1);
+  z_return_val_if_fail (clip->name_ != new_clip->name_, -1);
 
   if (write_file)
     {
-      GError * err = NULL;
-      bool     success =
-        audio_clip_write_to_pool (new_clip, F_NO_PARTS, F_NOT_BACKUP, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s", "Failed to write clip to pool");
-          return -1;
-        }
+      new_clip->write_to_pool (false, false);
     }
 
-  return new_clip->pool_id;
+  return new_clip->pool_id_;
 }
 
-/**
- * Generates a name for a recording clip.
- */
-char *
-audio_pool_gen_name_for_recording_clip (AudioPool * pool, Track * track, int lane)
+std::string
+AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
 {
-  return g_strdup_printf (
-    "%s - lane %d - recording", track->name,
+  return fmt::format (
+    "%s - lane %d - recording", track.name_,
     /* add 1 to get human friendly index */
     lane + 1);
 }
 
-/**
- * Removes the clip with the given ID from the pool
- * and optionally frees it (and removes the file).
- *
- * @param backup Whether to remove from backup
- *   directory.
- */
 void
-audio_pool_remove_clip (
-  AudioPool * self,
-  int         clip_id,
-  bool        free_and_remove_file,
-  bool        backup)
+AudioPool::remove_clip (int clip_id, bool free_and_remove_file, bool backup)
 {
-  g_message ("removing clip with ID %d", clip_id);
+  z_debug ("removing clip with ID %d", clip_id);
 
-  AudioClip * clip = audio_pool_get_clip (self, clip_id);
-  g_return_if_fail (clip);
+  auto clip = get_clip (clip_id);
+  z_return_if_fail (clip);
 
   if (free_and_remove_file)
     {
-      audio_clip_remove_and_free (clip, backup);
-    }
-  else
-    {
-      audio_clip_free (clip);
+      clip->remove (backup);
     }
 
-  self->clips[clip_id] = NULL;
+  auto removed_clip = std::move (clips_[clip_id]);
 }
 
-/**
- * Removes and frees (and removes the files for) all
- * clips not used by the project or undo stacks.
- *
- * @param backup Whether to remove from backup
- *   directory.
- */
 void
-audio_pool_remove_unused (AudioPool * self, bool backup)
+AudioPool::remove_unused (bool backup)
 {
-  g_message ("--- removing unused files from pool ---");
+  z_debug ("--- removing unused files from pool ---");
 
-  /* remove clips from the pool that are not in
-   * use */
+  /* remove clips from the pool that are not in use */
   int removed_clips = 0;
-  for (int i = 0; i < self->num_clips; i++)
+  for (size_t i = 0; i < clips_.size (); ++i)
     {
-      AudioClip * clip = self->clips[i];
-
-      if (clip && !audio_clip_is_in_use (clip, true))
+      auto &clip = clips_[i];
+      if (clip && !clip->is_in_use (true))
         {
-          g_message ("unused clip [%d]: %s", i, clip->name);
-          audio_pool_remove_clip (self, i, F_FREE, backup);
+          z_info ("unused clip [{}]: {}", i, clip->name_);
+          remove_clip (i, true, backup);
           removed_clips++;
         }
     }
 
   /* remove untracked files from pool directory */
-  char * prj_pool_dir =
-    project_get_path (PROJECT, ProjectPath::PROJECT_PATH_POOL, backup);
-  char ** files = io_get_files_in_dir_ending_in (prj_pool_dir, 1, NULL, false);
-  if (files)
+  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, backup);
+  auto files = io_get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
+  for (const auto &path : files)
     {
-      for (size_t i = 0; files[i] != NULL; i++)
+      bool found = false;
+      for (const auto &clip : clips_)
         {
-          const char * path = files[i];
+          if (!clip)
+            continue;
 
-          bool found = false;
-          for (int j = 0; j < self->num_clips; j++)
+          if (clip->get_path_in_pool (backup) == path)
             {
-              AudioClip * clip = self->clips[j];
-              if (!clip)
-                continue;
-
-              char * clip_path = audio_clip_get_path_in_pool (clip, backup);
-
-              if (string_is_equal (clip_path, path))
-                {
-                  found = true;
-                  break;
-                }
-
-              g_free (clip_path);
-            }
-
-          /* if file not found in pool clips,
-           * delete */
-          if (!found)
-            {
-              io_remove (path);
+              found = true;
+              break;
             }
         }
-      g_strfreev (files);
-    }
-  g_free (prj_pool_dir);
 
-  g_message ("%s: done, removed %d clips", __func__, removed_clips);
+      /* if file not found in pool clips, delete */
+      if (!found)
+        {
+          io_remove (path.toStdString ());
+        }
+    }
+
+      z_info ("removed {} clips", removed_clips);
 }
 
-/**
- * Loads the frame buffers of clips currently in
- * use in the project from their files and frees the
- * buffers of clips not currently in use.
- *
- * This should be called whenever there is a relevant
- * change in the project (eg, object added/removed).
- */
-bool
-audio_pool_reload_clip_frame_bufs (AudioPool * self, GError ** error)
+void
+AudioPool::reload_clip_frame_bufs ()
 {
-  for (int i = 0; i < self->num_clips; i++)
+  for (auto &clip : clips_)
     {
-      AudioClip * clip = self->clips[i];
       if (!clip)
         continue;
 
-      bool in_use = audio_clip_is_in_use (clip, false);
+      bool in_use = clip->is_in_use (false);
 
-      if (in_use && clip->num_frames == 0)
+      if (in_use && clip->get_num_frames () == 0)
         {
           /* load from the file */
-          GError * err = NULL;
-          bool     success = audio_clip_init_loaded (clip, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, _ ("Failed to initialize audio clip '%s'"),
-                clip->name);
-              return false;
-            }
+          clip->init_loaded ();
         }
-      else if (!in_use && clip->num_frames > 0)
+      else if (!in_use && clip->get_num_frames () > 0)
         {
           /* unload frames */
-          clip->num_frames = 0;
-          free (clip->frames);
-          clip->frames = NULL;
+          clip->num_frames_ = 0;
+          clip->frames_.clear ();
+          clip->ch_frames_.clear ();
         }
     }
-  return true;
 }
 
-typedef struct WriteClipData
+struct WriteClipData
 {
   AudioClip * clip;
   bool        is_backup;
 
   /** To be set after writing the file. */
-  bool     successful;
-  GError * error;
-} WriteClipData;
+  bool        successful = false;
+  std::string error;
+
+  static void free (void * data, GClosure * closure)
+  {
+    auto * self = (WriteClipData *) data;
+    delete self;
+  }
+};
 
 /**
  * Thread for writing an audio clip to disk.
@@ -430,153 +295,93 @@ typedef struct WriteClipData
 static void
 write_clip_thread (void * data, void * user_data)
 {
-  WriteClipData * write_clip_data = (WriteClipData *) data;
-  write_clip_data->successful = audio_clip_write_to_pool (
-    write_clip_data->clip, false, write_clip_data->is_backup,
-    &write_clip_data->error);
+  auto * write_clip_data = (WriteClipData *) data;
+  try
+    {
+      write_clip_data->clip->write_to_pool (false, write_clip_data->is_backup);
+      write_clip_data->successful = true;
+    }
+  catch (const ZrythmException &e)
+    {
+      write_clip_data->successful = false;
+      write_clip_data->error = e.what ();
+    }
 }
 
-static void
-write_clip_data_free (void * data)
-{
-  WriteClipData * self = (WriteClipData *) data;
-  object_zero_and_free (self);
-}
-
-/**
- * Writes all the clips to disk.
- *
- * Used when saving a project elsewhere.
- *
- * @param is_backup Whether this is a backup project.
- *
- * @return Whether successful.
- */
-bool
-audio_pool_write_to_disk (AudioPool * self, bool is_backup, GError ** error)
+void
+AudioPool::write_to_disk (bool is_backup)
 {
   /* ensure pool dir exists */
-  char * prj_pool_dir =
-    project_get_path (PROJECT, ProjectPath::PROJECT_PATH_POOL, is_backup);
-  if (!file_exists (prj_pool_dir))
+  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  if (!file_path_exists (prj_pool_dir))
     {
-      GError * err = NULL;
-      bool     success = io_mkdir (prj_pool_dir, &err);
-      if (!success)
+      try
         {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed to create pool directory %s", prj_pool_dir);
-          return false;
+          io_mkdir (prj_pool_dir);
+        }
+      catch (const ZrythmException &e)
+        {
+          std::throw_with_nested (
+            ZrythmException ("Failed to create pool directory"));
         }
     }
-  g_free (prj_pool_dir);
 
   GError *      err = NULL;
   GThreadPool * thread_pool = g_thread_pool_new (
-    write_clip_thread, self, (int) g_get_num_processors (), F_NOT_EXCLUSIVE,
+    write_clip_thread, this, (int) g_get_num_processors (), F_NOT_EXCLUSIVE,
     &err);
   if (err)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", "Failed to create thread pool");
-      return false;
+      throw ZrythmException (
+        fmt::format ("Failed to create thread pool: {}", err->message));
     }
 
-  GPtrArray * clip_data_arr =
-    g_ptr_array_new_with_free_func (write_clip_data_free);
-  for (int i = 0; i < self->num_clips; i++)
+  std::vector<WriteClipData> clip_data_vec;
+  for (auto &clip : clips_)
     {
-      AudioClip * clip = self->clips[i];
       if (clip)
         {
-          WriteClipData * data = object_new (WriteClipData);
-          data->clip = clip;
-          data->is_backup = is_backup;
-          data->successful = false;
-          data->error = NULL;
-          g_ptr_array_add (clip_data_arr, data);
+          clip_data_vec.emplace_back (WriteClipData{ clip.get (), is_backup });
 
           /* start writing in a new thread */
-          g_thread_pool_push (thread_pool, data, NULL);
+          g_thread_pool_push (thread_pool, &clip_data_vec.back (), nullptr);
         }
     }
 
-  g_debug ("waiting for thread pool to finish...");
+  z_debug ("waiting for thread pool to finish...");
   g_thread_pool_free (thread_pool, false, true);
-  g_debug ("done");
+  z_debug ("done");
 
-  for (size_t i = 0; i < clip_data_arr->len; i++)
+  for (auto &clip_data : clip_data_vec)
     {
-      WriteClipData * clip_data =
-        (WriteClipData *) g_ptr_array_index (clip_data_arr, i);
-      if (!clip_data->successful)
+      if (!clip_data.successful)
         {
-          PROPAGATE_PREFIXED_ERROR (
-            error, clip_data->error, _ ("Failed to write clip %s"),
-            clip_data->clip->name);
-          clip_data->error = NULL;
-          return false;
+          throw ZrythmException (fmt::format (
+            "Failed to write clip {}: {}", clip_data.clip->name_,
+            clip_data.error));
         }
     }
-
-  g_ptr_array_unref (clip_data_arr);
-
-  return true;
 }
 
 void
-audio_pool_print (const AudioPool * const self)
+AudioPool::print () const
 {
-  GString * gstr = g_string_new ("[Audio Pool]\n");
-  for (int i = 0; i < self->num_clips; i++)
+  std::stringstream ss;
+  ss << "[Audio Pool]\n";
+  for (size_t i = 0; i < clips_.size (); ++i)
     {
-      AudioClip * clip = self->clips[i];
+      const auto &clip = clips_[i];
       if (clip)
         {
-          char * pool_path = audio_clip_get_path_in_pool (clip, F_NOT_BACKUP);
-          g_string_append_printf (
-            gstr, "[Clip #%d] %s (%s): %s\n", i, clip->name, clip->file_hash,
+          auto pool_path = clip->get_path_in_pool (false);
+          ss << fmt::format (
+            "[Clip #{}] {} ({}): {}\n", i, clip->name_, clip->file_hash_,
             pool_path);
-          g_free (pool_path);
         }
       else
         {
-          g_string_append_printf (gstr, "[Clip #%d] <empty>\n", i);
+          ss << fmt::format ("[Clip #{}] <empty>\n", i);
         }
     }
-  char * str = g_string_free (gstr, false);
-  g_message ("%s", str);
-  g_free (str);
-}
-
-/**
- * To be used during serialization.
- */
-AudioPool *
-audio_pool_clone (const AudioPool * src)
-{
-  AudioPool * self = object_new (AudioPool);
-  self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
-
-  self->clips = object_new_n ((size_t) src->num_clips, AudioClip *);
-  for (int i = 0; i < src->num_clips; i++)
-    {
-      if (src->clips[i])
-        self->clips[i] = audio_clip_clone (src->clips[i]);
-    }
-  self->num_clips = src->num_clips;
-
-  return self;
-}
-
-void
-audio_pool_free (AudioPool * self)
-{
-  for (int i = 0; i < self->num_clips; i++)
-    {
-      object_free_w_func_and_null (audio_clip_free, self->clips[i]);
-    }
-  object_zero_and_free (self->clips);
-
-  object_zero_and_free (self);
+  z_info ("%s", ss.str ());
 }

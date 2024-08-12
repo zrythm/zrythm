@@ -139,7 +139,7 @@ static void
 font_scale_adjustment_changed (GtkAdjustment * adjustment, void * data)
 {
   double factor = gtk_adjustment_get_value (adjustment);
-  zrythm_app_set_font_scale (zrythm_app, factor);
+  zrythm_app_set_font_scale (zrythm_app.get (), factor);
 }
 
 static void
@@ -165,13 +165,13 @@ on_reset_to_factory_clicked (GtkButton * btn, gpointer user_data)
   CallbackData * data = (CallbackData *) user_data;
 
   AdwAlertDialog * dialog =
-    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Reset Settings?"), NULL));
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Reset Settings?"), nullptr));
   adw_alert_dialog_format_body_markup (
     dialog,
     _ ("This will reset Zrythm to factory settings. <b>You will lose "
        "all your preferences</b>."));
   adw_alert_dialog_add_responses (
-    dialog, "cancel", _ ("_Cancel"), "reset", _ ("_Reset"), NULL);
+    dialog, "cancel", _ ("_Cancel"), "reset", _ ("_Reset"), nullptr);
 
   adw_alert_dialog_set_response_appearance (
     dialog, "reset", ADW_RESPONSE_DESTRUCTIVE);
@@ -183,7 +183,7 @@ on_reset_to_factory_clicked (GtkButton * btn, gpointer user_data)
     data->preferences_widget);
 
   adw_alert_dialog_choose (
-    dialog, GTK_WIDGET (data->preferences_widget), NULL, NULL, NULL);
+    dialog, GTK_WIDGET (data->preferences_widget), nullptr, nullptr, nullptr);
 }
 
 static void
@@ -369,7 +369,7 @@ make_control (
     {
       widget = adw_combo_row_new ();
       ui_setup_audio_device_name_combo_row (
-        ADW_COMBO_ROW (widget), MAIN_WINDOW != NULL, true);
+        ADW_COMBO_ROW (widget), MAIN_WINDOW != nullptr, true);
       if (KEY_IS ("General", "Engine", "rtaudio-audio-device-name"))
         {
           self->audio_backend_rtaudio_device_row = ADW_PREFERENCES_ROW (widget);
@@ -388,14 +388,16 @@ make_control (
     }
   else if (KEY_IS ("General", "Engine", "audio-inputs"))
     {
-      widget = GTK_WIDGET (g_object_new (ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL));
+      widget =
+        GTK_WIDGET (g_object_new (ACTIVE_HARDWARE_MB_WIDGET_TYPE, nullptr));
       active_hardware_mb_widget_setup (
         Z_ACTIVE_HARDWARE_MB_WIDGET (widget), F_INPUT, F_NOT_MIDI,
         S_P_GENERAL_ENGINE, "audio-inputs");
     }
   else if (KEY_IS ("General", "Engine", "midi-controllers"))
     {
-      widget = GTK_WIDGET (g_object_new (ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL));
+      widget =
+        GTK_WIDGET (g_object_new (ACTIVE_HARDWARE_MB_WIDGET_TYPE, nullptr));
       active_hardware_mb_widget_setup (
         Z_ACTIVE_HARDWARE_MB_WIDGET (widget), F_INPUT, F_MIDI,
         S_P_GENERAL_ENGINE, "midi-controllers");
@@ -410,26 +412,26 @@ make_control (
         GTK_ORIENTATION_HORIZONTAL, lower, upper, 0.1);
       gtk_widget_set_visible (scale, true);
       gtk_widget_set_hexpand (scale, true);
-      gtk_scale_add_mark (GTK_SCALE (scale), 1.0, GTK_POS_TOP, NULL);
+      gtk_scale_add_mark (GTK_SCALE (scale), 1.0, GTK_POS_TOP, nullptr);
       gtk_box_append (GTK_BOX (widget), scale);
       GtkAdjustment * adj = gtk_range_get_adjustment (GTK_RANGE (scale));
       gtk_adjustment_set_value (adj, current);
       g_settings_bind (
         info->settings, key, adj, "value", G_SETTINGS_BIND_DEFAULT);
       g_signal_connect (
-        adj, "value-changed", G_CALLBACK (font_scale_adjustment_changed), NULL);
+        adj, "value-changed", G_CALLBACK (font_scale_adjustment_changed),
+        nullptr);
     }
   else if (
     KEY_IS ("UI", "General", "css-theme")
     || KEY_IS ("UI", "General", "icon-theme"))
     {
       auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-      char * user_css_theme_path = dir_mgr->get_dir (
+      auto   user_css_theme_path = dir_mgr->get_dir (
         (KEY_IS ("UI", "General", "css-theme"))
-          ? USER_THEMES_CSS
-          : USER_THEMES_ICONS);
-      char ** css_themes =
-        io_get_files_in_dir_as_basenames (user_css_theme_path, true, true);
+          ? ZrythmDirType::USER_THEMES_CSS
+          : ZrythmDirType::USER_THEMES_ICONS);
+      auto css_themes = io_get_files_in_dir_as_basenames (user_css_theme_path);
       const char * default_themes[] = {
         (KEY_IS ("UI", "General", "css-theme"))
           ? "zrythm-theme.css"
@@ -437,8 +439,8 @@ make_control (
         NULL
       };
       GtkStringList * string_list = gtk_string_list_new (default_themes);
-      gtk_string_list_splice (string_list, 1, 0, (const char **) css_themes);
-      g_strfreev (css_themes);
+      gtk_string_list_splice (
+        string_list, 1, 0, (const char **) css_themes.getNullTerminated ());
       widget = adw_combo_row_new ();
       adw_combo_row_set_model (
         ADW_COMBO_ROW (widget), G_LIST_MODEL (string_list));
@@ -514,7 +516,7 @@ make_control (
       else if (path_type == PATH_TYPE_NONE)
         {
           /* map enums */
-          const char ** strv = NULL;
+          const char * const * strv = nullptr;
           size_t        size = 0;
 
 #define SET_STRV_IF_MATCH(a, b, c, arr_name) \
@@ -532,23 +534,26 @@ make_control (
     }
 
           SET_STRV_IF_MATCH (
-            "General", "Engine", "audio-backend", audio_backend_str);
+            "General", "Engine", "audio-backend", AudioBackend_get_strings ());
           SET_STRV_IF_MATCH (
-            "General", "Engine", "midi-backend", midi_backend_str);
+            "General", "Engine", "midi-backend", MidiBackend_get_strings ());
           SET_STRV_IF_MATCH (
-            "General", "Engine", "sample-rate", sample_rate_str);
+            "General", "Engine", "sample-rate",
+            AudioEngine_SampleRate_get_strings ());
           SET_STRV_IF_MATCH (
-            "General", "Engine", "buffer-size", buffer_size_str);
+            "General", "Engine", "buffer-size",
+            AudioEngine_BufferSize_get_strings ());
           SET_STRV_IF_MATCH (
             "Editing", "Audio", "fade-algorithm",
-            curve_algorithm_get_strings ());
+            CurveOptions_Algorithm_get_strings ());
           SET_STRV_IF_MATCH (
             "Editing", "Automation", "curve-algorithm",
-            curve_algorithm_get_strings ());
+            CurveOptions_Algorithm_get_strings ());
           SET_STRV_IF_MATCH_W_COUNT (
             "UI", "General", "language",
             localization_get_language_strings_w_codes (), NUM_LL_LANGUAGES);
-          SET_STRV_IF_MATCH ("UI", "General", "graphic-detail", ui_detail_str);
+          SET_STRV_IF_MATCH (
+            "UI", "General", "graphic-detail", UiDetail_get_strings ());
           SET_STRV_IF_MATCH ("DSP", "Pan", "pan-algorithm", pan_algorithm_str);
           SET_STRV_IF_MATCH ("DSP", "Pan", "pan-law", pan_law_str);
 
@@ -556,7 +561,7 @@ make_control (
 
           if (strv)
             {
-              GtkStringList * string_list = gtk_string_list_new (NULL);
+              GtkStringList * string_list = gtk_string_list_new (nullptr);
               for (size_t i = 0; i < size; i++)
                 {
                   if (strv)
@@ -809,7 +814,7 @@ add_group (PreferencesWidget * self, int group_idx)
 {
   GSettingsSchemaSource * source = g_settings_schema_source_get_default ();
   char **                 non_relocatable;
-  g_settings_schema_source_list_schemas (source, 1, &non_relocatable, NULL);
+  g_settings_schema_source_list_schemas (source, 1, &non_relocatable, nullptr);
 
   /* loop once to get the max subgroup index and group name */
   char *       schema_str;
@@ -900,8 +905,8 @@ on_window_closed (GtkWidget * object, PreferencesWidget * self)
 PreferencesWidget *
 preferences_widget_new (void)
 {
-  PreferencesWidget * self = Z_PREFERENCES_WIDGET (
-    g_object_new (PREFERENCES_WIDGET_TYPE, "title", _ ("Preferences"), NULL));
+  PreferencesWidget * self = Z_PREFERENCES_WIDGET (g_object_new (
+    PREFERENCES_WIDGET_TYPE, "title", _ ("Preferences"), nullptr));
 
   for (int i = 0; i <= 5; i++)
     {

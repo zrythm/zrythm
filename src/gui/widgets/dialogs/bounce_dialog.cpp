@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -12,14 +12,10 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
@@ -34,21 +30,20 @@ on_cancel_clicked (GtkButton * btn, BounceDialogWidget * self)
 }
 
 static void
-progress_close_cb (ExportData * data)
+progress_close_cb (Exporter * exporter)
 {
-  g_thread_join (data->thread);
+  exporter->join_generic_thread ();
+  exporter->post_export ();
 
-  exporter_post_export (data->info, data->conns, data->state);
+  BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (exporter->parent_owner_);
 
-  BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (data->parent_owner);
-
-  const ProgressInfo &pinfo = *data->info->progress_info;
+  auto &pinfo = exporter->progress_info_;
   if (
     !self->bounce_to_file
-    && pinfo.get_completion_type () == ProgressInfo::CompletionType::SUCCESS)
+    && pinfo->get_completion_type () == ProgressInfo::CompletionType::SUCCESS)
     {
       /* create audio track with bounced material */
-      exporter_create_audio_track_after_bounce (data->info, &self->start_pos);
+      exporter->create_audio_track_after_bounce (self->start_pos);
     }
 
   gtk_window_close (GTK_WINDOW (self));
@@ -57,65 +52,65 @@ progress_close_cb (ExportData * data)
 static void
 on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
 {
-  ExportSettings * info = export_settings_new ();
-  ExportData *     data = export_data_new (GTK_WIDGET (self), info);
+  auto settings = Exporter::Settings ();
 
   switch (self->type)
     {
     case BounceDialogWidgetType::BOUNCE_DIALOG_REGIONS:
-      data->info->mode = ExportMode::EXPORT_MODE_REGIONS;
+      settings.mode_ = Exporter::Mode::Regions;
       break;
     case BounceDialogWidgetType::BOUNCE_DIALOG_TRACKS:
-      data->info->mode = ExportMode::EXPORT_MODE_TRACKS;
+      settings.mode_ = Exporter::Mode::Tracks;
       break;
     }
 
   if (self->bounce_to_file)
     {
       /* TODO */
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
   else
     {
-      export_settings_set_bounce_defaults (
-        data->info, ExportFormat::EXPORT_FORMAT_WAV, NULL, self->bounce_name);
+      settings.set_bounce_defaults (
+        Exporter::Format::WAV, "", self->bounce_name);
     }
 
-  position_init (&self->start_pos);
+  self->start_pos.zero ();
   switch (self->type)
     {
     case BounceDialogWidgetType::BOUNCE_DIALOG_REGIONS:
-      timeline_selections_mark_for_bounce (
-        TL_SELECTIONS, data->info->bounce_with_parents);
-      data->info->mode = ExportMode::EXPORT_MODE_REGIONS;
-      arranger_selections_get_start_pos (
-        (ArrangerSelections *) TL_SELECTIONS, &self->start_pos, F_GLOBAL);
+      {
+        TL_SELECTIONS->mark_for_bounce (settings.bounce_with_parents_);
+        settings.mode_ = Exporter::Mode::Regions;
+        auto [obj, pos] = TL_SELECTIONS->get_first_object_and_pos (true);
+        self->start_pos = pos;
+      }
       break;
     case BounceDialogWidgetType::BOUNCE_DIALOG_TRACKS:
       {
-        tracklist_selections_mark_for_bounce (
-          TRACKLIST_SELECTIONS, data->info->bounce_with_parents,
-          F_NO_MARK_MASTER);
-        data->info->mode = ExportMode::EXPORT_MODE_TRACKS;
+        TRACKLIST_SELECTIONS->mark_for_bounce (
+          settings.bounce_with_parents_, false);
+        settings.mode_ = Exporter::Mode::Tracks;
 
         /* start at start marker */
-        Marker *         m = marker_track_get_start_marker (P_MARKER_TRACK);
-        ArrangerObject * m_obj = (ArrangerObject *) m;
-        position_set_to_pos (&self->start_pos, &m_obj->pos);
+        auto m = P_MARKER_TRACK->get_start_marker ();
+        self->start_pos = m->pos_;
       }
       break;
     }
 
-  data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
+  self->exporter =
+    std::make_unique<Exporter> (settings, GTK_WIDGET (self), nullptr);
+
+  self->exporter->prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
   /* start exporting in a new thread */
-  data->thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, data->info);
+  self->exporter->begin_generic_thread ();
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      data, true, progress_close_cb, false, F_CANCELABLE);
+      self->exporter, true, progress_close_cb, false, true);
   adw_dialog_present (ADW_DIALOG (progress_dialog), GTK_WIDGET (self));
 }
 
@@ -145,14 +140,15 @@ on_disable_after_bounce_toggled (GtkCheckButton * btn, BounceDialogWidget * self
  * Creates a bounce dialog.
  */
 BounceDialogWidget *
-bounce_dialog_widget_new (BounceDialogWidgetType type, const char * bounce_name)
+bounce_dialog_widget_new (
+  BounceDialogWidgetType type,
+  const std::string     &bounce_name)
 {
-  BounceDialogWidget * self = static_cast<BounceDialogWidget *> (
-    g_object_new (BOUNCE_DIALOG_WIDGET_TYPE, NULL));
+  auto * self = static_cast<BounceDialogWidget *> (
+    g_object_new (BOUNCE_DIALOG_WIDGET_TYPE, nullptr));
 
   self->type = type;
-  /* TODO free when destroying */
-  self->bounce_name = g_strdup (bounce_name);
+  self->bounce_name = bounce_name;
 
   self->bounce_step_selector = bounce_step_selector_widget_new ();
   gtk_box_append (
@@ -182,6 +178,15 @@ bounce_dialog_widget_new (BounceDialogWidgetType type, const char * bounce_name)
 }
 
 static void
+bounce_dialog_widget_finalize (GObject * object)
+{
+  BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (object);
+
+  self->exporter.~shared_ptr<Exporter> ();
+  self->bounce_name.~basic_string ();
+}
+
+static void
 bounce_dialog_widget_class_init (BounceDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
@@ -199,11 +204,17 @@ bounce_dialog_widget_class_init (BounceDialogWidgetClass * _klass)
 
   gtk_widget_class_bind_template_callback (klass, on_cancel_clicked);
   gtk_widget_class_bind_template_callback (klass, on_bounce_clicked);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize = bounce_dialog_widget_finalize;
 }
 
 static void
 bounce_dialog_widget_init (BounceDialogWidget * self)
 {
+  new (&self->bounce_name) std::string ();
+  new (&self->exporter) std::shared_ptr<Exporter> ();
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_window_set_focus (GTK_WINDOW (self), GTK_WIDGET (self->bounce_btn));

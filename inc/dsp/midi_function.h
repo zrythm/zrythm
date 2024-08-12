@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * MIDI functions.
  *
@@ -13,12 +13,12 @@
 #define __AUDIO_MIDI_FUNCTION_H__
 
 #include "dsp/curve.h"
+#include "utils/format.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
 #include <glib/gi18n.h>
 
-typedef struct ArrangerSelections ArrangerSelections;
+class ArrangerSelections;
 
 /**
  * @addtogroup dsp
@@ -28,41 +28,30 @@ typedef struct ArrangerSelections ArrangerSelections;
 
 enum class MidiFunctionType
 {
-  MIDI_FUNCTION_CRESCENDO,
-  MIDI_FUNCTION_FLAM,
-  MIDI_FUNCTION_FLIP_HORIZONTAL,
-  MIDI_FUNCTION_FLIP_VERTICAL,
-  MIDI_FUNCTION_LEGATO,
-  MIDI_FUNCTION_PORTATO,
-  MIDI_FUNCTION_STACCATO,
-  MIDI_FUNCTION_STRUM,
+  Crescendo,
+  Flam,
+  FlipHorizontal,
+  FlipVertical,
+  Legato,
+  Portato,
+  Staccato,
+  Strum,
 };
 
-typedef struct MidiFunctionOpts
+class MidiFunctionOpts
 {
-  midi_byte_t start_vel;
-  midi_byte_t end_vel;
-  midi_byte_t vel;
+public:
+  midi_byte_t start_vel_ = 0;
+  midi_byte_t end_vel_ = 0;
+  midi_byte_t vel_ = 0;
 
-  bool   ascending;
-  double time;
-  double amount;
+  bool   ascending_ = true;
+  double time_ = 0;
+  double amount_ = 0;
 
-  CurveAlgorithm curve_algo;
-  double         curviness;
-
-} MidiFunctionOpts;
-
-static inline const char *
-midi_function_type_to_string (MidiFunctionType type)
-{
-  static const char * midi_function_type_strings[] = {
-    N_ ("Crescendo"), N_ ("Flam"),    N_ ("Flip H"),   N_ ("Flip V"),
-    N_ ("Legato"),    N_ ("Portato"), N_ ("Staccato"), N_ ("Strum"),
-  };
-
-  return midi_function_type_strings[static_cast<int> (type)];
-}
+  CurveOptions::Algorithm curve_algo_ = CurveOptions::Algorithm::Exponent;
+  double                  curviness_ = 0;
+};
 
 /**
  * Returns a string identifier for the type.
@@ -81,13 +70,25 @@ midi_function_string_id_to_type (const char * id);
  *
  * @param sel Selections to edit.
  * @param type Function type.
+ * @throw ZrythmException on error.
  */
-int
+void
 midi_function_apply (
-  ArrangerSelections * sel,
-  MidiFunctionType     type,
-  MidiFunctionOpts     opts,
-  GError **            error);
+  ArrangerSelections &sel,
+  MidiFunctionType    type,
+  MidiFunctionOpts    opts);
+
+DEFINE_ENUM_FORMATTER (
+  MidiFunctionType,
+  MidiFunctionType,
+  N_ ("Crescendo"),
+  N_ ("Flam"),
+  N_ ("Flip H"),
+  N_ ("Flip V"),
+  N_ ("Legato"),
+  N_ ("Portato"),
+  N_ ("Staccato"),
+  N_ ("Strum"));
 
 /**
  * @}

@@ -30,7 +30,7 @@ watch_out_cb (GIOChannel * channel, GIOCondition cond, ChildWatchData * data)
  *
  * This assumes that the process will exit within a
  * few milliseconds from when the first output is
- * printed, unless \ref always_wait is true, in
+ * printed, unless @ref always_wait is true, in
  * which case the process will only be
  * reaped after the waiting time.
  *
@@ -45,8 +45,8 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
   int      out, err;
   GError * g_err = NULL;
   bool     ret = g_spawn_async_with_pipes (
-    NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL, &out, &err,
-    &g_err);
+    nullptr, argv, nullptr, G_SPAWN_DEFAULT, nullptr, nullptr, &pid, nullptr,
+    &out, &err, &g_err);
   if (!ret)
     {
       g_warning ("(%s) spawn failed: %s", __func__, g_err->message);
@@ -88,7 +88,7 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
 
   char *    str;
   gsize     size;
-  GIOStatus gio_status = g_io_channel_read_to_end (out_ch, &str, &size, NULL);
+  GIOStatus gio_status = g_io_channel_read_to_end (out_ch, &str, &size, nullptr);
   g_io_channel_unref (out_ch);
 
   if (gio_status == G_IO_STATUS_NORMAL)

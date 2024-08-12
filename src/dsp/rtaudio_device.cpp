@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "zrythm-config.h"
 
@@ -12,15 +10,14 @@
 #  include "dsp/port.h"
 #  include "dsp/rtaudio_device.h"
 #  include "project.h"
-#  include "utils/objects.h"
-#  include "utils/string.h"
+#  include "zrythm.h"
 
 #  include <gtk/gtk.h>
 
 static void
 error_cb (rtaudio_error_t err, const char * msg)
 {
-  g_critical ("RtAudio error: %s", msg);
+  z_error ("RtAudio error: %s", msg);
 }
 
 static int
@@ -32,20 +29,18 @@ myaudio_cb (
   rtaudio_stream_status_t status,
   RtAudioDevice *         self)
 {
-  /*g_debug ("calling callback");*/
-
   /* if input device, receive data */
   if (in_buf)
     {
-      zix_sem_wait (&self->audio_ring_sem);
+      SemaphoreRAII<> sem_raii (self->audio_ring_sem_);
 
       if (status != 0)
         {
           /* xrun */
-          g_message ("XRUN in RtAudio");
+          z_info ("XRUN in RtAudio");
         }
 
-      zix_ring_write (self->audio_ring, in_buf, nframes * sizeof (float));
+      self->audio_ring_.force_write_multiple (in_buf, nframes);
 
 #  if 0
       for (unsigned int i = 0; i < nframes; i++)
@@ -57,46 +52,39 @@ myaudio_cb (
             }
         }
 #  endif
-
-      zix_sem_post (&self->audio_ring_sem);
     }
 
   return 0;
 }
 
-RtAudioDevice *
-rtaudio_device_new (
-  int          is_input,
-  const char * device_name,
+RtAudioDevice::RtAudioDevice (
+  bool         is_input,
   unsigned int device_id,
   unsigned int channel_idx,
-  Port *       port)
+  AudioPort *  port,
+  std::string  device_name)
+    : is_input_ (is_input), channel_idx_ (channel_idx), id_ (device_id),
+      port_ (port)
 {
-  RtAudioDevice * self = object_new (RtAudioDevice);
-
-  self->is_input = is_input;
-  self->id = device_id;
-  self->port = port;
-  self->channel_idx = channel_idx;
-  self->handle =
-    engine_rtaudio_create_rtaudio (AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
-  if (!self->handle)
+  handle_ = engine_rtaudio_create_rtaudio (
+    AUDIO_ENGINE.get (), AUDIO_ENGINE->audio_backend_);
+  if (!handle_)
     {
-      g_warning ("Failed to create RtAudio handle");
-      free (self);
-      return NULL;
+      throw ZrythmException ("Failed to create RtAudio handle");
     }
 
   rtaudio_device_info_t dev_nfo;
-  if (device_name)
+  if (!device_name.empty ())
     {
-      int dev_count = rtaudio_device_count (self->handle);
-      g_return_val_if_fail (dev_count >= 0, NULL);
-      for (unsigned int i = 0; i < (unsigned int) dev_count; i++)
+      int dev_count = rtaudio_device_count (handle_);
+      if (dev_count < 0)
         {
-          rtaudio_device_info_t cur_dev_nfo =
-            rtaudio_get_device_info (self->handle, i);
-          if (string_is_equal (cur_dev_nfo.name, device_name))
+          throw ZrythmException ("Failed to get device count");
+        }
+      for (unsigned int i = 0; i < static_cast<unsigned int> (dev_count); i++)
+        {
+          auto cur_dev_nfo = rtaudio_get_device_info (handle_, i);
+          if (cur_dev_nfo.name == device_name)
             {
               dev_nfo = cur_dev_nfo;
               break;
@@ -105,160 +93,105 @@ rtaudio_device_new (
     }
   else
     {
-      dev_nfo = rtaudio_get_device_info (self->handle, device_id);
+      dev_nfo = rtaudio_get_device_info (handle_, device_id);
     }
-  self->name = g_strdup (dev_nfo.name);
-
-  self->audio_ring = zix_ring_new (
-    zix_default_allocator (),
-    sizeof (float) * (size_t) RTAUDIO_DEVICE_BUFFER_SIZE);
-
-  zix_sem_init (&self->audio_ring_sem, 1);
-
-  return self;
+  name_ = dev_nfo.name;
 }
 
-/**
- * Opens a device allocated with
- * rtaudio_device_new().
- *
- * @param start Also start the device.
- *
- * @return Non-zero if error.
- */
-int
-rtaudio_device_open (RtAudioDevice * self, int start)
+void
+RtAudioDevice::open (bool start)
 {
-  g_message ("opening rtaudio device");
+  z_debug ("opening rtaudio device");
 
-  rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, self->id);
-  g_message ("RtAudio device %d: %s", self->id, dev_nfo.name);
+  auto dev_nfo = rtaudio_get_device_info (handle_, id_);
+  z_debug ("RtAudio device {}: {}", id_, dev_nfo.name);
 
   /* prepare params */
-  struct rtaudio_stream_parameters stream_params = {
-    .device_id = self->id,
+  rtaudio_stream_parameters stream_params = {
+    .device_id = id_,
     .num_channels = 1,
-    .first_channel = self->channel_idx,
+    .first_channel = channel_idx_,
   };
-  struct rtaudio_stream_options stream_opts = {
+  rtaudio_stream_options stream_opts = {
     .flags = RTAUDIO_FLAGS_SCHEDULE_REALTIME,
     .num_buffers = 2,
     .priority = 99,
     .name = "Zrythm",
   };
 
-  unsigned int samplerate = AUDIO_ENGINE->sample_rate;
-  unsigned int buffer_size = AUDIO_ENGINE->block_length;
+  auto samplerate = AUDIO_ENGINE->sample_rate_;
+  auto buffer_size = AUDIO_ENGINE->block_length_;
   /* input stream */
-  int ret = rtaudio_open_stream (
-    self->handle, NULL, &stream_params, RTAUDIO_FORMAT_FLOAT32, samplerate,
-    &buffer_size, (rtaudio_cb_t) myaudio_cb, self, &stream_opts,
+  auto ret = rtaudio_open_stream (
+    handle_, nullptr, &stream_params, RTAUDIO_FORMAT_FLOAT32, samplerate,
+    &buffer_size, (rtaudio_cb_t) myaudio_cb, this, &stream_opts,
     (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
-      g_warning (
-        "An error occurred opening the RtAudio "
-        "stream: %s",
-        rtaudio_error (self->handle));
-      return -1;
+      throw ZrythmException (fmt::format (
+        "An error occurred opening the RtAudio stream: {}",
+        rtaudio_error (handle_)));
     }
-  g_message (
-    "Opened %s with samplerate %u and "
-    "buffer size %u",
-    dev_nfo.name, samplerate, buffer_size);
-  self->opened = 1;
+  z_info (
+    "Opened {} with samplerate {} and buffer size {}", dev_nfo.name, samplerate,
+    buffer_size);
+  opened_ = true;
 
   if (start)
     {
-      return rtaudio_device_start (self);
+      this->start ();
     }
-
-  return 0;
 }
 
-int
-rtaudio_device_start (RtAudioDevice * self)
+void
+RtAudioDevice::start ()
 {
-  int ret = rtaudio_start_stream (self->handle);
+  auto ret = rtaudio_start_stream (handle_);
   if (ret)
     {
-      g_critical (
-        "An error occurred starting the RtAudio "
-        "stream: %s",
-        rtaudio_error (self->handle));
-      return ret;
+      throw ZrythmException (fmt::format (
+        "An error occurred starting the RtAudio stream: {}",
+        rtaudio_error (handle_)));
     }
-  rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, self->id);
-  g_message ("RtAudio device %s started", dev_nfo.name);
-  self->started = 1;
-
-  return 0;
+  auto dev_nfo = rtaudio_get_device_info (handle_, id_);
+  z_info ("RtAudio device {} started", dev_nfo.name);
+  started_ = true;
 }
 
-int
-rtaudio_device_stop (RtAudioDevice * self)
+void
+RtAudioDevice::stop ()
 {
-  int ret = rtaudio_stop_stream (self->handle);
+  auto ret = rtaudio_stop_stream (handle_);
   if (ret)
     {
-      g_critical (
-        "An error occurred stopping the RtAudio "
-        "stream: %s",
-        rtaudio_error (self->handle));
-      return ret;
+      throw ZrythmException (fmt::format (
+        "An error occurred stopping the RtAudio stream: {}",
+        rtaudio_error (handle_)));
     }
-  rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, self->id);
-  g_message ("RtAudio device %s stopped", dev_nfo.name);
-  self->started = 0;
-
-  return 0;
+  auto dev_nfo = rtaudio_get_device_info (handle_, id_);
+  z_info ("RtAudio device {} stopped", dev_nfo.name);
+  started_ = false;
 }
 
 /**
  * Close the RtAudioDevice.
- *
- * @param free Also free the memory.
  */
-int
-rtaudio_device_close (RtAudioDevice * self, int free_device)
+void
+RtAudioDevice::close ()
 {
-  g_message ("closing rtaudio device");
-  rtaudio_close_stream (self->handle);
-  self->opened = 0;
-
-  if (free_device)
-    {
-      rtaudio_device_free (self);
-    }
-
-  return 0;
+  z_debug ("closing rtaudio device");
+  rtaudio_close_stream (handle_);
+  opened_ = false;
 }
 
 void
-rtaudio_device_print_dev_info (rtaudio_device_info_t * nfo)
+RtAudioDevice::print_dev_info (const rtaudio_device_info_t &nfo)
 {
-  g_message (
-    "ID: %u\toutput channels: %u\t input channels: %u\tduplex channels: %u\tis default out: %d\tis default in: %d\tpreferred samplerate: %u\tname: %s",
-    nfo->id, nfo->output_channels, nfo->input_channels, nfo->duplex_channels,
-    nfo->is_default_output, nfo->is_default_input, nfo->preferred_sample_rate,
-    nfo->name);
-}
-
-void
-rtaudio_device_free (RtAudioDevice * self)
-{
-  if (self->audio_ring)
-    zix_ring_free (self->audio_ring);
-
-  zix_sem_destroy (&self->audio_ring_sem);
-
-  if (self->name)
-    g_free (self->name);
-
-  free (self);
+  z_info (
+    "ID: {}\toutput channels: {}\t input channels: {}\tduplex channels: {}\tis default out: {}\tis default in: {}\tpreferred samplerate: {}\tname: {}",
+    nfo.id, nfo.output_channels, nfo.input_channels, nfo.duplex_channels,
+    nfo.is_default_output, nfo.is_default_input, nfo.preferred_sample_rate,
+    nfo.name);
 }
 
 #endif // HAVE_RTAUDIO

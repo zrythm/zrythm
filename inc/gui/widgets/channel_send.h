@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Channel send widget.
  */
@@ -20,8 +20,8 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SEND_WIDGET,
   GtkWidget)
 
-typedef struct ChannelSend                ChannelSend;
-typedef struct _ChannelSendSelectorWidget ChannelSendSelectorWidget;
+class ChannelSend;
+using ChannelSendSelectorWidget = struct _ChannelSendSelectorWidget;
 
 /**
  * @addtogroup widgets
@@ -29,7 +29,7 @@ typedef struct _ChannelSendSelectorWidget ChannelSendSelectorWidget;
  * @{
  */
 
-typedef struct _ChannelSendWidget
+using ChannelSendWidget = struct _ChannelSendWidget
 {
   GtkWidget parent_instance;
 
@@ -62,7 +62,7 @@ typedef struct _ChannelSendWidget
   GtkPopoverMenu * popover_menu;
 
   ChannelSendSelectorWidget * selector_popover;
-} ChannelSendWidget;
+};
 
 /**
  * Creates a new ChannelSend widget and binds it to

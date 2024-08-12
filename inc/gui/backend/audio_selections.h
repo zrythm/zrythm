@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * API for selections in the AudioArrangerWidget.
  */
@@ -14,7 +14,7 @@
 #include "dsp/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
 
-typedef struct Region Region;
+class Region;
 
 /**
  * @addtogroup gui_backend
@@ -22,71 +22,75 @@ typedef struct Region Region;
  * @{
  */
 
-#define AUDIO_SELECTIONS (PROJECT->audio_selections)
+#define AUDIO_SELECTIONS (PROJECT->audio_selections_)
 
 /**
- * Selections to be used for the AudioArrangerWidget's
- * current selections, copying, undoing, etc.
- *
- * @extends ArrangerSelections
+ * Selections to be used for the AudioArrangerWidget's current selections,
+ * copying, undoing, etc.
  */
-typedef struct AudioSelections
+class AudioSelections final
+    : public ArrangerSelections,
+      public ICloneable<AudioSelections>,
+      public ISerializable<AudioSelections>
 {
-  ArrangerSelections base;
+public:
+  /**
+   * Sets whether a range selection exists and sends events to update the UI.
+   */
+  void set_has_range (bool has_range);
 
+  bool contains_clip (const AudioClip &clip) const final;
+
+  bool has_any () const override { return has_selection_; }
+
+  void init_after_cloning (const AudioSelections &other) override
+  {
+    ArrangerSelections::copy_members_from (other);
+    has_selection_ = other.has_selection_;
+    sel_start_ = other.sel_start_;
+    sel_end_ = other.sel_end_;
+    pool_id_ = other.pool_id_;
+    region_id_ = other.region_id_;
+  }
+
+  void sort_by_indices (bool desc) override { }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  bool can_be_pasted_at_impl (const Position pos, const int idx) const final;
+
+public:
   /** Whether or not a selection exists. */
-  bool has_selection;
+  bool has_selection_ = false;
 
   /**
    * Selected range.
    *
-   * The start position must always be before the
-   * end position.
+   * The start position must always be before the end position.
    *
-   * Start position is included in the range, end
-   * position is excluded.
+   * Start position is included in the range, end position is excluded.
    *
-   * @note These are global positions and must
-   * be adjusted for the region's start position.
+   * @note These are global positions and must be adjusted for the region's
+   * start position.
    */
-  Position sel_start;
-  Position sel_end;
+  Position sel_start_ = {};
+  Position sel_end_ = {};
 
   /**
-   * Audio pool ID of the associated audio file,
-   * used during serialization.
+   * Audio pool ID of the associated audio file, used during serialization.
    *
    * Set to -1 if unused.
    */
-  int pool_id;
+  int pool_id_ = -1;
 
   /**
    * Identifier of the current region.
    *
-   * Other types of selections don't need this
-   * since their objects refer to it.
+   * Other types of selections don't need this since their objects refer to it.
    */
-  RegionIdentifier region_id;
-
-} AudioSelections;
-
-/**
- * Sets whether a range selection exists and sends
- * events to update the UI.
- *
- * @memberof AudioSelections
- */
-void
-audio_selections_set_has_range (AudioSelections * self, bool has_range);
-
-/**
- * Returns if the selections can be pasted.
- *
- * @param pos Position to paste to.
- * @param region Region to paste to.
- */
-bool
-audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, Region * r);
+  RegionIdentifier region_id_ = {};
+};
 
 /**
  * @}

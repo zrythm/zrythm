@@ -1,176 +1,63 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-#include "dsp/chord_object.h"
 #include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
 #include "dsp/tracklist.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-/**
- * Creates a new Region for chords.
- *
- * @param idx Index inside chord track.
- */
-Region *
-chord_region_new (const Position * start_pos, const Position * end_pos, int idx)
+ChordRegion::
+  ChordRegion (const Position &start_pos, const Position &end_pos, int idx)
 {
-  Region * self = object_new (Region);
+  id_.type_ = RegionType::Chord;
 
-  self->chord_objects_size = 1;
-  self->chord_objects = object_new_n (self->chord_objects_size, ChordObject *);
-
-  self->id.type = RegionType::REGION_TYPE_CHORD;
-
-  region_init (
-    self, start_pos, end_pos, track_get_name_hash (*P_CHORD_TRACK), 0, idx);
-
-  g_warn_if_fail (IS_REGION (self));
-
-  return self;
-}
-
-/**
- * Inserts a ChordObject to the Region.
- */
-void
-chord_region_insert_chord_object (
-  Region *      self,
-  ChordObject * chord,
-  int           pos,
-  bool          fire_events)
-{
-  g_return_if_fail (IS_REGION (self));
-
-  char              str[500];
-  ChordDescriptor * cd = chord_object_get_chord_descriptor (chord);
-  chord_descriptor_to_string (cd, str);
-  g_message (
-    "inserting chord '%s' (index %d) to "
-    "region '%s' at pos %d",
-    str, chord->index, self->name, pos);
-
-  array_double_size_if_full (
-    self->chord_objects, self->num_chord_objects, self->chord_objects_size,
-    ChordObject *);
-  array_insert (self->chord_objects, self->num_chord_objects, pos, chord);
-
-  for (int i = pos; i < self->num_chord_objects; i++)
-    {
-      ChordObject * co = self->chord_objects[i];
-      chord_object_set_region_and_index (co, self, i);
-    }
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, chord);
-    }
-}
-
-/**
- * Adds a ChordObject to the Region.
- */
-void
-chord_region_add_chord_object (
-  Region *      self,
-  ChordObject * chord,
-  bool          fire_events)
-{
-  chord_region_insert_chord_object (
-    self, chord, self->num_chord_objects, fire_events);
-}
-
-/**
- * Removes a ChordObject from the Region.
- *
- * @param free Optionally free the ChordObject.
- */
-void
-chord_region_remove_chord_object (
-  Region *      self,
-  ChordObject * chord,
-  int           free,
-  bool          fire_events)
-{
-  g_return_if_fail (IS_REGION (self) && IS_CHORD_OBJECT (chord));
-
-  char              str[500];
-  ChordDescriptor * cd = chord_object_get_chord_descriptor (chord);
-  chord_descriptor_to_string (cd, str);
-  g_message (
-    "removing chord '%s' (index %d) from "
-    "region '%s'",
-    str, chord->index, self->name);
-
-  /* deselect */
-  if (CHORD_SELECTIONS)
-    {
-      arranger_selections_remove_object (
-        (ArrangerSelections *) CHORD_SELECTIONS, (ArrangerObject *) chord);
-    }
-
-  int pos = -1;
-  array_delete_return_pos (
-    self->chord_objects, self->num_chord_objects, chord, pos);
-  g_return_if_fail (pos >= 0);
-
-  for (int i = pos; i < self->num_chord_objects; i++)
-    {
-      chord_object_set_region_and_index (self->chord_objects[i], self, i);
-    }
-
-  if (free)
-    {
-      arranger_object_free ((ArrangerObject *) chord);
-    }
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (
-        EventType::ET_ARRANGER_OBJECT_REMOVED,
-        ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
-    }
+  init (start_pos, end_pos, P_CHORD_TRACK->get_name_hash (), 0, idx);
 }
 
 bool
-chord_region_validate (Region * self)
+ChordRegion::validate (bool is_project, double frames_per_tick) const
 {
-  for (int i = 0; i < self->num_chord_objects; i++)
+  int idx = 0;
+  for (auto &chord : chord_objects_)
     {
-      ChordObject * c = self->chord_objects[i];
+      z_return_val_if_fail (chord->index_ == idx++, false);
+    }
 
-      g_return_val_if_fail (c->index == i, false);
+  if (
+    !Region::are_members_valid (is_project)
+    || !TimelineObject::are_members_valid (is_project)
+    || !NameableObject::are_members_valid (is_project)
+    || !LoopableObject::are_members_valid (is_project)
+    || !MuteableObject::are_members_valid (is_project)
+    || !LengthableObject::are_members_valid (is_project)
+    || !ColoredObject::are_members_valid (is_project)
+    || !ArrangerObject::are_members_valid (is_project))
+    {
+      return false;
     }
 
   return true;
 }
 
-/**
- * Frees members only but not the Region itself.
- *
- * Regions should be free'd using region_free.
- */
-void
-chord_region_free_members (Region * self)
+ArrangerSelections *
+ChordRegion::get_arranger_selections () const
 {
-  g_return_if_fail (IS_REGION (self));
+  return CHORD_SELECTIONS.get ();
+}
 
-  for (int i = 0; i < self->num_chord_objects; i++)
-    {
-      chord_region_remove_chord_object (
-        self, self->chord_objects[i], F_FREE, F_NO_PUBLISH_EVENTS);
-    }
-
-  object_zero_and_free (self->chord_objects);
+ArrangerWidget *
+ChordRegion::get_arranger_for_children () const
+{
+  return MW_CHORD_ARRANGER;
 }

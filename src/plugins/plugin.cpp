@@ -1,28 +1,20 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Implementation of Plugin.
- */
-
-#include "dsp/port_identifier.h"
-#define _GNU_SOURCE 1 /* To pick up REG_RIP */
-
 #include "zrythm-config.h"
 
-#include <cstdlib>
-#include <cstring>
-
-#include <signal.h>
-
 #include "actions/undo_manager.h"
+#include "dsp/audio_port.h"
+#include "dsp/automatable_track.h"
 #include "dsp/automation_tracklist.h"
 #include "dsp/channel.h"
+#include "dsp/channel_track.h"
 #include "dsp/control_port.h"
+#include "dsp/cv_port.h"
 #include "dsp/engine.h"
 #include "dsp/midi_event.h"
+#include "dsp/modulator_track.h"
+#include "dsp/port_identifier.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "dsp/transport.h"
@@ -41,6 +33,7 @@
 #include "utils/dialogs.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
+#include "utils/exceptions.h"
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -48,226 +41,188 @@
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
+
+#include <fmt/printf.h>
+#define _GNU_SOURCE 1 /* To pick up REG_RIP */
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-typedef enum
+std::unique_ptr<Plugin>
+Plugin::create_with_setting (
+  const PluginSetting &setting,
+  unsigned int         track_name_hash,
+  PluginSlotType       slot_type,
+  int                  slot)
 {
-  Z_PLUGINS_PLUGIN_ERROR_CREATION_FAILED,
-  Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
-} ZPluginsPluginError;
-
-#define Z_PLUGINS_PLUGIN_ERROR z_plugins_plugin_error_quark ()
-GQuark
-z_plugins_plugin_error_quark (void);
-G_DEFINE_QUARK (
-  z - plugins - plugin - error - quark,
-  z_plugins_plugin_error)
-
-/**
- * To be called when struct is deserialized or
- * when creating a new plugin.
- */
-NONNULL static void
-init_port_arrays (Plugin * self)
-{
-  /* create cache arrays */
-  const size_t def_sz = 20;
-  self->ctrl_in_ports = g_ptr_array_new_full (def_sz, NULL);
-  self->audio_in_ports = g_ptr_array_new_full (def_sz, NULL);
-  self->cv_in_ports = g_ptr_array_new_full (def_sz, NULL);
-  self->midi_in_ports = g_ptr_array_new_full (def_sz, NULL);
+  return std::make_unique<CarlaNativePlugin> (
+    setting, track_name_hash, slot_type, slot);
 }
 
-NONNULL static void
-set_stereo_outs_and_midi_in (Plugin * pl)
+void
+Plugin::set_stereo_outs_and_midi_in ()
 {
-  g_return_if_fail (pl->setting && pl->setting->descr);
-
   /* set the L/R outputs */
   int num_audio_outs = 0;
-  for (int i = 0; i < pl->num_out_ports; i++)
+  for (auto &out_port : out_ports_)
     {
-      Port * out_port = pl->out_ports[i];
-      if (out_port->id_.type_ == PortType::Audio)
+      if (out_port->is_audio ())
         {
           if (num_audio_outs == 0)
             {
-              out_port->id_.flags_ |= PortIdentifier::Flags::STEREO_L;
-              pl->l_out = out_port;
+              out_port->id_.flags_ |= PortIdentifier::Flags::StereoL;
+              l_out_ = static_cast<AudioPort *> (out_port.get ());
             }
           else if (num_audio_outs == 1)
             {
-              out_port->id_.flags_ |= PortIdentifier::Flags::STEREO_R;
-              pl->r_out = out_port;
+              out_port->id_.flags_ |= PortIdentifier::Flags::StereoR;
+              r_out_ = static_cast<AudioPort *> (out_port.get ());
             }
           num_audio_outs++;
         }
     }
 
-  /* if mono set it as both stereo out L and
-   * R */
+  /* if mono set it as both stereo out L and R */
   if (num_audio_outs == 1)
     {
-      /* this code is only accessed by beta
-       * projects before the change to force
+      /* this code is only accessed by beta projects before the change to force
        * stereo a few commits after beta 1.1.11 */
-      g_warning ("should not happen with carla");
-      pl->l_out->id_.flags_ |= PortIdentifier::Flags::STEREO_R;
-      pl->r_out = pl->l_out;
+      z_warning ("should not happen with carla");
+      l_out_->id_.flags_ |= PortIdentifier::Flags::StereoR;
+      r_out_ = l_out_;
     }
 
-  if (pl->setting->descr->num_audio_outs > 0)
+  const auto &descr = get_descriptor ();
+  if (descr.num_audio_outs_ > 0)
     {
-      g_return_if_fail (pl->l_out && pl->r_out);
+      g_return_if_fail (l_out_ && r_out_);
     }
 
   /* set MIDI input */
-  for (int i = 0; i < pl->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = pl->in_ports[i];
       if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, port->id_.flags2_,
-          PortIdentifier::Flags2::SUPPORTS_MIDI))
+          PortIdentifier::Flags2::SupportsMidi))
         {
-          pl->midi_in_port = port;
+          midi_in_port_ = static_cast<MidiPort *> (port.get ());
           break;
         }
     }
-  if (plugin_descriptor_is_instrument (pl->setting->descr))
+  if (descr.is_instrument ())
     {
-      g_return_if_fail (pl->midi_in_port);
+      g_return_if_fail (midi_in_port_);
     }
 }
 
-static void
-set_enabled_and_gain (Plugin * self)
+void
+Plugin::set_enabled_and_gain ()
 {
   /* set enabled/gain ports */
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
+      const auto &id = port->id_;
       if (
-        !(port->id_.type_ == PortType::Control
+        !(port->is_control ()
           && ENUM_BITSET_TEST (
-            PortIdentifier::Flags, port->id_.flags_,
-            PortIdentifier::Flags::GENERIC_PLUGIN_PORT)))
+            PortIdentifier::Flags, id.flags_,
+            PortIdentifier::Flags::GenericPluginPort)))
         continue;
 
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::PLUGIN_ENABLED))
+          PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginEnabled))
         {
-          self->enabled = port;
+          enabled_ = static_cast<ControlPort *> (port.get ());
         }
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::PLUGIN_GAIN))
+          PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginGain))
         {
-          self->gain = port;
+          gain_ = static_cast<ControlPort *> (port.get ());
         }
     }
-  g_return_if_fail (self->enabled && self->gain);
+  g_return_if_fail (enabled_ && gain_);
+}
+
+bool
+Plugin::is_in_active_project () const
+{
+  return track_ && track_->is_in_active_project ();
+}
+
+bool
+Plugin::is_auditioner () const
+{
+  return track_ && track_->is_auditioner ();
 }
 
 void
-plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms)
+Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
 {
-  self->magic = PLUGIN_MAGIC;
-  self->track = track;
-  self->ms = ms;
+  track_ = track;
+  ms_ = ms;
 
-  init_port_arrays (self);
-
-  GPtrArray * ports = g_ptr_array_new ();
-  plugin_append_ports (self, ports);
-  for (size_t i = 0; i < ports->len; i++)
+  std::vector<Port *> ports;
+  append_ports (ports);
+  for (auto &port : ports)
     {
-      Port * port = (Port *) g_ptr_array_index (ports, i);
       port->magic_ = PORT_MAGIC;
-      port->plugin_ = self;
+      port->plugin_ = this;
     }
-  object_free_w_func_and_null (g_ptr_array_unref, ports);
 
-  set_enabled_and_gain (self);
+  set_enabled_and_gain ();
 
-#ifdef HAVE_CARLA
-  if (self->setting->open_with_carla)
+  if (is_in_active_project ())
     {
-      self->carla = object_new (CarlaNativePlugin);
-      self->carla->plugin = self;
-      carla_native_plugin_init_loaded (self->carla);
-    }
-#endif
-
-  if (plugin_is_in_active_project (self))
-    {
-      bool     was_enabled = plugin_is_enabled (self, false);
-      GError * err = NULL;
-      int      ret = plugin_instantiate (self, &err);
-      if (ret == 0)
+      bool was_enabled = this->is_enabled (false);
+      try
         {
-          plugin_activate (self, true);
-
-          plugin_set_enabled (self, was_enabled, F_NO_PUBLISH_EVENTS);
+          instantiate ();
         }
-      else
+      catch (const ZrythmException &err)
         {
           /* disable plugin, instantiation failed */
-          HANDLE_ERROR (
-            err, _ ("Instantiation failed for plugin '%s'. Disabling..."),
-            self->setting->descr->name);
-          self->instantiation_failed = true;
+          instantiation_failed_ = true;
+          throw ZrythmException (format_str (
+            _ ("Instantiation failed for plugin '{}'. Disabling..."),
+            get_name ()));
         }
-    }
 
-  /*Track * track = plugin_get_track (self);*/
-  /*plugin_generate_automation_tracks (self, track);*/
+      activate (true);
+      set_enabled (was_enabled, false);
+    }
 }
 
-static void
-plugin_init (
-  Plugin *        plugin,
-  unsigned int    track_name_hash,
-  ZPluginSlotType slot_type,
-  int             slot)
+void
+Plugin::init (unsigned int track_name_hash, PluginSlotType slot_type, int slot)
 {
-  g_message (
-    "%s: %s (%s) track name hash %u slot %d", __func__,
-    plugin->setting->descr->name, ENUM_NAME (plugin->setting->descr->protocol),
-    track_name_hash, slot);
+  z_debug (
+    "{} ({}) track name hash {} slot {}", get_name (),
+    ENUM_NAME (get_protocol ()), track_name_hash, slot);
 
   g_return_if_fail (
-    plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
+    PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot));
 
-  plugin->in_ports_size = 1;
-  plugin->out_ports_size = 1;
-  plugin->id.track_name_hash = track_name_hash;
-  plugin->id.slot_type = slot_type;
-  plugin->id.slot = slot;
-  plugin->magic = PLUGIN_MAGIC;
-
-  plugin->in_ports = object_new_n (1, Port *);
-  plugin->out_ports = object_new_n (1, Port *);
+  id_.track_name_hash_ = track_name_hash;
+  id_.slot_type_ = slot_type;
+  id_.slot_ = slot;
 
   /* add enabled port */
-  Port * port = new Port (PortType::Control, PortFlow::Input, _ ("Enabled"));
-  port->id_.sym_ = ("enabled");
-  port->id_.comment_ = (_ ("Enables or disables the plugin"));
-  port->id_.port_group_ = ("[Zrythm]");
-  plugin_add_in_port (plugin, port);
-  port->id_.flags_ |= PortIdentifier::Flags::PLUGIN_ENABLED;
-  port->id_.flags_ |= PortIdentifier::Flags::TOGGLE;
-  port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
-  port->id_.flags_ |= PortIdentifier::Flags::GENERIC_PLUGIN_PORT;
+  auto port = std::make_unique<ControlPort> (_ ("Enabled"));
+  port->id_.sym_ = "enabled";
+  port->id_.comment_ = _ ("Enables or disables the plugin");
+  port->id_.port_group_ = "[Zrythm]";
+  port->id_.flags_ |= PortIdentifier::Flags::PluginEnabled;
+  port->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  port->id_.flags_ |= PortIdentifier::Flags::Automatable;
+  port->id_.flags_ |= PortIdentifier::Flags::GenericPluginPort;
   port->minf_ = 0.f;
   port->maxf_ = 1.f;
   port->zerof_ = 0.f;
@@ -275,390 +230,267 @@ plugin_init (
   port->control_ = 1.f;
   port->unsnapped_control_ = 1.f;
   port->carla_param_id_ = -1;
-  plugin->enabled = port;
+  enabled_ = static_cast<ControlPort *> (add_in_port (std::move (port)));
 
   /* add gain port */
-  port = new Port (PortType::Control, PortFlow::Input, _ ("Gain"));
-  port->id_.sym_ = ("gain");
-  port->id_.comment_ = (_ ("Plugin gain"));
-  plugin_add_in_port (plugin, port);
-  port->id_.flags_ |= PortIdentifier::Flags::PLUGIN_GAIN;
-  port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
-  port->id_.flags_ |= PortIdentifier::Flags::GENERIC_PLUGIN_PORT;
-  port->id_.port_group_ = ("[Zrythm]");
+  port = std::make_unique<ControlPort> (_ ("Gain"));
+  port->id_.sym_ = "gain";
+  port->id_.comment_ = _ ("Plugin gain");
+  port->id_.flags_ |= PortIdentifier::Flags::PluginGain;
+  port->id_.flags_ |= PortIdentifier::Flags::Automatable;
+  port->id_.flags_ |= PortIdentifier::Flags::GenericPluginPort;
+  port->id_.port_group_ = "[Zrythm]";
   port->minf_ = 0.f;
   port->maxf_ = 8.f;
   port->zerof_ = 0.f;
   port->deff_ = 1.f;
-  port->set_control_value (1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  port->set_control_value (1.f, false, false);
   port->carla_param_id_ = -1;
-  plugin->gain = port;
+  gain_ = static_cast<ControlPort *> (add_in_port (std::move (port)));
 
-  plugin->selected_bank.bank_idx = -1;
-  plugin->selected_bank.idx = -1;
-  plugin_preset_identifier_init (&plugin->selected_preset);
-  plugin->selected_preset.bank_idx = -1;
-  plugin->selected_preset.idx = -1;
+  selected_bank_.bank_idx_ = -1;
+  selected_bank_.idx_ = -1;
+  selected_preset_.bank_idx_ = -1;
+  selected_preset_.idx_ = -1;
 
-  plugin_set_ui_refresh_rate (plugin);
+  set_ui_refresh_rate ();
+
+  z_return_if_fail (gain_ && enabled_);
+
+  /* select the init preset */
+  selected_bank_.bank_idx_ = 0;
+  selected_bank_.idx_ = -1;
+  selected_bank_.plugin_id_ = id_;
+  selected_preset_.bank_idx_ = 0;
+  selected_preset_.idx_ = 0;
+  selected_preset_.plugin_id_ = id_;
+
+  if (!ZRYTHM_TESTING)
+    {
+      /* save the new setting (may have changed during instantiation) */
+      S_PLUGIN_SETTINGS->set (setting_, true);
+    }
 }
 
-PluginBank *
-plugin_add_bank_if_not_exists (Plugin * self, const char * uri, const char * name)
+Plugin::Bank *
+Plugin::add_bank_if_not_exists (const std::string * uri, std::string_view name)
 {
-  for (int i = 0; i < self->num_banks; i++)
+  for (auto &bank : banks_)
     {
-      PluginBank * bank = self->banks[i];
       if (uri)
         {
-          if (string_is_equal (bank->uri, uri))
+          if (bank.uri_ == *uri)
             {
-              return bank;
+              return &bank;
             }
         }
       else
         {
-          if (string_is_equal (bank->name, name))
+          if (bank.name_ == name)
             {
-              return bank;
+              return &bank;
             }
         }
     }
 
-  PluginBank * bank = plugin_bank_new ();
-
-  bank->id.idx = -1;
-  bank->id.bank_idx = self->num_banks;
-  plugin_identifier_copy (&bank->id.plugin_id, &self->id);
-  bank->name = g_strdup (name);
+  Bank bank;
+  bank.id_.idx_ = -1;
+  bank.id_.bank_idx_ = banks_.size ();
+  bank.id_.plugin_id_ = id_;
+  bank.name_ = name;
   if (uri)
-    bank->uri = g_strdup (uri);
+    bank.uri_ = *uri;
 
-  array_double_size_if_full (
-    self->banks, self->num_banks, self->banks_size, PluginBank *);
-  array_append (self->banks, self->num_banks, bank);
-
-  return bank;
+  banks_.push_back (std::move (bank));
+  return &banks_.back ();
 }
 
 void
-plugin_add_preset_to_bank (Plugin * self, PluginBank * bank, PluginPreset * preset)
+Plugin::Bank::add_preset (Preset &&preset)
 {
-  preset->id.idx = bank->num_presets;
-  preset->id.bank_idx = bank->id.bank_idx;
-  plugin_identifier_copy (&preset->id.plugin_id, &bank->id.plugin_id);
+  preset.id_.idx_ = presets_.size ();
+  preset.id_.bank_idx_ = id_.bank_idx_;
+  preset.id_.plugin_id_ = id_.plugin_id_;
 
-  array_double_size_if_full (
-    bank->presets, bank->num_presets, bank->presets_size, PluginPreset *);
-  array_append (bank->presets, bank->num_presets, preset);
+  presets_.push_back (std::move (preset));
+}
+void
+Plugin::set_selected_bank_from_index (int idx)
+{
+  selected_bank_.bank_idx_ = idx;
+  selected_preset_.bank_idx_ = idx;
+  set_selected_preset_from_index (0);
 }
 
-static void
-populate_banks (Plugin * self)
+void
+Plugin::set_selected_preset_from_index (int idx)
 {
-  g_message ("populating plugin banks...");
+  z_return_if_fail (instantiated_);
 
-#ifdef HAVE_CARLA
-  if (self->setting->open_with_carla)
+  selected_preset_.idx_ = idx;
+
+  z_debug ("applying preset at index {}", idx);
+  set_selected_preset_from_index_impl (idx);
+}
+
+void
+Plugin::set_selected_preset_by_name (std::string_view name)
+{
+  z_return_if_fail (instantiated_);
+
+  const auto &bank = banks_[selected_bank_.bank_idx_];
+  for (size_t i = 0; i < bank.presets_.size (); ++i)
     {
-      carla_native_plugin_populate_banks (self->carla);
-    }
-#endif
-}
-
-void
-plugin_set_selected_bank_from_index (Plugin * self, int idx)
-{
-  self->selected_bank.bank_idx = idx;
-  self->selected_preset.bank_idx = idx;
-  plugin_set_selected_preset_from_index (self, 0);
-}
-
-void
-plugin_set_selected_preset_from_index (Plugin * self, int idx)
-{
-  g_return_if_fail (self->instantiated);
-
-  self->selected_preset.idx = idx;
-
-  g_message ("applying preset at index %d", idx);
-
-  GError * err = NULL;
-  bool     applied = false;
-  if (self->setting->open_with_carla)
-    {
-#ifdef HAVE_CARLA
-      g_return_if_fail (self->carla->host_handle);
-
-      /* if init preset */
-      if (self->selected_bank.bank_idx == 0 && idx == 0)
+      const auto &pset = bank.presets_[i];
+      if (pset.name_ == name)
         {
-          carla_reset_parameters (self->carla->host_handle, 0);
-          applied = true;
-          g_message ("applied default preset");
-        }
-      else
-        {
-          PluginPreset * pset =
-            self->banks[self->selected_bank.bank_idx]->presets[idx];
-          carla_set_program (
-            self->carla->host_handle, 0, (uint32_t) pset->carla_program);
-          applied = true;
-          g_message ("applied preset '%s'", pset->name);
-        }
-#endif
-    }
-
-  if (!applied)
-    {
-      HANDLE_ERROR (err, "%s", _ ("Failed to apply preset"));
-    }
-}
-
-void
-plugin_set_selected_preset_by_name (Plugin * self, const char * name)
-{
-  g_return_if_fail (self->instantiated);
-
-  PluginBank * bank = self->banks[self->selected_bank.bank_idx];
-  for (int i = 0; i < bank->num_presets; i++)
-    {
-      PluginPreset * pset = bank->presets[i];
-      if (string_is_equal (pset->name, name))
-        {
-          plugin_set_selected_preset_from_index (self, i);
+          set_selected_preset_from_index (static_cast<int> (i));
           return;
         }
     }
 
-  g_return_if_reached ();
+  z_return_if_reached ();
 }
 
-/**
- * Creates/initializes a plugin and its internal
- * plugin (LV2, etc.)
- * using the given setting.
- *
- * @param track_name_hash The expected name hash
- *   of track the plugin will be in.
- * @param slot The expected slot the plugin will
- *   be in.
- */
-Plugin *
-plugin_new_from_setting (
-  PluginSetting * setting,
-  unsigned int    track_name_hash,
-  ZPluginSlotType slot_type,
-  int             slot,
-  GError **       error)
+Plugin::Plugin (
+  const PluginSetting &setting,
+  unsigned int         track_name_hash,
+  PluginSlotType       slot_type,
+  int                  slot)
+    : setting_ (setting)
 {
-  Plugin * self = object_new (Plugin);
-  self->schema_version = PLUGIN_SCHEMA_VERSION;
+  const auto &descr = setting_.descr_;
 
-  init_port_arrays (self);
+  z_debug (
+    "creating plugin: {} ({}) slot {}", descr.name_,
+    ENUM_NAME (descr.protocol_), slot);
 
-  self->setting = plugin_setting_clone (setting, F_VALIDATE);
-  setting = self->setting;
-  const PluginDescriptor * descr = self->setting->descr;
-
-  g_message (
-    "%s: %s (%s) slot %d", __func__, descr->name, ENUM_NAME (descr->protocol),
-    slot);
-
-  plugin_init (self, track_name_hash, slot_type, slot);
-  g_return_val_if_fail (self->gain && self->enabled, NULL);
-
-#ifdef HAVE_CARLA
-  if (setting->open_with_carla)
-    {
-      GError * err = NULL;
-      carla_native_plugin_new_from_setting (self, &err);
-      if (!self->carla)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s", _ ("Failed to get Carla plugin"));
-          return NULL;
-        }
-    }
-#endif
-
-  /* select the init preset */
-  self->selected_bank.bank_idx = 0;
-  self->selected_bank.idx = -1;
-  plugin_identifier_copy (&self->selected_bank.plugin_id, &self->id);
-  self->selected_preset.bank_idx = 0;
-  self->selected_preset.idx = 0;
-  plugin_identifier_copy (&self->selected_preset.plugin_id, &self->id);
-
-  if (!ZRYTHM_TESTING)
-    {
-      /* save the new setting (may have changed
-       * during instantiation) */
-      plugin_settings_set (S_PLUGIN_SETTINGS, self->setting, F_SERIALIZE);
-    }
-
-  return self;
+  init (track_name_hash, slot_type, slot);
 }
 
-/**
- * Create a dummy plugin for tests.
- */
-Plugin *
-plugin_new_dummy (ZPluginCategory cat, unsigned int track_name_hash, int slot)
+Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
 {
-  Plugin * self = object_new (Plugin);
-  self->schema_version = PLUGIN_SCHEMA_VERSION;
+  PluginDescriptor descr;
+  descr.author_ = "Hoge";
+  descr.name_ = "Dummy Plugin";
+  descr.category_ = cat;
+  descr.category_str_ = "Dummy Plugin Category";
 
-  PluginDescriptor * descr = object_new (PluginDescriptor);
-  descr->author = g_strdup ("Hoge");
-  descr->name = g_strdup ("Dummy Plugin");
-  descr->category = cat;
-  descr->category_str = g_strdup ("Dummy Plugin Category");
+  setting_ = PluginSetting (descr);
 
-  self->setting = plugin_setting_new_default (descr);
-  plugin_descriptor_free (descr);
-
-  plugin_init (
-    self, track_name_hash, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, slot);
-
-  return self;
+  init (track_name_hash, PluginSlotType::Insert, slot);
 }
 
 void
-plugin_append_ports (Plugin * self, GPtrArray * ports)
+Plugin::append_ports (std::vector<Port *> &ports)
 {
-#define _ADD(port) g_ptr_array_add (ports, port)
-
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
-      g_return_if_fail (port);
-      _ADD (port);
+      z_return_if_fail (port);
+      ports.push_back (port.get ());
     }
-  for (int i = 0; i < self->num_out_ports; i++)
+  for (auto &port : out_ports_)
     {
-      Port * port = self->out_ports[i];
-      g_return_if_fail (port);
-      _ADD (port);
+      z_return_if_fail (port);
+      ports.push_back (port.get ());
     }
-
-#undef _ADD
 }
 
-/**
- * Removes the automation tracks associated with
- * this plugin from the automation tracklist in the
- * corresponding track.
- *
- * Used e.g. when moving plugins.
- *
- * @param free_ats Also free the ats.
- */
 void
-plugin_remove_ats_from_automation_tracklist (
-  Plugin * pl,
-  bool     free_ats,
-  bool     fire_events)
+Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
 {
-  Track * track = plugin_get_track (pl);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_if_fail (atl);
-  for (int i = atl->num_ats - 1; i >= 0; i--)
+  auto track = get_track ();
+  z_return_if_fail (track);
+  auto &atl = track->get_automation_tracklist ();
+  for (auto it = atl.ats_.rbegin (); it != atl.ats_.rend (); ++it)
     {
-      AutomationTrack * at = atl->ats[i];
+      auto &at = *it;
       if (
-        at->port_id.owner_type_ == PortIdentifier::OwnerType::PLUGIN
+        at->port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id.flags_,
-          PortIdentifier::Flags::PLUGIN_CONTROL))
+          PortIdentifier::Flags, at->port_id_.flags_,
+          PortIdentifier::Flags::PluginControl))
         {
           if (
-            at->port_id.plugin_id_.slot == pl->id.slot
-            && at->port_id.plugin_id_.slot_type == pl->id.slot_type)
+            at->port_id_.plugin_id_.slot_ == id_.slot_
+            && at->port_id_.plugin_id_.slot_type_ == id_.slot_type_)
             {
-              automation_tracklist_remove_at (atl, at, free_ats, fire_events);
+              atl.remove_at (*at, free_ats, fire_events);
             }
         }
     }
 }
 
-/**
- * Verifies that the plugin identifiers are valid.
- */
 bool
-plugin_validate (Plugin * self)
+Plugin::validate () const
 {
-  g_return_val_if_fail (IS_PLUGIN (self), false);
-
-  if (plugin_is_in_active_project (self))
+  if (is_in_active_project ())
     {
-      /* assert instantiated and activated, or
-       * instantiation failed */
-      g_return_val_if_fail (
-        self->instantiation_failed || (self->instantiated && self->activated),
-        false);
+      /* assert instantiated and activated, or instantiation failed */
+      z_return_val_if_fail (
+        instantiation_failed_ || (instantiated_ && activated_), false);
     }
 
   return true;
 }
 
-typedef struct PluginMoveData
+struct PluginMoveData
 {
-  Plugin *        pl;
-  Track *         track;
-  ZPluginSlotType slot_type;
-  int             slot;
-  bool            fire_events;
-} PluginMoveData;
+  Plugin *           pl = nullptr;
+  AutomatableTrack * track = nullptr;
+  PluginSlotType     slot_type{};
+  int                slot = 0;
+  bool               fire_events = false;
+};
 
 static void
-plugin_move_data_free (void * _data)
+plugin_move_data_free (void * _data, GClosure * closure)
 {
   PluginMoveData * self = (PluginMoveData *) _data;
-  object_zero_and_free (self);
+  object_delete_and_null (self);
 }
 
 static void
 do_move (PluginMoveData * data)
 {
-  Plugin *        pl = data->pl;
-  int             prev_slot = pl->id.slot;
-  ZPluginSlotType prev_slot_type = pl->id.slot_type;
-  Track *         prev_track = plugin_get_track (pl);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (prev_track));
-  Channel * prev_ch = plugin_get_channel (pl);
-  g_return_if_fail (IS_CHANNEL_AND_NONNULL (prev_ch));
+  auto pl = data->pl;
+  auto prev_slot = pl->id_.slot_;
+  auto prev_slot_type = pl->id_.slot_type_;
+  auto prev_track = pl->get_track ();
+  z_return_if_fail (prev_track);
+  auto prev_ch = pl->get_channel ();
+  z_return_if_fail (prev_ch);
+
+  auto data_channel_track = dynamic_cast<ChannelTrack *> (data->track);
 
   /* if existing plugin exists, delete it */
-  Plugin * existing_pl =
-    track_get_plugin_at_slot (data->track, data->slot_type, data->slot);
+  auto existing_pl =
+    data->track->get_plugin_at_slot (data->slot_type, data->slot);
   if (existing_pl)
     {
-      data->track->channel->remove_plugin (
-        data->slot_type, data->slot, F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
-        F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+      data_channel_track->channel_->remove_plugin (
+        data->slot_type, data->slot, false, true, false, false);
     }
 
-  /* move plugin's automation from src to
-   * dest */
-  plugin_move_automation (
-    pl, prev_track, data->track, data->slot_type, data->slot);
+  /* move plugin's automation from src to dest */
+  pl->move_automation (*prev_track, *data->track, data->slot_type, data->slot);
 
   /* remove plugin from its channel */
-  prev_ch->remove_plugin (
-    prev_slot_type, prev_slot, F_MOVING_PLUGIN, F_NOT_DELETING_PLUGIN,
-    F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+  auto plugin_ptr = prev_ch->remove_plugin (
+    prev_slot_type, prev_slot, true, false, false, false);
+  z_return_if_fail (plugin_ptr && plugin_ptr.get () == pl);
 
   /* add plugin to its new channel */
-  data->track->channel->add_plugin (
-    data->slot_type, data->slot, pl, F_NO_CONFIRM, F_MOVING_PLUGIN,
-    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+  data_channel_track->channel_->add_plugin (
+    std::move (plugin_ptr), data->slot_type, data->slot, false, true, false,
+    true, true);
 
   if (data->fire_events)
     {
       EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, data->track->channel);
+      EVENTS_PUSH (
+        EventType::ET_CHANNEL_SLOTS_CHANGED,
+        data_channel_track->channel_.get ());
     }
 }
 
@@ -678,497 +510,358 @@ overwrite_plugin_response_cb (
 }
 
 void
-plugin_move (
-  Plugin *        pl,
-  Track *         track,
-  ZPluginSlotType slot_type,
-  int             slot,
-  bool            confirm_overwrite,
-  bool            fire_events)
+Plugin::move (
+  AutomatableTrack * track,
+  PluginSlotType     slot_type,
+  int                slot,
+  bool               confirm_overwrite,
+  bool               fire_events)
 {
-  PluginMoveData * data = object_new (PluginMoveData);
-  data->pl = pl;
+  auto data = std::make_unique<PluginMoveData> ();
+  data->pl = this;
   data->track = track;
   data->slot_type = slot_type;
   data->slot = slot;
   data->fire_events = fire_events;
 
-  Plugin * existing_pl = track_get_plugin_at_slot (track, slot_type, slot);
+  auto existing_pl = track->get_plugin_at_slot (slot_type, slot);
   if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
     {
-      AdwMessageDialog * dialog =
+      auto dialog =
         dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
       gtk_window_present (GTK_WINDOW (dialog));
       g_signal_connect_data (
-        dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
-        (GClosureNotify) plugin_move_data_free, G_CONNECT_DEFAULT);
+        dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
+        data.release (), plugin_move_data_free, G_CONNECT_DEFAULT);
       return;
     }
 
-  do_move (data);
-  plugin_move_data_free (data);
+  do_move (data.get ());
 }
 
-/**
- * Sets the channel and slot on the plugin and
- * its ports.
- */
 void
-plugin_set_track_and_slot (
-  Plugin *        pl,
-  unsigned int    track_name_hash,
-  ZPluginSlotType slot_type,
-  int             slot)
+Plugin::set_track_and_slot (
+  unsigned int   track_name_hash,
+  PluginSlotType slot_type,
+  int            slot)
 {
-  g_return_if_fail (
-    plugin_identifier_validate_slot_type_slot_combo (slot_type, slot));
+  z_return_if_fail (
+    PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot));
 
-  pl->id.track_name_hash = track_name_hash;
-  pl->id.slot = slot;
-  pl->id.slot_type = slot_type;
+  id_.track_name_hash_ = track_name_hash;
+  id_.slot_ = slot;
+  id_.slot_type_ = slot_type;
 
-  for (int i = 0; i < pl->num_in_ports; i++)
+  auto track = get_track ();
+  for (auto &port : in_ports_)
     {
-      Port *         port = pl->in_ports[i];
-      PortIdentifier copy_id = PortIdentifier (port->id_);
-      port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl);
-      if (plugin_is_in_active_project (pl))
+      auto copy_id = port->id_;
+      port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+      if (is_in_active_project ())
         {
-          Track * track = plugin_get_track (pl);
-
-          port->update_identifier (
-            &copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
+          port->update_identifier (copy_id, track, false);
         }
     }
-  for (int i = 0; i < pl->num_out_ports; i++)
+  for (auto &port : out_ports_)
     {
-      Port *         port = pl->out_ports[i];
-      PortIdentifier copy_id = PortIdentifier (port->id_);
-      port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl);
-      if (plugin_is_in_active_project (pl))
+      auto copy_id = port->id_;
+      port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+      if (is_in_active_project ())
         {
-          Track * track = plugin_get_track (pl);
-
-          port->update_identifier (
-            &copy_id, track, F_NO_UPDATE_AUTOMATION_TRACK);
+          port->update_identifier (copy_id, track, false);
         }
     }
 }
 
-Track *
-plugin_get_track (const Plugin * self)
+AutomatableTrack *
+Plugin::get_track () const
 {
-  g_return_val_if_fail (self->track, NULL);
-  return self->track;
+  z_return_val_if_fail (track_, nullptr);
+  return track_;
 }
 
 Channel *
-plugin_get_channel (Plugin * self)
+Plugin::get_channel () const
 {
-  Track * track = plugin_get_track (self);
-  g_return_val_if_fail (track, NULL);
-  Channel * ch = track->channel;
-  g_return_val_if_fail (ch, NULL);
+  auto track = dynamic_cast<ChannelTrack *> (get_track ());
+  z_return_val_if_fail (track, nullptr);
+  auto ch = track->channel_;
+  z_return_val_if_fail (ch, nullptr);
 
-  return ch;
+  return ch.get ();
 }
 
 Plugin *
-plugin_find (const PluginIdentifier * id)
+Plugin::find (const PluginIdentifier &id)
 {
-  Plugin plugin;
-  memset (&plugin, 0, sizeof (Plugin));
-  plugin_identifier_copy (&plugin.id, id);
+  auto track = TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
+  z_return_val_if_fail (track, nullptr);
 
-#if 0
-  Tracklist * tracklist = NULL;
-  if (plugin.is_auditioner)
-    tracklist = SAMPLE_PROCESSOR->tracklist;
-  else if (!plugin.is_function)
-    tracklist = TRACKLIST;
-
-  if (!tracklist)
-    return NULL;
-#endif
-
-  Track * track =
-    tracklist_find_track_by_name_hash (TRACKLIST, plugin.id.track_name_hash);
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
-
-  Channel * ch = NULL;
+  Channel * ch = nullptr;
   if (
-    track->type != TrackType::TRACK_TYPE_MODULATOR
-    || id->slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX
-    || id->slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT
-    || id->slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSERT)
+    !track->is_modulator () || id.slot_type_ == PluginSlotType::MidiFx
+    || id.slot_type_ == PluginSlotType::Instrument
+    || id.slot_type_ == PluginSlotType::Insert)
     {
-      ch = track->channel;
-      g_return_val_if_fail (ch, NULL);
+      auto channel_track = dynamic_cast<ChannelTrack *> (track);
+      ch = channel_track->channel_.get ();
+      z_return_val_if_fail (ch, nullptr);
     }
-  Plugin * ret = NULL;
-  switch (id->slot_type)
+  Plugin * ret = nullptr;
+  switch (id.slot_type_)
     {
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
-      ret = ch->midi_fx[id->slot];
+    case PluginSlotType::MidiFx:
+      z_return_val_if_fail (ch, nullptr);
+      ret = ch->midi_fx_[id.slot_].get ();
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
-      ret = ch->instrument;
+    case PluginSlotType::Instrument:
+      z_return_val_if_fail (ch, nullptr);
+      ret = ch->instrument_.get ();
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
-      ret = ch->inserts[id->slot];
+    case PluginSlotType::Insert:
+      z_return_val_if_fail (ch, nullptr);
+      ret = ch->inserts_[id.slot_].get ();
       break;
-    case ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR:
-      g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
-      ret = track->modulators[id->slot];
+    case PluginSlotType::Modulator:
+      {
+        auto modulator_track = dynamic_cast<ModulatorTrack *> (track);
+        z_return_val_if_fail (modulator_track, nullptr);
+        ret = modulator_track->modulators_[id.slot_].get ();
+      }
       break;
     default:
-      g_return_val_if_reached (NULL);
+      z_return_val_if_reached (nullptr);
       break;
     }
-  g_return_val_if_fail (ret, NULL);
+  z_return_val_if_fail (ret, nullptr);
 
   return ret;
 }
 
-void
-plugin_get_full_port_group_designation (
-  Plugin *     self,
-  const char * port_group,
-  char *       buf)
+std::string
+Plugin::get_full_port_group_designation (const std::string &port_group) const
 {
-  Track * track = plugin_get_track (self);
-  g_return_if_fail (track);
-  sprintf (buf, "%s/%s/%s", track->name, self->setting->descr->name, port_group);
+  auto track = get_track ();
+  z_return_val_if_fail (track, {});
+  return fmt::format ("{}/{}/{}", track->name_, get_name (), port_group);
 }
 
 Port *
-plugin_get_port_in_group (Plugin * self, const char * port_group, bool left)
+Plugin::get_port_in_group (const std::string &port_group, bool left) const
 {
-  for (int i = 0; i < self->num_in_ports; i++)
+  auto flag =
+    left ? PortIdentifier::Flags::StereoL : PortIdentifier::Flags::StereoR;
+  for (const auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
       if (
-        string_is_equal (port->id_.port_group_.c_str (), port_group)
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          (left ? PortIdentifier::Flags::STEREO_L
-                : PortIdentifier::Flags::STEREO_R)))
+        port->id_.port_group_ == port_group
+        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, flag))
         {
-          return port;
+          return port.get ();
         }
     }
-  for (int i = 0; i < self->num_out_ports; i++)
+  for (const auto &port : out_ports_)
     {
-      Port * port = self->out_ports[i];
       if (
-        string_is_equal (port->id_.port_group_.c_str (), port_group)
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          (left ? PortIdentifier::Flags::STEREO_L
-                : PortIdentifier::Flags::STEREO_R)))
+        port->id_.port_group_ == port_group
+        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, flag))
         {
-          return port;
+          return port.get ();
         }
     }
 
-  return NULL;
+  return nullptr;
 }
 
-/**
- * Find corresponding port in the same port group
- * (eg, if this is left, find right and vice
- * versa).
- */
 Port *
-plugin_get_port_in_same_group (Plugin * self, Port * port)
+Plugin::get_port_in_same_group (const Port &port)
 {
-  if (port->id_.port_group_.empty ())
+  if (port.id_.port_group_.empty ())
     {
-      g_message ("port %s has no port group", port->get_label_as_c_str ());
-      return NULL;
+      z_warning ("port {} has no port group", port.get_label ());
+      return nullptr;
     }
 
-  int     num_ports = 0;
-  Port ** ports = NULL;
-  if (port->id_.flow_ == PortFlow::Input)
-    {
-      num_ports = self->num_in_ports;
-      ports = self->in_ports;
-    }
-  else
-    {
-      num_ports = self->num_out_ports;
-      ports = self->out_ports;
-    }
+  const auto &ports = port.id_.flow_ == PortFlow::Input ? in_ports_ : out_ports_;
 
-  for (int i = 0; i < num_ports; i++)
+  for (const auto &cur_port : ports)
     {
-      Port * cur_port = ports[i];
-
-      if (port == cur_port)
+      if (&port == cur_port.get ())
         {
           continue;
         }
 
-      if (port->id_.port_group_ == cur_port->id_.port_group_ && ((ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::STEREO_L) && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::STEREO_R)) || (ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::STEREO_R) && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::STEREO_L))))
+      if (port.id_.port_group_ == cur_port->id_.port_group_ && ((ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::StereoL) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_.flags_, PortIdentifier::Flags::StereoR)) || (ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::StereoR) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_.flags_, PortIdentifier::Flags::StereoL))))
         {
-          return cur_port;
+          return cur_port.get ();
         }
     }
 
-  return NULL;
+  return nullptr;
 }
 
-char *
-plugin_generate_window_title (Plugin * self)
+std::string
+Plugin::generate_window_title () const
 {
-  g_return_val_if_fail (self->setting->descr, NULL);
-  g_return_val_if_fail (plugin_is_in_active_project (self), NULL);
+  z_return_val_if_fail (is_in_active_project (), {});
 
-  Track * track = self->track;
+  auto track = get_track ();
 
-  const PluginSetting * setting = self->setting;
+  const auto track_name = track ? track->name_ : "";
+  const auto plugin_name = get_name ();
+  z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
-  const char * track_name = track ? track->name : "";
-  const char * plugin_name = setting->descr->name;
-  g_return_val_if_fail (track_name && plugin_name, NULL);
-
-  char bridge_mode[100];
-  strcpy (bridge_mode, "");
-  if (setting->bridge_mode != CarlaBridgeMode::None)
+  std::string bridge_mode;
+  if (setting_.bridge_mode_ != CarlaBridgeMode::None)
     {
-      sprintf (bridge_mode, " - bridge: %s", ENUM_NAME (setting->bridge_mode));
+      bridge_mode =
+        fmt::format (" - bridge: {}", ENUM_NAME (setting_.bridge_mode_));
     }
 
-  char slot[100];
-  sprintf (slot, "#%d", self->id.slot + 1);
-  if (self->id.slot_type == ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT)
+  std::string slot;
+  if (id_.slot_type_ == PluginSlotType::Instrument)
     {
-      strcpy (slot, "instrument");
+      slot = "instrument";
+    }
+  else
+    {
+      slot = fmt::format ("#{}", id_.slot_ + 1);
     }
 
-  char title[500];
-  sprintf (
-    title, "%s (%s %s%s%s)", plugin_name, track_name, slot,
+  return fmt::format (
+    "{} ({} {}{}{})", plugin_name, track_name, slot,
     /* assume all plugins use carla for now */
     "",
-    /*setting->open_with_carla ? " carla" : "",*/
+    /*setting->open_with_carla_ ? " carla" : "",*/
     bridge_mode);
-
-  return g_strdup (title);
 }
 
-/**
- * Activates or deactivates the plugin.
- *
- * @param activate True to activate, false to
- *   deactivate.
- */
-int
-plugin_activate (Plugin * pl, bool activate)
+void
+Plugin::activate (bool activate)
 {
-  g_return_val_if_fail (IS_PLUGIN (pl), -1);
-
-  if ((pl->activated && activate) || (!pl->activated && !activate))
+  if ((activated_ && activate) || (!activated_ && !activate))
     {
       /* nothing to do */
-      g_message ("%s: nothing to do", __func__);
-      return 0;
+      z_debug ("plugin already activated/deactivated. nothing to do");
+      return;
     }
 
-  if (activate && !pl->instantiated)
+  if (activate && !instantiated_)
     {
-      g_critical ("plugin %s not instantiated", pl->setting->descr->name);
-      return -1;
+      z_error ("plugin {} not instantiated", get_name ());
+      return;
     }
 
   if (!activate)
     {
-      pl->deactivating = true;
+      deactivating_ = true;
     }
 
-  if (pl->setting->open_with_carla)
+  activate_impl (activate);
+
+  activated_ = activate;
+  deactivating_ = false;
+}
+
+void
+Plugin::cleanup ()
+{
+  z_debug ("Cleaning up {}...", get_name ());
+
+  if (!activated_ && instantiated_)
     {
-#ifdef HAVE_CARLA
-      int ret = carla_native_plugin_activate (pl->carla, activate);
-      g_return_val_if_fail (ret == 0, ret);
-#endif
+      cleanup_impl ();
     }
 
-  pl->activated = activate;
-  pl->deactivating = false;
-
-  return 0;
+  instantiated_ = false;
+  z_debug ("done");
 }
 
-/**
- * Cleans up an instantiated but not activated
- * plugin.
- */
-int
-plugin_cleanup (Plugin * self)
-{
-  g_message ("Cleaning up %s...", self->setting->descr->name);
-
-  if (!self->activated && self->instantiated)
-    {
-      if (self->setting->open_with_carla)
-        {
-#ifdef HAVE_CARLA
-#  if 0
-          carla_native_plugin_close (
-            self->carla);
-#  endif
-#endif
-        }
-    }
-
-  self->instantiated = false;
-  g_message ("done");
-
-  return 0;
-}
-
-/**
- * Updates the plugin's latency.
- *
- * Calls the plugin format's get_latency()
- * function and stores the result in the plugin.
- */
 void
-plugin_update_latency (Plugin * pl)
+Plugin::update_latency ()
 {
-  if (pl->setting->open_with_carla)
-    {
-#ifdef HAVE_CARLA
-      pl->latency = carla_native_plugin_get_latency (pl->carla);
-#endif
-    }
+  latency_ = get_latency ();
 
-  g_message ("%s latency: %d samples", pl->setting->descr->name, pl->latency);
+  z_debug ("{} latency: {} samples", get_name (), latency_);
 }
 
-/**
- * Adds a port of the given type to the Plugin.
- */
-#define ADD_PORT(type) \
-  while (pl->num_##type##_ports >= (int) pl->type##_ports_size) \
-    { \
-      if (pl->type##_ports_size == 0) \
-        pl->type##_ports_size = 1; \
-      else \
-        pl->type##_ports_size *= 2; \
-      pl->type##_ports = static_cast<Port **> (g_realloc ( \
-        pl->type##_ports, sizeof (Port *) * pl->type##_ports_size)); \
-    } \
-  port->id_.port_index_ = pl->num_##type##_ports; \
-  port->set_owner (PortIdentifier::OwnerType::PLUGIN, pl); \
-  array_append (pl->type##_ports, pl->num_##type##_ports, port)
-
-/**
- * Adds an in port to the plugin's list.
- */
-void
-plugin_add_in_port (Plugin * pl, Port * port)
+Port *
+Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
-  ADD_PORT (in);
-#if 0
-  g_debug (
-    "added input port %s to plugin %s at index %d",
-    port->id_.label, pl->descr->name,
-    port->id_.port_index);
-#endif
+  port->id_.port_index_ = in_ports_.size ();
+  port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+  in_ports_.emplace_back (std::move (port));
+  return in_ports_.back ().get ();
 }
 
-/**
- * Adds an out port to the plugin's list.
- */
-void
-plugin_add_out_port (Plugin * pl, Port * port)
+Port *
+Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
-  ADD_PORT (out);
-  /*g_message (*/
-  /*"added output port %s to plugin %s at index %d",*/
-  /*port->id_.label, pl->descr->name,*/
-  /*port->id_.port_index);*/
+  port->id_.port_index_ = out_ports_.size ();
+  port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+  out_ports_.push_back (std::move (port));
+  return out_ports_.back ().get ();
 }
-#undef ADD_PORT
 
-/**
- * Moves the Plugin's automation from one Channel
- * to another.
- */
 void
-plugin_move_automation (
-  Plugin *        pl,
-  Track *         prev_track,
-  Track *         track,
-  ZPluginSlotType new_slot_type,
-  int             new_slot)
+Plugin::move_automation (
+  AutomatableTrack &prev_track,
+  AutomatableTrack &track,
+  PluginSlotType    new_slot_type,
+  int               new_slot)
 {
-  g_message (
+  z_debug (
     "moving plugin '%s' automation from "
-    "%s to %s -> %s:%d",
-    pl->setting->descr->name, prev_track->name, track->name,
-    ENUM_NAME (new_slot_type), new_slot);
+    "{} to {} -> {}:{}",
+    get_name (), prev_track.name_, track.name_, ENUM_NAME (new_slot_type),
+    new_slot);
 
-  AutomationTracklist * prev_atl = track_get_automation_tracklist (prev_track);
-  g_return_if_fail (prev_atl);
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_if_fail (atl);
+  auto &prev_atl = prev_track.get_automation_tracklist ();
+  auto &atl = track.get_automation_tracklist ();
 
-  unsigned int name_hash = track_get_name_hash (*track);
-  for (int i = prev_atl->num_ats - 1; i >= 0; i--)
+  auto name_hash = track.get_name_hash ();
+  for (auto &at : prev_atl.ats_)
     {
-      AutomationTrack * at = prev_atl->ats[i];
-      Port *            port = Port::find_from_identifier (&at->port_id);
+      auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
       if (!port)
         continue;
-      g_return_if_fail (IS_PORT (port));
-      if (port->id_.owner_type_ == PortIdentifier::OwnerType::PLUGIN)
+      if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
-          Plugin * port_pl = port->get_plugin (1);
-          if (port_pl != pl)
+          auto port_pl = port->get_plugin (true);
+          if (port_pl != this)
             continue;
         }
       else
         continue;
 
-      g_return_if_fail (port->at_ == at);
+      z_return_if_fail (port->at_ == at.get ());
 
       /* delete from prev channel */
-      int num_regions_before = at->num_regions;
-      automation_tracklist_remove_at (
-        prev_atl, at, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      auto num_regions_before = at->regions_.size ();
+      auto removed_at = prev_atl.remove_at (*at, false, false);
 
       /* add to new channel */
-      automation_tracklist_add_at (atl, at);
-      g_warn_if_fail (
-        at == atl->ats[at->index] && at->num_regions == num_regions_before);
+      auto added_at = atl.add_at (std::move (removed_at));
+      z_return_if_fail (
+        added_at == atl.ats_[added_at->index_].get ()
+        && added_at->regions_.size () == num_regions_before);
 
-      /* update the automation track port
-       * identifier */
-      at->port_id.plugin_id_.slot = new_slot;
-      at->port_id.plugin_id_.slot_type = new_slot_type;
-      at->port_id.plugin_id_.track_name_hash = name_hash;
+      /* update the automation track port identifier */
+      added_at->port_id_.plugin_id_.slot_ = new_slot;
+      added_at->port_id_.plugin_id_.slot_type_ = new_slot_type;
+      added_at->port_id_.plugin_id_.track_name_hash_ = name_hash;
 
-      g_warn_if_fail (at->port_id.port_index_ == port->id_.port_index_);
+      z_return_if_fail (added_at->port_id_.port_index_ == port->id_.port_index_);
     }
 }
 
-/**
- * Sets the UI refresh rate on the Plugin.
- */
 void
-plugin_set_ui_refresh_rate (Plugin * self)
+Plugin::set_ui_refresh_rate ()
 {
   if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
     {
-      self->ui_update_hz = 30.f;
-      self->ui_scale_factor = 1.f;
+      ui_update_hz_ = 30.f;
+      ui_scale_factor_ = 1.f;
       goto return_refresh_rate_and_scale_factor;
     }
 
@@ -1177,110 +870,80 @@ plugin_set_ui_refresh_rate (Plugin * self)
   if (g_settings_get_int (S_P_PLUGINS_UIS, "refresh-rate"))
     {
       /* Use user-specified UI update rate. */
-      self->ui_update_hz =
+      ui_update_hz_ =
         (float) g_settings_get_int (S_P_PLUGINS_UIS, "refresh-rate");
     }
   else
     {
-      self->ui_update_hz = (float) z_gtk_get_primary_monitor_refresh_rate ();
-      g_debug (
-        "refresh rate returned by GDK: %.01f", (double) self->ui_update_hz);
+      ui_update_hz_ = (float) z_gtk_get_primary_monitor_refresh_rate ();
+      z_debug ("refresh rate returned by GDK: %.01f", (double) ui_update_hz_);
     }
 
-  /* if no preferred scale factor is set,
-   * use the monitor's scale factor */
+  /* if no preferred scale factor is set, use the monitor's scale factor */
   {
     float scale_factor_setting =
       (float) g_settings_get_double (S_P_PLUGINS_UIS, "scale-factor");
     if (scale_factor_setting >= 0.5f)
       {
         /* use user-specified scale factor */
-        self->ui_scale_factor = scale_factor_setting;
+        ui_scale_factor_ = scale_factor_setting;
       }
     else
       {
         /* set the scale factor */
-        self->ui_scale_factor =
-          (float) z_gtk_get_primary_monitor_scale_factor ();
-        g_debug (
-          "scale factor returned by GDK: %.01f", (double) self->ui_scale_factor);
+        ui_scale_factor_ = (float) z_gtk_get_primary_monitor_scale_factor ();
+        z_debug (
+          "scale factor returned by GDK: %.01f", (double) ui_scale_factor_);
       }
   }
 
   /* clamp the refresh rate to sensible limits */
   if (
-    self->ui_update_hz < PLUGIN_MIN_REFRESH_RATE
-    || self->ui_update_hz > PLUGIN_MAX_REFRESH_RATE)
+    ui_update_hz_ < PLUGIN_MIN_REFRESH_RATE
+    || ui_update_hz_ > PLUGIN_MAX_REFRESH_RATE)
     {
-      g_warning (
+      z_warning (
         "Invalid refresh rate of %.01f received, "
         "clamping to reasonable bounds",
-        (double) self->ui_update_hz);
-      self->ui_update_hz = CLAMP (
-        self->ui_update_hz, PLUGIN_MIN_REFRESH_RATE, PLUGIN_MAX_REFRESH_RATE);
+        (double) ui_update_hz_);
+      ui_update_hz_ = std::clamp (
+        ui_update_hz_, PLUGIN_MIN_REFRESH_RATE, PLUGIN_MAX_REFRESH_RATE);
     }
 
   /* clamp the scale factor to sensible limits */
   if (
-    self->ui_scale_factor < PLUGIN_MIN_SCALE_FACTOR
-    || self->ui_scale_factor > PLUGIN_MAX_SCALE_FACTOR)
+    ui_scale_factor_ < PLUGIN_MIN_SCALE_FACTOR
+    || ui_scale_factor_ > PLUGIN_MAX_SCALE_FACTOR)
     {
-      g_warning (
+      z_warning (
         "Invalid scale factor of %.01f received, "
         "clamping to reasonable bounds",
-        (double) self->ui_scale_factor);
-      self->ui_scale_factor = CLAMP (
-        self->ui_scale_factor, PLUGIN_MIN_SCALE_FACTOR, PLUGIN_MAX_SCALE_FACTOR);
+        (double) ui_scale_factor_);
+      ui_scale_factor_ = std::clamp (
+        ui_scale_factor_, PLUGIN_MIN_SCALE_FACTOR, PLUGIN_MAX_SCALE_FACTOR);
     }
 
 return_refresh_rate_and_scale_factor:
-  g_message ("refresh rate set to %f", (double) self->ui_update_hz);
-  g_message ("scale factor set to %f", (double) self->ui_scale_factor);
+  z_debug ("refresh rate set to %f", (double) ui_update_hz_);
+  z_debug ("scale factor set to %f", (double) ui_scale_factor_);
 }
 
-/**
- * Returns the escaped name of the plugin.
- */
-char *
-plugin_get_escaped_name (Plugin * pl)
-{
-  const PluginDescriptor * descr = pl->setting->descr;
-  g_return_val_if_fail (descr, NULL);
-
-  char tmp[strlen (descr->name) + 200];
-  io_escape_dir_name (tmp, descr->name);
-  return g_strdup (tmp);
-}
-
-/**
- * Generates automatables for the plugin.
- *
- * Plugin must be instantiated already.
- *
- * @param track The Track this plugin belongs to.
- *   This is passed because the track might not be
- *   in the project yet so we can't fetch it
- *   through indices.
- */
 void
-plugin_generate_automation_tracks (Plugin * self, Track * track)
+Plugin::generate_automation_tracks (AutomatableTrack &track)
 {
-  g_message (
-    "generating automation tracks for %s...", self->setting->descr->name);
+  z_debug ("generating automation tracks for {}...", get_name ());
 
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  for (int i = 0; i < self->num_in_ports; i++)
+  auto &atl = track.get_automation_tracklist ();
+  for (auto port : in_ports_ | type_is<ControlPort> ())
     {
-      Port * port = self->in_ports[i];
       if (
         port->id_.type_ != PortType::Control
         || !(ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::AUTOMATABLE)))
+          PortIdentifier::Flags::Automatable)))
         continue;
 
-      AutomationTrack * at = automation_track_new (port);
-      automation_tracklist_add_at (atl, at);
+      atl.add_at (std::make_unique<AutomationTrack> (*port));
     }
 }
 
@@ -1288,162 +951,118 @@ plugin_generate_automation_tracks (Plugin * self, Track * track)
  * Gets the enable/disable port for this plugin.
  */
 Port *
-plugin_get_enabled_port (Plugin * self)
+Plugin::get_enabled_port ()
 {
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
       if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::PLUGIN_ENABLED)
+          PortIdentifier::Flags::PluginEnabled)
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::GENERIC_PLUGIN_PORT))
+          PortIdentifier::Flags::GenericPluginPort))
         {
-          return port;
+          return port.get ();
         }
     }
-  g_return_val_if_reached (NULL);
+  z_return_val_if_reached (nullptr);
 }
 
 void
-plugin_update_identifier (Plugin * self)
+Plugin::update_identifier ()
 {
-  g_return_if_fail (self->track);
+  z_return_if_fail (track_);
 
   /* set port identifier track poses */
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
-      port->update_track_name_hash (self->track, self->id.track_name_hash);
-      port->id_.plugin_id_ = self->id;
+      port->update_track_name_hash (*track_, id_.track_name_hash_);
+      port->id_.plugin_id_ = id_;
     }
-  for (int i = 0; i < self->num_out_ports; i++)
+  for (auto &port : out_ports_)
     {
-      Port * port = self->out_ports[i];
-      port->update_track_name_hash (self->track, self->id.track_name_hash);
-      port->id_.plugin_id_ = self->id;
+      port->update_track_name_hash (*track_, id_.track_name_hash_);
+      port->id_.plugin_id_ = id_;
     }
 }
 
-/**
- * Sets the track name hash on the plugin.
- */
 void
-plugin_set_track_name_hash (Plugin * pl, unsigned int track_name_hash)
+Plugin::set_track_name_hash (unsigned int track_name_hash)
 {
-  pl->id.track_name_hash = track_name_hash;
+  id_.track_name_hash_ = track_name_hash;
 
-  plugin_update_identifier (pl);
+  update_identifier ();
 }
 
-int
-plugin_instantiate (Plugin * self, GError ** error)
+void
+Plugin::instantiate ()
 {
-  g_return_val_if_fail (self->setting, -1);
-  const PluginDescriptor * descr = self->setting->descr;
-  g_return_val_if_fail (descr, -1);
+  z_debug ("Instantiating plugin '%s'...", get_name ());
 
-  g_message ("Instantiating plugin '%s'...", descr->name);
+  set_enabled_and_gain ();
 
-  set_enabled_and_gain (self);
+  set_ui_refresh_rate ();
 
-  plugin_set_ui_refresh_rate (self);
-
-  if (!PROJECT->loaded)
+  if (!PROJECT->loaded_)
     {
-      g_return_val_if_fail (self->state_dir, -1);
+      z_return_if_fail (!state_dir_.empty ());
     }
-  g_message ("state dir: %s", self->state_dir);
+  z_debug ("state dir: %s", state_dir_);
 
-  if (self->setting->open_with_carla)
-    {
-#ifdef HAVE_CARLA
-      GError * err = NULL;
-      int      ret = carla_native_plugin_instantiate (
-        self->carla, !PROJECT->loaded, self->state_dir ? true : false, &err);
-      if (ret != 0)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, _ ("Carla plugin instantiation failed"));
-          return -1;
-        }
+  instantiate_impl (!PROJECT->loaded_, !state_dir_.empty ());
+  save_state (false, nullptr);
 
-      /* save the state */
-      bool success =
-        carla_native_plugin_save_state (self->carla, false, NULL, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, _ ("Failed saving Carla plugin state"));
-          return -1;
-        }
-#else
-      g_return_val_if_reached (-1);
-#endif
-    }
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (self->enabled), -1);
-  control_port_set_val_from_normalized (self->enabled, 1.f, 0);
+  z_return_if_fail (enabled_);
+  enabled_->set_val_from_normalized (1.f, 0);
 
   /* set the L/R outputs */
-  set_stereo_outs_and_midi_in (self);
+  set_stereo_outs_and_midi_in ();
 
   /* update banks */
-  populate_banks (self);
+  populate_banks ();
 
-  self->instantiated = true;
-
-  return 0;
+  instantiated_ = true;
 }
 
-/**
- * Prepare plugin for processing.
- */
 void
-plugin_prepare_process (Plugin * self)
+Plugin::prepare_process ()
 {
-  for (size_t i = 0; i < self->audio_in_ports->len; i++)
+  for (auto &port : audio_in_ports_)
     {
-      Port * port = (Port *) g_ptr_array_index (self->audio_in_ports, i);
       port->clear_buffer (*AUDIO_ENGINE);
     }
-  for (size_t i = 0; i < self->cv_in_ports->len; i++)
+  for (auto &port : cv_in_ports_)
     {
-      Port * port = (Port *) g_ptr_array_index (self->cv_in_ports, i);
       port->clear_buffer (*AUDIO_ENGINE);
     }
-  for (size_t i = 0; i < self->midi_in_ports->len; i++)
+  for (auto &port : midi_in_ports_)
     {
-      Port * port = (Port *) g_ptr_array_index (self->midi_in_ports, i);
       port->clear_buffer (*AUDIO_ENGINE);
     }
 
-  for (int i = 0; i < self->num_out_ports; i++)
+  for (auto &port : out_ports_)
     {
-      self->out_ports[i]->clear_buffer (*AUDIO_ENGINE);
+      port->clear_buffer (*AUDIO_ENGINE);
     }
 }
 
-/**
- * Process plugin.
- */
 void
-plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
+Plugin::process (const EngineProcessTimeInfo time_nfo)
 {
-  if (!plugin_is_enabled (plugin, true) && !plugin->own_enabled_port)
+  if (!is_enabled (true) && !own_enabled_port_)
     {
-      plugin_process_passthrough (plugin, time_nfo);
+      process_passthrough (time_nfo);
       return;
     }
 
-  if (!plugin->instantiated || !plugin->activated)
+  if (!instantiated_ || !activated_)
     {
       return;
     }
 
   /* if has MIDI input port */
-  if (plugin->setting->descr->num_midi_ins > 0)
+  if (setting_.descr_.num_midi_ins_ > 0)
     {
       /* if recording, write MIDI events to the region TODO */
 
@@ -1451,105 +1070,68 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
       /* add midi events to input port */
     }
 
-#ifdef HAVE_CARLA
-  if (plugin->setting->open_with_carla)
-    {
-      carla_native_plugin_process (plugin->carla, time_nfo);
-    }
-#endif
-
-    /* turn off any trigger input controls */
-    /* (only used in direct LV2 implementation which is now disabled, so skip
-     * this for now to avoid unnecessary loops) */
-#if 0
-  for (size_t i = 0; i < plugin->ctrl_in_ports->len; i++)
-    {
-      Port * port = (Port *) g_ptr_array_index (plugin->ctrl_in_ports, i);
-      if (
-        ENUM_BITSET_TEST(PortIdentifier::Flags,port->id_.flags,PortIdentifier::Flags::TRIGGER)
-        && !math_floats_equal (port->control, 0.f))
-        {
-          port->set_control_value ( 0.f, 0, 1);
-        }
-    }
-#endif
+  process_impl (time_nfo);
 
   /* if plugin has gain, apply it */
-  if (!math_floats_equal_epsilon (plugin->gain->control_, 1.f, 0.001f))
+  if (!math_floats_equal_epsilon (gain_->control_, 1.f, 0.001f))
     {
-      for (int i = 0; i < plugin->num_out_ports; i++)
+      for (auto &port : out_ports_)
         {
-          Port * port = plugin->out_ports[i];
           if (port->id_.type_ != PortType::Audio)
             continue;
 
           /* if close to 0 set it to the denormal prevention val */
-          if (math_floats_equal_epsilon (plugin->gain->control_, 0.f, 0.00001f))
+          if (math_floats_equal_epsilon (gain_->control_, 0.f, 0.00001f))
             {
               dsp_fill (
-                &port->buf_[time_nfo->local_offset],
-                DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo->nframes);
+                &port->buf_[time_nfo.local_offset_],
+                DENORMAL_PREVENTION_VAL (AUDIO_ENGINE.get ()),
+                time_nfo.nframes_);
             }
           /* otherwise just apply gain */
           else
             {
               dsp_mul_k2 (
-                &port->buf_[time_nfo->local_offset], plugin->gain->control_,
-                time_nfo->nframes);
+                &port->buf_[time_nfo.local_offset_], gain_->control_,
+                time_nfo.nframes_);
             }
         }
     }
 }
 
-/**
- * Prints the plugin to the buffer, if any, or to
- * the log.
- */
-void
-plugin_print (Plugin * self, char * buf, size_t buf_sz)
+std::string
+Plugin::print () const
 {
-  if (buf)
-    {
-      Track * track = plugin_is_in_active_project (self) ? self->track : NULL;
-      snprintf (
-        buf, buf_sz, "%s (%d):%s:%d - %s", track ? track->name : "<no track>",
-        track ? track->pos : -1, ENUM_NAME (self->id.slot_type), self->id.slot,
-        self->setting->descr->name);
-    }
+  auto track = is_in_active_project () ? track_ : nullptr;
+  return fmt::format (
+    "{} ({}):{}:{} - {}", track ? track->get_name () : "<no track>",
+    track ? track->pos_ : -1, ENUM_NAME (id_.slot_type_), id_.slot_,
+    setting_.descr_.name_);
 }
 
-/**
- * Sets caches for processing.
- */
 void
-plugin_set_caches (Plugin * self)
+Plugin::set_caches ()
 {
+  ctrl_in_ports_.clear ();
+  audio_in_ports_.clear ();
+  cv_in_ports_.clear ();
+  midi_in_ports_.clear ();
 
-#define PREPARE_ARRAY(arr) g_ptr_array_remove_range (arr, 0, arr->len)
-
-  PREPARE_ARRAY (self->ctrl_in_ports);
-  PREPARE_ARRAY (self->audio_in_ports);
-  PREPARE_ARRAY (self->cv_in_ports);
-  PREPARE_ARRAY (self->midi_in_ports);
-
-#undef PREPARE_ARRAY
-
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (auto &port : in_ports_)
     {
-      Port * port = self->in_ports[i];
       switch (port->id_.type_)
         {
         case PortType::Control:
-          g_ptr_array_add (self->ctrl_in_ports, port);
+          ctrl_in_ports_.push_back (static_cast<ControlPort *> (port.get ()));
           break;
         case PortType::Audio:
-          g_ptr_array_add (self->audio_in_ports, port);
+          audio_in_ports_.push_back (static_cast<AudioPort *> (port.get ()));
           break;
         case PortType::CV:
-          g_ptr_array_add (self->cv_in_ports, port);
+          cv_in_ports_.push_back (static_cast<CVPort *> (port.get ()));
           break;
         case PortType::Event:
-          g_ptr_array_add (self->midi_in_ports, port);
+          midi_in_ports_.push_back (static_cast<MidiPort *> (port.get ()));
           break;
         default:
           break;
@@ -1557,387 +1139,229 @@ plugin_set_caches (Plugin * self)
     }
 }
 
-/**
- * Shows plugin ui and sets window close callback
- */
 void
-plugin_open_ui (Plugin * self)
+Plugin::open_ui ()
 {
-  g_return_if_fail (IS_PLUGIN (self));
-  g_return_if_fail (self->setting->descr);
-  g_return_if_fail (plugin_is_in_active_project (self));
+  z_return_if_fail (is_in_active_project ());
 
-  char pl_str[700];
-  plugin_print (self, pl_str, 700);
-  g_debug ("opening plugin UI [%s]", pl_str);
+  z_debug ("opening plugin UI [{}]", print ());
 
-  PluginSetting * setting = self->setting;
-
-  if (self->instantiation_failed)
+  if (instantiation_failed_)
     {
-      g_message (
-        "plugin %s instantiation failed, no UI to "
-        "open",
-        pl_str);
+      z_warning ("plugin {} instantiation failed, no UI to open", print ());
       return;
     }
 
-  /* if plugin already has a window (either generic
-   * or LV2 non-carla and non-external UI) */
-  if (GTK_IS_WINDOW (self->window))
+  /* if plugin already has a window (either generic or LV2 non-carla and
+   * non-external UI) */
+  if (GTK_IS_WINDOW (window_))
     {
       /* present it */
-      g_debug ("presenting plugin [%s] window %p", pl_str, self->window);
-      gtk_window_present (GTK_WINDOW (self->window));
+      z_debug ("presenting plugin [{}] window {}", print (), (void *) window_);
+      gtk_window_present (GTK_WINDOW (window_));
     }
   else
     {
-      bool generic_ui = setting->force_generic_ui;
+      bool generic_ui = setting_.force_generic_ui_;
 
-      /* handle generic UIs, then carla custom,
-       * then LV2 custom */
+      /* handle generic UIs, then carla custom, then LV2 custom */
       if (generic_ui)
         {
-          g_debug ("creating and opening generic UI");
-          plugin_gtk_create_window (self);
-          plugin_gtk_open_generic_ui (self, F_PUBLISH_EVENTS);
+          z_debug ("creating and opening generic UI");
+          plugin_gtk_create_window (this);
+          plugin_gtk_open_generic_ui (this, true);
         }
-      else if (setting->open_with_carla)
+      else
         {
-#ifdef HAVE_CARLA
-          carla_native_plugin_open_ui (self->carla, 1);
-#endif
+          open_custom_ui (true);
         }
     }
 }
 
-/**
- * Returns if Plugin exists in MixerSelections.
- */
 bool
-plugin_is_selected (Plugin * pl)
+Plugin::is_selected () const
 {
-  g_return_val_if_fail (IS_PLUGIN (pl), false);
-
-  return mixer_selections_contains_plugin (MIXER_SELECTIONS, pl);
+  return MIXER_SELECTIONS->contains_plugin (*this);
 }
 
-/**
- * Selects the plugin in the MixerSelections.
- *
- * @param select Select or deselect.
- * @param exclusive Whether to make this the only
- *   selected plugin or add it to the selections.
- */
 void
-plugin_select (Plugin * self, bool select, bool exclusive)
+Plugin::select (bool select, bool exclusive)
 {
-  g_return_if_fail (IS_PLUGIN (self));
-  g_return_if_fail (self->setting->descr);
-  g_return_if_fail (plugin_is_in_active_project (self));
+  z_return_if_fail (is_in_active_project ());
 
   if (exclusive)
     {
-      mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+      MIXER_SELECTIONS->clear (true);
     }
 
-  Track * track = plugin_get_track (self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  auto track = get_track ();
+  z_return_if_fail (track);
 
   if (select)
     {
-      mixer_selections_add_slot (
-        MIXER_SELECTIONS, track, self->id.slot_type, self->id.slot, F_NO_CLONE,
-        F_PUBLISH_EVENTS);
+      MIXER_SELECTIONS->add_slot (*track, id_.slot_type_, id_.slot_, true);
     }
   else
     {
-      mixer_selections_remove_slot (
-        MIXER_SELECTIONS, self->id.slot, self->id.slot_type, F_PUBLISH_EVENTS);
+      MIXER_SELECTIONS->remove_slot (id_.slot_, id_.slot_type_, true);
     }
 }
 
-/**
- * Copies the state directory from the given source
- * plugin to the given destination plugin's state
- * directory.
- *
- * @param is_backup Whether this is a backup
- *   project. Used for calculating the absolute
- *   path to the state dir.
- * @param abs_state_dir If passed, the state will
- *   be saved inside this directory instead of the
- *   plugin's state directory. Used when saving
- *   presets.
- */
-int
-plugin_copy_state_dir (
-  Plugin *     self,
-  Plugin *     src,
-  bool         is_backup,
-  const char * abs_state_dir)
+void
+Plugin::copy_state_dir (
+  const Plugin       &src,
+  bool                is_backup,
+  const std::string * abs_state_dir)
 {
-  char * dir_to_use = NULL;
-  if (abs_state_dir)
-    {
-      dir_to_use = g_strdup (abs_state_dir);
-    }
-  else
-    {
-      dir_to_use = plugin_get_abs_state_dir (self, is_backup, true);
-    }
-  char ** files_in_dir = io_get_files_in_dir (dir_to_use, false);
-  g_return_val_if_fail (!files_in_dir, -1);
+  auto dir_to_use =
+    abs_state_dir ? *abs_state_dir : get_abs_state_dir (is_backup, true);
+  auto files_in_dir = io_get_files_in_dir (dir_to_use);
+  z_return_if_fail (!files_in_dir.isEmpty ());
 
-  char * src_dir_to_use = plugin_get_abs_state_dir (src, is_backup, false);
+  auto src_dir_to_use = src.get_abs_state_dir (is_backup);
+  z_return_if_fail (!src_dir_to_use.empty ());
 
-  GError * err = NULL;
-  bool     success = io_copy_dir (
-    dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
-  if (!success)
-    {
-      HANDLE_ERROR_LITERAL (err, "Failed to copy state directory");
-      return -1;
-    }
-
-  g_free (src_dir_to_use);
-  g_free (dir_to_use);
-
-  g_warn_if_fail (self->state_dir);
-
-  return 0;
+  io_copy_dir (dir_to_use, src_dir_to_use, true, true);
 }
 
-/**
- * Returns the state dir as an absolute path.
- */
-char *
-plugin_get_abs_state_dir (Plugin * self, bool is_backup, bool create_if_not_exists)
+std::string
+Plugin::get_abs_state_dir (const std::string &plugin_state_dir, bool is_backup)
+{
+  z_return_val_if_fail (!plugin_state_dir.empty (), "");
+  auto parent_dir = PROJECT->get_path (ProjectPath::PluginStates, is_backup);
+  return fmt::format ("{}/{}", parent_dir, plugin_state_dir);
+}
+
+std::string
+Plugin::get_abs_state_dir (bool is_backup, bool create_if_not_exists)
 {
   if (create_if_not_exists)
     {
-      GError * err = NULL;
-      bool     success = plugin_ensure_state_dir (self, is_backup, &err);
-      if (!success)
+      try
         {
-          HANDLE_ERROR_LITERAL (err, "Failed to create plugin state directory");
-          return NULL;
+          ensure_state_dir (is_backup);
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to create plugin state directory");
+          return {};
         }
     }
-  else
-    {
-      g_return_val_if_fail (self->state_dir, NULL);
-    }
 
-  char * parent_dir = project_get_path (
-    PROJECT, ProjectPath::PROJECT_PATH_PLUGIN_STATES, is_backup);
-  char * full_path = g_build_filename (parent_dir, self->state_dir, NULL);
-
-  g_free (parent_dir);
-
-  return full_path;
+  return get_abs_state_dir (state_dir_, is_backup);
 }
 
-/**
- * Ensures the state dir exists or creates it.
- *
- * @return Whether successful.
- */
-bool
-plugin_ensure_state_dir (Plugin * self, bool is_backup, GError ** error)
+void
+Plugin::ensure_state_dir (bool is_backup)
 {
-  if (self->state_dir)
+  if (!state_dir_.empty ())
     {
-      char * parent_dir = project_get_path (
-        PROJECT, ProjectPath::PROJECT_PATH_PLUGIN_STATES, is_backup);
-      char * abs_state_dir =
-        g_build_filename (parent_dir, self->state_dir, NULL);
-      GError * err = NULL;
-      bool     success = io_mkdir (abs_state_dir, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed to create state directory %s", abs_state_dir);
-          return false;
-        }
-      g_free (parent_dir);
-      g_free (abs_state_dir);
-      return true;
+      auto abs_state_dir = get_abs_state_dir (state_dir_, is_backup);
+      io_mkdir (abs_state_dir);
+      return;
     }
 
-  char * escaped_name = plugin_get_escaped_name (self);
-  g_return_val_if_fail (escaped_name, false);
-  char * parent_dir = project_get_path (
-    PROJECT, ProjectPath::PROJECT_PATH_PLUGIN_STATES, is_backup);
-  g_return_val_if_fail (parent_dir, false);
-  char * tmp = g_strdup_printf ("%s_XXXXXX", escaped_name);
-  char * abs_state_dir_template = g_build_filename (parent_dir, tmp, NULL);
-  if (!abs_state_dir_template)
-    {
-      g_critical ("Failed to build filename using '%s' / '%s'", parent_dir, tmp);
-      return false;
-    }
-  GError * err = NULL;
-  bool     success = io_mkdir (parent_dir, &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to create directory %s", parent_dir);
-      return false;
-    }
-  char * abs_state_dir = g_mkdtemp (abs_state_dir_template);
+  auto escaped_name = io_get_legal_file_name (get_name ());
+  auto parent_dir = PROJECT->get_path (ProjectPath::PluginStates, is_backup);
+  z_return_if_fail (!parent_dir.empty ());
+  io_mkdir (parent_dir);
+  auto tmp = fmt::format ("{}_XXXXXX", escaped_name);
+  auto abs_state_dir_template = fs::path (parent_dir) / tmp;
+  tmp = abs_state_dir_template.string ();
+  char * abs_state_dir = g_mkdtemp (tmp.data ());
   if (!abs_state_dir)
     {
-      g_critical (
-        "Failed to make state dir using template "
-        "%s: %s",
-        abs_state_dir_template, strerror (errno));
-      return false;
+      throw ZrythmException (format_str (
+        "Failed to make state dir using template {}: {}",
+        abs_state_dir_template.string (), strerror (errno)));
     }
-  self->state_dir = g_path_get_basename (abs_state_dir);
-  g_debug ("set plugin state dir to %s", self->state_dir);
-  g_free (escaped_name);
-  g_free (parent_dir);
-  g_free (tmp);
-  g_free (abs_state_dir);
-
-  return true;
+  state_dir_ = Glib::path_get_basename (abs_state_dir);
+  z_debug ("set plugin state dir to {}", state_dir_);
 }
 
-/**
- * Returns all plugins in the current project.
- */
 void
-plugin_get_all (Project * prj, GPtrArray * arr, bool check_undo_manager)
+Plugin::get_all (Project &prj, std::vector<Plugin *> &arr, bool check_undo_manager)
 {
-  for (auto track : prj->tracklist->tracks)
+  for (auto &track : prj.tracklist_->tracks_)
     {
-      track_get_plugins (track, arr);
+      track->get_plugins (arr);
     }
 
   if (check_undo_manager)
     {
-      undo_manager_get_plugins (prj->undo_manager, arr);
+      prj.undo_manager_->get_plugins (arr);
     }
 }
 
-/**
- * Clones the given plugin.
- *
- * @param error To be filled if an error occurred.
- *
- * @return The cloned plugin, or NULL if an error
- *   occurred.
- */
-Plugin *
-plugin_clone (Plugin * src, GError ** error)
+void
+Plugin::copy_members_from (Plugin &other)
 {
-  g_return_val_if_fail (!error || !*error, NULL);
-  g_return_val_if_fail (IS_PLUGIN (src), NULL);
-
-  char buf[800];
-  plugin_print (src, buf, 800);
-
-  Plugin * self = NULL;
-  g_debug ("[0/5] cloning plugin '%s'", buf);
+  z_debug ("[0/5] cloning plugin '{}'", other.print ());
 
   /* save the state of the original plugin */
-  g_message ("[1/5] saving state of source plugin (if instantiated)");
-  if (src->instantiated)
+  z_debug ("[1/5] saving state of source plugin (if instantiated)");
+  if (other.instantiated_)
     {
-      if (src->setting->open_with_carla)
-        {
-#ifdef HAVE_CARLA
-          GError * err = NULL;
-          bool     success = carla_native_plugin_save_state (
-            src->carla, F_NOT_BACKUP, NULL, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, _ ("Failed saving Carla plugin state"));
-              return NULL;
-            }
-#else
-          g_return_val_if_reached (NULL);
-#endif
-        }
-      g_message ("saved source plugin state to %s", src->state_dir);
+      other.save_state (false, nullptr);
+      z_debug ("saved source plugin state to {}", other.state_dir_);
     }
 
   /* create a new plugin with same descriptor */
-  g_message ("[2/5] creating new plugin with same setting");
-  GError * err = NULL;
-  self = plugin_new_from_setting (
-    src->setting, src->id.track_name_hash, src->id.slot_type, src->id.slot,
-    &err);
-  if (!self || !self->carla)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Failed to create plugin clone for %s"), buf);
-      return NULL;
-    }
+  z_debug ("[2/5] creating new plugin with same setting");
+  setting_ = other.setting_;
+  init (other.id_.track_name_hash_, other.id_.slot_type_, other.id_.slot_);
 
   /* copy ports */
-  g_message ("[3/5] copying ports from source plugin");
-  self->enabled = NULL;
-  self->gain = NULL;
-  for (int i = 0; i < self->num_in_ports; i++)
+  z_debug ("[3/5] copying ports from source plugin");
+  enabled_ = nullptr;
+  gain_ = nullptr;
+  in_ports_.clear ();
+  out_ports_.clear ();
+  in_ports_.reserve (other.in_ports_.size ());
+  out_ports_.reserve (other.out_ports_.size ());
+  for (auto &port : other.in_ports_)
     {
-      object_delete_and_null (self->in_ports[i]);
+      std::visit (
+        [&] (auto &&port) {
+          auto new_port = port->clone_unique ();
+          new_port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+          in_ports_.push_back (std::move (new_port));
+        },
+        convert_to_variant<PortPtrVariant> (port.get ()));
     }
-  for (int i = 0; i < self->num_out_ports; i++)
+  for (auto &port : other.out_ports_)
     {
-      object_delete_and_null (self->out_ports[i]);
+      std::visit (
+        [&] (auto &&port) {
+          auto new_port = port->clone_unique ();
+          new_port->set_owner (PortIdentifier::OwnerType::Plugin, this);
+          out_ports_.push_back (std::move (new_port));
+        },
+        convert_to_variant<PortPtrVariant> (port.get ()));
     }
-  self->in_ports = static_cast<Port **> (
-    g_realloc_n (self->in_ports, (size_t) src->num_in_ports, sizeof (Port *)));
-  self->out_ports = static_cast<Port **> (g_realloc_n (
-    self->out_ports, (size_t) src->num_out_ports, sizeof (Port *)));
-  for (int i = 0; i < src->num_in_ports; i++)
-    {
-      self->in_ports[i] = new Port (src->in_ports[i]->clone ());
-      self->in_ports[i]->set_owner (PortIdentifier::OwnerType::PLUGIN, self);
-    }
-  for (int i = 0; i < src->num_out_ports; i++)
-    {
-      self->out_ports[i] = new Port (src->out_ports[i]->clone ());
-      self->out_ports[i]->set_owner (PortIdentifier::OwnerType::PLUGIN, self);
-    }
-  self->num_in_ports = src->num_in_ports;
-  self->num_out_ports = src->num_out_ports;
-  set_enabled_and_gain (self);
+  set_enabled_and_gain ();
 
   /* copy the state directory */
-  g_message ("[4/5] copying state directory from source plugin");
-  plugin_copy_state_dir (self, src, F_NOT_BACKUP, NULL);
+  z_debug ("[4/5] copying state directory from source plugin");
+  copy_state_dir (other, false, nullptr);
 
-  g_message ("[5/5] done");
+  z_debug ("[5/5] done");
 
-  g_return_val_if_fail (src->num_in_ports || src->num_out_ports, NULL);
-
-  g_return_val_if_fail (self, NULL);
-  plugin_identifier_copy (&self->id, &src->id);
-  self->magic = PLUGIN_MAGIC;
-  self->visible = src->visible;
-
-  /* verify same number of inputs and outputs */
-  g_return_val_if_fail (src->num_in_ports == self->num_in_ports, NULL);
-  g_return_val_if_fail (src->num_out_ports == self->num_out_ports, NULL);
-
-  return self;
+  id_ = other.id_;
+  visible_ = other.visible_;
 }
 
 bool
-plugin_is_enabled (Plugin * self, bool check_track)
+Plugin::is_enabled (bool check_track) const
 {
-  if (!control_port_is_toggled (self->enabled))
+  if (!enabled_->is_toggled ())
     return false;
 
   if (check_track)
     {
-      Track * track = plugin_get_track (self);
-      g_return_val_if_fail (track, false);
-      return track_is_enabled (track);
+      auto track = get_track ();
+      z_return_val_if_fail (track, false);
+      return track->is_enabled ();
     }
   else
     {
@@ -1946,47 +1370,38 @@ plugin_is_enabled (Plugin * self, bool check_track)
 }
 
 void
-plugin_set_enabled (Plugin * self, bool enabled, bool fire_events)
+Plugin::set_enabled (bool enabled, bool fire_events)
 {
-  g_return_if_fail (self->instantiated);
+  z_return_if_fail (instantiated_);
 
-  self->enabled->set_control_value (enabled ? 1.f : 0.f, false, fire_events);
+  enabled_->set_control_value (enabled ? 1.f : 0.f, false, fire_events);
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, self);
+      EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, this);
     }
 }
 
-/**
- * Processes the plugin by passing through the
- * input to its output.
- *
- * This is called when the plugin is bypassed.
- */
 void
-plugin_process_passthrough (
-  Plugin *                            self,
-  const EngineProcessTimeInfo * const time_nfo)
+Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
 {
-  int last_audio_idx = 0;
-  int last_midi_idx = 0;
-  for (int i = 0; i < self->num_in_ports; i++)
+  size_t last_audio_idx = 0;
+  size_t last_midi_idx = 0;
+  for (auto &in_port : in_ports_)
     {
-      bool   goto_next = false;
-      Port * in_port = self->in_ports[i];
+      bool goto_next = false;
       switch (in_port->id_.type_)
         {
         case PortType::Audio:
-          for (int j = last_audio_idx; j < self->num_out_ports; j++)
+          for (size_t j = last_audio_idx; j < out_ports_.size (); j++)
             {
-              Port * out_port = self->out_ports[j];
+              auto &out_port = out_ports_[j];
               if (out_port->id_.type_ == PortType::Audio)
                 {
                   /* copy */
                   dsp_copy (
-                    &out_port->buf_[time_nfo->local_offset],
-                    &in_port->buf_[time_nfo->local_offset], time_nfo->nframes);
+                    &out_port->buf_[time_nfo.local_offset_],
+                    &in_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
 
                   last_audio_idx = j + 1;
                   goto_next = true;
@@ -1997,19 +1412,21 @@ plugin_process_passthrough (
             }
           break;
         case PortType::Event:
-          for (int j = last_midi_idx; j < self->num_out_ports; j++)
+          for (size_t j = last_midi_idx; j < out_ports_.size (); j++)
             {
-              Port * out_port = self->out_ports[j];
+              auto &out_port = out_ports_[j];
               if (
                 out_port->id_.type_ == PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, out_port->id_.flags2_,
-                  PortIdentifier::Flags2::SUPPORTS_MIDI))
+                  PortIdentifier::Flags2::SupportsMidi))
                 {
+                  auto midi_in_port = static_cast<MidiPort *> (in_port.get ());
+                  auto midi_out_port = static_cast<MidiPort *> (out_port.get ());
                   /* copy */
-                  midi_events_append (
-                    out_port->midi_events_, in_port->midi_events_,
-                    time_nfo->local_offset, time_nfo->nframes, false);
+                  midi_out_port->midi_events_.active_events_.append (
+                    midi_in_port->midi_events_.active_events_,
+                    time_nfo.local_offset_, time_nfo.nframes_);
 
                   last_midi_idx = j + 1;
                   goto_next = true;
@@ -2025,160 +1442,83 @@ plugin_process_passthrough (
     }
 }
 
-/**
- * hides plugin ui
- */
 void
-plugin_close_ui (Plugin * self)
+Plugin::close_ui ()
 {
-  g_return_if_fail (ZRYTHM_HAVE_UI);
-  g_return_if_fail (plugin_is_in_active_project (self));
+  z_return_if_fail (ZRYTHM_HAVE_UI);
+  z_return_if_fail (is_in_active_project ());
 
-  if (self->instantiation_failed)
+  if (instantiation_failed_)
     {
-      g_message (
-        "plugin %s instantiation failed, "
-        "no UI to close",
-        self->setting->descr->name);
+      z_warning ("plugin {} instantiation failed, no UI to close", get_name ());
       return;
     }
 
-  g_return_if_fail (self->instantiated);
+  z_return_if_fail (instantiated_);
 
-  plugin_gtk_close_ui (self);
+  plugin_gtk_close_ui (this);
 
-#ifdef HAVE_CARLA
-  bool generic_ui = self->setting->force_generic_ui;
-  if (!generic_ui && self->setting->open_with_carla)
+  bool generic_ui = setting_.force_generic_ui_;
+  if (!generic_ui)
     {
-      g_message ("closing carla plugin UI");
-      carla_native_plugin_open_ui (self->carla, false);
+      open_custom_ui (false);
     }
-#endif
 
-  /* run events immediately otherwise freed
-   * plugin might be accessed by event manager */
-  event_manager_process_now (EVENT_MANAGER);
+  /* run events immediately otherwise freed plugin might be accessed by event
+   * manager */
+  EVENT_MANAGER->process_now ();
 
-  self->visible = false;
+  visible_ = false;
 }
 
-#if 0
-/**
- * Returns the event ports in the plugin.
- *
- * @param ports Array to fill in. Must be large
- *   enough.
- *
- * @return The number of ports in the array.
- */
-int
-plugin_get_event_ports (
-  Plugin * pl,
-  Port **  ports,
-  int      input)
-{
-  int index = 0;
-
-  if (input)
-    {
-      for (int i = 0; i < pl->num_in_ports; i++)
-        {
-          Port * port = pl->in_ports[i];
-          if (port->id_.type == PortType::Event)
-            {
-              ports[index++] = port;
-            }
-        }
-    }
-  else
-    {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          Port * port = pl->out_ports[i];
-          if (port->id_.type == PortType::Event)
-            {
-              ports[index++] = port;
-            }
-        }
-    }
-
-  return index;
-}
-#endif
-
-/**
- * Connect the output Ports of the given source
- * Plugin to the input Ports of the given
- * destination Plugin.
- *
- * Used when automatically connecting a Plugin
- * in the Channel strip to the next Plugin.
- */
 void
-plugin_connect_to_plugin (Plugin * src, Plugin * dest)
+Plugin::connect_to_plugin (Plugin &dest)
 {
-  int   i, j, last_index, num_ports_to_connect;
-  Port *in_port, *out_port;
+  size_t num_src_audio_outs = 0;
+  size_t num_dest_audio_ins = 0;
 
-  /* get actual port counts */
-  int num_src_audio_outs = 0;
-  for (i = 0; i < src->num_out_ports; i++)
+  for (const auto &out_port : out_ports_)
     {
-      Port * port = src->out_ports[i];
-      if (port->id_.type_ == PortType::Audio)
+      if (out_port->id_.type_ == PortType::Audio)
         num_src_audio_outs++;
     }
 
-  int num_dest_audio_ins = 0;
-  for (i = 0; i < dest->num_in_ports; i++)
+  for (const auto &in_port : dest.in_ports_)
     {
-      Port * port = dest->in_ports[i];
-      if (port->id_.type_ == PortType::Audio)
+      if (in_port->id_.type_ == PortType::Audio)
         num_dest_audio_ins++;
     }
 
   if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
     {
-      last_index = 0;
-      for (i = 0; i < src->num_out_ports; i++)
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (auto &in_port : dest.in_ports_)
                 {
-                  in_port = dest->in_ports[j];
-
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, 1);
+                      out_port->connect_to (*in_port, true);
                       goto done1;
                     }
                 }
             }
         }
-done1:;
     }
   else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
     {
-      /* plugin is mono and next plugin is
-       * not mono, so connect the mono out to
+      /* plugin is mono and next plugin is not mono, so connect the mono out to
        * each input */
-      for (i = 0; i < src->num_out_ports; i++)
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (auto &in_port : dest.in_ports_)
                 {
-                  in_port = dest->in_ports[j];
-
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, 1);
+                      out_port->connect_to (*in_port, true);
                     }
                 }
               break;
@@ -2187,50 +1527,41 @@ done1:;
     }
   else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
     {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < dest->num_in_ports; i++)
+      /* connect multi-output channel into mono by only connecting to the first
+       * input channel found */
+      for (auto &in_port : dest.in_ports_)
         {
-          in_port = dest->in_ports[i];
-
           if (in_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < src->num_out_ports; j++)
+              for (auto &out_port : out_ports_)
                 {
-                  out_port = src->out_ports[j];
-
                   if (out_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, 1);
-                      goto done2;
+                      out_port->connect_to (*in_port, true);
+                      goto done1;
                     }
                 }
               break;
             }
         }
-done2:;
     }
   else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
     {
-      /* connect to as many audio outs this
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect = MIN (num_src_audio_outs, num_dest_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < src->num_out_ports; i++)
+      /* connect to as many audio outs this plugin has, or until we can't
+       * connect anymore */
+      auto num_ports_to_connect = MIN (num_src_audio_outs, num_dest_audio_ins);
+      size_t last_index = 0;
+      size_t ports_connected = 0;
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (; last_index < dest->num_in_ports; last_index++)
+              for (; last_index < dest.in_ports_.size (); last_index++)
                 {
-                  in_port = dest->in_ports[last_index];
-                  if (in_port->id_.type_ == PortType::Audio)
+                  auto &in_port = *dest.in_ports_[last_index];
+                  if (in_port.id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, 1);
+                      out_port->connect_to (in_port, true);
                       last_index++;
                       ports_connected++;
                       break;
@@ -2242,30 +1573,27 @@ done2:;
         }
     }
 
-  /* connect prev midi outs to next midi ins */
-  /* this connects only one midi out to all of the
-   * midi ins of the next plugin */
-  for (i = 0; i < src->num_out_ports; i++)
-    {
-      out_port = src->out_ports[i];
+done1:
 
+  /* connect prev midi outs to next midi ins */
+  /* this connects only one midi out to all of the midi ins of the next plugin */
+  for (auto &out_port : out_ports_)
+    {
       if (
         out_port->id_.type_ == PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_.flags2_,
-          PortIdentifier::Flags2::SUPPORTS_MIDI))
+          PortIdentifier::Flags2::SupportsMidi))
         {
-          for (j = 0; j < dest->num_in_ports; j++)
+          for (auto &in_port : dest.in_ports_)
             {
-              in_port = dest->in_ports[j];
-
               if (
                 in_port->id_.type_ == PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, in_port->id_.flags2_,
-                  PortIdentifier::Flags2::SUPPORTS_MIDI))
+                  PortIdentifier::Flags2::SupportsMidi))
                 {
-                  out_port->connect_to (*in_port, 1);
+                  out_port->connect_to (*in_port, true);
                 }
             }
           break;
@@ -2273,142 +1601,111 @@ done2:;
     }
 }
 
-/**
- * Connects the Plugin's output Port's to the
- * input Port's of the given Channel's prefader.
- *
- * Used when doing automatic connections.
- */
 void
-plugin_connect_to_prefader (Plugin * pl, Channel * ch)
+Plugin::connect_to_prefader (Channel &ch)
 {
-  g_return_if_fail (pl->instantiated || pl->instantiation_failed);
+  z_return_if_fail (instantiated_ || instantiation_failed_);
 
-  Track   &track = ch->get_track ();
-  PortType type = track.out_signal_type;
+  auto track = ch.get_track ();
+  auto type = track->out_signal_type_;
 
   if (type == PortType::Event)
     {
-      for (int i = 0; i < pl->num_out_ports; i++)
+      for (auto &out_port : out_ports_)
         {
-          Port * out_port = pl->out_ports[i];
           if (
             out_port->id_.type_ == PortType::Event
             && ENUM_BITSET_TEST (
               PortIdentifier::Flags2, out_port->id_.flags2_,
-              PortIdentifier::Flags2::SUPPORTS_MIDI)
+              PortIdentifier::Flags2::SupportsMidi)
             && out_port->id_.flow_ == PortFlow::Output)
             {
-              out_port->connect_to (*ch->midi_out, 1);
+              out_port->connect_to (*ch.midi_out_, true);
             }
         }
     }
   else if (type == PortType::Audio)
     {
-      if (pl->l_out && pl->r_out)
+      if (l_out_ && r_out_)
         {
-          pl->l_out->connect_to (ch->prefader->stereo_in->get_l (), true);
-          pl->r_out->connect_to (ch->prefader->stereo_in->get_r (), true);
+          l_out_->connect_to (ch.prefader_->stereo_in_->get_l (), true);
+          r_out_->connect_to (ch.prefader_->stereo_in_->get_r (), true);
         }
     }
 }
 
 void
-plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
+Plugin::disconnect_from_prefader (Channel &ch)
 {
-  int      i;
-  Port *   out_port;
-  Track   &track = ch->get_track ();
-  PortType type = track.out_signal_type;
+  auto track = ch.get_track ();
+  auto type = track->out_signal_type_;
 
-  for (i = 0; i < pl->num_out_ports; i++)
+  for (auto &out_port : out_ports_)
     {
-      out_port = pl->out_ports[i];
       if (type == PortType::Audio && out_port->id_.type_ == PortType::Audio)
         {
-          if (out_port->is_connected_to (&ch->prefader->stereo_in->get_l ()))
-            out_port->disconnect_from (ch->prefader->stereo_in->get_l ());
-          if (out_port->is_connected_to (&ch->prefader->stereo_in->get_r ()))
-            out_port->disconnect_from (ch->prefader->stereo_in->get_r ());
+          if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_l ()))
+            out_port->disconnect_from (ch.prefader_->stereo_in_->get_l ());
+          if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_r ()))
+            out_port->disconnect_from (ch.prefader_->stereo_in_->get_r ());
         }
       else if (
         type == PortType::Event && out_port->id_.type_ == PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_.flags2_,
-          PortIdentifier::Flags2::SUPPORTS_MIDI))
+          PortIdentifier::Flags2::SupportsMidi))
         {
-          if (out_port->is_connected_to (ch->prefader->midi_in))
-            out_port->disconnect_from (*ch->prefader->midi_in);
+          if (out_port->is_connected_to (*ch.prefader_->midi_in_))
+            out_port->disconnect_from (*ch.prefader_->midi_in_);
         }
     }
 }
 
-/**
- * Disconnect the automatic connections from the
- * given source Plugin to the given destination
- * Plugin.
- */
 void
-plugin_disconnect_from_plugin (Plugin * src, Plugin * dest)
+Plugin::disconnect_from_plugin (Plugin &dest)
 {
-  int   i, j, last_index, num_ports_to_connect;
-  Port *in_port, *out_port;
-
-  /* get actual port counts */
   int num_src_audio_outs = 0;
-  for (i = 0; i < src->num_out_ports; i++)
+  size_t num_dest_audio_ins = 0;
+
+  for (auto &out_port : out_ports_)
     {
-      Port * port = src->out_ports[i];
-      if (port->id_.type_ == PortType::Audio)
+      if (out_port->id_.type_ == PortType::Audio)
         num_src_audio_outs++;
     }
 
-  int num_dest_audio_ins = 0;
-  for (i = 0; i < dest->num_in_ports; i++)
+  for (auto &in_port : dest.in_ports_)
     {
-      Port * port = dest->in_ports[i];
-      if (port->id_.type_ == PortType::Audio)
+      if (in_port->id_.type_ == PortType::Audio)
         num_dest_audio_ins++;
     }
 
   if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
     {
-      last_index = 0;
-      for (i = 0; i < src->num_out_ports; i++)
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (auto &in_port : dest.in_ports_)
                 {
-                  in_port = dest->in_ports[j];
-
                   if (in_port->id_.type_ == PortType::Audio)
                     {
                       out_port->disconnect_from (*in_port);
-                      goto done1;
+                      goto done2;
                     }
                 }
             }
         }
-done1:;
     }
   else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
     {
-      /* plugin is mono and next plugin is
-       * not mono, so disconnect the mono out from
-       * each input */
-      for (i = 0; i < src->num_out_ports; i++)
+      /* plugin is mono and next plugin is not mono, so disconnect the mono out
+       * from each input */
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (auto &in_port : dest.in_ports_)
                 {
-                  in_port = dest->in_ports[j];
-
                   if (in_port->id_.type_ == PortType::Audio)
                     {
                       out_port->disconnect_from (*in_port);
@@ -2420,19 +1717,14 @@ done1:;
     }
   else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
     {
-      /* disconnect multi-output channel from mono
-       * by disconnecting to the first input channel
-       * found */
-      for (i = 0; i < dest->num_in_ports; i++)
+      /* disconnect multi-output channel from mono by disconnecting to the first
+       * input channel found */
+      for (auto &in_port : dest.in_ports_)
         {
-          in_port = dest->in_ports[i];
-
           if (in_port->id_.type_ == PortType::Audio)
             {
-              for (j = 0; j < src->num_out_ports; j++)
+              for (auto &out_port : out_ports_)
                 {
-                  out_port = src->out_ports[j];
-
                   if (out_port->id_.type_ == PortType::Audio)
                     {
                       out_port->disconnect_from (*in_port);
@@ -2442,246 +1734,181 @@ done1:;
               break;
             }
         }
-done2:;
     }
   else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
     {
-      /* connect to as many audio outs this
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect = MIN (num_src_audio_outs, num_dest_audio_ins);
-      last_index = 0;
-      int ports_disconnected = 0;
-      for (i = 0; i < src->num_out_ports; i++)
+      /* connect to as many audio outs this plugin has, or until we can't
+       * connect anymore */
+      auto num_ports_to_connect =
+        std::min (num_src_audio_outs, (int) num_dest_audio_ins);
+      size_t last_index = 0;
+      size_t ports_disconnected = 0;
+      for (auto &out_port : out_ports_)
         {
-          out_port = src->out_ports[i];
-
           if (out_port->id_.type_ == PortType::Audio)
             {
-              for (; last_index < dest->num_in_ports; last_index++)
+              for (; last_index < dest.in_ports_.size (); ++last_index)
                 {
-                  in_port = dest->in_ports[last_index];
-                  if (in_port->id_.type_ == PortType::Audio)
+                  auto &in_port = *dest.in_ports_[last_index];
+                  if (in_port.id_.type_ == PortType::Audio)
                     {
-                      out_port->disconnect_from (*in_port);
+                      out_port->disconnect_from (in_port);
                       last_index++;
                       ports_disconnected++;
                       break;
                     }
                 }
-              if (ports_disconnected == num_ports_to_connect)
+              if ((int) ports_disconnected == num_ports_to_connect)
                 break;
             }
         }
     }
 
-  /* disconnect MIDI connections */
-  for (i = 0; i < src->num_out_ports; i++)
-    {
-      out_port = src->out_ports[i];
+done2:
 
+  /* disconnect MIDI connections */
+  for (auto &out_port : out_ports_)
+    {
       if (
         out_port->id_.type_ == PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_.flags2_,
-          PortIdentifier::Flags2::SUPPORTS_MIDI))
+          PortIdentifier::Flags2::SupportsMidi))
         {
-          for (j = 0; j < dest->num_in_ports; j++)
+          for (auto &in_port : dest.in_ports_)
             {
-              in_port = dest->in_ports[j];
-
               if (
                 in_port->id_.type_ == PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, in_port->id_.flags2_,
-                  PortIdentifier::Flags2::SUPPORTS_MIDI))
+                  PortIdentifier::Flags2::SupportsMidi))
                 {
                   out_port->disconnect_from (*in_port);
                 }
             }
         }
     }
-}
+    }
 
-/**
- * To be called immediately when a channel or plugin is deleted.
- *
- * A call to plugin_free can be made at any point later just to free the
- * resources.
- */
 void
-plugin_disconnect (Plugin * self)
+Plugin::disconnect ()
 {
-  g_message ("disconnecting plugin %s...", self->setting->descr->name);
+  z_info ("disconnecting plugin {}...", get_name ());
 
-  self->deleting = 1;
+  deleting_ = true;
 
-  if (plugin_is_in_active_project (self))
+  if (is_in_active_project ())
     {
-      if (self->visible && ZRYTHM_HAVE_UI)
-        plugin_close_ui (self);
+      if (visible_ && ZRYTHM_HAVE_UI)
+        close_ui ();
 
       /* disconnect all ports */
-      Port::disconnect_ports (self->in_ports, self->num_in_ports, true);
-      Port::disconnect_ports (self->out_ports, self->num_out_ports, true);
-      g_message (
-        "%s: DISCONNECTED ALL PORTS OF %s %d %d", __func__,
-        self->setting->descr->name, self->num_in_ports, self->num_out_ports);
+      for (auto &port : in_ports_)
+        port->disconnect_all ();
+      for (auto &port : out_ports_)
+        port->disconnect_all ();
+      z_debug (
+        "disconnected all ports of {} in ports: {} out ports: {}", get_name (),
+        in_ports_.size (), out_ports_.size ());
 
-#ifdef HAVE_CARLA
-      if (self->setting->open_with_carla)
-        {
-          carla_native_plugin_close (self->carla);
-        }
-#endif
+      close ();
     }
   else
     {
-      g_debug (
-        "%s is not a project plugin, skipping "
-        "disconnect",
-        self->setting->descr->name);
+      z_debug ("{} is not a project plugin, skipping disconnect", get_name ());
 
-      self->visible = false;
+      visible_ = false;
     }
 
-  g_message ("finished disconnecting plugin %s", self->setting->descr->name);
+  z_debug ("finished disconnecting plugin {}", get_name ());
 }
 
-/**
- * Deletes any state files associated with this
- * plugin.
- *
- * This should be called when a plugin instance is
- * removed from the project (including undo stacks)
- * to remove any files not needed anymore.
- */
 void
-plugin_delete_state_files (Plugin * self)
+Plugin::delete_state_files ()
 {
-  g_message (
-    "deleting state files for plugin %s (%s)", self->setting->descr->name,
-    self->state_dir);
+  z_debug (
+    "deleting state files for plugin {} ({})", setting_.descr_.name_,
+    state_dir_);
 
-  g_return_if_fail (g_path_is_absolute (self->state_dir));
+  z_return_if_fail (
+    !state_dir_.empty () && std::filesystem::path (state_dir_).is_absolute ());
 
-  io_rmdir (self->state_dir, true);
+  try
+    {
+      fs::remove_all (state_dir_);
+    }
+  catch (const fs::filesystem_error &e)
+    {
+      z_warning ("error deleting state dir: {}", e.what ());
+    }
 }
 
-/**
- * Exposes or unexposes plugin ports to the backend.
- *
- * @param expose Expose or not.
- * @param inputs Expose/unexpose inputs.
- * @param outputs Expose/unexpose outputs.
- */
 void
-plugin_expose_ports (Plugin * pl, bool expose, bool inputs, bool outputs)
+Plugin::expose_ports (bool expose, bool inputs, bool outputs)
 {
+  auto set_expose = [expose] (auto &port) {
+    bool is_exposed = port->is_exposed_to_backend ();
+    if (expose != is_exposed)
+      port->set_expose_to_backend (expose);
+  };
+
   if (inputs)
     {
-      for (int i = 0; i < pl->num_in_ports; i++)
-        {
-          Port * port = pl->in_ports[i];
-
-          bool is_exposed = port->is_exposed_to_backend ();
-          if (expose && !is_exposed)
-            {
-              port->set_expose_to_backend (true);
-            }
-          else if (!expose && is_exposed)
-            {
-              port->set_expose_to_backend (false);
-            }
-        }
+      for (auto &port : in_ports_)
+        set_expose (port);
     }
   if (outputs)
     {
-      for (int i = 0; i < pl->num_out_ports; i++)
-        {
-          Port * port = pl->out_ports[i];
-
-          bool is_exposed = port->is_exposed_to_backend ();
-          if (expose && !is_exposed)
-            {
-              port->set_expose_to_backend (true);
-            }
-          else if (!expose && is_exposed)
-            {
-              port->set_expose_to_backend (false);
-            }
-        }
+      for (auto &port : out_ports_)
+        set_expose (port);
     }
 }
 
-/**
- * Gets a port by its symbol.
- *
- * Only works for LV2 plugins.
- */
-Port *
-plugin_get_port_by_symbol (Plugin * pl, const char * sym)
+template <typename T>
+T *
+Plugin::get_port_by_symbol (const std::string &sym)
 {
-  g_return_val_if_fail (
-    IS_PLUGIN (pl)
-      && pl->setting->descr->protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2,
-    NULL);
+  z_return_val_if_fail (
+    setting_.descr_.protocol_ == PluginProtocol::LV2, nullptr);
 
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * port = pl->in_ports[i];
-      g_return_val_if_fail (IS_PORT_AND_NONNULL (port), NULL);
+  auto find_port = [&sym] (const auto &ports) {
+    return std::find_if (ports.begin (), ports.end (), [&sym] (const auto &port) {
+      return port->id_.sym_ == sym;
+    });
+  };
 
-      if (string_is_equal (port->id_.sym_.c_str (), sym))
-        {
-          return port;
-        }
-    }
-  for (int i = 0; i < pl->num_out_ports; i++)
-    {
-      Port * port = pl->out_ports[i];
-      g_return_val_if_fail (IS_PORT_AND_NONNULL (port), NULL);
+  auto it = find_port (in_ports_);
+  if (it != in_ports_.end ())
+    return dynamic_cast<T*>(it->get ());
 
-      if (string_is_equal (port->id_.sym_.c_str (), sym))
-        {
-          return port;
-        }
-    }
+  it = find_port (out_ports_);
+  if (it != out_ports_.end ())
+    return dynamic_cast<T*>(it->get ());
 
-  g_warning ("failed to find port with symbol %s", sym);
-  return NULL;
+  z_warning ("failed to find port with symbol {}", sym);
+  return nullptr;
 }
 
-/**
- * Frees given plugin, frees its ports
- * and other internal pointers
- */
-void
-plugin_free (Plugin * self)
+std::unique_ptr<Plugin>
+Plugin::create_unique_from_hosting_type(PluginSetting::HostingType hosting_type)
 {
-  g_return_if_fail (IS_PLUGIN (self));
-
-  g_return_if_fail (!self->visible);
-
-  g_debug ("freeing plugin %s", self->setting->descr->name);
-
-#ifdef HAVE_CARLA
-  object_free_w_func_and_null (carla_native_plugin_free, self->carla);
-#endif
-
-  for (int i = 0; i < self->num_in_ports; i++)
+  switch (hosting_type)
     {
-      object_delete_and_null (self->in_ports[i]);
+      case PluginSetting::HostingType::Carla:
+        return std::make_unique<CarlaNativePlugin>();
+      default:
+        // TODO: implement other plugin hosting types
+        z_return_val_if_reached (nullptr);
     }
-  for (int i = 0; i < self->num_out_ports; i++)
-    {
-      object_delete_and_null (self->out_ports[i]);
-    }
-
-  object_free_w_func_and_null (g_ptr_array_unref, self->ctrl_in_ports);
-  object_free_w_func_and_null (g_ptr_array_unref, self->audio_in_ports);
-  object_free_w_func_and_null (g_ptr_array_unref, self->cv_in_ports);
-  object_free_w_func_and_null (g_ptr_array_unref, self->midi_in_ports);
-
-  object_zero_and_free (self);
 }
+
+template Port *
+Plugin::get_port_by_symbol (const std::string &);
+template ControlPort *
+Plugin::get_port_by_symbol (const std::string &);
+template AudioPort *
+Plugin::get_port_by_symbol (const std::string &);
+template CVPort *
+Plugin::get_port_by_symbol (const std::string &);
+template MidiPort *
+Plugin::get_port_by_symbol (const std::string &);

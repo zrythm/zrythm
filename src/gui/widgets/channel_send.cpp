@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "actions/channel_send_action.h"
 #include "dsp/channel_send.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
@@ -28,7 +29,7 @@ update_pango_layout (ChannelSendWidget * self, bool force)
     {
       object_free_w_func_and_null (g_object_unref, self->txt_layout);
       PangoLayout * layout =
-        gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+        gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
       self->txt_layout = layout;
     }
@@ -53,9 +54,8 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_widget_get_color (GTK_WIDGET (self), &fg);
   int           padding = 2;
   ChannelSend * send = self->send;
-  char          dest_name[400] = "";
-  channel_send_get_dest_name (send, dest_name);
-  if (channel_send_is_empty (send))
+  auto          dest_name = send->get_dest_name ();
+  if (send->is_empty ())
     {
       /* fill background */
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f);
@@ -69,7 +69,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
       /* fill text */
       int w, h;
-      pango_layout_set_markup (self->txt_layout, dest_name, -1);
+      pango_layout_set_markup (self->txt_layout, dest_name.c_str (), -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       {
@@ -85,16 +85,16 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         {
           g_free (self->cache_tooltip);
           self->cache_tooltip = NULL;
-          gtk_widget_set_tooltip_text (widget, dest_name);
+          gtk_widget_set_tooltip_text (widget, dest_name.c_str ());
         }
     }
   else
     {
       GdkRGBA bg;
-      if (channel_send_is_prefader (self->send))
-        bg = UI_COLORS->prefader_send;
+      if (self->send->is_prefader ())
+        bg = UI_COLORS->prefader_send.to_gdk_rgba ();
       else
-        bg = UI_COLORS->postfader_send;
+        bg = UI_COLORS->postfader_send.to_gdk_rgba ();
 
       /* fill background */
       GdkRGBA bg_color = bg;
@@ -109,8 +109,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
       /* fill amount */
       bg_color.alpha = 1.f;
-      float amount =
-        channel_send_get_amount_for_widgets (self->send) * (float) width;
+      float amount = self->send->get_amount_for_widgets () * (float) width;
       {
         graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) padding, (float) padding, amount - (float) padding * 2.f,
@@ -120,7 +119,7 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
       /* fill text */
       int w, h;
-      pango_layout_set_markup (self->txt_layout, dest_name, -1);
+      pango_layout_set_markup (self->txt_layout, dest_name.c_str (), -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       {
@@ -132,11 +131,13 @@ channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
-      if (!self->cache_tooltip || !g_strcmp0 (dest_name, self->cache_tooltip))
+      if (
+        !self->cache_tooltip
+        || !g_strcmp0 (dest_name.c_str (), self->cache_tooltip))
         {
           if (self->cache_tooltip)
             g_free (self->cache_tooltip);
-          self->cache_tooltip = g_strdup (dest_name);
+          self->cache_tooltip = g_strdup (dest_name.c_str ());
           gtk_widget_set_tooltip_text (widget, self->cache_tooltip);
         }
     }
@@ -150,7 +151,7 @@ on_drag_begin (
   ChannelSendWidget * self)
 {
   self->start_x = start_x;
-  self->send_amount_at_start = self->send->amount->control_;
+  self->send_amount_at_start = self->send->amount_->control_;
 }
 
 static void
@@ -160,15 +161,14 @@ on_drag_update (
   gdouble             offset_y,
   ChannelSendWidget * self)
 {
-  if (channel_send_is_enabled (self->send))
+  if (self->send->is_enabled ())
     {
       int    width = gtk_widget_get_width (GTK_WIDGET (self));
       double new_normalized_val = ui_get_normalized_draggable_value (
-        width, channel_send_get_amount_for_widgets (self->send), self->start_x,
+        width, self->send->get_amount_for_widgets (), self->start_x,
         self->start_x + offset_x, self->start_x + self->last_offset_x, 1.0,
-        UI_DRAG_MODE_CURSOR);
-      channel_send_set_amount_from_widget (
-        self->send, (float) new_normalized_val);
+        UiDragMode::UI_DRAG_MODE_CURSOR);
+      self->send->set_amount_from_widget ((float) new_normalized_val);
       gtk_widget_queue_draw (GTK_WIDGET (self));
     }
 
@@ -185,18 +185,20 @@ on_drag_end (
   self->start_x = 0;
   self->last_offset_x = 0;
 
-  float send_amount_at_end = self->send->amount->control_;
-  self->send->amount->set_control_value (
+  float send_amount_at_end = self->send->amount_->control_;
+  self->send->amount_->set_control_value (
     self->send_amount_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
-  if (channel_send_is_enabled (self->send) && self->n_press != 2)
+  if (self->send->is_enabled () && self->n_press != 2)
     {
-      GError * err = NULL;
-      bool     ret = channel_send_action_perform_change_amount (
-        self->send, send_amount_at_end, &err);
-      if (!ret)
+      try
         {
-          HANDLE_ERROR (err, "%s", _ ("Failed to change send amount"));
+          UNDO_MANAGER->perform (std::make_unique<ChannelSendChangeAmountAction> (
+            *self->send, send_amount_at_end));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (_ ("Failed to change send amount"));
         }
     }
 }
@@ -226,7 +228,7 @@ show_context_menu (ChannelSendWidget * self, double x, double y)
   GMenuItem * menuitem;
 
   char tmp[500];
-  sprintf (tmp, "app.bind-midi-cc::%p", self->send->amount);
+  sprintf (tmp, "app.bind-midi-cc::%p", self->send->amount_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -273,7 +275,7 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSendWidget * se
       return G_SOURCE_CONTINUE;
     }
 
-  bool empty = channel_send_is_empty (self->send);
+  bool empty = self->send->is_empty ();
   if (empty != self->was_empty)
     {
       self->was_empty = empty;
@@ -323,7 +325,7 @@ ChannelSendWidget *
 channel_send_widget_new (ChannelSend * send)
 {
   ChannelSendWidget * self = static_cast<ChannelSendWidget *> (
-    g_object_new (CHANNEL_SEND_WIDGET_TYPE, NULL));
+    g_object_new (CHANNEL_SEND_WIDGET_TYPE, nullptr));
   self->send = send;
 
   return self;
@@ -346,7 +348,8 @@ channel_send_widget_init (ChannelSendWidget * self)
   self->selector_popover = channel_send_selector_widget_new (self);
   gtk_widget_set_parent (GTK_WIDGET (self->selector_popover), GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -389,7 +392,7 @@ channel_send_widget_init (ChannelSendWidget * self)
     G_OBJECT (self->drag), "drag-end", G_CALLBACK (on_drag_end), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, nullptr);
 }
 
 static void

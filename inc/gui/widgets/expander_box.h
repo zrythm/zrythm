@@ -2,7 +2,7 @@
 // <alex@zrythm.org> SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Expander box.
  */

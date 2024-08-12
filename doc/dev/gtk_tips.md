@@ -76,7 +76,39 @@ Focus on click doesn't work automatically, it has to be implemented in a particu
 And you can set focus-on-click to false to disable that (and that's again something that the particular widget has to check for, and not call grab_focus ()) in that case
 ```
 
+# Storing Objects in GListStore
+
+When storing objects (such as newly-created WrappedObjectWithChangeSignal) in a `GListStore` using `g_list_store_append()`, the list store takes a reference to the object. However, `g_object_new()` returns an owned reference, so it needs to be dropped after appending to avoid leaking the instance.
+
+To do this, either:
+
+1. Unref the object after appending:
+   ```c
+   gpointer obj = g_object_new (type, NULL);
+   g_list_store_append (store, obj);
+   g_object_unref (obj);
+   ```
+
+2. Use `g_autoptr` to automatically unref the object when it goes out of scope:
+   ```c
+   {
+     g_autoptr (GObject) obj = g_object_new (type, NULL);
+     g_list_store_append (store, obj);
+   }
+   ```
+
+If creating initially floating objects, inherit from `GInitiallyUnowned`, sink the floating reference using `g_object_ref_sink()`, append to the list store, and then unref:
+
+```c
+gpointer obj = g_object_ref_sink (g_object_new (type, NULL));
+g_list_store_append (store, obj);
+g_object_unref (obj);
+```
+
+In general, avoid floating references whenever possible.
+
+
 <!---
-SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->

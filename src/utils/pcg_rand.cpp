@@ -26,7 +26,7 @@ PCGRand::PCGRand ()
   this->_state = 0;
   this->_inc = (initseq << 1) | 1;
   u32 ();
-  this->_state += (uint64_t) (time (NULL) ^ (intptr_t) this);
+  this->_state += (uint64_t) (time (nullptr) ^ (intptr_t) this);
   u32 ();
 }
 

@@ -1,19 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou
+// <alex@zrythm.org> SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/control_port.h"
-#include "dsp/track.h"
-#include "gui/widgets/knob.h"
-#include "gui/widgets/knob_with_name.h"
-#include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_inner.h"
-#include "gui/widgets/popovers/port_connections_popover.h"
 #include "plugins/plugin.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -30,17 +20,17 @@ modulator_widget_refresh (ModulatorWidget * self)
 ModulatorWidget *
 modulator_widget_new (Plugin * modulator)
 {
-  g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
+  g_return_val_if_fail (IS_PLUGIN (modulator), nullptr);
 
-  ModulatorWidget * self =
-    static_cast<ModulatorWidget *> (g_object_new (MODULATOR_WIDGET_TYPE, NULL));
+  ModulatorWidget * self = static_cast<ModulatorWidget *> (
+    g_object_new (MODULATOR_WIDGET_TYPE, nullptr));
 
   self->modulator = modulator;
 
   self->inner = modulator_inner_widget_new (self);
 
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self), modulator->setting->descr->name);
+    Z_EXPANDER_BOX_WIDGET (self), modulator->get_name ().c_str ());
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "gnome-icon-library-encoder-knob-symbolic");
 

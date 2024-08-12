@@ -29,7 +29,7 @@ PortConnectionsWidget *
 port_connections_widget_new (void)
 {
   PortConnectionsWidget * self = Z_PORT_CONNECTIONS_WIDGET (
-    g_object_new (PORT_CONNECTIONS_WIDGET_TYPE, NULL));
+    g_object_new (PORT_CONNECTIONS_WIDGET_TYPE, nullptr));
 
   self->bindings_tree = port_connections_tree_widget_new ();
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->bindings_tree));

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event_manager.h"
@@ -7,7 +7,6 @@
 #include "gui/widgets/channel_sends_expander.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_controls_expander.h"
-#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
@@ -18,8 +17,6 @@
 #include "gui/widgets/track_properties_expander.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -63,8 +60,8 @@ setup_color (InspectorTrackWidget * self, Track * track)
     }
   else
     {
-      GdkRGBA color = { 1, 1, 1, 1 };
-      color_area_widget_set_color (self->color, &color);
+      Color color = { 1, 1, 1, 1 };
+      color_area_widget_set_color (self->color, color);
     }
 }
 
@@ -77,12 +74,12 @@ setup_color (InspectorTrackWidget * self, Track * track)
  */
 void
 inspector_track_widget_show_tracks (
-  InspectorTrackWidget * self,
-  TracklistSelections *  tls,
-  bool                   set_notebook_page)
+  InspectorTrackWidget *      self,
+  SimpleTracklistSelections * tls,
+  bool                        set_notebook_page)
 {
-  g_debug (
-    "showing %d tracks (set notebook page: %d)", tls->num_tracks,
+  z_debug (
+    "showing %d tracks (set notebook page: %d)", tls->track_names_.size (),
     set_notebook_page);
 
   if (set_notebook_page)
@@ -95,14 +92,14 @@ inspector_track_widget_show_tracks (
     }
 
   /* show info for first track */
-  Track * track = NULL;
-  if (tls->num_tracks > 0)
+  if (!tls->track_names_.empty ())
     {
-      track = tls->tracks[0];
-      g_debug ("track %s", track->name);
+      auto track = tls->get_highest_track ();
+      auto track_ptr = track;
+      z_debug ("track %s", track->name_);
 
       /* don't attempt to show tracks during disconnect */
-      g_return_if_fail (!track->disconnecting);
+      z_return_if_fail (!track->disconnecting_);
 
       setup_color (self, track);
 
@@ -118,12 +115,14 @@ inspector_track_widget_show_tracks (
       gtk_widget_set_visible (GTK_WIDGET (self->comment), true);
 
       text_expander_widget_setup (
-        self->comment, true, track_get_comment, track_comment_setter, track);
+        self->comment, true, Track::comment_getter, Track::comment_setter,
+        track);
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self->comment), _ ("Notes"));
 
-      if (track_type_has_channel (track->type))
+      if (track->has_channel ())
         {
+          auto ch_track = dynamic_cast<ChannelTrack *> (track);
           gtk_widget_set_visible (GTK_WIDGET (self->sends), true);
 #if 0
           gtk_widget_set_visible (
@@ -134,48 +133,49 @@ inspector_track_widget_show_tracks (
           gtk_widget_set_visible (GTK_WIDGET (self->fader), true);
           gtk_widget_set_visible (GTK_WIDGET (self->inserts), true);
 
-          if (track_has_inputs (track))
+          if (Track::type_has_inputs (track->type_))
             {
               gtk_widget_set_visible (GTK_WIDGET (self->inputs), true);
             }
-          if (track->in_signal_type == PortType::Event)
+          if (track->in_signal_type_ == PortType::Event)
             {
               gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), true);
               plugin_strip_expander_widget_setup (
-                self->midi_fx, ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX,
-                PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, track);
+                self->midi_fx, PluginSlotType::MidiFx,
+                PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, ch_track);
             }
-          track_input_expander_widget_refresh (self->inputs, track);
+          track_input_expander_widget_refresh (self->inputs, ch_track);
           ports_expander_widget_setup_track (
-            self->outputs, track,
+            self->outputs, track_ptr,
             PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_SENDS);
           ports_expander_widget_setup_track (
-            self->controls, track,
+            self->controls, track_ptr,
             PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_CONTROLS);
 
           plugin_strip_expander_widget_setup (
-            self->inserts, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT,
-            PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, track);
+            self->inserts, PluginSlotType::Insert,
+            PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, ch_track);
 
-          fader_controls_expander_widget_setup (self->fader, track);
+          fader_controls_expander_widget_setup (self->fader, ch_track);
 
           channel_sends_expander_widget_setup (
             self->sends, ChannelSendsExpanderPosition::CSE_POSITION_INSPECTOR,
-            track);
+            track_ptr);
         }
     }
   else /* no tracks selected */
     {
-      track_properties_expander_widget_refresh (self->track_info, NULL);
+      track_properties_expander_widget_refresh (self->track_info, nullptr);
       ports_expander_widget_setup_track (
-        self->outputs, track,
+        self->outputs, nullptr,
         PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_SENDS);
       ports_expander_widget_setup_track (
-        self->controls, track,
+        self->controls, nullptr,
         PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_CONTROLS);
-      text_expander_widget_setup (self->comment, false, NULL, NULL, NULL);
+      text_expander_widget_setup (
+        self->comment, false, nullptr, nullptr, nullptr);
 
-      setup_color (self, NULL);
+      setup_color (self, nullptr);
     }
 }
 
@@ -185,20 +185,18 @@ inspector_track_widget_show_tracks (
  */
 void
 inspector_track_widget_setup (
-  InspectorTrackWidget * self,
-  TracklistSelections *  tls)
+  InspectorTrackWidget *      self,
+  SimpleTracklistSelections * tls)
 {
   g_return_if_fail (tls);
-  if (tls->num_tracks == 0)
+  if (tls->track_names_.empty ())
     {
-      g_critical (
-        "no tracks selected. this should never "
-        "happen");
+      z_error ("no tracks selected. this should never happen");
       return;
     }
 
-  Track * track = tls->tracks[0];
-  g_return_if_fail (track);
+  auto track = tls->get_highest_track ();
+  z_return_if_fail (track);
 
   track_properties_expander_widget_setup (self->track_info, track);
 }
@@ -207,7 +205,7 @@ InspectorTrackWidget *
 inspector_track_widget_new (void)
 {
   InspectorTrackWidget * self = static_cast<InspectorTrackWidget *> (
-    g_object_new (INSPECTOR_TRACK_WIDGET_TYPE, NULL));
+    g_object_new (INSPECTOR_TRACK_WIDGET_TYPE, nullptr));
 
   return self;
 }

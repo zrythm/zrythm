@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Timeline selection info.
  */
@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_TS_INFO MW_TIMELINE_PANEL->selection_info
 
 typedef struct _SelectionInfoWidget SelectionInfoWidget;
-typedef struct TimelineSelections   TimelineSelections;
+class TimelineSelections;
 
 /**
  * A widget for showing info about the current

@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Chord preset.
- */
 
 #ifndef __SETTINGS_CHORD_PRESET_H__
 #define __SETTINGS_CHORD_PRESET_H__
@@ -13,9 +7,11 @@
 #include "zrythm-config.h"
 
 #include "dsp/chord_descriptor.h"
-#include "utils/yaml.h"
+#include "gui/backend/chord_editor.h"
+#include "utils/types.h"
 
-typedef struct ChordPresetPack ChordPresetPack;
+class ChordPresetPack;
+TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);
 
 /**
  * @addtogroup settings
@@ -26,49 +22,49 @@ typedef struct ChordPresetPack ChordPresetPack;
 /**
  * A preset of chord descriptors.
  */
-typedef struct ChordPreset
+class ChordPreset final : public ISerializable<ChordPreset>
 {
+public:
+  ChordPreset () = default;
+  ChordPreset (const std::string &name) : ChordPreset () { name_ = name; }
+
+  /**
+   * Gets informational text.
+   */
+  std::string get_info_text () const;
+
+  const std::string &get_name () const { return name_; }
+  static std::string name_getter (void * data)
+  {
+    return static_cast<ChordPreset *> (data)->get_name ();
+  }
+
+  void        set_name (const std::string &name);
+  static void name_setter (void * data, const std::string &name)
+  {
+    static_cast<ChordPreset *> (data)->set_name (name);
+  }
+
+  GMenuModel * generate_context_menu () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** Preset name. */
-  char * name;
+  std::string name_;
 
   /** Chord descriptors. */
-  ChordDescriptor * descr[12];
+  std::vector<ChordDescriptor> descr_;
 
   /** Pointer to owner pack. */
-  ChordPresetPack * pack;
-} ChordPreset;
+  ChordPresetPack * pack_ = nullptr;
+};
 
-ChordPreset *
-chord_preset_new (void);
-
-ChordPreset *
-chord_preset_new_from_name (const char * name);
-
-NONNULL ChordPreset *
-chord_preset_clone (const ChordPreset * src);
-
-/**
- * Gets informational text.
- *
- * Must be free'd by caller.
- */
-char *
-chord_preset_get_info_text (const ChordPreset * self);
-
-const char *
-chord_preset_get_name (const ChordPreset * self);
-
-void
-chord_preset_set_name (ChordPreset * self, const char * name);
-
-GMenuModel *
-chord_preset_generate_context_menu (const ChordPreset * self);
-
-/**
- * Frees the plugin setting.
- */
-NONNULL void
-chord_preset_free (ChordPreset * self);
+inline bool
+operator== (const ChordPreset &lhs, const ChordPreset &rhs)
+{
+  return lhs.name_ == rhs.name_ && lhs.descr_ == rhs.descr_;
+}
 
 /**
  * @}

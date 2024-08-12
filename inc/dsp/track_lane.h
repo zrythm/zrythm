@@ -1,22 +1,16 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Track lanes for each track.
- */
 
 #ifndef __AUDIO_TRACK_LANE_H__
 #define __AUDIO_TRACK_LANE_H__
 
+#include "dsp/midi_event.h"
 #include "dsp/region.h"
-#include "utils/yaml.h"
+#include "dsp/region_owner.h"
+#include "gui/widgets/custom_button.h"
 
-typedef struct _TrackLaneWidget TrackLaneWidget;
-struct Tracklist;
-typedef struct CustomButtonWidget CustomButtonWidget;
-typedef void                      MIDI_FILE;
+using MIDI_FILE = void;
+class Tracklist;
 
 /**
  * @addtogroup dsp
@@ -24,15 +18,9 @@ typedef void                      MIDI_FILE;
  * @{
  */
 
-#define TRACK_LANE_MAGIC 3418552
-#define IS_TRACK_LANE(x) (((TrackLane *) x)->magic == TRACK_LANE_MAGIC)
+constexpr int TRACK_LANE_MAGIC = 3418552;
+#define IS_TRACK_LANE(x) (((TrackLane *) x)->magic_ == TRACK_LANE_MAGIC)
 #define IS_TRACK_LANE_AND_NONNULL(x) (x && IS_TRACK_LANE (x))
-
-#define track_lane_is_auditioner(self) \
-  (self->track && track_is_auditioner (self->track))
-
-#define track_lane_is_in_active_project(self) \
-  (self->track && track_is_in_active_project (self->track))
 
 /**
  * A TrackLane belongs to a Track (can have many TrackLanes in a Track) and
@@ -41,228 +29,241 @@ typedef void                      MIDI_FILE;
  * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
  * and AudioTrack.
  */
-typedef struct TrackLane
+class TrackLane : virtual public RegionOwner
 {
+public:
+  virtual ~TrackLane () = default;
+
+  std::string        get_name () { return this->name_; }
+  static std::string name_getter (void * data)
+  {
+    return ((TrackLane *) data)->get_name ();
+  }
+
+  bool get_soloed () const { return solo_; }
+
+  /**
+   * @brief Returns if the lane is explicitly marked as muted.
+   *
+   * @note Doesn't check soloed state or track state.
+   */
+  bool get_muted () const { return this->mute_; }
+
+protected:
+  TrackLane () = default;
+  TrackLane (int pos, std::string name) : pos_ (pos), name_ (std::move (name))
+  {
+  }
+
+public:
   /** Position in the Track. */
-  int pos;
+  int pos_ = 0;
 
   /** Name of lane, e.g. "Lane 1". */
-  char * name;
-
-  /** TrackLaneWidget for this lane. */
-  // TrackLaneWidget *   widget;
+  std::string name_;
 
   /** Y local to track. */
-  int y;
+  int y_ = 0;
 
   /** Position of handle. */
-  double height;
+  double height_ = 0;
 
   /** Muted or not. */
-  int mute;
+  bool mute_ = false;
 
   /** Soloed or not. */
-  int solo;
-
-  /** Regions in this track. */
-  Region ** regions;
-  int       num_regions;
-  size_t    regions_size;
+  bool solo_ = false;
 
   /**
    * MIDI channel, if MIDI lane, starting at 1.
    *
-   * If this is set to 0, the value will be
-   * inherited from the Track.
+   * If this is set to 0, the value will be inherited from the Track.
    */
-  uint8_t midi_ch;
+  uint8_t midi_ch_ = 0;
 
-  /* FIXME this is bad design - this object should not care
-   * about widgets */
-  /** Buttons used by the track widget. */
-  CustomButtonWidget * buttons[8];
-  int                  num_buttons;
+  std::vector<CustomButtonWidget> buttons_;
 
+  int magic_ = TRACK_LANE_MAGIC;
+};
+
+/**
+ * A TrackLane belongs to a Track (can have many TrackLanes in a Track) and
+ * contains Regions.
+ *
+ * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
+ * and AudioTrack.
+ */
+template <typename RegionT>
+class TrackLaneImpl final
+    : public TrackLane,
+      public ICloneable<TrackLaneImpl<RegionT>>,
+      public RegionOwnerImpl<RegionT>,
+      public ISerializable<TrackLaneImpl<RegionT>>
+{
+public:
+  using LanedTrackT = LanedTrackImpl<RegionT>;
+
+public:
+  TrackLaneImpl () = default;
+
+  /**
+   * Creates a new TrackLane at the given pos in the given Track.
+   *
+   * @param track The Track to create the TrackLane for.
+   * @param pos The position (index) in the Track that this lane will be placed
+   * in.
+   */
+  TrackLaneImpl (LanedTrackT * track, int pos)
+      : TrackLane (pos, format_str (_ ("Lane {}"), pos + 1)), track_ (track)
+  {
+  }
+
+  bool is_in_active_project () const override;
+
+  bool is_auditioner () const override;
+
+  void init_loaded (LanedTrackT * track)
+  {
+    track_ = track;
+    for (auto &region : this->regions_)
+      {
+        region->set_lane (*this);
+        region->init_loaded ();
+      }
+  }
+
+  /**
+   * Sets track lane soloed, updates UI and optionally
+   * adds the action to the undo stack.
+   *
+   * @param trigger_undo Create and perform an
+   *   undoable action.
+   * @param fire_events Fire UI events.
+   */
+  void set_soloed (bool solo, bool trigger_undo, bool fire_events);
+
+  /**
+   * Sets track lane muted, updates UI and optionally
+   * adds the action to the undo stack.
+   *
+   * @param trigger_undo Create and perform an
+   *   undoable action.
+   * @param fire_events Fire UI events.
+   */
+  void set_muted (bool mute, bool trigger_undo, bool fire_events);
+
+  /**
+   * @brief Returns if the lane is effectively muted (explicitly or implicitly
+   * muted).
+   */
+  bool is_effectively_muted () const;
+
+  /**
+   * Rename the lane.
+   *
+   * @param with_action Whether to make this an
+   *   undoable action.
+   */
+  void rename (const std::string &new_name, bool with_action);
+
+  /**
+   * Wrapper over track_lane_rename().
+   */
+  void rename_with_action (const std::string &new_name)
+  {
+    rename (new_name, true);
+  }
+  static void name_setter_with_action (void * data, const std::string &new_name)
+  {
+    ((TrackLaneImpl *) data)->rename_with_action (new_name);
+  }
+
+  /**
+   * Unselects all arranger objects.
+   */
+  void unselect_all ()
+  {
+    for (auto &region : this->regions_)
+      {
+        region->select (false, false, false);
+      }
+  }
+
+  /**
+   * Sets the new track name hash to all the lane's objects recursively.
+   */
+  void update_track_name_hash ();
+
+  /**
+   * Writes the lane to the given MIDI file.
+   *
+   * @param lanes_as_tracks Export lanes as separate MIDI tracks.
+   * @param use_track_or_lane_pos Whether to use the track position (or lane
+   * position if @ref lanes_as_tracks is true) in the MIDI data. The MIDI track
+   * will be set to 1 if false.
+   * @param events Track events, if not using lanes as tracks.
+   * @param start Events before this position will be skipped.
+   * @param end Events after this position will be skipped.
+   */
+  void write_to_midi_file (
+    MIDI_FILE *       mf,
+    MidiEventVector * events,
+    const Position *  start,
+    const Position *  end,
+    bool              lanes_as_tracks,
+    bool use_track_or_lane_pos) requires std::derived_from<MidiRegion, RegionT>;
+
+  Tracklist * get_tracklist () const;
+
+  LanedTrackT * get_track () const
+  {
+    z_return_val_if_fail (track_, nullptr);
+    return track_;
+  }
+
+  /**
+   * Calculates a unique index for this lane.
+   */
+  int calculate_lane_idx () const;
+
+  /**
+   * Generate a snapshot for playback.
+   */
+  auto gen_snapshot () const
+  {
+    auto ret = this->clone_unique ();
+    ret->track_ = track_;
+    return ret;
+  }
+
+  void init_after_cloning (const TrackLaneImpl &other) override
+  {
+    pos_ = other.pos_;
+    name_ = other.name_;
+    y_ = other.y_;
+    height_ = other.height_;
+    mute_ = other.mute_;
+    solo_ = other.solo_;
+    clone_unique_ptr_container (this->regions_, other.regions_);
+    for (auto &region : this->regions_)
+      {
+        region->set_lane (*this);
+        region->gen_name (region->name_.c_str (), nullptr, nullptr);
+      }
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void after_remove_region () final;
+
+public:
   /** Owner track. */
-  Track * track;
+  LanedTrackT * track_ = nullptr;
+};
 
-  int magic;
-
-} TrackLane;
-
-void
-track_lane_init_loaded (TrackLane * self, Track * track);
-
-/**
- * Creates a new TrackLane at the given pos in the
- * given Track.
- *
- * @param track The Track to create the TrackLane
- *   for.
- * @param pos The position (index) in the Track that
- *   this lane will be placed in.
- */
-TrackLane *
-track_lane_new (Track * track, int pos);
-
-/**
- * Inserts a Region to the given TrackLane at the
- * given index.
- */
-void
-track_lane_insert_region (TrackLane * self, Region * region, int idx);
-
-/**
- * Adds a Region to the given TrackLane.
- */
-void
-track_lane_add_region (TrackLane * self, Region * region);
-
-/**
- * Removes but does not free the region.
- */
-void
-track_lane_remove_region (TrackLane * self, Region * region);
-
-/**
- * Unselects all arranger objects.
- */
-void
-track_lane_unselect_all (TrackLane * self);
-
-/**
- * Removes all objects recursively from the track
- * lane.
- */
-void
-track_lane_clear (TrackLane * self);
-
-/**
- * Rename the lane.
- *
- * @param with_action Whether to make this an
- *   undoable action.
- */
-void
-track_lane_rename (TrackLane * self, const char * new_name, bool with_action);
-
-/**
- * Wrapper over track_lane_rename().
- */
-void
-track_lane_rename_with_action (TrackLane * self, const char * new_name);
-
-/**
- * Sets track lane soloed, updates UI and optionally
- * adds the action to the undo stack.
- *
- * @param trigger_undo Create and perform an
- *   undoable action.
- * @param fire_events Fire UI events.
- */
-NONNULL void
-track_lane_set_soloed (
-  TrackLane * self,
-  bool        solo,
-  bool        trigger_undo,
-  bool        fire_events);
-
-NONNULL bool
-track_lane_get_soloed (const TrackLane * const self);
-
-/**
- * Sets track lane muted, updates UI and optionally
- * adds the action to the undo stack.
- *
- * @param trigger_undo Create and perform an
- *   undoable action.
- * @param fire_events Fire UI events.
- */
-NONNULL void
-track_lane_set_muted (
-  TrackLane * self,
-  bool        mute,
-  bool        trigger_undo,
-  bool        fire_events);
-
-NONNULL bool
-track_lane_get_muted (const TrackLane * const self);
-
-const char *
-track_lane_get_name (TrackLane * self);
-
-/**
- * Updates the positions in each child recursively.
- *
- * @param from_ticks Whether to update the
- *   positions based on ticks (true) or frames
- *   (false).
- */
-void
-track_lane_update_positions (TrackLane * self, bool from_ticks, bool bpm_change);
-
-/**
- * Sets the new track name hash to all the lane's
- * objects recursively.
- */
-void
-track_lane_update_track_name_hash (TrackLane * self);
-
-/**
- * Clones the TrackLane.
- *
- * @param track New owner track, if any.
- */
-TrackLane *
-track_lane_clone (const TrackLane * src, Track * track);
-
-/**
- * Writes the lane to the given MIDI file.
- *
- * @param lanes_as_tracks Export lanes as separate
- *   MIDI tracks.
- * @param use_track_or_lane_pos Whether to use the
- *   track position (or lane position if @ref
- *   lanes_as_tracks is true) in the MIDI data.
- *   The MIDI track will be set to 1 if false.
- * @param events Track events, if not using lanes
- *   as tracks.
- * @param start Events before this position will be skipped.
- * @param end Events after this position will be skipped.
- */
-NONNULL_ARGS (1, 2)
-void track_lane_write_to_midi_file (
-  TrackLane *      self,
-  MIDI_FILE *      mf,
-  MidiEvents *     events,
-  const Position * start,
-  const Position * end,
-  bool             lanes_as_tracks,
-  bool             use_track_or_lane_pos);
-
-NONNULL Tracklist *
-track_lane_get_tracklist (const TrackLane * self);
-
-NONNULL Track *
-track_lane_get_track (const TrackLane * self);
-
-/**
- * Calculates a unique index for this lane.
- */
-NONNULL int
-track_lane_calculate_lane_idx (const TrackLane * self);
-
-/**
- * Generate a snapshot for playback.
- */
-TrackLane *
-track_lane_gen_snapshot (const TrackLane * self);
-
-/**
- * Frees the TrackLane.
- */
-NONNULL void
-track_lane_free (TrackLane * lane);
+extern template class TrackLaneImpl<MidiRegion>;
+extern template class TrackLaneImpl<AudioRegion>;
 
 /**
  * @}

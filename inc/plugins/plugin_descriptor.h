@@ -1,27 +1,24 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Base plugin.
- */
 
 #ifndef __PLUGINS_PLUGIN_DESCRIPTOR_H__
 #define __PLUGINS_PLUGIN_DESCRIPTOR_H__
 
 #include "zrythm-config.h"
 
+#include <filesystem>
+
+#include "io/serialization/iserializable.h"
 #include "utils/types.h"
 
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 
-#include <CarlaBackend.h>
+#include "carla_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
+enum class PluginSlotType;
 enum class TrackType;
-enum class ZPluginSlotType;
 
 /**
  * @addtogroup plugins
@@ -29,98 +26,80 @@ enum class ZPluginSlotType;
  * @{
  */
 
-#define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 1
-
 /**
  * Plugin category.
  */
-#ifdef __cplusplus
 enum class ZPluginCategory
-#else
-typedef enum
-#endif
 {
   /** None specified. */
-  Z_PLUGIN_CATEGORY_NONE,
-  Z_PLUGIN_CATEGORY_DELAY,
-  Z_PLUGIN_CATEGORY_REVERB,
-  Z_PLUGIN_CATEGORY_DISTORTION,
-  Z_PLUGIN_CATEGORY_WAVESHAPER,
-  Z_PLUGIN_CATEGORY_DYNAMICS,
-  Z_PLUGIN_CATEGORY_AMPLIFIER,
-  Z_PLUGIN_CATEGORY_COMPRESSOR,
-  Z_PLUGIN_CATEGORY_ENVELOPE,
-  Z_PLUGIN_CATEGORY_EXPANDER,
-  Z_PLUGIN_CATEGORY_GATE,
-  Z_PLUGIN_CATEGORY_LIMITER,
-  Z_PLUGIN_CATEGORY_FILTER,
-  Z_PLUGIN_CATEGORY_ALLPASS_FILTER,
-  Z_PLUGIN_CATEGORY_BANDPASS_FILTER,
-  Z_PLUGIN_CATEGORY_COMB_FILTER,
-  Z_PLUGIN_CATEGORY_EQ,
-  Z_PLUGIN_CATEGORY_MULTI_EQ,
-  Z_PLUGIN_CATEGORY_PARA_EQ,
-  Z_PLUGIN_CATEGORY_HIGHPASS_FILTER,
-  Z_PLUGIN_CATEGORY_LOWPASS_FILTER,
-  Z_PLUGIN_CATEGORY_GENERATOR,
-  Z_PLUGIN_CATEGORY_CONSTANT,
-  Z_PLUGIN_CATEGORY_INSTRUMENT,
-  Z_PLUGIN_CATEGORY_OSCILLATOR,
-  Z_PLUGIN_CATEGORY_MIDI,
-  Z_PLUGIN_CATEGORY_MODULATOR,
-  Z_PLUGIN_CATEGORY_CHORUS,
-  Z_PLUGIN_CATEGORY_FLANGER,
-  Z_PLUGIN_CATEGORY_PHASER,
-  Z_PLUGIN_CATEGORY_SIMULATOR,
-  Z_PLUGIN_CATEGORY_SIMULATOR_REVERB,
-  Z_PLUGIN_CATEGORY_SPATIAL,
-  Z_PLUGIN_CATEGORY_SPECTRAL,
-  Z_PLUGIN_CATEGORY_PITCH,
-  Z_PLUGIN_CATEGORY_UTILITY,
-  Z_PLUGIN_CATEGORY_ANALYZER,
-  Z_PLUGIN_CATEGORY_CONVERTER,
-  Z_PLUGIN_CATEGORY_FUNCTION,
-  Z_PLUGIN_CATEGORY_MIXER,
-#ifdef __cplusplus
+  NONE,
+  DELAY,
+  REVERB,
+  DISTORTION,
+  WAVESHAPER,
+  DYNAMICS,
+  AMPLIFIER,
+  COMPRESSOR,
+  ENVELOPE,
+  EXPANDER,
+  GATE,
+  LIMITER,
+  FILTER,
+  ALLPASS_FILTER,
+  BANDPASS_FILTER,
+  COMB_FILTER,
+  EQ,
+  MULTI_EQ,
+  PARA_EQ,
+  HIGHPASS_FILTER,
+  LOWPASS_FILTER,
+  GENERATOR,
+  CONSTANT,
+  INSTRUMENT,
+  OSCILLATOR,
+  MIDI,
+  MODULATOR,
+  CHORUS,
+  FLANGER,
+  PHASER,
+  SIMULATOR,
+  SIMULATOR_REVERB,
+  SPATIAL,
+  SPECTRAL,
+  PITCH,
+  UTILITY,
+  ANALYZER,
+  CONVERTER,
+  FUNCTION,
+  MIXER,
 };
-#else
-} ZPluginCategory;
-#endif
 
 /**
  * Plugin protocol.
  */
-#ifdef __cplusplus
-enum class ZPluginProtocol
-#else
-typedef enum
-#endif
+enum class PluginProtocol
 {
   /** Dummy protocol for tests. */
-  Z_PLUGIN_PROTOCOL_DUMMY,
-  Z_PLUGIN_PROTOCOL_LV2,
-  Z_PLUGIN_PROTOCOL_DSSI,
-  Z_PLUGIN_PROTOCOL_LADSPA,
-  Z_PLUGIN_PROTOCOL_VST,
-  Z_PLUGIN_PROTOCOL_VST3,
-  Z_PLUGIN_PROTOCOL_AU,
-  Z_PLUGIN_PROTOCOL_SFZ,
-  Z_PLUGIN_PROTOCOL_SF2,
-  Z_PLUGIN_PROTOCOL_CLAP,
-  Z_PLUGIN_PROTOCOL_JSFX,
-#ifdef __cplusplus
+  DUMMY,
+  LV2,
+  DSSI,
+  LADSPA,
+  VST,
+  VST3,
+  AU,
+  SFZ,
+  SF2,
+  CLAP,
+  JSFX,
 };
-#else
-} ZPluginProtocol;
-#endif
 
 /**
  * 32 or 64 bit.
  */
-enum class ZPluginArchitecture
+enum class PluginArchitecture
 {
-  Z_PLUGIN_ARCHITECTURE_32,
-  Z_PLUGIN_ARCHITECTURE_64
+  ARCH_32_BIT,
+  ARCH_64_BIT
 };
 
 /**
@@ -133,51 +112,132 @@ enum class CarlaBridgeMode
   Full,
 };
 
-/***
- * A descriptor to be implemented by all plugins
- * This will be used throughout the UI
+/**
+ * The PluginDescriptor class provides a set of static utility functions and
+ * member functions to work with plugin descriptors. It contains information
+ * about a plugin such as its name, author, category, protocol, and various port
+ * counts.
+ *
+ * The static utility functions are used to convert between different
+ * plugin-related enumerations and strings, as well as to determine if a plugin
+ * protocol is supported.
+ *
+ * The member functions provide information about the plugin, such as whether it
+ * is an instrument, effect, modulator, or MIDI modifier, whether it is valid
+ * for a given slot type and track type, whether it has a custom UI, the minimum
+ * required bridge mode, and whether it is whitelisted.
+ *
+ * The PluginDescriptor also contains various fields that store the plugin's
+ * metadata, such as its author, name, website, category, port counts,
+ * architecture, protocol, and unique ID (for VST plugins).
  */
-typedef struct PluginDescriptor
+class PluginDescriptor final : public ISerializable<PluginDescriptor>
 {
-  int             schema_version;
-  char *          author;
-  char *          name;
-  char *          website;
-  ZPluginCategory category;
+public:
+  static std::string plugin_protocol_to_str (PluginProtocol prot);
+
+  static PluginProtocol plugin_protocol_from_str (const std::string &str);
+  static PluginProtocol
+  get_protocol_from_carla_plugin_type (CarlaBackend::PluginType ptype);
+  static CarlaBackend::PluginType
+  get_carla_plugin_type_from_protocol (PluginProtocol protocol);
+  static ZPluginCategory
+  get_category_from_carla_category_str (const std::string &category);
+  static ZPluginCategory
+  get_category_from_carla_category (CarlaBackend::PluginCategory carla_cat);
+  static bool            protocol_is_supported (PluginProtocol protocol);
+  static std::string     get_icon_name_for_protocol (PluginProtocol prot);
+  static ZPluginCategory string_to_category (const std::string &str);
+  static std::string     category_to_string (ZPluginCategory category);
+
+  static void free_closure (void * data, GClosure * closure);
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+  bool is_instrument () const;
+  bool is_effect () const;
+  bool is_modulator () const;
+  bool is_midi_modifier () const;
+
+  /**
+   * Returns if this can be dropped in a slot of the given type.
+   */
+  bool
+  is_valid_for_slot_type (PluginSlotType slot_type, TrackType track_type) const;
+
+  /**
+   * Returns whether the two descriptors describe the same plugin, ignoring
+   * irrelevant fields.
+   */
+  bool is_same_plugin (const PluginDescriptor &other) const;
+
+  /**
+   * Returns if the Plugin has a supported custom UI.
+   */
+  bool has_custom_ui () const;
+
+  /**
+   * Returns the minimum bridge mode required for this plugin.
+   */
+  CarlaBridgeMode get_min_bridge_mode () const;
+
+  /**
+   * Returns whether the plugin is known to work, so it should be whitelisted.
+   *
+   * Non-whitelisted plugins will run in full bridge mode. This is to prevent
+   * crashes when Zrythm is not at fault.
+   *
+   * These must all be free-software plugins so that they can be debugged if
+   * issues arise.
+   */
+  bool is_whitelisted () const;
+
+  /**
+   * Gets an appropriate icon name.
+   */
+  std::string get_icon_name () const;
+
+  GMenuModel * generate_context_menu () const;
+
+public:
+  std::string     author_;
+  std::string     name_;
+  std::string     website_;
+  ZPluginCategory category_ = ZPluginCategory::NONE;
   /** Lv2 plugin subcategory. */
-  char * category_str;
+  std::string category_str_;
   /** Number of audio input ports. */
-  int num_audio_ins;
+  int num_audio_ins_ = 0;
   /** Number of MIDI input ports. */
-  int num_midi_ins;
+  int num_midi_ins_ = 0;
   /** Number of audio output ports. */
-  int num_audio_outs;
+  int num_audio_outs_ = 0;
   /** Number of MIDI output ports. */
-  int num_midi_outs;
+  int num_midi_outs_ = 0;
   /** Number of input control (plugin param) ports. */
-  int num_ctrl_ins;
+  int num_ctrl_ins_ = 0;
   /** Number of output control (plugin param) ports. */
-  int num_ctrl_outs;
+  int num_ctrl_outs_ = 0;
   /** Number of input CV ports. */
-  int num_cv_ins;
+  int num_cv_ins_ = 0;
   /** Number of output CV ports. */
-  int num_cv_outs;
+  int num_cv_outs_ = 0;
   /** Architecture (32/64bit). */
-  ZPluginArchitecture arch;
+  PluginArchitecture arch_ = PluginArchitecture::ARCH_32_BIT;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
-  ZPluginProtocol protocol;
+  PluginProtocol protocol_ = PluginProtocol::DUMMY;
   /** Path, if not an Lv2Plugin which uses URIs. */
-  char * path;
+  fs::path path_;
   /** Lv2Plugin URI. */
-  char * uri;
+  std::string uri_;
 
   /** Used for VST. */
-  int64_t unique_id;
+  int64_t unique_id_ = 0;
 
   /** Minimum required bridge mode. */
-  CarlaBridgeMode min_bridge_mode;
+  CarlaBridgeMode min_bridge_mode_ = CarlaBridgeMode::None;
 
-  bool has_custom_ui;
+  bool has_custom_ui_ = false;
 
   /**
    * Hash of the plugin's bundle (.so/.ddl for VST) used when caching
@@ -185,181 +245,22 @@ typedef struct PluginDescriptor
    *
    * @deprecated Kept so that older projects still work.
    */
-  unsigned int ghash;
+  unsigned int ghash_ = 0;
 
   /** SHA1 of the file (replaces ghash). */
-  char * sha1;
+  std::string sha1_;
 
   /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj;
-} PluginDescriptor;
+  WrappedObjectWithChangeSignal * gobj_ = nullptr;
+};
 
-PluginDescriptor *
-plugin_descriptor_new (void);
-
-const char *
-plugin_protocol_to_str (ZPluginProtocol prot);
-
-ZPluginProtocol
-plugin_protocol_from_str (const char * str);
-
-static inline const char *
-plugin_protocol_get_icon_name (ZPluginProtocol prot)
+inline bool
+operator== (const PluginDescriptor &a, const PluginDescriptor &b)
 {
-  const char * icon = NULL;
-  switch (prot)
-    {
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
-      icon = "logo-lv2";
-      break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA:
-      icon = "logo-ladspa";
-      break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
-      icon = "logo-au";
-      break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
-      icon = "logo-vst";
-      break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2:
-      icon = "file-music-line";
-      break;
-    default:
-      icon = "plug";
-      break;
-    }
-  return icon;
+  return a.arch_ == b.arch_ && a.protocol_ == b.protocol_
+         && a.unique_id_ == b.unique_id_ && a.ghash_ == b.ghash_
+         && a.sha1_ == b.sha1_ && a.uri_ == b.uri_;
 }
-
-bool
-plugin_protocol_is_supported (ZPluginProtocol protocol);
-
-const char *
-plugin_category_to_string (ZPluginCategory category);
-
-CarlaBackend::PluginType
-plugin_descriptor_get_carla_plugin_type_from_protocol (ZPluginProtocol protocol);
-
-ZPluginProtocol
-plugin_descriptor_get_protocol_from_carla_plugin_type (
-  CarlaBackend::PluginType ptype);
-
-ZPluginCategory
-plugin_descriptor_get_category_from_carla_category_str (const char * category);
-
-ZPluginCategory
-plugin_descriptor_get_category_from_carla_category (
-  CarlaBackend::PluginCategory carla_cat);
-
-/**
- * Clones the plugin descriptor.
- */
-NONNULL void
-plugin_descriptor_copy (PluginDescriptor * dest, const PluginDescriptor * src);
-
-/**
- * Clones the plugin descriptor.
- */
-NONNULL PluginDescriptor *
-plugin_descriptor_clone (const PluginDescriptor * src);
-
-/**
- * Returns if the Plugin is an instrument or not.
- */
-NONNULL bool
-plugin_descriptor_is_instrument (const PluginDescriptor * const descr);
-
-/**
- * Returns if the Plugin is an effect or not.
- */
-NONNULL bool
-plugin_descriptor_is_effect (const PluginDescriptor * const descr);
-
-/**
- * Returns if the Plugin is a modulator or not.
- */
-NONNULL int
-plugin_descriptor_is_modulator (const PluginDescriptor * const descr);
-
-/**
- * Returns if the Plugin is a midi modifier or not.
- */
-NONNULL int
-plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr);
-
-/**
- * Returns the ZPluginCategory matching the given
- * string.
- */
-NONNULL ZPluginCategory
-plugin_descriptor_string_to_category (const char * str);
-
-char *
-plugin_descriptor_category_to_string (ZPluginCategory category);
-
-/**
- * Gets an appropriate icon name for the given
- * descriptor.
- */
-const char *
-plugin_descriptor_get_icon_name (const PluginDescriptor * const self);
-
-/**
- * Returns if the given plugin identifier can be dropped in a slot of the given
- * type.
- */
-bool
-plugin_descriptor_is_valid_for_slot_type (
-  const PluginDescriptor * self,
-  ZPluginSlotType          slot_type,
-  TrackType                track_type);
-
-/**
- * Returns whether the two descriptors describe
- * the same plugin, ignoring irrelevant fields.
- */
-NONNULL bool
-plugin_descriptor_is_same_plugin (
-  const PluginDescriptor * a,
-  const PluginDescriptor * b);
-
-/**
- * Returns if the Plugin has a supported custom
- * UI.
- */
-NONNULL bool
-plugin_descriptor_has_custom_ui (const PluginDescriptor * self);
-
-/**
- * Returns the minimum bridge mode required for this
- * plugin.
- */
-NONNULL CarlaBridgeMode
-plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self);
-
-/**
- * Returns whether the plugin is known to work, so it should
- * be whitelisted.
- *
- * Non-whitelisted plugins will run in full bridge mode. This
- * is to prevent crashes when Zrythm is not at fault.
- *
- * These must all be free-software plugins so that they can
- * be debugged if issues arise.
- */
-NONNULL bool
-plugin_descriptor_is_whitelisted (const PluginDescriptor * self);
-
-NONNULL GMenuModel *
-plugin_descriptor_generate_context_menu (const PluginDescriptor * self);
-
-NONNULL void
-plugin_descriptor_free (PluginDescriptor * self);
-
-NONNULL void
-plugin_descriptor_free_closure (void * data, GClosure * closure);
 
 /**
  * @}

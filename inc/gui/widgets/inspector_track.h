@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Inspector section for tracks.
  */
 
 #ifndef __GUI_WIDGETS_INSPECTOR_TRACK_H__
 #define __GUI_WIDGETS_INSPECTOR_TRACK_H__
+
+#include "gui/backend/tracklist_selections.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -20,15 +23,15 @@ G_DECLARE_FINAL_TYPE (
   INSPECTOR_TRACK_WIDGET,
   GtkWidget)
 
-typedef struct TracklistSelections            TracklistSelections;
-typedef struct _TrackPropertiesExpanderWidget TrackPropertiesExpanderWidget;
-typedef struct _PortsExpanderWidget           PortsExpanderWidget;
-typedef struct _TrackInputExpanderWidget      TrackInputExpanderWidget;
-typedef struct _PluginStripExpanderWidget     PluginStripExpanderWidget;
-typedef struct _FaderControlsExpanderWidget   FaderControlsExpanderWidget;
-typedef struct _TextExpanderWidget            TextExpanderWidget;
-typedef struct _ColorAreaWidget               ColorAreaWidget;
-typedef struct _ChannelSendsExpanderWidget    ChannelSendsExpanderWidget;
+class TracklistSelections;
+TYPEDEF_STRUCT_UNDERSCORED (TrackPropertiesExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PortsExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TrackInputExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PluginStripExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FaderControlsExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TextExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ChannelSendsExpanderWidget);
 
 /**
  * @addtogroup widgets
@@ -41,7 +44,7 @@ typedef struct _ChannelSendsExpanderWidget    ChannelSendsExpanderWidget;
 /**
  * Inspector section for tracks.
  */
-typedef struct _InspectorTrackWidget
+using InspectorTrackWidget = struct _InspectorTrackWidget
 {
   GtkWidget                       parent_instance;
   TrackPropertiesExpanderWidget * track_info;
@@ -63,7 +66,7 @@ typedef struct _InspectorTrackWidget
   TextExpanderWidget *          comment;
 
   ColorAreaWidget * color;
-} InspectorTrackWidget;
+};
 
 /**
  * Shows the inspector page for the given tracklist
@@ -74,18 +77,17 @@ typedef struct _InspectorTrackWidget
  */
 NONNULL void
 inspector_track_widget_show_tracks (
-  InspectorTrackWidget * self,
-  TracklistSelections *  tls,
-  bool                   set_notebook_page);
+  InspectorTrackWidget *      self,
+  SimpleTracklistSelections * tls,
+  bool                        set_notebook_page);
 
 /**
- * Sets up the inspector track widget for the first
- * time.
+ * Sets up the inspector track widget for the first time.
  */
 void
 inspector_track_widget_setup (
-  InspectorTrackWidget * self,
-  TracklistSelections *  tls);
+  InspectorTrackWidget *      self,
+  SimpleTracklistSelections * tls);
 
 InspectorTrackWidget *
 inspector_track_widget_new (void);

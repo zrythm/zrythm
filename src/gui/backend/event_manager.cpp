@@ -3,13 +3,12 @@
 
 #include "zrythm-config.h"
 
-#include <cmath>
-
 #include "dsp/audio_region.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
 #include "dsp/channel.h"
+#include "dsp/channel_track.h"
 #include "dsp/clip.h"
 #include "dsp/modulator_track.h"
 #include "dsp/pool.h"
@@ -77,16 +76,10 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/log.h"
+#include "utils/logger.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
-#include "utils/objects.h"
-#include "utils/stack.h"
-#include "utils/string.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -112,7 +105,7 @@ on_project_selection_type_changed (void)
   gtk_widget_remove_css_class (GTK_WIDGET (MW_MIXER), klass);
   gtk_widget_add_css_class (GTK_WIDGET (MW_MIXER), selectable_class);
 
-  switch (PROJECT->last_selection)
+  switch (PROJECT->last_selection_)
     {
     case Project::SelectionType::Tracklist:
       gtk_widget_add_css_class (
@@ -179,43 +172,40 @@ on_playhead_changed (bool manually)
 static void
 on_channel_output_changed (Channel * ch)
 {
-  if (ch->widget)
+  if (ch->widget_)
     {
       route_target_selector_widget_refresh (
-        ch->widget->output, &ch->get_track ());
+        ch->widget_->output, ch->get_track ());
     }
 }
 
 static void
 on_track_state_changed (Track * track)
 {
-  Channel * chan = track_get_channel (track);
-  if (chan && chan->widget)
+  if (track->has_channel ())
     {
-      channel_widget_refresh (chan->widget);
+      auto channel_track = dynamic_cast<ChannelTrack *> (track);
+      if (channel_track->channel_->widget_)
+        {
+          channel_widget_refresh (channel_track->channel_->widget_);
+        }
     }
 
-  if (TRACKLIST_SELECTIONS->tracks[0] == track)
+  if (track->is_selected ())
     {
       inspector_track_widget_show_tracks (
-        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS, true);
+        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS.get (), true);
     }
 }
 
 static void
 on_automation_track_added (AutomationTrack * at)
 {
-  /*AutomationTracklist * atl =*/
-  /*track_get_automation_tracklist (at->track);*/
-  /*if (atl && atl->widget)*/
-  /*automation_tracklist_widget_refresh (*/
-  /*atl->widget);*/
-
-  Track * track = automation_track_get_track (at);
+  auto track = at->get_track ();
   g_return_if_fail (track);
-  if (Z_IS_TRACK_WIDGET (track->widget))
+  if (Z_IS_TRACK_WIDGET (track->widget_))
     {
-      TrackWidget * tw = (TrackWidget *) track->widget;
+      TrackWidget * tw = (TrackWidget *) track->widget_;
       track_widget_update_size (tw);
     }
 }
@@ -231,9 +221,8 @@ on_track_added (void)
   if (MW_TRACKLIST)
     tracklist_widget_hard_refresh (MW_TRACKLIST);
 
-  /* needs to be called later because tracks need
-   * time to get allocated */
-  EVENTS_PUSH (EventType::ET_REFRESH_ARRANGER, NULL);
+  /* needs to be called later because tracks need time to get allocated */
+  EVENTS_PUSH (EventType::ET_REFRESH_ARRANGER, nullptr);
 }
 
 static void
@@ -244,10 +233,10 @@ on_automation_value_changed (Port * port)
   if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags2, id->flags2_,
-      PortIdentifier::Flags2::CHANNEL_SEND_AMOUNT))
+      PortIdentifier::Flags2::ChannelSendAmount))
     {
-      Track * tr = port->get_track (true);
-      if (track_is_selected (tr))
+      auto tr = port->get_track (true);
+      if (tr->is_selected ())
         {
           gtk_widget_queue_draw (
             GTK_WIDGET (MW_TRACK_INSPECTOR->sends->slots[id->port_index_]));
@@ -266,33 +255,37 @@ static void
 on_plugin_crashed (Plugin * plugin)
 {
   ui_show_message_printf (
-    _ ("Plugin Crashed"),
-    _ ("Plugin '%s' has crashed and has been "
-       "disabled."),
-    plugin->setting->descr->name);
+    _ ("Plugin Crashed"), _ ("Plugin '%s' has crashed and has been disabled."),
+    plugin->get_name ().c_str ());
 }
 
 static void
 on_plugin_state_changed (Plugin * pl)
 {
-  Track * track = plugin_get_track (pl);
-  if (track && track->channel && track->channel->widget)
+  auto track = pl->get_track ();
+  if (track && track->has_channel ())
     {
-      /* redraw slot */
-      switch (pl->id.slot_type)
+      auto channel_track = dynamic_cast<ChannelTrack *> (track);
+      if (channel_track->channel_->widget_)
         {
-        case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-          plugin_strip_expander_widget_redraw_slot (
-            MW_TRACK_INSPECTOR->midi_fx, pl->id.slot);
-          break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-          plugin_strip_expander_widget_redraw_slot (
-            MW_TRACK_INSPECTOR->inserts, pl->id.slot);
-          plugin_strip_expander_widget_redraw_slot (
-            track->channel->widget->inserts, pl->id.slot);
-          break;
-        default:
-          break;
+          auto ch = channel_track->channel_;
+          auto plugin_slot = pl->id_.slot_;
+          /* redraw slot */
+          switch (pl->id_.slot_type_)
+            {
+            case PluginSlotType::MidiFx:
+              plugin_strip_expander_widget_redraw_slot (
+                MW_TRACK_INSPECTOR->midi_fx, plugin_slot);
+              break;
+            case PluginSlotType::Insert:
+              plugin_strip_expander_widget_redraw_slot (
+                MW_TRACK_INSPECTOR->inserts, plugin_slot);
+              plugin_strip_expander_widget_redraw_slot (
+                ch->widget_->inserts, plugin_slot);
+              break;
+            default:
+              break;
+            }
         }
     }
 }
@@ -302,7 +295,7 @@ on_modulator_added (Plugin * modulator)
 {
   on_plugin_added (modulator);
 
-  Track * track = plugin_get_track (modulator);
+  auto track = dynamic_cast<ModulatorTrack*>(modulator->get_track ());
   modulator_view_widget_refresh (MW_MODULATOR_VIEW, track);
 }
 
@@ -317,23 +310,23 @@ on_plugins_removed (Track * tr)
 }
 
 static void
-refresh_for_selections_type (ArrangerSelectionsType type)
+refresh_for_selections_type (ArrangerSelections::Type type)
 {
   switch (type)
     {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
+    case ArrangerSelections::Type::Timeline:
       event_viewer_widget_refresh (MW_TIMELINE_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
+    case ArrangerSelections::Type::Midi:
       event_viewer_widget_refresh (MW_MIDI_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
+    case ArrangerSelections::Type::Chord:
       event_viewer_widget_refresh (MW_CHORD_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+    case ArrangerSelections::Type::Automation:
       event_viewer_widget_refresh (MW_AUTOMATION_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
+    case ArrangerSelections::Type::Audio:
       event_viewer_widget_refresh (MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
@@ -345,7 +338,7 @@ refresh_for_selections_type (ArrangerSelectionsType type)
 static void
 on_arranger_selections_changed (ArrangerSelections * sel)
 {
-  refresh_for_selections_type (sel->type);
+  refresh_for_selections_type (sel->type_);
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
 
   timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
@@ -354,21 +347,21 @@ on_arranger_selections_changed (ArrangerSelections * sel)
 static void
 arranger_selections_change_redraw_everything (ArrangerSelections * sel)
 {
-  switch (sel->type)
+  switch (sel->type_)
     {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
+    case ArrangerSelections::Type::Timeline:
       event_viewer_widget_refresh (MW_TIMELINE_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
+    case ArrangerSelections::Type::Midi:
       event_viewer_widget_refresh (MW_MIDI_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
+    case ArrangerSelections::Type::Chord:
       event_viewer_widget_refresh (MW_CHORD_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+    case ArrangerSelections::Type::Automation:
       event_viewer_widget_refresh (MW_AUTOMATION_EVENT_VIEWER, false);
       break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
+    case ArrangerSelections::Type::Audio:
       event_viewer_widget_refresh (MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
@@ -392,28 +385,24 @@ on_arranger_selections_moved (ArrangerSelections * sel)
 static void
 on_arranger_selections_removed (ArrangerSelections * sel)
 {
-  MW_TIMELINE->hovered_object = NULL;
-  MW_MIDI_ARRANGER->hovered_object = NULL;
-  MW_MIDI_MODIFIER_ARRANGER->hovered_object = NULL;
-  MW_AUTOMATION_ARRANGER->hovered_object = NULL;
-  MW_AUDIO_ARRANGER->hovered_object = NULL;
-  MW_CHORD_ARRANGER->hovered_object = NULL;
-
+  MW_TIMELINE->hovered_object.reset ();
+  MW_MIDI_ARRANGER->hovered_object.reset ();
+  MW_MIDI_MODIFIER_ARRANGER->hovered_object.reset ();
+  MW_AUTOMATION_ARRANGER->hovered_object.reset ();
+  MW_AUDIO_ARRANGER->hovered_object.reset ();
+  MW_CHORD_ARRANGER->hovered_object.reset ();
   timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
 }
 
 static void
 on_mixer_selections_changed (void)
 {
-  for (auto track : TRACKLIST->tracks)
+  for (auto track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
     {
-      if (!track_type_has_channel (track->type))
-        continue;
-
-      Channel * ch = track->channel;
-      if (ch->widget)
+      auto ch = track->channel_;
+      if (ch->widget_)
         {
-          plugin_strip_expander_widget_refresh (ch->widget->inserts);
+          plugin_strip_expander_widget_refresh (ch->widget_->inserts);
         }
     }
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
@@ -422,11 +411,12 @@ on_mixer_selections_changed (void)
 static void
 on_track_color_changed (Track * track)
 {
-  if (track_type_has_channel (track->type))
+  if (track->has_channel ())
     {
-      if (track->channel->widget)
+      auto channel_track = dynamic_cast<ChannelTrack *> (track);
+      if (channel_track->channel_->widget_)
         {
-          channel_widget_refresh (track->channel->widget);
+          channel_widget_refresh (channel_track->channel_->widget_);
         }
     }
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
@@ -435,8 +425,7 @@ on_track_color_changed (Track * track)
 static void
 on_track_name_changed (Track * track)
 {
-  /* refresh all because tracks routed to/from are
-   * also affected */
+  /* refresh all because tracks routed to/from are also affected */
   mixer_widget_soft_refresh (MW_MIXER);
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
 }
@@ -444,14 +433,14 @@ on_track_name_changed (Track * track)
 static void
 on_arranger_object_changed (ArrangerObject * obj)
 {
-  g_return_if_fail (IS_ARRANGER_OBJECT (obj));
+  z_return_if_fail (obj);
 
-  ArrangerSelections * sel = arranger_object_get_selections_for_type (obj->type);
+  ArrangerSelections * sel = obj->get_selections_for_type (obj->type_);
   event_viewer_widget_refresh_for_selections (sel);
 
-  switch (obj->type)
+  switch (obj->type_)
     {
-    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
+    case ArrangerObject::Type::Region:
       /* redraw editor ruler if region positions were changed */
       timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
       break;
@@ -464,11 +453,12 @@ static void
 on_track_changed (Track * track)
 {
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-  if (GTK_IS_WIDGET (track->widget))
+  if (GTK_IS_WIDGET (track->widget_))
     {
-      if (gtk_widget_get_visible (GTK_WIDGET (track->widget)) != track->visible)
+      if (
+        gtk_widget_get_visible (GTK_WIDGET (track->widget_)) != track->visible_)
         {
-          gtk_widget_set_visible (GTK_WIDGET (track->widget), track->visible);
+          gtk_widget_set_visible (GTK_WIDGET (track->widget_), track->visible_);
         }
     }
 }
@@ -476,64 +466,67 @@ on_track_changed (Track * track)
 static void
 on_plugin_window_visibility_changed (Plugin * pl)
 {
-  g_message ("start");
-  if (!IS_PLUGIN (pl) || pl->deleting)
+  if (!IS_PLUGIN (pl) || pl->deleting_)
     {
       return;
     }
 
-  Track * track = plugin_get_track (pl);
+  Track * track = pl->get_track ();
 
-  if (
-    track && track->channel && track->channel->widget
-    && Z_IS_CHANNEL_WIDGET (track->channel->widget))
+  if (track && track->has_channel ())
     {
-      /* redraw slot */
-      switch (pl->id.slot_type)
+      auto channel_track = dynamic_cast<ChannelTrack *> (track);
+      auto ch = channel_track->channel_;
+      auto ch_widget = ch->widget_;
+      if (ch_widget && Z_IS_CHANNEL_WIDGET (ch_widget))
         {
-        case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
-          plugin_strip_expander_widget_redraw_slot (
-            MW_TRACK_INSPECTOR->midi_fx, pl->id.slot);
-          break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
-          plugin_strip_expander_widget_redraw_slot (
-            MW_TRACK_INSPECTOR->inserts, pl->id.slot);
-          plugin_strip_expander_widget_redraw_slot (
-            track->channel->widget->inserts, pl->id.slot);
-          break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
-          track_properties_expander_widget_refresh (
-            MW_TRACK_INSPECTOR->track_info, track);
-          break;
-        default:
-          break;
+          auto slot = pl->id_.slot_;
+          /* redraw slot */
+          switch (pl->id_.slot_type_)
+            {
+            case PluginSlotType::MidiFx:
+              plugin_strip_expander_widget_redraw_slot (
+                MW_TRACK_INSPECTOR->midi_fx, slot);
+              break;
+            case PluginSlotType::Insert:
+              plugin_strip_expander_widget_redraw_slot (
+                MW_TRACK_INSPECTOR->inserts, slot);
+              plugin_strip_expander_widget_redraw_slot (
+                ch_widget->inserts, slot);
+              break;
+            case PluginSlotType::Instrument:
+              track_properties_expander_widget_refresh (
+                MW_TRACK_INSPECTOR->track_info, track);
+              break;
+            default:
+              break;
+            }
+
+          channel_widget_refresh_instrument_ui_toggle (ch_widget);
         }
-
-      channel_widget_refresh_instrument_ui_toggle (track->channel->widget);
     }
 
-  if (pl->modulator_widget)
+  if (pl->modulator_widget_)
     {
-      modulator_widget_refresh (pl->modulator_widget);
+      modulator_widget_refresh (pl->modulator_widget_);
     }
-  g_message ("done");
 }
 
 static void
 on_plugin_visibility_changed (Plugin * pl)
 {
-  g_debug ("start - visible: %d", pl->visible);
-  if (pl->visible)
+  z_debug ("start - visible: %d", pl->visible_);
+  if (pl->visible_)
     {
-      plugin_open_ui (pl);
+      pl->open_ui ();
     }
-  else if (!pl->visible)
+  else if (!pl->visible_)
     {
-      plugin_close_ui (pl);
+      pl->close_ui ();
     }
 
   on_plugin_window_visibility_changed (pl);
-  g_debug ("done");
+  z_debug ("done");
 }
 
 /*static int*/
@@ -552,67 +545,57 @@ on_plugin_visibility_changed (Plugin * pl)
 /*return FALSE;*/
 /*}*/
 
-static inline void
-clean_duplicates_and_copy (EventManager * self, GPtrArray * events_arr)
+void
+EventManager::clean_duplicate_events_and_copy ()
 {
-  MPMCQueue * q = self->mqueue;
+  auto       &q = mqueue_;
   ZEvent *    event;
 
-  g_ptr_array_remove_range (events_arr, 0, events_arr->len);
+  events_arr_.clear ();
 
-  /* only add events once to new array while
-   * popping */
-  while (event_queue_dequeue_event (q, &event))
+  /* only add events once to new array while popping */
+  while (q.pop_front (event))
     {
-      bool already_exists = false;
-
-      for (guint i = 0; i < events_arr->len; i++)
-        {
-          ZEvent * cur_event = (ZEvent *) g_ptr_array_index (events_arr, i);
-          if (event->type == cur_event->type && event->arg == cur_event->arg)
-            already_exists = true;
-        }
+      bool already_exists = std::any_of (
+        events_arr_.begin (), events_arr_.end (), [&event] (ZEvent * e) {
+          return event->type_ == e->type_ && event->arg_ == e->arg_;
+        });
 
       if (already_exists)
         {
-          object_pool_return (self->obj_pool, event);
+          obj_pool_.release (event);
         }
       else
         {
-          g_ptr_array_add (events_arr, event);
+          events_arr_.push_back (event);
         }
     }
 }
 
-static int
-soft_recalc_graph_when_paused (void * data)
+bool
+EventManager::soft_recalc_graph_when_paused ()
 {
-  EventManager * self = (EventManager *) data;
-  if (TRANSPORT->play_state == PlayState::PLAYSTATE_PAUSED)
+  if (TRANSPORT->play_state_ == Transport::PlayState::Paused)
     {
-      router_recalc_graph (ROUTER, F_SOFT);
-      self->pending_soft_recalc = false;
-      return G_SOURCE_REMOVE;
+      ROUTER->recalc_graph (true);
+      pending_soft_recalc_ = false;
+      return SourceFuncRemove;
     }
-  return G_SOURCE_CONTINUE;
+  return SourceFuncContinue;
 }
 
-/**
- * Processes the given event.
- *
- * The caller is responsible for putting the event
- * back in the object pool if needed.
- */
 void
-event_manager_process_event (EventManager * self, ZEvent * ev)
+EventManager::process_event (ZEvent &ev)
 {
-  switch (ev->type)
+  switch (ev.type_)
     {
     case EventType::ET_PLUGIN_LATENCY_CHANGED:
-      if (!self->pending_soft_recalc)
+      if (!pending_soft_recalc_)
         {
-          self->pending_soft_recalc = true;
-          g_idle_add (soft_recalc_graph_when_paused, self);
+          pending_soft_recalc_ = true;
+          Glib::signal_idle ().connect (sigc::track_obj (
+            sigc::mem_fun (*this, &EventManager::soft_recalc_graph_when_paused),
+            *this));
         }
       break;
     case EventType::ET_TRACKS_REMOVED:
@@ -629,21 +612,24 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case EventType::ET_ARRANGER_OBJECT_CREATED:
       break;
     case EventType::ET_ARRANGER_OBJECT_CHANGED:
-      on_arranger_object_changed ((ArrangerObject *) ev->arg);
+      on_arranger_object_changed ((ArrangerObject *) ev.arg_);
       break;
     case EventType::ET_ARRANGER_OBJECT_REMOVED:
       break;
     case EventType::ET_ARRANGER_SELECTIONS_CHANGED:
-      on_arranger_selections_changed (ARRANGER_SELECTIONS (ev->arg));
+      on_arranger_selections_changed (
+        static_cast<ArrangerSelections *> (ev.arg_));
       break;
     case EventType::ET_ARRANGER_SELECTIONS_CREATED:
-      on_arranger_selections_created (ARRANGER_SELECTIONS (ev->arg));
+      on_arranger_selections_created (
+        static_cast<ArrangerSelections *> (ev.arg_));
       break;
     case EventType::ET_ARRANGER_SELECTIONS_REMOVED:
-      on_arranger_selections_removed (ARRANGER_SELECTIONS (ev->arg));
+      on_arranger_selections_removed (
+        static_cast<ArrangerSelections *> (ev.arg_));
       break;
     case EventType::ET_ARRANGER_SELECTIONS_MOVED:
-      on_arranger_selections_moved (ARRANGER_SELECTIONS (ev->arg));
+      on_arranger_selections_moved (static_cast<ArrangerSelections *> (ev.arg_));
       break;
     case EventType::ET_ARRANGER_SELECTIONS_QUANTIZED:
       break;
@@ -653,10 +639,10 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       /* only refresh the inspector if the tracklist selection changed by
        * clicking on a track or on a region */
       if (
-        PROJECT->last_selection == Project::SelectionType::Tracklist
-        || PROJECT->last_selection == Project::SelectionType::Insert
-        || PROJECT->last_selection == Project::SelectionType::MidiFX
-        || PROJECT->last_selection == Project::SelectionType::Timeline)
+        PROJECT->last_selection_ == Project::SelectionType::Tracklist
+        || PROJECT->last_selection_ == Project::SelectionType::Insert
+        || PROJECT->last_selection_ == Project::SelectionType::MidiFX
+        || PROJECT->last_selection_ == Project::SelectionType::Timeline)
         {
           left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
         }
@@ -673,18 +659,18 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case EventType::ET_TIMELINE_SONG_MARKER_POS_CHANGED:
       break;
     case EventType::ET_PLUGIN_VISIBILITY_CHANGED:
-      on_plugin_visibility_changed ((Plugin *) ev->arg);
+      on_plugin_visibility_changed ((Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED:
-      on_plugin_window_visibility_changed ((Plugin *) ev->arg);
+      on_plugin_window_visibility_changed ((Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_STATE_CHANGED:
       {
-        Plugin * pl = (Plugin *) ev->arg;
-        if (IS_PLUGIN (pl))
+        auto pl = (Plugin *) ev.arg_;
+        if (pl)
           {
             on_plugin_state_changed (pl);
-            g_atomic_int_set (&pl->state_changed_event_sent, 0);
+            pl->state_changed_event_sent_.store (false);
           }
       }
       break;
@@ -694,7 +680,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
       break;
     case EventType::ET_AUTOMATION_VALUE_CHANGED:
-      on_automation_value_changed ((Port *) ev->arg);
+      on_automation_value_changed ((Port *) ev.arg_);
       break;
     case EventType::ET_RANGE_SELECTION_CHANGED:
       timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
@@ -725,23 +711,23 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_CLIP_EDITOR_REGION_CHANGED:
       clip_editor_widget_on_region_changed (MW_CLIP_EDITOR);
-      PIANO_ROLL->num_current_notes = 0;
+      PIANO_ROLL->current_notes_.clear ();
       piano_roll_keys_widget_redraw_full (MW_PIANO_ROLL_KEYS);
       bot_dock_edge_widget_update_event_viewer_stack_page (MW_BOT_DOCK_EDGE);
       break;
     case EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
       {
-        Track * track = (Track *) ev->arg;
+        Track * track = (Track *) ev.arg_;
         if (!IS_TRACK_AND_NONNULL (track))
           {
             g_critical ("expected track argument");
             break;
           }
 
-        if (GTK_IS_WIDGET (track->widget))
+        if (GTK_IS_WIDGET (track->widget_))
           {
-            track_widget_update_icons (track->widget);
-            track_widget_update_size (track->widget);
+            track_widget_update_icons (track->widget_);
+            track_widget_update_size (track->widget_);
           }
       }
       break;
@@ -754,7 +740,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       tracklist_header_widget_refresh_track_count (MW_TRACKLIST_HEADER);
       break;
     case EventType::ET_TRACK_CHANGED:
-      on_track_changed ((Track *) ev->arg);
+      on_track_changed ((Track *) ev.arg_);
       break;
     case EventType::ET_TRACKS_ADDED:
       if (MW_MIXER)
@@ -764,21 +750,21 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       tracklist_header_widget_refresh_track_count (MW_TRACKLIST_HEADER);
       break;
     case EventType::ET_TRACK_COLOR_CHANGED:
-      on_track_color_changed ((Track *) ev->arg);
+      on_track_color_changed ((Track *) ev.arg_);
       break;
     case EventType::ET_TRACK_NAME_CHANGED:
-      on_track_name_changed ((Track *) ev->arg);
+      on_track_name_changed ((Track *) ev.arg_);
       break;
     case EventType::ET_REFRESH_ARRANGER:
       break;
     case EventType::ET_RULER_VIEWPORT_CHANGED:
       arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
-      ruler_widget_refresh (Z_RULER_WIDGET (ev->arg));
+      ruler_widget_refresh (Z_RULER_WIDGET (ev.arg_));
       break;
     case EventType::ET_TRACK_STATE_CHANGED:
-      for (auto track : TRACKLIST->tracks)
+      for (auto &track : TRACKLIST->tracks_)
         {
-          on_track_state_changed (track);
+          on_track_state_changed (track.get ());
         }
       monitor_section_widget_refresh (MW_MONITOR_SECTION);
       break;
@@ -789,7 +775,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_UNDO_REDO_ACTION_DONE:
       main_window_widget_refresh_undo_redo_buttons (MAIN_WINDOW);
-      main_window_widget_set_project_title (MAIN_WINDOW, PROJECT);
+      main_window_widget_set_project_title (MAIN_WINDOW, PROJECT.get ());
       break;
     case EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
       if (MW_MIDI_EDITOR_SPACE)
@@ -804,25 +790,25 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case EventType::ET_AUTOMATION_TRACK_ADDED:
     case EventType::ET_AUTOMATION_TRACK_REMOVED:
     case EventType::ET_AUTOMATION_TRACK_CHANGED:
-      on_automation_track_added ((AutomationTrack *) ev->arg);
+      on_automation_track_added ((AutomationTrack *) ev.arg_);
       break;
     case EventType::ET_PLUGINS_ADDED:
-      on_plugins_removed ((Track *) ev->arg);
+      on_plugins_removed ((Track *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_ADDED:
-      on_plugin_added ((Plugin *) ev->arg);
+      on_plugin_added ((Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_CRASHED:
-      on_plugin_crashed ((Plugin *) ev->arg);
+      on_plugin_crashed ((Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGINS_REMOVED:
-      on_plugins_removed ((Track *) ev->arg);
+      on_plugins_removed ((Track *) ev.arg_);
       break;
     case EventType::ET_MIXER_SELECTIONS_CHANGED:
       on_mixer_selections_changed ();
       break;
     case EventType::ET_CHANNEL_OUTPUT_CHANGED:
-      on_channel_output_changed ((Channel *) ev->arg);
+      on_channel_output_changed ((Channel *) ev.arg_);
       break;
     case EventType::ET_TRACKS_MOVED:
       if (MW_MIXER)
@@ -843,12 +829,12 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
 
       /* needs to be called later because tracks
        * need time to get allocated */
-      EVENTS_PUSH (EventType::ET_REFRESH_ARRANGER, NULL);
+      EVENTS_PUSH (EventType::ET_REFRESH_ARRANGER, nullptr);
       break;
     case EventType::ET_CHANNEL_SLOTS_CHANGED:
       {
-        Channel *       ch = (Channel *) ev->arg;
-        ChannelWidget * cw = ch ? ch->widget : NULL;
+        Channel *       ch = (Channel *) ev.arg_;
+        ChannelWidget * cw = ch ? ch->widget_ : NULL;
         if (cw)
           {
             channel_widget_update_midi_fx_and_inserts (cw);
@@ -859,7 +845,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       midi_editor_space_widget_refresh (MW_MIDI_EDITOR_SPACE);
       break;
     case EventType::ET_MODULATOR_ADDED:
-      on_modulator_added ((Plugin *) ev->arg);
+      on_modulator_added ((Plugin *) ev.arg_);
       break;
     case EventType::ET_PINNED_TRACKLIST_SIZE_CHANGED:
       /*gtk_widget_set_size_request (*/
@@ -880,12 +866,12 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       transport_controls_widget_refresh (MW_TRANSPORT_CONTROLS);
       break;
     case EventType::ET_ARRANGER_SELECTIONS_IN_TRANSIT:
-      on_arranger_selections_in_transit ((ArrangerSelections *) ev->arg);
+      on_arranger_selections_in_transit ((ArrangerSelections *) ev.arg_);
       break;
     case EventType::ET_CHORD_KEY_CHANGED:
-      for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
+      for (size_t j = 0; j < CHORD_EDITOR->chords_.size (); ++j)
         {
-          if (CHORD_EDITOR->chords[j] == (ChordDescriptor *) ev->arg)
+          if (CHORD_EDITOR->chords_[j] == *((ChordDescriptor *) ev.arg_))
             {
               chord_key_widget_refresh (MW_CHORD_EDITOR_SPACE->chord_keys[j]);
             }
@@ -913,13 +899,13 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_SELECTING_IN_ARRANGER:
       {
-        ArrangerWidget * arranger = Z_ARRANGER_WIDGET (ev->arg);
+        ArrangerWidget * arranger = Z_ARRANGER_WIDGET (ev.arg_);
         event_viewer_widget_refresh_for_arranger (arranger, true);
         timeline_toolbar_widget_refresh (MW_TIMELINE_TOOLBAR);
       }
       break;
     case EventType::ET_TRACKS_RESIZED:
-      g_warn_if_fail (ev->arg);
+      g_warn_if_fail (ev.arg_);
       break;
     case EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
       gtk_widget_set_visible (
@@ -934,13 +920,12 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       ruler_widget_refresh (EDITOR_RULER);
       gtk_widget_queue_draw (GTK_WIDGET (MW_DIGITAL_BPM));
 
-      /* these are only used in the UI so
-       * no need to update them during DSP */
-      quantize_options_update_quantize_points (QUANTIZE_OPTIONS_TIMELINE);
-      quantize_options_update_quantize_points (QUANTIZE_OPTIONS_EDITOR);
+      /* these are only used in the UI so no need to update them during DSP */
+      QUANTIZE_OPTIONS_TIMELINE->update_quantize_points ();
+      QUANTIZE_OPTIONS_EDITOR->update_quantize_points ();
       break;
     case EventType::ET_CHANNEL_FADER_VAL_CHANGED:
-      channel_widget_redraw_fader (((Channel *) ev->arg)->widget);
+      channel_widget_redraw_fader (((Channel *) ev.arg_)->widget_);
 #if 0
       inspector_track_widget_show_tracks (
         MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
@@ -958,26 +943,15 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_MAIN_WINDOW_LOADED:
       /* show all visible plugins */
-      for (auto track : TRACKLIST->tracks)
+      for (auto track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
         {
-          Channel * ch = track->channel;
-          if (!ch)
-            continue;
-
-          for (int k = 0; k < STRIP_SIZE * 2 + 1; k++)
+          auto                 &ch = track->channel_;
+          std::vector<Plugin *> plugins;
+          ch->get_plugins (plugins);
+          for (auto plugin : plugins)
             {
-              Plugin * pl = NULL;
-              if (k < STRIP_SIZE)
-                pl = ch->midi_fx[k];
-              else if (k == STRIP_SIZE)
-                pl = ch->instrument;
-              else
-                pl = ch->inserts[k - (STRIP_SIZE + 1)];
-
-              if (!pl)
-                continue;
-              if (pl->visible)
-                plugin_open_ui (pl);
+              if (plugin->visible_)
+                plugin->open_ui ();
             }
         }
       /* refresh modulator view */
@@ -987,7 +961,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         }
 
       /* show clip editor if clip selected */
-      if (MW_CLIP_EDITOR && CLIP_EDITOR->has_region)
+      if (MW_CLIP_EDITOR && CLIP_EDITOR->has_region_)
         {
           clip_editor_widget_on_region_changed (MW_CLIP_EDITOR);
         }
@@ -998,7 +972,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       main_notebook_widget_refresh (MW_MAIN_NOTEBOOK);
 
 #ifdef CHECK_UPDATES
-      zrythm_app_check_for_updates (zrythm_app);
+      zrythm_app_check_for_updates (zrythm_app.get ());
 #endif /* CHECK_UPDATES */
 
       /* show any pending messages */
@@ -1007,50 +981,50 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         while (
           (ui_msg = (ZrythmAppUiMessage *) g_async_queue_try_pop (
              zrythm_app->project_load_message_queue))
-          != NULL)
+          != nullptr)
           {
-            ui_show_message_literal (NULL, ui_msg->msg);
+            ui_show_message_literal (nullptr, ui_msg->msg);
             zrythm_app_ui_message_free (ui_msg);
           }
       }
 
-      if (PLUGIN_MANAGER->num_new_plugins > 0)
+      if (PLUGIN_MANAGER->num_new_plugins_ > 0)
         {
           ui_show_notification_idle_printf (
-            _ ("%d new plugins detected"), PLUGIN_MANAGER->num_new_plugins);
+            _ ("%d new plugins detected"), PLUGIN_MANAGER->num_new_plugins_);
         }
       break;
     case EventType::ET_SPLASH_CLOSED:
       break;
     case EventType::ET_PROJECT_SAVED:
-      main_window_widget_set_project_title (MAIN_WINDOW, (Project *) ev->arg);
+      main_window_widget_set_project_title (MAIN_WINDOW, (Project *) ev.arg_);
       break;
     case EventType::ET_PROJECT_LOADED:
-      main_window_widget_set_project_title (MAIN_WINDOW, (Project *) ev->arg);
+      main_window_widget_set_project_title (MAIN_WINDOW, (Project *) ev.arg_);
       main_window_widget_refresh_undo_redo_buttons (MAIN_WINDOW);
       ruler_widget_set_zoom_level (
         MW_RULER, ruler_widget_get_zoom_level (MW_RULER));
       ruler_widget_set_zoom_level (
         EDITOR_RULER, ruler_widget_get_zoom_level (EDITOR_RULER));
       gtk_paned_set_position (
-        MW_TIMELINE_PANEL->tracklist_timeline, PRJ_TIMELINE->tracks_width);
+        MW_TIMELINE_PANEL->tracklist_timeline, PRJ_TIMELINE->tracks_width_);
       break;
     case EventType::ET_AUTOMATION_TRACKLIST_AT_REMOVED:
       /* TODO */
       break;
     case EventType::ET_CHANNEL_SEND_CHANGED:
       {
-        ChannelSend *       send = (ChannelSend *) ev->arg;
-        ChannelSendWidget * widget = channel_send_find_widget (send);
+        auto send = (ChannelSend *) ev.arg_;
+        auto widget = send->find_widget ();
         if (widget)
           {
             gtk_widget_queue_draw (GTK_WIDGET (widget));
           }
-        Track *         tr = channel_send_get_track (send);
-        ChannelWidget * ch_w = tr->channel->widget;
+        auto tr = send->get_track ();
+        auto ch_w = tr->channel_->widget_;
         if (ch_w)
           {
-            gtk_widget_queue_draw (GTK_WIDGET (ch_w->sends->slots[send->slot]));
+            gtk_widget_queue_draw (GTK_WIDGET (ch_w->sends->slots[send->slot_]));
           }
       }
       break;
@@ -1065,7 +1039,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         {
           bot_bar_widget_refresh (MW_BOT_BAR);
           inspector_track_widget_show_tracks (
-            MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS, false);
+            MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS.get (), false);
         }
       break;
     case EventType::ET_MIDI_BINDINGS_CHANGED:
@@ -1079,7 +1053,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING:
       arranger_selections_change_redraw_everything (
-        ARRANGER_SELECTIONS (ev->arg));
+        static_cast<ArrangerSelections *> (ev.arg_));
       break;
     case EventType::ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
       break;
@@ -1094,12 +1068,12 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_SNAP_GRID_OPTIONS_CHANGED:
       {
-        SnapGrid * sg = (SnapGrid *) ev->arg;
-        if (sg == SNAP_GRID_TIMELINE)
+        auto sg = (SnapGrid *) ev.arg_;
+        if (sg == SNAP_GRID_TIMELINE.get ())
           {
             snap_grid_widget_refresh (MW_TIMELINE_TOOLBAR->snap_grid);
           }
-        else if (sg == SNAP_GRID_EDITOR)
+        else if (sg == SNAP_GRID_EDITOR.get ())
           {
             snap_grid_widget_refresh (MW_EDITOR_TOOLBAR->snap_grid);
           }
@@ -1107,29 +1081,28 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_TRANSPORT_RECORDING_ON_OFF_CHANGED:
       gtk_toggle_button_set_active (
-        MW_TRANSPORT_CONTROLS->trans_record_btn, TRANSPORT->recording);
+        MW_TRANSPORT_CONTROLS->trans_record_btn, TRANSPORT->recording_);
       break;
     case EventType::ET_TRACK_FREEZE_CHANGED:
-      arranger_selections_change_redraw_everything (
-        (ArrangerSelections *) TL_SELECTIONS);
+      arranger_selections_change_redraw_everything (TL_SELECTIONS.get ());
       break;
     case EventType::ET_LOG_WARNING_STATE_CHANGED:
       break;
     case EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED:
       break;
     case EventType::ET_TRACK_FADER_BUTTON_CHANGED:
-      on_track_state_changed ((Track *) ev->arg);
+      on_track_state_changed ((Track *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_PRESET_SAVED:
     case EventType::ET_PLUGIN_PRESET_LOADED:
       {
-        Plugin * pl = (Plugin *) ev->arg;
-        if (pl->window)
+        Plugin * pl = (Plugin *) ev.arg_;
+        if (pl->window_)
           {
-            plugin_gtk_set_window_title (pl, pl->window);
+            plugin_gtk_set_window_title (pl, pl->window_);
           }
 
-        switch (ev->type)
+        switch (ev.type_)
           {
           case EventType::ET_PLUGIN_PRESET_SAVED:
             ui_show_notification (_ ("Plugin preset saved."));
@@ -1167,7 +1140,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case EventType::ET_ARRANGER_SCROLLED:
       {
-        ArrangerWidget *     arranger = Z_ARRANGER_WIDGET (ev->arg);
+        ArrangerWidget *     arranger = Z_ARRANGER_WIDGET (ev.arg_);
         ArrangerSelections * sel = arranger_widget_get_selections (arranger);
         arranger_selections_change_redraw_everything (sel);
       }
@@ -1180,206 +1153,118 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
 #endif
       break;
     case EventType::ET_TRANSPORT_ROLL_REQUIRED:
-      transport_request_roll (TRANSPORT, true);
+      TRANSPORT->request_roll (true);
       break;
     case EventType::ET_TRANSPORT_PAUSE_REQUIRED:
-      transport_request_pause (TRANSPORT, true);
+      TRANSPORT->request_pause (true);
       break;
     case EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED:
-      transport_move_backward (TRANSPORT, true);
+      TRANSPORT->move_backward (true);
       break;
     case EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED:
-      transport_move_forward (TRANSPORT, true);
+      TRANSPORT->move_forward (true);
       break;
     case EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED:
-      transport_set_loop (TRANSPORT, !TRANSPORT->loop, true);
+      TRANSPORT->set_loop (!TRANSPORT->loop_, true);
       break;
     case EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED:
-      transport_set_recording (
-        TRANSPORT, !TRANSPORT->recording, true, F_PUBLISH_EVENTS);
+      TRANSPORT->set_recording (!TRANSPORT->recording_, true, true);
       break;
     default:
-      g_warning ("event %s not implemented yet", ENUM_NAME (ev->type));
+      z_warning ("event %s not implemented yet", ENUM_NAME (ev.type_));
       break;
     }
 }
 
-/**
- * GSourceFunc to be added using idle add.
- *
- * This will loop indefinintely.
- */
-static int
-process_events (void * data)
+bool
+EventManager::process_events ()
 {
-  EventManager * self = (EventManager *) data;
+  clean_duplicate_events_and_copy ();
 
-  ZEvent * ev;
-  clean_duplicates_and_copy (self, self->events_arr);
-
-  /*g_message ("starting processing");*/
-  for (guint i = 0; i < self->events_arr->len; i++)
+  int count = -1;
+  for (auto ev : events_arr_)
     {
-      if (i > 30)
+      ++count;
+      if (count > 30)
         {
-          g_message (
-            "more than 30 UI events processed "
-            "(%d)!",
-            i);
+          z_warning ("more than 30 UI events processed ({})!", count);
         }
 
-      ev = (ZEvent *) g_ptr_array_index (self->events_arr, i);
-
-      if (!ZRYTHM_HAVE_UI)
+      if (ZRYTHM_HAVE_UI)
         {
-          g_message ("%s: (%d) No UI, skipping", __func__, i);
-          goto return_to_pool;
+          process_event (*ev);
+        }
+      else
+        {
+          z_info ("(%d) No UI, skipping", count);
         }
 
-      /*g_message ("event type %d", ev->type);*/
-
-      event_manager_process_event (self, ev);
-
-return_to_pool:
-      object_pool_return (self->obj_pool, ev);
+      obj_pool_.release (ev);
     }
-  /*g_message ("processed %d events", i);*/
 
-  if (self->events_arr->len > 6)
-    g_message (
-      "More than 6 events processed. "
-      "Optimization needed.");
+  if (events_arr_.size () > 6)
+    z_debug ("More than 6 events processed. Optimization needed.");
 
   /*g_usleep (8000);*/
   /*project_validate (PROJECT);*/
 
-  return G_SOURCE_CONTINUE;
+  return SourceFuncContinue;
 }
 
-/**
- * Starts accepting events.
- */
 void
-event_manager_start_events (EventManager * self)
+EventManager::start_events ()
 {
-  g_message ("%s: starting...", __func__);
+  z_debug ("starting event manager events...");
 
-  if (self->process_source_id)
+  if (process_source_id_.connected ())
     {
-      g_message ("%s: already processing events", __func__);
+      z_debug ("already processing events");
       return;
     }
 
-  g_message ("%s: starting processing events...", __func__);
+  z_debug ("starting processing events...");
 
-  self->process_source_id = g_timeout_add (12, process_events, self);
+  process_source_id_ = Glib::signal_timeout ().connect (
+    sigc::mem_fun (*this, &EventManager::process_events), 12);
 
-  g_message ("%s: done...", __func__);
+  z_debug ("done");
 }
 
-/**
- * Creates the event queue and starts the event loop.
- *
- * Must be called from a GTK thread.
- */
-EventManager *
-event_manager_new (void)
+EventManager::EventManager ()
 {
-  EventManager * self = object_new (EventManager);
+  obj_pool_.reserve (EVENT_MANAGER_MAX_EVENTS);
+  mqueue_.reserve (EVENT_MANAGER_MAX_EVENTS);
 
-  self->obj_pool = object_pool_new (
-    (ObjectCreatorFunc) event_new, (ObjectFreeFunc) event_free,
-    EVENT_MANAGER_MAX_EVENTS);
-  self->mqueue = mpmc_queue_new ();
-  mpmc_queue_reserve (
-    self->mqueue, (size_t) EVENT_MANAGER_MAX_EVENTS * sizeof (ZEvent *));
-
-  self->events_arr = g_ptr_array_sized_new (200);
-
-  return self;
+  events_arr_.reserve (200);
 }
 
-/**
- * Stops events from getting fired.
- */
 void
-event_manager_stop_events (EventManager * self)
+EventManager::stop_events ()
 {
-  if (self->process_source_id)
+  if (process_source_id_.connected ())
     {
       /* remove the source func */
-      g_source_remove_and_zero (self->process_source_id);
+      process_source_id_.disconnect ();
     }
 
-  /* process any remaining events - clear the
-   * queue. */
-  process_events (self);
+  /* process any remaining events - clear the queue. */
+  process_events ();
 
-  /* clear the event queue just in case no events
-   * were processed */
+  /* clear the event queue just in case no events were processed */
   ZEvent * event;
-  while (event_queue_dequeue_event (self->mqueue, &event))
+  while (mqueue_.pop_front (event))
     {
-      object_pool_return (self->obj_pool, event);
+      obj_pool_.release (event);
     }
-  g_return_if_fail (
-    self->obj_pool->num_obj_available == self->obj_pool->max_objects);
 }
 
-/**
- * Processes the events now.
- *
- * Must only be called from the GTK thread.
- */
 void
-event_manager_process_now (EventManager * self)
+EventManager::process_now ()
 {
-  g_return_if_fail (self);
-
-  g_message ("processing events now...");
+  z_debug ("processing events now...");
 
   /* process events now */
-  process_events (self);
+  process_events ();
 
-  g_message ("done");
-}
-
-/**
- * Removes events where the arg matches the
- * given object.
- *
- * FIXME doesn't work - infinite loop.
- */
-void
-event_manager_remove_events_for_obj (EventManager * self, void * obj)
-{
-  MPMCQueue * q = self->mqueue;
-  ZEvent *    event;
-  while (event_queue_dequeue_event (q, &event))
-    {
-      if (event->arg == obj)
-        {
-          object_pool_return (self->obj_pool, event);
-        }
-      else
-        {
-          event_queue_push_back_event (q, event);
-        }
-    }
-}
-
-void
-event_manager_free (EventManager * self)
-{
-  g_message ("%s: Freeing...", __func__);
-
-  event_manager_stop_events (self);
-
-  object_free_w_func_and_null (object_pool_free, self->obj_pool);
-  object_free_w_func_and_null (mpmc_queue_free, self->mqueue);
-  object_free_w_func_and_null (g_ptr_array_unref, self->events_arr);
-
-  object_zero_and_free (self);
-
-  g_message ("%s: done", __func__);
+  z_debug ("done");
 }

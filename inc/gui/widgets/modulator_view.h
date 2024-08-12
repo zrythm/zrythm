@@ -1,18 +1,13 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Modulator view in the bottom panel.
- */
 
 #ifndef __GUI_WIDGETS_MODULATOR_VIEW_H__
 #define __GUI_WIDGETS_MODULATOR_VIEW_H__
 
-#include <adwaita.h>
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 #define MODULATOR_VIEW_WIDGET_TYPE (modulator_view_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -25,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
 TYPEDEF_STRUCT_UNDERSCORED (ModulatorWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ModulatorMacroWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
-TYPEDEF_STRUCT (Track);
+class ModulatorTrack;
 
 /**
  * @addtogroup widgets
@@ -45,7 +40,7 @@ TYPEDEF_STRUCT (Track);
  * The ModulatorViewWidget contains the
  * ModulatorWidgets for the selected Track.
  */
-typedef struct _ModulatorViewWidget
+using ModulatorViewWidget = struct _ModulatorViewWidget
 {
   GtkWidget              parent_instance;
   AdwStatusPage *        no_modulators_status_page;
@@ -53,16 +48,18 @@ typedef struct _ModulatorViewWidget
   GtkBox *               macros_box;
   ColorAreaWidget *      color;
   GtkLabel *             track_name_lbl;
-  Track *                track;
+  ModulatorTrack *       track;
   ModulatorWidget *      modulators[14];
   ModulatorMacroWidget * macros[8];
-} ModulatorViewWidget;
+};
 
 void
-modulator_view_widget_refresh (ModulatorViewWidget * self, Track * track);
+modulator_view_widget_refresh (
+  ModulatorViewWidget * self,
+  ModulatorTrack *      track);
 
 ModulatorViewWidget *
-modulator_view_widget_new (void);
+modulator_view_widget_new ();
 
 /**
  * @}

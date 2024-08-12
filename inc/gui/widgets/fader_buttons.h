@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Channel slot.
  */
@@ -22,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
   FADER_BUTTONS_WIDGET,
   GtkBox)
 
-typedef struct Track Track;
+class ChannelTrack;
 
 /**
  * @addtogroup widgets
@@ -30,7 +28,7 @@ typedef struct Track Track;
  * @{
  */
 
-typedef struct _FaderButtonsWidget
+using FaderButtonsWidget = struct _FaderButtonsWidget
 {
   GtkBox parent_instance;
 
@@ -53,12 +51,11 @@ typedef struct _FaderButtonsWidget
   gulong swap_phase_toggled_handler_id;
 
   /** Owner track. */
-  Track * track;
+  ChannelTrack * track;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-
-} FaderButtonsWidget;
+};
 
 void
 fader_buttons_widget_block_signal_handlers (FaderButtonsWidget * self);
@@ -67,10 +64,10 @@ void
 fader_buttons_widget_unblock_signal_handlers (FaderButtonsWidget * self);
 
 void
-fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track);
+fader_buttons_widget_refresh (FaderButtonsWidget * self, ChannelTrack * track);
 
 FaderButtonsWidget *
-fader_buttons_widget_new (Track * track);
+fader_buttons_widget_new (ChannelTrack * track);
 
 /**
  * @}

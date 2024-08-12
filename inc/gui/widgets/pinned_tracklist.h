@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * The ruler tracklist contains special tracks that
  * are shown above the normal tracklist (Chord
@@ -37,8 +37,8 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_PINNED_TRACKLIST MW_TIMELINE_PANEL->pinned_tracklist
 
-struct Tracklist;
-typedef struct _TrackWidget TrackWidget;
+class Tracklist;
+TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 
 /**
  * The PinnedTracklistWidget contains special tracks

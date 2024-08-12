@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Port selector dialog.
  */
@@ -57,7 +57,7 @@ typedef struct _PortSelectorDialogWidget
   /**
    * Plugin selected in the Plugin treeview.
    *
-   * If this is NULL, see track_ports_selected.
+   * If this is nullptr, see track_ports_selected.
    */
   Plugin * selected_plugin;
 

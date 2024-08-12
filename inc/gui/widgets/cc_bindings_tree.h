@@ -1,16 +1,19 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * CC Bindings tree.
  */
 
 #ifndef __GUI_WIDGETS_CC_BINDINGS_TREE_H__
 #define __GUI_WIDGETS_CC_BINDINGS_TREE_H__
+
+#include <memory>
+#include <vector>
+
+#include "gui/widgets/item_factory.h"
 
 #include "gtk_wrapper.h"
 
@@ -28,7 +31,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct _CcBindingsTreeWidget
+using CcBindingsTreeWidget = struct _CcBindingsTreeWidget
 {
   GtkBox parent_instance;
 
@@ -38,11 +41,11 @@ typedef struct _CcBindingsTreeWidget
   GtkColumnView * column_view;
 
   /** Array of ItemFactory pointers for each column. */
-  GPtrArray * item_factories;
+  ItemFactoryPtrVector item_factories;
 
   GtkBox *    toolbar;
   GtkButton * delete_btn;
-} CcBindingsTreeWidget;
+};
 
 /**
  * Refreshes the tree model.
@@ -54,7 +57,7 @@ cc_bindings_tree_widget_refresh (CcBindingsTreeWidget * self);
  * Instantiates a new CcBindingsTreeWidget.
  */
 CcBindingsTreeWidget *
-cc_bindings_tree_widget_new (void);
+cc_bindings_tree_widget_new ();
 
 /**
  * @}

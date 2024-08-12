@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019, 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * API for selections in the piano roll.
  */
@@ -10,9 +10,7 @@
 #ifndef __GUI_BACKEND_CHORD_SELECTIONS_H__
 #define __GUI_BACKEND_CHORD_SELECTIONS_H__
 
-#include "dsp/chord_object.h"
 #include "gui/backend/arranger_selections.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup gui_backend
@@ -20,40 +18,30 @@
  * @{
  */
 
-#define CHORD_SELECTIONS_SCHEMA_VERSION 1
-
-#define CHORD_SELECTIONS (PROJECT->chord_selections)
+#define CHORD_SELECTIONS (PROJECT->chord_selections_)
 
 /**
  * Selections to be used for the ChordArrangerWidget's
  * current selections, copying, undoing, etc.
  */
-typedef struct ChordSelections
+class ChordSelections final
+    : public ArrangerSelections,
+      public ICloneable<ChordSelections>,
+      public ISerializable<ChordSelections>
 {
-  /** Base struct. */
-  ArrangerSelections base;
+public:
+  void sort_by_indices (bool desc) override;
 
-  /** Selected ChordObject's.
-   *
-   * These are used for
-   * serialization/deserialization only. */
-  ChordObject ** chord_objects;
-  int            num_chord_objects;
-  size_t         chord_objects_size;
+  void init_after_cloning (const ChordSelections &other) override
+  {
+    ArrangerSelections::copy_members_from (other);
+  }
 
-} ChordSelections;
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-/**
- * Returns if the selections can be pasted.
- *
- * @param pos Position to paste to.
- * @param region Region to paste to.
- */
-int
-chord_selections_can_be_pasted (
-  ChordSelections * ts,
-  Position *        pos,
-  Region *          region);
+private:
+  bool can_be_pasted_at_impl (const Position pos, const int idx) const override;
+};
 
 /**
  * @}

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -33,6 +33,7 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 
+#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 
 /**
@@ -54,7 +55,7 @@ stretcher_new_rubberband (
   double       pitch_ratio,
   bool         realtime)
 {
-  Stretcher * self = object_new (Stretcher);
+  Stretcher * self = new Stretcher ();
 
   RubberBandOptions opts = 0;
 
@@ -163,19 +164,19 @@ stretcher_new_rubberband (
  *
  * @param in_samples_l The left samples.
  * @param in_samples_r The right channel samples. If
- *   this is NULL, the audio is assumed to be mono.
+ *   this is nullptr, the audio is assumed to be mono.
  * @param in_samples_size The number of input samples
  *   per channel.
  */
 ssize_t
 stretcher_stretch (
-  Stretcher * self,
-  float *     in_samples_l,
-  float *     in_samples_r,
-  size_t      in_samples_size,
-  float *     out_samples_l,
-  float *     out_samples_r,
-  size_t      out_samples_wanted)
+  Stretcher *   self,
+  const float * in_samples_l,
+  const float * in_samples_r,
+  size_t        in_samples_size,
+  float *       out_samples_l,
+  float *       out_samples_r,
+  size_t        out_samples_wanted)
 {
   g_message ("%s: in samples size: %zu", __func__, in_samples_size);
   g_return_val_if_fail (in_samples_l, -1);
@@ -262,10 +263,10 @@ stretcher_get_latency (Stretcher * self)
  */
 ssize_t
 stretcher_stretch_interleaved (
-  Stretcher * self,
-  float *     in_samples,
-  size_t      in_samples_size,
-  float **    _out_samples)
+  Stretcher *   self,
+  const float * in_samples,
+  size_t        in_samples_size,
+  float **      _out_samples)
 {
   g_return_val_if_fail (in_samples, -1);
 
@@ -273,15 +274,15 @@ stretcher_stretch_interleaved (
 
   /* create the de-interleaved array */
   unsigned int channels = self->channels;
-  float        in_buffers_l[in_samples_size];
-  float        in_buffers_r[in_samples_size];
+  std::vector<float> in_buffers_l (in_samples_size, 0.f);
+  std::vector<float> in_buffers_r (in_samples_size, 0.f);
   for (size_t i = 0; i < in_samples_size; i++)
     {
       in_buffers_l[i] = in_samples[i * channels];
       if (channels == 2)
         in_buffers_r[i] = in_samples[i * channels + 1];
     }
-  const float * in_buffers[2] = { in_buffers_l, in_buffers_r };
+  const float * in_buffers[2] = { in_buffers_l.data (), in_buffers_r.data () };
 
   /* tell rubberband how many input samples it will
    * receive */
@@ -307,13 +308,10 @@ stretcher_stretch_interleaved (
   g_warn_if_fail (samples_to_read == 0);
 
   /* create the out sample arrays */
-  float * out_samples[channels];
+  // float * out_samples[channels];
   size_t  out_samples_size = (size_t) math_round_double_to_signed_64 (
     rubberband_get_time_ratio (self->rubberband_state) * in_samples_size);
-  for (unsigned int i = 0; i < channels; i++)
-    {
-      out_samples[i] = object_new_n (out_samples_size, float);
-    }
+  juce::AudioSampleBuffer out_samples (channels, out_samples_size);
 
   /* process */
   size_t processed = 0;
@@ -346,11 +344,10 @@ stretcher_stretch_interleaved (
 
       size_t avail = (size_t) rubberband_available (self->rubberband_state);
 
-      /* retrieve the output data in temporary
-       * arrays */
-      float   tmp_out_l[avail];
-      float   tmp_out_r[avail];
-      float * tmp_out_arrays[2] = { tmp_out_l, tmp_out_r };
+      /* retrieve the output data in temporary arrays */
+      std::vector<float> tmp_out_l (avail);
+      std::vector<float> tmp_out_r (avail);
+      float * tmp_out_arrays[2] = { tmp_out_l.data (), tmp_out_r.data () };
       size_t  out_chunk_size =
         rubberband_retrieve (self->rubberband_state, tmp_out_arrays, avail);
 
@@ -359,8 +356,8 @@ stretcher_stretch_interleaved (
         {
           for (size_t j = 0; j < out_chunk_size; j++)
             {
-              g_return_val_if_fail (out_samples[i], -1);
-              out_samples[i][j + total_out_frames] = tmp_out_arrays[i][j];
+              out_samples.setSample (
+                i, j + total_out_frames, tmp_out_arrays[i][j]);
             }
         }
 
@@ -381,7 +378,8 @@ stretcher_stretch_interleaved (
     {
       for (size_t i = 0; i < total_out_frames; i++)
         {
-          (*_out_samples)[i * (size_t) channels + ch] = out_samples[ch][i];
+          (*_out_samples)[i * (size_t) channels + ch] =
+            out_samples.getSample (ch, i);
         }
     }
 
@@ -397,5 +395,5 @@ stretcher_free (Stretcher * self)
   if (self->rubberband_state)
     rubberband_delete (self->rubberband_state);
 
-  free (self);
+  delete self;
 }

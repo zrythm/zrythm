@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Track properties box.
  */
@@ -27,7 +27,7 @@ G_DECLARE_FINAL_TYPE (
   TwoColExpanderBoxWidget);
 
 typedef struct _EditableLabelWidget       EditableLabelWidget;
-typedef struct Track                      Track;
+class Track;
 typedef struct _RouteTargetSelectorWidget RouteTargetSelectorWidget;
 typedef struct _ChannelSlotWidget         ChannelSlotWidget;
 

@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_SNAP_GRID_H__
 #define __GUI_WIDGETS_SNAP_GRID_H__
 
-#include <adwaita.h>
-
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 #define SNAP_GRID_WIDGET_TYPE (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -17,7 +16,7 @@ G_DECLARE_FINAL_TYPE (
   GtkWidget)
 
 typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
-typedef struct SnapGrid               SnapGrid;
+class SnapGrid;
 
 typedef struct _SnapGridWidget
 {

@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  */
 
@@ -25,17 +23,17 @@ on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
 {
   g_message ("toggling");
   if (tb == self->select_mode)
-    P_TOOL = Tool::TOOL_SELECT;
+    P_TOOL = Tool::Select;
   else if (tb == self->edit_mode)
-    P_TOOL = Tool::TOOL_EDIT;
+    P_TOOL = Tool::Edit;
   else if (tb == self->cut_mode)
-    P_TOOL = Tool::TOOL_CUT;
+    P_TOOL = Tool::Cut;
   else if (tb == self->erase_mode)
-    P_TOOL = Tool::TOOL_ERASER;
+    P_TOOL = Tool::Eraser;
   else if (tb == self->ramp_mode)
-    P_TOOL = Tool::TOOL_RAMP;
+    P_TOOL = Tool::Ramp;
   else if (tb == self->audition_mode)
-    P_TOOL = Tool::TOOL_AUDITION;
+    P_TOOL = Tool::Audition;
 
   toolbox_widget_refresh (MW_TOOLBOX);
 }
@@ -71,22 +69,22 @@ toolbox_widget_refresh (ToolboxWidget * self)
   /* set toggled states */
   switch (P_TOOL)
     {
-    case Tool::TOOL_SELECT:
+    case Tool::Select:
       gtk_toggle_button_set_active (self->select_mode, true);
       break;
-    case Tool::TOOL_EDIT:
+    case Tool::Edit:
       gtk_toggle_button_set_active (self->edit_mode, 1);
       break;
-    case Tool::TOOL_CUT:
+    case Tool::Cut:
       gtk_toggle_button_set_active (self->cut_mode, 1);
       break;
-    case Tool::TOOL_ERASER:
+    case Tool::Eraser:
       gtk_toggle_button_set_active (self->erase_mode, 1);
       break;
-    case Tool::TOOL_RAMP:
+    case Tool::Ramp:
       gtk_toggle_button_set_active (self->ramp_mode, 1);
       break;
-    case Tool::TOOL_AUDITION:
+    case Tool::Audition:
       gtk_toggle_button_set_active (self->audition_mode, 1);
       break;
     }

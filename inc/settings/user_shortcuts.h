@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -13,7 +10,8 @@
 #ifndef __SETTINGS_USER_SHORTCUTS_H__
 #define __SETTINGS_USER_SHORTCUTS_H__
 
-#include "utils/yaml.h"
+#include <string>
+#include <vector>
 
 /**
  * @addtogroup settings
@@ -21,50 +19,45 @@
  * @{
  */
 
-#define USER_SHORTCUTS_SCHEMA_VERSION 2
-
-typedef struct UserShortcut
-{
-  char * action;
-  char * primary;
-  char * secondary;
-} UserShortcut;
-
 /**
- * User shortcuts read from yaml.
- */
-typedef struct UserShortcuts
-{
-  /** Valid descriptors. */
-  UserShortcut * shortcuts[900];
-  int            num_shortcuts;
-} UserShortcuts;
-
-void
-user_shortcut_free (UserShortcut * shortcut);
-
-/**
- * Reads the file and fills up the object.
- */
-UserShortcuts *
-user_shortcuts_new (void);
-
-/**
- * Returns a shortcut for the given action, or @p
- * default_shortcut if not found.
+ * Represents a user-defined keyboard shortcut.
  *
- * @param primary Whether to get the primary
- *   shortcut, otherwise the secondary.
+ * This struct contains the action name and the primary and secondary
+ * keyboard shortcuts associated with that action.
  */
-const char *
-user_shortcuts_get (
-  UserShortcuts * self,
-  bool            primary,
-  const char *    action,
-  const char *    default_shortcut);
+struct UserShortcut
+{
+  std::string action;
+  std::string primary;
+  std::string secondary;
+};
 
-void
-user_shortcuts_free (UserShortcuts * self);
+/**
+ * Manages user-defined keyboard shortcuts.
+ *
+ * This class provides methods to read and retrieve user-defined keyboard
+ * shortcuts for various actions in the application.
+ *
+ * @warning Unimplemented.
+ */
+class UserShortcuts
+{
+public:
+  /**
+   * Returns a shortcut for the given action, or @p
+   * default_shortcut if not found.
+   *
+   * @param primary Whether to get the primary
+   *   shortcut, otherwise the secondary.
+   */
+  const std::string &get (
+    bool               primary,
+    const std::string &action,
+    const std::string &default_shortcut) const;
+
+private:
+  std::vector<UserShortcut> shortcuts;
+};
 
 /**
  * @}

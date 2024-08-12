@@ -1,22 +1,17 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-/**
- * \file
- *
- * Supported file info.
- */
 
 #ifndef __AUDIO_SUPPORTED_FILE_H__
 #define __AUDIO_SUPPORTED_FILE_H__
 
 #include <memory>
+#include <string>
+
+#include "utils/types.h"
 
 #include <glib.h>
 
-typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
+TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 
 /**
  * @addtogroup utils
@@ -29,69 +24,76 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 /**
  * File type.
  */
-enum class ZFileType
+enum class FileType
 {
-  FILE_TYPE_MIDI,
-  FILE_TYPE_MP3,
-  FILE_TYPE_FLAC,
-  FILE_TYPE_OGG,
-  FILE_TYPE_WAV,
-  FILE_TYPE_DIR,
+  Midi,
+  Mp3,
+  Flac,
+  Ogg,
+  Wav,
+  Directory,
   /** Special entry ".." for the parent dir. */
-  FILE_TYPE_PARENT_DIR,
-  FILE_TYPE_OTHER,
-  NUM_FILE_TYPES,
+  ParentDirectory,
+  Other,
+  NumFileTypes,
 };
 
 /**
  * Descriptor of a file.
  */
-struct FileDescriptor
+class FileDescriptor
 {
+public:
   FileDescriptor () = default;
 
-  FileDescriptor (const char * abs_path);
+  FileDescriptor (const std::string &abs_path);
 
-  static std::unique_ptr<FileDescriptor>
-  new_from_uri (const char * uri, GError ** error);
+  /**
+   * @brief Creates a new FileDescriptor from a URI.
+   *
+   * @param uri
+   * @return std::unique_ptr<FileDescriptor>
+   * @throw ZrythmException on error.
+   */
+  static std::unique_ptr<FileDescriptor> new_from_uri (const std::string &uri);
 
   /**
    * Returns a human readable description of the given file type.
    *
    * Example: wav -> "Wave file".
    */
-  static char * get_type_description (ZFileType type);
+  static std::string get_type_description (FileType type);
 
   /**
    * Returns if the given type is supported.
    */
-  static bool is_type_supported (ZFileType type);
+  static bool is_type_supported (FileType type);
 
   /**
    * Returns if the FileDescriptor is an audio file.
    */
-  static bool is_type_audio (ZFileType type);
+  static bool is_type_audio (FileType type);
 
   /**
    * Returns if the FileDescriptor is a midi file.
    */
-  static bool is_type_midi (ZFileType type);
+  static bool is_type_midi (FileType type);
 
   /**
    * Returns the most common extension for the given filetype.
    */
-  static const char * get_type_ext (ZFileType type);
+  static const char * get_type_ext (FileType type);
 
   /**
    * Returns the file type of the given file path.
    */
-  static ZFileType get_type_from_path (const char * file);
+  static FileType get_type_from_path (const char * file);
 
-  bool is_audio () const { return is_type_audio (type); }
+  bool is_audio () const { return is_type_audio (type_); }
 
-  bool is_midi () const { return is_type_midi (type); }
+  bool is_midi () const { return is_type_midi (type_); }
 
-  bool is_supported () const { return is_type_supported (type); }
+  bool is_supported () const { return is_type_supported (type_); }
 
   /**
    * Returns whether the given file should auto-play (shorter than 1 min).
@@ -106,19 +108,20 @@ struct FileDescriptor
   /**
    * Returns a pango markup to be used in GTK labels.
    */
-  char * get_info_text_for_label () const;
+  std::string get_info_text_for_label () const;
 
+public:
   /** Absolute path. */
-  std::string abs_path;
+  std::string abs_path_;
 
   /** Type of file. */
-  ZFileType type = {};
+  FileType type_ = {};
 
   /** Human readable label. */
-  std::string label;
+  std::string label_;
 
   /** Hidden or not. */
-  bool hidden = false;
+  bool hidden_ = false;
 };
 
 /**

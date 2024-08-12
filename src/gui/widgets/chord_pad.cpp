@@ -25,25 +25,25 @@ G_DEFINE_TYPE (ChordPadWidget, chord_pad_widget, GTK_TYPE_WIDGET)
 static ChordDescriptor *
 get_chord_descriptor (ChordPadWidget * self)
 {
-  ChordDescriptor * descr = CHORD_EDITOR->chords[self->chord_idx];
-  g_return_val_if_fail (descr, NULL);
-
-  return descr;
+  return &CHORD_EDITOR->chords_[self->chord_idx];
 }
 
 static void
 send_note_offs (ChordPadWidget * self)
 {
-  Track * track = TRACKLIST_SELECTIONS->tracks[0];
+  auto track = dynamic_cast<ProcessableTrack *> (
+    TRACKLIST_SELECTIONS->get_highest_track ());
+  if (!track)
+    return;
 
-  if (track && track->in_signal_type == PortType::Event)
+  if (track->in_signal_type_ == PortType::Event)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note offs at time 1 */
-      Port * port = track->processor->midi_in;
-      midi_events_add_note_offs_from_chord_descr (
-        port->midi_events_, descr, 1, 1, F_QUEUED);
+      auto &port = track->processor_->midi_in_;
+      port->midi_events_.queued_events_.add_note_offs_from_chord_descr (
+        *descr, 1, 1);
     }
 }
 
@@ -59,16 +59,19 @@ on_chord_click_pressed (
 
   ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
-  Track * track = TRACKLIST_SELECTIONS->tracks[0];
+  auto track = dynamic_cast<ProcessableTrack *> (
+    TRACKLIST_SELECTIONS->get_highest_track ());
+  if (!track)
+    return;
 
-  if (track && track->in_signal_type == PortType::Event)
+  if (track->in_signal_type_ == PortType::Event)
     {
       ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note ons at time 0 */
-      Port * port = track->processor->midi_in;
-      midi_events_add_note_ons_from_chord_descr (
-        port->midi_events_, descr, 1, VELOCITY_DEFAULT, 0, F_QUEUED);
+      auto &port = track->processor_->midi_in_;
+      port->midi_events_.queued_events_.add_note_ons_from_chord_descr (
+        *descr, 1, VELOCITY_DEFAULT, 0);
     }
 }
 
@@ -192,24 +195,24 @@ on_invert_btn_clicked (GtkButton * btn, ChordPadWidget * self)
 {
   const ChordDescriptor * descr = get_chord_descriptor (self);
   g_return_if_fail (descr);
-  ChordDescriptor * descr_clone = chord_descriptor_clone (descr);
+  ChordDescriptor descr_clone = *descr;
 
   if (btn == self->invert_prev_btn)
     {
-      if (chord_descriptor_get_min_inversion (descr) != descr->inversion)
+      if (descr->get_min_inversion () != descr->inversion_)
         {
-          descr_clone->inversion--;
-          chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone, self->chord_idx, F_UNDOABLE);
+          descr_clone.inversion_--;
+          CHORD_EDITOR->apply_single_chord (
+            descr_clone, self->chord_idx, F_UNDOABLE);
         }
     }
   else if (btn == self->invert_next_btn)
     {
-      if (chord_descriptor_get_max_inversion (descr) != descr->inversion)
+      if (descr->get_max_inversion () != descr->inversion_)
         {
-          descr_clone->inversion++;
-          chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone, self->chord_idx, F_UNDOABLE);
+          descr_clone.inversion_++;
+          CHORD_EDITOR->apply_single_chord (
+            descr_clone, self->chord_idx, F_UNDOABLE);
         }
     }
 }
@@ -223,11 +226,10 @@ chord_pad_widget_refresh (ChordPadWidget * self, int idx)
   self->chord_idx = idx;
 
   ChordDescriptor * descr = get_chord_descriptor (self);
-  g_return_if_fail (descr);
+  z_return_if_fail (descr);
 
-  char * lbl = chord_descriptor_to_new_string (descr);
-  gtk_button_set_label (self->btn, lbl);
-  g_free (lbl);
+  auto lbl = descr->to_string ();
+  gtk_button_set_label (self->btn, lbl.c_str ());
 }
 
 /**
@@ -236,8 +238,8 @@ chord_pad_widget_refresh (ChordPadWidget * self, int idx)
 ChordPadWidget *
 chord_pad_widget_new (void)
 {
-  ChordPadWidget * self =
-    static_cast<ChordPadWidget *> (g_object_new (CHORD_PAD_WIDGET_TYPE, NULL));
+  ChordPadWidget * self = static_cast<ChordPadWidget *> (
+    g_object_new (CHORD_PAD_WIDGET_TYPE, nullptr));
 
   gtk_widget_set_visible (GTK_WIDGET (self), true);
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);

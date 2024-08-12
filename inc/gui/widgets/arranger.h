@@ -1,17 +1,12 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Arranger base widget.
- */
 
 #ifndef __GUI_WIDGETS_ARRANGER_H__
 #define __GUI_WIDGETS_ARRANGER_H__
 
 #include "dsp/position.h"
 #include "dsp/transport.h"
+#include "gui/backend/editor_settings.h"
 #include "gui/widgets/main_window.h"
 #include "utils/ui.h"
 
@@ -20,19 +15,9 @@
 #define ARRANGER_WIDGET_TYPE (arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ArrangerWidget, arranger_widget, Z, ARRANGER_WIDGET, GtkWidget)
 
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
-typedef struct MidiNote          MidiNote;
-typedef struct SnapGrid          SnapGrid;
-typedef struct AutomationPoint   AutomationPoint;
-
-typedef struct _GtkEventControllerMotion GtkEventControllerMotion;
-typedef struct ArrangerObject            ArrangerObject;
-typedef struct ArrangerSelections        ArrangerSelections;
-typedef struct EditorSettings            EditorSettings;
-typedef struct ObjectPool                ObjectPool;
-typedef struct _RulerWidget              RulerWidget;
-enum class ArrangerObjectType;
-enum class TransportDisplay;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerBgWidget);
+TYPEDEF_STRUCT_UNDERSCORED (GtkEventControllerMotion);
+TYPEDEF_STRUCT_UNDERSCORED (RulerWidget);
 
 /**
  * @addtogroup widgets
@@ -40,8 +25,7 @@ enum class TransportDisplay;
  * @{
  */
 
-#define ARRANGER_WIDGET_GET_ACTION(arr, actn) \
-  (arr->action == UI_OVERLAY_ACTION_##actn)
+#define ARRANGER_WIDGET_GET_ACTION(arr, actn) (arr->action == ##actn)
 
 enum class ArrangerCursor
 {
@@ -101,10 +85,15 @@ typedef enum ArrangerWidgetHoverType
 #endif
 
 /**
- * The arranger widget is a canvas that draws all
- * the arranger objects it contains.
+ * @brief A canvas widget for drawing and interacting with arranger objects.
+ *
+ * The ArrangerWidget is responsible for rendering and handling user
+ * interactions with various musical elements such as MIDI notes, audio regions,
+ * automation points, and more. It supports different types of arrangers
+ * (timeline, MIDI, automation, etc.) and provides a unified interface for
+ * working with these elements.
  */
-typedef struct _ArrangerWidget
+using ArrangerWidget = struct _ArrangerWidget
 {
   GtkWidget parent_instance;
 
@@ -148,13 +137,9 @@ typedef struct _ArrangerWidget
    */
   bool drag_update_started;
 
-  /** Whether an object exists, so we can use the
-   * earliest_obj_start_pos. */
-  bool earliest_obj_exists;
-
-  /** Start Position of the earliest object
-   * at the start of the drag. */
-  Position earliest_obj_start_pos;
+  /** Start Position of the earliest object at the start of the drag, or nullptr
+   * if an earliest object doesn't exist. */
+  std::unique_ptr<Position> earliest_obj_start_pos;
 
   /**
    * Fade in/out position at start.
@@ -164,48 +149,54 @@ typedef struct _ArrangerWidget
   Position fade_pos_at_start;
 
   /**
-   * The object that was clicked in this drag cycle, if any.
+   * A clone of the object that was clicked in this drag cycle, if any.
    *
    * This is the ArrangerObject that was clicked, even though there could be
    * more selected.
    *
    * This is also used when changing values via the event viewer.
-   *
-   * FIXME this sometimes stores project objects (that should
-   * not be free'd) and sometimes clones (eg,
-   * arranger_object_edit_begin/finish()). Only allow one type.
    */
-  ArrangerObject * start_object;
+  std::unique_ptr<ArrangerObject> start_object;
+
+  /**
+   * @brief Start object in the live project.
+   *
+   * This tracks the live (in the project) object that was first clicked.
+   */
+  std::weak_ptr<ArrangerObject> prj_start_object;
 
   /** Object currently hovered. */
-  ArrangerObject * hovered_object;
+  std::weak_ptr<ArrangerObject> hovered_object;
 
-  /** Whether the start object was selected before
-   * drag_begin. */
-  int start_object_was_selected;
+  /** Whether the start object was selected before drag_begin. */
+  bool start_object_was_selected;
 
   /**
    * A clone of the ArrangerSelections on drag begin.
    *
-   * When autofilling velocities, this is used to store the affected objects
-   * before editing.
-   *
-   * This must contain clones only.
+   * This is used to know the state of the selected objects at the start of an
+   * action. For example,  when autofilling velocities, this is used to store
+   * the affected objects before editing.
    */
-  ArrangerSelections * sel_at_start;
+  std::unique_ptr<ArrangerSelections> sel_at_start;
+
+#if 0
+  /**
+   * @brief A list that tracks the live (in the project) currently selected
+   * objects.
+   *
+   * TODO use weak_ptrs.
+   */
+  std::vector<ArrangerObject *> live_selections;
+#endif
 
   /**
    * Region on drag begin, if editing automation.
    */
-  Region * region_at_start;
+  std::unique_ptr<Region> region_at_start;
 
-  /** Selections to delete, used with the eraser
-   * tool. */
-  ArrangerSelections * sel_to_delete;
-
-  /** Start Position of the earliest object
-   * currently. */
-  // Position             earliest_obj_pos;
+  /** Selections to delete, used with the eraser tool. */
+  std::unique_ptr<ArrangerSelections> sel_to_delete;
 
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
@@ -247,7 +238,7 @@ typedef struct _ArrangerWidget
   int n_press;
 
   /** Associated SnapGrid. */
-  SnapGrid * snap_grid;
+  std::shared_ptr<SnapGrid> snap_grid;
 
   /** Whether shift button is held down. */
   int shift_held;
@@ -411,7 +402,7 @@ typedef struct _ArrangerWidget
   double new_hadj_val;
 
   /** Cached setting. */
-  TransportDisplay ruler_display;
+  Transport::Display ruler_display;
 
   /**
    * Layout for drawing velocity text.
@@ -419,7 +410,7 @@ typedef struct _ArrangerWidget
    * TODO move to Velocity if parallel
    * processing is needed - no need now.
    */
-  PangoLayout * vel_layout;
+  PangoLayoutUniquePtr vel_layout;
 
   /**
    * Layout for drawing automation point text.
@@ -427,36 +418,30 @@ typedef struct _ArrangerWidget
    * TODO move to AutomationPoint if parallel
    * processing is needed - no need now.
    */
-  PangoLayout * ap_layout;
+  PangoLayoutUniquePtr ap_layout;
 
   /**
    * Layout for drawing audio editor text.
    */
-  PangoLayout * audio_layout;
+  PangoLayoutUniquePtr audio_layout;
 
   /** Layout for debug text. */
-  PangoLayout * debug_layout;
+  PangoLayoutUniquePtr debug_layout;
 
   /**
    * Cached playhead x to draw.
    *
-   * This is used to avoid queuing drawing at x and
-   * then drawing after it (if playhead moved). The
-   * playhead will be drawn at the location it
-   * was when the draw was queued.
+   * This is used to avoid queuing drawing at x and then drawing after it (if
+   * playhead moved). The playhead will be drawn at the location it was when the
+   * draw was queued.
    */
   int queued_playhead_px;
 
-  /**
-   * Array of objects to draw.
-   *
-   * To be reused in snapshot().
-   */
-  GPtrArray * hit_objs_to_draw;
-
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} ArrangerWidget;
+
+  guint unlisten_notes_timeout_id;
+};
 
 const char *
 arranger_widget_get_type_str (ArrangerWidgetType type);
@@ -473,9 +458,9 @@ arranger_widget_can_scroll_vertically (ArrangerWidget * self);
  */
 void
 arranger_widget_setup (
-  ArrangerWidget *   self,
-  ArrangerWidgetType type,
-  SnapGrid *         snap_grid);
+  ArrangerWidget *                 self,
+  ArrangerWidgetType               type,
+  const std::shared_ptr<SnapGrid> &snap_grid);
 
 /**
  * Sets the cursor on the arranger and all of its
@@ -485,11 +470,13 @@ void
 arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor);
 
 /**
- * Wrapper of the UI functions based on the arranger
- * type.
+ * Wrapper of the UI functions based on the arranger type.
  */
 int
-arranger_widget_pos_to_px (ArrangerWidget * self, Position * pos, int use_padding);
+arranger_widget_pos_to_px (
+  ArrangerWidget * self,
+  const Position   pos,
+  bool             use_padding);
 
 /**
  * Gets the cursor based on the current hover
@@ -499,8 +486,8 @@ ArrangerCursor
 arranger_widget_get_cursor (ArrangerWidget * self);
 
 /**
- * Figures out which cursor should be used based
- * on the current state and then sets it.
+ * Figures out which cursor should be used based on the current state and then
+ * sets it.
  */
 void
 arranger_widget_refresh_cursor (ArrangerWidget * self);
@@ -509,18 +496,15 @@ arranger_widget_refresh_cursor (ArrangerWidget * self);
  * Get all objects currently present in the arranger.
  */
 void
-arranger_widget_get_all_objects (ArrangerWidget * self, GPtrArray * objs_arr);
+arranger_widget_get_all_objects (
+  ArrangerWidget *               self,
+  std::vector<ArrangerObject *> &objs_arr);
 
 /**
- * Wrapper for ui_px_to_pos depending on the
- * arranger type.
+ * Wrapper for ui_px_to_pos depending on the arranger type.
  */
-void
-arranger_widget_px_to_pos (
-  ArrangerWidget * self,
-  double           px,
-  Position *       pos,
-  bool             has_padding);
+Position
+arranger_widget_px_to_pos (ArrangerWidget * self, double px, bool has_padding);
 
 /**
  * Returns the current visible rectangle.
@@ -531,75 +515,77 @@ void
 arranger_widget_get_visible_rect (ArrangerWidget * self, GdkRectangle * rect);
 
 /**
- * Fills in the given array with the ArrangerObject's
- * of the given type that appear in the given
- * ranger.
+ * Fills in the given array with the ArrangerObject's of the given type that
+ * appear in the given ranger.
  *
- * @param type The type of arranger objects to find,
- *   or -1 to look for all objects.
+ * @param type The type of arranger objects to find, or -1 to look for all
+ * objects.
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
  */
 void
 arranger_widget_get_hit_objects_at_point (
-  ArrangerWidget *   self,
-  ArrangerObjectType type,
-  double             x,
-  double             y,
-  GPtrArray *        arr);
+  ArrangerWidget *               self,
+  ArrangerObject::Type           type,
+  double                         x,
+  double                         y,
+  std::vector<ArrangerObject *> &arr);
 
 /**
- * Fills in the given array with the ArrangerObject's
- * of the given type that appear in the given
- * ranger.
+ * Fills in the given array with the ArrangerObject's of the given type that
+ * appear in the given ranger.
  *
  * @param rect The rectangle to search in.
- * @param type The type of arranger objects to find,
- *   or -1 to look for all objects.
+ * @param type The type of arranger objects to find, or -1 to look for all
+ * objects.
  */
 void
 arranger_widget_get_hit_objects_in_rect (
-  ArrangerWidget *   self,
-  ArrangerObjectType type,
-  GdkRectangle *     rect,
-  GPtrArray *        arr);
+  ArrangerWidget *               self,
+  ArrangerObject::Type           type,
+  GdkRectangle *                 rect,
+  std::vector<ArrangerObject *> &arr);
 
 /**
- * Returns the ArrangerObject of the given type
- * at (x,y).
+ * Returns the ArrangerObject of the given type at (x,y).
  *
- * @param type The arranger object type, or -1 to
- *   search for all types.
+ * @param type The arranger object type, or -1 to search for all types.
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
  */
 ArrangerObject *
 arranger_widget_get_hit_arranger_object (
-  ArrangerWidget *   self,
-  ArrangerObjectType type,
-  const double       x,
-  const double       y);
+  ArrangerWidget *     self,
+  ArrangerObject::Type type,
+  const double         x,
+  const double         y);
 
 void
 arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events);
 
+template <typename T = ArrangerObject>
+requires std::derived_from<T, ArrangerObject> void
+arranger_widget_set_start_object (ArrangerWidget * self, std::shared_ptr<T> &obj)
+{
+  self->start_object = obj->clone_unique ();
+  self->prj_start_object = obj;
+}
+
 /**
- * Returns if the arranger is in a moving-related
- * operation or starting a moving-related operation.
+ * Returns if the arranger is in a moving-related operation or starting a
+ * moving-related operation.
  *
- * Useful to know if we need transient widgets or
- * not.
+ * Useful to know if we need transient widgets or not.
  */
 NONNULL bool
 arranger_widget_is_in_moving_operation (ArrangerWidget * self);
 
 /**
- * Returns the ArrangerSelections for this
- * ArrangerWidget.
+ * Returns the ArrangerSelections for this ArrangerWidget.
  */
-RETURNS_NONNULL
-ArrangerSelections *
-arranger_widget_get_selections (ArrangerWidget * self);
+template <typename T = ArrangerSelections>
+requires std::derived_from<T, ArrangerSelections> T *
+         arranger_widget_get_selections (ArrangerWidget * self) RETURNS_NONNULL;
 
 /**
  * Only redraws the playhead part.
@@ -611,8 +597,7 @@ SnapGrid *
 arranger_widget_get_snap_grid (ArrangerWidget * self);
 
 /**
- * Called from MainWindowWidget because some
- * events don't reach here.
+ * Called from MainWindowWidget because some events don't reach here.
  */
 gboolean
 arranger_widget_on_key_press (
@@ -631,10 +616,15 @@ arranger_widget_on_key_release (
   ArrangerWidget *        self);
 
 /**
+ * To be called on drag_end() to handle erase actions.
+ */
+void
+arranger_widget_handle_erase_action (ArrangerWidget * self);
+
+/**
  * Scroll until the given object is visible.
  *
- * @param horizontal 1 for horizontal, 2 for
- *   vertical.
+ * @param horizontal 1 for horizontal, 2 for vertical.
  * @param up Whether scrolling up or down.
  * @param padding Padding pixels.
  */
@@ -648,8 +638,8 @@ arranger_widget_scroll_until_obj (
   int              padding);
 
 /**
- * Toggles the mute status of the selection, based
- * on the mute status of the selected object.
+ * Toggles the mute status of the selection, based on the mute status of the
+ * selected object.
  *
  * This creates an undoable action and executes it.
  */
@@ -659,8 +649,8 @@ arranger_widget_toggle_selections_muted (
   ArrangerObject * clicked_object);
 
 /**
- * Returns the earliest possible position allowed
- * in this arranger (eg, 1.1.0.0 for timeline).
+ * Returns the earliest possible position allowed in this arranger
+ * (eg, 1.1.0.0 for timeline).
  */
 void
 arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos);
@@ -668,24 +658,23 @@ arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos
 /**
  * Sets the highlight rectangle.
  *
- * @param rect The rectangle with absolute positions, or NULL
- *   to unset/unhighlight.
+ * @param rect The rectangle with absolute positions, or NULL to
+ * unset/unhighlight.
  */
 void
 arranger_widget_set_highlight_rect (ArrangerWidget * self, GdkRectangle * rect);
 
 /**
- * Returns the EditorSettings corresponding to
- * the given arranger.
+ * Returns the EditorSettings corresponding to the given arranger.
  */
-EditorSettings *
+EditorSettingsPtrVariant
 arranger_widget_get_editor_settings (ArrangerWidget * self);
 
 /**
- * Get just the values, adjusted properly for special cases
- * (like pinned timeline).
+ * Get just the values, adjusted properly for special cases (like pinned
+ * timeline).
  */
-EditorSettings
+std::unique_ptr<EditorSettings>
 arranger_widget_get_editor_setting_values (ArrangerWidget * self);
 
 bool
@@ -706,35 +695,29 @@ NONNULL RulerWidget *
 arranger_widget_get_ruler (ArrangerWidget * self);
 
 /**
- * Returns whether any arranger is in the middle
- * of an action.
+ * Returns whether any arranger is in the middle of an action.
  */
 bool
 arranger_widget_any_doing_action (void);
 
 /**
- * Returns the playhead's x coordinate in absolute
- * coordinates.
+ * Returns the playhead's x coordinate in absolute coordinates.
  */
 int
 arranger_widget_get_playhead_px (ArrangerWidget * self);
 
-#define arranger_widget_print_action(self) \
-  g_debug ("action: %s", ui_overlay_strings[self->action])
+#define arranger_widget_print_action(self) z_debug ("action: {}", self->action)
 
 /**
- * Returns true if MIDI arranger and track mode
- * is enabled.
+ * Returns true if MIDI arranger and track mode is enabled.
  */
 bool
 arranger_widget_get_drum_mode_enabled (ArrangerWidget * self);
 
 /**
- * Called when an item needs to be created at the
- * given position.
+ * Called when an item needs to be created at the given position.
  *
- * @param autofilling Whether this is part of an
- *   autofill action.
+ * @param autofilling Whether this is part of an autofill action.
  */
 NONNULL void
 arranger_widget_create_item (
@@ -744,9 +727,8 @@ arranger_widget_create_item (
   bool             autofilling);
 
 /**
- * To be called after using arranger_widget_create_item() in
- * an action (ie, not from click + drag interaction with the
- * arranger) to finish the action.
+ * To be called after using arranger_widget_create_item() in an action (ie,
+ * not from click + drag interaction with the arranger) to finish the action.
  *
  * @return Whether an action was performed.
  */

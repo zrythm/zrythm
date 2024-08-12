@@ -1,20 +1,18 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Object to hold information for the chord track.
- *
- * Contains project scale, chord markers, etc.
- */
 
 #ifndef __AUDIO_CHORD_TRACK_H__
 #define __AUDIO_CHORD_TRACK_H__
 
-#include <cstdint>
+#include <memory>
+#include <ranges>
+#include <vector>
 
-#include "dsp/track.h"
+#include "dsp/channel_track.h"
+#include "dsp/chord_region.h"
+#include "dsp/recordable_track.h"
+#include "dsp/region_owner.h"
+#include "dsp/scale_object.h"
 
 /**
  * @addtogroup dsp
@@ -22,93 +20,145 @@
  * @{
  */
 
-#define P_CHORD_TRACK (TRACKLIST->chord_track)
-
-typedef struct ChordObject       ChordObject;
-typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct MusicalScale      MusicalScale;
-
-typedef struct Track ChordTrack;
+#define P_CHORD_TRACK (TRACKLIST->chord_track_)
 
 /**
- * Creates a new chord Track.
+ * The ChordTrack class is responsible for managing the chord and scale
+ * information in the project. It inherits from the RecordableTrack and
+ * ChannelTrack classes, which provide basic track functionality.
+ *
+ * The ChordTrack class provides methods for inserting, adding, and removing
+ * chord regions and scales from the track. It also provides methods for
+ * retrieving the current chord and scale at a given position in the timeline.
+ *
+ * The chord regions and scales are stored in sorted vectors, and the class
+ * provides methods for clearing all objects from the track, which is mainly
+ * used for testing.
  */
-ChordTrack *
-chord_track_new (int track_pos);
+class ChordTrack final
+    : public RecordableTrack,
+      public ChannelTrack,
+      public RegionOwnerImpl<ChordRegion>,
+      public ICloneable<ChordTrack>,
+      public ISerializable<ChordTrack>
+{
+public:
+  ChordTrack () = default;
+  ChordTrack (int track_pos);
 
-/**
- * Inits a chord track (e.g. when cloning).
- */
-void
-chord_track_init (Track * track);
+  void init_loaded () override;
 
-/**
- * Inserts a chord region to the Track at the given
- * index.
- */
-void
-chord_track_insert_chord_region (ChordTrack * track, Region * region, int idx);
+  bool is_in_active_project () const override
+  {
+    return Track::is_in_active_project ();
+  }
 
-/**
- * Inserts a scale to the track.
- */
-void
-chord_track_insert_scale (ChordTrack * track, ScaleObject * scale, int pos);
+  bool is_auditioner () const override { return Track::is_auditioner (); }
 
-/**
- * Adds a scale to the track.
- */
-void
-chord_track_add_scale (ChordTrack * track, ScaleObject * scale);
+  /**
+   * Inserts a scale to the track.
+   */
+  std::shared_ptr<ScaleObject>
+  insert_scale (std::shared_ptr<ScaleObject> scale, int index);
 
-/**
- * Removes a scale from the chord Track.
- */
-void
-chord_track_remove_scale (ChordTrack * self, ScaleObject * scale, bool free);
+  /**
+   * Adds a scale to the track.
+   */
+  std::shared_ptr<ScaleObject> add_scale (std::shared_ptr<ScaleObject> scale)
+  {
+    return insert_scale (std::move (scale), scales_.size ());
+  }
 
-/**
- * Removes a region from the chord track.
- */
-void
-chord_track_remove_region (ChordTrack * self, Region * region);
-
-bool
-chord_track_validate (Track * self);
+  /**
+   * Removes a scale from the chord Track.
+   */
+  void remove_scale (ScaleObject &scale);
 
 /**
  * Returns the current chord.
  */
-#define chord_track_get_chord_at_playhead(ct) \
-  chord_track_get_chord_at_pos (ct, PLAYHEAD)
+#define get_chord_at_playhead() get_chord_at_pos (PLAYHEAD)
 
-/**
- * Returns the ChordObject at the given Position
- * in the TimelineArranger.
- */
-ChordObject *
-chord_track_get_chord_at_pos (const Track * ct, const Position * pos);
+  /**
+   * Returns the ChordObject at the given Position
+   * in the TimelineArranger.
+   */
+  ChordObject * get_chord_at_pos (const Position pos) const;
 
 /**
  * Returns the current scale.
  */
-#define chord_track_get_scale_at_playhead(ct) \
-  chord_track_get_scale_at_pos (ct, PLAYHEAD)
+#define get_scale_at_playhead() get_scale_at_pos (PLAYHEAD)
 
-/**
- * Returns the ScaleObject at the given Position
- * in the TimelineArranger.
- */
-ScaleObject *
-chord_track_get_scale_at_pos (const Track * ct, const Position * pos);
+  /**
+   * Returns the ScaleObject at the given Position
+   * in the TimelineArranger.
+   */
+  ScaleObject * get_scale_at_pos (const Position pos) const;
 
-/**
- * Removes all objects from the chord track.
- *
- * Mainly used in testing.
- */
-void
-chord_track_clear (ChordTrack * self);
+  bool validate () const override;
+
+  void clear_objects () override
+  {
+    clear_regions ();
+    for (auto &scale : std::ranges::reverse_view (scales_))
+      {
+        scale->remove_from_project (false);
+      }
+    scale_snapshots_.clear ();
+  }
+
+  void get_regions_in_range (
+    std::vector<Region *> &regions,
+    const Position *       p1,
+    const Position *       p2) override
+  {
+    for (auto &region : regions_)
+      {
+        add_region_if_in_range (p1, p2, regions, region.get ());
+      }
+  }
+
+  void init_after_cloning (const ChordTrack &other) override
+  {
+    Track::copy_members_from (other);
+    AutomatableTrack::copy_members_from (other);
+    ProcessableTrack::copy_members_from (other);
+    RecordableTrack::copy_members_from (other);
+    ChannelTrack::copy_members_from (other);
+    RegionOwnerImpl::copy_members_from (other);
+    clone_unique_ptr_container (scales_, other.scales_);
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void set_playback_caches () override
+  {
+    region_snapshots_.clear ();
+    region_snapshots_.reserve (regions_.size ());
+    for (const auto &region : regions_)
+      {
+        region_snapshots_.push_back (region->clone_unique ());
+      }
+
+    scale_snapshots_.clear ();
+    scale_snapshots_.reserve (scales_.size ());
+    for (const auto &scale : scales_)
+      {
+        scale_snapshots_.push_back (scale->clone_unique ());
+      }
+  }
+
+public:
+  /**
+   * @note These must always be sorted by Position.
+   */
+  std::vector<std::shared_ptr<ScaleObject>> scales_;
+
+  /** Snapshots used during playback TODO unimplemented. */
+  std::vector<std::unique_ptr<ScaleObject>> scale_snapshots_;
+};
 
 /**
  * @}

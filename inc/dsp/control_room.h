@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * The control room backend.
  */
@@ -10,12 +10,11 @@
 #define __AUDIO_CONTROL_ROOM_H__
 
 #include "dsp/fader.h"
-#include "dsp/port.h"
-#include "utils/types.h"
+#include "utils/icloneable.h"
 
-typedef struct AudioEngine AudioEngine;
-typedef struct ExtPort     ExtPort;
-TYPEDEF_STRUCT (RtAudioDevice);
+class Fader;
+class AudioEngine;
+class ExtPort;
 
 /**
  * @addtogroup dsp
@@ -23,93 +22,85 @@ TYPEDEF_STRUCT (RtAudioDevice);
  * @{
  */
 
-#define CONTROL_ROOM_SCHEMA_VERSION 2
-
-#define CONTROL_ROOM (AUDIO_ENGINE->control_room)
-
-#define control_room_is_in_active_project(self) \
-  (self->audio_engine && engine_is_in_active_project (self->audio_engine))
+#define CONTROL_ROOM (AUDIO_ENGINE->control_room_)
 
 /**
- * The control room allows to specify how Listen will
- * work on each Channel and to set overall volume
- * after the Master Channel so you can change the
- * volume without touching the Master Fader.
+ * The control room allows to specify how Listen will work on each Channel and
+ * to set overall volume after the Master Channel so you can change the volume
+ * without touching the Master Fader.
  */
-typedef struct ControlRoom
+class ControlRoom final
+    : public ICloneable<ControlRoom>,
+      public ISerializable<ControlRoom>
 {
-  int schema_version;
+public:
+  ControlRoom () = default;
+  ControlRoom (AudioEngine * engine);
 
+  bool is_in_active_project () const;
+
+  /**
+   * Inits the control room from a project.
+   */
+  void init_loaded (AudioEngine * engine);
+
+  /**
+   * Sets dim_output to on/off and notifies interested parties.
+   */
+  void set_dim_output (bool dim_output) { dim_output_ = dim_output; }
+
+  void init_after_cloning (const ControlRoom &other) override
+  {
+    monitor_fader_ = other.monitor_fader_->clone_unique ();
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_common ();
+
+public:
   /**
    * The volume to set muted channels to when
    * soloing/muting.
    */
-  Fader * mute_fader;
+  std::unique_ptr<Fader> mute_fader_;
 
   /**
    * The volume to set listened channels to when
    * Listen is enabled on a Channel.
    */
-  Fader * listen_fader;
+  std::unique_ptr<Fader> listen_fader_;
 
   /**
    * The volume to set other channels to when Listen
    * is enabled on a Channel, or the monitor when
    * dim is enabled.
    */
-  Fader * dim_fader;
+  std::unique_ptr<Fader> dim_fader_;
 
   /** Dim the output volume. */
-  bool dim_output;
+  bool dim_output_ = false;
 
   /**
    * Monitor fader.
    *
    * The Master stereo out should connect to this.
    *
-   * @note This needs to be serialized because some
-   *   ports connect to it.
+   * @note This needs to be serialized because some ports connect to it.
    */
-  Fader * monitor_fader;
+  std::unique_ptr<Fader> monitor_fader_;
 
-  char * hw_out_l_id;
-  char * hw_out_r_id;
+  std::string hw_out_l_id_;
+  std::string hw_out_r_id_;
 
   /* caches */
-  ExtPort * hw_out_l;
-  ExtPort * hw_out_r;
+  ExtPort * hw_out_l_ = nullptr;
+  ExtPort * hw_out_r_ = nullptr;
 
   /** Pointer to owner audio engine, if any. */
-  AudioEngine * audio_engine;
-} ControlRoom;
-
-/**
- * Inits the control room from a project.
- */
-COLD NONNULL_ARGS (
-  1) void control_room_init_loaded (ControlRoom * self, AudioEngine * engine);
-
-/**
- * Creates a new control room.
- */
-COLD WARN_UNUSED_RESULT ControlRoom *
-control_room_new (AudioEngine * engine);
-
-/**
- * Sets dim_output to on/off and notifies interested
- * parties.
- */
-void
-control_room_set_dim_output (ControlRoom * self, int dim_output);
-
-/**
- * Used during serialization.
- */
-NONNULL ControlRoom *
-control_room_clone (const ControlRoom * src);
-
-void
-control_room_free (ControlRoom * self);
+  AudioEngine * audio_engine_ = nullptr;
+};
 
 /**
  * @}

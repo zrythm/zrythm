@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Backtrace utils.
  */
@@ -20,7 +20,7 @@
  */
 
 /**
- * Returns the backtrace with \ref max_lines
+ * Returns the backtrace with @ref max_lines
  * number of lines and a string prefix.
  *
  * @param exe_path Executable path for running
@@ -37,13 +37,13 @@ _backtrace_get (
   bool         write_to_file);
 
 #define backtrace_get(prefix, max_lines, write_to_file) \
-  _backtrace_get (NULL, prefix, max_lines, false, write_to_file)
+  _backtrace_get (nullptr, prefix, max_lines, false, write_to_file)
 
 #define backtrace_get_with_lines(prefix, max_lines, write_to_file) \
   _backtrace_get ( \
     (gZrythm && !gZrythm->exe_path_.empty ()) \
       ? gZrythm->exe_path_.c_str () \
-      : NULL, \
+      : nullptr, \
     prefix, max_lines, gZrythm && !gZrythm->exe_path_.empty () ? true : false, \
     write_to_file)
 

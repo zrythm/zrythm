@@ -1,12 +1,6 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-#include "dsp/channel.h"
-#include "dsp/chord_track.h"
-#include "dsp/region.h"
-#include "dsp/track.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_wrapper.h"
@@ -14,19 +8,15 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_note.h"
 #include "gui/widgets/piano_roll_keys.h"
-#include "gui/widgets/ruler.h"
 #include "gui/widgets/velocity_settings.h"
 #include "project.h"
 #include "utils/flags.h"
-#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -38,8 +28,7 @@ G_DEFINE_TYPE (MidiEditorSpaceWidget, midi_editor_space_widget, GTK_TYPE_WIDGET)
 static void
 on_midi_modifier_changed (GtkComboBox * widget, MidiEditorSpaceWidget * self)
 {
-  piano_roll_set_midi_modifier (
-    PIANO_ROLL,
+  PIANO_ROLL->set_midi_modifier (
     ENUM_INT_TO_VALUE (MidiModifier, gtk_combo_box_get_active (widget)));
 }
 
@@ -77,8 +66,7 @@ midi_editor_space_widget_scroll_to_middle (MidiEditorSpaceWidget * self)
       int adj_upper = (int) gtk_adjustment_get_upper (adj);
       if (adj_upper > 1)
         {
-          editor_settings_set_scroll_start_y (
-            &PIANO_ROLL->editor_settings, adj_upper / 2, F_VALIDATE);
+          PIANO_ROLL->set_scroll_start_y (adj_upper / 2, F_VALIDATE);
           self->scrolled_on_first_refresh = true;
           return G_SOURCE_REMOVE;
         }
@@ -95,7 +83,7 @@ midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
   /* setup combo box */
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (self->midi_modifier_chooser),
-    ENUM_VALUE_TO_INT (PIANO_ROLL->midi_modifier));
+    ENUM_VALUE_TO_INT (PIANO_ROLL->midi_modifier_));
 }
 
 void
@@ -130,9 +118,8 @@ on_piano_keys_scroll_hadj_changed (
   GtkAdjustment *         adj,
   MidiEditorSpaceWidget * self)
 {
-  editor_settings_set_scroll_start_y (
-    &PIANO_ROLL->editor_settings, (int) gtk_adjustment_get_value (adj),
-    F_VALIDATE);
+  PIANO_ROLL->set_scroll_start_y (
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
 }
 
 void
@@ -174,7 +161,7 @@ midi_editor_space_tick_cb (
 
   GtkAdjustment * vadj =
     gtk_scrolled_window_get_vadjustment (self->piano_roll_keys_scroll);
-  gtk_adjustment_set_value (vadj, PIANO_ROLL->editor_settings.scroll_start_y);
+  gtk_adjustment_set_value (vadj, PIANO_ROLL->scroll_start_y_);
 
   return G_SOURCE_CONTINUE;
 }
@@ -241,7 +228,7 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (scroll_controller));
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
+    GTK_WIDGET (self), midi_editor_space_tick_cb, self, nullptr);
 }
 
 static void

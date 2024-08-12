@@ -438,6 +438,17 @@ We are considering switching to a format that
 resembles the
 [GNU ChangeLog style](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs).
 
+## Comparison Operators and Inheritance
+
+We use `operator==` to compare objects. Since `operator==` doesn't work well with inheritance, please follow these guidelines:
+* Declare the operator outside the class declaration to ensure symmetry (if necessary, declare the operator as `friend` of the class)
+* Non-final (base) classes must only compare their own members (not members of inherited classes)
+* Final classes must compare their own members and (manually) invoke the `==` operator on all inherited classes in the hierarchy (the dev docs shows the hierarchy in visual form)
+
+The same guidelines apply to other comparison operators.
+
+Note that if a base class needs to be compared polymorphically (i.e., comparing instances of derived classes through base class pointers or references), the pointers will need to be casted first.
+
 # Troubleshooting
 
 *TODO: move this section to the dev docs.*

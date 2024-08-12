@@ -16,10 +16,6 @@
 #include "gui/widgets/modulator_view.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -55,24 +51,24 @@ on_notebook_switch_page (
 void
 bot_dock_edge_widget_update_event_viewer_stack_page (BotDockEdgeWidget * self)
 {
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
+  Region * r = CLIP_EDITOR->get_region ();
   if (r)
     {
-      switch (r->id.type)
+      switch (r->id_.type_)
         {
-        case RegionType::REGION_TYPE_MIDI:
+        case RegionType::Midi:
           gtk_stack_set_visible_child_name (self->event_viewer_stack, "midi");
           event_viewer_widget_refresh (self->event_viewer_midi, false);
           break;
-        case RegionType::REGION_TYPE_AUDIO:
+        case RegionType::Audio:
           gtk_stack_set_visible_child_name (self->event_viewer_stack, "audio");
           event_viewer_widget_refresh (self->event_viewer_audio, false);
           break;
-        case RegionType::REGION_TYPE_CHORD:
+        case RegionType::Chord:
           gtk_stack_set_visible_child_name (self->event_viewer_stack, "chord");
           event_viewer_widget_refresh (self->event_viewer_chord, false);
           break;
-        case RegionType::REGION_TYPE_AUTOMATION:
+        case RegionType::Automation:
           gtk_stack_set_visible_child_name (
             self->event_viewer_stack, "automation");
           event_viewer_widget_refresh (self->event_viewer_automation, false);
@@ -99,7 +95,7 @@ bot_dock_edge_widget_setup (BotDockEdgeWidget * self)
 
   /* set event viewer visibility */
   bool     visibility = false;
-  Region * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = CLIP_EDITOR->get_region ();
   if (g_settings_get_boolean (S_UI, "editor-event-viewer-visible") && region)
     {
       visibility = true;
@@ -140,7 +136,7 @@ bot_dock_edge_widget_show_clip_editor (
 
   bot_dock_edge_widget_update_event_viewer_stack_page (self);
 
-  if (navigate_to_region_start && CLIP_EDITOR->has_region)
+  if (navigate_to_region_start && CLIP_EDITOR->has_region_)
     {
       clip_editor_widget_navigate_to_region_start (MW_CLIP_EDITOR, true);
     }

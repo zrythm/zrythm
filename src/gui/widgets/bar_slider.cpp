@@ -64,8 +64,8 @@ get_real_val (BarSliderWidget * self, bool snapped)
 {
   if (self->type == BarSliderType::BAR_SLIDER_TYPE_PORT_MULTIPLIER)
     {
-      PortConnection * conn = (PortConnection *) self->object;
-      return conn->multiplier;
+      auto * conn = (PortConnection *) self->object;
+      return conn->multiplier_;
     }
   else
     {
@@ -88,12 +88,12 @@ set_real_val (BarSliderWidget * self, float real_val)
 {
   if (self->type == BarSliderType::BAR_SLIDER_TYPE_PORT_MULTIPLIER)
     {
-      PortConnection * connection = (PortConnection *) self->object;
-      connection->multiplier = real_val;
+      auto * connection = (PortConnection *) self->object;
+      connection->multiplier_ = real_val;
     }
   else
     {
-      (*self->setter) (self->object, real_val);
+      self->setter (self->object, real_val);
     }
 }
 
@@ -103,8 +103,10 @@ recreate_pango_layouts (BarSliderWidget * self)
   if (PANGO_IS_LAYOUT (self->layout))
     g_object_unref (self->layout);
 
-  self->layout = z_cairo_create_pango_layout_from_string (
-    (GtkWidget *) self, Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE, -1);
+  self->layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE, -1)
+      .release ();
 }
 
 /**
@@ -326,7 +328,7 @@ _bar_slider_widget_new (
   g_warn_if_fail (object);
 
   BarSliderWidget * self = static_cast<BarSliderWidget *> (
-    g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL));
+    g_object_new (BAR_SLIDER_WIDGET_TYPE, nullptr));
   self->type = type;
   self->getter = get_val;
   self->setter = set_val;

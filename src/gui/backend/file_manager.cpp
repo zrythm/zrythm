@@ -20,6 +20,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 
 #include "gui/backend/file_manager.h"
 #include "io/file_descriptor.h"
@@ -88,7 +89,7 @@ FileManager::FileManager ()
   GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
   GList *          drives = g_volume_monitor_get_connected_drives (vol_monitor);
   GList *          dl = drives;
-  while (dl != NULL)
+  while (dl != nullptr)
     {
       GList * dn = dl->next;
 
@@ -100,7 +101,7 @@ FileManager::FileManager ()
 
       GList * vols = g_drive_get_volumes (drive);
       GList * vl = vols;
-      while (vl != NULL)
+      while (vl != nullptr)
         {
           GList *   vn = vl->next;
           GVolume * vol = G_VOLUME (vl->data);
@@ -170,7 +171,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 {
   locations.clear ();
 
-  GDir * dir = g_dir_open (location.path_.c_str (), 0, NULL);
+  GDir * dir = g_dir_open (location.path_.c_str (), 0, nullptr);
   if (!dir)
     {
       g_warning ("Could not open dir %s", location.path_.c_str ());
@@ -179,14 +180,13 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 
   /* create special parent dir entry */
   {
-    char * parent_dir = io_path_get_parent_dir (location.path_.c_str ());
+    auto   parent_dir = fs::path (location.path_).parent_path ();
     auto   fd = FileDescriptor ();
-    fd.abs_path = parent_dir;
-    g_free (parent_dir);
-    fd.type = ZFileType::FILE_TYPE_PARENT_DIR;
-    fd.hidden = false;
-    fd.label = "..";
-    if (fd.abs_path.length () > 1)
+    fd.abs_path_ = parent_dir;
+    fd.type_ = FileType::ParentDirectory;
+    fd.hidden_ = false;
+    fd.label_ = "..";
+    if (fd.abs_path_.length () > 1)
       {
         files.push_back (fd);
       }
@@ -198,46 +198,43 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
       FileDescriptor fd = FileDescriptor ();
 
       /* set absolute path & label */
-      char * absolute_path = g_strdup_printf (
-        "%s%s%s", location.path_.length () == 1 ? "" : location.path_.c_str (),
-        G_DIR_SEPARATOR_S, file);
-      fd.abs_path = absolute_path;
-      fd.label = file;
+      auto absolute_path = fs::path (location.path_) / file;
+      fd.abs_path_ = absolute_path;
+      fd.label_ = file;
 
       GError *    err = NULL;
-      GFile *     gfile = g_file_new_for_path (absolute_path);
+      GFile *     gfile = g_file_new_for_path (absolute_path.c_str ());
       GFileInfo * info = g_file_query_info (
         gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN, G_FILE_QUERY_INFO_NONE,
-        NULL, &err);
+        nullptr, &err);
       if (err)
         {
-          g_warning ("failed to query file info for %s", absolute_path);
+          z_warning (
+            "failed to query file info for %s", absolute_path.string ());
         }
       else
         {
-          fd.hidden = g_file_info_get_is_hidden (info);
+          fd.hidden_ = g_file_info_get_is_hidden (info);
           g_object_unref (info);
         }
       g_object_unref (gfile);
 
       /* set type */
-      if (g_file_test (absolute_path, G_FILE_TEST_IS_DIR))
+      if (fs::is_directory (absolute_path))
         {
-          fd.type = ZFileType::FILE_TYPE_DIR;
+          fd.type_ = FileType::Directory;
         }
       else
         {
-          fd.type = FileDescriptor::get_type_from_path (file);
+          fd.type_ = FileDescriptor::get_type_from_path (file);
         }
 
       /* force hidden if starts with . */
       if (file[0] == '.')
-        fd.hidden = true;
+        fd.hidden_ = true;
 
       /* add to list */
       files.push_back (fd);
-
-      g_free (absolute_path);
     }
   g_dir_close (dir);
 
@@ -245,7 +242,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   std::sort (
     files.begin (), files.end (),
     [] (const FileDescriptor &a, const FileDescriptor &b) {
-      return a.label < b.label;
+      return a.label_ < b.label_;
     });
   g_message ("Total files: %zu", files.size ());
 }
@@ -271,7 +268,7 @@ FileManager::set_selection (
 {
   g_debug ("setting selection to %s", sel.path_.c_str ());
 
-  selection.reset (new FileBrowserLocation (sel));
+  selection = std::make_unique<FileBrowserLocation> (sel);
   if (_load_files)
     {
       load_files ();

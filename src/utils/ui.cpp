@@ -5,11 +5,8 @@
 
 #include "zrythm-config.h"
 
-#include <cmath>
-
 #include "dsp/engine.h"
 #include "dsp/engine_rtaudio.h"
-#include "dsp/engine_sdl.h"
 #include "dsp/pan.h"
 #include "dsp/port.h"
 #include "gui/widgets/bot_bar.h"
@@ -42,24 +39,21 @@
  */
 void
 ui_set_cursor_from_icon_name (
-  GtkWidget *  widget,
-  const char * name,
-  int          offset_x,
-  int          offset_y)
+  GtkWidget *        widget,
+  const std::string &name,
+  int                offset_x,
+  int                offset_y)
 {
   g_return_if_fail (offset_x >= 0 && offset_y >= 0);
 
   /* check the cache first */
-  for (int i = 0; i < UI_CACHES->num_cursors; i++)
+  for (auto &cursor : UI_CACHES->cursors_)
     {
-      g_return_if_fail (i < UI_MAX_CURSORS);
-
-      UiCursor * cursor = &UI_CACHES->cursors[i];
       if (
-        string_is_equal (name, cursor->name) && cursor->offset_x == offset_x
-        && cursor->offset_y == offset_y)
+        name == cursor.name_ && cursor.offset_x_ == offset_x
+        && cursor.offset_y_ == offset_y)
         {
-          gtk_widget_set_cursor (widget, cursor->cursor);
+          gtk_widget_set_cursor (widget, cursor.cursor_);
           return;
         }
     }
@@ -93,26 +87,23 @@ ui_set_cursor_from_icon_name (
   cairo_surface_write_to_png (
     surface, "/tmp/test.png");
 #endif
-  GdkTexture * texture = z_gdk_texture_new_from_icon_name (name, 24, 24, 1);
+  GdkTexture * texture =
+    z_gdk_texture_new_from_icon_name (name.c_str (), 24, 24, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
     {
-      g_warning ("no texture for %s", name);
+      z_warning ("no texture for %s", name);
       return;
     }
   int adjusted_offset_x = MIN (offset_x, gdk_texture_get_width (texture) - 1);
   int adjusted_offset_y = MIN (offset_y, gdk_texture_get_height (texture) - 1);
   GdkCursor * gdk_cursor = gdk_cursor_new_from_texture (
-    texture, adjusted_offset_x, adjusted_offset_y, NULL);
+    texture, adjusted_offset_x, adjusted_offset_y, nullptr);
   g_object_unref (texture);
 
   /* add the cursor to the caches */
-  UiCursor * cursor = &UI_CACHES->cursors[UI_CACHES->num_cursors++];
-  strcpy (cursor->name, name);
-  cursor->cursor = gdk_cursor;
-  cursor->offset_x = offset_x;
-  cursor->offset_y = offset_y;
+  UI_CACHES->cursors_.emplace_back (name, gdk_cursor, offset_x, offset_y);
 
-  gtk_widget_set_cursor (widget, cursor->cursor);
+  gtk_widget_set_cursor (widget, UI_CACHES->cursors_.back ().cursor_);
 }
 
 /**
@@ -121,7 +112,7 @@ ui_set_cursor_from_icon_name (
 void
 ui_set_cursor_from_name (GtkWidget * widget, const char * name)
 {
-  GdkCursor * cursor = gdk_cursor_new_from_name (name, NULL);
+  GdkCursor * cursor = gdk_cursor_new_from_name (name, nullptr);
   gtk_widget_set_cursor (widget, cursor);
 }
 
@@ -151,7 +142,7 @@ ui_show_message_full (
       free (buf);
       return NULL;
     }
-  g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, NULL);
+  g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, nullptr);
   buf = static_cast<char *> (
     g_realloc_n (buf, (size_t) (printed + 1), sizeof (char)));
 
@@ -164,7 +155,7 @@ ui_show_message_full (
     {
       AdwAlertDialog * dialog =
         ADW_ALERT_DIALOG (adw_alert_dialog_new (title, buf));
-      adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), NULL);
+      adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), nullptr);
       adw_alert_dialog_set_default_response (dialog, "ok");
       adw_alert_dialog_set_response_appearance (
         dialog, "ok", ADW_RESPONSE_SUGGESTED);
@@ -199,7 +190,7 @@ ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
       graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
-      g_return_val_if_fail (success, NULL);
+      g_return_val_if_fail (success, nullptr);
 
       /* if hit */
       int width = gtk_widget_get_width (GTK_WIDGET (child));
@@ -217,8 +208,8 @@ ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
   return NULL;
 }
 
-NONNULL static void
-px_to_pos (double px, Position * pos, bool use_padding, RulerWidget * ruler)
+static Position
+px_to_pos (double px, bool use_padding, RulerWidget * ruler)
 {
   if (use_padding)
     {
@@ -229,54 +220,34 @@ px_to_pos (double px, Position * pos, bool use_padding, RulerWidget * ruler)
         px = 0.0;
     }
 
-  pos->ticks = px / ruler->px_per_tick;
-  position_update_frames_from_ticks (pos, 0.0);
+  Position pos;
+  pos.ticks_ = px / ruler->px_per_tick;
+  pos.update_frames_from_ticks (0.0);
+  return pos;
 }
 
-/**
- * Converts from pixels to position.
- *
- * Only works with positive numbers. Negatives will
- * be clamped at 0. If a negative is needed, pass
- * the abs to this function and then change the
- * sign.
- *
- * @param has_padding Whether @ref px contains
- *   padding.
- */
-void
-ui_px_to_pos_timeline (double px, Position * pos, bool has_padding)
+Position
+ui_px_to_pos_timeline (double px, bool has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
-    return;
+    return Position ();
 
-  px_to_pos (px, pos, has_padding, Z_RULER_WIDGET (MW_RULER));
+  return px_to_pos (px, has_padding, Z_RULER_WIDGET (MW_RULER));
 }
 
-/**
- * Converts from pixels to position.
- *
- * Only works with positive numbers. Negatives will
- * be clamped at 0. If a negative is needed, pass
- * the abs to this function and then change the
- * sign.
- *
- * @param has_padding Whether @ref px contains
- *   padding.
- */
-void
-ui_px_to_pos_editor (double px, Position * pos, bool has_padding)
+Position
+ui_px_to_pos_editor (double px, bool has_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
-    return;
+    return {};
 
-  px_to_pos (px, pos, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
+  return px_to_pos (px, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 NONNULL static inline int
-pos_to_px (const Position * pos, int use_padding, RulerWidget * ruler)
+pos_to_px (const Position pos, int use_padding, RulerWidget * ruler)
 {
-  int px = (int) (pos->ticks * ruler->px_per_tick);
+  int px = (int) (pos.ticks_ * ruler->px_per_tick);
 
   if (use_padding)
     px += SPACE_BEFORE_START;
@@ -284,12 +255,8 @@ pos_to_px (const Position * pos, int use_padding, RulerWidget * ruler)
   return px;
 }
 
-/**
- * Converts position to px, optionally adding the
- * ruler padding.
- */
 int
-ui_pos_to_px_timeline (const Position * pos, int use_padding)
+ui_pos_to_px_timeline (const Position pos, int use_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
@@ -302,7 +269,7 @@ ui_pos_to_px_timeline (const Position * pos, int use_padding)
  * piano_roll ruler.
  */
 int
-ui_pos_to_px_editor (const Position * pos, bool use_padding)
+ui_pos_to_px_editor (const Position pos, bool use_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
@@ -327,7 +294,7 @@ px_to_frames (double px, bool has_padding, RulerWidget * ruler)
     }
 
   return (
-    signed_frame_t) (((double) AUDIO_ENGINE->frames_per_tick * px)
+    signed_frame_t) (((double) AUDIO_ENGINE->frames_per_tick_ * px)
                      / ruler->px_per_tick);
 }
 
@@ -350,7 +317,7 @@ ui_px_to_frames_editor (double px, bool has_padding)
 }
 
 /**
- * Returns if \ref rect is hit or not by the
+ * Returns if @ref rect is hit or not by the
  * given coordinate.
  *
  * @param check_x Check x-axis for match.
@@ -475,7 +442,7 @@ ui_show_notification (const char * msg)
     GTK_REVEALER (MAIN_WINDOW->revealer),
     1);
   g_timeout_add_seconds (
-    3, (GSourceFunc) hide_notification_async, NULL);
+    3, (GSourceFunc) hide_notification_async, nullptr);
 #endif
 }
 
@@ -492,23 +459,6 @@ ui_show_notification_idle_func (char * msg)
   g_free (msg);
 
   return G_SOURCE_REMOVE;
-}
-
-/**
- * Converts RGB to hex string.
- */
-void
-ui_rgb_to_hex (double red, double green, double blue, char * buf)
-{
-  sprintf (
-    buf, "#%hhx%hhx%hhx", (char) (red * 255.0), (char) (green * 255.0),
-    (char) (blue * 255.0));
-}
-
-void
-ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf)
-{
-  ui_rgb_to_hex (color->red, color->green, color->blue, buf);
 }
 
 #define CREATE_SIMPLE_MODEL_BOILERPLATE \
@@ -544,7 +494,7 @@ ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf)
 void
 ui_setup_language_combo_row (AdwComboRow * combo_row)
 {
-  GtkStringList * string_list = gtk_string_list_new (NULL);
+  GtkStringList * string_list = gtk_string_list_new (nullptr);
   const char **   lang_strings_w_codes =
     localization_get_language_strings_w_codes ();
   for (size_t i = 0; i < NUM_LL_LANGUAGES; i++)
@@ -567,7 +517,7 @@ on_audio_backend_selected_item_changed (
   GtkStringObject * selected_item =
     GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
   const char * str = gtk_string_object_get_string (selected_item);
-  AudioBackend backend = engine_audio_backend_from_string (str);
+  AudioBackend backend = AudioBackend_from_string (str);
   g_settings_set_enum (
     S_P_GENERAL_ENGINE, "audio-backend", ENUM_VALUE_TO_INT (backend));
 }
@@ -581,87 +531,78 @@ on_audio_backend_selected_item_changed (
 AdwComboRow *
 ui_gen_audio_backends_combo_row (bool with_signal)
 {
-  const gchar * labels[] = {
-    audio_backend_str[ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY)],
+  StringArray labels{
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_DUMMY),
 #ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_DUMMY_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_DUMMY_LIBSOUNDIO),
 #endif
 #ifdef HAVE_ALSA
   /* broken */
-  /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_ALSA],*/
+  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ALSA),*/
 #  ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_ALSA_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_LIBSOUNDIO),
 #  endif
 #  ifdef HAVE_RTAUDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO),
 #  endif
 #endif /* HAVE_ALSA */
 #ifdef HAVE_JACK
-    audio_backend_str[ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_JACK)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK),
 #  ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_JACK_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK_LIBSOUNDIO),
 #  endif
 #  ifdef HAVE_RTAUDIO
   /* unnecessary */
-  /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO],*/
+  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO),*/
 #  endif
 #endif /* HAVE_JACK */
 #ifdef HAVE_PULSEAUDIO
   /* use rtaudio version - this has known issues */
-  /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_PULSEAUDIO],*/
+  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_PULSEAUDIO),*/
 #  ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO),
 #  endif
 #  ifdef HAVE_RTAUDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO),
 #  endif
 #endif /* HAVE_PULSEAUDIO */
 #ifdef __APPLE__
 #  ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO),
 #  endif
 #  ifdef HAVE_RTAUDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO),
 #  endif
 #endif /* __APPLE__ */
 #ifdef HAVE_SDL
   /* has issues */
-  /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_SDL],*/
+  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_SDL),*/
 #endif
 #ifdef _WIN32
 #  ifdef HAVE_LIBSOUNDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_WASAPI_LIBSOUNDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_LIBSOUNDIO),
 #  endif
 #  ifdef HAVE_RTAUDIO
-    audio_backend_str[ENUM_VALUE_TO_INT (
-      AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO)],
+    AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO),
   /* doesn't work & licensing issues */
-  /*audio_backend_str[ENUM_VALUE_TO_INT(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO],*/
+  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO),*/
 #  endif
 #endif /* _WIN32 */
-    NULL,
+    nullptr,
   };
-  GtkStringList * string_list = gtk_string_list_new (labels);
+  auto            clabels = labels.getNullTerminated ();
+  GtkStringList * string_list = gtk_string_list_new (clabels);
+  g_strfreev (clabels);
   AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
-  for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
+  for (int i = 0; i < labels.size (); ++i)
     {
       if (
-        string_is_equal (
-          engine_audio_backend_to_string (
-            ENUM_INT_TO_VALUE (AudioBackend, selected)),
-          labels[i]))
+
+        AudioBackend_to_string (ENUM_INT_TO_VALUE (AudioBackend, selected))
+        == labels[i])
         {
           adw_combo_row_set_selected (combo_row, i);
           break;
@@ -672,7 +613,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
     {
       g_signal_connect (
         G_OBJECT (combo_row), "notify::selected-item",
-        G_CALLBACK (on_audio_backend_selected_item_changed), NULL);
+        G_CALLBACK (on_audio_backend_selected_item_changed), nullptr);
     }
 
   return combo_row;
@@ -688,7 +629,7 @@ on_midi_backend_selected_item_changed (
   GtkStringObject * selected_item =
     GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
   const char * str = gtk_string_object_get_string (selected_item);
-  MidiBackend  backend = engine_midi_backend_from_string (str);
+  MidiBackend  backend = MidiBackend_from_string (str);
   g_settings_set_enum (
     S_P_GENERAL_ENGINE, "midi-backend", ENUM_VALUE_TO_INT (backend));
 }
@@ -702,56 +643,54 @@ on_midi_backend_selected_item_changed (
 AdwComboRow *
 ui_gen_midi_backends_combo_row (bool with_signal)
 {
-  const gchar * labels[] = {
-    midi_backend_str[ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY)],
+  StringArray labels = {
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_DUMMY),
 #ifdef HAVE_ALSA
   /* broken */
-  /*midi_backend_str[MidiBackend::MIDI_BACKEND_ALSA],*/
+  /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_ALSA),*/
 #  ifdef HAVE_RTMIDI
-    midi_backend_str[ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_ALSA_RTMIDI)],
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_ALSA_RTMIDI),
 #  endif
 #endif
 #ifdef HAVE_JACK
-    midi_backend_str[ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_JACK)],
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_JACK),
 #  ifdef HAVE_RTMIDI
   /* unnecessary */
-  /*midi_backend_str[MidiBackend::MIDI_BACKEND_JACK_RTMIDI],*/
+  /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_JACK_RTMIDI),*/
 #  endif
 #endif
 #ifdef _WIN32
   /* has known issues - use rtmidi */
-  /*midi_backend_str[MidiBackend::MIDI_BACKEND_WINDOWS_MME],*/
+  /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_WINDOWS_MME),*/
 #  ifdef HAVE_RTMIDI
-    midi_backend_str[ENUM_VALUE_TO_INT (
-      MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI)],
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI),
 #  endif
 #endif /* _WIN32 */
 #ifdef __APPLE__
 #  ifdef HAVE_RTMIDI
-    midi_backend_str[ENUM_VALUE_TO_INT (
-      MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI)],
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI),
 #  endif
 #endif /* __APPLE__ */
 #ifdef _WIN32
 #  ifdef HAVE_RTMIDI_6
 #  endif
-    midi_backend_str[ENUM_VALUE_TO_INT (
-      MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI)],
+    MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI),
 #endif
-    NULL,
+    nullptr,
   };
-  GtkStringList * string_list = gtk_string_list_new (labels);
+  auto            clabels = labels.getNullTerminated ();
+  GtkStringList * string_list = gtk_string_list_new (clabels);
+  g_strfreev (clabels);
   AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
-  for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
+  for (int i = 0; i < labels.size (); i++)
     {
       if (
-        string_is_equal (
-          engine_midi_backend_to_string (
-            ENUM_INT_TO_VALUE (MidiBackend, selected)),
-          labels[i]))
+
+        MidiBackend_to_string (ENUM_INT_TO_VALUE (MidiBackend, selected))
+        == labels[i])
         {
           adw_combo_row_set_selected (combo_row, i);
           break;
@@ -762,7 +701,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
     {
       g_signal_connect (
         G_OBJECT (combo_row), "notify::selected-item",
-        G_CALLBACK (on_midi_backend_selected_item_changed), NULL);
+        G_CALLBACK (on_midi_backend_selected_item_changed), nullptr);
     }
 
   return combo_row;
@@ -854,7 +793,7 @@ ui_setup_audio_device_name_combo_row (
   AudioBackend backend =
     (AudioBackend) g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
 
-  GtkStringList * string_list = gtk_string_list_new (NULL);
+  GtkStringList * string_list = gtk_string_list_new (nullptr);
   char *          names[1024];
   int             num_names = 0;
   if (populate)
@@ -869,7 +808,7 @@ ui_setup_audio_device_name_combo_row (
         {
 #ifdef HAVE_RTAUDIO
           engine_rtaudio_get_device_names (
-            AUDIO_ENGINE, backend, 0, names, &num_names);
+            AUDIO_ENGINE.get (), backend, 0, names, &num_names);
 #endif
         }
       else
@@ -925,85 +864,6 @@ ui_setup_audio_device_name_combo_row (
     }
 }
 
-void
-ui_get_contrast_color (GdkRGBA * src, GdkRGBA * dest)
-{
-  /* if color is too bright use dark text,
-   * otherwise use bright text */
-  if (color_is_bright (src))
-    *dest = UI_COLORS->dark_text;
-  else
-    *dest = UI_COLORS->bright_text;
-}
-
-/**
- * Returns the color in-between two colors.
- *
- * @param transition How far to transition (0.5 for
- *   half).
- */
-void
-ui_get_mid_color (
-  GdkRGBA *       dest,
-  const GdkRGBA * c1,
-  const GdkRGBA * c2,
-  const float     transition)
-{
-  dest->red = c1->red * transition + c2->red * (1.f - transition);
-  dest->green = c1->green * transition + c2->green * (1.f - transition);
-  dest->blue = c1->blue * transition + c2->blue * (1.f - transition);
-  dest->alpha = c1->alpha * transition + c2->alpha * (1.f - transition);
-}
-
-/**
- * Gets the color the widget should be.
- *
- * @param color The original color.
- * @param is_selected Whether the widget is supposed
- *   to be selected or not.
- */
-void
-ui_get_arranger_object_color (
-  GdkRGBA *  color,
-  const bool is_hovered,
-  const bool is_selected,
-  const bool is_transient,
-  const bool is_muted)
-{
-  if (DEBUGGING)
-    color->alpha = 0.f;
-  else
-    color->alpha = is_transient ? 0.7f : 1.f;
-  if (is_muted)
-    {
-      color->red = 0.6f;
-      color->green = 0.6f;
-      color->blue = 0.6f;
-    }
-  if (is_selected)
-    {
-      color->red += is_muted ? 0.2f : 0.4f;
-      color->green += 0.2f;
-      color->blue += 0.2f;
-      color->alpha = DEBUGGING ? 0.5f : 1.f;
-    }
-  else if (is_hovered)
-    {
-      if (color_is_very_bright (color))
-        {
-          color->red -= 0.1f;
-          color->green -= 0.1f;
-          color->blue -= 0.1f;
-        }
-      else
-        {
-          color->red += 0.1f;
-          color->green += 0.1f;
-          color->blue += 0.1f;
-        }
-    }
-}
-
 /**
  * Gets a draggable value as a normalized value
  * between 0 and 1.
@@ -1025,12 +885,12 @@ ui_get_normalized_draggable_value (
 {
   switch (mode)
     {
-    case UI_DRAG_MODE_CURSOR:
-      return CLAMP (cur_px / size, 0.0, 1.0);
-    case UI_DRAG_MODE_RELATIVE:
-      return CLAMP (cur_val + (cur_px - last_px) / size, 0.0, 1.0);
-    case UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER:
-      return CLAMP (
+    case UiDragMode::UI_DRAG_MODE_CURSOR:
+      return std::clamp (cur_px / size, 0.0, 1.0);
+    case UiDragMode::UI_DRAG_MODE_RELATIVE:
+      return std::clamp (cur_val + (cur_px - last_px) / size, 0.0, 1.0);
+    case UiDragMode::UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER:
+      return std::clamp (
         cur_val + (multiplier * (cur_px - last_px)) / size, 0.0, 1.0);
     }
 
@@ -1040,14 +900,14 @@ ui_get_normalized_draggable_value (
 UiDetail
 ui_get_detail_level (void)
 {
-  if (!UI_CACHES->detail_level_set)
+  if (!UI_CACHES->detail_level_set_)
     {
-      UI_CACHES->detail_level =
+      UI_CACHES->detail_level_ =
         (UiDetail) g_settings_get_enum (S_P_UI_GENERAL, "graphic-detail");
-      UI_CACHES->detail_level_set = true;
+      UI_CACHES->detail_level_set_ = true;
     }
 
-  return UI_CACHES->detail_level;
+  return UI_CACHES->detail_level_;
 }
 
 /**
@@ -1074,14 +934,9 @@ ui_get_db_value_as_string (float val, char * buf)
     }
 }
 
-UiCaches *
-ui_caches_new (void)
+UiCaches::UiCaches ()
 {
-  UiCaches * self = object_new (UiCaches);
-
-  UiColors * colors = &self->colors;
-
-#define SET_COLOR(cname, caps) gdk_rgba_parse (&colors->cname, UI_COLOR_##caps)
+#define SET_COLOR(cname, caps) colors_.cname = Color (UI_COLOR_##caps)
 
   SET_COLOR (bright_green, BRIGHT_GREEN);
   SET_COLOR (darkish_green, DARKISH_GREEN);
@@ -1109,19 +964,4 @@ ui_caches_new (void)
   SET_COLOR (record_checked, RECORD_CHECKED);
 
 #undef SET_COLOR
-
-  return self;
-}
-
-void
-ui_caches_free (UiCaches * self)
-{
-  for (int i = 0; i < self->num_cursors; i++)
-    {
-      UiCursor * cursor = &self->cursors[i];
-
-      g_object_unref (cursor->cursor);
-    }
-
-  object_zero_and_free (self);
 }

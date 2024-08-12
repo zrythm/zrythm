@@ -13,12 +13,11 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
-#include "utils/log.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -46,7 +45,7 @@ validate_input (BugReportDialogWidget * self)
       AdwAlertDialog * dialog = ADW_ALERT_DIALOG (adw_alert_dialog_new (
         _ ("Need More Info"), _ ("Please enter more details")));
       adw_alert_dialog_add_responses (
-        ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+        ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), nullptr);
       adw_alert_dialog_set_default_response (ADW_ALERT_DIALOG (dialog), "ok");
       adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "ok");
 
@@ -76,11 +75,20 @@ get_report_template (BugReportDialogWidget * self, bool for_uri)
     "# Action stack\n```\n%s```\n\n"
     "# Log\n```\n%s```",
     steps_to_reproduce, ver_with_caps, self->system_nfo, self->backtrace,
-    self->fatal ? "Yes" : "No", self->undo_stack, self->log);
+    self->fatal ? "Yes" : "No", self->undo_stack.c_str (),
+
+    self->log.empty ()
+      ? ""
+      : std::accumulate (
+          std::next (self->log.begin ()), self->log.end (), self->log[0],
+          [] (std::string a, const std::string &b) {
+            return std::move (a) + " | " + b;
+          })
+          .c_str ());
 
   char * ret;
   if (for_uri)
-    ret = g_uri_escape_string (report_template, NULL, FALSE);
+    ret = g_uri_escape_string (report_template, nullptr, FALSE);
   else
     ret = g_markup_escape_text (report_template, -1);
 
@@ -95,9 +103,9 @@ get_json_string (BugReportDialogWidget * self)
 {
   g_debug ("%s: generating json...", __func__);
 
-  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
+  yyjson_mut_doc * doc = yyjson_mut_doc_new (nullptr);
   yyjson_mut_val * root = yyjson_mut_obj (doc);
-  g_return_val_if_fail (root, NULL);
+  g_return_val_if_fail (root, nullptr);
   yyjson_mut_doc_set_root (doc, root);
 
   char * steps_to_reproduce = z_gtk_text_buffer_get_full_text (
@@ -108,7 +116,8 @@ get_json_string (BugReportDialogWidget * self)
 
   yyjson_mut_obj_add_strcpy (doc, root, "extra_info", self->system_nfo);
 
-  yyjson_mut_obj_add_strcpy (doc, root, "action_stack", self->undo_stack_long);
+  yyjson_mut_obj_add_strcpy (
+    doc, root, "action_stack", self->undo_stack_long.c_str ());
 
   yyjson_mut_obj_add_strcpy (doc, root, "backtrace", self->backtrace);
 
@@ -118,7 +127,7 @@ get_json_string (BugReportDialogWidget * self)
   Zrythm::get_version_with_capabilities (ver_with_caps, false);
   yyjson_mut_obj_add_strcpy (doc, root, "version", ver_with_caps);
 
-  char * str = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, NULL);
+  char * str = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, nullptr);
 
   yyjson_mut_doc_free (doc);
 
@@ -158,7 +167,7 @@ send_data (AutomaticReportData * data)
     /* screenshot */
     "screenshot", self->screenshot_path, "image/jpeg",
     /* log */
-    "log_file", self->log_file_path, "application/zstd", NULL);
+    "log_file", self->log_file_path, "application/zstd", nullptr);
   if (ret != 0)
     {
       data->progress_nfo->mark_completed (
@@ -240,7 +249,7 @@ on_send_automatically_response (
     generic_progress_dialog_widget_new ();
   generic_progress_dialog_widget_setup (
     progress_dialog, _ ("Sending..."), data->progress_nfo,
-    _ ("Sending data..."), true, NULL, NULL, false);
+    _ ("Sending data..."), true, nullptr, nullptr, false);
 
   /* start sending in a new thread */
   data->thread =
@@ -248,7 +257,7 @@ on_send_automatically_response (
 
   /* run dialog */
   adw_alert_dialog_choose (
-    ADW_ALERT_DIALOG (progress_dialog), GTK_WIDGET (self), NULL,
+    ADW_ALERT_DIALOG (progress_dialog), GTK_WIDGET (self), nullptr,
     (GAsyncReadyCallback) send_data_ready_cb, data);
 }
 
@@ -260,9 +269,10 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
 
   /* create new dialog */
   AdwAlertDialog * dialog =
-    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send Automatically"), NULL));
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send Automatically"), nullptr));
   adw_alert_dialog_add_responses (
-    ADW_ALERT_DIALOG (dialog), "cancel", _ ("_Cancel"), "ok", _ ("_OK"), NULL);
+    ADW_ALERT_DIALOG (dialog), "cancel", _ ("_Cancel"), "ok", _ ("_OK"),
+    nullptr);
   adw_alert_dialog_set_response_appearance (
     dialog, "ok", ADW_RESPONSE_SUGGESTED);
   adw_alert_dialog_set_default_response (dialog, "ok");
@@ -328,6 +338,8 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   gtk_grid_attach (grid, log_file_heading, 0, 3, 1, 1);
   self->log_file_tmpdir = NULL;
   self->log_file_path = NULL;
+/* TODO: log */
+#if 0
   if (LOG && LOG->log_filepath)
     {
       /* create a zstd-compressed log file */
@@ -343,7 +355,8 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
           g_error_free (err);
         }
     }
-  GtkWidget * log_file_path_lbl = gtk_label_new (NULL);
+#endif
+  GtkWidget * log_file_path_lbl = gtk_label_new (nullptr);
   if (self->log_file_path)
     {
       char * str = g_strdup_printf (
@@ -397,10 +410,10 @@ on_gitlab_response (BugReportDialogWidget * self)
 
   /* create new dialog */
   AdwAlertDialog * dialog =
-    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send via GitLab"), NULL));
+    ADW_ALERT_DIALOG (adw_alert_dialog_new (_ ("Send via GitLab"), nullptr));
 
   adw_alert_dialog_add_responses (
-    ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+    ADW_ALERT_DIALOG (dialog), "ok", _ ("_OK"), nullptr);
   adw_alert_dialog_set_response_appearance (
     ADW_ALERT_DIALOG (dialog), "ok", ADW_RESPONSE_SUGGESTED);
   adw_alert_dialog_set_default_response (ADW_ALERT_DIALOG (dialog), "ok");
@@ -414,7 +427,7 @@ on_gitlab_response (BugReportDialogWidget * self)
 
   /* create new label for template */
   char *     report_template = get_report_template (self, false);
-  GtkLabel * label = GTK_LABEL (gtk_label_new (NULL));
+  GtkLabel * label = GTK_LABEL (gtk_label_new (nullptr));
   gtk_label_set_markup (label, report_template);
   g_free (report_template);
   gtk_label_set_selectable (label, true);
@@ -498,7 +511,7 @@ bug_report_dialog_new (
   BugReportDialogWidget * self = static_cast<
     BugReportDialogWidget *> (g_object_new (
     BUG_REPORT_DIALOG_WIDGET_TYPE, "heading",
-    fatal ? _ ("Fatal Error") : _ ("Error"), NULL));
+    fatal ? _ ("Fatal Error") : _ ("Error"), nullptr));
 
   self->screenshot_tmpdir = NULL;
   self->screenshot_path = NULL;
@@ -506,11 +519,11 @@ bug_report_dialog_new (
     {
       const char * option_keys[] = {
         "quality",
-        NULL,
+        nullptr,
       };
       const char * option_vals[] = {
         "30",
-        NULL,
+        nullptr,
       };
       z_gtk_generate_screenshot_image (
         GTK_WIDGET (parent), "jpeg", (char **) option_keys,
@@ -524,22 +537,32 @@ bug_report_dialog_new (
     msg_prefix);
   gtk_label_set_markup (self->top_lbl, markup);
 
-  self->log = log_get_last_n_lines (LOG, 60);
-  self->log_long = log_get_last_n_lines (LOG, 160);
+  self->log = Logger::getInstance ()->get_last_log_entries (60, true);
+  self->log_long = Logger::getInstance ()->get_last_log_entries (160, true);
+  static constexpr auto uninitialized_str = "<undo stack uninitialized>\n";
   self->undo_stack =
-    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack
-      ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 12)
-      : g_strdup ("<undo stack uninitialized>\n");
+    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack_
+      ? UNDO_MANAGER->undo_stack_->get_as_string (12)
+      : uninitialized_str;
   self->undo_stack_long =
-    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack
-      ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 32)
-      : g_strdup ("<undo stack uninitialized>\n");
+    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack_
+      ? UNDO_MANAGER->undo_stack_->get_as_string (32)
+      : uninitialized_str;
   self->backtrace = g_strdup (backtrace);
   self->system_nfo = Zrythm::get_system_info ();
   self->fatal = fatal;
 
   gtk_label_set_text (self->backtrace_lbl, self->backtrace);
-  gtk_label_set_text (self->log_lbl, self->log);
+  gtk_label_set_text (
+    self->log_lbl,
+    self->log.empty ()
+      ? ""
+      : std::accumulate (
+          std::next (self->log.begin ()), self->log.end (), self->log[0],
+          [] (std::string a, const std::string &b) {
+            return std::move (a) + " | " + b;
+          })
+          .c_str ());
   gtk_label_set_text (self->system_info_lbl, self->system_nfo);
 
   return self;
@@ -548,10 +571,11 @@ bug_report_dialog_new (
 static void
 dispose (BugReportDialogWidget * self)
 {
-  g_free_and_null (self->log);
-  g_free_and_null (self->log_long);
-  g_free_and_null (self->undo_stack);
-  g_free_and_null (self->undo_stack_long);
+  std::destroy_at (&self->log);
+  std::destroy_at (&self->log_long);
+  std::destroy_at (&self->undo_stack);
+  std::destroy_at (&self->undo_stack_long);
+
   g_free_and_null (self->backtrace);
   g_free_and_null (self->system_nfo);
 
@@ -586,5 +610,10 @@ bug_report_dialog_widget_class_init (BugReportDialogWidgetClass * _klass)
 static void
 bug_report_dialog_widget_init (BugReportDialogWidget * self)
 {
+  std::construct_at (&self->log);
+  std::construct_at (&self->log_long);
+  std::construct_at (&self->undo_stack);
+  std::construct_at (&self->undo_stack_long);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }

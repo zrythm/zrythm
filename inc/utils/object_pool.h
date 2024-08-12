@@ -1,75 +1,79 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Thread-safe object pool implementation.
- */
 
 #ifndef __UTILS_OBJECT_POOL_H__
 #define __UTILS_OBJECT_POOL_H__
 
-#include "utils/types.h"
+#include <memory>
+#include <vector>
 
-#include "zix/sem.h"
-
-/**
- * Function to call to create the objects in the
- * pool.
- */
-typedef void * (*ObjectCreatorFunc) (void);
-
-typedef struct ObjectPool
-{
-  int max_objects;
-
-  /** Available objects. */
-  void ** obj_available;
-  int     num_obj_available;
-
-  /** Object free func. */
-  ObjectFreeFunc free_func;
-
-  /** Semaphore for atomic operations. */
-  ZixSem access_sem;
-} ObjectPool;
+#include "utils/mpmc_queue.h"
 
 /**
- * Creates a new object pool.
- */
-ObjectPool *
-object_pool_new (
-  ObjectCreatorFunc create_func,
-  ObjectFreeFunc    free_func,
-  int               max_objects);
-
-/**
- * Returns an available object.
- */
-void *
-object_pool_get (ObjectPool * self);
-
-/**
- * Returns the number of available objects.
+ * @brief Thread-safe, realtime-safe object pool.
  *
- * @note This is not accurate (since the number may
- *   change after it's called) and is used only
- *   for debugging purposes.
+ * @tparam T The type of objects to be pooled. Must be default-constructible.
  */
-int
-object_pool_get_num_available (ObjectPool * self);
+template <typename T> class ObjectPool
+{
+public:
+  static_assert (
+    std::is_default_constructible<T>::value,
+    "T must be default-constructible");
 
-/**
- * Puts an object back in the pool.
- */
-void
-object_pool_return (ObjectPool * self, void * object);
+  ObjectPool (size_t initial_capacity = 64)
+      : capacity_ (initial_capacity), size_ (0)
+  {
+    expand ();
+  }
 
-/**
- * Frees the pool and all its objects.
- */
-void
-object_pool_free (ObjectPool * self);
+  T * acquire ()
+  {
+    T * object;
+    if (available_.pop_front (object))
+      {
+        return object;
+      }
+
+    if (size_ == capacity_)
+      {
+        expand ();
+      }
+
+    return acquire ();
+  }
+
+  void release (T * object) { available_.push_back (object); }
+
+  void reserve (size_t size)
+  {
+    while (size_ < size)
+      {
+        expand ();
+      }
+  }
+
+private:
+  void expand ()
+  {
+    size_t old_capacity = capacity_;
+    capacity_ *= 2;
+
+    buffer_.reserve (capacity_);
+
+    for (size_t i = old_capacity; i < capacity_; ++i)
+      {
+        buffer_.emplace_back (std::make_unique<T> ());
+        available_.push_back (buffer_.back ().get ());
+      }
+
+    size_ = capacity_;
+  }
+
+  std::vector<std::unique_ptr<T>> buffer_;
+  MPMCQueue<T *>                  available_;
+  size_t                          capacity_;
+  size_t                          size_;
+};
 
 #endif

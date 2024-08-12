@@ -129,7 +129,7 @@ MultiSelectionWidget *
 multi_selection_widget_new (void)
 {
   MultiSelectionWidget * self = static_cast<MultiSelectionWidget *> (
-    g_object_new (MULTI_SELECTION_WIDGET_TYPE, NULL));
+    g_object_new (MULTI_SELECTION_WIDGET_TYPE, nullptr));
 
   return self;
 }

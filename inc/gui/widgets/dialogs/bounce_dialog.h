@@ -5,13 +5,17 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Bounce to audio dialog.
  */
 
 #ifndef __GUI_WIDGETS_BOUNCE_DIALOG_H__
 #define __GUI_WIDGETS_BOUNCE_DIALOG_H__
+
+#include "dsp/exporter.h"
+#include "dsp/position.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -23,7 +27,7 @@ G_DECLARE_FINAL_TYPE (
   BOUNCE_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct _BounceStepSelectorWidget BounceStepSelectorWidget;
+TYPEDEF_STRUCT_UNDERSCORED (BounceStepSelectorWidget);
 
 /**
  * @addtogroup widgets
@@ -43,7 +47,7 @@ enum class BounceDialogWidgetType
 /**
  * The export dialog.
  */
-typedef struct _BounceDialogWidget
+using BounceDialogWidget = struct _BounceDialogWidget
 {
   GtkDialog                  parent_instance;
   GtkButton *                cancel_btn;
@@ -62,14 +66,17 @@ typedef struct _BounceDialogWidget
 
   Position start_pos;
 
-  char * bounce_name;
-} BounceDialogWidget;
+  std::string               bounce_name;
+  std::shared_ptr<Exporter> exporter;
+};
 
 /**
  * Creates a bounce dialog.
  */
 BounceDialogWidget *
-bounce_dialog_widget_new (BounceDialogWidgetType type, const char * bounce_name);
+bounce_dialog_widget_new (
+  BounceDialogWidgetType type,
+  const std::string     &bounce_name);
 
 /**
  * @}

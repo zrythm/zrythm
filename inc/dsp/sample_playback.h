@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * A framework from playing back samples independent
  * of the timeline, such as metronomes and samples
@@ -12,7 +12,11 @@
 #ifndef __AUDIO_SAMPLE_PLAYBACK_H__
 #define __AUDIO_SAMPLE_PLAYBACK_H__
 
+#include <utility>
+
 #include "utils/types.h"
+
+#include "ext/juce/juce.h"
 
 /**
  * @addtogroup dsp
@@ -23,41 +27,53 @@
 /**
  * A sample playback handle to be used by the engine.
  */
-typedef struct SamplePlayback
+struct SamplePlayback
 {
+public:
+  SamplePlayback () = default;
+  SamplePlayback (
+    std::shared_ptr<juce::AudioSampleBuffer> buf,
+    float                                    volume,
+    nframes_t                                start_offset,
+    const char *                             file,
+    const char *                             func,
+    int                                      lineno)
+      : buf_ (std::move (buf)), volume_ (volume), start_offset_ (start_offset),
+        file_ (file), func_ (func), lineno_ (lineno)
+  {
+  }
   /** A pointer to the original buffer. */
-  sample_t ** buf;
+  std::shared_ptr<juce::AudioSampleBuffer> buf_;
 
   /** The number of channels. */
-  channels_t channels;
+  // channels_t channels_ = 0;
 
   /** The number of frames in the buffer. */
-  unsigned_frame_t buf_size;
+  // unsigned_frame_t buf_size_ = 0;
 
   /** The current offset in the buffer. */
-  unsigned_frame_t offset;
+  unsigned_frame_t offset_ = 0;
 
   /** The volume to play the sample at (ratio from
    * 0.0 to 2.0, where 1.0 is the normal volume). */
-  float volume;
+  float volume_ = 1.0f;
 
   /** Offset relative to the current processing cycle
    * to start playing the sample. */
-  nframes_t start_offset;
+  nframes_t start_offset_ = 0;
 
   /** Source file initialized from. */
-  const char * file;
+  const char * file_ = nullptr;
 
   /** Function initialized from. */
-  const char * func;
+  const char * func_ = nullptr;
 
   /** Line no initialized from. */
-  int lineno;
-} SamplePlayback;
+  int lineno_ = 0;
+};
 
 /**
- * Initializes a SamplePlayback with a sample to
- * play back.
+ * Initializes a SamplePlayback with a sample to play back.
  */
 #define sample_playback_init( \
   self, _buf, _buf_size, _channels, _vol, _start_offset) \

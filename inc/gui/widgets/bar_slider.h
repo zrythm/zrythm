@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Custom slider widget.
  */
@@ -184,8 +184,9 @@ _bar_slider_widget_new (
  */
 #define bar_slider_widget_new_port_connection(conn, prefix) \
   _bar_slider_widget_new ( \
-    BarSliderType::BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, (void *) conn, \
-    0.f, 1.f, 160, 20, 0.f, 1, 0, UI_DRAG_MODE_CURSOR, prefix, " %")
+    BarSliderType::BAR_SLIDER_TYPE_PORT_MULTIPLIER, nullptr, nullptr, \
+    (void *) conn, 0.f, 1.f, 160, 20, 0.f, 1, 0, \
+    UiDragMode::UI_DRAG_MODE_CURSOR, prefix, " %")
 
 /**
  * @}

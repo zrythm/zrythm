@@ -1,21 +1,16 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Common data structures and functions for
- * *ArrangerSelections.
- */
 
 #ifndef __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 #define __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 
-typedef struct ArrangerObject ArrangerObject;
-typedef struct Position       Position;
-typedef struct AudioClip      AudioClip;
-typedef struct UndoableAction UndoableAction;
-typedef struct Region         Region;
+#include <memory>
+#include <vector>
+
+#include "dsp/arranger_objects.h"
+#include "utils/icloneable.h"
+
+class AudioClip;
 
 /**
  * @addtogroup gui_backend
@@ -23,373 +18,353 @@ typedef struct Region         Region;
  * @{
  */
 
-#define ARRANGER_SELECTIONS_MAGIC 35867752
+constexpr int ARRANGER_SELECTIONS_MAGIC = 35867752;
 #define IS_ARRANGER_SELECTIONS(x) \
-  (((ArrangerSelections *) x)->magic == ARRANGER_SELECTIONS_MAGIC)
+  (static_cast<ArrangerSelections *> (x)->magic_ == ARRANGER_SELECTIONS_MAGIC)
 #define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) (x && IS_ARRANGER_SELECTIONS (x))
-#define ARRANGER_SELECTIONS(x) arranger_selections_cast (x)
 
-#define ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS 0.1
+constexpr double ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS = 0.1;
 
-enum class ArrangerSelectionsType
+/**
+ * @brief Represents a collection of selected objects in an arranger view.
+ *
+ * This class provides methods for managing the selections, such as
+ * adding, removing, sorting, and pasting objects. It also includes
+ * utility functions for querying the selections, like getting the
+ * start and end positions, number of objects, and checking if the
+ * selections contain certain properties.
+ *
+ * This collection is mainly used for performing actions.
+ */
+class ArrangerSelections : public ISerializable<ArrangerSelections>
 {
-  ARRANGER_SELECTIONS_TYPE_NONE,
-  ARRANGER_SELECTIONS_TYPE_CHORD,
-  ARRANGER_SELECTIONS_TYPE_TIMELINE,
-  ARRANGER_SELECTIONS_TYPE_MIDI,
-  ARRANGER_SELECTIONS_TYPE_AUTOMATION,
-  ARRANGER_SELECTIONS_TYPE_AUDIO,
-};
+public:
+  enum class Type
+  {
+    None,
+    Chord,
+    Timeline,
+    Midi,
+    Automation,
+    Audio,
+  };
 
-static const char * arranger_selections_type_strings[] = {
-  "None", "Chord", "Timeline", "MIDI", "Automation", "Audio",
-};
+  enum class Property
+  {
+    HasLength,
+    CanLoop,
+    HasLooped,
+    CanFade,
+  };
 
-typedef struct ArrangerSelections
-{
-  /** Type of selections. */
-  ArrangerSelectionsType type;
+public:
+  ArrangerSelections () = default;
+  ArrangerSelections (Type type) : type_ (type) { }
+  virtual ~ArrangerSelections () = default;
 
-  int magic;
-} ArrangerSelections;
+  static std::unique_ptr<ArrangerSelections> new_from_type (Type type);
 
-enum class ArrangerSelectionsProperty
-{
-  ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
-  ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
-  ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
-  ARRANGER_SELECTIONS_PROPERTY_CAN_FADE,
-};
+  /**
+   * Inits the selections after loading a project.
+   *
+   * @param project Whether these are project selections (as opposed to
+   * clones).
+   * @param action To be passed when this is called from an undoable action.
+   */
+  void init_loaded (bool project, UndoableAction * action);
 
-static inline const char *
-arranger_selections_type_to_str (const ArrangerSelections * self)
-{
-  return arranger_selections_type_strings[static_cast<int> (self->type)];
-}
+  /**
+   * Initializes the selections.
+   */
+  void init (Type type);
 
-static inline ArrangerSelections *
-arranger_selections_cast (void * sel)
-{
-  if (!IS_ARRANGER_SELECTIONS ((ArrangerSelections *) sel))
-    {
-      g_warning ("%s", __func__);
-    }
-  return (ArrangerSelections *) sel;
-}
-
-/**
- * Inits the selections after loading a project.
- *
- * @param project Whether these are project
- *   selections (as opposed to clones).
- * @param action To be passed when this is called from an
- *   undoable action.
- */
-NONNULL_ARGS (1)
-void arranger_selections_init_loaded (
-  ArrangerSelections * self,
-  bool                 project,
-  UndoableAction *     action);
-
-/**
- * Initializes the selections.
- */
-NONNULL void
-arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type);
-
-/**
- * Creates new arranger selections.
- */
-ArrangerSelections *
-arranger_selections_new (ArrangerSelectionsType type);
-
-/**
- * Verify that the objects are not invalid.
- */
-NONNULL bool
-arranger_selections_verify (ArrangerSelections * self);
-
-/**
- * Appends the given object to the selections.
- */
-NONNULL void
-arranger_selections_add_object (ArrangerSelections * self, ArrangerObject * obj);
-
-/**
- * Sets the values of each object in the dest
- * selections to the values in the src selections.
- */
-NONNULL void
-arranger_selections_set_from_selections (
-  ArrangerSelections * dest,
-  ArrangerSelections * src);
-
-/**
- * Sorts the selections by their indices (eg, for
- * regions, their track indices, then the lane
- * indices, then the index in the lane).
- *
- * @note Only works for objects whose tracks exist.
- *
- * @param desc Descending or not.
- */
-NONNULL void
-arranger_selections_sort_by_indices (ArrangerSelections * sel, int desc);
-
-NONNULL void
-arranger_selections_sort_by_positions (ArrangerSelections * self, int desc);
-
-/**
- * Clone the struct for copying, undoing, etc.
- */
-NONNULL ArrangerSelections *
-arranger_selections_clone (const ArrangerSelections * self);
-
-/**
- * Returns if there are any selections.
- */
-NONNULL bool
-arranger_selections_has_any (ArrangerSelections * self);
-
-/**
- * Returns the position of the leftmost object.
- *
- * @param pos[out] The return value will be stored
- *   here.
- * @param global Return global (timeline) Position,
- *   otherwise returns the local (from the start
- *   of the Region) Position.
- */
-NONNULL void
-arranger_selections_get_start_pos (
-  const ArrangerSelections * self,
-  Position *                 pos,
-  const bool                 global);
-
-/**
- * Returns the end position of the rightmost object.
- *
- * @param pos The return value will be stored here.
- * @param global Return global (timeline) Position,
- *   otherwise returns the local (from the start
- *   of the Region) Position.
- */
-NONNULL void
-arranger_selections_get_end_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  int                  global);
-
-/**
- * Returns the number of selected objects.
- */
-NONNULL int
-arranger_selections_get_num_objects (const ArrangerSelections * self);
-
-/**
- * Gets first object.
- */
-NONNULL ArrangerObject *
-arranger_selections_get_first_object (const ArrangerSelections * self);
-
-/**
- * Gets last object.
- *
- * @param ends_last Whether to get the object that ends last,
- *   otherwise the object that starts last.
- */
-NONNULL ArrangerObject *
-arranger_selections_get_last_object (
-  const ArrangerSelections * self,
-  bool                       ends_last);
-
-/**
- * Pastes the given selections to the given
- * Position.
- */
-NONNULL void
-arranger_selections_paste_to_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  bool                 undoable);
-
-/**
- * Appends all objects in the given array.
- */
-NONNULL void
-arranger_selections_get_all_objects (
-  const ArrangerSelections * self,
-  GPtrArray *                arr);
+  bool is_automation () const { return type_ == Type::Automation; }
+  bool is_timeline () const { return type_ == Type::Timeline; }
+  bool is_midi () const { return type_ == Type::Midi; }
+  bool is_chord () const { return type_ == Type::Chord; }
+  bool is_audio () const { return type_ == Type::Audio; }
 
 #if 0
-/**
- * Redraws each object in the arranger selections.
- */
-NONNULL
-void
-arranger_selections_redraw (
-  ArrangerSelections * self);
+  /**
+   * Appends the given object to the selections.
+   */
+  [[deprecated ("Use add_object() with rvalue ref instead")]] void
+  add_object (const ArrangerObject &obj)
+  {
+    add_object (obj.clone_as<ArrangerObject> ());
+  }
 #endif
 
-/**
- * Adds each object in the selection to the given region (if
- * applicable).
- *
- * @param clone Whether to clone each object instead of adding
- *   it directly.
- */
-void
-arranger_selections_add_to_region (
-  ArrangerSelections * self,
-  Region *             region,
-  bool                 clone);
+  /**
+   * @brief Adds the given object clone to the selections.
+   *
+   * @param obj
+   */
+  void add_object_owned (std::unique_ptr<ArrangerObject> &&obj);
 
-/**
- * Moves the selections by the given
- * amount of ticks.
- *
- * @param ticks Ticks to add.
- */
-NONNULL void
-arranger_selections_add_ticks (ArrangerSelections * self, const double ticks);
+  /**
+   * @brief Adds a reference to the given object to the selections.
+   *
+   * @param obj
+   */
+  void add_object_ref (const std::shared_ptr<ArrangerObject> &obj);
 
-/**
- * Returns whether all the selections are on the
- * same lane (track lane or automation lane).
- */
-NONNULL bool
-arranger_selections_all_on_same_lane (ArrangerSelections * self);
+  /**
+   * Sorts the selections by their indices (eg, for regions, their track
+   * indices, then the lane indices, then the index in the lane).
+   *
+   * @note Only works for objects whose tracks exist.
+   *
+   * @param desc Descending or not.
+   */
+  virtual void sort_by_indices (bool desc) = 0;
 
-/**
- * Selects all possible objects from the project.
- */
-NONNULL void
-arranger_selections_select_all (ArrangerSelections * self, bool fire_events);
+  void sort_by_positions (bool desc);
 
-/**
- * Clears selections.
- */
-NONNULL void
-arranger_selections_clear (ArrangerSelections * self, bool free, bool fire_events);
+  /**
+   * Returns if there are any selections.
+   */
+  [[nodiscard]] virtual bool has_any () const { return objects_.size () > 0; };
 
-/**
- * Code to run after deserializing.
- */
-NONNULL void
-arranger_selections_post_deserialize (ArrangerSelections * self);
+#if 0
+  /**
+   * Returns the position of the leftmost object.
+   *
+   * @param global Return global (timeline) Position, otherwise returns the
+   * local (from the start of the Region) Position.
+   */
+  Position get_start_pos (bool global) const;
 
-NONNULL bool
-arranger_selections_validate (ArrangerSelections * self);
+  /**
+   * Returns the end position of the rightmost object.
+   *
+   * @param global Return global (timeline) Position, otherwise returns the
+   * local (from the start of the Region) Position.
+   */
+  Position get_end_pos (bool global) const;
+#endif
 
-/**
- * Frees anything allocated by the selections
- * but not the objects or @ref self itself.
- */
-NONNULL void
-arranger_selections_free_members (ArrangerSelections * self);
+  /**
+   * Returns the number of selected objects.
+   */
+  [[nodiscard]] int get_num_objects () const { return objects_.size (); };
 
-/**
- * Frees the selections but not the objects.
- */
-NONNULL void
-arranger_selections_free (ArrangerSelections * self);
+  template <typename T = ArrangerObject> int get_num_objects () const
+  {
+    return std::accumulate (
+      objects_.begin (), objects_.end (), 0, [] (int sum, const auto &obj) {
+        if (auto obj_ptr = std::dynamic_pointer_cast<T> (obj))
+          {
+            return sum + 1;
+          }
+        return sum;
+      });
+  }
 
-/**
- * Frees all the objects as well.
- *
- * To be used in actions where the selections are
- * all clones.
- */
-NONNULL void
-arranger_selections_free_full (ArrangerSelections * self);
+  /**
+   * Gets first object of the given type (if any, otherwise matches all types)
+   * and its start position.
+   *
+   * @param global For non-timeline selections, whether to return the global
+   * position (local + region start).
+   */
+  template <typename T = ArrangerObject>
+  requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+  get_first_object_and_pos (bool global) const;
 
-/**
- * Returns if the arranger object is in the
- * selections or  not.
- *
- * The object must be the main object (see
- * ArrangerObjectInfo).
- */
-NONNULL int
-arranger_selections_contains_object (
-  ArrangerSelections * self,
-  ArrangerObject *     obj);
+  /**
+   * Gets last object of the given type (if any, otherwise matches all types)
+   * and its end (if applicable, otherwise start) position.
+   *
+   * @param ends_last Whether to get the object that ends last, otherwise the
+   * object that starts last.
+   * @param global For non-timeline selections, whether to return the global
+   * position (local + region start).
+   */
+  template <typename T = ArrangerObject>
+  requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+  get_last_object_and_pos (bool global, bool ends_last) const;
 
-/**
- * Returns if the selections contain an undeletable
- * object (such as the start marker).
- */
-NONNULL bool
-arranger_selections_contains_undeletable_object (
-  const ArrangerSelections * self);
+  /**
+   * Pastes the given selections to the given Position.
+   */
+  void paste_to_pos (const Position &pos, bool undoable);
 
-/**
- * Returns if the selections contain an unclonable
- * object (such as the start marker).
- */
-NONNULL bool
-arranger_selections_contains_unclonable_object (const ArrangerSelections * self);
+  /**
+   * Adds a clone of each object in the selection to the given region (if
+   * applicable).
+   */
+  void add_to_region (Region &region);
 
-NONNULL bool
-arranger_selections_contains_unrenamable_object (
-  const ArrangerSelections * self);
+  /**
+   * Moves the selections by the given amount of ticks.
+   *
+   * @param ticks Ticks to add.
+   */
+  void add_ticks (const double ticks);
 
-/**
- * Checks whether an object matches the given
- * parameters.
- *
- * If a parameter should be checked, the has_*
- * argument must be true and the corresponding
- * argument must have the value to be checked
- * against.
- */
-NONNULL bool
-arranger_selections_contains_object_with_property (
-  ArrangerSelections *       self,
-  ArrangerSelectionsProperty property,
-  bool                       value);
+  /**
+   * Selects all possible objects from the project.
+   */
+  void select_all (bool fire_events = false);
 
-/**
- * Removes the arranger object from the selections.
- */
-NONNULL void
-arranger_selections_remove_object (
-  ArrangerSelections * self,
-  ArrangerObject *     obj);
+  /**
+   * Clears selections.
+   */
+  void clear (bool fire_events = false);
 
-/**
- * Merges the given selections into one region.
- *
- * @note All selections must be on the same lane.
- */
-NONNULL void
-arranger_selections_merge (ArrangerSelections * self);
+  /**
+   * Code to run after deserializing.
+   */
+  void post_deserialize ();
 
-/**
- * Returns if the selections can be pasted.
- */
-NONNULL bool
-arranger_selections_can_be_pasted (ArrangerSelections * self);
+  /**
+   * @brief Used for debugging.
+   */
+  bool validate () const;
 
-NONNULL bool
-arranger_selections_contains_looped (ArrangerSelections * self);
+  /**
+   * Returns if the arranger object is in the selections or not.
+   *
+   * This uses the equality operator defined by each object.
+   */
+  virtual bool contains_object (const ArrangerObject &obj) const final;
 
-NONNULL bool
-arranger_selections_can_be_merged (ArrangerSelections * self);
+  /**
+   * Finds the given object, or null if not found.
+   *
+   * This uses the equality operator defined by each object.
+   */
+  template <typename T = ArrangerObject>
+  T * find_object (const T &obj) const requires
+    FinalClass<T> &&DerivedButNotBase<T, ArrangerObject>
+  {
+    auto it =
+      std::find_if (objects_.begin (), objects_.end (), [&obj] (auto &element) {
+        return std::visit (
+          [&] (auto &&derived_obj) {
+            if constexpr (std::is_same_v<T, base_type<decltype (derived_obj)>>)
+              {
+                return obj == *derived_obj;
+              }
+            return false;
+          },
+          convert_to_variant<ArrangerObjectPtrVariant> (element.get ()));
+        return obj == *element;
+      });
+    return it != objects_.end () ? dynamic_cast<T *> ((*it).get ()) : nullptr;
+  }
 
-NONNULL double
-arranger_selections_get_length_in_ticks (ArrangerSelections * self);
+  /**
+   * Returns if the selections contain an undeletable object (such as the
+   * start marker).
+   */
+  bool contains_undeletable_object () const;
 
-NONNULL bool
-arranger_selections_contains_clip (ArrangerSelections * self, AudioClip * clip);
+  /**
+   * Returns if the selections contain an unclonable object (such as the start
+   * marker).
+   */
+  bool contains_unclonable_object () const;
 
-NONNULL bool
-arranger_selections_can_split_at_pos (
-  const ArrangerSelections * self,
-  const Position *           pos);
+  /** Whether the selections contain an unrenameable object (such as the start
+   * marker). */
+  bool contains_unrenamable_object () const;
 
-NONNULL ArrangerSelections *
-arranger_selections_get_for_type (ArrangerSelectionsType type);
+  /**
+   * Checks whether an object matches the given parameters.
+   *
+   * If a parameter should be checked, the has_* argument must be true and the
+   * corresponding argument must have the value to be checked against.
+   */
+  bool contains_object_with_property (Property property, bool value) const;
+
+  /**
+   * Removes the object with the same address as the given object from the
+   * selections.
+   */
+  void remove_object (const ArrangerObject &obj);
+
+  /**
+   * Merges the given selections into one region.
+   *
+   * @note All selections must be on the same lane.
+   */
+  virtual void merge (){};
+
+  /**
+   * Returns if the selections can be pasted at the current place/playhead.
+   */
+  bool can_be_pasted () const;
+
+  /**
+   * Returns if the selections can be pasted at the given position/region.
+   *
+   * @param pos Position to paste to.
+   * @param idx Track index to start pasting to, if applicable.
+   */
+  bool can_be_pasted_at (const Position pos, const int idx = -1) const;
+
+  virtual bool contains_looped () const { return false; };
+
+  virtual bool can_be_merged () const { return false; };
+
+  double get_length_in_ticks ();
+
+  /** Whether the selections contain the given clip.*/
+  virtual bool contains_clip (const AudioClip &clip) const { return false; };
+
+  bool can_split_at_pos (const Position pos) const;
+
+  static ArrangerSelections * get_for_type (ArrangerSelections::Type type);
+
+protected:
+  void copy_members_from (const ArrangerSelections &other)
+  {
+    type_ = other.type_;
+    for (auto &obj : other.objects_)
+      {
+        objects_.emplace_back (
+          clone_unique_with_variant<ArrangerObjectWithoutVelocityVariant> (
+            obj.get ()));
+      }
+  }
+
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+
+private:
+  bool is_object_allowed (const ArrangerObject &obj) const;
+
+  /**
+   * @brief Add owner region's ticks to the given position.
+   *
+   * @param[in,out] pos
+   */
+  void add_region_ticks (Position &pos) const;
+
+  virtual bool
+  can_be_pasted_at_impl (const Position pos, const int idx) const = 0;
+
+public:
+  /** Type of selections. */
+  Type type_ = (Type) 0;
+
+  int magic = ARRANGER_SELECTIONS_MAGIC;
+
+  /** Either copies of selected objects (when used in actions), or shared
+   * references to live objects in the project. */
+  std::vector<std::shared_ptr<ArrangerObject>> objects_;
+};
+
+DEFINE_ENUM_FORMATTER (
+  ArrangerSelections::Type,
+  ArrangerSelections_Type,
+  "None",
+  "Chord",
+  "Timeline",
+  "MIDI",
+  "Automation",
+  "Audio");
 
 /**
  * @}

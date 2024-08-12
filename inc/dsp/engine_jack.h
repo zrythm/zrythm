@@ -1,21 +1,18 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __AUDIO_ENGINE_JACK_H__
 #define __AUDIO_ENGINE_JACK_H__
 
 #include "zrythm-config.h"
 
+#include "dsp/engine.h"
+
 #ifdef HAVE_JACK
 
 #  include <stdlib.h>
 
 #  define JACK_PORT_T(exp) ((jack_port_t *) exp)
-
-TYPEDEF_STRUCT (AudioEngine);
-enum class AudioEngineJackTransportType;
 
 /**
  * Tests if JACK is working properly.
@@ -71,8 +68,8 @@ engine_jack_prepare_process (AudioEngine * self);
  */
 void
 engine_jack_set_transport_type (
-  AudioEngine *                self,
-  AudioEngineJackTransportType type);
+  AudioEngine *                  self,
+  AudioEngine::JackTransportType type);
 
 /**
  * Fills the external out bufs.
@@ -95,12 +92,9 @@ engine_jack_midi_setup (AudioEngine * self);
  */
 int
 engine_jack_setup (AudioEngine * self);
-/**
- * Copies the error message corresponding to \p
- * status in \p msg.
- */
-void
-engine_jack_get_error_message (jack_status_t status, char * msg);
+
+std::string
+engine_jack_get_error_message (jack_status_t status);
 
 void
 engine_jack_tear_down (AudioEngine * self);

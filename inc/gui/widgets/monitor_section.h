@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Monitor section panel.
  */
@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_MONITOR_SECTION MW_RIGHT_DOCK_EDGE->monitor_section
 
 typedef struct _KnobWithNameWidget     KnobWithNameWidget;
-typedef struct ControlRoom             ControlRoom;
+class ControlRoom;
 typedef struct _SliderBarWidget        SliderBarWidget;
 typedef struct _MeterWidget            MeterWidget;
 typedef struct _ActiveHardwareMbWidget ActiveHardwareMbWidget;

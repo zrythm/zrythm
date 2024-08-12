@@ -9,15 +9,21 @@
 
 #include "zrythm-config.h"
 
+#include <array>
+#include <string>
+
+#include "utils/ring_buffer.h"
+
 #ifdef HAVE_RTAUDIO
 
-#  define RTAUDIO_DEVICE_BUFFER_SIZE 32000
+constexpr int RTAUDIO_DEVICE_BUFFER_SIZE = 32000;
 
-#  include "zix/ring.h"
+#  include <semaphore>
+
 #  include <rtaudio_c.h>
 #  include <stdint.h>
 
-class Port;
+class AudioPort;
 
 /**
  * @addtogroup dsp
@@ -38,82 +44,98 @@ enum RtAudioDeviceFlow
 /**
  * This is actually a single channel on a device.
  */
-typedef struct RtAudioDevice
+class RtAudioDevice
 {
-  int is_input;
+public:
+  /**
+   * @brief Construct a new Rt Audio Device object
+   *
+   * @param is_input
+   * @param device_id
+   * @param channel_idx
+   * @param port
+   * @param device_name
+   * @throw ZrythmException on error.
+   */
+  RtAudioDevice (
+    bool         is_input,
+    unsigned int device_id,
+    unsigned int channel_idx,
+    AudioPort *  port,
+    std::string  device_name = "");
 
-  /** Channel index. */
-  unsigned int channel_idx;
-
-  /** Index (device index from RtAudio). */
-  unsigned int id;
-
-  char * name;
-
-  /** Whether opened or not. */
-  int opened;
-
-  /** Whether started (running) or not. */
-  int started;
-
-  rtaudio_t handle;
-
-  /** Associated port. */
-  Port * port;
+  ~RtAudioDevice ()
+  {
+    if (opened_)
+      {
+        close ();
+      }
+  }
 
   /**
-   * Audio data buffer (see
-   * port_prepare_rtaudio_data()).
+   * Opens the device.
+   *
+   * @param start Also start the device.
+   *
+   * @throw ZrythmException on error.
    */
-  float buf[16000];
+  void open (bool start);
+
+  /**
+   * Close the device.
+   */
+  void close ();
+
+  /**
+   * @brief Start the device
+   *
+   * @throw ZrythmException on error.
+   */
+  void start ();
+
+  /**
+   * @brief Stop the device
+   *
+   * @throw ZrythmException on error.
+   */
+  void stop ();
+
+  static void print_dev_info (const rtaudio_device_info_t &nfo);
+
+public:
+  bool is_input_ = false;
+
+  /** Channel index. */
+  unsigned int channel_idx_ = 0;
+
+  /** Index (device index from RtAudio). */
+  unsigned int id_ = 0;
+
+  std::string name_;
+
+  /** Whether opened or not. */
+  bool opened_ = false;
+
+  /** Whether started (running) or not. */
+  bool started_ = false;
+
+  rtaudio_t handle_ = nullptr;
+
+  /** Associated port. */
+  AudioPort * port_ = nullptr;
+
+  /**
+   * Audio data buffer (see port_prepare_rtaudio_data()).
+   */
+  std::array<float, 0x4000> audio_buf_;
 
   /** Ring buffer for audio data. */
-  ZixRing * audio_ring;
+  RingBuffer<float> audio_ring_{ RTAUDIO_DEVICE_BUFFER_SIZE };
 
   /** Semaphore for blocking writing events while
    * events are being read. */
-  ZixSem audio_ring_sem;
-
-} RtAudioDevice;
-
-RtAudioDevice *
-rtaudio_device_new (
-  int          is_input,
-  const char * device_name,
-  unsigned int device_id,
-  unsigned int channel_idx,
-  Port *       port);
-
-/**
- * Opens a device allocated with
- * rtaudio_device_new().
- *
- * @param start Also start the device.
- *
- * @return Non-zero if error.
- */
-int
-rtaudio_device_open (RtAudioDevice * self, int start);
-
-/**
- * Close the RtAudioDevice.
- *
- * @param free Also free the memory.
- */
-int
-rtaudio_device_close (RtAudioDevice * self, int free);
-
-int
-rtaudio_device_start (RtAudioDevice * self);
-
-int
-rtaudio_device_stop (RtAudioDevice * self);
-
-void
-rtaudio_device_print_dev_info (rtaudio_device_info_t * nfo);
-
-void
-rtaudio_device_free (RtAudioDevice * self);
+  std::binary_semaphore audio_ring_sem_{ 1 };
+};
 
 /**
  * @}

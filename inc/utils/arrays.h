@@ -7,6 +7,8 @@
 #ifndef __UTILS_ARRAYS_H__
 #define __UTILS_ARRAYS_H__
 
+#include <cstddef>
+
 #define array_index_of(_array, size, element) \
   _array_index_of ((void **) _array, size, (void *) element)
 
@@ -51,11 +53,11 @@
  * Doubles the size of the array, for dynamically allocated
  * arrays.
  *
- * If \ref max_sz is zero, this will reallocate the current
- * array to \ref count * 2.
+ * If @ref max_sz is zero, this will reallocate the current
+ * array to @ref count * 2.
  *
- * If \ref max_sz is equal to \ref count, this will reallocate
- * the current array to \ref count * 2 and also memset the new
+ * If @ref max_sz is equal to @ref count, this will reallocate
+ * the current array to @ref count * 2 and also memset the new
  * memory to 0.
  *
  * Calling this function with other values is invalid.
@@ -266,22 +268,5 @@ _array_contains_cmp (
  */
 int
 _array_index_of (void ** _array, int size, void * element);
-
-void
-array_sort_alphabetically (char ** _array, int size, int case_sensitive);
-
-void
-array_sort_float (float * _array, int size);
-
-void
-array_sort_long (long * _array, int size);
-
-#define array_get_count(_arr, _sz) _array_get_count ((void **) _arr, _sz)
-
-/**
- * Gets the count of a NULL-terminated array.
- */
-size_t
-_array_get_count (void ** _array, size_t element_size);
 
 #endif /* __UTILS_ARRAYS_H__ */

@@ -10,20 +10,19 @@
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 static void
 flip (AutomationSelections * sel, bool vertical)
 {
-  for (int i = 0; i < sel->num_automation_points; i++)
+  for (auto ap : sel->objects_ | type_is<AutomationPoint> ())
     {
-      AutomationPoint * ap = sel->automation_points[i];
-
       if (vertical)
         {
-          automation_point_set_fvalue (
-            ap, 1.f - ap->normalized_val, F_NORMALIZED, F_NO_PUBLISH_EVENTS);
-          ap->curve_opts.curviness = -ap->curve_opts.curviness;
+          ap->set_fvalue (1.f - ap->normalized_val_, true, false);
+          ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
         }
       else
         {
@@ -35,46 +34,34 @@ flip (AutomationSelections * sel, bool vertical)
 static void
 flatten (AutomationSelections * sel)
 {
-  for (int i = 0; i < sel->num_automation_points; i++)
+  for (auto ap : sel->objects_ | type_is<AutomationPoint> ())
     {
-      AutomationPoint * ap = sel->automation_points[i];
 
-      ap->curve_opts.curviness = 1.0;
-      ap->curve_opts.algo = CurveAlgorithm::PULSE;
+      ap->curve_opts_.curviness_ = 1.0;
+      ap->curve_opts_.algo_ = CurveOptions::Algorithm::Pulse;
     }
 }
 
-/**
- * Applies the given action to the given selections.
- *
- * @param sel Selections to edit.
- * @param type Function type.
- */
-int
-automation_function_apply (
-  ArrangerSelections *   sel,
-  AutomationFunctionType type,
-  GError **              error)
+void
+automation_function_apply (AutomationSelections &sel, AutomationFunctionType type)
 {
-  g_message ("applying %s...", automation_function_type_to_string (type));
+  z_debug ("applying %s...", AutomationFunctionType_to_string (type));
 
   switch (type)
     {
-    case AutomationFunctionType::AUTOMATION_FUNCTION_FLIP_HORIZONTAL:
+    case AutomationFunctionType::FlipHorizontal:
       /* TODO */
       break;
-    case AutomationFunctionType::AUTOMATION_FUNCTION_FLIP_VERTICAL:
-      flip ((AutomationSelections *) sel, true);
+    case AutomationFunctionType::FlipVertical:
+      flip (&sel, true);
       break;
-    case AutomationFunctionType::AUTOMATION_FUNCTION_FLATTEN:
-      flatten ((AutomationSelections *) sel);
+    case AutomationFunctionType::Flatten:
+      flatten (&sel);
       break;
     }
 
   /* set last action */
   g_settings_set_int (S_UI, "automation-function", ENUM_VALUE_TO_INT (type));
 
-  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, NULL);
-
-  return 0;
+  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

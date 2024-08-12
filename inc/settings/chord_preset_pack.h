@@ -1,19 +1,16 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Chord preset pack.
- */
 
 #ifndef __SETTINGS_CHORD_PRESET_PACK_H__
 #define __SETTINGS_CHORD_PRESET_PACK_H__
 
 #include "zrythm-config.h"
 
+#include <utility>
+
 #include "settings/chord_preset.h"
-#include "utils/yaml.h"
+#include "utils/format.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup settings
@@ -24,67 +21,94 @@
 /**
  * Chord preset pack.
  */
-typedef struct ChordPresetPack
+class ChordPresetPack final
+    : public ISerializable<ChordPresetPack>,
+      public ICloneable<ChordPresetPack>
 {
-  /** Pack name. */
-  char * name;
+public:
+  ChordPresetPack () = default;
+  ChordPresetPack (std::string name, bool is_standard)
+      : name_ (std::move (name)), is_standard_ (is_standard)
+  {
+  }
 
-  /** Presets. */
-  GPtrArray * presets;
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-  /** Whether this is a standard preset pack (not user-defined). */
-  bool is_standard;
-} ChordPresetPack;
+  std::string get_document_type () const override
+  {
+    return "Zrythm Chord Preset Pack";
+  }
+  int get_format_major_version () const override { return 2; }
+  int get_format_minor_version () const override { return 0; }
 
-ChordPresetPack *
-chord_preset_pack_new_empty (void);
+  void init_after_cloning (const ChordPresetPack &other) override
+  {
+    name_ = other.name_;
+    is_standard_ = other.is_standard_;
+    presets_ = other.presets_;
+    for (auto &pset : presets_)
+      {
+        pset.pack_ = this;
+      }
+  }
 
-ChordPresetPack *
-chord_preset_pack_new (const char * name, bool is_standard);
+ bool contains_name (const std::string &name) const;
 
-bool
-chord_preset_pack_contains_name (const ChordPresetPack * self, const char * name);
+ bool contains_preset (const ChordPreset &pset) const;
 
-bool
-chord_preset_pack_contains_preset (
-  const ChordPresetPack * self,
-  const ChordPreset *     pset);
+ void add_preset (const ChordPreset &pset);
 
-char *
-chord_preset_pack_serialize_to_json_str (
-  const ChordPresetPack * self,
-  GError **               error);
+ void delete_preset (const ChordPreset &pset);
 
-ChordPresetPack *
-chord_preset_pack_deserialize_from_json_str (const char * json, GError ** error);
+ int get_preset_index (const ChordPreset &pset) const
+ {
+   auto it = std::find (presets_.begin (), presets_.end (), pset);
+   z_return_val_if_fail (it != presets_.end (), -1);
+   return std::distance (presets_.begin (), it);
+  }
 
-/**
- * @note The given preset is cloned so the caller is
- *   still responsible for @ref pset.
- */
-void
-chord_preset_pack_add_preset (ChordPresetPack * self, const ChordPreset * pset);
+  std::string get_name () const { return name_; }
 
-void
-chord_preset_pack_delete_preset (ChordPresetPack * self, ChordPreset * pset);
+  static std::string name_getter (void * pack)
+  {
+    return ((ChordPresetPack *) pack)->get_name ();
+  }
 
-const char *
-chord_preset_pack_get_name (const ChordPresetPack * self);
+  static void name_setter (void * pack, const std::string &name)
+  {
+    ((ChordPresetPack *) pack)->set_name (name);
+  }
 
-void
-chord_preset_pack_set_name (ChordPresetPack * self, const char * name);
+   /**
+    * @brief Sets @ref name_ and emits @ref
+    * EventType::ET_CHORD_PRESET_PACK_EDITED.
+    */
+   void set_name (const std::string &name);
 
-ChordPresetPack *
-chord_preset_pack_clone (const ChordPresetPack * src);
+   GMenuModel * generate_context_menu () const;
 
-GMenuModel *
-chord_preset_pack_generate_context_menu (const ChordPresetPack * self);
+   /**
+    * @brief Used in GTK callbacks.
+    */
+   static void destroy_cb (void * data) { delete (ChordPresetPack *) data; };
 
-void
-chord_preset_pack_free (ChordPresetPack * self);
+ public:
+   /** Pack name. */
+   std::string name_;
 
-void
-chord_preset_pack_destroy_cb (void * self);
+   /** Presets. */
+   std::vector<ChordPreset> presets_;
+
+   /** Whether this is a standard preset pack (not user-defined). */
+   bool is_standard_ = false;
+};
+
+inline bool
+operator== (const ChordPresetPack &lhs, const ChordPresetPack &rhs)
+{
+  return lhs.name_ == rhs.name_ && lhs.presets_ == rhs.presets_
+         && lhs.is_standard_ == rhs.is_standard_;
+}
 
 /**
  * @}

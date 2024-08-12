@@ -1,15 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-#include <cstdlib>
-
+#include "actions/arranger_selections.h"
 #include "dsp/audio_region.h"
 #include "dsp/automation_region.h"
 #include "dsp/chord_object.h"
 #include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
-#include "dsp/engine.h"
 #include "dsp/marker.h"
 #include "dsp/marker_track.h"
 #include "dsp/scale_object.h"
@@ -20,2526 +17,812 @@
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/midi_selections.h"
 #include "gui/backend/timeline_selections.h"
-#include "gui/widgets/arranger_object.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/dsp.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include <limits.h>
 
-#define TYPE(x) (ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_##x)
-
 void
-arranger_selections_init_loaded (
-  ArrangerSelections * self,
-  bool                 project,
-  UndoableAction *     action)
+ArrangerSelections::init_loaded (bool project, UndoableAction * action)
 {
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-  self->magic = ARRANGER_SELECTIONS_MAGIC;
-
-#define SET_OBJ(sel, cc, sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      ArrangerObject * obj = (ArrangerObject *) sel->sc##s[i]; \
-      arranger_object_set_magic (obj); \
-      if (project) \
-        { \
-          /* throws an error otherwise */ \
-          if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
-            { \
-              Region * r = (Region *) obj; \
-              if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
-                { \
-                  r->read_from_pool = true; \
-                  AudioClip * clip = audio_region_get_clip (r); \
-                  g_return_if_fail (clip); \
-                  r->last_clip_change = g_get_monotonic_time (); \
-                } \
-            } \
-          arranger_object_update_positions (obj, true, false, NULL); \
-          sel->sc##s[i] = (cc *) arranger_object_find (obj); \
-        } \
-      else /* else if not project */ \
-        { \
-          arranger_object_init_loaded ((ArrangerObject *) sel->sc##s[i]); \
-          arranger_object_update_positions (obj, true, false, action); \
-          if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
-            { \
-              Region * r = (Region *) obj; \
-              if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
-                { \
-                  audio_region_fix_positions ( \
-                    r, action ? action->frames_per_tick : 0); \
-                } \
-              region_validate ( \
-                (Region *) obj, project, action ? action->frames_per_tick : 0); \
-            } \
-        } \
-    }
-
-  switch (self->type)
+  for (auto &obj_sharedptr : objects_)
     {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      SET_OBJ (ts, Region, region);
-      SET_OBJ (ts, ScaleObject, scale_object);
-      SET_OBJ (ts, Marker, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      for (i = 0; i < mas->num_midi_notes; i++)
-        {
-          MidiNote *       mn = mas->midi_notes[i];
-          ArrangerObject * mn_obj = (ArrangerObject *) mn;
-          arranger_object_update_positions (mn_obj, true, false, action);
+      auto obj_variant =
+        convert_to_variant<ArrangerObjectPtrVariant> (obj_sharedptr.get ());
+      std::visit (
+        [&] (auto &&obj) {
           if (project)
-            {
-              mas->midi_notes[i] = (MidiNote *) arranger_object_find (mn_obj);
+            { /* throws an error otherwise */
+              if constexpr (
+                std::is_same_v<AudioRegion, std::decay_t<decltype (obj)>>)
+                {
+                  obj->read_from_pool = true;
+                  auto clip = obj->get_clip ();
+                  z_return_if_fail (clip);
+                }
+              obj->update_positions (true, false, nullptr);
+              obj_sharedptr = obj->find_in_project ()->shared_from_this ();
             }
-          else
+          else /* else if not project */
             {
-              arranger_object_init_loaded (
-                (ArrangerObject *) mas->midi_notes[i]);
+              obj->init_loaded ();
+              obj->update_positions (true, false, action);
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                {
+                  if constexpr (
+                    std::is_same_v<AudioRegion, std::decay_t<decltype (obj)>>)
+                    {
+                      obj->fix_positions (action ? action->frames_per_tick_ : 0);
+                      obj->validate_with_frames_per_tick (
+                        project, action ? action->frames_per_tick_ : 0);
+                    }
+                  obj->validate (project, 0);
+                }
             }
-          g_warn_if_fail (mas->midi_notes[i]);
-        }
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      SET_OBJ (as, AutomationPoint, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      SET_OBJ (cs, ChordObject, chord_object);
-      break;
-    case TYPE (AUDIO):
-      break;
-    default:
-      g_critical ("unknown type %d", (int) self->type);
-      return;
+        },
+        obj_variant);
     }
-
-#undef SET_OBJ
 }
 
-/**
- * Initializes the selections.
- */
 void
-arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type)
+ArrangerSelections::sort_by_positions (bool desc)
 {
-  self->type = type;
-  self->magic = ARRANGER_SELECTIONS_MAGIC;
-
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-#define SET_OBJ(sel, cc, sc) \
-  sel->sc##s_size = 1; \
-  sel->sc##s = object_new_n (1, cc *)
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      SET_OBJ (ts, Region, region);
-      SET_OBJ (ts, ScaleObject, scale_object);
-      SET_OBJ (ts, Marker, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      SET_OBJ (mas, MidiNote, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      SET_OBJ (as, AutomationPoint, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      SET_OBJ (cs, ChordObject, chord_object);
-      break;
-    case TYPE (AUDIO):
-      {
-        AudioSelections * sel = (AudioSelections *) self;
-        position_init (&sel->sel_start);
-        position_init (&sel->sel_end);
-        region_identifier_init (&sel->region_id);
-        sel->pool_id = -1;
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef SET_OBJ
+  std::sort (
+    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
+      return desc ? a->pos_.ticks_ > b->pos_.ticks_
+                  : a->pos_.ticks_ < b->pos_.ticks_;
+    });
 }
 
-/**
- * Creates new arranger selections.
- */
-ArrangerSelections *
-arranger_selections_new (ArrangerSelectionsType type)
+std::unique_ptr<ArrangerSelections>
+ArrangerSelections::new_from_type (Type type)
 {
-  ArrangerSelections * self = NULL;
-
   switch (type)
     {
-    case TYPE (TIMELINE):
-      self = (ArrangerSelections *) object_new (TimelineSelections);
-      break;
-    case TYPE (MIDI):
-      self = (ArrangerSelections *) object_new (MidiArrangerSelections);
-      break;
-    case TYPE (AUTOMATION):
-      self = (ArrangerSelections *) object_new (AutomationSelections);
-      break;
-    case TYPE (CHORD):
-      self = (ArrangerSelections *) object_new (ChordSelections);
-      break;
-    case TYPE (AUDIO):
-      self = (ArrangerSelections *) object_new (AudioSelections);
-      break;
+    case Type::Timeline:
+      return std::make_unique<TimelineSelections> ();
+    case Type::Midi:
+      return std::make_unique<MidiSelections> ();
+    case Type::Automation:
+      return std::make_unique<AutomationSelections> ();
+    case Type::Chord:
+      return std::make_unique<ChordSelections> ();
+    case Type::Audio:
+      return std::make_unique<AudioSelections> ();
     default:
-      g_return_val_if_reached (NULL);
+      z_return_val_if_reached (nullptr);
     }
-
-  arranger_selections_init (self, type);
-
-  return self;
 }
 
-/**
- * Verify that the objects are not invalid.
- */
 bool
-arranger_selections_verify (ArrangerSelections * self)
+ArrangerSelections::is_object_allowed (const ArrangerObject &obj) const
 {
-  /* verify that all objects are arranger
-   * objects */
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self, objs_arr);
-  for (size_t i = 0; i < objs_arr->len; i++)
+  /* check if object is allowed */
+  switch (type_)
     {
-      ArrangerObject * obj = (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), false);
+    case Type::Chord:
+      z_return_val_if_fail (
+        obj.type_ == ArrangerObject::Type::ChordObject, false);
+      break;
+    case Type::Timeline:
+      z_return_val_if_fail (
+        obj.type_ == ArrangerObject::Type::Region
+          || obj.type_ == ArrangerObject::Type::ScaleObject
+          || obj.type_ == ArrangerObject::Type::Marker,
+        false);
+      break;
+    case Type::Midi:
+      z_return_val_if_fail (
+        obj.type_ == ArrangerObject::Type::MidiNote
+          || obj.type_ == ArrangerObject::Type::Velocity,
+        false);
+      break;
+    case Type::Automation:
+      z_return_val_if_fail (
+        obj.type_ == ArrangerObject::Type::AutomationPoint, false);
+      break;
+    default:
+      z_return_val_if_reached (false);
     }
-  g_ptr_array_unref (objs_arr);
-
   return true;
 }
 
-/**
- * Appends the given object to the selections.
- */
 void
-arranger_selections_add_object (ArrangerSelections * self, ArrangerObject * obj)
+ArrangerSelections::add_object_owned (std::unique_ptr<ArrangerObject> &&obj)
 {
-  g_return_if_fail (IS_ARRANGER_SELECTIONS (self) && IS_ARRANGER_OBJECT (obj));
-
-  /* check if object is allowed */
-  switch (self->type)
-    {
-    case TYPE (CHORD):
-      g_return_if_fail (
-        obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
-      break;
-    case TYPE (TIMELINE):
-      g_return_if_fail (
-        obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION
-        || obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_SCALE_OBJECT
-        || obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER);
-      break;
-    case TYPE (MIDI):
-      g_return_if_fail (
-        obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE
-        || obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY);
-      break;
-    case TYPE (AUTOMATION):
-      g_return_if_fail (
-        obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#define ADD_OBJ(sel, caps, cc, sc) \
-  if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_##caps) \
-    { \
-      cc * sc = (cc *) obj; \
-      if (!array_contains (sel->sc##s, sel->num_##sc##s, sc)) \
-        { \
-          array_double_size_if_full ( \
-            sel->sc##s, sel->num_##sc##s, sel->sc##s_size, cc *); \
-          array_append (sel->sc##s, sel->num_##sc##s, sc); \
-        } \
-    }
-
-  /* add the object to the child selections */
-  switch (self->type)
-    {
-    case TYPE (CHORD):
-      {
-        ChordSelections * sel = (ChordSelections *) self;
-        ADD_OBJ (sel, CHORD_OBJECT, ChordObject, chord_object);
-      }
-      break;
-    case TYPE (TIMELINE):
-      {
-        TimelineSelections * sel = (TimelineSelections *) self;
-        ADD_OBJ (sel, REGION, Region, region);
-        ADD_OBJ (sel, SCALE_OBJECT, ScaleObject, scale_object);
-        ADD_OBJ (sel, MARKER, Marker, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        MidiArrangerSelections * sel = (MidiArrangerSelections *) self;
-        if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY)
-          {
-            Velocity * vel = (Velocity *) obj;
-            obj = (ArrangerObject *) velocity_get_midi_note (vel);
-          }
-        ADD_OBJ (sel, MIDI_NOTE, MidiNote, midi_note);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        AutomationSelections * sel = (AutomationSelections *) self;
-        ADD_OBJ (sel, AUTOMATION_POINT, AutomationPoint, automation_point);
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-#undef ADD_OBJ
+  if (is_object_allowed (*obj))
+    objects_.emplace_back (std::move (obj));
 }
 
-/**
- * Sets the values of each object in the dest selections
- * to the values in the src selections.
- */
 void
-arranger_selections_set_from_selections (
-  ArrangerSelections * dest,
-  ArrangerSelections * src)
+ArrangerSelections::add_object_ref (const std::shared_ptr<ArrangerObject> &obj)
 {
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  /* TODO */
-#define RESET_COUNTERPART(sel, cc, sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    break;
-
-  switch (dest->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) dest;
-      RESET_COUNTERPART (ts, Region, region);
-      RESET_COUNTERPART (ts, ScaleObject, scale_object);
-      RESET_COUNTERPART (ts, Marker, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) dest;
-      RESET_COUNTERPART (mas, MidiNote, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) dest;
-      RESET_COUNTERPART (as, AutomationPoint, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) dest;
-      RESET_COUNTERPART (cs, ChordObject, chord_object);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef RESET_COUNTERPART
+  if (is_object_allowed (*obj))
+    objects_.emplace_back (obj);
 }
 
-/**
- * Clone the struct for copying, undoing, etc.
- */
-ArrangerSelections *
-arranger_selections_clone (const ArrangerSelections * self)
+void
+ArrangerSelections::add_region_ticks (Position &pos) const
 {
-  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), NULL);
-
-#define CLONE_OBJS(src_sel, new_sel, cc, sc) \
-  cc *sc, *new_##sc; \
-  for (int i = 0; i < src_sel->num_##sc##s; i++) \
-    { \
-      sc = src_sel->sc##s[i]; \
-      ArrangerObject * sc_obj = (ArrangerObject *) sc; \
-      new_##sc = (cc *) arranger_object_clone ((ArrangerObject *) sc); \
-      ArrangerObject * new_sc_obj = (ArrangerObject *) new_##sc; \
-      sc_obj->transient = new_sc_obj; \
-      arranger_selections_add_object ( \
-        (ArrangerSelections *) new_sel, new_sc_obj); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * src_ts = (const TimelineSelections *) self;
-        TimelineSelections *       new_ts = object_new (TimelineSelections);
-        new_ts->base = src_ts->base;
-        arranger_selections_init (
-          (ArrangerSelections *) new_ts,
-          ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
-        CLONE_OBJS (src_ts, new_ts, Region, region);
-        CLONE_OBJS (src_ts, new_ts, ScaleObject, scale_object);
-        CLONE_OBJS (src_ts, new_ts, Marker, marker);
-        return ((ArrangerSelections *) new_ts);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * src_mas =
-          (const MidiArrangerSelections *) self;
-        MidiArrangerSelections * new_mas = object_new (MidiArrangerSelections);
-        arranger_selections_init (
-          (ArrangerSelections *) new_mas,
-          ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI);
-        new_mas->base = src_mas->base;
-        CLONE_OBJS (src_mas, new_mas, MidiNote, midi_note);
-        return ((ArrangerSelections *) new_mas);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * src_as =
-          (const AutomationSelections *) self;
-        AutomationSelections * new_as = object_new (AutomationSelections);
-        arranger_selections_init (
-          (ArrangerSelections *) new_as,
-          ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION);
-        new_as->base = src_as->base;
-        CLONE_OBJS (src_as, new_as, AutomationPoint, automation_point);
-        return ((ArrangerSelections *) new_as);
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * src_cs = (const ChordSelections *) self;
-        ChordSelections *       new_cs = object_new (ChordSelections);
-        arranger_selections_init (
-          (ArrangerSelections *) new_cs,
-          ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD);
-        new_cs->base = src_cs->base;
-        CLONE_OBJS (src_cs, new_cs, ChordObject, chord_object);
-        return ((ArrangerSelections *) new_cs);
-      }
-      break;
-    case TYPE (AUDIO):
-      {
-        const AudioSelections * src_aus = (const AudioSelections *) self;
-        AudioSelections *       new_aus = object_new (AudioSelections);
-        arranger_selections_init (
-          (ArrangerSelections *) new_aus,
-          ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD);
-        new_aus->base = src_aus->base;
-        new_aus->sel_start = src_aus->sel_start;
-        new_aus->sel_end = src_aus->sel_end;
-        new_aus->has_selection = src_aus->has_selection;
-        new_aus->pool_id = src_aus->pool_id;
-        new_aus->region_id = src_aus->region_id;
-        return ((ArrangerSelections *) new_aus);
-      }
-      break;
-    default:
-      g_return_val_if_reached (NULL);
-    }
-
-  g_return_val_if_reached (NULL);
-
-#undef CLONE_OBJS
-}
-
-static int
-sort_midi_notes_func (const void * _a, const void * _b)
-{
-  MidiNote * a = *(MidiNote * const *) _a;
-  MidiNote * b = *(MidiNote * const *) _b;
-
-  /* region index doesn't really matter */
-  return a->pos - b->pos;
-}
-
-static int
-sort_midi_notes_desc (const void * a, const void * b)
-{
-  return -sort_midi_notes_func (a, b);
-}
-
-static int
-sort_aps (const void * _a, const void * _b)
-{
-  AutomationPoint * a = *(AutomationPoint * const *) _a;
-  AutomationPoint * b = *(AutomationPoint * const *) _b;
-
-  return a->index - b->index;
-}
-
-static int
-sort_aps_desc (const void * a, const void * b)
-{
-  return -sort_aps (a, b);
-}
-
-static int
-sort_chords (const void * _a, const void * _b)
-{
-  ChordObject * a = *(ChordObject * const *) _a;
-  ChordObject * b = *(ChordObject * const *) _b;
-
-  return a->index - b->index;
-}
-
-static int
-sort_chords_desc (const void * a, const void * b)
-{
-  return -sort_chords (a, b);
-}
-
-static int
-sort_regions_func (const void * _a, const void * _b)
-{
-  Region * a = *(Region * const *) _a;
-  Region * b = *(Region * const *) _b;
-
-  Track * at =
-    tracklist_find_track_by_name_hash (TRACKLIST, a->id.track_name_hash);
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (at), -1);
-  Track * bt =
-    tracklist_find_track_by_name_hash (TRACKLIST, b->id.track_name_hash);
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (bt), -1);
-  if (at->pos < bt->pos)
-    return -1;
-  else if (at->pos > bt->pos)
-    return 1;
-
-  int have_lane = region_type_has_lane (a->id.type);
-  /* order doesn't matter in this case */
-  if (have_lane != region_type_has_lane (b->id.type))
-    return -1;
-
-  if (have_lane)
-    {
-      if (a->id.lane_pos < b->id.lane_pos)
+  auto arranger_sel_variant =
+    convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&sel) {
+      if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
         {
-          return -1;
+          auto r = AudioRegion::find (sel->region_id_);
+          z_return_if_fail (r);
+          pos.add_ticks (r->pos_.ticks_);
         }
-      else if (a->id.lane_pos > b->id.lane_pos)
+      else if constexpr (
+        std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
         {
-          return 1;
+          // no region...
         }
-    }
-  else if (
-    a->id.type == RegionType::REGION_TYPE_AUTOMATION
-    && b->id.type == RegionType::REGION_TYPE_AUTOMATION)
-    {
-      if (a->id.at_idx < b->id.at_idx)
+      else
         {
-          return -1;
-        }
-      else if (a->id.at_idx > b->id.at_idx)
-        {
-          return 1;
-        }
-    }
-
-  return a->id.idx - b->id.idx;
-}
-
-static int
-sort_scales_func (const void * _a, const void * _b)
-{
-  ScaleObject * a = *(ScaleObject * const *) _a;
-  ScaleObject * b = *(ScaleObject * const *) _b;
-  return a->index - b->index;
-}
-
-static int
-sort_markers_func (const void * _a, const void * _b)
-{
-  Marker * a = *(Marker * const *) _a;
-  Marker * b = *(Marker * const *) _b;
-  return a->index - b->index;
-}
-
-static int
-sort_regions_desc (const void * a, const void * b)
-{
-  return -sort_regions_func (a, b);
-}
-
-static int
-sort_scales_desc (const void * a, const void * b)
-{
-  return -sort_scales_func (a, b);
-}
-
-static int
-sort_markers_desc (const void * a, const void * b)
-{
-  return -sort_markers_func (a, b);
-}
-
-/**
- * Sorts the selections by their indices (eg, for
- * regions, their track indices, then the lane
- * indices, then the index in the lane).
- *
- * @note Only works for objects whose tracks exist.
- *
- * @param desc Descending or not.
- */
-void
-arranger_selections_sort_by_indices (ArrangerSelections * self, int desc)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      qsort (
-        ts->regions, (size_t) ts->num_regions, sizeof (Region *),
-        desc ? sort_regions_desc : sort_regions_func);
-      qsort (
-        ts->scale_objects, (size_t) ts->num_scale_objects,
-        sizeof (ScaleObject *), desc ? sort_scales_desc : sort_scales_func);
-      qsort (
-        ts->markers, (size_t) ts->num_markers, sizeof (Marker *),
-        desc ? sort_markers_desc : sort_markers_func);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      qsort (
-        mas->midi_notes, (size_t) mas->num_midi_notes, sizeof (MidiNote *),
-        desc ? sort_midi_notes_desc : sort_midi_notes_func);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      qsort (
-        as->automation_points, (size_t) as->num_automation_points,
-        sizeof (AutomationPoint *), desc ? sort_aps_desc : sort_aps);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      qsort (
-        cs->chord_objects, (size_t) cs->num_chord_objects,
-        sizeof (ChordObject *), desc ? sort_chords_desc : sort_chords);
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
-
-static int
-sort_by_pos_func (const void * _a, const void * _b)
-{
-  ArrangerObject * a = *(ArrangerObject * const *) _a;
-  ArrangerObject * b = *(ArrangerObject * const *) _b;
-  return a->pos.ticks - b->pos.ticks >= 0.0;
-}
-
-static int
-sort_by_pos_desc_func (const void * _a, const void * _b)
-{
-  return -sort_by_pos_func (_a, _b);
-}
-
-void
-arranger_selections_sort_by_positions (ArrangerSelections * self, int desc)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      qsort (
-        ts->regions, (size_t) ts->num_regions, sizeof (Region *),
-        desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      qsort (
-        ts->scale_objects, (size_t) ts->num_scale_objects,
-        sizeof (ScaleObject *), desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      qsort (
-        ts->markers, (size_t) ts->num_markers, sizeof (Marker *),
-        desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      qsort (
-        mas->midi_notes, (size_t) mas->num_midi_notes, sizeof (MidiNote *),
-        desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      qsort (
-        as->automation_points, (size_t) as->num_automation_points,
-        sizeof (AutomationPoint *),
-        desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      qsort (
-        cs->chord_objects, (size_t) cs->num_chord_objects,
-        sizeof (ChordObject *), desc ? sort_by_pos_desc_func : sort_by_pos_func);
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
-
-/**
- * Returns if there are any selections.
- */
-bool
-arranger_selections_has_any (ArrangerSelections * self)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      return ts->num_regions > 0 || ts->num_scale_objects > 0
-             || ts->num_markers > 0;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      return mas->num_midi_notes > 0;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      return as->num_automation_points > 0;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      return cs->num_chord_objects > 0;
-    case TYPE (AUDIO):
-      {
-        AudioSelections * sel = (AudioSelections *) self;
-        return sel->has_selection;
-      }
-    default:
-      g_return_val_if_reached (-1);
-    }
-
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Add owner region's ticks to the given position.
- */
-NONNULL static void
-add_region_ticks (const ArrangerSelections * self, Position * pos)
-{
-  ArrangerObject * region;
-  if (self->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO)
-    {
-      const AudioSelections * as = (const AudioSelections *) self;
-      region = (ArrangerObject *) region_find (&as->region_id);
-    }
-  else
-    {
-      ArrangerObject * obj = arranger_selections_get_first_object (self);
-      g_return_if_fail (obj);
-      region = (ArrangerObject *) arranger_object_get_region (obj);
-    }
-  g_return_if_fail (region);
-  position_add_ticks (pos, region->pos.ticks);
-}
-
-/**
- * Returns the position of the leftmost object.
- *
- * @param pos The return value will be stored here.
- * @param global Return global (timeline) Position,
- *   otherwise returns the local (from the start
- *   of the Region) Position.
- */
-void
-arranger_selections_get_start_pos (
-  const ArrangerSelections * self,
-  Position *                 pos,
-  const bool                 global)
-{
-  position_set_to_bar (pos, 80000);
-  g_return_if_fail (pos->ticks > 0);
-  /*&pos, TRANSPORT->total_bars);*/
-
-#define GET_START_POS(sel, cc, sc) \
-  for (int i = 0; i < (sel)->num_##sc##s; i++) \
-    { \
-      cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = (ArrangerObject *) sc; \
-      g_warn_if_fail (obj); \
-      if (position_is_before (&obj->pos, pos)) \
-        { \
-          position_set_to_pos (pos, &obj->pos); \
-        } \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_START_POS (ts, Region, region);
-        GET_START_POS (ts, ScaleObject, scale_object);
-        GET_START_POS (ts, Marker, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * mas =
-          (const MidiArrangerSelections *) self;
-        GET_START_POS (mas, MidiNote, midi_note);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * as = (const AutomationSelections *) self;
-        GET_START_POS (as, AutomationPoint, automation_point);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * cs = (ChordSelections *) self;
-        GET_START_POS (cs, ChordObject, chord_object);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (AUDIO):
-      {
-        const AudioSelections * as = (AudioSelections *) self;
-        position_set_to_pos (pos, &as->sel_start);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef GET_START_POS
-}
-
-/**
- * Returns the end position of the rightmost object.
- *
- * @param pos The return value will be stored here.
- * @param global Return global (timeline) Position,
- *   otherwise returns the local (from the start
- *   of the Region) Position.
- */
-void
-arranger_selections_get_end_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  int                  global)
-{
-  position_init (pos);
-
-#define GET_END_POS(sel, cc, sc) \
-  for (int i = 0; i < (sel)->num_##sc##s; i++) \
-    { \
-      cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = (ArrangerObject *) sc; \
-      g_warn_if_fail (obj); \
-      if (arranger_object_type_has_length (obj->type)) \
-        { \
-          if (position_is_after (&obj->end_pos, pos)) \
-            { \
-              position_set_to_pos (pos, &obj->end_pos); \
-            } \
-        } \
-      else \
-        { \
-          if (position_is_after (&obj->pos, pos)) \
-            { \
-              position_set_to_pos (pos, &obj->pos); \
-            } \
-        } \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * ts = (TimelineSelections *) self;
-        GET_END_POS (ts, Region, region);
-        GET_END_POS (ts, ScaleObject, scale_object);
-        GET_END_POS (ts, Marker, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * mas =
-          (const MidiArrangerSelections *) self;
-        GET_END_POS (mas, MidiNote, midi_note);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * as = (const AutomationSelections *) self;
-        GET_END_POS (as, AutomationPoint, automation_point);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * cs = (const ChordSelections *) self;
-        GET_END_POS (cs, ChordObject, chord_object);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    case TYPE (AUDIO):
-      {
-        const AudioSelections * as = (const AudioSelections *) self;
-        position_set_to_pos (pos, &as->sel_end);
-        if (global)
-          {
-            add_region_ticks (self, pos);
-          }
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef GET_END_POS
-}
-
-/**
- * Adds each object in the selection to the given region (if
- * applicable).
- *
- * @param clone Whether to clone each object instead of adding
- *   it directly.
- */
-void
-arranger_selections_add_to_region (
-  ArrangerSelections * self,
-  Region *             region,
-  bool                 clone)
-{
-  switch (self->type)
-    {
-    case TYPE (MIDI):
-      {
-        MidiArrangerSelections * mas = (MidiArrangerSelections *) self;
-        for (int i = 0; i < mas->num_midi_notes; i++)
-          {
-            ArrangerObject * obj = (ArrangerObject *) mas->midi_notes[i];
-            if (clone)
-              {
-                obj = arranger_object_clone (obj);
-              }
-            region_add_arranger_object (region, obj, F_NO_PUBLISH_EVENTS);
-          }
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        AutomationSelections * as = (AutomationSelections *) self;
-        for (int i = 0; i < as->num_automation_points; i++)
-          {
-            ArrangerObject * obj = (ArrangerObject *) as->automation_points[i];
-            if (clone)
-              {
-                obj = arranger_object_clone (obj);
-              }
-            region_add_arranger_object (region, obj, F_NO_PUBLISH_EVENTS);
-          }
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        ChordSelections * cs = (ChordSelections *) self;
-        for (int i = 0; i < cs->num_chord_objects; i++)
-          {
-            ArrangerObject * obj = (ArrangerObject *) cs->chord_objects[i];
-            if (clone)
-              {
-                obj = arranger_object_clone (obj);
-              }
-            region_add_arranger_object (region, obj, F_NO_PUBLISH_EVENTS);
-          }
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-}
-
-/**
- * Gets first object.
- */
-ArrangerObject *
-arranger_selections_get_first_object (const ArrangerSelections * self)
-{
-  int i;
-
-  Position pos;
-  position_set_to_bar (&pos, 80000);
-  ArrangerObject * ret_obj = NULL;
-
-#define GET_FIRST_OBJ(sel, cc, sc) \
-  for (i = 0; i < (sel)->num_##sc##s; i++) \
-    { \
-      cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = (ArrangerObject *) sc; \
-      g_warn_if_fail (obj); \
-      g_debug ("checking obj %p", obj); \
-      position_print (&obj->pos); \
-      position_print (&pos); \
-      if (position_is_before (&obj->pos, &pos)) \
-        { \
-          g_debug ("position before"); \
-          position_set_to_pos (&pos, &obj->pos); \
-          ret_obj = obj; \
-        } \
-      else \
-        { \
-          g_debug ("position not before"); \
-        } \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_FIRST_OBJ (ts, Region, region);
-        GET_FIRST_OBJ (ts, ScaleObject, scale_object);
-        GET_FIRST_OBJ (ts, Marker, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * mas =
-          (const MidiArrangerSelections *) self;
-        GET_FIRST_OBJ (mas, MidiNote, midi_note);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * as = (const AutomationSelections *) self;
-        GET_FIRST_OBJ (as, AutomationPoint, automation_point);
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * cs = (const ChordSelections *) self;
-        GET_FIRST_OBJ (cs, ChordObject, chord_object);
-      }
-      break;
-    default:
-      g_return_val_if_reached (NULL);
-    }
-
-  return ret_obj;
-
-#undef GET_FIRST_OBJ
-}
-
-/**
- * Gets last object.
- *
- * @param ends_last Whether to get the object that ends last,
- *   otherwise the object that starts last.
- */
-ArrangerObject *
-arranger_selections_get_last_object (
-  const ArrangerSelections * self,
-  bool                       ends_last)
-{
-  int i;
-
-  Position pos;
-  position_set_to_bar (&pos, -POSITION_MAX_BAR);
-  ArrangerObject * ret_obj = NULL;
-
-#define GET_LAST_OBJ(sel, cc, sc) \
-  for (i = 0; i < (sel)->num_##sc##s; i++) \
-    { \
-      cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = (ArrangerObject *) sc; \
-      g_warn_if_fail (obj); \
-      if (arranger_object_type_has_length (obj->type) && ends_last) \
-        { \
-          if (position_is_after (&obj->end_pos, &pos)) \
-            { \
-              position_set_to_pos (&pos, &obj->end_pos); \
-              ret_obj = obj; \
-            } \
-        } \
-      else \
-        { \
-          if (position_is_after (&obj->pos, &pos)) \
-            { \
-              position_set_to_pos (&pos, &obj->pos); \
-              ret_obj = obj; \
-            } \
-        } \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * ts = (const TimelineSelections *) self;
-        GET_LAST_OBJ (ts, Region, region);
-        GET_LAST_OBJ (ts, ScaleObject, scale_object);
-        GET_LAST_OBJ (ts, Marker, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * mas =
-          (const MidiArrangerSelections *) self;
-        GET_LAST_OBJ (mas, MidiNote, midi_note);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * as = (const AutomationSelections *) self;
-        GET_LAST_OBJ (as, AutomationPoint, automation_point);
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * cs = (const ChordSelections *) self;
-        GET_LAST_OBJ (cs, ChordObject, chord_object);
-      }
-      break;
-    default:
-      g_return_val_if_reached (NULL);
-    }
-
-  return ret_obj;
-
-#undef GET_LAST_OBJ
-}
-
-/**
- * Moves the selections by the given
- * amount of ticks.
- *
- * @param ticks Ticks to add.
- */
-void
-arranger_selections_add_ticks (ArrangerSelections * self, const double ticks)
-{
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-#define ADD_TICKS(sel, sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      ArrangerObject * sc = (ArrangerObject *) sel->sc##s[i]; \
-      arranger_object_move (sc, ticks); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      ADD_TICKS (ts, region);
-      ADD_TICKS (ts, scale_object);
-      ADD_TICKS (ts, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      ADD_TICKS (mas, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      ADD_TICKS (as, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      ADD_TICKS (cs, chord_object);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef ADD_TICKS
-}
-
-/**
- * Selects all possible objects from the project.
- */
-void
-arranger_selections_select_all (ArrangerSelections * self, bool fire_events)
-{
-  arranger_selections_clear (self, F_NO_FREE, F_NO_PUBLISH_EVENTS);
-
-  Region * r = clip_editor_get_region (CLIP_EDITOR);
-
-  ArrangerObject * obj = NULL;
-  switch (self->type)
-    {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      /* midi/audio regions */
-      for (auto track : TRACKLIST->tracks)
-        {
-          for (int j = 0; j < track->num_lanes; j++)
-            {
-              TrackLane * lane = track->lanes[j];
-              for (int k = 0; k < lane->num_regions; k++)
+          z_return_if_fail (objects_.size () > 0);
+          auto obj_variant =
+            convert_to_variant<ArrangerObjectPtrVariant> (objects_[0].get ());
+          std::visit (
+            [&] (auto &&obj) {
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (obj)>, RegionOwnedObject>)
                 {
-                  obj = (ArrangerObject *) lane->regions[k];
-                  arranger_object_select (
-                    obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+                  auto r = obj->get_region ();
+                  z_return_if_fail (r);
+                  pos.add_ticks (r->pos_.ticks_);
                 }
-            }
+            },
+            obj_variant);
+        }
+    },
+    arranger_sel_variant);
+}
 
-          /* automation regions */
-          AutomationTracklist * atl = track_get_automation_tracklist (track);
-          if (atl && track->automation_visible)
+template <typename T>
+requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+ArrangerSelections::get_first_object_and_pos (bool global) const
+{
+  Position pos;
+  pos.set_to_bar (POSITION_MAX_BAR);
+  T * ret_obj = nullptr;
+
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&sel) {
+      if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
+        {
+          pos = sel->sel_start_;
+        }
+      else
+        {
+          for (const auto &obj : objects_)
             {
-              for (int j = 0; j < atl->num_ats; j++)
-                {
-                  AutomationTrack * at = atl->ats[j];
-
-                  if (!at->visible)
-                    continue;
-
-                  for (int k = 0; k < at->num_regions; k++)
+              auto obj_variant =
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
+              std::visit (
+                [&] (auto &&obj) {
+                  if constexpr (
+                    std::derived_from<std::decay_t<decltype (obj)>, T>)
                     {
-                      obj = (ArrangerObject *) at->regions[k];
-                      arranger_object_select (
-                        obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+                      if (obj->pos_ < pos)
+                        {
+                          ret_obj = obj;
+                          pos = obj->pos_;
+                        }
+                    }
+                },
+                obj_variant);
+            }
+        }
+
+      if constexpr (
+        !std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
+        {
+          if (global)
+            {
+              add_region_ticks (pos);
+            }
+        }
+    },
+    variant);
+
+  return std::make_pair (ret_obj, pos);
+}
+
+template <typename T>
+requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
+{
+  Position pos;
+  T *      ret_obj = nullptr;
+
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&sel) {
+      if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
+        {
+          pos = sel->sel_end_;
+        }
+      else
+        {
+          for (const auto &obj : objects_)
+            {
+              auto obj_variant =
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
+              std::visit (
+                [&] (auto &&obj) {
+                  if constexpr (
+                    std::derived_from<
+                      std::decay_t<decltype (obj)>, LengthableObject>)
+                    {
+                      if (ends_last)
+                        {
+                          if (obj->end_pos_ > pos)
+                            {
+                              ret_obj = obj;
+                              pos = obj->end_pos_;
+                            }
+                        }
+                      else
+                        {
+                          if (obj->pos_ > pos)
+                            {
+                              ret_obj = obj;
+                              pos = obj->pos_;
+                            }
+                        }
+                    }
+                  else
+                    {
+                      if (obj->pos_ > pos)
+                        {
+                          ret_obj = obj;
+                          pos = obj->pos_;
+                        }
+                    }
+                },
+                obj_variant);
+            }
+        }
+
+      if constexpr (
+        !std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
+        {
+          if (global)
+            {
+              add_region_ticks (pos);
+            }
+        }
+    },
+    variant);
+
+  return std::make_pair (ret_obj, pos);
+}
+
+void
+ArrangerSelections::add_to_region (Region &region)
+{
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&self) {
+      if constexpr (
+        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+        {
+          // no region...
+          return;
+        }
+      for (auto &obj : self->objects_)
+        {
+          auto obj_variant =
+            convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
+          std::visit (
+            [&] (auto &&obj) {
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (obj)>, RegionOwnedObject>)
+                {
+                  auto region_variant =
+                    convert_to_variant<RegionPtrVariant> (&region);
+                  std::visit (
+                    [&] (auto &&region) {
+                      auto obj_clone = obj->clone_shared ();
+                      region->append_object (obj_clone, false);
+                    },
+                    region_variant);
+                }
+            },
+            obj_variant);
+        }
+    },
+    variant);
+}
+
+void
+ArrangerSelections::add_ticks (const double ticks)
+{
+  for (auto &obj : objects_)
+    {
+      obj->move (ticks);
+    }
+}
+
+void
+ArrangerSelections::select_all (bool fire_events)
+{
+  clear (false);
+
+  auto r = CLIP_EDITOR->get_region ();
+
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&self) {
+      if constexpr (
+        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+        {
+          /* midi/audio regions */
+          for (auto &track : TRACKLIST->tracks_)
+            {
+              if (auto laned_track = dynamic_cast<LanedTrack *> (track.get ()))
+                {
+                  auto laned_track_variant =
+                    convert_to_variant<LanedTrackPtrVariant> (laned_track);
+                  std::visit (
+                    [&] (auto &&laned_track) {
+                      for (auto &region : laned_track->regions_)
+                        {
+                          add_object_ref (region);
+                        }
+                    },
+                    laned_track_variant);
+                }
+
+              /* automation regions */
+              if (
+                auto automatable_track =
+                  dynamic_cast<AutomatableTrack *> (track.get ()))
+                {
+                  const auto &atl =
+                    automatable_track->get_automation_tracklist ();
+                  if (automatable_track->automation_visible_)
+                    {
+                      for (auto &at : atl.ats_)
+                        {
+                          if (!at->visible_)
+                            continue;
+
+                          for (auto &region : at->regions_)
+                            {
+                              add_object_ref (region);
+                            }
+                        }
                     }
                 }
             }
-        }
 
-      /* chord regions */
-      for (int j = 0; j < P_CHORD_TRACK->num_chord_regions; j++)
+          /* chord regions */
+          for (auto &region : P_CHORD_TRACK->regions_)
+            {
+              add_object_ref (region);
+            }
+
+          /* scales */
+          for (auto &scale : P_CHORD_TRACK->scales_)
+            {
+              add_object_ref (scale);
+            }
+
+          /* markers */
+          for (auto &marker : P_MARKER_TRACK->markers_)
+            {
+              add_object_ref (marker);
+            }
+        }
+      else if constexpr (
+        std::is_same_v<ChordSelections, std::decay_t<decltype (self)>>)
         {
-          Region * cr = P_CHORD_TRACK->chord_regions[j];
-          obj = (ArrangerObject *) cr;
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-        }
+          if (!r || !r->is_chord ())
+            return;
 
-      /* scales */
-      for (int i = 0; i < P_CHORD_TRACK->num_scales; i++)
+          auto cr = dynamic_cast<ChordRegion *> (r);
+          for (auto &co : cr->chord_objects_)
+            {
+              z_return_if_fail (
+                co->chord_index_ < CHORD_EDITOR->chords_.size ());
+              add_object_ref (co);
+            }
+        }
+      else if constexpr (
+        std::is_same_v<MidiSelections, std::decay_t<decltype (self)>>)
         {
-          obj = (ArrangerObject *) P_CHORD_TRACK->scales[i];
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-        }
+          if (!r || !r->is_midi ())
+            return;
 
-      /* markers */
-      for (int j = 0; j < P_MARKER_TRACK->num_markers; j++)
+          auto mr = dynamic_cast<MidiRegion *> (r);
+          for (auto &mn : mr->midi_notes_)
+            {
+              add_object_ref (mn);
+            }
+        }
+      else if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
         {
-          Marker * marker = P_MARKER_TRACK->markers[j];
-          obj = (ArrangerObject *) marker;
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          /* no objects in audio arranger yet */
         }
-      break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-      if (!r || r->id.type != RegionType::REGION_TYPE_CHORD)
-        break;
-
-      for (int i = 0; i < r->num_chord_objects; i++)
+      else if constexpr (
+        std::is_same_v<AutomationSelections, std::decay_t<decltype (self)>>)
         {
-          ChordObject * co = r->chord_objects[i];
-          obj = (ArrangerObject *) co;
-          g_return_if_fail (co->chord_index < CHORD_EDITOR->num_chords);
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-        }
-      break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-      if (!r || r->id.type != RegionType::REGION_TYPE_MIDI)
-        break;
+          if (!r || !r->is_automation ())
+            return;
 
-      for (int i = 0; i < r->num_midi_notes; i++)
+          auto ar = dynamic_cast<AutomationRegion *> (r);
+          for (auto &ap : ar->aps_)
+            {
+              add_object_ref (ap);
+            }
+        }
+
+      if (fire_events)
         {
-          MidiNote * mn = r->midi_notes[i];
-          obj = (ArrangerObject *) mn;
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, self);
         }
-      break;
-      break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-      /* no objects in audio arranger yet */
-      break;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      if (!r || r->id.type != RegionType::REGION_TYPE_AUTOMATION)
-        break;
-
-      for (int i = 0; i < r->num_aps; i++)
-        {
-          AutomationPoint * ap = r->aps[i];
-          obj = (ArrangerObject *) ap;
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-        }
-      break;
-    default:
-      g_return_if_reached ();
-      break;
-    }
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, self);
-    }
+    },
+    variant);
 }
 
-/**
- * Clears selections.
- */
 void
-arranger_selections_clear (ArrangerSelections * self, bool _free, bool fire_events)
+ArrangerSelections::clear (bool fire_events)
 {
-  if (!arranger_selections_has_any (self))
+  if (!has_any ())
     {
       return;
     }
 
-/* use caches because ts->* will be operated on. */
-#define REMOVE_OBJS(sel, sc) \
-  { \
-    g_message ("%s", "clearing " #sc " selections"); \
-    int              num_##sc##s = sel->num_##sc##s; \
-    ArrangerObject * sc##s[num_##sc##s]; \
-    for (int i = 0; i < num_##sc##s; i++) \
-      { \
-        sc##s[i] = (ArrangerObject *) sel->sc##s[i]; \
-      } \
-    for (int i = 0; i < num_##sc##s; i++) \
-      { \
-        ArrangerObject * sc = sc##s[i]; \
-        arranger_selections_remove_object (self, sc); \
-        if (_free) \
-          { \
-            arranger_object_free (sc); \
-          } \
-        else if (fire_events) \
-          { \
-            EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, sc); \
-          } \
-      } \
-  }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        TimelineSelections * ts = (TimelineSelections *) self;
-        REMOVE_OBJS (ts, region);
-        REMOVE_OBJS (ts, scale_object);
-        REMOVE_OBJS (ts, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        MidiArrangerSelections * mas = (MidiArrangerSelections *) self;
-        REMOVE_OBJS (mas, midi_note);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        AutomationSelections * as = (AutomationSelections *) self;
-        REMOVE_OBJS (as, automation_point);
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        ChordSelections * cs = (ChordSelections *) self;
-        REMOVE_OBJS (cs, chord_object);
-      }
-      break;
-    case TYPE (AUDIO):
-      {
-        AudioSelections * aus = (AudioSelections *) self;
-        aus->has_selection = false;
-      }
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef REMOVE_OBJS
-}
-
-/**
- * Returns the number of selected objects.
- */
-int
-arranger_selections_get_num_objects (const ArrangerSelections * self)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  int size = 0;
-
-#define ADD_OBJ(sel, sc) \
-  for (int i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      size++; \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      ADD_OBJ (ts, region);
-      ADD_OBJ (ts, scale_object);
-      ADD_OBJ (ts, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      ADD_OBJ (mas, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      ADD_OBJ (as, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      ADD_OBJ (cs, chord_object);
-      break;
-    default:
-      g_return_val_if_reached (-1);
-    }
-#undef ADD_OBJ
-
-  return size;
-}
-
-/**
- * Code to run after deserializing.
- */
-void
-arranger_selections_post_deserialize (ArrangerSelections * self)
-{
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  self->magic = ARRANGER_SELECTIONS_MAGIC;
-
-/* use caches because ts->* will be operated on. */
-#define POST_DESERIALIZE(sel, sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      ArrangerObject * obj = (ArrangerObject *) sel->sc##s[i]; \
-      /* throws an error otherwise */ \
-      if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION) \
-        { \
-          Region * r = (Region *) obj; \
-          if (r->id.type == RegionType::REGION_TYPE_AUDIO) \
-            { \
-              r->read_from_pool = true; \
-            } \
-        } \
-      arranger_object_post_deserialize (obj); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      POST_DESERIALIZE (ts, region);
-      POST_DESERIALIZE (ts, scale_object);
-      POST_DESERIALIZE (ts, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      POST_DESERIALIZE (mas, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      POST_DESERIALIZE (as, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      POST_DESERIALIZE (cs, chord_object);
-      break;
-    case TYPE (AUDIO):
-      /* no post-deserialization needed */
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef POST_DESERIALIZE
-}
-
-bool
-arranger_selections_validate (ArrangerSelections * self)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-  AudioSelections *        aus;
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      (void) ts;
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      (void) mas;
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      (void) as;
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      (void) cs;
-      break;
-    case TYPE (AUDIO):
-      {
-        aus = (AudioSelections *) self;
-        Region * r = region_find (&aus->region_id);
-        g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
-        if (
-          position_is_before (&aus->sel_start, &r->base.pos)
-          || position_is_after_or_equal (&aus->sel_end, &r->base.end_pos))
-          return false;
-      }
-      break;
-    default:
-      g_return_val_if_reached (false);
-    }
-
-  return true;
-}
-
-/**
- * Frees anything allocated by the selections
- * but not the objects or @ref self itself.
- */
-void
-arranger_selections_free_members (ArrangerSelections * self)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      free (ts->regions);
-      free (ts->scale_objects);
-      free (ts->markers);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      free (mas->midi_notes);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      free (as->automation_points);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      free (cs->chord_objects);
-      break;
-    case TYPE (AUDIO):
-      /* nothing to free */
-      break;
-    default:
-      g_return_if_reached ();
-    }
-}
-
-/**
- * Frees the selections but not the objects.
- */
-void
-arranger_selections_free (ArrangerSelections * self)
-{
-  arranger_selections_free_members (self);
-  object_zero_and_free (self);
-}
-
-/**
- * Frees all the objects as well.
- *
- * To be used in actions where the selections are
- * all clones.
- */
-void
-arranger_selections_free_full (ArrangerSelections * self)
-{
-  g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
-
-  g_debug ("freeing arranger selections %p...", self);
-
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-/* use caches because ts->* will be operated on. */
-#define FREE_OBJS(sel, sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      object_free_w_func_and_null_cast ( \
-        arranger_object_free, ArrangerObject *, sel->sc##s[i]); \
-    } \
-  object_zero_and_free (sel->sc##s); \
-  sel->num_##sc##s = 0
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      FREE_OBJS (ts, region);
-      FREE_OBJS (ts, scale_object);
-      FREE_OBJS (ts, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      FREE_OBJS (mas, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      FREE_OBJS (as, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      FREE_OBJS (cs, chord_object);
-      break;
-    case TYPE (AUDIO):
-      /* nothing to free */
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef FREE_OBJS
-
-  object_zero_and_free (self);
-}
-
-/**
- * Returns if the arranger object is in the
- * selections or  not.
- *
- * The object must be the main object (see
- * ArrangerObjectInfo).
- */
-int
-arranger_selections_contains_object (
-  ArrangerSelections * self,
-  ArrangerObject *     obj)
-{
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), 0);
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      switch (obj->type)
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&self) {
+      if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
         {
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
-          return array_contains (ts->regions, ts->num_regions, obj);
-          break;
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-          return array_contains (ts->scale_objects, ts->num_scale_objects, obj);
-          break;
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER:
-          return array_contains (ts->markers, ts->num_markers, obj);
-          break;
-        default:
-          break;
+          self->has_selection_ = false;
         }
-      break;
-    case TYPE (MIDI):
-      {
-        mas = (MidiArrangerSelections *) self;
-        switch (obj->type)
-          {
-          case ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY:
-            {
-              Velocity * vel = (Velocity *) obj;
-              MidiNote * mn = velocity_get_midi_note (vel);
-              return array_contains (mas->midi_notes, mas->num_midi_notes, mn);
-            }
-            break;
-          case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-            {
-              return array_contains (mas->midi_notes, mas->num_midi_notes, obj);
-            }
-            break;
-          default:
-            g_return_val_if_reached (-1);
-          }
-      }
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      switch (obj->type)
+      else
         {
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-          {
-            return array_contains (
-              as->automation_points, as->num_automation_points, obj);
-          }
-          break;
-        default:
-          g_return_val_if_reached (-1);
+          objects_.clear ();
         }
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
-        {
-          return array_contains (cs->chord_objects, cs->num_chord_objects, obj);
-        }
-      break;
-    default:
-      g_critical ("unknown type %d", (int) self->type);
-      return false;
-    }
+    },
+    variant);
 
-  g_return_val_if_reached (0);
+  // TODO: fire events
 }
 
-/**
- * Returns if the selections contain an undeletable
- * object (such as the start marker).
- */
-bool
-arranger_selections_contains_undeletable_object (const ArrangerSelections * self)
+void
+ArrangerSelections::post_deserialize ()
 {
-  /* FIXME use arranger_object_is_deletable() */
-  switch (self->type)
+  for (auto &obj : objects_)
     {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      {
-        TimelineSelections * tl_sel = (TimelineSelections *) self;
-        for (int i = 0; i < tl_sel->num_markers; i++)
-          {
-            Marker * m = tl_sel->markers[i];
-            if (!marker_is_deletable (m))
-              {
-                return true;
-              }
-          }
-      }
-      break;
-    default:
-      return false;
+      obj->post_deserialize ();
     }
-  return false;
-}
-
-/**
- * Returns if the selections contain an unclonable
- * object (such as the start marker).
- */
-bool
-arranger_selections_contains_unclonable_object (const ArrangerSelections * self)
-{
-  return arranger_selections_contains_undeletable_object (self);
 }
 
 bool
-arranger_selections_contains_unrenamable_object (const ArrangerSelections * self)
+ArrangerSelections::validate () const
 {
-  return arranger_selections_contains_undeletable_object (self);
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  return std::visit (
+    [] (auto &&self) {
+      if constexpr (
+        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
+        {
+          auto r = RegionImpl<AudioRegion>::find (self->region_id_);
+          z_return_val_if_fail (r, false);
+          if (self->sel_start_ < r->pos_ || self->sel_end_ >= r->end_pos_)
+            return false;
+        }
+      return true;
+    },
+    variant);
 }
 
 bool
-arranger_selections_contains_object_with_property (
-  ArrangerSelections *       self,
-  ArrangerSelectionsProperty property,
-  bool                       value)
+ArrangerSelections::contains_object (const ArrangerObject &obj) const
 {
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self, objs_arr);
+  return std::visit (
+    [&] (auto &&obj_ptr) { return find_object (*obj_ptr) != nullptr; },
+    convert_to_variant<ArrangerObjectPtrVariant> (&obj));
+}
+
+bool
+ArrangerSelections::contains_undeletable_object () const
+{
+  return std::any_of (objects_.begin (), objects_.end (), [] (auto &element) {
+    return !element->is_deletable ();
+  });
+}
+
+bool
+ArrangerSelections::contains_unclonable_object () const
+{
+  return contains_undeletable_object ();
+}
+
+bool
+ArrangerSelections::contains_unrenamable_object () const
+{
+  return contains_undeletable_object ();
+}
+
+bool
+ArrangerSelections::contains_object_with_property (Property property, bool value)
+  const
+{
 
 #define CHECK_PROP(x) \
   (property == ArrangerSelectionsProperty::ARRANGER_SELECTIONS_PROPERTY_##x)
 
-  bool ret = false;
-  for (size_t i = 0; i < objs_arr->len; i++)
+  for (auto &obj : objects_)
     {
-      ArrangerObject * cur_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-
-      if (
-        CHECK_PROP (HAS_LENGTH)
-        && arranger_object_type_has_length (cur_obj->type) == value)
-        {
-          ret = true;
-          break;
-        }
-
-      if (CHECK_PROP (HAS_LOOPED))
-        {
-          int num_loops =
-            arranger_object_type_can_loop (cur_obj->type)
-              ? arranger_object_get_num_loops (cur_obj, false)
-              : 0;
-          if ((num_loops > 0) == value)
-            {
-              ret = true;
-              break;
-            }
-        }
-
-      if (
-        CHECK_PROP (CAN_LOOP)
-        && arranger_object_type_can_loop (cur_obj->type) == value)
-        {
-          ret = true;
-          break;
-        }
-
-      if (CHECK_PROP (CAN_FADE) && arranger_object_can_fade (cur_obj) == value)
-        {
-          ret = true;
-          break;
-        }
-    }
-
-#undef CHECK_PROP
-
-  g_ptr_array_unref (objs_arr);
-
-  return ret;
-}
-
-/**
- * Removes the arranger object from the selections.
- */
-void
-arranger_selections_remove_object (
-  ArrangerSelections * self,
-  ArrangerObject *     obj)
-{
-  g_return_if_fail (IS_ARRANGER_SELECTIONS (self) && IS_ARRANGER_OBJECT (obj));
-
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
-#define REMOVE_OBJ(sel, caps, sc) \
-  if ( \
-    obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_##caps \
-    && array_contains (sel->sc##s, sel->num_##sc##s, obj)) \
-    { \
-      array_delete (sel->sc##s, sel->num_##sc##s, obj); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      REMOVE_OBJ (ts, REGION, region);
-      REMOVE_OBJ (ts, SCALE_OBJECT, scale_object);
-      REMOVE_OBJ (ts, MARKER, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY)
-        {
-          Velocity * vel = (Velocity *) obj;
-          obj = (ArrangerObject *) velocity_get_midi_note (vel);
-        }
-      REMOVE_OBJ (mas, MIDI_NOTE, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      REMOVE_OBJ (as, AUTOMATION_POINT, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      REMOVE_OBJ (cs, CHORD_OBJECT, chord_object);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-#undef REMOVE_OBJ
-}
-
-double
-arranger_selections_get_length_in_ticks (ArrangerSelections * self)
-{
-  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), 0);
-
-  Position p1, p2;
-  arranger_selections_get_start_pos (self, &p1, F_GLOBAL);
-  arranger_selections_get_end_pos (self, &p2, F_GLOBAL);
-
-  return p2.ticks - p1.ticks;
-}
-
-/**
- * Returns whether all the selections are on the
- * same lane (track lane or automation lane).
- */
-bool
-arranger_selections_all_on_same_lane (ArrangerSelections * self)
-{
-  bool        ret = true;
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self, objs_arr);
-
-  /* return if not all regions on the same lane or automation track */
-  RegionIdentifier id;
-  memset (&id, 0, sizeof (RegionIdentifier));
-  id.type = (RegionType) -1;
-  for (size_t i = 0; i < objs_arr->len; i++)
-    {
-      ArrangerObject * obj = (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      if (obj->type != ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
-        {
-          ret = false;
-          goto free_objs_and_return;
-        }
-
-      /* verify that region is of same type as
-       * first */
-      Region * r = (Region *) obj;
-      if (i == 0)
-        {
-          id = r->id;
-        }
-      else
-        {
-          if (id.type != r->id.type)
-            {
-              ret = false;
-              goto free_objs_and_return;
-            }
-        }
-
-      switch (id.type)
-        {
-        case RegionType::REGION_TYPE_MIDI:
-        case RegionType::REGION_TYPE_AUDIO:
-          if (
-            r->id.track_name_hash != id.track_name_hash
-            || r->id.lane_pos != id.lane_pos)
-            {
-              ret = false;
-              goto free_objs_and_return;
-            }
-          break;
-        case RegionType::REGION_TYPE_CHORD:
-          break;
-        case RegionType::REGION_TYPE_AUTOMATION:
-          if (
-            r->id.track_name_hash != id.track_name_hash
-            || r->id.at_idx != id.at_idx)
-            {
-              ret = false;
-              goto free_objs_and_return;
-            }
-          break;
-        }
-    }
-
-free_objs_and_return:
-  g_ptr_array_unref (objs_arr);
-
-  return ret;
-}
-
-/**
- * Merges the given selections into one region.
- *
- * @note All selections must be on the same lane.
- */
-void
-arranger_selections_merge (ArrangerSelections * self)
-{
-  /* return if not all regions on the same lane or
-   * automation track */
-  bool same_lane = arranger_selections_all_on_same_lane (self);
-  if (!same_lane)
-    {
-      g_warning ("selections not on same lane");
-      return;
-    }
-
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self, objs_arr);
-
-  double ticks_length = arranger_selections_get_length_in_ticks (self);
-  unsigned_frame_t num_frames = static_cast<unsigned_frame_t> (
-    ceil ((double) AUDIO_ENGINE->frames_per_tick * ticks_length));
-  Position pos, end_pos;
-  arranger_selections_get_start_pos (self, &pos, F_GLOBAL);
-  position_from_ticks (&end_pos, pos.ticks + ticks_length);
-
-  ArrangerObject * first_obj = arranger_selections_get_first_object (self);
-  g_return_if_fail (
-    IS_ARRANGER_OBJECT_AND_NONNULL (first_obj)
-    && first_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION);
-  Region * first_r = (Region *) first_obj;
-
-  Region * new_r = NULL;
-  switch (first_r->id.type)
-    {
-    case RegionType::REGION_TYPE_MIDI:
-      new_r = midi_region_new (
-        &pos, &end_pos, first_r->id.track_name_hash, first_r->id.lane_pos,
-        first_r->id.idx);
-      for (size_t i = 0; i < objs_arr->len; i++)
-        {
-          ArrangerObject * r_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          Region * r = (Region *) r_obj;
-          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
-
-          /* copy all midi notes */
-          for (int j = 0; j < r->num_midi_notes; j++)
-            {
-              MidiNote *       mn = r->midi_notes[j];
-              ArrangerObject * new_obj =
-                arranger_object_clone ((ArrangerObject *) mn);
-              MidiNote * new_mn = (MidiNote *) new_obj;
-
-              /* move by diff from first object */
-              arranger_object_move (new_obj, ticks_diff);
-
-              midi_region_add_midi_note (new_r, new_mn, F_NO_PUBLISH_EVENTS);
-            }
-        }
-      break;
-    case RegionType::REGION_TYPE_AUDIO:
-      {
-        std::vector<float> lframes (num_frames, 0);
-        std::vector<float> rframes (num_frames, 0);
-        std::vector<float> frames (num_frames * 2, 0);
-        dsp_fill (lframes.data (), 0, (size_t) num_frames);
-        dsp_fill (rframes.data (), 0, (size_t) num_frames);
-        AudioClip * first_r_clip = audio_region_get_clip (first_r);
-        BitDepth    max_depth = first_r_clip->bit_depth;
-        g_warn_if_fail (first_r_clip->name);
-        for (size_t i = 0; i < objs_arr->len; i++)
-          {
-            ArrangerObject * r_obj =
-              (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-            Region * r = (Region *) r_obj;
-            long     frames_diff = r_obj->pos.frames - first_obj->pos.frames;
-            long r_frames_length = arranger_object_get_length_in_frames (r_obj);
-
-            /* add all audio data */
-            AudioClip * clip = audio_region_get_clip (r);
-            dsp_add2 (
-              &lframes.data ()[frames_diff], clip->ch_frames[0],
-              (size_t) r_frames_length);
-
-            if (clip->bit_depth > max_depth)
-              {
-                max_depth = clip->bit_depth;
-              }
-          }
-
-        /* interleave */
-        for (unsigned_frame_t i = 0; i < num_frames; i++)
-          {
-            frames[i * 2] = lframes[i];
-            frames[i * 2 + 1] = rframes[i];
-          }
-
-        /* create new region using frames */
-        new_r = audio_region_new (
-          -1, NULL, true, frames.data (), num_frames, first_r_clip->name, 2,
-          max_depth, &pos, first_r->id.track_name_hash, first_r->id.lane_pos,
-          first_r->id.idx, NULL);
-      }
-      break;
-    case RegionType::REGION_TYPE_CHORD:
-      new_r = chord_region_new (&pos, &end_pos, first_r->id.idx);
-      for (size_t i = 0; i < objs_arr->len; i++)
-        {
-          ArrangerObject * r_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          Region * r = (Region *) r_obj;
-          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
-
-          /* copy all chord objects */
-          for (int j = 0; j < r->num_chord_objects; j++)
-            {
-              ChordObject *    co = r->chord_objects[j];
-              ArrangerObject * new_obj =
-                arranger_object_clone ((ArrangerObject *) co);
-              ChordObject * new_co = (ChordObject *) new_obj;
-
-              /* move by diff from first object */
-              arranger_object_move (new_obj, ticks_diff);
-
-              chord_region_add_chord_object (new_r, new_co, F_NO_PUBLISH_EVENTS);
-            }
-        }
-      break;
-    case RegionType::REGION_TYPE_AUTOMATION:
-      new_r = automation_region_new (
-        &pos, &end_pos, first_r->id.track_name_hash, first_r->id.at_idx,
-        first_r->id.idx);
-      for (size_t i = 0; i < objs_arr->len; i++)
-        {
-          ArrangerObject * r_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          Region * r = (Region *) r_obj;
-          double   ticks_diff = r_obj->pos.ticks - first_obj->pos.ticks;
-
-          /* copy all chord objects */
-          for (int j = 0; j < r->num_aps; j++)
-            {
-              AutomationPoint * ap = r->aps[j];
-              ArrangerObject *  new_obj =
-                arranger_object_clone ((ArrangerObject *) ap);
-              AutomationPoint * new_ap = (AutomationPoint *) new_obj;
-
-              /* move by diff from first object */
-              arranger_object_move (new_obj, ticks_diff);
-
-              automation_region_add_ap (new_r, new_ap, F_NO_PUBLISH_EVENTS);
-            }
-        }
-      break;
-    }
-
-  region_gen_name (new_r, first_r->name, NULL, NULL);
-
-  /* clear/free previous selections and add the
-   * new region */
-  arranger_selections_clear (self, F_FREE, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (self, (ArrangerObject *) new_r);
-
-  g_ptr_array_unref (objs_arr);
-}
-
-bool
-arranger_selections_contains_looped (ArrangerSelections * self)
-{
-  if (self->type != ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
-    return false;
-
-  TimelineSelections * tl = (TimelineSelections *) self;
-  for (int i = 0; i < tl->num_regions; i++)
-    {
-      Region * r = tl->regions[i];
-      if (region_is_looped (r))
-        return true;
-    }
-
-  return false;
-}
-
-bool
-arranger_selections_can_be_merged (ArrangerSelections * self)
-{
-  if (self->type != ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
-    return false;
-
-  TimelineSelections * tl = (TimelineSelections *) self;
-
-  return tl->num_regions > 1 && arranger_selections_all_on_same_lane (self)
-         && !arranger_selections_contains_looped (self);
-}
-
-/**
- * Returns if the selections can be pasted.
- */
-bool
-arranger_selections_can_be_pasted (ArrangerSelections * self)
-{
-  Region *   r = clip_editor_get_region (CLIP_EDITOR);
-  Position * pos = PLAYHEAD;
-
-  if (arranger_selections_contains_unclonable_object (self))
-    {
-      g_message ("selections contain an unclonable object, cannot paste");
-      return false;
-    }
-
-  switch (self->type)
-    {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      return timeline_selections_can_be_pasted (
-        (TimelineSelections *) self, pos, TRACKLIST_SELECTIONS->tracks[0]->pos);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-      return chord_selections_can_be_pasted ((ChordSelections *) self, pos, r);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-      return midi_arranger_selections_can_be_pasted (
-        (MidiArrangerSelections *) self, pos, r);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      return automation_selections_can_be_pasted (
-        (AutomationSelections *) self, pos, r);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-      /* TODO */
-      g_warning ("unimplemented");
-      return false;
-    default:
-      g_return_val_if_reached (false);
-      break;
-    }
-
-  return true;
-}
-
-/**
- * Pastes the given selections to the given
- * Position.
- */
-void
-arranger_selections_paste_to_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  bool                 undoable)
-{
-  g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
-
-  if (!arranger_selections_has_any (self))
-    {
-      g_message ("nothing to paste");
-      return;
-    }
-
-  /* note: the objects in these selections will become the actual project
-   * objects so they should not be free'd here */
-  ArrangerSelections * clone_sel = arranger_selections_clone (self);
-  g_return_if_fail (clone_sel);
-
-  /* clear current project selections */
-  ArrangerSelections * project_sel =
-    arranger_selections_get_for_type (self->type);
-  g_return_if_fail (project_sel);
-  arranger_selections_clear (project_sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
-
-  Position first_obj_pos;
-  arranger_selections_get_start_pos (clone_sel, &first_obj_pos, F_NOT_GLOBAL);
-
-  /* if timeline selecctions */
-  if (self->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
-    {
-      TimelineSelections * ts = (TimelineSelections *) clone_sel;
-      Track *              track = TRACKLIST_SELECTIONS->tracks[0];
-      g_return_if_fail (track);
-
-      arranger_selections_add_ticks (
-        clone_sel, pos->ticks - first_obj_pos.ticks);
-
-      /* add selections to track */
-      for (int i = 0; i < ts->num_regions; i++)
-        {
-          Region * r = ts->regions[i];
-
-          /* automation not allowed to be pasted this way */
-          if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
-            continue;
-
-          GError * err = NULL;
-          bool     success = track_add_region (
-            track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS,
-            &err);
-          if (!success)
-            {
-              HANDLE_ERROR (err, "%s", _ ("Failed to add region"));
-            }
-        }
-
-      for (int i = 0; i < ts->num_scale_objects; i++)
-        {
-          ScaleObject * scale = ts->scale_objects[i];
-          chord_track_add_scale (P_CHORD_TRACK, scale);
-        }
-      for (int i = 0; i < ts->num_markers; i++)
-        {
-          Marker * m = ts->markers[i];
-          marker_track_add_marker (P_MARKER_TRACK, m);
-        }
-    }
-  /* else if selections inside region */
-  else
-    {
-      Region *         region = clip_editor_get_region (CLIP_EDITOR);
-      ArrangerObject * r_obj = (ArrangerObject *) region;
-
-      /* add selections to region */
-      arranger_selections_add_to_region (clone_sel, region, F_NO_CLONE);
-      arranger_selections_add_ticks (
-        clone_sel, (pos->ticks - r_obj->pos.ticks) - first_obj_pos.ticks);
-    }
-
-  if (undoable)
-    {
-      GError * err = NULL;
-      bool ret = arranger_selections_action_perform_create (clone_sel, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (err, "%s", _ ("Failed to paste selections"));
-        }
-    }
-
-  arranger_selections_free (clone_sel);
-}
-
-/**
- * Appends all objects in the given array.
- */
-void
-arranger_selections_get_all_objects (
-  const ArrangerSelections * self,
-  GPtrArray *                arr)
-{
-#define ADD_OBJ(sel, sc) \
-  for (int i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      g_ptr_array_add (arr, sel->sc##s[i]); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      {
-        const TimelineSelections * ts = (const TimelineSelections *) self;
-        ADD_OBJ (ts, region);
-        ADD_OBJ (ts, scale_object);
-        ADD_OBJ (ts, marker);
-      }
-      break;
-    case TYPE (MIDI):
-      {
-        const MidiArrangerSelections * mas =
-          (const MidiArrangerSelections *) self;
-        ADD_OBJ (mas, midi_note);
-      }
-      break;
-    case TYPE (AUTOMATION):
-      {
-        const AutomationSelections * as = (const AutomationSelections *) self;
-        ADD_OBJ (as, automation_point);
-      }
-      break;
-    case TYPE (CHORD):
-      {
-        const ChordSelections * cs = (const ChordSelections *) self;
-        ADD_OBJ (cs, chord_object);
-      }
-      break;
-    case TYPE (AUDIO):
-      return;
-    default:
-      g_return_if_reached ();
-    }
-#undef ADD_OBJ
-}
-
-ArrangerSelections *
-arranger_selections_get_for_type (ArrangerSelectionsType type)
-{
-  switch (type)
-    {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      return (ArrangerSelections *) TL_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-      return (ArrangerSelections *) MA_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-      return (ArrangerSelections *) CHORD_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      return (ArrangerSelections *) AUTOMATION_SELECTIONS;
-    default:
-      g_return_val_if_reached (NULL);
-    }
-  g_return_val_if_reached (NULL);
-}
-
-bool
-arranger_selections_contains_clip (ArrangerSelections * self, AudioClip * clip)
-{
-  if (self->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
-    {
-      TimelineSelections * sel = (TimelineSelections *) self;
-      for (int i = 0; i < sel->num_regions; i++)
-        {
-          Region * r = sel->regions[i];
-          if (
-            r->id.type == RegionType::REGION_TYPE_AUDIO
-            && r->pool_id == clip->pool_id)
-            {
-              return true;
-            }
-        }
-    }
-  else if (self->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO)
-    {
-      AudioSelections * sel = (AudioSelections *) self;
-      if (sel->pool_id == clip->pool_id)
+      if (property == Property::HasLength && obj->has_length () == value)
         {
           return true;
         }
+      if (property == Property::HasLooped)
+        {
+          if (!obj->can_loop ())
+            {
+              if (!value)
+                return true;
+            }
+          else
+            {
+              auto loopable_object = dynamic_cast<LoopableObject *> (obj.get ());
+              if (loopable_object->get_num_loops (false) > 0 == value)
+                return true;
+            }
+        }
+      if (property == Property::CanLoop)
+        {
+          if (obj->can_loop () == value)
+            return true;
+        }
+      if (property == Property::CanFade)
+        {
+          if (obj->can_fade () == value)
+            return true;
+        }
     }
-
   return false;
 }
 
-bool
-arranger_selections_can_split_at_pos (
-  const ArrangerSelections * self,
-  const Position *           pos)
+void
+ArrangerSelections::remove_object (const ArrangerObject &obj)
 {
-  int                  num_objs = arranger_selections_get_num_objects (self);
-  TimelineSelections * ts;
-  MidiArrangerSelections * mas;
-  bool                     can_split = true;
-  switch (self->type)
+  auto it =
+    std::find_if (objects_.begin (), objects_.end (), [&obj] (auto &element) {
+      return &obj == element.get ();
+    });
+  if (it != objects_.end ())
     {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      if (num_objs != ts->num_regions)
-        {
-          can_split = false;
-          goto return_can_split;
-        }
-      for (int i = 0; i < ts->num_regions; i++)
-        {
-          Region *         r = ts->regions[i];
-          ArrangerObject * r_obj = (ArrangerObject *) r;
+      objects_.erase (it);
+    }
+}
 
-          /* don't allow splitting at edges */
-          if (
-            position_is_before_or_equal (pos, &r_obj->pos)
-            || position_is_after_or_equal (pos, &r_obj->end_pos))
-            {
-              can_split = false;
-              goto return_can_split;
-            }
-        }
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      for (int i = 0; i < mas->num_midi_notes; i++)
-        {
-          MidiNote *       mn = mas->midi_notes[i];
-          ArrangerObject * mn_obj = (ArrangerObject *) mn;
+double
+ArrangerSelections::get_length_in_ticks ()
+{
+  auto p1 = get_first_object_and_pos (true);
+  auto p2 = get_last_object_and_pos (true, true);
 
-          /* don't allow splitting at edges */
-          if (
-            position_is_before_or_equal (pos, &mn_obj->pos)
-            || position_is_after_or_equal (pos, &mn_obj->end_pos))
-            {
-              can_split = false;
-              goto return_can_split;
-            }
-        }
-      break;
-    default:
-      can_split = false;
-      break;
+  return p2.second.ticks_ - p1.second.ticks_;
+}
+
+bool
+ArrangerSelections::can_be_pasted () const
+{
+  return can_be_pasted_at (PLAYHEAD);
+}
+
+bool
+ArrangerSelections::can_be_pasted_at (const Position pos, const int idx) const
+{
+  if (contains_unclonable_object ())
+    {
+      z_debug ("selections contain an unclonable object, cannot paste");
+      return false;
+    }
+  return can_be_pasted_at_impl (pos, idx);
+}
+
+void
+ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
+{
+  if (!has_any ())
+    {
+      z_debug ("nothing to paste");
+      return;
     }
 
-return_can_split:
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  std::visit (
+    [&] (auto &&self) {
+      /* note: the objects in these selections will become the actual project
+       * objects so they should not be free'd here */
+      auto clone_sel = self->clone_unique ();
+
+      /* clear current project selections */
+      auto project_sel = ArrangerSelections::get_for_type (self->type_);
+      z_return_if_fail (project_sel);
+      project_sel->clear (false);
+
+      auto first_obj_pair = clone_sel->get_first_object_and_pos (false);
+
+      if constexpr (
+        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+        {
+          auto track = TRACKLIST_SELECTIONS->get_highest_track ();
+          z_return_if_fail (track);
+
+          clone_sel->add_ticks (pos.ticks_ - first_obj_pair.second.ticks_);
+
+          /* add selections to track */
+          for (auto obj : clone_sel->objects_)
+            {
+              auto obj_variant =
+                convert_to_variant<ArrangerObjectPtrVariant> (obj);
+              std::visit (
+                [&] (auto &&obj) {
+                  if constexpr (
+                    std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                    {
+                      /* automation not allowed to be pasted this way */
+                      if constexpr (
+                        !std::is_same_v<decltype (obj), AutomationRegion>)
+                        {
+                          try
+                            {
+                              track->add_region (
+                                obj->shared_from_this (), nullptr,
+                                obj->id_.lane_pos_, false, false);
+                            }
+                          catch (const ZrythmException &e)
+                            {
+                              e.handle (_ ("Failed to add region"));
+                            }
+                        }
+                    }
+
+                  if constexpr (
+                    std::is_same_v<std::decay_t<decltype (obj)>, ScaleObject>)
+                    {
+                      P_CHORD_TRACK->add_scale (obj->shared_from_this ());
+                    }
+                  else if constexpr (
+                    std::is_same_v<std::decay_t<decltype (obj)>, Marker>)
+                    {
+                      P_MARKER_TRACK->add_marker (obj->shared_from_this ());
+                    }
+                },
+                obj_variant);
+            }
+        }
+      /* else if selections inside region (ie not timeline selections) */
+      else
+        {
+          auto region = CLIP_EDITOR->get_region ();
+
+          /* add selections to region */
+          clone_sel->add_to_region (*region);
+          clone_sel->add_ticks (
+            (pos.ticks_ - region->pos_.ticks_) - first_obj_pair.second.ticks_);
+        }
+
+      if (undoable)
+        {
+          try
+            {
+              UNDO_MANAGER->perform (
+                std::make_unique<ArrangerSelectionsAction::CreateAction> (
+                  *clone_sel));
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to paste selections"));
+            }
+        }
+    },
+    variant);
+}
+
+ArrangerSelections *
+ArrangerSelections::get_for_type (ArrangerSelections::Type type)
+{
+  switch (type)
+    {
+    case ArrangerSelections::Type::Timeline:
+      return TL_SELECTIONS.get ();
+    case ArrangerSelections::Type::Midi:
+      return MIDI_SELECTIONS.get ();
+    case ArrangerSelections::Type::Chord:
+      return CHORD_SELECTIONS.get ();
+    case ArrangerSelections::Type::Automation:
+      return AUTOMATION_SELECTIONS.get ();
+    default:
+      z_return_val_if_reached (nullptr);
+    }
+  z_return_val_if_reached (nullptr);
+}
+
+bool
+ArrangerSelections::can_split_at_pos (const Position pos) const
+{
+  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
+  bool can_split = std::visit (
+    [&] (auto &&self) {
+      if constexpr (
+        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+        {
+          for (auto &obj : objects_)
+            {
+              auto obj_variant =
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
+              auto ret = std::visit (
+                [&] (auto &&obj) {
+                  if constexpr (
+                    std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                    {
+                      /* don't allow splitting at edges */
+                      if (pos <= obj->pos_ || pos >= obj->end_pos_)
+                        {
+                          return false;
+                        }
+                    }
+                  else
+                    {
+                      /* only regions can be split*/
+                      return false;
+                    }
+                },
+                obj_variant);
+              if (!ret)
+                return false;
+            }
+
+          return true;
+        }
+      else if constexpr (
+        std::is_same_v<MidiSelections, std::decay_t<decltype (self)>>)
+        {
+          for (auto obj : objects_ | type_is<MidiNote> ())
+            {
+              /* don't allow splitting at edges */
+              if (pos <= obj->pos_ || pos >= obj->end_pos_)
+                {
+                  return false;
+                }
+            }
+          return true;
+        }
+      else
+        {
+          return false;
+        }
+    },
+    variant);
+
   if (!can_split)
     {
-      char pos_str[400];
-      position_to_string (pos, pos_str);
-      g_message (
-        "cannot split %s selections at %s", ENUM_NAME (self->type), pos_str);
+      z_debug ("cannot split {} selections at {}", ENUM_NAME (type_), pos);
     }
 
   return can_split;
 }
-
-#if 0
-/**
- * Redraws each object in the arranger selections.
- */
-void
-arranger_selections_redraw (
-  ArrangerSelections * self)
-{
-  int size;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self, &size);
-
-  for (int i = 0; i < size; i++)
-    {
-      ArrangerObject * obj = objs[i];
-      arranger_object_queue_redraw (obj);
-    }
-
-  free (objs);
-}
-#endif

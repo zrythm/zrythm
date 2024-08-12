@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
+#include "dsp/instrument_track.h"
 #include "dsp/track.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/editable_label.h"
@@ -9,8 +9,6 @@
 #include "gui/widgets/track_properties_expander.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
-#include "utils/gtk.h"
-#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -34,19 +32,20 @@ track_properties_expander_widget_refresh (
     {
       g_return_if_fail (self->direct_out);
       route_target_selector_widget_refresh (
-        self->direct_out, track_type_has_channel (track->type) ? track : NULL);
+        self->direct_out,
+        track->has_channel () ? dynamic_cast<ChannelTrack *> (track) : nullptr);
 
       editable_label_widget_setup (
-        self->name, track, (GenericStringGetter) track_get_name,
-        (GenericStringSetter) track_set_name_with_action);
+        self->name, track, Track::name_getter, Track::name_setter_with_action);
 
-      bool is_instrument = track->type == TrackType::TRACK_TYPE_INSTRUMENT;
+      bool is_instrument = track->is_instrument ();
       gtk_widget_set_visible (GTK_WIDGET (self->instrument_slot), is_instrument);
       gtk_widget_set_visible (
         GTK_WIDGET (self->instrument_label), is_instrument);
       if (is_instrument)
         {
-          channel_slot_widget_set_instrument (self->instrument_slot, track);
+          channel_slot_widget_set_instrument (
+            self->instrument_slot, dynamic_cast<InstrumentTrack *> (track));
         }
     }
 }
@@ -71,7 +70,7 @@ track_properties_expander_widget_setup (
   gtk_widget_set_visible (lbl, 1)
 
   /* add track name */
-  self->name = editable_label_widget_new (NULL, NULL, NULL, 11);
+  self->name = editable_label_widget_new (nullptr, nullptr, nullptr, 11);
   gtk_label_set_xalign (self->name->label, 0);
   gtk_widget_set_margin_start (GTK_WIDGET (self->name->label), 4);
   CREATE_LABEL (_ ("Track Name"));
@@ -83,7 +82,7 @@ track_properties_expander_widget_setup (
 
   /* add direct out */
   self->direct_out = Z_ROUTE_TARGET_SELECTOR_WIDGET (
-    g_object_new (ROUTE_TARGET_SELECTOR_WIDGET_TYPE, NULL));
+    g_object_new (ROUTE_TARGET_SELECTOR_WIDGET_TYPE, nullptr));
   CREATE_LABEL (_ ("Direct Out"));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);

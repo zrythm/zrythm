@@ -1,20 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Marker related code.
- */
 
 #ifndef __AUDIO_MARKER_H__
 #define __AUDIO_MARKER_H__
-
-#include <cstdint>
-
-#include "dsp/position.h"
-#include "gui/backend/arranger_object.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup dsp
@@ -22,78 +10,106 @@
  * @{
  */
 
-#define MARKER_WIDGET_TRIANGLE_W 10
+#include "dsp/nameable_object.h"
+#include "dsp/timeline_object.h"
+#include "utils/icloneable.h"
+#include "utils/pango.h"
 
-#define marker_is_selected(r) arranger_object_is_selected ((ArrangerObject *) r)
-
-#define marker_is_deletable(m) \
-  ((m)->type != MarkerType::MARKER_TYPE_START \
-   && (m)->type != MarkerType::MARKER_TYPE_END)
-
-/**
- * Marker type.
- */
-enum class MarkerType
-{
-  /** Song start Marker that cannot be deleted. */
-  MARKER_TYPE_START,
-  /** Song end Marker that cannot be deleted. */
-  MARKER_TYPE_END,
-  /** Custom Marker. */
-  MARKER_TYPE_CUSTOM,
-};
+constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
 
 /**
  * Marker for the MarkerTrack.
  */
-typedef struct Marker
+class Marker final
+    : public TimelineObject,
+      public NameableObject,
+      public ICloneable<Marker>,
+      public ISerializable<Marker>
 {
-  /** Base struct. */
-  ArrangerObject base;
+public:
+  /**
+   * Marker type.
+   */
+  enum class Type
+  {
+    /** Song start Marker that cannot be deleted. */
+    Start,
+    /** Song end Marker that cannot be deleted. */
+    End,
+    /** Custom Marker. */
+    Custom,
+  };
 
+  // Rule of 0
+  Marker () = default;
+
+  Marker (const std::string &name)
+      : ArrangerObject (ArrangerObject::Type::Marker), NameableObject (name)
+  {
+  }
+
+  bool is_start () const { return marker_type_ == Type::Start; }
+  bool is_end () const { return marker_type_ == Type::End; }
+
+  bool validate_name (const std::string &name) override
+  {
+    /* valid if no other marker with the same name exists*/
+    return find_by_name (name) == nullptr;
+  }
+
+  void set_marker_track_index (int index) { marker_track_index_ = index; }
+
+  static Marker * find_by_name (const std::string &name);
+
+  bool is_deletable () const override
+  {
+    return marker_type_ != Type::Start && marker_type_ != Type::End;
+  }
+
+  void init_after_cloning (const Marker &other) override
+  {
+    marker_type_ = other.marker_type_;
+    marker_track_index_ = other.marker_track_index_;
+    NameableObject::copy_members_from (other);
+    TimelineObject::copy_members_from (other);
+    ArrangerObject::copy_members_from (other);
+  }
+
+  std::string print_to_str () const override;
+
+  ArrangerObjectPtr find_in_project () const override;
+
+  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+
+  ArrangerObjectPtr insert_clone_to_project () const override;
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** Marker type. */
-  MarkerType type;
+  Type marker_type_ = Type::Custom;
 
-  /** Name of Marker to be displayed in the UI. */
-  char * name;
-
-  /** Escaped name for drawing. */
-  char * escaped_name;
-
-  /** Position of the marker track this marker is
-   * in. */
-  unsigned int track_name_hash;
-
-  /** Index in the track. */
-  int index;
+  /** Index in the marker track. */
+  int marker_track_index_ = -1;
 
   /** Cache layout for drawing the name. */
-  PangoLayout * layout;
-} Marker;
+  PangoLayoutUniquePtr layout_;
+};
 
-/**
- * Creates a Marker.
- */
-Marker *
-marker_new (const char * name);
-
-/**
- * Returns if the two Marker's are equal.
- */
-int
-marker_is_equal (Marker * a, Marker * b);
-
-void
-marker_set_index (Marker * self, int index);
-
-/**
- * Sets the Track of the Marker.
- */
-void
-marker_set_track_name_hash (Marker * marker, unsigned int track_name_hash);
-
-Marker *
-marker_find_by_name (const char * name);
+inline bool
+operator== (const Marker &lhs, const Marker &rhs)
+{
+  return static_cast<const TimelineObject &> (lhs)
+           == static_cast<const TimelineObject &> (rhs)
+         && static_cast<const NameableObject &> (lhs)
+              == static_cast<const NameableObject &> (rhs)
+         && static_cast<const ArrangerObject &> (lhs)
+              == static_cast<const ArrangerObject &> (rhs)
+         && lhs.marker_type_ == rhs.marker_type_
+         && lhs.marker_track_index_ == rhs.marker_track_index_;
+}
 
 /**
  * @}

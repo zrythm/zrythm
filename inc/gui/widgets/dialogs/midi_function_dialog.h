@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Dialog for viewing/editing port info.
  */
@@ -12,7 +12,7 @@
 
 #include "dsp/midi_function.h"
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 #define MIDI_FUNCTION_DIALOG_WIDGET_TYPE \
   (midi_function_dialog_widget_get_type ())
@@ -23,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   MIDI_FUNCTION_DIALOG_WIDGET,
   AdwWindow)
 
-typedef struct ArrangerObject ArrangerObject;
+class ArrangerObject;
 
 /**
  * @addtogroup widgets
@@ -55,7 +55,7 @@ typedef struct _MidiFunctionDialogWidget
 } MidiFunctionDialogWidget;
 
 /**
- * Fills in \ref opts with the current options in the dialog
+ * Fills in @ref opts with the current options in the dialog
  * (fetched from gsettings).
  */
 void

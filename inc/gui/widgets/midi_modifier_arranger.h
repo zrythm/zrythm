@@ -14,7 +14,7 @@
 
 #define MW_MIDI_MODIFIER_ARRANGER (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 
-typedef struct Velocity        Velocity;
+class Velocity;
 typedef struct _VelocityWidget VelocityWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
 
@@ -25,12 +25,17 @@ typedef struct _ArrangerWidget ArrangerWidget;
  */
 
 /**
- * Sets the start velocities of all velocities
- * in the current region.
+ * Sets the start velocities of all velocities in the current region.
  */
 void
 midi_modifier_arranger_widget_set_start_vel (ArrangerWidget * self);
 
+/**
+ * @brief Selects MidiNote objects in the  given range.
+ *
+ * @param self
+ * @param offset_x ?
+ */
 void
 midi_modifier_arranger_widget_select_vels_in_range (
   ArrangerWidget * self,
@@ -42,8 +47,7 @@ midi_modifier_arranger_widget_resize_velocities (
   double           offset_y);
 
 /**
- * Sets the value of each velocity hit at x to the
- * value corresponding to y.
+ * Sets the value of each velocity hit at x to the value corresponding to y.
  *
  * Used with the pencil tool.
  *
@@ -58,14 +62,16 @@ midi_modifier_arranger_set_hit_velocity_vals (
   bool             append_to_selections);
 
 /**
- * Draws a ramp from the start coordinates to the
- * given coordinates.
+ * Draws a ramp from the start coordinates to the given coordinates.
  */
 void
 midi_modifier_arranger_widget_ramp (
   ArrangerWidget * self,
   double           offset_x,
   double           offset_y);
+
+void
+midi_modifier_arranger_on_drag_end (ArrangerWidget * self);
 
 /**
  * @}

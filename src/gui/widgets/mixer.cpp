@@ -1,28 +1,17 @@
-/*
- * SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel.h"
-#include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/folder_channel.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/track.h"
-#include "gui/widgets/tracklist.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
-#include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
 
@@ -31,94 +20,92 @@ G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 void
 mixer_widget_soft_refresh (MixerWidget * self)
 {
-  Track *   track;
-  Channel * ch;
-  for (auto track : TRACKLIST->tracks)
+  for (auto track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
     {
-      if (!track_type_has_channel (track->type))
-        continue;
-
-      ch = track->channel;
-      g_return_if_fail (ch);
-
-      if (GTK_IS_WIDGET (ch->widget))
-        channel_widget_refresh (ch->widget);
+      auto ch = track->channel_;
+      if (GTK_IS_WIDGET (ch->widget_))
+        channel_widget_refresh (ch->widget_);
     }
 }
 
 void
 mixer_widget_hard_refresh (MixerWidget * self)
 {
-#define REF_AND_ADD_TO_ARRAY(x) \
-  g_object_ref (x); \
-  g_ptr_array_add (refed_widgets, x)
+  std::vector<GtkWidget *> refed_widgets;
+  auto                     ref_and_add_to_array = [&refed_widgets] (auto x) {
+    g_object_ref (x);
+    refed_widgets.push_back (GTK_WIDGET (x));
+  };
 
-  GPtrArray * refed_widgets = g_ptr_array_new ();
-
-  REF_AND_ADD_TO_ARRAY (self->ddbox);
-  REF_AND_ADD_TO_ARRAY (self->channels_add);
+  ref_and_add_to_array (self->ddbox);
+  ref_and_add_to_array (self->channels_add);
 
   /* ref the channel widgets to make this faster */
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (track->folder_ch_widget)
+      if (track->is_folder ())
         {
-          REF_AND_ADD_TO_ARRAY (track->folder_ch_widget);
+          auto foldable_tr = dynamic_cast<FolderTrack *> (track.get ());
+          if (foldable_tr->folder_ch_widget_)
+            {
+              ref_and_add_to_array (foldable_tr->folder_ch_widget_);
+            }
         }
 
-      if (track_type_has_channel (track->type))
+      if (track->has_channel ())
         {
-          if (track->channel->widget)
+          auto ch_track = dynamic_cast<ChannelTrack *> (track.get ());
+          if (ch_track->channel_->widget_)
             {
-              REF_AND_ADD_TO_ARRAY (track->channel->widget);
+              ref_and_add_to_array (ch_track->channel_->widget_);
             }
         }
     }
 
   /* remove all things in the container */
   z_gtk_widget_remove_all_children (GTK_WIDGET (self->channels_box));
-  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == NULL);
+  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
 
   /* add all channels */
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      if (!track_get_should_be_visible (track))
+      if (!track->should_be_visible ())
         continue;
 
-      if (
-        track_type_is_foldable (track->type)
-        && track->type != TrackType::TRACK_TYPE_MASTER)
+      if (track->is_foldable () && !track->is_master ())
         {
-          if (!track->folder_ch_widget)
+          auto foldable_tr = dynamic_cast<FolderTrack *> (track.get ());
+          if (!foldable_tr->folder_ch_widget_)
             {
-              track->folder_ch_widget = folder_channel_widget_new (track);
+              foldable_tr->folder_ch_widget_ =
+                folder_channel_widget_new (foldable_tr);
             }
 
-          folder_channel_widget_refresh (track->folder_ch_widget);
+          folder_channel_widget_refresh (foldable_tr->folder_ch_widget_);
 
           gtk_box_append (
-            self->channels_box, GTK_WIDGET (track->folder_ch_widget));
+            self->channels_box, GTK_WIDGET (foldable_tr->folder_ch_widget_));
         }
 
-      if (!track_type_has_channel (track->type))
+      if (!track->has_channel ())
         continue;
 
-      Channel * ch = track->channel;
-      g_return_if_fail (ch);
+      auto ch_track = dynamic_cast<ChannelTrack *> (track.get ());
+      auto ch = ch_track->channel_;
 
       /* create chan widget if necessary */
-      if (!ch->widget)
+      if (!ch->widget_)
         {
-          ch->widget = channel_widget_new (ch);
+          ch->widget_ = channel_widget_new (ch);
         }
 
-      channel_widget_refresh (ch->widget);
+      channel_widget_refresh (ch->widget_);
 
       if (
-        track->type != TrackType::TRACK_TYPE_MASTER
-        && !gtk_widget_get_parent (GTK_WIDGET (ch->widget))) /* not master */
+        !track->is_master ()
+        && !gtk_widget_get_parent (GTK_WIDGET (ch->widget_))) /* not master */
         {
-          gtk_box_append (self->channels_box, GTK_WIDGET (ch->widget));
+          gtk_box_append (self->channels_box, GTK_WIDGET (ch->widget_));
         }
     }
 
@@ -129,13 +116,10 @@ mixer_widget_hard_refresh (MixerWidget * self)
   gtk_box_append (self->channels_box, GTK_WIDGET (self->ddbox));
 
   /* unref refed widgets */
-  for (size_t i = 0; i < refed_widgets->len; i++)
+  for (auto ref_widget : refed_widgets)
     {
-      g_object_unref (g_ptr_array_index (refed_widgets, i));
+      g_object_unref (ref_widget);
     }
-  g_ptr_array_unref (refed_widgets);
-
-#undef REF_AND_ADD_TO_ARRAY
 }
 
 void
@@ -143,14 +127,14 @@ mixer_widget_setup (MixerWidget * self, Channel * master)
 {
   g_message ("Setting up...");
 
-  if (!master->widget)
+  if (!master->widget_)
     {
-      master->widget = channel_widget_new (master);
+      master->widget_ = channel_widget_new (master->shared_from_this ());
     }
 
   if (!self->setup)
     {
-      gtk_box_append (GTK_BOX (self->master_box), GTK_WIDGET (master->widget));
+      gtk_box_append (GTK_BOX (self->master_box), GTK_WIDGET (master->widget_));
     }
   gtk_widget_set_hexpand (GTK_WIDGET (self->master_box), false);
 
@@ -162,10 +146,10 @@ mixer_widget_setup (MixerWidget * self, Channel * master)
 }
 
 MixerWidget *
-mixer_widget_new (void)
+mixer_widget_new ()
 {
-  MixerWidget * self =
-    static_cast<MixerWidget *> (g_object_new (MIXER_WIDGET_TYPE, NULL));
+  auto * self =
+    static_cast<MixerWidget *> (g_object_new (MIXER_WIDGET_TYPE, nullptr));
 
   return self;
 }

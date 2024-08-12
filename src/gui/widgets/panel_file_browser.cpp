@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * File browser.
- */
 
 #include "actions/tracklist_selections.h"
 #include "dsp/tracklist.h"
@@ -96,27 +90,27 @@ files_filter_func (GObject * item, gpointer user_data)
     gtk_editable_get_text (GTK_EDITABLE (self->file_search_entry));
   if (
     text && strlen (text) > 0
-    && !string_contains_substr_case_insensitive (descr->label.c_str (), text))
+    && !string_contains_substr_case_insensitive (descr->label_.c_str (), text))
     {
       return false;
     }
 
   bool visible = false;
-  switch (descr->type)
+  switch (descr->type_)
     {
-    case ZFileType::FILE_TYPE_MIDI:
+    case FileType::Midi:
       visible = show_midi || all_toggles_off;
       break;
-    case ZFileType::FILE_TYPE_DIR:
-    case ZFileType::FILE_TYPE_PARENT_DIR:
+    case FileType::Directory:
+    case FileType::ParentDirectory:
       return true;
-    case ZFileType::FILE_TYPE_MP3:
-    case ZFileType::FILE_TYPE_FLAC:
-    case ZFileType::FILE_TYPE_OGG:
-    case ZFileType::FILE_TYPE_WAV:
+    case FileType::Mp3:
+    case FileType::Flac:
+    case FileType::Ogg:
+    case FileType::Wav:
       visible = show_audio || all_toggles_off;
       break;
-    case ZFileType::FILE_TYPE_OTHER:
+    case FileType::Other:
       visible =
         all_toggles_off
         && g_settings_get_boolean (S_UI_FILE_BROWSER, "show-unsupported-files");
@@ -130,7 +124,7 @@ files_filter_func (GObject * item, gpointer user_data)
 
   if (
     !g_settings_get_boolean (S_UI_FILE_BROWSER, "show-hidden-files")
-    && descr->hidden)
+    && descr->hidden_)
     return false;
 
   return visible;
@@ -195,8 +189,8 @@ create_model_for_files (PanelFileBrowserWidget * self)
       g_list_store_append (store, wobj);
     });
 
-  self->files_filter =
-    gtk_custom_filter_new ((GtkCustomFilterFunc) files_filter_func, self, NULL);
+  self->files_filter = gtk_custom_filter_new (
+    (GtkCustomFilterFunc) files_filter_func, self, nullptr);
   self->files_filter_model = gtk_filter_list_model_new (
     G_LIST_MODEL (store), GTK_FILTER (self->files_filter));
   self->files_selection_model =
@@ -214,13 +208,13 @@ on_files_selection_changed (
 {
   PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
 
-  sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
+  SAMPLE_PROCESSOR->stop_file_playback ();
 
   GObject * gobj = G_OBJECT (gtk_single_selection_get_selected_item (
     GTK_SINGLE_SELECTION (self->files_selection_model)));
   if (!gobj)
     {
-      self->cur_file = NULL;
+      self->cur_file = nullptr;
       return;
     }
 
@@ -230,22 +224,22 @@ on_files_selection_changed (
   auto descr = (FileDescriptor *) wrapped_obj->obj;
   self->cur_file = descr;
 
-  g_ptr_array_remove_range (self->selected_files, 0, self->selected_files->len);
-  g_ptr_array_add (self->selected_files, descr);
+  self->selected_files->clear ();
+  self->selected_files->push_back (descr);
 
   /* return if file does not exist */
-  if (!g_file_test (descr->abs_path.c_str (), G_FILE_TEST_EXISTS))
+  if (!g_file_test (descr->abs_path_.c_str (), G_FILE_TEST_EXISTS))
     return;
 
-  char * label = descr->get_info_text_for_label ();
-  g_message ("selected file: %s", descr->abs_path.c_str ());
-  update_file_info_label (self, label);
+  auto label = descr->get_info_text_for_label ();
+  z_debug ("selected file: %s", descr->abs_path_);
+  update_file_info_label (self, label.c_str ());
 
   if (
     g_settings_get_boolean (S_UI_FILE_BROWSER, "autoplay")
     && descr->should_autoplay ())
     {
-      sample_processor_queue_file (SAMPLE_PROCESSOR, descr);
+      SAMPLE_PROCESSOR->queue_file (*descr);
     }
 }
 
@@ -256,20 +250,14 @@ files_list_view_setup (
   GtkSelectionModel *      selection_model)
 {
   gtk_list_view_set_model (list_view, selection_model);
-  ItemFactory * prev_factory = self->files_item_factory;
-  self->files_item_factory =
-    item_factory_new (ItemFactoryType::ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
+  *self->files_item_factory = std::make_unique<ItemFactory> (
+    ItemFactory::Type::IconAndText, false, nullptr);
   gtk_list_view_set_factory (
-    list_view, self->files_item_factory->list_item_factory);
+    list_view, (*self->files_item_factory)->list_item_factory_);
 
   g_signal_connect (
     G_OBJECT (selection_model), "selection-changed",
     G_CALLBACK (on_files_selection_changed), self);
-
-  if (prev_factory)
-    {
-      item_factory_free (prev_factory);
-    }
 }
 
 static void
@@ -288,7 +276,7 @@ on_bookmark_row_activated (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  FileBrowserLocation * loc = (FileBrowserLocation *) wrapped_obj->obj;
+  auto * loc = (FileBrowserLocation *) wrapped_obj->obj;
 
   gZrythm->get_file_manager ().set_selection (*loc, true, true);
   self->files_selection_model =
@@ -325,11 +313,11 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
   FileDescriptor * descr = (FileDescriptor *) wrapped_obj->obj;
 
   if (
-    descr->type == ZFileType::FILE_TYPE_DIR
-    || descr->type == ZFileType::FILE_TYPE_PARENT_DIR)
+    descr->type_ == FileType::Directory
+    || descr->type_ == FileType::ParentDirectory)
     {
       auto loc = FileBrowserLocation ();
-      loc.path_ = descr->abs_path;
+      loc.path_ = descr->abs_path_;
       char * basename = g_path_get_basename (loc.path_.c_str ());
       loc.label_ = basename;
       g_free (basename);
@@ -340,17 +328,19 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
         self, self->files_list_view,
         GTK_SELECTION_MODEL (self->files_selection_model));
     }
-  else if (FileDescriptor::is_type_supported (descr->type))
+  else if (FileDescriptor::is_type_supported (descr->type_))
     {
-      if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+      if (zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
         return;
 
-      GError * err = NULL;
-      bool     success = tracklist_import_files (
-        TRACKLIST, NULL, descr, NULL, NULL, -1, PLAYHEAD, NULL, &err);
-      if (!success)
+      try
         {
-          HANDLE_ERROR (err, "%s", _ ("Failed to create track"));
+          TRACKLIST->import_files (
+            nullptr, descr, nullptr, nullptr, -1, &PLAYHEAD, nullptr);
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (_ ("Failed to create track"));
         }
     }
 }
@@ -362,10 +352,10 @@ bookmarks_list_view_setup (
   GtkSelectionModel *      model)
 {
   gtk_list_view_set_model (list_view, model);
-  self->bookmarks_item_factory =
-    item_factory_new (ItemFactoryType::ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
+  *self->bookmarks_item_factory = std::make_unique<ItemFactory> (
+    ItemFactory::Type::IconAndText, false, nullptr);
   gtk_list_view_set_factory (
-    list_view, self->bookmarks_item_factory->list_item_factory);
+    list_view, (*self->bookmarks_item_factory)->list_item_factory_);
 }
 
 static void
@@ -420,7 +410,7 @@ PanelFileBrowserWidget *
 panel_file_browser_widget_new (void)
 {
   PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (
-    g_object_new (PANEL_FILE_BROWSER_WIDGET_TYPE, NULL));
+    g_object_new (PANEL_FILE_BROWSER_WIDGET_TYPE, nullptr));
 
   g_message ("Instantiating panel_file_browser widget...");
 
@@ -455,7 +445,7 @@ panel_file_browser_widget_new (void)
     self->file_search_entry, GTK_WIDGET (self->files_list_view));
   g_object_set (
     G_OBJECT (self->file_search_entry), "placeholder-text", _ ("Search..."),
-    NULL);
+    nullptr);
   g_signal_connect (
     G_OBJECT (self->file_search_entry), "search-changed",
     G_CALLBACK (on_file_search_changed), self);
@@ -478,6 +468,9 @@ dispose (PanelFileBrowserWidget * self)
 static void
 finalize (PanelFileBrowserWidget * self)
 {
+  delete self->selected_files;
+  delete self->bookmarks_item_factory;
+  delete self->files_item_factory;
 
   G_OBJECT_CLASS (panel_file_browser_widget_parent_class)
     ->finalize (G_OBJECT (self));
@@ -514,17 +507,20 @@ panel_file_browser_widget_class_init (PanelFileBrowserWidgetClass * _klass)
 static void
 panel_file_browser_widget_init (PanelFileBrowserWidget * self)
 {
+  self->selected_files = new std::vector<FileDescriptor *> ();
+  self->bookmarks_item_factory = new std::unique_ptr<ItemFactory> ();
+  self->files_item_factory = new std::unique_ptr<ItemFactory> ();
+
   g_type_ensure (FILE_AUDITIONER_CONTROLS_WIDGET_TYPE);
   g_type_ensure (FILE_BROWSER_FILTERS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self->paned), true);
-
-  self->selected_files = g_ptr_array_new ();
 
   /* re-filter when these change */
   g_signal_connect (

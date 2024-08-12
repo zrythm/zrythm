@@ -4,6 +4,8 @@
 #ifndef __GUI_WIDGETS_TRACK_FILTER_POPOVER_H__
 #define __GUI_WIDGETS_TRACK_FILTER_POPOVER_H__
 
+#include "gui/widgets/item_factory.h"
+
 #include "gtk_wrapper.h"
 
 #define TRACK_FILTER_POPOVER_WIDGET_TYPE \
@@ -15,7 +17,7 @@ G_DECLARE_FINAL_TYPE (
   TRACK_FILTER_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct _TrackFilterPopoverWidget
+using TrackFilterPopoverWidget = struct _TrackFilterPopoverWidget
 {
   GtkPopover parent_instance;
 
@@ -24,13 +26,13 @@ typedef struct _TrackFilterPopoverWidget
 
   GListStore * track_list_store;
 
-  GPtrArray * item_factories;
-} TrackFilterPopoverWidget;
+  ItemFactoryPtrVector item_factories;
+};
 
 /**
  * Creates the popover.
  */
 TrackFilterPopoverWidget *
-track_filter_popover_widget_new (void);
+track_filter_popover_widget_new ();
 
 #endif

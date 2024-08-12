@@ -1,18 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Group of linked regions.
- */
 
 #ifndef __AUDIO_REGION_LINK_GROUP_H__
 #define __AUDIO_REGION_LINK_GROUP_H__
 
 #include "dsp/region_identifier.h"
 
-typedef struct Region Region;
+class Region;
 
 /**
  * @addtogroup dsp
@@ -22,70 +16,64 @@ typedef struct Region Region;
 
 #define REGION_LINK_GROUP_MAGIC 1222013
 #define IS_REGION_LINK_GROUP(x) \
-  (((RegionLinkGroup *) (x))->magic == REGION_LINK_GROUP_MAGIC)
+  (((RegionLinkGroup *) (x))->magic_ == REGION_LINK_GROUP_MAGIC)
 
 /**
  * A group of linked regions.
  */
-typedef struct RegionLinkGroup
+class RegionLinkGroup final : public ISerializable<RegionLinkGroup>
 {
-  /** Identifiers for regions in this link group. */
-  RegionIdentifier * ids;
-  int                num_ids;
-  size_t             ids_size;
+public:
+  RegionLinkGroup () = default;
+  RegionLinkGroup (int idx) : group_idx_ (idx) { }
+  void add_region (Region &region);
 
-  int magic;
+  /**
+   * Remove the region from the link group.
+   *
+   * @param autoremove_last_region_and_group Automatically remove the last
+   * region left in the group, and the group itself when empty.
+   */
+  void remove_region (
+    Region &region,
+    bool    autoremove_last_region_and_group,
+    bool    update_identifier);
+
+  bool contains_region (const Region &region) const;
+
+  /**
+   * Updates all other regions in the link group.
+   *
+   * @param region The region where the change happened.
+   */
+  void update (const Region &region);
+
+  bool validate () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  /** Identifiers for regions in this link group. */
+  std::vector<RegionIdentifier> ids_;
+
+  int magic_ = REGION_LINK_GROUP_MAGIC;
 
   /** Group index. */
-  int group_idx;
-} RegionLinkGroup;
+  int group_idx_ = -1;
+};
 
-NONNULL void
-region_link_group_init_loaded (RegionLinkGroup * self);
+template <> struct fmt::formatter<RegionLinkGroup>
+{
+  constexpr auto parse (format_parse_context &ctx) { return ctx.begin (); }
 
-RegionLinkGroup *
-region_link_group_new (int idx);
-
-NONNULL void
-region_link_group_add_region (RegionLinkGroup * self, Region * region);
-
-/**
- * Remove the region from the link group.
- *
- * @param autoremove_last_region_and_group
- *   Automatically remove the last region left in
- *   the group, and the group itself when empty.
- */
-NONNULL void
-region_link_group_remove_region (
-  RegionLinkGroup * self,
-  Region *          region,
-  bool              autoremove_last_region_and_group,
-  bool              update_identifier);
-
-NONNULL bool
-region_link_group_contains_region (RegionLinkGroup * self, Region * region);
-
-NONNULL void
-region_link_group_print (RegionLinkGroup * self);
-
-/**
- * Updates all other regions in the link group.
- *
- * @param region The region where the change
- *   happened.
- */
-NONNULL void
-region_link_group_update (RegionLinkGroup * self, Region * region);
-
-NONNULL bool
-region_link_group_validate (RegionLinkGroup * self);
-
-RegionLinkGroup *
-region_link_group_clone (const RegionLinkGroup * src);
-
-void
-region_link_group_free (RegionLinkGroup * self);
+  template <typename FormatContext>
+  auto format (const RegionLinkGroup &rlg, FormatContext &ctx)
+  {
+    return format_to (
+      ctx.out (), "RegionLinkGroup {{ group_idx: {}, ids: [{}] }}",
+      rlg.group_idx_, fmt::join (rlg.ids_, ", "));
+  }
+};
 
 /**
  * @}

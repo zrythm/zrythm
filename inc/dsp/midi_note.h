@@ -1,29 +1,18 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * API for MIDI notes in the PianoRoll.
- */
 
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
 #include <cstdint>
+#include <memory>
 
-#include "dsp/midi_region.h"
+#include "dsp/lengthable_object.h"
+#include "dsp/muteable_object.h"
 #include "dsp/position.h"
 #include "dsp/velocity.h"
-#include "gui/backend/arranger_object.h"
-
-typedef struct _MidiNoteWidget MidiNoteWidget;
-typedef struct Channel         Channel;
-typedef struct Track           Track;
-typedef struct MidiEvents      MidiEvents;
-typedef struct Position        Position;
-typedef struct Velocity        Velocity;
-enum class PianoRollNoteNotation;
+#include "gui/backend/piano_roll.h"
+#include "utils/pango.h"
 
 /**
  * @addtogroup dsp
@@ -31,155 +20,139 @@ enum class PianoRollNoteNotation;
  * @{
  */
 
-#define MIDI_NOTE_SCHEMA_VERSION 1
-
-#define MIDI_NOTE_MAGIC 3588791
+constexpr int MIDI_NOTE_MAGIC = 3588791;
 #define IS_MIDI_NOTE(tr) \
-  ((MidiNote *) tr && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
-
-#define midi_note_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  ((tr) != nullptr && static_cast<MidiNote *> (tr)->magic_ == MIDI_NOTE_MAGIC)
 
 /**
  * A MIDI note inside a Region shown in the piano roll.
- *
- * @extends ArrangerObject
  */
-typedef struct MidiNote
+class MidiNote final
+    : public MuteableObject,
+      public RegionOwnedObjectImpl<MidiRegion>,
+      public LengthableObject,
+      public ICloneable<MidiNote>,
+      public ISerializable<MidiNote>
 {
-  /** Base struct. */
-  ArrangerObject base;
+public:
+  // Rule of 0
+  MidiNote () : ArrangerObject (Type::MidiNote){};
 
+  /**
+   * Creates a new MidiNote.
+   */
+  MidiNote (
+    const RegionIdentifier &region_id,
+    Position                start_pos,
+    Position                end_pos,
+    uint8_t                 val,
+    uint8_t                 vel)
+      : RegionOwnedObjectImpl (region_id),
+        vel_ (std::make_shared<Velocity> (this, vel)), val_ (val)
+  {
+    MidiNote ();
+    pos_ = start_pos;
+    end_pos_ = end_pos;
+  }
+
+  void init_loaded () override
+  {
+    vel_->midi_note_ = this;
+    vel_->init_loaded ();
+  }
+
+  void set_cache_val (const uint8_t val) { cache_val_ = val; }
+
+  /**
+   * Gets the MIDI note's value as a string (eg "C#4").
+   *
+   * @param use_markup Use markup to show the octave as a superscript.
+   */
+  std::string
+  get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup) const;
+
+  /**
+   * Listen to the given MidiNote.
+   *
+   * @param listen Turn note on if 1, or turn it
+   *   off if 0.
+   */
+  void listen (bool listen);
+
+  /**
+   * Shifts MidiNote's position and/or value.
+   *
+   * @param delta Y (0-127)
+   */
+  void shift_pitch (const int delta);
+
+  /**
+   * Returns if the MIDI note is hit at given pos (in the timeline).
+   */
+  bool is_hit (const signed_frame_t gframes) const;
+
+  /**
+   * Sends a note off if currently playing and sets
+   * the pitch of the MidiNote.
+   */
+  void set_val (const uint8_t val);
+
+  ArrangerWidget * get_arranger () const override;
+
+  ArrangerObjectPtr find_in_project () const override;
+
+  std::string print_to_str () const override;
+
+  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+
+  ArrangerObjectPtr insert_clone_to_project () const override;
+
+  // friend bool operator== (const MidiNote &lhs, const MidiNote &rhs);
+
+  std::string gen_human_friendly_name () const override;
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  void init_after_cloning (const MidiNote &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** Velocity. */
-  Velocity * vel;
+  std::shared_ptr<Velocity> vel_;
 
   /** The note/pitch, (0-127). */
-  uint8_t val;
+  uint8_t val_ = 0;
 
   /** Cached note, for live operations. */
-  uint8_t cache_val;
+  uint8_t cache_val_ = 0;
 
-  /** Muted or not */
-  int muted;
+  /** Whether or not this note is currently listened to */
+  bool currently_listened_ = false;
 
-  /** Whether or not this note is currently
-   * listened to */
-  int currently_listened;
+  /** The note/pitch that is currently playing, if @ref
+   * currently_listened_ is true. */
+  uint8_t last_listened_val_ = 0;
 
-  /** The note/pitch that is currently playing,
-   * if \ref MidiNote.currently_listened is true. */
-  uint8_t last_listened_val;
-
-  /** Index in the parent region. */
-  int pos;
-
-  int magic;
+  int magic_ = MIDI_NOTE_MAGIC;
 
   /** Cache layout for drawing the name. */
-  PangoLayout * layout;
-} MidiNote;
+  PangoLayoutUniquePtr layout_;
+};
 
-/**
- * Gets the global Position of the MidiNote's
- * start_pos.
- *
- * @param pos Position to fill in.
- */
-void
-midi_note_get_global_start_pos (MidiNote * self, Position * pos);
-
-/**
- * Creates a new MidiNote.
- */
-MidiNote *
-midi_note_new (
-  RegionIdentifier * region_id,
-  Position *         start_pos,
-  Position *         end_pos,
-  uint8_t            val,
-  uint8_t            vel);
-
-/**
- * Sets the region the MidiNote belongs to.
- */
-void
-midi_note_set_region_and_index (MidiNote * self, Region * region, int idx);
-
-void
-midi_note_set_cache_val (MidiNote * self, const uint8_t val);
-
-/**
- * Returns 1 if the MidiNotes match, 0 if not.
- */
-NONNULL int
-midi_note_is_equal (MidiNote * src, MidiNote * dest);
-
-/**
- * Gets the MIDI note's value as a string (eg "C#4").
- *
- * @param use_markup Use markup to show the octave as a
- *   superscript.
- */
-void
-midi_note_get_val_as_string (
-  const MidiNote *      self,
-  char *                buf,
-  PianoRollNoteNotation notation,
-  const int             use_markup);
-
-/**
- * For debugging.
- */
-void
-midi_note_print (MidiNote * mn);
-
-/**
- * Listen to the given MidiNote.
- *
- * @param listen Turn note on if 1, or turn it
- *   off if 0.
- */
-void
-midi_note_listen (MidiNote * mn, bool listen);
-
-/**
- * Shifts MidiNote's position and/or value.
- *
- * @param delta Y (0-127)
- */
-void
-midi_note_shift_pitch (MidiNote * self, const int delta);
-
-/**
- * Returns if the MIDI note is hit at given pos (in the timeline).
- */
-int
-midi_note_hit (MidiNote * self, const signed_frame_t gframes);
-
-/**
- * Converts an array of MIDI notes to MidiEvents.
- *
- * @param midi_notes Array of MidiNote's.
- * @param num_notes Number of notes in array.
- * @param pos Position to offset time from.
- * @param events Preallocated struct to fill.
- */
-void
-midi_note_notes_to_events (
-  MidiNote **  midi_notes,
-  int          num_notes,
-  Position *   pos,
-  MidiEvents * events);
-
-/**
- * Sends a note off if currently playing and sets
- * the pitch of the MidiNote.
- */
-void
-midi_note_set_val (MidiNote * midi_note, const uint8_t val);
-
-Region *
-midi_note_get_region (MidiNote * self);
+inline bool
+operator== (const MidiNote &lhs, const MidiNote &rhs)
+{
+  return lhs.val_ == rhs.val_ && *lhs.vel_ == *rhs.vel_
+         && static_cast<const MuteableObject &> (lhs)
+              == static_cast<const MuteableObject &> (rhs)
+         && static_cast<const RegionOwnedObject &> (lhs)
+              == static_cast<const RegionOwnedObject &> (rhs)
+         && static_cast<const LengthableObject &> (lhs)
+              == static_cast<const LengthableObject &> (rhs)
+         && static_cast<const ArrangerObject &> (lhs)
+              == static_cast<const ArrangerObject &> (rhs);
+}
 
 /**
  * @}

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Actions.
  */
@@ -39,8 +39,8 @@ activate_preferences (
 /**
  * Show preferences window.
  */
-void
-activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data);
+// void
+// activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 DECLARE_SIMPLE (activate_audition_mode);
 DECLARE_SIMPLE (activate_select_mode);

@@ -1,7 +1,9 @@
 # SPDX-FileCopyrightText: © 2024 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
 ---
+Diagnostics:
+  ClangTidy:
+    Add: [performance-*, modernize-*]
+    Remove: [modernize-use-trailing-return-type, performance-unnecessary-value-param, modernize-use-nodiscard]
 CompileFlags:
-    Add: [-xc++, -Wall, -fsanitize=address]
-    Remove: -fanalyzer
-    Compiler: clang++
+  Add: [-ferror-limit=150]

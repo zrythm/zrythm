@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Custom image.
  */

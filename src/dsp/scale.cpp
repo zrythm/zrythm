@@ -1,10 +1,8 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2018-2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Musical scales.
  *
@@ -15,170 +13,99 @@
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/scale.h"
-#include "utils/objects.h"
+#include "utils/types.h"
 
 #include <glib/gi18n.h>
 
-/**
- * Creates new scale using type and root note.
- */
-MusicalScale *
-musical_scale_new (MusicalScaleType type, MusicalNote root)
-{
-  MusicalScale * self = object_new (MusicalScale);
-
-  self->type = type;
-  self->root_key = root;
-
-  return self;
-}
-
-/**
- * Returns the triads in the given scale.
- *
- * There will be as many chords are enabled notes
- * in the scale, and the rest of the array will be
- * filled with ChordType::CHORD_TYPE_NONE.
- *
- * @param ascending Whether to get the triads when
- *   ascending or descending (some scales have
- *   different triads when rising/falling).
- */
 const ChordType *
-musical_scale_get_triad_types (MusicalScaleType scale_type, bool ascending)
+MusicalScale::get_triad_types_for_type (Type type, bool ascending)
 {
 #define SET_TRIADS(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
     static const ChordType chord_types[] = { \
-      ChordType::CHORD_TYPE_##n1,  ChordType::CHORD_TYPE_##n2, \
-      ChordType::CHORD_TYPE_##n3,  ChordType::CHORD_TYPE_##n4, \
-      ChordType::CHORD_TYPE_##n5,  ChordType::CHORD_TYPE_##n6, \
-      ChordType::CHORD_TYPE_##n7,  ChordType::CHORD_TYPE_##n8, \
-      ChordType::CHORD_TYPE_##n9,  ChordType::CHORD_TYPE_##n10, \
-      ChordType::CHORD_TYPE_##n11, ChordType::CHORD_TYPE_##n12 \
+      n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12 \
     }; \
     return chord_types; \
   }
 
 #define SET_7_TRIADS(n1, n2, n3, n4, n5, n6, n7) \
-  SET_TRIADS (n1, n2, n3, n4, n5, n6, n7, NONE, NONE, NONE, NONE, NONE)
+  SET_TRIADS ( \
+    n1, n2, n3, n4, n5, n6, n7, ChordType::None, ChordType::None, \
+    ChordType::None, ChordType::None, ChordType::None)
 
   /* get the notes starting at C */
-  switch (scale_type)
+  switch (type)
     {
-    case MusicalScaleType::SCALE_CHROMATIC:
-      SET_7_TRIADS (NONE, NONE, NONE, NONE, NONE, NONE, NONE);
+    case Type::Chromatic:
+      SET_7_TRIADS (
+        ChordType::None, ChordType::None, ChordType::None, ChordType::None,
+        ChordType::None, ChordType::None, ChordType::None);
       break;
-    case MusicalScaleType::SCALE_MAJOR:
-    case MusicalScaleType::SCALE_IONIAN:
-      SET_7_TRIADS (MAJ, MIN, MIN, MAJ, MAJ, MIN, DIM);
+    case Type::Major:
+    case Type::Ionian:
+      SET_7_TRIADS (
+        ChordType::Major, ChordType::Minor, ChordType::Minor, ChordType::Major,
+        ChordType::Major, ChordType::Minor, ChordType::Diminished);
       break;
-    case MusicalScaleType::SCALE_DORIAN:
-      SET_7_TRIADS (MIN, MIN, MAJ, MAJ, MIN, DIM, MAJ);
+    case Type::Dorian:
+      SET_7_TRIADS (
+        ChordType::Minor, ChordType::Minor, ChordType::Major, ChordType::Major,
+        ChordType::Minor, ChordType::Diminished, ChordType::Major);
       break;
-    case MusicalScaleType::SCALE_PHRYGIAN:
-      SET_7_TRIADS (MIN, MAJ, MAJ, MIN, DIM, MAJ, MIN);
+    case Type::Phrygian:
+      SET_7_TRIADS (
+        ChordType::Minor, ChordType::Major, ChordType::Major, ChordType::Minor,
+        ChordType::Diminished, ChordType::Major, ChordType::Minor);
       break;
-    case MusicalScaleType::SCALE_LYDIAN:
-      SET_7_TRIADS (MAJ, MAJ, MIN, DIM, MAJ, MIN, MIN);
+    case Type::Lydian:
+      SET_7_TRIADS (
+        ChordType::Major, ChordType::Major, ChordType::Minor,
+        ChordType::Diminished, ChordType::Major, ChordType::Minor,
+        ChordType::Minor);
       break;
-    case MusicalScaleType::SCALE_MIXOLYDIAN:
-      SET_7_TRIADS (MAJ, MIN, DIM, MAJ, MIN, MIN, MAJ);
+    case Type::Mixolydian:
+      SET_7_TRIADS (
+        ChordType::Major, ChordType::Minor, ChordType::Diminished,
+        ChordType::Major, ChordType::Minor, ChordType::Minor, ChordType::Major);
       break;
-    case MusicalScaleType::SCALE_MINOR:
-    case MusicalScaleType::SCALE_AEOLIAN:
-      SET_7_TRIADS (MIN, DIM, MAJ, MIN, MIN, MAJ, MAJ);
+    case Type::Minor:
+    case Type::Aeolian:
+      SET_7_TRIADS (
+        ChordType::Minor, ChordType::Diminished, ChordType::Major,
+        ChordType::Minor, ChordType::Minor, ChordType::Major, ChordType::Major);
       break;
-    case MusicalScaleType::SCALE_LOCRIAN:
-      SET_7_TRIADS (DIM, MAJ, MIN, MIN, MAJ, MAJ, MIN);
+    case Type::Locrian:
+      SET_7_TRIADS (
+        ChordType::Diminished, ChordType::Major, ChordType::Minor,
+        ChordType::Minor, ChordType::Major, ChordType::Major, ChordType::Minor);
       break;
-    case MusicalScaleType::SCALE_MELODIC_MINOR:
-      SET_7_TRIADS (MIN, MIN, AUG, MAJ, MAJ, DIM, DIM);
+    case Type::MelodicMinor:
+      SET_7_TRIADS (
+        ChordType::Minor, ChordType::Minor, ChordType::Augmented,
+        ChordType::Major, ChordType::Major, ChordType::Diminished,
+        ChordType::Diminished);
       break;
-    case MusicalScaleType::SCALE_HARMONIC_MINOR:
-      SET_7_TRIADS (MIN, DIM, AUG, MIN, MAJ, MAJ, DIM);
-      break;
-    /* below need double check */
-    case MusicalScaleType::SCALE_HARMONIC_MAJOR:
-      break;
-    case MusicalScaleType::SCALE_MAJOR_PENTATONIC:
-      break;
-    case MusicalScaleType::SCALE_MINOR_PENTATONIC:
-      break;
-    case MusicalScaleType::SCALE_PHRYGIAN_DOMINANT:
-      break;
-    case MusicalScaleType::SCALE_MAJOR_LOCRIAN:
-      break;
-    case MusicalScaleType::SCALE_ALGERIAN:
-      break;
-    case MusicalScaleType::SCALE_AUGMENTED:
-      break;
-    case MusicalScaleType::SCALE_DOUBLE_HARMONIC:
-      break;
-    case MusicalScaleType::SCALE_CHINESE:
-      break;
-    case MusicalScaleType::SCALE_DIMINISHED:
-      break;
-    case MusicalScaleType::SCALE_DOMINANT_DIMINISHED:
-      break;
-    case MusicalScaleType::SCALE_EGYPTIAN:
-      break;
-    case MusicalScaleType::SCALE_EIGHT_TONE_SPANISH:
-      break;
-    case MusicalScaleType::SCALE_ENIGMATIC:
-      break;
-    case MusicalScaleType::SCALE_GEEZ:
-      break;
-    case MusicalScaleType::SCALE_HINDU:
-      break;
-    case MusicalScaleType::SCALE_HIRAJOSHI:
-      break;
-    case MusicalScaleType::SCALE_HUNGARIAN_GYPSY:
-      break;
-    case MusicalScaleType::SCALE_INSEN:
-      break;
-    case MusicalScaleType::SCALE_NEAPOLITAN_MINOR:
-      break;
-    case MusicalScaleType::SCALE_NEAPOLITAN_MAJOR:
-      break;
-    case MusicalScaleType::SCALE_OCTATONIC_HALF_WHOLE:
-      break;
-    case MusicalScaleType::SCALE_OCTATONIC_WHOLE_HALF:
-      break;
-    case MusicalScaleType::SCALE_ORIENTAL:
-      break;
-    case MusicalScaleType::SCALE_WHOLE_TONE:
-      break;
-    case MusicalScaleType::SCALE_ROMANIAN_MINOR:
-      break;
-    case MusicalScaleType::SCALE_ALTERED:
-      break;
-    case MusicalScaleType::SCALE_MAQAM:
-      break;
-    case MusicalScaleType::SCALE_YO:
+    case Type::HarmonicMinor:
+      SET_7_TRIADS (
+        ChordType::Minor, ChordType::Diminished, ChordType::Augmented,
+        ChordType::Minor, ChordType::Major, ChordType::Major,
+        ChordType::Diminished);
       break;
     default:
       break;
     }
 
   /* return no triads for unimplemented scales */
-  SET_7_TRIADS (NONE, NONE, NONE, NONE, NONE, NONE, NONE);
+  SET_7_TRIADS (
+    ChordType::None, ChordType::None, ChordType::None, ChordType::None,
+    ChordType::None, ChordType::None, ChordType::None);
 
 #undef SET_TRIADS
 #undef SET_7_TRIADS
-
-  /*return NULL;*/
 }
 
-/**
- * Returns the notes in the given scale.
- *
- * @param ascending Whether to get the notes when
- *   ascending or descending (some scales have
- *   different notes when rising/falling).
- */
 const bool *
-musical_scale_get_notes (MusicalScaleType scale_type, bool ascending)
+MusicalScale::get_notes_for_type (Type type, bool ascending)
 {
 #define SET_NOTES(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
@@ -189,186 +116,186 @@ musical_scale_get_notes (MusicalScaleType scale_type, bool ascending)
   }
 
   /* get the notes starting at C */
-  switch (scale_type)
+  switch (type)
     {
-    case MusicalScaleType::SCALE_CHROMATIC:
+    case Type::Chromatic:
       SET_NOTES (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
       break;
-    case MusicalScaleType::SCALE_MAJOR:
-    case MusicalScaleType::SCALE_IONIAN:
+    case Type::Major:
+    case Type::Ionian:
       SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_DORIAN:
+    case Type::Dorian:
       SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_PHRYGIAN:
+    case Type::Phrygian:
       SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_LYDIAN:
+    case Type::Lydian:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_MIXOLYDIAN:
+    case Type::Mixolydian:
       SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_MINOR:
-    case MusicalScaleType::SCALE_AEOLIAN:
+    case Type::Minor:
+    case Type::Aeolian:
       SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_LOCRIAN:
+    case Type::Locrian:
       SET_NOTES (1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_MELODIC_MINOR:
+    case Type::MelodicMinor:
       SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_HARMONIC_MINOR:
+    case Type::HarmonicMinor:
       SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1);
       break;
     /* below need double check */
-    case MusicalScaleType::SCALE_HARMONIC_MAJOR:
+    case Type::HarmonicMajor:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_MAJOR_PENTATONIC:
+    case Type::MajorPentatonic:
       SET_NOTES (1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0);
       break;
-    case MusicalScaleType::SCALE_MINOR_PENTATONIC:
+    case Type::MinorPentatonic:
       SET_NOTES (1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_PHRYGIAN_DOMINANT:
+    case Type::PhrygianDominant:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_MAJOR_LOCRIAN:
+    case Type::MajorLocrian:
       SET_NOTES (1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ACOUSTIC:
+    case Type::Acoustic:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ALTERED:
+    case Type::Altered:
       SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ALGERIAN:
+    case Type::Algerian:
       SET_NOTES (1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_AUGMENTED:
+    case Type::Augmented:
       SET_NOTES (1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_DOUBLE_HARMONIC:
+    case Type::DoubleHarmonic:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_CHINESE:
+    case Type::Chinese:
       SET_NOTES (1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_DIMINISHED:
+    case Type::Diminished:
       SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_DOMINANT_DIMINISHED:
+    case Type::DominantDiminished:
       SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_EGYPTIAN:
+    case Type::Egyptian:
       SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_EIGHT_TONE_SPANISH:
+    case Type::EightToneSpanish:
       SET_NOTES (1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ENIGMATIC:
+    case Type::Enigmatic:
       SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1);
       break;
-    case MusicalScaleType::SCALE_GEEZ:
+    case Type::Geez:
       SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_HINDU:
+    case Type::Hindu:
       SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_HIRAJOSHI:
+    case Type::Hirajoshi:
       SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_HUNGARIAN_GYPSY:
+    case Type::HungarianGypsy:
       SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_INSEN:
+    case Type::Insen:
       SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_NEAPOLITAN_MAJOR:
+    case Type::NeapolitanMajor:
       SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_NEAPOLITAN_MINOR:
+    case Type::NeapolitanMinor:
       SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_OCTATONIC_HALF_WHOLE:
+    case Type::OctatonicHalfWhole:
       SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_OCTATONIC_WHOLE_HALF:
+    case Type::OctatonicWholeHalf:
       SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_ORIENTAL:
+    case Type::Oriental:
       SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_WHOLE_TONE:
+    case Type::WholeTone:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ROMANIAN_MINOR:
+    case Type::RomanianMinor:
       SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_MAQAM:
+    case Type::Maqam:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_YO:
+    case Type::Yo:
       SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0);
       break;
-    case MusicalScaleType::SCALE_BEBOP_LOCRIAN:
+    case Type::BebopLocrian:
       SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1);
       break;
-    case MusicalScaleType::SCALE_BEBOP_DOMINANT:
+    case Type::BebopDominant:
       SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1);
       break;
-    case MusicalScaleType::SCALE_BEBOP_MAJOR:
+    case Type::BebopMajor:
       SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1);
       break;
-    case MusicalScaleType::SCALE_SUPER_LOCRIAN:
+    case Type::SuperLocrian:
       SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_ENIGMATIC_MINOR:
+    case Type::EnigmaticMinor:
       SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1);
       break;
-    case MusicalScaleType::SCALE_COMPOSITE:
+    case Type::Composite:
       SET_NOTES (1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_BHAIRAV:
+    case Type::Bhairav:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_HUNGARIAN_MINOR:
+    case Type::HungarianMinor:
       SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_PERSIAN:
+    case Type::Persian:
       SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1);
       break;
-    case MusicalScaleType::SCALE_IWATO:
+    case Type::Iwato:
       SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_KUMOI:
+    case Type::Kumoi:
       SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
       break;
-    case MusicalScaleType::SCALE_PELOG:
+    case Type::Pelog:
       SET_NOTES (1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0);
       break;
-    case MusicalScaleType::SCALE_PROMETHEUS:
+    case Type::Prometheus:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_PROMETHEUS_NEAPOLITAN:
+    case Type::PrometheusNeapolitan:
       SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0);
       break;
-    case MusicalScaleType::SCALE_PROMETHEUS_LISZT:
+    case Type::PrometheusLiszt:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
       break;
-    case MusicalScaleType::SCALE_BALINESE:
+    case Type::Balinese:
       SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0);
       break;
-    case MusicalScaleType::SCALE_RAGATODI:
+    case Type::Ragatodi:
       SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0);
       break;
-    case MusicalScaleType::SCALE_JAPANESE1:
+    case Type::Japanese1:
       SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
       break;
-    case MusicalScaleType::SCALE_JAPANESE2:
+    case Type::Japanese2:
       SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0);
       break;
     default:
@@ -380,48 +307,25 @@ musical_scale_get_notes (MusicalScaleType scale_type, bool ascending)
   return NULL;
 }
 
-/**
- * Clones the scale.
- */
-MusicalScale *
-musical_scale_clone (MusicalScale * src)
-{
-  /* TODO */
-  return musical_scale_new (src->type, src->root_key);
-}
-
-/**
- * Returns if the given key is in the given
- * MusicalScale.
- *
- * @param note A note inside a single octave (0-11).
- */
 bool
-musical_scale_contains_note (const MusicalScale * scale, MusicalNote note)
+MusicalScale::contains_note (MusicalNote note) const
 {
-  if (scale->root_key == note)
+  if (root_key_ == note)
     return 1;
 
-  const bool * notes = musical_scale_get_notes (scale->type, false);
+  const bool * notes = get_notes_for_type (type_, false);
 
-  return notes[((int) note - (int) scale->root_key + 12) % 12];
+  return notes[((int) note - (int) root_key_ + 12) % 12];
 }
 
-/**
- * Returns if all of the chord's notes are in
- * the scale.
- */
 bool
-musical_scale_contains_chord (
-  const MusicalScale * const    scale,
-  const ChordDescriptor * const chord)
+MusicalScale::contains_chord (const ChordDescriptor &chord) const
 {
-  for (int i = 0; i < 48; i++)
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
     {
       if (
-        chord->notes[i]
-        && !musical_scale_contains_note (
-          scale, ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
+        chord.notes_[i]
+        && !contains_note (ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
         return 0;
     }
   return 1;
@@ -430,74 +334,70 @@ musical_scale_contains_chord (
 /**
  * Returns if the accent is in the scale.
  */
-int
-musical_scale_is_accent_in_scale (
-  MusicalScale * scale,
-  MusicalNote    chord_root,
-  ChordType      type,
-  ChordAccent    chord_accent)
+bool
+MusicalScale::is_accent_in_scale (
+  MusicalNote chord_root,
+  ChordType   type,
+  ChordAccent chord_accent) const
 {
-  if (!musical_scale_contains_note (scale, chord_root))
-    return 0;
+  if (!contains_note (chord_root))
+    return false;
 
-  unsigned int min_seventh_sems = type == ChordType::CHORD_TYPE_DIM ? 9 : 10;
+  int min_seventh_sems = type == ChordType::Diminished ? 9 : 10;
 
-  int chord_root_int = ENUM_VALUE_TO_INT (chord_root);
+  int chord_root_int = (int) chord_root;
 
   /* if 7th not in scale no need to check > 7th */
   if (
-    chord_accent >= ChordAccent::CHORD_ACC_b9
-    && !musical_scale_contains_note (
-      scale,
-      ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + min_seventh_sems) % 12)))
-    return 0;
+    chord_accent >= ChordAccent::FlatNinth
+    && !contains_note (ENUM_INT_TO_VALUE (
+      MusicalNote, (chord_root_int + min_seventh_sems) % 12)))
+    return false;
 
   switch (chord_accent)
     {
-    case ChordAccent::CHORD_ACC_NONE:
-      return 1;
-    case ChordAccent::CHORD_ACC_7:
-      return musical_scale_contains_note (
-        scale,
-        ENUM_INT_TO_VALUE (
-          MusicalNote, (chord_root_int + min_seventh_sems) % 12));
-    case ChordAccent::CHORD_ACC_j7:
-      return musical_scale_contains_note (
-        scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 11) % 12));
-    case ChordAccent::CHORD_ACC_b9:
-      return musical_scale_contains_note (
-        scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 13) % 12));
-    case ChordAccent::CHORD_ACC_9:
-      return musical_scale_contains_note (
-        scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 14) % 12));
-    case ChordAccent::CHORD_ACC_S9:
-      return musical_scale_contains_note (
-        scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 15) % 12));
-    case ChordAccent::CHORD_ACC_11:
-      return musical_scale_contains_note (
-        scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 17) % 12));
-    case ChordAccent::CHORD_ACC_b5_S11:
-      return musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 6) % 12))
-             && musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 18) % 12));
-    case ChordAccent::CHORD_ACC_S5_b13:
-      return musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 8) % 12))
-             && musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 16) % 12));
-    case ChordAccent::CHORD_ACC_6_13:
-      return musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 9) % 12))
-             && musical_scale_contains_note (
-               scale, ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 21) % 12));
+    case ChordAccent::None:
+      return true;
+    case ChordAccent::Seventh:
+      return contains_note (ENUM_INT_TO_VALUE (
+        MusicalNote, (chord_root_int + min_seventh_sems) % 12));
+    case ChordAccent::MajorSeventh:
+      return contains_note (
+        ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 11) % 12));
+    case ChordAccent::FlatNinth:
+      return contains_note (
+        ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 13) % 12));
+    case ChordAccent::Ninth:
+      return contains_note (
+        ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 14) % 12));
+    case ChordAccent::SharpNinth:
+      return contains_note (
+        ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 15) % 12));
+    case ChordAccent::Eleventh:
+      return contains_note (
+        ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 17) % 12));
+    case ChordAccent::FlatFifthSharpEleventh:
+      return contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 6) % 12))
+             && contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 18) % 12));
+    case ChordAccent::SharpFifthFlatThirteenth:
+      return contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 8) % 12))
+             && contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 16) % 12));
+    case ChordAccent::SixthThirteenth:
+      return contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 9) % 12))
+             && contains_note (
+               ENUM_INT_TO_VALUE (MusicalNote, (chord_root_int + 21) % 12));
     default:
-      return 0;
+      return false;
     }
 }
 
 const char *
-musical_scale_type_to_string (const MusicalScaleType type)
+MusicalScale::type_to_string (Type type)
 {
   static const char * musical_scale_type_strings[] = {
     N_ ("Chromatic"),
@@ -562,53 +462,12 @@ musical_scale_type_to_string (const MusicalScaleType type)
     N_ ("Japanese 1"),
     N_ ("Japanese 2"),
   };
-  return _ (musical_scale_type_strings[ENUM_VALUE_TO_INT (type)]);
+  return _ (musical_scale_type_strings[(int) type]);
 }
 
-/**
- * Prints the MusicalScale to a string.
- *
- * MUST be free'd.
- */
-char *
-musical_scale_to_string (const MusicalScale * const self)
+std::string
+MusicalScale::to_string () const
 {
-  return g_strdup_printf (
-    "%s %s", chord_descriptor_note_to_string (self->root_key),
-    musical_scale_type_to_string (self->type));
-}
-
-/**
- * Same as above but uses a buffer instead of
- * allocating.
- */
-void
-musical_scale_strcpy (MusicalScale * scale, char * buf)
-{
-#define SET_SCALE_STR(uppercase, str) \
-  case MusicalScaleType::SCALE_##uppercase: \
-    sprintf ( \
-      buf, "%s %s", chord_descriptor_note_to_string (scale->root_key), \
-      _ (str)); \
-    return;
-
-  switch (scale->type)
-    {
-      SET_SCALE_STR (CHROMATIC, "Chromatic");
-      SET_SCALE_STR (IONIAN, "Ionian (Major)");
-      SET_SCALE_STR (AEOLIAN, "Aeolian (Natural Minor)");
-      SET_SCALE_STR (HARMONIC_MINOR, "Harmonic Minor");
-    default:
-      /* TODO */
-      strcpy (buf, _ ("Unimplemented"));
-    }
-}
-
-/**
- * Frees the MusicalScale.
- */
-void
-musical_scale_free (MusicalScale * scale)
-{
-  /* TODO */
+  return std::string (ChordDescriptor::note_to_string (root_key_)) + " "
+         + type_to_string (type_);
 }

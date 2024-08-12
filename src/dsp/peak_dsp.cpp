@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -40,19 +40,19 @@
  * @param n Number of samples.
  */
 void
-peak_dsp_process (PeakDsp * self, float * p, int n)
+PeakDsp::process (float * p, int n)
 {
   float s = 0.f, t;
 
-  if (self->fpp != n)
+  if (this->fpp != n)
     {
       /*const float fall = 15.f;*/
-      const float fall = 5.f;
-      const float tme = (float) n / self->fsamp; // period time in seconds
-      self->fall = powf (
+      constexpr float fall = 5.f;
+      const float     tme = (float) n / this->fsamp; // period time in seconds
+      this->fall = powf (
         10.f,
         -0.05f * fall * tme); // per period fallback multiplier
-      self->fpp = n;
+      this->fpp = n;
     }
 
   t = 0;
@@ -73,85 +73,68 @@ peak_dsp_process (PeakDsp * self, float * p, int n)
   if (!std::isfinite (t))
     t = 0;
 
-  if (self->flag) // Display thread has read the rms value.
+  if (this->flag) // Display thread has read the rms value.
     {
-      self->rms = max;
-      self->flag = false;
+      this->rms = max;
+      this->flag = false;
     }
   else
     {
       // Adjust RMS value and update maximum since last read().
-      if (max > self->rms)
-        self->rms = max;
+      if (max > this->rms)
+        this->rms = max;
     }
 
   // Digital peak hold and fallback.
-  if (t >= self->peak)
+  if (t >= this->peak)
     {
       // If higher than current value, update and set hold counter.
-      self->peak = t;
-      self->cnt = self->hold;
+      this->peak = t;
+      this->cnt = this->hold;
     }
-  else if (self->cnt > 0)
+  else if (this->cnt > 0)
     {
       // else decrement counter if not zero,
-      self->cnt -= self->fpp;
+      this->cnt -= this->fpp;
     }
   else
     {
-      self->peak *= self->fall; // else let the peak value fall back,
-      self->peak += 1e-10f;     // and avoid denormals.
+      this->peak *= this->fall; // else let the peak value fall back,
+      this->peak += 1e-10f;     // and avoid denormals.
     }
 }
 
 float
-peak_dsp_read_f (PeakDsp * self)
+PeakDsp::read_f ()
 {
-  float rv = self->rms;
-  self->flag = true; // Resets _rms in next process().
+  float rv = this->rms;
+  this->flag = true; // Resets _rms in next process().
   return rv;
 }
 
 void
-peak_dsp_read (PeakDsp * self, float * rms, float * peak)
+PeakDsp::read (float * rms, float * peak)
 {
-  *rms = self->rms;
-  *peak = self->peak;
-  self->flag = true; // Resets _rms in next process().
+  *rms = this->rms;
+  *peak = this->peak;
+  this->flag = true; // Resets _rms in next process().
 }
 
 void
-peak_dsp_reset (PeakDsp * self)
+PeakDsp::reset ()
 {
-  self->rms = self->peak = .0f;
-  self->cnt = 0;
-  self->flag = false;
+  this->rms = this->peak = .0f;
+  this->cnt = 0;
+  this->flag = false;
 }
 
-/**
- * Init with the samplerate.
- */
 void
-peak_dsp_init (PeakDsp * self, float samplerate)
+PeakDsp::init (float samplerate)
 {
   /*const float hold = 0.5f;*/
   const float hold = 1.5f;
-  self->fsamp = samplerate;
+  this->fsamp = samplerate;
 
-  self->hold =
+  this->hold =
     (int) (hold * samplerate + 0.5f); // number of samples to hold peak
-}
-
-PeakDsp *
-peak_dsp_new (void)
-{
-  PeakDsp * self = object_new_unresizable (PeakDsp);
-
-  return self;
-}
-
-void
-peak_dsp_free (PeakDsp * self)
-{
-  object_zero_and_free_unresizable (PeakDsp, self);
 }

@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * CPU usage on windows.
  */

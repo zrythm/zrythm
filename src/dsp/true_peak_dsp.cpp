@@ -29,68 +29,61 @@
 #include <assert.h>
 
 #include "dsp/true_peak_dsp.h"
-#include "utils/objects.h"
 
 #include "gtk_wrapper.h"
 
-/**
- * Process.
- *
- * @param p Frame array.
- * @param n Number of samples.
- */
 void
-true_peak_dsp_process (TruePeakDsp * self, float * data, int n)
+TruePeakDsp::process (float * data, int n)
 {
   assert (n > 0);
   assert (n <= 8192);
-  self->src->inp_count = (unsigned int) n;
-  self->src->inp_data = data;
-  self->src->out_count = (unsigned int) n * 4;
-  self->src->out_data = self->buf;
-  zita_resampler_process (self->src);
+  src_->inp_count = static_cast<unsigned int> (n);
+  src_->inp_data = data;
+  src_->out_count = static_cast<unsigned int> (n * 4);
+  src_->out_data = buf_;
+  zita_resampler_process (src_);
 
   float   v;
-  float   m = self->res ? 0 : self->m;
-  float   p = self->res ? 0 : self->p;
-  float   z1 = self->z1 > 20 ? 20 : (self->z1 < 0 ? 0 : self->z1);
-  float   z2 = self->z2 > 20 ? 20 : (self->z2 < 0 ? 0 : self->z2);
-  float * b = self->buf;
+  float   m = res_ ? 0 : m_;
+  float   p = res_ ? 0 : p_;
+  float   z1 = z1_ > 20 ? 20 : (z1_ < 0 ? 0 : z1_);
+  float   z2 = z2_ > 20 ? 20 : (z2_ < 0 ? 0 : z2_);
+  float * b = buf_;
 
   while (n--)
     {
-      z1 *= self->w3;
-      z2 *= self->w3;
+      z1 *= w3_;
+      z2 *= w3_;
 
       v = fabsf (*b++);
       if (v > z1)
-        z1 += self->w1 * (v - z1);
+        z1 += w1_ * (v - z1);
       if (v > z2)
-        z2 += self->w2 * (v - z2);
+        z2 += w2_ * (v - z2);
       if (v > p)
         p = v;
 
       v = fabsf (*b++);
       if (v > z1)
-        z1 += self->w1 * (v - z1);
+        z1 += w1_ * (v - z1);
       if (v > z2)
-        z2 += self->w2 * (v - z2);
+        z2 += w2_ * (v - z2);
       if (v > p)
         p = v;
 
       v = fabsf (*b++);
       if (v > z1)
-        z1 += self->w1 * (v - z1);
+        z1 += w1_ * (v - z1);
       if (v > z2)
-        z2 += self->w2 * (v - z2);
+        z2 += w2_ * (v - z2);
       if (v > p)
         p = v;
 
       v = fabsf (*b++);
       if (v > z1)
-        z1 += self->w1 * (v - z1);
+        z1 += w1_ * (v - z1);
       if (v > z2)
-        z2 += self->w2 * (v - z2);
+        z2 += w2_ * (v - z2);
       if (v > p)
         p = v;
 
@@ -99,43 +92,43 @@ true_peak_dsp_process (TruePeakDsp * self, float * data, int n)
         m = v;
     }
 
-  self->z1 = z1 + 1e-20f;
-  self->z2 = z2 + 1e-20f;
+  z1_ = z1 + 1e-20f;
+  z2_ = z2 + 1e-20f;
 
-  m *= self->g;
+  m *= g_;
 
-  if (self->res)
+  if (res_)
     {
-      self->m = m;
-      self->p = p;
-      self->res = false;
+      m_ = m;
+      p_ = p;
+      res_ = false;
     }
   else
     {
-      if (m > self->m)
+      if (m > m_)
         {
-          self->m = m;
+          m_ = m;
         }
-      if (p > self->p)
+      if (p > p_)
         {
-          self->p = p;
+          p_ = p;
         }
     }
 }
 
 void
-true_peak_dsp_process_max (TruePeakDsp * self, float * p, int n)
+TruePeakDsp::process_max (float * p, int n)
 {
   assert (n <= 8192);
-  self->src->inp_count = (unsigned int) n;
-  self->src->inp_data = p;
-  self->src->out_count = (unsigned int) n * 4;
-  self->src->out_data = self->buf;
-  zita_resampler_process (self->src);
+  src_->inp_count = static_cast<unsigned int> (n);
+  src_->inp_data = p;
+  src_->out_count = static_cast<unsigned int> (n * 4);
+  src_->out_data = buf_;
+  zita_resampler_process (src_);
 
-  float   m = self->res ? 0 : self->m;
+  float   m = res_ ? 0 : m_;
   float   v;
-  float * b = self->buf;
+  float * b = buf_;
   while (n--)
     {
       v = fabsf (*b++);
@@ -151,77 +144,67 @@ true_peak_dsp_process_max (TruePeakDsp * self, float * p, int n)
       if (v > m)
         m = v;
     }
-  self->m = m;
+  m_ = m;
 }
 
 float
-true_peak_dsp_read_f (TruePeakDsp * self)
+TruePeakDsp::read_f ()
 {
-  self->res = true;
-  return self->m;
+  res_ = true;
+  return m_;
 }
 
 void
-true_peak_dsp_read (TruePeakDsp * self, float * m, float * p)
+TruePeakDsp::read (float * m, float * p)
 {
-  self->res = true;
-  *m = self->m;
-  *p = self->p;
+  res_ = true;
+  *m = m_;
+  *p = p_;
 }
 
 void
-true_peak_dsp_reset (TruePeakDsp * self)
+TruePeakDsp::reset ()
 {
-  self->res = true;
-  self->m = 0;
-  self->p = 0;
+  res_ = true;
+  m_ = 0;
+  p_ = 0;
 }
 
-/**
- * Init with the samplerate.
- */
 void
-true_peak_dsp_init (TruePeakDsp * self, float samplerate)
+TruePeakDsp::init (float samplerate)
 {
   zita_resampler_setup_with_frel (
-    self->src, (unsigned int) samplerate, (unsigned int) (samplerate * 4.f), 1,
-    24, 1.0);
-  self->buf = (float *) g_malloc (32768 * sizeof (float));
+    src_, static_cast<unsigned int> (samplerate),
+    static_cast<unsigned int> (samplerate * 4.f), 1, 24, 1.0);
+  buf_ = static_cast<float *> (g_malloc (32768 * sizeof (float)));
 
-  self->z1 = self->z2 = .0f;
-  self->w1 = 4000.f / samplerate / 4.f;
-  self->w2 = 17200.f / samplerate / 4.f;
-  self->w3 = 1.0f - 7.f / samplerate / 4.f;
-  self->g = 0.502f;
+  z1_ = z2_ = .0f;
+  w1_ = 4000.f / samplerate / 4.f;
+  w2_ = 17200.f / samplerate / 4.f;
+  w3_ = 1.0f - 7.f / samplerate / 4.f;
+  g_ = 0.502f;
 
-  /* q/d initialize */
   float zero[8192];
   for (int i = 0; i < 8192; ++i)
     {
       zero[i] = 0.0;
     }
-  self->src->inp_count = 8192;
-  self->src->inp_data = zero;
-  self->src->out_count = 32768;
-  self->src->out_data = self->buf;
-  zita_resampler_process (self->src);
+  src_->inp_count = 8192;
+  src_->inp_data = zero;
+  src_->out_count = 32768;
+  src_->out_data = buf_;
+  zita_resampler_process (src_);
 }
 
-TruePeakDsp *
-true_peak_dsp_new (void)
+TruePeakDsp::TruePeakDsp ()
 {
-  TruePeakDsp * self = object_new (TruePeakDsp);
-
-  self->res = true;
-
-  self->src = zita_resampler_new ();
-
-  return self;
+  res_ = true;
+  src_ = zita_resampler_new ();
 }
 
-void
-true_peak_dsp_free (TruePeakDsp * self)
+TruePeakDsp::~TruePeakDsp ()
 {
-  zita_resampler_free (self->src);
-  free (self->buf);
+  zita_resampler_free (src_);
+  if (buf_)
+    free (buf_);
 }

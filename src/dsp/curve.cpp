@@ -1,4 +1,3 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -27,107 +26,53 @@
  *
  * ---
  */
-// clang-format on
 
 #include <cmath>
 
 #include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math.h"
-#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
 
-const char **
-curve_algorithm_get_strings (void)
-{
-  static const char * curve_algorithm_strings[] = {
-    N_ ("Exponent"), N_ ("Superellipse"), N_ ("Vital"),
-    N_ ("Pulse"),    N_ ("Logarithmic"),
-  };
-  return curve_algorithm_strings;
-}
-
-const char *
-curve_algorithm_to_str (CurveAlgorithm algo)
-{
-  const char ** strs = curve_algorithm_get_strings ();
-
-  return strs[static_cast<int> (algo)];
-}
-
-void
-curve_opts_init (CurveOptions * opts)
-{
-  opts->schema_version = CURVE_OPTIONS_SCHEMA_VERSION;
-}
-
-/**
- * Stores the localized name of the algorithm in
- * \ref buf.
- */
-void
-curve_algorithm_get_localized_name (CurveAlgorithm algo, char * buf)
-{
-  switch (algo)
-    {
-    case CurveAlgorithm::EXPONENT:
-      sprintf (buf, _ ("Exponent"));
-      break;
-    case CurveAlgorithm::SUPERELLIPSE:
-      sprintf (buf, _ ("Superellipse"));
-      break;
-    case CurveAlgorithm::VITAL:
-      sprintf (buf, "Vital");
-      break;
-    case CurveAlgorithm::PULSE:
-      sprintf (buf, _ ("Pulse"));
-      break;
-    case CurveAlgorithm::LOGARITHMIC:
-      sprintf (buf, _ ("Logarithmic"));
-      break;
-    default:
-      g_return_if_reached ();
-    }
-  return;
-}
-
 static const char *
-curve_algorithm_get_string_id (CurveAlgorithm algo)
+curve_algorithm_get_string_id (CurveOptions::Algorithm algo)
 {
+  using Algorithm = CurveOptions::Algorithm;
   switch (algo)
     {
-    case CurveAlgorithm::EXPONENT:
+    case Algorithm::Exponent:
       return "exponent";
-    case CurveAlgorithm::SUPERELLIPSE:
+    case Algorithm::SuperEllipse:
       return "superellipse";
-    case CurveAlgorithm::VITAL:
+    case Algorithm::Vital:
       return "vital";
-    case CurveAlgorithm::PULSE:
+    case Algorithm::Pulse:
       return "pulse";
-    case CurveAlgorithm::LOGARITHMIC:
+    case Algorithm::Logarithmic:
       return "logarithmic";
     default:
       return "invalid";
     }
 }
 
-static CurveAlgorithm
+static CurveOptions::Algorithm
 curve_algorithm_get_from_string_id (const char * str)
 {
+  using Algorithm = CurveOptions::Algorithm;
   if (string_is_equal (str, "exponent"))
-    return CurveAlgorithm::EXPONENT;
+    return Algorithm::Exponent;
   else if (string_is_equal (str, "superellipse"))
-    return CurveAlgorithm::SUPERELLIPSE;
+    return Algorithm::SuperEllipse;
   else if (string_is_equal (str, "vital"))
-    return CurveAlgorithm::VITAL;
+    return Algorithm::Vital;
   else if (string_is_equal (str, "pulse"))
-    return CurveAlgorithm::PULSE;
+    return Algorithm::Pulse;
   else if (string_is_equal (str, "logarithmic"))
-    return CurveAlgorithm::LOGARITHMIC;
+    return Algorithm::Logarithmic;
 
-  g_return_val_if_reached (CurveAlgorithm::SUPERELLIPSE);
+  g_return_val_if_reached (Algorithm::SuperEllipse);
 }
 
 gboolean
@@ -136,9 +81,9 @@ curve_algorithm_get_g_settings_mapping (
   GVariant * variant,
   gpointer   user_data)
 {
-  const char * str = g_variant_get_string (variant, NULL);
+  const char * str = g_variant_get_string (variant, nullptr);
 
-  CurveAlgorithm val = curve_algorithm_get_from_string_id (str);
+  CurveOptions::Algorithm val = curve_algorithm_get_from_string_id (str);
   g_value_set_uint (value, static_cast<guint> (val));
 
   return true;
@@ -153,35 +98,26 @@ curve_algorithm_set_g_settings_mapping (
   guint val = g_value_get_uint (value);
 
   const char * str =
-    curve_algorithm_get_string_id (static_cast<CurveAlgorithm> (val));
+    curve_algorithm_get_string_id (static_cast<CurveOptions::Algorithm> (val));
 
   return g_variant_new_string (str);
 }
 
-/**
- * Returns the Y value on a curve specified by
- * \ref algo.
- *
- * @param x X-coordinate, normalized.
- * @param opts Curve options.
- * @param start_higher Start at higher point.
- */
 double
-curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
+CurveOptions::get_normalized_y (double x, bool start_higher) const
 {
   z_return_val_if_fail_cmp (x, >=, 0.0, 0.0);
   z_return_val_if_fail_cmp (x, <=, 1.0, 0.0);
 
-  int curve_up = opts->curviness >= 0;
+  int curve_up = curviness_ >= 0;
 
   double val = -1.0;
-  switch (opts->algo)
+  switch (algo_)
     {
-    case CurveAlgorithm::EXPONENT:
+    case CurveOptions::Algorithm::Exponent:
       {
         /* convert curviness to bound */
-        double curviness_for_calc =
-          opts->curviness * CURVE_EXPONENT_CURVINESS_BOUND;
+        double curviness_for_calc = curviness_ * CURVE_EXPONENT_CURVINESS_BOUND;
 
         curviness_for_calc = 1.0 - fabs (curviness_for_calc);
         if (!start_higher)
@@ -203,11 +139,11 @@ curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
           val = 1.0 - val;
       }
       break;
-    case CurveAlgorithm::SUPERELLIPSE:
+    case CurveOptions::Algorithm::SuperEllipse:
       {
         /* convert curviness to bound */
         double curviness_for_calc =
-          opts->curviness * CURVE_SUPERELLIPSE_CURVINESS_BOUND;
+          curviness_ * CURVE_SUPERELLIPSE_CURVINESS_BOUND;
 
         curviness_for_calc = 1.0 - fabs (curviness_for_calc);
         if (!start_higher)
@@ -230,11 +166,10 @@ curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
           val = 1.0 - val;
       }
       break;
-    case CurveAlgorithm::VITAL:
+    case CurveOptions::Algorithm::Vital:
       {
         /* convert curviness to bound */
-        double curviness_for_calc =
-          opts->curviness * CURVE_VITAL_CURVINESS_BOUND;
+        double curviness_for_calc = curviness_ * CURVE_VITAL_CURVINESS_BOUND;
 
         curviness_for_calc = -curviness_for_calc * 10.0;
         if (start_higher)
@@ -251,20 +186,19 @@ curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
           }
       }
       break;
-    case CurveAlgorithm::PULSE:
+    case CurveOptions::Algorithm::Pulse:
       {
-        val = ((1.0 + opts->curviness) / 2.0) > x ? 0.0 : 1.0;
+        val = ((1.0 + curviness_) / 2.0) > x ? 0.0 : 1.0;
 
         if (start_higher)
           val = 1.0 - val;
       }
       break;
-    case CurveAlgorithm::LOGARITHMIC:
+    case CurveOptions::Algorithm::Logarithmic:
       {
         /* convert curviness to bound */
         static const float bound = 1e-12f;
-        float              s =
-          CLAMP (fabsf ((float) opts->curviness), 0.01f, 1 - bound) * 10.f;
+        float s = CLAMP (fabsf ((float) curviness_), 0.01f, 1 - bound) * 10.f;
         float curviness_for_calc =
           CLAMP ((10.f - s) / (powf (s, s)), bound, 10.f);
 
@@ -276,7 +210,7 @@ curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
 #if 0
         g_message (
           "curviness (z): %f (for calc %f), x %f",
-          opts->curviness,
+          curviness_,
           (double) curviness_for_calc, x);
 #endif
 
@@ -326,64 +260,28 @@ curve_get_normalized_y (double x, CurveOptions * opts, int start_higher)
   return CLAMP (val, 0.0, 1.0);
 }
 
-static CurveFadePreset *
-curve_fade_preset_create (
-  const char *   id,
-  const char *   label,
-  CurveAlgorithm algo,
-  double         curviness)
+std::vector<CurveFadePreset>
+CurveFadePreset::get_fade_presets ()
 {
-  CurveFadePreset * preset = object_new (CurveFadePreset);
+  std::vector<CurveFadePreset> presets;
 
-  preset->id = g_strdup (id);
-  preset->label = g_strdup (label);
-  preset->opts.algo = algo;
-  preset->opts.curviness = curviness;
+  presets.push_back (CurveFadePreset (
+    "linear", _ ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0));
+  presets.push_back (CurveFadePreset (
+    "exponential", _ ("Exponential"), CurveOptions::Algorithm::Exponent, -0.6));
+  presets.push_back (CurveFadePreset (
+    "elliptic", _ ("Elliptic"), CurveOptions::Algorithm::SuperEllipse, -0.5));
+  presets.push_back (CurveFadePreset (
+    "logarithmic", _ ("Logarithmic"), CurveOptions::Algorithm::Logarithmic,
+    -0.5));
+  presets.push_back (CurveFadePreset (
+    "vital", _ ("Vital"), CurveOptions::Algorithm::Vital, -0.5));
 
-  return preset;
-}
-
-static void
-curve_fade_preset_free (gpointer data)
-{
-  CurveFadePreset * preset = (CurveFadePreset *) data;
-  g_free_and_null (preset->id);
-  g_free_and_null (preset->label);
-  object_zero_and_free (preset);
-}
-
-/**
- * Returns an array of CurveFadePreset.
- */
-GPtrArray *
-curve_get_fade_presets (void)
-{
-  GPtrArray * arr = g_ptr_array_new_with_free_func (curve_fade_preset_free);
-  g_ptr_array_add (
-    arr,
-    curve_fade_preset_create (
-      "linear", _ ("Linear"), CurveAlgorithm::SUPERELLIPSE, 0));
-  g_ptr_array_add (
-    arr,
-    curve_fade_preset_create (
-      "exponential", _ ("Exponential"), CurveAlgorithm::EXPONENT, -0.6));
-  g_ptr_array_add (
-    arr,
-    curve_fade_preset_create (
-      "elliptic", _ ("Elliptic"), CurveAlgorithm::SUPERELLIPSE, -0.5));
-  g_ptr_array_add (
-    arr,
-    curve_fade_preset_create (
-      "logarithmic", _ ("Logarithmic"), CurveAlgorithm::LOGARITHMIC, -0.5));
-  g_ptr_array_add (
-    arr,
-    curve_fade_preset_create ("vital", _ ("Vital"), CurveAlgorithm::VITAL, -0.5));
-
-  return arr;
+  return presets;
 }
 
 bool
-curve_options_are_equal (const CurveOptions * a, const CurveOptions * b)
+operator== (const CurveOptions &a, const CurveOptions &b)
 {
-  return a->algo == b->algo && math_doubles_equal (a->curviness, b->curviness);
+  return math_doubles_equal (a.curviness_, b.curviness_) && a.algo_ == b.algo_;
 }

@@ -15,7 +15,6 @@
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
-#include <zix/ring.h>
 
 G_DEFINE_TYPE (
   PrerollCountSelectorWidget,
@@ -99,7 +98,7 @@ preroll_count_selector_widget_new (PrerollCountSelectorType type)
   PrerollCountSelectorWidget * self = static_cast<
     PrerollCountSelectorWidget *> (g_object_new (
     PREROLL_COUNT_SELECTOR_WIDGET_TYPE, "orientation",
-    GTK_ORIENTATION_HORIZONTAL, "visible", true, NULL));
+    GTK_ORIENTATION_HORIZONTAL, "visible", true, nullptr));
 
   self->type = type;
 
@@ -146,7 +145,7 @@ preroll_count_selector_widget_new (PrerollCountSelectorType type)
       gtk_toggle_button_set_active (self->four_bars_toggle, true);
       break;
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
     }
 
   return self;

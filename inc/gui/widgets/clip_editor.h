@@ -2,15 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_CLIP_EDITOR_H__
 #define __GUI_WIDGETS_CLIP_EDITOR_H__
 
-#include <adwaita.h>
-
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 #define CLIP_EDITOR_WIDGET_TYPE (clip_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -26,7 +25,7 @@ typedef struct _ClipEditorInnerWidget     ClipEditorInnerWidget;
 typedef struct _EditorSelectionInfoWidget EditorSelectionInfoWidget;
 typedef struct _EditorToolbarWidget       EditorToolbarWidget;
 typedef struct _AudioClipEditorWidget     AudioClipEditorWidget;
-typedef struct ClipEditor                 ClipEditor;
+class ClipEditor;
 
 /**
  * The ClipEditorWidget shows in the Clip Editor /

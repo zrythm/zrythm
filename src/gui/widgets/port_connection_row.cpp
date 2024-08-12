@@ -1,12 +1,8 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
 #include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_connections_manager.h"
@@ -15,9 +11,9 @@
 #include "gui/widgets/popovers/port_connections_popover.h"
 #include "gui/widgets/port_connection_row.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -28,13 +24,22 @@ G_DEFINE_TYPE (PortConnectionRowWidget, port_connection_row_widget, GTK_TYPE_BOX
 static void
 on_enable_toggled (GtkToggleButton * btn, PortConnectionRowWidget * self)
 {
-  GError * err = NULL;
-  bool     ret = port_connection_action_perform_enable (
-    self->connection->src_id, self->connection->dest_id,
-    gtk_toggle_button_get_active (btn), &err);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to enable connection"));
+      if (gtk_toggle_button_get_active (btn))
+        {
+          UNDO_MANAGER->perform (std::make_unique<PortConnectionEnableAction> (
+            self->connection->src_id_, self->connection->dest_id_));
+        }
+      else
+        {
+          UNDO_MANAGER->perform (std::make_unique<PortConnectionDisableAction> (
+            self->connection->src_id_, self->connection->dest_id_));
+        }
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to enable connection"));
     }
 
   g_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
@@ -44,12 +49,15 @@ on_enable_toggled (GtkToggleButton * btn, PortConnectionRowWidget * self)
 static void
 on_del_clicked (GtkButton * btn, PortConnectionRowWidget * self)
 {
-  GError * err = NULL;
-  bool     ret = port_connection_action_perform_disconnect (
-    self->connection->src_id, self->connection->dest_id, &err);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to disconnect"));
+
+      UNDO_MANAGER->perform (std::make_unique<PortConnectionDisconnectAction> (
+        self->connection->src_id_, self->connection->dest_id_));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to disconnect"));
     }
 
   g_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
@@ -59,7 +67,7 @@ on_del_clicked (GtkButton * btn, PortConnectionRowWidget * self)
 static void
 finalize (PortConnectionRowWidget * self)
 {
-  object_free_w_func_and_null (port_connection_free, self->connection);
+  object_delete_and_null (self->connection);
 
   G_OBJECT_CLASS (port_connection_row_widget_parent_class)
     ->finalize (G_OBJECT (self));
@@ -75,9 +83,9 @@ port_connection_row_widget_new (
   bool                           is_input)
 {
   PortConnectionRowWidget * self = Z_PORT_CONNECTION_ROW_WIDGET (
-    g_object_new (PORT_CONNECTION_ROW_WIDGET_TYPE, NULL));
+    g_object_new (PORT_CONNECTION_ROW_WIDGET_TYPE, nullptr));
 
-  self->connection = port_connection_clone (connection);
+  self->connection = new PortConnection (*connection);
 
   self->is_input = is_input;
   self->parent = parent;
@@ -88,7 +96,7 @@ port_connection_row_widget_new (
 
   /* power button */
   GtkToggleButton * btn = z_gtk_toggle_button_new_with_icon ("network-connect");
-  gtk_toggle_button_set_active (btn, connection->enabled);
+  gtk_toggle_button_set_active (btn, connection->enabled_);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (btn));
   gtk_widget_set_tooltip_text (
@@ -102,19 +110,16 @@ port_connection_row_widget_new (
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->overlay));
 
   /* bar slider */
-  char                   designation[600];
-  const PortIdentifier * port_id =
-    is_input ? connection->dest_id : connection->src_id;
-  Port * port = Port::find_from_identifier (port_id);
-  if (!IS_PORT_AND_NONNULL (port))
+  const auto &port_id = is_input ? connection->dest_id_ : connection->src_id_;
+  Port *      port = Port::find_from_identifier (port_id);
+  if (!port)
     {
-      g_critical (
-        "failed to find port for '%s'", port_id->get_label_as_c_str ());
-      return NULL;
+      z_error ("failed to find port for '{}'", port_id.get_label ());
+      return nullptr;
     }
-  port->get_full_designation (designation);
-  strcat (designation, " ");
-  self->slider = bar_slider_widget_new_port_connection (connection, designation);
+  auto designation = port->get_full_designation () + " ";
+  self->slider =
+    bar_slider_widget_new_port_connection (connection, designation.c_str ());
   gtk_overlay_set_child (GTK_OVERLAY (self->overlay), GTK_WIDGET (self->slider));
 
   /* delete connection button */
@@ -128,7 +133,7 @@ port_connection_row_widget_new (
 
   gtk_box_append (GTK_BOX (self), box);
 
-  gtk_widget_set_sensitive (box, !connection->locked);
+  gtk_widget_set_sensitive (box, !connection->locked_);
 
   return self;
 }

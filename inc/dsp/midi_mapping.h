@@ -1,20 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Mapping MIDI CC to controls.
- */
 
 #ifndef __AUDIO_MIDI_MAPPING_H__
 #define __AUDIO_MIDI_MAPPING_H__
 
 #include "dsp/ext_port.h"
 #include "dsp/port.h"
-#include "utils/midi.h"
+#include "utils/icloneable.h"
 
-typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
+using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup dsp
@@ -22,147 +16,137 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
  * @{
  */
 
-#define MIDI_MAPPINGS (PROJECT->midi_mappings)
+#define MIDI_MAPPINGS (PROJECT->midi_mappings_)
 
 /**
- * A mapping from a MIDI value to a destination.
+ * A mapping from a MIDI CC value to a destination ControlPort.
  */
-typedef struct MidiMapping
+class MidiMapping final
+    : public ICloneable<MidiMapping>,
+      public ISerializable<MidiMapping>
 {
+public:
+  void init_after_cloning (const MidiMapping &other) override
+  {
+    key_ = other.key_;
+    if (other.device_port_)
+      device_port_ = std::make_unique<ExtPort> (*other.device_port_);
+    dest_id_ = other.dest_id_;
+    enabled_.store (other.enabled_.load ());
+  }
+
+  void set_enabled (bool enabled) { enabled_.store (enabled); }
+
+  void apply (std::array<midi_byte_t, 3> buf);
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** Raw MIDI signal. */
-  midi_byte_t key[3] = {};
+  std::array<midi_byte_t, 3> key_ = {};
 
   /** The device that this connection will be mapped for. */
-  ExtPort * device_port = nullptr;
+  std::unique_ptr<ExtPort> device_port_;
 
   /** Destination. */
-  PortIdentifier dest_id = {};
+  PortIdentifier dest_id_ = {};
 
   /**
    * Destination pointer, for convenience.
    *
    * @note This pointer is not owned by this instance.
    */
-  Port * dest = nullptr;
+  Port * dest_ = nullptr;
 
   /** Whether this binding is enabled. */
-  int enabled = 0;
-
-  /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj = nullptr;
-} MidiMapping;
+  /* TODO: check if really should be atomic */
+  std::atomic<bool> enabled_ = false;
+};
 
 /**
  * All MIDI mappings in Zrythm.
  */
-typedef struct MidiMappings
+class MidiMappings final
+    : public ICloneable<MidiMappings>,
+      public ISerializable<MidiMappings>
 {
-  MidiMapping ** mappings;
-  size_t         mappings_size;
-  int            num_mappings;
-} MidiMappings;
+public:
+  void init_loaded ();
 
-/**
- * Initializes the MidiMappings after a Project
- * is loaded.
- */
-void
-midi_mappings_init_loaded (MidiMappings * self);
+  /**
+   * Binds the CC represented by the given raw buffer (must be size 3) to the
+   * given Port.
+   *
+   * @param idx Index to insert at.
+   * @param buf The buffer used for matching at [0] and [1].
+   * @param device_port Device port, if custom mapping.
+   */
+  void bind_at (
+    std::array<midi_byte_t, 3> buf,
+    ExtPort *                  device_port,
+    Port                      &dest_port,
+    int                        idx,
+    bool                       fire_events);
 
-/**
- * Returns a newly allocated MidiMappings.
- */
-MidiMappings *
-midi_mappings_new (void);
+  /**
+   * Unbinds the given binding.
+   *
+   * @note This must be called inside a port operation lock, such as inside an
+   * undoable action.
+   */
+  void unbind (int idx, bool fire_events);
 
-#define midi_mappings_bind_device(self, buf, dev_port, dest_port, fire_events) \
-  midi_mappings_bind_at ( \
-    self, buf, dev_port, dest_port, (self)->num_mappings, fire_events)
+  void bind_device (
+    std::array<midi_byte_t, 3> buf,
+    ExtPort *                  dev_port,
+    Port                      &dest_port,
+    bool                       fire_events)
+  {
+    bind_at (buf, dev_port, dest_port, mappings_.size (), fire_events);
+  }
 
-#define midi_mappings_bind_track(self, buf, dest_port, fire_events) \
-  midi_mappings_bind_at ( \
-    self, buf, NULL, dest_port, (self)->num_mappings, fire_events)
+  void
+  bind_track (std::array<midi_byte_t, 3> buf, Port &dest_port, bool fire_events)
+  {
+    bind_at (buf, nullptr, dest_port, mappings_.size (), fire_events);
+  }
 
-/**
- * Binds the CC represented by the given raw buffer
- * (must be size 3) to the given Port.
- *
- * @param idx Index to insert at.
- * @param buf The buffer used for matching at [0] and
- *   [1].
- * @param device_port Device port, if custom mapping.
- */
-void
-midi_mappings_bind_at (
-  MidiMappings * self,
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port,
-  int            idx,
-  bool           fire_events);
+  int get_mapping_index (const MidiMapping &mapping) const;
 
-/**
- * Unbinds the given binding.
- *
- * @note This must be called inside a port operation
- *   lock, such as inside an undoable action.
- */
-void
-midi_mappings_unbind (MidiMappings * self, int idx, bool fire_events);
+  /**
+   * Applies the events to the appropriate mapping.
+   *
+   * This is used only for TrackProcessor.cc_mappings.
+   *
+   * @note Must only be called while transport is recording.
+   */
+  void apply_from_cc_events (MidiEventVector &events);
 
-MidiMapping *
-midi_mapping_new (void);
+  /**
+   * Applies the given buffer to the matching ports.
+   */
+  void apply (const midi_byte_t * buf);
 
-void
-midi_mapping_set_enabled (MidiMapping * self, bool enabled);
+  /**
+   * Get MIDI mappings for the given port.
+   *
+   * @param arr Optional array to fill with the mappings.
+   *
+   * @return The number of results.
+   */
+  int
+  get_for_port (const Port &dest_port, std::vector<MidiMapping *> * arr) const;
 
-int
-midi_mapping_get_index (MidiMappings * self, MidiMapping * mapping);
+  void init_after_cloning (const MidiMappings &other) override
+  {
+    clone_unique_ptr_container (mappings_, other.mappings_);
+  }
 
-NONNULL MidiMapping *
-midi_mapping_clone (const MidiMapping * src);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-void
-midi_mapping_free (MidiMapping * self);
-
-/**
- * Applies the events to the appropriate mapping.
- *
- * This is used only for TrackProcessor.cc_mappings.
- *
- * @note Must only be called while transport is
- *   recording.
- */
-void
-midi_mappings_apply_from_cc_events (
-  MidiMappings * self,
-  MidiEvents *   events,
-  bool           queued);
-
-/**
- * Applies the given buffer to the matching ports.
- */
-void
-midi_mappings_apply (MidiMappings * self, midi_byte_t * buf);
-
-/**
- * Get MIDI mappings for the given port.
- *
- * @param arr Optional array to fill with the mappings.
- *
- * @return The number of results.
- */
-int
-midi_mappings_get_for_port (
-  MidiMappings * self,
-  Port *         dest_port,
-  GPtrArray *    arr);
-
-MidiMappings *
-midi_mappings_clone (const MidiMappings * src);
-
-void
-midi_mappings_free (MidiMappings * self);
+public:
+  std::vector<std::unique_ptr<MidiMapping>> mappings_;
+};
 
 /**
  * @}

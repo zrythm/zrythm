@@ -1,34 +1,14 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * The automation containing regions and other
- * objects.
- */
-
 #include "actions/arranger_selections.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
-#include "dsp/audio_bus_track.h"
-#include "dsp/audio_track.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
 #include "dsp/channel.h"
-#include "dsp/chord_object.h"
-#include "dsp/chord_track.h"
 #include "dsp/control_port.h"
 #include "dsp/curve.h"
-#include "dsp/instrument_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/master_track.h"
 #include "dsp/midi_region.h"
-#include "dsp/scale_object.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -36,246 +16,276 @@
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord_object.h"
-#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/color_area.h"
-#include "gui/widgets/editor_ruler.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/marker.h"
-#include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_note.h"
-#include "gui/widgets/pinned_tracklist.h"
-#include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/scale_object.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/tracklist.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/cairo.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
-#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-/**
- * Create an AutomationPointat the given Position
- * in the given Track's AutomationTrack.
- *
- * @param pos The pre-snapped position.
- */
 void
 automation_arranger_widget_create_ap (
-  ArrangerWidget * self,
-  const Position * pos,
-  const double     start_y,
-  Region *         region,
-  bool             autofilling)
+  ArrangerWidget *   self,
+  const Position *   pos,
+  const double       start_y,
+  AutomationRegion * region,
+  bool               autofilling)
 {
-  AutomationTrack * at = region_get_automation_track (region);
-  g_return_if_fail (at);
-  Port * port = Port::find_from_identifier (&at->port_id);
-  g_return_if_fail (port);
+  auto at = region->get_automation_track ();
+  if (!at)
+    return;
+  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  if (!port)
+    return;
 
   if (!autofilling)
     {
-      self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
+      self->action = UiOverlayAction::CREATING_MOVING;
     }
 
-  ArrangerObject * region_obj = (ArrangerObject *) region;
-
   /* get local pos */
-  Position local_pos;
-  position_from_ticks (&local_pos, pos->ticks - region_obj->pos.ticks);
-
+  Position local_pos (pos->ticks_ - region->pos_.ticks_);
   int height = gtk_widget_get_height (GTK_WIDGET (self));
   /* do height - because it's uside down */
-  float normalized_val = (float) ((height - start_y) / height);
-  g_message ("normalized val is %f", (double) normalized_val);
+  float normalized_val = static_cast<float> ((height - start_y) / height);
+  z_debug ("normalized val is %f", static_cast<double> (normalized_val));
 
   /* clamp the value because the cursor might be
    * outside the widget */
-  normalized_val = CLAMP (normalized_val, 0.f, 1.f);
+  normalized_val = std::clamp (normalized_val, 0.f, 1.f);
 
-  float value = control_port_normalized_val_to_real (port, normalized_val);
+  float value = port->normalized_val_to_real (normalized_val);
 
-  /* create a new ap */
-  AutomationPoint * ap =
-    automation_point_new_float (value, normalized_val, &local_pos);
-  ArrangerObject * ap_obj = (ArrangerObject *) ap;
-
-  /* set it as start object */
-  self->start_object = ap_obj;
-
-  /* add it to automation track */
-  automation_region_add_ap (region, ap, F_PUBLISH_EVENTS);
+  /* create a new ap and add it to the automation region */
+  auto ap = region->append_object (
+    std::make_shared<AutomationPoint> (value, normalized_val, local_pos), true);
 
   /* set position to all counterparts */
-  arranger_object_set_position (
-    ap_obj, &local_pos,
-    ArrangerObjectPositionType::ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
+  ap->set_position (&local_pos, ArrangerObject::PositionType::Start, false);
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ap);
-  arranger_object_select (ap_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  /* set it as start object */
+  self->prj_start_object = ap->shared_from_this ();
+  self->start_object = ap->clone_unique ();
+
+  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ap.get ());
+  ArrangerObject::select (ap->shared_from_this (), true, false, false);
 }
 
-/**
- * Change curviness of selected curves.
- */
 void
 automation_arranger_widget_resize_curves (ArrangerWidget * self, double offset_y)
 {
-  double diff = offset_y - self->last_offset_y;
-  diff = -diff;
-  diff = diff / 120.0;
-  for (int i = 0; i < AUTOMATION_SELECTIONS->num_automation_points; i++)
+  double diff = (self->last_offset_y - offset_y) / 120.0;
+  for (auto &obj : AUTOMATION_SELECTIONS->objects_)
     {
-      AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[i];
-      double new_curve_val = CLAMP (ap->curve_opts.curviness + diff, -1.0, 1.0);
-      automation_point_set_curviness (ap, new_curve_val);
+      if (auto ap = dynamic_cast<AutomationPoint *> (obj.get ()))
+        {
+          auto prj_ap =
+            std::dynamic_pointer_cast<AutomationPoint> (ap->find_in_project ());
+          double new_curve_val =
+            std::clamp (prj_ap->curve_opts_.curviness_ + diff, -1.0, 1.0);
+          prj_ap->set_curviness (new_curve_val);
+
+          /* make the change in the selection copy too */
+          ap->set_curviness (new_curve_val);
+        }
     }
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, AUTOMATION_SELECTIONS);
+  EVENTS_PUSH (
+    EventType::ET_ARRANGER_SELECTIONS_CHANGED, AUTOMATION_SELECTIONS.get ());
 }
 
-/** Used for passing a curve algorithm to some
- * actions. */
-typedef struct CurveAlgorithmInfo
-{
-  AutomationPoint * ap;
-  CurveAlgorithm    algo;
-} CurveAlgorithmInfo;
-
-/**
- * Generate a context menu at x, y.
- *
- * @param menu A menu to append entries to (optional).
- *
- * @return The given updated menu or a new menu.
- */
 GMenu *
 automation_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
-  GMenu *          menu,
   double           x,
   double           y)
 {
-  if (!menu)
-    {
-      menu = g_menu_new ();
-    }
-  GMenuItem * menuitem;
-
-  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
-    (ArrangerWidget *) self,
-    ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, y);
-  AutomationPoint * ap = (AutomationPoint *) obj;
+  auto menu = Gio::Menu::create ();
+  auto obj = arranger_widget_get_hit_arranger_object (
+    self, ArrangerObject::Type::AutomationPoint, x, y);
+  auto ap = dynamic_cast<AutomationPoint *> (obj);
 
   if (ap)
     {
-      GMenu * edit_submenu = g_menu_new ();
+      auto edit_submenu = Gio::Menu::create ();
 
       /* create cut, copy, duplicate, delete */
-      menuitem = CREATE_CUT_MENU_ITEM ("app.cut");
-      g_menu_append_item (edit_submenu, menuitem);
-      menuitem = CREATE_COPY_MENU_ITEM ("app.copy");
-      g_menu_append_item (edit_submenu, menuitem);
-      menuitem = CREATE_DUPLICATE_MENU_ITEM ("app.duplicate");
-      g_menu_append_item (edit_submenu, menuitem);
-      menuitem = CREATE_DELETE_MENU_ITEM ("app.delete");
-      g_menu_append_item (edit_submenu, menuitem);
+      edit_submenu->append (_ ("Cut"), "app.cut");
+      edit_submenu->append (_ ("Copy"), "app.copy");
+      edit_submenu->append (_ ("Duplicate"), "app.duplicate");
+      edit_submenu->append (_ ("Delete"), "app.delete");
 
-      char str[100];
-      sprintf (str, "app.arranger-object-view-info::%p", obj);
-      menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, str);
-      g_menu_append_item (edit_submenu, menuitem);
+      edit_submenu->append (
+        _ ("View info"),
+        Glib::ustring::compose ("app.arranger-object-view-info::%1", obj));
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (edit_submenu));
+      menu->append_section (Glib::RefPtr<Gio::MenuModel> (edit_submenu));
 
       /* add curve algorithm selection */
-      GMenu * curve_algorithm_submenu = g_menu_new ();
-      for (unsigned int i = 0; i < ENUM_COUNT (CurveAlgorithm); i++)
+      auto curve_algorithm_submenu = Gio::Menu::create ();
+      for (
+        unsigned int i = 0;
+        i < static_cast<unsigned int> (CurveOptions::Algorithm::Logarithmic) + 1;
+        i++)
         {
-          char name[100];
-          curve_algorithm_get_localized_name ((CurveAlgorithm) i, name);
-          char tmp[200];
-          /* TODO change action state so that
-           * selected algorithm shows as selected */
-          sprintf (tmp, "app.set-curve-algorithm");
-          menuitem = z_gtk_create_menu_item (name, NULL, tmp);
-          g_menu_item_set_action_and_target_value (
-            menuitem, tmp, g_variant_new_int32 (i));
-          g_menu_append_item (curve_algorithm_submenu, menuitem);
+          curve_algorithm_submenu->append (
+            CurveOptions_Algorithm_to_string (
+              ENUM_INT_TO_VALUE (CurveOptions::Algorithm, i), true),
+            Glib::ustring::compose ("app.set-curve-algorithm(%1)", i));
         }
 
-      g_menu_append_section (
-        menu, _ ("Curve algorithm"), G_MENU_MODEL (curve_algorithm_submenu));
+      menu->append_section (
+        _ ("Curve algorithm"),
+        Glib::RefPtr<Gio::MenuModel> (curve_algorithm_submenu));
     }
 
-  return menu;
+  auto gobj = menu->gobj ();
+  g_object_ref (gobj);
+  return gobj;
 }
 
-/**
- * Called when using the edit tool.
- *
- * @return Whether an automation point was moved.
- */
 bool
 automation_arranger_move_hit_aps (ArrangerWidget * self, double x, double y)
 {
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* get snapped x */
-  Position pos;
-  arranger_widget_px_to_pos (self, x, &pos, true);
-  if (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid))
+  Position pos = arranger_widget_px_to_pos (self, x, true);
+  if (!self->shift_held && self->snap_grid->any_snap ())
     {
-      position_snap (
-        &self->earliest_obj_start_pos, &pos, NULL, NULL, self->snap_grid);
-      x = arranger_widget_pos_to_px (self, &pos, true);
+      pos.snap (
+        self->earliest_obj_start_pos.get (), nullptr, nullptr, *self->snap_grid);
+      x = arranger_widget_pos_to_px (self, pos, true);
     }
 
   /* move any hit automation points */
-  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
-    self, ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, -1);
-  if (obj)
+  auto obj = arranger_widget_get_hit_arranger_object (
+    self, ArrangerObject::Type::AutomationPoint, x, -1);
+  if (auto ap = dynamic_cast<AutomationPoint *> (obj))
     {
-      AutomationPoint * ap = (AutomationPoint *) obj;
-      if (automation_point_is_point_hit (ap, x, -1))
+      if (automation_point_is_point_hit (*ap, x, -1))
         {
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          ArrangerObject::select (ap->shared_from_this (), true, true, false);
 
-          Port * port = automation_point_get_port (ap);
-          g_return_val_if_fail (port, false);
+          auto port = ap->get_port ();
+          if (!port)
+            return false;
 
           /* move it to the y value */
           /* do height - because it's uside down */
-          float normalized_val = (float) ((height - y) / height);
+          float normalized_val = static_cast<float> ((height - y) / height);
 
-          /* clamp the value because the cursor might
-           * be outside the widget */
-          normalized_val = CLAMP (normalized_val, 0.f, 1.f);
-          float value =
-            control_port_normalized_val_to_real (port, normalized_val);
-          automation_point_set_fvalue (
-            ap, value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+          /* clamp the value because the cursor might be outside the widget */
+          normalized_val = std::clamp (normalized_val, 0.f, 1.f);
+          float value = port->normalized_val_to_real (normalized_val);
+          ap->set_fvalue (value, false, true);
 
           return true;
         }
     }
 
   return false;
+}
+
+void
+automation_arranger_on_drag_end (ArrangerWidget * self)
+{
+  auto automation_sel_at_start =
+    dynamic_cast<AutomationSelections *> (self->sel_at_start.get ());
+  try
+    {
+      switch (self->action)
+        {
+        case UiOverlayAction::RESIZING_UP:
+          {
+            try
+              {
+                UNDO_MANAGER->perform (
+                  std::make_unique<ArrangerSelectionsAction::EditAction> (
+                    *self->sel_at_start, AUTOMATION_SELECTIONS.get (),
+                    ArrangerSelectionsAction::EditType::Primitive, true));
+              }
+            catch (const ZrythmException &e)
+              {
+                e.handle (_ ("Failed to edit selection"));
+              }
+          }
+          break;
+        case UiOverlayAction::STARTING_MOVING:
+          break;
+        case UiOverlayAction::MOVING:
+          {
+            const AutomationPoint * start_ap =
+              automation_sel_at_start->get_automation_point (0);
+            const AutomationPoint * ap =
+              AUTOMATION_SELECTIONS->get_automation_point (0);
+            double ticks_diff = ap->pos_.ticks_ - start_ap->pos_.ticks_;
+            double norm_value_diff =
+              (double) (ap->normalized_val_ - start_ap->normalized_val_);
+            UNDO_MANAGER->perform (
+              std::make_unique<
+                ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
+                *AUTOMATION_SELECTIONS, true, ticks_diff, norm_value_diff, true));
+          }
+          break;
+          /* if copy-moved */
+        case UiOverlayAction::MOVING_COPY:
+          {
+            auto start_ap =
+              dynamic_cast<AutomationPoint *> (self->start_object.get ());
+            double ticks_diff =
+              start_ap->pos_.ticks_ - start_ap->transient_->pos_.ticks_;
+            float value_diff =
+              start_ap->normalized_val_
+              - dynamic_cast<AutomationPoint *> (start_ap->transient_)
+                  ->normalized_val_;
+
+            UNDO_MANAGER->perform (
+              std::make_unique<
+                ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
+                *AUTOMATION_SELECTIONS, false, ticks_diff, value_diff, true));
+          }
+          break;
+        case UiOverlayAction::NONE:
+        case UiOverlayAction::STARTING_SELECTION:
+          {
+            AUTOMATION_SELECTIONS->clear (false);
+          }
+          break;
+        /* if something was created */
+        case UiOverlayAction::CREATING_MOVING:
+          {
+            UNDO_MANAGER->perform (
+              std::make_unique<ArrangerSelectionsAction::CreateAction> (
+                *AUTOMATION_SELECTIONS));
+          }
+          break;
+        case UiOverlayAction::DELETE_SELECTING:
+        case UiOverlayAction::ERASING:
+          arranger_widget_handle_erase_action (self);
+          break;
+        case UiOverlayAction::AUTOFILLING:
+          {
+            auto region = CLIP_EDITOR->get_region<AutomationRegion> ();
+            z_return_if_fail (region);
+            UNDO_MANAGER->perform (
+              std::make_unique<ArrangerSelectionsAction::AutomationFillAction> (
+                *self->region_at_start, *region, true));
+          }
+          break;
+        /* if didn't click on something */
+        default:
+          break;
+        }
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to perform action"));
+    }
+
+  self->start_object = nullptr;
 }

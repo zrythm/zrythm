@@ -1,32 +1,12 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
- */
-
-/**
- * \file
- *
- * Track logic specific to bus tracks.
- */
-
-#include <cstdlib>
 
 #include "dsp/audio_group_track.h"
-#include "dsp/automation_tracklist.h"
-#include "dsp/channel_track.h"
-#include "project.h"
 
-void
-audio_group_track_init (Track * self)
+AudioGroupTrack::AudioGroupTrack (const std::string &name, int pos)
+    : Track (Track::Type::AudioGroup, name, pos)
 {
-  self->type = TrackType::TRACK_TYPE_AUDIO_GROUP;
   /* GTK color picker color */
-  gdk_rgba_parse (&self->color, "#26A269");
-  self->icon_name = g_strdup ("effect");
-}
-
-void
-audio_group_track_setup (Track * self)
-{
-  channel_track_setup (self);
+  color_ = Color ("#26A269");
+  icon_name_ = "effect";
 }

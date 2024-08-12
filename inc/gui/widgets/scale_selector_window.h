@@ -1,14 +1,17 @@
-// SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * MusicalScale selector popover.
  */
 
 #ifndef __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
 #define __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
+
+#include "dsp/scale.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -27,14 +30,14 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct ScaleObject  ScaleObject;
-typedef struct MusicalScale MusicalScale;
+class ScaleObject;
+class MusicalScale;
 
 /**
  * A GtkPopover to create a ScaleDescriptor for use
  * in the ScaleTrack's ScaleObject's.
  */
-typedef struct _ScaleSelectorWindowWidget
+using ScaleSelectorWindowWidget = struct _ScaleSelectorWindowWidget
 {
   GtkDialog parent_instance;
 
@@ -59,16 +62,15 @@ typedef struct _ScaleSelectorWindowWidget
   GtkFlowBox * creator_type_other_flowbox;
 
   /** All of the above in an array. */
-  GtkFlowBoxChild * creator_types[ENUM_COUNT (MusicalScaleType)];
+  GtkFlowBoxChild * creator_types[ENUM_COUNT (MusicalScale::Type)];
 
   /** The owner ScaleObjectWidget. */
   ScaleObject * scale;
 
   /** The descriptor of the edited scale, so
    * it can be used to save into the ScaleObject. */
-  MusicalScale * descr;
-
-} ScaleSelectorWindowWidget;
+  std::unique_ptr<MusicalScale> * descr;
+};
 
 /**
  * Creates the popover.

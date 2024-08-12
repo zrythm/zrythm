@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Item factory.
- */
 
 /**
  * @addtogroup widgets
@@ -16,89 +10,93 @@
 #ifndef __GUI_WIDGETS_ITEM_FACTORY_H__
 #define __GUI_WIDGETS_ITEM_FACTORY_H__
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "gtk_wrapper.h"
-
-/**
- * Item factory column type.
- */
-enum class ItemFactoryType
-{
-  ITEM_FACTORY_TOGGLE,
-  ITEM_FACTORY_TEXT,
-
-  /** Integer display. */
-  ITEM_FACTORY_INTEGER,
-
-  /** Icon. */
-  ITEM_FACTORY_ICON,
-
-  /** Composite type (eg, used in plugin browser). */
-  ITEM_FACTORY_ICON_AND_TEXT,
-
-  /** Position. */
-  ITEM_FACTORY_POSITION,
-
-  /** Color. */
-  ITEM_FACTORY_COLOR,
-};
 
 /**
  * Item factory for column views.
  *
- * The owner widget is expected to have a GPtrArray
- * that holds an instance of this for each column.
+ * The owner widget is expected to have a std::vector<ItemFactory>
+ * that holds an ItemFactory for each column.
  * 1 column = 1 ItemFactory.
  *
- * This can also be used on listviews (ie, only 1
- * ItemFactory would be needed).
+ * This can also be used on listviews (ie, only 1 ItemFactory would be needed).
  */
-typedef struct ItemFactory
+class ItemFactory
 {
-  GtkListItemFactory * list_item_factory;
+public:
+  /**
+   * Item factory column type.
+   */
+  enum class Type
+  {
+    Toggle,
+    Text,
 
-  ItemFactoryType type;
+    /** Integer display. */
+    Integer,
 
-  bool editable;
+    /** Icon. */
+    Icon,
 
-  bool ellipsize_label;
+    /** Composite type (eg, used in plugin browser). */
+    IconAndText,
 
-  /** Column name, or NULL if used for list
-   * views. */
-  char * column_name;
-} ItemFactory;
+    /** Position. */
+    Position,
 
-/**
- * Creates a new item factory.
- *
- * @param editable Whether the item should be editable.
- * @param column_name Column name, if column view, otherwise
- *   NULL.
- */
-ItemFactory *
-item_factory_new (ItemFactoryType type, bool editable, const char * column_name);
+    /** Color. */
+    Color,
+  };
 
-/**
- * Shorthand to generate and append a column to
- * a column view.
- *
- * @return The newly created ItemFactory, for
- *   convenience.
- */
-ItemFactory *
-item_factory_generate_and_append_column (
-  GtkColumnView * column_view,
-  GPtrArray *     item_factories,
-  ItemFactoryType type,
-  bool            editable,
-  bool            resizable,
-  GtkSorter *     sorter,
-  const char *    column_name);
+public:
+  /**
+   * Creates a new item factory.
+   *
+   * @param editable Whether the item should be editable.
+   * @param column_name Column name, if column view, otherwise
+   *   NULL.
+   */
+  ItemFactory (Type type, bool editable, std::string column_name);
+  ~ItemFactory ();
 
-void
-item_factory_free (ItemFactory * self);
+  /**
+   * Shorthand to generate and append a column to a column view.
+   */
+  static std::unique_ptr<ItemFactory> &generate_and_append_column (
+    GtkColumnView *                            column_view,
+    std::vector<std::unique_ptr<ItemFactory>> &item_factories,
+    Type                                       type,
+    bool                                       editable,
+    bool                                       resizable,
+    GtkSorter *                                sorter,
+    std::string                                column_name);
 
-void
-item_factory_free_func (void * self);
+public:
+  /**
+   * @brief An owned GtkListItemFactory.
+   */
+  GtkListItemFactory * list_item_factory_ = nullptr;
+
+  Type type_ = Type::Text;
+
+  bool editable_ = false;
+
+  bool ellipsize_label_ = true;
+
+  gulong setup_id_ = 0;
+  gulong bind_id_ = 0;
+  gulong unbind_id_ = 0;
+  gulong teardown_id_ = 0;
+
+  /** Column name, or empty if used for list views. */
+  std::string column_name_;
+};
+
+using ItemFactoryPtrVector = std::vector<std::unique_ptr<ItemFactory>>;
 
 /**
  * @}

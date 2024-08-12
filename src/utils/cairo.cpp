@@ -4,6 +4,7 @@
 #include "zrythm-config.h"
 
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/pango.h"
 
 void
@@ -38,7 +39,7 @@ z_cairo_draw_vertical_line (
 PangoLayout *
 z_cairo_create_default_pango_layout (GtkWidget * widget)
 {
-  PangoLayout * layout = gtk_widget_create_pango_layout (widget, NULL);
+  PangoLayout * layout = gtk_widget_create_pango_layout (widget, nullptr);
 
   PangoFontDescription * desc =
     pango_font_description_from_string (Z_CAIRO_FONT);
@@ -52,22 +53,22 @@ z_cairo_create_default_pango_layout (GtkWidget * widget)
  * Creates a PangoLayout to be cached in widgets
  * based on the given settings.
  */
-PangoLayout *
+PangoLayoutUniquePtr
 z_cairo_create_pango_layout_from_description (
   GtkWidget *            widget,
   PangoFontDescription * descr,
   PangoEllipsizeMode     ellipsize_mode,
   int                    ellipsize_padding)
 {
-  PangoLayout * layout = z_pango_create_layout_from_description (widget, descr);
+  auto layout = z_pango_create_layout_from_description (widget, descr);
 
   if (ellipsize_mode > PANGO_ELLIPSIZE_NONE)
     {
       pango_layout_set_width (
-        layout,
+        layout.get (),
         pango_units_from_double (
           MAX (gtk_widget_get_width (widget) - ellipsize_padding * 2, 1)));
-      pango_layout_set_ellipsize (layout, ellipsize_mode);
+      pango_layout_set_ellipsize (layout.get (), ellipsize_mode);
     }
 
   return layout;
@@ -77,7 +78,7 @@ z_cairo_create_pango_layout_from_description (
  * Creates a PangoLayout to be cached in widgets
  * based on the given settings.
  */
-PangoLayout *
+PangoLayoutUniquePtr
 z_cairo_create_pango_layout_from_string (
   GtkWidget *        widget,
   const char *       font,
@@ -85,7 +86,7 @@ z_cairo_create_pango_layout_from_string (
   int                ellipsize_padding)
 {
   PangoFontDescription * desc = pango_font_description_from_string (font);
-  PangoLayout *          layout = z_cairo_create_pango_layout_from_description (
+  auto                   layout = z_cairo_create_pango_layout_from_description (
     widget, desc, ellipsize_mode, ellipsize_padding);
   pango_font_description_free (desc);
 
@@ -138,4 +139,11 @@ z_cairo_draw_text_full (
   pango_cairo_show_layout (cr, layout);
 
   cairo_translate (cr, -start_x, -start_y);
+}
+
+void
+z_cairo_set_source_color (cairo_t * cr, Color color)
+{
+  auto color_rgba = color.to_gdk_rgba ();
+  gdk_cairo_set_source_rgba (cr, &color_rgba);
 }

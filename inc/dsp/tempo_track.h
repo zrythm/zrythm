@@ -1,21 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Object to hold information for the Tempo track.
- */
 
 #ifndef __AUDIO_TEMPO_TRACK_H__
 #define __AUDIO_TEMPO_TRACK_H__
 
-#include <cstdint>
-
-#include "dsp/track.h"
+#include "dsp/automatable_track.h"
 #include "utils/types.h"
-
-#include <magic_enum.hpp>
 
 /**
  * @addtogroup dsp
@@ -23,112 +13,117 @@
  * @{
  */
 
-#define TEMPO_TRACK_MAX_BPM 420.f
-#define TEMPO_TRACK_MIN_BPM 40.f
-#define TEMPO_TRACK_DEFAULT_BPM 140.f
-#define TEMPO_TRACK_DEFAULT_BEATS_PER_BAR 4
-#define TEMPO_TRACK_MIN_BEATS_PER_BAR 1
-#define TEMPO_TRACK_MAX_BEATS_PER_BAR 16
-#define TEMPO_TRACK_DEFAULT_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_4
-#define TEMPO_TRACK_MIN_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_2
-#define TEMPO_TRACK_MAX_BEAT_UNIT ZBeatUnit::Z_BEAT_UNIT_16
+constexpr float TEMPO_TRACK_MAX_BPM = 420.f;
+constexpr float TEMPO_TRACK_MIN_BPM = 40.f;
+constexpr float TEMPO_TRACK_DEFAULT_BPM = 140.f;
+constexpr int   TEMPO_TRACK_DEFAULT_BEATS_PER_BAR = 4;
+constexpr int   TEMPO_TRACK_MIN_BEATS_PER_BAR = 1;
+constexpr int   TEMPO_TRACK_MAX_BEATS_PER_BAR = 16;
+constexpr auto  TEMPO_TRACK_DEFAULT_BEAT_UNIT = BeatUnit::Four;
+constexpr auto  TEMPO_TRACK_MIN_BEAT_UNIT = BeatUnit::Two;
+constexpr auto  TEMPO_TRACK_MAX_BEAT_UNIT = BeatUnit::Sixteen;
 
-#define P_TEMPO_TRACK (TRACKLIST->tempo_track)
+#define P_TEMPO_TRACK (TRACKLIST->tempo_track_)
 
 /**
- * Beat unit.
+ * @brief Represents a track that controls the tempo of the audio.
+ *
+ * The TempoTrack class is responsible for managing the tempo of the audio in a
+ * project. It provides methods to set the BPM (beats per minute), beats per
+ * bar, and beat unit. The tempo can be automated using the provided ports.
  */
-enum class ZBeatUnit
+class TempoTrack final
+    : public AutomatableTrack,
+      public ICloneable<TempoTrack>,
+      public ISerializable<TempoTrack>
 {
-  Z_BEAT_UNIT_2,
-  Z_BEAT_UNIT_4,
-  Z_BEAT_UNIT_8,
-  Z_BEAT_UNIT_16
+public:
+  // Rule of 0
+  TempoTrack () = default;
+  TempoTrack (int track_pos);
+
+  /**
+   * Removes all objects from the tempo track.
+   *
+   * Mainly used in testing.
+   */
+  void clear_objects () override;
+
+  /**
+   * Returns the BPM at the given pos.
+   */
+  bpm_t get_bpm_at_pos (const Position pos);
+
+  void init_after_cloning (const TempoTrack &other) override;
+
+  /**
+   * Returns the current BPM.
+   */
+  bpm_t get_current_bpm () const;
+
+  static std::string get_current_bpm_as_str (void * obj);
+  static void        set_bpm_from_str (void * obj, const std::string &str);
+
+  /**
+   * Sets the BPM.
+   *
+   * @param update_snap_points Whether to update the
+   *   snap points.
+   * @param stretch_audio_region Whether to stretch
+   *   audio regions. This should only be true when
+   *   the BPM change is final.
+   * @param start_bpm The BPM at the start of the
+   *   action, if not temporary.
+   */
+  void set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_events);
+
+  static constexpr int beat_unit_enum_to_int (BeatUnit ebeat_unit)
+  {
+    switch (ebeat_unit)
+      {
+      case BeatUnit::Two:
+        return 2;
+      case BeatUnit::Four:
+        return 4;
+      case BeatUnit::Eight:
+        return 8;
+      case BeatUnit::Sixteen:
+        return 16;
+      }
+  }
+
+  void set_beat_unit_from_enum (BeatUnit ebeat_unit);
+
+  BeatUnit get_beat_unit_enum () const
+  {
+    return beat_unit_to_enum (get_beat_unit ());
+  }
+
+  static BeatUnit beat_unit_to_enum (int beat_unit);
+
+  void set_beat_unit (int beat_unit);
+
+  /**
+   * Updates beat unit and anything depending on it.
+   */
+  void set_beats_per_bar (int beats_per_bar);
+
+  int get_beats_per_bar () const;
+
+  int get_beat_unit () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  /** Automatable BPM control. */
+  std::unique_ptr<ControlPort> bpm_port_;
+
+  /** Automatable beats per bar port. */
+  std::unique_ptr<ControlPort> beats_per_bar_port_;
+
+  /** Automatable beat unit port. */
+  std::unique_ptr<ControlPort> beat_unit_port_;
 };
-
-/**
- * Creates the default tempo track.
- */
-Track *
-tempo_track_default (int track_pos);
-
-/**
- * Inits the tempo track.
- */
-void
-tempo_track_init (Track * track);
-
-/**
- * Removes all objects from the tempo track.
- *
- * Mainly used in testing.
- */
-void
-tempo_track_clear (Track * self);
-
-/**
- * Returns the BPM at the given pos.
- */
-bpm_t
-tempo_track_get_bpm_at_pos (Track * track, Position * pos);
-
-/**
- * Returns the current BPM.
- */
-bpm_t
-tempo_track_get_current_bpm (Track * self);
-
-const char *
-tempo_track_get_current_bpm_as_str (void * self);
-
-/**
- * Sets the BPM.
- *
- * @param update_snap_points Whether to update the
- *   snap points.
- * @param stretch_audio_region Whether to stretch
- *   audio regions. This should only be true when
- *   the BPM change is final.
- * @param start_bpm The BPM at the start of the
- *   action, if not temporary.
- */
-void
-tempo_track_set_bpm (
-  Track * self,
-  bpm_t   bpm,
-  bpm_t   start_bpm,
-  bool    temporary,
-  bool    fire_events);
-
-void
-tempo_track_set_bpm_from_str (void * _self, const char * str);
-
-int
-tempo_track_beat_unit_enum_to_int (ZBeatUnit ebeat_unit);
-
-void
-tempo_track_set_beat_unit_from_enum (Track * self, ZBeatUnit ebeat_unit);
-
-ZBeatUnit
-tempo_track_get_beat_unit_enum (Track * self);
-
-ZBeatUnit
-tempo_track_beat_unit_to_enum (int beat_unit);
-
-void
-tempo_track_set_beat_unit (Track * self, int beat_unit);
-
-/**
- * Updates beat unit and anything depending on it.
- */
-void
-tempo_track_set_beats_per_bar (Track * self, int beats_per_bar);
-
-int
-tempo_track_get_beats_per_bar (Track * self);
-
-int
-tempo_track_get_beat_unit (Track * self);
 
 /**
  * @}

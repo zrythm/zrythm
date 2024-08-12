@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Array helpers.
  */
@@ -147,11 +147,11 @@ _array_dynamic_swap (void *** arr1, size_t * sz1, void *** arr2, size_t * sz2)
  * Doubles the size of the array, for dynamically allocated
  * arrays.
  *
- * If \ref max_sz is zero, this will reallocate the current
- * array to \ref count * 2.
+ * If @ref max_sz is zero, this will reallocate the current
+ * array to @ref count * 2.
  *
- * If \ref max_sz is equal to \ref count, this will reallocate
- * the current array to \ref count * 2 and also memset the new
+ * If @ref max_sz is equal to @ref count, this will reallocate
+ * the current array to @ref count * 2 and also memset the new
  * memory to 0.
  *
  * Calling this function with other values is invalid.
@@ -200,26 +200,6 @@ _array_double_size_if_full (
   *max_sz = new_sz;
 }
 
-static int
-alphaBetize (const void * a, const void * b)
-{
-  const char * aa = (const char *) a;
-  const char * bb = (const char *) b;
-  int          r = strcasecmp (aa, bb);
-  if (r)
-    return r;
-  /* if equal ignoring case, use opposite of strcmp()
-   * result to get lower before upper */
-  return -strcmp (aa, bb); /* aka: return strcmp(b, a); */
-}
-
-void
-array_sort_alphabetically (char ** _array, int size, int case_sensitive)
-{
-  if (!case_sensitive)
-    qsort (_array, (size_t) size, sizeof (char *), alphaBetize);
-}
-
 /**
  * Shuffle array elements.
  *
@@ -248,45 +228,4 @@ array_shuffle (void * _array, size_t n, size_t size)
           memcpy (arr + i * stride, tmp, size);
         }
     }
-}
-
-static int
-cmp_float_func (const void * a, const void * b)
-{
-  return (*(float *) a - *(float *) b) < 0.f ? -1 : 1;
-}
-
-void
-array_sort_float (float * _array, int size)
-{
-  qsort (_array, (size_t) size, sizeof (long), cmp_float_func);
-}
-
-static int
-cmp_long_func (const void * a, const void * b)
-{
-  return (*(long *) a - *(long *) b);
-}
-
-void
-array_sort_long (long * _array, int size)
-{
-  qsort (_array, (size_t) size, sizeof (long), cmp_long_func);
-}
-
-/**
- * Gets the count of a NULL-terminated array.
- */
-size_t
-_array_get_count (void ** _array, size_t element_size)
-{
-  size_t arr_size = 0;
-  size_t byte_size = 0;
-  while (_array[byte_size] != NULL)
-    {
-      arr_size++;
-      byte_size += element_size;
-    }
-
-  return arr_size;
 }

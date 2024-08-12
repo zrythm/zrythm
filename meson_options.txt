@@ -298,4 +298,4 @@ option (
 
 option (
   'static_tests', type: 'boolean', value: false,
-  description: 'Build tests statically (avoids an unsolved issue with gZrythm being NULL).')
+  description: 'Build tests statically (avoids an unsolved issue with gZrythm being nullptr).')

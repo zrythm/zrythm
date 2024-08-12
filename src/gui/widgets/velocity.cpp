@@ -1,26 +1,13 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-
-#include "dsp/channel.h"
-#include "dsp/channel_track.h"
-#include "dsp/chord_track.h"
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
-#include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/bot_bar.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
-#include "utils/cairo.h"
-#include "utils/color.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -34,33 +21,33 @@
 void
 velocity_draw (Velocity * self, GtkSnapshot * snapshot)
 {
-  ArrangerObject * obj = (ArrangerObject *) self;
-  MidiNote *       mn = velocity_get_midi_note (self);
-  ArrangerWidget * arranger = arranger_object_get_arranger (obj);
+  MidiNote *       mn = self->get_midi_note ();
+  ArrangerWidget * arranger = self->get_arranger ();
 
   /* get color */
-  GdkRGBA color;
-  midi_note_get_adjusted_color (mn, &color);
+  Color color;
+  midi_note_get_adjusted_color (mn, color);
 
   /* make velocity start at 0,0 to make it easier to
    * draw */
   gtk_snapshot_save (snapshot);
   {
     graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
-      (float) obj->full_rect.x, (float) obj->full_rect.y);
+      (float) self->full_rect_.x, (float) self->full_rect_.y);
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
 
   /* --- draw --- */
 
-  const int circle_radius = obj->full_rect.width / 2;
+  const int circle_radius = self->full_rect_.width / 2;
 
   /* draw line */
   {
     graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
-      (float) obj->full_rect.width / 2.f - VELOCITY_LINE_WIDTH / 2.f,
-      (float) circle_radius, VELOCITY_LINE_WIDTH, (float) obj->full_rect.height);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+      (float) self->full_rect_.width / 2.f - VELOCITY_LINE_WIDTH / 2.f,
+      (float) circle_radius, VELOCITY_LINE_WIDTH,
+      (float) self->full_rect_.height);
+    z_gtk_snapshot_append_color (snapshot, color, &tmp_r);
   }
 
   /*
@@ -89,20 +76,23 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   float       border_widths[] = {
     border_width, border_width, border_width, border_width
   };
-  GdkRGBA border_colors[] = { color, color, color, color };
+  GdkRGBA border_colors[] = {
+    color.to_gdk_rgba (), color.to_gdk_rgba (), color.to_gdk_rgba (),
+    color.to_gdk_rgba ()
+  };
   gtk_snapshot_append_border (
     snapshot, &rounded_rect, border_widths, border_colors);
   gtk_snapshot_pop (snapshot);
   gtk_snapshot_restore (snapshot);
 
   /* draw text */
-  if (arranger->action != UI_OVERLAY_ACTION_NONE)
+  if (arranger->action != UiOverlayAction::NONE)
     {
       char text[8];
-      sprintf (text, "%d", self->vel);
+      sprintf (text, "%d", self->vel_);
       const int padding = 3;
       int       text_start_y = padding;
-      int       text_start_x = obj->full_rect.width + padding;
+      int       text_start_x = self->full_rect_.width + padding;
 
       gtk_snapshot_save (snapshot);
       {
@@ -110,10 +100,10 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
           Z_GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y);
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
-      PangoLayout * layout = arranger->vel_layout;
-      pango_layout_set_text (layout, text, -1);
+      auto &layout = arranger->vel_layout;
+      pango_layout_set_text (layout.get (), text, -1);
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_append_layout (snapshot, layout, &tmp_color);
+      gtk_snapshot_append_layout (snapshot, layout.get (), &tmp_color);
       gtk_snapshot_restore (snapshot);
     }
 
@@ -129,7 +119,7 @@ velocity_widget_new (Velocity * velocity)
 {
   VelocityWidget * self =
     g_object_new (VELOCITY_WIDGET_TYPE,
-                  NULL);
+                  nullptr);
 
   arranger_object_widget_setup (
     Z_ARRANGER_OBJECT_WIDGET (self),

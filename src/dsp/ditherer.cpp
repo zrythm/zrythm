@@ -86,3 +86,39 @@ ditherer_process (
         }
     }
 }
+
+void
+ditherer_process (Ditherer * self, float * frames, size_t n_frames)
+{
+  /* FIXME code duplication */
+  for (size_t j = 0; j < n_frames; j++)
+    {
+      self->random2 = self->random1;
+      self->random1 = rand ();
+
+      float * in_ptr = &frames[j];
+      float   in = *in_ptr;
+
+      // check for dodgy numbers coming in..
+      if (in < -0.000001f || in > 0.000001f)
+        {
+          in += 0.5f * (self->s1 + self->s1 - self->s2);
+          float out =
+            in + self->offset
+            + (self->amp * (float) (self->random1 - self->random2));
+          *in_ptr = out;
+          self->s2 = self->s1;
+          self->s1 = in - out;
+        }
+      else
+        {
+          *in_ptr = in;
+          in += 0.5f * (self->s1 + self->s1 - self->s2);
+          float out =
+            in + self->offset
+            + (self->amp * (float) (self->random1 - self->random2));
+          self->s2 = self->s1;
+          self->s1 = in - out;
+        }
+    }
+}

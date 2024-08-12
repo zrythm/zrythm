@@ -1,6 +1,6 @@
 /*
- * SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
+ * SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou
+ * <alex@zrythm.org> SPDX-License-Identifier: LicenseRef-ZrythmLicense
  *
  * This file incorporates work covered by the following copyright and
  * permission notice:
@@ -32,63 +32,55 @@
 #include <cstdlib>
 
 #include "dsp/kmeter_dsp.h"
-#include "utils/objects.h"
 
 #include <glib.h>
 
-/**
- * Process.
- *
- * @param p Frame array.
- * @param n Number of samples.
- */
-void
-kmeter_dsp_process (KMeterDsp * self, float * p, int n)
+void KMeterDsp::process (float * p, int n)
 {
   float s, t, z1, z2;
 
-  if (G_UNLIKELY (self->fpp != n))
+  if (fpp_ != n) [[unlikely]]
     {
       /*const float fall = 15.f;*/
-      const float fall = 5.f;
-      const float tme = (float) n / self->fsamp; // period time in seconds
-      self->fall = powf (
+      constexpr float fall = 5.f;
+      const float tme = (float) n / fsamp_; // period time in seconds
+      fall_ = std::powf (
         10.0f,
         -0.05f * fall * tme); // per period fallback multiplier
-      self->fpp = n;
+      fpp_ = n;
     }
 
   t = 0;
   // Get filter state.
-  z1 = self->z1 > 50 ? 50 : (self->z1 < 0 ? 0 : self->z1);
-  z2 = self->z2 > 50 ? 50 : (self->z2 < 0 ? 0 : self->z2);
+  z1 = z1_ > 50 ? 50 : (z1_ < 0 ? 0 : z1_);
+  z2 = z2_ > 50 ? 50 : (z2_ < 0 ? 0 : z2_);
 
   // Perform filtering. The second filter is evaluated
   // only every 4th sample - this is just an optimisation.
   n /= 4; // Loop is unrolled by 4.
-  while (G_LIKELY (n--))
+  while (n--) [[likely]]
     {
       s = *p++;
       s *= s;
       if (t < s)
         t = s;                      // Update digital peak.
-      z1 += self->omega * (s - z1); // Update first filter.
+      z1 += omega_ * (s - z1); // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
         t = s;                      // Update digital peak.
-      z1 += self->omega * (s - z1); // Update first filter.
+      z1 += omega_ * (s - z1);      // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
         t = s;                      // Update digital peak.
-      z1 += self->omega * (s - z1); // Update first filter.
+      z1 += omega_ * (s - z1);      // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
         t = s;                           // Update digital peak.
-      z1 += self->omega * (s - z1);      // Update first filter.
-      z2 += 4 * self->omega * (z1 - z2); // Update second filter.
+      z1 += omega_ * (s - z1);           // Update first filter.
+      z2 += 4 * omega_ * (z1 - z2);      // Update second filter.
     }
 
   if (std::isnan (z1))
@@ -99,92 +91,75 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
     t = 0;
 
   // Save filter state. The added constants avoid denormals.
-  self->z1 = z1 + 1e-20f;
-  self->z2 = z2 + 1e-20f;
+  z1_ = z1 + 1e-20f;
+  z2_ = z2 + 1e-20f;
 
   s = sqrtf (2.0f * z2);
   t = sqrtf (t);
 
-  if (self->flag) // Display thread has read the rms value.
+  if (flag_) // Display thread has read the rms value.
     {
-      self->rms = s;
-      self->flag = false;
+      rms_ = s;
+      flag_ = false;
     }
   else
     {
       // Adjust RMS value and update maximum since last read().
-      if (s > self->rms)
-        self->rms = s;
+      if (s > rms_)
+        rms_ = s;
     }
 
   // Digital peak hold and fallback.
-  if (t >= self->peak)
+  if (t >= peak_)
     {
       // If higher than current value, update and set hold counter.
-      self->peak = t;
-      self->cnt = self->hold;
+      peak_ = t;
+      cnt_ = hold_;
     }
-  else if (self->cnt > 0)
+  else if (cnt_ > 0)
     {
       // else decrement counter if not zero,
-      self->cnt -= self->fpp;
+      cnt_ -= fpp_;
     }
   else
     {
-      self->peak *= self->fall; // else let the peak value fall back,
-      self->peak += 1e-10f;     // and avoid denormals.
+      peak_ *= fall_; // else let the peak value fall back,
+      peak_ += 1e-10f;     // and avoid denormals.
     }
 }
 
 float
-kmeter_dsp_read_f (KMeterDsp * self)
+KMeterDsp::read_f ()
 {
-  float rv = self->rms;
-  self->flag = true; // Resets _rms in next process().
+  float rv = rms_;
+  flag_ = true; // Resets _rms in next process().
   return rv;
 }
 
 void
-kmeter_dsp_read (KMeterDsp * self, float * rms, float * peak)
+KMeterDsp::read (float * rms, float * peak)
 {
-  *rms = self->rms;
-  *peak = self->peak;
-  self->flag = true; // Resets _rms in next process().
+  *rms = rms_;
+  *peak = peak_;
+  flag_ = true; // Resets _rms in next process().
 }
 
 void
-kmeter_dsp_reset (KMeterDsp * self)
+KMeterDsp::reset ()
 {
-  self->z1 = self->z2 = self->rms = self->peak = .0f;
-  self->cnt = 0;
-  self->flag = false;
+  z1_ = z2_ = rms_ = peak_ = .0f;
+  cnt_ = 0;
+  flag_ = false;
 }
 
-/**
- * Init with the samplerate.
- */
 void
-kmeter_dsp_init (KMeterDsp * self, float samplerate)
+KMeterDsp::init (float samplerate)
 {
   /*const float hold = 0.5f;*/
   const float hold = 1.5f;
-  self->fsamp = samplerate;
+  fsamp_ = samplerate;
 
-  self->hold =
+  hold_ =
     (int) (hold * samplerate + 0.5f); // number of samples to hold peak
-  self->omega = 9.72f / samplerate;   // ballistic filter coefficient
-}
-
-KMeterDsp *
-kmeter_dsp_new (void)
-{
-  KMeterDsp * self = object_new (KMeterDsp);
-
-  return self;
-}
-
-void
-kmeter_dsp_free (KMeterDsp * self)
-{
-  free (self);
+  omega_ = 9.72f / samplerate;   // ballistic filter coefficient
 }

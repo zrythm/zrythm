@@ -1,17 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/midi_mapping_action.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/cc_bindings_tree.h"
 #include "gui/widgets/item_factory.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -70,7 +66,7 @@ on_right_click (
     gtk_tree_view_get_selection (self->tree);
   if (!gtk_tree_view_get_path_at_pos (
         GTK_TREE_VIEW (self->tree), x, y,
-        &path, &column, NULL, NULL))
+        &path, &column, nullptr, nullptr))
     {
       g_message ("no path at position %d %d", x, y);
       // if we can't find path at pos, we surely don't
@@ -106,19 +102,18 @@ cc_bindings_tree_widget_refresh (CcBindingsTreeWidget * self)
 
   g_list_store_remove_all (store);
 
-  for (int i = 0; i < MIDI_MAPPINGS->num_mappings; i++)
+  for (auto &mapping : MIDI_MAPPINGS->mappings_)
     {
-      MidiMapping * mm = MIDI_MAPPINGS->mappings[i];
-      g_return_if_fail (G_IS_OBJECT (mm->gobj));
-      g_list_store_append (store, mm->gobj);
+      auto gobj = wrapped_object_with_change_signal_new (
+        mapping.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
+      g_list_store_append (store, gobj);
+      g_object_unref (gobj);
     }
 }
 
 static void
 generate_column_view (CcBindingsTreeWidget * self)
 {
-  self->item_factories = g_ptr_array_new_with_free_func (item_factory_free_func);
-
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
   GtkMultiSelection * sel =
     GTK_MULTI_SELECTION (gtk_multi_selection_new (G_LIST_MODEL (store)));
@@ -127,20 +122,19 @@ generate_column_view (CcBindingsTreeWidget * self)
   gtk_scrolled_window_set_child (self->scroll, GTK_WIDGET (self->column_view));
 
   /* column for checkbox */
-  item_factory_generate_and_append_column (
-    self->column_view, self->item_factories,
-    ItemFactoryType::ITEM_FACTORY_TOGGLE, Z_F_EDITABLE, Z_F_RESIZABLE, NULL,
-    _ ("On"));
+  ItemFactory::generate_and_append_column (
+    self->column_view, self->item_factories, ItemFactory::Type::Toggle,
+    Z_F_EDITABLE, Z_F_RESIZABLE, nullptr, _ ("On"));
 
   /* column for control */
-  item_factory_generate_and_append_column (
-    self->column_view, self->item_factories, ItemFactoryType::ITEM_FACTORY_TEXT,
-    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, NULL, _ ("Note/Control"));
+  ItemFactory::generate_and_append_column (
+    self->column_view, self->item_factories, ItemFactory::Type::Text,
+    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, nullptr, _ ("Note/Control"));
 
   /* column for path */
-  item_factory_generate_and_append_column (
-    self->column_view, self->item_factories, ItemFactoryType::ITEM_FACTORY_TEXT,
-    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, NULL, _ ("Destination"));
+  ItemFactory::generate_and_append_column (
+    self->column_view, self->item_factories, ItemFactory::Type::Text,
+    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, nullptr, _ ("Destination"));
 
   /* connect right click handler */
   GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -154,7 +148,7 @@ CcBindingsTreeWidget *
 cc_bindings_tree_widget_new (void)
 {
   CcBindingsTreeWidget * self = static_cast<CcBindingsTreeWidget *> (
-    g_object_new (CC_BINDINGS_TREE_WIDGET_TYPE, NULL));
+    g_object_new (CC_BINDINGS_TREE_WIDGET_TYPE, nullptr));
 
   return self;
 }
@@ -162,7 +156,7 @@ cc_bindings_tree_widget_new (void)
 static void
 cc_bindings_tree_finalize (CcBindingsTreeWidget * self)
 {
-  g_ptr_array_unref (self->item_factories);
+  self->item_factories.~ItemFactoryPtrVector ();
 
   G_OBJECT_CLASS (cc_bindings_tree_widget_parent_class)
     ->finalize (G_OBJECT (self));
@@ -178,6 +172,8 @@ cc_bindings_tree_widget_class_init (CcBindingsTreeWidgetClass * klass)
 static void
 cc_bindings_tree_widget_init (CcBindingsTreeWidget * self)
 {
+  new (&self->item_factories) ItemFactoryPtrVector ();
+
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
 

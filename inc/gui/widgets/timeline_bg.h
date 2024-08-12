@@ -7,7 +7,7 @@
 #if 0
 
 /**
- * \file
+ * @file
  *
  * The background (main overlay child) of the
  * TimelineArrangerWidget.

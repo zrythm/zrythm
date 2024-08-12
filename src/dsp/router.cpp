@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -35,7 +35,6 @@
 #include "dsp/audio_track.h"
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
-#include "dsp/engine_alsa.h"
 #include "utils/debug.h"
 #ifdef HAVE_JACK
 #  include "dsp/engine_jack.h"
@@ -45,225 +44,138 @@
 #endif
 #include "dsp/graph.h"
 #include "dsp/graph_thread.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_track.h"
-#include "dsp/pan.h"
 #include "dsp/port.h"
 #include "dsp/router.h"
-#include "dsp/stretcher.h"
 #include "dsp/tempo_track.h"
-#include "dsp/track.h"
 #include "dsp/track_processor.h"
 #include "dsp/tracklist.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/env.h"
 #include "utils/flags.h"
-#include "utils/midi.h"
-#include "utils/mpmc_queue.h"
-#include "utils/objects.h"
-#include "utils/stoat.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 
-/**
- * Returns the max playback latency of the trigger
- * nodes.
- */
 nframes_t
-router_get_max_route_playback_latency (Router * router)
+Router::get_max_route_playback_latency ()
 {
-  g_return_val_if_fail (router && router->graph, 0);
-  router->max_route_playback_latency =
-    graph_get_max_route_playback_latency (router->graph, false);
+  z_return_val_if_fail (graph_, 0);
+  max_route_playback_latency_ = graph_->get_max_route_playback_latency (false);
 
-  return router->max_route_playback_latency;
+  return max_route_playback_latency_;
 }
 
-/**
- * Starts a new cycle.
- */
 void
-router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo)
+Router::start_cycle (EngineProcessTimeInfo time_nfo)
 {
-  g_return_if_fail (self && self->graph);
+  g_return_if_fail (graph_);
   g_return_if_fail (
-    time_nfo.local_offset + time_nfo.nframes <= AUDIO_ENGINE->nframes);
+    time_nfo.local_offset_ + time_nfo.nframes_ <= AUDIO_ENGINE->nframes_);
 
   /* only set the kickoff thread when not called from the gtk thread (sometimes
    * this is called from the gtk thread to force some processing) */
-  if (g_thread_self () != zrythm_app->gtk_thread)
-    self->process_kickoff_thread = g_thread_self ();
+  if (!ZRYTHM_APP_IS_GTK_THREAD)
+    process_kickoff_thread_ = current_thread_id.get ();
 
-  if (zix_sem_try_wait (&self->graph_access) != ZIX_STATUS_SUCCESS)
+  SemaphoreRAII<> sem (graph_access_sem_);
+  if (!sem.is_acquired ())
     {
-      g_message ("graph access is busy, returning...");
+      z_info ("graph access is busy, returning...");
       return;
     }
 
-  self->global_offset =
-    self->max_route_playback_latency - AUDIO_ENGINE->remaining_latency_preroll;
-  memcpy (&self->time_nfo, &time_nfo, sizeof (EngineProcessTimeInfo));
+  global_offset_ =
+    max_route_playback_latency_ - AUDIO_ENGINE->remaining_latency_preroll_;
+  time_nfo_ = time_nfo;
   z_return_if_fail_cmp (
-    time_nfo.g_start_frame_w_offset, >=, time_nfo.g_start_frame);
+    time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
   /* read control port change events */
-  while (
-    zix_ring_read_space (self->ctrl_port_change_queue)
-    >= sizeof (ControlPortChange))
+  ControlPort::ChangeEvent change{};
+  while (ctrl_port_change_queue_.read (change))
     {
-      ControlPortChange change = {};
-      zix_ring_read (self->ctrl_port_change_queue, &change, sizeof (change));
       if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, change.flag1, PortIdentifier::Flags::BPM))
+            PortIdentifier::Flags, change.flag1, PortIdentifier::Flags::Bpm))
         {
-          tempo_track_set_bpm (
-            P_TEMPO_TRACK, change.real_val, 0.f, true, F_PUBLISH_EVENTS);
+          P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, F_PUBLISH_EVENTS);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, change.flag2,
-          PortIdentifier::Flags2::BEATS_PER_BAR))
+          PortIdentifier::Flags2::BeatsPerBar))
         {
-          tempo_track_set_beats_per_bar (P_TEMPO_TRACK, change.ival);
+          P_TEMPO_TRACK->set_beats_per_bar (change.ival);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, change.flag2,
-          PortIdentifier::Flags2::BEAT_UNIT))
+          PortIdentifier::Flags2, change.flag2, PortIdentifier::Flags2::BeatUnit))
         {
-          tempo_track_set_beat_unit_from_enum (P_TEMPO_TRACK, change.beat_unit);
+          P_TEMPO_TRACK->set_beat_unit_from_enum (change.beat_unit);
         }
     }
 
   /* process tempo track ports first */
-  if (self->graph->bpm_node)
+  if (graph_->bpm_node_)
     {
-      graph_node_process (self->graph->bpm_node, time_nfo);
+      graph_->bpm_node_->process (time_nfo, *graph_->main_thread_);
     }
-  if (self->graph->beats_per_bar_node)
+  if (graph_->beats_per_bar_node_)
     {
-      graph_node_process (self->graph->beats_per_bar_node, time_nfo);
+      graph_->beats_per_bar_node_->process (time_nfo, *graph_->main_thread_);
     }
-  if (self->graph->beat_unit_node)
+  if (graph_->beat_unit_node_)
     {
-      graph_node_process (self->graph->beat_unit_node, time_nfo);
+      graph_->beat_unit_node_->process (time_nfo, *graph_->main_thread_);
     }
 
-  self->callback_in_progress = true;
-  zix_sem_post (&self->graph->callback_start);
-  zix_sem_wait (&self->graph->callback_done);
-  self->callback_in_progress = false;
-
-  zix_sem_post (&self->graph_access);
+  callback_in_progress_ = true;
+  graph_->callback_start_sem_.release ();
+  graph_->callback_done_sem_.acquire ();
+  callback_in_progress_ = false;
 }
 
-/**
- * Recalculates the process acyclic directed graph.
- *
- * @param soft If true, only readjusts latencies.
- */
 void
-router_recalc_graph (Router * self, bool soft)
+Router::recalc_graph (bool soft)
 {
   g_message ("Recalculating%s...", soft ? " (soft)" : "");
 
-  g_return_if_fail (self);
-
-  if (!self->graph && !soft)
+  if (!graph_ && !soft)
     {
-      self->graph = graph_new (self);
-      g_atomic_int_set (&self->graph_setup_in_progress, 1);
-      graph_setup (self->graph, 1, 1);
-      g_atomic_int_set (&self->graph_setup_in_progress, 0);
-      graph_start (self->graph);
+      graph_ = std::make_unique<Graph> (this);
+      graph_setup_in_progress_.store (true);
+      graph_->setup (true, true);
+      graph_setup_in_progress_.store (false);
+      graph_->start ();
       return;
     }
 
   if (soft)
     {
-      zix_sem_wait (&self->graph_access);
-      graph_update_latencies (self->graph, false);
-      zix_sem_post (&self->graph_access);
+      graph_access_sem_.acquire ();
+      graph_->update_latencies (false);
+      graph_access_sem_.release ();
     }
   else
     {
-      int running = g_atomic_int_get (&AUDIO_ENGINE->run);
-      g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-      while (g_atomic_int_get (&AUDIO_ENGINE->cycle_running))
+      bool running = AUDIO_ENGINE->run_.load ();
+      AUDIO_ENGINE->run_.store (false);
+      while (AUDIO_ENGINE->cycle_running_.load ())
         {
           g_usleep (100);
         }
-      g_atomic_int_set (&self->graph_setup_in_progress, 1);
-      graph_setup (self->graph, 1, 1);
-      g_atomic_int_set (&self->graph_setup_in_progress, 0);
-      g_atomic_int_set (&AUDIO_ENGINE->run, (guint) running);
+      graph_setup_in_progress_.store (true);
+      graph_->setup (true, true);
+      graph_setup_in_progress_.store (false);
+      AUDIO_ENGINE->run_.store (running);
     }
 
   g_message ("done");
 }
 
-/**
- * Queues a control port change to be applied
- * when processing starts.
- *
- * Currently only applies to BPM/time signature
- * changes.
- */
 void
-router_queue_control_port_change (Router * self, const ControlPortChange * change)
+Router::queue_control_port_change (const ControlPort::ChangeEvent &change)
 {
-  if (
-    zix_ring_write_space (self->ctrl_port_change_queue)
-    < sizeof (ControlPortChange))
-    {
-      zix_ring_skip (self->ctrl_port_change_queue, sizeof (ControlPortChange));
-    }
-
-  zix_ring_write (
-    self->ctrl_port_change_queue, change, sizeof (ControlPortChange));
-}
-
-/**
- * Creates a new Router.
- *
- * There is only 1 router needed in a project.
- */
-Router *
-router_new (void)
-{
-  g_message ("Creating new router...");
-
-  Router * self = object_new (Router);
-
-  zix_sem_init (&self->graph_access, 1);
-
-  self->ctrl_port_change_queue = zix_ring_new (
-    zix_default_allocator (), sizeof (ControlPortChange) * (size_t) 24);
-
-  g_message ("done");
-
-  return self;
-}
-
-void
-router_free (Router * self)
-{
-  g_debug ("%s: freeing...", __func__);
-
-  if (self->graph)
-    graph_destroy (self->graph);
-  self->graph = NULL;
-
-  zix_sem_destroy (&self->graph_access);
-  object_set_to_zero (&self->graph_access);
-
-  object_free_w_func_and_null (zix_ring_free, self->ctrl_port_change_queue);
-
-  object_zero_and_free (self);
-
-  g_debug ("%s: done", __func__);
+  ctrl_port_change_queue_.force_write (change);
 }

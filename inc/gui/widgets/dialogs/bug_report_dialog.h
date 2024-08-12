@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Bug report/backtrace dialog.
  */
@@ -10,7 +10,10 @@
 #ifndef __GUI_WIDGETS_BUG_REPORT_DIALOG_H__
 #define __GUI_WIDGETS_BUG_REPORT_DIALOG_H__
 
-#include <adwaita.h>
+#include <string>
+#include <vector>
+
+#include "libadwaita_wrapper.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -31,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   BUG_REPORT_DIALOG_WIDGET,
   AdwAlertDialog)
 
-typedef struct _BugReportDialogWidget
+using BugReportDialogWidget = struct _BugReportDialogWidget
 {
   AdwAlertDialog parent_instance;
 
@@ -43,10 +46,10 @@ typedef struct _BugReportDialogWidget
 
   GtkTextView * user_input_text_view;
 
-  char * log;
-  char * log_long;
-  char * undo_stack;
-  char * undo_stack_long;
+  std::vector<std::string> log;
+  std::vector<std::string> log_long;
+  std::string              undo_stack;
+  std::string              undo_stack_long;
   char * backtrace;
   char * system_nfo;
   bool   fatal;
@@ -57,8 +60,7 @@ typedef struct _BugReportDialogWidget
   char * screenshot_path;
   char * screenshot_tmpdir;
   char * json_str;
-
-} BugReportDialogWidget;
+};
 
 /**
  * Creates and displays the about dialog.

@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Timeline arranger API.
  */
@@ -10,22 +10,7 @@
 #ifndef __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
-#include "dsp/position.h"
-#include "gui/backend/timeline_selections.h"
-#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/main_window.h"
-
-#include "gtk_wrapper.h"
-
-typedef struct _ArrangerWidget        ArrangerWidget;
-typedef struct MidiNote               MidiNote;
-typedef struct SnapGrid               SnapGrid;
-typedef struct AutomationPoint        AutomationPoint;
-typedef struct _AutomationPointWidget AutomationPointWidget;
-typedef struct AutomationCurve        AutomationCurve;
-typedef struct ChordObject            ChordObject;
-typedef struct ScaleObject            ScaleObject;
 
 /**
  * @addtogroup widgets
@@ -65,8 +50,7 @@ void
 timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y);
 
 /**
- * Create a Region at the given Position in the
- * given Track's given TrackLane.
+ * Create a Region at the given Position in the given Track's given TrackLane.
  *
  * @param type The type of region to create.
  * @param pos The pre-snapped position.
@@ -74,25 +58,25 @@ timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y);
  * @param lane TrackLane, if midi/audio region.
  * @param at AutomationTrack, if automation Region.
  *
- * @return Whether successful.
+ * @throw ZrythmException on error.
  */
-bool
+template <FinalRegionSubclass RegionT>
+void
 timeline_arranger_widget_create_region (
-  ArrangerWidget *  self,
-  const RegionType  type,
-  Track *           track,
-  TrackLane *       lane,
+  ArrangerWidget * self,
+  Track *          track,
+  std::conditional_t<
+    LaneOwnedRegionSubclass<RegionT>,
+    TrackLaneImpl<RegionT> *,
+    std::nullptr_t> lane,
   AutomationTrack * at,
-  const Position *  pos,
-  GError **         error);
+  const Position *  pos);
 
 /**
- * Wrapper for
- * timeline_arranger_widget_create_chord() or
+ * Wrapper for timeline_arranger_widget_create_chord() or
  * timeline_arranger_widget_create_scale().
  *
- * @param y the y relative to the
- *   ArrangerWidget.
+ * @param y the y relative to the ArrangerWidget.
  */
 void
 timeline_arranger_widget_create_chord_or_scale (
@@ -102,8 +86,7 @@ timeline_arranger_widget_create_chord_or_scale (
   const Position * pos);
 
 /**
- * Create a ScaleObject at the given Position in the
- * given Track.
+ * Create a ScaleObject at the given Position in the given Track.
  *
  * @param pos The pre-snapped position.
  */
@@ -114,8 +97,7 @@ timeline_arranger_widget_create_scale (
   const Position * pos);
 
 /**
- * Create a Marker at the given Position in the
- * given Track.
+ * Create a Marker at the given Position in the given Track.
  *
  * @param pos The pre-snapped position.
  */
@@ -126,40 +108,34 @@ timeline_arranger_widget_create_marker (
   const Position * pos);
 
 /**
- * Snaps both the transients (to show in the GUI)
- * and the actual regions.
+ * Snaps both the transients (to show in the GUI) and the actual regions.
  *
  * @param pos Absolute position in the timeline.
- * @param dry_run Don't resize notes; just check
- *   if the resize is allowed (check if invalid
- *   resizes will happen).
+ * @param dry_run Don't resize notes; just check if the resize is allowed (check
+ * if invalid resizes will happen).
  *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
+ * @return Whether successful.
  */
-int
+bool
 timeline_arranger_widget_snap_regions_l (
   ArrangerWidget * self,
   Position *       pos,
-  int              dry_run);
+  bool             dry_run);
 
 /**
- * Snaps both the transients (to show in the GUI)
- * and the actual regions.
+ * Snaps both the transients (to show in the GUI) and the actual regions.
  *
  * @param pos Absolute position in the timeline.
- * @parram dry_run Don't resize notes; just check
- *   if the resize is allowed (check if invalid
- *   resizes will happen)
+ * @param dry_run Don't resize notes; just check if the resize is allowed (check
+ * if invalid resizes will happen)
  *
- * @return 0 if the operation was successful,
- *   nonzero otherwise.
+ * @return Whether successful.
  */
-int
+bool
 timeline_arranger_widget_snap_regions_r (
   ArrangerWidget * self,
   Position *       pos,
-  int              dry_run);
+  bool             dry_run);
 
 /**
  * Scroll to the given position.
@@ -209,33 +185,62 @@ timeline_arranger_widget_remove_children (ArrangerWidget * self);
 /**
  * Generate a context menu at x, y.
  *
- * @param menu A menu to append entries to (optional).
- *
  * @return The given updated menu or a new menu.
  */
 GMenu *
 timeline_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
-  GMenu *          menu,
   double           x,
   double           y);
 
 /**
  * Fade up/down.
  *
- * @param fade_in 1 for in, 0 for out.
+ * @param fade_in True to fade in, false to fade out.
  */
 void
 timeline_arranger_widget_fade_up (
   ArrangerWidget * self,
   double           offset_y,
-  int              fade_in);
+  bool             fade_in);
 
 /**
  * Sets up the timeline arranger as a drag dest.
  */
 void
 timeline_arranger_setup_drag_dest (ArrangerWidget * self);
+
+void
+timeline_arranger_on_drag_end (ArrangerWidget * self);
+
+extern template void
+timeline_arranger_widget_create_region<MidiRegion> (
+  ArrangerWidget *,
+  Track *,
+  TrackLaneImpl<MidiRegion> *,
+  AutomationTrack *,
+  const Position *);
+extern template void
+timeline_arranger_widget_create_region<AudioRegion> (
+  ArrangerWidget *,
+  Track *,
+  TrackLaneImpl<AudioRegion> *,
+  AutomationTrack *,
+  const Position *);
+extern template void
+timeline_arranger_widget_create_region<ChordRegion> (
+  ArrangerWidget *,
+  Track *,
+  std::nullptr_t,
+  AutomationTrack *,
+  const Position *);
+extern template void
+timeline_arranger_widget_create_region<AutomationRegion> (
+  ArrangerWidget *,
+  Track *,
+  std::nullptr_t,
+  AutomationTrack *,
+  const Position *);
 
 /**
  * @}

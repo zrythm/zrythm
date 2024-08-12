@@ -1,38 +1,36 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/engine.h"
-#include "dsp/position.h"
-#include "dsp/track.h"
-#include "dsp/transport.h"
-#include "gui/backend/chord_selections.h"
-#include "gui/backend/event_manager.h"
+#include "dsp/region.h"
+#include "gui/backend/audio_selections.h"
+#include "gui/backend/clip_editor.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/audio.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
-#include "utils/yaml.h"
+#include "zrythm.h"
 
 #include "gtk_wrapper.h"
 
-/**
- * Returns if the selections can be pasted.
- *
- * @param pos Position to paste to.
- * @param region Region to paste to.
- */
-int
-chord_selections_can_be_pasted (ChordSelections * ts, Position * pos, Region * r)
+bool
+ChordSelections::can_be_pasted_at_impl (const Position pos, const int idx) const
 {
-  if (!r || r->id.type != RegionType::REGION_TYPE_CHORD)
-    return 0;
+  Region * r = CLIP_EDITOR->get_region ();
+  if (!r || !r->is_chord ())
+    return false;
 
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  if (r_obj->pos.frames + pos->frames < 0)
-    return 0;
+  if (r->pos_.frames_ + pos.frames_ < 0)
+    return false;
 
-  return 1;
+  return true;
+}
+
+void
+ChordSelections::sort_by_indices (bool desc)
+{
+  std::sort (
+    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
+      bool ret = false;
+      ret =
+        dynamic_cast<ChordObject &> (*a).index_
+        < dynamic_cast<ChordObject &> (*b).index_;
+      return desc ? !ret : ret;
+    });
 }

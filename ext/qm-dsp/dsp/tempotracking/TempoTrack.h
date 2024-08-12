@@ -41,15 +41,14 @@ struct TTParams
     WinThresh WinT;//window size in frames for adaptive thresholding [pre post]:
 };
 
-
-class TempoTrack  
+class QMTempoTrack
 {
 public:
-    TempoTrack( TTParams Params );
-    virtual ~TempoTrack();
+  QMTempoTrack (TTParams Params);
+  virtual ~QMTempoTrack ();
 
-    std::vector<int> process( std::vector <double> DF,
-                              std::vector <double> *tempoReturn = 0);
+  std::vector<int>
+  process (std::vector<double> DF, std::vector<double> * tempoReturn = 0);
 
         
 private:

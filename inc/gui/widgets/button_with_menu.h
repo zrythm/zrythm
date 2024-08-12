@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Button with an arrow on the right side for a menu.
  */

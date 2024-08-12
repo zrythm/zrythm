@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Dialog for binding MIDI CC to a port.
  */
@@ -25,6 +25,8 @@ G_DECLARE_FINAL_TYPE (
   BIND_CC_DIALOG_WIDGET,
   GtkDialog)
 
+class Port;
+
 /**
  * @addtogroup widgets
  *
@@ -34,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
 /**
  * The bind_cc dialog.
  */
-typedef struct _BindCcDialogWidget
+using BindCcDialogWidget = struct _BindCcDialogWidget
 {
   GtkDialog   parent_instance;
   GtkButton * cancel_btn;
@@ -50,7 +52,7 @@ typedef struct _BindCcDialogWidget
   /** Whether to perform an undoable action for
    * binding on close. */
   bool perform_action;
-} BindCcDialogWidget;
+};
 
 /**
  * Creates an bind_cc dialog widget and displays it.

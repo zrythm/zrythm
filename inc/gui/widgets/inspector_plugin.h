@@ -1,14 +1,11 @@
-// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Inspector section for plugins.
- */
 
 #ifndef __GUI_WIDGETS_INSPECTOR_PLUGIN_H__
 #define __GUI_WIDGETS_INSPECTOR_PLUGIN_H__
+
+#include "gui/backend/mixer_selections.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -28,12 +25,16 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_PLUGIN_INSPECTOR MW_LEFT_DOCK_EDGE->plugin_inspector
 
-typedef struct _PortsExpanderWidget            PortsExpanderWidget;
-typedef struct _PluginPropertiesExpanderWidget PluginPropertiesExpanderWidget;
-typedef struct _ColorAreaWidget                ColorAreaWidget;
-typedef struct MixerSelections                 MixerSelections;
+TYPEDEF_STRUCT_UNDERSCORED (PortsExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PluginPropertiesExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
+class MixerSelections;
 
-typedef struct _InspectorPluginWidget
+/**
+ * @brief Inspector section for plugins.
+ *
+ */
+using InspectorPluginWidget = struct _InspectorPluginWidget
 {
   GtkBox parent_instance;
 
@@ -48,7 +49,7 @@ typedef struct _InspectorPluginWidget
   PortsExpanderWidget *            cv_outs;
 
   ColorAreaWidget * color;
-} InspectorPluginWidget;
+};
 
 /**
  * Shows the inspector page for the given mixer
@@ -59,9 +60,9 @@ typedef struct _InspectorPluginWidget
  */
 void
 inspector_plugin_widget_show (
-  InspectorPluginWidget * self,
-  MixerSelections *       ms,
-  bool                    set_notebook_page);
+  InspectorPluginWidget *  self,
+  ProjectMixerSelections * ms,
+  bool                     set_notebook_page);
 
 InspectorPluginWidget *
 inspector_plugin_widget_new (void);

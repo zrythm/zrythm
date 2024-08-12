@@ -1,19 +1,18 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/tracklist_selections.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector_plugin.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/gtk.h"
+#include "utils/logger.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -31,23 +30,16 @@ setup_color (InspectorPluginWidget * self, Track * track)
     }
   else
     {
-      GdkRGBA color = { 1, 1, 1, 1 };
-      color_area_widget_set_color (self->color, &color);
+      Color color = { 1, 1, 1, 1 };
+      color_area_widget_set_color (self->color, color);
     }
 }
 
-/**
- * Shows the inspector page for the given mixer
- * selection (plugin).
- *
- * @param set_notebook_page Whether to set the
- *   current left panel tab to the plugin page.
- */
 void
 inspector_plugin_widget_show (
-  InspectorPluginWidget * self,
-  MixerSelections *       ms,
-  bool                    set_notebook_page)
+  InspectorPluginWidget *  self,
+  ProjectMixerSelections * ms,
+  bool                     set_notebook_page)
 {
   g_debug (
     "showing plugin inspector contents (set notebook page: %d)...",
@@ -65,33 +57,34 @@ inspector_plugin_widget_show (
   /* show info for first selected plugin, or first plugin in
    * the selected track */
   Plugin * pl = NULL;
-  if (ms->has_any)
+  if (ms->has_any_)
     {
-      pl = mixer_selections_get_first_plugin (ms);
+      pl = ms->get_first_plugin ();
     }
   else
     {
-      Track * tr = tracklist_selections_get_highest_track (TRACKLIST_SELECTIONS);
-      Channel * ch = track_get_channel (tr);
-      if (ch)
+      auto tr = dynamic_cast<ChannelTrack *> (
+        TRACKLIST_SELECTIONS->get_highest_track ());
+      if (tr)
         {
-          Plugin * pls[120];
-          int      num_pls = ch->get_plugins (pls);
-          if (num_pls > 0)
+          auto                  ch = tr->get_channel ();
+          std::vector<Plugin *> pls;
+          ch->get_plugins (pls);
+          if (!pls.empty ())
             {
-              pl = pls[0];
-              g_message ("showing info for plugin %s", pl->setting->descr->name);
+              pl = pls.front ();
+              z_debug ("showing info for plugin %s", pl->get_name ());
             }
         }
     }
 
   if (pl)
     {
-      setup_color (self, plugin_get_track (pl));
+      setup_color (self, pl->get_track ());
     }
   else
     {
-      setup_color (self, NULL);
+      setup_color (self, nullptr);
     }
 
   ports_expander_widget_setup_plugin (
@@ -118,9 +111,9 @@ InspectorPluginWidget *
 inspector_plugin_widget_new (void)
 {
   InspectorPluginWidget * self = Z_INSPECTOR_PLUGIN_WIDGET (
-    g_object_new (INSPECTOR_PLUGIN_WIDGET_TYPE, NULL));
+    g_object_new (INSPECTOR_PLUGIN_WIDGET_TYPE, nullptr));
 
-  plugin_properties_expander_widget_setup (self->properties, NULL);
+  plugin_properties_expander_widget_setup (self->properties, nullptr);
 
   return self;
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <sys/time.h>
@@ -9,7 +9,6 @@
 #include "dsp/tracklist.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -17,19 +16,12 @@
 #include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/folder_channel.h"
 #include "gui/widgets/gtk_flipper.h"
-#include "gui/widgets/knob.h"
-#include "gui/widgets/meter.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_strip_expander.h"
-#include "gui/widgets/route_target_selector.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/math.h"
 #include "utils/resources.h"
-#include "utils/symap.h"
-#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -52,8 +44,7 @@ folder_channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (track)
     {
       /* tint background */
-      GdkRGBA tint_color = Z_GDK_RGBA_INIT (
-        track->color.red, track->color.green, track->color.blue, 0.15f);
+      GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha(0.15f);
       {
         graphene_rect_t tmp_r =
           Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
@@ -103,45 +94,44 @@ on_dnd_drop (
   int pos;
   if (x < w / 2)
     {
-      if (this_track->pos <= MW_MIXER->start_drag_track->pos)
-        pos = this_track->pos;
+      if (this_track->pos_ <= MW_MIXER->start_drag_track->pos_)
+        pos = this_track->pos_;
       else
         {
-          Track * prev =
-            tracklist_get_prev_visible_track (TRACKLIST, this_track);
-          pos = prev ? prev->pos : this_track->pos;
+          Track * prev = TRACKLIST->get_prev_visible_track (*this_track);
+          pos = prev ? prev->pos_ : this_track->pos_;
         }
     }
   else
     {
-      if (this_track->pos >= MW_MIXER->start_drag_track->pos)
-        pos = this_track->pos;
+      if (this_track->pos_ >= MW_MIXER->start_drag_track->pos_)
+        pos = this_track->pos_;
       else
         {
-          Track * next =
-            tracklist_get_next_visible_track (TRACKLIST, this_track);
-          pos = next ? next->pos : this_track->pos;
+          Track * next = TRACKLIST->get_next_visible_track (*this_track);
+          pos = next ? next->pos_ : this_track->pos_;
         }
     }
 
-  tracklist_selections_select_foldable_children (TRACKLIST_SELECTIONS);
+  TRACKLIST_SELECTIONS->select_foldable_children ();
 
-  GError * err = NULL;
-  bool     ret;
-  if (action == GDK_ACTION_COPY)
+  try
     {
-      ret = tracklist_selections_action_perform_copy (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
+      if (action == GDK_ACTION_COPY)
+        {
+          UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+            *PORT_CONNECTIONS_MGR, pos));
+        }
+      else
+        {
+          UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (), pos));
+        }
     }
-  else
+  catch (const ZrythmException &e)
     {
-      ret = tracklist_selections_action_perform_move (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
-    }
-
-  if (!ret)
-    {
-      HANDLE_ERROR (err, "%s", _ ("Failed to move or copy track(s)"));
+      e.handle (_ ("Failed to move or copy track(s)"));
     }
 
   return true;
@@ -178,24 +168,23 @@ on_dnd_drag_begin (GtkDragSource * source, GdkDrag * drag, gpointer user_data)
 
   if (self->n_press == 1)
     {
-      int ctrl = 0, selected = 0;
+      bool ctrl = false, selected = false;
 
       ctrl = self->ctrl_held_at_start;
 
-      if (tracklist_selections_contains_track (TRACKLIST_SELECTIONS, track))
-        selected = 1;
+      if (TRACKLIST_SELECTIONS->contains_track (*track))
+        selected = true;
 
       /* no control & not selected */
       if (!ctrl && !selected)
         {
-          tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS, track, F_PUBLISH_EVENTS);
+          TRACKLIST_SELECTIONS->select_single (*track, F_PUBLISH_EVENTS);
         }
       else if (!ctrl && selected)
         {
         }
       else if (ctrl && !selected)
-        tracklist_selections_add_track (TRACKLIST_SELECTIONS, track, 1);
+        TRACKLIST_SELECTIONS->add_track (*track, true);
     }
 }
 
@@ -338,11 +327,11 @@ on_btn_release (
   Track * track = self->track;
   if (self->n_press == 1)
     {
-      PROJECT->last_selection = Project::SelectionType::Tracklist;
+      PROJECT->last_selection_ = Project::SelectionType::Tracklist;
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;
-      tracklist_selections_handle_click (track, ctrl, shift, self->dragged);
+      TRACKLIST_SELECTIONS->handle_click (*track, ctrl, shift, self->dragged);
     }
 }
 
@@ -351,31 +340,31 @@ refresh_color (FolderChannelWidget * self)
 {
   Track * track = self->track;
   color_area_widget_setup_track (self->color_top, track);
-  color_area_widget_set_color (self->color_top, &track->color);
-  color_area_widget_set_color (self->color_left, &track->color);
+  color_area_widget_set_color (self->color_top, track->color_);
+  color_area_widget_set_color (self->color_left, track->color_);
 }
 
 static void
 setup_folder_channel_icon (FolderChannelWidget * self)
 {
   Track * track = self->track;
-  gtk_image_set_from_icon_name (self->icon, track->icon_name);
-  gtk_widget_set_sensitive (GTK_WIDGET (self->icon), track_is_enabled (track));
+  gtk_image_set_from_icon_name (self->icon, track->icon_name_.c_str ());
+  gtk_widget_set_sensitive (GTK_WIDGET (self->icon), track->is_enabled ());
 }
 
 static void
 refresh_name (FolderChannelWidget * self)
 {
   Track * track = self->track;
-  if (track_is_enabled (track))
+  if (track->is_enabled ())
     {
-      gtk_label_set_markup (self->name_lbl, track->name);
+      gtk_label_set_markup (self->name_lbl, track->name_.c_str ());
     }
   else
     {
-      char * markup =
-        g_strdup_printf ("<span foreground=\"grey\">%s</span>", track->name);
-      gtk_label_set_markup (self->name_lbl, markup);
+      auto markup =
+        fmt::format ("<span foreground=\"grey\">{}</span>", track->name_);
+      gtk_label_set_markup (self->name_lbl, markup.c_str ());
     }
 }
 
@@ -390,24 +379,25 @@ folder_channel_widget_refresh (FolderChannelWidget * self)
   refresh_name (self);
   refresh_color (self);
   setup_folder_channel_icon (self);
-  fader_buttons_widget_refresh (self->fader_buttons, self->track);
+  fader_buttons_widget_refresh (
+    self->fader_buttons, dynamic_cast<ChannelTrack *> (self->track));
 
 #define ICON_NAME_FOLD "fluentui-folder-regular"
 #define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
 
-  Track * track = self->track;
+  auto track = self->track;
   gtk_button_set_icon_name (
     GTK_BUTTON (self->fold_toggle),
-    track->folded ? ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
+    track->folded_ ? ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
 
 #undef ICON_NAME_FOLD
 #undef ICON_NAME_FOLD_OPEN
 
   g_signal_handler_block (self->fold_toggle, self->fold_toggled_handler_id);
-  gtk_toggle_button_set_active (self->fold_toggle, !track->folded);
+  gtk_toggle_button_set_active (self->fold_toggle, !track->folded_);
   g_signal_handler_unblock (self->fold_toggle, self->fold_toggled_handler_id);
 
-  if (track_is_selected (track))
+  if (track->is_selected ())
     {
       /* set selected or not */
       gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, 0);
@@ -438,15 +428,15 @@ on_right_click (
     GTK_EVENT_CONTROLLER (gesture));
 
   Track * track = self->track;
-  if (!track_is_selected (track))
+  if (!track->is_selected ())
     {
       if (state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK)
         {
-          track_select (track, F_SELECT, 0, 1);
+          track->select (F_SELECT, false, true);
         }
       else
         {
-          track_select (track, F_SELECT, 1, 1);
+          track->select (F_SELECT, true, true);
         }
     }
   if (n_press == 1)
@@ -460,8 +450,8 @@ on_fold_toggled (GtkToggleButton * toggle, FolderChannelWidget * self)
 {
   bool folded = !gtk_toggle_button_get_active (toggle);
 
-  track_set_folded (
-    self->track, folded, F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
+  self->track->set_folded (
+    folded, F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
 }
 
 static void
@@ -500,17 +490,17 @@ setup_dnd (FolderChannelWidget * self)
 }
 
 FolderChannelWidget *
-folder_channel_widget_new (Track * track)
+folder_channel_widget_new (FoldableTrack * track)
 {
-  FolderChannelWidget * self = static_cast<FolderChannelWidget *> (
-    g_object_new (FOLDER_CHANNEL_WIDGET_TYPE, NULL));
+  auto * self = static_cast<FolderChannelWidget *> (
+    g_object_new (FOLDER_CHANNEL_WIDGET_TYPE, nullptr));
   self->track = track;
 
   setup_folder_channel_icon (self);
 
   self->fold_toggled_handler_id = g_signal_connect (
     self->fold_toggle, "toggled", G_CALLBACK (on_fold_toggled), self);
-  g_signal_connect (self, "destroy", G_CALLBACK (on_destroy), NULL);
+  g_signal_connect (self, "destroy", G_CALLBACK (on_destroy), nullptr);
 
   setup_dnd (self);
 
@@ -532,7 +522,7 @@ folder_channel_widget_tear_down (FolderChannelWidget * self)
   if (self->setup)
     {
       g_object_unref (self);
-      self->track->folder_ch_widget = NULL;
+      // self->track->folder_ch_widget = NULL;
       self->setup = false;
     }
 }
@@ -584,7 +574,8 @@ folder_channel_widget_init (FolderChannelWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), 0);

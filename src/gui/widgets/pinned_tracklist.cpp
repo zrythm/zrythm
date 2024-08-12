@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2019, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/engine.h"
 #include "dsp/track.h"

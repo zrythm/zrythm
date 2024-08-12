@@ -1,9 +1,6 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/range_action_buttons.h"
@@ -13,6 +10,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -23,17 +21,17 @@ void
 timeline_toolbar_widget_refresh (TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
-  bool sensitive =
-    arranger_selections_can_be_merged ((ArrangerSelections *) TL_SELECTIONS);
-  g_debug ("settings merge button sensitivity %d", sensitive);
+  bool sensitive = TL_SELECTIONS->can_be_merged ();
+  z_debug ("settings merge button sensitivity %d", sensitive);
   gtk_widget_set_sensitive (GTK_WIDGET (self->merge_btn), sensitive);
 }
 
 void
 timeline_toolbar_widget_setup (TimelineToolbarWidget * self)
 {
-  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_TIMELINE);
-  quantize_box_widget_setup (self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
+  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_TIMELINE.get ());
+  quantize_box_widget_setup (
+    self->quantize_box, QUANTIZE_OPTIONS_TIMELINE.get ());
 }
 
 static void

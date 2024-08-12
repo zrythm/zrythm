@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_ZOOM_BUTTONS_H__

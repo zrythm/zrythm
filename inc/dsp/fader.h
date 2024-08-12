@@ -1,26 +1,28 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Backend for faders or other volume/gain controls.
- */
 
 #ifndef __AUDIO_FADER_H__
 #define __AUDIO_FADER_H__
 
-#include "dsp/port.h"
+#include <atomic>
+
+#include "dsp/audio_port.h"
+#include "dsp/control_port.h"
+#include "dsp/midi_port.h"
+#include "utils/icloneable.h"
 #include "utils/types.h"
 
+#include <fmt/printf.h>
+
 class StereoPorts;
+class MidiPort;
+class ControlPort;
+class Channel;
 class Port;
-typedef struct Channel         Channel;
-typedef struct AudioEngine     AudioEngine;
-typedef struct ControlRoom     ControlRoom;
-typedef struct SampleProcessor SampleProcessor;
-struct PortIdentifier;
-typedef struct Track Track;
+class ControlRoom;
+class SampleProcessor;
+class PortIdentifier;
+class Track;
 
 /**
  * @addtogroup dsp
@@ -28,58 +30,16 @@ typedef struct Track Track;
  * @{
  */
 
-#define FADER_SCHEMA_VERSION 2
-
-#define MONITOR_FADER (CONTROL_ROOM->monitor_fader)
+#define MONITOR_FADER (CONTROL_ROOM->monitor_fader_)
 
 #define FADER_MAGIC 32548791
-#define IS_FADER(f) (f->magic == FADER_MAGIC)
-#define IS_FADER_AND_NONNULL(f) (f && f->magic == FADER_MAGIC)
+#define IS_FADER(f) (((Fader *) f)->magic_ == FADER_MAGIC)
+#define IS_FADER_AND_NONNULL(f) ((f) && IS_FADER (f))
 
 /** Causes loud volume in when < 1k. */
-#define FADER_DEFAULT_FADE_FRAMES_SHORT 1024
+constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
 #define FADER_DEFAULT_FADE_FRAMES \
   (ZRYTHM_TESTING ? FADER_DEFAULT_FADE_FRAMES_SHORT : 8192)
-
-#define FADER_FADE_FRAMES_FOR_TYPE(f) \
-  ((f)->type == FaderType::FADER_TYPE_MONITOR \
-     ? FADER_DEFAULT_FADE_FRAMES \
-     : FADER_DEFAULT_FADE_FRAMES_SHORT)
-
-#define fader_is_in_active_project(self) \
-  ((self->track != NULL && track_is_in_active_project (self->track)) || (self->sample_processor != NULL && sample_processor_is_in_active_project (self->sample_processor)) || (self->control_room != NULL && control_room_is_in_active_project (self->control_room)))
-
-/**
- * Fader type.
- */
-enum class FaderType
-{
-  FADER_TYPE_NONE,
-
-  /** Audio fader for the monitor. */
-  FADER_TYPE_MONITOR,
-
-  /** Audio fader for the sample processor. */
-  FADER_TYPE_SAMPLE_PROCESSOR,
-
-  /** Audio fader for Channel's. */
-  FADER_TYPE_AUDIO_CHANNEL,
-
-  /* MIDI fader for Channel's. */
-  FADER_TYPE_MIDI_CHANNEL,
-
-  /** For generic uses. */
-  FADER_TYPE_GENERIC,
-};
-
-enum class MidiFaderMode
-{
-  /** Multiply velocity of all MIDI note ons. */
-  MIDI_FADER_MODE_VEL_MULTIPLIER,
-
-  /** Send CC volume event on change TODO. */
-  MIDI_FADER_MODE_CC_VOLUME,
-};
 
 /**
  * A Fader is a processor that is used for volume controls and pan.
@@ -87,349 +47,358 @@ enum class MidiFaderMode
  * It does not necessarily have to correspond to a FaderWidget. It can be used
  * as a backend to KnobWidget's.
  */
-typedef struct Fader
+class Fader final : public ICloneable<Fader>, public ISerializable<Fader>
 {
-  int schema_version;
+public:
+  /**
+   * Fader type.
+   */
+  enum class Type
+  {
+    None,
 
+    /** Audio fader for the monitor. */
+    Monitor,
+
+    /** Audio fader for the sample processor. */
+    SampleProcessor,
+
+    /** Audio fader for Channel's. */
+    AudioChannel,
+
+    /* MIDI fader for Channel's. */
+    MidiChannel,
+
+    /** For generic uses. */
+    Generic,
+  };
+
+  enum class MidiFaderMode
+  {
+    /** Multiply velocity of all MIDI note ons. */
+    MIDI_FADER_MODE_VEL_MULTIPLIER,
+
+    /** Send CC volume event on change TODO. */
+    MIDI_FADER_MODE_CC_VOLUME,
+  };
+
+public:
+  Fader () = default;
+
+  /**
+   * Creates a new fader.
+   *
+   * This assumes that the channel has no plugins.
+   *
+   * @param type The Fader::Type.
+   * @param ch Channel, if this is a channel Fader.
+   */
+  Fader (
+    Type              type,
+    bool              passthrough,
+    Track *           track,
+    ControlRoom *     control_room,
+    SampleProcessor * sample_processor);
+
+  /**
+   * Inits fader after a project is loaded.
+   */
+  COLD void init_loaded (
+    Track *           track,
+    ControlRoom *     control_room,
+    SampleProcessor * sample_processor);
+
+  static Fader * find_from_port_identifier (const PortIdentifier &id);
+
+  static std::unique_ptr<ControlPort> create_swap_phase_port (bool passthrough);
+
+  /**
+   * Appends the ports owned by fader to the given array.
+   */
+  void append_ports (std::vector<Port *> &ports) const;
+
+  /**
+   * Sets the amplitude of the fader. (0.0 to 2.0)
+   */
+  void set_amp (float amp);
+
+  /**
+   * Sets the amp value with an undoable action.
+   *
+   * @param skip_if_equal Whether to skip the action
+   *   if the amp hasn't changed.
+   */
+  void set_amp_with_action (float amp_from, float amp_to, bool skip_if_equal);
+
+  /**
+   * Adds (or subtracts if negative) to the amplitude
+   * of the fader (clamped at 0.0 to 2.0).
+   */
+  void add_amp (float amp);
+
+  void set_midi_mode (MidiFaderMode mode, bool with_action, bool fire_events);
+
+  /**
+   * Sets track muted and optionally adds the action
+   * to the undo stack.
+   */
+  void set_muted (bool mute, bool fire_events);
+
+  /**
+   * Returns if the fader is muted.
+   */
+  bool get_muted () const { return mute_->is_toggled (); }
+
+  /**
+   * Returns if the track is soloed.
+   */
+  HOT bool get_soloed () const { return solo_->is_toggled (); }
+
+  /**
+   * Returns whether the fader is not soloed on its
+   * own but its direct out (or its direct out's direct
+   * out, etc.) or its child (or its children's child,
+   * etc.) is soloed.
+   */
+  bool get_implied_soloed () const;
+
+  /**
+   * Returns whether the fader is listened.
+   */
+  bool get_listened () const { return listen_->is_toggled (); }
+
+  /**
+   * Sets fader listen and optionally adds the action
+   * to the undo stack.
+   */
+  void set_listened (bool listen, bool fire_events);
+
+  /**
+   * Sets track soloed and optionally adds the action
+   * to the undo stack.
+   */
+  void set_soloed (bool solo, bool fire_events);
+
+  /**
+   * Gets the fader amplitude (not db)
+   */
+  float get_amp () const { return amp_->control_; }
+
+  /**
+   * Gets whether mono compatibility is enabled.
+   */
+  bool get_mono_compat_enabled () const
+  {
+    return mono_compat_enabled_->is_toggled ();
+  }
+
+  /**
+   * Sets whether mono compatibility is enabled.
+   */
+  void set_mono_compat_enabled (bool enabled, bool fire_events);
+
+  /**
+   * Gets whether mono compatibility is enabled.
+   */
+  bool get_swap_phase () const { return swap_phase_->is_toggled (); }
+
+  /**
+   * Sets whether mono compatibility is enabled.
+   */
+  void set_swap_phase (bool enabled, bool fire_events);
+
+  float        get_fader_val () const { return fader_val_; }
+  static float fader_val_getter (void * data)
+  {
+    return ((Fader *) data)->get_fader_val ();
+  }
+
+  float get_default_fader_val () const
+  {
+    return math_get_fader_val_from_amp (amp_->deff_);
+  }
+  static float default_fader_val_getter (void * data)
+  {
+    return ((Fader *) data)->get_default_fader_val ();
+  }
+
+  std::string db_string_getter () const
+  {
+    return fmt::sprintf ("%.1f", math_amp_to_dbfs (amp_->control_));
+  }
+  static std::string db_string_getter_static (void * data)
+  {
+    return ((Fader *) data)->db_string_getter ();
+  }
+
+  Channel * get_channel () const;
+
+  Track * get_track () const;
+
+  void update_volume_and_fader_val ();
+
+  /**
+   * Clears all buffers.
+   */
+  HOT void clear_buffers ();
+
+  /**
+   * Sets the fader levels from a normalized value
+   * 0.0-1.0 (such as in widgets).
+   */
+  void        set_fader_val (float fader_val);
+  static void fader_val_setter (void * data, float val)
+  {
+    ((Fader *) data)->set_fader_val (val);
+  }
+
+  /**
+   * Disconnects all ports connected to the fader.
+   */
+  void disconnect_all ();
+
+  /**
+   * Copy the fader values from another fader.
+   *
+   * Used when cloning channels.
+   */
+  void copy_values (const Fader &other);
+
+  /**
+   * Process the Fader.
+   */
+  HOT void process (const EngineProcessTimeInfo time_nfo);
+
+  bool is_in_active_project () const;
+
+  static int fade_frames_for_type (Type type);
+
+  void init_after_cloning (const Fader &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /**
    * Volume in dBFS. (-inf ~ +6)
    */
-  float volume;
+  float volume_ = 0.f;
 
   /** Used by the phase knob (0.0 ~ 360.0). */
-  float phase;
+  float phase_ = 0.f;
 
   /** 0.0 ~ 1.0 for widgets. */
-  float fader_val;
+  float fader_val_ = 0.f;
 
   /**
-   * Value of \ref amp during last processing.
+   * Value of @ref amp during last processing.
    *
    * Used when processing MIDI faders.
    *
    * TODO
    */
-  float last_cc_volume;
+  float last_cc_volume_ = 0.f;
 
   /**
-   * A control port that controls the volume in
-   * amplitude (0.0 ~ 1.5)
+   * A control port that controls the volume in amplitude (0.0 ~ 1.5)
    */
-  Port * amp;
+  std::unique_ptr<ControlPort> amp_;
 
   /** A control Port that controls the balance
    * (0.0 ~ 1.0) 0.5 is center. */
-  Port * balance;
+  std::unique_ptr<ControlPort> balance_;
 
   /**
-   * Control port for muting the (channel)
-   * fader.
+   * Control port for muting the (channel) fader.
    */
-  Port * mute;
+  std::unique_ptr<ControlPort> mute_;
 
   /** Soloed or not. */
-  Port * solo;
+  std::unique_ptr<ControlPort> solo_;
 
   /** Listened or not. */
-  Port * listen;
+  std::unique_ptr<ControlPort> listen_;
 
   /** Whether mono compatibility switch is enabled. */
-  Port * mono_compat_enabled;
+  std::unique_ptr<ControlPort> mono_compat_enabled_;
 
   /** Swap phase toggle. */
-  Port * swap_phase;
+  std::unique_ptr<ControlPort> swap_phase_;
 
   /**
    * L & R audio input ports, if audio.
    */
-  StereoPorts * stereo_in;
+  std::unique_ptr<StereoPorts> stereo_in_;
 
   /**
    * L & R audio output ports, if audio.
    */
-  StereoPorts * stereo_out;
+  std::unique_ptr<StereoPorts> stereo_out_;
 
   /**
    * MIDI in port, if MIDI.
    */
-  Port * midi_in;
+  std::unique_ptr<MidiPort> midi_in_;
 
   /**
    * MIDI out port, if MIDI.
    */
-  Port * midi_out;
+  std::unique_ptr<MidiPort> midi_out_;
 
   /**
    * Current dBFS after processing each output port.
    *
    * Transient variables only used by the GUI.
    */
-  float l_port_db;
-  float r_port_db;
+  float l_port_db_ = 0.f;
+  float r_port_db_ = 0.f;
 
-  FaderType type;
+  Type type_ = (Type) 0;
 
   /** MIDI fader mode. */
-  MidiFaderMode midi_mode;
+  MidiFaderMode midi_mode_ = (MidiFaderMode) 0;
 
   /** Whether this is a passthrough fader (like a prefader). */
-  bool passthrough;
+  bool passthrough_ = false;
 
   /** Pointer to owner track, if any. */
-  Track * track;
+  Track * track_ = nullptr;
 
   /** Pointer to owner control room, if any. */
-  ControlRoom * control_room;
+  ControlRoom * control_room_ = nullptr;
 
   /** Pointer to owner sample processor, if any. */
-  SampleProcessor * sample_processor;
+  SampleProcessor * sample_processor_ = nullptr;
 
-  int magic;
+  int magic_ = FADER_MAGIC;
 
-  bool is_project;
+  bool is_project_ = false;
 
   /* TODO Caches to be set when recalculating the
    * graph. */
-  bool implied_soloed;
-  bool soloed;
-
-  /** Number of samples left to fade in. */
-  int fade_in_samples;
+  bool implied_soloed_ = false;
+  bool soloed_ = false;
 
   /**
    * Number of samples left to fade out.
-   */
-  int fade_out_samples;
-
-  /** Whether currently fading out.
    *
-   * When true, if fade_out_samples becomes 0 then the output
-   * will be silenced.
+   * This is atomic because it is used during processing (@ref process()) and
+   * also checked in the main thread by @ref Engine.wait_for_pause().
    */
-  int fading_out;
+  std::atomic<int> fade_out_samples_ = 0;
+
+  /** Number of samples left to fade in. */
+  std::atomic<int> fade_in_samples_ = 0;
+
+  /**
+   * Whether currently fading out.
+   *
+   * When true, if fade_out_samples becomes 0 then the output will be silenced.
+   */
+  std::atomic<bool> fading_out_ = false;
 
   /** Cache. */
-  bool was_effectively_muted;
-} Fader;
-
-/**
- * Inits fader after a project is loaded.
- */
-COLD NONNULL_ARGS (1) void fader_init_loaded (
-  Fader *           self,
-  Track *           track,
-  ControlRoom *     control_room,
-  SampleProcessor * sample_processor);
-
-/**
- * Creates a new fader.
- *
- * This assumes that the channel has no plugins.
- *
- * @param type The FaderType.
- * @param ch Channel, if this is a channel Fader.
- */
-COLD Fader *
-fader_new (
-  FaderType         type,
-  bool              passthrough,
-  Track *           track,
-  ControlRoom *     control_room,
-  SampleProcessor * sample_processor);
-
-Fader *
-fader_find_from_port_identifier (const PortIdentifier * id);
-
-Port *
-fader_create_swap_phase_port (Fader * self, bool passthrough);
-
-/**
- * Appends the ports owned by fader to the given
- * array.
- */
-NONNULL void
-fader_append_ports (const Fader * self, GPtrArray * ports);
-
-/**
- * Sets the amplitude of the fader. (0.0 to 2.0)
- */
-void
-fader_set_amp (void * self, float amp);
-
-/**
- * Sets the amp value with an undoable action.
- *
- * @param skip_if_equal Whether to skip the action
- *   if the amp hasn't changed.
- */
-void
-fader_set_amp_with_action (
-  Fader * self,
-  float   amp_from,
-  float   amp_to,
-  bool    skip_if_equal);
-
-/**
- * Adds (or subtracts if negative) to the amplitude
- * of the fader (clamped at 0.0 to 2.0).
- */
-void
-fader_add_amp (void * self, float amp);
-
-NONNULL void
-fader_set_midi_mode (
-  Fader *       self,
-  MidiFaderMode mode,
-  bool          with_action,
-  bool          fire_events);
-
-/**
- * Sets track muted and optionally adds the action
- * to the undo stack.
- */
-void
-fader_set_muted (Fader * self, bool mute, bool fire_events);
-
-/**
- * Returns if the fader is muted.
- */
-NONNULL bool
-fader_get_muted (const Fader * const self);
-
-/**
- * Returns if the track is soloed.
- */
-HOT NONNULL bool
-fader_get_soloed (const Fader * const self);
-
-/**
- * Returns whether the fader is not soloed on its
- * own but its direct out (or its direct out's direct
- * out, etc.) or its child (or its children's child,
- * etc.) is soloed.
- */
-bool
-fader_get_implied_soloed (Fader * self);
-
-/**
- * Returns whether the fader is listened.
- */
-#define fader_get_listened(self) (control_port_is_toggled (self->listen))
-
-/**
- * Sets fader listen and optionally adds the action
- * to the undo stack.
- */
-void
-fader_set_listened (Fader * self, bool listen, bool fire_events);
-
-/**
- * Sets track soloed and optionally adds the action
- * to the undo stack.
- */
-void
-fader_set_soloed (Fader * self, bool solo, bool fire_events);
-
-/**
- * Gets the fader amplitude (not db)
- * FIXME is void * necessary? do it in the caller.
- */
-NONNULL float
-fader_get_amp (void * self);
-
-/**
- * Gets whether mono compatibility is enabled.
- */
-bool
-fader_get_mono_compat_enabled (Fader * self);
-
-/**
- * Sets whether mono compatibility is enabled.
- */
-void
-fader_set_mono_compat_enabled (Fader * self, bool enabled, bool fire_events);
-
-/**
- * Gets whether mono compatibility is enabled.
- */
-bool
-fader_get_swap_phase (Fader * self);
-
-/**
- * Sets whether mono compatibility is enabled.
- */
-void
-fader_set_swap_phase (Fader * self, bool enabled, bool fire_events);
-
-float
-fader_get_fader_val (void * self);
-
-float
-fader_get_default_fader_val (void * self);
-
-void
-fader_db_string_getter (void * obj, char * buf);
-
-Channel *
-fader_get_channel (Fader * self);
-
-NONNULL Track *
-fader_get_track (Fader * self);
-
-void
-fader_update_volume_and_fader_val (Fader * self);
-
-/**
- * Clears all buffers.
- */
-HOT NONNULL void
-fader_clear_buffers (Fader * self);
-
-/**
- * Sets the fader levels from a normalized value
- * 0.0-1.0 (such as in widgets).
- */
-void
-fader_set_fader_val (Fader * self, float fader_val);
-
-/**
- * Disconnects all ports connected to the fader.
- */
-void
-fader_disconnect_all (Fader * self);
-
-/**
- * Copy the fader values from source to dest.
- *
- * Used when cloning channels.
- */
-void
-fader_copy_values (Fader * src, Fader * dest);
-
-/**
- * Process the Fader.
- */
-NONNULL HOT void
-fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo);
-
-#if 0
-/**
- * Updates the track pos of the fader.
- */
-void
-fader_update_track_pos (
-  Fader * self,
-  int     pos);
-#endif
-
-Fader *
-fader_clone (const Fader * src);
-
-/**
- * Frees the fader members.
- */
-void
-fader_free (Fader * self);
+  bool was_effectively_muted_ = false;
+};
 
 /**
  * @}

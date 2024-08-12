@@ -29,25 +29,12 @@
 
 #include "zrythm-config.h"
 
-#include <cstdlib>
-
 #include "gui/widgets/greeter.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla_discovery.h"
-#include "plugins/collections.h"
-#include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/io.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
-#include "utils/sort.h"
-#include "utils/string.h"
-#include "utils/ui.h"
 #include "utils/windows.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -58,150 +45,111 @@
 
 /*#include <ctype.h>*/
 
-/**
- * If category not already set in the categories, add it.
- */
-static void
-add_category_and_author (PluginManager * self, char * category, char * author)
+void
+PluginManager::add_category_and_author (
+  std::string_view category,
+  std::string_view author)
 {
-  g_return_if_fail (category);
   if (!string_is_ascii (category))
     {
-      g_warning ("Ignoring non-ASCII plugin category name...");
+      z_warning ("Ignoring non-ASCII plugin category name...");
     }
-  bool ignore_category = false;
-  for (int i = 0; i < self->num_plugin_categories; i++)
+  if (
+    !std::any_of (
+      plugin_categories_.begin (), plugin_categories_.end (),
+      [&] (const auto &cat) { return cat == category; }))
     {
-      char * cat = self->plugin_categories[i];
-      if (!strcmp (cat, category))
+      z_debug ("New category: {}", category);
+      plugin_categories_.push_back (std::string (category));
+    }
+
+  if (!author.empty ())
+    {
+      if (
+        !std::any_of (
+          plugin_authors_.begin (), plugin_authors_.end (),
+          [&] (const auto &cur_author) { return cur_author == author; }))
         {
-          ignore_category = true;
-          break;
+          z_debug ("New author: {}", author);
+          plugin_authors_.push_back (std::string (author));
         }
     }
-  if (!ignore_category)
-    {
-      g_message ("%s: %s", __func__, category);
-      self->plugin_categories[self->num_plugin_categories++] =
-        g_strdup (category);
-    }
-
-  if (author)
-    {
-      bool ignore_author = false;
-      for (int i = 0; i < self->num_plugin_authors; i++)
-        {
-          char * cat = self->plugin_authors[i];
-          if (!strcmp (cat, author))
-            {
-              ignore_author = true;
-              break;
-            }
-        }
-
-      if (!ignore_author)
-        {
-          g_message ("%s: %s", __func__, author);
-          self->plugin_authors[self->num_plugin_authors++] = g_strdup (author);
-        }
-    }
-}
-
-static int
-sort_plugin_func (const void * a, const void * b)
-{
-  PluginDescriptor * pa = *(PluginDescriptor * const *) a;
-  PluginDescriptor * pb = *(PluginDescriptor * const *) b;
-  g_return_val_if_fail (pa->name && pb->name, -1);
-  int r = strcasecmp (pa->name, pb->name);
-  if (r)
-    return r;
-
-  /* if equal ignoring case, use opposite of strcmp() result to get lower before
-   * upper */
-  /* aka: return strcmp(b, a); */
-  return -strcmp (pa->name, pb->name);
 }
 
 static void
-add_expanded_paths (GStrvBuilder * builder, char ** paths_from_settings)
+add_expanded_paths (
+  StringArray                      &arr,
+  const std::vector<Glib::ustring> &paths_from_settings)
 {
-  const char * cur_path = NULL;
-  for (int i = 0; (cur_path = paths_from_settings[i]) != NULL; i++)
+  for (auto &path : paths_from_settings)
     {
-      char * expanded_cur_path = string_expand_env_vars (cur_path);
+      char * expanded_cur_path = string_expand_env_vars (path.c_str ());
       /* split because the env might contain multiple paths */
-      char ** expanded_paths =
-        g_strsplit (expanded_cur_path, G_SEARCHPATH_SEPARATOR_S, 0);
-      g_strv_builder_addv (builder, (const char **) expanded_paths);
-      g_strfreev (expanded_paths);
+      auto expanded_paths =
+        Glib::Regex::split_simple (G_SEARCHPATH_SEPARATOR_S, expanded_cur_path);
+      for (auto &expanded_path : expanded_paths)
+        {
+          arr.add (expanded_path);
+        }
       g_free (expanded_cur_path);
     }
 }
 
-static char **
-plugin_manager_get_lv2_paths (const PluginManager * self)
+StringArray
+PluginManager::get_lv2_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
       /* add test plugins if testing */
-      const char * tests_builddir = g_getenv ("G_TEST_BUILDDIR");
-      const char * root_builddir = g_getenv ("G_TEST_BUILD_ROOT_DIR");
-      g_return_val_if_fail (tests_builddir, NULL);
-      g_return_val_if_fail (root_builddir, NULL);
+      auto tests_builddir = Glib::getenv ("G_TEST_BUILDDIR");
+      auto root_builddir = Glib::getenv ("G_TEST_BUILD_ROOT_DIR");
+      g_return_val_if_fail (!tests_builddir.empty (), nullptr);
+      g_return_val_if_fail (!root_builddir.empty (), nullptr);
 
-      char * test_lv2_plugins =
-        g_build_filename (tests_builddir, "lv2plugins", NULL);
-      char * test_root_plugins =
-        g_build_filename (root_builddir, "data", "plugins", NULL);
-      g_strv_builder_add_many (
-        builder, test_lv2_plugins, test_root_plugins, NULL);
-      g_free (test_lv2_plugins);
-      g_free (test_root_plugins);
+      auto test_lv2_plugins = fs::path (tests_builddir) / "lv2plugins";
+      auto test_root_plugins = fs::path (root_builddir) / "data" / "plugins";
+      ret.add (test_lv2_plugins);
+      ret.add (test_root_plugins);
 
-      const char * paths_from_settings[] = {
-        "${LV2_PATH}", "/usr/lib/lv2", NULL
+      std::vector<Glib::ustring> paths_from_settings = {
+        "${LV2_PATH}", "/usr/lib/lv2"
       };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("LV2 paths", paths);
+      ret.print ("LV2 paths");
 
-      return paths;
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "lv2-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("lv2-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #ifdef _WIN32
-      g_strv_builder_add_many (
-        builder, "C:\\Program Files\\Common Files\\LV2", NULL);
+      ret.add ("C:\\Program Files\\Common Files\\LV2");
 #elif defined(__APPLE__)
-      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/LV2");
+      ret.add ("/Library/Audio/Plug-ins/LV2");
 #elif defined(FLATPAK_BUILD)
-      g_strv_builder_add_many (
-        builder, "/app/lib/lv2", "/app/extensions/Plugins/lv2", NULL);
+      ret.add ("/app/lib/lv2");
+      ret.add ("/app/extensions/Plugins/lv2");
 #else /* non-flatpak UNIX */
       {
-        char * home_lv2 = g_build_filename (g_get_home_dir (), ".lv2", NULL);
-        g_strv_builder_add (builder, home_lv2);
-        g_free (home_lv2);
+        auto home_lv2 = fs::path (Glib::get_home_dir ()) / ".lv2";
+        ret.add (home_lv2);
       }
-      g_strv_builder_add_many (
-        builder, "/usr/lib/lv2", "/usr/local/lib/lv2", NULL);
+      ret.add ("/usr/lib/lv2");
+      ret.add ("/usr/local/lib/lv2");
 #  if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/lv2", "/usr/local/lib64/lv2", NULL);
+      ret.add ("/usr/lib64/lv2");
+      ret.add ("/usr/local/lib64/lv2");
 #  else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/lv2",
-            "/usr/local/" LIBDIR_NAME "/lv2", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/lv2");
+          ret.add ("/usr/local/" LIBDIR_NAME "/lv2");
         }
 #  endif /* endif non-flatpak UNIX */
 #endif   /* endif per-platform code */
@@ -209,94 +157,68 @@ plugin_manager_get_lv2_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
   /* add special paths */
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  char * builtin_plugins_path = dir_mgr->get_dir (SYSTEM_BUNDLED_PLUGINSDIR);
-  char * special_plugins_path =
-    dir_mgr->get_dir (SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
-  g_strv_builder_add_many (
-    builder, builtin_plugins_path, special_plugins_path, NULL);
-  g_free_and_null (builtin_plugins_path);
-  g_free_and_null (special_plugins_path);
+  auto   builtin_plugins_path =
+    dir_mgr->get_dir (ZrythmDirType::SYSTEM_BUNDLED_PLUGINSDIR);
+  auto special_plugins_path =
+    dir_mgr->get_dir (ZrythmDirType::SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+  ret.add (builtin_plugins_path);
+  ret.add (special_plugins_path);
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("LV2 paths", paths);
+  ret.print ("LV2 paths");
 
-  return paths;
-}
-
-PluginManager *
-plugin_manager_new (void)
-{
-  PluginManager * self = object_new (PluginManager);
-
-  self->plugin_descriptors =
-    g_ptr_array_new_full (100, (GDestroyNotify) plugin_descriptor_free);
-
-  /* init vst/dssi/ladspa */
-  self->cached_plugin_descriptors = cached_plugin_descriptors_read_or_new ();
-
-  /* fetch/create collections */
-  self->collections = plugin_collections_read_or_new ();
-
-  self->carla_discovery = z_carla_discovery_new (self);
-
-  return self;
+  return ret;
 }
 
 #ifdef HAVE_CARLA
-static char **
-plugin_manager_get_vst2_paths (const PluginManager * self)
+StringArray
+PluginManager::get_vst2_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${VST_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      std::vector<Glib::ustring> paths_from_settings = { "${VST_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("VST2 paths", paths);
-
-      return paths;
+      ret.print ("VST2 paths");
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst2-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("vst2-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #  ifdef _WIN32
-      g_strv_builder_add_many (
-        builder, "C:\\Program Files\\Common Files\\VST2",
-        "C:\\Program Files\\VSTPlugins",
-        "C:\\Program Files\\Steinberg\\VSTPlugins",
-        "C:\\Program Files\\Common Files\\VST2",
-        "C:\\Program Files\\Common Files\\Steinberg\\VST2", NULL);
+      ret.add ("C:\\Program Files\\Common Files\\VST2");
+      ret.add ("C:\\Program Files\\VSTPlugins");
+      ret.add ("C:\\Program Files\\Steinberg\\VSTPlugins");
+      ret.add ("C:\\Program Files\\Common Files\\VST2");
+      ret.add ("C:\\Program Files\\Common Files\\Steinberg\\VST2");
 #  elif defined(__APPLE__)
-      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/VST");
+      ret.add ("/Library/Audio/Plug-ins/VST");
 #  elif defined(FLATPAK_BUILD)
-      g_strv_builder_add (builder, "/app/extensions/Plugins/vst");
+      ret.add ("/app/extensions/Plugins/vst");
 #  else /* non-flatpak UNIX */
       {
-        char * home_vst = g_build_filename (g_get_home_dir (), ".vst", NULL);
-        g_strv_builder_add (builder, home_vst);
-        g_free (home_vst);
+        auto home_vst = fs::path (Glib::get_home_dir ()) / ".vst";
+        ret.add (home_vst);
       }
-      g_strv_builder_add_many (
-        builder, "/usr/lib/vst", "/usr/local/lib/vst", NULL);
+      ret.add ("/usr/lib/vst");
+      ret.add ("/usr/local/lib/vst");
 #    if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/vst", "/usr/local/lib64/vst", NULL);
+      ret.add ("/usr/lib64/vst");
+      ret.add ("/usr/local/lib64/vst");
 #    else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/vst",
-            "/usr/local/" LIBDIR_NAME "/vst", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/vst");
+          ret.add ("/usr/local/" LIBDIR_NAME "/vst");
         }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
@@ -304,61 +226,54 @@ plugin_manager_get_vst2_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("VST2 paths", paths);
+  ret.print ("VST2 paths");
 
-  return paths;
+  return ret;
 }
 
-static char **
-plugin_manager_get_vst3_paths (const PluginManager * self)
+StringArray
+PluginManager::get_vst3_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${VST3_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      std::vector<Glib::ustring> paths_from_settings = { "${VST3_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("VST3 paths", paths);
-
-      return paths;
+      ret.print ("VST3 paths");
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst3-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("vst3-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #  ifdef _WIN32
-      g_strv_builder_add_many (
-        builder, "C:\\Program Files\\Common Files\\VST3",
-        "C:\\Program Files\\Common Files\\VST3", NULL);
+      ret.add ("C:\\Program Files\\Common Files\\VST3");
 #  elif defined(__APPLE__)
-      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/VST3");
+      ret.add ("/Library/Audio/Plug-ins/VST3");
 #  elif defined(FLATPAK_BUILD)
-      g_strv_builder_add (builder, "/app/extensions/Plugins/vst3");
+      ret.add ("/app/extensions/Plugins/vst3");
 #  else /* non-flatpak UNIX */
       {
-        char * home_vst3 = g_build_filename (g_get_home_dir (), ".vst3", NULL);
-        g_strv_builder_add (builder, home_vst3);
-        g_free (home_vst3);
+        auto home_vst3 = fs::path (Glib::get_home_dir ()) / ".vst3";
+        ret.add (home_vst3);
       }
-      g_strv_builder_add_many (
-        builder, "/usr/lib/vst3", "/usr/local/lib/vst3", NULL);
+      ret.add ("/usr/lib/vst3");
+      ret.add ("/usr/local/lib/vst3");
 #    if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/vst3", "/usr/local/lib64/vst3", NULL);
+      ret.add ("/usr/lib64/vst3");
+      ret.add ("/usr/local/lib64/vst3");
 #    else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/vst3",
-            "/usr/local/" LIBDIR_NAME "/vst3", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/vst3");
+          ret.add ("/usr/local/" LIBDIR_NAME "/vst3");
         }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
@@ -366,77 +281,69 @@ plugin_manager_get_vst3_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("VST3 paths", paths);
+  ret.print ("VST3 paths");
 
-  return paths;
+  return ret;
 }
 
-/**
- * Gets the SFZ or SF2 paths.
- */
-static char **
-plugin_manager_get_sf_paths (const PluginManager * self, bool sf2)
+StringArray
+PluginManager::get_sf_paths (bool sf2)
 {
-  char ** paths = NULL;
-  if (ZRYTHM_TESTING)
-    {
-      paths =
-        g_strsplit (G_SEARCHPATH_SEPARATOR_S, G_SEARCHPATH_SEPARATOR_S, -1);
-    }
-  else
-    {
-      paths = g_settings_get_strv (
-        S_P_PLUGINS_PATHS, sf2 ? "sf2-search-paths" : "sfz-search-paths");
-      g_return_val_if_fail (paths, NULL);
-    }
-
-  return paths;
-}
-
-static char **
-plugin_manager_get_dssi_paths (const PluginManager * self)
-{
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${DSSI_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
-
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("DSSI paths", paths);
-
-      return paths;
+      ret.add (G_SEARCHPATH_SEPARATOR_S);
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "dssi-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings =
+    settings->get_string_array (sf2 ? "sf2-search-paths" : "sfz-search-paths");
+  add_expanded_paths (ret, paths_from_settings);
+
+  return ret;
+}
+
+StringArray
+PluginManager::get_dssi_paths ()
+{
+  auto ret = StringArray ();
+
+  if (ZRYTHM_TESTING)
+    {
+      std::vector<Glib::ustring> paths_from_settings = { "${DSSI_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
+
+      ret.print ("DSSI paths");
+      return ret;
+    }
+
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("dssi-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #  if defined(FLATPAK_BUILD)
-      g_strv_builder_add (builder, "/app/extensions/Plugins/dssi");
+      ret.add ("/app/extensions/Plugins/dssi");
 #  else /* non-flatpak UNIX */
       {
-        char * home_dssi = g_build_filename (g_get_home_dir (), ".dssi", NULL);
-        g_strv_builder_add (builder, home_dssi);
-        g_free (home_dssi);
+        auto home_dssi = fs::path (Glib::get_home_dir ()) / ".dssi";
+        ret.add (home_dssi);
       }
-      g_strv_builder_add_many (
-        builder, "/usr/lib/dssi", "/usr/local/lib/dssi", NULL);
+      ret.add ("/usr/lib/dssi");
+      ret.add ("/usr/local/lib/dssi");
 #    if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/dssi", "/usr/local/lib64/dssi", NULL);
+      ret.add ("/usr/lib64/dssi");
+      ret.add ("/usr/local/lib64/dssi");
 #    else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/dssi",
-            "/usr/local/" LIBDIR_NAME "/dssi", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/dssi");
+          ret.add ("/usr/local/" LIBDIR_NAME "/dssi");
         }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
@@ -444,50 +351,46 @@ plugin_manager_get_dssi_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("DSSI paths", paths);
+  ret.print ("DSSI paths");
 
-  return paths;
+  return ret;
 }
 
-static char **
-plugin_manager_get_ladspa_paths (const PluginManager * self)
+StringArray
+PluginManager::get_ladspa_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${LADSPA_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      std::vector<Glib::ustring> paths_from_settings = { "${LADSPA_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("LADSPA paths", paths);
-
-      return paths;
+      ret.print ("LADSPA paths");
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "ladspa-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("ladspa-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #  if defined(FLATPAK_BUILD)
-      g_strv_builder_add (builder, "/app/extensions/Plugins/ladspa");
+      ret.add ("/app/extensions/Plugins/ladspa");
 #  else /* non-flatpak UNIX */
-      g_strv_builder_add_many (
-        builder, "/usr/lib/ladspa", "/usr/local/lib/ladspa", NULL);
+      ret.add ("/usr/lib/ladspa");
+      ret.add ("/usr/local/lib/ladspa");
 #    if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/ladspa", "/usr/local/lib64/ladspa", NULL);
+      ret.add ("/usr/lib64/ladspa");
+      ret.add ("/usr/local/lib64/ladspa");
 #    else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/ladspa",
-            "/usr/local/" LIBDIR_NAME "/ladspa", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/ladspa");
+          ret.add ("/usr/local/" LIBDIR_NAME "/ladspa");
         }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
@@ -495,70 +398,59 @@ plugin_manager_get_ladspa_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("LADSPA paths", paths);
+  ret.print ("LADSPA paths");
 
-  return paths;
+  return ret;
 }
 
-/**
- * For the official paths see:
- * https://github.com/free-audio/clap/blob/b902efa94e7a069dc1576617ebd74d2310746bd4/include/clap/entry.h#L14
- */
-static char **
-plugin_manager_get_clap_paths (const PluginManager * self)
+StringArray
+PluginManager::get_clap_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
 #  ifndef CARLA_HAVE_CLAP_SUPPORT
-  char ** empty_paths = g_strv_builder_end (builder);
-  return empty_paths;
+  return ret;
 #  endif
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${CLAP_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      std::vector<Glib::ustring> paths_from_settings = { "${CLAP_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("CLAP paths", paths);
-
-      return paths;
+      ret.print ("CLAP paths");
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "clap-search-paths");
-  if (paths_from_settings[0] == NULL)
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("clap-search-paths");
+  if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
 #  ifdef _WIN32
-      g_strv_builder_add_many (
-        builder, "C:\\Program Files\\Common Files\\CLAP",
-        "C:\\Program Files (x86)\\Common Files\\CLAP", NULL);
+      ret.add ("C:\\Program Files\\Common Files\\CLAP");
+      ret.add ("C:\\Program Files (x86)\\Common Files\\CLAP");
 #  elif defined(__APPLE__)
-      g_strv_builder_add (builder, "/Library/Audio/Plug-ins/CLAP");
+      ret.add ("/Library/Audio/Plug-ins/CLAP");
 #  elif defined(FLATPAK_BUILD)
-      g_strv_builder_add (builder, "/app/extensions/Plugins/clap");
+      ret.add ("/app/extensions/Plugins/clap");
 #  else /* non-flatpak UNIX */
       {
-        char * home_clap = g_build_filename (g_get_home_dir (), ".clap", NULL);
-        g_strv_builder_add (builder, home_clap);
-        g_free (home_clap);
+        auto home_clap = fs::path (Glib::get_home_dir ()) / ".clap";
+        ret.add (home_clap);
       }
-      g_strv_builder_add_many (
-        builder, "/usr/lib/clap", "/usr/local/lib/clap", NULL);
+      ret.add ("/usr/lib/clap");
+      ret.add ("/usr/local/lib/clap");
 #    if defined(INSTALLER_VER)
-      g_strv_builder_add_many (
-        builder, "/usr/lib64/clap", "/usr/local/lib64/clap", NULL);
+      ret.add ("/usr/lib64/clap");
+      ret.add ("/usr/local/lib64/clap");
 #    else  /* else if unix and not installer ver */
-      if (!string_is_equal (LIBDIR_NAME, "lib"))
+      if (std::string (LIBDIR_NAME) != "lib")
         {
-          g_strv_builder_add_many (
-            builder, "/usr/" LIBDIR_NAME "/clap",
-            "/usr/local/" LIBDIR_NAME "/clap", NULL);
+          ret.add ("/usr/" LIBDIR_NAME "/clap");
+          ret.add ("/usr/local/" LIBDIR_NAME "/clap");
         }
 #    endif /* endif non-flatpak UNIX */
 #  endif   /* endif per-platform code */
@@ -566,251 +458,236 @@ plugin_manager_get_clap_paths (const PluginManager * self)
   else
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("CLAP paths", paths);
+  ret.print ("CLAP paths");
 
-  return paths;
+  return ret;
 }
 
-static char **
-plugin_manager_get_jsfx_paths (const PluginManager * self)
+StringArray
+PluginManager::get_jsfx_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
   if (ZRYTHM_TESTING)
     {
-      const char * paths_from_settings[] = { "${JSFX_PATH}", NULL };
-      add_expanded_paths (builder, (char **) paths_from_settings);
+      std::vector<Glib::ustring> paths_from_settings = { "${JSFX_PATH}" };
+      add_expanded_paths (ret, paths_from_settings);
 
-      char ** paths = g_strv_builder_end (builder);
-      string_print_strv ("JSFX paths", paths);
-
-      return paths;
+      ret.print ("JSFX paths");
+      return ret;
     }
 
-  char ** paths_from_settings =
-    g_settings_get_strv (S_P_PLUGINS_PATHS, "jsfx-search-paths");
-  if (paths_from_settings[0] == NULL)
-    {
-      /* no paths given - use default */
-    }
-  else
+  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
+  auto paths_from_settings = settings->get_string_array ("jsfx-search-paths");
+  if (!paths_from_settings.empty ())
     {
       /* use paths given */
-      add_expanded_paths (builder, paths_from_settings);
+      add_expanded_paths (ret, paths_from_settings);
     }
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("JSFX paths", paths);
+  ret.print ("JSFX paths");
 
-  return paths;
+  return ret;
 }
 
-static char **
-plugin_manager_get_au_paths (const PluginManager * self)
+StringArray
+PluginManager::get_au_paths ()
 {
-  GStrvBuilder * builder = g_strv_builder_new ();
+  auto ret = StringArray ();
 
-  g_strv_builder_add (builder, "/Library/Audio/Plug-ins/Components");
-  char * user_components = g_build_filename (
-    g_get_home_dir (), "Library", "Audio", "Plug-ins", "Components", NULL);
-  g_strv_builder_add (builder, user_components);
-  g_free (user_components);
+  ret.add ("/Library/Audio/Plug-ins/Components");
+  auto user_components =
+    fs::path (Glib::get_home_dir ()) / "Library" / "Audio" / "Plug-ins"
+    / "Components";
+  ret.add (user_components);
 
-  char ** paths = g_strv_builder_end (builder);
-  string_print_strv ("AU paths", paths);
+  ret.print ("AU paths");
 
-  return paths;
+  return ret;
 }
 #endif /* HAVE_CARLA */
 
-/**
- * Returns if the plugin manager supports the given
- * plugin protocol.
- */
 bool
-plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol)
+PluginManager::supports_protocol (PluginProtocol protocol)
 {
-  switch (protocol)
+  // List of protocols that are always supported
+  const auto always_supported = {
+    PluginProtocol::DUMMY, PluginProtocol::LV2,  PluginProtocol::LADSPA,
+    PluginProtocol::VST,   PluginProtocol::VST3, PluginProtocol::SFZ,
+    PluginProtocol::JSFX,  PluginProtocol::CLAP
+  };
+
+  // Check if the protocol is in the always supported list
+  if (
+    std::ranges::find (always_supported, protocol)
+    != std::ranges::end (always_supported))
     {
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_DUMMY:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP:
 #ifdef HAVE_CARLA
       return true;
 #else
       return false;
 #endif
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2:
-      {
-#ifdef HAVE_CARLA
-        const char * const * carla_features = carla_get_supported_features ();
-        const char *         feature;
-        int                  i = 0;
-        while ((feature = carla_features[i++]))
-          {
-#  define CHECK_FEATURE(str, format) \
-    if ( \
-      string_is_equal (feature, str) \
-      && protocol == ZPluginProtocol::Z_PLUGIN_PROTOCOL_##format) \
-    return true
-
-            CHECK_FEATURE ("sf2", SF2);
-            CHECK_FEATURE ("osc", DSSI);
-            CHECK_FEATURE ("vst3", VST3);
-            CHECK_FEATURE ("au", AU);
-#  undef CHECK_FEATURE
-          }
-#endif /* HAVE_CARLA */
-        return false;
-      }
     }
+
+#ifdef HAVE_CARLA
+  // Get the list of features supported by Carla
+  const StringArray carla_supported_features (carla_get_supported_features ());
+
+  // Map of protocols to their corresponding Carla feature names
+  const auto feature_map = std::map<PluginProtocol, std::string>{
+    {PluginProtocol::SF2,   "sf2" },
+    { PluginProtocol::DSSI, "osc" },
+    { PluginProtocol::VST3, "vst3"},
+    { PluginProtocol::AU,   "au"  }
+  };
+
+  // Check if the protocol is in the feature map
+  if (auto it = feature_map.find (protocol); it != feature_map.end ())
+    {
+      // Check if the corresponding feature is supported by Carla
+      return std::ranges::any_of (
+        carla_supported_features, [&] (const auto &feature) {
+          return feature.toStdString () == it->second;
+        });
+    }
+#endif
+
+  // If not found in any of the above cases, return false
   return false;
 }
 
-char **
-plugin_manager_get_paths_for_protocol (
-  const PluginManager * self,
-  const ZPluginProtocol protocol)
+std::vector<fs::path>
+PluginManager::get_paths_for_protocol (const PluginProtocol protocol)
 {
-  char ** paths = NULL;
+  StringArray paths;
   switch (protocol)
     {
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST:
-      paths = plugin_manager_get_vst2_paths (self);
+    case PluginProtocol::VST:
+      paths = get_vst2_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_VST3:
-      paths = plugin_manager_get_vst3_paths (self);
+    case PluginProtocol::VST3:
+      paths = get_vst3_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_DSSI:
-      paths = plugin_manager_get_dssi_paths (self);
+    case PluginProtocol::DSSI:
+      paths = get_dssi_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LADSPA:
-      paths = plugin_manager_get_ladspa_paths (self);
+    case PluginProtocol::LADSPA:
+      paths = get_ladspa_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SFZ:
-      paths = plugin_manager_get_sf_paths (self, false);
+    case PluginProtocol::SFZ:
+      paths = get_sf_paths (false);
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_SF2:
-      paths = plugin_manager_get_sf_paths (self, true);
+    case PluginProtocol::SF2:
+      paths = get_sf_paths (true);
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_CLAP:
-      paths = plugin_manager_get_clap_paths (self);
+    case PluginProtocol::CLAP:
+      paths = get_clap_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX:
-      paths = plugin_manager_get_jsfx_paths (self);
+    case PluginProtocol::JSFX:
+      paths = get_jsfx_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2:
-      paths = plugin_manager_get_lv2_paths (self);
+    case PluginProtocol::LV2:
+      paths = get_lv2_paths ();
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
-      paths = plugin_manager_get_au_paths (self);
+    case PluginProtocol::AU:
+      paths = get_au_paths ();
       break;
     default:
       break;
     }
-  g_return_val_if_fail (paths, NULL);
 
-  return paths;
+  std::vector<fs::path> ret;
+  for (const auto &path : paths)
+    {
+      ret.push_back (path.toStdString ());
+    }
+
+  return ret;
 }
 
-char *
-plugin_manager_get_paths_for_protocol_separated (
-  const PluginManager * self,
-  const ZPluginProtocol protocol)
+std::string
+PluginManager::get_paths_for_protocol_separated (const PluginProtocol protocol)
 {
-  char ** paths = plugin_manager_get_paths_for_protocol (self, protocol);
-  if (paths)
+  auto paths = get_paths_for_protocol (protocol);
+  if (!paths.empty ())
     {
-      char * paths_separated = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, paths);
-      g_strfreev (paths);
+      auto path_strings = std::vector<std::string> ();
+      std::ranges::transform (
+        paths, std::back_inserter (path_strings),
+        [] (const auto &path) { return path.string (); });
+      auto paths_separated =
+        string_join (path_strings, G_SEARCHPATH_SEPARATOR_S);
       return paths_separated;
     }
   else
     {
-      return NULL;
+      return "";
     }
 }
 
-char *
-plugin_manager_find_plugin_from_rel_path (
-  const PluginManager * self,
-  const ZPluginProtocol protocol,
-  const char *          rel_path)
+fs::path
+PluginManager::find_plugin_from_rel_path (
+  const PluginProtocol   protocol,
+  const std::string_view rel_path) const
 {
-  char ** paths = plugin_manager_get_paths_for_protocol (self, protocol);
-  if (!paths)
+  auto paths = get_paths_for_protocol (protocol);
+  if (paths.empty ())
     {
-      g_warning ("no paths for %s", rel_path);
-      return g_strdup ("");
+      z_warning ("no paths for %s", rel_path.data ());
+      return {};
     }
 
-  int    path_idx = 0;
-  char * path;
-  while ((path = paths[path_idx++]) != NULL)
+  for (const auto &path : paths)
     {
-      char * full_path = g_build_filename (path, rel_path, NULL);
-      if (g_file_test (full_path, G_FILE_TEST_EXISTS))
+      auto full_path = fs::path (path) / rel_path;
+      if (fs::exists (full_path))
         {
-          g_strfreev (paths);
           return full_path;
         }
     }
-  g_strfreev (paths);
 
-  g_warning ("no paths for %s", rel_path);
-  return g_strdup ("");
+  z_warning ("no paths for {}", rel_path);
+  return {};
 }
 
 void
-plugin_manager_add_descriptor (PluginManager * self, PluginDescriptor * descr)
+PluginManager::add_descriptor (const PluginDescriptor &descr)
 {
-  g_return_if_fail (descr->protocol > ZPluginProtocol::Z_PLUGIN_PROTOCOL_DUMMY);
-  g_ptr_array_add (self->plugin_descriptors, descr);
-  add_category_and_author (self, descr->category_str, descr->author);
+  z_return_if_fail (descr.protocol_ > PluginProtocol::DUMMY);
+  plugin_descriptors_.push_back (descr);
+  add_category_and_author (descr.category_str_, descr.author_);
 }
 
-static gboolean
-call_carla_discovery_idle (PluginManager * self)
+bool
+PluginManager::call_carla_discovery_idle ()
 {
-  bool done = z_carla_discovery_idle (self->carla_discovery);
+  bool done = carla_discovery_->idle ();
   if (done)
     {
       /* sort alphabetically */
-      g_ptr_array_sort (self->plugin_descriptors, sort_plugin_func);
-      qsort (
-        self->plugin_categories, (size_t) self->num_plugin_categories,
-        sizeof (char *), sort_alphabetical_func);
-      qsort (
-        self->plugin_authors, (size_t) self->num_plugin_authors,
-        sizeof (char *), sort_alphabetical_func);
+      std::sort (
+        plugin_descriptors_.begin (), plugin_descriptors_.end (),
+        [] (const auto &a, const auto &b) { return a.name_ < b.name_; });
+      std::sort (plugin_categories_.begin (), plugin_categories_.end ());
+      std::sort (plugin_authors_.begin (), plugin_authors_.end ());
 
-      cached_plugin_descriptors_serialize_to_file (
-        self->cached_plugin_descriptors);
-      if (self->scan_done_cb)
+      cached_plugin_descriptors_->serialize_to_file_no_throw ();
+      if (scan_done_cb_)
         {
-          self->scan_done_cb (self->scan_done_cb_data);
+          scan_done_cb_ (scan_done_cb_data_);
         }
 
-      return G_SOURCE_REMOVE;
+      return SourceFuncRemove;
     }
 
-  return G_SOURCE_CONTINUE;
+  return SourceFuncContinue;
 }
 
 void
-plugin_manager_begin_scan (
-  PluginManager * self,
+PluginManager::begin_scan (
   const double    max_progress,
   double *        progress,
   GenericCallback cb,
@@ -827,112 +704,100 @@ plugin_manager_begin_scan (
 
   const double       start_progress = progress ? *progress : 0;
   const unsigned int num_plugin_types =
-    (ENUM_VALUE_TO_INT (ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX)
-     - ENUM_VALUE_TO_INT (ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2))
+    (ENUM_VALUE_TO_INT (PluginProtocol::JSFX)
+     - ENUM_VALUE_TO_INT (PluginProtocol::LV2))
     + 1;
 
   for (
-    size_t i = ENUM_VALUE_TO_INT (ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2);
-    i <= ENUM_VALUE_TO_INT (ZPluginProtocol::Z_PLUGIN_PROTOCOL_JSFX); i++)
+    size_t i = ENUM_VALUE_TO_INT (PluginProtocol::LV2);
+    i <= ENUM_VALUE_TO_INT (PluginProtocol::JSFX); i++)
     {
-      ZPluginProtocol cur = ENUM_INT_TO_VALUE (ZPluginProtocol, i);
-      if (!plugin_protocol_is_supported (cur))
+      PluginProtocol cur = ENUM_INT_TO_VALUE (PluginProtocol, i);
+      if (!supports_protocol (cur))
         continue;
 
-      z_carla_discovery_start (
-        self->carla_discovery, CarlaBackend::BINARY_NATIVE, cur);
+      carla_discovery_->start (CarlaBackend::BINARY_NATIVE, cur);
       /* also scan 32-bit on windows */
 #ifdef _WIN32
-      z_carla_discovery_start (
-        self->carla_discovery, CarlaBackend::BINARY_WIN32, cur);
+      carla_discovery_->start (CarlaBackend::BINARY_WIN32, cur);
 #endif
       if (progress)
         {
           *progress =
             start_progress
-            + ((double) ((i - ENUM_VALUE_TO_INT (ZPluginProtocol::Z_PLUGIN_PROTOCOL_LV2))
-                         + 1)
+            + ((double) ((i - ENUM_VALUE_TO_INT (PluginProtocol::LV2)) + 1)
                / num_plugin_types)
                 * (max_progress - start_progress);
           g_return_if_fail (zrythm_app->greeter);
           greeter_widget_set_progress_and_status (
-            zrythm_app->greeter, _ ("Scanning Plugins"), NULL, *progress);
+            zrythm_app->greeter, _ ("Scanning Plugins"), nullptr, *progress);
         }
     }
 
-  self->scan_done_cb = cb;
-  self->scan_done_cb_data = user_data;
+  scan_done_cb_ = cb;
+  scan_done_cb_data_ = user_data;
 
-  g_idle_add ((GSourceFunc) call_carla_discovery_idle, self);
+  Glib::signal_idle ().connect (sigc::track_obj (
+    sigc::mem_fun (*this, &PluginManager::call_carla_discovery_idle), *this));
 }
 
-PluginDescriptor *
-plugin_manager_find_plugin_from_uri (PluginManager * self, const char * uri)
+std::unique_ptr<PluginDescriptor>
+PluginManager::find_plugin_from_uri (std::string_view uri) const
 {
-  for (size_t i = 0; i < self->plugin_descriptors->len; i++)
+  auto it = std::find_if (
+    plugin_descriptors_.begin (), plugin_descriptors_.end (),
+    [&uri] (const PluginDescriptor &descr) { return uri == descr.uri_; });
+  if (it != plugin_descriptors_.end ())
     {
-      PluginDescriptor * descr =
-        (PluginDescriptor *) g_ptr_array_index (self->plugin_descriptors, i);
-      if (string_is_equal (uri, descr->uri))
-        {
-          return descr;
-        }
+      return std::make_unique<PluginDescriptor> (*it);
     }
-
-  return NULL;
+  else
+    {
+      z_debug ("descriptor for URI {} not found", uri);
+      return nullptr;
+    }
 }
 
-/**
- * Finds and returns the PluginDescriptor instance
- * matching the given descriptor.
- *
- * This instance is held by the plugin manager and
- * must not be free'd.
- */
-PluginDescriptor *
-plugin_manager_find_from_descriptor (
-  PluginManager *          self,
-  const PluginDescriptor * src_descr)
+std::unique_ptr<PluginDescriptor>
+PluginManager::find_from_descriptor (const PluginDescriptor &src_descr) const
 {
-  g_return_val_if_fail (self && src_descr, NULL);
-
-  for (size_t i = 0; i < self->plugin_descriptors->len; i++)
+  auto it = std::find_if (
+    plugin_descriptors_.begin (), plugin_descriptors_.end (),
+    [&src_descr] (const PluginDescriptor &descr) {
+      return src_descr.is_same_plugin (descr);
+    });
+  if (it != plugin_descriptors_.end ())
     {
-      PluginDescriptor * descr =
-        (PluginDescriptor *) g_ptr_array_index (self->plugin_descriptors, i);
-      if (plugin_descriptor_is_same_plugin (src_descr, descr))
-        {
-          return descr;
-        }
+      return std::make_unique<PluginDescriptor> (*it);
     }
-
-  g_message ("descriptor for %s not found", src_descr->name);
-  return NULL;
+  else
+    {
+      z_debug ("descriptor for {} not found", src_descr.name_);
+      return nullptr;
+    }
 }
 
-/**
- * Returns an instrument plugin, if any.
- */
-PluginDescriptor *
-plugin_manager_pick_instrument (PluginManager * self)
+std::unique_ptr<PluginDescriptor>
+PluginManager::pick_instrument () const
 {
-  for (size_t i = 0; i < self->plugin_descriptors->len; i++)
+  auto it = std::find_if (
+    plugin_descriptors_.begin (), plugin_descriptors_.end (),
+    [] (const auto &descr) { return descr.is_instrument (); });
+  if (it != plugin_descriptors_.end ())
     {
-      PluginDescriptor * descr =
-        (PluginDescriptor *) g_ptr_array_index (self->plugin_descriptors, i);
-      if (plugin_descriptor_is_instrument (descr))
-        {
-          return descr;
-        }
+      return std::make_unique<PluginDescriptor> (*it);
     }
-  return NULL;
+  else
+    {
+      z_debug ("no instrument found");
+      return nullptr;
+    }
 }
 
 void
-plugin_manager_set_currently_scanning_plugin (
-  PluginManager * self,
-  const char *    filename,
-  const char *    sha1)
+PluginManager::set_currently_scanning_plugin (
+  const char * filename,
+  const char * sha1)
 {
   if (ZRYTHM_HAVE_UI)
     {
@@ -942,32 +807,9 @@ plugin_manager_set_currently_scanning_plugin (
 }
 
 void
-plugin_manager_clear_plugins (PluginManager * self)
+PluginManager::clear_plugins ()
 {
-  g_ptr_array_remove_range (
-    self->plugin_descriptors, 0, self->plugin_descriptors->len);
-
-  for (int i = 0; i < self->num_plugin_categories; i++)
-    {
-      g_free_and_null (self->plugin_categories[i]);
-    }
-  self->num_plugin_categories = 0;
-}
-
-void
-plugin_manager_free (PluginManager * self)
-{
-  g_debug ("%s: Freeing...", __func__);
-
-  g_ptr_array_unref (self->plugin_descriptors);
-
-  object_free_w_func_and_null (
-    cached_plugin_descriptors_free, self->cached_plugin_descriptors);
-  object_free_w_func_and_null (plugin_collections_free, self->collections);
-
-  object_free_w_func_and_null (z_carla_discovery_free, self->carla_discovery);
-
-  object_zero_and_free (self);
-
-  g_debug ("%s: done", __func__);
+  plugin_descriptors_.clear ();
+  plugin_categories_.clear ();
+  plugin_authors_.clear ();
 }

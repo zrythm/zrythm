@@ -8,9 +8,9 @@
 #include "utils/resources.h"
 #include "zrythm.h"
 
-#include <adwaita.h>
 #include <glib/gi18n.h>
 
+#include "libadwaita_wrapper.h"
 #include "src/translators.h"
 
 /**

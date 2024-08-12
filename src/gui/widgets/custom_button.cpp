@@ -1,111 +1,75 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
 
 #include "gui/widgets/custom_button.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
+#include "utils/logger.h"
 #include "utils/ui.h"
-#include "zrythm.h"
 #include "zrythm_app.h"
 
-static void
-init (CustomButtonWidget * self)
+void
+CustomButtonWidget::init ()
 {
-#if 0
-  gdk_rgba_parse (
-    &self->def_color, UI_COLOR_BUTTON_NORMAL);
-  gdk_rgba_parse (
-    &self->hovered_color, UI_COLOR_BUTTON_HOVER);
-#endif
-  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
-  self->hovered_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
+  def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
+  hovered_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
   g_return_if_fail (UI_COLORS);
-  self->toggled_color = UI_COLORS->bright_orange;
-  self->held_color = UI_COLORS->bright_orange;
-  self->aspect = 1.0;
-  self->corner_radius = 2.0;
+  toggled_color = UI_COLORS->bright_orange;
+  held_color = UI_COLORS->bright_orange;
+  aspect = 1.0;
+  corner_radius = 2.0;
 }
 
-/**
- * Updates the drawing caches.
- */
-/*static void*/
-/*update_caches (*/
-/*CustomButtonWidget * self)*/
-/*{*/
-/*}*/
-
-/**
- * Creates a new track widget from the given track.
- */
-CustomButtonWidget *
-custom_button_widget_new (const char * icon_name, int size)
+CustomButtonWidget::CustomButtonWidget (const std::string &icon_name, int size)
+    : icon_name (icon_name), size (size)
 {
-  CustomButtonWidget * self = object_new (CustomButtonWidget);
+  init ();
 
-  strcpy (self->icon_name, icon_name);
-  self->size = size;
-  init (self);
-
-  const int texture_size = self->size - 2;
-  self->icon_texture = z_gdk_texture_new_from_icon_name (
-    self->icon_name, texture_size, texture_size, 1);
-  if (!self->icon_texture)
+  const int texture_size = size - 2;
+  icon_texture = z_gdk_texture_new_from_icon_name (
+    icon_name.c_str (), texture_size, texture_size, 1);
+  if (!icon_texture)
     {
-      g_critical ("Failed to get icon surface for %s", self->icon_name);
-      free (self);
-      return NULL;
+      z_error ("Failed to get icon surface for %s", icon_name);
+      return;
     }
-
-  return self;
 }
 
-static void
-get_color_for_state (
-  CustomButtonWidget *    self,
-  CustomButtonWidgetState state,
-  GdkRGBA *               c)
+GdkRGBA
+CustomButtonWidget::get_color_for_state (State state) const
 {
-  (void) c;
   switch (state)
     {
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_NORMAL:
-      *c = self->def_color;
-      break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_HOVERED:
-      *c = self->hovered_color;
-      break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_ACTIVE:
-      *c = self->held_color;
-      break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED:
-      *c = self->toggled_color;
-      break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED:
-      *c = self->def_color;
-      break;
+    case State::NORMAL:
+      return def_color.to_gdk_rgba ();
+    case State::HOVERED:
+      return hovered_color.to_gdk_rgba ();
+    case State::ACTIVE:
+      return held_color.to_gdk_rgba ();
+    case State::TOGGLED:
+      return toggled_color.to_gdk_rgba ();
+    case State::SEMI_TOGGLED:
+      return def_color.to_gdk_rgba ();
     default:
-      g_warn_if_reached ();
+      g_return_val_if_reached (GdkRGBA{});
     }
 }
 
-static void
-draw_bg (
-  CustomButtonWidget *    self,
-  GtkSnapshot *           snapshot,
-  double                  x,
-  double                  y,
-  double                  width,
-  int                     draw_frame,
-  CustomButtonWidgetState state)
+void
+CustomButtonWidget::draw_bg (
+  GtkSnapshot * snapshot,
+  double        x,
+  double        y,
+  double        width,
+  int           draw_frame,
+  State         state)
 {
   GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
-    (float) x, (float) y, (float) width, (float) self->size);
+  graphene_rect_t graphene_rect =
+    Z_GRAPHENE_RECT_INIT ((float) x, (float) y, (float) width, (float) size);
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, (float) self->corner_radius);
+    &rounded_rect, &graphene_rect, (float) corner_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   if (draw_frame)
@@ -123,32 +87,29 @@ draw_bg (
     }
 
   /* draw bg with fade from last state */
-  GdkRGBA c;
-  get_color_for_state (self, state, &c);
-  if (self->last_state != state)
+  GdkRGBA c = get_color_for_state (state);
+  if (last_state != state)
     {
-      self->transition_frames = CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+      transition_frames = CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
     }
 
   /* draw transition if transition frames exist */
-  if (self->transition_frames)
+  if (transition_frames)
     {
-      GdkRGBA mid_c;
-      ui_get_mid_color (
-        &mid_c, &c, &self->last_color,
+      auto mid_c = Color::get_mid_color (
+        c, last_color,
         1.f
-          - (float) self->transition_frames
+          - (float) transition_frames
               / CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
-      c = mid_c;
-      self->transition_frames--;
+      c = mid_c.to_gdk_rgba ();
+      transition_frames--;
     }
-  self->last_color = c;
+  last_color = c;
 
   gtk_snapshot_append_color (snapshot, &c, &graphene_rect);
-  if (state == CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED)
+  if (state == State::SEMI_TOGGLED)
     {
-      get_color_for_state (
-        self, CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED, &c);
+      c = get_color_for_state (State::TOGGLED);
       const float border_width = 1.f;
       float       border_widths[] = {
         border_width, border_width, border_width, border_width
@@ -162,13 +123,9 @@ draw_bg (
   gtk_snapshot_pop (snapshot);
 }
 
-static void
-draw_icon_with_shadow (
-  CustomButtonWidget *    self,
-  GtkSnapshot *           snapshot,
-  double                  x,
-  double                  y,
-  CustomButtonWidgetState state)
+void
+CustomButtonWidget::
+  draw_icon_with_shadow (GtkSnapshot * snapshot, double x, double y, State state)
 {
   /* TODO */
 #if 0
@@ -183,91 +140,71 @@ draw_icon_with_shadow (
   /* add main icon */
   {
     graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
-      (float) (x + 1), (float) (y + 1), (float) self->size - 2,
-      (float) self->size - 2);
-    gtk_snapshot_append_texture (snapshot, self->icon_texture, &tmp_r);
+      (float) (x + 1), (float) (y + 1), (float) size - 2, (float) size - 2);
+    gtk_snapshot_append_texture (snapshot, icon_texture, &tmp_r);
   }
 }
 
 void
-custom_button_widget_draw (
-  CustomButtonWidget *    self,
-  GtkSnapshot *           snapshot,
-  double                  x,
-  double                  y,
-  CustomButtonWidgetState state)
+CustomButtonWidget::draw (GtkSnapshot * snapshot, double x, double y, State state)
 {
-  draw_bg (self, snapshot, x, y, self->size, false, state);
+  draw_bg (snapshot, x, y, size, false, state);
 
-  draw_icon_with_shadow (self, snapshot, x, y, state);
+  draw_icon_with_shadow (snapshot, x, y, state);
 
-  self->last_state = state;
+  last_state = state;
 }
 
-/**
- * @param width Max width for the button to use.
- */
 void
-custom_button_widget_draw_with_text (
-  CustomButtonWidget *    self,
-  GtkSnapshot *           snapshot,
-  double                  x,
-  double                  y,
-  double                  width,
-  CustomButtonWidgetState state)
+CustomButtonWidget::draw_with_text (
+  GtkSnapshot * snapshot,
+  double        x,
+  double        y,
+  double        width,
+  State         state)
 {
-  draw_bg (self, snapshot, x, y, width, 0, state);
+  draw_bg (snapshot, x, y, width, 0, state);
 
-  draw_icon_with_shadow (self, snapshot, x, y, state);
+  draw_icon_with_shadow (snapshot, x, y, state);
 
   /* draw text */
   gtk_snapshot_save (snapshot);
-  float text_x = (float) (x + self->size + 2);
+  float text_x = (float) (x + size + 2);
   {
     graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
-      text_x, (float) ((y + self->size / 2) - self->text_height / 2));
+      text_x, (float) ((y + size / 2) - text_height / 2));
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
-  PangoLayout * layout = self->layout;
-  pango_layout_set_text (layout, self->text, -1);
+  PangoLayout * layout = this->layout;
+  pango_layout_set_text (layout, text.c_str (), -1);
   pango_layout_set_width (layout, pango_units_from_double (x + width - text_x));
   GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
   gtk_snapshot_append_layout (snapshot, layout, &white);
   gtk_snapshot_restore (snapshot);
 
-  self->width = (int) width;
-  self->last_state = state;
+  this->width = (int) width;
+  last_state = state;
 }
 
-/**
- * Sets the text and layout to draw the text width.
- *
- * @param font_descr Font description to set the
- *   pango layout font to.
- */
 void
-custom_button_widget_set_text (
-  CustomButtonWidget * self,
-  PangoLayout *        layout,
-  const char *         text,
-  const char *         font_descr)
+CustomButtonWidget::set_text (
+  PangoLayout *      layout,
+  const std::string &text,
+  const std::string &font_descr)
 {
-  g_return_if_fail (text && layout);
+  g_return_if_fail (!text.empty () && layout);
 
-  self->text = g_strdup (text);
-  self->layout = pango_layout_copy (layout);
-  PangoFontDescription * desc = pango_font_description_from_string (font_descr);
-  pango_layout_set_font_description (self->layout, desc);
+  this->text = text;
+  this->layout = pango_layout_copy (layout);
+  PangoFontDescription * desc =
+    pango_font_description_from_string (font_descr.c_str ());
+  pango_layout_set_font_description (this->layout, desc);
   pango_font_description_free (desc);
-  pango_layout_get_pixel_size (self->layout, NULL, &self->text_height);
+  pango_layout_get_pixel_size (this->layout, nullptr, &this->text_height);
 }
 
-void
-custom_button_widget_free (CustomButtonWidget * self)
+CustomButtonWidget::~CustomButtonWidget ()
 {
-  object_free_w_func_and_null (g_free, self->text);
-  object_free_w_func_and_null (g_object_unref, self->layout);
-  object_free_w_func_and_null (g_object_unref, self->icon_texture);
-
-  object_zero_and_free (self);
+  g_object_unref (layout);
+  g_object_unref (icon_texture);
 }

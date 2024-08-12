@@ -1,13 +1,10 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/velocity_settings.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/gtk.h"
-#include "utils/resources.h"
 
 #include <glib/gi18n.h>
 
@@ -16,9 +13,9 @@ G_DEFINE_TYPE (VelocitySettingsWidget, velocity_settings_widget, GTK_TYPE_WIDGET
 static gboolean
 get_mapping (GValue * value, GVariant * variant, VelocitySettingsWidget * self)
 {
-  const char * str = g_variant_get_string (variant, NULL);
+  const char * str = g_variant_get_string (variant, nullptr);
 
-  guint val = velocity_setting_str_to_enum (str);
+  guint val = Velocity::setting_str_to_enum (str);
   g_value_set_uint (value, val);
 
   return true;
@@ -32,7 +29,7 @@ set_mapping (
 {
   guint val = g_value_get_uint (value);
 
-  const char * str = velocity_setting_enum_to_str (val);
+  const char * str = Velocity::setting_enum_to_str (val);
 
   return g_variant_new_string (str);
 }
@@ -85,5 +82,5 @@ velocity_settings_widget_init (VelocitySettingsWidget * self)
     S_UI, "piano-roll-default-velocity",
     G_OBJECT (self->default_velocity_dropdown), "selected",
     G_SETTINGS_BIND_DEFAULT, (GSettingsBindGetMapping) get_mapping,
-    (GSettingsBindSetMapping) set_mapping, self, NULL);
+    (GSettingsBindSetMapping) set_mapping, self, nullptr);
 }

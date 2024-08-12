@@ -1,11 +1,13 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __ACTION_PORT_ACTION_H__
 #define __ACTION_PORT_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "dsp/control_port.h"
 #include "dsp/port_identifier.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup actions
@@ -13,74 +15,72 @@
  * @{
  */
 
-enum class PortActionType
+class PortAction
+    : public UndoableAction,
+      public ICloneable<PortAction>,
+      public ISerializable<PortAction>
 {
-  /** Set control port value. */
-  PORT_ACTION_SET_CONTROL_VAL,
-};
+public:
+  enum class Type
+  {
+    /** Set control port value. */
+    SetControlValue,
+  };
 
-typedef struct PortAction
-{
-  UndoableAction parent_instance;
-
-  PortActionType type;
-
-  PortIdentifier port_id;
+public:
+  PortAction () : UndoableAction (UndoableAction::Type::Port) { }
+  virtual ~PortAction () = default;
 
   /**
-   * Real (not normalized) value before/after the
-   * change.
+   * @brief Construct a new action for setting a control.
+   *
+   * @param type
+   * @param port_id
+   * @param val
+   * @param is_normalized
+   */
+  PortAction (
+    Type                  type,
+    const PortIdentifier &port_id,
+    float                 val,
+    bool                  is_normalized);
+
+  std::string to_string () const override;
+
+  void init_after_cloning (const PortAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override { }
+  void perform_impl () override;
+  void undo_impl () override;
+  void do_or_undo (bool do_it);
+
+public:
+  Type type_ = Type::SetControlValue;
+
+  PortIdentifier port_id_;
+
+  /**
+   * Real (not normalized) value before/after the change.
    *
    * To be swapped on undo/redo.
    */
-  float val;
-} PortAction;
-
-void
-port_action_init_loaded (PortAction * self);
+  float val_ = 0.0f;
+};
 
 /**
- * Create a new action.
+ * @brief Action for resetting a control.
  */
-WARN_UNUSED_RESULT UndoableAction *
-port_action_new (
-  PortActionType   type,
-  PortIdentifier * port_id,
-  float            val,
-  bool             is_normalized,
-  GError **        error);
-
-/**
- * Create a new action.
- */
-WARN_UNUSED_RESULT UndoableAction *
-port_action_new_reset_control (PortIdentifier * port_id, GError ** error);
-
-NONNULL PortAction *
-port_action_clone (const PortAction * src);
-
-bool
-port_action_perform (
-  PortActionType   type,
-  PortIdentifier * port_id,
-  float            val,
-  bool             is_normalized,
-  GError **        error);
-
-bool
-port_action_perform_reset_control (PortIdentifier * port_id, GError ** error);
-
-int
-port_action_do (PortAction * self, GError ** error);
-
-int
-port_action_undo (PortAction * self, GError ** error);
-
-char *
-port_action_stringize (PortAction * self);
-
-void
-port_action_free (PortAction * self);
+class PortActionResetControl : public PortAction
+{
+public:
+  PortActionResetControl (const ControlPort &port)
+      : PortAction (PortAction::Type::SetControlValue, port.id_, port.deff_, false)
+  {
+  }
+};
 
 /**
  * @}

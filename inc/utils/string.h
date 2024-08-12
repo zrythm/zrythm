@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -28,7 +28,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * String utilities.
  */
@@ -36,7 +36,11 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
+#include <format>
+
 #include "ext/juce/juce.h"
+#include <fmt/format.h>
+#include <glibmm.h>
 
 /**
  * @addtogroup utils
@@ -52,6 +56,10 @@ class StringArray : public juce::StringArray
 {
 public:
   StringArray () : juce::StringArray (){};
+  StringArray (const std::initializer_list<const char *> &strings)
+      : juce::StringArray (strings){};
+  StringArray (const std::initializer_list<std::string> &strings)
+      : juce::StringArray (strings){};
   StringArray (const char * const * strs);
 
   /**
@@ -65,6 +73,7 @@ public:
   {
     juce::StringArray::insert (index, juce::CharPointer_UTF8 (s));
   };
+  void add (const std::string &s) { juce::StringArray::add (s); }
   void add (const char * s)
   {
     juce::StringArray::add (juce::CharPointer_UTF8 (s));
@@ -82,13 +91,31 @@ public:
   {
     juce::StringArray::removeString (juce::CharPointer_UTF8 (s));
   };
+
+  std::vector<std::string> toStdStringVector () const
+  {
+    std::vector<std::string> ret;
+    for (auto &s : *this)
+      {
+        ret.push_back (s.toStdString ());
+      }
+    return ret;
+  }
+
+  void print (std::string title) const;
 };
+
+Glib::ustring
+string_view_to_ustring (std::string_view sv);
+
+juce::String
+string_view_to_juce_string (std::string_view sv);
 
 /**
  * Returns if the string is ASCII.
  */
-int
-string_is_ascii (const char * string);
+bool
+string_is_ascii (std::string_view string);
 
 /**
  * Returns the matched string if the string array contains the given substring.
@@ -106,17 +133,17 @@ bool
 string_contains_substr_case_insensitive (const char * str, const char * substr);
 
 /**
- * Converts the given string to uppercase in \ref out.
+ * Converts the given string to uppercase in @ref out.
  *
- * Assumes \ref out is already allocated to as many chars as \ref in.
+ * Assumes @ref out is already allocated to as many chars as @ref in.
  */
 void
 string_to_upper (const char * in, char * out);
 
 /**
- * Converts the given string to lowercase in \ref out.
+ * Converts the given string to lowercase in @ref out.
  *
- * Assumes \ref out is already allocated to as many chars as \ref in.
+ * Assumes @ref out is already allocated to as many chars as @ref in.
  */
 void
 string_to_lower (const char * in, char * out);
@@ -132,6 +159,9 @@ string_to_lower (const char * in, char * out);
 bool
 string_is_equal_ignore_case (const char * str1, const char * str2);
 
+bool
+string_is_equal_ignore_case (const std::string &str1, const std::string &str2);
+
 /**
  * Returns a newly allocated string that is a
  * filename version of the given string.
@@ -142,8 +172,8 @@ NONNULL char *
 string_convert_to_filename (const char * str);
 
 /**
- * Removes the suffix starting from \ref suffix
- * from \ref full_str and returns a newly allocated
+ * Removes the suffix starting from @ref suffix
+ * from @ref full_str and returns a newly allocated
  * string.
  */
 MALLOC
@@ -152,7 +182,7 @@ string_get_substr_before_suffix (const char * str, const char * suffix);
 
 /**
  * Removes everything up to and including the first
- * match of \ref match from the start of the string
+ * match of @ref match from the start of the string
  * and returns a newly allocated string.
  */
 char *
@@ -192,18 +222,16 @@ string_get_regex_group_as_int (
   int          def);
 
 /**
- * Returns the integer found at the end of a string
- * like "My String 3" -> 3, or -1 if no number is
- * found.
+ * Returns the integer found at the end of a string like "My String 3" -> 3, or
+ * -1 if no number is found.
  *
- * See https://www.debuggex.com/cheatsheet/regex/pcre
- * for more info.
+ * See https://www.debuggex.com/cheatsheet/regex/pcre for more info.
  *
- * @param str_without_num A buffer to save the
- *   string without the number (including the space).
+ * @return The integer found at the end of the string, or -1 if no number is
+ * found, and the string without the number (including the space).
  */
-int
-string_get_int_after_last_space (const char * str, char * str_without_num);
+std::pair<int, std::string>
+string_get_int_after_last_space (const std::string &str);
 
 /**
  * TODO
@@ -219,11 +247,11 @@ char **
 string_array_sort_and_remove_duplicates (char ** str_arr);
 
 /**
- * Copies the string src to the buffer in \ref dest after reallocating the
- * buffer in \ref dest to the length of \ref src.
+ * Copies the string src to the buffer in @ref dest after reallocating the
+ * buffer in @ref dest to the length of @ref src.
  *
- * If \ref src is NULL, the string at \ref dest is free'd and the pointer is set
- * to NULL.
+ * If @ref src is nullptr, the string at @ref dest is free'd and the pointer is
+ * set to NULL.
  */
 void
 string_copy_w_realloc (char ** dest, const char * src);
@@ -267,6 +295,49 @@ string_print_strv (const char * prefix, char ** strv);
  */
 char **
 string_array_clone (const char ** src);
+
+#include <cstdlib>
+#include <utility>
+
+class CStringRAII
+{
+public:
+  // Constructor that takes ownership of the given string
+  explicit CStringRAII (char * str) noexcept : str_ (str) { }
+
+  // Destructor
+  ~CStringRAII () { free (str_); }
+
+  // Delete copy constructor and assignment operator
+  CStringRAII (const CStringRAII &) = delete;
+  CStringRAII &operator= (const CStringRAII &) = delete;
+
+  // Move constructor
+  CStringRAII (CStringRAII &&other) noexcept
+      : str_ (std::exchange (other.str_, nullptr))
+  {
+  }
+
+  // Move assignment operator
+  CStringRAII &operator= (CStringRAII &&other) noexcept
+  {
+    if (this != &other)
+      {
+        free (str_);
+        str_ = std::exchange (other.str_, nullptr);
+      }
+    return *this;
+  }
+
+  // Getter for the underlying C-string
+  [[nodiscard]] const char * c_str () const noexcept { return str_; }
+
+private:
+  char * str_;
+};
+
+std::string
+string_join (const std::vector<std::string> &strings, std::string_view delimiter);
 
 /**
  * @}

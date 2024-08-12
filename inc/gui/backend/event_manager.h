@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Events for calling refresh on widgets.
  *
@@ -13,20 +13,20 @@
 #ifndef __GUI_BACKEND_EVENT_MANAGER_H__
 #define __GUI_BACKEND_EVENT_MANAGER_H__
 
+#include "gui/backend/event.h"
 #include "utils/backtrace.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 
-#include <glib.h>
-
-class Zrythm;
-typedef struct ZEvent ZEvent;
+#include <glibmm.h>
 
 /**
  * @addtogroup events
  *
  * @{
  */
+
+constexpr int EVENT_MANAGER_MAX_EVENTS = 4000;
 
 /**
  * Event manager for the UI.
@@ -36,153 +36,148 @@ typedef struct ZEvent ZEvent;
  *
  * @see ZEvent.
  */
-typedef struct EventManager
+class EventManager
 {
+public:
+  /**
+   * Creates the event queue and starts the event loop.
+   *
+   * Must be called from a GTK thread.
+   */
+  EventManager ();
+
+  ~EventManager () { stop_events (); }
+
+  /**
+   * Starts accepting events.
+   */
+  void start_events ();
+
+  /**
+   * Stops events from getting fired.
+   */
+  void stop_events ();
+
+  /**
+   * Processes the given event.
+   *
+   * The caller is responsible for putting the event back in the object pool if
+   * needed.
+   */
+  void process_event (ZEvent &ev);
+
+  /**
+   * @brief Source function to process events.
+   */
+  bool process_events ();
+
+  /**
+   * Processes the events now.
+   *
+   * Must only be called from the GTK thread.
+   */
+  void process_now ();
+
+private:
+  void clean_duplicate_events_and_copy ();
+
+  /**
+   * @brief Source function to recalculate the graph when paused.
+   */
+  bool soft_recalc_graph_when_paused ();
+
+public:
   /**
    * Event queue, mainly for GUI events.
    */
-  MPMCQueue * mqueue;
+  MPMCQueue<ZEvent *> mqueue_;
 
   /**
    * Object pool of event structs to avoid real time
    * allocation.
    */
-  ObjectPool * obj_pool;
+  ObjectPool<ZEvent> obj_pool_;
 
   /**
    * ID of the event processing source func.
    *
    * Will be zero when stopped and non-zero when active.
    */
-  guint process_source_id;
+  sigc::scoped_connection process_source_id_;
 
-  /** A soft recalculation of the routing graph
-   * is pending. */
-  bool pending_soft_recalc;
+  /** A soft recalculation of the routing graph is pending. */
+  bool pending_soft_recalc_ = false;
 
+private:
   /** Events array to use during processing. */
-  GPtrArray * events_arr;
-} EventManager;
+  std::vector<ZEvent *> events_arr_;
+};
 
-#define EVENT_MANAGER (gZrythm->event_manager)
+#define EVENT_MANAGER (gZrythm->event_manager_)
 
 /** The event queue. */
-#define EVENT_QUEUE (EVENT_MANAGER->mqueue)
-
-#define EVENT_MANAGER_MAX_EVENTS 4000
-
-#define event_queue_push_back_event(q, x) mpmc_queue_push_back (q, (void *) x)
-
-#define event_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void **) x)
+#define EVENT_QUEUE (EVENT_MANAGER->mqueue_)
 
 /**
  * Push events.
  */
 #define EVENTS_PUSH(et, _arg) \
   if ( \
-    ZRYTHM_HAVE_UI && EVENT_MANAGER && EVENT_QUEUE \
-    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting) \
-    && EVENT_MANAGER->process_source_id) \
+    ZRYTHM_HAVE_UI && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
+    && EVENT_MANAGER->process_source_id_.connected ()) \
     { \
-      ZEvent * _ev = (ZEvent *) object_pool_get (EVENT_MANAGER->obj_pool); \
-      _ev->file = __FILE__; \
-      _ev->func = __func__; \
-      _ev->lineno = __LINE__; \
-      _ev->type = (et); \
-      _ev->arg = (void *) (_arg); \
+      ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
+      _ev->file_ = __FILE__; \
+      _ev->func_ = __func__; \
+      _ev->lineno_ = __LINE__; \
+      _ev->type_ = (et); \
+      _ev->arg_ = (void *) (_arg); \
       if ( \
-        zrythm_app->gtk_thread == g_thread_self () /* skip backtrace for now */ \
+        zrythm_app->gtk_thread_id == current_thread_id.get () /* skip backtrace \
+                                                               for now */ \
         && false) \
         { \
-          _ev->backtrace = backtrace_get ("", 40, false); \
+          _ev->backtrace_ = backtrace_get ("", 40, false); \
         } \
       /* don't print events that are called \
        * continuously */ \
       if ( \
         (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
-        && g_thread_self () == zrythm_app->gtk_thread) \
+        && zrythm_app->gtk_thread_id == current_thread_id.get ()) \
         { \
-          g_debug ("pushing UI event " #et " (%s:%d)", __func__, __LINE__); \
+          z_debug ("pushing UI event " #et " (%s:%d)", __func__, __LINE__); \
         } \
-      event_queue_push_back_event (EVENT_QUEUE, _ev); \
+      EVENT_QUEUE.push_back (_ev); \
     }
 
 /* runs the event logic now */
 #define EVENTS_PUSH_NOW(et, _arg) \
   if ( \
-    ZRYTHM_HAVE_UI && EVENT_MANAGER && EVENT_QUEUE \
-    && zrythm_app->gtk_thread == g_thread_self () \
-    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting) \
-    && EVENT_MANAGER->process_source_id) \
+    ZRYTHM_HAVE_UI && EVENT_MANAGER \
+    && zrythm_app->gtk_thread_id == current_thread_id.get () \
+    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
+    && EVENT_MANAGER->process_source_id_.connected ()) \
     { \
-      ZEvent * _ev = (ZEvent *) object_pool_get (EVENT_MANAGER->obj_pool); \
-      _ev->file = __FILE__; \
-      _ev->func = __func__; \
-      _ev->lineno = __LINE__; \
-      _ev->type = et; \
-      _ev->arg = (void *) _arg; \
+      ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
+      _ev->file_ = __FILE__; \
+      _ev->func_ = __func__; \
+      _ev->lineno_ = __LINE__; \
+      _ev->type_ = et; \
+      _ev->arg_ = (void *) _arg; \
       if (/* skip backtrace for now */ \
           false) \
         { \
-          _ev->backtrace = backtrace_get ("", 40, false); \
+          _ev->backtrace_ = backtrace_get ("", 40, false); \
         } \
-      /* don't print events that are called \
-       * continuously */ \
+      /* don't print events that are called continuously */ \
       if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \
         { \
-          g_debug ( \
+          z_debug ( \
             "processing UI event now " #et " (%s:%d)", __func__, __LINE__); \
         } \
-      event_manager_process_event (EVENT_MANAGER, _ev); \
-      object_pool_return (EVENT_MANAGER->obj_pool, _ev); \
+      EVENT_MANAGER->process_event (*_ev); \
+      EVENT_MANAGER->obj_pool_.release (_ev); \
     }
-
-/**
- * Creates the event queue and starts the event loop.
- *
- * Must be called from a GTK thread.
- */
-EventManager *
-event_manager_new (void);
-
-/**
- * Starts accepting events.
- */
-void
-event_manager_start_events (EventManager * self);
-
-/**
- * Stops events from getting fired.
- */
-void
-event_manager_stop_events (EventManager * self);
-
-/**
- * Processes the given event.
- *
- * The caller is responsible for putting the event
- * back in the object pool if needed.
- */
-void
-event_manager_process_event (EventManager * self, ZEvent * ev);
-
-/**
- * Processes the events now.
- *
- * Must only be called from the GTK thread.
- */
-void
-event_manager_process_now (EventManager * self);
-
-/**
- * Removes events where the arg matches the
- * given object.
- */
-void
-event_manager_remove_events_for_obj (EventManager * self, void * obj);
-
-void
-event_manager_free (EventManager * self);
 
 /**
  * @}

@@ -24,6 +24,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -43,7 +44,7 @@ arranger_minimap_widget_px_to_pos (
   double width = gtk_widget_get_width (GTK_WIDGET (self));
   double ratio = (double) px / width;
   int    px_in_ruler = (int) (MW_RULER->total_px * ratio);
-  ui_px_to_pos_timeline (px_in_ruler, pos, 1);
+  *pos = ui_px_to_pos_timeline (px_in_ruler, true);
 }
 
 static void
@@ -56,8 +57,7 @@ move_selection_x (ArrangerMinimapWidget * self, double offset_x)
   double ratio = new_wx / width;
   double ruler_px = MW_RULER->total_px * ratio;
 
-  editor_settings_set_scroll_start_x (
-    &PRJ_TIMELINE->editor_settings, (int) ruler_px, F_VALIDATE);
+  PRJ_TIMELINE->set_scroll_start_x ((int) ruler_px, F_VALIDATE);
 }
 
 static void
@@ -84,8 +84,7 @@ resize_selection_l (ArrangerMinimapWidget * self, double offset_x)
       /* set alignment */
       ratio = new_l / width;
       double ruler_px = MW_RULER->total_px * ratio;
-      editor_settings_set_scroll_start_x (
-        &PRJ_TIMELINE->editor_settings, (int) ruler_px, F_VALIDATE);
+      PRJ_TIMELINE->set_scroll_start_x ((int) ruler_px, true);
 
       EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
@@ -115,8 +114,7 @@ resize_selection_r (ArrangerMinimapWidget * self, double offset_x)
       /* set alignment */
       ratio = self->selection_start_pos / width;
       double ruler_px = MW_RULER->total_px * ratio;
-      editor_settings_set_scroll_start_x (
-        &PRJ_TIMELINE->editor_settings, (int) ruler_px, F_VALIDATE);
+      PRJ_TIMELINE->set_scroll_start_x ((int) ruler_px, F_VALIDATE);
 
       EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
@@ -150,8 +148,7 @@ get_child_position (
           int height = gtk_widget_get_height (GTK_WIDGET (self));
 
           /* get pixels at start of visible ruler */
-          double px_start =
-            (double) PRJ_TIMELINE->editor_settings.scroll_start_x;
+          auto   px_start = (double) PRJ_TIMELINE->scroll_start_x_;
           double px_width =
             gtk_widget_get_width (GTK_WIDGET (MW_TIMELINE_PANEL->ruler));
 
@@ -233,9 +230,10 @@ drag_begin (
   if (is_hit)
     {
       /* update arranger action */
-      if (self->selection->cursor == UI_CURSOR_STATE_RESIZE_L)
+      if (self->selection->cursor == UiCursorState::UI_CURSOR_STATE_RESIZE_L)
         self->action = ArrangerMinimapAction::ARRANGER_MINIMAP_ACTION_RESIZING_L;
-      else if (self->selection->cursor == UI_CURSOR_STATE_RESIZE_R)
+      else if (
+        self->selection->cursor == UiCursorState::UI_CURSOR_STATE_RESIZE_R)
         self->action = ArrangerMinimapAction::ARRANGER_MINIMAP_ACTION_RESIZING_R;
       else
         {
@@ -438,5 +436,5 @@ arranger_minimap_widget_init (ArrangerMinimapWidget * self)
     G_CALLBACK (get_child_position), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), arranger_minimap_tick_cb, self, NULL);
+    GTK_WIDGET (self), arranger_minimap_tick_cb, self, nullptr);
 }

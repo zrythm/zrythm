@@ -5,7 +5,6 @@
 #include "zrythm-config.h"
 
 #include "dsp/engine.h"
-#include "dsp/engine_alsa.h"
 #include "dsp/engine_jack.h"
 #include "dsp/engine_pa.h"
 #include "dsp/engine_pulse.h"
@@ -58,9 +57,10 @@ project_info_new (const char * name, const char * filename)
         }
       else
         {
-          self->modified_str = datetime_epoch_to_str (self->modified, NULL);
+          self->modified_str =
+            g_strdup (datetime_epoch_to_str (self->modified).c_str ());
         }
-      g_return_val_if_fail (self->modified_str, NULL);
+      g_return_val_if_fail (self->modified_str, nullptr);
     }
   else
     {
@@ -89,13 +89,16 @@ project_info_destroy_func (void * data)
 }
 
 static void
-project_ready_while_zrythm_running_cb (bool success, GError * error, gpointer data)
+project_ready_while_zrythm_running_cb (
+  bool        success,
+  std::string error_str,
+  gpointer    data)
 {
   if (!success)
     {
       /* just show the error and let the program continue - this was called
        * while another project is already running */
-      HANDLE_ERROR_LITERAL (error, _ ("Project loading failed"));
+      ui_show_error_message (_ ("Project Loading Failed"), error_str.c_str ());
     }
 }
 
@@ -109,7 +112,7 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
     {
       if (!zrythm_already_running)
         {
-          g_application_quit (G_APPLICATION (zrythm_app));
+          g_application_quit (G_APPLICATION (zrythm_app.get ()));
         }
     }
   else
@@ -119,23 +122,22 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           /* pause engine early otherwise there is a crash */
           /* TODO: this should be done inside the project init flow manager at
            * the appropriate timing */
-          EngineState state;
-          engine_wait_for_pause (AUDIO_ENGINE, &state, true, false);
+          AudioEngine::State state;
+          AUDIO_ENGINE->wait_for_pause (state, true, false);
 
-          project_init_flow_manager_load_or_create_default_project (
-            gZrythm->open_filename.empty ()
-              ? nullptr
-              : gZrythm->open_filename.c_str (),
-            gZrythm->opening_template, project_ready_while_zrythm_running_cb,
-            NULL);
+          zrythm_app
+            ->project_init_flow_mgr = std::make_unique<ProjectInitFlowManager> (
+            gZrythm->open_filename_.empty () ? nullptr : gZrythm->open_filename_,
+            gZrythm->opening_template_, project_ready_while_zrythm_running_cb,
+            nullptr);
         }
       else
         {
           /*gtk_window_close (*/
           /*GTK_WINDOW (data->assistant));*/
-          g_message ("activating zrythm_app.load_project");
+          z_debug ("activating zrythm_app.load_project");
           g_action_group_activate_action (
-            G_ACTION_GROUP (zrythm_app), "load_project", NULL);
+            G_ACTION_GROUP (zrythm_app.get ()), "load_project", nullptr);
         }
     }
 }
@@ -143,14 +145,14 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
 static void
 on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 {
-  ProjectInfo * nfo = static_cast<ProjectInfo *> (
+  auto * nfo = static_cast<ProjectInfo *> (
     g_object_get_data (G_OBJECT (row), "project-info"));
   g_debug ("activated %s", nfo->filename);
 
-  gZrythm->open_filename = nfo->filename;
-  g_return_if_fail (!gZrythm->open_filename.empty ());
-  g_message ("Loading project: %s", gZrythm->open_filename.c_str ());
-  gZrythm->creating_project = false;
+  gZrythm->open_filename_ = nfo->filename;
+  g_return_if_fail (!gZrythm->open_filename_.empty ());
+  z_info ("Loading project: %s", gZrythm->open_filename_);
+  gZrythm->creating_project_ = false;
 
   post_finish (self, self->zrythm_already_running, false);
 }
@@ -205,14 +207,13 @@ greeter_tick_cb (
   GdkFrameClock * frame_clock,
   GreeterWidget * self)
 {
-  zix_sem_wait (&self->progress_status_lock);
+  SemaphoreRAII lock (self->progress_status_lock);
   adw_status_page_set_title (self->status_page, self->title);
   /*gtk_label_set_text (self->status_title, self->title);*/
   /*gtk_label_set_text (self->status_description, self->description);*/
   gtk_progress_bar_set_text (self->progress_bar, self->description);
   /*gtk_progress_bar_set_fraction (self->progress_bar, self->progress);*/
   gtk_progress_bar_pulse (self->progress_bar);
-  zix_sem_post (&self->progress_status_lock);
 
   return G_SOURCE_CONTINUE;
 }
@@ -260,7 +261,7 @@ on_file_set (GObject * gobject, GParamSpec * pspec, gpointer user_data)
   GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   char *  str = g_file_get_path (file);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", str);
-  char * str2 = g_build_filename (str, ZRYTHM_PROJECTS_DIR, NULL);
+  char * str2 = g_build_filename (str, ZRYTHM_PROJECTS_DIR, nullptr);
   g_settings_set_string (S_GENERAL, "last-project-dir", str);
   g_free (str);
   g_free (str2);
@@ -280,10 +281,11 @@ begin_init (GreeterWidget * self)
 
   /* start initialization in another thread */
   self->init_thread = g_thread_new (
-    "init_thread", (GThreadFunc) zrythm_app_init_thread, zrythm_app);
+    "init_thread", (GThreadFunc) zrythm_app_init_thread, zrythm_app.get ());
 
   /* set a source func in the main GTK thread to check when scanning finished */
-  g_idle_add ((GSourceFunc) zrythm_app_prompt_for_project_func, zrythm_app);
+  g_idle_add (
+    (GSourceFunc) zrythm_app_prompt_for_project_func, zrythm_app.get ());
 }
 
 static void
@@ -310,12 +312,11 @@ static void
 on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
 {
   auto *  dir_mgr = ZrythmDirectoryManager::getInstance ();
-  char *  dir = dir_mgr->get_default_user_dir ();
-  GFile * gf_dir = g_file_new_for_path (dir);
-  g_message ("reset to %s", dir);
+  auto    dir = dir_mgr->get_default_user_dir ();
+  GFile * gf_dir = g_file_new_for_path (dir.c_str ());
+  z_debug ("reset to %s", dir);
   ide_file_chooser_entry_set_file (self->fc_entry, gf_dir);
-  g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir);
-  g_free (dir);
+  g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir.c_str ());
   g_object_unref (gf_dir);
 
   /* reset language */
@@ -334,7 +335,7 @@ greeter_widget_set_progress_and_status (
   const char *    description,
   const double    perc)
 {
-  zix_sem_wait (&self->progress_status_lock);
+  SemaphoreRAII lock (self->progress_status_lock);
   if (title && !description)
     {
       g_message ("[%s]", title);
@@ -361,7 +362,6 @@ greeter_widget_set_progress_and_status (
       strcpy (self->description, description);
     }
   self->progress = perc;
-  zix_sem_post (&self->progress_status_lock);
 }
 
 void
@@ -370,7 +370,7 @@ greeter_widget_set_currently_scanned_plugin (
   const char *    filename)
 {
   char * prog_str = g_strdup_printf (_ ("Scanning %s..."), filename);
-  greeter_widget_set_progress_and_status (self, NULL, prog_str, 0.5);
+  greeter_widget_set_progress_and_status (self, nullptr, prog_str, 0.5);
   g_free (prog_str);
 }
 
@@ -405,8 +405,8 @@ open_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, GreeterWidget * self)
   g_return_if_fail (path);
   g_object_unref (file);
 
-  gZrythm->open_filename = path;
-  g_message ("Loading project: %s", gZrythm->open_filename.c_str ());
+  gZrythm->open_filename_ = path;
+  z_info ("Loading project: {}", gZrythm->open_filename_);
 
   post_finish (self, self->zrythm_already_running, false);
 }
@@ -416,10 +416,10 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
 {
   /* get the zrythm project name */
   char * str = g_settings_get_string (S_GENERAL, "last-project-dir");
-  gZrythm->create_project_path = g_build_filename (
-    str, gtk_editable_get_text (GTK_EDITABLE (self->project_title_row)), NULL);
+  gZrythm->create_project_path_ = Glib::build_filename (
+    str, gtk_editable_get_text (GTK_EDITABLE (self->project_title_row)));
   g_free (str);
-  g_message ("creating project at: %s", gZrythm->create_project_path.c_str ());
+  z_info ("creating project at: %s", gZrythm->create_project_path_);
 
   GObject * template_gobj =
     G_OBJECT (adw_combo_row_get_selected_item (self->templates_combo_row));
@@ -427,20 +427,19 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
     g_object_get_data (template_gobj, "project-info"));
   g_return_if_fail (selected_template);
 
-  gZrythm->creating_project = true;
+  gZrythm->creating_project_ = true;
 
   /* if we are loading a blank template */
   if (selected_template->filename[0] == '-')
     {
-      gZrythm->open_filename.clear ();
+      gZrythm->open_filename_.clear ();
       g_message ("Creating blank project");
     }
   else
     {
-      gZrythm->open_filename = selected_template->filename;
-      g_message (
-        "Creating project from template: %s", gZrythm->open_filename.c_str ());
-      gZrythm->opening_template = true;
+      gZrythm->open_filename_ = selected_template->filename;
+      z_info ("Creating project from template: %s", gZrythm->open_filename_);
+      gZrythm->opening_template_ = true;
     }
 
   post_finish (self, self->zrythm_already_running, false);
@@ -468,7 +467,7 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
 
   /* get next available "Untitled Project" */
   char * untitled_project = g_strdup (_ ("Untitled Project"));
-  char * tmp = g_build_filename (str, untitled_project, NULL);
+  char * tmp = g_build_filename (str, untitled_project, nullptr);
   char * dir = io_get_next_available_filepath (tmp);
   g_free (tmp);
   g_free (untitled_project);
@@ -485,7 +484,7 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 on_open_from_path_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  gZrythm->creating_project = true;
+  gZrythm->creating_project_ = true;
 
   GtkFileDialog * dialog = gtk_file_dialog_new ();
   gtk_file_dialog_set_title (dialog, _ ("Select Project"));
@@ -498,7 +497,8 @@ on_open_from_path_clicked (GtkButton * btn, GreeterWidget * self)
   gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (list_store));
   g_object_unref (list_store);
   gtk_file_dialog_open (
-    dialog, GTK_WINDOW (self), NULL, (GAsyncReadyCallback) open_ready_cb, self);
+    dialog, GTK_WINDOW (self), nullptr, (GAsyncReadyCallback) open_ready_cb,
+    self);
 }
 
 static void
@@ -529,11 +529,12 @@ greeter_widget_select_project (
   /* fill recent projects */
   for (int i = 0; i < gZrythm->recent_projects_.size (); i++)
     {
-      const char * recent_prj = gZrythm->recent_projects_[i];
-      char *       recent_dir = io_get_dir (recent_prj);
-      char *       project_name = g_path_get_basename (recent_dir);
+      auto recent_prj = gZrythm->recent_projects_[i];
+      auto recent_dir = io_get_dir (recent_prj);
+      auto project_name = Glib::path_get_basename (recent_dir);
 
-      ProjectInfo * prj_nfo = project_info_new (project_name, recent_prj);
+      ProjectInfo * prj_nfo =
+        project_info_new (project_name.c_str (), recent_prj);
 
       if (prj_nfo)
         {
@@ -550,20 +551,18 @@ greeter_widget_select_project (
               g_ptr_array_add (self->project_infos_arr, prj_nfo);
             }
         }
-
-      g_free (project_name);
-      g_free (recent_dir);
     }
 
   /* fill templates */
   {
-    ProjectInfo * blank_template = project_info_new (_ ("Blank project"), NULL);
+    ProjectInfo * blank_template =
+      project_info_new (_ ("Blank project"), nullptr);
     g_ptr_array_add (self->templates_arr, blank_template);
     for (auto &template_str : gZrythm->templates_)
       {
         char * name = g_path_get_basename (template_str.toRawUTF8 ());
         char * filename =
-          g_build_filename (template_str.toRawUTF8 (), PROJECT_FILE, NULL);
+          g_build_filename (template_str.toRawUTF8 (), PROJECT_FILE, nullptr);
 
         ProjectInfo * template_nfo = project_info_new (name, filename);
         g_ptr_array_add (self->templates_arr, template_nfo);
@@ -585,7 +584,7 @@ greeter_widget_select_project (
   if (template_to_use)
     {
       gZrythm->creating_project = true;
-      gZrythm->open_filename = g_build_filename (template_to_use, PROJECT_FILE, NULL);
+      gZrythm->open_filename = g_build_filename (template_to_use, PROJECT_FILE, nullptr);
       gZrythm->opening_template = true;
       g_message ("Creating project from template: %s", gZrythm->open_filename);
 
@@ -656,13 +655,13 @@ greeter_widget_new (
 {
   GreeterWidget * self = static_cast<GreeterWidget *> (g_object_new (
     GREETER_WIDGET_TYPE, "application", G_APPLICATION (app), "title",
-    PROGRAM_NAME, "transient-for", parent, NULL));
-  g_return_val_if_fail (Z_IS_GREETER_WIDGET (self), NULL);
+    PROGRAM_NAME, "transient-for", parent, nullptr));
+  g_return_val_if_fail (Z_IS_GREETER_WIDGET (self), nullptr);
 
   /* if not startup, just proceed to select a project */
   if (!is_startup)
     {
-      greeter_widget_select_project (self, true, is_for_new_project, NULL);
+      greeter_widget_select_project (self, true, is_for_new_project, nullptr);
     }
   /* else if not first run, skip to the "progress" part (don't show welcome UI) */
   else if (is_startup && !app->is_first_run)
@@ -688,10 +687,9 @@ finalize (GreeterWidget * self)
       self->init_thread = NULL;
     }
 
-  g_ptr_array_unref (self->recent_projects_item_factories);
-  g_ptr_array_unref (self->templates_item_factories);
-
-  zix_sem_destroy (&self->progress_status_lock);
+  std::destroy_at (&self->recent_projects_item_factories);
+  std::destroy_at (&self->templates_item_factories);
+  std::destroy_at (&self->progress_status_lock);
 
   G_OBJECT_CLASS (greeter_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -699,6 +697,9 @@ finalize (GreeterWidget * self)
 static void
 greeter_widget_init (GreeterWidget * self)
 {
+  new (&self->recent_projects_item_factories) ItemFactoryPtrVector ();
+  new (&self->templates_item_factories) ItemFactoryPtrVector ();
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* -- welcome part */
@@ -771,53 +772,49 @@ greeter_widget_init (GreeterWidget * self)
     g_signal_connect (
       G_OBJECT (self->language_dropdown), "notify::selected",
       G_CALLBACK (on_language_changed), self);
-    on_language_changed (NULL, NULL, self);
+    on_language_changed (nullptr, nullptr, self);
     adw_preferences_group_add (pref_group, GTK_WIDGET (row));
   }
 
   /* set zrythm dir */
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  char * dir = dir_mgr->get_dir (USER_TOP);
+  auto   dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
   {
     AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("User path"));
     adw_action_row_set_subtitle (row, _ ("Location to save user files"));
     self->fc_entry = IDE_FILE_CHOOSER_ENTRY (ide_file_chooser_entry_new (
       _ ("Select a directory"), GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER));
-    GFile * dir_gf = g_file_new_for_path (dir);
+    GFile * dir_gf = g_file_new_for_path (dir.c_str ());
     ide_file_chooser_entry_set_file (self->fc_entry, dir_gf);
     g_object_unref (dir_gf);
     g_signal_connect_data (
-      self->fc_entry, "notify::file", G_CALLBACK (on_file_set), self, NULL,
+      self->fc_entry, "notify::file", G_CALLBACK (on_file_set), self, nullptr,
       G_CONNECT_AFTER);
-    g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir);
+    g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir.c_str ());
     gtk_widget_set_valign (GTK_WIDGET (self->fc_entry), GTK_ALIGN_CENTER);
     adw_action_row_add_suffix (row, GTK_WIDGET (self->fc_entry));
     adw_preferences_group_add (pref_group, GTK_WIDGET (row));
   }
 
   /* set templates info button label */
-  char * str = g_strdup_printf (
+  auto str = format_str (
     _ ("You can create your own templates by copying a project directory under “templates” in the <a href=\"%s\">Zrythm user path</a>."),
     dir);
-  cc_list_row_info_button_set_text (self->templates_info_button, str);
+  cc_list_row_info_button_set_text (self->templates_info_button, str.c_str ());
   cc_list_row_info_button_set_text_callback (
     self->templates_info_button, G_CALLBACK (z_gtk_activate_dir_link_func));
-
-  g_free (str);
 
   /* add error text */
   gtk_widget_add_css_class (GTK_WIDGET (self->lang_error_txt), "error");
   adw_preferences_group_add (pref_group, GTK_WIDGET (self->lang_error_txt));
 
   /* set appropriate backend */
-  engine_set_default_backends (false);
+  AudioEngine::set_default_backends (false);
 
   /* set the last project dir to the default one */
-  char * projects_dir = g_build_filename (dir, ZRYTHM_PROJECTS_DIR, NULL);
-  g_settings_set_string (S_GENERAL, "last-project-dir", projects_dir);
-  g_free (dir);
-  g_free (projects_dir);
+  auto projects_dir = Glib::build_filename (dir, ZRYTHM_PROJECTS_DIR);
+  g_settings_set_string (S_GENERAL, "last-project-dir", projects_dir.c_str ());
 
   g_signal_connect (
     self->config_ok_btn, "clicked", G_CALLBACK (on_config_ok_btn_clicked), self);
@@ -828,18 +825,15 @@ greeter_widget_init (GreeterWidget * self)
 
   /* -- progress part -- */
 
-  zix_sem_init (&self->progress_status_lock, 1);
+  /* placement-new */
+  new (&self->progress_status_lock) std::binary_semaphore (1);
   gtk_progress_bar_set_fraction (self->progress_bar, 0.0);
 
   self->tick_cb_id = gtk_widget_add_tick_callback (
-    (GtkWidget *) self, (GtkTickCallback) greeter_tick_cb, self, NULL);
+    (GtkWidget *) self, (GtkTickCallback) greeter_tick_cb, self, nullptr);
 
   /* -- projects part -- */
 
-  self->recent_projects_item_factories =
-    g_ptr_array_new_with_free_func (item_factory_free_func);
-  self->templates_item_factories =
-    g_ptr_array_new_with_free_func (item_factory_free_func);
   self->project_infos_arr =
     g_ptr_array_new_with_free_func (project_info_destroy_func);
   self->templates_arr =
@@ -854,7 +848,7 @@ greeter_widget_init (GreeterWidget * self)
     GTK_WIDGET (self->project_parent_dir_fc), GTK_ALIGN_CENTER);
   g_signal_connect_data (
     self->project_parent_dir_fc, "notify::file",
-    G_CALLBACK (on_project_parent_dir_set), self, NULL, G_CONNECT_AFTER);
+    G_CALLBACK (on_project_parent_dir_set), self, nullptr, G_CONNECT_AFTER);
   adw_action_row_add_suffix (
     self->project_parent_dir_row, GTK_WIDGET (self->project_parent_dir_fc));
 
@@ -930,9 +924,9 @@ greeter_widget_class_init (GreeterWidgetClass * _klass)
   oklass->finalize = (GObjectFinalizeFunc) finalize;
 
   gtk_widget_class_install_action (
-    wklass, "win.carousel-prev", NULL,
+    wklass, "win.carousel-prev", nullptr,
     (GtkWidgetActionActivateFunc) carousel_nav_activate_func);
   gtk_widget_class_install_action (
-    wklass, "win.carousel-next", NULL,
+    wklass, "win.carousel-next", nullptr,
     (GtkWidgetActionActivateFunc) carousel_nav_activate_func);
 }

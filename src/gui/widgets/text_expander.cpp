@@ -1,13 +1,9 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "zrythm-config.h"
 
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/text_expander.h"
-#include "project.h"
 #include "utils/gtk.h"
 
 #include <glib/gi18n.h>
@@ -57,8 +53,8 @@ text_expander_widget_refresh (TextExpanderWidget * self)
     {
       g_return_if_fail (self->buffer);
       gtk_text_buffer_set_text (
-        GTK_TEXT_BUFFER (self->buffer), self->getter (self->obj), -1);
-      gtk_label_set_text (self->label, self->getter (self->obj));
+        GTK_TEXT_BUFFER (self->buffer), self->getter (self->obj).c_str (), -1);
+      gtk_label_set_text (self->label, self->getter (self->obj).c_str ());
     }
 }
 
@@ -100,7 +96,7 @@ text_expander_widget_init (TextExpanderWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (self->scroll), -1, 124);
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->scroll));
 
-  self->viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  self->viewport = GTK_VIEWPORT (gtk_viewport_new (nullptr, nullptr));
   gtk_widget_set_visible (GTK_WIDGET (self->viewport), 1);
   gtk_scrolled_window_set_child (self->scroll, GTK_WIDGET (self->viewport));
 

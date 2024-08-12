@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Piano roll backend.
  */
@@ -13,8 +11,9 @@
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
 #include "gui/backend/editor_settings.h"
+#include "utils/icloneable.h"
 
-typedef struct Track Track;
+class Track;
 
 /**
  * @addtogroup gui_backend
@@ -22,90 +21,20 @@ typedef struct Track Track;
  * @{
  */
 
-#define PIANO_ROLL_SCHEMA_VERSION 1
-
-#define PIANO_ROLL (CLIP_EDITOR->piano_roll)
-
-#define DRUM_LABELS \
-  static const char * drum_labels[47] = { \
-    "Acoustic Bass Drum", \
-    "Bass Drum 1", \
-    "Side Stick", \
-    "Acoustic Snare", \
-    "Hand Clap", \
-    "Electric Snare", \
-    "Low Floor Tom", \
-    "Closed Hi Hat", \
-    "High Floor Tom", \
-    "Pedal Hi-Hat", \
-    "Low Tom", \
-    "Open Hi-Hat", \
-    "Low-Mid Tom", \
-    "Hi-Mid Tom", \
-    "Crash Cymbal 1", \
-    "High Tom", \
-    "Ride Cymbal 1", \
-    "Chinese Cymbal", \
-    "Ride Bell", \
-    "Tambourine", \
-    "Splash Cymbal", \
-    "Cowbell", \
-    "Crash Cymbal 2", \
-    "Vibraslap", \
-    "Ride Cymbal 2", \
-    "Hi Bongo", \
-    "Low Bongo", \
-    "Mute Hi Conga", \
-    "Open Hi Conga", \
-    "Low Conga", \
-    "High Timbale", \
-    "Low Timbale", \
-    "High Agogo", \
-    "Low Agogo", \
-    "Cabasa", \
-    "Maracas", \
-    "Short Whistle", \
-    "Long Whistle", \
-    "Short Guiro", \
-    "Long Guiro", \
-    "Claves", \
-    "Hi Wood Block", \
-    "Low Wood Block", \
-    "Mute Cuica", \
-    "Open Cuica", \
-    "Mute Triangle", \
-    "Open Triangle" \
-  }
+#define PIANO_ROLL (&CLIP_EDITOR->piano_roll_)
 
 /**
  * A MIDI modifier to use to display data for.
  */
 enum class MidiModifier
 {
-  MIDI_MODIFIER_VELOCITY,
-  MIDI_MODIFIER_PITCH_WHEEL,
-  MIDI_MODIFIER_MOD_WHEEL,
-  MIDI_MODIFIER_AFTERTOUCH,
+  Velocity,
+  PitchWheel,
+  ModWheel,
+  Aftertouch,
 };
 
-/**
- * Highlighting for the piano roll.
- */
-enum class PianoRollHighlighting
-{
-  PR_HIGHLIGHT_NONE,
-  PR_HIGHLIGHT_CHORD,
-  PR_HIGHLIGHT_SCALE,
-  PR_HIGHLIGHT_BOTH,
-};
-
-enum class PianoRollNoteNotation
-{
-  PIANO_ROLL_NOTE_NOTATION_MUSICAL,
-  PIANO_ROLL_NOTE_NOTATION_PITCH,
-};
-
-typedef struct Region Region;
+class Region;
 
 /**
  * A descriptor for a MidiNote, used by the piano roll.
@@ -114,220 +43,202 @@ typedef struct Region Region;
  *
  * In normal mode, only visibility can be changed.
  */
-typedef struct MidiNoteDescriptor
+class MidiNoteDescriptor
 {
+public:
+  inline std::string get_custom_name () const { return custom_name_; }
+
+  void set_custom_name (const std::string &str) { custom_name_ = str; }
+
+public:
   /**
    * The index to display the note at.
    */
-  int index;
+  int index_ = 0;
 
   /**
    * The actual value (0-127).
    *
    * Must be unique in the array.
    */
-  int value;
+  int value_ = 0;
 
   /** Whether the note is visible or not. */
-  int visible;
+  bool visible_ = true;
 
   /**
    * Custom name, from midnam or GM MIDI specs, etc.
    *
    * This is only used in drum mode.
    */
-  char * custom_name;
+  std::string custom_name_;
 
   /** Name of the note, from C-2 to B8. */
-  char * note_name;
+  std::string note_name_;
 
   /** Note name with extra formatting. */
-  char * note_name_pango;
+  std::string note_name_pango_;
 
-  /** Whether the note is highlighted/marked or not.
-   */
-  int marked;
-} MidiNoteDescriptor;
-
-MidiNoteDescriptor *
-midi_note_descriptor_new (void);
-
-void
-midi_note_descriptor_free (MidiNoteDescriptor * self);
+  /** Whether the note is highlighted/marked or not. */
+  bool marked_ = false;
+};
 
 /**
  * Piano roll serializable backend.
  *
  * The actual widgets should reflect the information here.
  */
-typedef struct PianoRoll
+class PianoRoll final
+    : public EditorSettings,
+      public ICloneable<PianoRoll>,
+      public ISerializable<PianoRoll>
 {
-  /** Notes zoom level. */
-  float notes_zoom;
-
-  /** Selected MidiModifier. */
-  MidiModifier midi_modifier;
-
-  /** Currently pressed notes (used only at runtime). */
-  int current_notes[128];
-  int num_current_notes;
-
+public:
   /**
-   * Piano roll mode descriptors.
-   *
-   * For performance purposes, invisible notes must
-   * be sorted at the end of the array.
+   * Highlighting for the piano roll.
    */
-  MidiNoteDescriptor * piano_descriptors[128];
+  enum class Highlighting
+  {
+    None,
+    Chord,
+    Scale,
+    Both,
+  };
 
-  /**
-   * Highlighting notes depending on the current
-   * chord or scale.
-   */
-  PianoRollHighlighting highlighting;
+  enum class NoteNotation
+  {
+    Musical,
+    Pitch,
+  };
 
-  /**
-   * Drum mode descriptors.
-   *
-   * These must be sorted by index at all times.
-   *
-   * For performance purposes, invisible notes must
-   * be sorted at the end of the array.
-   */
-  MidiNoteDescriptor * drum_descriptors[128];
-
-  EditorSettings editor_settings;
-} PianoRoll;
+public:
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
 /**
  * Returns if the key is black.
  */
-int
-piano_roll_is_key_black (int note);
+bool is_key_black (int note);
 
-#define piano_roll_is_next_key_black(x) piano_roll_is_key_black (x + 1)
+bool is_next_key_black (int note) { return is_key_black (note + 1); }
 
-#define piano_roll_is_prev_key_black(x) piano_roll_is_key_black (x - 1)
+bool is_prev_key_black (int note) { return is_key_black (note - 1); }
 
 /**
- * Adds the note if it doesn't exist in the array.
+ * Adds the note if it doesn't exist in @ref current_notes_.
  */
-void
-piano_roll_add_current_note (PianoRoll * self, int note);
+void add_current_note (int note);
 
 /**
- * Removes the note if it exists in the array.
+ * Removes the note if it exists in @ref current_notes_.
  */
-void
-piano_roll_remove_current_note (PianoRoll * self, int note);
+void remove_current_note (int note);
 
 /**
- * Returns 1 if it contains the given note, 0
- * otherwise.
+ * Returns whether the note exists in @ref current_notes_.
  */
-int
-piano_roll_contains_current_note (PianoRoll * self, int note);
+bool contains_current_note (int note);
 
 /**
- * Returns the current track whose regions are
- * being shown in the piano roll.
+ * Returns the current track whose regions are being shown in the piano roll.
  */
-Track *
-piano_roll_get_current_track (const PianoRoll * self);
+Track * get_current_track () const;
 
-void
-piano_roll_set_notes_zoom (PianoRoll * self, float notes_zoom, int fire_events);
+void set_notes_zoom (float notes_zoom, bool fire_events);
 
 /**
- * Inits the PianoRoll after a Project has been
- * loaded.
+ * Inits the PianoRoll after a Project has been loaded.
  */
-void
-piano_roll_init_loaded (PianoRoll * self);
+void init_loaded ();
 
 /**
- * Returns the MidiNoteDescriptor matching the value
- * (0-127).
+ * Returns the MidiNoteDescriptor matching the value (0-127).
  */
 const MidiNoteDescriptor *
-piano_roll_find_midi_note_descriptor_by_val (
-  PianoRoll *   self,
-  bool          drum_mode,
-  const uint8_t val);
-
-static inline char *
-midi_note_descriptor_get_custom_name (MidiNoteDescriptor * descr)
-{
-  return descr->custom_name;
-}
-
-void
-midi_note_descriptor_set_custom_name (MidiNoteDescriptor * descr, char * str);
+find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val);
 
 /**
  * Updates the highlighting and notifies the UI.
  */
-void
-piano_roll_set_highlighting (
-  PianoRoll *           self,
-  PianoRollHighlighting highlighting);
+void set_highlighting (Highlighting highlighting);
 
 /**
  * Sets the MIDI modifier.
  */
-void
-piano_roll_set_midi_modifier (PianoRoll * self, MidiModifier modifier);
+void set_midi_modifier (MidiModifier modifier);
 
 /**
  * Gets the visible notes.
  */
-static inline void
-piano_roll_get_visible_notes (
-  PianoRoll *          self,
-  bool                 drum_mode,
-  MidiNoteDescriptor * arr,
-  int *                num)
+void get_visible_notes (bool drum_mode, std::vector<MidiNoteDescriptor> &vec)
 {
-  *num = 0;
+  vec.clear ();
 
-  MidiNoteDescriptor * descr;
   for (int i = 0; i < 128; i++)
     {
+      MidiNoteDescriptor * descr;
       if (drum_mode)
-        descr = self->drum_descriptors[i];
+        descr = &drum_descriptors_[i];
       else
-        descr = self->piano_descriptors[i];
+        descr = &piano_descriptors_[i];
 
-      if (descr->visible)
+      if (descr->visible_)
         {
-          arr[*num].index = descr->index;
-          arr[*num].value = descr->value;
-          arr[*num].marked = descr->marked;
-          arr[*num].visible = descr->visible;
-          arr[*num].custom_name = descr->custom_name;
-          arr[*num].note_name = descr->note_name;
-          (*num)++;
+          vec.push_back (*descr);
         }
     }
-}
+  }
 
-/**
- * Initializes the PianoRoll.
- */
-void
-piano_roll_init (PianoRoll * self);
+   /**
+    * Initializes the PianoRoll.
+    */
+   void init ();
 
-/**
- * Only clones what is needed for serialization.
- */
-PianoRoll *
-piano_roll_clone (const PianoRoll * src);
+   void init_after_cloning (const PianoRoll &other) override { *this = other; }
 
-PianoRoll *
-piano_roll_new (void);
+ private:
+   /**
+    * Inits the descriptors to the default values.
+    *
+    * FIXME move them to tracks since each track might have different
+    * arrangement of drums.
+    */
+   void init_descriptors ();
 
-void
-piano_roll_free (PianoRoll * self);
+ public:
+   /** Notes zoom level. */
+   float notes_zoom_ = 1.0f;
+
+   /** Selected MidiModifier. */
+   MidiModifier midi_modifier_ = MidiModifier::Velocity;
+
+   /** Currently pressed notes (used only at runtime). */
+   std::vector<int> current_notes_;
+
+   /**
+    * Piano roll mode descriptors.
+    *
+    * For performance purposes, invisible notes must be sorted at the end of
+    * the array.
+    */
+   std::vector<MidiNoteDescriptor> piano_descriptors_ =
+     std::vector<MidiNoteDescriptor> (128);
+
+   /**
+    * Highlighting notes depending on the current chord or scale.
+    */
+   Highlighting highlighting_ = Highlighting::None;
+
+   /**
+    * Drum mode descriptors.
+    *
+    * These must be sorted by index at all times.
+    *
+    * For performance purposes, invisible notes must be sorted at the end of
+    * the array.
+    */
+   std::vector<MidiNoteDescriptor> drum_descriptors_ =
+     std::vector<MidiNoteDescriptor> (128);
+};
 
 /**
  * @}

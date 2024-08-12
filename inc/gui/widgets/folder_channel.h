@@ -10,6 +10,9 @@
 #ifndef __GUI_WIDGETS_FOLDER_CHANNEL_H__
 #define __GUI_WIDGETS_FOLDER_CHANNEL_H__
 
+#include "dsp/foldable_track.h"
+#include "utils/types.h"
+
 #include "gtk_wrapper.h"
 
 #define FOLDER_CHANNEL_WIDGET_TYPE (folder_channel_widget_get_type ())
@@ -20,11 +23,11 @@ G_DECLARE_FINAL_TYPE (
   FOLDER_CHANNEL_WIDGET,
   GtkWidget)
 
-typedef struct _ColorAreaWidget         ColorAreaWidget;
-typedef struct Track                    Track;
-typedef struct _FolderChannelSlotWidget FolderChannelSlotWidget;
-typedef struct _EditableLabelWidget     EditableLabelWidget;
-typedef struct _FaderButtonsWidget      FaderButtonsWidget;
+class Track;
+TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FolderChannelSlotWidget);
+TYPEDEF_STRUCT_UNDERSCORED (EditableLabelWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
 
 /**
  * @addtogroup widgets
@@ -32,7 +35,7 @@ typedef struct _FaderButtonsWidget      FaderButtonsWidget;
  * @{
  */
 
-typedef struct _FolderChannelWidget
+using FolderChannelWidget = struct _FolderChannelWidget
 {
   GtkWidget         parent_instance;
   GtkGrid *         grid;
@@ -57,18 +60,18 @@ typedef struct _FolderChannelWidget
   int n_press;
 
   /** Control held down on drag begin. */
-  int ctrl_held_at_start;
+  bool ctrl_held_at_start;
 
   /** If drag update was called at least once. */
-  int dragged;
+  bool dragged;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int selected_in_dnd;
+  bool selected_in_dnd;
 
   /** Pointer to owner Track. */
-  Track * track;
+  FoldableTrack * track;
 
   /** Whole folder_channel press. */
   GtkGestureClick * mp;
@@ -84,13 +87,13 @@ typedef struct _FolderChannelWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} FolderChannelWidget;
+};
 
 /**
  * Creates a folder_channel widget using the given folder_channel data.
  */
 FolderChannelWidget *
-folder_channel_widget_new (Track * track);
+folder_channel_widget_new (FoldableTrack * track);
 
 void
 folder_channel_widget_tear_down (FolderChannelWidget * self);

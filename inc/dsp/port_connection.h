@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022,2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Port connection.
- */
 
 #ifndef __AUDIO_PORT_CONNECTION_H__
 #define __AUDIO_PORT_CONNECTION_H__
@@ -13,7 +7,7 @@
 #include "zrythm-config.h"
 
 #include "dsp/port_identifier.h"
-#include "utils/yaml.h"
+#include "utils/math.h"
 
 /**
  * @addtogroup dsp
@@ -24,10 +18,39 @@
 /**
  * A connection between two ports.
  */
-typedef struct PortConnection
+class PortConnection final : public ISerializable<PortConnection>
 {
-  PortIdentifier * src_id;
-  PortIdentifier * dest_id;
+public:
+  PortConnection () = default;
+  PortConnection (
+    PortIdentifier src,
+    PortIdentifier dest,
+    float          multiplier,
+    bool           locked,
+    bool           enabled)
+      : src_id_ (std::move (src)), dest_id_ (std::move (dest)),
+        multiplier_ (multiplier), locked_ (locked), enabled_ (enabled)
+  {
+  }
+
+  void update (float multiplier, bool locked, bool enabled)
+  {
+    multiplier_ = multiplier;
+    locked_ = locked;
+    enabled_ = enabled;
+  }
+
+  bool is_send () const;
+
+  std::string print_to_str () const;
+
+  void print () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  PortIdentifier src_id_ = {};
+  PortIdentifier dest_id_ = {};
 
   /**
    * Multiplier to apply, where applicable.
@@ -35,68 +58,35 @@ typedef struct PortConnection
    * Range: 0 to 1.
    * Default: 1.
    */
-  float multiplier;
+  float multiplier_ = 1.0f;
 
   /**
-   * Whether the connection can be removed or the
-   * multiplier edited by the user.
+   * Whether the connection can be removed or the multiplier edited by the user.
    *
-   * Ignored when connecting things internally and
-   * only used to deter the user from breaking
-   * necessary connections.
+   * Ignored when connecting things internally and only used to deter the user
+   * from breaking necessary connections.
    */
-  bool locked;
+  bool locked_ = false;
 
   /**
    * Whether the connection is enabled.
    *
-   * @note The user can disable port connections only
-   * if they are not locked.
+   * @note The user can disable port connections only if they are not locked.
    */
-  bool enabled;
+  bool enabled_ = true;
 
   /** Used for CV -> control port connections. */
-  float base_value;
-} PortConnection;
+  float base_value_ = 0.0f;
+};
 
-PortConnection *
-port_connection_new (
-  const PortIdentifier * src,
-  const PortIdentifier * dest,
-  float                  multiplier,
-  bool                   locked,
-  bool                   enabled);
-
-NONNULL void
-port_connection_update (
-  PortConnection * self,
-  float            multiplier,
-  bool             locked,
-  bool             enabled);
-
-NONNULL bool
-port_connection_is_send (const PortConnection * self);
-
-NONNULL void
-port_connection_print_to_str (
-  const PortConnection * self,
-  char *                 buf,
-  size_t                 buf_sz);
-
-NONNULL void
-port_connection_print (const PortConnection * self);
-
-/**
- * To be used during serialization.
- */
-NONNULL PortConnection *
-port_connection_clone (const PortConnection * src);
-
-/**
- * Deletes port, doing required cleanup and updating counters.
- */
-NONNULL void
-port_connection_free (PortConnection * self);
+inline bool
+operator== (const PortConnection &lhs, const PortConnection &rhs)
+{
+  return lhs.src_id_ == rhs.src_id_ && lhs.dest_id_ == rhs.dest_id_
+         && math_floats_equal (lhs.multiplier_, rhs.multiplier_)
+         && lhs.locked_ == rhs.locked_ && lhs.enabled_ == rhs.enabled_
+         && math_floats_equal (lhs.base_value_, rhs.base_value_);
+}
 
 /**
  * @}

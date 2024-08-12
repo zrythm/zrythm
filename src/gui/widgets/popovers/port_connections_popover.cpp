@@ -1,18 +1,15 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/automation_track.h"
-#include "dsp/channel_track.h"
 #include "dsp/port_connections_manager.h"
 #include "gui/widgets/dialogs/port_selector_dialog.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/popovers/port_connections_popover.h"
 #include "gui/widgets/port_connection_row.h"
-#include "plugins/plugin.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/resources.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -59,21 +56,17 @@ port_connections_popover_widget_refresh (
           gtk_label_set_text (self->title, _ ("INPUTS"));
         }
 
-      GPtrArray * srcs = g_ptr_array_new ();
-      int         num_srcs = port_connections_manager_get_sources_or_dests (
-        PORT_CONNECTIONS_MGR, srcs, &self->port->id_, true);
-      for (int i = 0; i < num_srcs; i++)
+      std::vector<PortConnection *> srcs;
+      PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, self->port->id_, true);
+      for (auto conn : srcs)
         {
-          PortConnection * conn =
-            static_cast<PortConnection *> (g_ptr_array_index (srcs, i));
-          if (!conn->locked)
+          if (!conn->locked_)
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (self, conn, false);
               gtk_box_append (GTK_BOX (self->ports_box), GTK_WIDGET (pcr));
             }
         }
-      g_ptr_array_unref (srcs);
     }
   else if (self->port->id_.flow_ == PortFlow::Output)
     {
@@ -82,21 +75,18 @@ port_connections_popover_widget_refresh (
           gtk_label_set_text (self->title, _ ("OUTPUTS"));
         }
 
-      GPtrArray * dests = g_ptr_array_new ();
-      int         num_dests = port_connections_manager_get_sources_or_dests (
-        PORT_CONNECTIONS_MGR, dests, &self->port->id_, false);
-      for (int i = 0; i < num_dests; i++)
+      std::vector<PortConnection *> dests;
+      PORT_CONNECTIONS_MGR->get_sources_or_dests (
+        &dests, self->port->id_, false);
+      for (auto conn : dests)
         {
-          PortConnection * conn =
-            static_cast<PortConnection *> (g_ptr_array_index (dests, i));
-          if (!conn->locked)
+          if (!conn->locked_)
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (self, conn, true);
               gtk_box_append (GTK_BOX (self->ports_box), GTK_WIDGET (pcr));
             }
         }
-      g_ptr_array_unref (dests);
     }
 }
 
@@ -109,10 +99,10 @@ port_connections_popover_widget_refresh (
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (GtkWidget * owner)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (owner), NULL);
+  g_return_val_if_fail (GTK_IS_WIDGET (owner), nullptr);
 
   PortConnectionsPopoverWidget * self = Z_PORT_CONNECTIONS_POPOVER_WIDGET (
-    g_object_new (PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL));
+    g_object_new (PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, nullptr));
 
   return self;
 }

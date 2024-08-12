@@ -4,7 +4,7 @@
 #ifndef __AUDIO_ENGINE_DUMMY_H__
 #define __AUDIO_ENGINE_DUMMY_H__
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * Sets up a dummy audio engine.

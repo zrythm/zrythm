@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Timeline backend.
  */
@@ -11,6 +11,7 @@
 #define __GUI_BACKEND_TIMELINE_H__
 
 #include "gui/backend/editor_settings.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend
@@ -18,45 +19,25 @@
  * @{
  */
 
-#define PRJ_TIMELINE (PROJECT->timeline)
+#define PRJ_TIMELINE (PROJECT->timeline_)
 
 /**
- * Clip editor serializable backend.
- *
- * The actual widgets should reflect the information here.
+ * @brief Timeline settings.
  */
-struct Timeline
+class Timeline final
+    : public EditorSettings,
+      public ICloneable<Timeline>,
+      public ISerializable<Timeline>
 {
-  /** Settings for the timeline. */
-  EditorSettings editor_settings;
+public:
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-  /** Width of the left side of the timeline panel. */
-  int tracks_width;
+void init_after_cloning (const Timeline &other) override { *this = other; }
+
+public:
+/** Width of the left side of the timeline panel. */
+int tracks_width_ = 0;
 };
-
-/**
- * Inits the Timeline after a Project is loaded.
- */
-void
-timeline_init_loaded (Timeline * self);
-
-/**
- * Inits the Timeline instance.
- */
-void
-timeline_init (Timeline * self);
-
-Timeline *
-timeline_clone (Timeline * src);
-
-/**
- * Creates a new Timeline instance.
- */
-Timeline *
-timeline_new (void);
-
-void
-timeline_free (Timeline * self);
 
 /**
  * @}

@@ -1,15 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "dsp/marker.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/marker.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -35,7 +28,7 @@ on_response (
     {
       const char * text = gtk_editable_get_text (GTK_EDITABLE (self->entry));
 
-      self->setter (self->obj, text);
+      (*self->setter) (self->obj, text);
     }
 }
 
@@ -51,26 +44,26 @@ on_entry_activate (GtkEntry * btn, StringEntryDialogWidget * self)
  */
 StringEntryDialogWidget *
 string_entry_dialog_widget_new (
-  const char *        label,
+  const std::string  &label,
   void *              obj,
   GenericStringGetter getter,
   GenericStringSetter setter)
 {
   StringEntryDialogWidget * self = static_cast<
     StringEntryDialogWidget *> (g_object_new (
-    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "heading", label,
-    NULL));
+    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "heading",
+    label.c_str (), nullptr));
 
   self->obj = obj;
-  self->getter = getter;
-  self->setter = setter;
+  self->getter = new GenericStringGetter (getter);
+  self->setter = new GenericStringSetter (setter);
 
   gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
 
   /*gtk_label_set_text (self->label, label);*/
 
   /* setup text */
-  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter (obj));
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter (obj).c_str ());
 
   return self;
 }
@@ -105,6 +98,13 @@ str_set (char ** str, const char * in_str)
 #endif
 
 static void
+finalize (StringEntryDialogWidget * self)
+{
+  object_delete_and_null (self->getter);
+  object_delete_and_null (self->setter);
+}
+
+static void
 string_entry_dialog_widget_class_init (StringEntryDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
@@ -115,6 +115,9 @@ string_entry_dialog_widget_class_init (StringEntryDialogWidgetClass * _klass)
 
   BIND_CHILD (entry);
   /*BIND_CHILD (label);*/
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 
 #undef BIND_CHILD
 }

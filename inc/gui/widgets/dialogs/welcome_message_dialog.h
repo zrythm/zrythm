@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Welcome message dialog.
  */
@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 /**
  * @addtogroup widgets

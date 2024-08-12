@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Manager of linked region groups.
- */
 
 #ifndef __AUDIO_REGION_LINK_GROUP_MANAGER_H__
 #define __AUDIO_REGION_LINK_GROUP_MANAGER_H__
@@ -18,53 +12,47 @@
  * @{
  */
 
-#define REGION_LINK_GROUP_MANAGER (PROJECT->region_link_group_manager)
+#define REGION_LINK_GROUP_MANAGER (PROJECT->region_link_group_manager_)
 
 /**
  * Manager of region link groups.
  */
-typedef struct RegionLinkGroupManager
+class RegionLinkGroupManager final : public ISerializable<RegionLinkGroupManager>
 {
+public:
+  /**
+   * Adds a group and returns its index.
+   */
+  int add_group ();
+
+  RegionLinkGroup * get_group (int group_id);
+
+  /**
+   * Removes the group.
+   */
+  void remove_group (int group_id);
+
+  bool validate () const;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** Region link groups. */
-  RegionLinkGroup ** groups;
-  int                num_groups;
-  size_t             groups_size;
-} RegionLinkGroupManager;
+  std::vector<RegionLinkGroup> groups_;
+};
 
-void
-region_link_group_manager_init_loaded (RegionLinkGroupManager * self);
+template <> struct fmt::formatter<RegionLinkGroupManager>
+{
+  constexpr auto parse (format_parse_context &ctx) { return ctx.begin (); }
 
-RegionLinkGroupManager *
-region_link_group_manager_new (void);
-
-/**
- * Adds a group and returns its index.
- */
-int
-region_link_group_manager_add_group (RegionLinkGroupManager * self);
-
-RegionLinkGroup *
-region_link_group_manager_get_group (RegionLinkGroupManager * self, int group_id);
-
-/**
- * Removes the group.
- */
-void
-region_link_group_manager_remove_group (
-  RegionLinkGroupManager * self,
-  int                      group_id);
-
-NONNULL bool
-region_link_group_manager_validate (RegionLinkGroupManager * self);
-
-NONNULL void
-region_link_group_manager_print (RegionLinkGroupManager * self);
-
-NONNULL RegionLinkGroupManager *
-region_link_group_manager_clone (RegionLinkGroupManager * src);
-
-NONNULL void
-region_link_group_manager_free (RegionLinkGroupManager * self);
+  template <typename FormatContext>
+  auto format (const RegionLinkGroupManager &rlgm, FormatContext &ctx)
+  {
+    return format_to (
+      ctx.out (), "RegionLinkGroupManager {{ groups: [{}] }}",
+      fmt::join (rlgm.groups_, ", "));
+  }
+};
 
 /**
  * @}

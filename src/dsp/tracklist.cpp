@@ -1,13 +1,18 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <ranges>
+
+#include "actions/arranger_selections.h"
 #include "actions/tracklist_selections.h"
-#include "dsp/audio_region.h"
 #include "dsp/channel.h"
 #include "dsp/chord_track.h"
-#include "dsp/group_target_track.h"
+#include "dsp/foldable_track.h"
+#include "dsp/marker_track.h"
 #include "dsp/master_track.h"
+#include "dsp/modulator_track.h"
 #include "dsp/router.h"
+#include "dsp/tempo_track.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/event.h"
@@ -18,134 +23,86 @@
 #include "gui/widgets/dialogs/file_import_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "io/file_import.h"
-#include "io/midi_file.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/error.h"
 #include "utils/flags.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-typedef enum
-{
-  Z_AUDIO_TRACKLIST_ERROR_FAILED,
-  Z_AUDIO_TRACKLIST_ERROR_NO_DATA,
-} ZAudioTracklistError;
-
-#define Z_AUDIO_TRACKLIST_ERROR z_audio_tracklist_error_quark ()
-GQuark
-z_audio_tracklist_error_quark (void);
-G_DEFINE_QUARK (
-  z - audio - tracklist - error - quark,
-  z_audio_tracklist_error)
-
-/**
- * Initializes the tracklist when loading a project.
- */
 void
-tracklist_init_loaded (
-  Tracklist *       self,
-  Project *         project,
-  SampleProcessor * sample_processor)
+Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)
 {
-  self->project = project;
-  self->sample_processor = sample_processor;
+  project_ = project;
+  sample_processor_ = sample_processor;
 
-  g_message ("initializing loaded Tracklist...");
-  for (auto track : TRACKLIST->tracks)
+  z_debug ("initializing loaded Tracklist...");
+  for (auto &track : tracks_)
     {
-      track_set_magic (track);
-    }
-
-  for (auto track : TRACKLIST->tracks)
-    {
-      if (track->type == TrackType::TRACK_TYPE_CHORD)
-        self->chord_track = track;
-      else if (track->type == TrackType::TRACK_TYPE_MARKER)
-        self->marker_track = track;
-      else if (track->type == TrackType::TRACK_TYPE_MASTER)
-        self->master_track = track;
-      else if (track->type == TrackType::TRACK_TYPE_TEMPO)
-        self->tempo_track = track;
-      else if (track->type == TrackType::TRACK_TYPE_MODULATOR)
-        self->modulator_track = track;
-
-      track_init_loaded (track, self, NULL);
+      if (track->is_chord ())
+        chord_track_ = dynamic_cast<ChordTrack *> (track.get ());
+      else if (track->is_marker ())
+        marker_track_ = dynamic_cast<MarkerTrack *> (track.get ());
+      else if (track->is_master ())
+        master_track_ = dynamic_cast<MasterTrack *> (track.get ());
+      else if (track->is_tempo ())
+        tempo_track_ = dynamic_cast<TempoTrack *> (track.get ());
+      else if (track->is_modulator ())
+        modulator_track_ = dynamic_cast<ModulatorTrack *> (track.get ());
+      track->tracklist_ = this;
+      track->init_loaded ();
     }
 }
 
 void
-tracklist_select_all (Tracklist * self, bool select, bool fire_events)
+Tracklist::select_all (bool select, bool fire_events)
 {
-  for (size_t i = 0; i < self->tracks.size (); i++)
+  for (auto &track : tracks_)
     {
-      Track * track = self->tracks[i];
-
-      track_select (track, select, F_NOT_EXCLUSIVE, fire_events);
-
-      if (!select && i == self->tracks.size () - 1)
-        {
-          track_select (track, F_SELECT, F_EXCLUSIVE, fire_events);
-        }
+      track->select (select, false, fire_events);
     }
+
+  if (!select)
+    tracks_.back ()->select (true, true, fire_events);
 }
 
-/**
- * Finds visible tracks and puts them in given array.
- */
 void
-tracklist_get_visible_tracks (
-  Tracklist * self,
-  Track **    visible_tracks,
-  int *       num_visible)
+Tracklist::get_visible_tracks (std::vector<Track *> visible_tracks) const
 {
-  *num_visible = 0;
-  for (auto track : TRACKLIST->tracks)
+  for (const auto &track : TRACKLIST->tracks_)
     {
-      if (track_get_should_be_visible (track))
-        {
-          visible_tracks[*num_visible++] = track;
-        }
+      if (track->should_be_visible ())
+        visible_tracks.push_back (track.get ());
     }
 }
 
-/**
- * Returns the number of visible Tracks between
- * src and dest (negative if dest is before src).
- */
 int
-tracklist_get_visible_track_diff (
-  Tracklist *   self,
-  const Track * src,
-  const Track * dest)
+Tracklist::get_visible_track_diff (const Track &src, const Track &dest) const
 {
-  g_return_val_if_fail (src && dest, 0);
-
   int count = 0;
-  if (src->pos < dest->pos)
+  if (src.pos_ < dest.pos_)
     {
-      for (int i = src->pos; i < dest->pos; i++)
+      for (
+        auto it = tracks_.begin () + src.pos_;
+        it != tracks_.begin () + dest.pos_; ++it)
         {
-          Track * track = self->tracks[i];
-          if (track_get_should_be_visible (track))
+          if ((*it)->should_be_visible ())
             {
               count++;
             }
         }
     }
-  else if (src->pos > dest->pos)
+  else if (src.pos_ > dest.pos_)
     {
-      for (int i = dest->pos; i < src->pos; i++)
+      for (
+        auto it = tracks_.begin () + dest.pos_;
+        it != tracks_.begin () + src.pos_; ++it)
         {
-          Track * track = self->tracks[i];
-          if (track_get_should_be_visible (track))
+          if ((*it)->should_be_visible ())
             {
               count--;
             }
@@ -155,330 +112,291 @@ tracklist_get_visible_track_diff (
   return count;
 }
 
-int
-tracklist_contains_master_track (Tracklist * self)
-{
-  for (auto track : TRACKLIST->tracks)
-    {
-      if (track->type == TrackType::TRACK_TYPE_MASTER)
-        return 1;
-    }
-  return 0;
-}
-
-int
-tracklist_contains_chord_track (Tracklist * self)
-{
-  for (auto track : TRACKLIST->tracks)
-    {
-      if (track->type == TrackType::TRACK_TYPE_CHORD)
-        return 1;
-    }
-  return 0;
-}
-
 void
-tracklist_print_tracks (Tracklist * self)
+Tracklist::print_tracks () const
 {
-  g_message ("----- tracklist tracks ------");
-  for (int i = 0; i < self->tracks.size (); i++)
+  z_info ("----- tracklist tracks ------");
+  for (size_t i = 0; i < tracks_.size (); i++)
     {
-      Track * track = self->tracks[i];
+      const auto &track = tracks_[i];
       if (track)
         {
-          char parent_str[200];
-          strcpy (parent_str, "");
-          GPtrArray * parents = g_ptr_array_new ();
-          track_add_folder_parents (track, parents, false);
-          for (size_t j = 0; j < parents->len; j++)
-            {
-              strcat (parent_str, "--");
-              if (j == parents->len - 1)
-                strcat (parent_str, " ");
-            }
+          std::string                  parent_str;
+          std::vector<FoldableTrack *> parents;
+          track->add_folder_parents (parents, false);
+          parent_str.append (parents.size () * 2, '-');
+          if (!parents.empty ())
+            parent_str += ' ';
 
-          g_message (
-            "[%03d] %s%s (pos %d, parents %d, "
+          z_info (
+            "[%03zu] %s%s (pos %d, parents %zu, "
             "size %d)",
-            i, parent_str, track->name, track->pos, parents->len, track->size);
-          g_ptr_array_unref (parents);
+            i, parent_str, track->name_, track->pos_, parents.size (),
+            track->is_foldable ()
+              ? dynamic_cast<FoldableTrack *> (track.get ())->size_
+              : 1);
         }
       else
         {
-          g_message ("[%03d] (null)", i);
+          z_info ("[%03zu] (null)", i);
         }
     }
-  g_message ("------ end ------");
+  z_info ("------ end ------");
 }
 
-static void
-swap_tracks (Tracklist * self, int src, int dest)
+void
+Tracklist::swap_tracks (const size_t index1, const size_t index2)
 {
-  g_return_if_fail (self->tracks.size () > std::max (src, dest));
-  self->swapping_tracks = true;
+  z_return_if_fail (std::max (index1, index2) < tracks_.size ());
+  swapping_tracks_ = true;
 
-  Track * src_track = self->tracks[src];
-  Track * dest_track = self->tracks[dest];
-  g_debug (
-    "swapping tracks %s [%d] and %s [%d]...",
-    src_track ? src_track->name : "(null)", src,
-    dest_track ? dest_track->name : "(null)", dest);
+  auto &src_track = tracks_[index1];
+  auto &dest_track = tracks_[index2];
+  z_debug (
+    "swapping tracks {} [{}] and %s [{}]...",
+    src_track ? src_track->name_ : nullptr, index1,
+    dest_track ? dest_track->name_ : nullptr, index2);
 
-  std::iter_swap (self->tracks.begin () + src, self->tracks.begin () + dest);
+  std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
 
   if (dest_track)
-    dest_track->pos = src;
+    dest_track->pos_ = index1;
   if (src_track)
-    src_track->pos = dest;
+    src_track->pos_ = index2;
 
-  self->swapping_tracks = false;
-  g_debug ("tracks swapped");
+  swapping_tracks_ = false;
+  z_debug ("tracks swapped");
 }
 
-/**
- * Adds given track to given spot in tracklist.
- *
- * @param publish_events Publish UI events.
- * @param recalc_graph Recalculate routing graph.
- */
-void
-tracklist_insert_track (
-  Tracklist * self,
-  Track *     track,
-  int         pos,
-  int         publish_events,
-  int         recalc_graph)
+template <FinalTrackSubclass T>
+T *
+Tracklist::insert_track (
+  std::unique_ptr<T> &&track,
+  int                  pos,
+  bool                 publish_events,
+  bool                 recalc_graph)
 {
-  g_message (
-    "inserting %s at %d (has output %d)...", track->name, pos,
-    track->channel && track->channel->has_output);
+  z_info ("inserting %s at %d", track->name_, pos);
 
-  /* TODO throw critical if attempted to add a special track
-   * (like master) when it already exists */
+  /* throw error if attempted to add a special track (like master) when it
+   * already exists */
+  for (auto &t : unique_track_types_)
+    {
+      z_return_val_if_fail (!contains_track_type (t), nullptr);
+    }
 
   /* set to -1 so other logic knows it is a new track */
-  track->pos = -1;
-  if (track->channel)
+  track->pos_ = -1;
+  if constexpr (std::derived_from<T, ChannelTrack>)
     {
-      track->channel->track_pos = -1;
+      track->channel_->track_pos_ = -1;
     }
 
   /* this needs to be called before appending the track to the tracklist */
-  track_set_name (track, track->name, F_NO_PUBLISH_EVENTS);
+  track->set_name (track->name_, F_NO_PUBLISH_EVENTS);
 
   /* append the track at the end */
-  self->tracks.push_back (track);
-  track->tracklist = self;
+  auto added_track =
+    dynamic_cast<T *> (tracks_.emplace_back (std::move (track)).get ());
+  added_track->tracklist_ = this;
+
+  /* remember important tracks */
+  if constexpr (std::is_same_v<T, MasterTrack>)
+    master_track_ = added_track;
+  else if constexpr (std::is_same_v<T, ChordTrack>)
+    chord_track_ = added_track;
+  else if constexpr (std::is_same_v<T, MarkerTrack>)
+    marker_track_ = added_track;
+  else if constexpr (std::is_same_v<T, TempoTrack>)
+    tempo_track_ = added_track;
+  else if constexpr (std::is_same_v<T, ModulatorTrack>)
+    modulator_track_ = added_track;
 
   /* add flags for auditioner track ports */
-  if (tracklist_is_auditioner (self))
+  if (is_auditioner ())
     {
-      GPtrArray * ports = g_ptr_array_new ();
-      track_append_ports (track, ports, true);
-      for (size_t i = 0; i < ports->len; i++)
+      std::vector<Port *> ports;
+      added_track->append_ports (ports, true);
+      for (auto port : ports)
         {
-          Port * port = (Port *) g_ptr_array_index (ports, i);
-          port->id_.flags2_ |= PortIdentifier::Flags2::SAMPLE_PROCESSOR_TRACK;
+          port->id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
         }
-      object_free_w_func_and_null (g_ptr_array_unref, ports);
     }
 
   /* if inserting it, swap until it reaches its position */
-  if (pos != self->tracks.size () - 1)
+  if (static_cast<size_t> (pos) != tracks_.size () - 1)
     {
-      for (int i = self->tracks.size () - 1; i > pos; i--)
+      for (int i = tracks_.size () - 1; i > pos; --i)
         {
-          swap_tracks (self, i, i - 1);
+          swap_tracks (i, i - 1);
         }
     }
 
-  track->pos = pos;
+  added_track->pos_ = pos;
 
   if (
-    tracklist_is_in_active_project (self)
+    is_in_active_project ()
     /* auditioner doesn't need automation */
-    && !tracklist_is_auditioner (self))
+    && !is_auditioner ())
     {
       /* make the track the only selected track */
-      tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track, publish_events);
+      TRACKLIST_SELECTIONS->select_single (*added_track, publish_events);
 
       /* set automation track on ports */
-      AutomationTracklist * atl = track_get_automation_tracklist (track);
-      if (atl)
+      if constexpr (std::derived_from<T, AutomatableTrack>)
         {
-          for (int i = 0; i < atl->num_ats; i++)
+          const auto &atl = added_track->get_automation_tracklist ();
+          for (const auto &at : atl.ats_)
             {
-              AutomationTrack * at = atl->ats[i];
-              Port * port = Port::find_from_identifier (&at->port_id);
-              g_return_if_fail (IS_PORT_AND_NONNULL (port));
-              port->at_ = at;
+              auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+              z_return_val_if_fail (port, nullptr);
+              port->at_ = at.get ();
             }
         }
     }
 
-  if (track->channel)
-    {
-      track->channel->connect ();
-    }
+  if constexpr (std::derived_from<T, ChannelTrack>)
+    added_track->channel_->connect ();
 
   /* if audio output route to master */
-  if (
-    track->out_signal_type == PortType::Audio
-    && track->type != TrackType::TRACK_TYPE_MASTER)
+  if constexpr (!std::is_same_v<T, MasterTrack>)
     {
-      group_target_track_add_child (
-        self->master_track, track_get_name_hash (*track), F_CONNECT,
-        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+      if (added_track->out_signal_type_ == PortType::Audio && master_track_)
+        {
+          master_track_->add_child (
+            added_track->get_name_hash (), true, false, false);
+        }
     }
 
-  if (tracklist_is_in_active_project (self))
-    track_activate_all_plugins (track, F_ACTIVATE);
+  if (is_in_active_project ())
+    added_track->activate_all_plugins (true);
 
-  if (!tracklist_is_auditioner (self))
+  if (!is_auditioner ())
     {
       /* verify */
-      track_validate (track);
+      added_track->validate ();
     }
 
   if (ZRYTHM_TESTING)
     {
-      for (auto cur_track : TRACKLIST->tracks)
+      for (auto cur_track : tracks_ | type_is<ChannelTrack> ())
         {
-          if (track_type_has_channel (cur_track->type))
+          auto ch = cur_track->channel_;
+          if (ch->has_output_)
             {
-              Channel * ch = cur_track->channel;
-              if (ch->has_output)
-                {
-                  g_return_if_fail (
-                    ch->output_name_hash != track_get_name_hash (*cur_track));
-                }
+              z_return_val_if_fail (
+                ch->output_name_hash_ != cur_track->get_name_hash (), nullptr);
             }
         }
     }
 
-  if (ZRYTHM_HAVE_UI && !tracklist_is_auditioner (self))
+  if (ZRYTHM_HAVE_UI && !is_auditioner ())
     {
       /* generate track widget */
-      track->widget = track_widget_new (track);
+      added_track->widget_ = track_widget_new (added_track);
     }
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_ADDED, track);
+      EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
     }
 
-  g_message (
-    "%s: done - inserted track '%s' (%u) at %d", __func__, track->name,
-    track_get_name_hash (*track), pos);
+  z_debug (
+    "done - inserted track '{}' ({}) at {}", added_track->name_,
+    added_track->get_name_hash (), pos);
+
+  return added_track;
+}
+
+Track *
+Tracklist::insert_track (
+  std::unique_ptr<Track> &&track,
+  int                      pos,
+  bool                     publish_events,
+  bool                     recalc_graph)
+{
+  return std::visit (
+    [&] (auto &&track) {
+      using T = base_type<decltype (track)>;
+      auto track_unique_ptr = std::unique_ptr<T> (track);
+      return dynamic_cast<Track *> (insert_track<T> (
+        std::move (track_unique_ptr), pos, publish_events, recalc_graph));
+    },
+    convert_to_variant<TrackPtrVariant> (track.release ()));
+}
+
+Track *
+Tracklist::append_track (
+  std::unique_ptr<Track> &&track,
+  bool                     publish_events,
+  bool                     recalc_graph)
+{
+  return std::visit (
+    [&] (auto &&track) {
+      using T = base_type<decltype (track)>;
+      auto track_unique_ptr = std::unique_ptr<T> (track);
+      return dynamic_cast<Track *> (append_track<T> (
+        std::move (track_unique_ptr), publish_events, recalc_graph));
+    },
+    convert_to_variant<TrackPtrVariant> (track.release ()));
 }
 
 ChordTrack *
-tracklist_get_chord_track (const Tracklist * self)
+Tracklist::get_chord_track () const
 {
-  for (auto track : self->tracks)
-    {
-      if (track->type == TrackType::TRACK_TYPE_CHORD)
-        {
-          return (ChordTrack *) track;
-        }
-    }
-  g_warn_if_reached ();
-  return NULL;
+  return get_track_by_type<ChordTrack> (Track::Type::Chord);
 }
 
-/**
- * Returns the Track matching the given name, if
- * any.
- */
-Track *
-tracklist_find_track_by_name (Tracklist * self, const char * name)
+template <typename T>
+T *
+Tracklist::find_track_by_name_hash (unsigned int hash) const
 {
-  if (G_UNLIKELY (ROUTER && router_is_processing_thread (ROUTER)))
-    {
-      g_critical ("attempted to call from DSP thread");
-      return NULL;
-    }
-
-  for (auto track : TRACKLIST->tracks)
-    {
-      if (string_is_equal (name, track->name))
-        return track;
-    }
-  return NULL;
-}
-
-/**
- * Returns the Track matching the given name, if
- * any.
- */
-NONNULL Track *
-tracklist_find_track_by_name_hash (Tracklist * self, unsigned int hash)
-{
+  static_assert (TrackSubclass<T>);
   if (
-    G_LIKELY (tracklist_is_in_active_project (self)) && ROUTER
-    && router_is_processing_thread (ROUTER) && !tracklist_is_auditioner (self))
+    is_in_active_project () && ROUTER && ROUTER->is_processing_thread ()
+    && !is_auditioner ()) [[likely]]
     {
-      for (auto track : self->tracks)
-        {
-          if (G_UNLIKELY (track->name_hash == hash))
-            return track;
-        }
+      auto found = std::ranges::find_if (tracks_, [hash] (const auto &track) {
+        return track->name_hash_ == hash;
+      });
+      if (found != tracks_.end ())
+        return dynamic_cast<T *> (found->get ());
+      else
+        return nullptr;
     }
   else
     {
-      for (auto track : self->tracks)
+      for (auto &track : tracks_)
         {
           if (ZRYTHM_TESTING)
             {
-              g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
+              z_return_val_if_fail (track, nullptr);
             }
-          if (G_UNLIKELY (track_get_name_hash (*track) == hash))
-            return track;
+          if (track->get_name_hash () == hash)
+            return dynamic_cast<T *> (track.get ());
         }
     }
-  return NULL;
+  return nullptr;
 }
 
-void
-tracklist_append_track (
-  Tracklist * self,
-  Track *     track,
-  int         publish_events,
-  int         recalc_graph)
-{
-  tracklist_insert_track (
-    self, track, self->tracks.size (), publish_events, recalc_graph);
-}
-
-/**
- * Multiplies all tracks' heights and returns if
- * the operation was valid.
- *
- * @param visible_only Only apply to visible tracks.
- */
 bool
-tracklist_multiply_track_heights (
-  Tracklist * self,
-  double      multiplier,
-  bool        visible_only,
-  bool        check_only,
-  bool        fire_events)
+Tracklist::multiply_track_heights (
+  double multiplier,
+  bool   visible_only,
+  bool   check_only,
+  bool   fire_events)
 {
-  for (auto tr : self->tracks)
+  for (auto &tr : tracks_)
     {
-      if (visible_only && !track_get_should_be_visible (tr))
+      if (visible_only && !tr->should_be_visible ())
         continue;
 
-      bool ret =
-        track_multiply_heights (tr, multiplier, visible_only, check_only);
-      /*g_debug ("%s can multiply %d",*/
-      /*tr->name, ret);*/
+      bool ret = tr->multiply_heights (multiplier, visible_only, check_only);
 
       if (!ret)
         {
@@ -488,757 +406,509 @@ tracklist_multiply_track_heights (
       if (!check_only && fire_events)
         {
           /* FIXME should be event */
-          track_widget_update_size (tr->widget);
+          track_widget_update_size (tr->widget_);
         }
     }
 
   return true;
 }
 
-/**
- * Returns the track at the given index or NULL if
- * the index is invalid.
- */
-Track *
-tracklist_get_track (Tracklist * self, int idx)
-{
-  if (idx < 0 || idx >= self->tracks.size ())
-    {
-      g_warning ("invalid track idx %d", idx);
-      return NULL;
-    }
-
-  Track * tr = self->tracks[idx];
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
-
-  return tr;
-}
-
 int
-tracklist_get_track_pos (Tracklist * self, Track * track)
+Tracklist::get_track_pos (Track &track) const
 {
-  auto it = std::find (self->tracks.cbegin (), self->tracks.cend (), track);
-  g_return_val_if_fail (it != self->tracks.cend (), -1);
-  return std::distance (self->tracks.cbegin (), it);
-}
-
-/**
- * Returns the first track found with the given
- * type.
- */
-Track *
-tracklist_get_track_by_type (Tracklist * self, TrackType type)
-{
-  for (auto track : self->tracks)
-    {
-      if (track->type == type)
-        return track;
-    }
-  return NULL;
+  auto it =
+    std::find_if (tracks_.cbegin (), tracks_.cend (), [&track] (const auto &t) {
+      return t.get () == &track;
+    });
+  z_return_val_if_fail (it != tracks_.cend (), -1);
+  return std::distance (tracks_.cbegin (), it);
 }
 
 bool
-tracklist_validate (Tracklist * self)
+Tracklist::validate () const
 {
   /* this validates tracks in parallel */
   std::vector<std::future<bool>> ret_vals;
-  for (auto track : self->tracks)
+  ret_vals.reserve (tracks_.size ());
+  for (const auto &track : tracks_)
     {
-      ret_vals.emplace_back (std::async ([self, track] () {
-        g_return_val_if_fail (
-          track && track_is_in_active_project (track), false);
+      ret_vals.emplace_back (std::async ([this, &track] () {
+        z_return_val_if_fail (track && track->is_in_active_project (), false);
 
-        if (!track_validate (track))
+        if (!track->validate ())
           return false;
 
         /* validate size */
-        g_return_val_if_fail (
-          track->pos + track->size <= self->tracks.size (), false);
+        int track_size = 1;
+        if (auto foldable_track = dynamic_cast<FoldableTrack *> (track.get ()))
+          {
+            track_size = foldable_track->size_;
+          }
+        z_return_val_if_fail (
+          track->pos_ + track_size <= (int) tracks_.size (), false);
 
         /* validate connections */
-        if (track->channel)
+        if (auto channel_track = dynamic_cast<ChannelTrack *> (track.get ()))
           {
-            Channel * ch = track->channel;
-            for (int j = 0; j < STRIP_SIZE; j++)
+            auto &channel = channel_track->get_channel ();
+            for (const auto &send : channel->sends_)
               {
-                ChannelSend * send = ch->sends[j];
-                channel_send_validate (send);
+                send->validate ();
               }
           }
         return true;
       }));
     }
 
-  bool valid = true;
-  for (auto &t : ret_vals)
-    {
-      bool res = t.get ();
-      if (!res)
-        valid = false;
-    }
-
-  return valid;
+  return std::all_of (ret_vals.begin (), ret_vals.end (), [] (auto &t) {
+    return t.get ();
+  });
 }
 
-/**
- * Returns the index of the last Track.
- *
- * @param pin_opt Pin option.
- * @param visible_only Only consider visible
- *   Track's.
- */
 int
-tracklist_get_last_pos (
-  Tracklist *              self,
-  const TracklistPinOption pin_opt,
-  const bool               visible_only)
+Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 {
-  Track * tr;
-  for (int i = self->tracks.size () - 1; i >= 0; i--)
+  for (int i = tracks_.size () - 1; i >= 0; i--)
     {
-      tr = self->tracks[i];
+      const auto &tr = tracks_[i];
 
-      if (
-        pin_opt == TracklistPinOption::TRACKLIST_PIN_OPTION_PINNED_ONLY
-        && !track_is_pinned (tr))
-        {
-          continue;
-        }
-      if (
-        pin_opt == TracklistPinOption::TRACKLIST_PIN_OPTION_UNPINNED_ONLY
-        && track_is_pinned (tr))
-        {
-          continue;
-        }
-      if (visible_only && !track_get_should_be_visible (tr))
-        {
-          continue;
-        }
+      if (pin_opt == PinOption::PinnedOnly && !tr->is_pinned ())
+        continue;
+      if (pin_opt == PinOption::UnpinnedOnly && tr->is_pinned ())
+        continue;
+      if (visible_only && !tr->should_be_visible ())
+        continue;
 
       return i;
     }
 
   /* no track with given options found, select the last */
-  return self->tracks.size () - 1;
+  return tracks_.size () - 1;
+}
+
+bool
+Tracklist::is_in_active_project () const
+{
+  return project_ == PROJECT.get ()
+         || (sample_processor_ && sample_processor_->is_in_active_project ());
 }
 
 Track *
-tracklist_get_last_track (
-  Tracklist *              self,
-  const TracklistPinOption pin_opt,
-  const int                visible_only)
+Tracklist::get_visible_track_after_delta (Track &track, int delta) const
 {
-  int idx = tracklist_get_last_pos (self, pin_opt, visible_only);
-  g_return_val_if_fail (idx >= 0 && idx < self->tracks.size (), NULL);
-  Track * tr = self->tracks[idx];
-
-  return tr;
+  auto vis_track = &track;
+  while (delta != 0)
+    {
+      vis_track =
+        delta > 0
+          ? get_next_visible_track (*vis_track)
+          : get_prev_visible_track (*vis_track);
+      if (!vis_track)
+        return nullptr;
+      delta += delta > 0 ? -1 : 1;
+    }
+  return vis_track;
 }
 
-/**
- * Returns the Track after delta visible Track's.
- *
- * Negative delta searches backwards.
- *
- * This function searches tracks only in the same Tracklist
- * as the given one (ie, pinned or not).
- */
 Track *
-tracklist_get_visible_track_after_delta (
-  Tracklist * self,
-  Track *     track,
-  int         delta)
+Tracklist::get_first_visible_track (const bool pinned) const
 {
-  if (delta > 0)
-    {
-      Track * vis_track = track;
-      while (delta > 0)
-        {
-          vis_track = tracklist_get_next_visible_track (self, vis_track);
-
-          if (!vis_track)
-            return NULL;
-
-          delta--;
-        }
-      return vis_track;
-    }
-  else if (delta < 0)
-    {
-      Track * vis_track = track;
-      while (delta < 0)
-        {
-          vis_track = tracklist_get_prev_visible_track (self, vis_track);
-
-          if (!vis_track)
-            return NULL;
-
-          delta++;
-        }
-      return vis_track;
-    }
-  else
-    return track;
+  auto it =
+    std::find_if (tracks_.begin (), tracks_.end (), [pinned] (const auto &tr) {
+      return tr->should_be_visible () && tr->is_pinned () == pinned;
+    });
+  return it != tracks_.end () ? it->get () : nullptr;
 }
 
-/**
- * Returns the first visible Track.
- *
- * @param pinned 1 to check the pinned tracklist,
- *   0 to check the non-pinned tracklist.
- */
 Track *
-tracklist_get_first_visible_track (Tracklist * self, const int pinned)
+Tracklist::get_prev_visible_track (const Track &track) const
 {
-  for (auto tr : self->tracks)
-    {
-      if (track_get_should_be_visible (tr) && track_is_pinned (tr) == pinned)
-        {
-          return tr;
-        }
-    }
-  g_warn_if_reached ();
-  return NULL;
+  auto it = std::find_if (
+    tracks_.rbegin (), tracks_.rend (), [&track] (const auto &tr) {
+      return tr->pos_ < track.pos_ && tr->should_be_visible ();
+    });
+  return it != tracks_.rend () ? it->get () : nullptr;
 }
 
-/**
- * Returns the previous visible Track.
- */
 Track *
-tracklist_get_prev_visible_track (Tracklist * self, Track * track)
+Tracklist::get_next_visible_track (const Track &track) const
 {
-  Track * tr;
-  for (int i = tracklist_get_track_pos (self, track) - 1; i >= 0; i--)
-    {
-      tr = self->tracks[i];
-      if (track_get_should_be_visible (tr))
-        {
-          g_warn_if_fail (tr != track);
-          return tr;
-        }
-    }
-  return NULL;
+  auto it =
+    std::find_if (tracks_.begin (), tracks_.end (), [&track] (const auto &tr) {
+      return tr->pos_ > track.pos_ && tr->should_be_visible ();
+    });
+  return it != tracks_.end () ? it->get () : nullptr;
 }
 
-/**
- * Returns the next visible Track in the same
- * Tracklist.
- */
-Track *
-tracklist_get_next_visible_track (Tracklist * self, Track * track)
-{
-  for (
-    int i = tracklist_get_track_pos (self, track) + 1; i < self->tracks.size ();
-    i++)
-    {
-      Track * tr = self->tracks[i];
-      if (track_get_should_be_visible (tr))
-        {
-          g_warn_if_fail (tr != track);
-          return tr;
-        }
-    }
-  return NULL;
-}
-
-/**
- * Removes a track from the Tracklist and the
- * TracklistSelections.
- *
- * Also disconnects the channel.
- *
- * @param rm_pl Remove plugins or not.
- * @param free Free the track or not (free later).
- * @param publish_events Push a track deleted event
- *   to the UI.
- * @param recalc_graph Recalculate the mixer graph.
- */
 void
-tracklist_remove_track (
-  Tracklist * self,
-  Track *     track,
-  bool        rm_pl,
-  bool        free_track,
-  bool        publish_events,
-  bool        recalc_graph)
+Tracklist::remove_track (
+  Track &track,
+  bool   rm_pl,
+  bool   free_track,
+  bool   publish_events,
+  bool   recalc_graph)
 {
-  g_return_if_fail (IS_TRACK (track));
-  g_message (
-    "%s: removing [%d] %s - remove plugins %d - "
+  z_debug (
+    "removing [%d] %s - remove plugins %d - "
     "free track %d - pub events %d - "
     "recalc graph %d - "
     "num tracks before deletion: %zu",
-    __func__, track->pos, track->name, rm_pl, free_track, publish_events,
-    recalc_graph, self->tracks.size ());
+    track.pos_, track.get_name (), rm_pl, free_track, publish_events,
+    recalc_graph, tracks_.size ());
 
-  Track * prev_visible = NULL;
-  Track * next_visible = NULL;
-  if (!tracklist_is_auditioner (self))
+  Track * prev_visible = nullptr;
+  Track * next_visible = nullptr;
+  if (!is_auditioner ())
     {
-      prev_visible = tracklist_get_prev_visible_track (self, track);
-      next_visible = tracklist_get_next_visible_track (self, track);
+      prev_visible = get_prev_visible_track (track);
+      next_visible = get_next_visible_track (track);
     }
 
   /* remove/deselect all objects */
-  track_clear (track);
+  track.clear_objects ();
 
-  int idx = tracklist_get_track_pos (self, track);
-  g_return_if_fail (track->pos == idx);
+  int idx = get_track_pos (track);
+  z_return_if_fail (track.pos_ == idx);
 
-  track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
+  track.disconnect (rm_pl, false);
 
   /* move track to the end */
-  int end_pos = self->tracks.size () - 1;
-  tracklist_move_track (
-    self, track, end_pos, false, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+  int end_pos = tracks_.size () - 1;
+  move_track (track, end_pos, false, false, false);
 
-  if (!tracklist_is_auditioner (self))
+  if (!is_auditioner ())
     {
-      tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track, publish_events);
+      TRACKLIST_SELECTIONS->remove_track (track, publish_events);
     }
 
-  self->tracks.erase (
-    std::remove (self->tracks.begin (), self->tracks.end (), track));
+  auto it =
+    std::find_if (tracks_.begin (), tracks_.end (), [&track] (const auto &ptr) {
+      return ptr.get () == &track;
+    });
+  z_return_if_fail (it != tracks_.end ());
+  std::unique_ptr<Track> removed_track = std::move (*it);
+  tracks_.erase (it);
 
-  if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
+  if (is_in_active_project () && !is_auditioner ())
     {
       /* if it was the only track selected, select the next one */
-      if (TRACKLIST_SELECTIONS->num_tracks == 0)
+      if (TRACKLIST_SELECTIONS->empty ())
         {
-          Track * track_to_select = NULL;
-          if (prev_visible || next_visible)
+          Track * track_to_select = next_visible ? next_visible : prev_visible;
+          if (!track_to_select && !tracks_.empty ())
             {
-              track_to_select = next_visible ? next_visible : prev_visible;
-            }
-          else if (self->tracks.size () > 0)
-            {
-              track_to_select = self->tracks[0];
+              track_to_select = tracks_[0].get ();
             }
           if (track_to_select)
             {
-              tracklist_selections_add_track (
-                TRACKLIST_SELECTIONS, track_to_select, publish_events);
+              TRACKLIST_SELECTIONS->add_track (*track_to_select, publish_events);
             }
         }
     }
 
-  track->pos = -1;
+  removed_track->pos_ = -1;
 
   if (free_track)
     {
-      track_free (track);
+      removed_track.reset ();
     }
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, NULL);
+      EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
     }
 
-  g_message ("%s: done", __func__);
+  z_debug ("done removing track");
 }
 
 void
-tracklist_move_track (
-  Tracklist * self,
-  Track *     track,
-  int         pos,
-  bool        always_before_pos,
-  bool        publish_events,
-  bool        recalc_graph)
+Tracklist::move_track (
+  Track &track,
+  int    pos,
+  bool   always_before_pos,
+  bool   publish_events,
+  bool   recalc_graph)
 {
-  g_message ("%s: %s from %d to %d", __func__, track->name, track->pos, pos);
+  z_debug ("moving track: %s from %d to %d", track.get_name (), track.pos_, pos);
 
-  if (pos == track->pos)
+  if (pos == track.pos_)
     return;
 
-  bool move_higher = pos < track->pos;
+  bool move_higher = pos < track.pos_;
 
-  Track * prev_visible = tracklist_get_prev_visible_track (self, track);
-  Track * next_visible = tracklist_get_next_visible_track (self, track);
+  Track * prev_visible = get_prev_visible_track (track);
+  Track * next_visible = get_next_visible_track (track);
 
-  int idx = tracklist_get_track_pos (self, track);
-  g_return_if_fail (track->pos == idx);
+  int idx = get_track_pos (track);
+  z_return_if_fail (track.pos_ == idx);
 
   /* the current implementation currently moves some tracks to tracks.size() + 1
    * temporarily, so we expand the vector here and resize it back at the end */
   bool expanded = false;
-  if (pos >= self->tracks.size ())
+  if (pos >= static_cast<int> (tracks_.size ()))
     {
-      self->tracks.resize (pos + 1, nullptr);
+      tracks_.resize (pos + 1);
       expanded = true;
     }
 
-  if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
+  if (is_in_active_project () && !is_auditioner ())
     {
       /* clear the editor region if it exists and belongs to this track */
-      Region * region = clip_editor_get_region (CLIP_EDITOR);
-      if (
-        region && arranger_object_get_track ((ArrangerObject *) region) == track)
+      auto region = CLIP_EDITOR->get_region ();
+      if (region && region->get_track () == &track)
         {
-          clip_editor_set_region (CLIP_EDITOR, NULL, publish_events);
+          CLIP_EDITOR->set_region (nullptr, publish_events);
         }
 
       /* deselect all objects */
-      track_unselect_all (track);
+      track.unselect_all ();
 
-      tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track, publish_events);
+      TRACKLIST_SELECTIONS->remove_track (track, publish_events);
 
-      /* if it was the only track selected, select
-       * the next one */
-      if (
-        TRACKLIST_SELECTIONS->num_tracks == 0 && (prev_visible || next_visible))
+      /* if it was the only track selected, select the next one */
+      if (TRACKLIST_SELECTIONS->empty () && (prev_visible || next_visible))
         {
-          tracklist_selections_add_track (
-            TRACKLIST_SELECTIONS, next_visible ? next_visible : prev_visible,
-            publish_events);
+          TRACKLIST_SELECTIONS->add_track (
+            next_visible ? *next_visible : *prev_visible, publish_events);
         }
     }
 
   if (move_higher)
     {
       /* move all other tracks 1 track further */
-      for (int i = track->pos; i > pos; i--)
+      for (int i = track.pos_; i > pos; i--)
         {
-          swap_tracks (self, i, i - 1);
+          swap_tracks (i, i - 1);
         }
     }
   else
     {
       /* move all other tracks 1 track earlier */
-      for (int i = track->pos; i < pos; i++)
+      for (int i = track.pos_; i < pos; i++)
         {
-          swap_tracks (self, i, i + 1);
+          swap_tracks (i, i + 1);
         }
 
       if (always_before_pos && pos > 0)
         {
           /* swap with previous track */
-          swap_tracks (self, pos, pos - 1);
+          swap_tracks (pos, pos - 1);
         }
     }
 
   if (expanded)
     {
       /* resize back */
-      self->tracks.resize (self->tracks.size () - 1);
+      tracks_.resize (tracks_.size () - 1);
     }
 
-  if (tracklist_is_in_active_project (self) && !tracklist_is_auditioner (self))
+  if (is_in_active_project () && !is_auditioner ())
     {
       /* make the track the only selected track */
-      tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track, publish_events);
+      TRACKLIST_SELECTIONS->select_single (track, publish_events);
     }
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKS_MOVED, NULL);
+      EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
     }
 
-  g_debug ("%s: finished moving track", __func__);
+  z_debug ("finished moving track");
 }
 
 bool
-tracklist_track_name_is_unique (
-  Tracklist *  self,
-  const char * name,
-  Track *      track_to_skip)
+Tracklist::track_name_is_unique (const std::string &name, Track * track_to_skip)
+  const
 {
-  for (auto track : self->tracks)
-    {
-      if (string_is_equal (name, track->name) && track != track_to_skip)
-        return false;
-    }
-  return true;
+  return std::none_of (
+    tracks_.begin (), tracks_.end (), [&name, track_to_skip] (const auto &track) {
+      return track->get_name () == name && track.get () != track_to_skip;
+    });
 }
 
 bool
-tracklist_has_soloed (const Tracklist * self)
+Tracklist::has_soloed () const
 {
-  for (auto track : self->tracks)
-    {
-      if (track->channel && track_get_soloed (track))
-        return true;
-    }
-  return false;
+  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+    return track->has_channel () && track->get_soloed ();
+  });
 }
 
-/**
- * Returns if the tracklist has listened tracks.
- */
-NONNULL bool
-tracklist_has_listened (const Tracklist * self)
+bool
+Tracklist::has_listened () const
 {
-  for (auto track : self->tracks)
-    {
-      if (track->channel && track_get_listened (track))
-        return true;
-    }
-  return false;
+  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+    return track->has_channel () && track->get_listened ();
+  });
 }
 
 int
-tracklist_get_num_muted_tracks (const Tracklist * self)
+Tracklist::get_num_muted_tracks () const
 {
-  int count = 0;
-  for (auto track : self->tracks)
-    {
-      if (track_type_has_channel (track->type) && track_get_muted (track))
-        {
-          count++;
-        }
-    }
-
-  return count;
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+    return track->has_channel () && track->get_muted ();
+  });
 }
 
 int
-tracklist_get_num_soloed_tracks (const Tracklist * self)
+Tracklist::get_num_soloed_tracks () const
 {
-  int count = 0;
-  for (auto track : self->tracks)
-    {
-      if (track_type_has_channel (track->type) && track_get_soloed (track))
-        {
-          count++;
-        }
-    }
-
-  return count;
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+    return track->has_channel () && track->get_soloed ();
+  });
 }
 
 int
-tracklist_get_num_listened_tracks (const Tracklist * self)
+Tracklist::get_num_listened_tracks () const
 {
-  int count = 0;
-  for (auto track : self->tracks)
-    {
-      if (track_type_has_channel (track->type) && track_get_listened (track))
-        {
-          count++;
-        }
-    }
-
-  return count;
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+    return track->has_channel () && track->get_listened ();
+  });
 }
 
-int
-tracklist_get_plugins (const Tracklist * const self, GPtrArray * arr)
-{
-  int total = 0;
-  for (auto track : self->tracks)
-    {
-      total += track_get_plugins (track, arr);
-    }
-
-  return total;
-}
-
-/**
- * Activate or deactivate all plugins.
- *
- * This is useful for exporting: deactivating and
- * reactivating a plugin will reset its state.
- */
 void
-tracklist_activate_all_plugins (Tracklist * self, bool activate)
+Tracklist::get_plugins (std::vector<Plugin *> &arr) const
 {
-  for (auto track : self->tracks)
+  for (auto &track : tracks_)
     {
-      track_activate_all_plugins (track, activate);
+      track->get_plugins (arr);
     }
 }
 
-/**
- * @param visible 1 for visible, 0 for invisible.
- */
-int
-tracklist_get_num_visible_tracks (Tracklist * self, int visible)
-{
-  int ret = 0;
-  for (auto track : self->tracks)
-    {
-      if (track_get_should_be_visible (track) == visible)
-        ret++;
-    }
-
-  return ret;
-}
-
-/**
- * Exposes each track's ports that should be
- * exposed to the backend.
- *
- * This should be called after setting up the
- * engine.
- */
 void
-tracklist_expose_ports_to_backend (Tracklist * self)
+Tracklist::activate_all_plugins (bool activate)
 {
-  g_return_if_fail (self);
-
-  for (auto track : self->tracks)
+  for (auto &track : tracks_)
     {
-      g_return_if_fail (track);
-
-      if (track_type_has_channel (track->type))
-        {
-          Channel * ch = track_get_channel (track);
-          g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
-          ch->expose_ports_to_backend ();
-        }
+      track->activate_all_plugins (activate);
     }
 }
 
-bool
-tracklist_import_regions (
-  GPtrArray *            region_arrays,
-  const FileImportInfo * import_info,
-  TracksReadyCallback    ready_cb,
-  GError **              error)
+int
+Tracklist::get_num_visible_tracks (bool visible) const
 {
-  g_message ("Adding regions into the project...");
+  return std::count_if (
+    tracks_.begin (), tracks_.end (), [visible] (const auto &track) {
+      return track->should_be_visible () == visible;
+    });
+}
 
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+void
+Tracklist::expose_ports_to_backend ()
+{
+  for (auto track : tracks_ | type_is<ChannelTrack> ())
+    {
+      track->channel_->expose_ports_to_backend ();
+    }
+}
+
+void
+Tracklist::import_regions (
+  std::vector<std::vector<std::shared_ptr<Region>>> &region_arrays,
+  const FileImportInfo *                             import_info,
+  TracksReadyCallback                                ready_cb)
+{
+  z_debug ("Adding regions into the project...");
+
+  AudioEngine::State state;
+  AUDIO_ENGINE->wait_for_pause (state, false, true);
   int  executed_actions = 0;
-  bool result = true;
-  for (size_t j = 0; j < region_arrays->len; j++)
+  try
     {
-      GPtrArray * regions = (GPtrArray *) g_ptr_array_index (region_arrays, j);
-      g_debug ("REGION ARRAY %zu (%u elements)", j, regions->len);
-      int i = 0;
-      while (regions->len > 0)
+      for (auto regions : region_arrays)
         {
-          int iter = i++;
-          g_debug ("REGION %d", iter);
-          Region *  r = (Region *) g_ptr_array_steal_index (regions, 0);
-          TrackType track_type = ENUM_INT_TO_VALUE (TrackType, 0);
-          bool      gen_name = true;
-          if (r->id.type == RegionType::REGION_TYPE_AUDIO)
+          z_debug ("REGION ARRAY (%zu elements)", regions.size ());
+          int i = 0;
+          while (!regions.empty ())
             {
-              track_type = TrackType::TRACK_TYPE_AUDIO;
-            }
-          else if (r->id.type == RegionType::REGION_TYPE_MIDI)
-            {
-              track_type = TrackType::TRACK_TYPE_MIDI;
-              /* name could already be generated based on the
-               * track name (if any) in the MIDI file */
-              if (r->name)
-                gen_name = false;
-            }
-          else
-            {
-              g_warn_if_reached ();
-              continue;
-            }
-
-          Track * track = NULL;
-          if (import_info->track_name_hash)
-            {
-              track = tracklist_find_track_by_name_hash (
-                TRACKLIST, import_info->track_name_hash);
-            }
-          else
-            {
-              GError * err = NULL;
-              int      index = import_info->track_idx + (int) iter;
-              bool     success =
-                track_create_empty_at_idx_with_action (track_type, index, &err);
-              if (!success)
+              int iter = i++;
+              z_debug ("REGION %d", iter);
+              auto r = regions.back ();
+              regions.pop_back ();
+              Track::Type track_type = Track::Type::Audio;
+              bool        gen_name = true;
+              if (r->is_midi ())
                 {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, _ ("Failed to create MIDI track"));
-                  result = false;
-                  goto finish_import_regions;
+                  track_type = Track::Type::Midi;
+                  if (!r->name_.empty ())
+                    gen_name = false;
                 }
-              track = tracklist_get_track (TRACKLIST, index);
-              executed_actions++;
-            }
-          g_return_val_if_fail (track, false);
+              else if (!r->is_audio ())
+                {
+                  z_warning ("Unknown region type");
+                  continue;
+                }
 
-          GError * err = NULL;
-          bool     success = track_add_region (
-            track, r, NULL, 0, gen_name, F_NO_PUBLISH_EVENTS, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, _ ("Failed to add region %d to track"), iter);
-              result = false;
-              goto finish_import_regions;
+              Track * track = nullptr;
+              if (import_info->track_name_hash)
+                {
+                  track = find_track_by_name_hash (import_info->track_name_hash);
+                }
+              else
+                {
+                  int index = import_info->track_idx + iter;
+                  Track::create_empty_at_idx_with_action (track_type, index);
+                  track = get_track (index);
+                  executed_actions++;
+                }
+              z_return_if_fail (track);
+              track->add_region_plain (r, nullptr, 0, gen_name, false);
+              r->select (true, false, true);
+              UNDO_MANAGER->perform (
+                std::make_unique<ArrangerSelectionsAction::CreateAction> (
+                  *TL_SELECTIONS));
+              ++executed_actions;
             }
+        }
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning ("Failed to import regions: {}", e.what ());
 
-          arranger_object_select (
-            (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
-          success =
-            arranger_selections_action_perform_create (TL_SELECTIONS, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, _ ("Failed to create region %d inside track %s"),
-                iter, track->name);
-              result = false;
-              goto finish_import_regions;
-            }
-          executed_actions++;
-        } /* end foreach region */
+      /* undo any performed actions */
+      while (executed_actions > 0)
+        {
+          UNDO_MANAGER->undo ();
+          --executed_actions;
+        }
+
+      /* rethrow the exception */
+      throw;
     }
 
-finish_import_regions:
   if (executed_actions > 0)
     {
-      UndoableAction * last_action = undo_manager_get_last_action (UNDO_MANAGER);
-      last_action->num_actions = executed_actions;
+      auto last_action = UNDO_MANAGER->get_last_action ();
+      last_action->num_actions_ = executed_actions;
     }
 
-  engine_resume (AUDIO_ENGINE, &state);
+  AUDIO_ENGINE->resume (state);
 
   if (ready_cb)
     {
-      ready_cb (import_info, *error);
+      ready_cb (import_info);
     }
-
-  return result;
 }
 
-/**
- * Handles a file drop inside the timeline or in
- * empty space in the tracklist.
- *
- * @param uri_list URI list, if URI list was dropped.
- * @param file File, if FileDescriptor was dropped.
- * @param track Track, if any.
- * @param lane TrackLane, if any.
- * @param index Index to insert new tracks at, or -1 to insert
- *   at end.
- * @param pos Position the file was dropped at, if
- *   inside track.
- *
- * @return Whether successful.
- */
-bool
-tracklist_import_files (
-  Tracklist *            self,
-  char **                uri_list,
+void
+Tracklist::import_files (
+  const StringArray *    uri_list,
   const FileDescriptor * orig_file,
-  Track *                track,
-  TrackLane *            lane,
+  const Track *          track,
+  const TrackLane *      lane,
   int                    index,
   const Position *       pos,
-  TracksReadyCallback    ready_cb,
-  GError **              error)
+  TracksReadyCallback    ready_cb)
 {
   std::vector<FileDescriptor> file_arr;
   if (orig_file)
@@ -1247,280 +917,227 @@ tracklist_import_files (
     }
   else
     {
-      g_return_val_if_fail (uri_list, NULL);
-
-      char * uri = NULL;
-      int    i = 0;
-      while ((uri = uri_list[i++]) != NULL)
+      for (const auto &uri : *uri_list)
         {
-          /* strip "file://" */
-          if (!string_contains_substr (uri, "file://"))
+          if (!uri.contains ("file://"))
             continue;
 
-          GError * err = NULL;
-          auto     file = FileDescriptor::new_from_uri (uri, &err);
-          if (!file)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to create a FileImport instance");
-              return false;
-            }
+          auto file = FileDescriptor::new_from_uri (uri.toStdString ());
           file_arr.push_back (*file);
         }
     }
 
-  if (file_arr.size () == 0)
+  if (file_arr.empty ())
     {
-      g_set_error_literal (
-        error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
-        _ ("No file was found"));
-      return false;
+      throw ZrythmException (_ ("No file was found"));
     }
   else if (track && file_arr.size () > 1)
     {
-      g_set_error_literal (
-        error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
+      throw ZrythmException (
         _ ("Can only drop 1 file at a time on existing tracks"));
-      return false;
     }
 
-  for (auto &file : file_arr)
+  for (const auto &file : file_arr)
     {
       if (file.is_supported () && file.is_audio ())
         {
-          if (track && track->type != TrackType::TRACK_TYPE_AUDIO)
+          if (track && !track->is_audio ())
             {
-              g_set_error_literal (
-                error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
+              throw ZrythmException (
                 _ ("Can only drop audio files on audio tracks"));
-              return false;
             }
         }
       else if (file.is_midi ())
         {
-          if (
-            track && track->type != TrackType::TRACK_TYPE_MIDI
-            && track->type != TrackType::TRACK_TYPE_INSTRUMENT)
+          if (track && !track->has_piano_roll ())
             {
-              g_set_error_literal (
-                error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
+              throw ZrythmException (
                 _ ("Can only drop MIDI files on MIDI/instrument tracks"));
-              return false;
             }
         }
       else
         {
-          char * descr = FileDescriptor::get_type_description (file.type);
-          g_set_error (
-            error, Z_AUDIO_TRACKLIST_ERROR, Z_AUDIO_TRACKLIST_ERROR_FAILED,
-            _ ("Unsupported file type %s"), descr);
-          g_free (descr);
-          return false;
+          auto descr = FileDescriptor::get_type_description (file.type_);
+          throw ZrythmException (
+            format_str (_ ("Unsupported file type {}"), descr));
         }
     }
 
-  GStrvBuilder * builder = g_strv_builder_new ();
-  for (auto &file : file_arr)
+  StringArray filepaths;
+  for (const auto &file : file_arr)
     {
-      g_strv_builder_add (builder, file.abs_path.c_str ());
+      filepaths.add (file.abs_path_);
     }
-  char **          filepaths = g_strv_builder_end (builder);
-  FileImportInfo * nfo = file_import_info_new ();
-  nfo->track_name_hash = track ? track->name_hash : 0;
-  nfo->lane = lane ? lane->pos : 0;
-  if (pos)
+
+  auto nfo = FileImportInfo (
+    track ? track->name_hash_ : 0, lane ? lane->pos_ : 0,
+    pos ? *pos : Position (),
+    track ? track->pos_ : (index >= 0 ? index : TRACKLIST->tracks_.size ()));
+
+  if (ZRYTHM_TESTING)
     {
-      position_set_to_pos (&nfo->pos, pos);
+      for (const auto &filepath : filepaths)
+        {
+
+          auto fi = file_import_new (filepath.toStdString ().c_str (), &nfo);
+          GError * err = nullptr;
+          auto     regions = file_import_sync (fi, &err);
+          if (err)
+            {
+              throw ZrythmException (format_str (
+                _ ("Failed to import file {}"), filepath.toStdString ()));
+            }
+          std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
+          region_arrays.push_back (regions);
+          import_regions (region_arrays, &nfo, ready_cb);
+        }
     }
   else
     {
-      position_init (&nfo->pos);
-    }
-  nfo->track_idx =
-    track ? track->pos : (index >= 0 ? index : TRACKLIST->tracks.size ());
-  if (ZRYTHM_TESTING)
-    {
-      int          i = 0;
-      const char * filepath;
-      while ((filepath = filepaths[i++]) != NULL)
-        {
-          FileImport * fi = file_import_new (filepath, nfo);
-          GError *     err = NULL;
-          GPtrArray *  regions = file_import_sync (fi, &err);
-          if (!regions)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "File import failed");
-              return false;
-            }
-          GPtrArray * region_arrays = g_ptr_array_new ();
-          g_ptr_array_add (region_arrays, regions);
-          bool success =
-            tracklist_import_regions (region_arrays, nfo, ready_cb, &err);
-          g_ptr_array_unref (region_arrays);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to import regions");
-              return false;
-            }
-        }
-    }
-  else /* not testing */
-    {
+      auto filepaths_null_terminated = filepaths.getNullTerminated ();
       FileImportProgressDialog * dialog = file_import_progress_dialog_new (
-        (const char **) filepaths, nfo, ready_cb, UI_ACTIVE_WINDOW_OR_NULL);
+        (const char **) filepaths_null_terminated, &nfo, ready_cb,
+        UI_ACTIVE_WINDOW_OR_NULL);
       file_import_progress_dialog_run (dialog);
+      g_strfreev (filepaths_null_terminated);
     }
-  g_strfreev (filepaths);
-  file_import_info_free (nfo);
-  return true;
 }
 
-static void
-move_after_copying_or_moving_inside (
-  TracklistSelections * after_tls,
-  int                   diff_between_track_below_and_parent)
+void
+Tracklist::move_after_copying_or_moving_inside (
+  TracklistSelections &after_tls,
+  int                  diff_between_track_below_and_parent)
 {
-  Track * lowest_cloned_track =
-    tracklist_selections_get_lowest_track (after_tls);
-  int lowest_cloned_track_pos = lowest_cloned_track->pos;
+  const auto &lowest_cloned_track = *(std::max_element (
+    after_tls.tracks_.begin (), after_tls.tracks_.end (),
+    [] (const auto &lhs, const auto &rhs) { return lhs->pos_ < rhs->pos_; }));
+  auto        lowest_cloned_track_pos = lowest_cloned_track->pos_;
 
-  GError * err = NULL;
-  bool     ret = tracklist_selections_action_perform_move (
-    after_tls, PORT_CONNECTIONS_MGR,
-    lowest_cloned_track_pos + diff_between_track_below_and_parent, &err);
-  object_free_w_func_and_null (tracklist_selections_free, after_tls);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (
-        err, "%s",
-        _ ("Failed to move tracks after "
-           "copying or moving inside folder"));
+      UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+        after_tls,
+        lowest_cloned_track_pos + diff_between_track_below_and_parent));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (
+        _ ("Failed to move tracks after copying or moving inside folder"));
       return;
     }
-  UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
-  ua->num_actions = 2;
+
+  auto ua = UNDO_MANAGER->get_last_action ();
+  ua->num_actions_ = 2;
 }
 
-/**
- * Handles a move or copy action based on a drag.
- *
- * @param this_track The track at the cursor (where
- *   the selection was dropped to.
- * @param location Location relative to @ref
- *   this_track.
- */
 void
-tracklist_handle_move_or_copy (
-  Tracklist *          self,
-  Track *              this_track,
+Tracklist::handle_move_or_copy (
+  Track               &this_track,
   TrackWidgetHighlight location,
   GdkDragAction        action)
 {
-  g_debug (
-    "%s: this track '%s' - location %s - "
-    "action %s",
-    __func__, this_track->name, track_widget_highlight_to_str (location),
+  z_debug (
+    "this track '%s' - location %s - action %s", this_track.name_,
+    track_widget_highlight_to_str (location),
     action == GDK_ACTION_COPY ? "copy" : "move");
 
   int pos = -1;
   if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP)
     {
-      pos = this_track->pos;
+      pos = this_track.pos_;
     }
   else
     {
-      Track * next = tracklist_get_next_visible_track (TRACKLIST, this_track);
+      auto next = get_next_visible_track (this_track);
       if (next)
-        pos = next->pos;
+        pos = next->pos_;
       /* else if last track, move to end */
-      else if (this_track->pos == TRACKLIST->tracks.size () - 1)
-        pos = TRACKLIST->tracks.size ();
+      else if (this_track.pos_ == static_cast<int> (tracks_.size ()) - 1)
+        pos = tracks_.size ();
       /* else if last visible track but not last track */
       else
-        pos = this_track->pos + 1;
+        pos = this_track.pos_ + 1;
     }
 
   if (pos == -1)
     return;
 
-  tracklist_selections_select_foldable_children (TRACKLIST_SELECTIONS);
+  TRACKLIST_SELECTIONS->select_foldable_children ();
 
   if (action == GDK_ACTION_COPY)
     {
-      if (tracklist_selections_contains_uncopyable_track (TRACKLIST_SELECTIONS))
+      if (TRACKLIST_SELECTIONS->contains_uncopyable_track ())
         {
-          g_message (
-            "cannot copy - track selection "
-            "contains uncopyable track");
+          z_warning ("cannot copy - track selection contains uncopyable track");
           return;
         }
 
       if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
-          GError * err = NULL;
-          bool     ret = tracklist_selections_action_perform_copy_inside (
-            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, this_track->pos, &err);
-          if (!ret)
+          try
             {
-              HANDLE_ERROR (err, "%s", _ ("Failed to copy tracks inside"));
+              UNDO_MANAGER->perform (
+                std::make_unique<CopyTracksInsideFoldableTrackAction> (
+                  *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+                  *PORT_CONNECTIONS_MGR, this_track.pos_));
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to copy tracks inside"));
               return;
             }
         }
       /* else if not highlighted inside */
       else
         {
-          TracklistSelections * tls = TRACKLIST_SELECTIONS;
-          int                   num_tls = tls->num_tracks;
-          TracklistSelections * after_tls = NULL;
+          auto                                &tls = *TRACKLIST_SELECTIONS;
+          int                                  num_tls = tls.get_num_tracks ();
+          std::unique_ptr<TracklistSelections> after_tls;
           int                   diff_between_track_below_and_parent = 0;
           bool                  copied_inside = false;
-          if (pos < TRACKLIST->tracks.size ())
+          if (static_cast<size_t> (pos) < tracks_.size ())
             {
-              Track * track_below = TRACKLIST->tracks[pos];
-              Track * track_below_parent =
-                track_get_direct_folder_parent (track_below);
-              tracklist_selections_sort (TRACKLIST_SELECTIONS, true);
-              Track * cur_parent = TRACKLIST_SELECTIONS->tracks[0];
+              auto &track_below = *tracks_[pos];
+              auto track_below_parent = track_below.get_direct_folder_parent ();
+              tls.sort ();
+              auto cur_parent = find_track_by_name (tls.track_names_[0]);
 
               if (track_below_parent)
                 {
                   diff_between_track_below_and_parent =
-                    track_below->pos - track_below_parent->pos;
+                    track_below.pos_ - track_below_parent->pos_;
                 }
 
               /* first copy inside new parent */
               if (track_below_parent && track_below_parent != cur_parent)
                 {
-                  GError * err = NULL;
-                  bool ret = tracklist_selections_action_perform_copy_inside (
-                    tls, PORT_CONNECTIONS_MGR, track_below_parent->pos, &err);
-                  if (!ret)
+                  try
                     {
-                      HANDLE_ERROR (
-                        err, "%s",
-                        _ ("Failed to copy track "
-                           "inside"));
+                      UNDO_MANAGER->perform (
+                        std::make_unique<CopyTracksInsideFoldableTrackAction> (
+                          *tls.gen_tracklist_selections (),
+                          *PORT_CONNECTIONS_MGR, track_below_parent->pos_));
+                    }
+                  catch (const ZrythmException &e)
+                    {
+                      e.handle (_ ("Failed to copy track inside"));
                       return;
                     }
 
-                  after_tls = tracklist_selections_new (F_NOT_PROJECT);
+                  after_tls = std::make_unique<TracklistSelections> ();
                   for (int j = 1; j <= num_tls; j++)
                     {
-                      err = NULL;
-                      Track * clone_tr = track_clone (
-                        TRACKLIST->tracks[track_below_parent->pos + j], &err);
-                      if (!clone_tr)
+                      try
                         {
-                          HANDLE_ERROR (
-                            err, "%s",
-                            _ ("Failed to clone "
-                               "track"));
+                          after_tls->add_track (
+                            clone_unique_with_variant<TrackVariant> (
+                              tracks_[track_below_parent->pos_ + j].get ()));
+                        }
+                      catch (const ZrythmException &e)
+                        {
+                          e.handle (_ ("Failed to clone/add track"));
                           return;
                         }
-                      tracklist_selections_add_track (
-                        after_tls, clone_tr, F_NO_PUBLISH_EVENTS);
                     }
 
                   copied_inside = true;
@@ -1530,21 +1147,23 @@ tracklist_handle_move_or_copy (
           /* if not copied inside, copy normally */
           if (!copied_inside)
             {
-              GError * err = NULL;
-              bool     ret = tracklist_selections_action_perform_copy (
-                tls, PORT_CONNECTIONS_MGR, pos, &err);
-              if (!ret)
+              try
                 {
-                  HANDLE_ERROR (err, "%s", _ ("Failed to copy tracks"));
+                  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+                    *tls.gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+                    pos));
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle (_ ("Failed to copy tracks"));
                   return;
                 }
             }
-          /* else if copied inside and there is
-           * a track difference, also move */
+          /* else if copied inside and there is a track difference, also move */
           else if (diff_between_track_below_and_parent != 0)
             {
               move_after_copying_or_moving_inside (
-                after_tls, diff_between_track_below_and_parent);
+                *after_tls, diff_between_track_below_and_parent);
             }
         }
     }
@@ -1552,8 +1171,7 @@ tracklist_handle_move_or_copy (
     {
       if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
-          if (tracklist_selections_contains_track (
-                TRACKLIST_SELECTIONS, this_track))
+          if (TRACKLIST_SELECTIONS->contains_track (this_track))
             {
               if (!ZRYTHM_TESTING)
                 {
@@ -1562,20 +1180,19 @@ tracklist_handle_move_or_copy (
                 }
               return;
             }
-          /* else if selections do not contain the
-           * track dragged into */
+          /* else if selections do not contain the track dragged into */
           else
             {
-              GError * err = NULL;
-              bool     ret = tracklist_selections_action_perform_move_inside (
-                TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, this_track->pos,
-                &err);
-              if (!ret)
+              try
                 {
-                  HANDLE_ERROR (
-                    err, "%s",
-                    _ ("Failed to move track "
-                       "inside folder"));
+                  UNDO_MANAGER->perform (
+                    std::make_unique<MoveTracksInsideFoldableTrackAction> (
+                      *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+                      this_track.pos_));
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle (_ ("Failed to move track inside folder"));
                   return;
                 }
             }
@@ -1583,56 +1200,59 @@ tracklist_handle_move_or_copy (
       /* else if not highlighted inside */
       else
         {
-          TracklistSelections * tls = TRACKLIST_SELECTIONS;
-          int                   num_tls = tls->num_tracks;
-          TracklistSelections * after_tls = NULL;
+          auto                                &tls = *TRACKLIST_SELECTIONS;
+          int                                  num_tls = tls.get_num_tracks ();
+          std::unique_ptr<TracklistSelections> after_tls;
           int                   diff_between_track_below_and_parent = 0;
           bool                  moved_inside = false;
-          if (pos < TRACKLIST->tracks.size ())
+          if (static_cast<size_t> (pos) < tracks_.size ())
             {
-              Track * track_below = TRACKLIST->tracks[pos];
-              Track * track_below_parent =
-                track_get_direct_folder_parent (track_below);
-              tracklist_selections_sort (TRACKLIST_SELECTIONS, true);
-              Track * cur_parent = TRACKLIST_SELECTIONS->tracks[0];
+              auto &track_below = *tracks_[pos];
+              auto track_below_parent = track_below.get_direct_folder_parent ();
+              tls.sort ();
+              auto cur_parent = find_track_by_name (tls.track_names_[0]);
 
               if (track_below_parent)
                 {
                   diff_between_track_below_and_parent =
-                    track_below->pos - track_below_parent->pos;
+                    track_below.pos_ - track_below_parent->pos_;
                 }
 
               /* first move inside new parent */
               if (track_below_parent && track_below_parent != cur_parent)
                 {
-                  GError * err = NULL;
-                  bool ret = tracklist_selections_action_perform_move_inside (
-                    tls, PORT_CONNECTIONS_MGR, track_below_parent->pos, &err);
-                  if (!ret)
+                  try
                     {
-                      HANDLE_ERROR (
-                        err, "%s",
-                        _ ("Failed to move track "
-                           "inside folder"));
+                      UNDO_MANAGER->perform (
+                        std::make_unique<MoveTracksInsideFoldableTrackAction> (
+                          *tls.gen_tracklist_selections (),
+                          track_below_parent->pos_));
+                    }
+                  catch (const ZrythmException &e)
+                    {
+                      e.handle (_ ("Failed to move track inside folder"));
                       return;
                     }
 
-                  after_tls = tracklist_selections_new (F_NOT_PROJECT);
+                  after_tls = std::make_unique<TracklistSelections> ();
                   for (int j = 1; j <= num_tls; j++)
                     {
-                      err = NULL;
-                      Track * clone_tr = track_clone (
-                        TRACKLIST->tracks[track_below_parent->pos + j], &err);
-                      if (!clone_tr)
+                      try
                         {
-                          HANDLE_ERROR (
-                            err, "%s",
-                            _ ("Failed to clone "
-                               "track"));
+                          const auto &cur_track =
+                            tracks_[track_below_parent->pos_ + j];
+                          std::visit (
+                            [&] (auto &&cur_track) {
+                              after_tls->add_track (cur_track->clone_unique ());
+                            },
+                            convert_to_variant<TrackPtrVariant> (
+                              cur_track.get ()));
+                        }
+                      catch (const ZrythmException &e)
+                        {
+                          e.handle (_ ("Failed to clone track"));
                           return;
                         }
-                      tracklist_selections_add_track (
-                        after_tls, clone_tr, F_NO_PUBLISH_EVENTS);
                     }
 
                   moved_inside = true;
@@ -1642,126 +1262,116 @@ tracklist_handle_move_or_copy (
           /* if not moved inside, move normally */
           if (!moved_inside)
             {
-              GError * err = NULL;
-              bool     ret = tracklist_selections_action_perform_move (
-                tls, PORT_CONNECTIONS_MGR, pos, &err);
-              if (!ret)
+              try
                 {
-                  HANDLE_ERROR (err, "%s", _ ("Failed to move tracks"));
+                  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+                    *tls.gen_tracklist_selections (), pos));
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle (_ ("Failed to move tracks"));
                   return;
                 }
             }
-          /* else if moved inside and there is
-           * a track difference, also move */
+          /* else if moved inside and there is a track difference, also move */
           else if (diff_between_track_below_and_parent != 0)
             {
               move_after_copying_or_moving_inside (
-                after_tls, diff_between_track_below_and_parent);
+                *after_tls, diff_between_track_below_and_parent);
             }
         }
     } /* endif action is MOVE */
 }
 
-/**
- * Marks or unmarks all tracks for bounce.
- */
 void
-tracklist_mark_all_tracks_for_bounce (Tracklist * self, bool bounce)
+Tracklist::mark_all_tracks_for_bounce (bool bounce)
 {
-  for (auto track : self->tracks)
+  for (auto &track : tracks_)
     {
-      track_mark_for_bounce (
-        track, bounce, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
+      track->mark_for_bounce (bounce, true, false, false);
     }
 }
 
-void
-tracklist_get_total_bars (Tracklist * self, int * total_bars)
+int
+Tracklist::get_total_bars (int total_bars) const
 {
-  for (auto track : self->tracks)
+  for (const auto &track : tracks_)
     {
-      track_get_total_bars (track, total_bars);
+      total_bars = track->get_total_bars (total_bars);
     }
-}
-
-/**
- * Set various caches (snapshots, track name hashes, plugin
- * input/output ports, etc).
- */
-void
-tracklist_set_caches (Tracklist * self, CacheTypes types)
-{
-  for (auto track : self->tracks)
-    {
-      track_set_caches (track, types);
-    }
-}
-
-/**
- * Only clones what is needed for project save.
- *
- * @param src Source tracklist. Must be the
- *   tracklist of the project in use.
- */
-Tracklist *
-tracklist_clone (Tracklist * src)
-{
-  Tracklist * self = new Tracklist ();
-
-  self->pinned_tracks_cutoff = src->pinned_tracks_cutoff;
-
-  for (auto track : src->tracks)
-    {
-      GError * err = NULL;
-      Track *  clone = track_clone (track, &err);
-      g_return_val_if_fail (clone, NULL);
-      self->tracks.push_back (clone);
-    }
-
-  return self;
-}
-
-Tracklist *
-tracklist_new (Project * project, SampleProcessor * sample_processor)
-{
-  Tracklist * self = new Tracklist ();
-  self->project = project;
-  self->sample_processor = sample_processor;
-
-  if (project)
-    {
-      project->tracklist = self;
-    }
-
-  return self;
+  return total_bars;
 }
 
 void
-tracklist_free (Tracklist * self)
+Tracklist::set_caches (CacheType types)
 {
-  g_message ("%s: freeing...", __func__);
-
-  size_t num_tracks = self->tracks.size ();
-  for (int i = num_tracks - 1; i >= 0; i--)
+  for (auto &track : tracks_)
     {
-      Track * track = self->tracks[i];
-      g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-      if (track != self->tempo_track)
-        tracklist_remove_track (
-          self, track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
-          F_NO_RECALC_GRAPH);
+      track->set_caches (types);
+    }
+}
+
+void
+Tracklist::init_after_cloning (const Tracklist &other)
+{
+  pinned_tracks_cutoff_ = other.pinned_tracks_cutoff_;
+  clone_variant_container<TrackVariant> (tracks_, other.tracks_);
+}
+
+Tracklist::Tracklist (Project &project) : project_ (&project) { }
+
+Tracklist::Tracklist (SampleProcessor &sample_processor)
+    : sample_processor_ (&sample_processor)
+{
+}
+
+Tracklist::~Tracklist ()
+{
+  z_debug ("freeing tracklist...");
+
+  for (auto &track : std::ranges::reverse_view (tracks_))
+    {
+      if (track.get () == tempo_track_)
+        continue;
+
+      remove_track (*track, true, true, false, false);
     }
 
   /* remove tempo track last (used when printing positions) */
-  if (self->tempo_track)
+  if (tempo_track_)
     {
-      tracklist_remove_track (
-        self, self->tempo_track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
-      self->tempo_track = NULL;
+      remove_track (*tempo_track_, true, true, false, false);
+      tempo_track_ = nullptr;
     }
-
-  delete self;
-
-  g_message ("%s: done", __func__);
 }
+
+void
+Tracklist::instantiate_templates ()
+{
+  TrackVariant x;
+  std::visit (
+    [] (auto &&x) {
+      using TrackT = base_type<decltype (x)>;
+      Tracklist tl;
+      tl.find_track_by_name_hash<TrackT> (0);
+      tl.insert_track<TrackT> (std::unique_ptr<TrackT> (&x), 0, false, false);
+    },
+    x);
+}
+
+template ProcessableTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template ChannelTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template FoldableTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template RecordableTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template AutomatableTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template LanedTrackImpl<AudioRegion> *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template LanedTrackImpl<MidiRegion> *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template GroupTargetTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;

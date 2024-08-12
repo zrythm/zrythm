@@ -1,103 +1,84 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-#include <cstdlib>
-
 #include "dsp/chord_object.h"
+#include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
-#include "dsp/position.h"
-#include "gui/widgets/chord_object.h"
+#include "gui/backend/clip_editor.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/debug.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
 #include "zrythm_app.h"
 
-/**
- * Creates a ChordObject.
- */
-ChordObject *
-chord_object_new (RegionIdentifier * region_id, int chord_index, int index)
-{
-  ChordObject * self = object_new (ChordObject);
-
-  ArrangerObject * obj = (ArrangerObject *) self;
-  obj->type = ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT;
-
-  self->chord_index = chord_index;
-  self->index = index;
-  region_identifier_copy (&obj->region_id, region_id);
-  self->magic = CHORD_OBJECT_MAGIC;
-
-  arranger_object_init (obj);
-
-  return self;
-}
+#include <fmt/format.h>
 
 /**
- * Returns the ChordDescriptor associated with this
- * ChordObject.
+ * Returns the ChordDescriptor associated with this ChordObject.
  */
 ChordDescriptor *
-chord_object_get_chord_descriptor (const ChordObject * self)
+ChordObject::get_chord_descriptor () const
 {
-  g_return_val_if_fail (CLIP_EDITOR, NULL);
-  z_return_val_if_fail_cmp (self->chord_index, >=, 0, NULL);
-  return CHORD_EDITOR->chords[self->chord_index];
+  g_return_val_if_fail (CLIP_EDITOR, nullptr);
+  z_return_val_if_fail_cmp (chord_index_, >=, 0, nullptr);
+  return &CHORD_EDITOR->chords_[chord_index_];
 }
 
-int
-chord_object_is_equal (ChordObject * a, ChordObject * b)
+ArrangerObject::ArrangerObjectPtr
+ChordObject::find_in_project () const
 {
-  ArrangerObject * obj_a = (ArrangerObject *) a;
-  ArrangerObject * obj_b = (ArrangerObject *) b;
-  return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
-         && a->chord_index == b->chord_index && a->index == b->index;
+  /* get actual region - clone's region might be an unused clone */
+  auto r = RegionImpl<ChordRegion>::find (region_id_);
+  g_return_val_if_fail (r, nullptr);
+
+  g_return_val_if_fail (
+    r && r->chord_objects_.size () > (size_t) index_, nullptr);
+  z_return_val_if_fail_cmp (index_, >=, 0, nullptr);
+
+  auto &co = r->chord_objects_[index_];
+  z_return_val_if_fail (co, nullptr);
+  z_return_val_if_fail (*co == *this, nullptr);
+  return co;
 }
 
-/**
- * Finds the ChordObject in the project
- * corresponding to the given one's position.
- *
- * Used in actions.
- */
-ChordObject *
-chord_object_find_by_pos (ChordObject * clone)
+ArrangerWidget *
+ChordObject::get_arranger () const
 {
-  ArrangerObject * clone_obj = (ArrangerObject *) clone;
-
-  /* get actual region - clone's region might be
-   * an unused clone */
-  Region * r = region_find (&clone_obj->region_id);
-  g_return_val_if_fail (r, NULL);
-
-  ChordObject *    chord;
-  ArrangerObject * c_obj;
-  for (int i = 0; i < r->num_chord_objects; i++)
-    {
-      chord = r->chord_objects[i];
-      c_obj = (ArrangerObject *) chord;
-      if (position_is_equal (&c_obj->pos, &clone_obj->pos))
-        return chord;
-    }
-  return NULL;
+  return (ArrangerWidget *) (MW_CHORD_ARRANGER);
 }
 
-/**
- * Sets the region and index of the chord.
- */
-void
-chord_object_set_region_and_index (ChordObject * self, Region * region, int idx)
+ArrangerObject::ArrangerObjectPtr
+ChordObject::add_clone_to_project (bool fire_events) const
 {
-  ArrangerObject * obj = (ArrangerObject *) self;
-  region_identifier_copy (&obj->region_id, &region->id);
-  self->index = idx;
+  return get_region ()->append_object (clone_shared (), true);
 }
 
-Region *
-chord_object_get_region (ChordObject * self)
+ArrangerObject::ArrangerObjectPtr
+ChordObject::insert_clone_to_project () const
 {
-  ArrangerObject * obj = (ArrangerObject *) self;
-  return region_find (&obj->region_id);
+  return get_region ()->insert_object (clone_shared (), index_, true);
+}
+
+std::string
+ChordObject::print_to_str () const
+{
+  return fmt::format ("ChordObject: {} {}", index_, chord_index_);
+}
+
+std::string
+ChordObject::gen_human_friendly_name () const
+{
+  return get_chord_descriptor ()->to_string ();
+}
+
+bool
+ChordObject::validate (bool is_project, double frames_per_tick) const
+{
+  // TODO
+  return true;
 }

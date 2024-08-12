@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -73,9 +73,9 @@ z_curl_get_page_contents (const char * url, int timeout, GError ** error)
   g_debug ("getting page contents for %s...", url);
 
   CURL * curl = curl_easy_init ();
-  g_return_val_if_fail (curl, NULL);
+  g_return_val_if_fail (curl, nullptr);
 
-  GString * page_str = g_string_new (NULL);
+  GString * page_str = g_string_new (nullptr);
 
   CURLcode res;
   curl_easy_setopt (curl, CURLOPT_URL, url);
@@ -123,7 +123,7 @@ z_curl_get_page_contents_default (const char * url)
       timeout = 1;
     }
 
-  return z_curl_get_page_contents (url, timeout, NULL);
+  return z_curl_get_page_contents (url, timeout, nullptr);
 }
 
 struct WriteThis
@@ -176,7 +176,7 @@ z_curl_post_json_no_auth (
   ...)
 {
   g_return_val_if_fail (
-    url == NULL || data == NULL || error == NULL || *error == NULL, -1);
+    url == NULL || data == NULL || error == NULL || *error == nullptr, -1);
 
   g_message ("sending data...");
 
@@ -209,7 +209,7 @@ z_curl_post_json_no_auth (
     curl_slist_append (headers, "charset: utf-8");
 #endif
 
-  GString * response = g_string_new (NULL);
+  GString * response = g_string_new (nullptr);
 
   CURLcode res;
   curl_easy_setopt (curl, CURLOPT_URL, url);
@@ -335,7 +335,7 @@ char *
 z_curl_get_page_contents_finish (GAsyncResult * res, GError ** error)
 {
   g_debug ("finished getting page contents");
-  g_return_val_if_fail (g_task_is_valid (res, zrythm_app), NULL);
+  g_return_val_if_fail (g_task_is_valid (res, zrythm_app.get ()), nullptr);
   return (char *) g_task_propagate_pointer ((GTask *) res, error);
 }
 
@@ -346,7 +346,8 @@ z_curl_get_page_contents_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
-  GTask *         task = g_task_new (zrythm_app, NULL, callback, callback_data);
+  GTask * task =
+    g_task_new (zrythm_app.get (), nullptr, callback, callback_data);
   ZCurlTaskData * task_data = object_new (ZCurlTaskData);
   task_data->url = url;
   task_data->timeout_sec = timeout_sec;

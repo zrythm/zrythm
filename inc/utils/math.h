@@ -26,7 +26,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Math utils.
  *
@@ -67,16 +67,14 @@
  *
  * @param e The allowed difference (epsilon).
  */
-#define math_floats_equal_epsilon(a, b, e) \
-  ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)
+#define math_floats_equal_epsilon(a, b, e) (std::abs ((a) - (b)) < (e))
 
 #define math_doubles_equal_epsilon math_floats_equal_epsilon
 
 /**
  * Checks if 2 doubles are equal.
  */
-#define math_floats_equal(a, b) \
-  ((a) > (b) ? (a) - (b) < FLT_EPSILON : (b) - (a) < FLT_EPSILON)
+#define math_floats_equal(a, b) math_floats_equal_epsilon (a, b, FLT_EPSILON)
 
 #define math_doubles_equal(a, b) \
   ((a) > (b) ? (a) - (b) < DBL_EPSILON : (b) - (a) < DBL_EPSILON)
@@ -258,7 +256,7 @@ math_assert_nonnann (float x);
 /**
  * Returns whether the given string is a valid float.
  *
- * @param ret If non-NULL, the result will be placed here.
+ * @param ret If non-nullptr, the result will be placed here.
  */
 NONNULL_ARGS (1)
 bool math_is_string_valid_float (const char * str, float * ret);

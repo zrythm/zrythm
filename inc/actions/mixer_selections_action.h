@@ -7,90 +7,188 @@
 #include "actions/undoable_action.h"
 #include "dsp/automation_track.h"
 #include "dsp/port_connections_manager.h"
+#include "dsp/track.h"
 #include "gui/backend/mixer_selections.h"
-#include "utils/yaml.h"
 
-typedef struct Plugin          Plugin;
-typedef struct Track           Track;
-typedef struct MixerSelections MixerSelections;
-
-enum class MixerSelectionsActionType
-{
-  /** Duplicate from existing plugins. */
-  MIXER_SELECTIONS_ACTION_COPY,
-  /** Create new from clipboard. */
-  MIXER_SELECTIONS_ACTION_PASTE,
-  /** Create new from PluginSetting. */
-  MIXER_SELECTIONS_ACTION_CREATE,
-  MIXER_SELECTIONS_ACTION_DELETE,
-  MIXER_SELECTIONS_ACTION_MOVE,
-  MIXER_SELECTIONS_ACTION_CHANGE_STATUS,
-  MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR,
-};
+class Plugin;
+class Track;
+class MixerSelections;
 
 /**
- * Restrict selections to a channel.
+ * Action for manipulating plugins (plugin slot selections in the mixer).
+ *
+ * @see MixerSelections
  */
-typedef struct MixerSelectionsAction
+class MixerSelectionsAction
+    : public UndoableAction,
+      public ICloneable<MixerSelectionsAction>,
+      public ISerializable<MixerSelectionsAction>
 {
-  UndoableAction parent_instance;
+public:
+  enum class Type
+  {
+    /** Duplicate from existing plugins. */
+    Copy,
+    /** Create new from clipboard. */
+    Paste,
+    /** Create new from PluginSetting. */
+    Create,
+    Delete,
+    Move,
+    ChangeStatus,
+    ChangeLoadBehavior,
+  };
 
-  MixerSelectionsActionType type;
+  MixerSelectionsAction ()
+      : UndoableAction (UndoableAction::Type::MixerSelections)
+  {
+  }
+
+  /**
+   * Create a new action.
+   *
+   * @param ms The mixer selections before the action is performed.
+   * @param slot_type Target slot type.
+   * @param to_track_name_hash Target track name hash, or 0 for new channel.
+   * @param to_slot Target slot.
+   * @param setting The plugin setting, if creating plugins.
+   * @param num_plugins The number of plugins to create, if creating plugins.
+   */
+  MixerSelectionsAction (
+    const FullMixerSelections *    ms,
+    const PortConnectionsManager * connections_mgr,
+    Type                           type,
+    PluginSlotType                 slot_type,
+    unsigned int                   to_track_name_hash,
+    int                            to_slot,
+    const PluginSetting *          setting,
+    int                            num_plugins,
+    int                            new_val,
+    CarlaBridgeMode                new_bridge_mode);
+
+  std::string to_string () const override;
+
+  void get_plugins (std::vector<Plugin *> &plugins) override
+  {
+    if (ms_before_)
+      ms_before_->get_plugins (plugins);
+    if (deleted_ms_)
+      deleted_ms_->get_plugins (plugins);
+  }
+
+  void init_after_cloning (const MixerSelectionsAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override;
+  void perform_impl () override;
+  void undo_impl () override;
+
+  /**
+   * Clone automation tracks.
+   *
+   * @param deleted Use deleted_ats.
+   * @param start_slot Slot in @p ms to start processing.
+   */
+  void clone_ats (const FullMixerSelections &ms, bool deleted, int start_slot);
+
+  void copy_automation_from_track1_to_track2 (
+    const AutomatableTrack &from_track,
+    AutomatableTrack       &to_track,
+    PluginSlotType          slot_type,
+    int                     from_slot,
+    int                     to_slot);
+
+  void copy_at_regions (AutomationTrack &dest, const AutomationTrack &src);
+
+  /**
+   * Reverts automation events from before deletion.
+   *
+   * @param deleted Whether to use deleted_ats.
+   */
+  void revert_automation (
+    AutomatableTrack    &track,
+    FullMixerSelections &ms,
+    int                  slot,
+    bool                 deleted);
+
+  /**
+   * Save an existing plugin about to be replaced into @p tmp_ms.
+   */
+  void save_existing_plugin (
+    FullMixerSelections * tmp_ms,
+    Track *               from_tr,
+    PluginSlotType        from_slot_type,
+    int                   from_slot,
+    Track *               to_tr,
+    PluginSlotType        to_slot_type,
+    int                   to_slot);
+
+  void revert_deleted_plugin (Track &to_tr, int to_slot);
+
+  void do_or_undo_create_or_delete (bool do_it, bool create);
+  void do_or_undo_change_status (bool do_it);
+  void do_or_undo_change_load_behavior (bool do_it);
+  void do_or_undo_move_or_copy (bool do_it, bool copy);
+  void do_or_undo (bool do_it);
+
+public:
+  Type mixer_selections_action_type_ = Type ();
 
   /** Type of starting slot to move plugins to. */
-  ZPluginSlotType slot_type;
+  PluginSlotType slot_type_ = PluginSlotType ();
 
   /**
    * Starting target slot.
    *
-   * The rest of the slots will start from this so
-   * they can be calculated when doing/undoing.
+   * The rest of the slots will start from this so they can be calculated when
+   * doing/undoing.
    */
-  int to_slot;
+  int to_slot_ = 0;
 
   /** To track position. */
-  unsigned int to_track_name_hash;
+  unsigned int to_track_name_hash_ = 0;
 
   /** Whether the plugins will be copied/moved into
    * a new channel, if applicable. */
-  bool new_channel;
+  bool new_channel_ = false;
 
   /** Number of plugins to create, when creating new plugins. */
-  int num_plugins;
+  int num_plugins_ = 0;
 
   /** Used when changing status. */
-  int new_val;
+  int new_val_ = 0;
 
   /** Used when changing load behavior. */
-  CarlaBridgeMode new_bridge_mode;
+  CarlaBridgeMode new_bridge_mode_ = CarlaBridgeMode::None;
 
   /**
    * PluginSetting to use when creating.
    */
-  PluginSetting * setting;
+  std::unique_ptr<PluginSetting> setting_;
 
   /**
    * Clone of mixer selections at start.
    */
-  MixerSelections * ms_before;
+  std::unique_ptr<FullMixerSelections> ms_before_;
+
+  std::unique_ptr<MixerSelections> ms_before_simple_;
 
   /**
-   * Deleted plugins (ie, plugins replaced during
-   * move/copy).
+   * Deleted plugins (ie, plugins replaced during move/copy).
    *
    * Used during undo to bring them back.
    */
-  MixerSelections * deleted_ms;
+  std::unique_ptr<FullMixerSelections> deleted_ms_;
 
   /**
-   * Automation tracks associated with the deleted
-   * plugins.
+   * Automation tracks associated with the deleted plugins.
    *
-   * These are used when undoing so we can readd
-   * the automation events, if applicable.
+   * These are used when undoing so we can readd the automation events, if
+   * applicable.
    */
-  AutomationTrack * deleted_ats[16000];
-  int               num_deleted_ats;
+  std::vector<std::unique_ptr<AutomationTrack>> deleted_ats_;
 
   /**
    * Automation tracks associated with the plugins.
@@ -98,167 +196,177 @@ typedef struct MixerSelectionsAction
    * These are used when undoing so we can readd
    * the automation events, if applicable.
    */
-  AutomationTrack * ats[16000];
-  int               num_ats;
+  std::vector<std::unique_ptr<AutomationTrack>> ats_;
+};
 
-  /** A clone of the port connections at the
-   * start of the action. */
-  PortConnectionsManager * connections_mgr_before;
+class MixerSelectionsCreateAction : public MixerSelectionsAction
+{
+public:
+  MixerSelectionsCreateAction (
+    PluginSlotType       slot_type,
+    const Track         &to_track,
+    int                  to_slot,
+    const PluginSetting &setting,
+    int                  num_plugins = 1)
+      : MixerSelectionsAction (
+        nullptr,
+        nullptr,
+        MixerSelectionsAction::Type::Create,
+        slot_type,
+        to_track.name_hash_,
+        to_slot,
+        &setting,
+        num_plugins,
+        0,
+        CarlaBridgeMode::None)
+  {
+  }
+};
 
-  /** A clone of the port connections after
-   * applying the action. */
-  PortConnectionsManager * connections_mgr_after;
-} MixerSelectionsAction;
+class MixerSelectionsTargetedAction : public MixerSelectionsAction
+{
+public:
+  MixerSelectionsTargetedAction (
+    const FullMixerSelections    &ms,
+    const PortConnectionsManager &connections_mgr,
+    MixerSelectionsAction::Type   type,
+    PluginSlotType                slot_type,
+    const Track *                 to_track,
+    int                           to_slot)
+      : MixerSelectionsAction (
+        &ms,
+        &connections_mgr,
+        type,
+        slot_type,
+        to_track ? to_track->name_hash_ : 0,
+        to_slot,
+        nullptr,
+        0,
+        0,
+        CarlaBridgeMode::None)
+  {
+  }
+};
 
-void
-mixer_selections_action_init_loaded (MixerSelectionsAction * self);
+class MixerSelectionsCopyAction : public MixerSelectionsTargetedAction
+{
+public:
+  MixerSelectionsCopyAction (
+    const FullMixerSelections    &ms,
+    const PortConnectionsManager &connections_mgr,
+    PluginSlotType                slot_type,
+    const Track *                 to_track,
+    int                           to_slot)
+      : MixerSelectionsTargetedAction (
+        ms,
+        connections_mgr,
+        MixerSelectionsAction::Type::Copy,
+        slot_type,
+        to_track,
+        to_slot)
+  {
+  }
+};
 
-/**
- * Create a new action.
- *
- * @param ms The mixer selections before the action is performed.
- * @param slot_type Target slot type.
- * @param to_track_name_hash Target track name hash, or 0 for new channel.
- * @param to_slot Target slot.
- * @param setting The plugin setting, if creating plugins.
- * @param num_plugins The number of plugins to create, if creating plugins.
- */
-WARN_UNUSED_RESULT UndoableAction *
-mixer_selections_action_new (
-  const MixerSelections *        ms,
-  const PortConnectionsManager * connections_mgr,
-  MixerSelectionsActionType      type,
-  ZPluginSlotType                slot_type,
-  unsigned int                   to_track_name_hash,
-  int                            to_slot,
-  PluginSetting *                setting,
-  int                            num_plugins,
-  int                            new_val,
-  CarlaBridgeMode                new_bridge_mode,
-  GError **                      error);
+class MixerSelectionsPasteAction : public MixerSelectionsTargetedAction
+{
+public:
+  MixerSelectionsPasteAction (
+    const FullMixerSelections    &ms,
+    const PortConnectionsManager &connections_mgr,
+    PluginSlotType                slot_type,
+    const Track *                 to_track,
+    int                           to_slot)
+      : MixerSelectionsTargetedAction (
+        ms,
+        connections_mgr,
+        MixerSelectionsAction::Type::Paste,
+        slot_type,
+        to_track,
+        to_slot)
+  {
+  }
+};
 
-#define mixer_selections_action_new_create( \
-  slot_type, to_tr, to_slot, setting, num_plugins, error) \
-  mixer_selections_action_new ( \
-    NULL, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CREATE, \
-    slot_type, to_tr, to_slot, setting, num_plugins, 0, CarlaBridgeMode::None, \
-    error)
+class MixerSelectionsMoveAction : public MixerSelectionsTargetedAction
+{
+public:
+  MixerSelectionsMoveAction (
+    const FullMixerSelections    &ms,
+    const PortConnectionsManager &connections_mgr,
+    PluginSlotType                slot_type,
+    const Track *                 to_track,
+    int                           to_slot)
+      : MixerSelectionsTargetedAction (
+        ms,
+        connections_mgr,
+        MixerSelectionsAction::Type::Move,
+        slot_type,
+        to_track,
+        to_slot)
+  {
+  }
+};
 
-#define mixer_selections_action_new_copy( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_new ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
+class MixerSelectionsDeleteAction : public MixerSelectionsAction
+{
+public:
+  MixerSelectionsDeleteAction (
+    const FullMixerSelections    &ms,
+    const PortConnectionsManager &connections_mgr)
+      : MixerSelectionsAction (
+        &ms,
+        &connections_mgr,
+        MixerSelectionsAction::Type::Delete,
+        PluginSlotType::Invalid,
+        0,
+        0,
+        0,
+        0,
+        0,
+        CarlaBridgeMode::None)
+  {
+  }
+};
 
-#define mixer_selections_action_new_paste( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_new ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
-    to_tr, to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
+class MixerSelectionsChangeStatusAction : public MixerSelectionsAction
+{
+public:
+  MixerSelectionsChangeStatusAction (const FullMixerSelections &ms, int new_val)
+      : MixerSelectionsAction (
+        &ms,
+        nullptr,
+        MixerSelectionsAction::Type::ChangeStatus,
+        PluginSlotType::Invalid,
+        0,
+        0,
+        0,
+        0,
+        new_val,
+        CarlaBridgeMode::None)
+  {
+  }
+};
 
-#define mixer_selections_action_new_move( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_new ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_new_delete(ms, port_connections_mgr, error) \
-  mixer_selections_action_new ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
-    0, 0, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_new_change_status(ms, new_val, error) \
-  mixer_selections_action_new ( \
-    ms, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_STATUS, \
-    0, 0, 0, NULL, 0, new_val, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_new_change_load_behavior( \
-  ms, new_bridge_mode, error) \
-  mixer_selections_action_perform ( \
-    ms, NULL, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, \
-    0, 0, 0, NULL, 0, 0, new_bridge_mode, error)
-
-NONNULL MixerSelectionsAction *
-mixer_selections_action_clone (const MixerSelectionsAction * src);
-
-bool
-mixer_selections_action_perform (
-  const MixerSelections *        ms,
-  const PortConnectionsManager * connections_mgr,
-  MixerSelectionsActionType      type,
-  ZPluginSlotType                slot_type,
-  unsigned int                   to_track_name_hash,
-  int                            to_slot,
-  PluginSetting *                setting,
-  int                            num_plugins,
-  int                            new_val,
-  CarlaBridgeMode                new_bridge_mode,
-  GError **                      error);
-
-#define mixer_selections_action_perform_create( \
-  slot_type, to_tr, to_slot, setting, num_plugins, error) \
-  mixer_selections_action_perform ( \
-    NULL, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CREATE, \
-    slot_type, to_tr, to_slot, setting, num_plugins, 0, CarlaBridgeMode::None, \
-    error)
-
-#define mixer_selections_action_perform_copy( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_perform ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_perform_paste( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_perform ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
-    to_tr, to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_perform_move( \
-  ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
-  mixer_selections_action_perform ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
-    to_slot, NULL, 0, 0, CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_perform_delete(ms, port_connections_mgr, error) \
-  mixer_selections_action_perform ( \
-    ms, port_connections_mgr, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_DELETE, \
-    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, 0, \
-    CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_perform_change_status(ms, new_val, error) \
-  mixer_selections_action_perform ( \
-    ms, NULL, MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_STATUS, \
-    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, new_val, \
-    CarlaBridgeMode::None, error)
-
-#define mixer_selections_action_perform_change_load_behavior( \
-  ms, new_bridge_mode, error) \
-  mixer_selections_action_perform ( \
-    ms, NULL, \
-    MixerSelectionsActionType::MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR, \
-    ENUM_INT_TO_VALUE (ZPluginSlotType, 0), 0, 0, NULL, 0, 0, new_bridge_mode, \
-    error)
-
-int
-mixer_selections_action_do (MixerSelectionsAction * self, GError ** error);
-
-int
-mixer_selections_action_undo (MixerSelectionsAction * self, GError ** error);
-
-char *
-mixer_selections_action_stringize (MixerSelectionsAction * self);
-
-void
-mixer_selections_action_free (MixerSelectionsAction * self);
+  class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
+  {
+  public:
+    MixerSelectionsChangeLoadBehaviorAction (
+      const FullMixerSelections &ms,
+      CarlaBridgeMode            new_bridge_mode)
+        : MixerSelectionsAction (
+          &ms,
+          nullptr,
+          MixerSelectionsAction::Type::ChangeLoadBehavior,
+          PluginSlotType::Invalid,
+          0,
+          0,
+          0,
+          0,
+          0,
+          new_bridge_mode)
+    {
+    }
+  };
 
 #endif

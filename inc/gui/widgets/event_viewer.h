@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Event viewer.
  */
@@ -13,6 +11,8 @@
 #define __GUI_WIDGETS_EVENT_VIEWER_H__
 
 #include "dsp/region_identifier.h"
+#include "gui/widgets/item_factory.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -24,8 +24,8 @@ G_DECLARE_FINAL_TYPE (
   EVENT_VIEWER_WIDGET,
   GtkBox)
 
-typedef struct _ArrangerWidget    ArrangerWidget;
-typedef struct ArrangerSelections ArrangerSelections;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
+class ArrangerSelections;
 
 /**
  * @addtogroup widgets
@@ -49,16 +49,15 @@ enum class EventViewerType
   EVENT_VIEWER_TYPE_AUTOMATION,
 };
 
-typedef struct _EventViewerWidget
+using EventViewerWidget = struct _EventViewerWidget
 {
   GtkBox parent_instance;
 
   /** The tree view. */
   GtkColumnView * column_view;
 
-  /** Array of ItemFactory pointers for each
-   * column. */
-  GPtrArray * item_factories;
+  /** Array of ItemFactory pointers for each column. */
+  ItemFactoryPtrVector item_factories;
 
   /** Type. */
   EventViewerType type;
@@ -68,11 +67,11 @@ typedef struct _EventViewerWidget
   // RegionType region_type;
 
   /** Clone of last selections used. */
-  ArrangerSelections * last_selections;
+  std::unique_ptr<ArrangerSelections> last_selections;
 
   /** Temporary flag. */
   bool marking_selected_objs;
-} EventViewerWidget;
+};
 
 /**
  * Called to update the models/selections.

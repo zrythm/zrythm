@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -8,6 +8,7 @@
 #include "gui/widgets/ext_input_selection_dropdown.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "zrythm.h"
 
 static char *
 get_str (void * data)
@@ -23,102 +24,98 @@ get_str (void * data)
       GtkStringObject * str_obj = GTK_STRING_OBJECT (data);
       return g_strdup (gtk_string_object_get_string (str_obj));
     }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 static void
 on_ext_input_changed (
   Track *       track,
   GtkDropDown * dropdown,
-  const int     midi,
-  const int     left)
+  const bool    midi,
+  const bool    left)
 {
-  guint idx = gtk_drop_down_get_selected (dropdown);
+  auto idx = gtk_drop_down_get_selected (dropdown);
 
-  g_debug ("ext input: %u (midi? %d left? %d)", idx, midi, left);
+  z_debug ("ext input: %u (midi? %d left? %d)", idx, midi, left);
 
-  Channel * ch = track->channel;
+  auto ch_track = dynamic_cast<ChannelTrack *> (track);
+  z_return_if_fail (ch_track);
+  auto &ch = *ch_track->get_channel ();
   if (idx == 0)
     {
       if (midi)
         {
-          if (ch->all_midi_ins)
+          if (ch.all_midi_ins_)
             return;
-          ch->all_midi_ins = 1;
+          ch.all_midi_ins_ = true;
         }
       else if (left)
         {
-          if (ch->all_stereo_l_ins)
+          if (ch.all_stereo_l_ins_)
             return;
-          ch->all_stereo_l_ins = 1;
+          ch.all_stereo_l_ins_ = true;
         }
       else
         {
-          if (ch->all_stereo_r_ins)
+          if (ch.all_stereo_r_ins_)
             return;
-          ch->all_stereo_r_ins = 1;
+          ch.all_stereo_r_ins_ = true;
         }
     }
   else if (idx == 1)
     {
       if (midi)
         {
-          ch->all_midi_ins = 0;
-          ext_ports_free (ch->ext_midi_ins, ch->num_ext_midi_ins);
-          ch->num_ext_midi_ins = 0;
+          ch.all_midi_ins_ = false;
+          ch.ext_midi_ins_.clear ();
         }
       else if (left)
         {
-          ch->all_stereo_l_ins = 0;
-          ext_ports_free (ch->ext_stereo_l_ins, ch->num_ext_stereo_l_ins);
-          ch->num_ext_stereo_l_ins = 0;
+          ch.all_stereo_l_ins_ = false;
+          ch.ext_stereo_l_ins_.clear ();
         }
       else
         {
-          ch->all_stereo_r_ins = 0;
-          ext_ports_free (ch->ext_stereo_r_ins, ch->num_ext_stereo_r_ins);
-          ch->num_ext_stereo_r_ins = 0;
+          ch.all_stereo_r_ins_ = false;
+          ch.ext_stereo_r_ins_.clear ();
         }
     }
   else
     {
       if (midi)
         {
-          ext_ports_free (ch->ext_midi_ins, ch->num_ext_midi_ins);
-          ch->all_midi_ins = 0;
+          ch.ext_midi_ins_.clear ();
+          ch.all_midi_ins_ = false;
         }
       else if (left)
         {
-          ext_ports_free (ch->ext_stereo_l_ins, ch->num_ext_stereo_l_ins);
-          ch->all_stereo_l_ins = 0;
+          ch.ext_stereo_l_ins_.clear ();
+          ch.all_stereo_l_ins_ = false;
         }
       else
         {
-          ext_ports_free (ch->ext_stereo_r_ins, ch->num_ext_stereo_r_ins);
-          ch->all_stereo_r_ins = 0;
+          ch.ext_stereo_r_ins_.clear ();
+          ch.all_stereo_r_ins_ = false;
         }
 
-      WrappedObjectWithChangeSignal * wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      auto wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
         gtk_drop_down_get_selected_item (dropdown));
-      ExtPort * port = (ExtPort *) wobj->obj;
+      auto port = static_cast<ExtPort *> (wobj->obj);
       if (midi)
         {
-          ch->num_ext_midi_ins = 1;
-          ch->ext_midi_ins[0] = ext_port_clone (port);
+          ch.ext_midi_ins_.emplace_back (std::make_unique<ExtPort> (*port));
         }
       else if (left)
         {
-          ch->num_ext_stereo_l_ins = 1;
-          ch->ext_stereo_l_ins[0] = ext_port_clone (port);
+          ch.ext_stereo_l_ins_.emplace_back (std::make_unique<ExtPort> (*port));
         }
       else
         {
-          ch->num_ext_stereo_r_ins = 1;
-          ch->ext_stereo_r_ins[0] = ext_port_clone (port);
+          ch.ext_stereo_r_ins_.emplace_back (std::make_unique<ExtPort> (*port));
         }
     }
 
-  ch->reconnect_ext_input_ports ();
+  ch.reconnect_ext_input_ports ();
 }
 
 static void
@@ -185,7 +182,7 @@ preselect_current_port (GtkDropDown * dropdown, ExtPort * ch_port)
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_object (model, i));
       ExtPort * port = (ExtPort *) wobj->obj;
-      if (ext_ports_equal (port, ch_port))
+      if (*port == *ch_port)
         {
           gtk_drop_down_set_selected (dropdown, i);
           found = true;
@@ -198,16 +195,16 @@ preselect_current_port (GtkDropDown * dropdown, ExtPort * ch_port)
 
 void
 ext_input_selection_dropdown_widget_refresh (
-  GtkDropDown * dropdown,
-  Track *       track,
-  bool          left)
+  GtkDropDown *  dropdown,
+  ChannelTrack * track,
+  bool           left)
 {
-  bool midi = track->in_signal_type == PortType::Event;
+  bool midi = track->in_signal_type_ == PortType::Event;
 
   /* --- disconnect existing signals --- */
 
-  Track * cur_track =
-    (Track *) g_object_get_data (G_OBJECT (dropdown), "cur-track");
+  auto cur_track =
+    (ChannelTrack *) g_object_get_data (G_OBJECT (dropdown), "cur-track");
   if (cur_track)
     {
       g_signal_handlers_disconnect_by_data (dropdown, cur_track);
@@ -219,8 +216,9 @@ ext_input_selection_dropdown_widget_refresh (
   GtkListItemFactory * header_factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
     header_factory, "setup",
-    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), NULL);
-  g_signal_connect (header_factory, "bind", G_CALLBACK (on_header_bind), NULL);
+    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), nullptr);
+  g_signal_connect (
+    header_factory, "bind", G_CALLBACK (on_header_bind), nullptr);
   gtk_drop_down_set_header_factory (dropdown, header_factory);
   g_object_unref (header_factory);
 
@@ -229,8 +227,8 @@ ext_input_selection_dropdown_widget_refresh (
   GtkListItemFactory * factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
     factory, "setup",
-    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), NULL);
-  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), NULL);
+    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), nullptr);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), nullptr);
   gtk_drop_down_set_factory (dropdown, factory);
   g_object_unref (factory);
 
@@ -238,8 +236,9 @@ ext_input_selection_dropdown_widget_refresh (
 
   factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
-    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common), NULL);
-  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), NULL);
+    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common),
+    nullptr);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), nullptr);
   gtk_drop_down_set_list_factory (dropdown, factory);
   g_object_unref (factory);
 
@@ -247,7 +246,7 @@ ext_input_selection_dropdown_widget_refresh (
 
 #if 0
   GtkExpression * expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_str), NULL, NULL);
+    G_TYPE_STRING, nullptr, 0, nullptr, G_CALLBACK (get_str), nullptr, nullptr);
   gtk_drop_down_set_expression (dropdown, expression);
   gtk_expression_unref (expression);
 
@@ -256,7 +255,7 @@ ext_input_selection_dropdown_widget_refresh (
 
   /* --- create models --- */
 
-  GtkStringList * standard_sl = gtk_string_list_new (NULL);
+  GtkStringList * standard_sl = gtk_string_list_new (nullptr);
   if (midi)
     {
       gtk_string_list_append (standard_sl, _ ("All MIDI Inputs"));
@@ -273,19 +272,13 @@ ext_input_selection_dropdown_widget_refresh (
   GListStore * ext_inputs_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
   for (
-    int i = 0;
-    i
-    < (midi ? HW_IN_PROCESSOR->num_ext_midi_ports : HW_IN_PROCESSOR->num_ext_audio_ports);
-    i++)
+    auto &port :
+    midi ? HW_IN_PROCESSOR->ext_midi_ports_ : HW_IN_PROCESSOR->ext_audio_ports_)
     {
-      ExtPort * port =
-        midi ? HW_IN_PROCESSOR->ext_midi_ports[i]
-             : HW_IN_PROCESSOR->ext_audio_ports[i];
-
-      WrappedObjectWithChangeSignal * wobj =
-        wrapped_object_with_change_signal_new (
-          port, WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT);
-      g_list_store_append (ext_inputs_ls, wobj);
+        WrappedObjectWithChangeSignal * wobj =
+          wrapped_object_with_change_signal_new (
+            port.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT);
+        g_list_store_append (ext_inputs_ls, wobj);
     }
 
   GListStore * composite_ls = g_list_store_new (G_TYPE_LIST_MODEL);
@@ -299,34 +292,34 @@ ext_input_selection_dropdown_widget_refresh (
   /* --- preselect the current value --- */
 
   /* select the correct value */
-  Channel * ch = track->channel;
+  auto ch = track->channel_;
   g_debug ("selecting ext input...");
   if (midi)
     {
-      if (ch->all_midi_ins)
+      if (ch->all_midi_ins_)
         gtk_drop_down_set_selected (dropdown, 0);
-      else if (ch->num_ext_midi_ins == 0)
+      else if (ch->ext_midi_ins_.empty ())
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        preselect_current_port (dropdown, ch->ext_midi_ins[0]);
+        preselect_current_port (dropdown, ch->ext_midi_ins_[0].get ());
     }
   else if (left)
     {
-      if (ch->all_stereo_l_ins)
+      if (ch->all_stereo_l_ins_)
         gtk_drop_down_set_selected (dropdown, 0);
-      else if (ch->num_ext_stereo_l_ins == 0)
+      else if (ch->ext_stereo_l_ins_.empty ())
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        preselect_current_port (dropdown, ch->ext_stereo_l_ins[0]);
+        preselect_current_port (dropdown, ch->ext_stereo_l_ins_[0].get ());
     }
   else
     {
-      if (ch->all_stereo_r_ins)
+      if (ch->all_stereo_r_ins_)
         gtk_drop_down_set_selected (dropdown, 0);
-      else if (ch->num_ext_stereo_r_ins == 0)
+      else if (ch->ext_stereo_r_ins_.empty ())
         gtk_drop_down_set_selected (dropdown, 1);
       else
-        preselect_current_port (dropdown, ch->ext_stereo_r_ins[0]);
+        preselect_current_port (dropdown, ch->ext_stereo_r_ins_[0].get ());
     }
 
   /* --- add signal --- */

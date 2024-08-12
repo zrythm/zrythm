@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Channel slot.
  */
@@ -23,8 +23,9 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SLOT_WIDGET,
   GtkWidget)
 
-TYPEDEF_STRUCT (Plugin);
-TYPEDEF_STRUCT (Channel);
+class Plugin;
+class Channel;
+class ChannelTrack;
 TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotActivateButtonWidget);
 
 /**
@@ -33,14 +34,14 @@ TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotActivateButtonWidget);
  * @{
  */
 
-typedef struct _ChannelSlotWidget
+using ChannelSlotWidget = struct _ChannelSlotWidget
 {
   GtkWidget parent_instance;
 
-  ZPluginSlotType type;
+  PluginSlotType type;
 
   /** The Track this belongs to. */
-  Track * track;
+  ChannelTrack * track;
 
   /** The Channel slot index. */
   int               slot_index;
@@ -79,14 +80,14 @@ typedef struct _ChannelSlotWidget
   ChannelSlotActivateButtonWidget * activate_btn;
 
   GtkImage * bridge_icon;
-} ChannelSlotWidget;
+};
 
 /**
  * Creates a new ChannelSlot widget whose track
  * and plugin can change.
  */
 ChannelSlotWidget *
-channel_slot_widget_new_instrument (void);
+channel_slot_widget_new_instrument ();
 
 /**
  * Creates a new ChannelSlot widget and binds it to
@@ -94,13 +95,15 @@ channel_slot_widget_new_instrument (void);
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int             slot_index,
-  Track *         track,
-  ZPluginSlotType type,
-  bool            open_plugin_inspector_on_click);
+  int            slot_index,
+  ChannelTrack * track,
+  PluginSlotType type,
+  bool           open_plugin_inspector_on_click);
 
 void
-channel_slot_widget_set_instrument (ChannelSlotWidget * self, Track * track);
+channel_slot_widget_set_instrument (
+  ChannelSlotWidget * self,
+  ChannelTrack *      track);
 
 Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self);

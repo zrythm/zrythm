@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "actions/tracklist_selections.h"
 #include "dsp/control_port.h"
 #include "dsp/control_room.h"
 #include "dsp/engine.h"
@@ -19,6 +20,7 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -52,9 +54,9 @@ dim_name_getter (void * obj)
 void
 monitor_section_widget_refresh (MonitorSectionWidget * self)
 {
-  int num_muted = tracklist_get_num_muted_tracks (TRACKLIST);
-  int num_soloed = tracklist_get_num_soloed_tracks (TRACKLIST);
-  int num_listened = tracklist_get_num_listened_tracks (TRACKLIST);
+  int num_muted = TRACKLIST->get_num_muted_tracks ();
+  int num_soloed = TRACKLIST->get_num_soloed_tracks ();
+  int num_listened = TRACKLIST->get_num_listened_tracks ();
 
   char str[200];
   snprintf (str, 200, _ ("<small>%d muted</small>"), num_muted);
@@ -81,29 +83,25 @@ static void
 on_unsolo_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
 {
   /* remember selections */
-  int num_tracks_before = TRACKLIST_SELECTIONS->num_tracks;
-  int tracks_before[num_tracks_before];
-  for (int i = 0; i < num_tracks_before; i++)
-    {
-      tracks_before[i] = TRACKLIST_SELECTIONS->tracks[i]->pos;
-    }
+  auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unsolo all */
-  tracklist_select_all (TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  GError * err = NULL;
-  bool     ret = tracklist_selections_action_perform_edit_solo (
-    TRACKLIST_SELECTIONS, F_NO_SOLO, &err);
-  if (!ret)
+  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to unsolo all tracks"));
+      UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
+        *TRACKLIST_SELECTIONS->gen_tracklist_selections (), false));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to unsolo all tracks"));
     }
 
   /* restore selections */
-  for (int i = 0; i < num_tracks_before; i++)
+  for (auto &track_name : tracks_before)
     {
-      track_select (
-        TRACKLIST->tracks[tracks_before[i]], F_SELECT, i == 0,
-        F_NO_PUBLISH_EVENTS);
+      auto tr = TRACKLIST->find_track_by_name (track_name);
+      tr->select (F_SELECT, track_name == tracks_before[0], false);
     }
 }
 
@@ -111,29 +109,25 @@ static void
 on_unmute_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
 {
   /* remember selections */
-  int num_tracks_before = TRACKLIST_SELECTIONS->num_tracks;
-  int tracks_before[num_tracks_before];
-  for (int i = 0; i < num_tracks_before; i++)
-    {
-      tracks_before[i] = TRACKLIST_SELECTIONS->tracks[i]->pos;
-    }
+  auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unmute all */
-  tracklist_select_all (TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  GError * err = NULL;
-  bool     ret = tracklist_selections_action_perform_edit_mute (
-    TRACKLIST_SELECTIONS, F_NO_MUTE, &err);
-  if (!ret)
+  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to unmute all tracks"));
+      UNDO_MANAGER->perform (std::make_unique<MuteTracksAction> (
+        *TRACKLIST_SELECTIONS->gen_tracklist_selections (), false));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to unmute all tracks"));
     }
 
   /* restore selections */
-  for (int i = 0; i < num_tracks_before; i++)
+  for (auto &track_name : tracks_before)
     {
-      track_select (
-        TRACKLIST->tracks[tracks_before[i]], F_SELECT, i == 0,
-        F_NO_PUBLISH_EVENTS);
+      auto tr = TRACKLIST->find_track_by_name (track_name);
+      tr->select (F_SELECT, track_name == tracks_before[0], false);
     }
 }
 
@@ -141,29 +135,25 @@ static void
 on_unlisten_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
 {
   /* remember selections */
-  int num_tracks_before = TRACKLIST_SELECTIONS->num_tracks;
-  int tracks_before[num_tracks_before];
-  for (int i = 0; i < num_tracks_before; i++)
-    {
-      tracks_before[i] = TRACKLIST_SELECTIONS->tracks[i]->pos;
-    }
+  auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unlisten all */
-  tracklist_select_all (TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  GError * err = NULL;
-  bool     ret = tracklist_selections_action_perform_edit_listen (
-    TRACKLIST_SELECTIONS, F_NO_LISTEN, &err);
-  if (!ret)
+  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to unlisten all tracks"));
+      UNDO_MANAGER->perform (std::make_unique<ListenTracksAction> (
+        *TRACKLIST_SELECTIONS->gen_tracklist_selections (), false));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to unlisten all tracks"));
     }
 
   /* restore selections */
-  for (int i = 0; i < num_tracks_before; i++)
+  for (auto &track_name : tracks_before)
     {
-      track_select (
-        TRACKLIST->tracks[tracks_before[i]], F_SELECT, i == 0,
-        F_NO_PUBLISH_EVENTS);
+      auto tr = TRACKLIST->find_track_by_name (track_name);
+      tr->select (F_SELECT, track_name == tracks_before[0], false);
     }
 }
 
@@ -171,7 +161,7 @@ static void
 on_mono_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  fader_set_mono_compat_enabled (MONITOR_FADER, active, F_NO_PUBLISH_EVENTS);
+  MONITOR_FADER->set_mono_compat_enabled (active, F_NO_PUBLISH_EVENTS);
   g_settings_set_boolean (S_MONITOR, "mono", active);
 }
 
@@ -179,7 +169,7 @@ static void
 on_dim_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  CONTROL_ROOM->dim_output = active;
+  CONTROL_ROOM->dim_output_ = active;
   g_settings_set_boolean (S_MONITOR, "dim-output", active);
 }
 
@@ -187,7 +177,7 @@ static void
 on_mute_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  MONITOR_FADER->mute->control_ = active ? 1.f : 0.f;
+  MONITOR_FADER->mute_->control_ = active ? 1.f : 0.f;
   g_settings_set_boolean (S_MONITOR, "mute", active);
 }
 
@@ -197,14 +187,14 @@ on_devices_updated (MonitorSectionWidget * self)
 #ifdef HAVE_JACK
   /* reconnect to devices */
   GError * err = NULL;
-  bool     ret = engine_jack_reconnect_monitor (AUDIO_ENGINE, true, &err);
+  bool ret = engine_jack_reconnect_monitor (AUDIO_ENGINE.get (), true, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s", _ ("Failed to connect to left monitor output port"));
       return;
     }
-  ret = engine_jack_reconnect_monitor (AUDIO_ENGINE, false, &err);
+  ret = engine_jack_reconnect_monitor (AUDIO_ENGINE.get (), false, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -222,62 +212,66 @@ monitor_section_widget_setup (
   self->control_room = control_room;
 
   KnobWidget * knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val, fader_set_fader_val,
-    MONITOR_FADER, 0.f, 1.f, 78, 0.f);
-  knob->hover_str_getter = fader_db_string_getter;
+    Fader::fader_val_getter, Fader::default_fader_val_getter,
+    Fader::fader_val_setter, MONITOR_FADER.get (), 0.f, 1.f, 78, 0.f);
+  knob->hover_str_getter = Fader::db_string_getter_static;
   self->monitor_level = knob_with_name_widget_new (
-    NULL, monitor_out_name_getter, NULL, knob, GTK_ORIENTATION_VERTICAL, false,
-    2);
+    nullptr, monitor_out_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL,
+    false, 2);
   gtk_box_append (
     GTK_BOX (self->monitor_level_box), GTK_WIDGET (self->monitor_level));
 
   /* mute */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val, fader_set_fader_val,
-    CONTROL_ROOM->mute_fader, 0.f, 1.f, 52, 0.f);
-  knob->hover_str_getter = fader_db_string_getter;
+    Fader::fader_val_getter, Fader::default_fader_val_getter,
+    Fader::fader_val_setter, CONTROL_ROOM->mute_fader_.get (), 0.f, 1.f, 52,
+    0.f);
+  knob->hover_str_getter = Fader::db_string_getter_static;
   self->mute_level = knob_with_name_widget_new (
-    NULL, mute_name_getter, NULL, knob, GTK_ORIENTATION_VERTICAL, false, 2);
+    nullptr, mute_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false,
+    2);
   gtk_box_append (GTK_BOX (self->mute_level_box), GTK_WIDGET (self->mute_level));
 
   /* listen */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val, fader_set_fader_val,
-    CONTROL_ROOM->listen_fader, 0.f, 1.f, 52, 0.f);
-  knob->hover_str_getter = fader_db_string_getter;
+    Fader::fader_val_getter, Fader::default_fader_val_getter,
+    Fader::fader_val_setter, CONTROL_ROOM->listen_fader_.get (), 0.f, 1.f, 52,
+    0.f);
+  knob->hover_str_getter = Fader::db_string_getter_static;
   self->listen_level = knob_with_name_widget_new (
-    NULL, listen_name_getter, NULL, knob, GTK_ORIENTATION_VERTICAL, false, 2);
+    nullptr, listen_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false,
+    2);
   gtk_box_append (
     GTK_BOX (self->listen_level_box), GTK_WIDGET (self->listen_level));
 
   /* dim */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val, fader_set_fader_val,
-    CONTROL_ROOM->dim_fader, 0.f, 1.f, 52, 0.f);
-  knob->hover_str_getter = fader_db_string_getter;
+    Fader::fader_val_getter, Fader::default_fader_val_getter,
+    Fader::fader_val_setter, CONTROL_ROOM->dim_fader_.get (), 0.f, 1.f, 52, 0.f);
+  knob->hover_str_getter = Fader::db_string_getter_static;
   self->dim_level = knob_with_name_widget_new (
-    NULL, dim_name_getter, NULL, knob, GTK_ORIENTATION_VERTICAL, false, 2);
+    nullptr, dim_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_box_append (GTK_BOX (self->dim_level_box), GTK_WIDGET (self->dim_level));
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->mono_toggle), "codicons-merge", _ ("Mono"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
-    self->mono_toggle, fader_get_mono_compat_enabled (MONITOR_FADER));
+    self->mono_toggle, MONITOR_FADER->get_mono_compat_enabled ());
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->dim_toggle), "dim", _ ("Dim"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
-  gtk_toggle_button_set_active (self->dim_toggle, CONTROL_ROOM->dim_output);
+  gtk_toggle_button_set_active (self->dim_toggle, CONTROL_ROOM->dim_output_);
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->mute_toggle), "mute", _ ("Mute"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
-    self->mute_toggle, control_port_is_toggled (MONITOR_FADER->mute));
+    self->mute_toggle, MONITOR_FADER->mute_->is_toggled ());
 
   /* left/right outputs */
-  if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       self->left_outputs = active_hardware_mb_widget_new ();
       active_hardware_mb_widget_setup (
@@ -337,7 +331,7 @@ MonitorSectionWidget *
 monitor_section_widget_new (void)
 {
   MonitorSectionWidget * self = static_cast<MonitorSectionWidget *> (
-    g_object_new (MONITOR_SECTION_WIDGET_TYPE, NULL));
+    g_object_new (MONITOR_SECTION_WIDGET_TYPE, nullptr));
 
   return self;
 }

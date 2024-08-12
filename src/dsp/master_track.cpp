@@ -1,27 +1,22 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
-#include "dsp/automation_tracklist.h"
 #include "dsp/master_track.h"
-#include "project.h"
 
-#include "gtk_wrapper.h"
-
-void
-master_track_init (Track * self)
+MasterTrack::MasterTrack (int pos)
+    : Track (Track::Type::Master, _ ("Master"), pos)
 {
-  self->type = TrackType::TRACK_TYPE_MASTER;
   /* GTK color picker color */
-  gdk_rgba_parse (&self->color, "#C01C28");
-  self->icon_name = g_strdup ("effect");
+  color_ = Color ("#C01C28");
+  icon_name_ = "effect";
 }
 
 void
-master_track_setup (MasterTrack * self)
+MasterTrack::init_after_cloning (const MasterTrack &other)
 {
-  AudioBusTrack * track = (AudioBusTrack *) self;
-
-  audio_bus_track_setup (track);
+  Track::copy_members_from (other);
+  AutomatableTrack::copy_members_from (other);
+  ProcessableTrack::copy_members_from (other);
+  ChannelTrack::copy_members_from (other);
+  GroupTargetTrack::copy_members_from (other);
 }

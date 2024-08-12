@@ -1,26 +1,18 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
 #define __GUI_WIDGETS_CHORD_ARRANGER_H__
 
+#include "dsp/chord_region.h"
 #include "dsp/position.h"
-#include "gui/backend/tool.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/main_window.h"
 
 #include "gtk_wrapper.h"
 
-#define MW_CHORD_ARRANGER MW_CHORD_EDITOR_SPACE->arranger
+class ChordObject;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 
-typedef struct ChordObject        ChordObject;
-typedef struct _ChordObjectWidget ChordObjectWidget;
-typedef struct SnapGrid           SnapGrid;
-typedef struct AutomationPoint    AutomationPoint;
-typedef struct Region             ChordRegion;
-typedef struct Channel            Channel;
+#define MW_CHORD_ARRANGER MW_CHORD_EDITOR_SPACE->arranger
 
 /**
  * @addtogroup widgets
@@ -35,15 +27,15 @@ int
 chord_arranger_widget_get_chord_at_y (double y);
 
 /**
- * Called on drag begin in parent when background is double
- * clicked (i.e., a note is created).
+ * Called on drag begin in parent when background is double clicked (i.e., a
+ * note is created).
  */
-ChordObject *
+void
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
-  const Position * pos,
+  const Position   pos,
   int              chord_index,
-  Region *         region);
+  ChordRegion     &region);
 
 /**
  * Called on move items_y setup.
@@ -52,6 +44,9 @@ chord_arranger_widget_create_chord (
  */
 int
 chord_arranger_calc_deltamax_for_chord_movement (int y_delta);
+
+void
+chord_arranger_on_drag_end (ArrangerWidget * self);
 
 /**
  * @}

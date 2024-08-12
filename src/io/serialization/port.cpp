@@ -1,370 +1,166 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/audio_port.h"
+#include "dsp/control_port.h"
+#include "dsp/cv_port.h"
 #include "dsp/ext_port.h"
+#include "dsp/midi_port.h"
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_connections_manager.h"
-#include "io/serialization/plugin.h"
-#include "io/serialization/port.h"
-#include "utils/objects.h"
 
-#include <yyjson.h>
-
-typedef enum
+void
+PortIdentifier::define_fields (const Context &ctx)
 {
-  Z_IO_SERIALIZATION_PORT_ERROR_FAILED,
-} ZIOSerializationPortError;
-
-#define Z_IO_SERIALIZATION_PORT_ERROR z_io_serialization_port_error_quark ()
-GQuark
-z_io_serialization_port_error_quark (void);
-G_DEFINE_QUARK (z - io - serialization - port - error - quark, z_io_serialization_port_error)
-
-bool
-port_identifier_serialize_to_json (
-  yyjson_mut_doc *       doc,
-  yyjson_mut_val *       pi_obj,
-  const PortIdentifier * pi,
-  GError **              error)
-{
-  if (!pi->label_.empty ())
-    {
-      yyjson_mut_obj_add_str (doc, pi_obj, "label", pi->label_.c_str ());
-    }
-  if (!pi->sym_.empty ())
-    {
-      yyjson_mut_obj_add_str (doc, pi_obj, "symbol", pi->sym_.c_str ());
-    }
-  if (!pi->uri_.empty ())
-    {
-      yyjson_mut_obj_add_str (doc, pi_obj, "uri", pi->uri_.c_str ());
-    }
-  if (!pi->comment_.empty ())
-    {
-      yyjson_mut_obj_add_str (doc, pi_obj, "comment", pi->comment_.c_str ());
-    }
-  yyjson_mut_obj_add_int (doc, pi_obj, "ownerType", (int64_t) pi->owner_type_);
-  yyjson_mut_obj_add_int (doc, pi_obj, "type", (int64_t) pi->type_);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flow", (int64_t) pi->flow_);
-  yyjson_mut_obj_add_int (doc, pi_obj, "unit", (int64_t) pi->unit_);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flags", (int64_t) pi->flags_);
-  yyjson_mut_obj_add_int (doc, pi_obj, "flags2", (int64_t) pi->flags2_);
-  yyjson_mut_obj_add_uint (doc, pi_obj, "trackNameHash", pi->track_name_hash_);
-  yyjson_mut_val * plugin_id_obj =
-    yyjson_mut_obj_add_obj (doc, pi_obj, "pluginId");
-  plugin_identifier_serialize_to_json (
-    doc, plugin_id_obj, &pi->plugin_id_, error);
-  if (!pi->port_group_.empty ())
-    {
-      yyjson_mut_obj_add_str (
-        doc, pi_obj, "portGroup", pi->port_group_.c_str ());
-    }
-  if (!pi->ext_port_id_.empty ())
-    {
-      yyjson_mut_obj_add_str (
-        doc, pi_obj, "externalPortId", pi->ext_port_id_.c_str ());
-    }
-  yyjson_mut_obj_add_int (doc, pi_obj, "portIndex", pi->port_index_);
-  return true;
+  serialize_fields (
+    ctx, make_field ("label", label_), make_field ("symbol", sym_),
+    make_field ("uri", uri_), make_field ("comment", comment_),
+    make_field ("ownerType", owner_type_), make_field ("type", type_),
+    make_field ("flow", flow_), make_field ("unit", unit_),
+    make_field ("flags", flags_), make_field ("flags2", flags2_),
+    make_field ("trackNameHash", track_name_hash_),
+    make_field ("pluginId", plugin_id_), make_field ("portGroup", port_group_),
+    make_field ("externalPortId", ext_port_id_),
+    make_field ("portIndex", port_index_));
 }
 
-bool
-port_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * port_obj,
-  const Port *     port,
-  GError **        error)
+void
+Port::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * pi_id_obj = yyjson_mut_obj_add_obj (doc, port_obj, "id");
-  port_identifier_serialize_to_json (doc, pi_id_obj, &port->id_, error);
-  yyjson_mut_obj_add_bool (
-    doc, port_obj, "exposedToBackend", port->exposed_to_backend_);
-  yyjson_mut_obj_add_real (doc, port_obj, "control", port->control_);
-  yyjson_mut_obj_add_real (doc, port_obj, "minf", port->minf_);
-  yyjson_mut_obj_add_real (doc, port_obj, "maxf", port->maxf_);
-  yyjson_mut_obj_add_real (doc, port_obj, "zerof_", port->zerof_);
-  yyjson_mut_obj_add_real (doc, port_obj, "deff", port->deff_);
-  yyjson_mut_obj_add_int (
-    doc, port_obj, "carlaParameterId", port->carla_param_id_);
-  yyjson_mut_obj_add_real (doc, port_obj, "baseValue", port->base_value_);
-  return true;
+  serialize_fields (
+    ctx, make_field ("id", id_),
+    make_field ("exposedToBackend", exposed_to_backend_));
 }
 
-bool
-stereo_ports_serialize_to_json (
-  yyjson_mut_doc *    doc,
-  yyjson_mut_val *    sp_obj,
-  const StereoPorts * sp,
-  GError **           error)
+void
+ControlPort::define_fields (const Context &ctx)
 {
-  yyjson_mut_val * l_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "l");
-  port_serialize_to_json (doc, l_obj, &sp->get_l (), error);
-  yyjson_mut_val * r_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "r");
-  port_serialize_to_json (doc, r_obj, &sp->get_r (), error);
-  return true;
+  using T = ISerializable<ControlPort>;
+  T::call_all_base_define_fields<Port> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("control", control_), T::make_field ("minf", minf_),
+    T::make_field ("maxf", maxf_), T::make_field ("zerof", zerof_),
+    T::make_field ("deff", deff_),
+    T::make_field ("carlaParameterId", carla_param_id_),
+    T::make_field ("baseValue", base_value_));
+
+  if (ctx.is_deserializing ())
+    {
+      unsnapped_control_ = control_;
+    }
 }
 
-bool
-ext_port_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * ep_obj,
-  const ExtPort *  ep,
-  GError **        error)
+void
+MidiPort::define_fields (const Context &ctx)
 {
-  yyjson_mut_obj_add_str (doc, ep_obj, "fullName", ep->full_name);
-  if (ep->short_name)
-    {
-      yyjson_mut_obj_add_str (doc, ep_obj, "shortName", ep->short_name);
-    }
-  if (ep->alias1)
-    {
-      yyjson_mut_obj_add_str (doc, ep_obj, "alias1", ep->alias1);
-    }
-  if (ep->alias2)
-    {
-      yyjson_mut_obj_add_str (doc, ep_obj, "alias2", ep->alias2);
-    }
-  if (ep->rtaudio_dev_name)
-    {
-      yyjson_mut_obj_add_str (
-        doc, ep_obj, "rtAudioDeviceName", ep->rtaudio_dev_name);
-    }
-  yyjson_mut_obj_add_int (doc, ep_obj, "numAliases", ep->num_aliases);
-  yyjson_mut_obj_add_bool (doc, ep_obj, "isMidi", ep->is_midi);
-  yyjson_mut_obj_add_int (doc, ep_obj, "type", (int64_t) ep->type);
-  yyjson_mut_obj_add_uint (
-    doc, ep_obj, "rtAudioChannelIndex", ep->rtaudio_channel_idx);
-  return true;
+  using T = ISerializable<MidiPort>;
+  T::call_all_base_define_fields<Port> (ctx);
 }
 
-bool
-port_connection_serialize_to_json (
-  yyjson_mut_doc *       doc,
-  yyjson_mut_val *       conn_obj,
-  const PortConnection * conn,
-  GError **              error)
+void
+CVPort::define_fields (const Context &ctx)
 {
-  yyjson_mut_val * src_id_obj = yyjson_mut_obj_add_obj (doc, conn_obj, "srcId");
-  port_identifier_serialize_to_json (doc, src_id_obj, conn->src_id, error);
-  yyjson_mut_val * dest_id_obj =
-    yyjson_mut_obj_add_obj (doc, conn_obj, "destId");
-  port_identifier_serialize_to_json (doc, dest_id_obj, conn->dest_id, error);
-  yyjson_mut_obj_add_real (doc, conn_obj, "multiplier", conn->multiplier);
-  yyjson_mut_obj_add_bool (doc, conn_obj, "enabled", conn->enabled);
-  yyjson_mut_obj_add_bool (doc, conn_obj, "locked", conn->locked);
-  yyjson_mut_obj_add_real (doc, conn_obj, "baseValue", conn->base_value);
-  return true;
+  using T = ISerializable<CVPort>;
+  T::call_all_base_define_fields<Port> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("minf", minf_), T::make_field ("maxf", maxf_),
+    T::make_field ("zerof", zerof_));
 }
 
-bool
-port_connections_manager_serialize_to_json (
-  yyjson_mut_doc *               doc,
-  yyjson_mut_val *               mgr_obj,
-  const PortConnectionsManager * mgr,
-  GError **                      error)
+void
+AudioPort::define_fields (const Context &ctx)
 {
-  if (mgr->connections)
-    {
-      yyjson_mut_val * conns_arr =
-        yyjson_mut_obj_add_arr (doc, mgr_obj, "connections");
-      for (int i = 0; i < mgr->num_connections; i++)
-        {
-          PortConnection * conn = mgr->connections[i];
-          yyjson_mut_val * conn_obj = yyjson_mut_arr_add_obj (doc, conns_arr);
-          port_connection_serialize_to_json (doc, conn_obj, conn, error);
-        }
-    }
-  return true;
+  using T = ISerializable<AudioPort>;
+  T::call_all_base_define_fields<Port> (ctx);
 }
 
-bool
-port_identifier_deserialize_from_json (
-  yyjson_doc *     doc,
-  yyjson_val *     pi_obj,
-  PortIdentifier * pi,
-  GError **        error)
+#if 0
+void
+ControlPort::deserialize (Context ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (pi_obj);
-  yyjson_val *    label_obj = yyjson_obj_iter_get (&it, "label");
-  if (label_obj)
-    {
-      pi->label_ = g_strdup (yyjson_get_str (label_obj));
-    }
-  yyjson_val * sym_obj = yyjson_obj_iter_get (&it, "symbol");
-  if (sym_obj)
-    {
-      pi->sym_ = g_strdup (yyjson_get_str (sym_obj));
-    }
-  yyjson_val * uri_obj = yyjson_obj_iter_get (&it, "uri");
-  if (uri_obj)
-    {
-      pi->uri_ = g_strdup (yyjson_get_str (uri_obj));
-    }
-  yyjson_val * comment_obj = yyjson_obj_iter_get (&it, "comment");
-  if (comment_obj)
-    {
-      pi->comment_ = g_strdup (yyjson_get_str (comment_obj));
-    }
-  pi->owner_type_ = (PortIdentifier::OwnerType) yyjson_get_int (
-    yyjson_obj_iter_get (&it, "ownerType"));
-  pi->type_ = (PortType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  pi->flow_ = (PortFlow) yyjson_get_int (yyjson_obj_iter_get (&it, "flow"));
-  pi->unit_ = (PortUnit) yyjson_get_int (yyjson_obj_iter_get (&it, "unit"));
-  pi->flags_ =
-    (PortIdentifier::Flags) yyjson_get_int (yyjson_obj_iter_get (&it, "flags"));
-  pi->flags2_ = (PortIdentifier::Flags2) yyjson_get_int (
-    yyjson_obj_iter_get (&it, "flags2"));
-  pi->track_name_hash_ =
-    yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
-  yyjson_val * plugin_id_obj = yyjson_obj_iter_get (&it, "pluginId");
-  plugin_identifier_deserialize_from_json (
-    doc, plugin_id_obj, &pi->plugin_id_, error);
-  yyjson_val * port_group_obj = yyjson_obj_iter_get (&it, "portGroup");
-  if (port_group_obj)
-    {
-      pi->port_group_ = g_strdup (yyjson_get_str (port_group_obj));
-    }
-  yyjson_val * ext_port_id_obj = yyjson_obj_iter_get (&it, "externalPortId");
-  if (ext_port_id_obj)
-    {
-      pi->ext_port_id_ = g_strdup (yyjson_get_str (ext_port_id_obj));
-    }
-  pi->port_index_ = yyjson_get_int (yyjson_obj_iter_get (&it, "portIndex"));
-  return true;
+  Port::deserialize_common (ctx);
+  yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+  deserialize_field (it, "control", control_, ctx);
+  deserialize_field (it, "minf", minf_, ctx);
+  deserialize_field (it, "maxf", maxf_, ctx);
+
+  /* this was incorrectly serialized in the past */
+  std::string zerof_str = "zerof";
+  if (ctx.format_major_version_ == 1 && ctx.format_minor_version_ < 11)
+    zerof_str = "zerof_";
+  deserialize_field (it, zerof_str.c_str (), zerof_, ctx);
+
+  deserialize_field (it, "deff", deff_, ctx);
+  deserialize_field (it, "carlaParameterId", carla_param_id_, ctx);
+
+  /* added in 1.7 */
+  deserialize_field (it, "baseValue", base_value_, ctx, true);
+
+  unsnapped_control_ = control_;
+}
+#endif
+
+#if 0
+void
+CVPort::deserialize (Context ctx)
+{
+  Port::deserialize_common (ctx);
+  yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+  deserialize_field (it, "minf", minf_, ctx);
+  deserialize_field (it, "maxf", maxf_, ctx);
+
+  /* this was incorrectly serialized in the past */
+  std::string zerof_str = "zerof";
+  if (ctx.format_major_version_ == 1 && ctx.format_minor_version_ < 11)
+    zerof_str = "zerof_";
+  deserialize_field (it, zerof_str.c_str (), zerof_, ctx);
+}
+#endif
+
+void
+StereoPorts::define_fields (const Context &ctx)
+{
+  using T = ISerializable<StereoPorts>;
+  T::serialize_fields (ctx, T::make_field ("l", l_), T::make_field ("r", r_));
 }
 
-bool
-port_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * port_obj,
-  Port *       port,
-  GError **    error)
+void
+ExtPort::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (port_obj);
-  yyjson_val *    id_obj = yyjson_obj_iter_get (&it, "id");
-  port_identifier_deserialize_from_json (doc, id_obj, &port->id_, error);
-  port->exposed_to_backend_ =
-    yyjson_get_bool (yyjson_obj_iter_get (&it, "exposedToBackend"));
-  port->control_ =
-    (float) yyjson_get_real (yyjson_obj_iter_get (&it, "control"));
-  port->minf_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "minf"));
-  port->maxf_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "maxf"));
-  port->zerof_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "zerof_"));
-  port->deff_ = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "deff"));
-  port->carla_param_id_ =
-    yyjson_get_int (yyjson_obj_iter_get (&it, "carlaParameterId"));
-  yyjson_val * base_val_obj = yyjson_obj_iter_get (&it, "baseValue");
-  if (base_val_obj) /* added in 1.7 */
-    {
-      port->base_value_ = (float) yyjson_get_real (base_val_obj);
-    }
-  port->magic_ = PORT_MAGIC;
-  return true;
+  using T = ISerializable<ExtPort>;
+  T::serialize_fields (
+    ctx, T::make_field ("fullName", full_name_),
+    T::make_field ("shortName", short_name_, true),
+    T::make_field ("alias1", alias1_, true),
+    T::make_field ("alias2", alias2_, true),
+    T::make_field ("rtAudioDeviceName", rtaudio_dev_name_, true),
+    T::make_field ("numAliases", num_aliases_),
+    T::make_field ("isMidi", is_midi_), T::make_field ("type", type_),
+    T::make_field ("rtAudioChannelIndex", rtaudio_channel_idx_));
 }
 
-bool
-stereo_ports_deserialize_from_json (
-  yyjson_doc *  doc,
-  yyjson_val *  sp_obj,
-  StereoPorts * sp,
-  GError **     error)
+void
+PortConnection::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (sp_obj);
-  yyjson_val *    l_obj = yyjson_obj_iter_get (&it, "l");
-  port_deserialize_from_json (doc, l_obj, &sp->get_l (), error);
-  yyjson_val * r_obj = yyjson_obj_iter_get (&it, "r");
-  port_deserialize_from_json (doc, r_obj, &sp->get_r (), error);
-  return true;
+  using T = ISerializable<PortConnection>;
+  T::serialize_fields (
+    ctx, T::make_field ("srcId", src_id_), T::make_field ("destId", dest_id_),
+    T::make_field ("multiplier", multiplier_),
+    T::make_field ("enabled", enabled_), T::make_field ("locked", locked_));
+  T::serialize_fields (
+    ctx,
+    T::make_field (
+      "baseValue", base_value_,
+      !ctx.is_serializing () || src_id_.type_ != PortType::CV));
 }
 
-bool
-ext_port_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * ep_obj,
-  ExtPort *    ep,
-  GError **    error)
+void
+PortConnectionsManager::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (ep_obj);
-  ep->full_name =
-    g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "fullName")));
-  yyjson_val * short_name_obj = yyjson_obj_iter_get (&it, "shortName");
-  if (short_name_obj)
-    {
-      ep->short_name = g_strdup (yyjson_get_str (short_name_obj));
-    }
-  yyjson_val * alias1_obj = yyjson_obj_iter_get (&it, "alias1");
-  if (alias1_obj)
-    {
-      ep->alias1 = g_strdup (yyjson_get_str (alias1_obj));
-    }
-  yyjson_val * alias2_obj = yyjson_obj_iter_get (&it, "alias2");
-  if (alias2_obj)
-    {
-      ep->alias2 = g_strdup (yyjson_get_str (alias2_obj));
-    }
-  yyjson_val * rtaudio_dev_name_obj =
-    yyjson_obj_iter_get (&it, "rtAudioDeviceName");
-  if (rtaudio_dev_name_obj)
-    {
-      ep->rtaudio_dev_name = g_strdup (yyjson_get_str (rtaudio_dev_name_obj));
-    }
-  ep->num_aliases = yyjson_get_int (yyjson_obj_iter_get (&it, "numAliases"));
-  ep->is_midi = yyjson_get_bool (yyjson_obj_iter_get (&it, "isMidi"));
-  ep->type = (ExtPortType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  ep->rtaudio_channel_idx =
-    yyjson_get_uint (yyjson_obj_iter_get (&it, "rtAudioChannelIndex"));
-  return true;
-}
+  using T = ISerializable<PortConnectionsManager>;
+  T::serialize_fields (ctx, T::make_field ("connections", connections_));
 
-bool
-port_connection_deserialize_from_json (
-  yyjson_doc *     doc,
-  yyjson_val *     conn_obj,
-  PortConnection * conn,
-  GError **        error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (conn_obj);
-  yyjson_val *    src_id_obj = yyjson_obj_iter_get (&it, "srcId");
-  conn->src_id = new PortIdentifier ();
-  port_identifier_deserialize_from_json (doc, src_id_obj, conn->src_id, error);
-  yyjson_val * dest_id_obj = yyjson_obj_iter_get (&it, "destId");
-  conn->dest_id = new PortIdentifier ();
-  port_identifier_deserialize_from_json (doc, dest_id_obj, conn->dest_id, error);
-  conn->multiplier =
-    (float) yyjson_get_real (yyjson_obj_iter_get (&it, "multiplier"));
-  conn->enabled = yyjson_get_bool (yyjson_obj_iter_get (&it, "enabled"));
-  conn->locked = yyjson_get_bool (yyjson_obj_iter_get (&it, "locked"));
-  conn->base_value =
-    (float) yyjson_get_real (yyjson_obj_iter_get (&it, "baseValue"));
-  return true;
-}
-
-bool
-port_connections_manager_deserialize_from_json (
-  yyjson_doc *             doc,
-  yyjson_val *             mgr_obj,
-  PortConnectionsManager * mgr,
-  GError **                error)
-{
-  yyjson_obj_iter it = yyjson_obj_iter_with (mgr_obj);
-  yyjson_val *    conns_arr = yyjson_obj_iter_get (&it, "connections");
-  if (conns_arr)
-    {
-      mgr->connections_size = yyjson_arr_size (conns_arr);
-      if (mgr->connections_size > 0)
-        {
-          mgr->connections =
-            object_new_n (mgr->connections_size, PortConnection *);
-          yyjson_arr_iter conn_it = yyjson_arr_iter_with (conns_arr);
-          yyjson_val *    conn_obj = NULL;
-          while ((conn_obj = yyjson_arr_iter_next (&conn_it)))
-            {
-              PortConnection * conn = object_new (PortConnection);
-              mgr->connections[mgr->num_connections++] = conn;
-              port_connection_deserialize_from_json (doc, conn_obj, conn, error);
-            }
-        }
-    }
-  return true;
+  if (ctx.is_deserializing ())
+    regenerate_hashtables ();
 }

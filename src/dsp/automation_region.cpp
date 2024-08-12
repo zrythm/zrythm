@@ -1,176 +1,149 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
 
+#include "dsp/automatable_track.h"
 #include "dsp/automation_point.h"
 #include "dsp/automation_region.h"
 #include "dsp/position.h"
-#include "dsp/region.h"
-#include "gui/backend/automation_selections.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
+#include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
-int
-automation_region_sort_func (const void * _a, const void * _b)
+AutomationRegion::AutomationRegion (
+  const Position &start_pos,
+  const Position &end_pos,
+  unsigned int    track_name_hash,
+  int             at_idx,
+  int             idx_inside_at)
 {
-  AutomationPoint * a = *(AutomationPoint * const *) _a;
-  AutomationPoint * b = *(AutomationPoint * const *) _b;
-  ArrangerObject *  a_obj = (ArrangerObject *) a;
-  ArrangerObject *  b_obj = (ArrangerObject *) b;
-  long              ret = position_compare_frames (&a_obj->pos, &b_obj->pos);
-  if (ret == 0 && a->index < b->index)
-    {
-      return -1;
-    }
+  id_ = RegionIdentifier (RegionType::Automation);
 
-  return (int) CLAMP (ret, -1, 1);
+  init (start_pos, end_pos, track_name_hash, at_idx, idx_inside_at);
 }
 
-Region *
-automation_region_new (
-  const Position * start_pos,
-  const Position * end_pos,
-  unsigned int     track_name_hash,
-  int              at_idx,
-  int              idx_inside_at)
-{
-  Region * self = object_new (Region);
-
-  self->id.type = RegionType::REGION_TYPE_AUTOMATION;
-
-  self->aps_size = 2;
-  self->aps = object_new_n (self->aps_size, AutomationPoint *);
-
-  region_init (self, start_pos, end_pos, track_name_hash, at_idx, idx_inside_at);
-
-  return self;
-}
-
-/**
- * Prints the automation in this Region.
- */
 void
-automation_region_print_automation (Region * self)
+AutomationRegion::print_automation () const
 {
-  AutomationPoint * ap;
-  ArrangerObject *  ap_obj;
-  for (int i = 0; i < self->num_aps; i++)
+  for (const auto &ap : aps_)
     {
-      ap = self->aps[i];
-      ap_obj = (ArrangerObject *) ap;
-      g_message ("%d", i);
-      position_print (&ap_obj->pos);
+      z_debug ("[%d] %s : %s", ap->index_, ap->fvalue_, ap->pos_.to_string ());
     }
 }
 
-/**
- * Forces sort of the automation points.
- */
-void
-automation_region_force_sort (Region * self)
+AutomationTrack *
+AutomationRegion::get_automation_track () const
 {
-  /* sort by position */
-  qsort (
-    self->aps, (size_t) self->num_aps, sizeof (AutomationPoint *),
-    automation_region_sort_func);
+  auto track = dynamic_cast<AutomatableTrack *> (get_track ());
+  g_return_val_if_fail (track != nullptr, nullptr);
+  const auto &atl = track->get_automation_tracklist ();
+  g_return_val_if_fail ((int) atl.ats_.size () > id_.at_idx_, nullptr);
+
+  return atl.ats_[id_.at_idx_].get ();
+}
+
+void
+AutomationRegion::set_automation_track (AutomationTrack &at)
+{
+  z_debug (
+    "setting region automation track to %d %s", at.index_,
+    at.port_id_.get_label ());
+
+  /* if clip editor region or region selected,
+   * unselect it */
+  if (id_ == CLIP_EDITOR->region_id_)
+    {
+      CLIP_EDITOR->set_region (nullptr, true);
+    }
+  bool was_selected = false;
+  if (is_selected ())
+    {
+      was_selected = true;
+      select (false, false, false);
+    }
+  id_.at_idx_ = at.index_;
+  auto track = at.get_track ();
+  id_.track_name_hash_ = track->get_name_hash ();
+
+  update_identifier ();
+
+  /* reselect it if was selected */
+  if (was_selected)
+    {
+      select (true, true, false);
+    }
+}
+
+bool
+AutomationRegion::get_muted (bool check_parent) const
+{
+  if (check_parent)
+    {
+      auto at = get_automation_track ();
+      g_return_val_if_fail (at, true);
+
+      if (at->automation_mode_ == AutomationMode::Off)
+        return true;
+    }
+  return muted_;
+}
+
+void
+AutomationRegion::force_sort ()
+{
+  std::sort (aps_.begin (), aps_.end (), [] (const auto &a, const auto &b) {
+    return *a.get () < *b.get ();
+  });
 
   /* refresh indices */
-  for (int i = 0; i < self->num_aps; i++)
+  for (size_t i = 0; i < aps_.size (); i++)
     {
-      automation_point_set_region_and_index (self->aps[i], self, i);
+      aps_[i]->set_region_and_index (*this, i);
     }
 }
 
-/**
- * Adds an AutomationPoint to the Region.
- */
-void
-automation_region_add_ap (Region * self, AutomationPoint * ap, int pub_events)
+AutomationPoint *
+AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 {
-  g_return_if_fail (IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
+  if (ap.index_ > 0)
+    return aps_[ap.index_ - 1].get ();
 
-  /* add point */
-  array_double_size_if_full (
-    self->aps, self->num_aps, self->aps_size, AutomationPoint *);
-  array_append (self->aps, self->num_aps, ap);
-
-  /* re-sort */
-  automation_region_force_sort (self);
-
-  if (pub_events)
-    {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ap);
-    }
+  return nullptr;
 }
 
-/**
- * Returns the AutomationPoint before the given
- * one.
- */
 AutomationPoint *
-automation_region_get_prev_ap (Region * self, AutomationPoint * ap)
+AutomationRegion::get_next_ap (
+  const AutomationPoint &ap,
+  bool                   check_positions,
+  bool                   check_transients) const
 {
-  if (ap->index > 0)
-    return self->aps[ap->index - 1];
-
-  return NULL;
-}
-
-/**
- * Returns the AutomationPoint after the given
- * one.
- *
- * @param check_positions Compare positions instead
- *   of just getting the next index.
- * @param check_transients Also check the transient
- *   of each object. This only matters if \ref
- *   check_positions is true. FIXME not used at
- *   the moment. Keep it around for abit then
- *   delete it if not needed.
- */
-AutomationPoint *
-automation_region_get_next_ap (
-  Region *          self,
-  AutomationPoint * ap,
-  bool              check_positions,
-  bool              check_transients)
-{
-  g_return_val_if_fail (self && ap, NULL);
-
   if (check_positions)
     {
       check_transients =
         ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
-        && MW_AUTOMATION_ARRANGER->action == UI_OVERLAY_ACTION_MOVING_COPY;
-      ArrangerObject *  obj = (ArrangerObject *) ap;
-      AutomationPoint * next_ap = NULL;
-      ArrangerObject *  next_obj = NULL;
+        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MOVING_COPY;
+      AutomationPoint * next_ap = nullptr;
       const int         loop_times = check_transients ? 2 : 1;
-      for (int i = 0; i < self->num_aps; i++)
+      for (auto &cur_ap_outer : aps_)
         {
           for (int j = 0; j < loop_times; j++)
             {
-              AutomationPoint * cur_ap = self->aps[i];
-              ArrangerObject *  cur_obj = (ArrangerObject *) cur_ap;
+              AutomationPoint &cur_ap = *cur_ap_outer;
               if (j == 1)
                 {
-                  if (cur_obj->transient)
+                  if (cur_ap.transient_)
                     {
-                      cur_obj = cur_obj->transient;
-                      cur_ap = (AutomationPoint *) cur_obj;
+                      cur_ap = *cur_ap.get_transient<AutomationPoint> ();
                     }
                   else
                     continue;
@@ -180,168 +153,103 @@ automation_region_get_next_ap (
                 continue;
 
               if (
-                position_is_after_or_equal (&cur_obj->pos, &obj->pos)
-                && (!next_obj || position_is_before (&cur_obj->pos, &next_obj->pos)))
+                cur_ap.pos_ >= ap.pos_
+                && (!next_ap || cur_ap.pos_ < next_ap->pos_))
                 {
-                  next_obj = cur_obj;
-                  next_ap = cur_ap;
+                  next_ap = &cur_ap;
                 }
             }
         }
       return next_ap;
     }
-  else if (ap->index < self->num_aps - 1)
-    return self->aps[ap->index + 1];
+  else if (ap.index_ < static_cast<int> (aps_.size ()) - 1)
+    return aps_[ap.index_ + 1].get ();
 
-  return NULL;
+  return nullptr;
 }
 
-/**
- * Removes the AutomationPoint from the Region,
- * optionally freeing it.
- *
- * @param free Free the AutomationPoint after
- *   removing it.
- */
 void
-automation_region_remove_ap (
-  Region *          self,
-  AutomationPoint * ap,
-  bool              freeing_region,
-  int               free)
+AutomationRegion::get_aps_since_last_recorded (
+  Position                        pos,
+  std::vector<AutomationPoint *> &aps)
 {
-  g_return_if_fail (IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
+  aps.clear ();
 
-  /* deselect */
-  arranger_object_select (
-    (ArrangerObject *) ap, F_NO_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-
-  if (self->last_recorded_ap == ap)
-    {
-      self->last_recorded_ap = NULL;
-    }
-
-  array_delete (self->aps, self->num_aps, ap);
-
-  if (!freeing_region)
-    {
-      for (int i = 0; i < self->num_aps; i++)
-        {
-          automation_point_set_region_and_index (self->aps[i], self, i);
-        }
-    }
-
-  if (free)
-    {
-      /* FIXME this was the previous comment, it's now free'd
-       * immediately so there may be issues */
-      /* free later otherwise causes problems while recording */
-      /*free_later (ap, arranger_object_free);*/
-      arranger_object_free ((ArrangerObject *) ap);
-    }
-}
-
-/**
- * Returns the automation points since the last
- * recorded automation point (if the last recorded
- * automation point was before the current pos).
- */
-void
-automation_region_get_aps_since_last_recorded (
-  Region *    self,
-  Position *  pos,
-  GPtrArray * aps)
-{
-  g_ptr_array_remove_range (aps, 0, aps->len);
-
-  ArrangerObject * last_recorded_obj = (ArrangerObject *) self->last_recorded_ap;
-  if (
-    !last_recorded_obj
-    || position_is_before_or_equal (pos, &last_recorded_obj->pos))
+  if (!last_recorded_ap_ || pos <= last_recorded_ap_->pos_)
     return;
 
-  for (int i = 0; i < self->num_aps; i++)
+  for (auto &ap : aps_)
     {
-      AutomationPoint * ap = self->aps[i];
-      ArrangerObject *  ap_obj = (ArrangerObject *) ap;
-
-      if (
-        position_is_after (&ap_obj->pos, &last_recorded_obj->pos)
-        && position_is_before_or_equal (&ap_obj->pos, pos))
+      if (ap->pos_ > last_recorded_ap_->pos_ && ap->pos_ <= pos)
         {
-          g_ptr_array_add (aps, ap);
+          aps.push_back (ap.get ());
         }
     }
 }
 
-/**
- * Returns an automation point found within +/-
- * delta_ticks from the position, or NULL.
- *
- * @param before_only Only check previous automation
- *   points.
- */
 AutomationPoint *
-automation_region_get_ap_around (
-  Region *   self,
+AutomationRegion::get_ap_around (
   Position * _pos,
   double     delta_ticks,
   bool       before_only,
   bool       use_snapshots)
 {
   Position pos;
-  position_set_to_pos (&pos, _pos);
-  AutomationTrack * at = region_get_automation_track (self);
-  /* FIXME only check aps in this region */
-  AutomationPoint * ap =
-    automation_track_get_ap_before_pos (at, &pos, true, use_snapshots);
-  ArrangerObject * ap_obj = (ArrangerObject *) ap;
-  if (ap && pos.ticks - ap_obj->pos.ticks <= (double) delta_ticks)
+  pos = *_pos;
+  AutomationTrack * at = get_automation_track ();
+  AutomationPoint * ap = at->get_ap_before_pos (pos, true, use_snapshots);
+  if (ap && pos.ticks_ - ap->pos_.ticks_ <= (double) delta_ticks)
     {
       return ap;
     }
   else if (!before_only)
     {
-      position_add_ticks (&pos, delta_ticks);
-      ap = automation_track_get_ap_before_pos (at, &pos, true, use_snapshots);
-      ap_obj = (ArrangerObject *) ap;
+      pos.add_ticks (delta_ticks);
+      ap = at->get_ap_before_pos (pos, true, use_snapshots);
       if (ap)
         {
-          double diff = ap_obj->pos.ticks - _pos->ticks;
+          double diff = ap->pos_.ticks_ - _pos->ticks_;
           if (diff >= 0.0)
             return ap;
         }
     }
 
-  return NULL;
+  return nullptr;
 }
 
 bool
-automation_region_validate (Region * self)
+AutomationRegion::validate (bool is_project, double frames_per_tick) const
 {
-  for (int i = 0; i < self->num_aps; i++)
+  for (size_t i = 0; i < aps_.size (); i++)
     {
-      AutomationPoint * ap = self->aps[i];
+      AutomationPoint * ap = aps_[i].get ();
+      z_return_val_if_fail (ap->index_ == (int) i, false);
+    }
 
-      g_return_val_if_fail (ap->index == i, false);
+  if (
+    !Region::are_members_valid (is_project)
+    || !TimelineObject::are_members_valid (is_project)
+    || !NameableObject::are_members_valid (is_project)
+    || !LoopableObject::are_members_valid (is_project)
+    || !MuteableObject::are_members_valid (is_project)
+    || !LengthableObject::are_members_valid (is_project)
+    || !ColoredObject::are_members_valid (is_project)
+    || !ArrangerObject::are_members_valid (is_project))
+    {
+      return false;
     }
 
   return true;
 }
 
-/**
- * Frees members only but not the Region itself.
- *
- * Regions should be free'd using region_free.
- */
-void
-automation_region_free_members (Region * self)
+ArrangerSelections *
+AutomationRegion::get_arranger_selections () const
 {
-  int i;
-  for (i = self->num_aps - 1; i >= 0; i--)
-    {
-      automation_region_remove_ap (self, self->aps[i], true, F_FREE);
-    }
+  return AUTOMATION_SELECTIONS.get ();
+}
 
-  free (self->aps);
+ArrangerWidget *
+AutomationRegion::get_arranger_for_children () const
+{
+  return MW_AUTOMATION_ARRANGER;
 }

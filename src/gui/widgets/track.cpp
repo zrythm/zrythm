@@ -1,16 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/audio_bus_track.h"
-#include "dsp/audio_group_track.h"
 #include "dsp/automation_track.h"
-#include "dsp/control_port.h"
-#include "dsp/exporter.h"
-#include "dsp/group_target_track.h"
 #include "dsp/instrument_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/master_track.h"
-#include "dsp/port_connections_manager.h"
 #include "dsp/region.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
@@ -25,11 +17,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/custom_button.h"
-#include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
-#include "gui/widgets/dialogs/bounce_dialog.h"
-#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
-#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/fader_buttons.h"
@@ -47,16 +35,10 @@
 #include "gui/widgets/track_canvas.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "utils/cairo.h"
-#include "utils/color.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/symap.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -70,29 +52,28 @@ G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
  * Width of each meter: total 8 for MIDI, total
  * 16 for audio.
  */
-#define METER_WIDTH 8
+// static constexpr int METER_WIDTH = 8;
 
 /** Pixels from the bottom edge to start resizing
  * at. */
-#define RESIZE_PX 12
+static constexpr int RESIZE_PX = 12;
 
 AutomationTrack *
 track_widget_get_at_at_y (TrackWidget * self, double y)
 {
-  Track *               track = self->track;
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  if (!atl || !track->automation_visible)
-    return NULL;
+  auto track = dynamic_cast<AutomatableTrack *> (self->track);
+  if (!track || !track->automation_visible_)
+    return nullptr;
 
-  for (int j = 0; j < atl->num_ats; j++)
+  auto &atl = track->get_automation_tracklist ();
+
+  for (auto &at : atl.ats_)
     {
-      AutomationTrack * at = atl->ats[j];
-
-      if (!at->created || !at->visible)
+      if (!at->created_ || !at->visible_)
         continue;
 
-      if (y >= at->y && y < at->y + at->height)
-        return at;
+      if (y >= at->y_ && y < at->y_ + at->height_)
+        return at.get ();
     }
 
   return NULL;
@@ -119,152 +100,154 @@ track_widget_highlight_to_str (TrackWidgetHighlight highlight)
 CustomButtonWidget *
 track_widget_get_hovered_button (TrackWidget * self, int x, int y)
 {
-#define IS_BUTTON_HOVERED \
-  (x >= cb->x && x <= cb->x + (cb->width ? cb->width : TRACK_BUTTON_SIZE) \
-   && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE)
-#define RETURN_IF_HOVERED \
-  if (IS_BUTTON_HOVERED) \
-    return cb;
+  auto is_button_hovered = [x, y] (const CustomButtonWidget &cb) {
+    return (
+      x >= cb.x && x <= cb.x + (cb.width ? cb.width : TRACK_BUTTON_SIZE)
+      && y >= cb.y && y <= cb.y + TRACK_BUTTON_SIZE);
+  };
+#define RETURN_IF_HOVERED(cb) \
+  if (is_button_hovered (cb)) \
+    return &cb;
 
-  CustomButtonWidget * cb = NULL;
-  for (int i = 0; i < self->num_top_buttons; i++)
+  CustomButtonWidget * cb = nullptr;
+  for (auto & cb_ref : self->top_buttons)
     {
-      cb = self->top_buttons[i];
-      RETURN_IF_HOVERED;
+      cb = &cb_ref;
+      RETURN_IF_HOVERED (*cb);
     }
-  if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (self->track->main_height))
+  if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (self->track->main_height_))
     {
-      for (int i = 0; i < self->num_bot_buttons; i++)
+      for (auto & cb_ref : self->bot_buttons)
         {
-          cb = self->bot_buttons[i];
-          RETURN_IF_HOVERED;
+          cb = &cb_ref;
+          RETURN_IF_HOVERED (*cb);
         }
     }
 
-  Track * track = self->track;
-  if (track->lanes_visible)
+  if (auto track = dynamic_cast<LanedTrack *> (self->track))
     {
-      for (int i = 0; i < track->num_lanes; i++)
+      if (track->lanes_visible_)
         {
-          TrackLane * lane = track->lanes[i];
-
-          for (int j = 0; j < lane->num_buttons; j++)
-            {
-              cb = lane->buttons[j];
-              RETURN_IF_HOVERED;
-            }
-        }
-    }
-
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  if (atl && track->automation_visible)
-    {
-      for (int i = 0; i < atl->num_ats; i++)
-        {
-          AutomationTrack * at = atl->ats[i];
-
-          /* skip invisible automation tracks */
-          if (!at->visible)
-            continue;
-
-          for (int j = 0; j < at->num_top_left_buttons; j++)
-            {
-              cb = at->top_left_buttons[j];
-              RETURN_IF_HOVERED;
-            }
-          for (int j = 0; j < at->num_top_right_buttons; j++)
-            {
-              cb = at->top_right_buttons[j];
-              RETURN_IF_HOVERED;
-            }
-          if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (at->height))
-            {
-              for (int j = 0; j < at->num_bot_left_buttons; j++)
+          auto laned_track_variant =
+            convert_to_variant<LanedTrackPtrVariant> (track);
+          auto ret = std::visit (
+            [&] (auto &laned_track) {
+              for (auto &lane : laned_track->lanes_)
                 {
-                  cb = at->bot_left_buttons[j];
-                  RETURN_IF_HOVERED;
+                  for (auto &lane_button : lane->buttons_)
+                    {
+                      RETURN_IF_HOVERED (lane_button);
+                    }
                 }
-              for (int j = 0; j < at->num_bot_right_buttons; j++)
+                return (CustomButtonWidget*) nullptr;
+            },
+            laned_track_variant);
+
+          if (ret)
+            return ret;
+        }
+    }
+
+  if (auto track = dynamic_cast<AutomatableTrack *> (self->track))
+    {
+      auto &atl = track->get_automation_tracklist ();
+      if (track->automation_visible_)
+        {
+          for (auto &at : atl.ats_)
+            {
+              /* skip invisible automation tracks */
+              if (!at->visible_)
+                continue;
+
+              for (auto &button : at->top_left_buttons_)
                 {
-                  cb = at->bot_right_buttons[j];
-                  RETURN_IF_HOVERED;
+                  RETURN_IF_HOVERED (button);
+                }
+              for (auto &button : at->top_right_buttons_)
+                {
+                  RETURN_IF_HOVERED (button);
+                }
+              if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (at->height_))
+                {
+                  for (auto &button : at->bot_left_buttons_)
+                    {
+                      RETURN_IF_HOVERED (button);
+                    }
+                  for (auto &button : at->bot_right_buttons_)
+                    {
+                      RETURN_IF_HOVERED (button);
+                    }
                 }
             }
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 AutomationModeWidget *
 track_widget_get_hovered_am_widget (TrackWidget * self, int x, int y)
 {
-#define IS_BUTTON_HOVERED \
-  (x >= cb->x && x <= cb->x + (cb->width ? cb->width : TRACK_BUTTON_SIZE) \
-   && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE)
-#define RETURN_IF_HOVERED \
-  if (IS_BUTTON_HOVERED) \
-    return cb;
-
-  Track *               track = self->track;
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  if (atl && track->automation_visible)
+  if (auto track = dynamic_cast<AutomatableTrack *> (self->track))
     {
-      for (int i = 0; i < atl->num_ats; i++)
+      if (track->automation_visible_)
         {
-          AutomationTrack * at = atl->ats[i];
-
-          /* skip invisible automation tracks */
-          if (!at->visible)
-            continue;
-
-          AutomationModeWidget * am = at->am_widget;
-          if (!am)
-            continue;
-          if (
-            x >= am->x && x <= am->x + am->width && y >= am->y
-            && y <= am->y + TRACK_BUTTON_SIZE)
+          auto &atl = track->get_automation_tracklist ();
+          for (auto &at : atl.ats_)
             {
-              return am;
+              /* skip invisible automation tracks */
+              if (!at->visible_)
+                continue;
+
+              auto &am = at->am_widget_;
+              if (!am)
+                continue;
+              if (
+                x >= am->x_ && x <= am->x_ + am->width_ && y >= am->y_
+                && y <= am->y_ + TRACK_BUTTON_SIZE)
+                {
+                  return am.get ();
+                }
             }
         }
     }
   return NULL;
 }
 
-/** 250 ms */
-/*static const float MAX_TIME = 250000.f;*/
-
 static AutomationTrack *
 get_at_to_resize (TrackWidget * self, int y)
 {
-  Track * track = self->track;
-
-  if (!track->automation_visible)
+  auto track = dynamic_cast<AutomatableTrack *> (self->track);
+  if (!track || !track->automation_visible_)
     return NULL;
 
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_val_if_fail (atl, NULL);
-  int total_height = (int) track->main_height;
-  if (track->lanes_visible)
+  auto &atl = track->get_automation_tracklist ();
+  int   total_height = (int) track->main_height_;
+  if (auto laned_track = dynamic_cast<LanedTrack *> (track))
     {
-      for (int i = 0; i < track->num_lanes; i++)
+      if (laned_track->lanes_visible_)
         {
-          TrackLane * lane = track->lanes[i];
-          total_height += (int) lane->height;
+          auto laned_track_variant =
+            convert_to_variant<LanedTrackPtrVariant> (track);
+          std::visit (
+            [&] (auto &laned_track) {
+              for (auto &lane : laned_track->lanes_)
+                {
+                  total_height += (int) lane->height_;
+                }
+            },
+            laned_track_variant);
         }
     }
 
-  for (int i = 0; i < atl->num_ats; i++)
+  for (auto &at : atl.ats_)
     {
-      AutomationTrack * at = atl->ats[i];
-
-      if (at->created && at->visible)
-        total_height += (int) at->height;
+      if (at->created_ && at->visible_)
+        total_height += (int) at->height_;
 
       int val = total_height - y;
       if (val >= 0 && val < RESIZE_PX)
         {
-          return at;
+          return at.get ();
         }
     }
 
@@ -274,25 +257,28 @@ get_at_to_resize (TrackWidget * self, int y)
 static TrackLane *
 get_lane_to_resize (TrackWidget * self, int y)
 {
-  Track * track = self->track;
+  auto track = dynamic_cast<LanedTrack *> (self->track);
 
-  if (!track->lanes_visible)
+  if (!track->lanes_visible_)
     return NULL;
 
-  int total_height = (int) track->main_height;
-  for (int i = 0; i < track->num_lanes; i++)
-    {
-      TrackLane * lane = track->lanes[i];
-      total_height += (int) lane->height;
-
-      int val = total_height - y;
-      if (val >= 0 && val < RESIZE_PX)
+  int  total_height = (int) track->main_height_;
+  auto laned_track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
+  return std::visit (
+    [&] (auto &laned_track) {
+      for (auto &lane : laned_track->lanes_)
         {
-          return lane;
-        }
-    }
+          total_height += (int) lane->height_;
 
-  return NULL;
+          int val = total_height - y;
+          if (val >= 0 && val < RESIZE_PX)
+            {
+              return static_cast<TrackLane *> (lane.get ());
+            }
+        }
+      return static_cast<TrackLane *> (nullptr);
+    },
+    laned_track_variant);
 }
 
 static void
@@ -314,7 +300,8 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (SHOW_UI))
     {
-      if (instrument_track_is_plugin_visible (track))
+      auto instrument_track = dynamic_cast<InstrumentTrack *> (track);
+      if (instrument_track->is_plugin_visible ())
         {
           SET_TOOLTIP (_ ("Hide instrument UI"));
         }
@@ -325,7 +312,7 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (MUTE))
     {
-      if (track_get_muted (track))
+      if (track->get_muted ())
         {
           SET_TOOLTIP (_ ("Unmute"));
         }
@@ -336,7 +323,7 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (LISTEN))
     {
-      if (track_get_muted (track))
+      if (track->get_muted ())
         {
           SET_TOOLTIP (_ ("Unlisten"));
         }
@@ -359,7 +346,8 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (RECORD))
     {
-      if (track_get_recording (track))
+      auto recordable_track = dynamic_cast<RecordableTrack *> (track);
+      if (recordable_track->get_recording ())
         {
           SET_TOOLTIP (_ ("Disarm"));
         }
@@ -370,7 +358,8 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (SHOW_TRACK_LANES))
     {
-      if (self->track->lanes_visible)
+      auto laned_track = dynamic_cast<LanedTrack *> (track);
+      if (laned_track->lanes_visible_)
         {
           SET_TOOLTIP (_ ("Hide lanes"));
         }
@@ -381,16 +370,14 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
     }
   else if (TRACK_CB_ICON_IS (SHOW_AUTOMATION_LANES))
     {
-      if (
-        cb->owner_type == CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_AT)
+      if (cb->owner_type == CustomButtonWidget::Owner::AT)
         {
           SET_TOOLTIP (_ ("Change automatable"));
         }
-      else if (
-        cb->owner_type
-        == CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_TRACK)
+      else if (cb->owner_type == CustomButtonWidget::Owner::TRACK)
         {
-          if (self->track->automation_visible)
+          auto automatable_track = dynamic_cast<AutomatableTrack *> (track);
+          if (automatable_track->automation_visible_)
             {
               SET_TOOLTIP (_ ("Hide automation"));
             }
@@ -477,7 +464,7 @@ on_motion (
         track_widget_get_hovered_button (self, (int) x, (int) y);
       AutomationModeWidget * am =
         track_widget_get_hovered_am_widget (self, (int) x, (int) y);
-      int               val = (int) self->track->main_height - (int) y;
+      int               val = (int) self->track->main_height_ - (int) y;
       int               resizing_track = val >= 0 && val < RESIZE_PX;
       AutomationTrack * resizing_at = get_at_to_resize (self, (int) y);
       TrackLane *       resizing_lane = get_lane_to_resize (self, (int) y);
@@ -611,8 +598,8 @@ track_widget_is_cursor_in_range_select_half (TrackWidget * self, double y)
 
   /* if bot 1/3rd */
   if (
-    wpt.y >= ((self->track->main_height * 2) / 3)
-    && wpt.y <= self->track->main_height)
+    wpt.y >= ((self->track->main_height_ * 2) / 3)
+    && wpt.y <= self->track->main_height_)
     {
       return true;
     }
@@ -626,27 +613,31 @@ track_widget_is_cursor_in_range_select_half (TrackWidget * self, double y)
 static TrackLane *
 get_lane_at_y (TrackWidget * self, double y)
 {
-  Track * track = self->track;
+  auto track = dynamic_cast<LanedTrack *> (self->track);
 
-  if (!track->lanes_visible)
+  if (!track->lanes_visible_)
     return NULL;
 
-  double height_before = track->main_height;
-  for (int i = 0; i < track->num_lanes; i++)
-    {
-      TrackLane * lane = track->lanes[i];
-      double      next_height = height_before + lane->height;
-      if (y > height_before && y <= next_height)
+  auto laned_track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
+  return std::visit (
+    [&] (auto &&track) {
+      double height_before = track->main_height_;
+      for (auto &lane : track->lanes_)
         {
-          g_debug ("found lane %d at y %f", i, y);
-          return lane;
+          double next_height = height_before + lane->height_;
+          if (y > height_before && y <= next_height)
+            {
+              z_debug ("found lane {} at y %f", lane->name_, y);
+              return static_cast<TrackLane *> (lane.get ());
+            }
+          height_before = next_height;
         }
-      height_before = next_height;
-    }
 
-  g_debug ("no lane found at y %f", y);
+      z_debug ("no lane found at y %f", y);
 
-  return NULL;
+      return static_cast<TrackLane *> (nullptr);
+    },
+    laned_track_variant);
 }
 
 #if 0
@@ -694,16 +685,15 @@ show_context_menu (TrackWidget * self, double x, double y)
 
   AutomationTrack * at = track_widget_get_at_at_y (self, y);
 
-  int num_selected = TRACKLIST_SELECTIONS->num_tracks;
+  int num_selected = TRACKLIST_SELECTIONS->get_num_tracks ();
 
   if (num_selected > 0)
     {
       char * str;
 
-      GMenu * edit_submenu =
-        track_generate_edit_context_menu (track, num_selected);
+      GMenu * edit_submenu = track->generate_edit_context_menu (num_selected);
       GMenuItem * edit_submenu_item =
-        g_menu_item_new_section (NULL, G_MENU_MODEL (edit_submenu));
+        g_menu_item_new_section (nullptr, G_MENU_MODEL (edit_submenu));
       g_menu_item_set_attribute (
         edit_submenu_item, "display-hint", "s", "horizontal-buttons");
       g_menu_append_item (menu, edit_submenu_item);
@@ -712,19 +702,19 @@ show_context_menu (TrackWidget * self, double x, double y)
 
       str = g_strdup ("app.append-track-objects-to-selection");
       menuitem = z_gtk_create_menu_item (
-        _ ("Append Track Objects to Selection"), NULL, str);
+        _ ("Append Track Objects to Selection"), nullptr, str);
       g_menu_item_set_action_and_target_value (
-        menuitem, str, g_variant_new_int32 (track->pos));
+        menuitem, str, g_variant_new_int32 (track->pos_));
       g_free (str);
       g_menu_append_item (select_submenu, menuitem);
 
       if (lane)
         {
           str = g_strdup_printf (
-            "app.append-lane-objects-to-selection((%d,%d))", track->pos,
-            lane->pos);
+            "app.append-lane-objects-to-selection((%d,%d))", track->pos_,
+            lane->pos_);
           menuitem = z_gtk_create_menu_item (
-            _ ("Append Lane Objects to Selection"), NULL, str);
+            _ ("Append Lane Objects to Selection"), nullptr, str);
           g_free (str);
           g_menu_append_item (select_submenu, menuitem);
         }
@@ -733,17 +723,17 @@ show_context_menu (TrackWidget * self, double x, double y)
         {
           str = g_strdup_printf (
             "app.append-lane-automation-regions-to-selection((%d,%d))",
-            track->pos, at->index);
+            track->pos_, at->index_);
           menuitem = z_gtk_create_menu_item (
-            _ ("Append Lane Automation Regions to Selection"), NULL, str);
+            _ ("Append Lane Automation Regions to Selection"), nullptr, str);
           g_free (str);
           g_menu_append_item (select_submenu, menuitem);
         }
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (select_submenu));
+      g_menu_append_section (menu, nullptr, G_MENU_MODEL (select_submenu));
     }
 
-  if (track->out_signal_type == PortType::Audio)
+  if (track->out_signal_type_ == PortType::Audio)
     {
       GMenu * bounce_submenu = g_menu_new ();
 
@@ -756,23 +746,21 @@ show_context_menu (TrackWidget * self, double x, double y)
         _ ("Bounce..."), "document-export", "app.bounce-selected-tracks");
       g_menu_append_item (bounce_submenu, menuitem);
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (bounce_submenu));
+      g_menu_append_section (menu, nullptr, G_MENU_MODEL (bounce_submenu));
     }
 
   /* add solo/mute/listen */
-  if (
-    track_type_has_channel (track->type)
-    || track->type == TrackType::TRACK_TYPE_FOLDER)
+  if (track->has_channel () || track->is_folder ())
     {
-      GMenu *     channel_submenu = track_generate_channel_context_menu (track);
+      auto    channel_track = dynamic_cast<ChannelTrack *> (track);
+      GMenu * channel_submenu = channel_track->generate_channel_context_menu ();
       GMenuItem * channel_submenu_item =
-        g_menu_item_new_section (NULL, G_MENU_MODEL (channel_submenu));
+        g_menu_item_new_section (nullptr, G_MENU_MODEL (channel_submenu));
       g_menu_append_item (menu, channel_submenu_item);
     } /* endif track has channel */
 
   /* add enable/disable */
-  if (
-    tracklist_selections_contains_enabled_track (TRACKLIST_SELECTIONS, F_ENABLED))
+  if (TRACKLIST_SELECTIONS->contains_enabled_track (F_ENABLED))
     {
       menuitem = z_gtk_create_menu_item (
         _ ("Disable"), "offline", "app.disable-selected-tracks");
@@ -789,7 +777,7 @@ show_context_menu (TrackWidget * self, double x, double y)
   menuitem =
     z_gtk_create_menu_item (
       _("Rename lane..."), "text-field",
-      F_NO_TOGGLE, NULL);
+      F_NO_TOGGLE, nullptr);
   g_signal_connect (
     G_OBJECT (menuitem), "activate",
     G_CALLBACK (on_lane_rename), lane);
@@ -797,14 +785,14 @@ show_context_menu (TrackWidget * self, double x, double y)
 #endif
 
   /* add midi channel selectors */
-  if (track_type_has_piano_roll (track->type))
+  if (track->has_piano_roll ())
     {
       GMenu * piano_roll_section = g_menu_new ();
 
       GMenu * track_midi_ch_submenu = g_menu_new ();
 
       menuitem = z_gtk_create_menu_item (
-        _ ("Passthrough input"), NULL, "app.toggle-track-passthrough-input");
+        _ ("Passthrough input"), nullptr, "app.toggle-track-passthrough-input");
       g_menu_append_item (track_midi_ch_submenu, menuitem);
 
       /* add each MIDI ch */
@@ -814,8 +802,8 @@ show_context_menu (TrackWidget * self, double x, double y)
           char action[600];
           sprintf (lbl, _ ("MIDI Channel %d"), i);
           sprintf (
-            action, "app.track-set-midi-channel::%d,%d,%d", track->pos, -1, i);
-          menuitem = z_gtk_create_menu_item (lbl, NULL, action);
+            action, "app.track-set-midi-channel::%d,%d,%d", track->pos_, -1, i);
+          menuitem = z_gtk_create_menu_item (lbl, nullptr, action);
           g_menu_append_item (track_midi_ch_submenu, menuitem);
         }
 
@@ -837,9 +825,9 @@ show_context_menu (TrackWidget * self, double x, double y)
 
               char action[600];
               sprintf (
-                action, "app.track-set-midi-channel::%d,%d,%d", track->pos,
-                lane->pos, i);
-              menuitem = z_gtk_create_menu_item (lbl, NULL, action);
+                action, "app.track-set-midi-channel::%d,%d,%d", track->pos_,
+                lane->pos_, i);
+              menuitem = z_gtk_create_menu_item (lbl, nullptr, action);
               g_menu_append_item (lane_midi_ch_submenu, menuitem);
             }
 
@@ -848,13 +836,11 @@ show_context_menu (TrackWidget * self, double x, double y)
             G_MENU_MODEL (lane_midi_ch_submenu));
         }
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (piano_roll_section));
+      g_menu_append_section (menu, nullptr, G_MENU_MODEL (piano_roll_section));
     }
 
   if (
-    num_selected > 0
-    && !tracklist_selections_contains_non_automatable_track (
-      TRACKLIST_SELECTIONS))
+    num_selected > 0 && !TRACKLIST_SELECTIONS->contains_non_automatable_track ())
     {
       GMenu * automation_section = g_menu_new ();
 
@@ -868,7 +854,7 @@ show_context_menu (TrackWidget * self, double x, double y)
         "app.hide-unused-automation-lanes-on-selected-tracks");
       g_menu_append_item (automation_section, menuitem);
 
-      g_menu_append_section (menu, NULL, G_MENU_MODEL (automation_section));
+      g_menu_append_section (menu, nullptr, G_MENU_MODEL (automation_section));
     }
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
@@ -892,15 +878,15 @@ on_right_click_pressed (
     GTK_EVENT_CONTROLLER (gesture));
 
   Track * track = self->track;
-  if (!track_is_selected (track))
+  if (!track->is_selected ())
     {
       if (state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK)
         {
-          track_select (track, F_SELECT, F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (F_SELECT, F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
       else
         {
-          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
     }
   if (n_press == 1)
@@ -917,17 +903,19 @@ show_edit_name_popover (TrackWidget * self, TrackLane * lane)
 {
   if (lane)
     {
-      editable_label_widget_show_popover_for_widget (
-        GTK_WIDGET (self), self->track_name_popover, lane,
-        (GenericStringGetter) track_lane_get_name,
-        (GenericStringSetter) track_lane_rename_with_action);
+      std::visit (
+        [&] (const auto &lane) {
+          editable_label_widget_show_popover_for_widget (
+            GTK_WIDGET (self), self->track_name_popover, lane,
+            lane->name_getter, lane->name_setter_with_action);
+        },
+        convert_to_variant<TrackLanePtrVariant> (lane));
     }
   else
     {
       editable_label_widget_show_popover_for_widget (
         GTK_WIDGET (self), self->track_name_popover, self->track,
-        (GenericStringGetter) track_get_name,
-        (GenericStringSetter) track_set_name_with_action);
+        Track::name_getter, Track::name_setter_with_action);
     }
 }
 
@@ -941,7 +929,8 @@ click_pressed (
 {
   Track * track = self->track;
   self->was_armed =
-    track_type_can_record (track->type) && track_get_recording (track);
+    track->can_record ()
+    && dynamic_cast<RecordableTrack *> (track)->get_recording ();
 
   gtk_widget_grab_focus (GTK_WIDGET (self));
 
@@ -957,8 +946,8 @@ click_pressed (
     }
   else
     {
-      PROJECT->last_selection = Project::SelectionType::Tracklist;
-      EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
+      PROJECT->last_selection_ = Project::SelectionType::Tracklist;
+      EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
     }
 
   if (self->icon_hovered)
@@ -970,7 +959,7 @@ click_pressed (
   else if (self->color_area_hovered)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW), self->track, NULL, NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track, nullptr, nullptr);
     }
 }
 
@@ -988,29 +977,31 @@ click_released (
     GTK_EVENT_CONTROLLER (gesture));
   bool ctrl = state & GDK_CONTROL_MASK;
   bool shift = state & GDK_SHIFT_MASK;
-  tracklist_selections_handle_click (track, ctrl, shift, self->dragged);
+  TRACKLIST_SELECTIONS->handle_click (*track, ctrl, shift, self->dragged);
 
   if (self->clicked_button)
     {
       CustomButtonWidget * cb = self->clicked_button;
 
       /* if track not selected, select it */
-      if (!track_is_selected (track))
+      if (!track->is_selected ())
         {
-          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
 
       if ((Track *) cb->owner == track)
         {
+          auto ch_track = dynamic_cast<ChannelTrack *> (track);
           if (TRACK_CB_ICON_IS (MONO_COMPAT))
             {
-              track->channel->set_mono_compat_enabled (
-                !track->channel->get_mono_compat_enabled (), F_PUBLISH_EVENTS);
+              ch_track->channel_->set_mono_compat_enabled (
+                !ch_track->channel_->get_mono_compat_enabled (),
+                F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (SWAP_PHASE))
             {
-              track->channel->set_swap_phase (
-                !track->channel->get_swap_phase (), F_PUBLISH_EVENTS);
+              ch_track->channel_->set_swap_phase (
+                !ch_track->channel_->get_swap_phase (), F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (RECORD))
             {
@@ -1018,27 +1009,27 @@ click_released (
             }
           else if (TRACK_CB_ICON_IS (SOLO))
             {
-              track_set_soloed (
-                track, !track_get_soloed (track), F_TRIGGER_UNDO, F_AUTO_SELECT,
+              ch_track->set_soloed (
+                !ch_track->get_soloed (), F_TRIGGER_UNDO, F_AUTO_SELECT,
                 F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (MUTE))
             {
-              track_set_muted (
-                track, !track_get_muted (track), F_TRIGGER_UNDO, F_AUTO_SELECT,
+              ch_track->set_muted (
+                !ch_track->get_muted (), F_TRIGGER_UNDO, F_AUTO_SELECT,
                 F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (LISTEN))
             {
-              track_set_listened (
-                track, !track_get_listened (track), F_TRIGGER_UNDO,
-                F_AUTO_SELECT, F_PUBLISH_EVENTS);
+              ch_track->set_listened (
+                !ch_track->get_listened (), F_TRIGGER_UNDO, F_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (MONITOR_AUDIO))
             {
-              track_set_monitor_audio (
-                track, !track_get_monitor_audio (track), F_AUTO_SELECT,
-                F_PUBLISH_EVENTS);
+              auto ptrack = dynamic_cast<ProcessableTrack *> (track);
+              ptrack->set_monitor_audio (
+                !ptrack->get_monitor_audio (), F_AUTO_SELECT, F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (SHOW_TRACK_LANES))
             {
@@ -1046,7 +1037,8 @@ click_released (
             }
           else if (TRACK_CB_ICON_IS (SHOW_UI))
             {
-              instrument_track_toggle_plugin_visible (track);
+              auto ins_track = dynamic_cast<InstrumentTrack *> (track);
+              ins_track->toggle_plugin_visible ();
             }
           else if (TRACK_CB_ICON_IS (SHOW_AUTOMATION_LANES))
             {
@@ -1054,8 +1046,9 @@ click_released (
             }
           else if (TRACK_CB_ICON_IS (FOLD_OPEN) || TRACK_CB_ICON_IS (FOLD))
             {
-              track_set_folded (
-                track, !track->folded, F_TRIGGER_UNDO, F_AUTO_SELECT,
+              auto foldable_tr = dynamic_cast<FoldableTrack *> (track);
+              foldable_tr->set_folded (
+                !foldable_tr->folded_, F_TRIGGER_UNDO, F_AUTO_SELECT,
                 F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (FREEZE))
@@ -1066,62 +1059,59 @@ click_released (
 #endif
             }
         }
-      else if (
-        cb->owner_type
-        == CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_LANE)
+      else if (cb->owner_type == CustomButtonWidget::Owner::LANE)
         {
           TrackLane * lane = (TrackLane *) cb->owner;
 
           if (TRACK_CB_ICON_IS (SOLO))
             {
-              track_lane_set_soloed (
-                lane, !track_lane_get_soloed (lane), F_TRIGGER_UNDO,
-                F_PUBLISH_EVENTS);
+              std::visit (
+                [&] (auto &&lane) {
+                  lane->set_soloed (
+                    !lane->get_soloed (), F_TRIGGER_UNDO, F_PUBLISH_EVENTS);
+                },
+                convert_to_variant<TrackLanePtrVariant> (lane));
             }
           else if (TRACK_CB_ICON_IS (MUTE))
             {
-              track_lane_set_muted (
-                lane, !track_lane_get_muted (lane), F_TRIGGER_UNDO,
-                F_PUBLISH_EVENTS);
+              std::visit (
+                [&] (auto &&lane) {
+                  lane->set_muted (
+                    !lane->get_muted (), F_TRIGGER_UNDO, F_PUBLISH_EVENTS);
+                },
+                convert_to_variant<TrackLanePtrVariant> (lane));
             }
         }
-      else if (
-        cb->owner_type == CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_AT)
+      else if (cb->owner_type == CustomButtonWidget::Owner::AT)
         {
-          AutomationTrack * at = (AutomationTrack *) cb->owner;
-          g_return_if_fail (at);
-          AutomationTracklist * atl =
-            automation_track_get_automation_tracklist (at);
-          g_return_if_fail (atl);
+          auto * at = (AutomationTrack *) cb->owner;
+          z_return_if_fail (at);
+          AutomationTracklist * atl = at->get_automation_tracklist ();
+          z_return_if_fail (atl);
 
           if (TRACK_CB_ICON_IS (PLUS))
             {
-              AutomationTrack * new_at =
-                automation_tracklist_get_first_invisible_at (atl);
+              AutomationTrack * new_at = atl->get_first_invisible_at ();
 
-              /* if any invisible at exists, show
-               * it */
+              /* if any invisible at exists, show it */
               if (new_at)
                 {
-                  if (!new_at->created)
-                    new_at->created = 1;
-                  automation_tracklist_set_at_visible (atl, new_at, true);
+                  if (!new_at->created_)
+                    new_at->created_ = true;
+                  atl->set_at_visible (*new_at, true);
 
-                  /* move it after the clicked
-                   * automation track */
-                  automation_tracklist_set_at_index (
-                    atl, new_at, at->index + 1, true);
+                  /* move it after the clicked automation track */
+                  atl->set_at_index (*new_at, at->index_ + 1, true);
 
                   EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_ADDED, new_at);
                 }
             }
           else if (TRACK_CB_ICON_IS (MINUS))
             {
-              /* don't allow deleting if no other
-               * visible automation tracks */
-              if (atl->visible_ats->len > 1)
+              /* don't allow deleting if no other visible automation tracks */
+              if (atl->visible_ats_.size () > 1)
                 {
-                  automation_tracklist_set_at_visible (atl, at, false);
+                  atl->set_at_visible (*at, false);
                   EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_REMOVED, at);
                 }
             }
@@ -1145,18 +1135,18 @@ click_released (
   else if (self->clicked_am)
     {
       AutomationModeWidget * am = self->clicked_am;
-      AutomationTrack *      at = (AutomationTrack *) am->owner;
+      auto *                 at = (AutomationTrack *) am->owner_;
       g_return_if_fail (at);
-      AutomationTracklist * atl = automation_track_get_automation_tracklist (at);
+      AutomationTracklist * atl = at->get_automation_tracklist ();
       g_return_if_fail (atl);
       if (
-        at->automation_mode == AutomationMode::AUTOMATION_MODE_RECORD
-        && am->hit_mode == AutomationMode::AUTOMATION_MODE_RECORD)
+        at->automation_mode_ == AutomationMode::Record
+        && am->hit_mode_ == AutomationMode::Record)
         {
-          automation_track_swap_record_mode (at);
-          automation_mode_widget_init (am);
+          at->swap_record_mode ();
+          am->init ();
         }
-      automation_track_set_automation_mode (at, am->hit_mode, F_PUBLISH_EVENTS);
+      at->set_automation_mode (am->hit_mode_, F_PUBLISH_EVENTS);
     }
   else if (n_press == 2)
     {
@@ -1215,7 +1205,7 @@ on_drag_begin (
 
           ctrl = self->ctrl_held_at_start;
 
-          if (tracklist_selections_contains_track (TRACKLIST_SELECTIONS, track))
+          if (TRACKLIST_SELECTIONS->contains_track (*track))
             {
               selected = 1;
             }
@@ -1223,14 +1213,13 @@ on_drag_begin (
           /* no control & not selected */
           if (!ctrl && !selected)
             {
-              tracklist_selections_select_single (
-                TRACKLIST_SELECTIONS, track, F_PUBLISH_EVENTS);
+              TRACKLIST_SELECTIONS->select_single (*track, F_PUBLISH_EVENTS);
             }
           else if (!ctrl && selected)
             {
             }
           else if (ctrl && !selected)
-            tracklist_selections_add_track (TRACKLIST_SELECTIONS, track, 1);
+            TRACKLIST_SELECTIONS->add_track (*track, true);
         }
     }
 
@@ -1255,7 +1244,7 @@ on_drag_update (
     GTK_EVENT_CONTROLLER (gesture));
   bool ctrl = state & GDK_CONTROL_MASK;
   bool shift = state & GDK_SHIFT_MASK;
-  tracklist_selections_handle_click (track, ctrl, shift, self->dragged);
+  TRACKLIST_SELECTIONS->handle_click (*track, ctrl, shift, self->dragged);
 
   if (self->resizing)
     {
@@ -1265,19 +1254,20 @@ on_drag_update (
       switch (self->resize_target_type)
         {
         case TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_TRACK:
-          track->main_height = MAX (TRACK_MIN_HEIGHT, track->main_height + diff);
+          track->main_height_ =
+            MAX (TRACK_MIN_HEIGHT, track->main_height_ + diff);
           break;
         case TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_AT:
           {
-            AutomationTrack * at = (AutomationTrack *) self->resize_target;
-            at->height = MAX (TRACK_MIN_HEIGHT, at->height + diff);
+            auto * at = (AutomationTrack *) self->resize_target;
+            at->height_ = MAX (TRACK_MIN_HEIGHT, at->height_ + diff);
           }
           break;
         case TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_LANE:
           {
-            TrackLane * lane = (TrackLane *) self->resize_target;
-            lane->height = MAX (TRACK_MIN_HEIGHT, lane->height + diff);
-            g_message ("lane %d height changed", lane->pos);
+            auto * lane = (TrackLane *) self->resize_target;
+            lane->height_ = MAX (TRACK_MIN_HEIGHT, lane->height_ + diff);
+            z_debug ("lane %d height changed", lane->pos_);
           }
           break;
         }
@@ -1289,7 +1279,7 @@ on_drag_update (
       int drag_threshold;
       g_object_get (
         zrythm_app->default_settings, "gtk-dnd-drag-threshold", &drag_threshold,
-        NULL);
+        nullptr);
       if (fabs (offset_x) > drag_threshold || fabs (offset_y) > drag_threshold)
         {
           /* start dnd */
@@ -1351,7 +1341,7 @@ track_widget_get_highlight_location (TrackWidget * self, int y)
 {
   Track * track = self->track;
   int     h = gtk_widget_get_height (GTK_WIDGET (self));
-  if (track_type_is_foldable (track->type) && y < h - 12 && y > 12)
+  if (track->is_foldable () && y < h - 12 && y > 12)
     {
       return TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE;
     }
@@ -1448,23 +1438,27 @@ track_widget_get_local_y (
 void
 track_widget_on_show_lanes_toggled (TrackWidget * self)
 {
-  Track * track = self->track;
+  auto track = dynamic_cast<LanedTrack *> (self->track);
+  if (!track)
+    return;
 
   /* set visibility flag */
-  track_set_lanes_visible (track, !track->lanes_visible);
+  track->set_lanes_visible (!track->lanes_visible_);
 }
 
 void
 track_widget_on_show_automation_toggled (TrackWidget * self)
 {
-  Track * track = self->track;
+  auto track = dynamic_cast<AutomatableTrack *> (self->track);
+  if (!track)
+    return;
 
-  g_debug ("%s: toggled on %s", __func__, track->name);
+  z_debug ("toggled on {}", track->name_);
 
   /* set visibility flag */
-  track_set_automation_visible (track, !track->automation_visible);
+  track->set_automation_visible (!track->automation_visible_);
 
-  if (track->type == TrackType::TRACK_TYPE_TEMPO && track->automation_visible)
+  if (track->is_tempo () && track->automation_visible_)
     {
       ui_show_warning_for_tempo_track_experimental_feature ();
     }
@@ -1473,13 +1467,13 @@ track_widget_on_show_automation_toggled (TrackWidget * self)
 void
 track_widget_on_record_toggled (TrackWidget * self)
 {
-  Track * track = self->track;
-  g_return_if_fail (track);
+  auto track = dynamic_cast<RecordableTrack *> (self->track);
+  z_return_if_fail (track);
 
   /* toggle record flag */
-  track_set_recording (track, !self->was_armed, F_PUBLISH_EVENTS);
-  track->record_set_automatically = false;
-  g_debug ("%s recording: %d", track->name, track_get_recording (track));
+  track->set_recording (!self->was_armed, F_PUBLISH_EVENTS);
+  track->record_set_automatically_ = false;
+  z_debug ("%s recording: %d", track->name_, track->get_recording ());
 
   EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
 }
@@ -1490,25 +1484,22 @@ track_widget_on_record_toggled (TrackWidget * self)
 void
 track_widget_recreate_group_colors (TrackWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
 
-  GPtrArray * array = g_ptr_array_sized_new (8);
-  track_add_folder_parents (track, array, false);
+  std::vector<FoldableTrack *> array;
+  track->add_folder_parents (array, false);
 
   /* remove existing group colors */
   z_gtk_widget_destroy_all_children (GTK_WIDGET (self->group_colors_box));
 
-  for (size_t i = 0; i < array->len; i++)
+  for (auto &parent_track : array)
     {
-      Track * parent_track = static_cast<Track *> (g_ptr_array_index (array, i));
       ColorAreaWidget * ca = Z_COLOR_AREA_WIDGET (
-        g_object_new (COLOR_AREA_WIDGET_TYPE, "visible", true, NULL));
-      color_area_widget_setup_generic (ca, &parent_track->color);
+        g_object_new (COLOR_AREA_WIDGET_TYPE, "visible", true, nullptr));
+      color_area_widget_setup_generic (ca, &parent_track->color_);
       gtk_widget_set_size_request (GTK_WIDGET (ca), 8, -1);
       gtk_box_append (GTK_BOX (self->group_colors_box), GTK_WIDGET (ca));
     }
-
-  g_ptr_array_unref (array);
 }
 
 /**
@@ -1516,42 +1507,33 @@ track_widget_recreate_group_colors (TrackWidget * self)
  *
  * @param top 1 for top, 0 for bottom.
  */
-static CustomButtonWidget *
+static CustomButtonWidget &
 add_button (TrackWidget * self, bool top, const char * icon_name)
 {
-  CustomButtonWidget * cb =
-    custom_button_widget_new (icon_name, TRACK_BUTTON_SIZE);
-  if (top)
-    {
-      self->top_buttons[self->num_top_buttons++] = cb;
-    }
-  else
-    {
-      self->bot_buttons[self->num_bot_buttons++] = cb;
-    }
-
-  cb->owner_type = CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_TRACK;
-  cb->owner = self->track;
-
-  return cb;
+  CustomButtonWidget cb (icon_name, TRACK_BUTTON_SIZE);
+  cb.owner_type = CustomButtonWidget::Owner::TRACK;
+  cb.owner = self->track;
+  auto &vec = top ? self->top_buttons : self->bot_buttons;
+  vec.emplace_back (std::move (cb));
+  return vec.back ();
 }
 
-static CustomButtonWidget *
+static CustomButtonWidget &
 add_solo_button (TrackWidget * self, int top)
 {
-  CustomButtonWidget * cb = add_button (self, top, TRACK_ICON_NAME_SOLO);
-  cb->toggled_color = UI_COLORS->solo_checked;
-  cb->held_color = UI_COLORS->solo_active;
+  auto &cb = add_button (self, top, TRACK_ICON_NAME_SOLO);
+  cb.toggled_color = UI_COLORS->solo_checked;
+  cb.held_color = UI_COLORS->solo_active;
 
   return cb;
 }
 
-static CustomButtonWidget *
+static CustomButtonWidget &
 add_record_button (TrackWidget * self, int top)
 {
-  CustomButtonWidget * cb = add_button (self, top, TRACK_ICON_NAME_RECORD);
-  gdk_rgba_parse (&cb->toggled_color, UI_COLOR_RECORD_CHECKED);
-  gdk_rgba_parse (&cb->held_color, UI_COLOR_RECORD_ACTIVE);
+  auto &cb = add_button (self, top, TRACK_ICON_NAME_RECORD);
+  cb.toggled_color = Color(UI_COLOR_RECORD_CHECKED);
+  cb.held_color = Color(UI_COLOR_RECORD_ACTIVE);
 
   return cb;
 }
@@ -1564,33 +1546,30 @@ void
 track_widget_update_size (TrackWidget * self)
 {
   g_return_if_fail (self->track);
-  int height = (int) track_get_full_visible_height (self->track);
+  int height = (int) self->track->get_full_visible_height ();
   g_return_if_fail (height > 1);
   int w;
-  gtk_widget_get_size_request ((GtkWidget *) self, &w, NULL);
+  gtk_widget_get_size_request ((GtkWidget *) self, &w, nullptr);
   gtk_widget_set_size_request (GTK_WIDGET (self), w, height);
 }
 
-/**
- * Updates the track icons.
- */
 void
 track_widget_update_icons (TrackWidget * self)
 {
-  for (int i = 0; i < self->num_bot_buttons; i++)
+  for (auto &cb_ref : self->bot_buttons)
     {
-      CustomButtonWidget * cb = self->bot_buttons[i];
-
+      auto cb = &cb_ref;
       if (TRACK_CB_ICON_IS (FOLD_OPEN) || TRACK_CB_ICON_IS (FOLD))
         {
-          custom_button_widget_free (cb);
-          cb = custom_button_widget_new (
-            self->track->folded ? TRACK_ICON_NAME_FOLD : TRACK_ICON_NAME_FOLD_OPEN,
-            TRACK_BUTTON_SIZE);
-          cb->owner_type =
-            CustomButtonWidgetOwner::CUSTOM_BUTTON_WIDGET_OWNER_TRACK;
-          cb->owner = self->track;
-          self->bot_buttons[i] = cb;
+          auto foldable_track = dynamic_cast<FoldableTrack *> (self->track);
+          const std::string new_icon_name =
+            foldable_track->folded_
+              ? TRACK_ICON_NAME_FOLD
+              : TRACK_ICON_NAME_FOLD_OPEN;
+
+          cb_ref = CustomButtonWidget (new_icon_name, TRACK_BUTTON_SIZE);
+          cb_ref.owner_type = CustomButtonWidget::Owner::TRACK;
+          cb_ref.owner = self->track;
         }
     }
 }
@@ -1687,7 +1666,7 @@ on_dnd_drop (
       /* TODO add the plugin to the track */
       switch (track->type)
         {
-        case TrackType::TRACK_TYPE_MIDI:
+        case Track::Type::MIDI:
           if (plugin_descriptor_is_instrument (pd))
             {
               ui_show_error_message (
@@ -1803,25 +1782,21 @@ track_widget_key_released (
     }
 }
 
-/**
- * Wrapper for child track widget.
- *
- * Sets color, draw callback, etc.
- */
 TrackWidget *
 track_widget_new (Track * track)
 {
-  g_return_val_if_fail (track, NULL);
-  g_debug ("creating new track widget for %s", track->name);
+  g_return_val_if_fail (track, nullptr);
+  z_debug ("creating new track widget for %s", track->name_);
 
-  TrackWidget * self =
-    static_cast<TrackWidget *> (g_object_new (TRACK_WIDGET_TYPE, NULL));
+  auto * self =
+    static_cast<TrackWidget *> (g_object_new (TRACK_WIDGET_TYPE, nullptr));
 
   self->track = track;
+  auto foldable_track = dynamic_cast<FoldableTrack *> (track);
 
-  switch (track->type)
+  switch (track->type_)
     {
-    case TrackType::TRACK_TYPE_INSTRUMENT:
+    case Track::Type::Instrument:
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (self, true, TRACK_ICON_NAME_MUTE);
@@ -1835,7 +1810,7 @@ track_widget_new (Track * track)
       add_button (self, false, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, false, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_MIDI:
+    case Track::Type::Midi:
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
@@ -1845,38 +1820,38 @@ track_widget_new (Track * track)
       add_button (self, 0, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_MASTER:
-      add_button (self, 1, TRACK_ICON_NAME_MONO_COMPAT);
+    case Track::Type::Master:
+      add_button (self, true, TRACK_ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
-      add_button (self, 1, TRACK_ICON_NAME_MUTE);
-      add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
+      add_button (self, true, TRACK_ICON_NAME_MUTE);
+      add_button (self, false, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_CHORD:
+    case Track::Type::Chord:
       add_record_button (self, 1);
       add_solo_button (self, 1);
-      add_button (self, 1, TRACK_ICON_NAME_MUTE);
+      add_button (self, true, TRACK_ICON_NAME_MUTE);
       break;
-    case TrackType::TRACK_TYPE_MARKER:
+    case Track::Type::Marker:
       break;
-    case TrackType::TRACK_TYPE_TEMPO:
+    case Track::Type::Tempo:
       add_button (self, true, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_MODULATOR:
+    case Track::Type::Modulator:
       add_button (self, true, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_AUDIO_BUS:
+    case Track::Type::AudioBus:
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
       add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_MIDI_BUS:
+    case Track::Type::MidiBus:
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_AUDIO_GROUP:
+    case Track::Type::AudioGroup:
       add_button (self, 1, TRACK_ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
@@ -1885,17 +1860,21 @@ track_widget_new (Track * track)
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       add_button (
         self, false,
-        track->folded ? TRACK_ICON_NAME_FOLD : TRACK_ICON_NAME_FOLD_OPEN);
+        foldable_track->folded_
+          ? TRACK_ICON_NAME_FOLD
+          : TRACK_ICON_NAME_FOLD_OPEN);
       break;
-    case TrackType::TRACK_TYPE_MIDI_GROUP:
+    case Track::Type::MidiGroup:
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       add_button (
         self, false,
-        track->folded ? TRACK_ICON_NAME_FOLD : TRACK_ICON_NAME_FOLD_OPEN);
+        foldable_track->folded_
+          ? TRACK_ICON_NAME_FOLD
+          : TRACK_ICON_NAME_FOLD_OPEN);
       break;
-    case TrackType::TRACK_TYPE_AUDIO:
+    case Track::Type::Audio:
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
@@ -1908,35 +1887,38 @@ track_widget_new (Track * track)
       add_button (self, 0, TRACK_ICON_NAME_SHOW_TRACK_LANES);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    case TrackType::TRACK_TYPE_FOLDER:
+    case Track::Type::Folder:
       add_solo_button (self, 1);
       add_button (self, true, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
       add_button (
         self, false,
-        track->folded ? TRACK_ICON_NAME_FOLD : TRACK_ICON_NAME_FOLD_OPEN);
+        foldable_track->folded_
+          ? TRACK_ICON_NAME_FOLD
+          : TRACK_ICON_NAME_FOLD_OPEN);
       break;
     }
 
-  if (track_type_has_channel (track->type))
+  if (track->has_channel ())
     {
+      auto ch_track = dynamic_cast<ChannelTrack *> (track);
       self->fader_buttons_for_popover =
-        g_object_ref (fader_buttons_widget_new (track));
+        g_object_ref (fader_buttons_widget_new (ch_track));
 
-      switch (track->out_signal_type)
+      switch (track->out_signal_type_)
         {
         case PortType::Event:
           meter_widget_setup (
-            self->meter_l, self->track->channel->midi_out, true);
+            self->meter_l, ch_track->channel_->midi_out_.get (), true);
           gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
           break;
         case PortType::Audio:
           meter_widget_setup (
-            self->meter_l, &self->track->channel->stereo_out->get_l (), true);
+            self->meter_l, &ch_track->channel_->stereo_out_->get_l (), true);
           meter_widget_setup (
-            self->meter_r, &self->track->channel->stereo_out->get_r (), true);
+            self->meter_r, &ch_track->channel_->stereo_out_->get_r (), true);
           break;
         default:
           break;
@@ -1953,14 +1935,15 @@ track_widget_new (Track * track)
   track_widget_update_size (self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) track_tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) track_tick_cb, self, nullptr);
 
   track_canvas_widget_setup (self->canvas, self);
 
   /*setup_dnd (self);*/
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, track->name, -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, track->name_.c_str (),
+    -1);
 
   return self;
 }
@@ -1971,22 +1954,10 @@ on_destroy (TrackWidget * self)
   Track * track = self->track;
   if (IS_TRACK_AND_NONNULL (track))
     {
-      g_debug ("destroying '%s' widget", track->name);
+      z_debug ("destroying '%s' widget", track->name_);
 
-      if (track->widget == self)
-        track->widget = NULL;
-    }
-
-  CustomButtonWidget * cb = NULL;
-  for (int i = 0; i < self->num_top_buttons; i++)
-    {
-      cb = self->top_buttons[i];
-      custom_button_widget_free (cb);
-    }
-  for (int i = 0; i < self->num_bot_buttons; i++)
-    {
-      cb = self->bot_buttons[i];
-      custom_button_widget_free (cb);
+      if (track->widget_ == self)
+        track->widget_ = nullptr;
     }
 }
 
@@ -2003,8 +1974,22 @@ dispose (TrackWidget * self)
 }
 
 static void
+track_widget_finalize (TrackWidget * self)
+{
+  std::destroy_at (&self->top_buttons);
+  std::destroy_at (&self->bot_buttons);
+  std::destroy_at (&self->last_midi_out_trigger_time);
+
+  G_OBJECT_CLASS (track_widget_parent_class)->finalize (G_OBJECT (self));
+}
+
+static void
 track_widget_init (TrackWidget * self)
 {
+  std::construct_at (&self->top_buttons);
+  std::construct_at (&self->bot_buttons);
+  std::construct_at (&self->last_midi_out_trigger_time);
+
   g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (TRACK_CANVAS_WIDGET_TYPE);
 
@@ -2019,7 +2004,8 @@ track_widget_init (TrackWidget * self)
     GTK_ORIENTABLE (gtk_widget_get_layout_manager (GTK_WIDGET (self))),
     GTK_ORIENTATION_VERTICAL);
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->track_name_popover = GTK_POPOVER (gtk_popover_new ());
@@ -2073,7 +2059,8 @@ track_widget_init (TrackWidget * self)
     G_OBJECT (self->drag), "drag-update", G_CALLBACK (on_drag_update), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end", G_CALLBACK (on_drag_end), self);
-  g_signal_connect (G_OBJECT (self), "destroy", G_CALLBACK (on_destroy), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "destroy", G_CALLBACK (on_destroy), nullptr);
   g_signal_connect (
     G_OBJECT (self), "query-tooltip", G_CALLBACK (on_query_tooltip), self);
 
@@ -2105,4 +2092,5 @@ track_widget_class_init (TrackWidgetClass * _klass)
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->finalize = (GObjectFinalizeFunc) track_widget_finalize;
 }

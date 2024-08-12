@@ -81,18 +81,18 @@ audio_cb (
       // g_warning ("XRUN in RtAudio");
     }
 
-  if (!engine_get_run (self))
+  if (!self->run_.load ())
     return 0;
 
   nframes_t num_frames = (nframes_t) nframes;
-  engine_process (self, num_frames);
+  self->process (num_frames);
 
   dsp_fill (
     out_buf, DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
-      out_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
-      out_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
+      out_buf[i * 2] = self->monitor_out_->get_l ().buf_[i];
+      out_buf[i * 2 + 1] = self->monitor_out_->get_r ().buf_[i];
     }
 
   return 0;
@@ -126,10 +126,9 @@ engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend)
   rtaudio_api_t api = get_api_from_audio_backend (backend);
   if (api == RTAUDIO_API_DUMMY)
     {
-      g_warning (
-        "RtAudio API for %s not enabled",
-        audio_backend_str[ENUM_VALUE_TO_INT (backend)]);
-      return NULL;
+      z_warning (
+        "RtAudio API for {} not enabled", AudioBackend_to_string (backend));
+      return nullptr;
     }
 
   g_debug ("calling rtaudio_create...");
@@ -179,14 +178,14 @@ engine_rtaudio_setup (AudioEngine * self)
 {
   g_message ("Setting up RtAudio %s...", rtaudio_version ());
 
-  self->rtaudio = engine_rtaudio_create_rtaudio (self, self->audio_backend);
-  if (!self->rtaudio)
+  self->rtaudio_ = engine_rtaudio_create_rtaudio (self, self->audio_backend_);
+  if (!self->rtaudio_)
     {
       g_warning ("failed to create rtaudio");
       return -1;
     }
 
-  int dev_count = rtaudio_device_count (self->rtaudio);
+  int dev_count = rtaudio_device_count (self->rtaudio_);
   g_return_val_if_fail (dev_count >= 0, -1);
   if (dev_count == 0)
     {
@@ -202,9 +201,9 @@ engine_rtaudio_setup (AudioEngine * self)
   unsigned int out_device_id = UINT_MAX;
   for (int i = 0; i < dev_count; i++)
     {
-      unsigned int          dev_id = rtaudio_get_device_id (self->rtaudio, i);
+      unsigned int          dev_id = rtaudio_get_device_id (self->rtaudio_, i);
       rtaudio_device_info_t dev_nfo =
-        rtaudio_get_device_info (self->rtaudio, dev_id);
+        rtaudio_get_device_info (self->rtaudio_, dev_id);
       char dev_nfo_str[800];
       print_dev_info (&dev_nfo, dev_nfo_str);
       g_message ("RtAudio device %d: %s", i, dev_nfo_str);
@@ -219,9 +218,9 @@ engine_rtaudio_setup (AudioEngine * self)
   if (out_device_id == UINT_MAX)
     {
       g_message ("selected device not found, using default");
-      out_device_id = rtaudio_get_default_output_device (self->rtaudio);
+      out_device_id = rtaudio_get_default_output_device (self->rtaudio_);
       rtaudio_device_info_t dev_nfo =
-        rtaudio_get_device_info (self->rtaudio, out_device_id);
+        rtaudio_get_device_info (self->rtaudio_, out_device_id);
       out_device = g_strdup (dev_nfo.name);
     }
 
@@ -238,11 +237,11 @@ engine_rtaudio_setup (AudioEngine * self)
     .name = "Zrythm",
   };
 
-  unsigned int samplerate = (unsigned int) engine_samplerate_enum_to_int (
-    (AudioEngineSamplerate) g_settings_get_enum (
+  unsigned int samplerate = (unsigned int) AudioEngine::samplerate_enum_to_int (
+    (AudioEngine::SampleRate) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "sample-rate"));
-  unsigned int buffer_size = (unsigned int) engine_buffer_size_enum_to_int (
-    (AudioEngineBufferSize) g_settings_get_enum (
+  unsigned int buffer_size = (unsigned int) AudioEngine::buffer_size_enum_to_int (
+    (AudioEngine::BufferSize) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "buffer-size"));
   g_message (
     "Attempting to open device [%s] with sample "
@@ -250,25 +249,25 @@ engine_rtaudio_setup (AudioEngine * self)
     out_device, samplerate, buffer_size);
 
   int ret = rtaudio_open_stream (
-    self->rtaudio, &out_stream_params, NULL, RTAUDIO_FORMAT_FLOAT32, samplerate,
-    &buffer_size, (rtaudio_cb_t) audio_cb, self, &stream_opts,
+    self->rtaudio_, &out_stream_params, nullptr, RTAUDIO_FORMAT_FLOAT32,
+    samplerate, &buffer_size, (rtaudio_cb_t) audio_cb, self, &stream_opts,
     (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
       g_warning (
         "An error occurred opening the RtAudio "
         "stream: %s",
-        rtaudio_error (self->rtaudio));
+        rtaudio_error (self->rtaudio_));
       return -1;
     }
-  bool is_open = rtaudio_is_stream_open (self->rtaudio);
+  bool is_open = rtaudio_is_stream_open (self->rtaudio_);
   if (!is_open)
     {
       g_warning ("RtAudio stream failed to open");
       return -1;
     }
-  self->block_length = buffer_size;
-  self->sample_rate = (sample_rate_t) samplerate;
+  self->block_length_ = buffer_size;
+  self->sample_rate_ = (sample_rate_t) samplerate;
 
   g_message ("RtAudio set up");
 
@@ -281,12 +280,12 @@ engine_rtaudio_activate (AudioEngine * self, bool activate)
   if (activate)
     {
       g_message ("%s: activating...", __func__);
-      rtaudio_start_stream (self->rtaudio);
+      rtaudio_start_stream (self->rtaudio_);
     }
   else
     {
       g_message ("%s: deactivating...", __func__);
-      rtaudio_stop_stream (self->rtaudio);
+      rtaudio_stop_stream (self->rtaudio_);
     }
 
   g_message ("%s: done", __func__);
@@ -307,7 +306,7 @@ engine_rtaudio_test (GtkWindow * win)
 }
 
 /**
- * Returns a list of names inside \ref names that
+ * Returns a list of names inside @ref names that
  * must be free'd.
  *
  * @param input 1 for input, 0 for output.
@@ -357,7 +356,7 @@ engine_rtaudio_get_device_names (
 void
 engine_rtaudio_tear_down (AudioEngine * self)
 {
-  rtaudio_close_stream (self->rtaudio);
+  rtaudio_close_stream (self->rtaudio_);
 }
 
 #endif // HAVE_RTAUDIO

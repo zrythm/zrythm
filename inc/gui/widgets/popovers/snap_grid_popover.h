@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
  * @file
@@ -12,9 +10,8 @@
 #ifndef __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 #define __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 
-#include <adwaita.h>
-
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget     SnapGridWidget;

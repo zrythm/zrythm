@@ -1,28 +1,17 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/chord_object.h"
-#include "dsp/chord_track.h"
-#include "gui/backend/clip_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_key.h"
 #include "gui/widgets/chord_selector_window.h"
-#include "gui/widgets/clip_editor.h"
-#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_keyboard.h"
 #include "project.h"
-#include "utils/cairo.h"
 #include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/midi.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -33,7 +22,7 @@ G_DEFINE_TYPE (ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
 static ChordDescriptor *
 get_chord_descr (ChordKeyWidget * self)
 {
-  return CHORD_EDITOR->chords[self->chord_idx];
+  return &CHORD_EDITOR->chords_[self->chord_idx];
 }
 
 static void
@@ -47,24 +36,24 @@ static void
 on_invert_btn_clicked (GtkButton * btn, ChordKeyWidget * self)
 {
   const ChordDescriptor * descr = get_chord_descr (self);
-  ChordDescriptor *       descr_clone = chord_descriptor_clone (descr);
+  ChordDescriptor         descr_clone = *descr;
 
   if (btn == self->invert_prev_btn)
     {
-      if (chord_descriptor_get_min_inversion (descr) != descr->inversion)
+      if (descr->get_min_inversion () != descr->inversion_)
         {
-          descr_clone->inversion--;
-          chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone, self->chord_idx, F_UNDOABLE);
+          descr_clone.inversion_--;
+          CHORD_EDITOR->apply_single_chord (
+            descr_clone, self->chord_idx, F_UNDOABLE);
         }
     }
   else if (btn == self->invert_next_btn)
     {
-      if (chord_descriptor_get_max_inversion (descr) != descr->inversion)
+      if (descr->get_max_inversion () != descr->inversion_)
         {
-          descr_clone->inversion++;
-          chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone, self->chord_idx, F_UNDOABLE);
+          descr_clone.inversion_++;
+          CHORD_EDITOR->apply_single_chord (
+            descr_clone, self->chord_idx, F_UNDOABLE);
         }
     }
 
@@ -74,11 +63,8 @@ on_invert_btn_clicked (GtkButton * btn, ChordKeyWidget * self)
 void
 chord_key_widget_refresh (ChordKeyWidget * self)
 {
-  char              str[120];
   ChordDescriptor * descr = get_chord_descr (self);
-  chord_descriptor_to_string (descr, str);
-  gtk_label_set_text (self->chord_lbl, str);
-
+  gtk_label_set_text (self->chord_lbl, descr->to_string ().c_str ());
   piano_keyboard_widget_refresh (self->piano);
 }
 
@@ -89,8 +75,8 @@ chord_key_widget_refresh (ChordKeyWidget * self)
 ChordKeyWidget *
 chord_key_widget_new (int idx)
 {
-  ChordKeyWidget * self =
-    static_cast<ChordKeyWidget *> (g_object_new (CHORD_KEY_WIDGET_TYPE, NULL));
+  auto * self = static_cast<ChordKeyWidget *> (
+    g_object_new (CHORD_KEY_WIDGET_TYPE, nullptr));
 
   self->chord_idx = idx;
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_CHORD_ACTION_H__
@@ -15,83 +15,74 @@
  */
 
 /**
- * Type of chord action.
- */
-enum class ChordActionType
-{
-  /**
-   * Change single chord.
-   */
-  CHORD_ACTION_SINGLE,
-
-  /** Change all chords. */
-  CHORD_ACTION_ALL,
-};
-
-/**
  * Action for chord pad changes.
  */
-typedef struct ChordAction
+class ChordAction final
+    : public UndoableAction,
+      public ICloneable<ChordAction>,
+      public ISerializable<ChordAction>
 {
-  UndoableAction parent_instance;
+public:
+  /**
+   * Type of chord action.
+   */
+  enum class Type
+  {
+    /**
+     * Change single chord.
+     */
+    Single,
 
-  ChordActionType type;
+    /** Change all chords. */
+    All,
+  };
 
-  ChordDescriptor * chord_before;
-  ChordDescriptor * chord_after;
-  int               chord_idx;
+  ChordAction () : UndoableAction (UndoableAction::Type::Chord) { }
+
+  /**
+   * @brief Creates a new action for changing all chords.
+   *
+   * @param chords_before Chords before the action.
+   * @param chords_after Chords after the action.
+   */
+  ChordAction (
+    const std::vector<ChordDescriptor> &chords_before,
+    const std::vector<ChordDescriptor> &chords_after);
+
+  /**
+   * @brief Creates a new action for changing a single chord.
+   *
+   * @param chord Chord after the change.
+   * @param chord_idx Index of the chord to change.
+   */
+  ChordAction (const ChordDescriptor &chord, const int chord_idx);
+
+  std::string to_string () const override;
+
+  void init_after_cloning (const ChordAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override { }
+  void perform_impl () override;
+  void undo_impl () override;
+
+  void do_or_undo (bool do_it);
+
+public:
+  Type type_ = (Type) 0;
+
+  ChordDescriptor chord_before_;
+  ChordDescriptor chord_after_;
+  int             chord_idx_ = 0;
 
   /** Chords before the change. */
-  ChordDescriptor ** chords_before;
+  std::vector<ChordDescriptor> chords_before_;
 
   /** Chords after the change. */
-  ChordDescriptor ** chords_after;
-
-} ChordAction;
-
-void
-chord_action_init_loaded (ChordAction * self);
-
-/**
- * Creates a new action.
- *
- * @param chord Chord descriptor, if single chord.
- * @param chords_before Chord descriptors, if
- *   changing all chords.
- */
-WARN_UNUSED_RESULT UndoableAction *
-chord_action_new (
-  const ChordDescriptor ** chords_before,
-  const ChordDescriptor ** chords_after,
-  const ChordDescriptor *  chord,
-  const int                chord_idx,
-  GError **                error);
-
-NONNULL ChordAction *
-chord_action_clone (const ChordAction * src);
-
-/**
- * Wrapper to create action and perform it.
- */
-bool
-chord_action_perform (
-  const ChordDescriptor ** chords_before,
-  const ChordDescriptor ** chords_after,
-  const ChordDescriptor *  chord,
-  const int                chord_idx,
-  GError **                error);
-
-int
-chord_action_do (ChordAction * self, GError ** error);
-
-int
-chord_action_undo (ChordAction * self, GError ** error);
-
-char *
-chord_action_stringize (ChordAction * self);
-
-void
-chord_action_free (ChordAction * self);
+  std::vector<ChordDescriptor> chords_after_;
+};
 
 /**
  * @}

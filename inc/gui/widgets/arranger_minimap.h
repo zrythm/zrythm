@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Arranger minimap.
  */
@@ -26,7 +24,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ArrangerMinimapBgWidget        ArrangerMinimapBgWidget;
 typedef struct _ArrangerMinimapSelectionWidget ArrangerMinimapSelectionWidget;
-typedef struct ArrangerMinimap                 ArrangerMinimap;
+class ArrangerMinimap;
 
 /**
  * @addtogroup widgets

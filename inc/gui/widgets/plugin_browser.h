@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Plugin browser.
  */
@@ -11,6 +11,7 @@
 #ifndef __GUI_WIDGETS_PLUGIN_BROWSER_H__
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
+#include "gui/widgets/item_factory.h"
 #include "plugins/plugin.h"
 #include "utils/symap.h"
 
@@ -25,8 +26,8 @@ G_DECLARE_FINAL_TYPE (
   GtkWidget);
 
 TYPEDEF_STRUCT_UNDERSCORED (ExpanderBoxWidget);
-TYPEDEF_STRUCT (PluginCollection);
-TYPEDEF_STRUCT (ItemFactory);
+class PluginCollection;
+class ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -67,7 +68,7 @@ enum class PluginBrowserSortStyle
  * It contains references to PluginDescriptor's, which it uses
  * to initialize Plugin's on row activation or drag-n-drop.
  */
-typedef struct _PluginBrowserWidget
+using PluginBrowserWidget = struct _PluginBrowserWidget
 {
   GtkWidget parent_instance;
 
@@ -123,17 +124,17 @@ typedef struct _PluginBrowserWidget
   GtkLabel * plugin_cv_label;
 
   /** Symbol IDs (for quick comparison) of selected authors. */
-  GArray * selected_authors;
+  std::vector<uint32_t> selected_authors;
 
   /** Selected categories (ZPluginCategory). */
-  GArray * selected_categories;
+  std::vector<ZPluginCategory> selected_categories;
 
-  /** Selected protocols (ZPluginProtocol). */
-  GArray * selected_protocols;
+  /** Selected protocols (PluginProtocol). */
+  std::vector<PluginProtocol> selected_protocols;
 
   /** Pointers to the collections (PluginCollection instances)
    * from PluginManager.collections that must not be free'd. */
-  GPtrArray * selected_collections;
+  std::vector<PluginCollection *> selected_collections;
 
   /** List view -> selection model -> filter model */
   GtkCustomFilter *    plugin_filter;
@@ -142,7 +143,7 @@ typedef struct _PluginBrowserWidget
   GtkSortListModel *   plugin_sort_model;
 
   /** Array of ItemFactory. */
-  GPtrArray * item_factories;
+  ItemFactoryPtrVector item_factories;
 
   /**
    * A little hack to get the paned position to
@@ -164,7 +165,7 @@ typedef struct _PluginBrowserWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} PluginBrowserWidget;
+};
 
 /**
  * Instantiates a new PluginBrowserWidget.

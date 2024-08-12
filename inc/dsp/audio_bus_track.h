@@ -1,24 +1,33 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_AUDIO_BUS_TRACK_H__
 #define __AUDIO_AUDIO_BUS_TRACK_H__
 
 #include "dsp/channel_track.h"
-#include "dsp/track.h"
 
-typedef struct Position        Position;
-typedef struct _TrackWidget    TrackWidget;
-typedef struct Channel         Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable     Automatable;
+/**
+ * @brief An audio bus track that can be processed and has channels.
+ */
+class AudioBusTrack final
+    : public ChannelTrack,
+      public ICloneable<AudioBusTrack>,
+      public ISerializable<AudioBusTrack>
+{
+public:
+  // Rule of 0
+  AudioBusTrack () = default;
+  AudioBusTrack (const std::string &name, int pos);
 
-typedef struct Track AudioBusTrack;
+  void init_after_cloning (const AudioBusTrack &other) override
+  {
+    ChannelTrack::copy_members_from (other);
+    ProcessableTrack::copy_members_from (other);
+    AutomatableTrack::copy_members_from (other);
+    Track::copy_members_from (other);
+  }
 
-void
-audio_bus_track_init (Track * track);
-
-void
-audio_bus_track_setup (AudioBusTrack * self);
+  DECLARE_DEFINE_FIELDS_METHOD ();
+};
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

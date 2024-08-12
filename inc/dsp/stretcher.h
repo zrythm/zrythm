@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Time and pitch stretching API.
  */
@@ -40,7 +40,7 @@ enum class StretcherBackend
 /**
  * Stretcher interface.
  */
-typedef struct Stretcher
+struct Stretcher
 {
   StretcherBackend backend;
 
@@ -58,7 +58,7 @@ typedef struct Stretcher
    * Somewhere around 6k should be fine.
    */
   unsigned int block_size;
-} Stretcher;
+};
 
 /**
  * Create a new Stretcher using the rubberband backend.
@@ -84,7 +84,7 @@ stretcher_new_rubberband (
  *
  * @param in_samples_l The left samples.
  * @param in_samples_r The right channel samples. If
- *   this is NULL, the audio is assumed to be mono.
+ *   this is nullptr, the audio is assumed to be mono.
  * @param in_samples_size The number of input samples
  *   per channel.
  *
@@ -93,13 +93,13 @@ stretcher_new_rubberband (
  */
 ssize_t
 stretcher_stretch (
-  Stretcher * self,
-  float *     in_samples_l,
-  float *     in_samples_r,
-  size_t      in_samples_size,
-  float *     out_samples_l,
-  float *     out_samples_r,
-  size_t      out_samples_wanted);
+  Stretcher *   self,
+  const float * in_samples_l,
+  const float * in_samples_r,
+  size_t        in_samples_size,
+  float *       out_samples_l,
+  float *       out_samples_r,
+  size_t        out_samples_wanted);
 
 /**
  * Get latency in number of samples.
@@ -123,10 +123,10 @@ stretcher_set_time_ratio (Stretcher * self, double ratio);
  */
 ssize_t
 stretcher_stretch_interleaved (
-  Stretcher * self,
-  float *     in_samples,
-  size_t      in_samples_size,
-  float **    _out_samples);
+  Stretcher *   self,
+  const float * in_samples,
+  size_t        in_samples_size,
+  float **      _out_samples);
 
 /**
  * Frees the resampler.

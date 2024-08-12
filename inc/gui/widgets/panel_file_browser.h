@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
@@ -10,9 +10,9 @@
 #include "gtk_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (FileAuditionerControlsWidget);
-struct FileBrowserLocation;
 TYPEDEF_STRUCT_UNDERSCORED (FileBrowserFiltersWidget);
-TYPEDEF_STRUCT (ItemFactory);
+struct FileBrowserLocation;
+class ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -30,7 +30,7 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_PANEL_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
-typedef struct _PanelFileBrowserWidget
+using PanelFileBrowserWidget = struct _PanelFileBrowserWidget
 {
   GtkWidget parent_instance;
 
@@ -40,22 +40,22 @@ typedef struct _PanelFileBrowserWidget
   GtkBox * browser_bot;
 
   GtkListView * bookmarks_list_view;
-  ItemFactory * bookmarks_item_factory;
+  std::unique_ptr<ItemFactory> * bookmarks_item_factory;
 
   GtkLabel * file_info;
-  ZFileType  selected_type;
+  FileType   selected_type;
 
   GtkSearchEntry * file_search_entry;
 
   GtkCustomFilter *    files_filter;
   GtkFilterListModel * files_filter_model;
   GtkSingleSelection * files_selection_model;
-  ItemFactory *        files_item_factory;
+  std::unique_ptr<ItemFactory> * files_item_factory;
   GtkListView *        files_list_view;
 
   /** Array of FileDescriptor. */
-  GPtrArray * selected_locations;
-  GPtrArray * selected_files;
+  // GPtrArray * selected_locations;
+  std::vector<FileDescriptor *> * selected_files;
 
   FileBrowserFiltersWidget * filters_toolbar;
 
@@ -68,7 +68,7 @@ typedef struct _PanelFileBrowserWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} PanelFileBrowserWidget;
+};
 
 void
 panel_file_browser_refresh_bookmarks (PanelFileBrowserWidget * self);

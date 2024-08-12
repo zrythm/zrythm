@@ -1,129 +1,99 @@
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
- */
 
-#include "dsp/engine.h"
+#include "dsp/control_port.h"
+#include "dsp/cv_port.h"
 #include "dsp/modulator_macro_processor.h"
+#include "dsp/modulator_track.h"
 #include "dsp/port.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
 
-void
-modulator_macro_processor_init_loaded (
-  ModulatorMacroProcessor * self,
-  Track *                   track)
+bool
+ModulatorMacroProcessor::is_in_active_project () const
 {
-  self->track = track;
-
-  self->macro->init_loaded (self);
-  self->cv_in->init_loaded (self);
-  self->cv_out->init_loaded (self);
-}
-
-Track *
-modulator_macro_processor_get_track (ModulatorMacroProcessor * self)
-{
-  return self->cv_in->get_track (true);
+  return track_ && track_->is_in_active_project ();
 }
 
 void
-modulator_macro_processor_set_name (
-  ModulatorMacroProcessor * self,
-  const char *              name)
+ModulatorMacroProcessor::init_loaded (ModulatorTrack &track)
 {
-  self->name = g_strdup (name);
+  track_ = &track;
+
+  macro_->init_loaded (this);
+  cv_in_->init_loaded (this);
+  cv_out_->init_loaded (this);
 }
 
 /**
  * Process.
  */
 void
-modulator_macro_processor_process (
-  ModulatorMacroProcessor *           self,
-  const EngineProcessTimeInfo * const time_nfo)
+ModulatorMacroProcessor::process (const EngineProcessTimeInfo time_nfo)
 {
   z_return_if_fail_cmp (
-    time_nfo->local_offset + time_nfo->nframes, <=, self->cv_out->last_buf_sz_);
+    time_nfo.local_offset_ + time_nfo.nframes_, <=, cv_out_->last_buf_sz_);
 
-  /* if there are inputs, multiply by the knov
-   * value */
-  if (self->cv_in->srcs_.size () > 0)
+  /* if there are inputs, multiply by the knob value */
+  if (!cv_in_->srcs_.empty ())
     {
       dsp_mix2 (
-        &self->cv_out->buf_[time_nfo->local_offset],
-        &self->cv_in->buf_[time_nfo->local_offset], 0.f, self->macro->control_,
-        time_nfo->nframes);
+        &cv_out_->buf_[time_nfo.local_offset_],
+        &cv_in_->buf_[time_nfo.local_offset_], 0.f, macro_->get_val (),
+        time_nfo.nframes_);
     }
-  /* else if there are no inputs, set the knob value
-   * as the output */
+  /* else if there are no inputs, set the knob value as the output */
   else
     {
-      Port * cv_out = self->cv_out;
-      g_return_if_fail (IS_PORT (cv_out));
       dsp_fill (
-        &cv_out->buf_[time_nfo->local_offset],
-        self->macro->control_ * (cv_out->maxf_ - cv_out->minf_) + cv_out->minf_,
-        time_nfo->nframes);
+        &cv_out_->buf_[time_nfo.local_offset_],
+        macro_->get_val () * (cv_out_->maxf_ - cv_out_->minf_) + cv_out_->minf_,
+        time_nfo.nframes_);
     }
 }
 
-ModulatorMacroProcessor *
-modulator_macro_processor_new (Track * track, int idx)
+ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int idx)
+    : track_ (track)
 {
-  ModulatorMacroProcessor * self = object_new (ModulatorMacroProcessor);
-  self->schema_version = MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION;
-  self->track = track;
 
-  char str[600];
-  sprintf (str, _ ("Macro %d"), idx + 1);
-  self->name = g_strdup (str);
-  self->macro = new Port (
-    PortType::Control, PortFlow::Input, str,
-    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->macro->id_.sym_ = fmt::sprintf ("macro_%d", idx + 1);
-  Port * port = self->macro;
-  port->minf_ = 0.f;
-  port->maxf_ = 1.f;
-  port->deff_ = 0.f;
-  port->set_control_value (0.75f, false, false);
-  port->id_.flags_ |= PortIdentifier::Flags::AUTOMATABLE;
-  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id_.port_index_ = idx;
+  name_ = format_str (_ ("Macro {}"), idx + 1);
+  macro_ = std::make_unique<ControlPort> (
+    name_, PortIdentifier::OwnerType::ModulatorMacroProcessor, this);
+  macro_->id_.sym_ = fmt::format ("macro_{}", idx + 1);
+  macro_->minf_ = 0.f;
+  macro_->maxf_ = 1.f;
+  macro_->deff_ = 0.f;
+  macro_->set_control_value (0.75f, false, false);
+  macro_->id_.flags_ |= PortIdentifier::Flags::Automatable;
+  macro_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  macro_->id_.port_index_ = idx;
 
-  sprintf (str, _ ("Macro CV In %d"), idx + 1);
-  self->cv_in = new Port (
-    PortType::CV, PortFlow::Input, str,
-    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->cv_in->id_.sym_ = fmt::sprintf ("macro_cv_in_%d", idx + 1);
-  port = self->cv_in;
-  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id_.port_index_ = idx;
+  cv_in_ = std::make_unique<CVPort> (
+    format_str (_ ("Macro CV In {}"), idx + 1), PortFlow::Input,
+    PortIdentifier::OwnerType::ModulatorMacroProcessor, this);
+  cv_in_->id_.sym_ = fmt::format ("macro_cv_in_{}", idx + 1);
+  cv_in_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  cv_in_->id_.port_index_ = idx;
 
-  sprintf (str, _ ("Macro CV Out %d"), idx + 1);
-  self->cv_out = new Port (
-    PortType::CV, PortFlow::Output, str,
-    PortIdentifier::OwnerType::MODULATOR_MACRO_PROCESSOR, self);
-  self->cv_out->id_.sym_ = fmt::sprintf ("macro_cv_out_%d", idx + 1);
-  port = self->cv_out;
-  port->id_.flags_ |= PortIdentifier::Flags::MODULATOR_MACRO;
-  port->id_.port_index_ = idx;
-
-  return self;
+  cv_out_ = std::make_unique<CVPort> (
+    format_str (_ ("Macro CV Out {}"), idx + 1), PortFlow::Output,
+    PortIdentifier::OwnerType::ModulatorMacroProcessor, this);
+  cv_out_->id_.sym_ = fmt::format ("macro_cv_out_{}", idx + 1);
+  cv_out_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  cv_out_->id_.port_index_ = idx;
 }
 
 void
-modulator_macro_processor_free (ModulatorMacroProcessor * self)
+ModulatorMacroProcessor::init_after_cloning (
+  const ModulatorMacroProcessor &other)
 {
-  object_delete_and_null (self->macro);
-  object_delete_and_null (self->cv_in);
-  object_delete_and_null (self->cv_out);
-
-  object_zero_and_free (self);
+  name_ = other.name_;
+  cv_in_ = other.cv_in_->clone_unique ();
+  cv_out_ = other.cv_out_->clone_unique ();
+  macro_ = other.macro_->clone_unique ();
 }

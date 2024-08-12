@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Plugin strip expander widget.
  */
@@ -11,6 +11,9 @@
 #define __GUI_WIDGETS_PLUGIN_STRIP_EXPANDER_H__
 
 #include "gui/widgets/expander_box.h"
+#include "plugins/plugin_identifier.h"
+#include "utils/audio.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -23,8 +26,8 @@ G_DECLARE_FINAL_TYPE (
   PLUGIN_STRIP_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track              Track;
-typedef struct _ChannelSlotWidget ChannelSlotWidget;
+class ChannelTrack;
+TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotWidget);
 
 /**
  * @addtogroup widgets
@@ -42,11 +45,11 @@ enum class PluginStripExpanderPosition
  * A TwoColExpanderBoxWidget for showing the ports
  * in the InspectorWidget.
  */
-typedef struct _PluginStripExpanderWidget
+using PluginStripExpanderWidget = struct _PluginStripExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
-  ZPluginSlotType             slot_type;
+  PluginSlotType              slot_type;
   PluginStripExpanderPosition position;
 
   /** Scrolled window for the vbox inside. */
@@ -63,8 +66,8 @@ typedef struct _PluginStripExpanderWidget
   ChannelSlotWidget * slots[STRIP_SIZE];
 
   /** Owner track. */
-  Track * track;
-} PluginStripExpanderWidget;
+  ChannelTrack * track;
+};
 
 /**
  * Queues a redraw of the given slot.
@@ -86,9 +89,9 @@ plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self);
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  ZPluginSlotType             type,
+  PluginSlotType              type,
   PluginStripExpanderPosition position,
-  Track *                     track);
+  ChannelTrack *              track);
 
 /**
  * @}

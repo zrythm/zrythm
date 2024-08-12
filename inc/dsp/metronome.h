@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Metronome related logic.
  */
@@ -10,11 +10,14 @@
 #ifndef __AUDIO_METRONOME_H__
 #define __AUDIO_METRONOME_H__
 
-#include <cstddef>
+#include <filesystem>
 
+#include "dsp/position.h"
 #include "utils/types.h"
 
-typedef struct AudioEngine AudioEngine;
+#include "ext/juce/juce.h"
+
+class AudioEngine;
 
 /**
  * @addtogroup dsp
@@ -22,72 +25,62 @@ typedef struct AudioEngine AudioEngine;
  * @{
  */
 
-#define METRONOME (AUDIO_ENGINE->metronome)
-
-/**
- * The type of the metronome sound.
- */
-enum class MetronomeType
-{
-  METRONOME_TYPE_NONE,
-  METRONOME_TYPE_EMPHASIS,
-  METRONOME_TYPE_NORMAL,
-};
+#define METRONOME (AUDIO_ENGINE->metronome_)
 
 /**
  * Metronome settings.
  */
-typedef struct Metronome
+class Metronome final
 {
+public:
+  /**
+   * The type of the metronome sound.
+   */
+  enum class Type
+  {
+    None,
+    Emphasis,
+    Normal,
+  };
+
+public:
+  Metronome () = default;
+  /**
+   * Initializes the Metronome by loading the samples into memory.
+   *
+   * @throw ZrythmException if loading fails.
+   */
+  Metronome (AudioEngine &engine);
+
+  using SampleBufferPtr = std::shared_ptr<juce::AudioSampleBuffer>;
+
+  void set_volume (float volume);
+
+  /**
+   * Queues metronome events (if any) within the current processing cycle.
+   *
+   * @param loffset Local offset in this cycle.
+   */
+  void queue_events (
+    AudioEngine *   engine,
+    const nframes_t loffset,
+    const nframes_t nframes);
+
+public:
   /** Absolute path of the "emphasis" sample. */
-  char * emphasis_path;
+  fs::path emphasis_path_;
 
   /** Absolute path of the "normal" sample. */
-  char * normal_path;
+  fs::path normal_path_;
 
   /** The emphasis sample. */
-  float * emphasis;
-
-  /** Size per channel. */
-  size_t emphasis_size;
-
-  channels_t emphasis_channels;
+  SampleBufferPtr emphasis_;
 
   /** The normal sample. */
-  float * normal;
+  SampleBufferPtr normal_;
 
-  /** Size per channel. */
-  size_t normal_size;
-
-  channels_t normal_channels;
-
-  float volume;
-} Metronome;
-
-/**
- * Initializes the Metronome by loading the samples
- * into memory.
- */
-Metronome *
-metronome_new (void);
-
-NONNULL void
-metronome_set_volume (Metronome * self, float volume);
-
-/**
- * Queues metronome events (if any) within the
- * current processing cycle.
- *
- * @param loffset Local offset in this cycle.
- */
-NONNULL void
-metronome_queue_events (
-  AudioEngine *   self,
-  const nframes_t loffset,
-  const nframes_t nframes);
-
-NONNULL void
-metronome_free (Metronome * self);
+  float volume_;
+};
 
 /**
  * @}

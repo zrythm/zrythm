@@ -1,17 +1,13 @@
-/*
- * SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "actions/tracklist_selections.h"
 #include "dsp/region.h"
 #include "dsp/track.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
-#include "project.h"
 #include "utils/color.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -31,39 +27,40 @@
  */
 bool
 object_color_chooser_dialog_widget_run (
-  GtkWindow *           parent,
-  Track *               track,
-  TracklistSelections * sel,
-  Region *              region)
+  GtkWindow *                       parent,
+  Track *                           track,
+  const SimpleTracklistSelections * sel,
+  Region *                          region)
 {
   GtkColorChooserDialog * dialog = NULL;
   if (track)
     {
-      char * str = g_strdup_printf (_ ("%s color"), track->name);
-      dialog =
-        GTK_COLOR_CHOOSER_DIALOG (gtk_color_chooser_dialog_new (str, parent));
-      gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (dialog), &track->color);
+      auto str = format_str (_ ("{} color"), track->name_);
+      dialog = GTK_COLOR_CHOOSER_DIALOG (
+        gtk_color_chooser_dialog_new (str.c_str (), parent));
+      auto color_rgba = track->color_.to_gdk_rgba ();
+      gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (dialog), &color_rgba);
       gtk_color_chooser_set_use_alpha (GTK_COLOR_CHOOSER (dialog), false);
-      g_free (str);
     }
   else if (region)
     {
-      char * str = g_strdup_printf (_ ("%s color"), region->name);
-      dialog =
-        GTK_COLOR_CHOOSER_DIALOG (gtk_color_chooser_dialog_new (str, parent));
+      auto str = format_str (_ ("%s color"), region->name_);
+      dialog = GTK_COLOR_CHOOSER_DIALOG (
+        gtk_color_chooser_dialog_new (str.c_str (), parent));
     }
   else if (sel)
     {
-      Track * tr = sel->tracks[0];
-      g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), false);
+      auto tr = sel->get_highest_track ();
+      z_return_val_if_fail (tr, false);
 
       dialog = GTK_COLOR_CHOOSER_DIALOG (
         gtk_color_chooser_dialog_new (_ ("Track color"), parent));
-      gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (dialog), &tr->color);
+      auto color_rgba = tr->color_.to_gdk_rgba ();
+      gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (dialog), &color_rgba);
       gtk_color_chooser_set_use_alpha (GTK_COLOR_CHOOSER (dialog), false);
     }
 
-  g_return_val_if_fail (dialog != NULL, false);
+  g_return_val_if_fail (dialog != nullptr, false);
 
   gtk_widget_add_css_class (GTK_WIDGET (dialog), "object-color-chooser-dialog");
 
@@ -87,22 +84,24 @@ object_color_chooser_dialog_widget_run (
       if (track)
         {
           /* get current object color */
-          GdkRGBA cur_color = track->color;
+          auto cur_color = track->color_;
 
           /* if changed, apply the change */
-          if (!color_is_same (&sel_color, &cur_color))
+          if (!Color (sel_color).is_same (cur_color))
             {
-              track_set_color (track, &sel_color, F_UNDOABLE, F_PUBLISH_EVENTS);
+              track->set_color (sel_color, true, true);
             }
         }
       else if (sel)
         {
-          GError * err = NULL;
-          bool     ret = tracklist_selections_action_perform_edit_color (
-            sel, &sel_color, &err);
-          if (!ret)
+          try
             {
-              HANDLE_ERROR (err, "%s", _ ("Failed to change color"));
+              UNDO_MANAGER->perform (std::make_unique<EditTracksColorAction> (
+                *sel->gen_tracklist_selections (), sel_color));
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle (_ ("Failed to change color"));
             }
         }
     }

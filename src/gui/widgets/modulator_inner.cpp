@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -24,6 +24,8 @@
 #include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -39,10 +41,10 @@ get_modulator (ModulatorInnerWidget * self)
 }
 
 static float
-get_snapped_control_value (Port * port)
+get_snapped_control_value (void * data)
 {
-  float val = port->get_control_value (F_NOT_NORMALIZED);
-
+  auto  port = static_cast<ControlPort *> (data);
+  float val = port->get_control_value (false);
   return val;
 }
 
@@ -51,7 +53,8 @@ on_show_hide_ui_toggled (GtkToggleButton * btn, ModulatorInnerWidget * self)
 {
   Plugin * modulator = get_modulator (self);
 
-  modulator->visible = !modulator->visible;
+  // FIXME use a method on the modulator to set the visibility
+  modulator->visible_ = !modulator->visible_;
 
   EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, modulator);
 }
@@ -59,21 +62,21 @@ on_show_hide_ui_toggled (GtkToggleButton * btn, ModulatorInnerWidget * self)
 static void
 on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
 {
-  MixerSelections * sel = mixer_selections_new ();
+  auto              sel = std::make_unique<FullMixerSelections> ();
   Plugin *          modulator = get_modulator (self);
-  mixer_selections_add_slot (
-    sel, P_MODULATOR_TRACK, ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR,
-    modulator->id.slot, F_NO_CLONE, F_PUBLISH_EVENTS);
+  sel->add_slot (
+    *P_MODULATOR_TRACK, PluginSlotType::Modulator, modulator->id_.slot_,
+    F_PUBLISH_EVENTS);
 
-  GError * err = NULL;
-  bool     ret =
-    mixer_selections_action_perform_delete (sel, PORT_CONNECTIONS_MGR, &err);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to delete plugins"));
+      UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
+        *sel, *PORT_CONNECTIONS_MGR));
     }
-
-  mixer_selections_free (sel);
+  catch (const ZrythmException &e)
+    {
+      e.handle (_ ("Failed to delete plugins"));
+    }
 }
 
 static void
@@ -108,7 +111,7 @@ modulator_inner_widget_refresh (ModulatorInnerWidget * self)
   Plugin * modulator = get_modulator (self);
   g_signal_handlers_block_by_func (
     self->show_hide_ui_btn, (gpointer) on_show_hide_ui_toggled, self);
-  gtk_toggle_button_set_active (self->show_hide_ui_btn, modulator->visible);
+  gtk_toggle_button_set_active (self->show_hide_ui_btn, modulator->visible_);
   g_signal_handlers_unblock_by_func (
     self->show_hide_ui_btn, (gpointer) on_show_hide_ui_toggled, self);
 }
@@ -129,7 +132,7 @@ on_knob_right_click (
 
   char tmp[600];
   sprintf (tmp, "app.reset-control::%p", port);
-  menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("Reset"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", port);
@@ -137,7 +140,7 @@ on_knob_right_click (
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.port-view-info::%p", port);
-  menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("View info"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
   KnobWithNameWidget * kwn = Z_KNOB_WITH_NAME_WIDGET (
@@ -152,29 +155,27 @@ ModulatorInnerWidget *
 modulator_inner_widget_new (ModulatorWidget * parent)
 {
   ModulatorInnerWidget * self = static_cast<ModulatorInnerWidget *> (
-    g_object_new (MODULATOR_INNER_WIDGET_TYPE, NULL));
+    g_object_new (MODULATOR_INNER_WIDGET_TYPE, nullptr));
 
   self->parent = parent;
 
   Plugin * modulator = get_modulator (self);
-  for (int i = 0; i < modulator->num_in_ports; i++)
+  for (auto &port : modulator->in_ports_)
     {
-      Port * port = modulator->in_ports[i];
-
       if (
         port->id_.type_ != PortType::Control || port->id_.flow_ != PortFlow::Input
         || ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::NOT_ON_GUI))
+          PortIdentifier::Flags::NotOnGui))
         continue;
 
       KnobWidget * knob = knob_widget_new_simple (
-        control_port_get_val, control_port_get_default_val,
-        control_port_set_real_val, port, port->minf_, port->maxf_, 24,
+        ControlPort::val_getter, ControlPort::default_val_getter,
+        ControlPort::real_val_setter, port.get (), port->minf_, port->maxf_, 24,
         port->zerof_);
-      knob->snapped_getter = (GenericFloatGetter) get_snapped_control_value;
+      knob->snapped_getter = get_snapped_control_value;
       KnobWithNameWidget * knob_with_name = knob_with_name_widget_new (
-        &port->id_, PortIdentifier::get_label, NULL, knob,
+        &port->id_, PortIdentifier::label_getter, nullptr, knob,
         GTK_ORIENTATION_HORIZONTAL, false, 3);
 
       array_double_size_if_full (
@@ -188,23 +189,23 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       gtk_gesture_single_set_button (
         GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
       g_signal_connect (
-        G_OBJECT (mp), "pressed", G_CALLBACK (on_knob_right_click), port);
+        G_OBJECT (mp), "pressed", G_CALLBACK (on_knob_right_click), port.get ());
       gtk_widget_add_controller (
         GTK_WIDGET (knob_with_name), GTK_EVENT_CONTROLLER (mp));
     }
 
-  for (int i = 0; i < modulator->num_out_ports; i++)
+  for (auto &port : modulator->out_ports_)
     {
-      Port * port = modulator->out_ports[i];
       if (port->id_.type_ != PortType::CV)
         continue;
 
       int index = self->num_waveforms++;
 
-      self->ports[index] = port;
+      self->ports[index] = port.get ();
 
       /* create waveform */
-      self->waveforms[index] = live_waveform_widget_new_port (port);
+      self->waveforms[index] =
+        live_waveform_widget_new_port (dynamic_cast<AudioPort *> (port.get ()));
       gtk_widget_set_size_request (GTK_WIDGET (self->waveforms[index]), 48, 48);
       gtk_widget_set_visible (GTK_WIDGET (self->waveforms[index]), true);
 

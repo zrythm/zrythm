@@ -1,10 +1,10 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __GUI_WIDGETS_TRACKLIST_H__
 #define __GUI_WIDGETS_TRACKLIST_H__
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -21,12 +21,11 @@ G_DECLARE_FINAL_TYPE (TracklistWidget, tracklist_widget, Z, TRACKLIST_WIDGET, Gt
 
 #define MW_TRACKLIST MW_TIMELINE_PANEL->tracklist
 
-typedef struct _TrackWidget       TrackWidget;
-typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct _ChordTrackWidget  ChordTrackWidget;
-typedef struct Track              InstrumentTrack;
-struct Tracklist;
-typedef struct _AddTrackMenuButtonWidget AddTrackMenuButtonWidget;
+TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
+TYPEDEF_STRUCT_UNDERSCORED (DragDestBoxWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ChordTrackWidget);
+class Tracklist;
+TYPEDEF_STRUCT_UNDERSCORED (AddTrackMenuButtonWidget);
 
 /**
  * The TracklistWidget holds all the Track's

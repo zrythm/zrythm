@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Hash utils.
  */
@@ -11,6 +11,7 @@
 #define __UTILS_HASH_H__
 
 #include <cstdint>
+#include <string>
 
 #include <xxhash.h>
 
@@ -26,8 +27,8 @@ typedef enum HashAlgorithm
   HASH_ALGORITHM_XXH3_64,
 } HashAlgorithm;
 
-char *
-hash_get_from_file (const char * filepath, HashAlgorithm algo);
+std::string
+hash_get_from_file (const std::string &filepath, HashAlgorithm algo);
 
 uint32_t
 hash_get_from_file_simple (const char * filepath);

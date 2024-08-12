@@ -74,7 +74,7 @@ button_with_menu_widget_setup (
   gtk_widget_add_css_class (GTK_WIDGET (self), "button-with-menu");
 
   int width;
-  gtk_widget_get_size_request (GTK_WIDGET (btn), &width, NULL);
+  gtk_widget_get_size_request (GTK_WIDGET (btn), &width, nullptr);
   gtk_widget_set_size_request (GTK_WIDGET (btn), width, height);
   gtk_widget_set_size_request (GTK_WIDGET (self->menu_btn), -1, height);
 
@@ -91,7 +91,7 @@ ButtonWithMenuWidget *
 button_with_menu_widget_new (void)
 {
   return static_cast<ButtonWithMenuWidget *> (
-    g_object_new (BUTTON_WITH_MENU_WIDGET_TYPE, NULL));
+    g_object_new (BUTTON_WITH_MENU_WIDGET_TYPE, nullptr));
 }
 
 static void

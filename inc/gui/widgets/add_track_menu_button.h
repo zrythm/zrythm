@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert dot panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Button with a popover menu to add new tracks
  */

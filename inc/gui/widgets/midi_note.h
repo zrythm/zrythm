@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * MidiNote widget API.
  */
@@ -30,7 +30,7 @@ NONNULL void
 midi_note_draw (MidiNote * self, GtkSnapshot * snapshot);
 
 NONNULL void
-midi_note_get_adjusted_color (MidiNote * self, GdkRGBA * color);
+midi_note_get_adjusted_color (MidiNote * self, Color &color);
 
 /**
  * @}

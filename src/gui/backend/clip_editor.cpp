@@ -1,18 +1,6 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Piano roll backend.
- *
- * This is meant to be serialized along with each
- * project.
- */
-
-#include <cstdlib>
-
-#include "dsp/channel.h"
 #include "dsp/router.h"
 #include "dsp/track.h"
 #include "gui/backend/clip_editor.h"
@@ -24,231 +12,174 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-/**
- * Inits the ClipEditor after a Project is loaded.
- */
 void
-clip_editor_init_loaded (ClipEditor * self)
+ClipEditor::init_loaded ()
 {
   g_message ("Initializing clip editor backend...");
 
-  piano_roll_init_loaded (self->piano_roll);
+  piano_roll_.init_loaded ();
 
   g_message ("Done initializing clip editor backend");
 }
 
-/**
- * Sets the region and refreshes the widgets.
- *
- * To be called only from GTK threads.
- */
 void
-clip_editor_set_region (ClipEditor * self, Region * region, bool fire_events)
+ClipEditor::set_region (Region * region, bool fire_events)
 {
   if (region)
     {
       g_return_if_fail (IS_REGION (region));
     }
 
-  g_message (
-    "clip editor: setting region to %p (%s)", region,
-    region ? region->name : NULL);
+  z_debug (
+    "clip editor: setting region to %p (%s)", fmt::ptr (region),
+    region ? region->name_ : nullptr);
 
   /* if first time showing a region, show the
    * event viewer as necessary */
-  if (fire_events && !self->has_region && region)
+  if (fire_events && !has_region_ && region)
     {
-      EVENTS_PUSH (EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, NULL);
+      EVENTS_PUSH (
+        EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, nullptr);
     }
 
   /*
-   * block until current DSP cycle finishes to
-   * avoid potentially sending the events to
-   * multiple tracks
+   * block until current DSP cycle finishes to avoid potentially sending the
+   * events to multiple tracks
    */
-  if (gZrythm && ROUTER && engine_get_run (AUDIO_ENGINE))
+  bool sem_aquired = false;
+  if (gZrythm && ROUTER && AUDIO_ENGINE->run_.load ())
     {
       g_debug (
-        "clip editor region changed, waiting for "
-        "graph access to make the change");
-      zix_sem_wait (&ROUTER->graph_access);
+        "clip editor region changed, waiting for graph access to make the change");
+      ROUTER->graph_access_sem_.acquire ();
+      sem_aquired = true;
     }
 
   if (region)
     {
-      self->has_region = 1;
-      region_identifier_copy (&self->region_id, &region->id);
-      self->track = arranger_object_get_track ((ArrangerObject *) region);
+      has_region_ = true;
+      region_id_ = region->id_;
+      track_ = region->get_track ();
 
-      /* if audio region, also set it in
-       * selections */
-      region_identifier_copy (&AUDIO_SELECTIONS->region_id, &region->id);
+      /* if audio region, also set it in selections */
+      AUDIO_SELECTIONS->region_id_ = region->id_;
     }
   else
     {
-      self->has_region = 0;
-      self->track = NULL;
+      has_region_ = false;
+      track_ = nullptr;
     }
 
-  self->region_changed = 1;
+  region_changed_ = true;
 
-  if (ROUTER && engine_get_run (AUDIO_ENGINE))
+  if (sem_aquired)
     {
-      zix_sem_post (&ROUTER->graph_access);
+      ROUTER->graph_access_sem_.release ();
       g_debug ("clip editor region successfully changed");
     }
 
   if (fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_CLIP_EDITOR)
     {
-      EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, NULL);
+      EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr);
 
-      /* setting the region potentially changes the active
-       * arranger - process now to change the active arranger */
-      event_manager_process_now (EVENT_MANAGER);
+      /* setting the region potentially changes the active arranger - process
+       * now to change the active arranger */
+      EVENT_MANAGER->process_now ();
     }
+}
+
+template <FinalRegionSubclass T>
+T *
+ClipEditor::get_region () const
+{
+  if (ROUTER->is_processing_thread ())
+    {
+      return dynamic_cast<T *> (region_);
+    }
+
+  if (!has_region_)
+    return nullptr;
+
+  return T::find (region_id_).get ();
 }
 
 Region *
-clip_editor_get_region (ClipEditor * self)
+ClipEditor::get_region () const
 {
-  if (router_is_processing_thread (ROUTER))
+  if (has_region_)
     {
-      return self->region;
-    }
-
-  if (!self->has_region)
-    return NULL;
-
-  Region * region = region_find (&self->region_id);
-  return region;
-}
-
-Track *
-clip_editor_get_track (ClipEditor * self)
-{
-  if (router_is_processing_thread (ROUTER))
-    {
-      return self->track;
-    }
-
-  if (!self->has_region)
-    return NULL;
-
-  Region * region = clip_editor_get_region (self);
-  g_return_val_if_fail (region, NULL);
-
-  Track * track = arranger_object_get_track ((ArrangerObject *) region);
-  g_return_val_if_fail (track, NULL);
-
-  return track;
-}
-
-#if 0
-/**
- * Returns the Region that widgets are expected
- * to use.
- */
-Region *
-clip_editor_get_region_for_widgets (
-  ClipEditor * self)
-{
-  Region * region =
-    region_find (&self->region_id_cache);
-  return region;
-}
-#endif
-
-ArrangerSelections *
-clip_editor_get_arranger_selections (ClipEditor * self)
-{
-  Region * region = clip_editor_get_region (CLIP_EDITOR);
-  if (!region)
-    {
-      return NULL;
-    }
-
-  ArrangerSelections * sel = region_get_arranger_selections (region);
-  if (!sel)
-    {
-      return NULL;
-    }
-
-  return sel;
-}
-
-ClipEditor *
-clip_editor_clone (const ClipEditor * src)
-{
-  ClipEditor * self = object_new (ClipEditor);
-
-  region_identifier_copy (&self->region_id, &src->region_id);
-  self->has_region = src->has_region;
-  self->piano_roll = piano_roll_clone (src->piano_roll);
-  self->automation_editor = automation_editor_clone (src->automation_editor);
-  self->chord_editor = chord_editor_clone (src->chord_editor);
-  self->audio_clip_editor = audio_clip_editor_clone (src->audio_clip_editor);
-
-  return self;
-}
-
-/**
- * To be called when recalculating the graph.
- */
-void
-clip_editor_set_caches (ClipEditor * self)
-{
-  if (self->has_region)
-    {
-      self->region = clip_editor_get_region (self);
-      self->track = clip_editor_get_track (self);
+      switch (region_id_.type_)
+        {
+        case RegionType::Midi:
+          return get_region<MidiRegion> ();
+        case RegionType::Audio:
+          return get_region<AudioRegion> ();
+        case RegionType::Chord:
+          return get_region<ChordRegion> ();
+        case RegionType::Automation:
+          return get_region<AutomationRegion> ();
+        default:
+          z_return_val_if_reached (nullptr);
+        }
     }
   else
     {
-      self->region = NULL;
-      self->track = NULL;
+      return nullptr;
     }
 }
 
-/**
- * Creates a new clip editor.
- */
-ClipEditor *
-clip_editor_new (void)
+Track *
+ClipEditor::get_track ()
 {
-  ClipEditor * self = object_new (ClipEditor);
+  if (ROUTER->is_processing_thread ())
+    {
+      return track_;
+    }
 
-  self->piano_roll = piano_roll_new ();
-  self->audio_clip_editor = audio_clip_editor_new ();
-  self->chord_editor = chord_editor_new ();
-  self->automation_editor = automation_editor_new ();
+  if (!has_region_)
+    return nullptr;
 
-  return self;
+  Region * region = get_region ();
+  g_return_val_if_fail (region, nullptr);
+
+  return region->get_track ();
 }
 
-/**
- * Inits the clip editor.
- */
-void
-clip_editor_init (ClipEditor * self)
+ArrangerSelections *
+ClipEditor::get_arranger_selections ()
 {
-  piano_roll_init (self->piano_roll);
-  audio_clip_editor_init (self->audio_clip_editor);
-  chord_editor_init (self->chord_editor);
-  automation_editor_init (self->automation_editor);
+  Region * region = get_region ();
+  if (!region)
+    {
+      return nullptr;
+    }
+
+  return region->get_arranger_selections ();
 }
 
 void
-clip_editor_free (ClipEditor * self)
+ClipEditor::set_caches ()
 {
-  object_free_w_func_and_null (piano_roll_free, self->piano_roll);
-  object_free_w_func_and_null (audio_clip_editor_free, self->audio_clip_editor);
-  object_free_w_func_and_null (chord_editor_free, self->chord_editor);
-  object_free_w_func_and_null (automation_editor_free, self->automation_editor);
+  if (has_region_)
+    {
+      region_ = get_region ();
+      track_ = get_track ();
+    }
+  else
+    {
+      region_ = nullptr;
+      track_ = nullptr;
+    }
+}
 
-  object_zero_and_free (self);
+void
+ClipEditor::init ()
+{
+  piano_roll_.init ();
+  chord_editor_.init ();
+  // the rest of the editors are initialized in their respective classes
 }

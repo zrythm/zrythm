@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -7,7 +7,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/gtk.h"
-#include "utils/midi.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
@@ -60,10 +60,10 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   switch (self->type)
     {
     case MidiActivityBarType::MAB_TYPE_TRACK:
-      trigger = self->track->trigger_midi_activity;
+      trigger = self->track->trigger_midi_activity_;
       break;
     case MidiActivityBarType::MAB_TYPE_ENGINE:
-      trigger = AUDIO_ENGINE->trigger_midi_activity;
+      trigger = AUDIO_ENGINE->trigger_midi_activity_;
       break;
     }
 
@@ -85,10 +85,10 @@ midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           /* FIXME these should be UI events
            * instead of these flags */
         case MidiActivityBarType::MAB_TYPE_TRACK:
-          self->track->trigger_midi_activity = 0;
+          self->track->trigger_midi_activity_ = false;
           break;
         case MidiActivityBarType::MAB_TYPE_ENGINE:
-          AUDIO_ENGINE->trigger_midi_activity = 0;
+          AUDIO_ENGINE->trigger_midi_activity_ = false;
           break;
         }
 
@@ -157,7 +157,7 @@ midi_activity_bar_widget_setup_track (MidiActivityBarWidget * self, Track * trac
   self->draw_border = false;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, nullptr);
 }
 
 /**
@@ -171,7 +171,7 @@ midi_activity_bar_widget_setup_engine (MidiActivityBarWidget * self)
   self->draw_border = true;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, nullptr);
 }
 
 static void

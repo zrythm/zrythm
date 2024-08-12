@@ -1,8 +1,7 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
+#include "dsp/control_port.h"
 #include "dsp/port.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "utils/ui.h"
@@ -35,7 +34,7 @@ set_values (
 #define PREPARE_ROW(title) \
   row = ADW_ACTION_ROW (adw_action_row_new ()); \
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title); \
-  lbl = GTK_LABEL (gtk_label_new (NULL))
+  lbl = GTK_LABEL (gtk_label_new (nullptr))
 
 #define ADD_ROW \
   adw_action_row_add_suffix (row, GTK_WIDGET (lbl)); \
@@ -50,8 +49,7 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Designation"));
-  port->get_full_designation (tmp);
-  gtk_label_set_text (lbl, tmp);
+  gtk_label_set_text (lbl, port->get_full_designation ().c_str ());
   ADD_ROW;
 
   PREPARE_ROW (_ ("Type"));
@@ -64,14 +62,23 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Default Value"));
-  sprintf (tmp, "%.1f", (double) port->deff_);
-  gtk_label_set_text (lbl, tmp);
+  if (id->is_control ())
+    {
+      auto ctrl = static_cast<ControlPort *> (port);
+      sprintf (tmp, "%.1f", (double) ctrl->deff_);
+      gtk_label_set_text (lbl, tmp);
+    }
+  else
+    {
+      gtk_label_set_text (lbl, _ ("N/A"));
+    }
   ADD_ROW;
 
   PREPARE_ROW (_ ("Current Value"));
   if (id->type_ == PortType::Control)
     {
-      sprintf (tmp, "%f", (double) port->control_);
+      auto ctrl = static_cast<ControlPort *> (port);
+      sprintf (tmp, "%f", (double) ctrl->control_);
       gtk_label_set_text (lbl, tmp);
     }
   else
@@ -121,7 +128,7 @@ PortInfoDialogWidget *
 port_info_dialog_widget_new (Port * port)
 {
   PortInfoDialogWidget * self = Z_PORT_INFO_DIALOG_WIDGET (
-    g_object_new (PORT_INFO_DIALOG_WIDGET_TYPE, NULL));
+    g_object_new (PORT_INFO_DIALOG_WIDGET_TYPE, nullptr));
 
   AdwPreferencesPage * pref_page =
     ADW_PREFERENCES_PAGE (adw_preferences_page_new ());

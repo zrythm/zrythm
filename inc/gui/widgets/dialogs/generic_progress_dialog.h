@@ -1,18 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Generic progress dialog.
- */
 
 #ifndef __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 
 #include "utils/types.h"
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 #define GENERIC_PROGRESS_DIALOG_WIDGET_TYPE \
   (generic_progress_dialog_widget_get_type ())
@@ -31,7 +25,7 @@ class ProgressInfo;
  * @{
  */
 
-typedef struct GenericProgressDialogButton
+using GenericProgressDialogButton = struct GenericProgressDialogButton
 {
   char response[200];
 
@@ -45,12 +39,12 @@ typedef struct GenericProgressDialogButton
 
   /** Callback object. */
   void * cb_obj;
-} GenericProgressDialogButton;
+};
 
 /**
- * A generic progress dialog.
+ * @brief A generic progress dialog.
  */
-typedef struct
+using GenericProgressDialogWidgetPrivate = struct
 {
   GtkProgressBar * progress_bar;
 
@@ -81,13 +75,12 @@ typedef struct
 
   /** Callback object. */
   void * close_cb_obj;
+};
 
-} GenericProgressDialogWidgetPrivate;
-
-typedef struct _GenericProgressDialogWidgetClass
+using GenericProgressDialogWidgetClass = struct _GenericProgressDialogWidgetClass
 {
   AdwAlertDialogClass parent_class;
-} GenericProgressDialogWidgetClass;
+};
 
 /**
  * Sets up a progress dialog widget.

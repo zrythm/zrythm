@@ -1,14 +1,8 @@
-// SPDX-FileCopyrightText: © 2019, 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- */
 
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
-#include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

@@ -13,48 +13,32 @@
  */
 
 #include <cmath>
+#include <numbers>
 
 #include "dsp/peak_fall_smooth.h"
-#include "utils/objects.h"
 
-PeakFallSmooth *
-peak_fall_smooth_new (void)
+void
+PeakFallSmooth::calculate_coeff (float frequency, float sample_rate)
 {
-  PeakFallSmooth * self = object_new (PeakFallSmooth);
-  return self;
+  coeff_ = std::exp (-2.f * std::numbers::pi_v<float> * frequency / sample_rate);
 }
 
 void
-peak_fall_smooth_calculate_coeff (
-  PeakFallSmooth * self,
-  const float      frequency,
-  const float      sample_rate)
+PeakFallSmooth::set_value (float val)
 {
-  self->coeff = expf (-2.f * (float) M_PI * frequency / sample_rate);
-}
-
-void
-peak_fall_smooth_set_value (PeakFallSmooth * self, const float val)
-{
-  if (self->history < val)
+  if (history_ < val)
     {
-      self->history = val;
+      history_ = val;
     }
 
-  self->value = val;
+  value_ = val;
 }
 
 float
-peak_fall_smooth_get_smoothed_value (PeakFallSmooth * self)
+PeakFallSmooth::get_smoothed_value () const
 {
-  float result = self->value + self->coeff * (self->history - self->value);
-  self->history = result;
+  float result = value_ + coeff_ * (history_ - value_);
+  history_ = result;
 
   return result;
-}
-
-void
-peak_fall_smooth_free (PeakFallSmooth * self)
-{
-  object_zero_and_free (self);
 }

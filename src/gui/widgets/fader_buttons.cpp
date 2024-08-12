@@ -26,80 +26,78 @@ G_DEFINE_TYPE (FaderButtonsWidget, fader_buttons_widget, GTK_TYPE_BOX)
 static void
 on_record_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto * track = self->track;
   if (track)
     {
-      if (!track_is_selected (track))
+      if (!track->is_selected ())
         {
-          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, true, true);
         }
-      track_set_recording (track, gtk_toggle_button_get_active (btn), 1);
+      auto recordable_track = dynamic_cast<RecordableTrack *> (track);
+      if (recordable_track)
+        {
+          recordable_track->set_recording (
+            gtk_toggle_button_get_active (btn), true);
+        }
     }
 }
 
 static void
 on_solo_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
   if (track)
     {
-      track_set_soloed (
-        self->track, gtk_toggle_button_get_active (btn), F_TRIGGER_UNDO,
-        F_AUTO_SELECT, F_PUBLISH_EVENTS);
+      track->set_soloed (gtk_toggle_button_get_active (btn), true, true, true);
     }
 }
 
 static void
 on_mute_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
   if (track)
     {
-      track_set_muted (
-        self->track, gtk_toggle_button_get_active (btn), F_TRIGGER_UNDO,
-        F_AUTO_SELECT, F_PUBLISH_EVENTS);
+      track->set_muted (gtk_toggle_button_get_active (btn), true, true, true);
     }
 }
 
 static void
 on_listen_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
   if (track)
     {
-      track_set_listened (
-        self->track, gtk_toggle_button_get_active (btn), F_TRIGGER_UNDO,
-        F_AUTO_SELECT, F_PUBLISH_EVENTS);
+      track->set_listened (gtk_toggle_button_get_active (btn), true, true, true);
     }
 }
 
 static void
 on_mono_compat_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
   if (track)
     {
-      if (!track_is_selected (track))
+      if (!track->is_selected ())
         {
-          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, true, true);
         }
-      track->channel->set_mono_compat_enabled (
-        gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
+      track->channel_->set_mono_compat_enabled (
+        gtk_toggle_button_get_active (btn), true);
     }
 }
 
 static void
 on_swap_phase_toggled (GtkToggleButton * btn, FaderButtonsWidget * self)
 {
-  Track * track = self->track;
+  auto track = self->track;
   if (track)
     {
-      if (!track_is_selected (track))
+      if (!track->is_selected ())
         {
-          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, true, true);
         }
-      track->channel->set_swap_phase (
-        gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
+      track->channel_->set_swap_phase (gtk_toggle_button_get_active (btn), true);
     }
 }
 
@@ -141,46 +139,47 @@ fader_buttons_widget_unblock_signal_handlers (FaderButtonsWidget * self)
 }
 
 void
-fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track)
+fader_buttons_widget_refresh (FaderButtonsWidget * self, ChannelTrack * track)
 {
   self->track = track;
 
   if (track)
     {
       fader_buttons_widget_block_signal_handlers (self);
-      if (track_type_has_mono_compat_switch (track->type))
+      if (Track::type_has_mono_compat_switch (track->type_))
         {
           gtk_toggle_button_set_active (
-            self->mono_compat, track->channel->get_mono_compat_enabled ());
+            self->mono_compat, track->channel_->get_mono_compat_enabled ());
           gtk_widget_set_visible (GTK_WIDGET (self->mono_compat), true);
         }
       else
         {
           gtk_widget_set_visible (GTK_WIDGET (self->mono_compat), false);
         }
-      if (track->out_signal_type == PortType::Audio)
+      if (track->out_signal_type_ == PortType::Audio)
         {
           gtk_toggle_button_set_active (
-            self->swap_phase, track->channel->get_swap_phase ());
+            self->swap_phase, track->channel_->get_swap_phase ());
           gtk_widget_set_visible (GTK_WIDGET (self->swap_phase), true);
         }
       else
         {
           gtk_widget_set_visible (GTK_WIDGET (self->swap_phase), false);
         }
-      gtk_toggle_button_set_active (self->mute, track_get_muted (track));
-      if (track_type_can_record (track->type))
+      gtk_toggle_button_set_active (self->mute, track->get_muted ());
+      if (track->can_record ())
         {
           gtk_widget_set_visible (GTK_WIDGET (self->record), true);
+          auto recordable_track = dynamic_cast<RecordableTrack *> (track);
           gtk_toggle_button_set_active (
-            self->record, track_get_recording (track));
+            self->record, recordable_track->get_recording ());
         }
       else
         {
           gtk_widget_set_visible (GTK_WIDGET (self->record), false);
         }
-      gtk_toggle_button_set_active (self->solo, track_get_soloed (track));
-      gtk_toggle_button_set_active (self->listen, track_get_listened (track));
+      gtk_toggle_button_set_active (self->solo, track->get_soloed ());
+      gtk_toggle_button_set_active (self->listen, track->get_listened ());
       fader_buttons_widget_unblock_signal_handlers (self);
     }
 }
@@ -196,40 +195,40 @@ on_btn_right_click (
   GtkWidget * widget =
     gtk_event_controller_get_widget (GTK_EVENT_CONTROLLER (gesture));
 
-  Fader * fader = track_get_fader (self->track, true);
+  auto fader = self->track->get_fader (true);
 
-  Port * port = NULL;
+  ControlPort * port = nullptr;
   if (widget == GTK_WIDGET (self->mute))
     {
-      port = fader->mute;
+      port = fader->mute_.get ();
     }
   else if (widget == GTK_WIDGET (self->solo))
     {
-      port = fader->solo;
+      port = fader->solo_.get ();
     }
   else if (widget == GTK_WIDGET (self->listen))
     {
-      port = fader->listen;
+      port = fader->listen_.get ();
     }
   else if (widget == GTK_WIDGET (self->mono_compat))
     {
-      port = fader->mono_compat_enabled;
+      port = fader->mono_compat_enabled_.get ();
     }
   else if (widget == GTK_WIDGET (self->swap_phase))
     {
-      port = fader->swap_phase;
+      port = fader->swap_phase_.get ();
     }
   else if (widget == GTK_WIDGET (self->record))
     {
-      port = self->track->recording;
+      auto recordable_track = dynamic_cast<RecordableTrack *> (self->track);
+      port = recordable_track->recording_.get ();
     }
 
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  char tmp[600];
-  sprintf (tmp, "app.bind-midi-cc::%p", port);
-  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (
+    fmt::format ("app.bind-midi-cc::%p", fmt::ptr (port)).c_str ());
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x_dbl, y_dbl, menu);
@@ -243,10 +242,10 @@ on_e_clicked (GtkButton * self, gpointer user_data)
 }
 
 FaderButtonsWidget *
-fader_buttons_widget_new (Track * track)
+fader_buttons_widget_new (ChannelTrack * track)
 {
   FaderButtonsWidget * self = static_cast<FaderButtonsWidget *> (
-    g_object_new (FADER_BUTTONS_WIDGET_TYPE, NULL));
+    g_object_new (FADER_BUTTONS_WIDGET_TYPE, nullptr));
 
   fader_buttons_widget_refresh (self, track);
   return self;
@@ -267,7 +266,8 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* add css classes */

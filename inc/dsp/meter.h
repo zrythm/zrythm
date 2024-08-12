@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Meter DSP.
  */
@@ -10,13 +10,16 @@
 #ifndef __AUDIO_METER_H__
 #define __AUDIO_METER_H__
 
+#include "dsp/kmeter_dsp.h"
+#include "dsp/peak_dsp.h"
+#include "dsp/true_peak_dsp.h"
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
-typedef struct TruePeakDsp TruePeakDsp;
-typedef struct KMeterDsp   KMeterDsp;
-typedef struct PeakDsp     PeakDsp;
+class TruePeakDsp;
+class KMeterDsp;
+class PeakDsp;
 class Port;
 
 /**
@@ -42,60 +45,56 @@ enum class MeterAlgorithm
 /**
  * A Meter used by a single GUI element.
  */
-typedef struct Meter
+class Meter
 {
+public:
+  Meter (Port &port);
+
+  /**
+   * Get the current meter value.
+   *
+   * This should only be called once in a draw cycle.
+   */
+  void get_value (AudioValueFormat format, float * val, float * max);
+
+public:
   /** Port associated with this meter. */
-  Port * port;
+  Port * port_;
 
   /** True peak processor. */
-  TruePeakDsp * true_peak_processor;
-  TruePeakDsp * true_peak_max_processor;
+  std::unique_ptr<TruePeakDsp> true_peak_processor_;
+  std::unique_ptr<TruePeakDsp> true_peak_max_processor_;
 
   /** Current true peak. */
-  float true_peak;
-  float true_peak_max;
+  float true_peak_;
+  float true_peak_max_;
 
   /** K RMS processor, if K meter. */
-  KMeterDsp * kmeter_processor;
+  std::unique_ptr<KMeterDsp> kmeter_processor_;
 
-  PeakDsp * peak_processor;
+  std::unique_ptr<PeakDsp> peak_processor_;
 
   /**
    * Algorithm to use.
    *
    * Auto by default.
    */
-  MeterAlgorithm algorithm;
+  MeterAlgorithm algorithm_ = MeterAlgorithm::METER_ALGORITHM_AUTO;
 
-  /** Previous max, used when holding the max
-   * value. */
-  float prev_max;
+  /** Previous max, used when holding the max value. */
+  float prev_max_ = 0.f;
 
-  /** Last meter value (in amplitude), used to
-   * show a falloff and avoid sudden dips. */
-  float last_amp;
+  /** Last meter value (in amplitude), used to show a falloff and avoid sudden
+   * dips. */
+  float last_amp_ = 0.f;
 
-  /** Time the last val was taken at (last draw
-   * time). */
-  gint64 last_draw_time;
+  /** Time the last val was taken at (last draw time). */
+  SteadyTimePoint last_draw_time_;
 
-  gint64 last_midi_trigger_time;
+  gint64 last_midi_trigger_time_;
 
-} Meter;
-
-Meter *
-meter_new_for_port (Port * port);
-
-/**
- * Get the current meter value.
- *
- * This should only be called once in a draw
- * cycle.
- */
-void
-meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max);
-
-void
-meter_free (Meter * self);
+private:
+  std::vector<float> tmp_buf_;
+};
 
 #endif

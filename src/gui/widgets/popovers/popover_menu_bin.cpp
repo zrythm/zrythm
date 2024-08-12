@@ -77,7 +77,7 @@ PopoverMenuBinWidget *
 popover_menu_bin_widget_new (void)
 {
   return Z_POPOVER_MENU_BIN_WIDGET (
-    g_object_new (POPOVER_MENU_BIN_WIDGET_TYPE, NULL));
+    g_object_new (POPOVER_MENU_BIN_WIDGET_TYPE, nullptr));
 }
 
 static void
@@ -101,7 +101,8 @@ popover_menu_bin_widget_class_init (PopoverMenuBinWidgetClass * _klass)
 static void
 popover_menu_bin_widget_init (PopoverMenuBinWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   GtkLayoutManager * bin_layout = gtk_bin_layout_new ();

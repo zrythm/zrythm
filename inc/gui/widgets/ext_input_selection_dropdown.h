@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,7 +12,7 @@
 
 #include "gtk_wrapper.h"
 
-TYPEDEF_STRUCT (Track);
+class ChannelTrack;
 
 /**
  * @addtogroup widgets
@@ -27,9 +27,9 @@ TYPEDEF_STRUCT (Track);
  */
 void
 ext_input_selection_dropdown_widget_refresh (
-  GtkDropDown * self,
-  Track *       track,
-  bool          left);
+  GtkDropDown *  self,
+  ChannelTrack * track,
+  bool           left);
 
 /**
  * @}

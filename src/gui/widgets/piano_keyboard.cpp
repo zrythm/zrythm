@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -29,12 +29,13 @@ draw_orange_circle (
   double height = (double) gtk_widget_get_height (GTK_WIDGET (self));
   if (self->for_chord)
     {
-      ChordDescriptor * descr = CHORD_EDITOR->chords[self->chord_idx];
-      if (descr->notes[self->start_key + i])
+      auto &descr = CHORD_EDITOR->chords_[self->chord_idx];
+      if (descr.notes_[self->start_key + i])
         {
           double circle_radius = key_width / 3.0;
-          bool   is_black = piano_roll_is_key_black (self->start_key + i);
-          gdk_cairo_set_source_rgba (cr, &UI_COLORS->dark_orange);
+          bool   is_black = PIANO_ROLL->is_key_black (self->start_key + i);
+          auto   color = UI_COLORS->dark_orange.to_gdk_rgba ();
+          gdk_cairo_set_source_rgba (cr, &color);
           cairo_set_source_rgba (cr, 1, 0, 0, 1);
           cairo_arc (
             cr, cur_offset + key_width / 2.0,
@@ -57,7 +58,7 @@ piano_keyboard_draw_cb (
   int num_white_keys = 0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      if (!piano_roll_is_key_black (self->start_key + i))
+      if (!PIANO_ROLL->is_key_black (self->start_key + i))
         num_white_keys++;
     }
 
@@ -66,7 +67,7 @@ piano_keyboard_draw_cb (
   double cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black = piano_roll_is_key_black (self->start_key + i);
+      bool is_black = PIANO_ROLL->is_key_black (self->start_key + i);
       if (is_black)
         continue;
 
@@ -87,11 +88,11 @@ piano_keyboard_draw_cb (
   cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black = piano_roll_is_key_black (self->start_key + i);
+      bool is_black = PIANO_ROLL->is_key_black (self->start_key + i);
       if (!is_black)
         {
           bool is_next_black =
-            piano_roll_is_next_key_black (self->start_key + i);
+            PIANO_ROLL->is_next_key_black (self->start_key + i);
 
           if (is_next_black)
             cur_offset += key_width / 2.0;
@@ -145,10 +146,10 @@ PianoKeyboardWidget *
 piano_keyboard_widget_new (GtkOrientation orientation)
 {
   PianoKeyboardWidget * self = static_cast<PianoKeyboardWidget *> (
-    g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL));
+    g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, nullptr));
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb, self, NULL);
+    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb, self, nullptr);
 
   return self;
 }

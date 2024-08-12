@@ -32,7 +32,7 @@ using std::vector;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-TempoTrack::TempoTrack( TTParams Params )
+QMTempoTrack::QMTempoTrack (TTParams Params)
 {
     m_tempoScratch = NULL;
     m_rawDFFrame = NULL;
@@ -51,12 +51,13 @@ TempoTrack::TempoTrack( TTParams Params )
     initialise( Params );
 }
 
-TempoTrack::~TempoTrack()
+QMTempoTrack::~QMTempoTrack ()
 {
     deInitialise();
 }
 
-void TempoTrack::initialise( TTParams Params )
+void
+QMTempoTrack::initialise (TTParams Params)
 {       
     m_winLength = Params.winLength;
     m_lagLength = Params.lagLength;
@@ -97,7 +98,8 @@ void TempoTrack::initialise( TTParams Params )
     m_RCFConditioning = new DFProcess( m_RCFPParams );
 }
 
-void TempoTrack::deInitialise()
+void
+QMTempoTrack::deInitialise ()
 {       
     delete [] m_rawDFFrame;
     delete [] m_smoothDFFrame;
@@ -108,7 +110,12 @@ void TempoTrack::deInitialise()
     delete m_RCFConditioning;
 }
 
-void TempoTrack::createCombFilter(double* Filter, int winLength, int /* TSig */, double beatLag)
+void
+QMTempoTrack::createCombFilter (
+  double * Filter,
+  int      winLength,
+  int /* TSig */,
+  double beatLag)
 {
     int i;
 
@@ -129,7 +136,8 @@ void TempoTrack::createCombFilter(double* Filter, int winLength, int /* TSig */,
     }
 }
 
-double TempoTrack::tempoMM(double* ACF, double* weight, int tsig)
+double
+QMTempoTrack::tempoMM (double * ACF, double * weight, int tsig)
 {
     double period = 0;
     double maxValRCF = 0.0;
@@ -396,7 +404,9 @@ double TempoTrack::tempoMM(double* ACF, double* weight, int tsig)
     return period;
 }
 
-void TempoTrack::stepDetect( double* periodP, double* periodG, int currentIdx, int* flag )
+void
+QMTempoTrack::
+  stepDetect (double * periodP, double * periodG, int currentIdx, int * flag)
 {
     double stepthresh = 1 * 3.9017;
 
@@ -411,7 +421,8 @@ void TempoTrack::stepDetect( double* periodP, double* periodG, int currentIdx, i
     }
 }
 
-void TempoTrack::constDetect( double* periodP, int currentIdx, int* flag )
+void
+QMTempoTrack::constDetect (double * periodP, int currentIdx, int * flag)
 {
     double constthresh = 2 * 3.9017;
 
@@ -422,7 +433,8 @@ void TempoTrack::constDetect( double* periodP, int currentIdx, int* flag )
     }
 }
 
-int TempoTrack::findMeter(double *ACF, int len, double period)
+int
+QMTempoTrack::findMeter (double * ACF, int len, double period)
 {
     int i;
     int p = (int)MathUtilities::round( period );
@@ -484,7 +496,13 @@ int TempoTrack::findMeter(double *ACF, int len, double period)
     return tsig;
 }
 
-void TempoTrack::createPhaseExtractor(double *Filter, int /* winLength */, double period, int fsp, int lastBeat)
+void
+QMTempoTrack::createPhaseExtractor (
+  double * Filter,
+  int /* winLength */,
+  double period,
+  int    fsp,
+  int    lastBeat)
 {       
     int p = (int)MathUtilities::round( period );
     int predictedOffset = 0;
@@ -553,7 +571,9 @@ void TempoTrack::createPhaseExtractor(double *Filter, int /* winLength */, doubl
     delete [] phaseScratch;
 }
 
-int TempoTrack::phaseMM(double *DF, double *weighting, int winLength, double period)
+int
+QMTempoTrack::
+  phaseMM (double * DF, double * weighting, int winLength, double period)
 {
     int alignment = 0;
     int p = (int)MathUtilities::round( period );
@@ -591,7 +611,8 @@ int TempoTrack::phaseMM(double *DF, double *weighting, int winLength, double per
     return alignment;
 }
 
-int TempoTrack::beatPredict(int FSP0, double alignment, double period, int step )
+int
+QMTempoTrack::beatPredict (int FSP0, double alignment, double period, int step)
 {
     int beat = 0;
 
@@ -613,10 +634,8 @@ int TempoTrack::beatPredict(int FSP0, double alignment, double period, int step 
     return beat;
 }
 
-
-
-vector<int> TempoTrack::process( vector <double> DF,
-                                 vector <double> *tempoReturn )
+vector<int>
+QMTempoTrack::process (vector<double> DF, vector<double> * tempoReturn)
 {
     m_dataLength = DF.size();
         

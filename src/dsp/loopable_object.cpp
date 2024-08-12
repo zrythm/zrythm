@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "dsp/loopable_object.h"
+#include "utils/debug.h"
+#include "zrythm.h"
+
+int
+LoopableObject::get_num_loops (bool count_incomplete) const
+{
+  int  i = 0;
+  long loop_size = get_loop_length_in_frames ();
+  z_return_val_if_fail_cmp (loop_size, >, 0, 0);
+  long full_size = get_length_in_frames ();
+  long loop_start = loop_start_pos_.frames_ - clip_start_pos_.frames_;
+  long curr_frames = loop_start;
+
+  while (curr_frames < full_size)
+    {
+      i++;
+      curr_frames += loop_size;
+    }
+
+  if (!count_incomplete)
+    i--;
+
+  return i;
+}
+
+bool
+LoopableObject::are_members_valid (bool is_project) const
+{
+  if (!is_position_valid (loop_start_pos_, PositionType::LoopStart))
+    {
+      if (ZRYTHM_TESTING)
+        {
+          z_info ("invalid loop start pos {}", loop_start_pos_);
+        }
+      return false;
+    }
+  if (!is_position_valid (loop_end_pos_, PositionType::LoopEnd))
+    {
+      if (ZRYTHM_TESTING)
+        {
+          z_info ("invalid loop end pos {}", loop_end_pos_);
+        }
+      return false;
+    }
+  if (!is_position_valid (clip_start_pos_, PositionType::ClipStart))
+    {
+      if (ZRYTHM_TESTING)
+        {
+          z_info ("invalid clip start pos {}", clip_start_pos_);
+        }
+      return false;
+    }
+
+  return true;
+}

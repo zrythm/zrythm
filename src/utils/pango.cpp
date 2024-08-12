@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
@@ -14,7 +11,7 @@
 #include <fontconfig/fontconfig.h>
 #include <pango/pangoft2.h>
 
-PangoLayout *
+PangoLayoutUniquePtr
 z_pango_create_layout_from_description (
   GtkWidget *            widget,
   PangoFontDescription * descr)
@@ -31,9 +28,9 @@ z_pango_create_layout_from_description (
 
       /* add fonts/zrythm dir to find DSEG font */
       auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-      char * fontdir = dir_mgr->get_dir (SYSTEM_FONTSDIR);
-      FcConfigAppFontAddDir (fc_config, (const unsigned char *) fontdir);
-      g_free (fontdir);
+      auto   fontdir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_FONTSDIR);
+      FcConfigAppFontAddDir (
+        fc_config, (const unsigned char *) fontdir.c_str ());
       FcConfigBuildFonts (fc_config);
 
       PangoFontMap * font_map =
@@ -45,7 +42,7 @@ z_pango_create_layout_from_description (
       PangoLayout * pangoLayout = pango_layout_new (context);
 
       FcPattern *   pattern = FcPatternCreate ();
-      FcObjectSet * os = FcObjectSetBuild (FC_FAMILY, NULL);
+      FcObjectSet * os = FcObjectSetBuild (FC_FAMILY, nullptr);
       FcFontSet *   fs = FcFontList (fc_config, pattern, os);
       FcPatternDestroy (pattern);
       FcObjectSetDestroy (os);
@@ -69,13 +66,13 @@ z_pango_create_layout_from_description (
   else
     {
 #endif
-      layout = gtk_widget_create_pango_layout (widget, NULL);
+      layout = gtk_widget_create_pango_layout (widget, nullptr);
 #ifdef HAVE_BUNDLED_DSEG
     }
 #endif
   g_free (str);
 
-  g_return_val_if_fail (layout, NULL);
+  g_return_val_if_fail (layout, nullptr);
 
   pango_layout_set_font_description (layout, descr);
 
@@ -84,5 +81,5 @@ z_pango_create_layout_from_description (
   pango_layout_set_markup (layout, "test", -1);
   pango_layout_get_pixel_size (layout, &test_w, &test_h);
 
-  return layout;
+  return PangoLayoutUniquePtr (layout);
 }

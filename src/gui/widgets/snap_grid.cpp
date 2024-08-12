@@ -1,12 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/snap_grid.h"
 #include "gui/widgets/popovers/snap_grid_popover.h"
 #include "gui/widgets/snap_grid.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
 
 #include <glib/gi18n.h>
 
@@ -18,33 +15,30 @@ static void
 set_label (SnapGridWidget * self)
 {
   SnapGrid * sg = self->snap_grid;
-  char *     snap_str = snap_grid_stringize (sg);
+  auto       snap_str = sg->stringize ();
 
-  char new_str[600];
-  if (sg->snap_to_grid)
+  std::string new_str;
+  if (sg->snap_to_grid_)
     {
-      if (sg->length_type == NoteLengthType::NOTE_LENGTH_LINK)
+      if (sg->length_type_ == NoteLengthType::NOTE_LENGTH_LINK)
         {
-          sprintf (new_str, "%s - 🔗", snap_str);
+          new_str = fmt::format ("%s - 🔗", snap_str);
         }
-      else if (sg->length_type == NoteLengthType::NOTE_LENGTH_LAST_OBJECT)
+      else if (sg->length_type_ == NoteLengthType::NOTE_LENGTH_LAST_OBJECT)
         {
-          sprintf (new_str, _ ("%s - Last object"), snap_str);
+          new_str = format_str (_ ("%s - Last object"), snap_str);
         }
       else
         {
-          char * default_str = snap_grid_stringize (sg);
-          sprintf (new_str, "%s - %s", snap_str, default_str);
-          g_free (default_str);
+          auto default_str = sg->stringize ();
+          new_str = fmt::format ("%s - %s", snap_str, default_str);
         }
     }
   else
     {
-      sprintf (new_str, "%s", _ ("Off"));
+      new_str = _ ("Off");
     }
-  adw_button_content_set_label (self->content, new_str);
-
-  g_free (snap_str);
+  adw_button_content_set_label (self->content, new_str.c_str ());
 }
 
 void
@@ -66,7 +60,7 @@ snap_grid_widget_setup (SnapGridWidget * self, SnapGrid * snap_grid)
 {
   self->snap_grid = snap_grid;
   gtk_menu_button_set_create_popup_func (
-    GTK_MENU_BUTTON (self->menu_btn), create_popover, self, NULL);
+    GTK_MENU_BUTTON (self->menu_btn), create_popover, self, nullptr);
 
   set_label (self);
 }

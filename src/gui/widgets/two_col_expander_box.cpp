@@ -160,7 +160,7 @@ two_col_expander_box_widget_init (TwoColExpanderBoxWidget * self)
     prv->scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
   prv->content =
     GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, prv->vertical_spacing));
-  GtkViewport * viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  GtkViewport * viewport = GTK_VIEWPORT (gtk_viewport_new (nullptr, nullptr));
   gtk_viewport_set_scroll_to_focus (viewport, false);
   gtk_viewport_set_child (viewport, GTK_WIDGET (prv->content));
   gtk_scrolled_window_set_child (prv->scroll, GTK_WIDGET (viewport));

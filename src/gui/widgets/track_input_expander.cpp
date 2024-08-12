@@ -1,20 +1,13 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/control_port.h"
-#include "dsp/engine.h"
-#include "dsp/ext_port.h"
-#include "dsp/hardware_processor.h"
-#include "dsp/track.h"
-#include "gui/widgets/editable_label.h"
+#include "dsp/channel_track.h"
 #include "gui/widgets/ext_input_selection_dropdown.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/midi_channel_selection_dropdown.h"
 #include "gui/widgets/track_input_expander.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -36,7 +29,7 @@ setup_ext_ins_dropdown (
   const bool                 midi,
   const bool                 left)
 {
-  GtkDropDown * dropdown = NULL;
+  GtkDropDown * dropdown = nullptr;
   if (midi)
     dropdown = self->midi_input;
   else if (left)
@@ -80,12 +73,11 @@ setup_midi_channels_dropdown (TrackInputExpanderWidget * self)
 static void
 on_mono_toggled (GtkToggleButton * btn, TrackInputExpanderWidget * self)
 {
-  if (!self->track || self->track->type != TrackType::TRACK_TYPE_AUDIO)
+  if (!self->track || !self->track->is_audio ())
     return;
 
   bool new_val = gtk_toggle_button_get_active (btn);
-  control_port_set_val_from_normalized (
-    self->track->processor->mono, new_val, false);
+  self->track->processor_->mono_->set_val_from_normalized (new_val, false);
   gtk_widget_set_sensitive (GTK_WIDGET (self->stereo_r_input), !new_val);
 }
 
@@ -95,7 +87,7 @@ on_mono_toggled (GtkToggleButton * btn, TrackInputExpanderWidget * self)
 void
 track_input_expander_widget_refresh (
   TrackInputExpanderWidget * self,
-  Track *                    track)
+  ChannelTrack *             track)
 {
   g_return_if_fail (track);
   self->track = track;
@@ -112,30 +104,25 @@ track_input_expander_widget_refresh (
       self->gain = NULL;
     }
 
-  if (
-    track->type != TrackType::TRACK_TYPE_MIDI
-    && track->type != TrackType::TRACK_TYPE_INSTRUMENT
-    && track->type != TrackType::TRACK_TYPE_AUDIO)
+  if (!track->is_midi () && !track->is_instrument () && !track->is_audio ())
     {
       return;
     }
 
-  if (
-    track->type == TrackType::TRACK_TYPE_MIDI
-    || track->type == TrackType::TRACK_TYPE_INSTRUMENT)
+  if (track->has_piano_roll ())
     {
       gtk_widget_set_visible (GTK_WIDGET (self->midi_input), 1);
       gtk_widget_set_visible (GTK_WIDGET (self->midi_channels), 1);
 
       /* refresh model and select appropriate
        * input */
-      setup_ext_ins_dropdown (self, 1, 0);
+      setup_ext_ins_dropdown (self, true, false);
       setup_midi_channels_dropdown (self);
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self), "midi-insert");
     }
-  else if (track->type == TrackType::TRACK_TYPE_AUDIO)
+  else if (track->is_audio ())
     {
       gtk_widget_set_visible (GTK_WIDGET (self->stereo_l_input), 1);
       gtk_widget_set_visible (GTK_WIDGET (self->stereo_r_input), 1);
@@ -145,15 +132,15 @@ track_input_expander_widget_refresh (
       setup_ext_ins_dropdown (self, 0, 1);
       setup_ext_ins_dropdown (self, 0, 0);
 
-      Port * port = track->processor->input_gain;
+      auto &port = track->processor_->input_gain_;
       self->gain = knob_widget_new_simple (
-        control_port_get_val, control_port_get_default_val,
-        control_port_set_real_val_w_events, port, port->minf_, port->maxf_, 24,
-        port->zerof_);
+        ControlPort::val_getter, ControlPort::default_val_getter,
+        ControlPort::real_val_setter_w_events, port.get (), port->minf_,
+        port->maxf_, 24, port->zerof_);
       gtk_box_append (GTK_BOX (self->gain_box), GTK_WIDGET (self->gain));
 
       gtk_toggle_button_set_active (
-        self->mono, control_port_is_toggled (track->processor->mono));
+        self->mono, track->processor_->mono_->is_toggled ());
 
       gtk_widget_set_visible (GTK_WIDGET (self->mono), true);
       gtk_widget_set_visible (GTK_WIDGET (self->gain_box), true);
@@ -179,12 +166,12 @@ track_input_expander_widget_class_init (TrackInputExpanderWidgetClass * klass)
 static void
 track_input_expander_widget_init (TrackInputExpanderWidget * self)
 {
-  self->midi_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  self->midi_input = GTK_DROP_DOWN (gtk_drop_down_new (nullptr, nullptr));
   gtk_widget_set_hexpand (GTK_WIDGET (self->midi_input), true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->midi_input));
 
-  self->midi_channels = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  self->midi_channels = GTK_DROP_DOWN (gtk_drop_down_new (nullptr, nullptr));
   gtk_widget_set_hexpand (GTK_WIDGET (self->midi_channels), true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->midi_channels));
@@ -192,7 +179,7 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
   self->audio_input_size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* setup audio inputs */
-  self->stereo_l_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  self->stereo_l_input = GTK_DROP_DOWN (gtk_drop_down_new (nullptr, nullptr));
   gtk_widget_set_hexpand (GTK_WIDGET (self->stereo_l_input), true);
   gtk_size_group_add_widget (
     self->audio_input_size_group, GTK_WIDGET (self->stereo_l_input));
@@ -210,7 +197,7 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
   /*F_FILL, 1, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (GTK_WIDGET (self->mono), _ ("Mono"));
 
-  self->stereo_r_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  self->stereo_r_input = GTK_DROP_DOWN (gtk_drop_down_new (nullptr, nullptr));
   gtk_widget_set_hexpand (GTK_WIDGET (self->stereo_r_input), true);
   gtk_size_group_add_widget (
     self->audio_input_size_group, GTK_WIDGET (self->stereo_r_input));

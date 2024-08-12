@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Snap/grid information.
  */
@@ -12,22 +12,18 @@
 
 #include "dsp/position.h"
 
-#include <glib/gi18n.h>
-
 /**
  * @addtogroup dsp
  *
  * @{
  */
 
-#define SNAP_GRID_TIMELINE (PROJECT->snap_grid_timeline)
-#define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor)
-
+#define SNAP_GRID_TIMELINE (PROJECT->snap_grid_timeline_)
+#define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor_)
 #define SNAP_GRID_IS_EDITOR(sg) (SNAP_GRID_EDITOR == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) (SNAP_GRID_TIMELINE == sg)
-/* if any snapping is enabled */
-#define SNAP_GRID_ANY_SNAP(sg) (sg->snap_to_grid || sg->snap_to_events)
-#define SNAP_GRID_DEFAULT_MAX_BAR 10000
+
+constexpr int SNAP_GRID_DEFAULT_MAX_BAR = 10000;
 
 enum class NoteLength
 {
@@ -73,139 +69,125 @@ enum class NoteLengthType
   NOTE_LENGTH_CUSTOM,
 };
 
-/**
- * Snap grid type.
- */
-enum class SnapGridType
+class SnapGrid final : public ISerializable<SnapGrid>
 {
-  SNAP_GRID_TYPE_TIMELINE,
-  SNAP_GRID_TYPE_EDITOR,
-};
+public:
+  enum class Type
+  {
+    Timeline,
+    Editor,
+  };
 
-typedef struct SnapGrid
-{
-  SnapGridType type;
+public:
+  // Rule of 0
+  SnapGrid () = default;
+
+  SnapGrid (Type type, NoteLength note_length, bool adaptive)
+      : type_ (type), snap_adaptive_ (adaptive),
+        snap_note_length_ (note_length), default_note_length_ (note_length)
+  {
+  }
 
   /**
-   * If this is on, the snap note length will be determined
-   * automatically based on the current zoom level.
+   * @brief Returns whether any snapping is enabled.
+   */
+  inline bool any_snap () const { return snap_to_grid_ || snap_to_events_; }
+
+  static int get_ticks_from_length_and_type (NoteLength length, NoteType type);
+
+  /**
+   * Gets a snap point's length in ticks.
+   */
+  int get_snap_ticks () const;
+
+  /**
+   * @brief Get the snap length in frames.
+   */
+  double get_snap_frames () const;
+
+  /**
+   * Gets a the default length in ticks.
+   */
+  int get_default_ticks () const;
+
+  /**
+   * Returns the grid intensity as a human-readable string.
+   */
+  static std::string
+  stringize_length_and_type (NoteLength note_length, NoteType note_type);
+
+  /**
+   * Returns the grid intensity as a human-readable string.
+   */
+  std::string stringize () const;
+
+  /**
+   * Returns the next or previous SnapGrid point.
+   *
+   * @param[out] ret_pos Output position, if found.
+   * @param pos Position to search for.
+   * @param return_prev 1 to return the previous element or 0 to return the
+   * next.
+   *
+   * @return Whether successful.
+   */
+  bool get_nearby_snap_point (
+    Position       &ret_pos,
+    const Position &pos,
+    const bool      return_prev);
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  Type type_ = (Type) 0;
+
+  /**
+   * If this is on, the snap note length will be determined automatically
+   * based on the current zoom level.
    *
    * The snap note type still applies.
    */
-  bool snap_adaptive;
+  bool snap_adaptive_ = false;
 
   /** Snap note length. */
-  NoteLength snap_note_length;
+  NoteLength snap_note_length_ = (NoteLength) 0;
 
   /** Snap note type. */
-  NoteType snap_note_type;
+  NoteType snap_note_type_ = NoteType::NOTE_TYPE_NORMAL;
 
   /** Whether to snap to the grid. */
-  bool snap_to_grid;
+  bool snap_to_grid_ = true;
 
   /**
    * Whether to keep the offset when moving items.
    *
-   * This requires @ref SnapGrid.snap_to_grid to be
-   * enabled.
+   * This requires @ref snap_to_grid to be enabled.
    */
-  bool snap_to_grid_keep_offset;
+  bool snap_to_grid_keep_offset_ = false;
 
   /** Whether to snap to events. */
-  bool snap_to_events;
+  bool snap_to_events_ = false;
 
   /** Default note length. */
-  NoteLength default_note_length;
+  NoteLength default_note_length_ = (NoteLength) 0;
   /** Default note type. */
-  NoteType default_note_type;
+  NoteType default_note_type_ = NoteType::NOTE_TYPE_NORMAL;
 
   /**
-   * If this is on, the default note length will be
-   * determined automatically based on the current
-   * zoom level.
+   * If this is on, the default note length will be determined automatically
+   * based on the current zoom level.
    *
    * The default note type still applies.
    *
    * TODO this will be done after v1.
    */
-  bool default_adaptive;
+  bool default_adaptive_ = false;
 
   /**
    * See NoteLengthType.
    */
-  NoteLengthType length_type;
-} SnapGrid;
-
-void
-snap_grid_init (
-  SnapGrid *   self,
-  SnapGridType type,
-  NoteLength   note_length,
-  bool         adaptive);
-
-int
-snap_grid_get_ticks_from_length_and_type (NoteLength length, NoteType type);
-
-/**
- * Gets a snap point's length in ticks.
- */
-NONNULL int
-snap_grid_get_snap_ticks (const SnapGrid * self);
-
-NONNULL double
-snap_grid_get_snap_frames (const SnapGrid * self);
-
-/**
- * Gets a the default length in ticks.
- */
-int
-snap_grid_get_default_ticks (SnapGrid * self);
-
-/**
- * Returns the grid intensity as a human-readable
- * string.
- *
- * Must be free'd.
- */
-char *
-snap_grid_stringize_length_and_type (NoteLength note_length, NoteType note_type);
-
-/**
- * Returns the grid intensity as a human-readable
- * string.
- *
- * Must be free'd.
- */
-char *
-snap_grid_stringize (SnapGrid * self);
-
-/**
- * Returns the next or previous SnapGrid point.
- *
- * Must not be free'd.
- *
- * @param self Snap grid to search in.
- * @param pos Position to search for.
- * @param return_prev 1 to return the previous
- * element or 0 to return the next.
- *
- * @return Whether successful.
- */
-NONNULL bool
-snap_grid_get_nearby_snap_point (
-  Position *             ret_pos,
-  const SnapGrid * const self,
-  const Position *       pos,
-  const bool             return_prev);
-
-SnapGrid *
-snap_grid_clone (SnapGrid * src);
-
-SnapGrid *
-snap_grid_new (void);
-
-void
-snap_grid_free (SnapGrid * self);
+  NoteLengthType length_type_ = NoteLengthType::NOTE_LENGTH_LINK;
+};
 
 /**
  * @}

@@ -155,7 +155,8 @@ sclose (const char * path, SNDFILE * file)
   int st = 0;
   if (file && (st = sf_close (file)))
     {
-      fatal (NULL, 1, "Failed to close %s (%s)\n", path, sf_error_number (st));
+      fatal (
+        nullptr, 1, "Failed to close %s (%s)\n", path, sf_error_number (st));
     }
 }
 
@@ -218,7 +219,7 @@ create_ports (LV2Apply * self)
 
   /* Get default values for all ports */
   float * values = (float *) calloc (n_ports, sizeof (float));
-  lilv_plugin_get_port_ranges_float (self->plugin, NULL, NULL, values);
+  lilv_plugin_get_port_ranges_float (self->plugin, nullptr, nullptr, values);
 
   LilvNode * lv2_InputPort = lilv_new_uri (world, LV2_CORE__InputPort);
   LilvNode * lv2_OutputPort = lilv_new_uri (world, LV2_CORE__OutputPort);
@@ -373,7 +374,8 @@ int
 main (int argc, char ** argv)
 {
   LV2Apply self = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 0, NULL
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+    0,       nullptr, 0,       0,       0,       NULL
   };
 
   /* Parse command line arguments */
@@ -533,7 +535,7 @@ main (int argc, char ** argv)
         }
       else
         {
-          lilv_instance_connect_port (self.instance, p, NULL);
+          lilv_instance_connect_port (self.instance, p, nullptr);
         }
     }
 

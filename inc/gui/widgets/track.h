@@ -1,26 +1,23 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Track widget to be shown in the tracklist.
- */
-
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
 #define TRACK_WIDGET_TYPE (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TrackWidget, track_widget, Z, TRACK_WIDGET, GtkWidget)
 
-typedef struct _ArrangerWidget      ArrangerWidget;
-typedef struct AutomationModeWidget AutomationModeWidget;
-typedef struct CustomButtonWidget   CustomButtonWidget;
-typedef struct _MeterWidget         MeterWidget;
-typedef struct Track                Track;
-typedef struct _TrackCanvasWidget   TrackCanvasWidget;
+class AutomationModeWidget;
+class CustomButtonWidget;
+class Track;
+class AutomationTrack;
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
+TYPEDEF_STRUCT_UNDERSCORED (MeterWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TrackCanvasWidget);
 TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
 
 /**
@@ -29,48 +26,53 @@ TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
  * @{
  */
 
-#define TRACK_BUTTON_SIZE 18
+/** Button size. */
+constexpr int TRACK_BUTTON_SIZE = 18;
 
 /** Padding between each button. */
-#define TRACK_BUTTON_PADDING 6
+constexpr int TRACK_BUTTON_PADDING = 6;
 
-/** Padding between the track edges and the
- * buttons */
-#define TRACK_BUTTON_PADDING_FROM_EDGE 3
+/** Padding between the track edges and the buttons */
+constexpr int TRACK_BUTTON_PADDING_FROM_EDGE = 3;
 
 #define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
   (height \
    >= (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING_FROM_EDGE) * 2 \
         + TRACK_BUTTON_PADDING)
 
-#define TRACK_COLOR_AREA_WIDTH 18
+constexpr int TRACK_COLOR_AREA_WIDTH = 18;
 
-#define TRACK_ICON_NAME_MONO_COMPAT "mono"
-#define TRACK_ICON_NAME_SWAP_PHASE "phase"
-#define TRACK_ICON_NAME_RECORD "media-record"
-#define TRACK_ICON_NAME_SOLO "solo"
-#define TRACK_ICON_NAME_MUTE "mute"
-#define TRACK_ICON_NAME_LISTEN "gnome-icon-library-headphones-symbolic"
-#define TRACK_ICON_NAME_SHOW_UI "jam-icons-screen"
-#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES "automation-4p"
-#define TRACK_ICON_NAME_SHOW_TRACK_LANES "untitled-ui-rows-03"
-#define TRACK_ICON_NAME_LOCK "gnome-icon-library-padlock2-symbolic"
-#define TRACK_ICON_NAME_UNLOCK "gnome-icon-library-padlock2-open-symbolic"
-#define TRACK_ICON_NAME_FREEZE "fork-awesome-snowflake-o"
-#define TRACK_ICON_NAME_PLUS "add"
-#define TRACK_ICON_NAME_MINUS "remove"
-#define TRACK_ICON_NAME_BUS "effect"
-#define TRACK_ICON_NAME_CHORDS "minuet-chords"
-#define TRACK_ICON_NAME_SHOW_MARKERS \
-  "gnome-icon-library-flag-outline-thick-symbolic"
-#define TRACK_ICON_NAME_MIDI "instrument"
-#define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
-#define TRACK_ICON_NAME_MODULATOR "gnome-icon-library-encoder-knob-symbolic"
-#define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
-#define TRACK_ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
-#define TRACK_ICON_NAME_MONITOR_AUDIO "audition"
+constexpr const char * TRACK_ICON_NAME_MONO_COMPAT = "mono";
+constexpr const char * TRACK_ICON_NAME_SWAP_PHASE = "phase";
+constexpr const char * TRACK_ICON_NAME_RECORD = "media-record";
+constexpr const char * TRACK_ICON_NAME_SOLO = "solo";
+constexpr const char * TRACK_ICON_NAME_MUTE = "mute";
+constexpr const char * TRACK_ICON_NAME_LISTEN =
+  "gnome-icon-library-headphones-symbolic";
+constexpr const char * TRACK_ICON_NAME_SHOW_UI = "jam-icons-screen";
+constexpr const char * TRACK_ICON_NAME_SHOW_AUTOMATION_LANES = "automation-4p";
+constexpr const char * TRACK_ICON_NAME_SHOW_TRACK_LANES = "untitled-ui-rows-03";
+constexpr const char * TRACK_ICON_NAME_LOCK =
+  "gnome-icon-library-padlock2-symbolic";
+constexpr const char * TRACK_ICON_NAME_UNLOCK =
+  "gnome-icon-library-padlock2-open-symbolic";
+constexpr const char * TRACK_ICON_NAME_FREEZE = "fork-awesome-snowflake-o";
+constexpr const char * TRACK_ICON_NAME_PLUS = "add";
+constexpr const char * TRACK_ICON_NAME_MINUS = "remove";
+constexpr const char * TRACK_ICON_NAME_BUS = "effect";
+constexpr const char * TRACK_ICON_NAME_CHORDS = "minuet-chords";
+constexpr const char * TRACK_ICON_NAME_SHOW_MARKERS =
+  "gnome-icon-library-flag-outline-thick-symbolic";
+constexpr const char * TRACK_ICON_NAME_MIDI = "instrument";
+constexpr const char * TRACK_ICON_NAME_TEMPO = "filename-bpm-amarok";
+constexpr const char * TRACK_ICON_NAME_MODULATOR =
+  "gnome-icon-library-encoder-knob-symbolic";
+constexpr const char * TRACK_ICON_NAME_FOLD = "fluentui-folder-regular";
+constexpr const char * TRACK_ICON_NAME_FOLD_OPEN =
+  "fluentui-folder-open-regular";
+constexpr const char * TRACK_ICON_NAME_MONITOR_AUDIO = "audition";
 
-#define TRACK_ICON_IS(x, name) (string_is_equal (x, TRACK_ICON_NAME_##name))
+#define TRACK_ICON_IS(x, name) (x == std::string (TRACK_ICON_NAME_##name))
 
 #define TRACK_CB_ICON_IS(name) TRACK_ICON_IS (cb->icon_name, name)
 
@@ -103,7 +105,7 @@ enum class TrackWidgetResizeTarget
  * - 3. Automation tracklist part contains each
  *      automation track.
  */
-typedef struct _TrackWidget
+using TrackWidget = struct _TrackWidget
 {
   GtkWidget parent_instance;
 
@@ -141,7 +143,7 @@ typedef struct _TrackWidget
    * Whether color area is currently hoverred.
    *
    * This is not mutually exclusive with
-   * \ref TrackWidget.bg_hovered. The color area
+   * @ref TrackWidget.bg_hovered. The color area
    * is considered part of the BG.
    */
   bool color_area_hovered;
@@ -151,7 +153,7 @@ typedef struct _TrackWidget
    * currently hoverred.
    *
    * This is not mutually exclusive with
-   * \ref TrackWidget.color_area_hovered. The
+   * @ref TrackWidget.color_area_hovered. The
    * icon is considered part of the color area.
    */
   bool icon_hovered;
@@ -231,10 +233,8 @@ typedef struct _TrackWidget
   // gulong              mute_toggled_handler_id;
 
   /** Buttons to be drawin in order. */
-  CustomButtonWidget * top_buttons[8];
-  int                  num_top_buttons;
-  CustomButtonWidget * bot_buttons[8];
-  int                  num_bot_buttons;
+  std::vector<CustomButtonWidget> top_buttons;
+  std::vector<CustomButtonWidget> bot_buttons;
 
   MeterWidget * meter_l;
   MeterWidget * meter_r;
@@ -244,9 +244,8 @@ typedef struct _TrackWidget
    */
   char * tooltip_text;
 
-  /** Last MIDI event trigger time, for MIDI
-   * ports. */
-  gint64 last_midi_out_trigger_time;
+  /** Last MIDI event trigger time, for MIDI ports. */
+  SteadyTimePoint last_midi_out_trigger_time;
 
   /** Set to 1 to redraw. */
   int redraw;
@@ -265,7 +264,7 @@ typedef struct _TrackWidget
   /** Popover for changing the track name. */
   GtkPopover *         track_name_popover;
   FaderButtonsWidget * fader_buttons_for_popover;
-} TrackWidget;
+};
 
 const char *
 track_widget_highlight_to_str (TrackWidgetHighlight highlight);

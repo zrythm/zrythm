@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "utils/hash.h"
+#include "utils/logger.h"
 
 #include <glib.h>
 
@@ -88,12 +89,12 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
 }
 #endif
 
-char *
-hash_get_from_file (const char * filepath, HashAlgorithm algo)
+std::string
+hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
 {
-  g_debug ("calculating hash for %s...", filepath);
+  z_debug ("calculating hash for %s...", filepath);
 
-  FILE * stream = fopen (filepath, "rb");
+  FILE * stream = fopen (filepath.c_str (), "rb");
   g_return_val_if_fail (stream, g_strdup ("INVALID"));
 
   char * ret_str = NULL;
@@ -111,9 +112,11 @@ hash_get_from_file (const char * filepath, HashAlgorithm algo)
 
   fclose (stream);
 
-  g_debug ("hash for %s: %s", filepath, ret_str);
+  z_debug ("hash for %s: %s", filepath, ret_str);
 
-  return ret_str;
+  auto ret = std::string (ret_str);
+  g_free (ret_str);
+  return ret;
 }
 
 uint32_t
@@ -121,7 +124,7 @@ hash_get_from_file_simple (const char * filepath)
 {
   FILE * stream = fopen (filepath, "rb");
   g_return_val_if_fail (stream, 0);
-  uint32_t hash = get_xxh32_hash (stream, NULL);
+  uint32_t hash = get_xxh32_hash (stream, nullptr);
   fclose (stream);
 
   return hash;

@@ -1,14 +1,10 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Common editor settings.
- */
 
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
+
+#include "io/serialization/iserializable.h"
 
 /**
  * @addtogroup gui_backend
@@ -19,36 +15,49 @@
 /**
  * Common editor settings.
  */
-typedef struct EditorSettings
+class EditorSettings : public ISerializable<EditorSettings>
 {
+public:
+  void set_scroll_start_x (int x, bool validate);
+
+  void set_scroll_start_y (int y, bool validate);
+
+  /**
+   * Appends the given deltas to the scroll x/y values.
+   */
+  void append_scroll (int dx, int dy, bool validate);
+
+protected:
+  void copy_members_from (const EditorSettings &other)
+  {
+    scroll_start_x_ = other.scroll_start_x_;
+    scroll_start_y_ = other.scroll_start_y_;
+    hzoom_level_ = other.hzoom_level_;
+  }
+
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+
+public:
   /** Horizontal scroll start position. */
-  int scroll_start_x;
+  int scroll_start_x_ = 0;
 
   /** Vertical scroll start position. */
-  int scroll_start_y;
+  int scroll_start_y_ = 0;
 
   /** Horizontal zoom level. */
-  double hzoom_level;
-} EditorSettings;
+  double hzoom_level_ = 1.0;
+};
 
-void
-editor_settings_init (EditorSettings * self);
+#if 0
+template <typename Derived>
+class EditorSettingsImpl : virtual public EditorSettings
+{
+public:
+  virtual ~EditorSettingsImpl () = default;
 
-void
-editor_settings_set_scroll_start_x (EditorSettings * self, int x, bool validate);
-
-void
-editor_settings_set_scroll_start_y (EditorSettings * self, int y, bool validate);
-
-/**
- * Appends the given deltas to the scroll x/y values.
- */
-void
-editor_settings_append_scroll (
-  EditorSettings * self,
-  int              dx,
-  int              dy,
-  bool             validate);
+  Derived * get_derived () { return static_cast<Derived *> (this); }
+};
+#endif
 
 /**
  * @}

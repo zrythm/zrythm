@@ -1,19 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Transport action.
- */
 
 #ifndef __ACTIONS_TRANSPORT_ACTION_H__
 #define __ACTIONS_TRANSPORT_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "dsp/transport.h"
+#include "utils/icloneable.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup actions
@@ -21,84 +14,87 @@
  * @{
  */
 
-enum class TransportActionType
-{
-  TRANSPORT_ACTION_BPM_CHANGE,
-  TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
-  TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
-};
-
 /**
  * Transport action.
  */
-typedef struct TransportAction
+class TransportAction final
+    : public UndoableAction,
+      public ICloneable<TransportAction>,
+      public ISerializable<TransportAction>
 {
-  UndoableAction parent_instance;
+public:
+  enum class Type
+  {
+    TempoChange,
+    BeatsPerBarChange,
+    BeatUnitChange,
+  };
 
-  TransportActionType type;
+  TransportAction () : UndoableAction (UndoableAction::Type::Transport) { }
 
-  bpm_t bpm_before;
-  bpm_t bpm_after;
+  /**
+   * @brief Construct a new Transport Action object for a BPM change.
+   *
+   * @param bpm_before
+   * @param bpm_after
+   * @param already_done
+   */
+  TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done);
 
-  int int_before;
-  int int_after;
+  /**
+   * @brief Construct a new Transport object for a beat unit/beats per bar
+   * change.
+   *
+   * @param type
+   * @param before
+   * @param after
+   * @param already_done
+   */
+  TransportAction (Type type, int before, int after, bool already_done);
 
-  /** Flag whether the action was already performed
-   * the first time. */
-  bool already_done;
+  void init_after_cloning (const TransportAction &other) override
+  {
+    UndoableAction::copy_members_from (other);
+    type_ = other.type_;
+    bpm_before_ = other.bpm_before_;
+    bpm_after_ = other.bpm_after_;
+    int_before_ = other.int_before_;
+    int_after_ = other.int_after_;
+    already_done_ = other.already_done_;
+    musical_mode_ = other.musical_mode_;
+  }
 
-  /** Whether musical mode was enabled when this
-   * action was made. */
-  bool musical_mode;
-} TransportAction;
+  std::string to_string () const override;
 
-void
-transport_action_init_loaded (TransportAction * self);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-WARN_UNUSED_RESULT UndoableAction *
-transport_action_new_bpm_change (
-  bpm_t     bpm_before,
-  bpm_t     bpm_after,
-  bool      already_done,
-  GError ** error);
+private:
+  void init_loaded_impl () override { }
+  void undo_impl () override;
+  void perform_impl () override;
 
-WARN_UNUSED_RESULT UndoableAction *
-transport_action_new_time_sig_change (
-  TransportActionType type,
-  int                 before,
-  int                 after,
-  bool                already_done,
-  GError **           error);
+  bool need_update_positions_from_ticks ()
+  {
+    return type_ == Type::TempoChange || type_ == Type::BeatsPerBarChange;
+  }
 
-NONNULL TransportAction *
-transport_action_clone (const TransportAction * src);
+   void do_or_undo (bool do_it);
 
-bool
-transport_action_perform_bpm_change (
-  bpm_t     bpm_before,
-  bpm_t     bpm_after,
-  bool      already_done,
-  GError ** error);
+ public:
+   Type type_ = Type::TempoChange;
 
-bool
-transport_action_perform_time_sig_change (
-  TransportActionType type,
-  int                 before,
-  int                 after,
-  bool                already_done,
-  GError **           error);
+   bpm_t bpm_before_ = 0.0;
+   bpm_t bpm_after_ = 0.0;
 
-int
-transport_action_do (TransportAction * self, GError ** error);
+   int int_before_ = 0;
+   int int_after_ = 0;
 
-int
-transport_action_undo (TransportAction * self, GError ** error);
+   /** Flag whether the action was already performed the first time. */
+   bool already_done_ = false;
 
-char *
-transport_action_stringize (TransportAction * self);
-
-void
-transport_action_free (TransportAction * self);
+   /** Whether musical mode was enabled when this action was made. */
+   bool musical_mode_ = false;
+};
 
 /**
  * @}

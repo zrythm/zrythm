@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
+
+#include "zrythm.h"
 
 #ifdef HAVE_RTMIDI
 
@@ -10,8 +12,6 @@
 #  include "dsp/port.h"
 #  include "dsp/rtmidi_device.h"
 #  include "project.h"
-#  include "utils/objects.h"
-#  include "utils/string.h"
 
 #  include <gtk/gtk.h>
 
@@ -78,59 +78,60 @@ midi_in_cb (
   size_t                message_size,
   RtMidiDevice *        self)
 {
-  zix_sem_wait (&self->midi_ring_sem);
+  SemaphoreRAII<> sem_raii (self->midi_ring_sem_);
 
   /* generate timestamp */
   gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts = cur_time - self->port->last_midi_dequeue_;
-  g_return_if_fail (ts >= 0);
-  char portname[900];
-  self->port->get_full_designation (portname);
+  gint64 ts = cur_time - self->port_->last_midi_dequeue_;
+  z_return_if_fail (ts >= 0);
   if (DEBUGGING)
     {
-      g_debug (
-        "[%s] message received of size %zu at %ld", portname, message_size, ts);
+      z_debug (
+        "[{}] message received of size {} at {}",
+        self->port_->get_full_designation (), message_size, ts);
     }
 
   /* add to ring buffer */
-  MidiEventHeader h = {
-    .time = (uint64_t) ts,
-    .size = message_size,
-  };
-  zix_ring_write (self->midi_ring, (uint8_t *) &h, sizeof (MidiEventHeader));
-  zix_ring_write (self->midi_ring, message, message_size);
-
-  zix_sem_post (&self->midi_ring_sem);
+  MidiEvent ev;
+  std::copy_n (message, message_size, ev.raw_buffer_.data ());
+  ev.raw_buffer_sz_ = message_size;
+  ev.systime_ = ts;
+  self->midi_ring_.write (ev);
 }
 
 static bool rtmidi_device_first_run = false;
 
 static int
-rtmidi_device_get_id_from_name (bool is_input, const char * name)
+rtmidi_device_get_id_from_name (bool is_input, std::string name)
 {
   if (is_input)
     {
-      RtMidiDevice * dev = rtmidi_device_new (1, NULL, 0, NULL);
-      if (!dev)
-        return 0;
+      std::unique_ptr<RtMidiDevice> dev;
+      try
+        {
+          dev = std::make_unique<RtMidiDevice> (true, 0, nullptr, nullptr);
+        }
+      catch (ZrythmException &e)
+        {
+          z_error (e.what ());
+          return -1;
+        }
 
-      unsigned int num_ports = rtmidi_get_port_count (dev->in_handle);
+      unsigned int num_ports = rtmidi_get_port_count (dev->in_handle_);
       for (unsigned int i = 0; i < num_ports; i++)
         {
           int buf_len;
-          rtmidi_get_port_name (dev->in_handle, i, NULL, &buf_len);
-          char dev_name[buf_len];
-          rtmidi_get_port_name (dev->in_handle, i, dev_name, &buf_len);
-          if (string_is_equal (dev_name, name))
+          rtmidi_get_port_name (dev->in_handle_, i, nullptr, &buf_len);
+          std::string dev_name (buf_len + 1, '\0');
+          rtmidi_get_port_name (dev->in_handle_, i, dev_name.data (), &buf_len);
+          if (dev_name == name)
             {
-              rtmidi_device_free (dev);
               return (int) i;
             }
         }
-      rtmidi_device_free (dev);
     }
 
-  g_warning ("could not find RtMidi device with name %s", name);
+  z_warning ("could not find RtMidi device with name %s", name);
 
   return -1;
 }
@@ -139,24 +140,17 @@ rtmidi_device_get_id_from_name (bool is_input, const char * name)
  * @param name If non-NUL, search by name instead of
  *   by @ref device_id.
  */
-RtMidiDevice *
-rtmidi_device_new (
+RtMidiDevice::RtMidiDevice (
   bool         is_input,
-  const char * name,
   unsigned int device_id,
-  Port *       port)
+  MidiPort *   port,
+  std::string  name)
 {
-  RtMidiDevice * self = object_new (RtMidiDevice);
-
-  enum RtMidiApi apis[20];
-  int            num_apis = (int) rtmidi_get_compiled_api (apis, 20);
+  std::array<enum RtMidiApi, 32> apis;
+  int num_apis = (int) rtmidi_get_compiled_api (apis.data (), apis.size ());
   if (num_apis < 0)
     {
-      g_warning (
-        "RtMidi: an error occurred fetching "
-        "compiled APIs");
-      object_zero_and_free (self);
-      return NULL;
+      throw ZrythmException ("RtMidi: an error occurred fetching compiled APIs");
     }
   if (rtmidi_device_first_run)
     {
@@ -167,174 +161,109 @@ rtmidi_device_new (
       rtmidi_device_first_run = false;
     }
 
-  enum RtMidiApi api = get_api_from_midi_backend (AUDIO_ENGINE->midi_backend);
+  enum RtMidiApi api = get_api_from_midi_backend (AUDIO_ENGINE->midi_backend_);
   if (api == RTMIDI_API_RTMIDI_DUMMY)
     {
-      g_warning (
-        "RtMidi API for %s not enabled", ENUM_NAME (AUDIO_ENGINE->midi_backend));
-      object_zero_and_free (self);
-      return NULL;
+      throw ZrythmException (fmt::format (
+        "RtMidi API for {} not enabled",
+        ENUM_NAME (AUDIO_ENGINE->midi_backend_)));
     }
 
-  if (name)
+  if (!name.empty ())
     {
       int id_from_name = rtmidi_device_get_id_from_name (is_input, name);
       if (id_from_name < 0)
         {
-          g_warning ("Could not find RtMidi Device '%s'", name);
-          object_zero_and_free (self);
-          return NULL;
+          throw ZrythmException (
+            fmt::format ("Could not find RtMidi Device '%s'", name));
         }
-      self->id = (unsigned int) id_from_name;
+      id_ = (unsigned int) id_from_name;
     }
   else
     {
-      self->id = device_id;
+      id_ = device_id;
     }
-  self->is_input = is_input;
-  self->port = port;
+  is_input_ = is_input;
+  port_ = port;
   if (is_input)
     {
-      self->in_handle =
-        rtmidi_in_create (api, "Zrythm", AUDIO_ENGINE->midi_buf_size);
-      if (!self->in_handle->ok)
+      in_handle_ =
+        rtmidi_in_create (api, "Zrythm", AUDIO_ENGINE->midi_buf_size_);
+      if (!in_handle_->ok)
         {
-          g_warning (
+          throw ZrythmException (fmt::format (
             "An error occurred creating an RtMidi in handle: %s",
-            self->in_handle->msg);
-          object_zero_and_free (self);
-          return NULL;
+            in_handle_->msg));
         }
     }
   else
     {
       /* TODO */
     }
-  self->midi_ring = zix_ring_new (
-    zix_default_allocator (), sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
-
-  self->events = midi_events_new ();
-
-  zix_sem_init (&self->midi_ring_sem, 1);
-
-  return self;
 }
 
-/**
- * Opens a device allocated with
- * rtmidi_device_new().
- *
- * @param start Also start the device.
- *
- * @return Non-zero if error.
- */
-int
-rtmidi_device_open (RtMidiDevice * self, int start)
+void
+RtMidiDevice::open (bool start)
 {
-  g_message ("opening rtmidi device");
-  char designation[800];
-  self->port->get_full_designation (designation);
-  char lbl[1200];
-  sprintf (lbl, "%s [%u]", designation, self->id);
-  rtmidi_close_port (self->in_handle);
-  rtmidi_open_port (self->in_handle, self->id, lbl);
-  if (!self->in_handle->ok)
+  z_debug ("opening rtmidi device");
+  auto        designation = port_->get_full_designation ();
+  std::string lbl = fmt::format ("{} [{}]", designation, id_);
+  rtmidi_close_port (in_handle_);
+  rtmidi_open_port (in_handle_, id_, lbl.c_str ());
+  if (!in_handle_->ok)
     {
-      g_warning (
-        "An error occurred opening the RtMidi "
-        "device: %s",
-        self->in_handle->msg);
-      return -1;
+      throw ZrythmException (fmt::format (
+        "An error occurred opening the RtMidi in port: %s", in_handle_->msg));
     }
 
   if (start)
     {
-      rtmidi_device_start (self);
+      this->start ();
     }
-
-  return 0;
-}
-
-/**
- * Close the RtMidiDevice.
- *
- * @param free Also free the memory.
- */
-int
-rtmidi_device_close (RtMidiDevice * self, int free_device)
-{
-  g_message ("closing rtmidi device");
-  rtmidi_device_stop (self);
-
-  if (self->is_input)
-    {
-      rtmidi_close_port (self->in_handle);
-    }
-  else
-    {
-      rtmidi_close_port (self->out_handle);
-    }
-
-  if (free_device)
-    {
-      rtmidi_device_free (self);
-    }
-
-  return 0;
-}
-
-int
-rtmidi_device_start (RtMidiDevice * self)
-{
-  g_message ("starting rtmidi device");
-  if (self->is_input)
-    {
-      rtmidi_in_set_callback (
-        self->in_handle, (RtMidiCCallback) midi_in_cb, self);
-      if (!self->in_handle->ok)
-        {
-          g_warning (
-            "An error occurred setting the RtMidi "
-            "device callback: %s",
-            self->in_handle->msg);
-          return -1;
-        }
-    }
-  self->started = 1;
-
-  return 0;
-}
-
-int
-rtmidi_device_stop (RtMidiDevice * self)
-{
-  g_message ("stopping rtmidi device");
-  if (self->is_input)
-    {
-      rtmidi_in_cancel_callback (self->in_handle);
-    }
-  self->started = 0;
-
-  return 0;
 }
 
 void
-rtmidi_device_free (RtMidiDevice * self)
+RtMidiDevice::close ()
 {
-  if (self->is_input)
+  z_debug ("closing rtmidi device");
+  stop ();
+
+  if (is_input_)
     {
-      rtmidi_in_free (self->in_handle);
+      rtmidi_close_port (in_handle_);
     }
+  else
+    {
+      rtmidi_close_port (out_handle_);
+    }
+}
 
-  if (self->midi_ring)
-    zix_ring_free (self->midi_ring);
+void
+RtMidiDevice::start ()
+{
+  z_debug ("starting rtmidi device");
+  if (is_input_)
+    {
+      rtmidi_in_set_callback (in_handle_, (RtMidiCCallback) midi_in_cb, this);
+      if (!in_handle_->ok)
+        {
+          throw ZrythmException (fmt::format (
+            "An error occurred starting the RtMidi in port: {}",
+            in_handle_->msg));
+        }
+    }
+  started_ = true;
+}
 
-  if (self->events)
-    midi_events_free (self->events);
-
-  zix_sem_destroy (&self->midi_ring_sem);
-
-  free (self);
+void
+RtMidiDevice::stop ()
+{
+  z_debug ("stopping rtmidi device");
+  if (is_input_)
+    {
+      rtmidi_in_cancel_callback (in_handle_);
+    }
+  started_ = false;
 }
 
 #endif // HAVE_RTMIDI

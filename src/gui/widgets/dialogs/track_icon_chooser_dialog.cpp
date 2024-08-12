@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/region.h"
@@ -6,7 +6,6 @@
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/color.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
@@ -46,10 +45,10 @@ track_icon_chooser_dialog_widget_run (TrackIconChooserDialogWidget * self)
   if (icon_set && self->selected_icon)
     {
       /* if changed, apply the change */
-      if (!string_is_equal (self->selected_icon, self->track->icon_name))
+      if (std::string (self->selected_icon) != self->track->icon_name_)
         {
-          track_set_icon (
-            self->track, self->selected_icon, F_UNDOABLE, F_PUBLISH_EVENTS);
+          self->track->set_icon (
+            self->selected_icon, F_UNDOABLE, F_PUBLISH_EVENTS);
         }
     }
   gtk_window_destroy (GTK_WINDOW (self->dialog));
@@ -92,7 +91,7 @@ create_list_store (void)
     {
       int                size = 16;
       GtkIconPaintable * paintable = gtk_icon_theme_lookup_icon (
-        icon_theme, icon_name, NULL, size, 1, GTK_TEXT_DIR_NONE,
+        icon_theme, icon_name, nullptr, size, 1, GTK_TEXT_DIR_NONE,
         GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
       GdkPixbuf * pixbuf = NULL;
       bool        is_track_type_icon = false;
@@ -149,16 +148,15 @@ create_list_store (void)
 TrackIconChooserDialogWidget *
 track_icon_chooser_dialog_widget_new (Track * track)
 {
-  g_return_val_if_fail (IS_TRACK (track), NULL);
+  g_return_val_if_fail (IS_TRACK (track), nullptr);
 
-  char * str = g_strdup_printf (_ ("%s icon"), track->name);
+  auto                           str = format_str (_ ("%s icon"), track->name_);
   TrackIconChooserDialogWidget * self =
     object_new (TrackIconChooserDialogWidget);
   self->dialog = GTK_DIALOG (gtk_dialog_new_with_buttons (
-    str, GTK_WINDOW (MAIN_WINDOW),
+    str.c_str (), GTK_WINDOW (MAIN_WINDOW),
     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, _ ("_Cancel"),
-    GTK_RESPONSE_REJECT, _ ("_Select"), GTK_RESPONSE_ACCEPT, NULL));
-  g_free (str);
+    GTK_RESPONSE_REJECT, _ ("_Select"), GTK_RESPONSE_ACCEPT, nullptr));
   gtk_widget_add_css_class (
     GTK_WIDGET (self->dialog), "track-icon-chooser-dialog");
 

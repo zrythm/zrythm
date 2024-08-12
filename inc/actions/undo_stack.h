@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Undo stack.
  */
@@ -10,20 +10,11 @@
 #ifndef __UNDO_UNDO_STACK_H__
 #define __UNDO_UNDO_STACK_H__
 
-#include "actions/arranger_selections.h"
-#include "actions/channel_send_action.h"
-#include "actions/chord_action.h"
-#include "actions/midi_mapping_action.h"
-#include "actions/mixer_selections_action.h"
-#include "actions/port_action.h"
-#include "actions/port_connection_action.h"
-#include "actions/range_action.h"
-#include "actions/tracklist_selections.h"
-#include "actions/transport_action.h"
-#include "utils/stack.h"
-#include "utils/yaml.h"
+#include "actions/undoable_action.h"
+#include "io/serialization/iserializable.h"
+#include "utils/icloneable.h"
 
-typedef struct AudioClip AudioClip;
+class AudioClip;
 
 /**
  * @addtogroup actions
@@ -36,133 +27,113 @@ typedef struct AudioClip AudioClip;
  *
  * This is used for both undo and redo.
  */
-typedef struct UndoStack
+class UndoStack final
+    : public ICloneable<UndoStack>,
+      public ISerializable<UndoStack>
 {
-  /** Actual stack used at runtime. */
-  Stack * stack;
+public:
+  UndoStack ();
 
-  /* the following are for serialization purposes only */
+  void init_loaded ();
 
-  ArrangerSelectionsAction ** as_actions;
-  size_t                      num_as_actions;
-  size_t                      as_actions_size;
+  /**
+   * Gets the list of actions as a string.
+   */
+  [[nodiscard]] std::string get_as_string (int limit) const;
 
-  MixerSelectionsAction ** mixer_selections_actions;
-  size_t                   num_mixer_selections_actions;
-  size_t                   mixer_selections_actions_size;
+  /* --- start wrappers --- */
 
-  TracklistSelectionsAction ** tracklist_selections_actions;
-  size_t                       num_tracklist_selections_actions;
-  size_t                       tracklist_selections_actions_size;
+  void push (std::unique_ptr<UndoableAction> &&action)
+  {
+    if (is_full ())
+      {
+        pop_last ();
+      }
+    actions_.push_back (std::move (action));
+  }
 
-  ChannelSendAction ** channel_send_actions;
-  size_t               num_channel_send_actions;
-  size_t               channel_send_actions_size;
+  std::unique_ptr<UndoableAction> pop ()
+  {
+    if (actions_.empty ())
+      {
+        return nullptr;
+      }
 
-  PortConnectionAction ** port_connection_actions;
-  size_t                  num_port_connection_actions;
-  size_t                  port_connection_actions_size;
+    auto last_action = std::move (actions_.back ());
+    actions_.pop_back ();
+    return last_action;
+  }
 
-  PortAction ** port_actions;
-  size_t        num_port_actions;
-  size_t        port_actions_size;
+  /**
+   * Pops the last (first added) element and moves everything back.
+   */
+  std::unique_ptr<UndoableAction> pop_last ()
+  {
+    if (actions_.empty ())
+      {
+        return nullptr;
+      }
 
-  MidiMappingAction ** midi_mapping_actions;
-  size_t               num_midi_mapping_actions;
-  size_t               midi_mapping_actions_size;
+    auto last_action = std::move (actions_.front ());
+    actions_.pop_front ();
+    return last_action;
+  }
+  auto             size () const { return actions_.size (); }
+  bool             is_empty () const { return actions_.empty (); }
+  bool             empty () const { return is_empty (); }
+  bool             is_full () const { return size () == max_size_; }
+  UndoableAction * peek () const
+  {
+    return is_empty () ? nullptr : actions_.back ().get ();
+  }
+  void clear () { actions_.clear (); };
 
-  RangeAction ** range_actions;
-  size_t         num_range_actions;
-  size_t         range_actions_size;
+  /* --- end wrappers --- */
 
-  TransportAction ** transport_actions;
-  size_t             num_transport_actions;
-  size_t             transport_actions_size;
+  [[nodiscard]] bool contains_clip (const AudioClip &clip) const
+  {
+    return std::any_of (
+      actions_.begin (), actions_.end (),
+      [&clip] (const auto &action) { return action->contains_clip (clip); });
+  }
 
-  ChordAction ** chord_actions;
-  size_t         num_chord_actions;
-  size_t         chord_actions_size;
+  /**
+   * Checks if the undo stack contains the given
+   * action pointer.
+   */
+  [[nodiscard]] bool contains_action (const UndoableAction &ua) const
+  {
+    return std::any_of (
+      actions_.begin (), actions_.end (),
+      [&ua] (const auto &action) { return action.get () == &ua; });
+  }
 
-} UndoStack;
+  /**
+   * Returns the plugins referred to in the undo stack.
+   */
+  void get_plugins (std::vector<Plugin *> &arr) const
+  {
+    for (auto &action : actions_)
+      {
+        action->get_plugins (arr);
+      }
+  }
 
-void
-undo_stack_init_loaded (UndoStack * self);
+  void init_after_cloning (const UndoStack &other) override;
 
-/**
- * Creates a new stack for undoable actions.
- */
-UndoStack *
-undo_stack_new (void);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-NONNULL UndoStack *
-undo_stack_clone (const UndoStack * src);
+public:
+  /**
+   * @brief Actions on the stack.
+   */
+  std::deque<std::unique_ptr<UndoableAction>> actions_;
 
-/**
- * Gets the list of actions as a string.
- */
-char *
-undo_stack_get_as_string (UndoStack * self, int limit);
-
-/**
- * Returns the total cached actions.
- *
- * Used when loading projects and for error checking.
- */
-NONNULL size_t
-undo_stack_get_total_cached_actions (UndoStack * self);
-
-/* --- start wrappers --- */
-
-#define undo_stack_size(x) (stack_size ((x)->stack))
-
-#define undo_stack_is_empty(x) (stack_is_empty ((x)->stack))
-
-#define undo_stack_is_full(x) (stack_is_full ((x)->stack))
-
-#define undo_stack_peek(x) ((UndoableAction *) stack_peek ((x)->stack))
-
-#define undo_stack_peek_last(x) \
-  ((UndoableAction *) stack_peek_last ((x)->stack))
-
-void
-undo_stack_push (UndoStack * self, UndoableAction * action);
-
-UndoableAction *
-undo_stack_pop (UndoStack * self);
-
-/**
- * Pops the last element and moves everything back.
- */
-UndoableAction *
-undo_stack_pop_last (UndoStack * self);
-
-/* --- end wrappers --- */
-
-bool
-undo_stack_contains_clip (UndoStack * self, AudioClip * clip);
-
-/**
- * Checks if the undo stack contains the given
- * action pointer.
- */
-bool
-undo_stack_contains_action (UndoStack * self, UndoableAction * ua);
-
-/**
- * Returns the plugins referred to in the undo stack.
- */
-NONNULL void
-undo_stack_get_plugins (UndoStack * self, GPtrArray * arr);
-
-/**
- * Clears the stack, optionally freeing all the
- * elements.
- */
-void
-undo_stack_clear (UndoStack * self, bool free);
-
-void
-undo_stack_free (UndoStack * self);
+  /**
+   * @brief Max size of the stack (if 0, unlimited).
+   */
+  size_t max_size_ = 0;
+};
 
 /**
  * @}

@@ -1,75 +1,62 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/marker.h"
 #include "dsp/marker_track.h"
 #include "dsp/tracklist.h"
-#include "gui/widgets/marker.h"
 #include "project.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
-#include "utils/string.h"
-
-/**
- * Creates a Marker.
- */
-Marker *
-marker_new (const char * name)
-{
-  Marker * self = object_new (Marker);
-
-  ArrangerObject * obj = (ArrangerObject *) self;
-  obj->type = ArrangerObjectType::ARRANGER_OBJECT_TYPE_MARKER;
-
-  self->name = g_strdup (name);
-  self->type = MarkerType::MARKER_TYPE_CUSTOM;
-  position_init (&obj->pos);
-
-  arranger_object_init (obj);
-
-  arranger_object_gen_escaped_name ((ArrangerObject *) self);
-
-  return self;
-}
-
-void
-marker_set_index (Marker * self, int index)
-{
-  self->index = index;
-}
-
-/**
- * Sets the Track of the Marker.
- */
-void
-marker_set_track_name_hash (Marker * marker, unsigned int track_name_hash)
-{
-  marker->track_name_hash = track_name_hash;
-}
+#include "zrythm.h"
 
 Marker *
-marker_find_by_name (const char * name)
+Marker::find_by_name (const std::string &name)
 {
-  for (int i = 0; i < P_MARKER_TRACK->num_markers; i++)
+  for (auto &marker : P_MARKER_TRACK->markers_)
     {
-      Marker * marker = P_MARKER_TRACK->markers[i];
-      if (string_is_equal (name, marker->name))
-        {
-          return marker;
-        }
+      if (name == marker->name_)
+        return marker.get ();
     }
 
-  return NULL;
+  return nullptr;
 }
 
-/**
- * Returns if the two Marker's are equal.
- */
-int
-marker_is_equal (Marker * a, Marker * b)
+std::string
+Marker::print_to_str () const
 {
-  ArrangerObject * obj_a = (ArrangerObject *) a;
-  ArrangerObject * obj_b = (ArrangerObject *) b;
-  return position_is_equal (&obj_a->pos, &obj_b->pos)
-         && string_is_equal (a->name, b->name);
+  return fmt::format (
+    "Marker: name: {}, type: {}, track index: {}, position: {}", name_,
+    ENUM_NAME (marker_type_), marker_track_index_, pos_.to_string ());
+}
+
+Marker::ArrangerObjectPtr
+Marker::find_in_project () const
+{
+  z_return_val_if_fail (
+    (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, nullptr);
+
+  auto &marker = P_MARKER_TRACK->markers_[marker_track_index_];
+  z_return_val_if_fail (*marker == *this, nullptr);
+  return marker;
+}
+
+Marker::ArrangerObjectPtr
+Marker::add_clone_to_project (bool fire_events) const
+{
+  return P_MARKER_TRACK->add_marker (clone_shared ());
+}
+
+Marker::ArrangerObjectPtr
+Marker::insert_clone_to_project () const
+{
+  return P_MARKER_TRACK->insert_marker (clone_shared (), marker_track_index_);
+}
+
+bool
+Marker::validate (bool is_project, double frames_per_tick) const
+{
+  if (
+    !ArrangerObject::are_members_valid (is_project)
+    || !NameableObject::are_members_valid (is_project))
+    return false;
+
+  return true;
 }

@@ -25,7 +25,7 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
     return;
 
   GAction * action = g_action_map_lookup_action (
-    G_ACTION_MAP (zrythm_app), "plugin-toggle-enabled");
+    G_ACTION_MAP (zrythm_app.get ()), "plugin-toggle-enabled");
   char tmp[500];
   sprintf (tmp, "%p", pl);
   GVariant * var = g_variant_new_string (tmp);
@@ -40,7 +40,7 @@ channel_slot_activate_button_widget_new (ChannelSlotWidget * owner)
 {
   ChannelSlotActivateButtonWidget * self =
     static_cast<ChannelSlotActivateButtonWidget *> (
-      g_object_new (CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET_TYPE, NULL));
+      g_object_new (CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET_TYPE, nullptr));
 
   self->owner = owner;
 

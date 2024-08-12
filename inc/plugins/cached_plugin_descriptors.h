@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
  * @file
@@ -12,6 +10,7 @@
 #ifndef __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 #define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 
+#include "io/serialization/iserializable.h"
 #include "plugins/plugin_descriptor.h"
 
 /**
@@ -20,90 +19,120 @@
  * @{
  */
 
-#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 5
-
 /**
  * Descriptors to be cached.
  */
-typedef struct CachedPluginDescriptors
+class CachedPluginDescriptors
+  final : public ISerializable<CachedPluginDescriptors>
 {
-  /** Valid descriptors. */
-  GPtrArray * descriptors;
+public:
+  /**
+   * @brief Returns a new instance with the cache pre-filled from the cache
+   * file, or an empty instance if there is no file or an error occurred.
+   *
+   * @return std::unique_ptr<CachedPluginDescriptors>
+   */
+  static std::unique_ptr<CachedPluginDescriptors> read_or_new ();
 
-  /** Blacklisted hashes, to skip when scanning. */
-  GPtrArray * blacklisted_sha1s;
-} CachedPluginDescriptors;
+  /**
+   * @brief Serializes the cached descriptors to the standard file.
+   *
+   * @throw ZrythmException if an error occurred while serializing.
+   */
+  void serialize_to_file ();
 
-/**
- * Reads the file and fills up the object.
- */
-CachedPluginDescriptors *
-cached_plugin_descriptors_read_or_new (void);
+  /**
+   * @brief Wrapper over @ref serialize_to_file that ignores exceptions.
+   *
+   */
+  void serialize_to_file_no_throw ()
+  {
+    try
+      {
+        serialize_to_file ();
+      }
+    catch (const ZrythmException &e)
+      {
+        z_warning (e.what ());
+      }
+  }
 
-void
-cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
-/**
- * Returns if the plugin with the given sha1 is blacklisted or not.
- */
-bool
-cached_plugin_descriptors_is_blacklisted (
-  CachedPluginDescriptors * self,
-  const char *              sha1);
+  int get_format_major_version () const override { return 6; }
+  int get_format_minor_version () const override { return 0; }
 
-/**
- * Finds descriptors matching the given one's unique identifiers and adds them
- * to the array.
- *
- * @note The elements in the array are owned by @p self and must not be free'd.
- *
- * @param descr The descriptor to check, or NULL to check sha1.
- * @param sha1 The sha1 to check, or NULL to check @p descr.
- * @param check_valid Whether to check valid descriptors.
- * @param check_blacklisted Whether to check blacklisted descriptors.
- *
- * @return Number of descriptors found.
- */
-NONNULL_ARGS (1)
-unsigned int cached_plugin_descriptors_find (
-  CachedPluginDescriptors * self,
-  GPtrArray *               arr,
-  const PluginDescriptor *  descr,
-  const char *              sha1,
-  bool                      check_valid,
-  bool                      check_blacklisted);
+  std::string get_document_type () const override
+  {
+    return "CachedPluginDescriptors";
+  }
 
-/**
- * Appends a descriptor to the cache.
- *
- * @param serialize Whether serialize the updated cache now.
- */
-void
-cached_plugin_descriptors_blacklist (
-  CachedPluginDescriptors * self,
-  const char *              sha1,
-  bool                      _serialize);
+  /**
+   * Returns if the plugin with the given sha1 is blacklisted or not.
+   */
+  bool is_blacklisted (std::string_view sha1);
 
-/**
- * Appends a descriptor to the cache.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- */
-void
-cached_plugin_descriptors_add (
-  CachedPluginDescriptors * self,
-  const PluginDescriptor *  descr,
-  int                       _serialize);
+  /**
+   * Returns found non-blacklisted descriptors.
+   */
+  std::vector<PluginDescriptor>
+  get_valid_descriptors_for_sha1 (std::string_view sha1);
 
-/**
- * Clears the descriptors and removes the cache file.
- */
-void
-cached_plugin_descriptors_clear (CachedPluginDescriptors * self);
+  /**
+   * @brief Returns whether the given sha1 is in the cache.
+   *
+   * @param sha1
+   */
+  bool
+  contains_sha1 (std::string_view sha1, bool check_valid, bool check_blacklisted);
 
-void
-cached_plugin_descriptors_free (CachedPluginDescriptors * self);
+  bool contains_valid_sha1 (auto sha1)
+  {
+    return contains_sha1 (sha1, true, false);
+  }
+
+  bool contains_blacklisted_sha1 (auto sha1)
+  {
+    return contains_sha1 (sha1, false, true);
+  }
+
+   /**
+    * Appends a descriptor to the cache.
+    *
+    * @param serialize Whether serialize the updated cache now.
+    */
+   void blacklist (std::string_view sha1, bool serialize);
+
+   /**
+    * Appends a descriptor to the cache.
+    *
+    * @param serialize Whether to serialize the updated
+    *   cache now.
+    */
+   void add (const PluginDescriptor &descr, bool serialize);
+
+   /**
+    * Clears the descriptors and removes the cache file.
+    */
+   void clear ();
+
+ private:
+   /**
+    * @brief Deletes the cache file.
+    *
+    * @throw ZrythmException if an error occurred while deleting the file.
+    */
+   static void delete_file ();
+
+   static fs::path get_file_path ();
+
+ public:
+   /** Valid descriptors. */
+   std::vector<PluginDescriptor> descriptors_;
+
+   /** Blacklisted hashes, to skip when scanning. */
+   std::vector<std::string> blacklisted_sha1s_;
+};
 
 /**
  * @}

@@ -1,41 +1,39 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/automation_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/engine.h"
 #include "dsp/position.h"
-#include "dsp/track.h"
-#include "dsp/transport.h"
+#include "dsp/region.h"
 #include "gui/backend/automation_selections.h"
-#include "gui/backend/event_manager.h"
+#include "gui/backend/clip_editor.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/audio.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
-#include "utils/yaml.h"
+#include "zrythm.h"
 
-#include "gtk_wrapper.h"
-
-/**
- * Returns if the selections can be pasted.
- *
- * @param pos Position to paste to.
- * @param region Region to paste to.
- */
 bool
-automation_selections_can_be_pasted (
-  AutomationSelections * ts,
-  Position *             pos,
-  Region *               r)
+AutomationSelections::can_be_pasted_at_impl (const Position pos, const int idx)
+  const
 {
-  if (!r || r->id.type != RegionType::REGION_TYPE_AUTOMATION)
+  if (!ArrangerSelections::can_be_pasted_at (pos))
     return false;
 
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  if (r_obj->pos.frames + pos->frames < 0)
+  Region * r = CLIP_EDITOR->get_region ();
+  if (!r || !r->is_automation ())
+    return false;
+
+  if (r->pos_.frames_ + pos.frames_ < 0)
     return false;
 
   return true;
+}
+
+void
+AutomationSelections::sort_by_indices (bool desc)
+{
+  std::sort (
+    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
+      bool ret = false;
+      ret =
+        dynamic_cast<AutomationPoint &> (*a).index_
+        < dynamic_cast<AutomationPoint &> (*b).index_;
+      return desc ? !ret : ret;
+    });
 }

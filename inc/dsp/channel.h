@@ -1,12 +1,5 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * API for Channel, representing a channel strip on
- * the mixer.
- */
 
 #ifndef __AUDIO_CHANNEL_H__
 #define __AUDIO_CHANNEL_H__
@@ -18,14 +11,16 @@
 #include "dsp/fader.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
+#include "utils/icloneable.h"
 
 #include <gdk/gdk.h>
 
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _ChannelWidget  ChannelWidget;
-typedef struct Track           Track;
-typedef struct _TrackWidget    TrackWidget;
-typedef struct ExtPort         ExtPort;
+class AutomationTrack;
+class ChannelTrack;
+class GroupTargetTrack;
+TYPEDEF_STRUCT_UNDERSCORED (ChannelWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
+class ExtPort;
 
 /**
  * @addtogroup dsp
@@ -34,23 +29,33 @@ typedef struct ExtPort         ExtPort;
  */
 
 /** Magic number to identify channels. */
-#define CHANNEL_MAGIC 8431676
-#define IS_CHANNEL(x) (((Channel *) x)->magic == CHANNEL_MAGIC)
+static constexpr int CHANNEL_MAGIC = 8431676;
+
+static constexpr float MAX_FADER_AMP = 1.42f;
+
+#define IS_CHANNEL(x) (((Channel *) x)->magic_ == CHANNEL_MAGIC)
 #define IS_CHANNEL_AND_NONNULL(x) (x && IS_CHANNEL (x))
 
-#define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
-#define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
-#define MAX_FADER_AMP 1.42f
-
 /**
- * A Channel is always part of a Track (excluding Tracks that don't have
- * Channels) and contains information related to routing and the Mixer.
+ * @brief Represents a channel strip on the mixer.
+ *
+ * The Channel class encapsulates the functionality of a channel strip,
+ * including its plugins, fader, sends, and other properties. It provides
+ * methods for managing the channel's state and processing the audio signal.
+ *
+ * Channels are owned by Tracks and handle the output part of the signal chain,
+ * while TrackProcessor handles the input part.
+ *
+ * @see Track
  */
-struct Channel
+class Channel final
+    : public ICloneable<Channel>,
+      public std::enable_shared_from_this<Channel>,
+      public ISerializable<Channel>
 {
-  Channel () = delete;
-  explicit Channel (Track &track);
-  ~Channel ();
+public:
+  Channel () = default;
+  explicit Channel (ChannelTrack &track);
 
   bool is_in_active_project ();
 
@@ -74,7 +79,7 @@ struct Channel
     const MixerSelections *  sel,
     const PluginDescriptor * descr,
     int                      slot,
-    ZPluginSlotType          slot_type,
+    PluginSlotType           slot_type,
     bool                     copy,
     bool                     ask_if_overwrite);
 
@@ -99,7 +104,7 @@ struct Channel
    * The plugin must be already instantiated at this point.
    *
    * @param channel The Channel.
-   * @param pos The position in the strip starting from 0.
+   * @param slot The position in the strip starting from 0.
    * @param plugin The plugin to add.
    * @param confirm Confirm if an existing plugin will be overwritten.
    * @param moving_plugin Whether or not we are moving the plugin.
@@ -108,21 +113,21 @@ struct Channel
    * @param recalc_graph Recalculate mixer graph.
    * @param pub_events Publish events.
    *
-   * @return true if plugin added, false if not.
+   * @throw ZrythmException on error.
    */
-  NONNULL bool add_plugin (
-    ZPluginSlotType slot_type,
-    int             pos,
-    Plugin *        plugin,
-    bool            confirm,
-    bool            moving_plugin,
-    bool            gen_automatables,
-    bool            recalc_graph,
-    bool            pub_events);
+  Plugin * add_plugin (
+    std::unique_ptr<Plugin> &&plugin,
+    PluginSlotType       slot_type,
+    int                  slot,
+    bool                 confirm,
+    bool                 moving_plugin,
+    bool                 gen_automatables,
+    bool                 recalc_graph,
+    bool                 pub_events);
 
-  Track &get_track ();
+  ChannelTrack * get_track () const { return track_; }
 
-  Track * get_output_track ();
+  GroupTargetTrack * get_output_track () const;
 
   /**
    * Called when the input has changed for Midi, Instrument or Audio tracks.
@@ -146,14 +151,16 @@ struct Channel
    * @param deleting_channel If true, the automation tracks associated with the
    * plugin are not deleted at this time.
    * @param recalc_graph Recalculate mixer graph.
+   *
+   * @return The plugin that was removed (in case we want to move it).
    */
-  void remove_plugin (
-    ZPluginSlotType slot_type,
-    int             slot,
-    bool            moving_plugin,
-    bool            deleting_plugin,
-    bool            deleting_channel,
-    bool            recalc_graph);
+  std::unique_ptr<Plugin> remove_plugin (
+    PluginSlotType slot_type,
+    int            slot,
+    bool           moving_plugin,
+    bool           deleting_plugin,
+    bool           deleting_channel,
+    bool           recalc_graph);
 
   /**
    * Updates the track name hash in the channel and all related ports and
@@ -162,7 +169,7 @@ struct Channel
   void
   update_track_name_hash (unsigned int old_name_hash, unsigned int new_name_hash);
 
-  NONNULL int get_plugins (Plugin ** pls);
+  void get_plugins (std::vector<Plugin *> &pls);
 
   /**
    * Gets whether mono compatibility is enabled.
@@ -184,32 +191,26 @@ struct Channel
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  Plugin * get_plugin_at (int slot, ZPluginSlotType slot_type) const;
+  Plugin * get_plugin_at_slot (int slot, PluginSlotType slot_type) const;
 
   /**
    * Selects/deselects all plugins in the given slot type.
    */
-  void select_all (ZPluginSlotType type, bool select);
+  void select_all (PluginSlotType type, bool select);
 
   /**
    * Sets caches for processing.
    */
   void set_caches ();
 
-  /**
-   * Clones the channel recursively.
-   *
-   * @param error To be filled if an error occurred.
-   * @param track The track to use for getting the name. This track is not
-   * cloned.
-   */
-  Channel * clone (Track &track, GError ** error);
+  void init_after_cloning (const Channel &other) override;
 
   /**
    * Disconnects the channel from the processing chain.
    *
    * This should be called immediately when the channel is getting deleted, and
-   * channel_free should be designed to be called later after an arbitrary delay.
+   * channel_free should be designed to be called later after an arbitrary
+   * delay.
    *
    * @param remove_pl Remove the Plugin from the Channel. Useful when deleting
    * the channel.
@@ -217,7 +218,7 @@ struct Channel
    */
   void disconnect (bool remove_pl);
 
-  void init_loaded (Track &track);
+  void init_loaded (ChannelTrack &track);
 
   /**
    * Handles the recording logic inside the process cycle.
@@ -232,12 +233,7 @@ struct Channel
   /**
    * Appends all channel ports and optionally plugin ports to the array.
    */
-  void append_ports (GPtrArray * ports, bool include_plugins);
-
-  /**
-   * @brief Sets the magic member on owned plugins.
-   */
-  void set_magic ();
+  void append_ports (std::vector<Port *> &ports, bool include_plugins);
 
   /**
    * Exposes the channel's ports to the backend.
@@ -255,7 +251,11 @@ struct Channel
 
   static float get_phase (void * channel);
 
-  static void set_balance_control (void * _channel, float pan);
+  static void balance_control_setter (void * _channel, float pan)
+  {
+    auto * channel = static_cast<Channel *> (_channel);
+    channel->set_balance_control (pan);
+  }
 
   void set_balance_control (float val);
 
@@ -264,22 +264,84 @@ struct Channel
    */
   static void add_balance_control (void * _channel, float pan);
 
-  static float get_balance_control (void * _channel);
+  static float balance_control_getter (void * _channel)
+  {
+    auto * channel = static_cast<Channel *> (_channel);
+    return channel->get_balance_control ();
+  }
 
   float get_balance_control () const;
 
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  /**
+   * Connect ports in the case of !prev && !next.
+   */
+  void connect_no_prev_no_next (Plugin &pl);
+
+  /**
+   * Connect ports in the case of !prev && next.
+   */
+  void connect_no_prev_next (Plugin &pl, Plugin &next_pl);
+
+  /**
+   * Connect ports in the case of prev && !next.
+   */
+  void connect_prev_no_next (Plugin &prev_pl, Plugin &pl);
+
+  /**
+   * Connect ports in the case of prev && next.
+   */
+  void connect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
+
+  /**
+   * Disconnect ports in the case of !prev && !next.
+   */
+  void disconnect_no_prev_no_next (Plugin &pl);
+
+  /**
+   * Disconnect ports in the case of !prev && next.
+   */
+  void disconnect_no_prev_next (Plugin &pl, Plugin &next_pl);
+
+  /**
+   * Connect ports in the case of prev && !next.
+   */
+  void disconnect_prev_no_next (Plugin &prev_pl, Plugin &pl);
+
+  /**
+   * Connect ports in the case of prev && next.
+   */
+  void disconnect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
+
+  void connect_plugins ();
+
+  /**
+   * Inits the stereo ports of the Channel while exposing them to the backend.
+   *
+   * This assumes the caller already checked that this channel should have the
+   * given ports enabled.
+   *
+   * @param loading 1 if loading a channel, 0 if new.
+   */
+  void init_stereo_out_ports (bool loading);
+
+  void disconnect_plugin_from_strip (int pos, Plugin &pl);
+
+public:
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
    *
    * This is processed before the instrument/inserts.
    */
-  Plugin * midi_fx[STRIP_SIZE] = {};
+  std::array<std::unique_ptr<Plugin>, STRIP_SIZE> midi_fx_;
 
   /** The channel insert strip. */
-  Plugin * inserts[STRIP_SIZE] = {};
+  std::array<std::unique_ptr<Plugin>, STRIP_SIZE> inserts_;
 
   /** The instrument plugin, if instrument track. */
-  Plugin * instrument = nullptr;
+  std::unique_ptr<Plugin> instrument_;
 
   /**
    * The sends strip.
@@ -288,110 +350,106 @@ struct Channel
    *
    * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
    */
-  ChannelSend * sends[STRIP_SIZE] = {};
+  std::array<std::unique_ptr<ChannelSend>, STRIP_SIZE> sends_;
 
   /**
    * External MIDI inputs that are currently connected to this channel as
    * official inputs, unless all_midi_ins is enabled.
    *
-   * These should be serialized every time and connected to when the project
-   * gets loaded if \ref Channel.all_midi_ins is not enabled.
+   * These should be serialized every time and connected to when the
+   * project gets loaded if @ref Channel.all_midi_ins is not enabled.
    *
    * If all_midi_ins is enabled, these are ignored.
    */
-  ExtPort * ext_midi_ins[EXT_PORTS_MAX] = {};
-  int       num_ext_midi_ins = 0;
+  std::vector<std::unique_ptr<ExtPort>> ext_midi_ins_;
 
   /** If true, the channel will connect to all MIDI ins found. */
-  bool all_midi_ins = false;
+  bool all_midi_ins_ = true;
 
   /**
-   * External audio L inputs that are currently connected to this channel as
-   * official inputs, unless all_stereo_l_ins is enabled.
+   * External audio L inputs that are currently connected to this channel
+   * as official inputs, unless all_stereo_l_ins is enabled.
    *
    * These should be serialized every time and if all_stereo_l_ins is not
    * enabled, connected to when the project gets loaded.
    *
    * If all_stereo_l_ins is enabled, these are ignored.
    */
-  ExtPort * ext_stereo_l_ins[EXT_PORTS_MAX] = {};
-  int       num_ext_stereo_l_ins = 0;
+  std::vector<std::unique_ptr<ExtPort>> ext_stereo_l_ins_;
 
   /** If true, the channel will connect to all stereo L ins found. */
-  bool all_stereo_l_ins = false;
+  bool all_stereo_l_ins_ = false;
 
   /**
-   * External audio R inputs that are currently connected to this channel as
-   * official inputs, unless all_stereo_r_ins is enabled.
+   * External audio R inputs that are currently connected to this channel
+   * as official inputs, unless all_stereo_r_ins is enabled.
    *
    * These should be serialized every time and if all_stereo_r_ins is not
    * enabled, connected to when the project gets loaded.
    *
    * If all_stereo_r_ins is enabled, these are ignored.
    */
-  ExtPort * ext_stereo_r_ins[EXT_PORTS_MAX] = {};
-  int       num_ext_stereo_r_ins = 0;
+  std::vector<std::unique_ptr<ExtPort>> ext_stereo_r_ins_;
 
   /** If true, the channel will connect to all stereo R ins found. */
-  bool all_stereo_r_ins = false;
+  bool all_stereo_r_ins_ = false;
 
   /**
    * 1 or 0 flags for each channel to enable it or disable it.
    *
    * If all_midi_channels is enabled, this is ignored.
    */
-  int midi_channels[16] = {};
+  std::array<bool, 16> midi_channels_;
 
   /** If true, the channel will accept MIDI messages from all MIDI channels.
    */
-  bool all_midi_channels = false;
+  bool all_midi_channels_ = true;
 
   /** The channel fader. */
-  Fader * fader = nullptr;
+  std::unique_ptr<Fader> fader_;
 
   /**
    * Prefader.
    *
    * The last plugin should connect to this.
    */
-  Fader * prefader = nullptr;
+  std::unique_ptr<Fader> prefader_;
 
   /**
-   * MIDI output for sending MIDI signals to other destinations, such as other
-   * channels when directly routed (eg MIDI track to ins track).
+   * MIDI output for sending MIDI signals to other destinations, such as
+   * other channels when directly routed (eg MIDI track to ins track).
    */
-  Port * midi_out = nullptr;
+  std::unique_ptr<MidiPort> midi_out_;
 
   /*
-   * Ports for direct (track-to-track) routing with the exception of master,
-   * which will route the output to monitor in.
+   * Ports for direct (track-to-track) routing with the exception of
+   * master, which will route the output to monitor in.
    */
-  StereoPorts * stereo_out = nullptr;
+  std::unique_ptr<StereoPorts> stereo_out_;
 
   /**
    * Whether or not output_pos corresponds to a Track or not.
    *
    * If not, the channel is routed to the engine.
    */
-  bool has_output = false;
+  bool has_output_ = false;
 
   /** Output track. */
-  unsigned int output_name_hash = 0;
+  unsigned int output_name_hash_ = 0;
 
   /** Track associated with this channel. */
-  int track_pos = 0;
+  int track_pos_ = 0;
 
   /** Channel widget width - reserved for future use. */
-  int width = 0;
+  int width_ = 0;
 
-  /** This must be set to CHANNEL_MAGIC. */
-  int magic = 0;
+  int magic_ = CHANNEL_MAGIC;
 
   /** The channel widget. */
-  ChannelWidget * widget = nullptr;
+  ChannelWidget * widget_ = nullptr;
 
   /** Owner track. */
-  Track &track_;
+  ChannelTrack * track_;
 };
 
 /**

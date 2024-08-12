@@ -1,774 +1,622 @@
-// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
-#include "utils/error.h"
 #include "utils/io.h"
-#include "utils/objects.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#define USER_PACKS_DIR_NAME "chord-preset-packs"
-#define USER_PACK_JSON_FILENAME "chord-presets.json"
+#include <glibmm.h>
 
-static char *
-get_user_packs_path (void)
+std::string
+ChordPresetPackManager::get_user_packs_path ()
 {
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  char * zrythm_dir = dir_mgr->get_dir (USER_TOP);
-  g_return_val_if_fail (zrythm_dir, NULL);
+  auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
+  std::string zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  g_return_val_if_fail (!zrythm_dir.empty (), "");
 
-  return g_build_filename (zrythm_dir, USER_PACKS_DIR_NAME, NULL);
+  return Glib::build_filename (zrythm_dir, UserPacksDirName);
 }
 
-static void
-add_standard_packs (ChordPresetPackManager * self)
+void
+ChordPresetPackManager::add_standard_packs ()
 {
-#define ADD_SIMPLE_CHORD(i, root, chord_type) \
-  pset->descr[i] = chord_descriptor_new ( \
-    root, false, root, chord_type, ChordAccent::CHORD_ACC_NONE, 0);
+  packs_.reserve (100);
+#define ADD_SIMPLE_CHORD(root, chord_type) \
+  pset.descr_.emplace_back ( \
+    root, false, root, chord_type, ChordAccent::None, 0);
 
 #define ADD_SIMPLE_CHORDS( \
   n0, t0, n1, t1, n2, t2, n3, t3, n4, t4, n5, t5, n6, t6, n7, t7, n8, t8, n9, \
   t9, n10, t10, n11, t11) \
-  ADD_SIMPLE_CHORD (0, n0, t0); \
-  ADD_SIMPLE_CHORD (1, n1, t1); \
-  ADD_SIMPLE_CHORD (2, n2, t2); \
-  ADD_SIMPLE_CHORD (3, n3, t3); \
-  ADD_SIMPLE_CHORD (4, n4, t4); \
-  ADD_SIMPLE_CHORD (5, n5, t5); \
-  ADD_SIMPLE_CHORD (6, n6, t6); \
-  ADD_SIMPLE_CHORD (7, n7, t7); \
-  ADD_SIMPLE_CHORD (8, n8, t8); \
-  ADD_SIMPLE_CHORD (9, n9, t9); \
-  ADD_SIMPLE_CHORD (10, n10, t10); \
-  ADD_SIMPLE_CHORD (11, n11, t11)
+  ADD_SIMPLE_CHORD (n0, t0); \
+  ADD_SIMPLE_CHORD (n1, t1); \
+  ADD_SIMPLE_CHORD (n2, t2); \
+  ADD_SIMPLE_CHORD (n3, t3); \
+  ADD_SIMPLE_CHORD (n4, t4); \
+  ADD_SIMPLE_CHORD (n5, t5); \
+  ADD_SIMPLE_CHORD (n6, t6); \
+  ADD_SIMPLE_CHORD (n7, t7); \
+  ADD_SIMPLE_CHORD (n8, t8); \
+  ADD_SIMPLE_CHORD (n9, t9); \
+  ADD_SIMPLE_CHORD (n10, t10); \
+  ADD_SIMPLE_CHORD (n11, t11)
 
 #define ADD_SIMPLE_4CHORDS(n0, t0, n1, t1, n2, t2, n3, t3) \
   ADD_SIMPLE_CHORDS ( \
-    n0, t0, n1, t1, n2, t2, n3, t3, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, \
-    ChordType::CHORD_TYPE_NONE)
-
-  ChordPresetPack * pack;
-  ChordPreset *     pset;
+    n0, t0, n1, t1, n2, t2, n3, t3, MusicalNote::C, ChordType::None, \
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None, \
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None, \
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None, \
+    MusicalNote::C, ChordType::None)
 
   /* --- euro pop pack --- */
-  pack = chord_preset_pack_new (_ ("Euro Pop"), true);
 
-  pset = chord_preset_new_from_name (_ ("4 Chord Song"));
+  auto pack = std::make_unique<ChordPresetPack> (_ ("Euro Pop"), true);
+
+  auto pset = ChordPreset (_ ("4 Chord Song"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[4]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::A, ChordType::Minor, MusicalNote::C, ChordType::Major,
+    MusicalNote::F, ChordType::Major, MusicalNote::G, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pset.descr_[4].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* Johann Pachelbel, My Chemical Romance */
-  pset = chord_preset_new_from_name (_ ("Canon in D"));
+  pset = ChordPreset (_ ("Canon in D"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::D, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::B, ChordType::Minor, MusicalNote::FSharp, ChordType::Minor,
+    MusicalNote::G, ChordType::Major, MusicalNote::D, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  pset = chord_preset_new_from_name (_ ("Love Progression"));
+  pset = ChordPreset (_ ("Love Progression"));
   ADD_SIMPLE_4CHORDS (
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::C, ChordType::Major, MusicalNote::A, ChordType::Minor,
+    MusicalNote::F, ChordType::Major, MusicalNote::G, ChordType::Major);
+  pack->add_preset (pset);
 
-  pset = chord_preset_new_from_name (_ ("Pop Chords 1"));
+  pset = ChordPreset (_ ("Pop Chords 1"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::C, ChordType::Major, MusicalNote::G, ChordType::Major,
+    MusicalNote::A, ChordType::Minor, MusicalNote::F, ChordType::Major,
+    MusicalNote::E, ChordType::Major, MusicalNote::B, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Minor, MusicalNote::A, ChordType::Major,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  pset = chord_preset_new_from_name (_ ("Most Often Used Chords"));
+  pset = ChordPreset (_ ("Most Often Used Chords"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::G, ChordType::Major, MusicalNote::F, ChordType::Major,
+    MusicalNote::C, ChordType::Major, MusicalNote::A, ChordType::Minor,
+    MusicalNote::D, ChordType::Minor, MusicalNote::E, ChordType::Minor,
+    MusicalNote::E, ChordType::Major, MusicalNote::D, ChordType::Major,
+    MusicalNote::ASharp, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- j/k pop --- */
 
-  pack = chord_preset_pack_new (_ ("Eastern Pop"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Eastern Pop"), true);
 
-  /* fight together */
-  pset = chord_preset_new_from_name ("Fight Together");
+  pset = ChordPreset (_ ("Fight Together"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::G, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::D, ChordType::Major, MusicalNote::G, ChordType::Major,
+    MusicalNote::A, ChordType::Major, MusicalNote::B, ChordType::Minor,
+    MusicalNote::D, ChordType::Major, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  /* gee */
-  pset = chord_preset_new_from_name ("Gee");
+  pset = ChordPreset (_ ("Gee"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_FS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[0]->accent = ChordAccent::CHORD_ACC_7;
-  pset->descr[3]->accent = ChordAccent::CHORD_ACC_7;
-  pset->descr[5]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::A, ChordType::Major, MusicalNote::FSharp, ChordType::Minor,
+    MusicalNote::GSharp, ChordType::Minor, MusicalNote::GSharp, ChordType::Minor,
+    MusicalNote::CSharp, ChordType::Minor, MusicalNote::CSharp, ChordType::Minor,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pset.descr_[0].accent_ = ChordAccent::Seventh;
+  pset.descr_[3].accent_ = ChordAccent::Seventh;
+  pset.descr_[5].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* yuriyurarararayuruyuri */
-  pset = chord_preset_new_from_name ("Daijiken");
+  pset = ChordPreset (_ ("Daijiken"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::ASharp,
+    ChordType::Minor, MusicalNote::F, ChordType::Major, MusicalNote::ASharp,
+    ChordType::Minor, MusicalNote::GSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::G, ChordType::Minor,
+    MusicalNote::F, ChordType::Minor, MusicalNote::ASharp, ChordType::Major,
+    MusicalNote::GSharp, ChordType::Major, MusicalNote::C, ChordType::Minor,
+    MusicalNote::C, ChordType::Major);
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- dance --- */
 
-  pack = chord_preset_pack_new (_ ("Dance"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Dance"), true);
 
   /* the idolm@ster 2 */
-  pset = chord_preset_new_from_name ("Idol 2");
+  pset = ChordPreset (_ ("Idol 2"));
   ADD_SIMPLE_4CHORDS (
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MIN);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::C, ChordType::Major, MusicalNote::D, ChordType::Major,
+    MusicalNote::B, ChordType::Minor, MusicalNote::E, ChordType::Minor);
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- ballad --- */
 
-  pack = chord_preset_pack_new (_ ("Ballad"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Ballad"), true);
 
   /* snow halation */
-  pset = chord_preset_new_from_name ("Snow Halation");
+  pset = ChordPreset (_ ("Snow Halation"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_B,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ);
-  pset->descr[4]->accent = ChordAccent::CHORD_ACC_7;
-  pset->descr[5]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::D, ChordType::Major, MusicalNote::E, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Minor, MusicalNote::FSharp, ChordType::Minor,
+    MusicalNote::B, ChordType::Minor, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::E, ChordType::Major, MusicalNote::CSharp, ChordType::Minor,
+    MusicalNote::CSharp, ChordType::Major, MusicalNote::B, ChordType::Major,
+    MusicalNote::E, ChordType::Major, MusicalNote::A, ChordType::Major);
+  pset.descr_[4].accent_ = ChordAccent::Seventh;
+  pset.descr_[5].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* connect */
-  pset = chord_preset_new_from_name ("Connect");
+  pset = ChordPreset (_ ("Connect"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MIN);
-  pset->descr[8]->accent = ChordAccent::CHORD_ACC_7;
-  pset->descr[10]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::B, ChordType::Major, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::ASharp, ChordType::Minor, MusicalNote::DSharp,
+    ChordType::Minor, MusicalNote::GSharp, ChordType::Minor, MusicalNote::B,
+    ChordType::Major, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::GSharp,
+    ChordType::Major, MusicalNote::ASharp, ChordType::Major, MusicalNote::G,
+    ChordType::Major, MusicalNote::C, ChordType::Minor);
+  pset.descr_[8].accent_ = ChordAccent::Seventh;
+  pset.descr_[10].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* secret base */
-  pset = chord_preset_new_from_name ("Secret Base");
+  pset = ChordPreset (_ ("Secret Base"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[2]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::B, ChordType::Major, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Minor, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::B, ChordType::Major, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::FSharp, ChordType::Major, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pset.descr_[2].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- eurodance --- */
 
-  pack = chord_preset_pack_new (_ ("Eurodance"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Eurodance"), true);
 
   /* what is love */
-  pset = chord_preset_new_from_name ("What is Love");
+  pset = ChordPreset (_ ("What is Love"));
   ADD_SIMPLE_4CHORDS (
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ);
-  pset->descr[2]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::G, ChordType::Minor, MusicalNote::ASharp, ChordType::Major,
+    MusicalNote::D, ChordType::Minor, MusicalNote::F, ChordType::Major);
+  pset.descr_[2].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* blue */
-  pset = chord_preset_new_from_name ("Blue");
+  pset = ChordPreset (_ ("Blue"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::G, ChordType::Minor, MusicalNote::F, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::C, ChordType::Minor,
+    MusicalNote::C, ChordType::Major, MusicalNote::D, ChordType::Minor,
+    MusicalNote::GSharp, ChordType::Major, MusicalNote::ASharp, ChordType::Major,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- eurobeat --- */
 
-  pack = chord_preset_pack_new (_ ("Eurobeat"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Eurobeat"), true);
 
-  pset = chord_preset_new_from_name ("Burning Night");
+  pset = ChordPreset (_ ("Burning Night"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_DIM,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::CSharp, ChordType::Major, MusicalNote::DSharp, ChordType::Major,
+    MusicalNote::C, ChordType::Minor, MusicalNote::F, ChordType::Minor,
+    MusicalNote::ASharp, ChordType::Minor, MusicalNote::B, ChordType::Diminished,
+    MusicalNote::C, ChordType::Major, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
   /* believe / dreamin' of you */
-  pset = chord_preset_new_from_name ("Dreamin' Of You");
+  pset = ChordPreset (_ ("Dreamin' Of You"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::F, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::D, ChordType::Minor, MusicalNote::ASharp, ChordType::Major,
+    MusicalNote::G, ChordType::Minor, MusicalNote::A, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::D, ChordType::Major,
+    MusicalNote::FSharp, ChordType::Minor, MusicalNote::B, ChordType::Minor,
+    MusicalNote::E, ChordType::Minor, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
   /* get me power */
-  pset = chord_preset_new_from_name ("Get Me Power");
+  pset = ChordPreset (_ ("Get Me Power"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::B, ChordType::Minor, MusicalNote::E, ChordType::Minor,
+    MusicalNote::D, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::FSharp, ChordType::Major, MusicalNote::A, ChordType::Minor,
+    MusicalNote::D, ChordType::Minor, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
   /* night of fire */
-  pset = chord_preset_new_from_name ("Night of Fire");
+  pset = ChordPreset (_ ("Night of Fire"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_B,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::DSharp, ChordType::Minor, MusicalNote::B, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Major, MusicalNote::FSharp,
+    ChordType::Major, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Minor, MusicalNote::FSharp,
+    ChordType::Major, MusicalNote::GSharp, ChordType::Major, MusicalNote::B,
+    ChordType::Major, MusicalNote::GSharp, ChordType::Minor, MusicalNote::ASharp,
+    ChordType::Minor, MusicalNote::CSharp, ChordType::Major);
+  pack->add_preset (pset);
 
   /* super fever night */
-  pset = chord_preset_new_from_name ("Super Fever Night");
+  pset = ChordPreset (_ ("Super Fever Night"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[4]->accent = ChordAccent::CHORD_ACC_7;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::B, ChordType::Minor, MusicalNote::G, ChordType::Major,
+    MusicalNote::A, ChordType::Major, MusicalNote::B, ChordType::Minor,
+    MusicalNote::G, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::D, ChordType::Major, MusicalNote::E, ChordType::Major,
+    MusicalNote::FSharp, ChordType::Minor, MusicalNote::FSharp, ChordType::Major,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pset.descr_[4].accent_ = ChordAccent::Seventh;
+  pack->add_preset (pset);
 
   /* break in2 the nite */
-  pset = chord_preset_new_from_name ("Step in2 the Nite");
+  pset = ChordPreset (_ ("Break In2 The Nite"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[4]->inversion = -2;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::D, ChordType::Minor, MusicalNote::F, ChordType::Major,
+    MusicalNote::C, ChordType::Major, MusicalNote::D, ChordType::Minor,
+    MusicalNote::ASharp, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::D, ChordType::Minor, MusicalNote::G, ChordType::Minor,
+    MusicalNote::F, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::A, ChordType::Minor, MusicalNote::C, ChordType::None);
+  pset.descr_[4].inversion_ = -2;
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- progressive trance --- */
 
-  pack = chord_preset_pack_new (_ ("Progressive Trance"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Progressive Trance"), true);
 
-  pset = chord_preset_new_from_name ("Sajek Valley");
+  pset = ChordPreset (_ ("Sajek Valley"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  pset->descr[1]->accent = ChordAccent::CHORD_ACC_7;
-  pset->descr[3]->inversion = 1;
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::A, ChordType::Minor, MusicalNote::D, ChordType::Minor,
+    MusicalNote::F, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::D, ChordType::Minor,
+    MusicalNote::E, ChordType::Minor, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pset.descr_[1].accent_ = ChordAccent::Seventh;
+  pset.descr_[3].inversion_ = 1;
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
   /* --- rock --- */
 
-  pack = chord_preset_pack_new (_ ("Rock"), true);
+  pack = std::make_unique<ChordPresetPack> (_ ("Rock"), true);
 
-  pset = chord_preset_new_from_name ("Overdrive");
+  pset = ChordPreset (_ ("Overdrive"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_FS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::FSharp, ChordType::Major, MusicalNote::GSharp,
+    ChordType::Major, MusicalNote::ASharp, ChordType::Minor,
+    MusicalNote::ASharp, ChordType::Major, MusicalNote::FSharp,
+    ChordType::Major, MusicalNote::GSharp, ChordType::Major,
+    MusicalNote::ASharp, ChordType::Minor, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::GSharp, ChordType::Major, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
   /* kokoro */
-  pset = chord_preset_new_from_name ("Kokoro");
+  pset = ChordPreset (_ ("Kokoro"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_FS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_FS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::FSharp, ChordType::Major, MusicalNote::F, ChordType::Minor,
+    MusicalNote::ASharp, ChordType::Minor, MusicalNote::DSharp,
+    ChordType::Minor, MusicalNote::GSharp, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Major, MusicalNote::FSharp,
+    ChordType::Major, MusicalNote::FSharp, ChordType::Major, MusicalNote::C,
+    ChordType::None, MusicalNote::C, ChordType::None, MusicalNote::C,
+    ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  pset = chord_preset_new_from_name ("Pray");
+  pset = ChordPreset (_ ("Pray"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_CS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_FS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MAJ);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::B, ChordType::Minor, MusicalNote::G, ChordType::Major,
+    MusicalNote::D, ChordType::Major, MusicalNote::A, ChordType::Major,
+    MusicalNote::E, ChordType::Major, MusicalNote::B, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Minor, MusicalNote::CSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::GSharp, ChordType::Minor,
+    MusicalNote::FSharp, ChordType::Major, MusicalNote::E, ChordType::Major);
+  pack->add_preset (pset);
 
   /* no thank you */
-  pset = chord_preset_new_from_name ("No Thank You");
+  pset = ChordPreset (_ ("No Thank You"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_D,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_G,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_A, ChordType::CHORD_TYPE_MIN,
-    MusicalNote::NOTE_B, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_D, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_G, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_B,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_E, ChordType::CHORD_TYPE_MIN);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::E, ChordType::Minor, MusicalNote::D, ChordType::Major,
+    MusicalNote::A, ChordType::Major, MusicalNote::C, ChordType::Major,
+    MusicalNote::G, ChordType::Major, MusicalNote::A, ChordType::Minor,
+    MusicalNote::B, ChordType::Minor, MusicalNote::C, ChordType::Major,
+    MusicalNote::D, ChordType::Major, MusicalNote::G, ChordType::Major,
+    MusicalNote::B, ChordType::Minor, MusicalNote::E, ChordType::Minor);
+  pack->add_preset (pset);
 
   /* boulevard of broken dreams */
-  pset = chord_preset_new_from_name ("Broken Dreams");
+  pset = ChordPreset (_ ("Broken Dreams"));
   ADD_SIMPLE_CHORDS (
-    MusicalNote::NOTE_F, ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_GS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_AS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_CS,
-    ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_GS, ChordType::CHORD_TYPE_MAJ,
-    MusicalNote::NOTE_DS, ChordType::CHORD_TYPE_MAJ, MusicalNote::NOTE_F,
-    ChordType::CHORD_TYPE_MIN, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE,
-    MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C,
-    ChordType::CHORD_TYPE_NONE, MusicalNote::NOTE_C, ChordType::CHORD_TYPE_NONE);
-  chord_preset_pack_add_preset (pack, pset);
-  chord_preset_free (pset);
+    MusicalNote::F, ChordType::Minor, MusicalNote::GSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::ASharp, ChordType::Major,
+    MusicalNote::CSharp, ChordType::Major, MusicalNote::GSharp, ChordType::Major,
+    MusicalNote::DSharp, ChordType::Major, MusicalNote::F, ChordType::Minor,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None,
+    MusicalNote::C, ChordType::None, MusicalNote::C, ChordType::None);
+  pack->add_preset (pset);
 
-  g_ptr_array_add (self->pset_packs, pack);
+  packs_.push_back (std::move (pack));
 
 #undef ADD_SIMPLE_CHORD
+#undef ADD_SIMPLE_CHORDS
+#undef ADD_SIMPLE_4CHORDS
 }
 
-/**
- * Creates a new chord preset pack manager.
- *
- * @param scan_for_packs Whether to scan for preset
- *   packs.
- */
-ChordPresetPackManager *
-chord_preset_pack_manager_new (bool scan_for_packs)
+void
+ChordPresetPackManager::add_user_packs ()
 {
-  ChordPresetPackManager * self = object_new (ChordPresetPackManager);
-
-  self->pset_packs =
-    g_ptr_array_new_with_free_func (chord_preset_pack_destroy_cb);
-
-  /* add standard preset packs */
-  add_standard_packs (self);
-
   if (!ZRYTHM_TESTING)
     {
       /* add user preset packs */
-      char * main_path = get_user_packs_path ();
-      g_debug ("Reading user chord packs from %s...", main_path);
+      std::string main_path = get_user_packs_path ();
+      z_debug ("Reading user chord packs from %s...", main_path);
 
-      char ** pack_paths =
-        io_get_files_in_dir_ending_in (main_path, true, ".json", false);
-      if (pack_paths)
+      StringArray pack_paths =
+        io_get_files_in_dir_ending_in (main_path, true, ".json");
+      if (!pack_paths.isEmpty ())
         {
-          char * pack_path = NULL;
-          int    i = 0;
-          while ((pack_path = pack_paths[i++]))
+          for (const auto &pack_path : pack_paths)
             {
               if (
-                !g_file_test (pack_path, G_FILE_TEST_EXISTS)
-                || g_file_test (pack_path, G_FILE_TEST_IS_DIR))
+                !Glib::file_test (
+                  pack_path.toStdString (), Glib::FileTest::EXISTS)
+                || Glib::file_test (
+                  pack_path.toStdString (), Glib::FileTest::IS_DIR))
                 {
                   continue;
                 }
 
-              g_debug ("checking file %s", pack_path);
+              z_debug ("checking file %s", pack_path.toStdString ());
 
-              char *   json = NULL;
-              GError * err = NULL;
-              g_file_get_contents (pack_path, &json, NULL, &err);
-              if (err != NULL)
+              std::string json;
+              try
                 {
-                  g_warning ("Failed to read json from %s", pack_path);
+                  Glib::file_get_contents (pack_path.toStdString ());
+                }
+              catch (Glib::FileError &err)
+                {
+                  z_warning (
+                    "Failed to read json from %s", pack_path.toStdString ());
                   continue;
                 }
 
-              ChordPresetPack * pack =
-                chord_preset_pack_deserialize_from_json_str (json, &err);
-              if (!pack)
+              try
                 {
-                  g_critical (
-                    "failed to load chord preset pack: %s", err->message);
-                  return NULL;
+                  auto pack = std::make_unique<ChordPresetPack> ();
+                  pack->deserialize_from_json_string (json.c_str ());
+                  packs_.push_back (std::move (pack));
                 }
-              g_ptr_array_add (self->pset_packs, pack);
-
-              g_free (json);
+              catch (const ZrythmException &e)
+                {
+                  z_warning ("failed to load chord preset pack: %s", e.what ());
+                }
             }
-
-          g_strfreev (pack_paths);
         }
       else
         {
           g_message ("no user chord presets found");
         }
     }
-
-  return self;
 }
 
-int
-chord_preset_pack_manager_get_num_packs (const ChordPresetPackManager * self)
+size_t
+ChordPresetPackManager::get_num_packs () const
 {
-  return (int) self->pset_packs->len;
-}
-
-ChordPresetPack *
-chord_preset_pack_manager_get_pack_at (
-  const ChordPresetPackManager * self,
-  int                            idx)
-{
-  return (ChordPresetPack *) g_ptr_array_index (self->pset_packs, idx);
-}
-
-/**
- * Add a copy of the given pack.
- */
-void
-chord_preset_pack_manager_add_pack (
-  ChordPresetPackManager * self,
-  const ChordPresetPack *  pack,
-  bool                     serialize)
-{
-  ChordPresetPack * new_pack = chord_preset_pack_clone (pack);
-  g_ptr_array_add (self->pset_packs, new_pack);
-
-  if (serialize)
-    {
-      GError * err = NULL;
-      bool     success = chord_preset_pack_manager_serialize (self, &err);
-      if (!success)
-        {
-          HANDLE_ERROR_LITERAL (err, "Failed to serialize chord preset packs");
-        }
-    }
-
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_ADDED, NULL);
-}
-
-void
-chord_preset_pack_manager_delete_pack (
-  ChordPresetPackManager * self,
-  ChordPresetPack *        pack,
-  bool                     serialize)
-{
-  g_ptr_array_remove (self->pset_packs, pack);
-
-  if (serialize)
-    {
-      GError * err = NULL;
-      bool     success = chord_preset_pack_manager_serialize (self, &err);
-      if (!success)
-        {
-          HANDLE_ERROR_LITERAL (err, "Failed to serialize chord preset packs");
-        }
-    }
-
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_REMOVED, NULL);
+  return packs_.size ();
 }
 
 ChordPresetPack *
-chord_preset_pack_manager_get_pack_for_preset (
-  ChordPresetPackManager * self,
-  const ChordPreset *      pset)
+ChordPresetPackManager::get_pack_at (size_t idx)
 {
-  for (size_t i = 0; i < self->pset_packs->len; i++)
-    {
-      ChordPresetPack * pack =
-        (ChordPresetPack *) g_ptr_array_index (self->pset_packs, i);
-
-      if (chord_preset_pack_contains_preset (pack, pset))
-        {
-          return pack;
-        }
-    }
-
-  g_return_val_if_reached (NULL);
-}
-
-int
-chord_preset_pack_manager_get_pack_index (
-  ChordPresetPackManager * self,
-  ChordPresetPack *        pack)
-{
-  for (size_t i = 0; i < self->pset_packs->len; i++)
-    {
-      ChordPresetPack * cur_pack =
-        (ChordPresetPack *) g_ptr_array_index (self->pset_packs, i);
-      if (cur_pack == pack)
-        return i;
-    }
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Returns the preset index in its pack.
- */
-int
-chord_preset_pack_manager_get_pset_index (
-  ChordPresetPackManager * self,
-  ChordPreset *            pset)
-{
-  ChordPresetPack * pack =
-    chord_preset_pack_manager_get_pack_for_preset (self, pset);
-  g_return_val_if_fail (pack, -1);
-
-  for (size_t i = 0; i < pack->presets->len; i++)
-    {
-      ChordPreset * cur_pset =
-        (ChordPreset *) g_ptr_array_index (pack->presets, i);
-      if (cur_pset == pset)
-        return i;
-    }
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Add a copy of the given preset.
- */
-void
-chord_preset_pack_manager_add_preset (
-  ChordPresetPackManager * self,
-  ChordPresetPack *        pack,
-  const ChordPreset *      pset,
-  bool                     serialize)
-{
-  chord_preset_pack_add_preset (pack, pset);
-
-  if (serialize)
-    {
-      GError * err = NULL;
-      bool     success = chord_preset_pack_manager_serialize (self, &err);
-      if (!success)
-        {
-          HANDLE_ERROR_LITERAL (err, "Failed to serialize chord preset packs");
-        }
-    }
+  z_return_val_if_fail (idx < packs_.size (), nullptr);
+  return packs_[idx].get ();
 }
 
 void
-chord_preset_pack_manager_delete_preset (
-  ChordPresetPackManager * self,
-  ChordPreset *            pset,
-  bool                     serialize)
+ChordPresetPackManager::add_pack (const ChordPresetPack &pack, bool _serialize)
 {
-  ChordPresetPack * pack =
-    chord_preset_pack_manager_get_pack_for_preset (self, pset);
+  packs_.emplace_back (pack.clone_unique ());
+
+  if (_serialize)
+    {
+      try
+        {
+          serialize ();
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to serialize chord preset packs");
+        }
+    }
+
+  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_ADDED, nullptr);
+}
+
+void
+ChordPresetPackManager::delete_pack (const ChordPresetPack &pack, bool _serialize)
+{
+  auto it =
+    std::find_if (packs_.begin (), packs_.end (), [&pack] (const auto &p) {
+      return *p == pack;
+    });
+  if (it != packs_.end ())
+    {
+      packs_.erase (it);
+    }
+
+  if (_serialize)
+    {
+      try
+        {
+          serialize ();
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to serialize chord preset packs");
+        }
+    }
+
+  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_REMOVED, nullptr);
+}
+
+ChordPresetPack *
+ChordPresetPackManager::get_pack_for_preset (const ChordPreset &pset)
+{
+  for (const auto &pack : packs_)
+    {
+      if (pack->contains_preset (pset))
+        {
+          return pack.get ();
+        }
+    }
+
+  g_return_val_if_reached (nullptr);
+}
+
+int
+ChordPresetPackManager::get_pack_index (const ChordPresetPack &pack) const
+{
+  auto it =
+    std::find_if (packs_.begin (), packs_.end (), [&pack] (const auto &p) {
+      return *p == pack;
+    });
+  if (it != packs_.end ())
+    return it - packs_.begin ();
+  else
+    z_return_val_if_reached (-1);
+}
+
+int
+ChordPresetPackManager::get_pset_index (const ChordPreset &pset)
+{
+  ChordPresetPack * pack = get_pack_for_preset (pset);
+  z_return_val_if_fail (pack, -1);
+
+  return pack->get_preset_index (pset);
+}
+
+void
+ChordPresetPackManager::
+  add_preset (ChordPresetPack &pack, const ChordPreset &pset, bool _serialize)
+{
+  pack.add_preset (pset);
+
+  if (_serialize)
+    {
+      try
+        {
+          serialize ();
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to serialize chord preset packs");
+        }
+    }
+}
+
+void
+ChordPresetPackManager::delete_preset (const ChordPreset &pset, bool _serialize)
+{
+  ChordPresetPack * pack = get_pack_for_preset (pset);
   if (!pack)
     return;
 
-  chord_preset_pack_delete_preset (pack, pset);
+  pack->delete_preset (pset);
 
-  if (serialize)
+  if (_serialize)
     {
-      GError * err = NULL;
-      bool     success = chord_preset_pack_manager_serialize (self, &err);
-      if (!success)
+      try
         {
-          HANDLE_ERROR_LITERAL (err, "Failed to serialize chord preset packs");
+          serialize ();
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Failed to serialize chord preset packs");
         }
     }
-}
-
-/**
- * Serializes the chord presets.
- *
- * @return Whether successful.
- */
-bool
-chord_preset_pack_manager_serialize (
-  ChordPresetPackManager * self,
-  GError **                error)
-{
-  /* TODO backup existing packs first */
-
-  g_message ("Serializing user preset packs...");
-  char * main_path = get_user_packs_path ();
-  g_return_val_if_fail (main_path && strlen (main_path) > 2, false);
-  g_message ("Writing user chord packs to %s...", main_path);
-
-  for (size_t i = 0; i < self->pset_packs->len; i++)
-    {
-      ChordPresetPack * pack =
-        (ChordPresetPack *) g_ptr_array_index (self->pset_packs, i);
-      if (pack->is_standard)
-        continue;
-
-      g_return_val_if_fail (pack->name && strlen (pack->name) > 0, false);
-
-      char *   pack_dir = g_build_filename (main_path, pack->name, NULL);
-      GError * err = NULL;
-      bool     success = io_mkdir (pack_dir, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed to create directory %s", pack_dir);
-          return false;
-        }
-      char * pack_json = chord_preset_pack_serialize_to_json_str (pack, &err);
-      if (!pack_json)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, _ ("Failed to serialize chord preset packs"));
-          return false;
-        }
-      char * pack_path =
-        g_build_filename (pack_dir, USER_PACK_JSON_FILENAME, NULL);
-      success = g_file_set_contents (pack_path, pack_json, -1, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "Unable to write chord preset pack %s", pack_path);
-          return false;
-        }
-      g_free (pack_path);
-      g_free (pack_json);
-      g_free (pack_dir);
-    }
-
-  g_free (main_path);
-
-  return true;
 }
 
 void
-chord_preset_pack_manager_free (const ChordPresetPackManager * self)
+ChordPresetPackManager::serialize ()
 {
-  g_ptr_array_unref (self->pset_packs);
+  /* TODO backup existing packs first */
 
-  object_zero_and_free (self);
+  z_debug ("Serializing user preset packs...");
+  std::string main_path = get_user_packs_path ();
+  z_return_if_fail (!main_path.empty () && main_path.length () > 2);
+  z_debug ("Writing user chord packs to %s...", main_path);
+
+  for (const auto &pack : packs_)
+    {
+      if (pack->is_standard_)
+        continue;
+
+      z_return_if_fail (!pack->name_.empty ());
+
+      std::string pack_dir = Glib::build_filename (main_path, pack->name_);
+      std::string pack_path =
+        Glib::build_filename (pack_dir, UserPackJsonFilename);
+      try
+        {
+          io_mkdir (pack_dir);
+
+          auto pack_json = pack->serialize_to_json_string ();
+          io_write_file_atomic (pack_path, pack_json.c_str ());
+        }
+      catch (const ZrythmException &e)
+        {
+          throw ZrythmException (
+            std::format ("Unable to write chord preset pack {}", pack_path));
+        }
+    }
 }

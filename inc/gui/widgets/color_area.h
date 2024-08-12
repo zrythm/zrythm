@@ -1,16 +1,18 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __GUI_WIDGETS_COLOR_AREA_H__
 #define __GUI_WIDGETS_COLOR_AREA_H__
 
 /**
- * \file
+ * @file
  *
  * Color picker for a channel strip.
  */
+
+#include <string>
+
+#include "utils/color.h"
 
 #include "gtk_wrapper.h"
 
@@ -38,14 +40,14 @@ enum class ColorAreaType
   COLOR_AREA_TYPE_TRACK,
 };
 
-typedef struct Track Track;
+class Track;
 
-typedef struct _ColorAreaWidget
+using ColorAreaWidget = struct _ColorAreaWidget
 {
   GtkWidget parent_instance;
 
   /** Color pointer to set/read value. */
-  GdkRGBA color;
+  Color color;
 
   /** The type. */
   ColorAreaType type;
@@ -56,11 +58,11 @@ typedef struct _ColorAreaWidget
   bool hovered;
 
   /** Used during drawing. */
-  GPtrArray * parents;
+  // GPtrArray * parents;
 
   GdkTexture * track_icon;
-  char *       last_track_icon_name;
-} ColorAreaWidget;
+  std::string  last_track_icon_name;
+};
 
 /**
  * Creates a generic color widget using the given color pointer.
@@ -69,7 +71,7 @@ typedef struct _ColorAreaWidget
  * color.
  */
 void
-color_area_widget_setup_generic (ColorAreaWidget * self, GdkRGBA * color);
+color_area_widget_setup_generic (ColorAreaWidget * self, Color * color);
 
 /**
  * Creates a ColorAreaWidget for use inside TrackWidget implementations.
@@ -84,6 +86,6 @@ color_area_widget_setup_track (ColorAreaWidget * self, Track * track);
  * Track.
  */
 void
-color_area_widget_set_color (ColorAreaWidget * widget, GdkRGBA * color);
+color_area_widget_set_color (ColorAreaWidget * widget, Color color);
 
 #endif

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Dialog for viewing/editing port info.
  */
@@ -21,7 +21,7 @@ G_DECLARE_FINAL_TYPE (
   ARRANGER_OBJECT_INFO_DIALOG_WIDGET,
   GtkWindow)
 
-typedef struct ArrangerObject ArrangerObject;
+class ArrangerObject;
 
 /**
  * @addtogroup widgets

@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  */
 
 #ifndef __GUI_WIDGETS_RANGE_ACTION_BUTTONS_H__
@@ -29,7 +29,7 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct SnapGrid        SnapGrid;
+class SnapGrid;
 
 typedef struct _RangeActionButtonsWidget
 {

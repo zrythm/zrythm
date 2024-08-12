@@ -5,8 +5,9 @@
 #include "dsp/audio_region.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
-#include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
+#include "dsp/control_port.h"
+#include "dsp/laned_track.h"
 #include "dsp/marker_track.h"
 #include "dsp/port_identifier.h"
 #include "dsp/router.h"
@@ -16,1843 +17,995 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/center_dock.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/debug.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-typedef enum
-{
-  Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
-} ZActionsArrangerSelectionsError;
-
-#define Z_ACTIONS_ARRANGER_SELECTIONS_ERROR \
-  z_actions_arranger_selections_error_quark ()
-GQuark
-z_actions_arranger_selections_error_quark (void);
-G_DEFINE_QUARK (
-  z - actions - arranger - selections - error - quark,
-  z_actions_arranger_selections_error)
-
-static const char * arranger_selections_action_resize_type_strings[] = {
-  "Resize L",        "Resize R",        "Resize L (loop)", "Resize R (loop)",
-  "Resize L (fade)", "Resize R (fade)", "Stretch L",       "Stretch R",
-};
-
-static void
-move_obj_by_tracks_and_lanes (
-  ArrangerObject * obj,
-  const int        tracks_diff,
-  const int        lanes_diff,
-  bool             use_index_in_prev_lane,
-  int              index_in_prev_lane);
-
 void
-arranger_selections_action_init_loaded (ArrangerSelectionsAction * self)
+ArrangerSelectionsAction::init_loaded_impl ()
 {
-#define DO_SELECTIONS(sc) \
-  if (self->sc##_sel) \
-    { \
-      self->sel = (ArrangerSelections *) self->sc##_sel; \
-      self->sel_after = (ArrangerSelections *) self->sc##_sel_after; \
-      arranger_selections_init_loaded ( \
-        self->sel, false, (UndoableAction *) self); \
-      if (self->sel_after) \
-        { \
-          arranger_selections_init_loaded ( \
-            self->sel_after, false, (UndoableAction *) self); \
-        } \
-    }
-  DO_SELECTIONS (chord);
-  DO_SELECTIONS (tl);
-  DO_SELECTIONS (ma);
-  DO_SELECTIONS (automation);
-  DO_SELECTIONS (audio);
-
-  for (int j = 0; j < self->num_split_objs; j++)
+  if (sel_)
     {
-      if (self->region_r1[j])
+      sel_->init_loaded (false, this);
+    };
+  if (sel_after_)
+    {
+      sel_after_->init_loaded (false, this);
+    }
+
+  z_return_if_fail (num_split_objs_ == r1_.size ());
+  z_return_if_fail (num_split_objs_ == r2_.size ());
+  for (size_t j = 0; j < num_split_objs_; j++)
+    {
+      if (r1_[j])
         {
-          arranger_object_init_loaded ((ArrangerObject *) self->region_r1[j]);
-          arranger_object_init_loaded ((ArrangerObject *) self->region_r2[j]);
-          self->r1[j] = (ArrangerObject *) self->region_r1[j];
-          self->r2[j] = (ArrangerObject *) self->region_r2[j];
-        }
-      else if (self->mn_r1[j])
-        {
-          arranger_object_init_loaded ((ArrangerObject *) self->mn_r1[j]);
-          arranger_object_init_loaded ((ArrangerObject *) self->mn_r2[j]);
-          self->r1[j] = (ArrangerObject *) self->mn_r1[j];
-          self->r2[j] = (ArrangerObject *) self->mn_r2[j];
+          r1_[j]->init_loaded ();
+          r2_[j]->init_loaded ();
         }
     }
 
-  if (self->region_before)
+  if (region_before_)
     {
-      arranger_object_init_loaded ((ArrangerObject *) self->region_before);
+      region_before_->init_loaded ();
     }
-  if (self->region_after)
+  if (region_after_)
     {
-      arranger_object_init_loaded ((ArrangerObject *) self->region_after);
+      region_after_->init_loaded ();
     }
 }
 
-/**
- * Sets the selections used when serializing.
- *
- * @param clone Clone the given selections first.
- * @param is_after If the selections should be set
- *   to \ref ArrangerSelectionsAction.sel_after.
- */
-static void
-set_selections (
-  ArrangerSelectionsAction * self,
-  ArrangerSelections *       _sel,
-  int                        clone,
-  int                        is_after)
+void
+ArrangerSelectionsAction::set_before_selections (const ArrangerSelections &src)
 {
-  ArrangerSelections * sel = _sel;
-  if (clone)
-    {
-      sel = arranger_selections_clone (_sel);
-    }
+  sel_ = clone_unique_with_variant<ArrangerSelectionsVariant> (&src);
 
   if (ZRYTHM_TESTING)
     {
-      arranger_selections_verify (_sel);
-      if (_sel != sel)
-        arranger_selections_verify (sel);
-    }
-
-  if (is_after)
-    {
-      self->sel_after = sel;
-    }
-  else
-    {
-      self->sel = sel;
-    }
-
-#define SET_SEL(cc, sc) \
-  if (is_after) \
-    self->sc##_sel_after = (cc##Selections *) sel; \
-  else \
-    self->sc##_sel = (cc##Selections *) sel; \
-  break
-
-  switch (sel->type)
-    {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-      SET_SEL (Chord, chord);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      SET_SEL (Timeline, tl);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-      SET_SEL (MidiArranger, ma);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      SET_SEL (Automation, automation);
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-      SET_SEL (Audio, audio);
-    default:
-      g_return_if_reached ();
-    }
-
-#undef SET_SEL
-}
-
-/**
- * Optionally clones the given objects and saves
- * them to self->r1 and self->r2.
- */
-NONNULL static void
-set_split_objects (
-  ArrangerSelectionsAction * self,
-  int                        i,
-  ArrangerObject *           r1,
-  ArrangerObject *           r2,
-  bool                       clone)
-{
-  if (clone)
-    {
-      r1 = arranger_object_clone (r1);
-      r2 = arranger_object_clone (r2);
-    }
-  self->r1[i] = r1;
-  self->r2[i] = r2;
-
-  switch (r1->type)
-    {
-    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
-      self->region_r1[i] = (Region *) r1;
-      self->region_r2[i] = (Region *) r2;
-      break;
-    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      self->mn_r1[i] = (MidiNote *) r1;
-      self->mn_r2[i] = (MidiNote *) r2;
-      break;
-    default:
-      g_return_if_reached ();
+      src.validate ();
+      sel_->validate ();
     }
 }
 
-static void
-free_split_objects (ArrangerSelectionsAction * self, int i)
+void
+ArrangerSelectionsAction::set_after_selections (const ArrangerSelections &src)
 {
-  arranger_object_free (self->r1[i]);
-  arranger_object_free (self->r2[i]);
+  sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant> (&src);
 
-  self->r1[i] = NULL;
-  self->r2[i] = NULL;
-  self->mn_r1[i] = NULL;
-  self->mn_r2[i] = NULL;
-  self->region_r1[i] = NULL;
-  self->region_r2[i] = NULL;
-}
-
-static ArrangerSelectionsAction *
-_create_action (ArrangerSelections * sel)
-{
-  ArrangerSelectionsAction * self = object_new (ArrangerSelectionsAction);
-
-  set_selections (self, sel, true, false);
-  self->first_run = true;
-
-  undoable_action_init (
-    (UndoableAction *) self, UndoableActionType::UA_ARRANGER_SELECTIONS);
-
-  return self;
-}
-
-static ArrangerSelections *
-get_actual_arranger_selections (ArrangerSelectionsAction * self)
-{
-  switch (self->sel->type)
+  if (ZRYTHM_TESTING)
     {
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      return (ArrangerSelections *) TL_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-      return (ArrangerSelections *) MA_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      return (ArrangerSelections *) AUTOMATION_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-      return (ArrangerSelections *) CHORD_SELECTIONS;
-    case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-      return (ArrangerSelections *) AUDIO_SELECTIONS;
-    default:
-      g_return_val_if_reached (NULL);
-      break;
+      src.validate ();
+      sel_after_->validate ();
     }
-
-  g_return_val_if_reached (NULL);
 }
 
-/**
- * Creates a new action for moving or duplicating
- * objects.
- *
- * @param move True to move, false to duplicate.
- * @param already_moved If this is true, the first
- *   DO will do nothing.
- * @param delta_normalized_amount Difference in a
- *   normalized amount, such as automation point
- *   normalized value.
- */
-UndoableAction *
-arranger_selections_action_new_move_or_duplicate (
-  ArrangerSelections *   sel,
-  const bool             move,
-  const double           ticks,
-  const int              delta_chords,
-  const int              delta_pitch,
-  const int              delta_tracks,
-  const int              delta_lanes,
-  const double           delta_normalized_amount,
-  const PortIdentifier * tgt_port_id,
-  const bool             already_moved,
-  GError **              error)
+ArrangerSelectionsAction::ArrangerSelectionsAction (
+  const ArrangerSelections &sel,
+  Type                      type)
+    : type_ (type)
 {
-  g_return_val_if_fail (
-    IS_ARRANGER_SELECTIONS (sel) && arranger_selections_has_any (sel), NULL);
+  undoable_action_type_ = UndoableAction::Type::ArrangerSelections;
+  set_before_selections (sel);
+}
+
+ArrangerSelections *
+ArrangerSelectionsAction::get_actual_arranger_selections () const
+{
+  return ArrangerSelections::get_for_type (sel_->type_);
+}
+
+ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
+  const ArrangerSelections &sel,
+  bool                      move,
+  double                    ticks,
+  int                       delta_chords,
+  int                       delta_pitch,
+  int                       delta_tracks,
+  int                       delta_lanes,
+  double                    delta_normalized_amount,
+  const PortIdentifier *    tgt_port_id,
+  bool                      already_moved)
+    : ArrangerSelectionsAction (sel, move ? Type::Move : Type::Duplicate)
+{
+  g_return_if_fail (sel.has_any ());
+
+  first_run_ = already_moved;
+  ticks_ = ticks;
+  delta_chords_ = delta_chords;
+  delta_pitch_ = delta_pitch;
+  delta_tracks_ = delta_tracks;
+  delta_lanes_ = delta_lanes;
+  delta_normalized_amount_ = delta_normalized_amount;
 
   /* validate */
   if (!move)
     {
-      if (arranger_selections_contains_unclonable_object (sel))
+      if (sel.contains_unclonable_object ())
         {
-          g_set_error (
-            error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-            Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
-            _ ("Arranger selections contain an object that "
-               "cannot be duplicated"));
-          return NULL;
+          throw ZrythmException (_ (
+            "Arranger selections contain an object that cannot be duplicated"));
         }
     }
 
-  ArrangerSelectionsAction * self = _create_action (sel);
-  UndoableAction *           ua = (UndoableAction *) self;
-  if (move)
+  if (!move)
     {
-      self->type = ArrangerSelectionsActionType::AS_ACTION_MOVE;
-    }
-  else
-    {
-      self->type = ArrangerSelectionsActionType::AS_ACTION_DUPLICATE;
-      set_selections (self, sel, true, true);
+      set_after_selections (sel);
     }
 
-  if (!already_moved)
-    {
-      self->first_run = 0;
-    }
-
-  self->ticks = ticks;
-  self->delta_chords = delta_chords;
-  self->delta_lanes = delta_lanes;
-  self->delta_tracks = delta_tracks;
-  self->delta_pitch = delta_pitch;
-  self->delta_normalized_amount = delta_normalized_amount;
   if (tgt_port_id)
     {
-      self->target_port = new PortIdentifier (*tgt_port_id);
+      target_port_ = std::make_unique<PortIdentifier> (*tgt_port_id);
     }
-
-  return ua;
 }
 
-/**
- * Creates a new action for linking regions.
- *
- * @param already_moved If this is true, the first
- *   DO will do nothing.
- * @param sel_before Original selections.
- * @param sel_after Selections after duplication.
- */
-UndoableAction *
-arranger_selections_action_new_link (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const double         ticks,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const bool           already_moved,
-  GError **            error)
+ArrangerSelectionsAction::LinkAction::LinkAction (
+  const ArrangerSelections &sel_before,
+  const ArrangerSelections &sel_after,
+  double                    ticks,
+  int                       delta_tracks,
+  int                       delta_lanes,
+  bool                      already_moved)
+    : ArrangerSelectionsAction (sel_before, Type::Link)
 {
-  g_return_val_if_fail (sel_before && sel_after, NULL);
+  first_run_ = already_moved;
+  ticks_ = ticks;
+  delta_tracks_ = delta_tracks;
+  delta_lanes_ = delta_lanes;
 
-  ArrangerSelectionsAction * self = _create_action (sel_before);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_LINK;
-
-  set_selections (self, sel_after, F_CLONE, F_IS_AFTER);
-
-  if (!already_moved)
-    self->first_run = false;
-
-  self->ticks = ticks;
-  self->delta_tracks = delta_tracks;
-  self->delta_lanes = delta_lanes;
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
+  set_after_selections (sel_after);
 }
 
-/**
- * Creates a new action for creating/deleting objects.
- *
- * @param create 1 to create 0 to delete.
- */
-UndoableAction *
-arranger_selections_action_new_create_or_delete (
-  ArrangerSelections * sel,
-  const bool           create,
-  GError **            error)
+ArrangerSelectionsAction::CreateOrDeleteAction::CreateOrDeleteAction (
+  const ArrangerSelections &sel,
+  bool                      create)
+    : ArrangerSelectionsAction (sel, create ? Type::Create : Type::Delete)
 {
-  g_return_val_if_fail (
-    IS_ARRANGER_SELECTIONS (sel) && arranger_selections_has_any (sel), NULL);
+  g_return_if_fail (sel.has_any ());
 
-  if (arranger_selections_contains_undeletable_object (sel))
+  if (sel.contains_undeletable_object ())
     {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
-        _ ("Arranger selections contain an "
-           "undeletable object"));
-      return NULL;
+      throw ZrythmException (
+        _ ("Arranger selections contain an undeletable object"));
     }
-
-  ArrangerSelectionsAction * self = _create_action (sel);
-  if (create)
-    {
-      self->type = ArrangerSelectionsActionType::AS_ACTION_CREATE;
-    }
-  else
-    {
-      self->type = ArrangerSelectionsActionType::AS_ACTION_DELETE;
-    }
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
 }
 
-UndoableAction *
-arranger_selections_action_new_record (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const bool           already_recorded,
-  GError **            error)
+ArrangerSelectionsAction::RecordAction::RecordAction (
+  const ArrangerSelections &sel_before,
+  const ArrangerSelections &sel_after,
+  bool                      already_recorded)
+    : ArrangerSelectionsAction (sel_before, Type::Record)
 {
-  ArrangerSelectionsAction * self = _create_action (sel_before);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_RECORD;
-
-  set_selections (self, sel_after, 1, 1);
-
-  if (!already_recorded)
-    self->first_run = 0;
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
+  first_run_ = !already_recorded;
+  set_after_selections (sel_after);
 }
 
-/**
- * Creates a new action for editing properties
- * of an object.
- *
- * @param sel_before The selections before the
- *   change.
- * @param sel_after The selections after the
- *   change, or NULL if not already edited.
- * @param type Indication of which field has changed.
- */
-UndoableAction *
-arranger_selections_action_new_edit (
-  ArrangerSelections *             sel_before,
-  ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error)
+ArrangerSelectionsAction::EditAction::EditAction (
+  const ArrangerSelections  &sel_before,
+  const ArrangerSelections * sel_after,
+  EditType                   type,
+  bool                       already_edited)
+    : ArrangerSelectionsAction (sel_before, Type::Edit)
 {
-  /* validate */
-  if (
-    type == ArrangerSelectionsActionEditType::ARRANGER_SELECTIONS_ACTION_EDIT_NAME
-    && arranger_selections_contains_unrenamable_object (sel_before))
+  first_run_ = already_edited;
+  edit_type_ = type;
+  if (type == EditType::Name && sel_before.contains_unrenamable_object ())
     {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
-        _ ("Cannot rename selected object(s)"));
-      return NULL;
+      throw ZrythmException (_ ("Cannot rename selected object(s)"));
     }
 
-  ArrangerSelectionsAction * self = _create_action (sel_before);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_EDIT;
-
-  self->edit_type = type;
-
-  set_selections (self, sel_before, F_CLONE, F_NOT_IS_AFTER);
+  set_before_selections (sel_before);
 
   if (sel_after)
     {
-      set_selections (self, sel_after, F_CLONE, F_IS_AFTER);
+      set_after_selections (*sel_after);
     }
   else
     {
       if (already_edited)
         {
           g_critical (
-            "sel_after must be passed or already "
-            "edited must be false");
-          return NULL;
+            "sel_after must be passed or already edited must be false");
         }
 
-      set_selections (self, sel_before, F_CLONE, F_IS_AFTER);
+      set_after_selections (sel_before);
     }
-
-  if (!already_edited)
-    {
-      self->first_run = 0;
-    }
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
 }
 
-UndoableAction *
-arranger_selections_action_new_edit_single_obj (
-  const ArrangerObject *           obj_before,
-  const ArrangerObject *           obj_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error)
+ArrangerSelectionsAction::EditAction::EditAction (
+  const ArrangerObject &obj_before,
+  const ArrangerObject &obj_after,
+  EditType              type,
+  bool                  already_edited)
 {
-  g_return_val_if_fail (obj_before, NULL);
-  g_return_val_if_fail (obj_after, NULL);
-
-  /* validate */
-  if (
-    type == ArrangerSelectionsActionEditType::ARRANGER_SELECTIONS_ACTION_EDIT_NAME
-    && arranger_object_is_renamable (obj_before))
-    {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
-        _ ("Cannot rename selected object(s)"));
-      return NULL;
-    }
-
-  ArrangerSelections * prj_sel =
-    arranger_object_get_selections_for_type (obj_before->type);
-  ArrangerSelectionsType sel_type = prj_sel->type;
-  ArrangerSelections *   sel_before = arranger_selections_new (sel_type);
-  ArrangerObject *       obj_before_clone = arranger_object_clone (obj_before);
-  arranger_selections_add_object (sel_before, obj_before_clone);
-  ArrangerSelections * sel_after = arranger_selections_new (sel_type);
-  ArrangerObject *     obj_after_clone = arranger_object_clone (obj_after);
-  arranger_selections_add_object (sel_after, obj_after_clone);
-
-  UndoableAction * ua = arranger_selections_action_new_edit (
-    sel_before, sel_after, type, already_edited, error);
-
-  arranger_selections_free_full (sel_before);
-  arranger_selections_free_full (sel_after);
-
-  return ua;
+  auto sel_before = obj_before.create_arranger_selections_from_this ();
+  auto sel_after = obj_after.create_arranger_selections_from_this ();
+  EditAction (*sel_before, sel_after.get (), type, already_edited);
 }
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for MIDI
- * functions.
- */
-UndoableAction *
-arranger_selections_action_new_edit_midi_function (
-  ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type,
-  MidiFunctionOpts     opts,
-  GError **            error)
+ArrangerSelectionsAction::EditAction::EditAction (
+  const MidiSelections &sel_before,
+  MidiFunctionType          midi_func_type,
+  MidiFunctionOpts          opts)
 {
-  ArrangerSelections * sel_after = arranger_selections_clone (sel_before);
+  auto sel_after = sel_before.clone_unique();
 
-  GError * err = NULL;
-  int      ret = midi_function_apply (sel_after, midi_func_type, opts, &err);
-  if (ret != 0)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to apply MIDI function"));
-      arranger_selections_free_full (sel_after);
-      return NULL;
-    }
+  midi_function_apply (*sel_after, midi_func_type, opts);
 
-  UndoableAction * ua = arranger_selections_action_new_edit (
-    sel_before, sel_after,
-    ArrangerSelectionsActionEditType::
-      ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-    F_NOT_ALREADY_EDITED, error);
-
-  arranger_selections_free_full (sel_after);
-
-  return ua;
+  EditAction (sel_before, sel_after.get (), EditType::EditorFunction, false);
 }
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for
- * automation functions.
- */
-UndoableAction *
-arranger_selections_action_new_edit_automation_function (
-  ArrangerSelections *   sel_before,
-  AutomationFunctionType automation_func_type,
-  GError **              error)
+ArrangerSelectionsAction::EditAction::EditAction (
+  const AutomationSelections &sel_before,
+  AutomationFunctionType    automation_func_type)
 {
-  ArrangerSelections * sel_after = arranger_selections_clone (sel_before);
+  auto sel_after =
+    sel_before.clone_unique();
 
-  GError * err = NULL;
-  int ret = automation_function_apply (sel_after, automation_func_type, &err);
-  if (ret != 0)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to apply automation function"));
-      arranger_selections_free_full (sel_after);
-      return NULL;
-    }
+  automation_function_apply (*sel_after, automation_func_type);
 
-  UndoableAction * ua = arranger_selections_action_new_edit (
-    sel_before, sel_after,
-    ArrangerSelectionsActionEditType::
-      ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-    F_NOT_ALREADY_EDITED, error);
-
-  arranger_selections_free_full (sel_after);
-
-  return ua;
+  EditAction (
+    sel_before, sel_after.get (),
+    ArrangerSelectionsAction::EditType::EditorFunction, false);
 }
 
-/**
- * Wrapper over
- * arranger_selections_action_new_edit() for
- * automation functions.
- */
-UndoableAction *
-arranger_selections_action_new_edit_audio_function (
-  ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error)
+ArrangerSelectionsAction::EditAction::EditAction (
+  const AudioSelections &sel_before,
+  AudioFunctionType         audio_func_type,
+  AudioFunctionOpts         opts,
+  const std::string *       uri)
 {
   /* prepare selections before */
-  ArrangerSelections * sel_before_clone = arranger_selections_clone (sel_before);
+  auto sel_before_clone = sel_before.clone_unique();
 
   g_debug ("saving file before applying audio func...");
-  GError * err = NULL;
-  bool     success = audio_function_apply (
-    sel_before_clone, AudioFunctionType::AUDIO_FUNCTION_INVALID, opts, NULL,
-    &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to apply audio function"));
-      arranger_selections_free_full (sel_before_clone);
-      return NULL;
-    }
+  audio_function_apply (
+    *sel_before_clone, AudioFunctionType::Invalid, opts, uri);
 
-  ArrangerSelections * sel_after = arranger_selections_clone (sel_before);
+  auto sel_after = sel_before.clone_unique();
   g_debug ("applying actual audio func...");
-  success = audio_function_apply (sel_after, audio_func_type, opts, uri, &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to apply audio function"));
-      arranger_selections_free_full (sel_after);
-      return NULL;
-    }
+  audio_function_apply (*sel_after, audio_func_type, opts, uri);
 
-  UndoableAction * ua = arranger_selections_action_new_edit (
-    sel_before_clone, sel_after,
-    ArrangerSelectionsActionEditType::
-      ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-    F_NOT_ALREADY_EDITED, error);
-
-  arranger_selections_free_full (sel_after);
-  arranger_selections_free_full (sel_before_clone);
-
-  return ua;
+  EditAction (
+    *sel_before_clone, sel_after.get (), EditType::EditorFunction, false);
 }
 
-/**
- * Creates a new action for automation autofill.
- *
- * @param region_before The region before the
- *   change.
- * @param region_after The region after the
- *   change.
- * @param already_changed Whether the change was
- *   already made.
- */
-UndoableAction *
-arranger_selections_action_new_automation_fill (
-  Region *  region_before,
-  Region *  region_after,
-  bool      already_changed,
-  GError ** error)
+ArrangerSelectionsAction::SplitAction::SplitAction (
+  const ArrangerSelections &sel,
+  Position                  pos)
+    : ArrangerSelectionsAction (sel, Type::Split)
 {
-  ArrangerSelectionsAction * self = object_new (ArrangerSelectionsAction);
-
-  UndoableAction * ua = (UndoableAction *) self;
-  undoable_action_init (ua, UndoableActionType::UA_ARRANGER_SELECTIONS);
-
-  self->first_run = true;
-
-  self->type = ArrangerSelectionsActionType::AS_ACTION_AUTOMATION_FILL;
-
-  self->region_before =
-    (Region *) arranger_object_clone ((ArrangerObject *) region_before);
-  self->region_after =
-    (Region *) arranger_object_clone ((ArrangerObject *) region_after);
-
-  if (!already_changed)
-    {
-      self->first_run = 0;
-    }
-
-  return ua;
+  pos_ = pos;
+  num_split_objs_ = sel.get_num_objects ();
+  pos_.update_frames_from_ticks (0.0);
 }
 
-/**
- * Creates a new action for splitting
- * ArrangerObject's.
- *
- * @param pos Global position to split at.
- */
-UndoableAction *
-arranger_selections_action_new_split (
-  ArrangerSelections * sel,
-  const Position *     pos,
-  GError **            error)
+ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const ArrangerSelections  &sel_before,
+  const ArrangerSelections * sel_after,
+  ResizeType                 type,
+  double                     ticks)
+    : ArrangerSelectionsAction (sel_before, Type::Resize)
 {
-  ArrangerSelectionsAction * self = _create_action (sel);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_SPLIT;
-
-  GPtrArray * split_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, split_objs_arr);
-  self->num_split_objs = (int) split_objs_arr->len;
-  g_ptr_array_unref (split_objs_arr);
-
-  self->pos = *pos;
-  position_update_frames_from_ticks (&self->pos, 0.0);
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
-}
-
-/**
- * Creates a new action for merging
- * ArrangerObject's.
- */
-UndoableAction *
-arranger_selections_action_new_merge (ArrangerSelections * sel, GError ** error)
-{
-  ArrangerSelectionsAction * self = _create_action (sel);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_MERGE;
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
-}
-
-UndoableAction *
-arranger_selections_action_new_resize (
-  ArrangerSelections *               sel_before,
-  ArrangerSelections *               sel_after,
-  ArrangerSelectionsActionResizeType type,
-  const double                       ticks,
-  GError **                          error)
-{
-  g_return_val_if_fail (sel_before, NULL);
-
+  resize_type_ = type;
+  ticks_ = ticks;
   /* validate */
-  bool have_unresizable = arranger_selections_contains_object_with_property (
-    sel_before,
-    ArrangerSelectionsProperty::ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
+  bool have_unresizable = sel_before.contains_object_with_property (
+    ArrangerSelections::Property::HasLength, false);
   if (have_unresizable)
     {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
-        _ ("Attempted to resize unresizable "
-           "objects"));
-      return NULL;
+      throw ZrythmException (_ ("Attempted to resize unresizable objects"));
     }
 
-  bool have_looped = arranger_selections_contains_object_with_property (
-    sel_before,
-    ArrangerSelectionsProperty::ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED, true);
+  bool have_looped = sel_before.contains_object_with_property (
+    ArrangerSelections::Property::HasLooped, true);
   if (
     have_looped
-    && (type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_RESIZE_L || type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_RESIZE_R || type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_STRETCH_L || type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_STRETCH_R))
+    && (type == ResizeType::L || type == ResizeType::R || type == ResizeType::LStretch || type == ResizeType::RStretch))
     {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
-        _ ("Cannot perform %s resize - selections contain looped objects"),
-        arranger_selections_action_resize_type_strings[ENUM_VALUE_TO_INT (type)]);
-      return NULL;
+      throw ZrythmException (format_str (
+        _ ("Cannot perform {} resize - selections contain looped objects"),
+        type));
     }
 
-  bool have_unloopable = arranger_selections_contains_object_with_property (
-    sel_before,
-    ArrangerSelectionsProperty::ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP, false);
+  bool have_unloopable = sel_before.contains_object_with_property (
+    ArrangerSelections::Property::CanLoop, false);
   if (
-    have_unloopable
-    && (type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP || type == ArrangerSelectionsActionResizeType::ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP))
+    have_unloopable && (type == ResizeType::LLoop || type == ResizeType::RLoop))
     {
-      g_set_error (
-        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
-        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
-        _ ("Cannot perform %s resize - selections "
-           "contain unloopable objects"),
-        arranger_selections_action_resize_type_strings[ENUM_VALUE_TO_INT (type)]);
-      return NULL;
+      throw ZrythmException (format_str (
+        _ ("Cannot perform {} resize - selections contain unloopable objects"),
+        type));
     }
-
-  ArrangerSelectionsAction * self = _create_action (sel_before);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_RESIZE;
-
-  self->resize_type = type;
-  self->ticks = ticks;
 
   if (sel_after)
     {
-      set_selections (self, sel_after, true, true);
+      set_after_selections (*sel_after);
     }
-
-  self->first_run = true;
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
 }
 
-/**
- * Creates a new action for quantizing
- * ArrangerObject's.
- *
- * @param opts Quantize options.
- */
-UndoableAction *
-arranger_selections_action_new_quantize (
-  ArrangerSelections * sel,
-  QuantizeOptions *    opts,
-  GError **            error)
+ArrangerSelectionsAction::AutomationFillAction::AutomationFillAction (
+  const Region &region_before,
+  const Region &region_after,
+  bool          already_changed)
+    : ArrangerSelectionsAction ()
 {
-  ArrangerSelectionsAction * self = _create_action (sel);
-  self->type = ArrangerSelectionsActionType::AS_ACTION_QUANTIZE;
-
-  set_selections (self, sel, 1, 1);
-  self->opts = quantize_options_clone (opts);
-
-  UndoableAction * ua = (UndoableAction *) self;
-  return ua;
+  type_ = Type::AutomationFill;
+  region_before_ = clone_unique_with_variant<RegionVariant> (&region_before);
+  region_after_ = clone_unique_with_variant<RegionVariant> (&region_after);
+  first_run_ = already_changed;
 }
 
-ArrangerSelectionsAction *
-arranger_selections_action_clone (const ArrangerSelectionsAction * src)
-{
-  ArrangerSelectionsAction * self = object_new (ArrangerSelectionsAction);
-
-  self->parent_instance = src->parent_instance;
-  self->type = src->type;
-
-  if (src->sel)
-    self->sel = arranger_selections_clone (src->sel);
-  if (src->sel_after)
-    self->sel_after = arranger_selections_clone (src->sel_after);
-
-#define SET_SEL(cc, sc, after) \
-  if (after) \
-    self->sc##_sel_after = (cc##Selections *) self->sel_after; \
-  else \
-    self->sc##_sel = (cc##Selections *) self->sel; \
-  break
-
-  if (self->sel)
-    {
-      switch (self->sel->type)
-        {
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-          SET_SEL (Chord, chord, false);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-          SET_SEL (Timeline, tl, false);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-          SET_SEL (MidiArranger, ma, false);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-          SET_SEL (Automation, automation, false);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-          SET_SEL (Audio, audio, false);
-        default:
-          g_return_val_if_reached (NULL);
-        }
-    }
-  if (self->sel_after)
-    {
-      switch (self->sel_after->type)
-        {
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-          SET_SEL (Chord, chord, true);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-          SET_SEL (Timeline, tl, true);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-          SET_SEL (MidiArranger, ma, true);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-          SET_SEL (Automation, automation, true);
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-          SET_SEL (Audio, audio, true);
-        default:
-          g_return_val_if_reached (NULL);
-        }
-    }
-
-#undef SET_SEL
-
-  self->edit_type = src->edit_type;
-  self->resize_type = src->resize_type;
-  self->ticks = src->ticks;
-  self->delta_tracks = src->delta_tracks;
-  self->delta_lanes = src->delta_lanes;
-  self->delta_chords = src->delta_chords;
-  self->delta_pitch = src->delta_pitch;
-  self->delta_vel = src->delta_vel;
-  self->delta_normalized_amount = src->delta_normalized_amount;
-  self->str = g_strdup (src->str);
-  self->pos = src->pos;
-
-  for (int i = 0; i < src->num_split_objs; i++)
-    {
-      g_return_val_if_fail (src->r1[i], NULL);
-      g_return_val_if_fail (src->r2[i], NULL);
-
-      ArrangerObject * r1 = arranger_object_clone (src->r1[i]);
-      ArrangerObject * r2 = arranger_object_clone (src->r2[i]);
-      self->r1[i] = r1;
-      self->r2[i] = r2;
-      switch (r1->type)
-        {
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
-          self->region_r1[i] = (Region *) r1;
-          self->region_r2[i] = (Region *) r2;
-          break;
-        case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-          self->mn_r1[i] = (MidiNote *) r1;
-          self->mn_r2[i] = (MidiNote *) r2;
-          break;
-        default:
-          g_return_val_if_reached (NULL);
-        }
-    }
-  self->num_split_objs = src->num_split_objs;
-
-  self->first_run = src->first_run;
-  if (src->opts)
-    self->opts = quantize_options_clone (src->opts);
-
-  return self;
-}
-
-bool
-arranger_selections_action_perform_create_or_delete (
-  ArrangerSelections * sel,
-  const bool           create,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_create_or_delete, error, sel, create, error);
-}
-
-bool
-arranger_selections_action_perform_record (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const bool           already_recorded,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_record, error, sel_before, sel_after,
-    already_recorded, error);
-}
-
-bool
-arranger_selections_action_perform_move_or_duplicate (
-  ArrangerSelections *   sel,
-  const bool             move,
-  const double           ticks,
-  const int              delta_chords,
-  const int              delta_pitch,
-  const int              delta_tracks,
-  const int              delta_lanes,
-  const double           delta_normalized_amount,
-  const PortIdentifier * tgt_port_id,
-  const bool             already_moved,
-  GError **              error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_move_or_duplicate, error, sel, move, ticks,
-    delta_chords, delta_pitch, delta_tracks, delta_lanes,
-    delta_normalized_amount, tgt_port_id, already_moved, error);
-}
-
-bool
-arranger_selections_action_perform_link (
-  ArrangerSelections * sel_before,
-  ArrangerSelections * sel_after,
-  const double         ticks,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const bool           already_moved,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_link, error, sel_before, sel_after, ticks,
-    delta_tracks, delta_lanes, already_moved, error);
-}
-
-bool
-arranger_selections_action_perform_edit (
-  ArrangerSelections *             sel_before,
-  ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_edit, error, sel_before, sel_after, type,
-    already_edited, error);
-}
-
-bool
-arranger_selections_action_perform_edit_single_obj (
-  const ArrangerObject *           obj_before,
-  const ArrangerObject *           obj_after,
-  ArrangerSelectionsActionEditType type,
-  bool                             already_edited,
-  GError **                        error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_edit_single_obj, error, obj_before,
-    obj_after, type, already_edited, error);
-}
-
-bool
-arranger_selections_action_perform_edit_midi_function (
-  ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type,
-  MidiFunctionOpts     opts,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_edit_midi_function, error, sel_before,
-    midi_func_type, opts, error);
-}
-
-bool
-arranger_selections_action_perform_edit_automation_function (
-  ArrangerSelections *   sel_before,
-  AutomationFunctionType automation_func_type,
-  GError **              error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_edit_automation_function, error, sel_before,
-    automation_func_type, error);
-}
-
-bool
-arranger_selections_action_perform_edit_audio_function (
-  ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_edit_audio_function, error, sel_before,
-    audio_func_type, opts, uri, error);
-}
-
-bool
-arranger_selections_action_perform_automation_fill (
-  Region *  region_before,
-  Region *  region_after,
-  bool      already_changed,
-  GError ** error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_automation_fill, error, region_before,
-    region_after, already_changed, error);
-}
-
-bool
-arranger_selections_action_perform_split (
-  ArrangerSelections * sel,
-  const Position *     pos,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_split, error, sel, pos, error);
-}
-
-bool
-arranger_selections_action_perform_merge (
-  ArrangerSelections * sel,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_merge, error, sel, error);
-}
-
-bool
-arranger_selections_action_perform_resize (
-  ArrangerSelections *               sel_before,
-  ArrangerSelections *               sel_after,
-  ArrangerSelectionsActionResizeType type,
-  const double                       ticks,
-  GError **                          error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_resize, error, sel_before, sel_after, type,
-    ticks, error);
-}
-
-bool
-arranger_selections_action_perform_quantize (
-  ArrangerSelections * sel,
-  QuantizeOptions *    opts,
-  GError **            error)
-{
-  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    arranger_selections_action_new_quantize, error, sel, opts, error);
-}
-
-/**
- * Find all corresponding objects in the project and call
- * region_update_link_group().
- */
-static void
-update_region_link_groups (GPtrArray * objs_arr)
+void
+ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
 {
   /* handle children of linked regions */
-  for (size_t i = 0; i < objs_arr->len; i++)
+  for (auto &_obj : objects)
     {
       /* get the actual object from the project */
-      ArrangerObject * obj = arranger_object_find (
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i));
+      const auto obj = _obj->find_in_project ();
       g_return_if_fail (obj);
 
-      if (arranger_object_owned_by_region (obj))
+      if (obj->owned_by_region ())
         {
-          Region * region = arranger_object_get_region (obj);
-          g_return_if_fail (region);
+          auto owned_obj = dynamic_cast<const RegionOwnedObject *> (obj.get ());
+          Region * region = owned_obj->get_region ();
+          z_return_if_fail (region);
 
           /* shift all linked objects */
-          region_update_link_group (region);
+          region->update_link_group ();
         }
     }
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_move (ArrangerSelectionsAction * self, const bool _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo_move (bool do_it)
 {
-  arranger_selections_sort_by_indices (self->sel, !_do);
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_arr);
+  sel_->sort_by_indices (!do_it);
 
-  double ticks = _do ? self->ticks : -self->ticks;
-  int    delta_tracks = _do ? self->delta_tracks : -self->delta_tracks;
-  int    delta_lanes = _do ? self->delta_lanes : -self->delta_lanes;
-  int    delta_chords = _do ? self->delta_chords : -self->delta_chords;
-  int    delta_pitch = _do ? self->delta_pitch : -self->delta_pitch;
+  double ticks = do_it ? ticks_ : -ticks_;
+  int    delta_tracks = do_it ? delta_tracks_ : -delta_tracks_;
+  int    delta_lanes = do_it ? delta_lanes_ : -delta_lanes_;
+  int    delta_chords = do_it ? delta_chords_ : -delta_chords_;
+  int    delta_pitch = do_it ? delta_pitch_ : -delta_pitch_;
   double delta_normalized_amt =
-    _do ? self->delta_normalized_amount : -self->delta_normalized_amount;
+    do_it ? delta_normalized_amount_ : -delta_normalized_amount_;
 
-  /* this is used for automation points to
-   * keep track of which automation point in the
-   * project matches which automation point in
-   * the cached selections */
-  GHashTable * ht = g_hash_table_new (NULL, NULL);
+  /* this is used for automation points to keep track of which automation point
+   * in the project matches which automation point in the cached selections key:
+   * project object, value: own object (from sel_->objects_) */
+  std::unordered_map<AutomationPoint *, AutomationPoint *> obj_map;
 
-  if (!self->first_run)
+  if (!first_run_)
     {
-      for (size_t i = 0; i < objs_arr->len; i++)
+      for (auto &own_obj : sel_->objects_)
         {
-          ArrangerObject * own_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          own_obj->flags |=
-            ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          own_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-          /* get the actual object from the
-           * project */
-          ArrangerObject * obj = arranger_object_find (own_obj);
-          g_return_val_if_fail (obj, -1);
+          /* get the actual object from the project */
+          auto obj = own_obj->find_in_project ();
+          z_return_if_fail (obj);
 
-          g_hash_table_insert (ht, obj, own_obj);
+          /* remember if automation point */
+          if (obj->type_ == ArrangerObject::Type::AutomationPoint)
+            {
+              auto ap = dynamic_pointer_cast<AutomationPoint> (obj);
+              z_return_if_fail (ap);
+              obj_map[ap.get ()] =
+                dynamic_cast<AutomationPoint *> (own_obj.get ());
+            }
 
           if (!math_doubles_equal (ticks, 0.0))
             {
               /* shift the actual object */
-              arranger_object_move (obj, ticks);
+              obj->move (ticks);
 
               /* also shift the copy */
-              arranger_object_move (own_obj, ticks);
+              own_obj->move (ticks);
             }
 
-          if (delta_tracks != 0)
+          if (delta_tracks != 0 || delta_lanes != 0)
             {
-              g_return_val_if_fail (
-                obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
-                -1);
+              /* shift the actual object */
+              move_obj_by_tracks_and_lanes (
+                *obj, delta_tracks, delta_lanes, false, -1);
 
-              Region * r = (Region *) obj;
-
-              Track * track_to_move_to = tracklist_get_visible_track_after_delta (
-                TRACKLIST, arranger_object_get_track (obj), delta_tracks);
-              g_warn_if_fail (track_to_move_to);
-
-              /* shift the actual object by
-               * tracks */
-              region_move_to_track (r, track_to_move_to, -1, -1);
-
-              /* remember info in identifier */
-              Region * r_clone = (Region *) own_obj;
-              region_identifier_copy (&r_clone->id, &r->id);
+              /* remember new info in own copy */
+              own_obj->copy_identifier (*obj);
             }
 
           if (delta_pitch != 0)
             {
-              g_return_val_if_fail (
-                obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE,
-                -1);
+              g_return_if_fail (obj->type_ == ArrangerObject::Type::MidiNote);
 
-              MidiNote * mn = (MidiNote *) obj;
+              auto mn = dynamic_pointer_cast<MidiNote> (obj);
 
               /* shift the actual object */
-              midi_note_shift_pitch (mn, delta_pitch);
+              mn->shift_pitch (delta_pitch);
 
-              /* also shift the copy so they can
-               * match */
-              midi_note_shift_pitch ((MidiNote *) own_obj, delta_pitch);
-            }
-
-          if (delta_lanes != 0)
-            {
-              g_return_val_if_fail (
-                obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
-                -1);
-
-              Region * r = (Region *) obj;
-
-              Track * region_track = arranger_object_get_track (obj);
-              int     new_lane_pos = r->id.lane_pos + delta_lanes;
-              g_return_val_if_fail (new_lane_pos >= 0, -1);
-
-              /* shift the actual object by lanes */
-              region_move_to_track (r, region_track, new_lane_pos, -1);
-
-              /* remember info in identifier */
-              Region * r_own = (Region *) own_obj;
-              region_identifier_copy (&r_own->id, &r->id);
+              /* also shift the copy so they can match */
+              dynamic_cast<MidiNote *> (own_obj.get ())
+                ->shift_pitch (delta_pitch);
             }
 
           if (delta_chords != 0)
             {
-              g_return_val_if_fail (
-                obj->type
-                  == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
-                -1);
-              ChordObject * co = (ChordObject *) obj;
+              g_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
+              auto co = dynamic_pointer_cast<ChordObject> (obj);
 
               /* shift the actual object */
-              co->chord_index += delta_chords;
+              co->chord_index_ += delta_chords;
 
               /* also shift the copy so they can match */
-              ((ChordObject *) own_obj)->chord_index += delta_chords;
+              dynamic_cast<ChordObject *> (own_obj.get ())->chord_index_ +=
+                delta_chords;
             }
 
           /* if moving automation */
-          if (self->target_port)
+          if (target_port_)
             {
-              g_return_val_if_fail (
-                obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
-                -1);
-              Region * r = (Region *) obj;
-              g_return_val_if_fail (
-                r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
-              AutomationTrack * cur_at = region_get_automation_track (r);
-              g_return_val_if_fail (cur_at, -1);
-              Port * port = Port::find_from_identifier (self->target_port);
-              g_return_val_if_fail (port, -1);
-              Track * track = port->get_track (true);
-              g_return_val_if_fail (track, -1);
+              g_return_if_fail (obj->type_ == ArrangerObject::Type::Region);
+              auto r = dynamic_pointer_cast<AutomationRegion> (obj);
+              g_return_if_fail (r->id_.type_ == RegionType::Automation);
+              auto cur_at = r->get_automation_track ();
+              g_return_if_fail (cur_at);
+              auto port =
+                Port::find_from_identifier<ControlPort> (*target_port_);
+              g_return_if_fail (port);
+              auto track =
+                dynamic_cast<AutomatableTrack *> (port->get_track (true));
+              g_return_if_fail (track);
               AutomationTrack * at =
-                automation_track_find_from_port (port, track, true);
-              g_return_val_if_fail (at, -1);
+                AutomationTrack::find_from_port (*port, track, true);
+              g_return_if_fail (at);
 
               /* move the actual object */
-              region_move_to_track (r, track, at->index, -1);
+              r->move_to_track (track, at->index_, -1);
 
               /* remember info in identifier */
-              Region * r_own = (Region *) own_obj;
-              region_identifier_copy (&r_own->id, &r->id);
+              auto r_own = dynamic_cast<AutomationRegion *> (own_obj.get ());
+              r_own->id_ = r->id_;
 
-              object_delete_and_null (self->target_port);
-              self->target_port = new PortIdentifier (cur_at->port_id);
+              target_port_ = std::make_unique<PortIdentifier> (cur_at->port_id_);
             }
 
           if (!math_doubles_equal (delta_normalized_amt, 0.0))
             {
-              if (
-                obj->type
-                == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+              if (obj->type_ == ArrangerObject::Type::AutomationPoint)
                 {
-                  AutomationPoint * ap = (AutomationPoint *) obj;
+                  auto ap = dynamic_pointer_cast<AutomationPoint> (obj);
 
                   /* shift the actual object */
-                  automation_point_set_fvalue (
-                    ap, ap->normalized_val + (float) delta_normalized_amt,
-                    F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+                  ap->set_fvalue (
+                    ap->normalized_val_
+                      + static_cast<float> (delta_normalized_amt),
+                    true, false);
 
-                  /* also shift the copy so they
-                   * can match */
-                  AutomationPoint * copy_ap = (AutomationPoint *) own_obj;
-                  automation_point_set_fvalue (
-                    copy_ap,
-                    copy_ap->normalized_val + (float) delta_normalized_amt,
-                    F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+                  /* also shift the copy so they can match */
+                  auto copy_ap =
+                    dynamic_cast<AutomationPoint *> (own_obj.get ());
+                  copy_ap->set_fvalue (
+                    copy_ap->normalized_val_
+                      + static_cast<float> (delta_normalized_amt),
+                    true, false);
                 }
             }
         }
 
-      /* if moving automation points, re-sort
-       * the region and remember the new
+      /* if moving automation points, re-sort the region and remember the new
        * indices */
-      ArrangerObject * first_own_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, 0);
-      if (
-        first_own_obj->type
-        == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+      auto first_own_obj = sel_->objects_[0].get ();
+      if (first_own_obj->type_ == ArrangerObject::Type::AutomationPoint)
         {
-          ArrangerObject * obj =
-            /* get the actual object from the
-             * project */
-            arranger_object_find (first_own_obj);
-          g_return_val_if_fail (obj, -1);
+          auto obj = dynamic_pointer_cast<AutomationPoint> (
+            first_own_obj->find_in_project ());
+          g_return_if_fail (obj);
 
-          Region * region = arranger_object_get_region (obj);
-          g_return_val_if_fail (region, -1);
-          automation_region_force_sort (region);
+          auto region = dynamic_cast<AutomationRegion *> (obj->get_region ());
+          g_return_if_fail (region);
+          region->force_sort ();
 
-          GHashTableIter iter;
-          gpointer       key, value;
-
-          g_hash_table_iter_init (&iter, ht);
-          while (g_hash_table_iter_next (&iter, &key, &value))
+          for (auto &[prj_ap, cached_ap] : obj_map)
             {
-              AutomationPoint * prj_ap = (AutomationPoint *) key;
-              AutomationPoint * cached_ap = (AutomationPoint *) value;
-              automation_point_set_region_and_index (
-                cached_ap, region, prj_ap->index);
+              auto * prj_ap_cast = dynamic_cast<AutomationPoint *> (prj_ap);
+              auto * cached_ap_cast =
+                dynamic_cast<AutomationPoint *> (cached_ap);
+              cached_ap_cast->set_region_and_index (
+                *region, prj_ap_cast->index_);
             }
         }
     }
 
-  update_region_link_groups (objs_arr);
+  update_region_link_groups (sel_->objects_);
 
   /* validate */
-  clip_editor_get_region (CLIP_EDITOR);
+  CLIP_EDITOR->get_region ();
 
-  g_ptr_array_unref (objs_arr);
-  g_hash_table_destroy (ht);
-
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_MOVED, sel);
 
-  self->first_run = 0;
-
-  return 0;
+  first_run_ = false;
 }
 
-static void
-move_obj_by_tracks_and_lanes (
-  ArrangerObject * obj,
-  const int        tracks_diff,
-  const int        lanes_diff,
-  bool             use_index_in_prev_lane,
-  int              index_in_prev_lane)
+void
+ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
+  ArrangerObject &obj,
+  const int       tracks_diff,
+  const int       lanes_diff,
+  bool            use_index_in_prev_lane,
+  int             index_in_prev_lane)
 {
-  g_return_if_fail (IS_ARRANGER_OBJECT (obj));
   if (tracks_diff)
     {
-      g_return_if_fail (
-        obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION);
+      auto r = dynamic_cast<Region *> (&obj);
+      g_return_if_fail (r);
 
-      Region * r = (Region *) obj;
-
-      Track * track_to_move_to = tracklist_get_visible_track_after_delta (
-        TRACKLIST, arranger_object_get_track (obj), tracks_diff);
+      auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
+        *r->get_track (), tracks_diff);
 
       /* shift the actual object by tracks */
-      if (
-        ENUM_BITSET_TEST (
-          ArrangerObjectFlags, obj->flags,
-          ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT))
+      if (ENUM_BITSET_TEST (
+            ArrangerObjectFlags, obj.flags_, ArrangerObject::Flags::NonProject))
         {
-          r->id.track_name_hash = track_get_name_hash (*track_to_move_to);
+          r->id_.track_name_hash_ = track_to_move_to->get_name_hash ();
         }
       else
         {
-          region_move_to_track (
-            r, track_to_move_to, -1,
-            use_index_in_prev_lane ? index_in_prev_lane : -1);
+          std::visit (
+            [&] (auto &&r) {
+              r->move_to_track (
+                track_to_move_to, -1,
+                use_index_in_prev_lane ? index_in_prev_lane : -1);
+            },
+            convert_to_variant<RegionPtrVariant> (r));
         }
     }
   if (lanes_diff)
     {
-      Region * r = (Region *) obj;
+      auto r = dynamic_cast<Region *> (&obj);
+      g_return_if_fail (r);
 
-      Track * region_track = arranger_object_get_track (obj);
-      int     new_lane_pos = r->id.lane_pos + lanes_diff;
+      // auto region_track = r->get_track_as<LanedTrack> ();
+      int new_lane_pos = r->id_.lane_pos_ + lanes_diff;
       g_return_if_fail (new_lane_pos >= 0);
 
       /* shift the actual object by lanes */
       if (
         ENUM_BITSET_TEST (
-          ArrangerObjectFlags, obj->flags,
-          ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT))
+          ArrangerObject::Flags, r->flags_, ArrangerObject::Flags::NonProject))
         {
-          r->id.lane_pos = new_lane_pos;
+          r->id_.lane_pos_ = new_lane_pos;
         }
       else
         {
-          track_create_missing_lanes (region_track, new_lane_pos);
-          region_move_to_track (
-            r, region_track, new_lane_pos,
-            use_index_in_prev_lane ? index_in_prev_lane : -1);
+          std::visit (
+            [&] (auto &&r) {
+              using RegionT = std::decay_t<decltype (r)>;
+              if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
+                {
+                  auto r_track =
+                    r->template get_track_as<LanedTrackImpl<RegionT>> ();
+                  r_track->create_missing_lanes (new_lane_pos);
+                  r->move_to_track (
+                    r_track, new_lane_pos,
+                    use_index_in_prev_lane ? index_in_prev_lane : -1);
+                }
+            },
+            convert_to_variant<RegionPtrVariant> (r));
         }
     }
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_duplicate_or_link (
-  ArrangerSelectionsAction * self,
-  const bool                 link,
-  const bool                 _do,
-  GError **                  error)
+void
+ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
 {
-  arranger_selections_sort_by_indices (self->sel, !_do);
-  arranger_selections_sort_by_indices (self->sel_after, !_do);
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel_after, objs_arr);
+  sel_->sort_by_indices (!_do);
+  sel_after_->sort_by_indices (!_do);
   if (ZRYTHM_TESTING)
     {
-      arranger_selections_verify (self->sel_after);
+      sel_after_->validate ();
     }
-  /* objects the duplication/link was based from */
-  GPtrArray * orig_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, orig_objs_arr);
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
-  g_return_val_if_fail (sel, -1);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
+  g_return_if_fail (sel);
 
-  double ticks = _do ? self->ticks : -self->ticks;
-  int    delta_tracks = _do ? self->delta_tracks : -self->delta_tracks;
-  int    delta_lanes = _do ? self->delta_lanes : -self->delta_lanes;
-  int    delta_chords = _do ? self->delta_chords : -self->delta_chords;
-  int    delta_pitch = _do ? self->delta_pitch : -self->delta_pitch;
-  float  delta_normalized_amount =
-    _do ? (float) self->delta_normalized_amount
-         : (float) -self->delta_normalized_amount;
+  double ticks = _do ? ticks_ : -ticks_;
+  int    delta_tracks = _do ? delta_tracks_ : -delta_tracks_;
+  int    delta_lanes = _do ? delta_lanes_ : -delta_lanes_;
+  int    delta_chords = _do ? delta_chords_ : -delta_chords_;
+  int    delta_pitch = _do ? delta_pitch_ : -delta_pitch_;
+  double delta_normalized_amount =
+    _do ? delta_normalized_amount_ : -delta_normalized_amount_;
 
   /* clear current selections in the project */
-  arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+  sel->clear (false);
 
   /* this is used for automation points to keep track of which automation point
-   * in the project matches which automation point in the cached selections */
-  GHashTable * ap_ht = g_hash_table_new (NULL, NULL);
+   * in the project matches which automation point in the cached selections
+   * key: project automation point, value: cached automation point */
+  std::map<AutomationPoint *, AutomationPoint *> ap_map;
 
-  for (int i = (int) objs_arr->len - 1; i >= 0; i--)
+  for (
+    auto it = sel_after_->objects_.rbegin ();
+    it != sel_after_->objects_.rend (); ++it)
     {
-      ArrangerObject * own_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      ArrangerObject * own_orig_obj =
-        (ArrangerObject *) g_ptr_array_index (orig_objs_arr, i);
-      own_obj->flags |= ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      own_orig_obj->flags |=
-        ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      g_warn_if_fail (IS_ARRANGER_OBJECT (own_obj));
+      size_t i = std::distance (sel_after_->objects_.begin (), it.base ()) - 1;
+      auto  &own_obj = (*it);
+      auto  &own_orig_obj = sel_->objects_[i];
+      own_obj->flags_ |= ArrangerObject::Flags::NonProject;
+      own_orig_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
       /* on first run, we need to first move the original object backwards (the
        * project object too) */
-      if (_do && self->first_run)
+      if (_do && first_run_)
         {
-          if (own_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
-            {
-              g_debug ("our:");
-              region_print ((Region *) own_obj);
-            }
-          Region * r_orig = NULL;
-          Region * r_our = NULL;
-          if (own_obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
-            {
-              r_orig = (Region *) own_orig_obj;
-              r_our = (Region *) own_obj;
-              g_return_val_if_fail (
-                IS_REGION_AND_NONNULL (r_orig) && IS_REGION_AND_NONNULL (r_our),
-                -1);
-            }
-          ArrangerObject * obj = arranger_object_find (own_obj);
-          g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
+          auto obj = own_obj->find_in_project ();
+          z_return_if_fail (obj);
 
-          g_debug (
-            "[%d] moving original object "
-            "backwards",
-            i);
+          z_debug ("{} moving original object backwards", i);
 
           /* ticks */
-          if (!math_doubles_equal (self->ticks, 0.0))
+          if (!math_doubles_equal (ticks_, 0.0))
             {
-              arranger_object_move (obj, -self->ticks);
-              arranger_object_move (own_obj, -self->ticks);
+              obj->move (-ticks_);
+              own_obj->move (-ticks_);
             }
 
           /* tracks & lanes */
-          if (delta_tracks || delta_lanes)
+          if (delta_tracks_ || delta_lanes_)
             {
-              g_return_val_if_fail (r_our, -1);
+              auto &own_obj_lo = dynamic_cast<LaneOwnedObject &> (*own_obj);
+              // auto& obj_lo = dynamic_cast<LaneOwnedObject &> (*obj);
+              auto &own_obj_r = dynamic_cast<Region &> (*own_obj);
+              // auto & obj_r = dynamic_cast<Region &> (*obj);
 
               g_message ("moving prj obj");
               move_obj_by_tracks_and_lanes (
-                obj, -delta_tracks, -delta_lanes, true,
-                own_obj->index_in_prev_lane);
+                *obj, -delta_tracks_, -delta_lanes_, true,
+                own_obj_lo.index_in_prev_lane_);
 
               g_message ("moving own obj");
-              RegionIdentifier own_id_before_move = r_our->id;
+              RegionIdentifier own_id_before_move = own_obj_r.id_;
               move_obj_by_tracks_and_lanes (
-                own_obj, -delta_tracks, -delta_lanes, true,
-                own_obj->index_in_prev_lane);
+                *own_obj, -delta_tracks_, -delta_lanes_, true,
+                own_obj_lo.index_in_prev_lane_);
 
-              /* since the object moved outside
-               * of its lane, decrement the index
-               * inside the lane for all of our
-               * cached objects in the same lane */
-              for (int j = i + 1; j < (int) objs_arr->len; j++)
+              /* since the object moved outside of its lane, decrement the index
+               * inside the lane for all of our cached objects in the same lane */
+              for (size_t j = i + 1; j < sel_after_->objects_.size (); j++)
                 {
-                  Region * own_r = (Region *) own_obj;
+                  auto &own_r = dynamic_cast<Region &> (*own_obj);
                   if (
-                    own_id_before_move.track_name_hash == own_r->id.track_name_hash
-                    && own_id_before_move.lane_pos == own_r->id.lane_pos
-                    && own_id_before_move.at_idx == own_r->id.at_idx)
+                    own_id_before_move.track_name_hash_
+                      == own_r.id_.track_name_hash_
+                    && own_id_before_move.lane_pos_ == own_r.id_.lane_pos_
+                    && own_id_before_move.at_idx_ == own_r.id_.at_idx_)
                     {
-                      own_r->id.idx--;
+                      own_r.id_.idx_--;
                     }
                 }
             }
 
           /* pitch */
-          if (delta_pitch)
+          if (delta_pitch_)
             {
-              midi_note_shift_pitch ((MidiNote *) obj, -delta_pitch);
-              midi_note_shift_pitch ((MidiNote *) own_obj, -delta_pitch);
+              dynamic_cast<MidiNote &> (*obj).shift_pitch (-delta_pitch_);
+              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (-delta_pitch_);
             }
 
           /* chords */
-          if (delta_chords != 0)
+          if (delta_chords_ != 0)
             {
-              g_return_val_if_fail (
-                obj->type
-                  == ArrangerObjectType::ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
-                -1);
-              ChordObject * co = (ChordObject *) obj;
+              g_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
+              auto co = dynamic_pointer_cast<ChordObject> (obj);
 
               /* shift the actual object */
-              co->chord_index -= delta_chords;
+              co->chord_index_ -= delta_chords_;
 
               /* also shift the copy so they can match */
-              ((ChordObject *) own_obj)->chord_index -= delta_chords;
+              dynamic_cast<ChordObject &> (*own_obj).chord_index_ -=
+                delta_chords_;
             }
 
           /* if moving automation */
-          if (self->target_port)
+          if (target_port_)
             {
               g_critical (
                 "not supported - automation must not be moved before performing the action");
             }
 
           /* automation value */
-          if (!math_floats_equal (delta_normalized_amount, 0.f))
+          if (!math_doubles_equal (delta_normalized_amount_, 0.0))
             {
-              AutomationPoint * ap = (AutomationPoint *) obj;
-              AutomationPoint * cached_ap = (AutomationPoint *) own_obj;
-              automation_point_set_fvalue (
-                ap, ap->normalized_val - delta_normalized_amount, F_NORMALIZED,
-                F_NO_PUBLISH_EVENTS);
-              automation_point_set_fvalue (
-                cached_ap, cached_ap->normalized_val - delta_normalized_amount,
-                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+              auto &ap = dynamic_cast<AutomationPoint &> (*obj);
+              auto &cached_ap = dynamic_cast<AutomationPoint &> (*own_obj);
+              ap.set_fvalue (
+                ap.normalized_val_ - (float) delta_normalized_amount_, true,
+                false);
+              cached_ap.set_fvalue (
+                cached_ap.normalized_val_ - (float) delta_normalized_amount_,
+                true, false);
             }
         } /* if do and first run */
     }
 
   g_debug ("moved original objects back");
 
-  for (size_t i = 0; i < objs_arr->len; i++)
+  for (size_t i = 0; i < sel_after_->objects_.size (); i++)
     {
-      ArrangerObject * own_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      ArrangerObject * own_orig_obj =
-        (ArrangerObject *) g_ptr_array_index (orig_objs_arr, i);
+      auto &own_obj = sel_after_->objects_[i];
+      auto &own_orig_obj = sel_->objects_[i];
 
       if (_do)
         {
-          /* clone the clone */
-          ArrangerObject * obj = arranger_object_clone (own_obj);
+          /* create a temporary clone */
+          auto obj =
+            clone_unique_with_variant<ArrangerObjectVariant> (own_obj.get ());
 
-          /* if region, clear the remembered index
-           * so that the region gets appended
-           * instead of inserted */
-          if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
+          /* if region, clear the remembered index so that the region gets
+           * appended instead of inserted */
+          if (obj->type_ == ArrangerObject::Type::Region)
             {
-              Region * r = (Region *) obj;
-              r->id.idx = -1;
+              auto r = dynamic_cast<Region *> (obj.get ());
+              r->id_.idx_ = -1;
             }
 
           /* add to track. */
-          GError * err = NULL;
-          bool     success =
-            arranger_object_add_to_project (obj, F_NO_PUBLISH_EVENTS, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to add object to project");
-              return -1;
-            }
+          auto added_obj_ref = obj->add_clone_to_project (F_NO_PUBLISH_EVENTS);
 
           /* edit both project object and the copy */
           if (!math_doubles_equal (ticks, 0.0))
             {
-              arranger_object_move (obj, ticks);
-              arranger_object_move (own_obj, ticks);
+              added_obj_ref->move (ticks);
+              own_obj->move (ticks);
             }
           if (delta_tracks != 0)
             {
-              move_obj_by_tracks_and_lanes (obj, delta_tracks, 0, false, -1);
-              move_obj_by_tracks_and_lanes (own_obj, delta_tracks, false, -1, 0);
+              move_obj_by_tracks_and_lanes (
+                *added_obj_ref, delta_tracks, 0, false, -1);
+              move_obj_by_tracks_and_lanes (
+                *own_obj, delta_tracks, false, -1, 0);
             }
           if (delta_lanes != 0)
             {
-              move_obj_by_tracks_and_lanes (obj, 0, delta_lanes, false, -1);
-              move_obj_by_tracks_and_lanes (own_obj, 0, delta_lanes, false, -1);
+              move_obj_by_tracks_and_lanes (
+                *added_obj_ref, 0, delta_lanes, false, -1);
+              move_obj_by_tracks_and_lanes (*own_obj, 0, delta_lanes, false, -1);
             }
           if (delta_pitch != 0)
             {
-              midi_note_shift_pitch ((MidiNote *) obj, delta_pitch);
-              midi_note_shift_pitch ((MidiNote *) own_obj, delta_pitch);
+              dynamic_pointer_cast<MidiNote> (added_obj_ref)
+                ->shift_pitch (delta_pitch);
+              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (delta_pitch);
             }
           if (delta_chords != 0)
             {
-              ((ChordObject *) obj)->chord_index += delta_chords;
-              ((ChordObject *) own_obj)->chord_index += delta_chords;
+              dynamic_pointer_cast<ChordObject> (added_obj_ref)->chord_index_ +=
+                delta_chords;
+              dynamic_cast<ChordObject &> (*own_obj).chord_index_ +=
+                delta_chords;
             }
-          if (self->target_port)
+          if (target_port_)
             {
-              g_return_val_if_fail (
-                obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION,
-                -1);
-              Region * r = (Region *) obj;
-              g_return_val_if_fail (
-                r->id.type == RegionType::REGION_TYPE_AUTOMATION, -1);
-              AutomationTrack * cur_at = region_get_automation_track (r);
-              g_return_val_if_fail (cur_at, -1);
-              Port * port = Port::find_from_identifier (self->target_port);
-              g_return_val_if_fail (port, -1);
-              Track * track = port->get_track (true);
-              g_return_val_if_fail (track, -1);
-              AutomationTrack * at =
-                automation_track_find_from_port (port, track, true);
-              g_return_val_if_fail (at, -1);
+              z_return_if_fail (
+                added_obj_ref->type_ == ArrangerObject::Type::Region);
+              auto r = dynamic_pointer_cast<AutomationRegion> (added_obj_ref);
+              z_return_if_fail (r->id_.type_ == RegionType::Automation);
+              auto cur_at = r->get_automation_track ();
+              z_return_if_fail (cur_at);
+              auto port =
+                Port::find_from_identifier<ControlPort> (*target_port_);
+              z_return_if_fail (port);
+              auto track =
+                dynamic_cast<AutomatableTrack *> (port->get_track (true));
+              g_return_if_fail (track);
+              auto at = AutomationTrack::find_from_port (*port, track, true);
+              g_return_if_fail (at);
 
               /* move the actual object */
-              region_move_to_track (r, track, at->index, -1);
+              r->move_to_track (track, at->index_, -1);
             }
           if (!math_floats_equal (delta_normalized_amount, 0.f))
             {
-              AutomationPoint * ap = (AutomationPoint *) obj;
-              automation_point_set_fvalue (
-                ap, ap->normalized_val + delta_normalized_amount, F_NORMALIZED,
+              auto ap = dynamic_pointer_cast<AutomationPoint> (added_obj_ref);
+              ap->set_fvalue (
+                ap->normalized_val_ + delta_normalized_amount, true,
                 F_NO_PUBLISH_EVENTS);
-              AutomationPoint * own_ap = (AutomationPoint *) own_obj;
-              automation_point_set_fvalue (
-                own_ap, own_ap->normalized_val + delta_normalized_amount,
-                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+              auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
+              own_ap.set_fvalue (
+                own_ap.normalized_val_ + delta_normalized_amount, true,
+                F_NO_PUBLISH_EVENTS);
             }
 
-          if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
+          if (obj->type_ == ArrangerObject::Type::Region)
             {
               /* if we are linking, create the necessary links */
               if (link)
                 {
                   /* add link group to original object if necessary */
-                  ArrangerObject * orig_obj =
-                    arranger_object_find (own_orig_obj);
-                  Region * orig_r = (Region *) orig_obj;
-                  g_return_val_if_fail (orig_r->id.idx >= 0, -1);
-                  region_create_link_group_if_none (orig_r);
-                  int link_group = orig_r->id.link_group;
+                  auto orig_obj = own_orig_obj->find_in_project ();
+                  auto orig_r = dynamic_pointer_cast<Region> (orig_obj);
+                  z_return_if_fail (orig_r->id_.idx_ >= 0);
 
-                  /* add link group to clone */
-                  Region * r_obj = (Region *) obj;
-                  g_return_val_if_fail (r_obj->id.type == orig_r->id.type, -1);
-                  g_return_val_if_fail (r_obj->id.idx >= 0, -1);
-                  region_set_link_group (r_obj, link_group, true);
+                  std::visit (
+                    [&] (auto &&orig_r) {
+                      using T = base_type<decltype (orig_r)>;
+                      orig_r->create_link_group_if_none ();
+                      int link_group = orig_r->id_.link_group_;
 
-                  /* remember link groups */
-                  Region * r = (Region *) own_orig_obj;
-                  region_set_link_group (r, link_group, true);
-                  r = (Region *) own_obj;
-                  region_set_link_group (r, link_group, true);
+                      /* add link group to clone */
+                      auto r_obj = dynamic_pointer_cast<T> (added_obj_ref);
+                      z_return_if_fail (r_obj->id_.type_ == orig_r->id_.type_);
+                      z_return_if_fail (r_obj->id_.idx_ >= 0);
+                      r_obj->set_link_group (link_group, true);
 
-                  region_link_group_manager_validate (REGION_LINK_GROUP_MANAGER);
+                      /* remember link groups */
+                      auto r = dynamic_pointer_cast<T> (own_orig_obj);
+                      r->set_link_group (link_group, true);
+                      r = dynamic_pointer_cast<T> (own_obj);
+                      r->set_link_group (link_group, true);
+                    },
+                    convert_to_variant<RegionPtrVariant> (orig_r.get ()));
+
+                  REGION_LINK_GROUP_MANAGER.validate ();
                 }
               else /* else if we are not linking */
                 {
-                  Region * region = (Region *) obj;
+                  std::visit (
+                    [&] (auto &&region) {
+                      using T = base_type<decltype (region)>;
 
-                  /* remove link group if first run */
-                  if (self->first_run)
-                    {
-                      if (region_has_link_group (region))
+                      /* remove link group if first run */
+                      if (first_run_)
                         {
-                          region_unlink (region);
+                          if (region->has_link_group ())
+                            {
+                              region->unlink ();
+                            }
                         }
-                    }
 
-                  /* if this is an audio region,
-                   * duplicate the clip */
-                  if (region->id.type == RegionType::REGION_TYPE_AUDIO)
-                    {
-                      AudioClip * clip = audio_region_get_clip (region);
-                      int         id = audio_pool_duplicate_clip (
-                        AUDIO_POOL, clip->pool_id, F_WRITE_FILE, &err);
-                      if (id < 0)
+                      /* if this is an audio region, duplicate the clip */
+                      if constexpr (std::is_same_v<T, AudioRegion>)
                         {
-                          PROPAGATE_PREFIXED_ERROR (
-                            error, err, "%s", "Failed to duplicate audio clip");
-                          return -1;
+                          auto ar = static_cast<AudioRegion *> (region);
+                          auto clip = ar->get_clip ();
+                          int  id =
+                            AUDIO_POOL->duplicate_clip (clip->pool_id_, true);
+                          if (id < 0)
+                            {
+                              throw ZrythmException (
+                                "Failed to duplicate audio clip");
+                            }
+                          clip = AUDIO_POOL->get_clip (id);
+                          z_return_if_fail (clip);
+                          ar->pool_id_ = clip->pool_id_;
                         }
-                      clip = audio_pool_get_clip (AUDIO_POOL, id);
-                      g_return_val_if_fail (clip, -1);
-                      region->pool_id = clip->pool_id;
-                    }
+                    },
+                    convert_to_variant<RegionPtrVariant> (added_obj_ref.get ()));
                 }
             } /* endif region */
 
           /* add the mapping to the hashtable */
-          g_hash_table_insert (ap_ht, obj, own_obj);
+          if (added_obj_ref->type_ == ArrangerObject::Type::AutomationPoint)
+            {
+              ap_map[dynamic_pointer_cast<AutomationPoint> (added_obj_ref).get ()] =
+                dynamic_cast<AutomationPoint *> (own_obj.get ());
+            }
 
           /* select it */
-          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          added_obj_ref->select (true, true, F_NO_PUBLISH_EVENTS);
 
           /* remember the identifier */
-          arranger_object_copy_identifier (own_obj, obj);
+          own_obj->copy_identifier (*added_obj_ref);
 
         }  /* endif do */
       else /* if undo */
         {
           /* find the actual object */
-          ArrangerObject * obj = arranger_object_find (own_obj);
-          g_return_val_if_fail (IS_ARRANGER_OBJECT_AND_NONNULL (obj), -1);
+          auto obj = own_obj->find_in_project ();
+          z_return_if_fail (obj);
 
-          /* if the object was created with linking,
-           * delete the links */
-          if (
-            link && obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
+          /* if the object was created with linking, delete the links */
+          if (link && obj->type_ == ArrangerObject::Type::Region)
             {
               /* remove link from created object (this will also automatically
                * remove the link from the parent region if it is the only region
                * in the link group) */
-              Region * region = (Region *) obj;
-              g_warn_if_fail (
-                IS_REGION (region) && region_has_link_group (region));
-              region_unlink (region);
-              g_warn_if_fail (region->id.link_group == -1);
+              std::visit (
+                [&] (auto &&region) {
+                  using T = base_type<decltype (region)>;
+                  z_warn_if_fail (region && region->has_link_group ());
+                  region->unlink ();
+                  z_warn_if_fail (region->id_.link_group_ == -1);
 
-              /* unlink remembered link groups */
-              region = (Region *) own_orig_obj;
-              region_unlink (region);
-              region = (Region *) own_obj;
-              region_unlink (region);
+                  /* unlink remembered link groups */
+                  auto &own_orig_r = dynamic_cast<T &> (*own_orig_obj);
+                  own_orig_r.unlink ();
+                  auto &own_r = dynamic_cast<T &> (*own_obj);
+                  own_r.unlink ();
+                },
+                convert_to_variant<RegionPtrVariant> (obj.get ()));
             }
 
           /* remove it */
-          arranger_object_remove_from_project (obj);
-          obj = NULL;
+          obj->remove_from_project ();
+          obj.reset ();
 
           /* set the copies back to original state */
           if (!math_doubles_equal (ticks, 0.0))
             {
-              arranger_object_move (own_obj, ticks);
+              own_obj->move (ticks);
             }
           if (delta_tracks != 0)
             {
-              move_obj_by_tracks_and_lanes (own_obj, delta_tracks, false, -1, 0);
+              move_obj_by_tracks_and_lanes (
+                *own_obj, delta_tracks, false, -1, 0);
             }
           if (delta_lanes != 0)
             {
-              move_obj_by_tracks_and_lanes (own_obj, 0, delta_lanes, false, -1);
+              move_obj_by_tracks_and_lanes (*own_obj, 0, delta_lanes, false, -1);
             }
           if (delta_pitch != 0)
             {
-              midi_note_shift_pitch ((MidiNote *) own_obj, delta_pitch);
+              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (delta_pitch);
             }
           if (delta_chords != 0)
             {
-              ((ChordObject *) own_obj)->chord_index += delta_chords;
+              dynamic_cast<ChordObject &> (*own_obj).chord_index_ +=
+                delta_chords;
             }
-          if (self->target_port)
+          if (target_port_)
             {
               /* nothing needed */
             }
           if (!math_floats_equal (delta_normalized_amount, 0.f))
             {
-              AutomationPoint * own_ap = (AutomationPoint *) own_obj;
-              automation_point_set_fvalue (
-                own_ap, own_ap->normalized_val + delta_normalized_amount,
-                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+              auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
+              own_ap.set_fvalue (
+                own_ap.normalized_val_ + delta_normalized_amount, true,
+                F_NO_PUBLISH_EVENTS);
             }
 
         } /* endif undo */
 
-      region_link_group_manager_validate (REGION_LINK_GROUP_MANAGER);
+      REGION_LINK_GROUP_MANAGER.validate ();
     }
 
-  /* if copy-moving automation points, re-sort the region and
-   * remember the new indices */
-  ArrangerObject * first_own_obj =
-    (ArrangerObject *) g_ptr_array_index (objs_arr, 0);
+  /* if copy-moving automation points, re-sort the region and remember the new
+   * indices */
   if (
-    first_own_obj->type
-    == ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+    sel_after_->objects_.front ()->type_
+    == ArrangerObject::Type::AutomationPoint)
     {
       /* get the actual object from the project */
-      gpointer * keys_arr = g_hash_table_get_keys_as_array (ap_ht, NULL);
-      if (keys_arr[0])
+      auto obj = ap_map.begin ()->first;
+      if (obj)
         {
-          ArrangerObject * obj = static_cast<ArrangerObject *> (keys_arr[0]);
-          g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
-          Region * region = arranger_object_get_region (obj);
-          g_return_val_if_fail (region, -1);
-          automation_region_force_sort (region);
+          auto region = dynamic_cast<AutomationRegion *> (obj->get_region ());
+          z_return_if_fail (region);
+          region->force_sort ();
 
-          GHashTableIter iter;
-          gpointer       key, value;
-
-          g_hash_table_iter_init (&iter, ap_ht);
-          while (g_hash_table_iter_next (&iter, &key, &value))
+          for (auto &pair : ap_map)
             {
-              AutomationPoint * prj_ap = (AutomationPoint *) key;
-              AutomationPoint * cached_ap = (AutomationPoint *) value;
-              automation_point_set_region_and_index (
-                cached_ap, region, prj_ap->index);
+              auto prj_ap = pair.first;
+              auto cached_ap = pair.second;
+              cached_ap->set_region_and_index (*region, prj_ap->index_);
             }
         }
-      g_free (keys_arr);
     }
 
   /* validate */
-  marker_track_validate (P_MARKER_TRACK);
-  chord_track_validate (P_CHORD_TRACK);
-  region_link_group_manager_validate (REGION_LINK_GROUP_MANAGER);
-  clip_editor_get_region (CLIP_EDITOR);
+  P_MARKER_TRACK->validate ();
+  P_CHORD_TRACK->validate ();
+  REGION_LINK_GROUP_MANAGER.validate ();
+  CLIP_EDITOR->get_region ();
 
-  g_ptr_array_unref (objs_arr);
-  g_ptr_array_unref (orig_objs_arr);
-  g_hash_table_destroy (ap_ht);
-
-  sel = get_actual_arranger_selections (self);
+  sel = get_actual_arranger_selections ();
   if (_do)
     {
-      transport_recalculate_total_bars (TRANSPORT, self->sel_after);
+      TRANSPORT->recalculate_total_bars (sel_after_.get ());
 
       EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
     }
@@ -1861,118 +1014,85 @@ do_or_undo_duplicate_or_link (
       EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
-  self->first_run = 0;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- * @param create 1 to create, 0 to delete. This just
- *   reverses the actions done by undo/redo.
- */
-static int
-do_or_undo_create_or_delete (
-  ArrangerSelectionsAction * self,
-  const int                  _do,
-  const int                  create,
-  GError **                  error)
+void
+ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 {
-  if (create)
-    {
-      arranger_selections_sort_by_indices (
-        self->sel, _do ? F_NOT_DESCENDING : F_DESCENDING);
-    }
-  else
-    {
-      arranger_selections_sort_by_indices (
-        self->sel, _do ? F_DESCENDING : F_NOT_DESCENDING);
-    }
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_arr);
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
-  g_return_val_if_fail (sel, -1);
+  sel_->sort_by_indices (create ? !do_it : do_it);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
+  g_return_if_fail (sel);
 
-  if (!self->first_run || !create)
+  if (!first_run_ || !create)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      sel->clear (false);
 
-      for (size_t i = 0; i < objs_arr->len; i++)
+      for (auto &own_obj : sel_->objects_)
         {
-          ArrangerObject * own_obj =
-            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-          own_obj->flags |=
-            ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          own_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
           /* if doing in a create action or undoing in a delete action */
-          if ((_do && create) || (!_do && !create))
+          if ((do_it && create) || (!do_it && !create))
             {
-              /* clone the clone */
-              ArrangerObject * obj = arranger_object_clone (own_obj);
-
-              /* add it to the project */
-              bool     success;
-              GError * err = NULL;
+              /* add a clone to the project */
+              ArrangerObject::ArrangerObjectPtr prj_obj;
               if (create)
                 {
-                  success = arranger_object_add_to_project (
-                    obj, F_NO_PUBLISH_EVENTS, &err);
+                  prj_obj = own_obj->add_clone_to_project (false);
                 }
               else
                 {
-                  success = arranger_object_insert_to_project (obj, &err);
-                }
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to add object to project");
-                  return -1;
+                  prj_obj = own_obj->insert_clone_to_project ();
                 }
 
               /* select it */
-              arranger_object_select (
-                obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
-              arranger_object_copy_identifier (own_obj, obj);
+              own_obj->copy_identifier (*prj_obj);
             }
 
           /* if removing */
           else
             {
               /* get the actual object from the project */
-              ArrangerObject * obj = arranger_object_find (own_obj);
-              g_return_val_if_fail (obj, -1);
+              auto obj = own_obj->find_in_project ();
+              z_return_if_fail (obj);
 
               /* if region, remove link */
-              if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
+              if (obj->type_ == ArrangerObject::Type::Region)
                 {
-                  Region * region = (Region *) obj;
-                  if (region_has_link_group (region))
-                    {
-                      region_unlink (region);
-                    }
+                  auto region = dynamic_pointer_cast<Region> (obj);
+                  std::visit (
+                    [&] (auto &&region) {
+                      if (region->has_link_group ())
+                        {
+                          region->unlink ();
+                        }
+                    },
+                    convert_to_variant<RegionPtrVariant> (region.get ()));
                 }
 
               /* remove it */
-              arranger_object_remove_from_project (obj);
+              obj->remove_from_project ();
             }
         }
     }
 
   /* if first time creating the object, save the length for use by SnapGrid */
-  if (ZRYTHM_HAVE_UI && self->first_run && create && _do && objs_arr->len == 1)
+  if (
+    ZRYTHM_HAVE_UI && first_run_ && create && do_it
+    && sel_->objects_.size () == 1)
     {
-      ArrangerObject * obj = (ArrangerObject *) g_ptr_array_index (objs_arr, 0);
-      obj = arranger_object_find (obj);
-      g_return_val_if_fail (obj, -1);
-      if (arranger_object_type_has_length (obj->type))
+      auto obj = sel_->objects_[0]->find_in_project ();
+      g_return_if_fail (obj);
+      if (obj->has_length ())
         {
-          double           ticks = arranger_object_get_length_in_ticks (obj);
-          ArrangerWidget * arranger = arranger_object_get_arranger (obj);
+          auto   obj_lo = dynamic_pointer_cast<LengthableObject> (obj);
+          double ticks = obj_lo->get_length_in_ticks ();
+          auto   arranger = obj->get_arranger ();
           if (
             arranger->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
             {
@@ -1986,11 +1106,11 @@ do_or_undo_create_or_delete (
     }
 
   /* if creating */
-  if ((_do && create) || (!_do && !create))
+  if ((do_it && create) || (!do_it && !create))
     {
-      update_region_link_groups (objs_arr);
+      update_region_link_groups (sel_->objects_);
 
-      transport_recalculate_total_bars (TRANSPORT, self->sel);
+      TRANSPORT->recalculate_total_bars (sel_.get ());
 
       EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
     }
@@ -2000,113 +1120,78 @@ do_or_undo_create_or_delete (
       EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
-  marker_track_validate (P_MARKER_TRACK);
-  chord_track_validate (P_CHORD_TRACK);
-  region_link_group_manager_validate (REGION_LINK_GROUP_MANAGER);
+  P_MARKER_TRACK->validate ();
+  P_CHORD_TRACK->validate ();
+  REGION_LINK_GROUP_MANAGER.validate ();
 
-  g_ptr_array_unref (objs_arr);
+  first_run_ = false;
 
-  self->first_run = 0;
-
-  if (
-    self->sel->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
+  if (sel_->type_ == ArrangerSelections::Type::Timeline)
     {
-      TimelineSelections * ts = (TimelineSelections *) self->sel;
-      bool                 have_automation_region = false;
-      for (int i = 0; i < ts->num_regions; i++)
+      auto &ts = dynamic_cast<TimelineSelections &> (*sel_);
+      bool  have_automation_region = false;
+      for (auto &obj : ts.objects_)
         {
-          Region * r = ts->regions[i];
-          if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
+          if (obj->is_region ())
             {
-              have_automation_region = true;
-              break;
+              auto &r = dynamic_cast<Region &> (*obj);
+              if (r.id_.type_ == RegionType::Automation)
+                {
+                  have_automation_region = true;
+                  break;
+                }
             }
         }
 
       if (have_automation_region)
         {
-          router_recalc_graph (ROUTER, F_NOT_SOFT);
+          ROUTER->recalc_graph (false);
         }
     }
-
-  return 0;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- * @param create 1 to create, 0 to delete. This just
- *   reverses the actions done by undo/redo.
- */
-static int
-do_or_undo_record (
-  ArrangerSelectionsAction * self,
-  const bool                 _do,
-  GError **                  error)
+void
+ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 {
-  arranger_selections_sort_by_indices (self->sel, _do ? false : true);
-  arranger_selections_sort_by_indices (self->sel_after, _do ? false : true);
-  GPtrArray * before_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, before_objs_arr);
-  GPtrArray * after_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel_after, after_objs_arr);
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
-  g_return_val_if_fail (sel, -1);
+  sel_->sort_by_indices (!do_it);
+  sel_after_->sort_by_indices (!do_it);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
+  g_return_if_fail (sel);
 
-  if (!self->first_run)
+  if (!first_run_)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      sel->clear (false);
 
       /* if do/redoing */
-      if (_do)
+      if (do_it)
         {
           /* create the newly recorded objects */
-          for (size_t i = 0; i < after_objs_arr->len; i++)
+          for (auto &own_after_obj : sel_after_->objects_)
             {
-              ArrangerObject * own_after_obj =
-                (ArrangerObject *) g_ptr_array_index (after_objs_arr, i);
-              own_after_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-              /* clone the clone */
-              ArrangerObject * obj = arranger_object_clone (own_after_obj);
-
-              /* add it to the project */
-              GError * err = NULL;
-              bool     success =
-                arranger_object_add_to_project (obj, F_NO_PUBLISH_EVENTS, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to add object to project");
-                  return -1;
-                }
+              /* add a clone to the project */
+              auto prj_obj = own_after_obj->add_clone_to_project (false);
 
               /* select it */
-              arranger_object_select (
-                obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
-              arranger_object_copy_identifier (own_after_obj, obj);
+              own_after_obj->copy_identifier (*prj_obj);
             }
 
           /* delete the previous objects */
-          for (size_t i = 0; i < before_objs_arr->len; i++)
+          for (auto &own_before_obj : sel_->objects_)
             {
-              ArrangerObject * own_before_obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-              own_before_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-              /* get the actual object from the
-               * project */
-              ArrangerObject * obj = arranger_object_find (own_before_obj);
-              g_return_val_if_fail (obj, -1);
+              /* get the actual object from the project */
+              auto obj = own_before_obj->find_in_project ();
+              g_return_if_fail (obj);
 
               /* remove it */
-              arranger_object_remove_from_project (obj);
+              obj->remove_from_project ();
             }
         }
 
@@ -2114,71 +1199,47 @@ do_or_undo_record (
       else
         {
           /* delete the newly recorded objects */
-          for (size_t i = 0; i < after_objs_arr->len; i++)
+          for (auto &own_after_obj : sel_after_->objects_)
             {
-              ArrangerObject * own_after_obj =
-                (ArrangerObject *) g_ptr_array_index (after_objs_arr, i);
-              own_after_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-              /* get the actual object from the
-               * project */
-              ArrangerObject * obj = arranger_object_find (own_after_obj);
-              g_return_val_if_fail (obj, -1);
+              /* get the actual object from the project */
+              auto obj = own_after_obj->find_in_project ();
+              g_return_if_fail (obj);
 
               /* remove it */
-              arranger_object_remove_from_project (obj);
+              obj->remove_from_project ();
             }
 
           /* add the objects before the recording */
-          for (size_t i = 0; i < before_objs_arr->len; i++)
+          for (auto &own_before_obj : sel_->objects_)
             {
-              ArrangerObject * own_before_obj =
-                (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-              own_before_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-              /* clone the clone */
-              ArrangerObject * obj = arranger_object_clone (own_before_obj);
-
-              /* add it to the project */
-              GError * err = NULL;
-              bool     success =
-                arranger_object_add_to_project (obj, F_NO_PUBLISH_EVENTS, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to add object to project");
-                  return -1;
-                }
+              /* add a clone to the project */
+              auto prj_obj = own_before_obj->add_clone_to_project (false);
 
               /* select it */
-              arranger_object_select (
-                obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
-              arranger_object_copy_identifier (own_before_obj, obj);
+              own_before_obj->copy_identifier (*prj_obj);
             }
         }
     }
 
-  g_ptr_array_unref (before_objs_arr);
-  g_ptr_array_unref (after_objs_arr);
-
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
 
-  self->first_run = 0;
+  first_run_ = false;
 
-  if (
-    self->sel->type == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE)
+  if (sel_->type_ == ArrangerSelections::Type::Timeline)
     {
-      TimelineSelections * ts = (TimelineSelections *) self->sel;
-      bool                 have_automation_region = false;
-      for (int i = 0; i < ts->num_regions; i++)
+      auto &ts = dynamic_cast<TimelineSelections &> (*sel_);
+      bool  have_automation_region = false;
+      for (auto &obj : ts.objects_)
         {
-          Region * r = ts->regions[i];
-          if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
+          if (dynamic_cast<AutomationRegion *> (obj.get ()) != nullptr)
             {
               have_automation_region = true;
               break;
@@ -2187,564 +1248,432 @@ do_or_undo_record (
 
       if (have_automation_region)
         {
-          router_recalc_graph (ROUTER, F_NOT_SOFT);
+          ROUTER->recalc_graph (false);
         }
     }
-
-  return 0;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- * @param create 1 to create, 0 to delete. This just
- *   reverses the actions done by undo/redo.
- */
-static int
-do_or_undo_edit (ArrangerSelectionsAction * self, const int _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 {
-  GPtrArray * objs_before_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_before_arr);
-  GPtrArray * objs_after_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel_after, objs_after_arr);
+  auto &src_sel = do_it ? sel_ : sel_after_;
+  auto &dest_sel = do_it ? sel_after_ : sel_;
 
-  GPtrArray * src_objs_arr = _do ? objs_before_arr : objs_after_arr;
-  GPtrArray * dest_objs_arr = _do ? objs_after_arr : objs_before_arr;
-
-  if (!self->first_run)
+  if (!first_run_)
     {
       if (
-        self->edit_type
-          == ArrangerSelectionsActionEditType::
-            ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION
-        && self->sel->type
-             == ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO)
+        edit_type_ == EditType::EditorFunction
+        && sel_->type_ == ArrangerSelections::Type::Audio)
         {
-          AudioSelections * src_audio_sel =
-            (AudioSelections *) (_do ? self->sel_after : self->sel);
-          Region *    r = region_find (&src_audio_sel->region_id);
-          AudioClip * src_clip =
-            audio_pool_get_clip (AUDIO_POOL, src_audio_sel->pool_id);
+          auto src_audio_sel = dynamic_cast<AudioSelections *> (dest_sel.get ());
+          g_return_if_fail (src_audio_sel);
+          auto r = RegionImpl<AudioRegion>::find (src_audio_sel->region_id_);
+          g_return_if_fail (r);
+          auto src_clip = AUDIO_POOL->get_clip (src_audio_sel->pool_id_);
+          g_return_if_fail (src_clip);
 
           /* adjust the positions */
-          Position start, end;
-          position_set_to_pos (&start, &src_audio_sel->sel_start);
-          position_set_to_pos (&end, &src_audio_sel->sel_end);
-          position_add_frames (&start, -r->base.pos.frames);
-          position_add_frames (&end, -r->base.pos.frames);
-          unsigned_frame_t num_frames =
-            (unsigned_frame_t) (end.frames - start.frames);
-          g_return_val_if_fail (num_frames == src_clip->num_frames, -1);
+          Position start = src_audio_sel->sel_start_;
+          Position end = src_audio_sel->sel_end_;
+          start.add_frames (-r->pos_.frames_);
+          end.add_frames (-r->pos_.frames_);
+          auto num_frames =
+            static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
+          g_return_if_fail (num_frames == src_clip->num_frames_);
 
-          char * src_clip_path =
-            audio_clip_get_path_in_pool (src_clip, F_NOT_BACKUP);
-          g_message (
-            "replacing audio region %s frames with "
-            "'%s' frames",
-            r->name, src_clip_path);
-          g_free (src_clip_path);
+          auto src_clip_path = src_clip->get_path_in_pool (false);
+          z_debug (
+            "replacing audio region {} frames with {} frames", r->name_,
+            src_clip_path);
 
           /* replace the frames in the region */
-          GError * err = NULL;
-          bool     success = audio_region_replace_frames (
-            r, src_clip->frames, (size_t) start.frames, num_frames,
-            F_NO_DUPLICATE_CLIP, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s", "Failed to replace frames for audio region");
-              return -1;
-            }
+          r->replace_frames (
+            src_clip->frames_.getReadPointer (0), start.frames_, num_frames,
+            false);
         }
       else /* not audio function */
         {
-          for (size_t i = 0; i < src_objs_arr->len; i++)
+          for (size_t i = 0; i < src_sel->objects_.size (); i++)
             {
-              ArrangerObject * own_src_obj =
-                (ArrangerObject *) g_ptr_array_index (src_objs_arr, i);
-              ArrangerObject * own_dest_obj =
-                (ArrangerObject *) g_ptr_array_index (dest_objs_arr, i);
-              g_return_val_if_fail (own_src_obj, -1);
-              g_return_val_if_fail (own_dest_obj, -1);
-              own_src_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
-              own_dest_obj->flags |=
-                ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              auto own_src_obj = src_sel->objects_[i].get ();
+              auto own_dest_obj = dest_sel->objects_[i].get ();
+              g_return_if_fail (own_src_obj);
+              g_return_if_fail (own_dest_obj);
+              own_src_obj->flags_ |= ArrangerObject::Flags::NonProject;
+              own_dest_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* find the actual object */
-              ArrangerObject * obj = arranger_object_find (own_src_obj);
-              g_return_val_if_fail (obj, -1);
+              auto obj = own_src_obj->find_in_project ();
+              g_return_if_fail (obj);
 
               /* change the parameter */
-              switch (self->edit_type)
+              switch (edit_type_)
                 {
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_NAME:
+                case EditType::Name:
                   {
-                    g_return_val_if_fail (
-                      arranger_object_type_has_name (obj->type), -1);
-                    const char * name = arranger_object_get_name (own_dest_obj);
-                    arranger_object_set_name (obj, name, F_NO_PUBLISH_EVENTS);
+                    g_return_if_fail (
+                      ArrangerObject::type_has_name (obj->type_));
+                    auto name =
+                      dynamic_cast<NameableObject *> (own_dest_obj)->name_;
+                    dynamic_pointer_cast<NameableObject> (obj)->set_name (
+                      name, false);
                   }
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_POS:
-                  obj->pos = own_dest_obj->pos;
-                  obj->end_pos = own_dest_obj->end_pos;
-                  obj->clip_start_pos = own_dest_obj->clip_start_pos;
-                  obj->loop_start_pos = own_dest_obj->loop_start_pos;
-                  obj->loop_end_pos = own_dest_obj->loop_end_pos;
+                case EditType::Position:
+                  obj->pos_ = own_dest_obj->pos_;
+                  if (obj->has_length ())
+                    {
+                      auto obj_lo = dynamic_pointer_cast<LengthableObject> (obj);
+                      auto own_dest_obj_lo =
+                        dynamic_cast<LengthableObject *> (own_dest_obj);
+                      obj_lo->end_pos_ = own_dest_obj_lo->end_pos_;
+                    }
+                  if (obj->can_loop ())
+                    {
+                      auto obj_lo = dynamic_pointer_cast<LoopableObject> (obj);
+                      auto own_dest_obj_lo =
+                        dynamic_cast<LoopableObject *> (own_dest_obj);
+                      obj_lo->loop_start_pos_ = own_dest_obj_lo->loop_start_pos_;
+                      obj_lo->loop_end_pos_ = own_dest_obj_lo->loop_end_pos_;
+                      obj_lo->clip_start_pos_ = own_dest_obj_lo->clip_start_pos_;
+                    }
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_FADES:
-                  obj->fade_in_pos = own_dest_obj->fade_in_pos;
-                  obj->fade_out_pos = own_dest_obj->fade_out_pos;
-                  obj->fade_in_opts = own_dest_obj->fade_in_opts;
-                  obj->fade_out_opts = own_dest_obj->fade_out_opts;
+                case EditType::Fades:
+                  if (obj->can_fade ())
+                    {
+                      auto obj_f = dynamic_pointer_cast<FadeableObject> (obj);
+                      auto own_dest_obj_f =
+                        dynamic_cast<FadeableObject *> (own_dest_obj);
+                      obj_f->fade_in_pos_ = own_dest_obj_f->fade_in_pos_;
+                      obj_f->fade_out_pos_ = own_dest_obj_f->fade_out_pos_;
+                      obj_f->fade_in_opts_ = own_dest_obj_f->fade_in_opts_;
+                      obj_f->fade_out_opts_ = own_dest_obj_f->fade_out_opts_;
+                    }
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
+                case EditType::Primitive:
 #define SET_PRIMITIVE(cc, member) \
-  ((cc *) obj)->member = ((cc *) own_dest_obj)->member
+  dynamic_pointer_cast<cc> (obj)->member = \
+    dynamic_cast<cc *> (own_dest_obj)->member
 
-                  switch (obj->type)
+                  switch (obj->type_)
                     {
-                    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION:
+                    case ArrangerObject::Type::Region:
                       {
-                        SET_PRIMITIVE (ArrangerObject, muted);
-                        SET_PRIMITIVE (Region, color);
-                        SET_PRIMITIVE (Region, use_color);
-                        SET_PRIMITIVE (Region, musical_mode);
-                        SET_PRIMITIVE (Region, gain);
+                        SET_PRIMITIVE (MuteableObject, muted_);
+                        SET_PRIMITIVE (Region, color_);
+                        SET_PRIMITIVE (Region, use_color_);
+                        SET_PRIMITIVE (AudioRegion, musical_mode_);
+                        SET_PRIMITIVE (AudioRegion, gain_);
                       }
                       break;
-                    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+                    case ArrangerObject::Type::MidiNote:
                       {
-                        SET_PRIMITIVE (MidiNote, muted);
-                        SET_PRIMITIVE (MidiNote, val);
+                        SET_PRIMITIVE (MidiNote, muted_);
+                        SET_PRIMITIVE (MidiNote, val_);
 
                         /* set velocity and cache vel */
-                        MidiNote * mn = (MidiNote *) obj;
-                        MidiNote * dest_mn = (MidiNote *) own_dest_obj;
-                        velocity_set_val (mn->vel, dest_mn->vel->vel);
+                        auto mn = dynamic_pointer_cast<MidiNote> (obj);
+                        auto dest_mn = dynamic_cast<MidiNote *> (own_dest_obj);
+                        mn->vel_->set_val (dest_mn->vel_->vel_);
                       }
                       break;
-                    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                    case ArrangerObject::Type::AutomationPoint:
                       {
-                        SET_PRIMITIVE (AutomationPoint, curve_opts);
-                        SET_PRIMITIVE (AutomationPoint, fvalue);
-                        SET_PRIMITIVE (AutomationPoint, normalized_val);
+                        SET_PRIMITIVE (AutomationPoint, curve_opts_);
+                        SET_PRIMITIVE (AutomationPoint, fvalue_);
+                        SET_PRIMITIVE (AutomationPoint, normalized_val_);
                       }
                       break;
                     default:
                       break;
                     }
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION:
-                  obj->pos = own_dest_obj->pos;
-                  obj->end_pos = own_dest_obj->end_pos;
-                  obj->clip_start_pos = own_dest_obj->clip_start_pos;
-                  obj->loop_start_pos = own_dest_obj->loop_start_pos;
-                  obj->loop_end_pos = own_dest_obj->loop_end_pos;
-                  switch (obj->type)
+                case EditType::EditorFunction:
+                  obj->pos_ = own_dest_obj->pos_;
+                  SET_PRIMITIVE (LengthableObject, end_pos_);
+                  SET_PRIMITIVE (LoopableObject, clip_start_pos_);
+                  SET_PRIMITIVE (LoopableObject, loop_start_pos_);
+                  SET_PRIMITIVE (LoopableObject, loop_end_pos_);
+                  switch (obj->type_)
                     {
-                    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+                    case ArrangerObject::Type::MidiNote:
                       {
-                        SET_PRIMITIVE (MidiNote, muted);
-                        SET_PRIMITIVE (MidiNote, val);
+                        SET_PRIMITIVE (MidiNote, muted_);
+                        SET_PRIMITIVE (MidiNote, val_);
 
                         /* set velocity and cache vel */
-                        MidiNote * mn = (MidiNote *) obj;
-                        MidiNote * dest_mn = (MidiNote *) own_dest_obj;
-                        velocity_set_val (mn->vel, dest_mn->vel->vel);
+                        auto mn = dynamic_pointer_cast<MidiNote> (obj);
+                        auto dest_mn = dynamic_cast<MidiNote *> (own_dest_obj);
+                        mn->vel_->set_val (dest_mn->vel_->vel_);
                       }
                       break;
-                    case ArrangerObjectType::ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                    case ArrangerObject::Type::AutomationPoint:
                       {
-                        SET_PRIMITIVE (AutomationPoint, curve_opts);
-                        SET_PRIMITIVE (AutomationPoint, fvalue);
-                        SET_PRIMITIVE (AutomationPoint, normalized_val);
+                        SET_PRIMITIVE (AutomationPoint, curve_opts_);
+                        SET_PRIMITIVE (AutomationPoint, fvalue_);
+                        SET_PRIMITIVE (AutomationPoint, normalized_val_);
                       }
                       break;
                     default:
                       break;
                     }
-#undef SET_PRIMITIVE
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_SCALE:
+                case EditType::Scale:
                   {
-                    ScaleObject * scale = (ScaleObject *) obj;
-                    ScaleObject * dest_scale = (ScaleObject *) own_dest_obj;
-
                     /* set the new scale */
-                    MusicalScale * old = scale->scale;
-                    scale->scale = musical_scale_clone (dest_scale->scale);
-                    object_free_w_func_and_null (musical_scale_free, old);
+                    SET_PRIMITIVE (ScaleObject, scale_);
                   }
                   break;
-                case ArrangerSelectionsActionEditType::
-                  ARRANGER_SELECTIONS_ACTION_EDIT_MUTE:
+                case EditType::Mute:
                   {
                     /* set the new status */
-                    arranger_object_set_muted (obj, !obj->muted, false);
+                    SET_PRIMITIVE (MuteableObject, muted_);
                   }
                   break;
                 default:
                   break;
                 }
+#undef SET_PRIMITIVE
             }
         } /* endif audio function */
     }     /* endif not first run */
 
-  update_region_link_groups (dest_objs_arr);
+  update_region_link_groups (dest_sel->objects_);
 
-  g_ptr_array_unref (src_objs_arr);
-  g_ptr_array_unref (dest_objs_arr);
-
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  auto sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING, sel);
 
-  self->first_run = false;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- * @param create 1 to create, 0 to delete. This just
- *   reverses the actions done by undo/redo.
- */
-static int
-do_or_undo_automation_fill (
-  ArrangerSelectionsAction * self,
-  const int                  _do,
-  GError **                  error)
+void
+ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
 {
-  if (!self->first_run)
+  if (!first_run_)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (
-        (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      TL_SELECTIONS->clear (false);
 
-      /* get the actual object from the
-       * project */
-      ArrangerObject * obj = arranger_object_find (
-        _do ? (ArrangerObject *) self->region_before
-            : (ArrangerObject *) self->region_after);
-      g_return_val_if_fail (obj, -1);
+      /* get the actual object from the project */
+      auto region = dynamic_pointer_cast<AutomationRegion> (
+        do_it ? region_before_->find_in_project ()
+              : region_after_->find_in_project ());
+      z_return_if_fail (region);
 
       /* remove link */
-      Region * region = (Region *) obj;
-      if (region_has_link_group (region))
+      if (region->has_link_group ())
         {
-          region_unlink (region);
+          region->unlink ();
 
-          /* unlink remembered link
-           * groups */
-          region = _do ? self->region_before : self->region_after;
-          region_unlink (region);
+          /* unlink remembered link groups */
+          auto &own_region = do_it ? region_before_ : region_after_;
+          dynamic_cast<AutomationRegion *>(own_region.get())->unlink ();
         }
 
       /* remove it */
-      arranger_object_remove_from_project (obj);
+      region->remove_from_project ();
 
-      /* clone the clone */
-      obj = arranger_object_clone (
-        _do ? (ArrangerObject *) self->region_after
-            : (ArrangerObject *) self->region_before);
-
-      /* add it to the project */
-      GError * err = NULL;
-      bool     success =
-        arranger_object_add_to_project (obj, F_NO_PUBLISH_EVENTS, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Failed to add object to project");
-          return -1;
-        }
+      /* add a clone to the project */
+      auto prj_obj =
+        (do_it ? region_after_ : region_before_)->add_clone_to_project (false);
 
       /* select it */
-      arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+      prj_obj->select (true, true, false);
 
       /* remember new info */
-      arranger_object_copy_identifier (
-        _do ? (ArrangerObject *) self->region_after
-            : (ArrangerObject *) self->region_before,
-        obj);
+      do_it
+        ? region_after_->copy_identifier (*prj_obj)
+        : region_before_->copy_identifier (*prj_obj);
     }
 
-  self->first_run = false;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_split (ArrangerSelectionsAction * self, const int _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo_split (bool do_it)
 {
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_arr);
-
-  for (size_t i = 0; i < objs_arr->len; i++)
+  int i = -1;
+  for (auto &own_obj : sel_->objects_)
     {
-      ArrangerObject * own_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      own_obj->flags |= ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      ++i;
+      own_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-      ArrangerObject *obj, *r1, *r2;
-      if (_do)
-        {
-          /* find the actual object */
-          obj = arranger_object_find (own_obj);
-          g_return_val_if_fail (obj, -1);
+      std::visit (
+        [&] (auto &&own_obj_raw_ptr) {
+          using T = base_type<decltype (own_obj_raw_ptr)>;
 
-          /* split */
-          GError * err = NULL;
-          bool     success = arranger_object_split (
-            obj, &self->pos, 0, &self->r1[i], &self->r2[i], true, &err);
-          if (!success)
+          if (do_it)
             {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to split object");
-              return -1;
+              /* find the actual object */
+              auto obj = dynamic_pointer_cast<T> (
+                own_obj->find_in_project ());
+              z_return_if_fail (obj);
+
+              /* split */
+              auto [r1, r2] = LengthableObject::split (*obj, pos_, false, true);
+
+              /* r1 and r2 are now inside the project, clone them to keep copies
+               */
+              z_return_if_fail (r1 && r2);
+              r1_[i] = r1->clone_unique();
+              r2_[i] = r2->clone_unique();
             }
-
-          /* r1 and r2 are now inside the project,
-           * clone them to keep copies */
-          g_return_val_if_fail (self->r1[i], -1);
-          g_return_val_if_fail (self->r2[i], -1);
-          set_split_objects (self, (int) i, self->r1[i], self->r2[i], true);
-        }
-      /* else if undoing split */
-      else
-        {
-          /* find the actual objects */
-          r1 = arranger_object_find (self->r1[i]);
-          r2 = arranger_object_find (self->r2[i]);
-          g_return_val_if_fail (r1 && r2, -1);
-
-          /* unsplit */
-          GError * err = NULL;
-          bool     success =
-            arranger_object_unsplit (r1, r2, &obj, F_NO_PUBLISH_EVENTS, &err);
-          if (!success)
+          /* else if undoing split */
+          else
             {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to unsplit object");
-              return -1;
-            }
+              /* find the actual objects */
+              auto r1 = dynamic_pointer_cast<T> (
+                r1_[i]->find_in_project ());
+              auto r2 = dynamic_pointer_cast<T> (
+                r2_[i]->find_in_project ());
+              z_return_if_fail (r1 && r2);
 
-          if (obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION)
-            {
-              Region * own_region = (Region *) own_obj;
-              arranger_object_set_name (
-                obj, own_region->name, F_NO_PUBLISH_EVENTS);
-            }
+              /* unsplit */
+              auto obj = LengthableObject::unsplit (*r1, *r2, false);
 
-          /* re-insert object at its original
-           * position */
-          arranger_object_remove_from_project (obj);
-          obj = arranger_object_clone (own_obj);
-          err = NULL;
-          success = arranger_object_insert_to_project (obj, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to add object to project");
-              return -1;
-            }
+              if (obj->type_ == ArrangerObject::Type::Region)
+                {
+                  auto own_region = dynamic_cast<Region *> (own_obj.get ());
+                  dynamic_pointer_cast<NameableObject> (obj)->set_name (
+                    own_region->name_, false);
+                }
 
-          /* free the copies created in _do */
-          free_split_objects (self, (int) i);
-        }
+              /* re-insert object at its original position */
+              obj->remove_from_project ();
+              own_obj->insert_clone_to_project ();
+
+              /* free the copies created in _do */
+              r1_[i].reset ();
+              r2_[i].reset ();
+            }
+        },
+        convert_to_variant<LengthableObjectPtrVariant> (own_obj.get ()));
     }
 
-  if (_do)
-    self->num_split_objs = (int) objs_arr->len;
+  if (do_it)
+    num_split_objs_ = sel_->objects_.size ();
   else
-    self->num_split_objs = 0;
+    num_split_objs_ = 0;
 
-  g_ptr_array_unref (objs_arr);
-
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
 
-  self->first_run = 0;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_merge (ArrangerSelectionsAction * self, const bool _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
 {
   /* if first run, merge */
-  if (self->first_run)
+  if (first_run_)
     {
-      self->sel_after = arranger_selections_clone (self->sel);
-      arranger_selections_merge (self->sel_after);
+      sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant>(sel_.get());
+      sel_after_->merge ();
     }
 
-  arranger_selections_sort_by_indices (self->sel, !_do);
-  arranger_selections_sort_by_indices (self->sel_after, !_do);
+  sel_->sort_by_indices (!do_it);
+  sel_after_->sort_by_indices (!do_it);
 
-  GPtrArray * before_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    _do ? self->sel : self->sel_after, before_objs_arr);
-  GPtrArray * after_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    _do ? self->sel_after : self->sel, after_objs_arr);
+  auto &before_objs = do_it ? sel_->objects_ : sel_after_->objects_;
+  auto &after_objs = do_it ? sel_after_->objects_ : sel_->objects_;
 
   /* remove the before objects from the project */
-  for (int i = (int) before_objs_arr->len - 1; i >= 0; i--)
+  for (auto it = before_objs.rbegin (); it != before_objs.rend (); ++it)
     {
-      ArrangerObject * own_before_obj =
-        (ArrangerObject *) g_ptr_array_index (before_objs_arr, i);
-
-      own_before_obj->flags |=
-        ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      auto &own_before_obj = *it;
+      own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
       /* find the actual object */
-      ArrangerObject * prj_obj = arranger_object_find (own_before_obj);
-      g_return_val_if_fail (prj_obj, -1);
+      auto prj_obj = own_before_obj->find_in_project ();
+      g_return_if_fail (prj_obj);
 
       /* remove */
-      arranger_object_remove_from_project (prj_obj);
+      prj_obj->remove_from_project();
     }
 
   /* add the after objects to the project */
-  for (int i = (int) after_objs_arr->len - 1; i >= 0; i--)
+  for (auto it = after_objs.rbegin (); it != after_objs.rend (); ++it)
     {
-      ArrangerObject * own_after_obj =
-        (ArrangerObject *) g_ptr_array_index (after_objs_arr, i);
-      own_after_obj->flags |=
-        ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      auto &own_after_obj = *it;
+      own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-      ArrangerObject * clone_obj = arranger_object_clone (own_after_obj);
-
-      GError * err = NULL;
-      bool     success =
-        arranger_object_add_to_project (clone_obj, F_NO_PUBLISH_EVENTS, &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err, "Failed to add object to project");
-          return -1;
-        }
+      auto prj_obj = own_after_obj->add_clone_to_project (false);
 
       /* remember positions */
-      arranger_object_copy_identifier (own_after_obj, clone_obj);
+      own_after_obj->copy_identifier (*prj_obj);
     }
 
-  g_ptr_array_unref (before_objs_arr);
-  g_ptr_array_unref (after_objs_arr);
-
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
 
-  self->first_run = 0;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_resize (ArrangerSelectionsAction * self, const int _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
 {
-  GPtrArray * objs_before_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_before_arr);
+  auto &objs_before = sel_->objects_;
 
-  bool sel_after_existed = self->sel_after != NULL;
-  if (!self->sel_after)
+  bool sel_after_existed = sel_after_ != nullptr;
+  if (!sel_after_)
     {
       /* create the "after" selections here if not already given (e.g., when the
        * objects are already edited) */
-      set_selections (self, self->sel, true, true);
+      set_after_selections (*sel_);
     }
 
-  GPtrArray * objs_after_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel_after, objs_after_arr);
+  auto &objs_after = sel_after_->objects_;
 
-  double ticks = _do ? self->ticks : -self->ticks;
+  double ticks = do_it ? ticks_ : -ticks_;
 
   /* if objects are already edited and this is the first run nothing needs to be
    * done */
-  if (!sel_after_existed || !self->first_run)
+  if (!sel_after_existed || !first_run_)
     {
-      for (size_t i = 0; i < objs_before_arr->len; i++)
+      for (size_t i = 0; i < objs_before.size (); i++)
         {
-          ArrangerObject * own_obj_before =
-            (ArrangerObject *) g_ptr_array_index (objs_before_arr, i);
-          own_obj_before->flags |=
-            ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
-          ArrangerObject * own_obj_after =
-            (ArrangerObject *) g_ptr_array_index (objs_after_arr, i);
-          own_obj_after->flags |=
-            ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          auto &own_obj_before = objs_before[i];
+          own_obj_before->flags_ |= ArrangerObject::Flags::NonProject;
+          auto &own_obj_after = objs_after[i];
+          own_obj_after->flags_ |= ArrangerObject::Flags::NonProject;
 
           /* find the actual object */
-          ArrangerObject * obj =
-            arranger_object_find (_do ? own_obj_before : own_obj_after);
-          g_return_val_if_fail (obj, -1);
+          auto obj =
+            do_it ? own_obj_before->find_in_project ()
+                  : own_obj_after->find_in_project ();
+          g_return_if_fail (obj);
 
-          ArrangerObjectResizeType type =
-            ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_NORMAL;
-          int left = 0;
-          switch (self->resize_type)
+          auto type = ArrangerObject::ResizeType::RESIZE_NORMAL;
+          bool left = false;
+          switch (resize_type_)
             {
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_NORMAL;
+            case ResizeType::L:
+              type = ArrangerObject::ResizeType::RESIZE_NORMAL;
               left = true;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_STRETCH_L:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_STRETCH;
+            case ResizeType::LStretch:
+              type = ArrangerObject::ResizeType::RESIZE_STRETCH;
               left = true;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP:
+            case ResizeType::LLoop:
               left = true;
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_LOOP;
+              type = ArrangerObject::ResizeType::RESIZE_LOOP;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE:
+            case ResizeType::LFade:
               left = true;
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_FADE;
+              type = ArrangerObject::ResizeType::RESIZE_FADE;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_NORMAL;
+            case ResizeType::R:
+              type = ArrangerObject::ResizeType::RESIZE_NORMAL;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_STRETCH_R:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_STRETCH;
+            case ResizeType::RStretch:
+              type = ArrangerObject::ResizeType::RESIZE_STRETCH;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_LOOP;
+            case ResizeType::RLoop:
+              type = ArrangerObject::ResizeType::RESIZE_LOOP;
               break;
-            case ArrangerSelectionsActionResizeType::
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE:
-              type = ArrangerObjectResizeType::ARRANGER_OBJECT_RESIZE_FADE;
+            case ResizeType::RFade:
+              type = ArrangerObject::ResizeType::RESIZE_FADE;
               break;
             default:
               g_warn_if_reached ();
@@ -2752,317 +1681,249 @@ do_or_undo_resize (ArrangerSelectionsAction * self, const int _do, GError ** err
 
           /* on first do, resize both the project object and our own "after"
            * object */
-          if (_do && self->first_run)
+          if (do_it && first_run_)
             {
-              GError * err = NULL;
-              bool     success =
-                arranger_object_resize (obj, left, type, ticks, false, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to resize object");
-                  return -1;
-                }
-
-              success = arranger_object_resize (
-                own_obj_after, left, type, ticks, false, &err);
-              if (!success)
-                {
-                  PROPAGATE_PREFIXED_ERROR_LITERAL (
-                    error, err, "Failed to resize object");
-                  return -1;
-                }
+              dynamic_pointer_cast<LengthableObject> (obj)->resize (
+                left, type, ticks, false);
+              dynamic_cast<LengthableObject *> (own_obj_after.get ())
+                ->resize (left, type, ticks, false);
             } /* endif do and first run */
 
           /* remove the project object and add a clone of our corresponding
            * object */
-          arranger_object_remove_from_project (obj);
-          obj = NULL;
-          ArrangerObject * new_obj =
-            arranger_object_clone (_do ? own_obj_after : own_obj_before);
-          GError * err = NULL;
-          bool     success = arranger_object_insert_to_project (new_obj, &err);
-          if (!success)
-            {
-              PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err, "Failed to add object to project");
-              return -1;
-            }
+           obj->remove_from_project();
+          obj = nullptr;
+          auto new_obj =
+            (do_it ? own_obj_after : own_obj_before)->insert_clone_to_project ();
 
           /* select it */
-          arranger_object_select (
-            new_obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          new_obj->select (true, true, false);
         } /* endforeach object */
     }
 
-  update_region_link_groups (_do ? objs_after_arr : objs_before_arr);
+  update_region_link_groups (do_it ? objs_after : objs_before);
 
-  g_ptr_array_unref (objs_before_arr);
-  g_ptr_array_unref (objs_after_arr);
-
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel);
 
-  self->first_run = false;
-
-  return 0;
+  first_run_ = false;
 }
 
-/**
- * Does or undoes the action.
- *
- * @param _do 1 to do, 0 to undo.
- */
-static int
-do_or_undo_quantize (
-  ArrangerSelectionsAction * self,
-  const int                  _do,
-  GError **                  error)
+void
+ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
 {
-  GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel, objs_arr);
-  GPtrArray * quantized_objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (self->sel_after, quantized_objs_arr);
+  auto &objs = sel_->objects_;
+  auto &quantized_objs = sel_after_->objects_;
 
-  for (size_t i = 0; i < objs_arr->len; i++)
+  for (size_t i = 0; i < objs.size (); i++)
     {
-      ArrangerObject * own_obj =
-        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
-      ArrangerObject * own_quantized_obj =
-        (ArrangerObject *) g_ptr_array_index (quantized_objs_arr, i);
+      auto &own_obj = objs[i];
+      auto &own_quantized_obj = quantized_objs[i];
 
-      own_obj->flags |= ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      own_quantized_obj->flags |=
-        ArrangerObjectFlags::ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      own_obj->flags_ |= ArrangerObject::Flags::NonProject;
+      own_quantized_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
       /* find the actual object */
-      ArrangerObject * obj;
-      if (_do)
-        {
-          obj = arranger_object_find (own_obj);
-        }
-      else
-        {
-          obj = arranger_object_find (own_quantized_obj);
-        }
-      g_return_val_if_fail (obj, -1);
+      auto obj =
+        do_it ? own_obj->find_in_project ()
+              : own_quantized_obj->find_in_project ();
+      g_return_if_fail (obj);
 
-      if (_do)
+      if (do_it)
         {
           /* quantize it */
-          if (self->opts->adj_start)
+          if (opts_->adj_start_)
             {
-              double ticks =
-                quantize_options_quantize_position (self->opts, &obj->pos);
-              position_add_ticks (&obj->end_pos, ticks);
+              double ticks = opts_->quantize_position (&obj->pos_);
+              dynamic_pointer_cast<LengthableObject> (obj)->end_pos_.add_ticks (ticks);
             }
-          if (self->opts->adj_end)
+          if (opts_->adj_end_)
             {
-              quantize_options_quantize_position (self->opts, &obj->end_pos);
+              opts_->quantize_position (
+                &dynamic_pointer_cast<LengthableObject> (obj)->end_pos_);
             }
-          arranger_object_pos_setter (obj, &obj->pos);
-          arranger_object_end_pos_setter (obj, &obj->end_pos);
+          obj->pos_setter (&obj->pos_);
+          dynamic_pointer_cast<LengthableObject> (obj)->end_pos_setter (
+            &dynamic_pointer_cast<LengthableObject> (obj)->end_pos_);
 
           /* remember the quantized position so we
            * can find the object when undoing */
-          position_set_to_pos (&own_quantized_obj->pos, &obj->pos);
-          position_set_to_pos (&own_quantized_obj->end_pos, &obj->end_pos);
+          own_quantized_obj->pos_ = obj->pos_;
+          dynamic_cast<LengthableObject &> (*own_quantized_obj).end_pos_ =
+            dynamic_pointer_cast<LengthableObject> (obj)->end_pos_;
         }
       else
         {
           /* unquantize it */
-          arranger_object_pos_setter (obj, &own_obj->pos);
-          arranger_object_end_pos_setter (obj, &own_obj->end_pos);
+          obj->pos_setter (&own_obj->pos_);
+          dynamic_pointer_cast<LengthableObject> (obj)->end_pos_setter (
+            &dynamic_cast<LengthableObject &> (*own_obj).end_pos_);
         }
     }
-  g_ptr_array_unref (objs_arr);
-  g_ptr_array_unref (quantized_objs_arr);
 
-  ArrangerSelections * sel = get_actual_arranger_selections (self);
+  ArrangerSelections * sel = get_actual_arranger_selections ();
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel);
 
-  self->first_run = 0;
-
-  return 0;
+  first_run_ = false;
 }
 
-static int
-do_or_undo (ArrangerSelectionsAction * self, bool _do, GError ** error)
+void
+ArrangerSelectionsAction::do_or_undo (bool do_it)
 {
-  int ret = -1;
-  switch (self->type)
+  switch (type_)
     {
-    case ArrangerSelectionsActionType::AS_ACTION_CREATE:
-      ret = do_or_undo_create_or_delete (self, _do, true, error);
+    case Type::Create:
+      do_or_undo_create_or_delete (do_it, true);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_DELETE:
-      ret = do_or_undo_create_or_delete (self, _do, false, error);
+    case Type::Delete:
+      do_or_undo_create_or_delete (do_it, false);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_DUPLICATE:
-      ret = do_or_undo_duplicate_or_link (self, false, _do, error);
+    case Type::Duplicate:
+      do_or_undo_duplicate_or_link (false, do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_MOVE:
-      ret = do_or_undo_move (self, _do, error);
+    case Type::Move:
+      do_or_undo_move (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_LINK:
-      ret = do_or_undo_duplicate_or_link (self, true, _do, error);
+    case Type::Link:
+      do_or_undo_duplicate_or_link (true, do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_RECORD:
-      ret = do_or_undo_record (self, _do, error);
+    case Type::Record:
+      do_or_undo_record (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_EDIT:
-      ret = do_or_undo_edit (self, _do, error);
+    case Type::Edit:
+      do_or_undo_edit (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_AUTOMATION_FILL:
-      ret = do_or_undo_automation_fill (self, _do, error);
+    case Type::AutomationFill:
+      do_or_undo_automation_fill (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_SPLIT:
-      ret = do_or_undo_split (self, _do, error);
+    case Type::Split:
+      do_or_undo_split (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_MERGE:
-      ret = do_or_undo_merge (self, _do, error);
+    case Type::Merge:
+      do_or_undo_merge (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_RESIZE:
-      ret = do_or_undo_resize (self, _do, error);
+    case Type::Resize:
+      do_or_undo_resize (do_it);
       break;
-    case ArrangerSelectionsActionType::AS_ACTION_QUANTIZE:
-      ret = do_or_undo_quantize (self, _do, error);
+    case Type::Quantize:
+      do_or_undo_quantize (do_it);
       break;
     default:
-      g_return_val_if_reached (-1);
+      g_return_if_reached ();
       break;
     }
 
   /* update playback caches */
-  tracklist_set_caches (TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+  TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
 
   /* reset new_lane_created */
-  for (auto track : TRACKLIST->tracks)
+  for (auto track : TRACKLIST->tracks_ | type_is<LanedTrack> ())
     {
-      track->last_lane_created = 0;
-      track->block_auto_creation_and_deletion = false;
-      track_create_missing_lanes (track, track->num_lanes - 1);
-      track_remove_empty_last_lanes (track);
+      track->last_lane_created_ = 0;
+      track->block_auto_creation_and_deletion_ = false;
+      std::visit (
+        [&] (auto &&track) {
+          track->create_missing_lanes (track->lanes_.size () - 1);
+          track->remove_empty_last_lanes ();
+        },
+        convert_to_variant<LanedTrackPtrVariant> (track));
     }
 
-  /* this is only needed in a few cases but it's cheap so
-   * send the event here anyway */
-  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
-
-  return ret;
+  /* this is only needed in a few cases but it's cheap so send the event here
+   * anyway */
+  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
 }
 
-int
-arranger_selections_action_do (ArrangerSelectionsAction * self, GError ** error)
+void
+ArrangerSelectionsAction::perform_impl ()
 {
-  return do_or_undo (self, true, error);
+  do_or_undo (true);
 }
 
-int
-arranger_selections_action_undo (ArrangerSelectionsAction * self, GError ** error)
+void
+ArrangerSelectionsAction::undo_impl ()
 {
-  return do_or_undo (self, false, error);
+  do_or_undo (false);
 }
 
 bool
-arranger_selections_action_contains_clip (
-  ArrangerSelectionsAction * self,
-  AudioClip *                clip)
+ArrangerSelectionsAction::contains_clip (const AudioClip &clip) const
 {
-  if (self->sel && arranger_selections_contains_clip (self->sel, clip))
+  if (sel_ && sel_->contains_clip (clip))
     {
       return true;
     }
-  if (
-    self->sel_after && arranger_selections_contains_clip (self->sel_after, clip))
+  if (sel_after_ && sel_after_->contains_clip (clip))
     {
       return true;
     }
 
   /* check split regions (if any) */
-  for (int i = 0; i < self->num_split_objs; i++)
+  for (size_t i = 0; i < num_split_objs_; i++)
     {
-      Region * r1 = self->region_r1[i];
-      Region * r2 = self->region_r2[i];
+      auto r1 = dynamic_cast<AudioRegion *> (r1_[i].get ());
+      auto r2 = dynamic_cast<AudioRegion *> (r2_[i].get ());
       if (r1 && r2)
         {
-          if (r1->id.type != RegionType::REGION_TYPE_AUDIO)
-            break;
-
-          if (r1->pool_id == clip->pool_id || r2->pool_id == clip->pool_id)
+          if (r1->pool_id_ == clip.pool_id_ || r2->pool_id_ == clip.pool_id_)
             {
               return true;
             }
         }
-      else
-        break;
     }
 
   return false;
 }
 
-char *
-arranger_selections_action_stringize (ArrangerSelectionsAction * self)
+std::string
+ArrangerSelectionsAction::to_string () const
 {
-  switch (self->type)
+  switch (type_)
     {
-    case ArrangerSelectionsActionType::AS_ACTION_CREATE:
-      switch (self->sel->type)
+    case Type::Create:
+      switch (sel_->type_)
         {
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE:
-          return g_strdup (_ ("Create timeline selections"));
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUDIO:
-          return g_strdup (_ ("Create audio selections"));
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-          return g_strdup (_ ("Create automation selections"));
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_CHORD:
-          return g_strdup (_ ("Create chord selections"));
-        case ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_MIDI:
-          return g_strdup (_ ("Create MIDI selections"));
+        case ArrangerSelections::Type::Timeline:
+          return _ ("Create timeline selections");
+        case ArrangerSelections::Type::Audio:
+          return _ ("Create audio selections");
+        case ArrangerSelections::Type::Automation:
+          return _ ("Create automation selections");
+        case ArrangerSelections::Type::Chord:
+          return _ ("Create chord selections");
+        case ArrangerSelections::Type::Midi:
+          return _ ("Create MIDI selections");
         default:
-          g_return_val_if_reached (NULL);
+          g_return_val_if_reached ("");
         }
-    case ArrangerSelectionsActionType::AS_ACTION_DELETE:
-      return g_strdup (_ ("Delete arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_DUPLICATE:
-      return g_strdup (_ ("Duplicate arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_MOVE:
-      return g_strdup (_ ("Move arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_LINK:
-      return g_strdup (_ ("Link arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_RECORD:
-      return g_strdup (_ ("Record arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_EDIT:
-      return g_strdup (_ ("Edit arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_AUTOMATION_FILL:
-      return g_strdup (_ ("Automation fill"));
-    case ArrangerSelectionsActionType::AS_ACTION_SPLIT:
-      return g_strdup (_ ("Split arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_MERGE:
-      return g_strdup (_ ("Merge arranger selections"));
-    case ArrangerSelectionsActionType::AS_ACTION_RESIZE:
+    case Type::Delete:
+      return _ ("Delete arranger selections");
+    case Type::Duplicate:
+      return _ ("Duplicate arranger selections");
+    case Type::Move:
+      return _ ("Move arranger selections");
+    case Type::Link:
+      return _ ("Link arranger selections");
+    case Type::Record:
+      return _ ("Record arranger selections");
+    case Type::Edit:
+      return _ ("Edit arranger selections");
+    case Type::AutomationFill:
+      return _ ("Automation fill");
+    case Type::Split:
+      return _ ("Split arranger selections");
+    case Type::Merge:
+      return _ ("Merge arranger selections");
+    case Type::Resize:
       {
-        const char * resize_type = arranger_selections_action_resize_type_strings
-          [ENUM_VALUE_TO_INT (self->resize_type)];
-        return g_strdup_printf (
-          _ ("Resize arranger selections - %s"), resize_type);
+        return format_str (_ ("Resize arranger selections - {}"), resize_type_);
       }
-    case ArrangerSelectionsActionType::AS_ACTION_QUANTIZE:
-      return g_strdup (_ ("Quantize arranger selections"));
+    case Type::Quantize:
+      return _ ("Quantize arranger selections");
     default:
       break;
     }
 
-  g_return_val_if_reached (g_strdup (""));
-}
-
-void
-arranger_selections_action_free (ArrangerSelectionsAction * self)
-{
-  object_free_w_func_and_null (arranger_selections_free_full, self->sel);
-
-  object_delete_and_null (self->target_port);
-
-  object_zero_and_free (self);
+  g_return_val_if_reached ("");
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_RANGE_ACTION_H__
@@ -15,91 +15,95 @@
  * @{
  */
 
-enum class RangeActionType
+class RangeAction
+    : public UndoableAction,
+      public ICloneable<RangeAction>,
+      public ISerializable<RangeAction>
 {
-  RANGE_ACTION_INSERT_SILENCE,
-  RANGE_ACTION_REMOVE,
-};
+public:
+  enum class Type
+  {
+    InsertSilence,
+    Remove,
+  };
 
-typedef struct RangeAction
-{
-  UndoableAction parent_instance;
+public:
+  RangeAction () : UndoableAction (UndoableAction::Type::Range) { }
+  RangeAction (Type type, Position start_pos, Position end_pos);
 
+  std::string to_string () const override;
+
+  bool can_contain_clip () const override { return true; }
+
+  bool contains_clip (const AudioClip &clip) const override
+  {
+    return (sel_before_ && sel_before_->contains_clip (clip))
+           || (sel_after_ && sel_after_->contains_clip (clip));
+  }
+
+  void init_after_cloning (const RangeAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override
+  {
+    if (sel_before_)
+      sel_before_->init_loaded (false, this);
+    if (sel_after_)
+      sel_after_->init_loaded (false, this);
+    transport_->init_loaded (nullptr, nullptr);
+  }
+
+  void perform_impl () override;
+  void undo_impl () override;
+
+  void add_to_sel_after (
+    std::vector<ArrangerObject *>                &prj_objs,
+    std::vector<std::shared_ptr<ArrangerObject>> &after_objs_for_prj,
+    ArrangerObject                               &prj_obj,
+    std::shared_ptr<ArrangerObject>             &&after_obj);
+
+public:
   /** Range positions. */
-  Position start_pos;
-  Position end_pos;
+  Position start_pos_;
+  Position end_pos_;
 
   /** Action type. */
-  RangeActionType type;
+  Type type_ = Type::InsertSilence;
 
   /** Selections before the action, starting from
    * objects intersecting with the start position and
    * ending in infinity. */
-  TimelineSelections * sel_before;
+  std::unique_ptr<TimelineSelections> sel_before_;
 
   /** Selections after the action. */
-  TimelineSelections * sel_after;
+  std::unique_ptr<TimelineSelections> sel_after_;
 
-  /** A copy of the transport at the start of the
-   * action. */
-  Transport * transport;
+  /** A copy of the transport at the start of the action. */
+  std::unique_ptr<Transport> transport_;
 
   /** Whether this is the first run. */
-  bool first_run;
+  bool first_run_ = true;
+};
 
-} RangeAction;
+class RangeInsertSilenceAction : public RangeAction
+{
+public:
+  RangeInsertSilenceAction (Position start_pos, Position end_pos)
+      : RangeAction (Type::InsertSilence, start_pos, end_pos)
+  {
+  }
+};
 
-void
-range_action_init_loaded (RangeAction * self);
-
-/**
- * Creates a new action.
- *
- * @param start_pos Range start.
- * @param end_pos Range end.
- */
-WARN_UNUSED_RESULT UndoableAction *
-range_action_new (
-  RangeActionType type,
-  Position *      start_pos,
-  Position *      end_pos,
-  GError **       error);
-
-#define range_action_new_insert_silence(start, end, error) \
-  range_action_new ( \
-    RangeActionType::RANGE_ACTION_INSERT_SILENCE, start, end, error)
-
-#define range_action_new_remove(start, end, error) \
-  range_action_new (RangeActionType::RANGE_ACTION_REMOVE, start, end, error)
-
-NONNULL RangeAction *
-range_action_clone (const RangeAction * src);
-
-bool
-range_action_perform (
-  RangeActionType type,
-  Position *      start_pos,
-  Position *      end_pos,
-  GError **       error);
-
-#define range_action_perform_insert_silence(start, end, error) \
-  range_action_perform ( \
-    RangeActionType::RANGE_ACTION_INSERT_SILENCE, start, end, error)
-
-#define range_action_perform_remove(start, end, error) \
-  range_action_perform (RangeActionType::RANGE_ACTION_REMOVE, start, end, error)
-
-int
-range_action_do (RangeAction * self, GError ** error);
-
-int
-range_action_undo (RangeAction * self, GError ** error);
-
-char *
-range_action_stringize (RangeAction * self);
-
-void
-range_action_free (RangeAction * self);
+class RangeRemoveAction : public RangeAction
+{
+public:
+  RangeRemoveAction (Position start_pos, Position end_pos)
+      : RangeAction (Type::Remove, start_pos, end_pos)
+  {
+  }
+};
 
 /**
  * @}

@@ -1,16 +1,13 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
 #include "dsp/port_connections_manager.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -50,7 +47,7 @@ on_enabled_toggled (
 
   /* get ports and toggled */
   gboolean enabled;
-  Port *   src_port = NULL, *dest_port = NULL;
+  Port *   src_port = nullptr, *dest_port = NULL;
   gtk_tree_model_get (
     model, &iter, COL_ENABLED, &enabled, COL_SRC_PORT, &src_port, COL_DEST_PORT,
     &dest_port, -1);
@@ -65,16 +62,16 @@ on_enabled_toggled (
   gtk_tree_path_free (path);
 
   /* perform an undoable action */
-  GError * err = NULL;
-  bool     ret = port_connection_action_perform_enable (
-    &src_port->id_, &dest_port->id_, enabled, &err);
-  if (!ret)
+  try
     {
-      HANDLE_ERROR (
-        err,
-        _ ("Failed to enable connection from %s to "
-           "%s"),
-        src_port->get_label_as_c_str (), dest_port->get_label_as_c_str ());
+      UNDO_MANAGER->perform (std::make_unique<PortConnectionEnableAction> (
+        src_port->id_, dest_port->id_));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (format_str (
+        _ ("Failed to enable connection from {} to {}"), src_port->get_label (),
+        dest_port->get_label ()));
     }
 }
 
@@ -90,33 +87,27 @@ create_model (void)
     G_TYPE_POINTER, G_TYPE_POINTER);
 
   /* add data to the list store */
-  for (int i = 0; i < PORT_CONNECTIONS_MGR->num_connections; i++)
+  for (auto &conn : PORT_CONNECTIONS_MGR->connections_)
     {
-      PortConnection * conn = PORT_CONNECTIONS_MGR->connections[i];
-
       /* skip locked connections */
-      if (conn->locked)
+      if (conn.locked_)
         continue;
 
-      Port * src_port = Port::find_from_identifier (conn->src_id);
-      Port * dest_port = Port::find_from_identifier (conn->dest_id);
-      g_return_val_if_fail (
-        IS_PORT_AND_NONNULL (src_port) && IS_PORT_AND_NONNULL (dest_port), NULL);
+      Port * src_port = Port::find_from_identifier (conn.src_id_);
+      Port * dest_port = Port::find_from_identifier (conn.dest_id_);
+      z_return_val_if_fail (src_port && dest_port, nullptr);
 
-      char src_path[600];
-      src_port->get_full_designation (src_path);
-      char dest_path[600];
-      dest_port->get_full_designation (dest_path);
+      auto src_path = src_port->get_full_designation ();
+      auto dest_path = dest_port->get_full_designation ();
 
       /* get multiplier */
-      char mult_str[40];
-      sprintf (mult_str, "%.4f", (double) conn->multiplier);
+      auto mult_str = fmt::sprintf ("%.4f", (double) conn.multiplier_);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (
-        store, &iter, COL_ENABLED, conn->enabled, COL_SRC_PATH, src_path,
-        COL_DEST_PATH, dest_path, COL_MULTIPLIER, mult_str, COL_SRC_PORT,
-        src_port, COL_DEST_PORT, dest_port, -1);
+        store, &iter, COL_ENABLED, conn.enabled_, COL_SRC_PATH,
+        src_path.c_str (), COL_DEST_PATH, dest_path.c_str (), COL_MULTIPLIER,
+        mult_str.c_str (), COL_SRC_PORT, src_port, COL_DEST_PORT, dest_port, -1);
     }
 
   return GTK_TREE_MODEL (store);
@@ -128,8 +119,8 @@ show_context_menu (PortConnectionsTreeWidget * self, double x, double y)
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  menuitem =
-    z_gtk_create_menu_item (_ ("Delete"), NULL, "app.port-connection-remove");
+  menuitem = z_gtk_create_menu_item (
+    _ ("Delete"), nullptr, "app.port-connection-remove");
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
@@ -157,7 +148,7 @@ on_right_click (
 
   GtkTreeSelection * selection = gtk_tree_view_get_selection (self->tree);
   if (!gtk_tree_view_get_path_at_pos (
-        GTK_TREE_VIEW (self->tree), x, y, &path, &column, NULL, NULL))
+        GTK_TREE_VIEW (self->tree), x, y, &path, &column, nullptr, nullptr))
     {
       g_message ("no path at position %d %d", x, y);
       return;
@@ -192,16 +183,16 @@ tree_view_setup (PortConnectionsTreeWidget * self, GtkTreeView * tree_view)
   /* column for checkbox */
   renderer = gtk_cell_renderer_toggle_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("On"), renderer, "active", COL_ENABLED, NULL);
+    _ ("On"), renderer, "active", COL_ENABLED, nullptr);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
   g_signal_connect (renderer, "toggled", G_CALLBACK (on_enabled_toggled), self);
 
   /* column for src path */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Source"), renderer, "text", COL_SRC_PATH, NULL);
+    _ ("Source"), renderer, "text", COL_SRC_PATH, nullptr);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
-  g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+  g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, nullptr);
   gtk_tree_view_column_set_resizable (GTK_TREE_VIEW_COLUMN (column), true);
   gtk_tree_view_column_set_min_width (GTK_TREE_VIEW_COLUMN (column), 120);
   gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), true);
@@ -209,9 +200,9 @@ tree_view_setup (PortConnectionsTreeWidget * self, GtkTreeView * tree_view)
   /* column for src path */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Destination"), renderer, "text", COL_DEST_PATH, NULL);
+    _ ("Destination"), renderer, "text", COL_DEST_PATH, nullptr);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
-  g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+  g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, nullptr);
   gtk_tree_view_column_set_resizable (GTK_TREE_VIEW_COLUMN (column), true);
   gtk_tree_view_column_set_min_width (GTK_TREE_VIEW_COLUMN (column), 120);
   gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), true);
@@ -219,7 +210,7 @@ tree_view_setup (PortConnectionsTreeWidget * self, GtkTreeView * tree_view)
   /* column for multiplier */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Multiplier"), renderer, "text", COL_MULTIPLIER, NULL);
+    _ ("Multiplier"), renderer, "text", COL_MULTIPLIER, nullptr);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
 
   /* connect right click handler */
@@ -249,7 +240,7 @@ PortConnectionsTreeWidget *
 port_connections_tree_widget_new (void)
 {
   PortConnectionsTreeWidget * self = Z_PORT_CONNECTIONS_TREE_WIDGET (
-    g_object_new (PORT_CONNECTIONS_TREE_WIDGET_TYPE, NULL));
+    g_object_new (PORT_CONNECTIONS_TREE_WIDGET_TYPE, nullptr));
 
   /* setup tree */
   tree_view_setup (self, self->tree);
@@ -272,6 +263,7 @@ port_connections_tree_widget_init (PortConnectionsTreeWidget * self)
   self->tree = GTK_TREE_VIEW (gtk_tree_view_new ());
   gtk_scrolled_window_set_child (self->scroll, GTK_WIDGET (self->tree));
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 }

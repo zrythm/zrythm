@@ -1,15 +1,12 @@
-/*
- * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_VOLUME_H__
 #define __GUI_WIDGETS_VOLUME_H__
 
 #include "gtk_wrapper.h"
 
-class Port;
+class ControlPort;
 
 /**
  * @addtogroup widgets
@@ -20,12 +17,12 @@ class Port;
 #define VOLUME_WIDGET_TYPE (volume_widget_get_type ())
 G_DECLARE_FINAL_TYPE (VolumeWidget, volume_widget, Z, VOLUME_WIDGET, GtkDrawingArea)
 
-typedef struct _VolumeWidget
+using VolumeWidget = struct _VolumeWidget
 {
   GtkDrawingArea parent_instance;
 
   /** Control port to change. */
-  Port * port;
+  ControlPort * port;
 
   bool hover;
 
@@ -33,13 +30,13 @@ typedef struct _VolumeWidget
 
   double last_x;
   double last_y;
-} VolumeWidget;
+};
 
 void
-volume_widget_setup (VolumeWidget * self, Port * port);
+volume_widget_setup (VolumeWidget * self, ControlPort * port);
 
 VolumeWidget *
-volume_widget_new (Port * port);
+volume_widget_new (ControlPort * port);
 
 /**
  * @}

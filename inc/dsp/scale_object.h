@@ -1,23 +1,15 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Scale object inside the chord Track in the
- * TimelineArranger.
- */
 
 #ifndef __AUDIO_SCALE_OBJECT_H__
 #define __AUDIO_SCALE_OBJECT_H__
 
-#include <cstdint>
-
-#include "dsp/position.h"
+#include "dsp/muteable_object.h"
 #include "dsp/scale.h"
-#include "gui/backend/arranger_object.h"
-
-typedef struct MusicalScale MusicalScale;
+#include "dsp/timeline_object.h"
+#include "io/serialization/iserializable.h"
+#include "utils/icloneable.h"
+#include "utils/pango.h"
 
 /**
  * @addtogroup dsp
@@ -25,44 +17,72 @@ typedef struct MusicalScale MusicalScale;
  * @{
  */
 
-#define scale_object_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+constexpr int SCALE_OBJECT_MAGIC = 13187994;
+#define IS_SCALE_OBJECT(tr) (tr && tr->magic_ == SCALE_OBJECT_MAGIC)
 
-#define SCALE_OBJECT_MAGIC 13187994
-#define IS_SCALE_OBJECT(tr) (tr && tr->magic == SCALE_OBJECT_MAGIC)
-
-/**
- * A ScaleObject to be shown in the
- * TimelineArrangerWidget.
- *
- * @extends ArrangerObject
- */
-typedef struct ScaleObject
+class ScaleObject final
+    : public TimelineObject,
+      public MuteableObject,
+      public ICloneable<ScaleObject>,
+      public ISerializable<ScaleObject>
 {
-  /** Base struct. */
-  ArrangerObject base;
+public:
+  ScaleObject () = default;
 
-  MusicalScale * scale;
+  ScaleObject (const MusicalScale &descr);
 
-  int index;
+  void init_after_cloning (const ScaleObject &other) override
+  {
+    index_in_chord_track_ = other.index_in_chord_track_;
+    scale_ = other.scale_;
+    TimelineObject::copy_members_from (other);
+    MuteableObject::copy_members_from (other);
+    ArrangerObject::copy_members_from (other);
+  }
 
-  int magic;
+  void set_index_in_chord_track (int index);
+
+  std::string gen_human_friendly_name () const override;
+
+  std::string print_to_str () const override;
+
+  ArrangerObjectPtr find_in_project () const override;
+
+  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+
+  ArrangerObjectPtr insert_clone_to_project () const override;
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+  friend bool operator== (const ScaleObject &a, const ScaleObject &b);
+
+public:
+  /** The scale descriptor. */
+  MusicalScale scale_;
+
+  /** The index of the scale in the chord tack. */
+  int index_in_chord_track_ = -1;
+
+  int magic_ = SCALE_OBJECT_MAGIC;
 
   /** Cache layout for drawing the name. */
-  PangoLayout * layout;
-} ScaleObject;
+  PangoLayoutUniquePtr layout_;
+};
 
-/**
- * Creates a ScaleObject.
- */
-ScaleObject *
-scale_object_new (MusicalScale * descr);
-
-void
-scale_object_set_index (ScaleObject * self, int index);
-
-int
-scale_object_is_equal (ScaleObject * a, ScaleObject * b);
+inline bool
+operator== (const ScaleObject &a, const ScaleObject &b)
+{
+  return static_cast<const TimelineObject &> (a)
+           == static_cast<const TimelineObject &> (b)
+         && static_cast<const MuteableObject &> (a)
+              == static_cast<const MuteableObject &> (b)
+         && static_cast<const ArrangerObject &> (a)
+              == static_cast<const ArrangerObject &> (b)
+         && a.scale_ == b.scale_
+         && a.index_in_chord_track_ == b.index_in_chord_track_;
+}
 
 /**
  * @}

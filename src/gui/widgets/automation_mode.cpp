@@ -5,13 +5,12 @@
 
 #include "gui/widgets/automation_mode.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 void
-automation_mode_widget_init (AutomationModeWidget * self)
+AutomationModeWidget::init ()
 {
 #if 0
   gdk_rgba_parse (
@@ -19,78 +18,66 @@ automation_mode_widget_init (AutomationModeWidget * self)
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
 #endif
-  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1f);
-  self->hovered_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
-  self->toggled_colors[0] = UI_COLORS->solo_checked;
-  self->held_colors[0] = UI_COLORS->solo_active;
-  gdk_rgba_parse (&self->toggled_colors[1], UI_COLOR_RECORD_CHECKED);
-  gdk_rgba_parse (&self->held_colors[1], UI_COLOR_RECORD_ACTIVE);
-  gdk_rgba_parse (&self->toggled_colors[2], "#444444");
-  gdk_rgba_parse (&self->held_colors[2], "#888888");
-  self->aspect = 1.0;
-  self->corner_radius = 8.0;
+  def_color_ = Z_GDK_RGBA_INIT (1, 1, 1, 0.1f);
+  hovered_color_ = Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
+  toggled_colors_[0] = UI_COLORS->solo_checked.to_gdk_rgba ();
+  held_colors_[0] = UI_COLORS->solo_active.to_gdk_rgba ();
+  gdk_rgba_parse (&toggled_colors_[1], UI_COLOR_RECORD_CHECKED);
+  gdk_rgba_parse (&held_colors_[1], UI_COLOR_RECORD_ACTIVE);
+  gdk_rgba_parse (&toggled_colors_[2], "#444444");
+  gdk_rgba_parse (&held_colors_[2], "#888888");
+  aspect_ = 1.0;
+  corner_radius_ = 8.0;
 
   /* set dimensions */
-  PangoLayout * layout = self->layout;
   int           total_width = 0;
   int           x_px, y_px;
   char          txt[400];
 #define DO(caps) \
-  if ( \
-    AutomationMode::AUTOMATION_MODE_##caps \
-    == AutomationMode::AUTOMATION_MODE_RECORD) \
+  if (AutomationMode::caps == AutomationMode::Record) \
     { \
-      automation_record_mode_get_localized (self->owner->record_mode, txt); \
+      auto str = fmt::format ("{:t}", owner_->record_mode_); \
+      strcpy (txt, str.c_str ()); \
     } \
   else \
     { \
-      automation_mode_get_localized ( \
-        AutomationMode::AUTOMATION_MODE_##caps, txt); \
+      auto str = fmt::format ("{:t}", AutomationMode::caps); \
+      strcpy (txt, str.c_str ()); \
     } \
-  pango_layout_set_text (layout, txt, -1); \
-  pango_layout_get_pixel_size (layout, &x_px, &y_px); \
-  self->text_widths[static_cast<int> ( \
-    AutomationMode::AUTOMATION_MODE_##caps)] = x_px; \
-  self->text_heights[static_cast<int> ( \
-    AutomationMode::AUTOMATION_MODE_##caps)] = y_px; \
-  if (y_px > self->max_text_height) \
-    self->max_text_height = y_px; \
+  pango_layout_set_text (layout_, txt, -1); \
+  pango_layout_get_pixel_size (layout_, &x_px, &y_px); \
+  text_widths_[static_cast<int> (AutomationMode::caps)] = x_px; \
+  text_heights_[static_cast<int> (AutomationMode::caps)] = y_px; \
+  if (y_px > max_text_height_) \
+    max_text_height_ = y_px; \
   total_width += x_px
 
-  DO (READ);
-  DO (RECORD);
-  DO (OFF);
+  DO (Read);
+  DO (Record);
+  DO (Off);
 
-  self->width =
+  width_ =
     total_width + AUTOMATION_MODE_HPADDING * 6
     + AUTOMATION_MODE_HSEPARATOR_SIZE * 2;
 }
 
-/**
- * Creates a new track widget from the given track.
- */
-AutomationModeWidget *
-automation_mode_widget_new (
+AutomationModeWidget::AutomationModeWidget (
   int               height,
   PangoLayout *     layout,
   AutomationTrack * owner)
 {
-  AutomationModeWidget * self = object_new (AutomationModeWidget);
-
-  self->owner = owner;
-  self->height = height;
-  self->layout = pango_layout_copy (layout);
+  this->owner_ = owner;
+  this->height_ = height;
+  this->layout_ = pango_layout_copy (layout);
   PangoFontDescription * desc = pango_font_description_from_string ("7");
-  pango_layout_set_font_description (self->layout, desc);
-  pango_layout_set_ellipsize (self->layout, PANGO_ELLIPSIZE_NONE);
+  pango_layout_set_font_description (this->layout_, desc);
+  pango_layout_set_ellipsize (this->layout_, PANGO_ELLIPSIZE_NONE);
   pango_font_description_free (desc);
-  automation_mode_widget_init (self);
-
-  return self;
+  init ();
 }
 
-static AutomationMode
-get_hit_mode (AutomationModeWidget * self, double x)
+AutomationMode
+AutomationModeWidget::get_hit_mode (double x) const
 {
   for (
     int i = 0; i < static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES) - 1;
@@ -99,10 +86,10 @@ get_hit_mode (AutomationModeWidget * self, double x)
       int total_widths = 0;
       for (int j = 0; j <= i; j++)
         {
-          total_widths += self->text_widths[j];
+          total_widths += text_widths_[j];
         }
       total_widths += 2 * AUTOMATION_MODE_HPADDING * (i + 1);
-      double next_start = self->x + total_widths;
+      double next_start = x_ + total_widths;
       /*g_message ("[%d] x: %f next start: %f",*/
       /*i, x, next_start);*/
       if (x < next_start)
@@ -110,60 +97,47 @@ get_hit_mode (AutomationModeWidget * self, double x)
           return (AutomationMode) i;
         }
     }
-  return AutomationMode::AUTOMATION_MODE_OFF;
+  return AutomationMode::Off;
 }
 
-/**
- * Gets the color for \ref state for \ref mode.
- *
- * @param state new state.
- * @param mode AutomationMode.
- */
-static void
-get_color_for_state (
-  AutomationModeWidget *  self,
-  CustomButtonWidgetState state,
-  AutomationMode          mode,
-  GdkRGBA *               c)
+void
+AutomationModeWidget::get_color_for_state (
+  CustomButtonWidget::State state,
+  AutomationMode            mode,
+  GdkRGBA *                 c)
 {
-  (void) c;
   switch (state)
     {
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_NORMAL:
-      *c = self->def_color;
+    case CustomButtonWidget::State::NORMAL:
+      *c = def_color_;
       break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_HOVERED:
-      *c = self->hovered_color;
+    case CustomButtonWidget::State::HOVERED:
+      *c = hovered_color_;
       break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_ACTIVE:
-      *c = self->held_colors[static_cast<int> (mode)];
+    case CustomButtonWidget::State::ACTIVE:
+      *c = held_colors_[static_cast<int> (mode)];
       break;
-    case CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED:
-      *c = self->toggled_colors[static_cast<int> (mode)];
+    case CustomButtonWidget::State::TOGGLED:
+      *c = toggled_colors_[static_cast<int> (mode)];
       break;
     default:
       g_warn_if_reached ();
     }
 }
 
-/**
- * @param mode Mode the state applies to.
- * @param state This state only applies to the mode.
- */
-static void
-draw_bg (
-  AutomationModeWidget * self,
-  GtkSnapshot *          snapshot,
-  double                 x,
-  double                 y,
-  int                    draw_frame,
-  bool                   keep_clip)
+void
+AutomationModeWidget::draw_bg (
+  GtkSnapshot * snapshot,
+  double        x,
+  double        y,
+  int           draw_frame,
+  bool          keep_clip)
 {
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = Z_GRAPHENE_RECT_INIT (
-    (float) x, (float) y, (float) self->width, (float) self->height);
+    (float) x, (float) y, (float) width_, (float) height_);
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, (float) self->corner_radius);
+    &rounded_rect, &graphene_rect, (float) corner_radius_);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   if (draw_frame)
@@ -183,8 +157,7 @@ draw_bg (
   /* draw bg with fade from last state */
   AutomationMode draw_order[static_cast<int> (
     AutomationMode::NUM_AUTOMATION_MODES)] = {
-    AutomationMode::AUTOMATION_MODE_READ, AutomationMode::AUTOMATION_MODE_OFF,
-    AutomationMode::AUTOMATION_MODE_RECORD
+    AutomationMode::Read, AutomationMode::Off, AutomationMode::Record
   };
   for (
     int idx = 0; idx < static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES);
@@ -193,60 +166,52 @@ draw_bg (
       AutomationMode cur = draw_order[idx];
       int            i = static_cast<int> (cur);
 
-      CustomButtonWidgetState cur_state = self->current_states[i];
+      CustomButtonWidget::State cur_state = current_states_[i];
       GdkRGBA                 c;
-      get_color_for_state (self, cur_state, cur, &c);
-      if (self->last_states[i] != cur_state)
+      get_color_for_state (cur_state, cur, &c);
+      if (last_states_[i] != cur_state)
         {
-          self->transition_frames = CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+          transition_frames_ = CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
         }
 
       /* draw transition if transition frames exist */
-      if (self->transition_frames)
+      if (transition_frames_)
         {
-          GdkRGBA mid_c;
-          ui_get_mid_color (
-            &mid_c, &c, &self->last_colors[i],
+          Color mid_c = Color::get_mid_color (
+            c, last_colors_[i],
             1.f
-              - (float) self->transition_frames
+              - (float) transition_frames_
                   / CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
-          c = mid_c;
-          if (cur == AutomationMode::AUTOMATION_MODE_OFF)
-            self->transition_frames--;
+          c = mid_c.to_gdk_rgba ();
+          if (cur == AutomationMode::Off)
+            transition_frames_--;
         }
-      self->last_colors[i] = c;
+      last_colors_[i] = c;
 
       double new_x = 0;
       int    new_width = 0;
       switch (cur)
         {
-        case AutomationMode::AUTOMATION_MODE_READ:
+        case AutomationMode::Read:
           new_x = x;
           new_width =
-            self->text_widths[static_cast<int> (
-              AutomationMode::AUTOMATION_MODE_READ)]
+            text_widths_[static_cast<int> (AutomationMode::Read)]
             + 2 * AUTOMATION_MODE_HPADDING;
           break;
-        case AutomationMode::AUTOMATION_MODE_RECORD:
+        case AutomationMode::Record:
           new_x =
-            x
-            + self->text_widths[static_cast<int> (
-              AutomationMode::AUTOMATION_MODE_READ)]
+            x + text_widths_[static_cast<int> (AutomationMode::Read)]
             + 2 * AUTOMATION_MODE_HPADDING;
           new_width =
-            self->text_widths[static_cast<int> (
-              AutomationMode::AUTOMATION_MODE_RECORD)]
+            text_widths_[static_cast<int> (AutomationMode::Record)]
             + 2 * AUTOMATION_MODE_HPADDING;
           break;
-        case AutomationMode::AUTOMATION_MODE_OFF:
+        case AutomationMode::Off:
           new_x =
-            x
-            + self->text_widths[static_cast<int> (
-              AutomationMode::AUTOMATION_MODE_READ)]
+            x + text_widths_[static_cast<int> (AutomationMode::Read)]
             + 4 * AUTOMATION_MODE_HPADDING
-            + self->text_widths[static_cast<int> (
-              AutomationMode::AUTOMATION_MODE_RECORD)];
-          new_width = ((int) x + self->width) - (int) new_x;
+            + text_widths_[static_cast<int> (AutomationMode::Record)];
+          new_width = ((int) x + width_) - (int) new_x;
           break;
         default:
           g_warn_if_reached ();
@@ -255,7 +220,7 @@ draw_bg (
 
       {
         graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
-          (float) new_x, (float) y, (float) new_width, (float) self->height);
+          (float) new_x, (float) y, (float) new_width, (float) height_);
         gtk_snapshot_append_color (snapshot, &c, &tmp_r);
       }
     }
@@ -265,22 +230,21 @@ draw_bg (
 }
 
 void
-automation_mode_widget_draw (
-  AutomationModeWidget *  self,
-  GtkSnapshot *           snapshot,
-  double                  x,
-  double                  y,
-  double                  x_cursor,
-  CustomButtonWidgetState state)
+AutomationModeWidget::draw (
+  GtkSnapshot *             snapshot,
+  double                    x,
+  double                    y,
+  double                    x_cursor,
+  CustomButtonWidget::State state)
 {
   /* get hit button */
-  self->has_hit_mode = 0;
+  has_hit_mode_ = 0;
   if (
-    state == CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_HOVERED
-    || state == CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_ACTIVE)
+    state == CustomButtonWidget::State::HOVERED
+    || state == CustomButtonWidget::State::ACTIVE)
     {
-      self->has_hit_mode = 1;
-      self->hit_mode = get_hit_mode (self, x_cursor);
+      has_hit_mode_ = 1;
+      hit_mode_ = get_hit_mode (x_cursor);
       /*g_message ("hit mode %d", self->hit_mode);*/
     }
 
@@ -290,29 +254,28 @@ automation_mode_widget_draw (
     i < static_cast<unsigned int> (AutomationMode::NUM_AUTOMATION_MODES); i++)
     {
       AutomationMode cur = static_cast<AutomationMode> (i);
-      AutomationMode prev_am = self->owner->automation_mode;
-      if (self->has_hit_mode && cur == self->hit_mode)
+      AutomationMode prev_am = owner_->automation_mode_;
+      if (has_hit_mode_ && cur == hit_mode_)
         {
           if (
             prev_am != cur
-            || (prev_am == cur && state == CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_ACTIVE))
+            || (prev_am == cur && state == CustomButtonWidget::State::ACTIVE))
             {
-              self->current_states[i] = state;
+              current_states_[i] = state;
             }
           else
             {
-              self->current_states[i] =
-                CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+              current_states_[i] = CustomButtonWidget::State::TOGGLED;
             }
         }
       else
-        self->current_states[i] =
-          self->owner->automation_mode == cur
-            ? CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_TOGGLED
-            : CustomButtonWidgetState::CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
+        current_states_[i] =
+          owner_->automation_mode_ == cur
+            ? CustomButtonWidget::State::TOGGLED
+            : CustomButtonWidget::State::NORMAL;
     }
 
-  draw_bg (self, snapshot, x, y, false, true);
+  draw_bg (snapshot, x, y, false, true);
 
   /*draw_icon_with_shadow (self, cr, x, y, state);*/
 
@@ -322,42 +285,42 @@ automation_mode_widget_draw (
     int i = 0; i < static_cast<int> (AutomationMode::NUM_AUTOMATION_MODES); i++)
     {
       AutomationMode cur = static_cast<AutomationMode> (i);
-      PangoLayout *  layout = self->layout;
+      PangoLayout *  layout = layout_;
       gtk_snapshot_save (snapshot);
       {
         graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
           (float) (x + AUTOMATION_MODE_HPADDING
                    + i * (2 * AUTOMATION_MODE_HPADDING) + total_text_widths),
-          (float) ((y + self->height / 2) - self->text_heights[i] / 2));
+          (float) ((y + height_ / 2) - text_heights_[i] / 2));
         gtk_snapshot_translate (snapshot, &tmp_pt);
       }
       char mode_str[400];
-      if (cur == AutomationMode::AUTOMATION_MODE_RECORD)
+      if (cur == AutomationMode::Record)
         {
-          automation_record_mode_get_localized (
-            self->owner->record_mode, mode_str);
+          auto str = fmt::format ("{:t}", owner_->record_mode_);
+          strcpy (mode_str, str.c_str ());
           pango_layout_set_text (layout, mode_str, -1);
         }
       else
         {
-          automation_mode_get_localized ((AutomationMode) i, mode_str);
+          auto str = fmt::format ("{:t}", (AutomationMode) i);
+          strcpy (mode_str, str.c_str ());
           pango_layout_set_text (layout, mode_str, -1);
         }
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
       gtk_snapshot_append_layout (snapshot, layout, &tmp_color);
       gtk_snapshot_restore (snapshot);
 
-      total_text_widths += self->text_widths[i];
+      total_text_widths += text_widths_[i];
 
-      self->last_states[i] = self->current_states[i];
+      last_states_[i] = current_states_[i];
     }
 
   /* pop clip from draw_bg */
   gtk_snapshot_pop (snapshot);
 }
 
-void
-automation_mode_widget_free (AutomationModeWidget * self)
+AutomationModeWidget::~AutomationModeWidget ()
 {
-  free (self);
+  /* TODO */
 }

@@ -1,21 +1,14 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-/**
- * \file
- *
- * Plugin identifier.
- */
 
 #ifndef __PLUGINS_PLUGIN_IDENTIFIER_H__
 #define __PLUGINS_PLUGIN_IDENTIFIER_H__
 
 #include "zrythm-config.h"
 
-#include <cstddef>
 #include <cstdint>
+
+#include "io/serialization/iserializable.h"
 
 /**
  * @addtogroup plugins
@@ -23,69 +16,76 @@
  * @{
  */
 
-enum class ZPluginSlotType
+enum class PluginSlotType
 {
-  Z_PLUGIN_SLOT_INVALID,
-  Z_PLUGIN_SLOT_INSERT,
-  Z_PLUGIN_SLOT_MIDI_FX,
-  Z_PLUGIN_SLOT_INSTRUMENT,
+  Invalid,
+  Insert,
+  MidiFx,
+  Instrument,
 
   /** Plugin is part of a modulator. */
-  Z_PLUGIN_SLOT_MODULATOR,
+  Modulator,
 };
 
 /**
  * Plugin identifier.
  */
-typedef struct PluginIdentifier
+class PluginIdentifier final : public ISerializable<PluginIdentifier>
 {
-  ZPluginSlotType slot_type;
+public:
+  // Rule of 0
 
-  /** Track name hash. */
-  unsigned int track_name_hash;
+  bool validate () const;
 
   /**
-   * The slot this plugin is in the channel, or
-   * the index if this is part of a modulator.
-   *
-   * If PluginIdentifier.slot_type is an instrument,
-   * this must be set to -1.
+   * Verifies that @p slot_type and @p slot is a valid combination.
    */
-  int slot;
-} PluginIdentifier;
+  static inline bool
+  validate_slot_type_slot_combo (PluginSlotType slot_type, int slot)
+  {
+    return (slot_type == PluginSlotType::Instrument && slot == -1)
+           || (slot_type == PluginSlotType::Invalid && slot == -1)
+           || (slot_type != PluginSlotType::Instrument && slot >= 0);
+  }
 
-void
-plugin_identifier_init (PluginIdentifier * self);
+  std::string print_to_str () const;
 
-static inline int
-plugin_identifier_is_equal (
-  const PluginIdentifier * a,
-  const PluginIdentifier * b)
+  uint32_t get_hash () const;
+
+  static uint32_t get_hash (const void * id)
+  {
+    return static_cast<const PluginIdentifier *> (id)->get_hash ();
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  PluginSlotType slot_type_ = PluginSlotType::Invalid;
+
+  /** Track name hash. */
+  unsigned int track_name_hash_ = 0;
+
+  /**
+   * The slot this plugin is in the channel, or the index if this is part of a
+   * modulator.
+   *
+   * If PluginIdentifier.slot_type is an instrument, this must be set to -1.
+   */
+  int slot_ = -1;
+};
+
+inline bool
+operator== (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
 {
-  return a->slot_type == b->slot_type
-         && a->track_name_hash == b->track_name_hash && a->slot == b->slot;
+  return lhs.slot_type_ == rhs.slot_type_
+         && lhs.track_name_hash_ == rhs.track_name_hash_ && lhs.slot_ == rhs.slot_;
 }
 
-void
-plugin_identifier_copy (PluginIdentifier * dest, const PluginIdentifier * src);
-
-NONNULL bool
-plugin_identifier_validate (const PluginIdentifier * self);
-
-/**
- * Verifies that @ref slot_type and @ref slot is
- * a valid combination.
- */
-bool
-plugin_identifier_validate_slot_type_slot_combo (
-  ZPluginSlotType slot_type,
-  int             slot);
-
-void
-plugin_identifier_print (const PluginIdentifier * self, char * str);
-
-uint32_t
-plugin_identifier_get_hash (const void * id);
+inline bool
+operator< (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
+{
+  return lhs.slot_ < rhs.slot_;
+}
 
 /**
  * @}

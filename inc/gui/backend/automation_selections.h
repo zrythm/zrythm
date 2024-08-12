@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
  * @file
@@ -21,36 +19,35 @@
  * @{
  */
 
-#define AUTOMATION_SELECTIONS (PROJECT->automation_selections)
+#define AUTOMATION_SELECTIONS (PROJECT->automation_selections_)
 
 /**
- * Selections to be used for the AutomationArrangerWidget's
- * current selections, copying, undoing, etc.
- *
- * @extends ArrangerSelections
+ * Selections to be used for the AutomationArrangerWidget's current selections,
+ * copying, undoing, etc.
  */
-typedef struct AutomationSelections
+class AutomationSelections final
+    : public ArrangerSelections,
+      public ICloneable<AutomationSelections>,
+      public ISerializable<AutomationSelections>
 {
-  ArrangerSelections base;
+public:
+  const AutomationPoint * get_automation_point (int index) const
+  {
+    return dynamic_cast<AutomationPoint *> (objects_[index].get ());
+  }
 
-  /** Selected AutomationObject's. */
-  AutomationPoint ** automation_points;
-  int                num_automation_points;
-  size_t             automation_points_size;
+  void sort_by_indices (bool desc) override;
 
-} AutomationSelections;
+  void init_after_cloning (const AutomationSelections &other) override
+  {
+    ArrangerSelections::copy_members_from (other);
+  }
 
-/**
- * Returns if the selections can be pasted.
- *
- * @param pos Position to paste to.
- * @param region Region to paste to.
- */
-bool
-automation_selections_can_be_pasted (
-  AutomationSelections * ts,
-  Position *             pos,
-  Region *               r);
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  bool can_be_pasted_at_impl (const Position pos, const int idx) const final;
+};
 
 /**
  * @}

@@ -1,18 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/arranger_object.h"
 #include "dsp/channel_send.h"
 #include "dsp/ext_port.h"
-#include "gui/backend/arranger_object.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/chord_preset_pack.h"
-#include "utils/error.h"
-#include "utils/gtk.h"
 #include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -51,7 +46,7 @@ wrapped_object_with_change_signal_fire (WrappedObjectWithChangeSignal * self)
 char *
 wrapped_object_with_change_signal_get_display_name (void * data)
 {
-  g_return_val_if_fail (Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), NULL);
+  g_return_val_if_fail (Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), nullptr);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
 
@@ -59,40 +54,40 @@ wrapped_object_with_change_signal_get_display_name (void * data)
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
       {
-        ChordPresetPack * pack = (ChordPresetPack *) wrapped_obj->obj;
-        return g_strdup (pack->name);
+        auto * pack = (ChordPresetPack *) wrapped_obj->obj;
+        return g_strdup (pack->name_.c_str ());
       }
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
       {
-        PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
-        return g_strdup (descr->name);
+        auto * descr = (PluginDescriptor *) wrapped_obj->obj;
+        return g_strdup (descr->name_.c_str ());
       }
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
       {
-        ChannelSendTarget * target = (ChannelSendTarget *) wrapped_obj->obj;
-        return channel_send_target_describe (target);
+        auto * target = (ChannelSend::Target *) wrapped_obj->obj;
+        return g_strdup (target->describe ().c_str ());
       }
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT:
       {
-        ExtPort * port = (ExtPort *) wrapped_obj->obj;
-        return ext_port_get_friendly_name (port);
+        auto * port = (ExtPort *) wrapped_obj->obj;
+        return g_strdup (port->get_friendly_name ().c_str ());
       }
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
       {
-        ArrangerObject * obj = (ArrangerObject *) wrapped_obj->obj;
-        return arranger_object_gen_human_readable_name (obj);
+        auto * obj = (ArrangerObject *) wrapped_obj->obj;
+        return g_strdup (obj->gen_human_friendly_name ().c_str ());
       }
       break;
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
       break;
     }
 
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 /**
@@ -116,7 +111,7 @@ WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type)
 {
   WrappedObjectWithChangeSignal * self = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
-    g_object_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, NULL));
+    g_object_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, nullptr));
 
   self->type = type;
   self->obj = obj;

@@ -10,7 +10,7 @@
 
 #    include <portaudio.h>
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * @addtogroup dsp

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/tracklist_selections.h"
@@ -13,6 +13,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -33,8 +34,8 @@ on_route_target_changed (
   if (!self->track)
     return;
 
-  Track * old_direct_out = self->track->channel->get_output_track ();
-  Track * new_direct_out = old_direct_out;
+  auto old_direct_out = self->track->channel_->get_output_track ();
+  auto new_direct_out = old_direct_out;
   if (gtk_drop_down_get_selected (dropdown) == 0)
     {
       new_direct_out = NULL;
@@ -43,22 +44,22 @@ on_route_target_changed (
     {
       WrappedObjectWithChangeSignal * wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
         gtk_drop_down_get_selected_item (dropdown));
-      new_direct_out = (Track *) wobj->obj;
+      new_direct_out = (GroupTargetTrack *) wobj->obj;
     }
 
   if (new_direct_out != old_direct_out)
     {
-      Track *               own_track_clone = track_clone (self->track, NULL);
-      TracklistSelections * sel = tracklist_selections_new (false);
-      tracklist_selections_add_track (sel, own_track_clone, F_NO_PUBLISH_EVENTS);
-      GError * err = NULL;
-      bool     success = tracklist_selections_action_perform_set_direct_out (
-        sel, PORT_CONNECTIONS_MGR, new_direct_out, &err);
-      if (!success)
+      TracklistSelections sel (*self->track);
+      try
         {
-          HANDLE_ERROR (
-            err, _ ("Failed to change direct out to %s"),
-            new_direct_out ? new_direct_out->name : _ ("None"));
+          UNDO_MANAGER->perform (std::make_unique<TracksDirectOutAction> (
+            sel, *PORT_CONNECTIONS_MGR, new_direct_out));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (format_str (
+            _ ("Failed to change direct out to {}"),
+            new_direct_out ? new_direct_out->name_ : _ ("None")));
         }
     }
 }
@@ -81,16 +82,16 @@ on_header_bind (
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
       Track * track = (Track *) wobj->obj;
-      switch (track->type)
+      switch (track->type_)
         {
-        case TrackType::TRACK_TYPE_MASTER:
+        case Track::Type::Master:
           gtk_label_set_markup (label, _ ("Master"));
           break;
-        case TrackType::TRACK_TYPE_AUDIO_GROUP:
-        case TrackType::TRACK_TYPE_MIDI_GROUP:
+        case Track::Type::AudioGroup:
+        case Track::Type::MidiGroup:
           gtk_label_set_markup (label, _ ("Groups"));
           break;
-        case TrackType::TRACK_TYPE_INSTRUMENT:
+        case Track::Type::Instrument:
           gtk_label_set_markup (label, _ ("Instruments"));
           break;
         default:
@@ -99,24 +100,24 @@ on_header_bind (
     }
 }
 
-static char *
+static std::string
 get_str (void * item, gpointer user_data)
 {
   RouteTargetSelectorWidget * self = Z_ROUTE_TARGET_SELECTOR_WIDGET (user_data);
-  if (self->track && self->track->type == TrackType::TRACK_TYPE_MASTER)
+  if (self->track && self->track->is_master ())
     {
-      return g_strdup_printf ("<tt><i>%s</i></tt>", _ ("Engine"));
+      return fmt::format ("<tt><i>{}</i></tt>", _ ("Engine"));
     }
   else if (GTK_IS_STRING_OBJECT (item))
     {
-      return g_strdup_printf ("<tt><i>%s</i></tt>", _ ("None"));
+      return fmt::format ("<tt><i>{}</i></tt>", _ ("None"));
     }
   else
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
       Track * track = (Track *) wobj->obj;
-      return g_strdup (track->name);
+      return track->name_;
     }
 }
 
@@ -129,9 +130,7 @@ on_bind (
   GtkLabel * label = GTK_LABEL (gtk_list_item_get_child (list_item));
   GObject *  item = G_OBJECT (gtk_list_item_get_item (list_item));
 
-  char * str = get_str (item, self);
-  gtk_label_set_markup (label, str);
-  g_free (str);
+  gtk_label_set_markup (label, get_str (item, self).c_str ());
 }
 
 static gboolean
@@ -145,7 +144,7 @@ underlying_track_is_equal (gpointer a, gpointer b)
 void
 route_target_selector_widget_refresh (
   RouteTargetSelectorWidget * self,
-  Track *                     track)
+  ChannelTrack *              track)
 {
   GtkDropDown * dropdown = self->dropdown;
 
@@ -162,7 +161,7 @@ route_target_selector_widget_refresh (
   GtkListItemFactory * header_factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
     header_factory, "setup",
-    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), NULL);
+    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), nullptr);
   g_signal_connect (header_factory, "bind", G_CALLBACK (on_header_bind), self);
   gtk_drop_down_set_header_factory (dropdown, header_factory);
   g_object_unref (header_factory);
@@ -172,7 +171,7 @@ route_target_selector_widget_refresh (
   GtkListItemFactory * factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
     factory, "setup",
-    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), NULL);
+    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), nullptr);
   g_signal_connect (factory, "bind", G_CALLBACK (on_bind), self);
   gtk_drop_down_set_factory (dropdown, factory);
   g_object_unref (factory);
@@ -181,7 +180,8 @@ route_target_selector_widget_refresh (
 
   factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
-    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common), NULL);
+    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common),
+    nullptr);
   g_signal_connect (factory, "bind", G_CALLBACK (on_bind), self);
   gtk_drop_down_set_list_factory (dropdown, factory);
   g_object_unref (factory);
@@ -190,7 +190,7 @@ route_target_selector_widget_refresh (
 
 #if 0
   GtkExpression * expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_str), self, NULL);
+    G_TYPE_STRING, nullptr, 0, nullptr, G_CALLBACK (get_str), self, nullptr);
   gtk_drop_down_set_expression (dropdown, expression);
   gtk_expression_unref (expression);
 
@@ -200,13 +200,13 @@ route_target_selector_widget_refresh (
   /* --- create models --- */
 
   /* none */
-  GtkStringList * none_sl = gtk_string_list_new (NULL);
+  GtkStringList * none_sl = gtk_string_list_new (nullptr);
   gtk_string_list_append (none_sl, _ ("None"));
 
   /* master */
   GListStore * master_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  if (track && track->out_signal_type == PortType::Audio)
+  if (track && track->out_signal_type_ == PortType::Audio)
     {
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new (
@@ -219,13 +219,16 @@ route_target_selector_widget_refresh (
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
   if (track)
     {
-      for (auto cur_track : TRACKLIST->tracks)
+      for (auto &cur_track : TRACKLIST->tracks_)
         {
-          if (cur_track != track && cur_track->in_signal_type == track->out_signal_type && (cur_track->type == TrackType::TRACK_TYPE_AUDIO_GROUP || cur_track->type == TrackType::TRACK_TYPE_MIDI_GROUP))
+          if (
+            cur_track.get () != track
+            && cur_track->in_signal_type_ == track->out_signal_type_
+            && (cur_track->type_ == Track::Type::AudioGroup || cur_track->type_ == Track::Type::MidiGroup))
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (
-                  cur_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+                  cur_track.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
               g_list_store_append (groups_ls, wobj);
             }
         }
@@ -234,15 +237,15 @@ route_target_selector_widget_refresh (
   /* instrument */
   GListStore * instruments_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  if (track && track->out_signal_type == PortType::Event)
+  if (track && track->out_signal_type_ == PortType::Event)
     {
-      for (auto cur_track : TRACKLIST->tracks)
+      for (auto &cur_track : TRACKLIST->tracks_)
         {
-          if (cur_track->type == TrackType::TRACK_TYPE_INSTRUMENT)
+          if (cur_track->is_instrument ())
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (
-                  cur_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+                  cur_track.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
               g_list_store_append (instruments_ls, wobj);
             }
         }
@@ -265,13 +268,13 @@ route_target_selector_widget_refresh (
     {
       gtk_drop_down_set_selected (dropdown, 0);
     }
-  else if (track && track->type == TrackType::TRACK_TYPE_MASTER)
+  else if (track && track->is_master ())
     {
       gtk_drop_down_set_selected (dropdown, 0);
     }
   else
     {
-      Track * direct_out = track->channel->get_output_track ();
+      auto direct_out = track->channel_->get_output_track ();
       if (direct_out)
         {
           WrappedObjectWithChangeSignal * direct_out_wobj =
@@ -321,7 +324,7 @@ route_target_selector_widget_refresh (
         GTK_WIDGET (dropdown), _ ("No Routing Available"));
     }
   /* if routed by default and cannot be changed */
-  else if (track && track->type == TrackType::TRACK_TYPE_MASTER)
+  else if (track && track->is_master ())
     {
       gtk_widget_set_sensitive (GTK_WIDGET (dropdown), false);
       gtk_widget_set_tooltip_text (
@@ -330,12 +333,11 @@ route_target_selector_widget_refresh (
   /* if routable */
   else
     {
-      Track * direct_out = track->channel->get_output_track ();
+      auto * direct_out = track->channel_->get_output_track ();
       if (direct_out)
         {
-          char * str = g_strdup_printf (_ ("Routed to %s"), direct_out->name);
-          gtk_widget_set_tooltip_text (GTK_WIDGET (dropdown), str);
-          g_free (str);
+          auto str = format_str (_ ("Routed to %s"), direct_out->name_);
+          gtk_widget_set_tooltip_text (GTK_WIDGET (dropdown), str.c_str ());
         }
       else
         {
@@ -364,6 +366,6 @@ route_target_selector_widget_class_init (RouteTargetSelectorWidgetClass * _klass
 static void
 route_target_selector_widget_init (RouteTargetSelectorWidget * self)
 {
-  self->dropdown = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  self->dropdown = GTK_DROP_DOWN (gtk_drop_down_new (nullptr, nullptr));
   adw_bin_set_child (ADW_BIN (self), GTK_WIDGET (self->dropdown));
 }

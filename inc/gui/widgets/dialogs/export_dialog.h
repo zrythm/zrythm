@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Export dialog.
  */
@@ -10,9 +10,11 @@
 #ifndef __GUI_WIDGETS_EXPORT_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_DIALOG_H__
 
-#include <adwaita.h>
+#include "dsp/position.h"
+#include "gui/widgets/item_factory.h"
 
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 #define EXPORT_DIALOG_WIDGET_TYPE (export_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -39,7 +41,7 @@ enum class ExportFilenamePattern
 /**
  * The export dialog.
  */
-typedef struct _ExportDialogWidget
+using ExportDialogWidget = struct _ExportDialogWidget
 {
   GtkDialog parent_instance;
 
@@ -66,7 +68,7 @@ typedef struct _ExportDialogWidget
   Position             audio_custom_end_pos;
   GtkColumnView *      audio_tracks_view;
   GtkLabel *           audio_output_label;
-  GPtrArray *          audio_item_factories;
+  ItemFactoryPtrVector audio_item_factories;
 
   /* MIDI */
   AdwEntryRow *        midi_title;
@@ -86,9 +88,8 @@ typedef struct _ExportDialogWidget
   Position             midi_custom_end_pos;
   GtkColumnView *      midi_tracks_view;
   GtkLabel *           midi_output_label;
-  GPtrArray *          midi_item_factories;
-
-} ExportDialogWidget;
+  ItemFactoryPtrVector midi_item_factories;
+};
 
 /**
  * Creates an export dialog widget and displays it.

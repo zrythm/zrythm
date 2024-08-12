@@ -12,12 +12,10 @@
  * ---
  */
 
-/** \file
+/** @file
  */
 
 #include "zrythm-config.h"
-
-#include <cstdio>
 
 #include "dsp/engine.h"
 #include "dsp/master_track.h"
@@ -33,13 +31,14 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <zix/ring.h>
+// Buffer size for spectrum analyzer
+constexpr size_t BUF_SIZE = 65000;
 
-#define BUF_SIZE 65000
+// Block size for processing
+constexpr size_t BLOCK_SIZE = 256;
 
-#define BLOCK_SIZE 256
-
-static const float threshold = -90.f;
+// Threshold for power spectrum in dB
+constexpr float threshold = -90.f;
 
 G_DEFINE_TYPE (SpectrumAnalyzerWidget, spectrum_analyzer_widget, GTK_TYPE_WIDGET)
 
@@ -114,9 +113,9 @@ getBinPos (const int bin, const int numBins, const float sampleRate)
 }
 
 static float
-lerp (float a, float b, float f)
+_lerp (float a, float b, float f)
 {
-  f = CLAMP (f, 0.0f, 1.0f);
+  f = std::clamp (f, 0.0f, 1.0f);
 
   return a * (1.f - f) + (b * f);
 }
@@ -146,23 +145,23 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  size_t   block_size = AUDIO_ENGINE->block_length;
+  size_t   block_size = AUDIO_ENGINE->block_length_;
   uint32_t block_size_in_bytes = sizeof (float) * (uint32_t) block_size;
 
   g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
-  if (!P_MASTER_TRACK->channel->stereo_out->get_l ().write_ring_buffers_)
+  if (!P_MASTER_TRACK->channel_->stereo_out_->get_l ().write_ring_buffers_)
     {
-      P_MASTER_TRACK->channel->stereo_out->set_write_ring_buffers (true);
+      P_MASTER_TRACK->channel_->stereo_out_->set_write_ring_buffers (true);
       return;
     }
-  Port &lport = P_MASTER_TRACK->channel->stereo_out->get_l ();
+  auto &lport = P_MASTER_TRACK->channel_->stereo_out_->get_l ();
 
   /* if ring not ready yet skip draw */
-  if (!lport.audio_ring_)
-    return;
+  // if (!lport.audio_ring_)
+  //   return;
 
   /* get the L buffer */
-  uint32_t read_space_avail = zix_ring_read_space (lport.audio_ring_);
+  uint32_t read_space_avail = lport.audio_ring_->read_space ();
   uint32_t blocks_to_read =
     block_size_in_bytes == 0 ? 0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
@@ -175,7 +174,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         self->bufs[0], self->buf_sz[0], self->buf_sz[0], float);
     }
   uint32_t lblocks_read =
-    zix_ring_peek (lport.audio_ring_, &(self->bufs[0][0]), read_space_avail);
+    lport.audio_ring_->peek_multiple (&(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
   uint32_t lstart_index = (lblocks_read - 1) * block_size;
   if (lblocks_read == 0)
@@ -185,8 +184,8 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 
   /* get the R buffer */
-  Port &rport = P_MASTER_TRACK->channel->stereo_out->get_r ();
-  read_space_avail = zix_ring_read_space (rport.audio_ring_);
+  auto &rport = P_MASTER_TRACK->channel_->stereo_out_->get_r ();
+  read_space_avail = rport.audio_ring_->read_space ();
   blocks_to_read = read_space_avail / block_size_in_bytes;
 
   /* if buffer is not filled do not draw */
@@ -199,7 +198,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         self->bufs[1], self->buf_sz[1], self->buf_sz[1], float);
     }
   size_t rblocks_read =
-    zix_ring_peek (rport.audio_ring_, &(self->bufs[1][0]), read_space_avail);
+    rport.audio_ring_->peek_multiple (&(self->bufs[1][0]), read_space_avail);
   rblocks_read /= block_size_in_bytes;
   size_t rstart_index = (rblocks_read - 1) * block_size;
   if (rblocks_read == 0)
@@ -218,13 +217,13 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if ((int) block_size != self->last_block_size)
     {
       kiss_fft_free (self->fft_config);
-      self->fft_config = kiss_fft_alloc ((int) block_size, 0, NULL, NULL);
+      self->fft_config = kiss_fft_alloc ((int) block_size, 0, nullptr, nullptr);
       for (size_t i = 0; i < block_size; i++)
         {
           g_return_if_fail (block_size <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
-          peak_fall_smooth_calculate_coeff (
-            self->bins[i], (float) AUDIO_ENGINE->sample_rate / 64.f,
-            (float) AUDIO_ENGINE->sample_rate);
+          self->bins[i].calculate_coeff (
+            (float) AUDIO_ENGINE->sample_rate_ / 64.f,
+            (float) AUDIO_ENGINE->sample_rate_);
         }
     }
 
@@ -252,8 +251,8 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   for (int i = 0; i < half; ++i)
     {
-      peak_fall_smooth_set_value (
-        self->bins[i], getPowerSpectrumdB (self, self->fft_out, i, block_size));
+      self->bins[i].set_value (
+        getPowerSpectrumdB (self, self->fft_out, i, block_size));
     }
 
   /* --- end process --- */
@@ -266,8 +265,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   for (int i = 0; i < half; ++i)
     {
-      const float powerSpectrumdB =
-        peak_fall_smooth_get_smoothed_value (self->bins[i]);
+      const float powerSpectrumdB = self->bins[i].get_smoothed_value ();
 
       /*Color pixelColor = getBinPixelColor(powerSpectrumdB);*/
       float amp = getBinPixelColor (powerSpectrumdB);
@@ -278,11 +276,11 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       if (i < half - 1) // must interpolate to fill the gaps
         {
           const float nextPowerSpectrumdB =
-            peak_fall_smooth_get_smoothed_value (self->bins[i + 1]);
+            self->bins[i + 1].get_smoothed_value ();
 
-          freqPos = (int) getBinPos (i, half, AUDIO_ENGINE->sample_rate);
+          freqPos = (int) getBinPos (i, half, AUDIO_ENGINE->sample_rate_);
           const int nextFreqPos =
-            (int) getBinPos (i + 1, half, AUDIO_ENGINE->sample_rate);
+            (int) getBinPos (i + 1, half, AUDIO_ENGINE->sample_rate_);
 
           const int freqDelta = (int) nextFreqPos - (int) freqPos;
 
@@ -290,8 +288,8 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             {
               (void) freqDelta;
               (void) nextPowerSpectrumdB;
-              (void) lerp;
-              float lerped_amt = getBinPixelColor (lerp (
+              (void) _lerp;
+              float lerped_amt = getBinPixelColor (_lerp (
                 powerSpectrumdB, nextPowerSpectrumdB,
                 (j - freqPos) / (float) freqDelta));
               /*fScrollingTexture.drawPixelOnCurrentLine(j, lerpedColor);*/
@@ -336,7 +334,7 @@ SpectrumAnalyzerWidget *
 spectrum_analyzer_widget_new_for_port (Port * port)
 {
   SpectrumAnalyzerWidget * self = Z_SPECTRUM_ANALYZER_WIDGET (
-    g_object_new (SPECTRUM_ANALYZER_WIDGET_TYPE, NULL));
+    g_object_new (SPECTRUM_ANALYZER_WIDGET_TYPE, nullptr));
 
   self->port = port;
 
@@ -350,11 +348,7 @@ finalize (SpectrumAnalyzerWidget * self)
   object_zero_and_free (self->bufs[1]);
   object_zero_and_free (self->fft_in);
   object_zero_and_free (self->fft_out);
-  for (int i = 0; i < SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2; i++)
-    {
-      object_free_w_func_and_null (peak_fall_smooth_free, self->bins[i]);
-    }
-  free (self->bins);
+  std::destroy_at (&self->bins);
 
   kiss_fft_free (self->fft_config);
 
@@ -369,18 +363,18 @@ spectrum_analyzer_widget_init (SpectrumAnalyzerWidget * self)
   self->bufs[1] = object_new_n (BUF_SIZE, float);
   self->buf_sz[0] = BUF_SIZE;
   self->buf_sz[1] = BUF_SIZE;
-  self->fft_config = kiss_fft_alloc (BLOCK_SIZE, 0, NULL, NULL);
+  self->fft_config = kiss_fft_alloc (BLOCK_SIZE, 0, nullptr, nullptr);
   self->fft_in = object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
   self->fft_out = object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
-  self->bins =
-    object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2, PeakFallSmooth *);
-  for (int i = 0; i < SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2; i++)
+
+  std::construct_at (&self->bins);
+  for (int i = 0; i < SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2; ++i)
     {
-      self->bins[i] = peak_fall_smooth_new ();
+      self->bins.emplace_back ();
     }
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, nullptr);
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 

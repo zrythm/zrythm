@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
@@ -7,11 +7,10 @@
 #include "gui/widgets/dialogs/save_chord_preset_dialog.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
-#include "utils/error.h"
 #include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -48,30 +47,27 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
             _ ("Invalid Name"), _ ("Please enter a valid name."));
           return;
         }
-      else if (chord_preset_pack_contains_name (pack, entered_name))
+      else if (pack->contains_name (entered_name))
         {
           ui_show_message_printf (
             _ ("Name Unavailable"),
-            _ ("Name '%s' is taken. Please enter "
-               "a different name"),
+            _ ("Name '%s' is taken. Please enter a different name"),
             entered_name);
           return;
         }
       else
         {
           /* save */
-          g_debug ("accept: %s, %s", pack->name, entered_name);
-          ChordPreset * pset = chord_preset_new_from_name (entered_name);
+          z_debug ("accept: %s, %s", pack->name_, entered_name);
+          ChordPreset pset (entered_name);
           for (int i = 0; i < 12; i++)
             {
-              ChordDescriptor * descr = CHORD_EDITOR->chords[i];
-              pset->descr[i] = chord_descriptor_clone (descr);
+              auto &descr = CHORD_EDITOR->chords_[i];
+              pset.descr_.emplace_back (descr);
             }
-          chord_preset_pack_manager_add_preset (
-            CHORD_PRESET_PACK_MANAGER, pack, pset, true);
-          chord_preset_free (pset);
+          CHORD_PRESET_PACK_MANAGER->add_preset (*pack, pset, true);
 
-          EVENTS_PUSH (EventType::ET_CHORD_PRESET_ADDED, NULL);
+            EVENTS_PUSH (EventType::ET_CHORD_PRESET_ADDED, nullptr);
         }
     }
 
@@ -83,25 +79,22 @@ generate_packs_dropdown (void)
 {
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  int num_packs =
-    chord_preset_pack_manager_get_num_packs (CHORD_PRESET_PACK_MANAGER);
-  for (int i = 0; i < num_packs; i++)
+  for (auto &pack : CHORD_PRESET_PACK_MANAGER->packs_)
     {
-      ChordPresetPack * pack =
-        chord_preset_pack_manager_get_pack_at (CHORD_PRESET_PACK_MANAGER, i);
-      if (pack->is_standard)
+      if (pack->is_standard_)
         continue;
 
       WrappedObjectWithChangeSignal * wrapped_pack =
         wrapped_object_with_change_signal_new (
-          pack, WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
+          pack.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
 
       g_list_store_append (store, wrapped_pack);
     }
 
   GtkExpression * expr = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL,
-    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), NULL, NULL);
+    G_TYPE_STRING, nullptr, 0, nullptr,
+    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), nullptr,
+    nullptr);
   GtkDropDown * dropdown =
     GTK_DROP_DOWN (gtk_drop_down_new (G_LIST_MODEL (store), expr));
 
@@ -114,10 +107,9 @@ generate_packs_dropdown (void)
 SaveChordPresetDialogWidget *
 save_chord_preset_dialog_widget_new (GtkWindow * parent_window)
 {
-  SaveChordPresetDialogWidget * self = static_cast<
-    SaveChordPresetDialogWidget *> (g_object_new (
+  auto * self = static_cast<SaveChordPresetDialogWidget *> (g_object_new (
     SAVE_CHORD_PRESET_DIALOG_WIDGET_TYPE, "title", _ ("Save Chord Preset"),
-    "modal", true, "transient-for", parent_window, NULL));
+    "modal", true, "transient-for", parent_window, nullptr));
 
   return self;
 }

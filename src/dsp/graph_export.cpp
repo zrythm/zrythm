@@ -12,6 +12,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm.h"
 
 #ifdef HAVE_CGRAPH
 #  include <graphviz/cgraph.h>
@@ -47,7 +48,7 @@ get_graph_from_node (GHashTable * anodes, GraphNode * node)
   if (anode && anode->node->id == node->id)
     return anode->graph;
   g_warning ("%p %s", node, graph_node_get_name (node));
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 static Agraph_t *
@@ -68,13 +69,13 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
       {
         switch (node->port->id_.owner_type)
           {
-          case PortIdentifier::OwnerType::PLUGIN:
+          case PortIdentifier::OwnerType::Plugin:
             {
               Plugin * pl = node->port->get_plugin (true);
               parent_node = graph_find_node_from_plugin (node->graph, pl);
             }
             break;
-          case PortIdentifier::OwnerType::TRACK:
+          case PortIdentifier::OwnerType::Track:
             {
               Track * tr = node->port->get_track (true);
               if (
@@ -96,16 +97,16 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
           case PortIdentifier::OwnerType::CHANNEL_SEND:
             {
               Track * tr = node->port->get_track (true);
-              g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
-              g_return_val_if_fail (tr->channel, NULL);
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), nullptr);
+              g_return_val_if_fail (tr->channel, nullptr);
               ChannelSend * send =
                 tr->channel->sends[node->port->id_.port_index];
-              g_return_val_if_fail (send, NULL);
+              g_return_val_if_fail (send, nullptr);
               parent_node =
                 graph_find_node_from_channel_send (node->graph, send);
             }
             break;
-          case PortIdentifier::OwnerType::FADER:
+          case PortIdentifier::OwnerType::Fader:
             {
               if (
                 ENUM_BITSET_TEST (
@@ -138,7 +139,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                 }
             }
             break;
-          case PortIdentifier::OwnerType::TRACK_PROCESSOR:
+          case PortIdentifier::OwnerType::Track_PROCESSOR:
             {
               Track * tr = node->port->get_track (true);
               parent_node = graph_find_node_from_track (node->graph, tr, true);
@@ -329,12 +330,13 @@ export_as_graphviz_type (
   const char * type)
 {
   GVC_t *    gvc = gvContext ();
-  Agraph_t * agraph = agopen ((char *) "routing_graph", Agstrictdirected, NULL);
+  Agraph_t * agraph =
+    agopen ((char *) "routing_graph", Agstrictdirected, nullptr);
 
   /* fill anodes with subgraphs */
   /* Hash table of key: (GraphNode *), value: (ANode *) */
   GHashTable * anodes = g_hash_table_new_full (
-    g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) anode_free);
+    g_direct_hash, g_direct_equal, nullptr, (GDestroyNotify) anode_free);
   fill_anodes (graph, agraph, anodes);
 
   /* create graph */
@@ -352,7 +354,7 @@ export_as_graphviz_type (
           Agnode_t *  achildnode = create_anode (agraph, child, anodes);
 
           /* create edge */
-          Agedge_t * edge = agedge (agraph, anode, achildnode, NULL, true);
+          Agedge_t * edge = agedge (agraph, anode, achildnode, nullptr, true);
           if (node->type == GraphNodeType::ROUTE_NODE_TYPE_PORT)
             {
               char * color = agget (anode, (char *) "color");
@@ -380,18 +382,16 @@ void
 graph_export_as_simple (GraphExportType type, const char * export_path)
 {
   /* pause engine */
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_FORCE, true);
+  AudioEngine::State state;
+  AUDIO_ENGINE->wait_for_pause (state, Z_F_FORCE, true);
 
-  Graph * graph = graph_new (ROUTER);
-  graph_setup (graph, false, false);
+  Graph graph (ROUTER.get ());
+  graph.setup (false, false);
 
-  graph_export_as (graph, type, export_path);
-
-  graph_free (graph);
+  graph_export_as (&graph, type, export_path);
 
   /* continue engine */
-  engine_resume (AUDIO_ENGINE, &state);
+  AUDIO_ENGINE->resume (state);
 }
 
 /**

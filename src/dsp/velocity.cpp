@@ -1,113 +1,54 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
-
-#include <cstdlib>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
 #include "dsp/velocity.h"
-#include "gui/widgets/velocity.h"
-#include "utils/objects.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/midi_editor_space.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "utils/string.h"
-#include "utils/types.h"
+#include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
 
-/**
- * Creates a new Velocity with the given value.
- */
-Velocity *
-velocity_new (MidiNote * midi_note, const uint8_t vel)
+Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
+    : RegionOwnedObjectImpl<MidiRegion> (midi_note->region_id_),
+      midi_note_ (midi_note), vel_ (vel)
 {
-  Velocity * self = object_new (Velocity);
-
-  ArrangerObject * obj = (ArrangerObject *) self;
-  obj->type = ArrangerObjectType::ARRANGER_OBJECT_TYPE_VELOCITY;
-
-  self->vel = vel;
-  self->midi_note = midi_note;
-
-  arranger_object_init (obj);
-
-  return self;
+  Velocity ();
 }
 
-/**
- * Sets the MidiNote the Velocity belongs to.
- */
+ArrangerWidget *
+Velocity::get_arranger () const
+{
+  return (ArrangerWidget *) (MW_MIDI_MODIFIER_ARRANGER);
+}
+
 void
-velocity_set_midi_note (Velocity * self, MidiNote * midi_note)
+Velocity::set_val (const int val)
 {
-  self->midi_note = midi_note;
+  vel_ = (uint8_t) std::clamp (val, 0, 127);
+
+  /* re-set the midi note value to set a note off event */
+  auto note = get_midi_note ();
+  z_return_if_fail (IS_MIDI_NOTE (note));
+  note->set_val (note->val_);
 }
 
-/**
- * Returns 1 if the Velocity's match, 0 if not.
- */
-int
-velocity_is_equal (Velocity * src, Velocity * dest)
-{
-  ArrangerObject * src_mn_obj = (ArrangerObject *) src->midi_note;
-  ArrangerObject * dest_mn_obj = (ArrangerObject *) dest->midi_note;
-  return src->vel == dest->vel && src->midi_note->pos == dest->midi_note->pos
-         && region_identifier_is_equal (
-           &src_mn_obj->region_id, &dest_mn_obj->region_id);
-}
-
-/**
- * Sets the velocity to the given value.
- *
- * The given value may exceed the bounds 0-127,
- * and will be clamped.
- */
-void
-velocity_set_val (Velocity * self, const int val)
-{
-  g_return_if_fail (IS_ARRANGER_OBJECT (self));
-
-  self->vel = (uint8_t) CLAMP (val, 0, 127);
-
-  /* re-set the midi note value to set a note off
-   * event */
-  MidiNote * note = velocity_get_midi_note (self);
-  g_return_if_fail (IS_MIDI_NOTE (note));
-  midi_note_set_val (note, note->val);
-}
-
-/**
- * Changes the Velocity by the given amount of
- * values (delta).
- */
-void
-velocity_shift (Velocity * self, const int delta)
-{
-  self->vel = (midi_byte_t) ((int) self->vel + delta);
-}
-
-/**
- * Returns the owner MidiNote.
- */
 MidiNote *
-velocity_get_midi_note (const Velocity * const self)
+Velocity::get_midi_note () const
 {
-  g_return_val_if_fail (IS_MIDI_NOTE (self->midi_note), NULL);
+  z_return_val_if_fail (midi_note_, nullptr);
 
-  return self->midi_note;
-
-#if 0
-  g_return_val_if_fail (self, NULL);
-  Region * region =
-    region_find (&self->region_id);
-  g_return_val_if_fail (region, NULL);
-  return region->midi_notes[self->note_pos];
-#endif
+  return midi_note_;
 }
 
 const char *
-velocity_setting_enum_to_str (guint index)
+Velocity::setting_enum_to_str (guint index)
 {
   switch (index)
     {
@@ -123,11 +64,11 @@ velocity_setting_enum_to_str (guint index)
       break;
     }
 
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 guint
-velocity_setting_str_to_enum (const char * str)
+Velocity::setting_str_to_enum (const char * str)
 {
   guint val;
   if (string_is_equal (str, "40"))
@@ -148,4 +89,26 @@ velocity_setting_str_to_enum (const char * str)
     }
 
   return val;
+}
+
+Velocity::ArrangerObjectPtr
+Velocity::find_in_project () const
+{
+  const auto mn = get_midi_note ();
+  auto prj_mn = std::dynamic_pointer_cast<MidiNote> (mn->find_in_project ());
+  z_return_val_if_fail (prj_mn && prj_mn->vel_, nullptr);
+  return prj_mn->vel_;
+}
+
+std::string
+Velocity::print_to_str () const
+{
+  return std::format ("Velocity: {}", vel_);
+}
+
+bool
+Velocity::validate (bool is_project, double frames_per_tick) const
+{
+  // TODO
+  return true;
 }

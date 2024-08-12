@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_region.h"
@@ -9,8 +9,7 @@
 #include "io/file_import.h"
 #include "io/midi_file.h"
 #include "project.h"
-#include "utils/error.h"
-#include "utils/objects.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -28,40 +27,19 @@ G_DEFINE_QUARK (
   z - io - file - import - error - quark,
   z_io_file_import_error)
 
-FileImportInfo *
-file_import_info_new (void)
-{
-  FileImportInfo * self = object_new (FileImportInfo);
-  return self;
-}
-
-FileImportInfo *
-file_import_info_clone (const FileImportInfo * src)
-{
-  FileImportInfo * self = file_import_info_new ();
-  *self = *src;
-  return self;
-}
-
-void
-file_import_info_free (FileImportInfo * self)
-{
-  object_zero_and_free (self);
-}
-
 /**
  * Returns a new FileImport instance.
  */
 FileImport *
-file_import_new (const char * filepath, const FileImportInfo * import_nfo)
+file_import_new (const std::string &filepath, const FileImportInfo * import_nfo)
 {
-  g_return_val_if_fail (filepath, NULL);
+  z_return_val_if_fail (!filepath.empty (), nullptr);
 
-  FileImport * self =
-    static_cast<FileImport *> (g_object_new (FILE_IMPORT_TYPE, NULL));
+  auto * self =
+    static_cast<FileImport *> (g_object_new (FILE_IMPORT_TYPE, nullptr));
 
-  self->import_info = file_import_info_clone (import_nfo);
-  self->filepath = g_strdup (filepath);
+  self->import_info = std::make_unique<FileImportInfo> (*import_nfo);
+  self->filepath = filepath;
 
   return self;
 }
@@ -75,37 +53,37 @@ file_import_thread_func (
 {
   FileImport * self = Z_FILE_IMPORT (task_data);
 
-  TrackType      track_type;
+  Track::Type    track_type;
   FileDescriptor file = FileDescriptor (self->filepath);
   if (file.is_supported () && file.is_audio ())
     {
-      track_type = TrackType::TRACK_TYPE_AUDIO;
+      track_type = Track::Type::Audio;
     }
   else if (file.is_midi ())
     {
-      track_type = TrackType::TRACK_TYPE_MIDI;
+      track_type = Track::Type::Midi;
     }
   else
     {
-      char *   descr = FileDescriptor::get_type_description (file.type);
+      auto     descr = FileDescriptor::get_type_description (file.type_);
       GError * err = NULL;
       g_set_error (
         &err, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-        _ ("Unsupported file type %s"), descr);
-      g_free (descr);
+        _ ("Unsupported file type %s"), descr.c_str ());
       g_task_return_error (task, err);
       return;
     }
 
   int num_nonempty_midi_tracks = 0;
-  if (track_type == TrackType::TRACK_TYPE_MIDI)
+  if (track_type == Track::Type::Midi)
     {
-      num_nonempty_midi_tracks = midi_file_get_num_tracks (self->filepath, true);
+      num_nonempty_midi_tracks =
+        midi_file_get_num_tracks (self->filepath.c_str (), true);
       if (num_nonempty_midi_tracks == 0)
         {
           g_task_return_new_error (
             task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-            _ ("The MIDI file at %s contains no data"), self->filepath);
+            _ ("The MIDI file at %s contains no data"), self->filepath.c_str ());
           return;
         }
     }
@@ -117,7 +95,7 @@ file_import_thread_func (
   Track * track = NULL;
   if (self->import_info->track_name_hash)
     {
-      if (track_type == TrackType::TRACK_TYPE_MIDI)
+      if (track_type == Track::Type::Midi)
         {
           if (num_nonempty_midi_tracks > 1)
             {
@@ -131,8 +109,8 @@ file_import_thread_func (
             }
         }
 
-      track = tracklist_find_track_by_name_hash (
-        TRACKLIST, self->import_info->track_name_hash);
+      track =
+        TRACKLIST->find_track_by_name_hash (self->import_info->track_name_hash);
       if (!track)
         {
           g_task_return_new_error (
@@ -143,50 +121,59 @@ file_import_thread_func (
         }
     }
 
-  int lane_pos =
-    self->import_info->lane >= 0
-      ? self->import_info->lane
-      : (!track || track->num_lanes == 1 ? 0 : track->num_lanes - 2);
-  int idx_in_lane = track ? track->lanes[lane_pos]->num_regions : 0;
-  switch (track_type)
-    {
-    case TrackType::TRACK_TYPE_AUDIO:
-      {
-        GError * err = NULL;
-        Region * region = audio_region_new (
-          -1, self->filepath, true, NULL, 0, NULL, 0,
-          ENUM_INT_TO_VALUE (BitDepth, 0), &self->import_info->pos,
-          self->import_info->track_name_hash, lane_pos, idx_in_lane, &err);
-        if (!region)
-          {
-            /*g_ptr_array_unref (regions);*/
-            g_task_return_error (task, err);
-            return;
-          }
-        g_ptr_array_add (self->regions, region);
-      }
-      break;
-    case TrackType::TRACK_TYPE_MIDI:
-      for (int i = 0; i < num_nonempty_midi_tracks; i++)
+  std::visit (
+    [&] (auto &&track) {
+      int lane_pos =
+        self->import_info->lane >= 0
+          ? self->import_info->lane
+          : (!track || track->lanes_.size () == 1 ? 0 : track->lanes_.size () - 2);
+      int idx_in_lane = track ? track->lanes_[lane_pos]->regions_.size () : 0;
+      switch (track_type)
         {
-          Region * region = midi_region_new_from_midi_file (
-            &self->import_info->pos, self->filepath,
-            self->import_info->track_name_hash, lane_pos, idx_in_lane, i);
-          if (!region)
+        case Track::Type::Audio:
+          {
+            try
+              {
+                self->regions.emplace_back (std::make_shared<AudioRegion> (
+                  -1, self->filepath, true, nullptr, 0, std::nullopt, 0,
+                  ENUM_INT_TO_VALUE (BitDepth, 0), self->import_info->pos,
+                  self->import_info->track_name_hash, lane_pos, idx_in_lane));
+              }
+            catch (const ZrythmException &e)
+              {
+                g_task_return_new_error (
+                  task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
+                  _ ("Failed to create an audio region for file %s: %s"),
+                  self->filepath.c_str (), e.what ());
+                return;
+              }
+          }
+          break;
+        case Track::Type::Midi:
+          for (int i = 0; i < num_nonempty_midi_tracks; i++)
             {
-              /*g_ptr_array_unref (regions);*/
-              g_task_return_new_error (
-                task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-                _ ("Failed to create a MIDI region for file %s"),
-                self->filepath);
-              return;
+              try
+                {
+                  self->regions.emplace_back (std::make_shared<MidiRegion> (
+                    self->import_info->pos, self->filepath,
+                    self->import_info->track_name_hash, lane_pos, idx_in_lane,
+                    i));
+                }
+              catch (const ZrythmException &e)
+                {
+                  g_task_return_new_error (
+                    task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
+                    _ ("Failed to create a MIDI region for file %s: %s"),
+                    self->filepath.c_str (), e.what ());
+                  return;
+                }
             }
-          g_ptr_array_add (self->regions, region);
+          break;
+        default:
+          break;
         }
-      break;
-    default:
-      break;
-    }
+    },
+    convert_to_variant<LanedTrackPtrVariant> (track));
 
   g_task_return_error_if_cancelled (task);
   if (g_task_had_error (task))
@@ -195,21 +182,13 @@ file_import_thread_func (
       return;
     }
 
-  g_debug (
+  z_debug (
     "returning %u region arrays from task (FileImport %p)...",
-    self->regions->len, self);
+    self->regions.size (), fmt::ptr (self));
   g_task_return_pointer (
-    task, self->regions, (GDestroyNotify) g_ptr_array_unref);
+    task, &self->regions, (GDestroyNotify) g_ptr_array_unref);
 }
 
-/**
- * Begins file import for a single file.
- *
- * @param owner Passed to the task as the owner object. This is
- *   to avoid the task callback being called after the owner
- *   object is deleted.
- * @param callback_data User data to pass to the callback.
- */
 void
 file_import_async (
   FileImport *        self,
@@ -218,7 +197,7 @@ file_import_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
-  g_message ("Starting an async file import operation for: %s", self->filepath);
+  z_debug ("Starting an async file import operation for: %s", self->filepath);
   GTask * task = g_task_new (owner, cancellable, callback, callback_data);
 
   if (owner)
@@ -228,49 +207,39 @@ file_import_async (
   g_task_set_return_on_cancel (task, false);
   g_task_set_check_cancellable (task, true);
   g_task_set_source_tag (task, (gpointer) file_import_async);
-  g_task_set_task_data (task, self, NULL);
+  g_task_set_task_data (task, self, nullptr);
   g_task_run_in_thread (task, file_import_thread_func);
   g_object_unref (task);
 }
 
-GPtrArray *
+std::vector<std::shared_ptr<Region>>
 file_import_sync (FileImport * self, GError ** error)
 {
-  g_message ("Starting a sync file import operation for: %s", self->filepath);
-  GTask * task = g_task_new (NULL, NULL, NULL, NULL);
+  z_debug ("Starting a sync file import operation for: %s", self->filepath);
+  GTask * task = g_task_new (nullptr, nullptr, nullptr, nullptr);
 
   g_task_set_return_on_cancel (task, false);
   g_task_set_check_cancellable (task, true);
   g_task_set_source_tag (task, (gpointer) file_import_sync);
-  g_task_set_task_data (task, self, NULL);
+  g_task_set_task_data (task, self, nullptr);
   g_task_run_in_thread_sync (task, file_import_thread_func);
-  g_return_val_if_fail (g_task_get_completed (task), NULL);
-  GPtrArray * regions = file_import_finish (self, G_ASYNC_RESULT (task), error);
+  z_return_val_if_fail (
+    g_task_get_completed (task), std::vector<std::shared_ptr<Region>> ());
+  auto regions = file_import_finish (self, G_ASYNC_RESULT (task), error);
   g_object_unref (task);
   return regions;
 }
 
-/**
- * To be called by the provided GAsyncReadyCallback to retrieve
- * retun values and error details, passing the GAsyncResult
- * which was passed to the callback.
- *
- * @return A pointer array of regions. The caller is
- *   responsible for freeing the pointer array and the regions.
- */
-GPtrArray *
+std::vector<std::shared_ptr<Region>>
 file_import_finish (FileImport * self, GAsyncResult * result, GError ** error)
 {
   g_debug ("file_import_finish (FileImport %p)", self);
-  g_return_val_if_fail (g_task_is_valid (result, self->owner), NULL);
-  GPtrArray * regions_array = static_cast<GPtrArray *> (
+  z_return_val_if_fail (
+    g_task_is_valid (result, self->owner),
+    std::vector<std::shared_ptr<Region>> ());
+  auto regions_array = static_cast<std::vector<std::shared_ptr<Region>> *> (
     g_task_propagate_pointer ((GTask *) result, error));
-  if (regions_array)
-    {
-      /* ownership is transferred to caller */
-      self->regions = NULL;
-    }
-  return regions_array;
+  return *regions_array;
 }
 
 static void
@@ -290,11 +259,11 @@ file_import_finalize (GObject * obj)
 {
   FileImport * self = Z_FILE_IMPORT (obj);
 
-  g_debug ("finalizing file import instance %p...", self);
+  z_debug ("finalizing file import instance %p...", fmt::ptr (self));
 
-  g_free_and_null (self->filepath);
-  object_free_w_func_and_null (file_import_info_free, self->import_info);
-  object_free_w_func_and_null (g_ptr_array_unref, self->regions);
+  std::destroy_at (&self->regions);
+  std::destroy_at (&self->filepath);
+  std::destroy_at (&self->import_info);
 
   G_OBJECT_CLASS (file_import_parent_class)->finalize (obj);
 }
@@ -311,6 +280,7 @@ file_import_class_init (FileImportClass * klass)
 static void
 file_import_init (FileImport * self)
 {
-  self->regions =
-    g_ptr_array_new_with_free_func ((GDestroyNotify) arranger_object_free);
+  std::construct_at (&self->regions);
+  std::construct_at (&self->filepath);
+  std::construct_at (&self->import_info);
 }

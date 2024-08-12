@@ -12,7 +12,7 @@
 
 #include "utils/yaml.h"
 
-typedef struct PluginIdentifier PluginIdentifier;
+// typedef struct PluginIdentifier PluginIdentifier;
 
 typedef enum ZPluginSlotType_v1
 {

@@ -59,9 +59,8 @@ on_chord_keys_scroll_hadj_changed (
   GtkAdjustment *          adj,
   ChordEditorSpaceWidget * self)
 {
-  editor_settings_set_scroll_start_y (
-    &CHORD_EDITOR->editor_settings, (int) gtk_adjustment_get_value (adj),
-    F_VALIDATE);
+  CHORD_EDITOR->set_scroll_start_y (
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
 }
 
 int
@@ -73,7 +72,7 @@ chord_editor_space_widget_get_chord_height (ChordEditorSpaceWidget * self)
 int
 chord_editor_space_widget_get_all_chords_height (ChordEditorSpaceWidget * self)
 {
-  return CHORD_EDITOR->num_chords
+  return CHORD_EDITOR->chords_.size ()
          * gtk_widget_get_height (GTK_WIDGET (self->chord_keys[0]));
 }
 
@@ -86,7 +85,7 @@ chord_editor_space_widget_refresh (ChordEditorSpaceWidget * self)
 void
 chord_editor_space_widget_refresh_chords (ChordEditorSpaceWidget * self)
 {
-  for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
+  for (size_t j = 0; j < CHORD_EDITOR->chords_.size (); j++)
     {
       chord_key_widget_refresh (self->chord_keys[j]);
     }
@@ -102,7 +101,7 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
         ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD, SNAP_GRID_EDITOR);
     }
 
-  for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
+  for (size_t i = 0; i < CHORD_EDITOR->chords_.size (); i++)
     {
       self->chord_keys[i] = chord_key_widget_new (i);
       GtkBox * box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
@@ -132,7 +131,7 @@ chord_editor_space_tick_cb (
 
   GtkAdjustment * vadj =
     gtk_scrolled_window_get_vadjustment (self->chord_keys_scroll);
-  gtk_adjustment_set_value (vadj, CHORD_EDITOR->editor_settings.scroll_start_y);
+  gtk_adjustment_set_value (vadj, CHORD_EDITOR->scroll_start_y_);
 
   return G_SOURCE_CONTINUE;
 }
@@ -154,7 +153,7 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
     self->arranger_and_keys_vsize_group, GTK_WIDGET (self->chord_keys_box));
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), chord_editor_space_tick_cb, self, NULL);
+    GTK_WIDGET (self), chord_editor_space_tick_cb, self, nullptr);
 }
 
 static void

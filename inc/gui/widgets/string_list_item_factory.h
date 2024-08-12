@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * String list item factory.
  */
 
 #ifndef __GUI_WIDGETS_STRING_LIST_ITEM_FACTORY_H__
 #define __GUI_WIDGETS_STRING_LIST_ITEM_FACTORY_H__
+
+#include <string>
 
 #include "gtk_wrapper.h"
 
@@ -18,7 +20,7 @@
  * @{
  */
 
-typedef const char * (*StringListItemFactoryEnumStringGetter) (int val);
+typedef std::string (*StringListItemFactoryEnumStringGetter) (int val);
 
 /**
  * Returns a simple item factory that puts each string in a

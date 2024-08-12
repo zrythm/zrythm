@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tracklist.h"
-#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger_wrapper.h"
@@ -34,7 +33,7 @@ on_vertical_divider_position_change (
   gpointer     user_data)
 {
   GtkPaned * paned = GTK_PANED (gobject);
-  PRJ_TIMELINE->tracks_width = gtk_paned_get_position (paned);
+  PRJ_TIMELINE->tracks_width_ = gtk_paned_get_position (paned);
 }
 
 void
@@ -42,7 +41,7 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
 {
   g_return_if_fail (Z_IS_TIMELINE_PANEL_WIDGET (self));
 
-  tracklist_widget_setup (self->tracklist, TRACKLIST);
+  tracklist_widget_setup (self->tracklist, TRACKLIST.get ());
 
   /* set tracklist header size */
   gtk_widget_set_size_request (
@@ -89,7 +88,7 @@ TimelinePanelWidget *
 timeline_panel_widget_new (void)
 {
   TimelinePanelWidget * self = static_cast<TimelinePanelWidget *> (
-    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL));
+    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, nullptr));
 
   return self;
 }
@@ -108,7 +107,7 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
 
   self->timeline = self->timeline_wrapper->child;
 
-  self->ruler->type = RulerWidgetType::RULER_WIDGET_TYPE_TIMELINE;
+  self->ruler->type = RulerWidgetType::Timeline;
   self->timeline->type = ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
   self->pinned_timeline->type =
     ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
@@ -134,7 +133,7 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
 
   g_signal_connect (
     G_OBJECT (self->tracklist_timeline), "notify::position",
-    G_CALLBACK (on_vertical_divider_position_change), NULL);
+    G_CALLBACK (on_vertical_divider_position_change), nullptr);
 }
 
 static void

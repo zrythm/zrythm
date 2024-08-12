@@ -1,17 +1,18 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-/** \file
+/** @file
  */
 
 #ifndef __GUI_WIDGETS_BALANCE_CONTROL_H__
 #define __GUI_WIDGETS_BALANCE_CONTROL_H__
 
+#include "utils/color.h"
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
+
+class ControlPort;
 
 #define BALANCE_CONTROL_WIDGET_TYPE (balance_control_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -21,7 +22,7 @@ G_DECLARE_FINAL_TYPE (
   BALANCE_CONTROL_WIDGET,
   GtkWidget)
 
-typedef struct _BalanceControlWidget
+using BalanceControlWidget = struct _BalanceControlWidget
 {
   GtkWidget        parent_instance;
   GtkGestureDrag * drag;
@@ -53,11 +54,11 @@ typedef struct _BalanceControlWidget
   /** Balance at start of drag. */
   float balance_at_start;
 
-  Port * port;
+  ControlPort * port;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} BalanceControlWidget;
+};
 
 /**
  * Creates a new BalanceControl widget and binds it
@@ -71,7 +72,7 @@ balance_control_widget_new (
   GenericFloatGetter getter,
   GenericFloatSetter setter,
   void *             object,
-  Port *             port,
+  ControlPort *      port,
   int                height);
 
 #endif

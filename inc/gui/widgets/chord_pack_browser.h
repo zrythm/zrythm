@@ -1,18 +1,17 @@
-/*
- * SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 #define __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 
+#include "utils/types.h"
+
 #include "gtk_wrapper.h"
 
-typedef struct ChordPreset                   ChordPreset;
-typedef struct ChordPresetPack               ChordPresetPack;
-typedef struct _FileAuditionerControlsWidget FileAuditionerControlsWidget;
-typedef struct ItemFactory                   ItemFactory;
+class ChordPreset;
+class ChordPresetPack;
+TYPEDEF_STRUCT_UNDERSCORED (FileAuditionerControlsWidget);
+class ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -30,7 +29,7 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_CHORD_PACK_BROWSER MW_RIGHT_DOCK_EDGE->chord_pack_browser
 
-typedef struct _ChordPackBrowserWidget
+using ChordPackBrowserWidget = struct _ChordPackBrowserWidget
 {
   GtkBox parent_instance;
 
@@ -40,7 +39,7 @@ typedef struct _ChordPackBrowserWidget
   GtkBox * browser_bot;
 
   GtkSingleSelection * packs_selection_model;
-  ItemFactory *        packs_item_factory;
+  std::unique_ptr<ItemFactory> * packs_item_factory;
   GtkListView *        packs_list_view;
 
   GtkLabel * pset_info;
@@ -48,12 +47,11 @@ typedef struct _ChordPackBrowserWidget
   GtkCustomFilter *    psets_filter;
   GtkFilterListModel * psets_filter_model;
   GtkSingleSelection * psets_selection_model;
-  ItemFactory *        psets_item_factory;
+  std::unique_ptr<ItemFactory> * psets_item_factory;
   GtkListView *        psets_list_view;
 
-  /** Array of ChordPreset. */
-  GPtrArray * selected_packs;
-  GPtrArray * selected_psets;
+  std::vector<ChordPresetPack *> * selected_packs;
+  std::vector<ChordPreset *> *     selected_psets;
 
   FileAuditionerControlsWidget * auditioner_controls;
 
@@ -63,7 +61,7 @@ typedef struct _ChordPackBrowserWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} ChordPackBrowserWidget;
+};
 
 void
 chord_pack_browser_widget_refresh_packs (ChordPackBrowserWidget * self);
@@ -72,7 +70,7 @@ void
 chord_pack_browser_widget_refresh_presets (ChordPackBrowserWidget * self);
 
 ChordPackBrowserWidget *
-chord_pack_browser_widget_new (void);
+chord_pack_browser_widget_new ();
 
 /**
  * @}

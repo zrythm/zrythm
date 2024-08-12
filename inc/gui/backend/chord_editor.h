@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Chord editor backend.
  */
@@ -13,10 +13,10 @@
 #include "dsp/chord_descriptor.h"
 #include "dsp/scale.h"
 #include "gui/backend/editor_settings.h"
-#include "utils/yaml.h"
+#include "utils/icloneable.h"
 
-typedef struct ChordDescriptor ChordDescriptor;
-typedef struct ChordPreset     ChordPreset;
+class ChordDescriptor;
+class ChordPreset;
 
 /**
  * @addtogroup gui_backend
@@ -24,91 +24,59 @@ typedef struct ChordPreset     ChordPreset;
  * @{
  */
 
-#define CHORD_EDITOR_SCHEMA_VERSION 1
+#define CHORD_EDITOR (&CLIP_EDITOR->chord_editor_)
 
-#define CHORD_EDITOR (CLIP_EDITOR->chord_editor)
-
-#define CHORD_EDITOR_NUM_CHORDS 12
+constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 
 /**
  * Backend for the chord editor.
  */
-typedef struct ChordEditor
+class ChordEditor final
+    : public EditorSettings,
+      public ICloneable<ChordEditor>,
+      public ISerializable<ChordEditor>
 {
+public:
+  /**
+   * Initializes the ChordEditor.
+   */
+  void init ();
+
+  void
+  apply_single_chord (const ChordDescriptor &chord, const int idx, bool undoable);
+
+  void apply_chords (const std::vector<ChordDescriptor> &chords, bool undoable);
+
+  void apply_preset (const ChordPreset &pset, bool undoable);
+
+  void apply_preset_from_scale (
+    MusicalScale::Type scale,
+    MusicalNote        root_note,
+    bool               undoable);
+
+  void transpose_chords (bool up, bool undoable);
+
+  /**
+   * Returns the ChordDescriptor for the given note number, otherwise NULL if
+   * the given note number is not in the proper range.
+   */
+  ChordDescriptor * get_chord_from_note_number (midi_byte_t note_number);
+
+  int get_chord_index (const ChordDescriptor &chord) const;
+
+  void init_after_cloning (const ChordEditor &other) override { *this = other; }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /**
    * The chords to show on the left.
    *
-   * Currently fixed to 12 chords whose order cannot
-   * be edited. Chords cannot be added or removed.
+   * Currently fixed to 12 chords whose order cannot be edited. Chords cannot
+   * be added or removed.
    */
-  ChordDescriptor * chords[128];
-  int               num_chords;
-
-  EditorSettings editor_settings;
-} ChordEditor;
-
-/**
- * Inits the ChordEditor after a Project has been
- * loaded.
- */
-void
-chord_editor_init_loaded (ChordEditor * self);
-
-/**
- * Initializes the ChordEditor.
- */
-void
-chord_editor_init (ChordEditor * self);
-
-ChordEditor *
-chord_editor_clone (ChordEditor * src);
-
-void
-chord_editor_apply_single_chord (
-  ChordEditor *           self,
-  const ChordDescriptor * chord,
-  const int               idx,
-  bool                    undoable);
-
-void
-chord_editor_apply_chords (
-  ChordEditor *            self,
-  const ChordDescriptor ** chords,
-  bool                     undoable);
-
-void
-chord_editor_apply_preset (ChordEditor * self, ChordPreset * pset, bool undoable);
-
-void
-chord_editor_apply_preset_from_scale (
-  ChordEditor *    self,
-  MusicalScaleType scale,
-  MusicalNote      root_note,
-  bool             undoable);
-
-void
-chord_editor_transpose_chords (ChordEditor * self, bool up, bool undoable);
-
-/**
- * Returns the ChordDescriptor for the given note
- * number, otherwise NULL if the given note number
- * is not in the proper range.
- */
-NONNULL ChordDescriptor *
-chord_editor_get_chord_from_note_number (
-  const ChordEditor * self,
-  midi_byte_t         note_number);
-
-NONNULL int
-chord_editor_get_chord_index (
-  const ChordEditor *     self,
-  const ChordDescriptor * chord);
-
-ChordEditor *
-chord_editor_new (void);
-
-void
-chord_editor_free (ChordEditor * self);
+  std::vector<ChordDescriptor> chords_;
+};
 
 /**
  * @}

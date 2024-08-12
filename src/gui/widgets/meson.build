@@ -78,7 +78,7 @@ widget_srcs = files([
   'knob_with_name.cpp',
   'left_dock_edge.cpp',
   'live_waveform.cpp',
-  'log_viewer.cpp',
+  # 'log_viewer.cpp',
   'main_notebook.cpp',
   'main_window.cpp',
   'marker.cpp',

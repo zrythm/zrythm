@@ -1,42 +1,35 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
-
-#include <cstdlib>
-
-#include <inttypes.h>
 
 #include "io/audio_file.h"
 #include "io/file_descriptor.h"
-#include "utils/error.h"
+#include "utils/exceptions.h"
+#include "utils/format.h"
 #include "utils/io.h"
+#include "utils/logger.h"
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
-FileDescriptor::FileDescriptor (const char * _abs_path)
+FileDescriptor::FileDescriptor (const std::string &_abs_path)
 {
   // g_debug ("creating new FileDescriptor for %s", path);
-  this->abs_path = _abs_path;
-  this->type = get_type_from_path (_abs_path);
-  char * tmp = g_path_get_basename (_abs_path);
-  this->label = tmp;
-  g_free (tmp);
+  abs_path_ = _abs_path;
+  type_ = get_type_from_path (_abs_path.c_str ());
+  label_ = Glib::path_get_basename (_abs_path);
 }
 
 std::unique_ptr<FileDescriptor>
-FileDescriptor::new_from_uri (const char * uri, GError ** error)
+FileDescriptor::new_from_uri (const std::string &uri)
 {
   GError * err = NULL;
-  char *   path = g_filename_from_uri (uri, NULL, &err);
+  char *   path = g_filename_from_uri (uri.c_str (), nullptr, &err);
   if (!path)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error getting file path from URI <%s>", uri);
-      return nullptr;
+      throw ZrythmException (fmt::format (
+        "Error getting file path from URI <{}>: {}", uri, err->message));
     }
 
   auto self = std::make_unique<FileDescriptor> (path);
@@ -46,13 +39,13 @@ FileDescriptor::new_from_uri (const char * uri, GError ** error)
 }
 
 bool
-FileDescriptor::is_type_supported (ZFileType type)
+FileDescriptor::is_type_supported (FileType type)
 {
   if (is_type_audio (type))
     {
       if (
-        type == ZFileType::FILE_TYPE_FLAC || type == ZFileType::FILE_TYPE_OGG
-        || type == ZFileType::FILE_TYPE_WAV || type == ZFileType::FILE_TYPE_MP3)
+        type == FileType::Flac || type == FileType::Ogg || type == FileType::Wav
+        || type == FileType::Mp3)
         return true;
     }
   if (is_type_midi (type))
@@ -62,112 +55,104 @@ FileDescriptor::is_type_supported (ZFileType type)
 }
 
 bool
-FileDescriptor::is_type_audio (ZFileType type)
+FileDescriptor::is_type_audio (FileType type)
 {
-  return type == ZFileType::FILE_TYPE_MP3 || type == ZFileType::FILE_TYPE_FLAC
-         || type == ZFileType::FILE_TYPE_OGG || type == ZFileType::FILE_TYPE_WAV;
+  return type == FileType::Mp3 || type == FileType::Flac
+         || type == FileType::Ogg || type == FileType::Wav;
 }
 
 bool
-FileDescriptor::is_type_midi (ZFileType type)
+FileDescriptor::is_type_midi (FileType type)
 {
-  return type == ZFileType::FILE_TYPE_MIDI;
+  return type == FileType::Midi;
 }
 
-char *
-FileDescriptor::get_type_description (ZFileType type)
+std::string
+FileDescriptor::get_type_description (FileType type)
 {
   switch (type)
     {
-    case ZFileType::FILE_TYPE_MIDI:
-      return g_strdup ("MIDI");
-      break;
-    case ZFileType::FILE_TYPE_MP3:
-      return g_strdup ("MP3");
-      break;
-    case ZFileType::FILE_TYPE_FLAC:
-      return g_strdup ("FLAC");
-      break;
-    case ZFileType::FILE_TYPE_OGG:
-      return g_strdup ("OGG (Vorbis)");
-      break;
-    case ZFileType::FILE_TYPE_WAV:
-      return g_strdup ("Wave");
-      break;
-    case ZFileType::FILE_TYPE_DIR:
-      return g_strdup ("Directory");
-      break;
-    case ZFileType::FILE_TYPE_PARENT_DIR:
-      return g_strdup ("Parent directory");
-      break;
-    case ZFileType::FILE_TYPE_OTHER:
-      return g_strdup ("Other");
-      break;
+    case FileType::Midi:
+      return "MIDI";
+    case FileType::Mp3:
+      return "MP3";
+    case FileType::Flac:
+      return "FLAC";
+    case FileType::Ogg:
+      return "OGG (Vorbis)";
+    case FileType::Wav:
+      return "Wave";
+    case FileType::Directory:
+      return "Directory";
+    case FileType::ParentDirectory:
+      return "Parent directory";
+    case FileType::Other:
+      return "Other";
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
     }
 }
 
-ZFileType
+FileType
 FileDescriptor::get_type_from_path (const char * file)
 {
   const char * ext = io_file_get_ext (file);
-  ZFileType    type = ZFileType::FILE_TYPE_OTHER;
+  FileType     type = FileType::Other;
 
   if (g_file_test (file, G_FILE_TEST_IS_DIR))
-    type = ZFileType::FILE_TYPE_DIR;
+    type = FileType::Directory;
   else if (string_is_equal (ext, ""))
-    type = ZFileType::FILE_TYPE_OTHER;
+    type = FileType::Other;
   else if (
     string_is_equal_ignore_case (ext, "MID")
     || string_is_equal_ignore_case (ext, "MIDI")
     || string_is_equal_ignore_case (ext, "SMF"))
-    type = ZFileType::FILE_TYPE_MIDI;
+    type = FileType::Midi;
   else if (string_is_equal_ignore_case (ext, "mp3"))
-    type = ZFileType::FILE_TYPE_MP3;
+    type = FileType::Mp3;
   else if (string_is_equal_ignore_case (ext, "flac"))
-    type = ZFileType::FILE_TYPE_FLAC;
+    type = FileType::Flac;
   else if (string_is_equal_ignore_case (ext, "ogg"))
-    type = ZFileType::FILE_TYPE_OGG;
+    type = FileType::Ogg;
   else if (string_is_equal_ignore_case (ext, "wav"))
-    type = ZFileType::FILE_TYPE_WAV;
+    type = FileType::Wav;
   else
-    type = ZFileType::FILE_TYPE_OTHER;
+    type = FileType::Other;
 
   return type;
 }
 
 const char *
-FileDescriptor::get_type_ext (ZFileType type)
+FileDescriptor::get_type_ext (FileType type)
 {
   switch (type)
     {
-    case ZFileType::FILE_TYPE_MIDI:
+    case FileType::Midi:
       return "mid";
       break;
-    case ZFileType::FILE_TYPE_MP3:
+    case FileType::Mp3:
       return "mp3";
       break;
-    case ZFileType::FILE_TYPE_FLAC:
+    case FileType::Flac:
       return "flac";
       break;
-    case ZFileType::FILE_TYPE_OGG:
+    case FileType::Ogg:
       return "ogg";
       break;
-    case ZFileType::FILE_TYPE_WAV:
+    case FileType::Wav:
       return "wav";
       break;
-    case ZFileType::FILE_TYPE_PARENT_DIR:
+    case FileType::ParentDirectory:
       return NULL;
       break;
-    case ZFileType::FILE_TYPE_DIR:
+    case FileType::Directory:
       return NULL;
       break;
-    case ZFileType::FILE_TYPE_OTHER:
+    case FileType::Other:
       return NULL;
       break;
     default:
-      g_return_val_if_reached (NULL);
+      g_return_val_if_reached (nullptr);
     }
 }
 
@@ -182,87 +167,85 @@ FileDescriptor::should_autoplay () const
 
   if (is_audio ())
     {
-      AudioFile * af = audio_file_new (this->abs_path.c_str ());
-      GError *    err = NULL;
-      bool        success = audio_file_read_metadata (af, &err);
-      if (!success)
+      try
         {
-          HANDLE_ERROR (err, "Error reading metadata from %s", af->filepath);
+          AudioFile af (abs_path_);
+          auto      metadata = af.read_metadata ();
+          if ((metadata.length / 1000) > 60)
+            {
+              autoplay = false;
+            }
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle ("Error reading metadata from {}", abs_path_);
           return false;
         }
-
-      if ((af->metadata.length / 1000) > 60)
-        {
-          autoplay = false;
-        }
-
-      audio_file_free (af);
     }
 
   return autoplay;
 }
 
-char *
+std::string
 FileDescriptor::get_info_text_for_label () const
 {
-  char * file_type_label = get_type_description (this->type);
-  char * label_str = NULL;
+  auto file_type_label = get_type_description (type_);
   if (is_audio ())
     {
-      AudioFile * af = audio_file_new (this->abs_path.c_str ());
-      GError *    err = NULL;
-      bool        success = audio_file_read_metadata (af, &err);
-      if (!success)
+      try
         {
-          HANDLE_ERROR (err, "Error reading metadata from %s", af->filepath);
-          g_free (file_type_label);
-          return g_strdup_printf (
-            _ ("Failed reading metadata for %s"), af->filepath);
+          AudioFile af (abs_path_);
+          auto      metadata = af.read_metadata ();
+          auto      label_str = g_markup_printf_escaped (
+            _ ("<b>%s</b>\n"
+                         "Sample rate: %d\n"
+                         "Length: %" PRId64 "s "
+                         "%" PRId64 " ms | BPM: %.1f\n"
+                         "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+                         "Bit depth: %d bits"),
+            this->label_.c_str (), metadata.samplerate, metadata.length / 1000,
+            metadata.length % 1000, (double) metadata.bpm, metadata.channels,
+            metadata.bit_rate / 1000, (metadata.bit_rate % 1000) / 100,
+            metadata.bit_depth);
+          std::string ret = label_str;
+          g_free (label_str);
+          return ret;
         }
-
-      label_str = g_markup_printf_escaped (
-        _ ("<b>%s</b>\n"
-           "Sample rate: %d\n"
-           "Length: %" PRId64 "s "
-           "%" PRId64 " ms | BPM: %.1f\n"
-           "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-           "Bit depth: %d bits"),
-        this->label.c_str (), af->metadata.samplerate,
-        af->metadata.length / 1000, af->metadata.length % 1000,
-        (double) af->metadata.bpm, af->metadata.channels,
-        af->metadata.bit_rate / 1000, (af->metadata.bit_rate % 1000) / 100,
-        af->metadata.bit_depth);
-
-      audio_file_free (af);
+      catch (const ZrythmException &e)
+        {
+          z_warning ("Error reading metadata from {}: {}", abs_path_, e.what ());
+          return format_str (_ ("Failed reading metadata for {}"), abs_path_);
+        }
     }
   else
-    label_str = g_markup_printf_escaped (
-      "<b>%s</b>\n"
-      "Type: %s",
-      this->label.c_str (), file_type_label);
-
-  g_free (file_type_label);
-
-  return label_str;
+    {
+      auto label_str = g_markup_printf_escaped (
+        "<b>%s</b>\n"
+        "Type: %s",
+        label_.c_str (), file_type_label.c_str ());
+      std::string ret = label_str;
+      g_free (label_str);
+      return ret;
+    }
 }
 
 const char *
 FileDescriptor::get_icon_name () const
 {
-  switch (this->type)
+  switch (type_)
     {
-    case ZFileType::FILE_TYPE_MIDI:
+    case FileType::Midi:
       return "audio-midi";
-    case ZFileType::FILE_TYPE_MP3:
-    case ZFileType::FILE_TYPE_FLAC:
-    case ZFileType::FILE_TYPE_OGG:
-    case ZFileType::FILE_TYPE_WAV:
+    case FileType::Mp3:
+    case FileType::Flac:
+    case FileType::Ogg:
+    case FileType::Wav:
       return "gnome-icon-library-sound-wave-symbolic";
-    case ZFileType::FILE_TYPE_DIR:
+    case FileType::Directory:
       return "folder";
-    case ZFileType::FILE_TYPE_PARENT_DIR:
+    case FileType::ParentDirectory:
       return "folder";
-    case ZFileType::FILE_TYPE_OTHER:
+    case FileType::Other:
       return "application-x-zerosize";
     default:
       return "";

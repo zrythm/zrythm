@@ -1,17 +1,10 @@
-/*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
-
-/**
- * \file
- *
- * Channel slot.
- */
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
 #define __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
+
+#include "dsp/channel_track.h"
 
 #include "gtk_wrapper.h"
 
@@ -23,11 +16,11 @@ G_DECLARE_FINAL_TYPE (
   FADER_CONTROLS_GRID_WIDGET,
   GtkGrid)
 
-typedef struct Track                 Track;
-typedef struct _FaderWidget          FaderWidget;
-typedef struct _MeterWidget          MeterWidget;
-typedef struct _BalanceControlWidget BalanceControlWidget;
-typedef struct _FaderButtonsWidget   FaderButtonsWidget;
+class Track;
+TYPEDEF_STRUCT_UNDERSCORED (FaderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (MeterWidget);
+TYPEDEF_STRUCT_UNDERSCORED (BalanceControlWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
 
 /**
  * @addtogroup widgets
@@ -35,7 +28,7 @@ typedef struct _FaderButtonsWidget   FaderButtonsWidget;
  * @{
  */
 
-typedef struct _FaderControlsGridWidget
+using FaderControlsGridWidget = struct _FaderControlsGridWidget
 {
   GtkGrid parent_instance;
 
@@ -59,11 +52,12 @@ typedef struct _FaderControlsGridWidget
   gint64 last_midi_trigger_time;
 
   guint tick_cb;
-
-} FaderControlsGridWidget;
+};
 
 void
-fader_controls_grid_widget_setup (FaderControlsGridWidget * self, Track * track);
+fader_controls_grid_widget_setup (
+  FaderControlsGridWidget * self,
+  ChannelTrack *            track);
 
 /**
  * Prepare for finalization.
@@ -72,7 +66,7 @@ void
 fader_controls_grid_widget_tear_down (FaderControlsGridWidget * self);
 
 FaderControlsGridWidget *
-fader_controls_grid_widget_new (void);
+fader_controls_grid_widget_new ();
 
 /**
  * @}

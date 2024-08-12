@@ -18,7 +18,7 @@
 AdwMessageDialog *
 welcome_message_dialog_new (GtkWindow * parent)
 {
-  GString * gstr = g_string_new (NULL);
+  GString * gstr = g_string_new (nullptr);
 
   g_string_append (gstr, "<big><b>%s</b></big>\n\n");
 
@@ -73,14 +73,14 @@ welcome_message_dialog_new (GtkWindow * parent)
 
   char * str = g_string_free (gstr, false);
 
-  AdwMessageDialog * dialog =
-    ADW_MESSAGE_DIALOG (adw_message_dialog_new (NULL, _ ("Welcome"), NULL));
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
+    adw_message_dialog_new (nullptr, _ ("Welcome"), nullptr));
   adw_message_dialog_format_body_markup (
     dialog, str, _ ("Welcome to the Zrythm DAW"));
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
 
   adw_message_dialog_add_responses (
-    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), nullptr);
 
   adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");

@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Port identifier.
  */
@@ -28,11 +26,7 @@
  * @{
  */
 
-#define PORT_IDENTIFIER_SCHEMA_VERSION 1
-
-#define PORT_IDENTIFIER_MAGIC 3411841
-#define IS_PORT_IDENTIFIER(tr) \
-  (tr && ((PortIdentifier *) tr)->magic == PORT_IDENTIFIER_MAGIC)
+constexpr int PORT_IDENTIFIER_MAGIC = 3411841;
 
 /**
  * Direction of the signal.
@@ -61,18 +55,18 @@ enum class PortType
  */
 enum class PortUnit
 {
-  Z_PORT_UNIT_NONE,
-  Z_PORT_UNIT_HZ,
-  Z_PORT_UNIT_MHZ,
-  Z_PORT_UNIT_DB,
-  Z_PORT_UNIT_DEGREES,
-  Z_PORT_UNIT_SECONDS,
+  None,
+  Hz,
+  MHz,
+  Db,
+  Degrees,
+  Seconds,
 
   /** Milliseconds. */
-  Z_PORT_UNIT_MS,
+  Ms,
 
   /** Microseconds. */
-  Z_PORT_UNIT_US,
+  Us,
 };
 
 const char *
@@ -80,34 +74,29 @@ port_unit_to_str (const PortUnit unit);
 
 /**
  * Struct used to identify Ports in the project.
- *
- * This should include some members of the original struct enough to identify
- * the port. To be used for sources and dests.
- *
- * This must be filled in before saving and read from while loading to fill in
- * the srcs/dests.
  */
-struct PortIdentifier
+class PortIdentifier final : public ISerializable<PortIdentifier>
 {
+public:
   /**
    * Type of owner.
    */
   enum class OwnerType
   {
     /* NONE, */
-    PORT_OWNER_TYPE_AUDIO_ENGINE,
+    AudioEngine,
 
     /** Plugin owner. */
-    PLUGIN,
+    Plugin,
 
     /** Track owner. */
-    TRACK,
+    Track,
 
     /** Channel owner. */
-    CHANNEL,
+    Channel,
 
     /** Fader. */
-    FADER,
+    Fader,
 
     /**
      * Channel send.
@@ -115,19 +104,19 @@ struct PortIdentifier
      * PortIdentifier.port_index will contain the
      * send index on the port's track's channel.
      */
-    CHANNEL_SEND,
+    ChannelSend,
 
     /* TrackProcessor. */
-    TRACK_PROCESSOR,
+    TrackProcessor,
 
     /** Port is part of a HardwareProcessor. */
-    HW,
+    HardwareProcessor,
 
     /** Port is owned by engine transport. */
-    PORT_OWNER_TYPE_TRANSPORT,
+    Transport,
 
     /** Modulator macro processor owner. */
-    MODULATOR_MACRO_PROCESSOR,
+    ModulatorMacroProcessor,
   };
 
   /**
@@ -135,18 +124,18 @@ struct PortIdentifier
    */
   enum class Flags
   {
-    STEREO_L = 1 << 0,
-    STEREO_R = 1 << 1,
+    StereoL = 1 << 0,
+    StereoR = 1 << 1,
     PianoRoll = 1 << 2,
     /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
-    SIDECHAIN = 1 << 3,
+    Sidechain = 1 << 3,
     /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
      * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
-    MAIN_PORT = 1 << 4,
-    MANUAL_PRESS = 1 << 5,
+    MainPort = 1 << 4,
+    ManualPress = 1 << 5,
 
     /** Amplitude port. */
-    AMPLITUDE = 1 << 6,
+    Amplitude = 1 << 6,
 
     /**
      * Port controls the stereo balance.
@@ -154,7 +143,7 @@ struct PortIdentifier
      * This is used in channels for the balance
      * control.
      */
-    STEREO_BALANCE = 1 << 7,
+    StereoBalance = 1 << 7,
 
     /**
      * Whether the port wants to receive position
@@ -162,7 +151,7 @@ struct PortIdentifier
      *
      * This is only applicable for LV2 Atom ports.
      */
-    WANT_POSITION = 1 << 8,
+    WantPosition = 1 << 8,
 
     /**
      * Trigger ports will be set to 0 at the end of
@@ -171,55 +160,54 @@ struct PortIdentifier
      * This mostly applies to LV2 Control Input
      * ports.
      */
-    TRIGGER = 1 << 9,
+    Trigger = 1 << 9,
 
     /** Whether the port is a toggle (on/off). */
-    TOGGLE = 1 << 10,
+    Toggle = 1 << 10,
 
     /** Whether the port is an integer. */
-    INTEGER = 1 << 11,
+    Integer = 1 << 11,
 
     /** Whether port is for letting the plugin know
      * that we are in freewheeling (export) mode. */
-    FREEWHEEL = 1 << 12,
+    Freewheel = 1 << 12,
 
     /** Used for plugin ports. */
-    REPORTS_LATENCY = 1 << 13,
+    ReportsLatency = 1 << 13,
 
     /** Port should not be visible to users. */
-    NOT_ON_GUI = 1 << 14,
+    NotOnGui = 1 << 14,
 
     /** Port is a switch for plugin enabled. */
-    PLUGIN_ENABLED = 1 << 15,
+    PluginEnabled = 1 << 15,
 
     /** Port is a plugin control. */
-    PLUGIN_CONTROL = 1 << 16,
+    PluginControl = 1 << 16,
 
     /** Port is for fader mute. */
-    FADER_MUTE = 1 << 17,
+    FaderMute = 1 << 17,
 
     /** Port is for channel fader. */
-    CHANNEL_FADER = 1 << 18,
+    ChannelFader = 1 << 18,
 
     /**
      * Port has an automation track.
      *
      * If this is set, it is assumed that the automation track at
-     * \ref PortIdentifier.port_index is for this port.
+     * @ref PortIdentifier.port_index is for this port.
      */
-    AUTOMATABLE = 1 << 19,
+    Automatable = 1 << 19,
 
-    /** MIDI automatable control, such as modwheel or
-     * pitch bend. */
-    MIDI_AUTOMATABLE = 1 << 20,
+    /** MIDI automatable control, such as modwheel or pitch bend. */
+    MidiAutomatable = 1 << 20,
 
     /** Channels can send to this port (ie, this port
      * is a track processor midi/stereo in or a plugin
      * sidechain in). */
-    SEND_RECEIVABLE = 1 << 21,
+    SendReceivable = 1 << 21,
 
     /** This is a BPM port. */
-    BPM = 1 << 22,
+    Bpm = 1 << 22,
 
     /**
      * Generic plugin port not belonging to the
@@ -228,19 +216,19 @@ struct PortIdentifier
      * This is for ports that are added by Zrythm
      * such as Enabled and Gain.
      */
-    GENERIC_PLUGIN_PORT = 1 << 23,
+    GenericPluginPort = 1 << 23,
 
     /** This is the plugin gain. */
-    PLUGIN_GAIN = 1 << 24,
+    PluginGain = 1 << 24,
 
     /** Track processor input mono switch. */
-    TP_MONO = 1 << 25,
+    TpMono = 1 << 25,
 
     /** Track processor input gain. */
-    TP_INPUT_GAIN = 1 << 26,
+    TpInputGain = 1 << 26,
 
     /** Port is a hardware port. */
-    HW = 1 << 27,
+    Hw = 1 << 27,
 
     /**
      * Port is part of a modulator macro processor.
@@ -248,10 +236,10 @@ struct PortIdentifier
      * Which of the ports it is can be determined
      * by checking flow/type.
      */
-    MODULATOR_MACRO = 1 << 28,
+    ModulatorMacro = 1 << 28,
 
     /** Logarithmic. */
-    LOGARITHMIC = 1 << 29,
+    Logarithmic = 1 << 29,
 
     /**
      * Plugin control is a property (changes are set
@@ -263,110 +251,134 @@ struct PortIdentifier
      * both).
      *
      * @see http://lv2plug.in/ns/lv2core#Parameter. */
-    IS_PROPERTY = 1 << 30,
+    IsProperty = 1 << 30,
   };
 
   enum class Flags2
   {
     /** Transport ports. */
-    TRANSPORT_ROLL = 1 << 0,
-    TRANSPORT_STOP = 1 << 1,
-    TRANSPORT_BACKWARD = 1 << 2,
-    TRANSPORT_FORWARD = 1 << 3,
-    TRANSPORT_LOOP_TOGGLE = 1 << 4,
-    TRANSPORT_REC_TOGGLE = 1 << 5,
+    TransportRoll = 1 << 0,
+    TransportStop = 1 << 1,
+    TransportBackward = 1 << 2,
+    TransportForward = 1 << 3,
+    TransportLoopToggle = 1 << 4,
+    TransportRecToggle = 1 << 5,
 
     /** LV2 control atom port supports patch
      * messages. */
-    SUPPORTS_PATCH_MESSAGE = 1 << 6,
+    SupportsPatchMessage = 1 << 6,
 
     /** Port's only reasonable values are its scale
      * points. */
-    ENUMERATION = 1 << 7,
+    Enumeration = 1 << 7,
 
     /** Parameter port's value type is URI. */
-    URI_PARAM = 1 << 8,
+    UriParam = 1 << 8,
 
     /** Atom port buffer type is sequence. */
-    SEQUENCE = 1 << 9,
+    Sequence = 1 << 9,
 
     /** Atom or event port supports MIDI. */
-    SUPPORTS_MIDI = 1 << 10,
+    SupportsMidi = 1 << 10,
 
     /** Track processor output gain. */
-    TP_OUTPUT_GAIN = 1 << 11,
+    TpOutputGain = 1 << 11,
 
     /** MIDI pitch bend. */
-    MIDI_PITCH_BEND = 1 << 12,
+    MidiPitchBend = 1 << 12,
 
     /** MIDI poly key pressure. */
-    MIDI_POLY_KEY_PRESSURE = 1 << 13,
+    MidiPolyKeyPressure = 1 << 13,
 
     /** MIDI channel pressure. */
-    MIDI_CHANNEL_PRESSURE = 1 << 14,
+    MidiChannelPressure = 1 << 14,
 
     /** Channel send enabled. */
-    CHANNEL_SEND_ENABLED = 1 << 15,
+    ChannelSendEnabled = 1 << 15,
 
     /** Channel send amount. */
-    CHANNEL_SEND_AMOUNT = 1 << 16,
+    ChannelSendAmount = 1 << 16,
 
     /** Beats per bar. */
-    BEATS_PER_BAR = 1 << 17,
+    BeatsPerBar = 1 << 17,
 
     /** Beat unit. */
-    BEAT_UNIT = 1 << 18,
+    BeatUnit = 1 << 18,
 
     /** Fader solo. */
-    FADER_SOLO = 1 << 19,
+    FaderSolo = 1 << 19,
 
     /** Fader listen. */
-    FADER_LISTEN = 1 << 20,
+    FaderListen = 1 << 20,
 
     /** Fader mono compat. */
-    FADER_MONO_COMPAT = 1 << 21,
+    FaderMonoCompat = 1 << 21,
 
     /** Track recording. */
-    TRACK_RECORDING = 1 << 22,
+    TrackRecording = 1 << 22,
 
     /** Track processor monitor audio. */
-    TP_MONITOR_AUDIO = 1 << 23,
+    TpMonitorAudio = 1 << 23,
 
     /** Port is owned by prefader. */
-    PREFADER = 1 << 24,
+    Prefader = 1 << 24,
 
     /** Port is owned by postfader. */
-    POSTFADER = 1 << 25,
+    Postfader = 1 << 25,
 
     /** Port is owned by monitor fader. */
     MonitorFader = 1 << 26,
 
     /** Port is owned by the sample processor fader. */
-    SAMPLE_PROCESSOR_FADER = 1 << 27,
+    SampleProcessorFader = 1 << 27,
 
     /** Port is owned by sample processor
      * track/channel (including faders owned by those
      * tracks/channels). */
-    SAMPLE_PROCESSOR_TRACK = 1 << 28,
+    SampleProcessorTrack = 1 << 28,
 
     /** Fader swap phase. */
-    FADER_SWAP_PHASE = 1 << 29,
+    FaderSwapPhase = 1 << 29,
 
     /** MIDI clock. */
-    MIDI_CLOCK = 1 << 30,
+    MidiClock = 1 << 30,
+  };
+
+  struct Hash
+  {
+    size_t operator() (const PortIdentifier &id) const
+    {
+      return id.get_hash ();
+    }
+  };
+
+  struct Compare
+  {
+    bool operator() (const PortIdentifier &lhs, const PortIdentifier &rhs) const
+    {
+      return lhs.get_hash () < rhs.get_hash ();
+    }
   };
 
 public:
-  PortIdentifier () = default;
-  PortIdentifier (const PortIdentifier &other);
-  ~PortIdentifier ();
-
-  PortIdentifier &operator= (const PortIdentifier &other);
+  // Rule of 0
 
   void init ();
 
   const std::string &get_label () const { return label_; }
+  static std::string label_getter (void * data)
+  {
+    return static_cast<PortIdentifier *> (data)->get_label ();
+  }
   const char *       get_label_as_c_str () const { return label_.c_str (); }
+
+  bool is_control () const { return type_ == PortType::Control; }
+  bool is_midi () const { return type_ == PortType::Event; }
+  bool is_cv () const { return type_ == PortType::CV; }
+  bool is_audio () const { return type_ == PortType::Audio; }
+
+  bool is_input () const { return flow_ == PortFlow::Input; }
+  bool is_output () const { return flow_ == PortFlow::Output; }
 
   /**
    * Returns the MIDI channel for a MIDI CC port, or -1 if not a MIDI CC port.
@@ -376,17 +388,16 @@ public:
   inline int get_midi_channel () const
   {
     if (
-      static_cast<int> (flags2_ & PortIdentifier::Flags2::MIDI_PITCH_BEND) != 0
-      || static_cast<int> (
-           flags2_ & PortIdentifier::Flags2::MIDI_POLY_KEY_PRESSURE)
+      static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiPitchBend) != 0
+      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiPolyKeyPressure)
            != 0
-      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MIDI_CHANNEL_PRESSURE)
+      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiChannelPressure)
            != 0)
       {
         return port_index_ + 1;
       }
     else if (
-      static_cast<int> (flags_ & PortIdentifier::Flags::MIDI_AUTOMATABLE) != 0)
+      static_cast<int> (flags_ & PortIdentifier::Flags::MidiAutomatable) != 0)
       {
         return port_index_ / 128 + 1;
       }
@@ -399,9 +410,9 @@ public:
    * @note Does not check insignificant data like
    *   comment.
    */
-  WARN_UNUSED_RESULT bool is_equal (const PortIdentifier &other) const;
+  // WARN_UNUSED_RESULT bool is_equal (const PortIdentifier &other) const;
 
-  NONNULL void print_to_str (char * buf, size_t buf_sz) const;
+  std::string  print_to_str () const;
   void         print () const;
   bool         validate () const;
   uint32_t     get_hash () const;
@@ -412,18 +423,47 @@ public:
    */
   static int port_group_cmp (const void * p1, const void * p2);
 
-  static const char * get_label (void * data);
+  static std::string get_label (void * data)
+  {
+    return static_cast<PortIdentifier *> (data)->get_label ();
+  }
 
-  static uint32_t get_hash (const void * data);
+  static uint32_t get_hash (const void * data)
+  {
+    return static_cast<const PortIdentifier *> (data)->get_hash ();
+  }
 
-  static void destroy_notify (void * data);
+  static void destroy_notify (void * data)
+  {
+    delete static_cast<PortIdentifier *> (data);
+  }
 
-  /**
-   * To be used as GEqualFunc.
-   */
-  static int is_equal_func (const void * a, const void * b);
+  DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
+  /** Index (e.g. in plugin's output ports). */
+  int port_index_ = 0;
+
+  /** Track name hash (0 for non-track ports). */
+  unsigned int track_name_hash_ = 0;
+
+  /** Owner type. */
+  PortIdentifier::OwnerType owner_type_ = (OwnerType) 0;
+  /** Data type (e.g. AUDIO). */
+  PortType type_ = (PortType) 0;
+  /** Flow (IN/OUT). */
+  PortFlow flow_ = PortFlow::Unknown;
+
+  /** Port unit. */
+  PortUnit unit_ = (PortUnit) 0;
+
+  /** Flags (e.g. is side chain). */
+  PortIdentifier::Flags  flags_ = (Flags) 0;
+  PortIdentifier::Flags2 flags2_ = (Flags2) 0;
+
+  /** Identifier of plugin. */
+  PluginIdentifier plugin_id_ = {};
+
   /** Human readable label. */
   std::string label_;
 
@@ -436,37 +476,50 @@ public:
   /** Comment, if any. */
   std::string comment_;
 
-  /** Owner type. */
-  PortIdentifier::OwnerType owner_type_ = (OwnerType) 0;
-  /** Data type (e.g. AUDIO). */
-  PortType type_ = (PortType) 0;
-  /** Flow (IN/OUT). */
-  PortFlow flow_ = PortFlow::Unknown;
-  /** Flags (e.g. is side chain). */
-  PortIdentifier::Flags  flags_ = (Flags) 0;
-  PortIdentifier::Flags2 flags2_ = (Flags2) 0;
-
-  /** Port unit. */
-  PortUnit unit_ = (PortUnit) 0;
-
-  /** Identifier of plugin. */
-  PluginIdentifier plugin_id_ = {};
-
   /** Port group this port is part of (only applicable for LV2 plugin ports). */
   std::string port_group_;
 
   /** ExtPort ID (type + full name), if hw port. */
   std::string ext_port_id_;
-
-  /** Track name hash (0 for non-track ports). */
-  unsigned int track_name_hash_ = 0;
-
-  /** Index (e.g. in plugin's output ports). */
-  int port_index_ = 0;
 };
 
 ENUM_ENABLE_BITSET (PortIdentifier::Flags);
 ENUM_ENABLE_BITSET (PortIdentifier::Flags2);
+
+inline bool
+operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
+{
+  bool eq =
+    lhs.owner_type_ == rhs.owner_type_ && lhs.unit_ == rhs.unit_
+    && lhs.type_ == rhs.type_ && lhs.flow_ == rhs.flow_
+    && lhs.flags_ == rhs.flags_ && lhs.flags2_ == rhs.flags2_
+    && lhs.track_name_hash_ == rhs.track_name_hash_;
+  if (!eq)
+    return false;
+
+  if (lhs.owner_type_ == PortIdentifier::OwnerType::Plugin)
+    {
+      eq = eq && lhs.plugin_id_ == rhs.plugin_id_;
+    }
+
+  /* if LV2 (has symbol) check symbol match, otherwise check index match and
+   * label match */
+  if (lhs.sym_.empty ())
+    {
+      eq = eq && lhs.port_index_ == rhs.port_index_ && lhs.label_ == rhs.label_;
+    }
+  else
+    {
+      eq = eq && lhs.sym_ == rhs.sym_;
+    }
+
+  /* do string comparisons at the end */
+  eq =
+    eq && lhs.uri_ == rhs.uri_ && lhs.port_group_ == rhs.port_group_
+    && lhs.ext_port_id_ == rhs.ext_port_id_;
+
+  return eq;
+}
 
 /**
  * @}

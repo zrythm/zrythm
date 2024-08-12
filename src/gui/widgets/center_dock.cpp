@@ -15,7 +15,7 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 G_DEFINE_TYPE (CenterDockWidget, center_dock_widget, GTK_TYPE_WIDGET)
 

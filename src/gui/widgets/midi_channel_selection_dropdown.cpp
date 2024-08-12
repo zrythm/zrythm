@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
-#include "dsp/track.h"
+#include "dsp/channel_track.h"
 #include "gui/widgets/midi_channel_selection_dropdown.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
@@ -15,28 +14,31 @@ get_str (void * data)
       GtkStringObject * str_obj = GTK_STRING_OBJECT (data);
       return g_strdup (gtk_string_object_get_string (str_obj));
     }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 static void
-on_midi_channel_changed (GtkDropDown * dropdown, GParamSpec * pspec, Track * track)
+on_midi_channel_changed (
+  GtkDropDown *  dropdown,
+  GParamSpec *   pspec,
+  ChannelTrack * track)
 {
   guint idx = gtk_drop_down_get_selected (dropdown);
 
-  Channel * ch = track->channel;
+  auto ch = track->channel_;
   if (idx == 0)
     {
-      if (ch->all_midi_channels)
+      if (ch->all_midi_channels_)
         return;
-      ch->all_midi_ins = 1;
+      ch->all_midi_ins_ = true;
     }
   else
     {
       /* clear */
-      ch->all_midi_channels = 0;
+      ch->all_midi_channels_ = false;
       for (unsigned int i = 0; i < 16; i++)
         {
-          ch->midi_channels[i] = 0;
+          ch->midi_channels_[i] = false;
         }
 
       if (idx > 1)
@@ -45,7 +47,7 @@ on_midi_channel_changed (GtkDropDown * dropdown, GParamSpec * pspec, Track * tra
             {
               if (idx == i + 2)
                 {
-                  ch->midi_channels[i] = 1;
+                  ch->midi_channels_[i] = true;
                   break;
                 }
             }
@@ -78,13 +80,13 @@ on_header_bind (
 
 void
 midi_channel_selection_dropdown_widget_refresh (
-  GtkDropDown * dropdown,
-  Track *       track)
+  GtkDropDown *  dropdown,
+  ChannelTrack * track)
 {
   /* --- disconnect existing signals --- */
 
-  Track * cur_track =
-    (Track *) g_object_get_data (G_OBJECT (dropdown), "cur-track");
+  auto * cur_track =
+    (ChannelTrack *) g_object_get_data (G_OBJECT (dropdown), "cur-track");
   if (cur_track)
     {
       g_signal_handlers_disconnect_by_data (dropdown, cur_track);
@@ -93,12 +95,12 @@ midi_channel_selection_dropdown_widget_refresh (
 
   /* --- create models --- */
 
-  GtkStringList * standard_sl = gtk_string_list_new (NULL);
+  GtkStringList * standard_sl = gtk_string_list_new (nullptr);
   gtk_string_list_append (standard_sl, _ ("All Channels"));
   gtk_string_list_append (standard_sl, _ ("No Channels"));
 
   /* get all ext inputs */
-  GtkStringList * midi_channels_sl = gtk_string_list_new (NULL);
+  GtkStringList * midi_channels_sl = gtk_string_list_new (nullptr);
   for (int i = 0; i < 16; i++)
     {
       char lbl[128];
@@ -114,7 +116,7 @@ midi_channel_selection_dropdown_widget_refresh (
     gtk_flatten_list_model_new (G_LIST_MODEL (composite_ls));
 
   GtkExpression * expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_str), NULL, NULL);
+    G_TYPE_STRING, nullptr, 0, nullptr, G_CALLBACK (get_str), nullptr, nullptr);
   gtk_drop_down_set_expression (dropdown, expression);
   gtk_expression_unref (expression);
 
@@ -125,24 +127,25 @@ midi_channel_selection_dropdown_widget_refresh (
   GtkListItemFactory * header_factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (
     header_factory, "setup",
-    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), NULL);
-  g_signal_connect (header_factory, "bind", G_CALLBACK (on_header_bind), NULL);
+    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), nullptr);
+  g_signal_connect (
+    header_factory, "bind", G_CALLBACK (on_header_bind), nullptr);
   gtk_drop_down_set_header_factory (dropdown, header_factory);
   g_object_unref (header_factory);
 
   /* --- preselect the current value --- */
 
   /* select the correct value */
-  Channel * ch = track->channel;
-  g_debug ("selecting MIDI channel...");
-  if (ch->all_midi_channels)
+  auto ch = track->channel_;
+  z_debug ("selecting MIDI channel...");
+  if (ch->all_midi_channels_)
     gtk_drop_down_set_selected (dropdown, 0);
   else
     {
       bool found = false;
       for (unsigned int i = 0; i < 16; i++)
         {
-          if (ch->midi_channels[i])
+          if (ch->midi_channels_[i])
             {
               gtk_drop_down_set_selected (dropdown, i + 2);
               found = true;

@@ -29,7 +29,7 @@ CcBindingsWidget *
 cc_bindings_widget_new (void)
 {
   CcBindingsWidget * self = static_cast<CcBindingsWidget *> (
-    g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL));
+    g_object_new (CC_BINDINGS_WIDGET_TYPE, nullptr));
 
   self->bindings_tree = cc_bindings_tree_widget_new ();
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->bindings_tree));

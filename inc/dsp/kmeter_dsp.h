@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -30,51 +30,41 @@
 #ifndef __AUDIO_KMETER_DSP__
 #define __AUDIO_KMETER_DSP__
 
-typedef struct KMeterDsp
+class KMeterDsp
 {
-  float z1;   // filter state
-  float z2;   // filter state
-  float rms;  // max rms value since last read()
-  float peak; // max peak value since last read()
-  int   cnt;  // digital peak hold counter
-  int   fpp;  // frames per period
-  float fall; // peak fallback
-  bool  flag; // flag set by read(), resets _rms
+public:
+  /**
+   * Process.
+   *
+   * @param p Frame array.
+   * @param n Number of samples.
+   */
+  void process (float * p, int n);
 
-  float omega; // ballistics filter constant.
-  int   hold;  // peak hold timeoute
-  float fsamp; // sample-rate
-} KMeterDsp;
+  float read_f ();
 
-/**
- * Process.
- *
- * @param p Frame array.
- * @param n Number of samples.
- */
-void
-kmeter_dsp_process (KMeterDsp * self, float * p, int n);
+  void read (float * rms, float * peak);
 
-float
-kmeter_dsp_read_f (KMeterDsp * self);
+  void reset ();
 
-void
-kmeter_dsp_read (KMeterDsp * self, float * rms, float * peak);
+  /**
+   * Init with the samplerate.
+   */
+  void init (float samplerate);
 
-void
-kmeter_dsp_reset (KMeterDsp * self);
+private:
+  float z1_;   // filter state
+  float z2_;   // filter state
+  float rms_;  // max rms value since last read()
+  float peak_; // max peak value since last read()
+  int   cnt_;  // digital peak hold counter
+  int   fpp_;  // frames per period
+  float fall_; // peak fallback
+  bool  flag_; // flag set by read(), resets _rms
 
-/**
- * Init with the samplerate.
- */
-void
-kmeter_dsp_init (KMeterDsp * self, float samplerate);
-
-MALLOC
-KMeterDsp *
-kmeter_dsp_new (void);
-
-void
-kmeter_dsp_free (KMeterDsp * self);
+  float omega_; // ballistics filter constant.
+  int   hold_;  // peak hold timeoute
+  float fsamp_; // sample-rate
+};
 
 #endif

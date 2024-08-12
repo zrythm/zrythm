@@ -26,16 +26,8 @@
 #include <cstdlib>
 
 #include <inttypes.h>
-#include <signal.h>
 
-#include "dsp/channel.h"
-#include "dsp/engine.h"
-#include "dsp/midi_event.h"
-#include "dsp/router.h"
-#include "dsp/transport.h"
-#include "project.h"
 #include "utils/midi.h"
-#include "utils/objects.h"
 
 /* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
  */

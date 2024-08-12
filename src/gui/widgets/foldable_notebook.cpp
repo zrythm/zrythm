@@ -123,12 +123,12 @@ foldable_notebook_widget_get_widget_at_page (
 {
   GtkNotebook * notebook = self->notebook;
   int           num_pages = gtk_notebook_get_n_pages (notebook);
-  g_return_val_if_fail (page < num_pages, NULL);
+  g_return_val_if_fail (page < num_pages, nullptr);
   GtkWidget * container =
     GTK_WIDGET (gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), page));
-  g_return_val_if_fail (container, NULL);
+  g_return_val_if_fail (container, nullptr);
   GtkWidget * widget = gtk_widget_get_first_child (GTK_WIDGET (container));
-  g_return_val_if_fail (widget, NULL);
+  g_return_val_if_fail (widget, nullptr);
   return widget;
 }
 
@@ -195,7 +195,7 @@ foldable_notebook_widget_add_page (
   gtk_widget_set_tooltip_text (GTK_WIDGET (box), tooltip);
   GtkWidget * img = gtk_image_new_from_icon_name (tab_icon_name);
   GtkWidget * img_flipper = gtk_flipper_new (img);
-  GtkWidget * lbl = NULL, *lbl_flipper = NULL;
+  GtkWidget * lbl = nullptr, *lbl_flipper = NULL;
   if (self->with_text)
     {
       lbl = gtk_label_new (tab_label);
@@ -253,7 +253,7 @@ FoldableNotebookWidget *
 foldable_notebook_widget_new (GtkPositionType pos_in_paned, bool with_text)
 {
   FoldableNotebookWidget * self = Z_FOLDABLE_NOTEBOOK_WIDGET (
-    g_object_new (FOLDABLE_NOTEBOOK_WIDGET_TYPE, NULL));
+    g_object_new (FOLDABLE_NOTEBOOK_WIDGET_TYPE, nullptr));
 
   self->pos_in_paned = pos_in_paned;
   self->with_text = with_text;

@@ -1,84 +1,83 @@
-// SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
-#include <cstdlib>
-
-#include "dsp/automation_track.h"
-#include "dsp/automation_tracklist.h"
-#include "dsp/channel_track.h"
 #include "dsp/instrument_track.h"
-#include "dsp/midi_note.h"
 #include "dsp/position.h"
 #include "dsp/region.h"
 #include "dsp/track.h"
-#include "dsp/velocity.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/midi.h"
-#include "utils/stoat.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
 
-/**
- * Initializes an instrument track.
- */
-void
-instrument_track_init (Track * self)
+InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
+    : Track (Track::Type::Instrument, name, pos)
 {
-  self->type = TrackType::TRACK_TYPE_INSTRUMENT;
-  gdk_rgba_parse (&self->color, "#FF9616");
-
-  self->icon_name = g_strdup ("instrument");
-}
-
-void
-instrument_track_setup (Track * self)
-{
-  channel_track_setup (self);
+  color_ = Color ("#FF9616");
+  icon_name_ = _ ("instrument");
 }
 
 Plugin *
-instrument_track_get_instrument (Track * self)
+InstrumentTrack::get_instrument ()
 {
-  g_return_val_if_fail (
-    self && self->type == TrackType::TRACK_TYPE_INSTRUMENT && self->channel,
-    NULL);
-
-  Plugin * plugin = self->channel->instrument;
-  g_return_val_if_fail (plugin, NULL);
-
-  return plugin;
+  auto &plugin = channel_->instrument_;
+  z_return_val_if_fail (plugin, nullptr);
+  return plugin.get ();
 }
 
-/**
- * Returns if the first plugin's UI in the
- * instrument track is visible.
- */
-int
-instrument_track_is_plugin_visible (Track * self)
+const Plugin *
+InstrumentTrack::get_instrument () const
 {
-  Plugin * plugin = instrument_track_get_instrument (self);
-  g_return_val_if_fail (plugin, 0);
-
-  return plugin->visible;
+  auto &plugin = channel_->instrument_;
+  z_return_val_if_fail (plugin, nullptr);
+  return plugin.get ();
 }
 
-/**
- * Toggles whether the first plugin's UI in the
- * instrument Track is visible.
- */
+bool
+InstrumentTrack::is_plugin_visible () const
+{
+  const auto &plugin = get_instrument ();
+  g_return_val_if_fail (plugin, false);
+  return plugin->visible_;
+}
+
 void
-instrument_track_toggle_plugin_visible (Track * self)
+InstrumentTrack::toggle_plugin_visible ()
 {
-  Plugin * plugin = instrument_track_get_instrument (self);
+  Plugin * plugin = get_instrument ();
   g_return_if_fail (plugin);
-
-  plugin->visible = !plugin->visible;
+  plugin->visible_ = !plugin->visible_;
 
   EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+}
+
+void
+InstrumentTrack::init_after_cloning (const InstrumentTrack &other)
+{
+  Track::copy_members_from (other);
+  AutomatableTrack::copy_members_from (other);
+  ProcessableTrack::copy_members_from (other);
+  ChannelTrack::copy_members_from (other);
+  GroupTargetTrack::copy_members_from (other);
+  RecordableTrack::copy_members_from (other);
+  LanedTrackImpl<MidiRegion>::copy_members_from (other);
+  PianoRollTrack::copy_members_from (other);
+}
+
+void
+InstrumentTrack::init_loaded ()
+{
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded ();
+  GroupTargetTrack::init_loaded ();
+  RecordableTrack::init_loaded ();
+  LanedTrackImpl<MidiRegion>::init_loaded ();
+  PianoRollTrack::init_loaded ();
 }

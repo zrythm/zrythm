@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Bottomest bar.
  */
@@ -11,16 +11,18 @@
 #ifndef __GUI_WIDGETS_BOT_BAR_H__
 #define __GUI_WIDGETS_BOT_BAR_H__
 
+#include "utils/types.h"
+
 #include "gtk_wrapper.h"
 #include "libpanel_wrapper.h"
 
-typedef struct _MidiActivityBarWidget   MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget      LiveWaveformWidget;
-typedef struct _SpectrumAnalyzerWidget  SpectrumAnalyzerWidget;
-typedef struct _DigitalMeterWidget      DigitalMeterWidget;
-typedef struct _TransportControlsWidget TransportControlsWidget;
-typedef struct _CpuWidget               CpuWidget;
-typedef struct _ButtonWithMenuWidget    ButtonWithMenuWidget;
+TYPEDEF_STRUCT_UNDERSCORED (MidiActivityBarWidget);
+TYPEDEF_STRUCT_UNDERSCORED (LiveWaveformWidget);
+TYPEDEF_STRUCT_UNDERSCORED (SpectrumAnalyzerWidget);
+TYPEDEF_STRUCT_UNDERSCORED (DigitalMeterWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TransportControlsWidget);
+TYPEDEF_STRUCT_UNDERSCORED (CpuWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ButtonWithMenuWidget);
 
 /**
  * @addtogroup widgets
@@ -37,9 +39,9 @@ G_DECLARE_FINAL_TYPE (BotBarWidget, bot_bar_widget, Z, BOT_BAR_WIDGET, GtkWidget
 #define MW_DIGITAL_TIME_SIG MW_BOT_BAR->digital_timesig
 
 /**
- * Bot bar.
+ * @brief Bottom bar showing the engine status, etc.
  */
-typedef struct _BotBarWidget
+using BotBarWidget = struct _BotBarWidget
 {
   GtkWidget parent_instance;
 
@@ -84,11 +86,10 @@ typedef struct _BotBarWidget
   PanelToggleButton * bot_dock_switcher;
 
   /** Color in hex to use in pango markups. */
-  char hex_color[8];
-  char green_hex[8];
-  char red_hex[8];
-
-} BotBarWidget;
+  std::string hex_color;
+  std::string green_hex;
+  std::string red_hex;
+};
 
 void
 bot_bar_widget_refresh (BotBarWidget * self);

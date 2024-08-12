@@ -1,23 +1,9 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * File browser.
- */
-
-#include "dsp/engine.h"
-#include "dsp/sample_processor.h"
 #include "gui/widgets/file_browser_filters.h"
-#include "gui/widgets/volume.h"
-#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 

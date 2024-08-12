@@ -14,7 +14,7 @@
 
 #    include <pulse/pulseaudio.h>
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * @addtogroup dsp

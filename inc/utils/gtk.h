@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * GTK utils.
  */
@@ -12,11 +12,15 @@
 
 #include "zrythm-config.h"
 
+#include <vector>
+
 #include "gtk_wrapper.h"
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtksourceview/gtksource.h>
 G_GNUC_END_IGNORE_DEPRECATIONS
+
+class Color;
 
 /**
  * @addtogroup utils
@@ -55,7 +59,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
   z_gtk_create_menu_item (_ ("Mute"), "mute", action)
 
 #define CREATE_UNMUTE_MENU_ITEM(action) \
-  z_gtk_create_menu_item (_ ("Unmute"), NULL, action)
+  z_gtk_create_menu_item (_ ("Unmute"), nullptr, action)
 
 #define z_gtk_assistant_set_current_page_complete(assistant, complete) \
   gtk_assistant_set_page_complete ( \
@@ -144,17 +148,25 @@ void
 z_gtk_tree_view_remove_all_columns (GtkTreeView * treeview);
 
 void
-z_gtk_column_view_remove_all_columnes (GtkColumnView * column_view);
+z_gtk_column_view_remove_all_columns (GtkColumnView * column_view);
 
 GListStore *
 z_gtk_column_view_get_list_store (GtkColumnView * column_view);
 
 /**
- * Removes all items and re-populates the list
- * store.
+ * Removes all items and re-populates the list store.
  */
 void
-z_gtk_list_store_splice (GListStore * store, GPtrArray * ptr_array);
+z_gtk_list_store_splice (GListStore * store, auto &items)
+{
+  static_assert (
+    std::is_pointer_v<typename std::decay_t<decltype (items)>::value_type>,
+    "items must be a vector of pointers");
+  std::vector<gpointer> additions (items.begin (), items.end ());
+  g_list_store_splice (
+    store, 0, g_list_model_get_n_items (G_LIST_MODEL (store)),
+    additions.data (), additions.size ());
+}
 
 void
 z_gtk_widget_remove_all_children (GtkWidget * widget);
@@ -300,7 +312,7 @@ z_gtk_widget_get_global_coordinates (
   GdkWindow * win =
     z_gtk_widget_get_root_gdk_window (widget);
   gdk_window_get_device_position (
-    win, dev, x, y, NULL);
+    win, dev, x, y, nullptr);
 }
 
 static inline void
@@ -314,7 +326,7 @@ z_gtk_widget_get_global_coordinates_double (
   GdkWindow * win =
     z_gtk_widget_get_root_gdk_window (widget);
   gdk_window_get_device_position_double (
-    win, dev, x, y, NULL);
+    win, dev, x, y, nullptr);
 }
 
 /**
@@ -349,8 +361,8 @@ static inline void
 z_gtk_widget_get_mask (GtkWidget * widget, GdkModifierType * mask)
 {
   gdk_surface_get_device_position (
-    z_gtk_widget_get_surface (widget), z_gtk_widget_get_device (widget), NULL,
-    NULL, mask);
+    z_gtk_widget_get_surface (widget), z_gtk_widget_get_device (widget),
+    nullptr, nullptr, mask);
 }
 
 /**
@@ -405,7 +417,7 @@ z_gtk_widget_get_nth_child (GtkWidget * widget, int index);
 
 /**
  * Sets the given emblem to the button, or unsets
- * the emblem if \ref emblem_icon is NULL.
+ * the emblem if @ref emblem_icon is NULL.
  */
 void
 z_gtk_button_set_emblem (GtkButton * btn, const char * emblem_icon);
@@ -625,8 +637,8 @@ z_gtk_simple_action_shortcut_func (
   gpointer    user_data);
 
 /**
- * Recursively searches the children of \ref widget
- * for a child of type \ref type.
+ * Recursively searches the children of @ref widget
+ * for a child of type @ref type.
  */
 GtkWidget *
 z_gtk_widget_find_child_of_type (GtkWidget * widget, GType type);
@@ -675,6 +687,12 @@ z_gtk_drop_down_factory_setup_common_ellipsized (
 
 const char *
 z_gtk_get_enum_nick (GType type, gint value);
+
+void
+z_gtk_snapshot_append_color (
+  GtkSnapshot *           snapshot,
+  Color                   color,
+  const graphene_rect_t * rect);
 
 /**
  * @}

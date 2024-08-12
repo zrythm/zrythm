@@ -1,526 +1,221 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/arranger_object.h"
+#include "dsp/audio_region.h"
+#include "dsp/automation_region.h"
+#include "dsp/chord_object.h"
+#include "dsp/chord_region.h"
 #include "dsp/marker.h"
+#include "dsp/midi_region.h"
 #include "dsp/region.h"
 #include "dsp/scale_object.h"
-#include "gui/backend/arranger_object.h"
-#include "io/serialization/arranger_objects.h"
-#include "io/serialization/extra.h"
-#include "utils/objects.h"
 
-typedef enum
+void
+RegionIdentifier::define_fields (const Context &ctx)
 {
-  Z_IO_SERIALIZATION_ARRANGER_OBJECTS_ERROR_FAILED,
-} ZIOSerializationArrangerObjectsError;
-
-#define Z_IO_SERIALIZATION_ARRANGER_OBJECTS_ERROR \
-  z_io_serialization_arranger_objects_error_quark ()
-GQuark
-z_io_serialization_arranger_objects_error_quark (void);
-G_DEFINE_QUARK (z - io - serialization - arranger - objects - error - quark, z_io_serialization_arranger_objects_error)
-
-bool
-arranger_object_serialize_to_json (
-  yyjson_mut_doc *       doc,
-  yyjson_mut_val *       ao_obj,
-  const ArrangerObject * ao,
-  GError **              error)
-{
-  yyjson_mut_obj_add_int (doc, ao_obj, "type", (int64_t) ao->type);
-  yyjson_mut_obj_add_int (doc, ao_obj, "flags", (int64_t) ao->flags);
-  yyjson_mut_obj_add_bool (doc, ao_obj, "muted", ao->muted);
-  yyjson_mut_val * pos_obj = yyjson_mut_obj_add_obj (doc, ao_obj, "pos");
-  position_serialize_to_json (doc, pos_obj, &ao->pos, error);
-  yyjson_mut_val * end_pos_obj = yyjson_mut_obj_add_obj (doc, ao_obj, "endPos");
-  position_serialize_to_json (doc, end_pos_obj, &ao->end_pos, error);
-  yyjson_mut_val * clip_start_pos_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "clipStartPos");
-  position_serialize_to_json (
-    doc, clip_start_pos_obj, &ao->clip_start_pos, error);
-  yyjson_mut_val * loop_start_pos_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "loopStartPos");
-  position_serialize_to_json (
-    doc, loop_start_pos_obj, &ao->loop_start_pos, error);
-  yyjson_mut_val * loop_end_pos_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "loopEndPos");
-  position_serialize_to_json (doc, loop_end_pos_obj, &ao->loop_end_pos, error);
-  yyjson_mut_val * fade_in_pos_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "fadeInPos");
-  position_serialize_to_json (doc, fade_in_pos_obj, &ao->fade_in_pos, error);
-  yyjson_mut_val * fade_out_pos_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "fadeOutPos");
-  position_serialize_to_json (doc, fade_out_pos_obj, &ao->fade_out_pos, error);
-  yyjson_mut_val * fade_in_opts_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "fadeInOpts");
-  curve_options_serialize_to_json (
-    doc, fade_in_opts_obj, &ao->fade_in_opts, error);
-  yyjson_mut_val * fade_out_opts_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "fadeOutOpts");
-  curve_options_serialize_to_json (
-    doc, fade_out_opts_obj, &ao->fade_out_opts, error);
-  yyjson_mut_val * region_id_obj =
-    yyjson_mut_obj_add_obj (doc, ao_obj, "regionId");
-  region_identifier_serialize_to_json (
-    doc, region_id_obj, &ao->region_id, error);
-  return true;
+  serialize_fields (
+    ctx, make_field ("type", type_), make_field ("linkGroup", link_group_),
+    make_field ("trackNameHash", track_name_hash_),
+    make_field ("lanePos", lane_pos_),
+    make_field ("automationTrackIndex", at_idx_), make_field ("index", idx_));
 }
 
-bool
-region_identifier_serialize_to_json (
-  yyjson_mut_doc *         doc,
-  yyjson_mut_val *         id_obj,
-  const RegionIdentifier * id,
-  GError **                error)
+void
+ArrangerObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_obj_add_int (doc, id_obj, "type", (int64_t) id->type);
-  yyjson_mut_obj_add_int (doc, id_obj, "linkGroup", id->link_group);
-  yyjson_mut_obj_add_uint (doc, id_obj, "trackNameHash", id->track_name_hash);
-  yyjson_mut_obj_add_int (doc, id_obj, "lanePos", id->lane_pos);
-  yyjson_mut_obj_add_int (doc, id_obj, "automationTrackIndex", id->at_idx);
-  yyjson_mut_obj_add_int (doc, id_obj, "index", id->idx);
-  return true;
+  serialize_fields (
+    ctx, make_field ("type", type_), make_field ("flags", flags_),
+    make_field ("trackNameHash", track_name_hash_), make_field ("pos", pos_));
 }
 
-static bool
-velocity_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * vel_obj,
-  const Velocity * vel,
-  GError **        error)
+void
+LengthableObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, vel_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &vel->base, error);
-  yyjson_mut_obj_add_uint (doc, vel_obj, "velocity", vel->vel);
-  return true;
+  ISerializable<LengthableObject>::serialize_fields (
+    ctx, ISerializable<LengthableObject>::make_field ("endPos", end_pos_));
 }
 
-bool
-midi_note_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * mn_obj,
-  const MidiNote * mn,
-  GError **        error)
+void
+LoopableObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, mn_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &mn->base, error);
-  yyjson_mut_val * vel_obj = yyjson_mut_obj_add_obj (doc, mn_obj, "velocity");
-  velocity_serialize_to_json (doc, vel_obj, mn->vel, error);
-  yyjson_mut_obj_add_uint (doc, mn_obj, "value", mn->val);
-  yyjson_mut_obj_add_bool (doc, mn_obj, "muted", mn->muted);
-  yyjson_mut_obj_add_int (doc, mn_obj, "pos", mn->pos);
-  return true;
+  ISerializable<LoopableObject>::serialize_fields (
+    ctx,
+    ISerializable<LoopableObject>::make_field ("clipStartPos", clip_start_pos_),
+    ISerializable<LoopableObject>::make_field ("loopStartPos", loop_start_pos_),
+    ISerializable<LoopableObject>::make_field ("loopEndPos", loop_end_pos_));
 }
 
-bool
-automation_point_serialize_to_json (
-  yyjson_mut_doc *        doc,
-  yyjson_mut_val *        ap_obj,
-  const AutomationPoint * ap,
-  GError **               error)
+void
+FadeableObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, ap_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &ap->base, error);
-  yyjson_mut_obj_add_real (doc, ap_obj, "fValue", ap->fvalue);
-  yyjson_mut_obj_add_real (doc, ap_obj, "normalizedValue", ap->normalized_val);
-  yyjson_mut_obj_add_int (doc, ap_obj, "index", ap->index);
-  yyjson_mut_val * curve_opts_obj =
-    yyjson_mut_obj_add_obj (doc, ap_obj, "curveOpts");
-  curve_options_serialize_to_json (doc, curve_opts_obj, &ap->curve_opts, error);
-  return true;
+  ISerializable<FadeableObject>::serialize_fields (
+    ctx, ISerializable<FadeableObject>::make_field ("fadeInPos", fade_in_pos_),
+    ISerializable<FadeableObject>::make_field ("fadeOutPos", fade_out_pos_),
+    ISerializable<FadeableObject>::make_field ("fadeInOpts", fade_in_opts_),
+    ISerializable<FadeableObject>::make_field ("fadeOutOpts", fade_out_opts_));
 }
 
-bool
-chord_object_serialize_to_json (
-  yyjson_mut_doc *    doc,
-  yyjson_mut_val *    co_obj,
-  const ChordObject * co,
-  GError **           error)
+void
+MuteableObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, co_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &co->base, error);
-  yyjson_mut_obj_add_int (doc, co_obj, "index", co->index);
-  yyjson_mut_obj_add_int (doc, co_obj, "chordIndex", co->chord_index);
-  return true;
+  ISerializable<MuteableObject>::serialize_fields (
+    ctx, ISerializable<MuteableObject>::make_field ("mute", muted_));
 }
 
-bool
-region_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * r_obj,
-  const Region *   r,
-  GError **        error)
+void
+NameableObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, r_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &r->base, error);
-  yyjson_mut_val * id_obj = yyjson_mut_obj_add_obj (doc, r_obj, "id");
-  region_identifier_serialize_to_json (doc, id_obj, &r->id, error);
-  yyjson_mut_obj_add_str (doc, r_obj, "name", r->name);
-  yyjson_mut_obj_add_int (doc, r_obj, "poolId", r->pool_id);
-  yyjson_mut_obj_add_real (doc, r_obj, "gain", r->gain);
-  yyjson_mut_val * color_obj = yyjson_mut_obj_add_obj (doc, r_obj, "color");
-  gdk_rgba_serialize_to_json (doc, color_obj, &r->color, error);
-  yyjson_mut_obj_add_bool (doc, r_obj, "useColor", r->use_color);
-  switch (r->id.type)
-    {
-    case RegionType::REGION_TYPE_AUDIO:
-      break;
-    case RegionType::REGION_TYPE_MIDI:
-      {
-        yyjson_mut_val * midi_notes_arr =
-          yyjson_mut_obj_add_arr (doc, r_obj, "midiNotes");
-        for (int i = 0; i < r->num_midi_notes; i++)
-          {
-            MidiNote *       mn = r->midi_notes[i];
-            yyjson_mut_val * mn_obj =
-              yyjson_mut_arr_add_obj (doc, midi_notes_arr);
-            midi_note_serialize_to_json (doc, mn_obj, mn, error);
-          }
-      }
-      break;
-    case RegionType::REGION_TYPE_CHORD:
-      {
-        yyjson_mut_val * chord_objects_arr =
-          yyjson_mut_obj_add_arr (doc, r_obj, "chordObjects");
-        for (int i = 0; i < r->num_chord_objects; i++)
-          {
-            ChordObject *    co = r->chord_objects[i];
-            yyjson_mut_val * co_obj =
-              yyjson_mut_arr_add_obj (doc, chord_objects_arr);
-            chord_object_serialize_to_json (doc, co_obj, co, error);
-          }
-      }
-      break;
-    case RegionType::REGION_TYPE_AUTOMATION:
-      {
-        yyjson_mut_val * automation_points_arr =
-          yyjson_mut_obj_add_arr (doc, r_obj, "automationPoints");
-        for (int i = 0; i < r->num_aps; i++)
-          {
-            AutomationPoint * ap = r->aps[i];
-            yyjson_mut_val *  ap_obj =
-              yyjson_mut_arr_add_obj (doc, automation_points_arr);
-            automation_point_serialize_to_json (doc, ap_obj, ap, error);
-          }
-      }
-      break;
-    }
-  return true;
+  ISerializable<NameableObject>::serialize_fields (
+    ctx, ISerializable<NameableObject>::make_field ("name", name_));
 }
 
-static bool
-musical_scale_serialize_to_json (
-  yyjson_mut_doc *     doc,
-  yyjson_mut_val *     scale_obj,
-  const MusicalScale * scale,
-  GError **            error)
+void
+ColoredObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_obj_add_int (doc, scale_obj, "type", (int64_t) scale->type);
-  yyjson_mut_obj_add_int (doc, scale_obj, "rootKey", (int64_t) scale->root_key);
-  return true;
+  ISerializable<ColoredObject>::serialize_fields (
+    ctx, ISerializable<ColoredObject>::make_field ("color", color_),
+    ISerializable<ColoredObject>::make_field ("useColor", use_color_));
 }
 
-bool
-scale_object_serialize_to_json (
-  yyjson_mut_doc *    doc,
-  yyjson_mut_val *    so_obj,
-  const ScaleObject * so,
-  GError **           error)
+void
+Region::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, so_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &so->base, error);
-  yyjson_mut_obj_add_int (doc, so_obj, "index", so->index);
-  yyjson_mut_val * scale_obj = yyjson_mut_obj_add_obj (doc, so_obj, "scale");
-  musical_scale_serialize_to_json (doc, scale_obj, so->scale, error);
-  return true;
+  ISerializable<Region>::serialize_fields (
+    ctx, ISerializable<Region>::make_field ("regionId", id_));
 }
 
-bool
-marker_serialize_to_json (
-  yyjson_mut_doc * doc,
-  yyjson_mut_val * m_obj,
-  const Marker *   m,
-  GError **        error)
+void
+RegionOwnedObject::define_base_fields (const Context &ctx)
 {
-  yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, m_obj, "base");
-  arranger_object_serialize_to_json (doc, base_obj, &m->base, error);
-  yyjson_mut_obj_add_str (doc, m_obj, "name", m->name);
-  yyjson_mut_obj_add_uint (doc, m_obj, "trackNameHash", m->track_name_hash);
-  yyjson_mut_obj_add_int (doc, m_obj, "index", m->index);
-  yyjson_mut_obj_add_int (doc, m_obj, "type", (int64_t) m->type);
-  return true;
+  ISerializable<RegionOwnedObject>::serialize_fields (
+    ctx, ISerializable<RegionOwnedObject>::make_field ("regionId", region_id_),
+    ISerializable<RegionOwnedObject>::make_field ("index", index_));
 }
 
-bool
-arranger_object_deserialize_from_json (
-  yyjson_doc *     doc,
-  yyjson_val *     ao_obj,
-  ArrangerObject * ao,
-  GError **        error)
+void
+MidiRegion::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (ao_obj);
-  ao->type =
-    (ArrangerObjectType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  ao->flags =
-    (ArrangerObjectFlags) yyjson_get_int (yyjson_obj_iter_get (&it, "flags"));
-  ao->muted = yyjson_get_bool (yyjson_obj_iter_get (&it, "muted"));
-  yyjson_val * pos_obj = yyjson_obj_iter_get (&it, "pos");
-  position_deserialize_from_json (doc, pos_obj, &ao->pos, error);
-  yyjson_val * end_pos_obj = yyjson_obj_iter_get (&it, "endPos");
-  position_deserialize_from_json (doc, end_pos_obj, &ao->end_pos, error);
-  yyjson_val * clip_start_pos_obj = yyjson_obj_iter_get (&it, "clipStartPos");
-  position_deserialize_from_json (
-    doc, clip_start_pos_obj, &ao->clip_start_pos, error);
-  yyjson_val * loop_start_pos_obj = yyjson_obj_iter_get (&it, "loopStartPos");
-  position_deserialize_from_json (
-    doc, loop_start_pos_obj, &ao->loop_start_pos, error);
-  yyjson_val * loop_end_pos_obj = yyjson_obj_iter_get (&it, "loopEndPos");
-  position_deserialize_from_json (
-    doc, loop_end_pos_obj, &ao->loop_end_pos, error);
-  yyjson_val * fade_in_pos_obj = yyjson_obj_iter_get (&it, "fadeInPos");
-  position_deserialize_from_json (doc, fade_in_pos_obj, &ao->fade_in_pos, error);
-  yyjson_val * fade_out_pos_obj = yyjson_obj_iter_get (&it, "fadeOutPos");
-  position_deserialize_from_json (
-    doc, fade_out_pos_obj, &ao->fade_out_pos, error);
-  yyjson_val * fade_in_opts_obj = yyjson_obj_iter_get (&it, "fadeInOpts");
-  curve_options_deserialize_from_json (
-    doc, fade_in_opts_obj, &ao->fade_in_opts, error);
-  yyjson_val * fade_out_opts_obj = yyjson_obj_iter_get (&it, "fadeOutOpts");
-  curve_options_deserialize_from_json (
-    doc, fade_out_opts_obj, &ao->fade_out_opts, error);
-  yyjson_val * region_id_obj = yyjson_obj_iter_get (&it, "regionId");
-  region_identifier_deserialize_from_json (
-    doc, region_id_obj, &ao->region_id, error);
-  ao->magic = ARRANGER_OBJECT_MAGIC;
-  return true;
+  using T = ISerializable<MidiRegion>;
+  T::call_all_base_define_fields<
+    ArrangerObject, LengthableObject, LoopableObject, MuteableObject,
+    NameableObject, ColoredObject, Region> (ctx);
+  T::serialize_fields (ctx, T::make_field ("midiNotes", midi_notes_));
 }
 
-bool
-region_identifier_deserialize_from_json (
-  yyjson_doc *       doc,
-  yyjson_val *       id_obj,
-  RegionIdentifier * id,
-  GError **          error)
+void
+Velocity::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (id_obj);
-  id->type = (RegionType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  id->link_group = yyjson_get_int (yyjson_obj_iter_get (&it, "linkGroup"));
-  id->track_name_hash =
-    yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
-  id->lane_pos = yyjson_get_int (yyjson_obj_iter_get (&it, "lanePos"));
-  id->at_idx =
-    yyjson_get_int (yyjson_obj_iter_get (&it, "automationTrackIndex"));
-  id->idx = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
-  return true;
+  ISerializable<Velocity>::call_all_base_define_fields<
+    ArrangerObject, RegionOwnedObject> (ctx);
+  ISerializable<Velocity>::serialize_fields (
+    ctx, ISerializable<Velocity>::make_field ("velocity", vel_));
 }
 
-static bool
-velocity_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * vel_obj,
-  Velocity *   vel,
-  GError **    error)
+void
+MidiNote::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (vel_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &vel->base, error);
-  vel->vel = (uint8_t) yyjson_get_uint (yyjson_obj_iter_get (&it, "velocity"));
-  return true;
+  using T = ISerializable<MidiNote>;
+  T::call_all_base_define_fields<
+    ArrangerObject, LengthableObject, MuteableObject, RegionOwnedObject> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("velocity", vel_), T::make_field ("value", val_));
 }
 
-bool
-midi_note_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * mn_obj,
-  MidiNote *   mn,
-  GError **    error)
+void
+AutomationPoint::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (mn_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &mn->base, error);
-  yyjson_val * vel_obj = yyjson_obj_iter_get (&it, "velocity");
-  mn->vel = object_new (Velocity);
-  velocity_deserialize_from_json (doc, vel_obj, mn->vel, error);
-  mn->val = yyjson_get_uint (yyjson_obj_iter_get (&it, "value"));
-  mn->muted = yyjson_get_bool (yyjson_obj_iter_get (&it, "muted"));
-  mn->pos = yyjson_get_int (yyjson_obj_iter_get (&it, "pos"));
-  mn->magic = MIDI_NOTE_MAGIC;
-  return true;
+  ArrangerObject::define_base_fields (ctx);
+  RegionOwnedObject::define_base_fields (ctx);
+
+  using T = ISerializable<AutomationPoint>;
+  T::serialize_fields (
+    ctx, T::make_field ("fValue", fvalue_),
+    T::make_field ("normalizedValue", normalized_val_),
+    T::make_field ("index", index_), T::make_field ("curveOpts", curve_opts_));
 }
 
-bool
-automation_point_deserialize_from_json (
-  yyjson_doc *      doc,
-  yyjson_val *      ap_obj,
-  AutomationPoint * ap,
-  GError **         error)
+void
+ChordObject::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (ap_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &ap->base, error);
-  ap->fvalue = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "fValue"));
-  ap->normalized_val =
-    (float) yyjson_get_real (yyjson_obj_iter_get (&it, "normalizedValue"));
-  ap->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
-  yyjson_val * curve_opts_obj = yyjson_obj_iter_get (&it, "curveOpts");
-  curve_options_deserialize_from_json (
-    doc, curve_opts_obj, &ap->curve_opts, error);
-  return true;
+  ArrangerObject::define_base_fields (ctx);
+  MuteableObject::define_base_fields (ctx);
+  RegionOwnedObject::define_base_fields (ctx);
+
+  ISerializable<ChordObject>::serialize_fields (
+    ctx, ISerializable<ChordObject>::make_field ("chordIndex", chord_index_));
 }
 
-bool
-chord_object_deserialize_from_json (
-  yyjson_doc *  doc,
-  yyjson_val *  co_obj,
-  ChordObject * co,
-  GError **     error)
+void
+AudioRegion::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (co_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &co->base, error);
-  co->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
-  /* this was missing until mid-1.9 */
-  yyjson_val * chord_index_val = yyjson_obj_iter_get (&it, "chordIndex");
-  if (chord_index_val)
-    {
-      co->chord_index = yyjson_get_int (chord_index_val);
-    }
-  co->magic = CHORD_OBJECT_MAGIC;
-  return true;
+  ArrangerObject::define_base_fields (ctx);
+  LengthableObject::define_base_fields (ctx);
+  LoopableObject::define_base_fields (ctx);
+  FadeableObject::define_base_fields (ctx);
+  MuteableObject::define_base_fields (ctx);
+  NameableObject::define_base_fields (ctx);
+  ColoredObject::define_base_fields (ctx);
+  Region::define_base_fields (ctx);
+
+  ISerializable<AudioRegion>::serialize_fields (
+    ctx, ISerializable<AudioRegion>::make_field ("poolId", pool_id_),
+    ISerializable<AudioRegion>::make_field ("gain", gain_));
 }
 
-bool
-region_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * r_obj,
-  Region *     r,
-  GError **    error)
+void
+ChordRegion::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (r_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &r->base, error);
-  yyjson_val * id_obj = yyjson_obj_iter_get (&it, "id");
-  region_identifier_deserialize_from_json (doc, id_obj, &r->id, error);
-  r->name = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "name")));
-  r->pool_id = yyjson_get_int (yyjson_obj_iter_get (&it, "poolId"));
-  r->gain = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "gain"));
-  yyjson_val * color_obj = yyjson_obj_iter_get (&it, "color");
-  gdk_rgba_deserialize_from_json (doc, color_obj, &r->color, error);
-  r->use_color = yyjson_get_bool (yyjson_obj_iter_get (&it, "useColor"));
-  switch (r->id.type)
-    {
-    case RegionType::REGION_TYPE_AUDIO:
-      break;
-    case RegionType::REGION_TYPE_MIDI:
-      {
-        yyjson_val * midi_notes_arr = yyjson_obj_iter_get (&it, "midiNotes");
-        r->midi_notes_size = yyjson_arr_size (midi_notes_arr);
-        if (r->midi_notes_size > 0)
-          {
-            r->midi_notes = object_new_n (r->midi_notes_size, MidiNote *);
-            yyjson_arr_iter midi_note_it = yyjson_arr_iter_with (midi_notes_arr);
-            yyjson_val * mn_obj = NULL;
-            while ((mn_obj = yyjson_arr_iter_next (&midi_note_it)))
-              {
-                MidiNote * mn = object_new (MidiNote);
-                r->midi_notes[r->num_midi_notes++] = mn;
-                midi_note_deserialize_from_json (doc, mn_obj, mn, error);
-              }
-          }
-      }
-      break;
-    case RegionType::REGION_TYPE_CHORD:
-      {
-        yyjson_val * chord_objects_arr =
-          yyjson_obj_iter_get (&it, "chordObjects");
-        r->chord_objects_size = yyjson_arr_size (chord_objects_arr);
-        if (r->chord_objects_size > 0)
-          {
-            r->chord_objects =
-              object_new_n (r->chord_objects_size, ChordObject *);
-            yyjson_arr_iter chord_object_it =
-              yyjson_arr_iter_with (chord_objects_arr);
-            yyjson_val * co_obj = NULL;
-            while ((co_obj = yyjson_arr_iter_next (&chord_object_it)))
-              {
-                ChordObject * co = object_new (ChordObject);
-                r->chord_objects[r->num_chord_objects++] = co;
-                chord_object_deserialize_from_json (doc, co_obj, co, error);
-              }
-          }
-      }
-      break;
-    case RegionType::REGION_TYPE_AUTOMATION:
-      {
-        yyjson_val * automation_points_arr =
-          yyjson_obj_iter_get (&it, "automationPoints");
-        r->aps_size = yyjson_arr_size (automation_points_arr);
-        if (r->aps_size > 0)
-          {
-            r->aps = object_new_n (r->aps_size, AutomationPoint *);
-            yyjson_arr_iter automation_point_it =
-              yyjson_arr_iter_with (automation_points_arr);
-            yyjson_val * ap_obj = NULL;
-            while ((ap_obj = yyjson_arr_iter_next (&automation_point_it)))
-              {
-                AutomationPoint * ap = object_new (AutomationPoint);
-                r->aps[r->num_aps++] = ap;
-                automation_point_deserialize_from_json (doc, ap_obj, ap, error);
-              }
-          }
-      }
-      break;
-    }
-  r->magic = REGION_MAGIC;
-  return true;
+  ArrangerObject::define_base_fields (ctx);
+  LengthableObject::define_base_fields (ctx);
+  LoopableObject::define_base_fields (ctx);
+  MuteableObject::define_base_fields (ctx);
+  NameableObject::define_base_fields (ctx);
+  ColoredObject::define_base_fields (ctx);
+  Region::define_base_fields (ctx);
+
+  ISerializable<ChordRegion>::serialize_fields (
+    ctx,
+    ISerializable<ChordRegion>::make_field ("chordObjects", chord_objects_));
 }
 
-static bool
-musical_scale_deserialize_from_json (
-  yyjson_doc *   doc,
-  yyjson_val *   scale_obj,
-  MusicalScale * scale,
-  GError **      error)
+void
+AutomationRegion::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (scale_obj);
-  scale->type =
-    (MusicalScaleType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  scale->root_key =
-    (MusicalNote) yyjson_get_int (yyjson_obj_iter_get (&it, "rootKey"));
-  return true;
+  using T = ISerializable<AutomationRegion>;
+  T::call_all_base_define_fields<
+    ArrangerObject, LengthableObject, LoopableObject, MuteableObject,
+    NameableObject, ColoredObject, Region> (ctx);
+
+  T::serialize_fields (ctx, T::make_field ("automationPoints", aps_));
 }
 
-bool
-scale_object_deserialize_from_json (
-  yyjson_doc *  doc,
-  yyjson_val *  so_obj,
-  ScaleObject * so,
-  GError **     error)
+void
+MusicalScale::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (so_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &so->base, error);
-  so->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
-  yyjson_val * scale_obj = yyjson_obj_iter_get (&it, "scale");
-  so->scale = object_new (MusicalScale);
-  musical_scale_deserialize_from_json (doc, scale_obj, so->scale, error);
-  return true;
+  ISerializable<MusicalScale>::serialize_fields (
+    ctx, ISerializable<MusicalScale>::make_field ("type", type_),
+    ISerializable<MusicalScale>::make_field ("rootKey", root_key_));
 }
 
-bool
-marker_deserialize_from_json (
-  yyjson_doc * doc,
-  yyjson_val * m_obj,
-  Marker *     m,
-  GError **    error)
+void
+ScaleObject::define_fields (const Context &ctx)
 {
-  yyjson_obj_iter it = yyjson_obj_iter_with (m_obj);
-  yyjson_val *    base_obj = yyjson_obj_iter_get (&it, "base");
-  arranger_object_deserialize_from_json (doc, base_obj, &m->base, error);
-  m->name = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "name")));
-  m->track_name_hash =
-    yyjson_get_uint (yyjson_obj_iter_get (&it, "trackNameHash"));
-  m->index = yyjson_get_int (yyjson_obj_iter_get (&it, "index"));
-  m->type = (MarkerType) yyjson_get_int (yyjson_obj_iter_get (&it, "type"));
-  return true;
+  ArrangerObject::define_base_fields (ctx);
+  MuteableObject::define_base_fields (ctx);
+
+  ISerializable<ScaleObject>::serialize_fields (
+    ctx, ISerializable<ScaleObject>::make_field ("index", index_in_chord_track_),
+    ISerializable<ScaleObject>::make_field ("scale", scale_));
+}
+
+void
+Marker::define_fields (const Context &ctx)
+{
+  ArrangerObject::define_base_fields (ctx);
+  NameableObject::define_base_fields (ctx);
+
+  ISerializable<Marker>::serialize_fields (
+    ctx, ISerializable<Marker>::make_field ("markerType", marker_type_),
+    ISerializable<Marker>::make_field ("markerTrackIndex", marker_track_index_));
 }

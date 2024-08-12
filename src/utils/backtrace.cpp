@@ -26,9 +26,9 @@
 
 #include "zrythm-config.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <fstream>
+#include <iostream>
+
 #ifdef _WIN32
 #  include <windows.h>
 /*#define DBGHELP_TRANSLATE_TCHAR*/
@@ -93,13 +93,13 @@ addr2line (
   /* Open the command for reading. */
   /* FIXME use reproc, this uses fork () */
   fp = popen (addr2line_cmd, "r");
-  if (fp == NULL)
+  if (fp == nullptr)
     return 1;
 
-  while (fgets (outLine1, sizeof (outLine1) - 1, fp) != NULL)
+  while (fgets (outLine1, sizeof (outLine1) - 1, fp) != nullptr)
     {
       // if we have a pair of lines
-      if (fgets (outLine2, sizeof (outLine2) - 1, fp) != NULL)
+      if (fgets (outLine2, sizeof (outLine2) - 1, fp) != nullptr)
         {
           // if symbols are readable
           if (outLine2[0] != '?')
@@ -224,7 +224,7 @@ full_cb (
     }
   else
     {
-      backtrace_syminfo (state, pc, syminfo_cb, NULL, *msg_str);
+      backtrace_syminfo (state, pc, syminfo_cb, nullptr, *msg_str);
     }
 
   /*g_string_append_printf (*/
@@ -250,7 +250,7 @@ bt_error_cb (void * data, const char * msg, int errnum)
 #endif
 
 /**
- * Returns the backtrace with \ref max_lines
+ * Returns the backtrace with @ref max_lines
  * number of lines and a string prefix.
  *
  * @param exe_path Executable path for running
@@ -282,39 +282,42 @@ _backtrace_get (
 
       if (write_to_file && gZrythm)
         {
-          char * str_datetime = datetime_get_for_filename ();
+          auto   str_datetime = datetime_get_for_filename ();
           auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-          char * user_bt_dir = dir_mgr->get_dir (USER_BACKTRACE);
-          char * backtrace_filepath = g_strdup_printf (
-            "%s%sbacktrace_%s.txt", user_bt_dir, G_DIR_SEPARATOR_S,
-            str_datetime);
-          GError * err = NULL;
-          bool     success = io_mkdir (user_bt_dir, &err);
-          if (!success)
+          auto   user_bt_dir = dir_mgr->get_dir (ZrythmDirType::USER_BACKTRACE);
+          auto   backtrace_filepath =
+            fs::path (user_bt_dir) / ("backtrace_" + str_datetime);
+          try
             {
-              g_warning ("failed to create directory file %s", user_bt_dir);
-              goto call_backtrace_full;
+              io_mkdir (user_bt_dir);
+
+              try
+                {
+                  std::ofstream f (backtrace_filepath);
+                  if (f)
+                    {
+                      // TODO
+                      // backtrace_print (state, 0, f);
+                    }
+                  else
+                    {
+                      z_info ("failed to open file {}", backtrace_filepath);
+                    }
+                }
+              catch (const fs::filesystem_error &e)
+                {
+                  z_info (
+                    "failed to open file {}: {}", backtrace_filepath, e.what ());
+                }
             }
-          FILE * f = fopen (backtrace_filepath, "a");
-          if (f)
+          catch (const ZrythmException &e)
             {
-              backtrace_print (state, 0, f);
-              fclose (f);
+              z_warning (
+                "failed to create directory file {}: {}", user_bt_dir,
+                e.what ());
             }
-          else
-            {
-              g_message ("failed to open file %s", backtrace_filepath);
-              g_free (str_datetime);
-              g_free (user_bt_dir);
-              g_free (backtrace_filepath);
-              goto call_backtrace_full;
-            }
-          g_free (str_datetime);
-          g_free (user_bt_dir);
-          g_free (backtrace_filepath);
         }
 
-call_backtrace_full:
       if (msg_str)
         {
           g_message ("getting bt");
@@ -353,9 +356,9 @@ read_traditional_bt:
   void * stack[100];
   HANDLE process = GetCurrentProcess ();
 
-  SymInitialize (process, NULL, TRUE);
+  SymInitialize (process, nullptr, TRUE);
 
-  unsigned short frames = CaptureStackBackTrace (0, 100, stack, NULL);
+  unsigned short frames = CaptureStackBackTrace (0, 100, stack, nullptr);
   SYMBOL_INFO *  symbol =
     (SYMBOL_INFO *) calloc (sizeof (SYMBOL_INFO) + 256 * sizeof (char), 1);
   symbol->MaxNameLen = 255;

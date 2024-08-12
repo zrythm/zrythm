@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -11,30 +11,22 @@
 #include "dsp/true_peak_dsp.h"
 #include "project.h"
 #include "utils/math.h"
-#include "utils/objects.h"
+#include "utils/ring_buffer.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <zix/ring.h>
-
 void
-meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max)
+Meter::get_value (AudioValueFormat format, float * val, float * max)
 {
-  Port * port = self->port;
-  if (ZRYTHM_TESTING)
-    {
-      g_return_if_fail (IS_PORT_AND_NONNULL (port));
-    }
-
   /* get amplitude */
   float amp = -1.f;
   float max_amp = -1.f;
-  if (port->id_.type_ == PortType::Audio || port->id_.type_ == PortType::CV)
+  if (port_->is_audio () || port_->is_cv ())
     {
-      g_return_if_fail (port->audio_ring_);
-      int    num_cycles = 4;
-      size_t read_space_avail = zix_ring_read_space (port->audio_ring_);
-      size_t size = sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
-      size_t blocks_to_read = size == 0 ? 0 : read_space_avail / size;
+      size_t       read_space_avail = port_->audio_ring_->read_space ();
+      const size_t block_length = AUDIO_ENGINE->block_length_;
+      size_t       blocks_to_read =
+        block_length == 0 ? 0 : read_space_avail / block_length;
       /* if no blocks available, skip */
       if (blocks_to_read == 0)
         {
@@ -43,80 +35,69 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
           return;
         }
 
-      float  buf[read_space_avail];
-      size_t blocks_read =
-        zix_ring_peek (port->audio_ring_, &buf[0], read_space_avail);
-      blocks_read /= size;
-      num_cycles = MIN (num_cycles, (int) blocks_read);
-      size_t start_index =
-        (blocks_read - (size_t) num_cycles) * AUDIO_ENGINE->block_length;
-      g_return_if_fail (IS_PORT_AND_NONNULL (port));
+      z_return_if_fail (tmp_buf_.capacity () >= read_space_avail);
+      tmp_buf_.resize (read_space_avail);
+      auto samples_read =
+        port_->audio_ring_->peek_multiple (tmp_buf_.data (), read_space_avail);
+      auto   blocks_read = samples_read / block_length;
+      auto   num_cycles = std::min (static_cast<size_t> (4), blocks_read);
+      size_t start_index = (blocks_read - num_cycles) * block_length;
       if (blocks_read == 0)
         {
-          g_message (
-            "%s: blocks read for port %s is 0", __func__,
-            port->get_label_as_c_str ());
+          z_debug ("blocks read for port {} is 0", port_->get_label ());
           *val = 1e-20f;
           *max = 1e-20f;
           return;
         }
 
-      switch (self->algorithm)
+      switch (algorithm_)
         {
         case MeterAlgorithm::METER_ALGORITHM_RMS:
           /* not used */
-          g_warn_if_reached ();
+          z_warn_if_reached ();
           amp = math_calculate_rms_amp (
-            &buf[start_index], (size_t) num_cycles * AUDIO_ENGINE->block_length);
+            &tmp_buf_[start_index], (size_t) num_cycles * block_length);
           break;
         case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
-          true_peak_dsp_process (
-            self->true_peak_processor, &port->buf_[0],
-            (int) AUDIO_ENGINE->block_length);
-          amp = true_peak_dsp_read_f (self->true_peak_processor);
+          true_peak_processor_->process (&port_->buf_[0], block_length);
+          amp = true_peak_processor_->read_f ();
           break;
         case MeterAlgorithm::METER_ALGORITHM_K:
-          kmeter_dsp_process (
-            self->kmeter_processor, &port->buf_[0],
-            (int) AUDIO_ENGINE->block_length);
-          kmeter_dsp_read (self->kmeter_processor, &amp, &max_amp);
+          kmeter_processor_->process (&port_->buf_[0], block_length);
+          kmeter_processor_->read (&amp, &max_amp);
           break;
         case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
-          peak_dsp_process (
-            self->peak_processor, &port->buf_[0],
-            (int) AUDIO_ENGINE->block_length);
-          peak_dsp_read (self->peak_processor, &amp, &max_amp);
+          peak_processor_->process (&port_->buf_[0], block_length);
+          peak_processor_->read (&amp, &max_amp);
           break;
         default:
           break;
         }
     }
-  else if (port->id_.type_ == PortType::Event)
+  else if (port_->is_event ())
     {
       bool on = false;
-      if (port->write_ring_buffers_)
+      auto port = static_cast<MidiPort *> (port_);
+      if (port_->write_ring_buffers_)
         {
           MidiEvent event;
-          while (
-            zix_ring_peek (port->midi_ring_, &event, sizeof (MidiEvent)) > 0)
+          while (port->midi_ring_->peek (event) > 0)
             {
-              if (event.systime > self->last_midi_trigger_time)
+              if (event.systime_ > last_midi_trigger_time_)
                 {
                   on = true;
-                  self->last_midi_trigger_time = event.systime;
+                  last_midi_trigger_time_ = event.systime_;
                   break;
                 }
             }
         }
       else
         {
-          on = port->last_midi_event_time_ > self->last_midi_trigger_time;
-          /*g_atomic_int_compare_and_exchange (*/
-          /*&port->has_midi_events, 1, 0);*/
+          on = port->last_midi_event_time_ > last_midi_trigger_time_;
+          /*g_atomic_int_compare_and_exchange (&port->has_midi_events, 1, 0);*/
           if (on)
             {
-              self->last_midi_trigger_time = port->last_midi_event_time_;
-              /*g_get_monotonic_time ();*/
+              last_midi_trigger_time_ = port->last_midi_event_time_;
             }
         }
 
@@ -125,19 +106,21 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
     }
 
   /* adjust falloff */
-  gint64 now = g_get_monotonic_time ();
-  if (amp < self->last_amp)
+  auto now = SteadyClock::now ();
+  if (amp < last_amp_)
     {
       /* calculate new value after falloff */
       float falloff =
-        ((float) (now - self->last_draw_time) / 1000000.f) *
+        static_cast<float> (
+          std::chrono::duration_cast<std::chrono::seconds> (now - last_draw_time_)
+            .count ())
+        *
         /* rgareus says 13.3 is the standard */
         13.3f;
 
-      /* use prev val plus falloff if higher than
-       * current val */
+      /* use prev val plus falloff if higher than current val */
       float prev_val_after_falloff =
-        math_dbfs_to_amp (math_amp_to_dbfs (self->last_amp) - falloff);
+        math_dbfs_to_amp (math_amp_to_dbfs (last_amp_) - falloff);
       if (prev_val_after_falloff > amp)
         {
           amp = prev_val_after_falloff;
@@ -150,19 +133,19 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
     max_amp = amp;
 
   /* remember vals */
-  self->last_draw_time = now;
-  self->last_amp = amp;
-  self->prev_max = max_amp;
+  last_draw_time_ = now;
+  last_amp_ = amp;
+  prev_max_ = max_amp;
 
   switch (format)
     {
-    case AUDIO_VALUE_AMPLITUDE:
+    case AudioValueFormat::Amplitude:
       break;
-    case AUDIO_VALUE_DBFS:
+    case AudioValueFormat::DBFS:
       *val = math_amp_to_dbfs (amp);
       *max = math_amp_to_dbfs (max_amp);
       break;
-    case AUDIO_VALUE_FADER:
+    case AudioValueFormat::Fader:
       *val = math_get_fader_val_from_amp (amp);
       *max = math_get_fader_val_from_amp (max_amp);
       break;
@@ -171,21 +154,18 @@ meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max
     }
 }
 
-Meter *
-meter_new_for_port (Port * port)
+Meter::Meter (Port &port)
 {
-  Meter * self = object_new_unresizable (Meter);
-
-  self->port = port;
+  port_ = &port;
 
   /* master */
-  if (port->id_.type_ == PortType::Audio || port->id_.type_ == PortType::CV)
+  if (port_->is_audio () || port_->is_cv ())
     {
       bool is_master_fader = false;
-      if (port->id_.owner_type_ == PortIdentifier::OwnerType::TRACK)
+      if (port_->id_.owner_type_ == PortIdentifier::OwnerType::Track)
         {
-          Track * track = port->get_track (true);
-          if (track->type == TrackType::TRACK_TYPE_MASTER)
+          Track * track = port_->get_track (true);
+          if (track->is_master ())
             {
               is_master_fader = true;
             }
@@ -193,39 +173,20 @@ meter_new_for_port (Port * port)
 
       if (is_master_fader)
         {
-          self->algorithm = MeterAlgorithm::METER_ALGORITHM_K;
-          self->kmeter_processor = kmeter_dsp_new ();
-          kmeter_dsp_init (self->kmeter_processor, AUDIO_ENGINE->sample_rate);
+          algorithm_ = MeterAlgorithm::METER_ALGORITHM_K;
+          kmeter_processor_ = std::make_unique<KMeterDsp> ();
+          kmeter_processor_->init (AUDIO_ENGINE->sample_rate_);
         }
       else
         {
-          self->algorithm = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
-          self->peak_processor = peak_dsp_new ();
-          peak_dsp_init (self->peak_processor, AUDIO_ENGINE->sample_rate);
+          algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
+          peak_processor_ = std::make_unique<PeakDsp> ();
+          peak_processor_->init (AUDIO_ENGINE->sample_rate_);
         }
+
+      tmp_buf_.reserve (0x4000);
     }
-  else if (port->id_.type_ == PortType::Event)
+  else if (port_->is_event ())
     {
     }
-
-  return self;
-}
-
-void
-meter_free (Meter * self)
-{
-#define FREE_DSP(x, name) \
-  if (self->x) \
-    { \
-      name##_free (self->x); \
-    }
-
-  FREE_DSP (true_peak_processor, true_peak_dsp);
-  FREE_DSP (true_peak_max_processor, true_peak_dsp);
-  FREE_DSP (kmeter_processor, kmeter_dsp);
-  FREE_DSP (peak_processor, peak_dsp);
-
-#undef FREE_DSP
-
-  object_zero_and_free_unresizable (Meter, self);
 }

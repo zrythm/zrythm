@@ -1,23 +1,18 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "dsp/engine.h"
 #include "dsp/port.h"
-#include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/editable_label.h"
-#include "gui/widgets/inspector_port.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_properties_expander.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
-#include "utils/error.h"
 #include "utils/gtk.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -33,8 +28,7 @@ on_bank_changed (GtkComboBox * cb, PluginPropertiesExpanderWidget * self)
   if (!self->plugin)
     return;
 
-  plugin_set_selected_bank_from_index (
-    self->plugin, gtk_combo_box_get_active (cb));
+  self->plugin->set_selected_bank_from_index (gtk_combo_box_get_active (cb));
 
   g_signal_handler_block (self->presets, self->pset_changed_handler);
   plugin_gtk_setup_plugin_presets_list_box (self->presets, self->plugin);
@@ -50,15 +44,16 @@ on_preset_changed (GtkListBox * box, PluginPropertiesExpanderWidget * self)
   GtkListBoxRow * row = gtk_list_box_get_selected_row (box);
   if (row)
     {
-      plugin_set_selected_preset_from_index (
-        self->plugin, gtk_list_box_row_get_index (row));
+
+      self->plugin->set_selected_preset_from_index (
+        gtk_list_box_row_get_index (row));
     }
 }
 
 static void
 on_save_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 {
-  if (!self->plugin || !self->plugin->instantiated)
+  if (!self->plugin || !self->plugin->instantiated_)
     return;
 
   plugin_gtk_on_save_preset_activate (GTK_WIDGET (self), self->plugin);
@@ -67,18 +62,19 @@ on_save_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 static void
 on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 {
-  if (!self->plugin || !self->plugin->instantiated)
+  if (!self->plugin || !self->plugin->instantiated_)
     return;
 
-  const PluginSetting * setting = self->plugin->setting;
+  const auto &setting = self->plugin->setting_;
 
   GtkWidget * dialog = gtk_file_chooser_dialog_new (
     _ ("Load Preset"),
-    self->plugin->window ? self->plugin->window : GTK_WINDOW (MAIN_WINDOW),
+    self->plugin->window_ ? self->plugin->window_ : GTK_WINDOW (MAIN_WINDOW),
     GTK_FILE_CHOOSER_ACTION_OPEN, _ ("_Cancel"), GTK_RESPONSE_REJECT,
-    _ ("_Load"), GTK_RESPONSE_ACCEPT, NULL);
+    _ ("_Load"), GTK_RESPONSE_ACCEPT, nullptr);
   GFile * gfile = g_file_new_for_path (g_get_home_dir ());
-  gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), gfile, NULL);
+  gtk_file_chooser_set_current_folder (
+    GTK_FILE_CHOOSER (dialog), gfile, nullptr);
   g_object_unref (gfile);
   gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
   if (z_gtk_dialog_run (GTK_DIALOG (dialog), false) != GTK_RESPONSE_ACCEPT)
@@ -88,28 +84,27 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
     }
 
   gfile = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-  char * path = g_file_get_path (gfile);
+  char * _path = g_file_get_path (gfile);
+  auto   path = std::string (_path);
+  g_free (_path);
   g_object_unref (gfile);
 
-  GError * err = NULL;
-  bool     applied = false;
-  if (setting->open_with_carla)
+  try
     {
+      if (setting.open_with_carla_)
+        {
 #ifdef HAVE_CARLA
-      applied = carla_native_plugin_load_state (self->plugin->carla, path, &err);
+          auto carla = static_cast<CarlaNativePlugin *> (self->plugin);
+          carla->load_state (&path);
 #else
-      g_return_if_reached ();
+          g_return_if_reached ();
 #endif
-    }
-  g_free (path);
-
-  if (applied)
-    {
+        }
       EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_LOADED, self->plugin);
     }
-  else
+  catch (const ZrythmException &e)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to apply preset"));
+      e.handle (_ ("Failed to apply preset"));
     }
 
   gtk_window_destroy (GTK_WINDOW (dialog));
@@ -130,8 +125,9 @@ plugin_properties_expander_widget_refresh (
 
   if (pl)
     {
-      gtk_label_set_text (self->name, pl->setting->descr->name);
-      gtk_label_set_text (self->type, pl->setting->descr->category_str);
+      gtk_label_set_text (self->name, pl->get_name ().c_str ());
+      gtk_label_set_text (
+        self->type, pl->get_descriptor ().category_str_.c_str ());
     }
   else
     {

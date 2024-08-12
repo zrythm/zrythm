@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/gtk_flipper.h"
@@ -153,7 +151,7 @@ expander_box_widget_new (
   GtkOrientation orientation)
 {
   ExpanderBoxWidget * self = static_cast<ExpanderBoxWidget *> (
-    g_object_new (EXPANDER_BOX_WIDGET_TYPE, "visible", 1, NULL));
+    g_object_new (EXPANDER_BOX_WIDGET_TYPE, "visible", 1, nullptr));
 
   expander_box_widget_set_icon_name (self, icon_name);
   expander_box_widget_set_orientation (self, orientation);

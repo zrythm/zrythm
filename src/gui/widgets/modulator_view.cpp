@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/track.h"
@@ -17,24 +17,23 @@
 G_DEFINE_TYPE (ModulatorViewWidget, modulator_view_widget, GTK_TYPE_WIDGET)
 
 void
-modulator_view_widget_refresh (ModulatorViewWidget * self, Track * track)
+modulator_view_widget_refresh (ModulatorViewWidget * self, ModulatorTrack * track)
 {
   self->track = track;
-  gtk_label_set_markup (self->track_name_lbl, track->name);
-  color_area_widget_set_color (self->color, &track->color);
+  gtk_label_set_markup (self->track_name_lbl, track->name_.c_str ());
+  color_area_widget_set_color (self->color, track->color_);
 
   z_gtk_widget_remove_all_children (GTK_WIDGET (self->modulators_box));
 
-  for (int i = 0; i < self->track->num_modulators; i++)
+  for (auto &modulator : self->track->modulators_)
     {
-      Plugin * modulator = track->modulators[i];
-      if (!modulator->modulator_widget)
+      if (!modulator->modulator_widget_)
         {
-          modulator->modulator_widget = modulator_widget_new (modulator);
+          modulator->modulator_widget_ = modulator_widget_new (modulator.get ());
         }
       gtk_box_append (
         GTK_BOX (self->modulators_box),
-        GTK_WIDGET (modulator->modulator_widget));
+        GTK_WIDGET (modulator->modulator_widget_));
     }
 
   DragDestBoxWidget * drag_dest = drag_dest_box_widget_new (
@@ -44,14 +43,14 @@ modulator_view_widget_refresh (ModulatorViewWidget * self, Track * track)
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->no_modulators_status_page),
-    self->track->num_modulators == 0);
+    self->track->modulators_.empty ());
 }
 
 ModulatorViewWidget *
 modulator_view_widget_new (void)
 {
   ModulatorViewWidget * self = static_cast<ModulatorViewWidget *> (
-    g_object_new (MODULATOR_VIEW_WIDGET_TYPE, NULL));
+    g_object_new (MODULATOR_VIEW_WIDGET_TYPE, nullptr));
 
   return self;
 }
@@ -65,7 +64,7 @@ modulator_view_widget_init (ModulatorViewWidget * self)
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
-  color_area_widget_set_color (self->color, &color);
+  color_area_widget_set_color (self->color, Color (color));
 
   DragDestBoxWidget * drag_dest = drag_dest_box_widget_new (
     GTK_ORIENTATION_HORIZONTAL, 0,

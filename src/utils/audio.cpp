@@ -3,16 +3,16 @@
 
 #include <cmath>
 
-#include "dsp/engine.h"
-#include "project.h"
+#include "dsp/clip.h"
 #include "utils/audio.h"
-#include "utils/error.h"
+#include "utils/exceptions.h"
+#include "utils/logger.h"
 #include "utils/math.h"
-#include "utils/string.h"
 #include "utils/vamp.h"
 
 #include <glib/gi18n.h>
 
+#include <giomm.h>
 #include <sndfile.h>
 #include <unistd.h>
 
@@ -20,73 +20,20 @@
 #  include <sys/sysctl.h>
 #endif
 
-typedef enum
-{
-  Z_UTILS_AUDIO_ERROR_FAILED,
-} ZUtilsAudioError;
-
-#define Z_UTILS_AUDIO_ERROR z_utils_audio_error_quark ()
-GQuark
-z_utils_audio_error_quark (void);
-G_DEFINE_QUARK (
-  z - utils - audio - error - quark,
-  z_utils_audio_error)
-
-static int num_cores = 0;
-
-static const char * bit_depth_pretty_strings[] = {
-  N_ ("16 bit"),
-  N_ ("24 bit"),
-  N_ ("32 bit"),
-};
-
-BitDepth
-audio_bit_depth_from_pretty_str (const char * str)
-{
-  for (
-    size_t i = ENUM_VALUE_TO_INT (BitDepth::BIT_DEPTH_16);
-    i <= ENUM_VALUE_TO_INT (BitDepth::BIT_DEPTH_32); i++)
-    {
-      BitDepth cur = ENUM_INT_TO_VALUE (BitDepth, i);
-      if (string_is_equal (str, _ (bit_depth_pretty_strings[i])))
-        return cur;
-    }
-
-  g_return_val_if_reached (BitDepth::BIT_DEPTH_16);
-}
-
-const char *
-audio_bit_depth_to_pretty_str (BitDepth depth)
-{
-  return _ (bit_depth_pretty_strings[ENUM_VALUE_TO_INT (depth)]);
-}
-
-/**
- * Writes the buffer as a raw file to the given path.
- *
- * @param size The number of frames per channel.
- * @param samplerate The samplerate of \ref buff.
- * @param frames_already_written Frames (per channel) already
- *   written. If this is non-zero and the file exists, it will
- *   append to the existing file.
- *
- * @return Whether successful.
- */
-WARN_UNUSED_RESULT bool
+void
 audio_write_raw_file (
-  float *      buff,
-  size_t       frames_already_written,
-  size_t       nframes,
-  uint32_t     samplerate,
-  bool         flac,
-  BitDepth     bit_depth,
-  channels_t   channels,
-  const char * filename,
-  GError **    error)
+  const float *      buff,
+  size_t             frames_already_written,
+  size_t             nframes,
+  uint32_t           samplerate,
+  bool               flac,
+  BitDepth           bit_depth,
+  channels_t         channels,
+  const std::string &filename)
 {
-  g_return_val_if_fail (samplerate < 10000000, false);
+  g_return_if_fail (samplerate < 10000000);
 
-  g_debug (
+  z_debug (
     "writing raw file: already written %zu, "
     "nframes %zu, samplerate %u, channels %u, "
     "filename %s, flac? %d",
@@ -108,7 +55,7 @@ audio_write_raw_file (
       type_minor = SF_FORMAT_PCM_24;
       break;
     case BitDepth::BIT_DEPTH_32:
-      g_return_val_if_fail (!flac, false);
+      g_return_if_fail (!flac);
       type_minor = SF_FORMAT_PCM_32;
       break;
     }
@@ -122,27 +69,26 @@ audio_write_raw_file (
 
   bool write_chunk =
     (frames_already_written > 0)
-    && g_file_test (filename, G_FILE_TEST_IS_REGULAR);
+    && Glib::file_test (filename, Glib::FileTest::IS_REGULAR);
 
   if (flac && write_chunk)
     {
       g_critical ("cannot write chunks for flac");
-      return false;
+      return;
     }
 
   if (!sf_format_check (&info))
     {
-      g_critical ("Invalid SFINFO: %s", sf_strerror (NULL));
-      return false;
+      g_critical ("Invalid SFINFO: %s", sf_strerror (nullptr));
+      return;
     }
 
-  SNDFILE * sndfile = sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
+  SNDFILE * sndfile =
+    sf_open (filename.c_str (), flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
     {
-      g_set_error (
-        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
-        _ ("Error opening sndfile: %s"), sf_strerror (NULL));
-      return false;
+      throw ZrythmException (
+        fmt::format ("Error opening sndfile: {}", sf_strerror (nullptr)));
     }
 
   if (info.format != (type_major | type_minor))
@@ -150,7 +96,7 @@ audio_write_raw_file (
       g_critical (
         "Invalid SNDFILE format: 0x%08X != 0x%08X", info.format,
         type_major | type_minor);
-      return false;
+      return;
     }
 
   sf_set_string (sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
@@ -162,10 +108,8 @@ audio_write_raw_file (
       int ret = sf_seek (sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
-          g_set_error (
-            error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
-            _ ("Seek error %d: %s"), ret, sf_strerror (NULL));
-          return false;
+          throw ZrythmException (
+            fmt::format ("Seek error {}: {}", ret, sf_strerror (nullptr)));
         }
     }
 
@@ -174,26 +118,20 @@ audio_write_raw_file (
   sf_count_t count = sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
-      g_set_error (
-        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
-        "Mismatch: expected %ld frames, got %ld: %s", _nframes, count,
-        sf_strerror (sndfile));
-      return false;
+      throw ZrythmException (fmt::format (
+        "Mismatch: expected {} frames, got {}: {}", _nframes, count,
+        sf_strerror (sndfile)));
     }
 
   sf_write_sync (sndfile);
 
   if (sf_close (sndfile) != 0)
     {
-      g_set_error (
-        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
-        "Failed to close sndfile: %s", sf_strerror (NULL));
-      return false;
+      throw ZrythmException (
+        fmt::format ("Failed to close sndfile: {}", sf_strerror (nullptr)));
     }
 
-  g_message ("wrote %zu frames to '%s'", count, filename);
-
-  return true;
+  z_debug ("wrote {} frames to '{}'", count, filename);
 }
 
 /**
@@ -256,54 +194,43 @@ audio_files_equal (
   size_t       num_frames,
   float        epsilon)
 {
-  GError *    err = NULL;
-  AudioClip * c1 = audio_clip_new_from_file (f1, &err);
-  if (!c1)
+  try
     {
-      HANDLE_ERROR_LITERAL (err, "Failed to create clip 1");
+      AudioClip c1{ f1 };
+      AudioClip c2{ f2 };
+
+      if (num_frames == 0)
+        {
+          if (c1.num_frames_ == c2.num_frames_)
+            {
+              num_frames = c1.num_frames_;
+            }
+          else
+            {
+              return false;
+            }
+        }
+      z_return_val_if_fail (num_frames > 0, false);
+
+      if (c1.channels_ != c2.channels_)
+        return false;
+
+      for (size_t i = 0; i < c1.channels_; i++)
+        {
+          if (
+            !audio_frames_equal (
+              c1.ch_frames_.getReadPointer (i),
+              c2.ch_frames_.getReadPointer (i), num_frames, epsilon))
+            return false;
+        }
+
+      return true;
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle ("An error occurred while comparing files");
       return false;
     }
-  err = NULL;
-  AudioClip * c2 = audio_clip_new_from_file (f2, &err);
-  if (!c2)
-    {
-      HANDLE_ERROR_LITERAL (err, "Failed to create clip 2");
-      return false;
-    }
-
-  bool ret = false;
-  if (num_frames == 0)
-    {
-      if (c1->num_frames == c2->num_frames)
-        {
-          num_frames = c1->num_frames;
-        }
-      else
-        {
-          goto cleanup_clips;
-        }
-    }
-  g_return_val_if_fail (num_frames > 0, false);
-
-  ret = c1->channels == c2->channels;
-  if (!ret)
-    goto cleanup_clips;
-
-  for (size_t i = 0; i < c1->channels; i++)
-    {
-      ret = audio_frames_equal (
-        c1->ch_frames[i], c2->ch_frames[i], num_frames, epsilon);
-      if (!ret)
-        {
-          goto cleanup_clips;
-        }
-    }
-
-cleanup_clips:
-  audio_clip_free (c1);
-  audio_clip_free (c2);
-
-  return ret;
 }
 
 /**
@@ -349,17 +276,12 @@ audio_file_is_silent (const char * filepath)
   return is_empty;
 }
 
-/**
- * Detect BPM.
- *
- * @return The BPM, or 0 if not found.
- */
 float
 audio_detect_bpm (
-  float *      src,
-  size_t       num_frames,
-  unsigned int samplerate,
-  GArray *     candidates)
+  const float *       src,
+  size_t              num_frames,
+  unsigned int        samplerate,
+  std::vector<float> &candidates)
 {
   ZVampPlugin * plugin =
     vamp_get_plugin (Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, (float) samplerate);
@@ -377,7 +299,7 @@ audio_detect_bpm (
   float bpm = 0.f;
   while ((cur_timestamp + (long) block_sz) < (long) num_frames)
     {
-      float * frames[] = {
+      const float * frames[] = {
         &src[cur_timestamp],
       };
       ZVampFeatureSet * feature_set = vamp_plugin_process (
@@ -391,13 +313,10 @@ audio_detect_bpm (
             (ZVampFeature *) g_ptr_array_index (fl->list, 0);
           bpm = feature->values[0];
 
-          if (candidates)
-            {
               for (size_t i = 0; i < feature->num_values; i++)
                 {
-                  g_array_append_val (candidates, feature->values[i]);
+                  candidates.push_back (feature->values[i]);
                 }
-            }
         }
       cur_timestamp += (long) step_sz;
       vamp_feature_set_free (feature_set);
@@ -415,13 +334,10 @@ audio_detect_bpm (
         (ZVampFeature *) g_ptr_array_index (fl->list, 0);
       bpm = feature->values[0];
 
-      if (candidates)
-        {
           for (size_t i = 0; i < feature->num_values; i++)
             {
-              g_array_append_val (candidates, feature->values[i]);
+              candidates.push_back (feature->values[i]);
             }
-        }
     }
   vamp_feature_set_free (feature_set);
 
@@ -432,42 +348,16 @@ audio_detect_bpm (
  * Returns the number of CPU cores.
  */
 int
-audio_get_num_cores (void)
+audio_get_num_cores ()
 {
+  static int num_cores = 0;
+
   if (num_cores > 0)
     return num_cores;
 
-#ifdef _WIN32
-  SYSTEM_INFO sysinfo;
-  GetSystemInfo (&sysinfo);
-  num_cores = (int) sysinfo.dwNumberOfProcessors;
-#endif
+  num_cores = std::thread::hardware_concurrency ();
 
-#if defined(__linux__) || defined(__APPLE__)
-  num_cores = (int) sysconf (_SC_NPROCESSORS_ONLN);
-#endif
-
-#ifdef __FreeBSD__
-  int    mib[4];
-  size_t len = sizeof (num_cores);
-
-  /* set the mib for hw.ncpu */
-  mib[0] = CTL_HW;
-  mib[1] = HW_NCPU;
-
-  /* get the number of CPUs from the system */
-  sysctl (mib, 2, &num_cores, &len, NULL, 0);
-
-  if (num_cores < 1)
-    {
-      mib[1] = HW_NCPU;
-      sysctl (mib, 2, &num_cores, &len, NULL, 0);
-      if (num_cores < 1)
-        num_cores = 1;
-    }
-#endif
-
-  g_message ("Number of CPU cores found: %d", num_cores);
+  z_info ("Number of CPU cores found: %d", num_cores);
 
   return num_cores;
 }

@@ -1,10 +1,8 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Dialog to change a string.
  */
@@ -14,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <adwaita.h>
+#include "libadwaita_wrapper.h"
 
 #define STRING_ENTRY_DIALOG_WIDGET_TYPE (string_entry_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -25,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
   AdwMessageDialog)
 
 typedef struct _MarkerWidget MarkerWidget;
-typedef struct Marker        Marker;
+class Marker;
 
 /**
  * @addtogroup widgets
@@ -36,25 +34,24 @@ typedef struct Marker        Marker;
 /**
  * A dialog to edit a string.
  */
-typedef struct _StringEntryDialogWidget
+using StringEntryDialogWidget = struct _StringEntryDialogWidget
 {
   AdwMessageDialog parent_instance;
 
   GtkEntry *  entry;
   GtkButton * ok;
 
-  GenericStringGetter getter;
-  GenericStringSetter setter;
+  GenericStringGetter * getter;
+  GenericStringSetter * setter;
   void *              obj;
-
-} StringEntryDialogWidget;
+};
 
 /**
  * Creates the dialog.
  */
 StringEntryDialogWidget *
 string_entry_dialog_widget_new (
-  const char *        label,
+  const std::string  &label,
   void *              obj,
   GenericStringGetter getter,
   GenericStringSetter setter);

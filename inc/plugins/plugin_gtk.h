@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * GTK window management for plugin UIs.
  */
@@ -14,7 +12,8 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct Plugin Plugin;
+class Plugin;
+class ControlPort;
 
 /**
  * @addtogroup plugins
@@ -25,13 +24,13 @@ typedef struct Plugin Plugin;
 /**
  * Widget for a control.
  */
-typedef struct PluginGtkController
+struct PluginGtkController
 {
   GtkSpinButton * spin;
   GtkWidget *     control;
 
   /** Port this control is for. */
-  Port * port;
+  ControlPort * port;
 
   /** Pointer back to plugin. */
   Plugin * plugin;
@@ -39,16 +38,16 @@ typedef struct PluginGtkController
   /** Last set control value - used to avoid re-setting the
    * same value on float controls. */
   float last_set_control_val;
-} PluginGtkController;
+};
 
-typedef struct PluginGtkPresetRecord
+struct PluginGtkPresetRecord
 {
   Plugin * plugin;
   /**
    * This will be a LilvNode * for LV2 and an absolute path for carla.
    */
   void * preset;
-} PluginGtkPresetRecord;
+};
 
 /**
  * Creates a new GtkWindow that will be used to

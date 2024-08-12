@@ -13,7 +13,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Helpers for loading and using resources such as icons.
  */

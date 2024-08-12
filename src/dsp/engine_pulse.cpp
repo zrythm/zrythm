@@ -45,7 +45,7 @@ engine_pulse_stream_write_callback (
 
   void *   buf;
   gboolean should_free_buffer = FALSE;
-  bytes = MIN (bytes, FRAMES_TO_BYTES (self->block_length));
+  bytes = MIN (bytes, FRAMES_TO_BYTES (self->block_length_));
   if (pa_stream_begin_write (stream, &buf, &bytes) != 0)
     {
       g_warning ("Failed to acquire pulse write buffer");
@@ -55,20 +55,21 @@ engine_pulse_stream_write_callback (
     }
 
   nframes_t num_frames = BYTES_TO_FRAMES (bytes);
-  engine_process (self, num_frames);
+  self->process (num_frames);
 
   memset (buf, 0, (size_t) bytes);
   float * float_buf = (float *) buf;
 
   for (nframes_t i = 0; i < num_frames; i++)
     {
-      float_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
-      float_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
+      float_buf[i * 2] = self->monitor_out_->get_l ().buf_[i];
+      float_buf[i * 2 + 1] = self->monitor_out_->get_r ().buf_[i];
     }
 
   if (
     pa_stream_write (
-      stream, buf, bytes, should_free_buffer ? g_free : NULL, 0, PA_SEEK_RELATIVE)
+      stream, buf, bytes, should_free_buffer ? g_free : nullptr, 0,
+      PA_SEEK_RELATIVE)
     != 0)
     {
       g_warning ("Failed to write pulse buffer");
@@ -95,15 +96,15 @@ engine_pulse_stream_underflow_callback (pa_stream * stream, void * userdata)
 {
   AudioEngine * self = (AudioEngine *) userdata;
 
-  if (self->pulse_notified_underflow)
+  if (self->pulse_notified_underflow_)
     return;
 
   g_message ("Pulse buffer underflow");
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
-    g_idle_add (engine_pulse_notify_underflow, NULL);
+    g_idle_add (engine_pulse_notify_underflow, nullptr);
 
-  self->pulse_notified_underflow = TRUE;
+  self->pulse_notified_underflow_ = true;
 }
 
 static void
@@ -199,7 +200,8 @@ engine_pulse_try_lock_connect_sync (
 
   pa_threaded_mainloop_lock (*mainloop);
 
-  if (pa_context_connect (*context, NULL, PA_CONTEXT_NOAUTOSPAWN, NULL) != 0)
+  if (
+    pa_context_connect (*context, nullptr, PA_CONTEXT_NOAUTOSPAWN, nullptr) != 0)
     {
       *msg = g_strdup_printf (
         _ ("PulseAudio Error: %s"), pa_strerror (pa_context_errno (*context)));
@@ -225,7 +227,7 @@ engine_pulse_try_lock_connect_sync (
     }
 
   pa_context_set_state_callback (
-    *context, engine_pulse_context_state_callback, NULL);
+    *context, engine_pulse_context_state_callback, nullptr);
 
   return TRUE;
 }
@@ -238,7 +240,7 @@ engine_pulse_setup (AudioEngine * self)
 {
   char * msg = NULL;
   if (!engine_pulse_try_lock_connect_sync (
-        &self->pulse_mainloop, &self->pulse_context, &msg))
+        &self->pulse_mainloop_, &self->pulse_context_, &msg))
     {
       g_warning ("%s", msg);
       g_free (msg);
@@ -248,13 +250,13 @@ engine_pulse_setup (AudioEngine * self)
   pa_sample_spec requested_spec;
   requested_spec.channels = 2;
   requested_spec.format = PA_SAMPLE_FLOAT32;
-  requested_spec.rate = (uint32_t) engine_samplerate_enum_to_int (
-    (AudioEngineSamplerate) g_settings_get_enum (
+  requested_spec.rate = (uint32_t) AudioEngine::samplerate_enum_to_int (
+    (AudioEngine::SampleRate) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "sample-rate"));
 
-  self->pulse_stream = pa_stream_new (
-    self->pulse_context, ZRYTHM_PULSE_CLIENT, &requested_spec, NULL);
-  if (self->pulse_stream == NULL)
+  self->pulse_stream_ = pa_stream_new (
+    self->pulse_context_, ZRYTHM_PULSE_CLIENT, &requested_spec, nullptr);
+  if (self->pulse_stream_ == nullptr)
     {
       g_warning (
         "PulseAudio Error: "
@@ -268,37 +270,37 @@ engine_pulse_setup (AudioEngine * self)
   pa_buffer_attr requested_attr;
   requested_attr.fragsize = (uint32_t) -1;
   requested_attr.prebuf = (uint32_t) -1;
-  requested_attr.tlength = FRAMES_TO_BYTES (engine_buffer_size_enum_to_int (
-    (AudioEngineBufferSize) g_settings_get_enum (
+  requested_attr.tlength = FRAMES_TO_BYTES (AudioEngine::buffer_size_enum_to_int (
+    (AudioEngine::BufferSize) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "buffer-size")));
   requested_attr.maxlength = requested_attr.tlength;
   requested_attr.minreq = requested_attr.tlength / 2;
 
   pa_stream_set_state_callback (
-    self->pulse_stream, engine_pulse_stream_state_callback,
-    self->pulse_mainloop);
+    self->pulse_stream_, engine_pulse_stream_state_callback,
+    self->pulse_mainloop_);
 
   pa_stream_set_underflow_callback (
-    self->pulse_stream, engine_pulse_stream_underflow_callback, self);
+    self->pulse_stream_, engine_pulse_stream_underflow_callback, self);
 
   if (
     pa_stream_connect_playback (
-      self->pulse_stream, NULL, &requested_attr,
-      PA_STREAM_START_CORKED | PA_STREAM_ADJUST_LATENCY, NULL, NULL)
+      self->pulse_stream_, nullptr, &requested_attr,
+      PA_STREAM_START_CORKED | PA_STREAM_ADJUST_LATENCY, nullptr, nullptr)
     != 0)
     {
       g_warning (
         "PulseAudio Error: "
         "Failed to connect playback stream: %s",
-        pa_strerror (pa_context_errno (self->pulse_context)));
+        pa_strerror (pa_context_errno (self->pulse_context_)));
       return 1;
     }
 
   for (;;)
     {
-      pa_threaded_mainloop_wait (self->pulse_mainloop);
+      pa_threaded_mainloop_wait (self->pulse_mainloop_);
 
-      pa_stream_state_t state = pa_stream_get_state (self->pulse_stream);
+      pa_stream_state_t state = pa_stream_get_state (self->pulse_stream_);
       if (state == PA_STREAM_READY)
         break;
       else if (state == PA_STREAM_FAILED)
@@ -306,31 +308,31 @@ engine_pulse_setup (AudioEngine * self)
           g_warning (
             "PulseAudio Error: "
             "Failed to connect to stream");
-          pa_threaded_mainloop_unlock (self->pulse_mainloop);
+          pa_threaded_mainloop_unlock (self->pulse_mainloop_);
           return 1;
         }
     }
 
   pa_stream_set_state_callback (
-    self->pulse_stream, engine_pulse_stream_state_callback, NULL);
+    self->pulse_stream_, engine_pulse_stream_state_callback, nullptr);
 
   const pa_sample_spec * actual_spec =
-    pa_stream_get_sample_spec (self->pulse_stream);
+    pa_stream_get_sample_spec (self->pulse_stream_);
 
-  self->sample_rate = actual_spec->rate;
+  self->sample_rate_ = actual_spec->rate;
   if (P_TEMPO_TRACK)
     {
-      int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-      engine_update_frames_per_tick (
-        self, beats_per_bar, tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->sample_rate, true, true, false);
+      int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+      self->update_frames_per_tick (
+        beats_per_bar, P_TEMPO_TRACK->get_current_bpm (), self->sample_rate_,
+        true, true, false);
     }
 
   const pa_buffer_attr * actual_attr =
-    pa_stream_get_buffer_attr (self->pulse_stream);
-  self->block_length = BYTES_TO_FRAMES (actual_attr->tlength);
+    pa_stream_get_buffer_attr (self->pulse_stream_);
+  self->block_length_ = BYTES_TO_FRAMES (actual_attr->tlength);
 
-  pa_threaded_mainloop_unlock (self->pulse_mainloop);
+  pa_threaded_mainloop_unlock (self->pulse_mainloop_);
 
   return 0;
 }
@@ -361,14 +363,14 @@ engine_pulse_activate (AudioEngine * self, gboolean activate)
       g_message ("deactivating...");
     }
 
-  pa_threaded_mainloop_lock (self->pulse_mainloop);
+  pa_threaded_mainloop_lock (self->pulse_mainloop_);
 
   pa_operation * op = pa_stream_cork (
-    self->pulse_stream, !activate, engine_pulse_stream_cork_callback,
-    self->pulse_mainloop);
+    self->pulse_stream_, !activate, engine_pulse_stream_cork_callback,
+    self->pulse_mainloop_);
 
   while (pa_operation_get_state (op) == PA_OPERATION_RUNNING)
-    pa_threaded_mainloop_wait (self->pulse_mainloop);
+    pa_threaded_mainloop_wait (self->pulse_mainloop_);
 
   if (activate)
     {
@@ -379,13 +381,13 @@ engine_pulse_activate (AudioEngine * self, gboolean activate)
        * https://lists.freedesktop.org/archives/pulseaudio-discuss/2016-July/026552.html
        */
       pa_stream_set_write_callback (
-        self->pulse_stream, engine_pulse_stream_write_callback, self);
+        self->pulse_stream_, engine_pulse_stream_write_callback, self);
 
-      size_t bytes = pa_stream_writable_size (self->pulse_stream);
-      engine_pulse_stream_write_callback (self->pulse_stream, bytes, self);
+      size_t bytes = pa_stream_writable_size (self->pulse_stream_);
+      engine_pulse_stream_write_callback (self->pulse_stream_, bytes, self);
     }
 
-  pa_threaded_mainloop_unlock (self->pulse_mainloop);
+  pa_threaded_mainloop_unlock (self->pulse_mainloop_);
 }
 
 /**
@@ -425,10 +427,10 @@ engine_pulse_test (GtkWindow * win)
       pa_threaded_mainloop_unlock (mainloop);
     }
 
-  if (context != NULL)
+  if (context != nullptr)
     pa_context_unref (context);
 
-  if (mainloop != NULL)
+  if (mainloop != nullptr)
     {
       pa_threaded_mainloop_stop (mainloop);
       pa_threaded_mainloop_free (mainloop);
@@ -443,16 +445,16 @@ engine_pulse_test (GtkWindow * win)
 void
 engine_pulse_tear_down (AudioEngine * engine)
 {
-  if (engine->pulse_stream != NULL)
-    pa_stream_unref (engine->pulse_stream);
+  if (engine->pulse_stream_ != nullptr)
+    pa_stream_unref (engine->pulse_stream_);
 
-  if (engine->pulse_context != NULL)
-    pa_context_unref (engine->pulse_context);
+  if (engine->pulse_context_ != nullptr)
+    pa_context_unref (engine->pulse_context_);
 
-  if (engine->pulse_mainloop != NULL)
+  if (engine->pulse_mainloop_ != nullptr)
     {
-      pa_threaded_mainloop_stop (engine->pulse_mainloop);
-      pa_threaded_mainloop_free (engine->pulse_mainloop);
+      pa_threaded_mainloop_stop (engine->pulse_mainloop_);
+      pa_threaded_mainloop_free (engine->pulse_mainloop_);
     }
 }
 

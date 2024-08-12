@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * File browser.
- */
-
 #include "dsp/engine.h"
 #include "dsp/sample_processor.h"
 #include "gui/backend/event.h"
@@ -14,16 +8,12 @@
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/file_auditioner_controls.h"
 #include "gui/widgets/volume.h"
-#include "io/serialization/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -45,12 +35,10 @@ on_play_clicked (GtkButton * toolbutton, FileAuditionerControlsWidget * self)
   switch (wrapped_obj->type)
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
-      sample_processor_queue_file (
-        SAMPLE_PROCESSOR, (FileDescriptor *) wrapped_obj->obj);
+      SAMPLE_PROCESSOR->queue_file (*(FileDescriptor *) wrapped_obj->obj);
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET:
-      sample_processor_queue_chord_preset (
-        SAMPLE_PROCESSOR, (ChordPreset *) wrapped_obj->obj);
+      SAMPLE_PROCESSOR->queue_chord_preset (*(ChordPreset *) wrapped_obj->obj);
       break;
     default:
       break;
@@ -60,7 +48,7 @@ on_play_clicked (GtkButton * toolbutton, FileAuditionerControlsWidget * self)
 static void
 on_stop_clicked (GtkButton * toolbutton, FileAuditionerControlsWidget * self)
 {
-  sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
+  SAMPLE_PROCESSOR->stop_file_playback ();
 }
 
 static void
@@ -84,57 +72,42 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
   const PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
 
   if (
-    SAMPLE_PROCESSOR->instrument_setting
-    && plugin_descriptor_is_same_plugin (
-      SAMPLE_PROCESSOR->instrument_setting->descr, descr))
+    SAMPLE_PROCESSOR->instrument_setting_
+    && SAMPLE_PROCESSOR->instrument_setting_->descr_.is_same_plugin (*descr))
     return;
 
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
-
-  /* clear previous instrument setting */
-  if (SAMPLE_PROCESSOR->instrument_setting)
-    {
-      object_free_w_func_and_null (
-        plugin_setting_free, SAMPLE_PROCESSOR->instrument_setting);
-    }
+  AudioEngine::State state;
+  AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   /* set setting */
-  PluginSetting * existing_setting =
-    plugin_settings_find (S_PLUGIN_SETTINGS, descr);
+  PluginSetting * existing_setting = S_PLUGIN_SETTINGS->find (*descr);
   if (existing_setting)
     {
-      SAMPLE_PROCESSOR->instrument_setting =
-        plugin_setting_clone (existing_setting, F_VALIDATE);
+      SAMPLE_PROCESSOR->instrument_setting_ =
+        std::make_unique<PluginSetting> (*existing_setting);
+      SAMPLE_PROCESSOR->instrument_setting_->validate ();
     }
   else
     {
-      SAMPLE_PROCESSOR->instrument_setting = plugin_setting_new_default (descr);
+      SAMPLE_PROCESSOR->instrument_setting_ =
+        std::make_unique<PluginSetting> (*descr);
     }
-  g_return_if_fail (SAMPLE_PROCESSOR->instrument_setting);
 
   /* save setting */
-  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
-  yyjson_mut_val * root = yyjson_mut_obj (doc);
-  g_return_if_fail (root);
-  yyjson_mut_doc_set_root (doc, root);
-  GError * err = NULL;
-  plugin_setting_serialize_to_json (
-    doc, root, SAMPLE_PROCESSOR->instrument_setting, &err);
-  char * setting_json = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, NULL);
-  if (setting_json)
+  try
     {
-      g_settings_set_string (S_UI_FILE_BROWSER, "instrument", setting_json);
-      g_free (setting_json);
+      auto json =
+        SAMPLE_PROCESSOR->instrument_setting_->serialize_to_json_string ();
+      g_settings_set_string (S_UI_FILE_BROWSER, "instrument", json.c_str ());
     }
-  else
+  catch (const ZrythmException &e)
     {
-      HANDLE_ERROR_LITERAL (err, "Failed to serialize instrument setting");
+      e.handle ("Failed to serialize instrument setting");
     }
 
-  engine_resume (AUDIO_ENGINE, &state);
+  AUDIO_ENGINE->resume (state);
 
-  EVENTS_PUSH (EventType::ET_FILE_BROWSER_INSTRUMENT_CHANGED, NULL);
+  EVENTS_PUSH (EventType::ET_FILE_BROWSER_INSTRUMENT_CHANGED, nullptr);
 }
 
 static void
@@ -145,22 +118,22 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
   /* populate instruments */
   int selected = -1;
   int num_added = 0;
-  for (size_t i = 0; i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
+  for (auto &descr : PLUGIN_MANAGER->plugin_descriptors_)
     {
-      PluginDescriptor * descr = static_cast<PluginDescriptor *> (
-        g_ptr_array_index (PLUGIN_MANAGER->plugin_descriptors, i));
-      if (plugin_descriptor_is_instrument (descr))
+      if (descr.is_instrument ())
         {
           WrappedObjectWithChangeSignal * wrapped_descr =
-            wrapped_object_with_change_signal_new (
-              descr, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
+            wrapped_object_with_change_signal_new_with_free_func (
+              new PluginDescriptor (descr),
+              WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR,
+              [] (void * ptr) { delete static_cast<PluginDescriptor *> (ptr); });
           g_list_store_append (store, wrapped_descr);
 
           /* set selected instrument */
           if (
-            SAMPLE_PROCESSOR->instrument_setting
-            && plugin_descriptor_is_same_plugin (
-              SAMPLE_PROCESSOR->instrument_setting->descr, descr))
+            SAMPLE_PROCESSOR->instrument_setting_
+            && SAMPLE_PROCESSOR->instrument_setting_->descr_.is_same_plugin (
+              descr))
             {
               selected = num_added;
             }
@@ -172,8 +145,9 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
   gtk_drop_down_set_model (self->instrument_dropdown, G_LIST_MODEL (store));
 
   GtkExpression * expr = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL,
-    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), NULL, NULL);
+    G_TYPE_STRING, nullptr, 0, nullptr,
+    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), nullptr,
+    nullptr);
   gtk_drop_down_set_expression (self->instrument_dropdown, expr);
 
   if (selected >= 0)
@@ -203,7 +177,7 @@ file_auditioner_controls_widget_setup (
   self->selected_file_getter = selected_file_getter;
   self->refilter_files = refilter_files_cb;
 
-  volume_widget_setup (self->volume, SAMPLE_PROCESSOR->fader->amp);
+  volume_widget_setup (self->volume, SAMPLE_PROCESSOR->fader_->amp_.get ());
 
   self->for_files = for_files;
   GMenu * menu = g_menu_new ();

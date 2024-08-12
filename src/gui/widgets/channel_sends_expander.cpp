@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
+#include "dsp/channel_track.h"
 #include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -11,6 +12,8 @@
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -45,9 +48,10 @@ on_reveal_changed (
   if (self->position == ChannelSendsExpanderPosition::CSE_POSITION_CHANNEL)
     {
       g_settings_set_boolean (S_UI_MIXER, "sends-expanded", revealed);
+      auto channel_track = dynamic_cast<ChannelTrack *> (self->track);
       EVENTS_PUSH (
         EventType::ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
-        self->track->channel);
+        channel_track->channel_.get ());
     }
 }
 
@@ -65,7 +69,7 @@ channel_sends_expander_widget_setup (
 
   if (track)
     {
-      switch (track->out_signal_type)
+      switch (track->out_signal_type_)
         {
         case PortType::Audio:
           expander_box_widget_set_icon_name (
@@ -85,20 +89,23 @@ channel_sends_expander_widget_setup (
       /* remove children */
       z_gtk_widget_destroy_all_children (GTK_WIDGET (self->box));
 
-      Channel * ch = track_get_channel (track);
-      g_return_if_fail (ch);
-      for (int i = 0; i < STRIP_SIZE; i++)
+      if (auto channel_track = dynamic_cast<ChannelTrack *> (track))
         {
-          GtkBox * strip_box =
-            GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-          gtk_widget_set_name (
-            GTK_WIDGET (strip_box), "channel-sends-expander-strip-box");
-          self->strip_boxes[i] = strip_box;
-          ChannelSendWidget * csw = channel_send_widget_new (ch->sends[i]);
-          self->slots[i] = csw;
-          gtk_box_append (strip_box, GTK_WIDGET (csw));
+          auto &ch = channel_track->channel_;
+          for (int i = 0; i < STRIP_SIZE; i++)
+            {
+              GtkBox * strip_box =
+                GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+              gtk_widget_set_name (
+                GTK_WIDGET (strip_box), "channel-sends-expander-strip-box");
+              self->strip_boxes[i] = strip_box;
+              ChannelSendWidget * csw =
+                channel_send_widget_new (ch->sends_[i].get ());
+              self->slots[i] = csw;
+              gtk_box_append (strip_box, GTK_WIDGET (csw));
 
-          gtk_box_append (self->box, GTK_WIDGET (strip_box));
+              gtk_box_append (self->box, GTK_WIDGET (strip_box));
+            }
         }
     }
 
@@ -135,7 +142,7 @@ channel_sends_expander_widget_init (ChannelSendsExpanderWidget * self)
     GTK_WIDGET (self->scroll), "channel-sends-expander-scroll");
   gtk_widget_set_vexpand (GTK_WIDGET (self->scroll), true);
 
-  self->viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  self->viewport = GTK_VIEWPORT (gtk_viewport_new (nullptr, nullptr));
   gtk_viewport_set_scroll_to_focus (self->viewport, false);
   gtk_widget_set_name (
     GTK_WIDGET (self->viewport), "channel-sends-expander-viewport");

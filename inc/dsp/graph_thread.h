@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -24,12 +24,6 @@
  * ---
  */
 
-/**
- * \file
- *
- * Routing graph thread.
- */
-
 #ifndef __AUDIO_GRAPH_THREAD_H__
 #define __AUDIO_GRAPH_THREAD_H__
 
@@ -37,14 +31,13 @@
 
 #include "utils/types.h"
 
-#include "gtk_wrapper.h"
-#include <pthread.h>
-
 #ifdef HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
-typedef struct Graph Graph;
+#include "ext/juce/juce.h"
+
+class Graph;
 
 /**
  * @addtogroup dsp
@@ -52,36 +45,66 @@ typedef struct Graph Graph;
  * @{
  */
 
-typedef struct GraphThread
+/**
+ * @brief Processing graph thread.
+ */
+class GraphThread final : public juce::Thread
 {
-  pthread_t pthread;
+public:
+  /**
+   * Creates and starts a realtime thread.
+   *
+   * @param id The index of the thread.
+   * @param graph The graph to set to the thread.
+   * @param is_main Whether main thread.
+   * @throw ZrythmException if the thread could not be started.
+   */
+  explicit GraphThread (const int id, const bool is_main, Graph &graph);
 
+public:
+  /**
+   * Called from a terminal node (from the Graph worker-thread)
+   * to indicate it has completed processing.
+   *
+   * The thread of the last terminal node that reaches here will
+   * inform the main-thread, wait, and kick off the next
+   * process cycle.
+   */
+  HOT void on_reached_terminal_node ();
+
+private:
+  void run () override;
+
+  /**
+   * @brief The actual worker thread.
+   */
+  void run_worker ();
+
+public:
   /**
    * Thread index in zrythm.
    *
-   * The main thread will be -1 and the rest in
-   * sequence starting from 0.
+   * The main thread will be -1 and the rest in sequence starting from 0.
    */
-  int id;
+  int id_ = -1;
+
+  bool is_main_ = false;
+
+  /**
+   * @brief Realtime thread ID.
+   *
+   * @see @ref RTThreadId.
+   */
+  unsigned int rt_thread_id_ = 0;
 
   /** Pointer back to the graph. */
-  Graph * graph;
+  Graph &graph_;
 
 #ifdef HAVE_LSP_DSP
   /** LSP DSP context. */
-  lsp::dsp::context_t lsp_ctx;
+  lsp::dsp::context_t lsp_ctx_ = {};
 #endif
-} GraphThread;
-
-/**
- * Creates a thread.
- *
- * @param id The index of the thread.
- * @param graph The graph to set to the thread.
- * @param is_main 1 if main thread.
- */
-GraphThread *
-graph_thread_new (const int id, const bool is_main, Graph * graph);
+};
 
 /**
  * @}

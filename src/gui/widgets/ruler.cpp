@@ -39,6 +39,7 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -50,9 +51,9 @@
 
 G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 
-#define TYPE(x) RulerWidgetType::RULER_WIDGET_TYPE_##x
+#define TYPE(x) RulerWidgetType::x
 
-#define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
+#define ACTION_IS(x) (self->action == UiOverlayAction::x)
 
 double
 ruler_widget_get_zoom_level (RulerWidget * self)
@@ -60,7 +61,7 @@ ruler_widget_get_zoom_level (RulerWidget * self)
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
   g_return_val_if_fail (settings, 1.0);
 
-  return settings->hzoom_level;
+  return settings->hzoom_level_;
 
   g_return_val_if_reached (1.f);
 }
@@ -76,7 +77,7 @@ ruler_widget_get_beat_interval (RulerWidget * self)
 
   /* gather divisors of the number of beats per
    * bar */
-  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int beat_divisors[16];
   int num_beat_divisors = 0;
   for (i = 1; i <= beats_per_bar; i++)
@@ -112,9 +113,8 @@ ruler_widget_get_sixteenth_interval (RulerWidget * self)
 {
   int i;
 
-  /* gather divisors of the number of sixteenths per
-   * beat */
-#define sixteenths_per_beat TRANSPORT->sixteenths_per_beat
+  /* gather divisors of the number of sixteenths per beat */
+  const auto sixteenths_per_beat = TRANSPORT->sixteenths_per_beat_;
   int divisors[16];
   int num_divisors = 0;
   for (i = 1; i <= sixteenths_per_beat; i++)
@@ -229,19 +229,18 @@ draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, Region * region)
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
-  ArrangerObject * r_obj = (ArrangerObject *) region;
-  Track *          track = arranger_object_get_track (r_obj);
-  GdkRGBA          color = track->color;
-  color.alpha = 0.5;
+  Track * track = region->get_track ();
+  auto color = track->color_;
+  color.alpha_ = 0.5;
 
   int px_start, px_end;
-  px_start = ui_pos_to_px_editor (&r_obj->pos, true);
-  px_end = ui_pos_to_px_editor (&r_obj->end_pos, true);
+  px_start = ui_pos_to_px_editor (region->pos_, true);
+  px_end = ui_pos_to_px_editor (region->end_pos_, true);
   {
     graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
       (float) px_start, 0.f, (float) px_end - (float) px_start,
       (float) height / 4.f);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+    z_gtk_snapshot_append_color (snapshot, color, &tmp_r);
   }
 }
 
@@ -256,54 +255,48 @@ draw_regions (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   /* get a visible region - the clip editor
    * region is removed temporarily while moving
    * regions so this could be NULL */
-  Region * region = clip_editor_get_region (CLIP_EDITOR);
+  Region * region = CLIP_EDITOR->get_region ();
   if (!region)
     return;
 
-  ArrangerObject * region_obj = (ArrangerObject *) region;
-
-  Track * track = arranger_object_get_track (region_obj);
+  Track * track = region->get_track ();
 
   int px_start, px_end;
 
   /* draw the main region */
-  GdkRGBA color = track->color;
-  ui_get_arranger_object_color (
-    &color, MW_TIMELINE->hovered_object == region_obj,
-    region_is_selected (region), false,
-    arranger_object_get_muted (region_obj, true));
-  px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
-  px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
+  auto color = Color::get_arranger_object_color (
+    track->color_, region->is_hovered (), region->is_selected (), false,
+    region->get_muted (true));
+  px_start = ui_pos_to_px_editor (region->pos_, true);
+  px_end = ui_pos_to_px_editor (region->end_pos_, true);
   {
     graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
       (float) px_start, 0.f, (float) px_end - (float) px_start,
       (float) height / 4.f);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+    z_gtk_snapshot_append_color (snapshot, color, &tmp_r);
   }
 
   /* draw its transient if copy-moving TODO */
-  if (arranger_object_should_orig_be_visible (region_obj, NULL))
+  if (arranger_object_should_orig_be_visible (region, nullptr))
     {
-      px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
-      px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
+      px_start = ui_pos_to_px_editor (region->pos_, 1);
+      px_end = ui_pos_to_px_editor (region->end_pos_, 1);
       {
         graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
           (float) px_start, 0.f, (float) px_end - (float) px_start,
           (float) height / 4.f);
-        gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+        z_gtk_snapshot_append_color (snapshot, color, &tmp_r);
       }
     }
 
   /* draw the other regions */
-  Region * other_regions[1000];
-  int      num_other_regions =
-    track_get_regions_in_range (track, NULL, NULL, other_regions);
-  for (int i = 0; i < num_other_regions; i++)
+  std::vector<Region *> other_regions;
+  track->get_regions_in_range (other_regions, nullptr, nullptr);
+  for (auto &other_region : other_regions)
     {
-      Region * other_region = other_regions[i];
       if (
-        region_identifier_is_equal (&region->id, &other_region->id)
-        || region->id.type != other_region->id.type)
+        region->id_ == other_region->id_
+        || region->id_.type_ != other_region->id_.type_)
         {
           continue;
         }
@@ -316,27 +309,24 @@ static void
 get_loop_start_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x = 0;
-  if (self->type == TYPE (EDITOR))
+  if (self->type == RulerWidgetType::Editor)
     {
-      Region * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = CLIP_EDITOR->get_region ();
       if (region)
         {
-          ArrangerObject * region_obj = (ArrangerObject *) region;
-          double           start_ticks = position_to_ticks (&region_obj->pos);
-          double           loop_start_ticks =
-            position_to_ticks (&region_obj->loop_start_pos) + start_ticks;
-          Position tmp;
-          position_from_ticks (&tmp, loop_start_ticks);
-          rect->x = ui_pos_to_px_editor (&tmp, 1);
+          double           start_ticks = region->pos_.ticks_;
+          double loop_start_ticks = region->loop_start_pos_.ticks_ + start_ticks;
+          Position tmp{ loop_start_ticks };
+          rect->x = ui_pos_to_px_editor (tmp, true);
         }
       else
         {
           rect->x = 0;
         }
     }
-  else if (self->type == TYPE (TIMELINE))
+  else if (self->type == RulerWidgetType::Timeline)
     {
-      rect->x = ui_pos_to_px_timeline (&TRANSPORT->loop_start_pos, 1);
+      rect->x = ui_pos_to_px_timeline (TRANSPORT->loop_start_pos_, true);
     }
   rect->y = 0;
   rect->width = RW_RULER_MARKER_SIZE;
@@ -370,28 +360,25 @@ static void
 get_loop_end_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x = 0;
-  if (self->type == TYPE (EDITOR))
+  if (self->type == RulerWidgetType::Editor)
     {
-      Region * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = CLIP_EDITOR->get_region ();
       if (region)
         {
-          ArrangerObject * region_obj = (ArrangerObject *) region;
-          double           start_ticks = position_to_ticks (&region_obj->pos);
-          double           loop_end_ticks =
-            position_to_ticks (&region_obj->loop_end_pos) + start_ticks;
-          Position tmp;
-          position_from_ticks (&tmp, loop_end_ticks);
-          rect->x = ui_pos_to_px_editor (&tmp, 1) - RW_RULER_MARKER_SIZE;
+          double   start_ticks = region->pos_.ticks_;
+          double   loop_end_ticks = region->loop_end_pos_.ticks_ + start_ticks;
+          Position tmp{ loop_end_ticks };
+          rect->x = ui_pos_to_px_editor (tmp, 1) - RW_RULER_MARKER_SIZE;
         }
       else
         {
           rect->x = 0;
         }
     }
-  else if (self->type == TYPE (TIMELINE))
+  else if (self->type == RulerWidgetType::Timeline)
     {
       rect->x =
-        ui_pos_to_px_timeline (&TRANSPORT->loop_end_pos, 1)
+        ui_pos_to_px_timeline (TRANSPORT->loop_end_pos_, 1)
         - RW_RULER_MARKER_SIZE;
     }
   rect->y = 0;
@@ -425,7 +412,7 @@ draw_loop_end (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 static void
 get_punch_in_rect (RulerWidget * self, GdkRectangle * rect)
 {
-  rect->x = ui_pos_to_px_timeline (&TRANSPORT->punch_in_pos, 1);
+  rect->x = ui_pos_to_px_timeline (TRANSPORT->punch_in_pos_, 1);
   rect->y = RW_RULER_MARKER_SIZE;
   rect->width = RW_RULER_MARKER_SIZE;
   rect->height = RW_RULER_MARKER_SIZE;
@@ -458,7 +445,7 @@ static void
 get_punch_out_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x =
-    ui_pos_to_px_timeline (&TRANSPORT->punch_out_pos, 1) - RW_RULER_MARKER_SIZE;
+    ui_pos_to_px_timeline (TRANSPORT->punch_out_pos_, 1) - RW_RULER_MARKER_SIZE;
   rect->y = RW_RULER_MARKER_SIZE;
   rect->width = RW_RULER_MARKER_SIZE;
   rect->height = RW_RULER_MARKER_SIZE;
@@ -495,18 +482,15 @@ get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
   rect->x = 0;
   rect->y = 0;
 
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
-      Region * region = clip_editor_get_region (CLIP_EDITOR);
+      Region * region = CLIP_EDITOR->get_region ();
       if (region)
         {
-          ArrangerObject * region_obj = (ArrangerObject *) region;
-          double           start_ticks = position_to_ticks (&region_obj->pos);
-          double           clip_start_ticks =
-            position_to_ticks (&region_obj->clip_start_pos) + start_ticks;
-          Position tmp;
-          position_from_ticks (&tmp, clip_start_ticks);
-          rect->x = ui_pos_to_px_editor (&tmp, 1);
+          double           start_ticks = region->pos_.ticks_;
+          double clip_start_ticks = region->clip_start_pos_.ticks_ + start_ticks;
+          Position tmp{ clip_start_ticks };
+          rect->x = ui_pos_to_px_editor (tmp, 1);
         }
       else
         {
@@ -527,9 +511,9 @@ get_cue_pos_rect (RulerWidget * self, GdkRectangle * rect)
   rect->x = 0;
   rect->y = 0;
 
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
-      rect->x = ui_pos_to_px_timeline (&TRANSPORT->cue_pos, 1);
+      rect->x = ui_pos_to_px_timeline (TRANSPORT->cue_pos_, 1);
       rect->y = RW_RULER_MARKER_SIZE;
     }
   rect->width = RW_CUE_MARKER_WIDTH;
@@ -545,11 +529,11 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
       get_clip_start_rect (self, &dr);
     }
-  else if (self->type == TYPE (TIMELINE))
+  else if (self->type == TYPE (Timeline))
     {
       get_cue_pos_rect (self, &dr);
     }
@@ -564,12 +548,12 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
-      if (self->type == TYPE (EDITOR))
+      if (self->type == TYPE (Editor))
         {
           /*cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);*/
           cairo_set_source_rgb (cr, 1, 0.2, 0.2);
         }
-      else if (self->type == TYPE (TIMELINE))
+      else if (self->type == TYPE (Timeline))
         {
           cairo_set_source_rgb (cr, 0, 0.6, 0.9);
         }
@@ -586,18 +570,16 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 static void
 draw_markers (RulerWidget * self, GtkSnapshot * snapshot, int height)
 {
-  Track * track = P_MARKER_TRACK;
-  for (int i = 0; i < track->num_markers; i++)
+  for (auto &m : P_MARKER_TRACK->markers_)
     {
-      const Marker * m = track->markers[i];
-      const float    cur_px = (float) ui_pos_to_px_timeline (&m->base.pos, 1);
+      const float cur_px = (float) ui_pos_to_px_timeline (m->pos_, 1);
       {
         graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (cur_px, 6.f, 2.f, 12.f);
-        gtk_snapshot_append_color (snapshot, &track->color, &tmp_r);
+        z_gtk_snapshot_append_color (snapshot, P_MARKER_TRACK->color_, &tmp_r);
       }
 
       int textw, texth;
-      pango_layout_set_text (self->marker_layout, m->name, -1);
+      pango_layout_set_text (self->marker_layout, m->name_.c_str (), -1);
       pango_layout_get_pixel_size (self->marker_layout, &textw, &texth);
       gtk_snapshot_save (snapshot);
       {
@@ -620,56 +602,54 @@ draw_markers (RulerWidget * self, GtkSnapshot * snapshot, int height)
 int
 ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops)
 {
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
       if (after_loops)
         {
           long     frames = 0;
-          Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+          Region * clip_editor_region = CLIP_EDITOR->get_region ();
           if (!clip_editor_region)
             {
               g_warning ("no clip editor region");
               return ui_pos_to_px_editor (PLAYHEAD, 1);
             }
 
-          Region * r = NULL;
+          Region * r = nullptr;
 
-          if (clip_editor_region->id.type == RegionType::REGION_TYPE_AUTOMATION)
+          if (clip_editor_region->is_automation ())
             {
-              AutomationTrack * at =
-                region_get_automation_track (clip_editor_region);
-              r = region_at_position (NULL, at, PLAYHEAD);
+              auto ar = dynamic_cast<AutomationRegion *> (clip_editor_region);
+              AutomationTrack * at = ar->get_automation_track ();
+              r = Region::get_at_pos (PLAYHEAD, nullptr, at);
             }
           else
             {
-              r = region_at_position (
-                arranger_object_get_track ((ArrangerObject *) clip_editor_region),
-                NULL, PLAYHEAD);
+              r = Region::get_at_pos (
+                PLAYHEAD, clip_editor_region->get_track (), nullptr);
             }
           Position tmp;
           if (r)
             {
-              ArrangerObject * obj = (ArrangerObject *) r;
-              signed_frame_t   region_local_frames = (signed_frame_t)
-                region_timeline_frames_to_local (r, PLAYHEAD->frames, 1);
-              region_local_frames += obj->pos.frames;
-              position_from_frames (&tmp, region_local_frames);
-              frames = tmp.frames;
+              auto region_local_frames =
+                (signed_frame_t) r->timeline_frames_to_local (
+                  PLAYHEAD.frames_, true);
+              region_local_frames += r->pos_.frames_;
+              tmp.from_frames (region_local_frames);
+              frames = tmp.frames_;
             }
           else
             {
-              frames = PLAYHEAD->frames;
+              frames = PLAYHEAD.frames_;
             }
-          Position pos;
-          position_from_frames (&pos, frames);
-          return ui_pos_to_px_editor (&pos, 1);
+          Position pos{ frames };
+          return ui_pos_to_px_editor (pos, true);
         }
       else /* else if not after loops */
         {
-          return ui_pos_to_px_editor (PLAYHEAD, 1);
+          return ui_pos_to_px_editor (PLAYHEAD, true);
         }
     }
-  else if (self->type == TYPE (TIMELINE))
+  else if (self->type == TYPE (Timeline))
     {
       return ui_pos_to_px_timeline (PLAYHEAD, 1);
     }
@@ -726,7 +706,7 @@ draw_lines_and_labels (
   char   text[40];
   int    textw, texth;
 
-  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   GdkRGBA main_color = { 1, 1, 1, 1 };
@@ -739,8 +719,8 @@ draw_lines_and_labels (
   /* if time display */
   if (
     ENUM_INT_TO_VALUE (
-      TransportDisplay, g_settings_get_enum (S_UI, "ruler-display"))
-    == TransportDisplay::TRANSPORT_DISPLAY_TIME)
+      Transport::Display, g_settings_get_enum (S_UI, "ruler-display"))
+    == Transport::Display::Time)
     {
       /* get sec interval */
       int sec_interval = ruler_widget_get_sec_interval (self);
@@ -968,12 +948,13 @@ draw_lines_and_labels (
                 gtk_snapshot_append_color (snapshot, &tertiary_color, &tmp_r);
               }
 
+              const auto sixteenths_per_beat = TRANSPORT->sixteenths_per_beat_;
               if (
                 (self->px_per_sixteenth > RW_PX_TO_HIDE_BEATS * 2)
                 && i % sixteenths_per_beat != 0)
                 {
                   sprintf (
-                    text, "%d.%d.%d", i / TRANSPORT->sixteenths_per_bar + 1,
+                    text, "%d.%d.%d", i / TRANSPORT->sixteenths_per_bar_ + 1,
                     ((i / sixteenths_per_beat) % beats_per_bar) + 1,
                     i % sixteenths_per_beat + 1);
                   pango_layout_set_text (self->monospace_layout_small, text, -1);
@@ -1009,7 +990,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* engine is run only set after everything is set up so this is a good way to
    * decide if we should  draw or not */
   if (
-    !PROJECT || !AUDIO_ENGINE || !g_atomic_int_get (&AUDIO_ENGINE->run)
+    !PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->run_.load ()
     || self->px_per_bar < 2.0)
     {
       return;
@@ -1032,19 +1013,19 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* if timeline, draw loop background */
   /* FIXME use rect */
   double start_px = 0, end_px = 0;
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
-      start_px = ui_pos_to_px_timeline (&TRANSPORT->loop_start_pos, 1);
-      end_px = ui_pos_to_px_timeline (&TRANSPORT->loop_end_pos, 1);
+      start_px = ui_pos_to_px_timeline (TRANSPORT->loop_start_pos_, 1);
+      end_px = ui_pos_to_px_timeline (TRANSPORT->loop_end_pos_, 1);
     }
-  else if (self->type == TYPE (EDITOR))
+  else if (self->type == TYPE (Editor))
     {
-      start_px = ui_pos_to_px_editor (&TRANSPORT->loop_start_pos, 1);
-      end_px = ui_pos_to_px_editor (&TRANSPORT->loop_end_pos, 1);
+      start_px = ui_pos_to_px_editor (TRANSPORT->loop_start_pos_, 1);
+      end_px = ui_pos_to_px_editor (TRANSPORT->loop_end_pos_, 1);
     }
 
   GdkRGBA color;
-  if (TRANSPORT->loop)
+  if (TRANSPORT->loop_)
     {
       color.red = 0;
       color.green = 0.9f;
@@ -1090,7 +1071,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* create gradient for loop area */
   GskColorStop stop1, stop2;
-  if (TRANSPORT->loop)
+  if (TRANSPORT->loop_)
     {
       stop1.offset = 0;
       stop1.color.red = 0;
@@ -1130,21 +1111,20 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* ----- draw range --------- */
 
-  if (TRANSPORT->has_range)
+  if (TRANSPORT->has_range_)
     {
-      int range1_first =
-        position_is_before_or_equal (&TRANSPORT->range_1, &TRANSPORT->range_2);
+      bool range1_first = TRANSPORT->range_1_ <= TRANSPORT->range_2_;
 
       GdkRectangle dr;
       if (range1_first)
         {
-          dr.x = ui_pos_to_px_timeline (&TRANSPORT->range_1, true);
-          dr.width = ui_pos_to_px_timeline (&TRANSPORT->range_2, true) - dr.x;
+          dr.x = ui_pos_to_px_timeline (TRANSPORT->range_1_, true);
+          dr.width = ui_pos_to_px_timeline (TRANSPORT->range_2_, true) - dr.x;
         }
       else
         {
-          dr.x = ui_pos_to_px_timeline (&TRANSPORT->range_2, true);
-          dr.width = ui_pos_to_px_timeline (&TRANSPORT->range_1, true) - dr.x;
+          dr.x = ui_pos_to_px_timeline (TRANSPORT->range_2_, true);
+          dr.width = ui_pos_to_px_timeline (TRANSPORT->range_1_, true) - dr.x;
         }
       dr.y = 0;
       dr.height =
@@ -1175,7 +1155,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* ----- draw regions --------- */
 
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
       draw_regions (self, snapshot, &visible_rect_gdk);
     }
@@ -1186,13 +1166,13 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   draw_loop_start (self, snapshot, &visible_rect_gdk);
   draw_loop_end (self, snapshot, &visible_rect_gdk);
 
-  if (self->type == TYPE (TIMELINE) && TRANSPORT->punch_mode)
+  if (self->type == TYPE (Timeline) && TRANSPORT->punch_mode_)
     {
       draw_punch_in (self, snapshot, &visible_rect_gdk);
       draw_punch_out (self, snapshot, &visible_rect_gdk);
     }
 
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
       draw_markers (self, snapshot, height);
     }
@@ -1250,7 +1230,7 @@ is_punch_out_hit (RulerWidget * self, double x, double y)
 static bool
 is_clip_start_hit (RulerWidget * self, double x, double y)
 {
-  if (self->type == TYPE (EDITOR))
+  if (self->type == TYPE (Editor))
     {
       GdkRectangle rect;
       get_clip_start_rect (self, &rect);
@@ -1265,21 +1245,19 @@ is_clip_start_hit (RulerWidget * self, double x, double y)
 static void
 get_range_rect (RulerWidget * self, RulerWidgetRangeType type, GdkRectangle * rect)
 {
-  g_return_if_fail (self->type == TYPE (TIMELINE));
+  g_return_if_fail (self->type == TYPE (Timeline));
 
-  Position tmp;
-  transport_get_range_pos (
-    TRANSPORT, type == RulerWidgetRangeType::RW_RANGE_END ? false : true, &tmp);
-  rect->x = ui_pos_to_px_timeline (&tmp, true);
-  if (type == RulerWidgetRangeType::RW_RANGE_END)
+  auto [start, end] = TRANSPORT->get_range_positions ();
+  Position tmp = type == RulerWidgetRangeType::Start ? start : end;
+  rect->x = ui_pos_to_px_timeline (tmp, true);
+  if (type == RulerWidgetRangeType::End)
     {
       rect->x -= RW_CUE_MARKER_WIDTH;
     }
   rect->y = 0;
-  if (type == RulerWidgetRangeType::RW_RANGE_FULL)
+  if (type == RulerWidgetRangeType::Full)
     {
-      transport_get_range_pos (TRANSPORT, false, &tmp);
-      double px = ui_pos_to_px_timeline (&tmp, true);
+      double px = ui_pos_to_px_timeline (end, true);
       rect->width = (int) px;
     }
   else
@@ -1296,19 +1274,17 @@ get_loop_range_rect (
   RulerWidgetRangeType type,
   GdkRectangle *       rect)
 {
-  Position tmp;
-  transport_get_loop_range_pos (
-    TRANSPORT, type == RulerWidgetRangeType::RW_RANGE_END ? false : true, &tmp);
-  rect->x = ui_pos_to_px_timeline (&tmp, true);
-  if (type == RulerWidgetRangeType::RW_RANGE_END)
+  auto [start, end] = TRANSPORT->get_loop_range_positions ();
+  Position tmp = type == RulerWidgetRangeType::Start ? start : end;
+  rect->x = ui_pos_to_px_timeline (tmp, true);
+  if (type == RulerWidgetRangeType::End)
     {
       rect->x -= RW_CUE_MARKER_WIDTH;
     }
   rect->y = 0;
-  if (type == RulerWidgetRangeType::RW_RANGE_FULL)
+  if (type == RulerWidgetRangeType::Full)
     {
-      transport_get_loop_range_pos (TRANSPORT, false, &tmp);
-      double px = ui_pos_to_px_timeline (&tmp, true);
+      double px = ui_pos_to_px_timeline (end, true);
       rect->width = (int) px;
     }
   else
@@ -1326,7 +1302,7 @@ ruler_widget_is_range_hit (
   double               x,
   double               y)
 {
-  if (self->type == TYPE (TIMELINE) && TRANSPORT->has_range)
+  if (self->type == TYPE (Timeline) && TRANSPORT->has_range_)
     {
       GdkRectangle rect;
       memset (&rect, 0, sizeof (GdkRectangle));
@@ -1374,17 +1350,16 @@ on_click_pressed (
 
   if (n_press == 2)
     {
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == TYPE (Timeline))
         {
-          Position pos;
-          ui_px_to_pos_timeline (x, &pos, 1);
-          if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+          Position pos = ui_px_to_pos_timeline (x, true);
+          if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
             {
-              position_snap (&pos, &pos, NULL, NULL, SNAP_GRID_TIMELINE);
+              pos.snap (&pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
             }
-          position_set_to_pos (&TRANSPORT->cue_pos, &pos);
+          TRANSPORT->cue_pos_ = pos;
         }
-      if (self->type == TYPE (EDITOR))
+      if (self->type == TYPE (Editor))
         {
         }
     }
@@ -1423,7 +1398,7 @@ on_right_click_pressed (
 static void
 set_cursor (RulerWidget * self)
 {
-  if (self->action == UI_OVERLAY_ACTION_NONE)
+  if (self->action == UiOverlayAction::NONE)
     {
       if (self->hovering)
         {
@@ -1434,10 +1409,10 @@ set_cursor (RulerWidget * self)
           bool   loop_start_hit = is_loop_start_hit (self, x, y);
           bool   loop_end_hit = is_loop_end_hit (self, x, y);
           bool   clip_start_hit = is_clip_start_hit (self, x, y);
-          bool   range_start_hit = ruler_widget_is_range_hit (
-            self, RulerWidgetRangeType::RW_RANGE_START, x, y);
-          bool range_end_hit = ruler_widget_is_range_hit (
-            self, RulerWidgetRangeType::RW_RANGE_END, x, y);
+          bool   range_start_hit =
+            ruler_widget_is_range_hit (self, RulerWidgetRangeType::Start, x, y);
+          bool range_end_hit =
+            ruler_widget_is_range_hit (self, RulerWidgetRangeType::End, x, y);
 
           int height = gtk_widget_get_height (GTK_WIDGET (self));
           if (self->alt_held)
@@ -1462,7 +1437,7 @@ set_cursor (RulerWidget * self)
               if (
                 self->ctrl_held
                 && ruler_widget_is_loop_range_hit (
-                  self, RulerWidgetRangeType::RW_RANGE_FULL, x, y))
+                  self, RulerWidgetRangeType::Full, x, y))
                 {
                   /* set cursor to movable */
                   ui_set_hand_cursor (self);
@@ -1471,7 +1446,7 @@ set_cursor (RulerWidget * self)
           else /* upper 1/4th */
             {
               if (ruler_widget_is_range_hit (
-                    self, RulerWidgetRangeType::RW_RANGE_FULL, x, y))
+                    self, RulerWidgetRangeType::Full, x, y))
                 {
                   /* set cursor to movable */
                   ui_set_hand_cursor (self);
@@ -1493,12 +1468,12 @@ set_cursor (RulerWidget * self)
     {
       switch (self->action)
         {
-        case UI_OVERLAY_ACTION_STARTING_PANNING:
-        case UI_OVERLAY_ACTION_PANNING:
+        case UiOverlayAction::STARTING_PANNING:
+        case UiOverlayAction::PANNING:
           ui_set_cursor_from_name (GTK_WIDGET (self), "all-scroll");
           break;
-        case UI_OVERLAY_ACTION_STARTING_MOVING:
-        case UI_OVERLAY_ACTION_MOVING:
+        case UiOverlayAction::STARTING_MOVING:
+        case UiOverlayAction::MOVING:
           ui_set_cursor_from_name (GTK_WIDGET (self), "grabbing");
           break;
         default:
@@ -1518,17 +1493,16 @@ drag_begin (
 {
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
   g_return_if_fail (settings);
-  start_x += settings->scroll_start_x;
+  start_x += settings->scroll_start_x_;
   self->start_x = start_x;
   self->start_y = start_y;
 
   guint drag_start_btn =
     gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
 
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
-      self->range1_first =
-        position_is_before_or_equal (&TRANSPORT->range_1, &TRANSPORT->range_2);
+      self->range1_first = TRANSPORT->range_1_ <= TRANSPORT->range_2_;
     }
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -1539,71 +1513,70 @@ drag_begin (
   int loop_end_hit = is_loop_end_hit (self, start_x, start_y);
   int clip_start_hit = is_clip_start_hit (self, start_x, start_y);
 
-  Region *         region = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  Region * region = CLIP_EDITOR->get_region ();
 
   /* if alt held down, start panning */
   if (self->alt_held || drag_start_btn == GDK_BUTTON_MIDDLE)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_PANNING;
+      self->action = UiOverlayAction::STARTING_PANNING;
     }
   /* else if one of the markers hit */
   else if (punch_in_hit)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_PUNCH_IN;
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::PunchIn;
     }
   else if (punch_out_hit)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_PUNCH_OUT;
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::PunchOut;
     }
   else if (loop_start_hit)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_LOOP_START;
-      if (self->type == TYPE (EDITOR))
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::LoopStart;
+      if (self->type == TYPE (Editor))
         {
           g_return_if_fail (region);
-          self->drag_start_pos = r_obj->loop_start_pos;
+          self->drag_start_pos = region->loop_start_pos_;
         }
       else
         {
-          self->drag_start_pos = TRANSPORT->loop_start_pos;
+          self->drag_start_pos = TRANSPORT->loop_start_pos_;
         }
     }
   else if (loop_end_hit)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_LOOP_END;
-      if (self->type == TYPE (EDITOR))
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::LoopEnd;
+      if (self->type == TYPE (Editor))
         {
           g_return_if_fail (region);
-          self->drag_start_pos = r_obj->loop_end_pos;
+          self->drag_start_pos = region->loop_end_pos_;
         }
       else
         {
-          self->drag_start_pos = TRANSPORT->loop_end_pos;
+          self->drag_start_pos = TRANSPORT->loop_end_pos_;
         }
     }
   else if (clip_start_hit)
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target = RWTarget::RW_TARGET_CLIP_START;
-      if (self->type == TYPE (EDITOR))
+      self->action = UiOverlayAction::STARTING_MOVING;
+      self->target = RWTarget::ClipStart;
+      if (self->type == TYPE (Editor))
         {
           g_return_if_fail (region);
-          self->drag_start_pos = r_obj->clip_start_pos;
+          self->drag_start_pos = region->clip_start_pos_;
         }
     }
   else
     {
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == TYPE (Timeline))
         {
           timeline_ruler_on_drag_begin_no_marker_hit (
             self, start_x, start_y, height);
         }
-      else if (self->type == TYPE (EDITOR))
+      else if (self->type == TYPE (Editor))
         {
           editor_ruler_on_drag_begin_no_marker_hit (self, start_x, start_y);
         }
@@ -1629,12 +1602,12 @@ drag_end (
   self->shift_held = 0;
   self->dragging = 0;
 
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     timeline_ruler_on_drag_end (self);
-  else if (self->type == TYPE (EDITOR))
+  else if (self->type == TYPE (Editor))
     editor_ruler_on_drag_end (self);
 
-  self->action = UI_OVERLAY_ACTION_NONE;
+  self->action = UiOverlayAction::NONE;
 
   set_cursor (self);
 }
@@ -1649,7 +1622,7 @@ auto_scroll (RulerWidget * self)
   bool scroll_h = false;
   switch (self->action)
     {
-    case UI_OVERLAY_ACTION_MOVING:
+    case UiOverlayAction::MOVING:
       scroll_h = true;
       break;
     default:
@@ -1665,7 +1638,7 @@ auto_scroll (RulerWidget * self)
   int border_distance = 5;
   int scroll_width = gtk_widget_get_width (GTK_WIDGET (self));
   int h_delta = 0;
-  int adj_x = settings->scroll_start_x;
+  int adj_x = settings->scroll_start_x_;
   int x = (int) self->hover_x;
   if (x + border_distance >= adj_x + scroll_width)
     {
@@ -1679,11 +1652,11 @@ auto_scroll (RulerWidget * self)
   if (!scroll_h)
     h_delta = 0;
 
-  if (settings->scroll_start_x + h_delta < 0)
+  if (settings->scroll_start_x_ + h_delta < 0)
     {
-      h_delta -= settings->scroll_start_x + h_delta;
+      h_delta -= settings->scroll_start_x_ + h_delta;
     }
-  editor_settings_append_scroll (settings, h_delta, 0, F_VALIDATE);
+  settings->append_scroll (h_delta, 0, F_VALIDATE);
 }
 
 static void
@@ -1701,7 +1674,7 @@ on_motion (
 
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
   g_return_if_fail (settings);
-  x += settings->scroll_start_x;
+  x += settings->scroll_start_x_;
   self->hover_x = x;
   self->hover_y = y;
   self->hovering = event_type != GDK_LEAVE_NOTIFY;
@@ -1715,11 +1688,11 @@ on_motion (
     {
       if (ACTION_IS (STARTING_MOVING))
         {
-          self->action = UI_OVERLAY_ACTION_MOVING;
+          self->action = UiOverlayAction::MOVING;
         }
       else if (ACTION_IS (STARTING_PANNING))
         {
-          self->action = UI_OVERLAY_ACTION_PANNING;
+          self->action = UiOverlayAction::PANNING;
         }
 
       /* panning is common */
@@ -1727,13 +1700,12 @@ on_motion (
       double offset_x = total_offset_x - self->last_offset_x;
       double total_offset_y = y - self->start_y;
       double offset_y = total_offset_y - self->last_offset_y;
-      if (self->action == UI_OVERLAY_ACTION_PANNING)
+      if (self->action == UiOverlayAction::PANNING)
         {
           if (!math_doubles_equal_epsilon (offset_x, 0.0, 0.1))
             {
               /* pan horizontally */
-              editor_settings_append_scroll (
-                settings, (int) -offset_x, 0, F_VALIDATE);
+              settings->append_scroll ((int) -offset_x, 0, F_VALIDATE);
 
               /* these are also affected */
               self->last_offset_x = MAX (0, self->last_offset_x - offset_x);
@@ -1743,7 +1715,7 @@ on_motion (
           int drag_threshold;
           g_object_get (
             zrythm_app->default_settings, "gtk-dnd-drag-threshold",
-            &drag_threshold, NULL);
+            &drag_threshold, nullptr);
           if (
             !math_doubles_equal_epsilon (offset_y, 0.0, 0.1)
             && (fabs (total_offset_y) >= drag_threshold || self->vertical_panning_started))
@@ -1754,7 +1726,7 @@ on_motion (
                 self, self->hover_x, &cursor_pos, F_PADDING);
 
               /* get px diff so we can calculate the new adjustment later */
-              double diff = self->hover_x - (double) settings->scroll_start_x;
+              double diff = self->hover_x - (double) settings->scroll_start_x_;
 
               double scroll_multiplier = 1.0 - 0.02 * offset_y;
               ruler_widget_set_zoom_level (
@@ -1762,8 +1734,7 @@ on_motion (
 
               int new_x = ruler_widget_pos_to_px (self, &cursor_pos, F_PADDING);
 
-              editor_settings_set_scroll_start_x (
-                settings, new_x - (int) diff, F_VALIDATE);
+              settings->set_scroll_start_x (new_x - (int) diff, F_VALIDATE);
 
               /* also update hover x since we're using it here */
               self->hover_x = new_x;
@@ -1772,11 +1743,11 @@ on_motion (
               self->vertical_panning_started = true;
             }
         }
-      else if (self->type == TYPE (TIMELINE))
+      else if (self->type == TYPE (Timeline))
         {
           timeline_ruler_on_drag_update (self, total_offset_x, total_offset_y);
         }
-      else if (self->type == TYPE (EDITOR))
+      else if (self->type == TYPE (Editor))
         {
           editor_ruler_on_drag_update (self, total_offset_x, total_offset_y);
         }
@@ -1806,20 +1777,20 @@ ruler_widget_refresh (RulerWidget * self)
   /*adjust for zoom level*/
   self->px_per_tick = DEFAULT_PX_PER_TICK * ruler_widget_get_zoom_level (self);
   self->px_per_sixteenth = self->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
-  self->px_per_beat = self->px_per_tick * TRANSPORT->ticks_per_beat;
-  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  self->px_per_beat = self->px_per_tick * TRANSPORT->ticks_per_beat_;
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   self->px_per_bar = self->px_per_beat * beats_per_bar;
 
   Position pos;
-  position_from_seconds (&pos, 1.0);
-  self->px_per_min = 60.0 * pos.ticks * self->px_per_tick;
-  self->px_per_10sec = 10.0 * pos.ticks * self->px_per_tick;
-  self->px_per_sec = pos.ticks * self->px_per_tick;
-  self->px_per_100ms = 0.1 * pos.ticks * self->px_per_tick;
+  pos.from_seconds (1);
+  self->px_per_min = 60.0 * pos.ticks_ * self->px_per_tick;
+  self->px_per_10sec = 10.0 * pos.ticks_ * self->px_per_tick;
+  self->px_per_sec = pos.ticks_ * self->px_per_tick;
+  self->px_per_100ms = 0.1 * pos.ticks_ * self->px_per_tick;
 
-  position_set_to_bar (&pos, TRANSPORT->total_bars + 1);
+  pos.set_to_bar (TRANSPORT->total_bars_ + 1);
   double prev_total_px = self->total_px;
-  self->total_px = self->px_per_tick * (double) position_to_ticks (&pos);
+  self->total_px = self->px_per_tick * (double) pos.ticks_;
 
   /* if size changed */
   if (!math_doubles_equal_epsilon (prev_total_px, self->total_px, 0.1))
@@ -1835,18 +1806,20 @@ ruler_widget_refresh (RulerWidget * self)
 EditorSettings *
 ruler_widget_get_editor_settings (RulerWidget * self)
 {
-  if (self->type == RulerWidgetType::RULER_WIDGET_TYPE_TIMELINE)
+  if (self->type == RulerWidgetType::Timeline)
     {
-      return &PRJ_TIMELINE->editor_settings;
+      return PRJ_TIMELINE.get ();
     }
-  else if (self->type == RulerWidgetType::RULER_WIDGET_TYPE_EDITOR)
+  else if (self->type == RulerWidgetType::Editor)
     {
       ArrangerWidget * arr =
         clip_editor_inner_widget_get_visible_arranger (MW_CLIP_EDITOR_INNER);
-      EditorSettings * settings = arranger_widget_get_editor_settings (arr);
-      return settings;
+      auto settings = arranger_widget_get_editor_settings (arr);
+      return std::visit (
+        [&] (auto &&settings) -> EditorSettings * { return settings; },
+        settings);
     }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 /**
@@ -1859,7 +1832,7 @@ ruler_widget_get_visible_rect (RulerWidget * self, GdkRectangle * rect)
   rect->height = gtk_widget_get_height (GTK_WIDGET (self));
   const EditorSettings * settings = ruler_widget_get_editor_settings (self);
   g_return_if_fail (settings);
-  rect->x = settings->scroll_start_x;
+  rect->x = settings->scroll_start_x_;
   rect->y = 0;
 }
 
@@ -1895,7 +1868,7 @@ ruler_widget_set_zoom_level (RulerWidget * self, double zoom_level)
     {
       EditorSettings * settings = ruler_widget_get_editor_settings (self);
       g_return_val_if_fail (settings, false);
-      settings->hzoom_level = zoom_level;
+      settings->hzoom_level_ = zoom_level;
       ruler_widget_refresh (self);
       return true;
     }
@@ -1912,26 +1885,26 @@ ruler_widget_px_to_pos (
   Position *    pos,
   bool          has_padding)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
-      ui_px_to_pos_timeline (px, pos, has_padding);
+      *pos = ui_px_to_pos_timeline (px, has_padding);
     }
   else
     {
-      ui_px_to_pos_editor (px, pos, has_padding);
+      *pos = ui_px_to_pos_editor (px, has_padding);
     }
 }
 
 int
 ruler_widget_pos_to_px (RulerWidget * self, Position * pos, int use_padding)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
-      return ui_pos_to_px_timeline (pos, use_padding);
+      return ui_pos_to_px_timeline (*pos, use_padding);
     }
   else
     {
-      return ui_pos_to_px_editor (pos, use_padding);
+      return ui_pos_to_px_editor (*pos, use_padding);
     }
 }
 
@@ -1948,7 +1921,7 @@ ruler_widget_handle_horizontal_zoom (RulerWidget * self, double * x_pos, double 
   /*position_print (&cursor_pos);*/
 
   /* get px diff so we can calculate the new adjustment later */
-  double diff = *x_pos - (double) settings->scroll_start_x;
+  double diff = *x_pos - (double) settings->scroll_start_x_;
 
   double scroll_multiplier = (dy > 0) ? (1.0 / 1.3) : 1.3;
   ruler_widget_set_zoom_level (
@@ -1956,10 +1929,10 @@ ruler_widget_handle_horizontal_zoom (RulerWidget * self, double * x_pos, double 
 
   int new_x = ruler_widget_pos_to_px (self, &cursor_pos, F_PADDING);
 
-  editor_settings_set_scroll_start_x (settings, new_x - (int) diff, F_VALIDATE);
+  settings->set_scroll_start_x (new_x - (int) diff, F_VALIDATE);
 
   /* refresh relevant widgets */
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (Timeline))
     {
       arranger_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
     }
@@ -2002,8 +1975,7 @@ on_scroll (
           const int        scroll_amt = RW_SCROLL_SPEED;
           int              scroll_x = horizontal_scroll ? (int) dx : (int) dy;
           EditorSettings * settings = ruler_widget_get_editor_settings (self);
-          editor_settings_append_scroll (
-            settings, scroll_x * scroll_amt, 0, F_VALIDATE);
+          settings->append_scroll (scroll_x * scroll_amt, 0, F_VALIDATE);
         }
     }
 
@@ -2037,7 +2009,8 @@ dispose (RulerWidget * self)
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
@@ -2081,25 +2054,27 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (scroll_controller));
 
-  self->layout_normal = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  self->layout_normal =
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
   PangoFontDescription * desc =
     pango_font_description_from_string ("Monospace 11");
   pango_layout_set_font_description (self->layout_normal, desc);
   pango_font_description_free (desc);
 
   self->monospace_layout_small =
-    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
   desc = pango_font_description_from_string ("Monospace 6");
   pango_layout_set_font_description (self->monospace_layout_small, desc);
   pango_font_description_free (desc);
 
-  self->marker_layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  self->marker_layout =
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
   desc = pango_font_description_from_string ("7");
   pango_layout_set_font_description (self->marker_layout, desc);
   pango_font_description_free (desc);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) ruler_tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) ruler_tick_cb, self, nullptr);
 
   /* add action group for right click menu */
   GSimpleActionGroup * action_group = g_simple_action_group_new ();

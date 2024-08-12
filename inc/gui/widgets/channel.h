@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_CHANNEL_H__
@@ -9,23 +9,22 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct _PluginStripExpanderWidget PluginStripExpanderWidget;
-
 #define CHANNEL_WIDGET_TYPE (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChannelWidget, channel_widget, Z, CHANNEL_WIDGET, GtkWidget)
 
-typedef struct _ColorAreaWidget            ColorAreaWidget;
-typedef struct _KnobWidget                 KnobWidget;
-typedef struct _FaderWidget                FaderWidget;
-typedef struct Channel                     Channel;
-typedef struct _ChannelSlotWidget          ChannelSlotWidget;
-typedef struct _RouteTargetSelectorWidget  RouteTargetSelectorWidget;
-typedef struct _BalanceControlWidget       BalanceControlWidget;
-typedef struct _EditableLabelWidget        EditableLabelWidget;
-typedef struct _FaderButtonsWidget         FaderButtonsWidget;
-typedef struct _ChannelSendsExpanderWidget ChannelSendsExpanderWidget;
+TYPEDEF_STRUCT_UNDERSCORED (PluginStripExpanderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
+TYPEDEF_STRUCT_UNDERSCORED (KnobWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FaderWidget);
+class Channel;
+TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotWidget);
+TYPEDEF_STRUCT_UNDERSCORED (RouteTargetSelectorWidget);
+TYPEDEF_STRUCT_UNDERSCORED (BalanceControlWidget);
+TYPEDEF_STRUCT_UNDERSCORED (EditableLabelWidget);
+TYPEDEF_STRUCT_UNDERSCORED (FaderButtonsWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ChannelSendsExpanderWidget);
 
-typedef struct _ChannelWidget
+using ChannelWidget = struct _ChannelWidget
 {
   GtkWidget                   parent_instance;
   GtkBox *                    box;
@@ -91,30 +90,28 @@ typedef struct _ChannelWidget
   int n_press;
 
   /** Control held down on drag begin. */
-  int ctrl_held_at_start;
+  bool ctrl_held_at_start;
 
   /** If drag update was called at least once. */
-  int dragged;
+  bool dragged;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int selected_in_dnd;
+  bool selected_in_dnd;
 
   /** Pointer to owner Channel. */
-  Channel * channel;
+  std::weak_ptr<Channel> channel;
 
   /**
    * Last time a plugin was pressed.
    *
-   * This is to detect when a channel was selected
-   * without clicking a plugin.
+   * This is to detect when a channel was selected without clicking a plugin.
    */
-  gint64 last_plugin_press;
+  SteadyTimePoint last_plugin_press;
 
-  /** Last MIDI event trigger time, for MIDI
-   * output. */
-  gint64 last_midi_trigger_time;
+  /** Last MIDI event trigger time, for MIDI output. */
+  SteadyTimePoint last_midi_trigger_time;
 
   /** Whole channel press. */
   GtkGestureClick * mp;
@@ -129,7 +126,7 @@ typedef struct _ChannelWidget
   /** Popover to be reused for context menus. */
   GtkPopoverMenu *     popover_menu;
   FaderButtonsWidget * fader_buttons_for_popover;
-} ChannelWidget;
+};
 
 /**
  * Updates the inserts.
@@ -144,7 +141,7 @@ channel_widget_redraw_fader (ChannelWidget * self);
  * Creates a channel widget using the given channel data.
  */
 ChannelWidget *
-channel_widget_new (Channel * channel);
+channel_widget_new (const std::shared_ptr<Channel> &channel);
 
 void
 channel_widget_tear_down (ChannelWidget * self);

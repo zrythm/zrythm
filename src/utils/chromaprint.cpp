@@ -34,30 +34,30 @@ z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
   memset (&sfinfo, 0, sizeof (sfinfo));
   sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile = sf_open (file1, SFM_READ, &sfinfo);
-  g_return_val_if_fail (sndfile, NULL);
-  g_return_val_if_fail (sfinfo.frames > 0, NULL);
+  g_return_val_if_fail (sndfile, nullptr);
+  g_return_val_if_fail (sfinfo.frames > 0, nullptr);
 
   ChromaprintContext * ctx = chromaprint_new (CHROMAPRINT_ALGORITHM_DEFAULT);
-  g_return_val_if_fail (ctx, NULL);
+  g_return_val_if_fail (ctx, nullptr);
   ret = chromaprint_start (ctx, sfinfo.samplerate, sfinfo.channels);
-  g_return_val_if_fail (ret == 1, NULL);
+  g_return_val_if_fail (ret == 1, nullptr);
   int        buf_size = sfinfo.frames * sfinfo.channels;
   short *    data = object_new_n ((size_t) buf_size, short);
   sf_count_t frames_read = sf_readf_short (sndfile, data, sfinfo.frames);
-  g_return_val_if_fail (frames_read == sfinfo.frames, NULL);
+  g_return_val_if_fail (frames_read == sfinfo.frames, nullptr);
   g_message ("read %ld frames for %s", frames_read, file1);
 
   ret = chromaprint_feed (ctx, data, buf_size);
-  g_return_val_if_fail (ret == 1, NULL);
+  g_return_val_if_fail (ret == 1, nullptr);
 
   ret = chromaprint_finish (ctx);
-  g_return_val_if_fail (ret == 1, NULL);
+  g_return_val_if_fail (ret == 1, nullptr);
 
   ChromaprintFingerprint * fp = object_new (ChromaprintFingerprint);
   ret = chromaprint_get_fingerprint (ctx, &fp->compressed_str);
-  g_return_val_if_fail (ret == 1, NULL);
+  g_return_val_if_fail (ret == 1, nullptr);
   ret = chromaprint_get_raw_fingerprint (ctx, &fp->fp, &fp->size);
-  g_return_val_if_fail (ret == 1, NULL);
+  g_return_val_if_fail (ret == 1, nullptr);
 
   g_message ("fingerprint %s [%d]", fp->compressed_str, fp->size);
 
@@ -65,7 +65,7 @@ z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
   free (data);
 
   ret = sf_close (sndfile);
-  g_return_val_if_fail (ret == 0, NULL);
+  g_return_val_if_fail (ret == 0, nullptr);
 
   return fp;
 }

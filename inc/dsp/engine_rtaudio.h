@@ -10,7 +10,7 @@
 
 #  include <rtaudio_c.h>
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * @addtogroup dsp
@@ -31,7 +31,7 @@ rtaudio_t
 engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend);
 
 /**
- * Returns a list of names inside \ref names that
+ * Returns a list of names inside @ref names that
  * must be free'd.
  *
  * @param input 1 for input, 0 for output.

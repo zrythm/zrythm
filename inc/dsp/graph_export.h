@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Graph exporter.
  */
@@ -12,7 +12,7 @@
 
 #include "zrythm-config.h"
 
-typedef struct Graph Graph;
+class Graph;
 
 /**
  * @addtogroup dsp

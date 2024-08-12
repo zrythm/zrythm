@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/editor_settings.h"
@@ -13,81 +13,72 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "utils/debug.h"
 #include "zrythm_app.h"
 
 void
-editor_settings_init (EditorSettings * self)
+EditorSettings::set_scroll_start_x (int x, bool validate)
 {
-  self->hzoom_level = 1.0;
-}
-
-void
-editor_settings_set_scroll_start_x (EditorSettings * self, int x, bool validate)
-{
-  self->scroll_start_x = MAX (x, 0);
+  scroll_start_x_ = MAX (x, 0);
   if (validate)
     {
-      if (self == &PRJ_TIMELINE->editor_settings)
+      if (this == PRJ_TIMELINE.get ())
         {
         }
     }
-  /*g_debug ("scrolled horizontally to %d", self->scroll_start_x);*/
+  /*g_debug ("scrolled horizontally to %d", scroll_start_x_);*/
 }
 
 void
-editor_settings_set_scroll_start_y (EditorSettings * self, int y, bool validate)
+EditorSettings::set_scroll_start_y (int y, bool validate)
 {
-  self->scroll_start_y = MAX (y, 0);
+  scroll_start_y_ = MAX (y, 0);
   if (validate)
     {
       int diff = 0;
-      if (self == &PRJ_TIMELINE->editor_settings)
+      if (this == PRJ_TIMELINE.get ())
         {
           int tracklist_height =
             gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST->unpinned_box));
           int tracklist_scroll_height =
             gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST->unpinned_scroll));
-          diff =
-            (self->scroll_start_y + tracklist_scroll_height) - tracklist_height;
+          diff = (scroll_start_y_ + tracklist_scroll_height) - tracklist_height;
         }
-      else if (self == &PIANO_ROLL->editor_settings)
+      else if (this == PIANO_ROLL)
         {
           int piano_roll_keys_height = gtk_widget_get_height (
             GTK_WIDGET (MW_MIDI_EDITOR_SPACE->piano_roll_keys));
           int piano_roll_keys_scroll_height = gtk_widget_get_height (
             GTK_WIDGET (MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll));
           diff =
-            (self->scroll_start_y + piano_roll_keys_scroll_height)
+            (scroll_start_y_ + piano_roll_keys_scroll_height)
             - piano_roll_keys_height;
         }
-      else if (self == &CHORD_EDITOR->editor_settings)
+      else if (this == CHORD_EDITOR)
         {
           int chord_keys_height = gtk_widget_get_height (
             GTK_WIDGET (MW_CHORD_EDITOR_SPACE->chord_keys_box));
           int chord_keys_scroll_height = gtk_widget_get_height (
             GTK_WIDGET (MW_CHORD_EDITOR_SPACE->chord_keys_scroll));
           diff =
-            (self->scroll_start_y + chord_keys_scroll_height)
-            - chord_keys_height;
+            (scroll_start_y_ + chord_keys_scroll_height) - chord_keys_height;
         }
 
       if (diff > 0)
         {
-          self->scroll_start_y -= diff;
+          scroll_start_y_ -= diff;
         }
     }
-  /*g_debug ("scrolled vertically to %d", self->scroll_start_y);*/
+  /*g_debug ("scrolled vertically to %d", scroll_start_y_);*/
 }
 
 /**
  * Appends the given deltas to the scroll x/y values.
  */
 void
-editor_settings_append_scroll (EditorSettings * self, int dx, int dy, bool validate)
+EditorSettings::append_scroll (int dx, int dy, bool validate)
 {
-  editor_settings_set_scroll_start_x (self, self->scroll_start_x + dx, validate);
-  editor_settings_set_scroll_start_y (self, self->scroll_start_y + dy, validate);
-  /*g_debug ("scrolled to (%d, %d)", self->scroll_start_x,
-   * self->scroll_start_y);*/
+  set_scroll_start_x (scroll_start_x_ + dx, validate);
+  set_scroll_start_y (scroll_start_y_ + dy, validate);
+  /*g_debug ("scrolled to (%d, %d)", scroll_start_x_,
+   * scroll_start_y_);*/
 }

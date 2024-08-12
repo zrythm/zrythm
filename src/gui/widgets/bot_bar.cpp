@@ -1,12 +1,6 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * \file
- *
- * Bottomest widget holding a status bar.
- */
 
 #include "zrythm-config.h"
 
@@ -31,9 +25,7 @@
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -93,8 +85,7 @@ activate_jack_mode (
   if (string_is_equal (variant, "become-master"))
     {
       engine_jack_set_transport_type (
-        AUDIO_ENGINE,
-        AudioEngineJackTransportType::AUDIO_ENGINE_JACK_TIMEBASE_MASTER);
+        AUDIO_ENGINE.get (), AudioEngine::JackTransportType::TimebaseMaster);
       gtk_widget_set_visible (self->master_img, 1);
       gtk_widget_set_visible (self->client_img, 0);
       gtk_widget_set_tooltip_text (
@@ -103,8 +94,7 @@ activate_jack_mode (
   else if (string_is_equal (variant, "sync"))
     {
       engine_jack_set_transport_type (
-        AUDIO_ENGINE,
-        AudioEngineJackTransportType::AUDIO_ENGINE_JACK_TRANSPORT_CLIENT);
+        AUDIO_ENGINE.get (), AudioEngine::JackTransportType::TransportClient);
       gtk_widget_set_visible (self->master_img, 0);
       gtk_widget_set_visible (self->client_img, 1);
       gtk_widget_set_tooltip_text (
@@ -113,8 +103,7 @@ activate_jack_mode (
   else if (string_is_equal (variant, "unlink"))
     {
       engine_jack_set_transport_type (
-        AUDIO_ENGINE,
-        AudioEngineJackTransportType::AUDIO_ENGINE_NO_JACK_TRANSPORT);
+        AUDIO_ENGINE.get (), AudioEngine::JackTransportType::NoJackTransport);
       gtk_widget_set_visible (self->master_img, 0);
       gtk_widget_set_visible (self->client_img, 0);
       gtk_widget_set_tooltip_text (
@@ -139,11 +128,11 @@ on_bpm_right_click (
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  menuitem = z_gtk_create_menu_item (_ ("Input"), NULL, "app.input-bpm");
+  menuitem = z_gtk_create_menu_item (_ ("Input"), nullptr, "app.input-bpm");
   g_menu_append_item (menu, menuitem);
   menuitem = z_gtk_create_menu_item (
     /* TRANSLATORS: tap tempo */
-    _ ("Tap"), NULL, "app.tap-bpm");
+    _ ("Tap"), nullptr, "app.tap-bpm");
   g_menu_append_item (menu, menuitem);
 
   digital_meter_show_context_menu (self->digital_bpm, menu);
@@ -172,7 +161,7 @@ on_transport_playhead_right_click (
 
   /* jack transport related */
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       GMenu * jack_section = g_menu_new ();
 
@@ -201,9 +190,9 @@ set_playhead_pos (Transport * transport, Position * pos)
 {
   /* only set playhead position if the user is currently
    * allowed to move the playhead */
-  if (transport_can_user_move_playhead (transport))
+  if (transport->can_user_move_playhead ())
     {
-      transport_set_playhead_pos (transport, pos);
+      transport->set_playhead_pos (*pos);
     }
 }
 
@@ -217,11 +206,11 @@ bot_bar_widget_refresh (BotBarWidget * self)
       /* FIXME */
       return;
       /*gtk_overlay_set_child (*/
-      /*self->playhead_overlay, NULL);*/
+      /*self->playhead_overlay, nullptr);*/
     }
   self->digital_transport = digital_meter_widget_new_for_position (
-    TRANSPORT, NULL, transport_get_playhead_pos, set_playhead_pos, NULL,
-    _ ("playhead"));
+    TRANSPORT.get (), nullptr, Transport::get_playhead_pos_static,
+    set_playhead_pos, nullptr, _ ("playhead"));
   self->digital_transport->is_transport = true;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->digital_transport), PLAYHEAD_CAPTION);
@@ -242,7 +231,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
   };
   GActionEntry actions[] = {
     {"jack-mode", activate_jack_mode, "s",
-     jack_modes[ENUM_VALUE_TO_INT (AUDIO_ENGINE->transport_type)]},
+     jack_modes[ENUM_VALUE_TO_INT (AUDIO_ENGINE->transport_type_)]},
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions, G_N_ELEMENTS (actions), self);
@@ -252,7 +241,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
     G_ACTION_GROUP (action_group));
 
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       GtkWidget * img = gtk_image_new_from_icon_name ("jack-transport-client");
       gtk_widget_set_halign (img, GTK_ALIGN_END);
@@ -269,8 +258,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
       gtk_overlay_add_overlay (self->playhead_overlay, img);
       self->master_img = img;
       if (
-        AUDIO_ENGINE->transport_type
-        == AudioEngineJackTransportType::AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
+        AUDIO_ENGINE->transport_type_
+        == AudioEngine::JackTransportType::TransportClient)
         {
           gtk_widget_set_visible (self->master_img, 0);
           gtk_widget_set_visible (self->client_img, 1);
@@ -278,8 +267,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
             GTK_WIDGET (self->digital_transport), PLAYHEAD_JACK_CLIENT_CAPTION);
         }
       else if (
-        AUDIO_ENGINE->transport_type
-        == AudioEngineJackTransportType::AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+        AUDIO_ENGINE->transport_type_
+        == AudioEngine::JackTransportType::TimebaseMaster)
         {
           gtk_widget_set_visible (self->master_img, 1);
           gtk_widget_set_visible (self->client_img, 0);
@@ -307,71 +296,61 @@ bot_bar_widget_refresh (BotBarWidget * self)
 }
 
 static void
-set_buffer_size (void * object, const char * str)
+set_buffer_size (void * object, const std::string &text)
 {
-  if (str)
+  const auto parse_uint32 = [&text] (uint32_t &val) {
+    return std::from_chars (text.data (), text.data () + text.size (), val).ec
+           == std::errc{};
+  };
+
+  uint32_t buf_sz = 0;
+  if (!parse_uint32 (buf_sz))
     {
-      unsigned long long int buf_sz = strtoull (str, NULL, 10);
-      if (buf_sz == 0ULL || (buf_sz == ULLONG_MAX && errno == ERANGE))
-        {
-          ui_show_error_message (
-            _ ("Invalid Value"), _ ("Please enter a valid number"));
-          return;
-        }
-      else
-        {
-          engine_set_buffer_size (AUDIO_ENGINE, (uint32_t) buf_sz);
-        }
+      ui_show_error_message (_ ("Invalid Value"), _ ("Invalid buffer size"));
+      return;
+    }
+  else
+    {
+      AUDIO_ENGINE->set_buffer_size (buf_sz);
     }
 }
 
-static const char *
+static std::string
 get_buffer_size (void * object)
 {
-  static char * buffer_size = NULL;
-  if (buffer_size != NULL)
-    {
-      g_free_and_null (buffer_size);
-    }
-  buffer_size = g_strdup_printf ("%u", AUDIO_ENGINE->block_length);
-  return buffer_size;
+  return fmt::format ("{}", AUDIO_ENGINE->block_length_);
 }
 
 static bool
 activate_link (GtkWidget * label, const gchar * uri, gpointer data)
 {
+  ui_show_error_message (
+    _ ("Feature Not Available"),
+    _ ("This feature is not available at the moment"));
+  return false;
+
   g_debug ("link activated");
   if (string_is_equal (uri, "enable"))
     {
       g_debug ("enable pressed");
-      goto feature_unavailable;
-      engine_activate (AUDIO_ENGINE, true);
+      AUDIO_ENGINE->activate (true);
       return true;
     }
   else if (string_is_equal (uri, "disable"))
     {
       g_debug ("disable pressed");
-      goto feature_unavailable;
-      engine_activate (AUDIO_ENGINE, false);
+      AUDIO_ENGINE->activate (false);
       return true;
     }
   else if (string_is_equal (uri, "change"))
     {
       g_debug ("change buf size pressed");
       StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-        _ ("Buffer Size"), NULL, (GenericStringGetter) get_buffer_size,
-        (GenericStringSetter) set_buffer_size);
+        _ ("Buffer Size"), nullptr, get_buffer_size, set_buffer_size);
       gtk_window_present (GTK_WINDOW (dialog));
       return true;
     }
 
-  return false;
-
-feature_unavailable:
-  ui_show_error_message (
-    _ ("Feature Not Available"),
-    _ ("This feature is not available at the "
-       "moment"));
   return false;
 }
 
@@ -381,35 +360,31 @@ feature_unavailable:
 void
 bot_bar_widget_update_status (BotBarWidget * self)
 {
-  char color_prefix[60];
-  sprintf (color_prefix, "<span foreground=\"%s\">", self->hex_color);
-  char color_suffix[40] = "</span>";
-  char green_prefix[60];
-  sprintf (green_prefix, "<span foreground=\"%s\">", self->green_hex);
-  char red_prefix[60];
-  sprintf (red_prefix, "<span foreground=\"%s\">", self->red_hex);
+  auto color_prefix = fmt::format ("<span foreground=\"{}\">", self->hex_color);
+  auto color_suffix = "</span>";
+  auto green_prefix = fmt::format ("<span foreground=\"{}\">", self->green_hex);
+  auto red_prefix = fmt::format ("<span foreground=\"{}\">", self->red_hex);
 
   /* TODO show xruns on status */
 
   const char * audio_pipewire_str = "";
   const char * midi_pipewire_str = "";
-  if (AUDIO_ENGINE->audio_backend == AudioBackend::AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
 #ifdef HAVE_JACK
-      audio_pipewire_str = engine_jack_is_pipewire (AUDIO_ENGINE) ? " (pw)" : "";
+      audio_pipewire_str =
+        engine_jack_is_pipewire (AUDIO_ENGINE.get ()) ? " (pw)" : "";
 #endif
     }
-  if (AUDIO_ENGINE->midi_backend == MidiBackend::MIDI_BACKEND_JACK)
+  if (AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
     {
 #ifdef HAVE_JACK
-      midi_pipewire_str = engine_jack_is_pipewire (AUDIO_ENGINE) ? " (pw)" : "";
+      midi_pipewire_str =
+        engine_jack_is_pipewire (AUDIO_ENGINE.get ()) ? " (pw)" : "";
 #endif
     }
 
-#define BUF_SZ 1200
-  char str[BUF_SZ];
-  snprintf (
-    str, BUF_SZ,
+  auto str = fmt::sprintf (
     "<span size=\"small\">"
     "%s: %s%s%s%s | "
     "%s: %s%s%s%s | "
@@ -423,34 +398,34 @@ bot_bar_widget_update_status (BotBarWidget * self)
     "<a href=\"%s\">%s</a>"
     "</span>",
     _ ("Audio"), color_prefix,
-    engine_audio_backend_to_string (AUDIO_ENGINE->audio_backend),
+    AudioBackend_to_string (AUDIO_ENGINE->audio_backend_, true).c_str (),
     audio_pipewire_str, color_suffix, "MIDI", color_prefix,
-    engine_midi_backend_to_string (AUDIO_ENGINE->midi_backend),
+    MidiBackend_to_string (AUDIO_ENGINE->midi_backend_, true).c_str (),
     midi_pipewire_str, color_suffix, _ ("Status"),
-    AUDIO_ENGINE->activated ? green_prefix : red_prefix,
-    AUDIO_ENGINE->activated ? _ ("On") : _ ("Off"), color_suffix,
+    AUDIO_ENGINE->activated_ ? green_prefix : red_prefix,
+    AUDIO_ENGINE->activated_ ? _ ("On") : _ ("Off"), color_suffix,
     /* TRANSLATORS: buffer size, please keep the
      * translation short */
     _ ("Buf sz"), color_prefix,
-    AUDIO_ENGINE->activated ? AUDIO_ENGINE->block_length : 0, color_suffix,
+    AUDIO_ENGINE->activated_ ? AUDIO_ENGINE->block_length_ : 0, color_suffix,
 #ifndef _WIN32
     /* TRANSLATORS: verb - change buffer size */
     _ ("change"),
 #endif
     /* TRANSLATORS: sample rate */
     _ ("Rate"), color_prefix,
-    AUDIO_ENGINE->activated ? AUDIO_ENGINE->sample_rate : 0, color_suffix,
-    AUDIO_ENGINE->activated ? "disable" : "enable",
-    AUDIO_ENGINE->activated ? _ ("Disable") : _ ("Enable"));
+    AUDIO_ENGINE->activated_ ? AUDIO_ENGINE->sample_rate_ : 0, color_suffix,
+    AUDIO_ENGINE->activated_ ? "disable" : "enable",
+    AUDIO_ENGINE->activated_ ? _ ("Disable") : _ ("Enable"));
 #undef BUF_SZ
 
-  gtk_label_set_markup (self->engine_status_label, str);
+  gtk_label_set_markup (self->engine_status_label, str.c_str ());
 }
 
 static void
 on_metronome_volume_changed (GtkRange * range, BotBarWidget * self)
 {
-  metronome_set_volume (METRONOME, (float) gtk_range_get_value (range));
+  METRONOME->set_volume ((float) gtk_range_get_value (range));
 }
 
 static void
@@ -463,7 +438,7 @@ setup_metronome (BotBarWidget * self)
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->metronome_btn), "app.toggle-metronome");
   button_with_menu_widget_setup (
-    self->metronome, GTK_BUTTON (self->metronome_btn), NULL, false, 38,
+    self->metronome, GTK_BUTTON (self->metronome_btn), nullptr, false, 38,
     _ ("Metronome"), _ ("Metronome options"));
 
   /* create popover for changing metronome options */
@@ -481,7 +456,7 @@ setup_metronome (BotBarWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (scale), 120, -1);
   g_signal_connect (
     scale, "value-changed", G_CALLBACK (on_metronome_volume_changed), self);
-  gtk_range_set_value (GTK_RANGE (scale), METRONOME->volume);
+  gtk_range_set_value (GTK_RANGE (scale), METRONOME->volume_);
   gtk_widget_set_visible (GTK_WIDGET (scale), true);
   gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (scale), 1, 0, 1, 1);
 
@@ -522,8 +497,24 @@ dispose (BotBarWidget * self)
 }
 
 static void
+bot_bar_widget_finalize (GObject * obj)
+{
+  BotBarWidget * self = Z_BOT_BAR_WIDGET (obj);
+
+  std::destroy_at (&self->hex_color);
+  std::destroy_at (&self->green_hex);
+  std::destroy_at (&self->red_hex);
+
+  G_OBJECT_CLASS (bot_bar_widget_parent_class)->finalize (G_OBJECT (self));
+}
+
+static void
 bot_bar_widget_init (BotBarWidget * self)
 {
+  std::construct_at (&self->hex_color);
+  std::construct_at (&self->green_hex);
+  std::construct_at (&self->red_hex);
+
   g_type_ensure (DIGITAL_METER_WIDGET_TYPE);
   g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
   g_type_ensure (CPU_WIDGET_TYPE);
@@ -536,9 +527,9 @@ bot_bar_widget_init (BotBarWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  ui_gdk_rgba_to_hex (&UI_COLORS->bright_orange, self->hex_color);
-  ui_gdk_rgba_to_hex (&UI_COLORS->bright_green, self->green_hex);
-  ui_gdk_rgba_to_hex (&UI_COLORS->record_checked, self->red_hex);
+  self->hex_color = UI_COLORS->bright_orange.to_hex ();
+  self->green_hex = UI_COLORS->bright_green.to_hex ();
+  self->red_hex = UI_COLORS->record_checked.to_hex ();
 
   setup_metronome (self);
 
@@ -550,17 +541,18 @@ bot_bar_widget_init (BotBarWidget * self)
     self->midi_activity, MidiActivityBarAnimation::MAB_ANIMATION_FLASH);
 
   MeterWidget * l =
-    meter_widget_new (&P_MASTER_TRACK->channel->stereo_out->get_l (), 4);
+    meter_widget_new (&P_MASTER_TRACK->channel_->stereo_out_->get_l (), 4);
   MeterWidget * r =
-    meter_widget_new (&P_MASTER_TRACK->channel->stereo_out->get_r (), 4);
+    meter_widget_new (&P_MASTER_TRACK->channel_->stereo_out_->get_r (), 4);
   gtk_box_append (self->meter_box, GTK_WIDGET (l));
   gtk_box_append (self->meter_box, GTK_WIDGET (r));
 
   /* setup digital meters */
   self->digital_bpm = digital_meter_widget_new (
-    DigitalMeterType::DIGITAL_METER_TYPE_BPM, NULL, NULL, _ ("bpm"));
+    DigitalMeterType::DIGITAL_METER_TYPE_BPM, nullptr, nullptr, _ ("bpm"));
   self->digital_timesig = digital_meter_widget_new (
-    DigitalMeterType::DIGITAL_METER_TYPE_TIMESIG, NULL, NULL, _ ("time sig."));
+    DigitalMeterType::DIGITAL_METER_TYPE_TIMESIG, nullptr, nullptr,
+    _ ("time sig."));
   gtk_box_append (self->digital_meters, GTK_WIDGET (self->digital_bpm));
   gtk_box_append (self->digital_meters, GTK_WIDGET (self->digital_timesig));
 
@@ -599,4 +591,5 @@ bot_bar_widget_class_init (BotBarWidgetClass * _klass)
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->finalize = bot_bar_widget_finalize;
 }

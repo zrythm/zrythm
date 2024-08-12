@@ -1,19 +1,22 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Region identifier.
  *
- * This is in its own file to avoid recursive
- * inclusion.
+ * This is in its own file to avoid recursive inclusion.
  */
 
 #ifndef __AUDIO_REGION_IDENTIFIER_H__
 #define __AUDIO_REGION_IDENTIFIER_H__
 
-#include "utils/general.h"
+#include "io/serialization/iserializable.h"
+#include "utils/format.h"
+#include "utils/logger.h"
+
+#include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
 
@@ -31,93 +34,73 @@
  */
 enum class RegionType
 {
-  REGION_TYPE_MIDI = 1 << 0,
-  REGION_TYPE_AUDIO = 1 << 1,
-  REGION_TYPE_AUTOMATION = 1 << 2,
-  REGION_TYPE_CHORD = 1 << 3,
+  Midi = 1 << 0,
+  Audio = 1 << 1,
+  Automation = 1 << 2,
+  Chord = 1 << 3,
 };
 
-static const char * region_type_bitvals[] = {
-  "midi",
-  "audio",
-  "automation",
-  "chord",
-};
+DEFINE_ENUM_FORMATTER (
+  RegionType,
+  RegionType,
+  N_ ("MIDI"),
+  N_ ("Audio"),
+  N_ ("Automation"),
+  N_ ("Chord"));
 
 /**
- * Index/identifier for a Region, so we can
- * get Region objects quickly with it without
- * searching by name.
+ * Index/identifier for a Region, so we can get Region objects quickly with it
+ * without searching by name.
  */
-typedef struct RegionIdentifier
+class RegionIdentifier : public ISerializable<RegionIdentifier>
 {
-  RegionType type;
+public:
+  RegionIdentifier () = default;
+  RegionIdentifier (RegionType type) : type_ (type) { }
+  bool validate () const
+  { /* TODO? */
+    return true;
+  };
+
+  inline bool is_automation () const { return type_ == RegionType::Automation; }
+  inline bool is_midi () const { return type_ == RegionType::Midi; }
+  inline bool is_audio () const { return type_ == RegionType::Audio; }
+  inline bool is_chord () const { return type_ == RegionType::Chord; }
+
+  void print () const
+  {
+    z_debug (
+      "Region identifier: type: %s, track name hash %u, lane pos %d, at index %d, index %d, link_group: %d",
+      RegionType_to_string (type_), track_name_hash_, lane_pos_, at_idx_, idx_,
+      link_group_);
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  RegionType type_ = (RegionType) 0;
 
   /** Link group index, if any, or -1. */
-  int link_group;
+  int link_group_ = -1;
 
-  unsigned int track_name_hash;
-  int          lane_pos;
+  unsigned int track_name_hash_ = 0;
+  int          lane_pos_ = 0;
 
-  /** Automation track index in the automation tracklist, if
-   * automation region. */
-  int at_idx;
+  /** Automation track index in the automation tracklist, if automation region. */
+  int at_idx_ = 0;
 
   /** Index inside lane or automation track. */
-  int idx;
-} RegionIdentifier;
+  int idx_ = 0;
+};
 
-void
-region_identifier_init (RegionIdentifier * self);
-
-static inline int
-region_identifier_is_equal (
-  const RegionIdentifier * a,
-  const RegionIdentifier * b)
+inline bool
+operator== (const RegionIdentifier &lhs, const RegionIdentifier &rhs)
 {
-  return a->idx == b->idx && a->track_name_hash == b->track_name_hash
-         && a->lane_pos == b->lane_pos && a->at_idx == b->at_idx
-         && a->link_group == b->link_group && a->type == b->type;
+  return lhs.type_ == rhs.type_ && lhs.link_group_ == rhs.link_group_
+         && lhs.track_name_hash_ == rhs.track_name_hash_
+         && lhs.lane_pos_ == rhs.lane_pos_ && lhs.at_idx_ == rhs.at_idx_
+         && lhs.idx_ == rhs.idx_;
 }
-
-NONNULL static inline void
-region_identifier_copy (RegionIdentifier * dest, const RegionIdentifier * src)
-{
-  dest->idx = src->idx;
-  dest->track_name_hash = src->track_name_hash;
-  dest->lane_pos = src->lane_pos;
-  dest->at_idx = src->at_idx;
-  dest->type = src->type;
-  dest->link_group = src->link_group;
-}
-
-bool
-region_identifier_validate (RegionIdentifier * self);
-
-static inline const char *
-region_identifier_get_region_type_name (RegionType type)
-{
-  g_return_val_if_fail (
-    type >= RegionType::REGION_TYPE_MIDI && type <= RegionType::REGION_TYPE_CHORD,
-    NULL);
-
-  return region_type_bitvals[utils_get_uint_from_bitfield_val (
-    static_cast<unsigned int> (type))];
-}
-
-static inline void
-region_identifier_print (const RegionIdentifier * self)
-{
-  g_message (
-    "Region identifier: "
-    "type: %s, track name hash %u, lane pos %d, "
-    "at index %d, index %d, link_group: %d",
-    region_identifier_get_region_type_name (self->type), self->track_name_hash,
-    self->lane_pos, self->at_idx, self->idx, self->link_group);
-}
-
-void
-region_identifier_free (RegionIdentifier * self);
 
 /**
  * @}

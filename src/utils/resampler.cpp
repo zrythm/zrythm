@@ -63,7 +63,7 @@ resampler_new (
   const ResamplerQuality quality,
   GError **              error)
 {
-  g_return_val_if_fail (in_frames, NULL);
+  g_return_val_if_fail (in_frames, nullptr);
 
   Resampler * self = object_new (Resampler);
 
@@ -103,7 +103,8 @@ resampler_new (
 
   soxr_error_t serror;
   soxr_t       soxr = soxr_create (
-    input_rate, output_rate, num_channels, &serror, NULL, &quality_spec, NULL);
+    input_rate, output_rate, num_channels, &serror, nullptr, &quality_spec,
+    nullptr);
 
   if (serror)
     {

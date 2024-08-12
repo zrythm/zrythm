@@ -5,10 +5,13 @@
  */
 
 #include <cstdlib>
+#include <format>
 
 #include "utils/env.h"
 
 #include <glib.h>
+
+#include "ext/juce/juce.h"
 
 /**
  * Returns a newly allocated string.
@@ -34,13 +37,7 @@ env_get_string (const char * key, const char * def)
 int
 env_get_int (const char * key, int def)
 {
-  const char * str = g_getenv (key);
-  if (!str)
-    return def;
-
-  int val = atoi (str);
-  if (val == 0)
-    return def;
-  else
-    return val;
+  auto str =
+    juce::SystemStats::getEnvironmentVariable (key, std::format ("{}", def));
+  return str.getIntValue ();
 }

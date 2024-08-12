@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include <cfloat>
 #include <cmath>
@@ -50,13 +48,13 @@ bool
 math_assert_nonnann (float x)
 {
   char * val = g_strdup_printf ("%f", (double) x);
-  if (isnan (x) || string_contains_substr (val, "nan"))
+  if (std::isnan (x) || string_contains_substr (val, "nan"))
     {
       g_critical ("nan");
       g_free (val);
       return false;
     }
-  if (!isfinite (x) || string_contains_substr (val, "inf"))
+  if (!std::isfinite (x) || string_contains_substr (val, "inf"))
     {
       g_critical ("inf");
       g_free (val);
@@ -68,7 +66,7 @@ math_assert_nonnann (float x)
 /**
  * Returns whether the given string is a valid float.
  *
- * @param ret If non-NULL, the result will be placed here.
+ * @param ret If non-nullptr, the result will be placed here.
  */
 bool
 math_is_string_valid_float (const char * str, float * ret)

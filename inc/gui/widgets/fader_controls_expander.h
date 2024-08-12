@@ -1,19 +1,11 @@
-/*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
-
-/**
- * \file
- *
- * Fader controls expander.
- */
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_FADER_CONTROLS_EXPANDER_H__
 #define __GUI_WIDGETS_FADER_CONTROLS_EXPANDER_H__
 
 #include "gui/widgets/expander_box.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -26,8 +18,8 @@ G_DECLARE_FINAL_TYPE (
   FADER_CONTROLS_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track                    Track;
-typedef struct _FaderControlsGridWidget FaderControlsGridWidget;
+class ChannelTrack;
+TYPEDEF_STRUCT_UNDERSCORED (FaderControlsGridWidget);
 
 /**
  * @addtogroup widgets
@@ -39,7 +31,7 @@ typedef struct _FaderControlsGridWidget FaderControlsGridWidget;
  * A TwoColExpanderBoxWidget for showing the ports
  * in the InspectorWidget.
  */
-typedef struct _FaderControlsExpanderWidget
+using FaderControlsExpanderWidget = struct _FaderControlsExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
@@ -47,8 +39,8 @@ typedef struct _FaderControlsExpanderWidget
   FaderControlsGridWidget * grid;
 
   /** Owner track. */
-  Track * track;
-} FaderControlsExpanderWidget;
+  ChannelTrack * track;
+};
 
 /**
  * Refreshes each field.
@@ -62,7 +54,7 @@ fader_controls_expander_widget_refresh (FaderControlsExpanderWidget * self);
 void
 fader_controls_expander_widget_setup (
   FaderControlsExpanderWidget * self,
-  Track *                       track);
+  ChannelTrack *                track);
 
 /**
  * Prepare for finalization.

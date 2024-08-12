@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Ruler parent class.
  */
@@ -12,26 +10,27 @@
 #ifndef __GUI_WIDGETS_RULER_H__
 #define __GUI_WIDGETS_RULER_H__
 
+#include "dsp/position.h"
 #include "utils/ui.h"
 
 #include "gtk_wrapper.h"
 
-#define RW_RULER_MARKER_SIZE 8
-#define RW_CUE_MARKER_HEIGHT 12
-#define RW_CUE_MARKER_WIDTH 7
-#define RW_PLAYHEAD_TRIANGLE_WIDTH 12
-#define RW_PLAYHEAD_TRIANGLE_HEIGHT 8
-#define RW_RANGE_HEIGHT_DIVISOR 4
+constexpr int RW_RULER_MARKER_SIZE = 8;
+constexpr int RW_CUE_MARKER_HEIGHT = 12;
+constexpr int RW_CUE_MARKER_WIDTH = 7;
+constexpr int RW_PLAYHEAD_TRIANGLE_WIDTH = 12;
+constexpr int RW_PLAYHEAD_TRIANGLE_HEIGHT = 8;
+constexpr int RW_RANGE_HEIGHT_DIVISOR = 4;
 
-#define RW_HEIGHT 42
+constexpr int RW_HEIGHT = 42;
 
 /** Mouse wheel scroll speed (number of pixels). */
-#define RW_SCROLL_SPEED 48
+constexpr int RW_SCROLL_SPEED = 48;
 
 /**
  * Minimum number of pixels between beat lines.
  */
-#define RW_PX_TO_HIDE_BEATS 40.0
+constexpr double RW_PX_TO_HIDE_BEATS = 40.0;
 
 #define RULER_WIDGET_TYPE (ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (RulerWidget, ruler_widget, Z, RULER_WIDGET, GtkWidget)
@@ -42,8 +41,8 @@ G_DECLARE_FINAL_TYPE (RulerWidget, ruler_widget, Z, RULER_WIDGET, GtkWidget)
  * @{
  */
 
-typedef struct Position       Position;
-typedef struct EditorSettings EditorSettings;
+class Position;
+class EditorSettings;
 
 /**
  * Pixels to draw between each beat, before being adjusted for zoom.
@@ -70,20 +69,20 @@ typedef struct EditorSettings EditorSettings;
  */
 enum class RWTarget
 {
-  RW_TARGET_PLAYHEAD,
-  RW_TARGET_LOOP_START,
-  RW_TARGET_LOOP_END,
-  RW_TARGET_PUNCH_IN,
-  RW_TARGET_PUNCH_OUT,
-  RW_TARGET_CLIP_START,
-  RW_TARGET_RANGE,      ///< for timeline only
-  RW_TARGET_LOOP_RANGE, ///< for timeline only
+  Playhead,
+  LoopStart,
+  LoopEnd,
+  PunchIn,
+  PunchOut,
+  ClipStart,
+  Range,     ///< for timeline only
+  LoopRange, ///< for timeline only
 };
 
 enum class RulerWidgetType
 {
-  RULER_WIDGET_TYPE_TIMELINE,
-  RULER_WIDGET_TYPE_EDITOR,
+  Timeline,
+  Editor,
 };
 
 /**
@@ -92,14 +91,14 @@ enum class RulerWidgetType
 enum class RulerWidgetRangeType
 {
   /** Range start. */
-  RW_RANGE_START,
+  Start,
   /** Whole range. */
-  RW_RANGE_FULL,
+  Full,
   /** Range end. */
-  RW_RANGE_END,
+  End,
 };
 
-typedef struct _RulerWidget
+using RulerWidget = struct _RulerWidget
 {
   GtkWidget parent_instance;
 
@@ -195,7 +194,7 @@ typedef struct _RulerWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
-} RulerWidget;
+};
 
 /**
  * Sets zoom level and disables/enables buttons accordingly.

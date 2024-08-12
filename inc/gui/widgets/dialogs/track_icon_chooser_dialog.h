@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Object color chooser dialog.
  */

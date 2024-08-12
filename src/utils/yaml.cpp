@@ -81,7 +81,7 @@ yaml_serialize (void * data, const cyaml_schema_value_t * schema, GError ** erro
   char * result = NULL;
 
   /* remember current locale and temporarily switch to C */
-  char * orig_locale = g_strdup (setlocale (LC_ALL, NULL));
+  char * orig_locale = g_strdup (setlocale (LC_ALL, nullptr));
   setlocale (LC_ALL, "C");
 
   cyaml_config_t cyaml_config = {};
@@ -120,14 +120,14 @@ yaml_deserialize (
   void * obj = NULL;
 
   /* remember current locale and temporarily switch to C */
-  char * orig_locale = g_strdup (setlocale (LC_ALL, NULL));
+  char * orig_locale = g_strdup (setlocale (LC_ALL, nullptr));
   setlocale (LC_ALL, "C");
 
   cyaml_config_t cyaml_config;
   yaml_get_cyaml_config (&cyaml_config);
   cyaml_err_t err = cyaml_load_data (
     (const unsigned char *) yaml, strlen (yaml), &cyaml_config, schema,
-    (cyaml_data_t **) &obj, NULL);
+    (cyaml_data_t **) &obj, nullptr);
   if (err != CYAML_OK)
     {
       g_set_error (

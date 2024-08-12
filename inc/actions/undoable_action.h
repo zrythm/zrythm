@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Undoable actions.
  */
@@ -10,11 +10,11 @@
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
+#include "dsp/port_connections_manager.h"
 #include "utils/types.h"
-#include "utils/yaml.h"
 
-typedef struct AudioClip              AudioClip;
-typedef struct PortConnectionsManager PortConnectionsManager;
+class AudioClip;
+class Plugin;
 
 /**
  * @addtogroup actions
@@ -23,170 +23,207 @@ typedef struct PortConnectionsManager PortConnectionsManager;
  */
 
 /**
- * Type of UndoableAction.
+ * Base class to be inherited by implementing undoable actions.
  */
-enum class UndoableActionType
+class UndoableAction : public ISerializable<UndoableAction>
 {
-  /* ---- Track/Channel ---- */
-  UA_TRACKLIST_SELECTIONS,
+public:
+  /**
+   * Type of UndoableAction.
+   */
+  enum class Type
+  {
+    /* ---- Track/Channel ---- */
+    TracklistSelections,
 
-  UA_CHANNEL_SEND,
+    ChannelSend,
 
-  /* ---- end ---- */
+    /* ---- end ---- */
 
-  UA_MIXER_SELECTIONS,
-  UA_ARRANGER_SELECTIONS,
+    MixerSelections,
+    ArrangerSelections,
 
-  /* ---- connections ---- */
+    /* ---- connections ---- */
 
-  UA_MIDI_MAPPING,
-  UA_PORT_CONNECTION,
-  UA_PORT,
+    MidiMapping,
+    PortConnection,
+    Port,
 
-  /* ---- end ---- */
+    /* ---- end ---- */
 
-  /* ---- range ---- */
+    /* ---- range ---- */
 
-  UA_RANGE,
+    Range,
 
-  /* ---- end ---- */
+    /* ---- end ---- */
 
-  UA_TRANSPORT,
+    Transport,
 
-  UA_CHORD,
-};
+    Chord,
+  };
 
-/**
- * Base struct to be inherited by implementing
- * undoable actions.
- */
-typedef struct UndoableAction
-{
+  UndoableAction () = default;
+  UndoableAction (Type type);
+  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate)
+      : undoable_action_type_ (type), frames_per_tick_ (frames_per_tick),
+        sample_rate_ (sample_rate)
+  {
+  }
+  virtual ~UndoableAction () = default;
+
+  /**
+   * @brief Create a unique from id object
+   *
+   * @param type
+   * @return std::unique_ptr<UndoableAction>
+   *
+   * @throw ZrythmException on error.
+   */
+  static std::unique_ptr<UndoableAction> create_unique_from_type (Type type);
+
+  /**
+   * @brief Non virtual function following the NVI pattern.
+   *
+   * @see init_loaded_impl().
+   */
+  void init_loaded ();
+
+  /**
+   * Returns whether the action requires pausing the engine.
+   */
+  virtual bool needs_pause () const { return true; };
+
+  /**
+   * Returns whether the total transport bars need to be recalculated.
+   *
+   * @note Some actions already handle this logic so return false here to avoid
+   * unnecessary calculations.
+   */
+  virtual bool needs_transport_total_bar_update (bool perform) const
+  {
+    return true;
+  };
+
+  /**
+   * Whether audio region loop/fade/etc. positions are affected by this undoable
+   * action.
+   *
+   * Used to correct off-by-one errors when changing BPM or resampling or
+   * something that causes position conversions.
+   */
+  virtual bool affects_audio_region_internal_positions () const { return true; }
+
+  /**
+   * Checks whether the action can contain an audio clip.
+   *
+   * No attempt is made to remove unused files from the pool for actions that
+   * can't contain audio clips.
+   */
+  virtual bool can_contain_clip () const { return false; };
+
+  /**
+   * Checks whether the action actually contains or refers to the given audio
+   * clip.
+   */
+  virtual bool contains_clip (const AudioClip &clip) const { return false; };
+
+  /**
+   * @brief Get the plugins referenced in this action.
+   *
+   * @param plugins
+   */
+  virtual void get_plugins (std::vector<Plugin *> &plugins){};
+
+  /**
+   * Sets the number of actions for this action.
+   *
+   * This should be set on the last action to be performed.
+   */
+  void set_num_actions (int num_actions);
+
+  /**
+   * To be used by actions that save/load port connections.
+   *
+   * @param performing True if doing/performing, false if undoing.
+   */
+  void save_or_load_port_connections (bool performing);
+
+  /**
+   * Performs the action.
+   *
+   * @note Only to be called by undo manager.
+   *
+   * @throw ZrythmException on error.
+   */
+  void perform ();
+
+  /**
+   * Undoes the action.
+   *
+   * @throw ZrythmException on error.
+   */
+  void undo ();
+
+  /**
+   * Stringizes the action to be used in Undo/Redo buttons.
+   */
+  virtual std::string to_string () const = 0;
+
+protected:
+  void copy_members_from (const UndoableAction &other);
+
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+
+private:
+  /** NVI pattern. */
+  virtual void init_loaded_impl () = 0;
+  virtual void perform_impl () = 0;
+  virtual void undo_impl () = 0;
+
+  /** Common handler for both perform and undo. */
+  void do_or_undo (bool perform);
+
+public:
   /** Undoable action type. */
-  UndoableActionType type;
+  Type undoable_action_type_ = (Type) 0;
 
-  /** A snapshot of AudioEngine.frames_per_tick when the
-   * action is executed. */
-  double frames_per_tick;
+  /** A snapshot of AudioEngine.frames_per_tick when the action is executed. */
+  double frames_per_tick_ = 0.0;
 
   /**
    * Sample rate of this action.
    *
-   * Used to recalculate UndoableAction.frames_per_tick when
-   * the project is loaded under a new samplerate.
+   * Used to recalculate UndoableAction.frames_per_tick when the project is
+   * loaded under a new samplerate.
    */
-  sample_rate_t sample_rate;
+  sample_rate_t sample_rate_ = 0;
 
   /**
    * Index in the stack.
    *
    * Used during deserialization.
    */
-  int stack_idx;
+  // int stack_idx_ = 0;
 
   /**
    * Number of actions to perform.
    *
-   * This is used to group multiple actions into
-   * one logical action (eg, create a group track
-   * and route multiple tracks to it).
+   * This is used to group multiple actions into one logical action (eg,
+   * create a group track and route multiple tracks to it).
    *
    * To be set on the last action being performed.
    */
-  int num_actions;
-} UndoableAction;
+  int num_actions_ = 1;
 
-NONNULL void
-undoable_action_init_loaded (UndoableAction * self);
+  /**
+   * @brief An (optional) clone of the port connections at the start of the
+   * action, used for reverting port connections when undoing.
+   */
+  std::unique_ptr<PortConnectionsManager> port_connections_before_;
 
-/**
- * Initializer to be used by implementing actions.
- */
-NONNULL void
-undoable_action_init (UndoableAction * self, UndoableActionType type);
-
-/**
- * Returns whether the action requires pausing
- * the engine.
- */
-NONNULL bool
-undoable_action_needs_pause (UndoableAction * self);
-
-/**
- * Checks whether the action can contain an audio
- * clip.
- *
- * No attempt is made to remove unused files from
- * the pool for actions that can't contain audio
- * clips.
- */
-NONNULL bool
-undoable_action_can_contain_clip (UndoableAction * self);
-
-/**
- * Checks whether the action actually contains or
- * refers to the given audio clip.
- */
-NONNULL bool
-undoable_action_contains_clip (UndoableAction * self, AudioClip * clip);
-
-NONNULL void
-undoable_action_get_plugins (UndoableAction * self, GPtrArray * arr);
-
-/**
- * Sets the number of actions for this action.
- *
- * This should be set on the last action to be
- * performed.
- */
-NONNULL void
-undoable_action_set_num_actions (UndoableAction * self, int num_actions);
-
-/**
- * To be used by actions that save/load port
- * connections.
- *
- * @param _do True if doing/performing, false if
- *   undoing.
- * @param before Pointer to the connections before.
- * @param after Pointer to the connections after.
- */
-NONNULL_ARGS (1)
-void undoable_action_save_or_load_port_connections (
-  UndoableAction *          self,
-  bool                      _do,
-  PortConnectionsManager ** before,
-  PortConnectionsManager ** after);
-
-/**
- * Performs the action.
- *
- * @note Only to be called by undo manager.
- *
- * @return Non-zero if errors occurred.
- */
-NONNULL_ARGS (1)
-int undoable_action_do (UndoableAction * self, GError ** error);
-
-/**
- * Undoes the action.
- *
- * @return Non-zero if errors occurred.
- */
-NONNULL_ARGS (1)
-int undoable_action_undo (UndoableAction * self, GError ** error);
-
-void
-undoable_action_free (UndoableAction * self);
-
-/**
- * Stringizes the action to be used in Undo/Redo
- * buttons.
- *
- * The string MUST be free'd using g_free().
- */
-NONNULL char *
-undoable_action_to_string (UndoableAction * ua);
+  /** @see port_connections_before_. */
+  std::unique_ptr<PortConnectionsManager> port_connections_after_;
+};
 
 /**
  * @}

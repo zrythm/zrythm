@@ -1,372 +1,206 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include <memory>
 
 #include "dsp/control_port.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "utils/midi.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
-static MidiMapping *
-create_midi_mapping (void)
-{
-  MidiMapping * self = new MidiMapping ();
-
-  self->gobj = wrapped_object_with_change_signal_new (
-    self, WrappedObjectType::WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
-
-  return self;
-}
-
 void
-midi_mappings_init_loaded (MidiMappings * self)
+MidiMappings::init_loaded ()
 {
-  self->mappings_size = (size_t) self->num_mappings;
-
-  for (int i = 0; i < self->num_mappings; i++)
+  for (auto &mapping : mappings_)
     {
-      MidiMapping * mapping = self->mappings[i];
-      mapping->gobj = wrapped_object_with_change_signal_new (
-        mapping, WrappedObjectType::WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
-      mapping->dest = Port::find_from_identifier (&mapping->dest_id);
+      mapping->dest_ = Port::find_from_identifier (mapping->dest_id_);
     }
 }
 
-/**
- * Binds the CC represented by the given raw buffer
- * (must be size 3) to the given Port.
- *
- * @param idx Index to insert at.
- * @param buf The buffer used for matching at [0] and
- *   [1].
- * @param device_port Device port, if custom mapping.
- */
 void
-midi_mappings_bind_at (
-  MidiMappings * self,
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port,
-  int            idx,
-  bool           fire_events)
+MidiMappings::bind_at (
+  std::array<midi_byte_t, 3> buf,
+  ExtPort *                  device_port,
+  Port                      &dest_port,
+  int                        idx,
+  bool                       fire_events)
 {
-  g_return_if_fail (self && buf && dest_port);
-
-  array_double_size_if_full (
-    self->mappings, self->num_mappings, self->mappings_size, MidiMapping);
-
-  /* if inserting, move later mappings further */
-  for (int i = self->num_mappings; i > idx; i--)
-    {
-      self->mappings[i] = self->mappings[i - 1];
-    }
-  self->num_mappings++;
-
-  MidiMapping * mapping = midi_mapping_new ();
-  self->mappings[idx] = mapping;
-
-  memcpy (mapping->key, buf, sizeof (midi_byte_t) * 3);
+  auto mapping = std::make_unique<MidiMapping> ();
+  mapping->key_ = buf;
+  ;
   if (device_port)
     {
-      mapping->device_port = ext_port_clone (device_port);
+      mapping->device_port_ = std::make_unique<ExtPort> (*device_port);
     }
-  mapping->dest_id = dest_port->id_;
-  mapping->dest = dest_port;
-  g_atomic_int_set (&mapping->enabled, (guint) true);
+  mapping->dest_id_ = dest_port.id_;
+  mapping->dest_ = &dest_port;
+  mapping->enabled_.store (true);
+
+  mappings_.insert (mappings_.begin () + idx, std::move (mapping));
 
   char str[100];
-  midi_ctrl_change_get_ch_and_description (buf, str);
+  midi_ctrl_change_get_ch_and_description (buf.data (), str);
 
   if (
     !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, dest_port->id_.flags_,
-      PortIdentifier::Flags::MIDI_AUTOMATABLE)))
+      PortIdentifier::Flags, dest_port.id_.flags_,
+      PortIdentifier::Flags::MidiAutomatable)))
     {
-      g_message (
-        "bounded MIDI mapping from %s to %s", str,
-        dest_port->get_label_as_c_str ());
+      z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
     }
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, NULL);
+      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
     }
 }
 
-/**
- * Unbinds the given binding.
- *
- * @note This must be called inside a port operation
- *   lock, such as inside an undoable action.
- */
 void
-midi_mappings_unbind (MidiMappings * self, int idx, bool fire_events)
+MidiMappings::unbind (int idx, bool fire_events)
 {
-  g_return_if_fail (self && idx >= 0);
+  z_return_if_fail (idx >= 0 && idx < static_cast<int> (mappings_.size ()));
 
-  MidiMapping * mapping_before = self->mappings[idx];
-
-  for (int i = self->num_mappings - 2; i >= idx; i--)
-    {
-      self->mappings[i] = self->mappings[i + 1];
-    }
-  self->num_mappings--;
-
-  object_free_w_func_and_null (midi_mapping_free, mapping_before);
+  mappings_.erase (mappings_.begin () + idx);
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, NULL);
+      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
     }
-}
-
-void
-midi_mapping_set_enabled (MidiMapping * self, bool enabled)
-{
-  g_atomic_int_set (&self->enabled, (guint) enabled);
 }
 
 int
-midi_mapping_get_index (MidiMappings * self, MidiMapping * mapping)
+MidiMappings::get_mapping_index (const MidiMapping &mapping) const
 {
-  for (int i = 0; i < self->num_mappings; i++)
-    {
-      if (self->mappings[i] == mapping)
-        return i;
-    }
-  g_return_val_if_reached (-1);
-}
-
-MidiMapping *
-midi_mapping_new (void)
-{
-  MidiMapping * self = create_midi_mapping ();
-
-  return self;
-}
-
-MidiMapping *
-midi_mapping_clone (const MidiMapping * src)
-{
-  MidiMapping * self = create_midi_mapping ();
-
-  memcpy (&self->key[0], &src->key[0], 3 * sizeof (midi_byte_t));
-  if (src->device_port)
-    self->device_port = ext_port_clone (src->device_port);
-  self->dest_id = src->dest_id;
-  g_atomic_int_set (&self->enabled, (guint) g_atomic_int_get (&src->enabled));
-
-  return self;
+  auto it = std::find_if (
+    mappings_.begin (), mappings_.end (),
+    [&mapping] (const auto &m) { return m.get () == &mapping; });
+  return it != mappings_.end () ? std::distance (mappings_.begin (), it) : -1;
 }
 
 void
-midi_mapping_free (MidiMapping * self)
+MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
-  object_free_w_func_and_null (ext_port_free, self->device_port);
+  z_return_if_fail (dest_);
 
-  g_clear_object (&self->gobj);
-
-  delete self;
-}
-
-static void
-apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
-{
-  g_return_if_fail (mapping->dest);
-
-  Port * dest = mapping->dest;
-  if (dest->id_.type_ == PortType::Control)
+  if (dest_->id_.type_ == PortType::Control)
     {
+      auto dest = static_cast<ControlPort *> (dest_);
       /* if toggle, reverse value */
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, dest->id_.flags_, PortIdentifier::Flags::TOGGLE))
+          PortIdentifier::Flags, dest->id_.flags_, PortIdentifier::Flags::Toggle))
         {
-          control_port_set_toggled (
-            dest, !control_port_is_toggled (dest), F_PUBLISH_EVENTS);
+          dest->set_toggled (!dest->is_toggled (), true);
         }
-      /* else if not toggle set the control
-       * value received */
+      /* else if not toggle set the control value received */
       else
         {
-          float normalized_val = (float) buf[2] / 127.f;
-          dest->set_control_value (
-            normalized_val, F_NORMALIZED, F_PUBLISH_EVENTS);
+          float normalized_val = static_cast<float> (buf[2]) / 127.f;
+          dest->set_control_value (normalized_val, true, true);
         }
     }
-  else if (dest->id_.type_ == PortType::Event)
+  else if (dest_->id_.type_ == PortType::Event)
     {
-      /* FIXME these are called during processing
-       * they should be queued as UI events
-       * instead */
+      /* FIXME these are called during processing they should be queued as UI
+       * events instead */
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_ROLL))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportRoll))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, NULL);
+          EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_STOP))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportStop))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, NULL);
+          EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_BACKWARD))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportBackward))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, NULL);
+          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_FORWARD))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportForward))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, NULL);
+          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_LOOP_TOGGLE))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportLoopToggle))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, NULL);
+          EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest->id_.flags2_,
-          PortIdentifier::Flags2::TRANSPORT_REC_TOGGLE))
+          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2::TransportRecToggle))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, NULL);
+          EVENTS_PUSH (
+            EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr);
         }
     }
 }
 
-/**
- * Applies the events to the appropriate mapping.
- *
- * This is used only for TrackProcessor.cc_mappings.
- *
- * @note Must only be called while transport is
- *   recording.
- */
 void
-midi_mappings_apply_from_cc_events (
-  MidiMappings * self,
-  MidiEvents *   events,
-  bool           queued)
+MidiMappings::apply_from_cc_events (MidiEventVector &events)
 {
-  /* queued not implemented yet */
-  g_return_if_fail (!queued);
-
-  for (int i = 0; i < events->num_events; i++)
+  for (const auto &ev : events)
     {
-      MidiEvent * ev = &events->events[i];
-      if (
-        ev->raw_buffer[0] >= (midi_byte_t) MIDI_CH1_CTRL_CHANGE
-        && ev->raw_buffer[0] <= (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | 15))
+      if (midi_is_controller (ev.raw_buffer_.data ()))
         {
-          midi_byte_t   channel = (midi_byte_t) ((ev->raw_buffer[0] & 0xf) + 1);
-          midi_byte_t   controller = ev->raw_buffer[1];
-          MidiMapping * mapping =
-            self->mappings[(channel - 1) * 128 + controller];
-          apply_mapping (mapping, ev->raw_buffer);
+          auto channel = midi_get_channel_1_to_16 (ev.raw_buffer_.data ());
+          auto controller = midi_get_controller_number (ev.raw_buffer_.data ());
+          auto &mapping = mappings_[(channel - 1) * 128 + controller];
+          mapping->apply (ev.raw_buffer_);
         }
     }
 }
 
-/**
- * Applies the given buffer to the matching ports.
- */
 void
-midi_mappings_apply (MidiMappings * self, midi_byte_t * buf)
+MidiMappings::apply (const midi_byte_t * buf)
 {
-  for (int i = 0; i < self->num_mappings; i++)
+  for (auto &mapping : mappings_)
     {
-      MidiMapping * mapping = self->mappings[i];
-
       if (
-        g_atomic_int_get (&mapping->enabled) && mapping->key[0] == buf[0]
-        && mapping->key[1] == buf[1])
+        mapping->enabled_.load () && mapping->key_[0] == buf[0]
+        && mapping->key_[1] == buf[1])
         {
-          apply_mapping (mapping, buf);
+          std::array<midi_byte_t, 3> arr = { buf[0], buf[1], buf[2] };
+          mapping->apply (arr);
         }
     }
 }
 
-/**
- * Returns a newly allocated MidiMappings.
- */
-MidiMappings *
-midi_mappings_new (void)
-{
-  MidiMappings * self = object_new (MidiMappings);
-
-  self->mappings_size = 4;
-  self->mappings = object_new_n (self->mappings_size, MidiMapping *);
-
-  return self;
-}
-
-/**
- * Get MIDI mappings for the given port.
- *
- * @param arr Optional array to fill with the mappings.
- *
- * @return The number of results.
- */
 int
-midi_mappings_get_for_port (MidiMappings * self, Port * dest_port, GPtrArray * arr)
+MidiMappings::get_for_port (
+  const Port                  &dest_port,
+  std::vector<MidiMapping *> * arr) const
 {
-  g_return_val_if_fail (self && dest_port, 0);
-
   int count = 0;
-  for (int i = 0; i < self->num_mappings; i++)
+  for (const auto &mapping : mappings_)
     {
-      MidiMapping * mapping = self->mappings[i];
-      if (mapping->dest == dest_port)
+      if (mapping->dest_ == &dest_port)
         {
           if (arr)
             {
-              g_ptr_array_add (arr, mapping);
+              arr->push_back (mapping.get ());
             }
           count++;
         }
     }
   return count;
-}
-
-MidiMappings *
-midi_mappings_clone (const MidiMappings * src)
-{
-  MidiMappings * self = object_new (MidiMappings);
-
-  self->mappings = object_new_n ((size_t) src->num_mappings, MidiMapping *);
-  for (int i = 0; i < src->num_mappings; i++)
-    {
-      self->mappings[i] = midi_mapping_clone (src->mappings[i]);
-    }
-  self->num_mappings = src->num_mappings;
-
-  return self;
-}
-
-void
-midi_mappings_free (MidiMappings * self)
-{
-  for (int i = 0; i < self->num_mappings; i++)
-    {
-      object_free_w_func_and_null (midi_mapping_free, self->mappings[i]);
-    }
-  object_zero_and_free (self->mappings);
-
-  object_zero_and_free (self);
 }

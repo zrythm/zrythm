@@ -1,10 +1,8 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Chord object in the TimelineArranger.
  */
@@ -12,13 +10,13 @@
 #ifndef __AUDIO_CHORD_OBJECT_H__
 #define __AUDIO_CHORD_OBJECT_H__
 
-#include <cstdint>
-
+#include "dsp/arranger_object.h"
 #include "dsp/chord_descriptor.h"
-#include "dsp/position.h"
+#include "dsp/muteable_object.h"
 #include "dsp/region_identifier.h"
-#include "gui/backend/arranger_object.h"
-#include "utils/yaml.h"
+#include "dsp/region_owned_object.h"
+#include "utils/icloneable.h"
+#include "utils/pango.h"
 
 /**
  * @addtogroup dsp
@@ -26,7 +24,7 @@
  * @{
  */
 
-#define CHORD_OBJECT_MAGIC 4181694
+constexpr int CHORD_OBJECT_MAGIC = 4181694;
 #define IS_CHORD_OBJECT(x) (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
 #define IS_CHORD_OBJECT_AND_NONNULL(x) (x && IS_CHORD_OBJECT (x))
 
@@ -35,61 +33,92 @@
 #define chord_object_is_selected(r) \
   arranger_object_is_selected ((ArrangerObject *) r)
 
-typedef struct ChordDescriptor ChordDescriptor;
+class ChordDescriptor;
+class ChordRegion;
 
 /**
- * A ChordObject to be shown in the TimelineArrangerWidget.
+ * The ChordObject class represents a chord inside a ChordRegion. It inherits
+ * from MuteableObject and RegionOwnedObject.
  *
- * @extends ArrangerObject
+ * The class provides methods to set the region and index of the chord, get the
+ * associated ChordDescriptor, and find the ChordObject corresponding to a given
+ * position.
+ *
+ * The chord_index_ member variable stores the index of the chord in the chord
+ * pad (0 being the topmost chord). The magic_ member variable is used to
+ * identify valid ChordObject instances. The layout member variable is a cache
+ * for the Pango layout used to draw the chord name.
  */
-typedef struct ChordObject
+class ChordObject final
+    : public MuteableObject,
+      public RegionOwnedObjectImpl<ChordRegion>,
+      public ICloneable<ChordObject>,
+      public ISerializable<ChordObject>
 {
-  /** Base struct. */
-  ArrangerObject base;
+public:
+  // Rule of 0
+  ChordObject () = default;
 
-  /** The index inside the region. */
-  int index;
+  ChordObject (const RegionIdentifier &region_id, int chord_index, int index)
+      : ArrangerObject (Type::ChordObject),
+        RegionOwnedObjectImpl (region_id, index), chord_index_ (chord_index)
+  {
+  }
 
+  using RegionOwnedObjectT = RegionOwnedObjectImpl<ChordRegion>;
+
+  /**
+   * Returns the ChordDescriptor associated with this ChordObject.
+   */
+  ChordDescriptor * get_chord_descriptor () const;
+
+  ArrangerWidget * get_arranger () const override;
+
+  ArrangerObjectPtr find_in_project () const override;
+
+  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+
+  ArrangerObjectPtr insert_clone_to_project () const override;
+
+  std::string print_to_str () const override;
+
+  std::string gen_human_friendly_name () const override;
+
+  friend bool operator== (const ChordObject &lhs, const ChordObject &rhs);
+
+  bool validate (bool is_project, double frames_per_tick) const override;
+
+  void init_after_cloning (const ChordObject &other) override
+  {
+    MuteableObject::copy_members_from (other);
+    RegionOwnedObjectImpl::copy_members_from (other);
+    ArrangerObject::copy_members_from (other);
+    chord_index_ = other.chord_index_;
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /** The index of the chord it belongs to (0 topmost). */
-  int chord_index;
+  int chord_index_ = 0;
 
-  int magic;
+  int magic_ = CHORD_OBJECT_MAGIC;
 
   /** Cache layout for drawing the name. */
-  PangoLayout * layout;
-} ChordObject;
+  PangoLayoutUniquePtr layout_;
+};
 
-/**
- * Creates a ChordObject.
- */
-ChordObject *
-chord_object_new (RegionIdentifier * region_id, int chord_index, int index);
-
-int
-chord_object_is_equal (ChordObject * a, ChordObject * b);
-
-/**
- * Sets the region and index of the chord.
- */
-void
-chord_object_set_region_and_index (ChordObject * self, Region * region, int idx);
-
-/**
- * Returns the ChordDescriptor associated with this
- * ChordObject.
- */
-ChordDescriptor *
-chord_object_get_chord_descriptor (const ChordObject * self);
-
-/**
- * Finds the ChordObject in the project
- * corresponding to the given one's position.
- */
-ChordObject *
-chord_object_find_by_pos (ChordObject * clone);
-
-Region *
-chord_object_get_region (ChordObject * self);
+inline bool
+operator== (const ChordObject &lhs, const ChordObject &rhs)
+{
+  return static_cast<const ArrangerObject &> (lhs)
+           == static_cast<const ArrangerObject &> (rhs)
+         && lhs.chord_index_ == rhs.chord_index_
+         && static_cast<const ChordObject::RegionOwnedObjectT &> (lhs)
+              == static_cast<const ChordObject::RegionOwnedObjectT &> (rhs)
+         && static_cast<const MuteableObject &> (lhs)
+              == static_cast<const MuteableObject &> (rhs);
+}
 
 /**
  * @}

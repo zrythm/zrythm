@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/automation_track.h"
@@ -12,9 +12,10 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
-#include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -30,26 +31,22 @@ static void
 on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
 {
   /* if the selected automatable changed */
-  Port * at_port = Port::find_from_identifier (&self->owner->port_id);
+  auto at_port = Port::find_from_identifier<ControlPort> (self->owner->port_id_);
   if (self->selected_port && at_port != self->selected_port)
     {
       /* set the previous automation track invisible */
-      AutomationTracklist * atl =
-        automation_track_get_automation_tracklist (self->owner);
-      automation_tracklist_set_at_visible (atl, self->owner, false);
+      auto atl = self->owner->get_automation_tracklist ();
+      atl->set_at_visible (*self->owner, false);
 
-      g_message (
-        "selected port: %s", self->selected_port->get_label ().c_str ());
+      z_debug ("selected port: %s", self->selected_port->get_label ());
 
       /* swap indices */
-      AutomationTrack * selected_at =
-        automation_tracklist_get_at_from_port (atl, self->selected_port);
-      g_return_if_fail (selected_at);
-      automation_tracklist_set_at_index (
-        atl, self->owner, selected_at->index, F_NO_PUSH_DOWN);
+      auto selected_at = atl->get_at_from_port (*self->selected_port);
+      z_return_if_fail (selected_at);
+      atl->set_at_index (*self->owner, selected_at->index_, F_NO_PUSH_DOWN);
 
-      selected_at->created = true;
-      automation_tracklist_set_at_visible (atl, selected_at, true);
+      selected_at->created_ = true;
+      atl->set_at_visible (*selected_at, true);
       EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_ADDED, selected_at);
     }
   else
@@ -155,7 +152,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
           const char *      str = gtk_string_object_get_string (sobj);
           if (string_is_equal (_ ("Tempo"), str))
             {
-              if (port_tr->type == TrackType::TRACK_TYPE_TEMPO)
+              if (port_tr->is_tempo ())
                 {
                   match = true;
                   break;
@@ -163,7 +160,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
             }
           else if (string_is_equal (_ ("Macros"), str))
             {
-              if (port_tr->type == TrackType::TRACK_TYPE_MODULATOR)
+              if (port_tr->is_modulator ())
                 {
                   match = true;
                   break;
@@ -172,8 +169,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
           else if (string_is_equal (_ ("Channel"), str))
             {
               if (
-                port->id_.owner_type_ == PortIdentifier::OwnerType::CHANNEL
-                || port->id_.owner_type_ == PortIdentifier::OwnerType::FADER)
+                port->id_.owner_type_ == PortIdentifier::OwnerType::Channel
+                || port->id_.owner_type_ == PortIdentifier::OwnerType::Fader)
                 {
                   match = true;
                   break;
@@ -196,8 +193,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
 
   if (match)
     {
-      char str[1200];
-      port->get_full_designation (str);
+      auto         str = port->get_full_designation ();
       const char * search_term =
         gtk_editable_get_text (GTK_EDITABLE (self->port_search_entry));
       char ** search_terms = g_strsplit (search_term, " ", -1);
@@ -205,9 +201,10 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
         {
           size_t       i = 0;
           const char * term;
-          while ((term = search_terms[i++]) != NULL)
+          while ((term = search_terms[i++]) != nullptr)
             {
-              match = string_contains_substr_case_insensitive (str, term);
+              match =
+                string_contains_substr_case_insensitive (str.c_str (), term);
               if (!match)
                 break;
             }
@@ -225,13 +222,11 @@ setup_ports_listview (
 {
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  Track *               track = automation_track_get_track (self->owner);
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_if_fail (atl);
-  for (int i = 0; i < atl->num_ats; i++)
+  auto  track = self->owner->get_track ();
+  auto &atl = track->get_automation_tracklist ();
+  for (auto &at : atl.ats_)
     {
-      AutomationTrack * at = atl->ats[i];
-      Port *            port = Port::find_from_identifier (&at->port_id);
+      auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
 
       if (!port)
         {
@@ -240,7 +235,7 @@ setup_ports_listview (
         }
 
       /* if this automation track is not already in a visible lane */
-      if (!at->created || !at->visible || at == self->owner)
+      if (!at->created_ || !at->visible_ || at.get () == self->owner)
         {
           WrappedObjectWithChangeSignal * wobj =
             wrapped_object_with_change_signal_new (
@@ -250,7 +245,7 @@ setup_ports_listview (
     }
 
   GtkFilter *          filter = GTK_FILTER (gtk_custom_filter_new (
-    (GtkCustomFilterFunc) ports_filter_func, self, NULL));
+    (GtkCustomFilterFunc) ports_filter_func, self, nullptr));
   GtkFilterListModel * filter_model =
     gtk_filter_list_model_new (G_LIST_MODEL (store), filter);
   GtkSingleSelection * single_sel =
@@ -258,9 +253,9 @@ setup_ports_listview (
   gtk_list_view_set_model (list_view, GTK_SELECTION_MODEL (single_sel));
 
   self->port_factory =
-    item_factory_new (ItemFactoryType::ITEM_FACTORY_TEXT, false, NULL);
-  self->port_factory->ellipsize_label = false;
-  gtk_list_view_set_factory (list_view, self->port_factory->list_item_factory);
+    std::make_unique<ItemFactory> (ItemFactory::Type::Text, false, nullptr);
+  self->port_factory->ellipsize_label_ = false;
+  gtk_list_view_set_factory (list_view, self->port_factory->list_item_factory_);
 }
 
 static void
@@ -286,7 +281,7 @@ bind_type_cb (
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
       Plugin * pl = (Plugin *) wobj->obj;
-      gtk_label_set_text (lbl, pl->setting->descr->name);
+      gtk_label_set_text (lbl, pl->get_name ().c_str ());
     }
   else if (GTK_IS_STRING_OBJECT (obj))
     {
@@ -318,18 +313,18 @@ bind_type_header_cb (
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
       Plugin * pl = (Plugin *) wobj->obj;
-      switch (pl->id.slot_type)
+      switch (pl->id_.slot_type_)
         {
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSERT:
+        case PluginSlotType::Insert:
           gtk_label_set_text (lbl, _ ("Inserts"));
           break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_MIDI_FX:
+        case PluginSlotType::MidiFx:
           gtk_label_set_text (lbl, _ ("MIDI FX"));
           break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_INSTRUMENT:
+        case PluginSlotType::Instrument:
           gtk_label_set_text (lbl, _ ("Instrument"));
           break;
-        case ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR:
+        case PluginSlotType::Modulator:
           gtk_label_set_text (lbl, _ ("Modulators"));
           break;
         default:
@@ -357,24 +352,24 @@ setup_types_listview (
   GtkListView *                      listview,
   AutomatableSelectorPopoverWidget * self)
 {
-  Track * track = automation_track_get_track (self->owner);
+  auto * track = self->owner->get_track ();
 
   GListStore * composite_ls = g_list_store_new (G_TYPE_LIST_MODEL);
 
-  GtkStringList * basic_types_sl = gtk_string_list_new (NULL);
-  if (track->type == TrackType::TRACK_TYPE_TEMPO)
+  GtkStringList * basic_types_sl = gtk_string_list_new (nullptr);
+  if (track->is_tempo ())
     {
       gtk_string_list_append (basic_types_sl, _ ("Tempo"));
     }
-  else if (track->type == TrackType::TRACK_TYPE_MODULATOR)
+  else if (track->is_modulator ())
     {
       gtk_string_list_append (basic_types_sl, _ ("Macros"));
     }
   g_list_store_append (composite_ls, basic_types_sl);
 
-  if (track_type_has_piano_roll (track->type))
+  if (track->has_piano_roll ())
     {
-      GtkStringList * sl = gtk_string_list_new (NULL);
+      GtkStringList * sl = gtk_string_list_new (nullptr);
       for (int i = 0; i < 16; i++)
         {
           char name[300];
@@ -384,17 +379,19 @@ setup_types_listview (
       g_list_store_append (composite_ls, sl);
     }
 
-  if (track_type_has_channel (track->type))
+  if (track->has_channel ())
     {
       gtk_string_list_append (basic_types_sl, _ ("Channel"));
 
-      if (track->channel->instrument)
+      auto ch_track = dynamic_cast<ChannelTrack *> (track);
+      auto ch = ch_track->channel_;
+      if (ch_track->channel_->instrument_)
         {
           GListStore * ls =
             g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
           WrappedObjectWithChangeSignal * wobj =
             wrapped_object_with_change_signal_new (
-              track->channel->instrument,
+              ch->instrument_.get (),
               WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
           g_list_store_append (ls, wobj);
           g_list_store_append (composite_ls, ls);
@@ -404,23 +401,23 @@ setup_types_listview (
         g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
       GListStore * inserts_ls =
         g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-      for (int i = 0; i < STRIP_SIZE; i++)
+      for (auto &plugin : ch->midi_fx_)
         {
-          Plugin * plugin = track->channel->midi_fx[i];
           if (plugin)
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (
-                  plugin, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
               g_list_store_append (midi_fx_ls, wobj);
             }
-
-          plugin = track->channel->inserts[i];
+        }
+      for (auto &plugin : ch->inserts_)
+        {
           if (plugin)
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (
-                  plugin, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
               g_list_store_append (inserts_ls, wobj);
             }
         }
@@ -429,15 +426,17 @@ setup_types_listview (
     }
   GListStore * modulators_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  for (int i = 0; i < track->num_modulators; i++)
+  if (auto mod_track = dynamic_cast<ModulatorTrack *> (track))
     {
-      Plugin * plugin = track->modulators[i];
-      if (plugin)
+      for (auto &plugin : mod_track->modulators_)
         {
-          WrappedObjectWithChangeSignal * wobj =
-            wrapped_object_with_change_signal_new (
-              plugin, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
-          g_list_store_append (modulators_ls, wobj);
+          if (plugin)
+            {
+              WrappedObjectWithChangeSignal * wobj =
+                wrapped_object_with_change_signal_new (
+                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+              g_list_store_append (modulators_ls, wobj);
+            }
         }
     }
   g_list_store_append (composite_ls, modulators_ls);
@@ -470,7 +469,7 @@ on_port_selection_changed (
       GTK_SINGLE_SELECTION (selection_model)));
   if (wobj)
     {
-      self->selected_port = (Port *) wobj->obj;
+      self->selected_port = (ControlPort *) wobj->obj;
       update_info_label (self);
     }
 }
@@ -494,13 +493,13 @@ automatable_selector_popover_widget_new (AutomationTrack * owner)
 {
   AutomatableSelectorPopoverWidget * self =
     Z_AUTOMATABLE_SELECTOR_POPOVER_WIDGET (
-      g_object_new (AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, NULL));
+      g_object_new (AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, nullptr));
 
   self->owner = owner;
 
   /* set selected automatable */
-  Port * port = Port::find_from_identifier (&owner->port_id);
-  g_return_val_if_fail (port, NULL);
+  auto * port = Port::find_from_identifier<ControlPort> (owner->port_id_);
+  g_return_val_if_fail (port, nullptr);
   self->selected_port = port;
 
   /* create model/treeview for types */
@@ -523,6 +522,18 @@ automatable_selector_popover_widget_new (AutomationTrack * owner)
 }
 
 static void
+automatable_selector_popover_widget_finalize (GObject * object)
+{
+  AutomatableSelectorPopoverWidget * self =
+    Z_AUTOMATABLE_SELECTOR_POPOVER_WIDGET (object);
+
+  std::destroy_at (&self->port_factory);
+
+  G_OBJECT_CLASS (automatable_selector_popover_widget_parent_class)
+    ->finalize (object);
+}
+
+static void
 automatable_selector_popover_widget_class_init (
   AutomatableSelectorPopoverWidgetClass * _klass)
 {
@@ -540,12 +551,17 @@ automatable_selector_popover_widget_class_init (
   gtk_widget_class_bind_template_callback (klass, on_closed);
 
 #undef BIND_CHILD
+
+  GObjectClass * gobject_class = G_OBJECT_CLASS (_klass);
+  gobject_class->finalize = automatable_selector_popover_widget_finalize;
 }
 
 static void
 automatable_selector_popover_widget_init (
   AutomatableSelectorPopoverWidget * self)
 {
+  std::construct_at (&self->port_factory);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_search_entry_set_key_capture_widget (

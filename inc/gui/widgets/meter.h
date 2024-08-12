@@ -1,9 +1,7 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
-/** \file
+/** @file
  */
 
 #ifndef __GUI_WIDGETS_METER_H__
@@ -16,7 +14,7 @@
 #define METER_WIDGET_TYPE (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MeterWidget, meter_widget, Z, METER_WIDGET, GtkWidget)
 
-typedef struct Meter Meter;
+class Meter;
 
 typedef struct _MeterWidget
 {
@@ -28,8 +26,8 @@ typedef struct _MeterWidget
   /** Hovered or not. */
   int hover;
 
-  GdkRGBA start_color;
-  GdkRGBA end_color;
+  Color start_color;
+  Color end_color;
 
   float meter_val;
   float meter_peak;

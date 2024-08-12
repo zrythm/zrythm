@@ -13,7 +13,7 @@ project (
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=gnu17',
-    'cpp_std=gnu++17',
+    'cpp_std=c++20',
     'b_lto=true',
     'b_lto_threads=2',
     'wrap_mode=nofallback',
@@ -209,10 +209,6 @@ have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 zrythm_pch = meson_src_root / 'src/pch/zrythm_pch.h'
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
-# this works around a mkenums_simple() bug
-# see https://github.com/mesonbuild/meson/pull/10855
-# TODO remove it after a few meson releases
-FIXME_plugins_inc = include_directories ('inc/plugins')
 ext_inc = include_directories ('ext')
 kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
@@ -221,7 +217,6 @@ weakjack_inc = include_directories ('ext/weakjack')
 all_inc = [
   root_inc,
   inc_inc,
-  FIXME_plugins_inc,
   ext_inc,
   kissfft_inc,
   midilib_inc,
@@ -285,8 +280,7 @@ cdata.set_quoted (
   'HOST_MACHINE_SYSTEM', host_machine.system ())
 cdata.set_quoted (
   'PACKAGE_VERSION',
-  # vcs_tag() broke on windows builds so just use the given
-  # version
+  # vcs_tag() broke on windows builds so just use the given version
   os_windows ? version_fallback : '@VCS_TAG@')
 # this always uses the latest release version from VERSION.txt
 cdata.set_quoted (
@@ -296,7 +290,7 @@ cdata.set ('ZRYTHM_TARGET_VER_MAJ', 1)
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())
-cdata.set_quoted ('PREFIX', prefix)
+cdata.set_quoted ('ZRYTHM_PREFIX', prefix)
 cdata.set_quoted (
   'COMPILER_VERSION',
   meson.get_compiler('c').version())
@@ -757,6 +751,7 @@ test_strict_cflags = [
   '-Werror=odr',
   '-Werror=mismatched-tags',
   '-Werror=narrowing',
+  '-Werror=overloaded-virtual'
   ]
 
 if is_gcc
@@ -833,6 +828,13 @@ add_project_link_arguments (
   language: [ 'c', 'cpp' ],
   )
 
+yyjson_dep = dependency (
+  'yyjson',
+  fallback: ['yyjson', 'yyjson_dep'],
+  default_options: [
+    'default_library=static',
+    ])
+
 subdir ('ext')
 
 # set config defines
@@ -840,11 +842,6 @@ x11_dep = dependency (
   'x11', required: get_option ('x11'), static: all_static)
 if (x11_dep.found ())
   cdata.set('HAVE_X11', 1)
-endif
-alsa_dep = dependency (
-  'alsa', required: get_option ('alsa'), static: all_static)
-if (alsa_dep.found ())
-  cdata.set('HAVE_ALSA', 1)
 endif
 pulseaudio_dep = dependency (
   'libpulse', required: get_option ('pulse'), static: all_static)
@@ -1216,16 +1213,6 @@ if rtaudio_dep.found ()
   cdata.set('RTAUDIO_MINOR_VER', rtaudio_ver_arr[1])
 endif
 
-sdl_dep = dependency (
-  'sdl2', required: get_option ('sdl'),
-  fallback: ['sdl2', 'sdl2_dep'],
-  default_options: [
-    'default_library=static',
-    ])
-if sdl_dep.found ()
-  cdata.set('HAVE_SDL', 1)
-endif
-
 zstd_dep = dependency (
   'libzstd',
   fallback: ['zstd', 'libzstd_dep'],
@@ -1268,21 +1255,6 @@ pcre2_dep = dependency (
     'default_library=static',
     ])
 
-zix_dep = dependency (
-  'zix-0',
-  fallback: ['zix', 'zix_dep'],
-  default_options: [
-    'tests=disabled', 'default_library=static',
-    'docs=disabled', 'tests_cpp=disabled',
-    ])
-
-yyjson_dep = dependency (
-  'yyjson',
-  fallback: ['yyjson', 'yyjson_dep'],
-  default_options: [
-    'default_library=static',
-    ])
-
 magic_enum_dep = dependency (
   'magic_enum', version: '>=0.9.5',
   fallback: ['magic_enum', 'magic_enum_dep'],
@@ -1292,6 +1264,10 @@ magic_enum_dep = dependency (
     ])
 
 fmt_dep = dependency('fmt')
+
+glibmm_dep = dependency('glibmm-2.68')
+giomm_dep = dependency('giomm-2.68')
+# gtkmm_dep = dependency('gtkmm-4.0')
 
 # TODO add Cantarell font as dependency
 
@@ -1303,7 +1279,6 @@ zrythm_deps = [
   graphene_dep,
   gtk_dep,
   sndfile_dep,
-  alsa_dep,
   pulseaudio_dep,
   libsoundio_dep,
   cyaml_dep,
@@ -1313,7 +1288,6 @@ zrythm_deps = [
   carla_host_plugin_dep,
   rtaudio_dep,
   rtmidi_dep,
-  sdl_dep,
   zstd_dep,
   dependency ('threads'),
   pcre2_dep,
@@ -1328,12 +1302,16 @@ zrythm_deps = [
   xxhash_dep,
   vamp_deps,
   dependency ('libcurl'),
-  zix_dep,
   dbus_dep,
   yyjson_dep,
   magic_enum_dep,
   juce_dep,
   fmt_dep,
+  glibmm_dep,
+  giomm_dep,
+  # gtkmm_dep,
+  # reflect_cpp_dep,
+  # cpp_yyjson_dep,
 
   libm,
 ]
@@ -1619,7 +1597,6 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'ALSA': alsa_dep.found (),
   'Carla': have_carla,
   'GraphViz': have_graphviz,
   'JACK': have_jack,
@@ -1628,7 +1605,6 @@ summary ({
   'PulseAudio': pulseaudio_dep.found (),
   'RtAudio': rtaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
-  'SDL': sdl_dep.found (),
   'X11': x11_dep.found (),
   }, section: 'Features')
 

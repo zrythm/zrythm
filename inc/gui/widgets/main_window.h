@@ -1,17 +1,14 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
 
 #include "zrythm.h"
 
-#include <adwaita.h>
-
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 #include "libpanel_wrapper.h"
 
 #define MAIN_WINDOW_WIDGET_TYPE (main_window_widget_get_type ())
@@ -22,12 +19,12 @@ G_DECLARE_FINAL_TYPE (
   MAIN_WINDOW_WIDGET,
   AdwApplicationWindow)
 
-typedef struct _ToolboxWidget     ToolboxWidget;
-typedef struct _CenterDockWidget  CenterDockWidget;
-typedef struct _BotBarWidget      BotBarWidget;
-typedef struct _TopBarWidget      TopBarWidget;
-typedef struct _ZrythmApp         ZrythmApp;
-typedef struct ArrangerSelections ArrangerSelections;
+TYPEDEF_STRUCT_UNDERSCORED (ToolboxWidget);
+TYPEDEF_STRUCT_UNDERSCORED (CenterDockWidget);
+TYPEDEF_STRUCT_UNDERSCORED (BotBarWidget);
+TYPEDEF_STRUCT_UNDERSCORED (TopBarWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ZrythmApp);
+class ArrangerSelections;
 
 /**
  * @addtogroup widgets
@@ -45,7 +42,7 @@ typedef struct ArrangerSelections ArrangerSelections;
  * it is the parent of all other sub-windows of
  * Zrythm.
  */
-typedef struct _MainWindowWidget
+using MainWindowWidget = struct _MainWindowWidget
 {
   AdwApplicationWindow parent_instance;
 
@@ -80,7 +77,7 @@ typedef struct _MainWindowWidget
 
   /** Whether set up already or not. */
   bool setup;
-} MainWindowWidget;
+};
 
 /**
  * Creates a main_window widget using the given

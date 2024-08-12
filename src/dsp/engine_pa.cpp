@@ -198,7 +198,8 @@ engine_pa_test (GtkWindow * win)
     }
 
   PaStream * stream;
-  err = Pa_OpenDefaultStream (&stream, 2, 2, paFloat32, 48000, 512, NULL, NULL);
+  err = Pa_OpenDefaultStream (
+    &stream, 2, 2, paFloat32, 48000, 512, nullptr, nullptr);
   if (err != paNoError)
     {
       msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));

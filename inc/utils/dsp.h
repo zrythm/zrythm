@@ -122,7 +122,7 @@ dsp_mul_k2 (float * dest, float k, size_t size)
  * Gets the maximum absolute value of the buffer (as amplitude).
  */
 NONNULL WARN_UNUSED_RESULT static inline float
-dsp_abs_max (float * buf, size_t size)
+dsp_abs_max (const float * buf, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -186,13 +186,13 @@ dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
  * Gets the minimum of the buffer.
  */
 NONNULL float
-dsp_min (float * buf, size_t size);
+dsp_min (const float * buf, size_t size);
 
 /**
  * Gets the maximum of the buffer.
  */
 NONNULL float
-dsp_max (float * buf, size_t size);
+dsp_max (const float * buf, size_t size);
 
 /**
  * Calculate dst[i] = dst[i] + src[i].
@@ -267,7 +267,7 @@ dsp_reverse1 (float * dest, size_t size)
  * Reverse the order of samples: dst[i] <=> src[count - i - 1].
  */
 NONNULL HOT static inline void
-dsp_reverse2 (float * dest, float * src, size_t size)
+dsp_reverse2 (float * dest, const float * src, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -376,5 +376,37 @@ dsp_linear_fade_out_to (
  */
 NONNULL void
 dsp_make_mono (float * l, float * r, size_t size, bool equal_power);
+
+/**
+ * RAII class to manage the lifecycle of an LSP DSP context.
+ *
+ * This class is responsible for starting and finishing the DSP context
+ * when the object is constructed and destructed, respectively. It
+ * provides access to the underlying DSP context through the `get()`
+ * method.
+ *
+ * The DSP context is only started and finished if the
+ * `ZRYTHM_USE_OPTIMIZED_DSP` macro is defined.
+ */
+class LspDspContextRAII
+{
+public:
+  LspDspContextRAII ()
+  {
+    if (ZRYTHM_USE_OPTIMIZED_DSP)
+      lsp::dsp::start (&ctx_);
+  }
+
+  ~LspDspContextRAII ()
+  {
+    if (ZRYTHM_USE_OPTIMIZED_DSP)
+      lsp::dsp::finish (&ctx_);
+  }
+
+  lsp::dsp::context_t * get () { return &ctx_; }
+
+private:
+  lsp::dsp::context_t ctx_ = {};
+};
 
 #endif

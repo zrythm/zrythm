@@ -14,10 +14,10 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#include <adwaita.h>
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
+#include "libadwaita_wrapper.h"
 
 G_DEFINE_TYPE (
   TracklistPreferencesPopoverWidget,
@@ -29,7 +29,7 @@ tracklist_preferences_popover_widget_new (void)
 {
   TracklistPreferencesPopoverWidget * self =
     Z_TRACKLIST_PREFERENCES_POPOVER_WIDGET (
-      g_object_new (TRACKLIST_PREFERENCES_POPOVER_WIDGET_TYPE, NULL));
+      g_object_new (TRACKLIST_PREFERENCES_POPOVER_WIDGET_TYPE, nullptr));
 
   return self;
 }

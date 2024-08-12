@@ -1,21 +1,15 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/exporter.h"
 #include "gui/widgets/bounce_step_selector.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/cairo.h"
 #include "utils/gtk.h"
-#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
-#include <zix/ring.h>
 
 G_DEFINE_TYPE (BounceStepSelectorWidget, bounce_step_selector_widget, GTK_TYPE_BOX)
 
@@ -45,8 +39,7 @@ static void
 on_before_inserts_toggled (GtkToggleButton * btn, BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
-    S_UI, "bounce-step",
-    ENUM_VALUE_TO_INT (BounceStep::BOUNCE_STEP_BEFORE_INSERTS));
+    S_UI, "bounce-step", ENUM_VALUE_TO_INT (BounceStep::BeforeInserts));
 
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (self->before_inserts_toggle, true);
@@ -59,7 +52,7 @@ static void
 on_pre_fader_toggled (GtkToggleButton * btn, BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
-    S_UI, "bounce-step", ENUM_VALUE_TO_INT (BounceStep::BOUNCE_STEP_PRE_FADER));
+    S_UI, "bounce-step", ENUM_VALUE_TO_INT (BounceStep::PreFader));
 
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (self->before_inserts_toggle, true);
@@ -72,7 +65,7 @@ static void
 on_post_fader_toggled (GtkToggleButton * btn, BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
-    S_UI, "bounce-step", ENUM_VALUE_TO_INT (BounceStep::BOUNCE_STEP_POST_FADER));
+    S_UI, "bounce-step", ENUM_VALUE_TO_INT (BounceStep::PostFader));
 
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (self->before_inserts_toggle, true);
@@ -90,13 +83,14 @@ bounce_step_selector_widget_new (void)
   BounceStepSelectorWidget * self = static_cast<
     BounceStepSelectorWidget *> (g_object_new (
     BOUNCE_STEP_SELECTOR_WIDGET_TYPE, "orientation", GTK_ORIENTATION_VERTICAL,
-    NULL));
+    nullptr));
 
   gtk_widget_set_visible (GTK_WIDGET (self), true);
 
 #define CREATE(x, n, icon) \
   self->x##_toggle = z_gtk_toggle_button_new_with_icon_and_text ( \
-    icon, _ (bounce_step_str[n]), false, GTK_ORIENTATION_HORIZONTAL, 4); \
+    icon, fmt::format ("{:t}", ENUM_INT_TO_VALUE (BounceStep, n)).c_str (), \
+    false, GTK_ORIENTATION_HORIZONTAL, 4); \
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = g_signal_connect ( \
     G_OBJECT (self->x##_toggle), "toggled", G_CALLBACK (on_##x##_toggled), \
@@ -109,13 +103,13 @@ bounce_step_selector_widget_new (void)
   BounceStep step = (BounceStep) g_settings_get_enum (S_UI, "bounce-step");
   switch (step)
     {
-    case BounceStep::BOUNCE_STEP_BEFORE_INSERTS:
+    case BounceStep::BeforeInserts:
       gtk_toggle_button_set_active (self->before_inserts_toggle, true);
       break;
-    case BounceStep::BOUNCE_STEP_PRE_FADER:
+    case BounceStep::PreFader:
       gtk_toggle_button_set_active (self->pre_fader_toggle, true);
       break;
-    case BounceStep::BOUNCE_STEP_POST_FADER:
+    case BounceStep::PostFader:
       gtk_toggle_button_set_active (self->post_fader_toggle, true);
       break;
     }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
@@ -32,13 +32,14 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
   /* --- predefined --- */
   GMenu * predefined_menu = g_menu_new ();
   GMenu * scales_submenu = g_menu_new ();
-  for (unsigned int i = 0; i < ENUM_COUNT (MusicalScaleType); i++)
+  for (unsigned int i = 0; i < ENUM_COUNT (MusicalScale::Type); i++)
     {
-      MusicalScaleType type = ENUM_INT_TO_VALUE (MusicalScaleType, i);
+      auto type = ENUM_INT_TO_VALUE (MusicalScale::Type, i);
 
       /* ignore scales with unimplemented triads */
-      const ChordType * triad_types = musical_scale_get_triad_types (type, true);
-      if (triad_types[0] == ChordType::CHORD_TYPE_NONE)
+      const auto triad_types =
+        MusicalScale::get_triad_types_for_type (type, true);
+      if (triad_types[0] == ChordType::None)
         continue;
 
       GMenu * scale_submenu = g_menu_new ();
@@ -48,12 +49,12 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
           char action[800];
           sprintf (action, "app.load-chord-preset-from-scale::%d,%d", i, j);
           menuitem = z_gtk_create_menu_item (
-            chord_descriptor_note_to_string ((MusicalNote) j), "minuet-chords",
+            ChordDescriptor::note_to_string ((MusicalNote) j), "minuet-chords",
             action);
           g_menu_append_item (scale_submenu, menuitem);
         }
       g_menu_append_submenu (
-        scales_submenu, musical_scale_type_to_string (type),
+        scales_submenu, MusicalScale::type_to_string (type),
         G_MENU_MODEL (scale_submenu));
     }
   g_menu_append_submenu (
@@ -62,27 +63,22 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
 
   /* --- packs --- */
   GMenu * packs_menu = g_menu_new ();
-  int     num_packs =
-    chord_preset_pack_manager_get_num_packs (CHORD_PRESET_PACK_MANAGER);
-  for (int i = 0; i < num_packs; i++)
+  for (size_t i = 0; i < CHORD_PRESET_PACK_MANAGER->packs_.size (); ++i)
     {
-      ChordPresetPack * pack =
-        chord_preset_pack_manager_get_pack_at (CHORD_PRESET_PACK_MANAGER, i);
+      ChordPresetPack * pack = CHORD_PRESET_PACK_MANAGER->get_pack_at (i);
 
       GMenu * pack_submenu = g_menu_new ();
-      for (size_t j = 0; j < pack->presets->len; j++)
+      for (size_t j = 0; j < pack->presets_.size (); ++j)
         {
-          ChordPreset * pset =
-            static_cast<ChordPreset *> (g_ptr_array_index (pack->presets, j));
+          ChordPreset &pset = pack->presets_[j];
 
-          char action[800];
-          sprintf (action, "app.load-chord-preset::%d,%zu", i, j);
-          menuitem =
-            z_gtk_create_menu_item (pset->name, "minuet-chords", action);
+          auto action = fmt::format ("app.load-chord-preset::{},{}", i, j);
+          menuitem = z_gtk_create_menu_item (
+            pset.name_.c_str (), "minuet-chords", action.c_str ());
           g_menu_append_item (pack_submenu, menuitem);
         }
       g_menu_append_submenu (
-        packs_menu, pack->name, G_MENU_MODEL (pack_submenu));
+        packs_menu, pack->name_.c_str (), G_MENU_MODEL (pack_submenu));
     }
   g_menu_append_section (menu, _ ("Preset Packs"), G_MENU_MODEL (packs_menu));
 
@@ -103,7 +99,7 @@ ChordPadPanelWidget *
 chord_pad_panel_widget_new (void)
 {
   ChordPadPanelWidget * self = static_cast<ChordPadPanelWidget *> (
-    g_object_new (CHORD_PAD_PANEL_WIDGET_TYPE, NULL));
+    g_object_new (CHORD_PAD_PANEL_WIDGET_TYPE, nullptr));
 
   return self;
 }

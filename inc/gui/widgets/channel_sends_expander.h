@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Channel sends.
  */
@@ -26,7 +26,7 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SENDS_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track              Track;
+class Track;
 typedef struct _ChannelSendWidget ChannelSendWidget;
 
 /**

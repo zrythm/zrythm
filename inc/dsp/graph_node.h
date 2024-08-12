@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -26,12 +26,6 @@
  * ---
  */
 
-/**
- * \file
- *
- * Routing graph node.
- */
-
 #ifndef __AUDIO_GRAPH_NODE_H__
 #define __AUDIO_GRAPH_NODE_H__
 
@@ -39,18 +33,19 @@
 
 #include "gtk_wrapper.h"
 
-TYPEDEF_STRUCT (GraphNode);
-TYPEDEF_STRUCT (Graph);
-TYPEDEF_STRUCT (PassthroughProcessor);
+class GraphNode;
+class Graph;
+class PassthroughProcessor;
 class Port;
-TYPEDEF_STRUCT (Fader);
-TYPEDEF_STRUCT (Track);
-TYPEDEF_STRUCT (SampleProcessor);
-TYPEDEF_STRUCT (Plugin);
-TYPEDEF_STRUCT (HardwareProcessor);
-TYPEDEF_STRUCT (ModulatorMacroProcessor);
-TYPEDEF_STRUCT (EngineProcessTimeInfo);
-TYPEDEF_STRUCT (ChannelSend);
+class Fader;
+class Track;
+class SampleProcessor;
+class Plugin;
+class HardwareProcessor;
+class ModulatorMacroProcessor;
+struct EngineProcessTimeInfo;
+class ChannelSend;
+class GraphThread;
 
 /**
  * @addtogroup dsp
@@ -59,168 +54,172 @@ TYPEDEF_STRUCT (ChannelSend);
  */
 
 /**
- * Graph nodes can be either ports or processors.
- *
- * Processors can be plugins, faders, etc.
+ * @brief A node in the processing graph.
  */
-enum class GraphNodeType
+class GraphNode
 {
-  /** Port. */
-  ROUTE_NODE_TYPE_PORT,
-  /** Plugin processor. */
-  ROUTE_NODE_TYPE_PLUGIN,
-  /** Track processor. */
-  ROUTE_NODE_TYPE_TRACK,
-  /** Fader/pan processor. */
-  ROUTE_NODE_TYPE_FADER,
-  /** Fader/pan processor for monitor. */
-  ROUTE_NODE_TYPE_MONITOR_FADER,
-  /** Pre-Fader passthrough processor. */
-  ROUTE_NODE_TYPE_PREFADER,
-  /** Sample processor. */
-  ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
+public:
+  /**
+   * @brief Graph node type.
+   *
+   * Graph nodes can be either ports (audio L input, midi input, etc.) or
+   * processors (plugin, fader, etc.). This is explained in the user manual.
+   * TODO: explain this here too.
+   */
+  enum class Type
+  {
+    /** Port. */
+    Port,
+    /** Plugin processor. */
+    Plugin,
+    /** Track processor. */
+    Track,
+    /** Fader/pan processor. */
+    Fader,
+    /** Fader/pan processor for monitor. */
+    MonitorFader,
+    /** Pre-Fader passthrough processor. */
+    Prefader,
+    /** Sample processor. */
+    SampleProcessor,
+
+    /**
+     * Initial processor.
+     *
+     * The initial processor is a dummy processor in the chain processed
+     * before anything else.
+     */
+    InitialProcessor,
+
+    /** Hardware processor. */
+    HardwareProcessor,
+
+    ModulatorMacroProcessor,
+
+    /** Channel send. */
+    ChannelSend,
+  };
+
+public:
+  GraphNode () = default;
+  GraphNode (Graph * graph, Type type, void * data);
 
   /**
-   * Initial processor.
+   * Returns a human friendly name of the node.
+   */
+  std::string get_name () const;
+
+  void * get_pointer () const;
+
+  /** For general debugging. */
+  std::string print_to_str () const;
+
+  void print () const;
+
+  /**
+   * Processes the GraphNode.
+   */
+  HOT void process (EngineProcessTimeInfo time_nfo, GraphThread &thread);
+
+  /**
+   * Returns the latency of only the given port, without adding the
+   * previous/next latencies.
    *
-   * The initial processor is a dummy processor
-   * in the chain processed before anything else.
+   * It returns the plugin's latency if plugin, otherwise 0.
    */
-  ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
+  HOT nframes_t get_single_playback_latency () const;
 
-  /** Hardware processor. */
-  ROUTE_NODE_TYPE_HW_PROCESSOR,
-
-  ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR,
-
-  /** Channel send. */
-  ROUTE_NODE_TYPE_CHANNEL_SEND,
-};
-
-/**
- * A node in the processing graph.
- */
-typedef struct GraphNode
-{
-  int id;
-  /** Ref back to the graph so we don't have to
-   * pass it around. */
-  Graph * graph;
-
-  /** outgoing edges
-   * downstream nodes to activate when this node
-   * has completed processed
+  /**
+   * Sets the playback latency of the given node recursively.
+   *
+   * Used only when (re)creating the graph.
+   *
+   * @param dest_latency The total destination latency so far.
    */
-  GraphNode ** childnodes;
-  int          n_childnodes;
+  void set_route_playback_latency (nframes_t dest_latency);
+
+  /**
+   * Called by an upstream node when it has completed processing.
+   */
+  HOT void trigger ();
+
+  void connect_to (GraphNode &target);
+
+private:
+  HOT void on_finish (GraphThread &thread);
+
+  HOT void process_internal (const EngineProcessTimeInfo time_nfo);
+
+  void add_feeds (GraphNode &dest);
+  void add_depends (GraphNode &src);
+
+public:
+  int id_ = 0;
+
+  /** Ref back to the graph so we don't have to pass it around. */
+  Graph * graph_ = nullptr;
+
+  /**
+   * @brief Outgoing nodes.
+   *
+   * Downstream nodes to activate when this node has completed processing.
+   *
+   * @note These are not owned.
+   */
+  std::vector<GraphNode *> childnodes_;
 
   /** Incoming node count. */
-  gint refcount;
+  std::atomic<int> refcount_ = 0;
 
   /** Initial incoming node count. */
-  gint init_refcount;
+  gint init_refcount_ = 0;
 
-  /** Used when creating the graph so we can
-   * traverse it backwards to set the latencies. */
-  GraphNode ** parentnodes;
+  /**
+   * @brief Incoming nodes.
+   *
+   * Used when creating the graph so we can traverse it backwards to set the
+   * latencies.
+   *
+   * @note These are not owned.
+   */
+  std::vector<GraphNode *> parentnodes_;
 
   /** Port, if not a plugin or fader. */
-  Port * port;
+  Port * port_ = nullptr;
 
   /** Plugin, if plugin. */
-  Plugin * pl;
+  Plugin * pl_ = nullptr;
 
   /** Fader, if fader. */
-  Fader * fader;
+  Fader * fader_ = nullptr;
 
-  Track * track;
+  Track * track_ = nullptr;
 
   /** Pre-Fader, if prefader node. */
-  Fader * prefader;
+  Fader * prefader_ = nullptr;
 
   /** Sample processor, if sample processor. */
-  SampleProcessor * sample_processor;
+  SampleProcessor * sample_processor_ = nullptr;
 
   /** Hardware processor, if hardware processor. */
-  HardwareProcessor * hw_processor;
+  HardwareProcessor * hw_processor_ = nullptr;
 
-  ModulatorMacroProcessor * modulator_macro_processor;
+  ModulatorMacroProcessor * modulator_macro_processor_ = nullptr;
 
-  ChannelSend * send;
+  ChannelSend * send_ = nullptr;
 
   /** For debugging. */
-  bool terminal;
-  bool initial;
+  bool terminal_ = false;
+  bool initial_ = false;
 
-  /** The playback latency of the node, in
-   * samples. */
-  nframes_t playback_latency;
+  /** The playback latency of the node, in samples. */
+  nframes_t playback_latency_ = 0;
 
   /** The route's playback latency so far. */
-  nframes_t route_playback_latency;
+  nframes_t route_playback_latency_ = 0;
 
-  GraphNodeType type;
-} GraphNode;
-
-/**
- * Returns a human friendly name of the node.
- *
- * Must be free'd.
- */
-char *
-graph_node_get_name (GraphNode * node);
-
-void *
-graph_node_get_pointer (GraphNode * self);
-
-void
-graph_node_print_to_str (GraphNode * node, char * buf, size_t buf_sz);
-
-void
-graph_node_print (GraphNode * node);
-
-/**
- * Processes the GraphNode.
- */
-HOT void
-graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo);
-
-/**
- * Returns the latency of only the given port, without adding
- * the previous/next latencies.
- *
- * It returns the plugin's latency if plugin, otherwise 0.
- */
-HOT nframes_t
-graph_node_get_single_playback_latency (GraphNode * node);
-
-/**
- * Sets the playback latency of the given node
- * recursively.
- *
- * Used only when (re)creating the graph.
- *
- * @param dest_latency The total destination
- * latency so far.
- */
-void
-graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency);
-
-/**
- * Called by an upstream node when it has completed
- * processing.
- */
-HOT void
-graph_node_trigger (GraphNode * self);
-
-void
-graph_node_connect (GraphNode * from, GraphNode * to);
-
-GraphNode *
-graph_node_new (Graph * graph, GraphNodeType type, void * data);
-
-void
-graph_node_free (GraphNode * node);
+  Type type_ = {};
+};
 
 /**
  * @}

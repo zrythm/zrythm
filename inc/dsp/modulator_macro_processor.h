@@ -1,19 +1,14 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * \file
- *
- * Modulator macro button processor.
- */
-
 #ifndef __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 #define __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 
-#include "dsp/port.h"
-#include "utils/yaml.h"
+#include "dsp/control_port.h"
+#include "dsp/cv_port.h"
+#include "utils/types.h"
 
-typedef struct Track Track;
+class ModulatorTrack;
 
 /**
  * @addtogroup dsp
@@ -21,82 +16,73 @@ typedef struct Track Track;
  * @{
  */
 
-#define MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION 1
-
-#define modulator_macro_processor_is_in_active_project(self) \
-  (self->track && track_is_in_active_project (self->track))
-
 /**
  * Modulator macro button processor.
  *
- * Has 1 control input, many CV inputs and 1 CV
- * output.
+ * Has 1 control input, many CV inputs and 1 CV output.
  *
  * Can only belong to modulator track.
  */
-typedef struct ModulatorMacroProcessor
+class ModulatorMacroProcessor final
+    : public ICloneable<ModulatorMacroProcessor>,
+      public ISerializable<ModulatorMacroProcessor>
 {
-  int schema_version;
+public:
+  ModulatorMacroProcessor () = default;
+  ModulatorMacroProcessor (ModulatorTrack * track, int idx);
 
+  bool is_in_active_project () const;
+
+  std::string        get_name () const { return name_; }
+  static std::string name_getter (void * data)
+  {
+    return static_cast<ModulatorMacroProcessor *> (data)->get_name ();
+  }
+
+  COLD void init_loaded (ModulatorTrack &track);
+
+  void        set_name (std::string_view name) { name_ = name; }
+  static void name_setter (void * data, std::string_view name)
+  {
+    static_cast<ModulatorMacroProcessor *> (data)->set_name (name);
+  }
+
+  ModulatorTrack * get_track () const { return track_; }
+
+  /**
+   * Process.
+   */
+  void process (const EngineProcessTimeInfo time_nfo);
+
+  void init_after_cloning (const ModulatorMacroProcessor &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
   /**
    * Name to be shown in the modulators tab.
    *
-   * @note This is only cosmetic and should not be
-   * used anywhere during processing.
+   * @note This is only cosmetic and should not be used anywhere during
+   * processing.
    */
-  char * name;
+  std::string name_;
 
   /** CV input port for connecting CV signals to. */
-  Port * cv_in;
+  std::unique_ptr<CVPort> cv_in_;
 
   /**
    * CV output after macro is applied.
    *
-   * This can be routed to other parameters to apply
-   * the macro.
+   * This can be routed to other parameters to apply the macro.
    */
-  Port * cv_out;
+  std::unique_ptr<CVPort> cv_out_;
 
   /** Control port controlling the amount. */
-  Port * macro;
+  std::unique_ptr<ControlPort> macro_;
 
   /** Pointer to owner track, if any. */
-  Track * track;
-
-} ModulatorMacroProcessor;
-
-static inline const char *
-modulator_macro_processor_get_name (ModulatorMacroProcessor * self)
-{
-  return self->name;
-}
-
-COLD void
-modulator_macro_processor_init_loaded (
-  ModulatorMacroProcessor * self,
-  Track *                   track);
-
-void
-modulator_macro_processor_set_name (
-  ModulatorMacroProcessor * self,
-  const char *              name);
-
-Track *
-modulator_macro_processor_get_track (ModulatorMacroProcessor * self);
-
-/**
- * Process.
- */
-void
-modulator_macro_processor_process (
-  ModulatorMacroProcessor *           self,
-  const EngineProcessTimeInfo * const time_nfo);
-
-ModulatorMacroProcessor *
-modulator_macro_processor_new (Track * track, int idx);
-
-void
-modulator_macro_processor_free (ModulatorMacroProcessor * self);
+  ModulatorTrack * track_;
+};
 
 /**
  * @}

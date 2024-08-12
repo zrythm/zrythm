@@ -1,12 +1,8 @@
-// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-
 #include "dsp/control_port.h"
-#include "dsp/port.h"
 #include "gui/widgets/volume.h"
-#include "utils/ui.h"
 
 G_DEFINE_TYPE (VolumeWidget, volume_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -40,7 +36,7 @@ volume_draw_cb (
   cairo_stroke (cr);
 
   /* draw filled in bar */
-  double normalized_val = control_port_get_normalized_val (self->port);
+  double normalized_val = self->port->get_normalized_val ();
   double filled_w = normalized_val * (double) width;
   double filled_h =
     /* tan (theta) * filled_w */
@@ -55,7 +51,7 @@ volume_draw_cb (
 static void
 on_leave (GtkEventControllerMotion * motion_controller, VolumeWidget * self)
 {
-  if (!gtk_gesture_drag_get_offset (self->drag, NULL, NULL))
+  if (!gtk_gesture_drag_get_offset (self->drag, nullptr, nullptr))
     self->hover = 0;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -81,12 +77,12 @@ drag_update (
   offset_y = -offset_y;
   const int use_y =
     fabs (offset_y - self->last_y) > fabs (offset_x - self->last_x);
-  const float cur_norm_val = control_port_get_normalized_val (self->port);
+  const float cur_norm_val = self->port->get_normalized_val ();
   const float delta =
     use_y ? (float) (offset_y - self->last_y) : (float) (offset_x - self->last_x);
   const float multiplier = 0.012f;
   const float new_norm_val = CLAMP (cur_norm_val + multiplier * delta, 0.f, 1.f);
-  control_port_set_val_from_normalized (self->port, new_norm_val, false);
+  self->port->set_val_from_normalized (new_norm_val, false);
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
@@ -108,7 +104,7 @@ drag_end (
   if (state & GDK_CONTROL_MASK)
     {
       float def_val = self->port->deff_;
-      control_port_set_real_val (self->port, def_val);
+      self->port->set_real_val (def_val);
     }
 
   self->last_x = 0;
@@ -116,7 +112,7 @@ drag_end (
 }
 
 void
-volume_widget_setup (VolumeWidget * self, Port * port)
+volume_widget_setup (VolumeWidget * self, ControlPort * port)
 {
   self->port = port;
 
@@ -138,14 +134,14 @@ volume_widget_setup (VolumeWidget * self, Port * port)
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), volume_draw_cb, self, NULL);
+    GTK_DRAWING_AREA (self), volume_draw_cb, self, nullptr);
 }
 
 VolumeWidget *
-volume_widget_new (Port * port)
+volume_widget_new (ControlPort * port)
 {
   VolumeWidget * self =
-    static_cast<VolumeWidget *> (g_object_new (VOLUME_WIDGET_TYPE, NULL));
+    static_cast<VolumeWidget *> (g_object_new (VOLUME_WIDGET_TYPE, nullptr));
 
   volume_widget_setup (self, port);
 

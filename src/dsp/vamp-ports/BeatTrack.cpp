@@ -482,7 +482,7 @@ BeatTracker::beatTrackOld ()
   ttParams.WinT.post = 8;
   ttParams.WinT.pre = 7;
 
-  TempoTrack tempoTracker (ttParams);
+  QMTempoTrack tempoTracker (ttParams);
 
   vector<double> tempi;
   vector<int>    beats = tempoTracker.process (m_d->dfOutput, &tempi);

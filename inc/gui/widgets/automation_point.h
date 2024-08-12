@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Automation Point.
  */
@@ -11,7 +11,6 @@
 #define __GUI_WIDGETS_AUTOMATION_POINT_H__
 
 #include "dsp/automation_point.h"
-#include "utils/ui.h"
 
 #include "gtk_wrapper.h"
 
@@ -21,7 +20,7 @@
  * @{
  */
 
-#define AP_WIDGET_POINT_SIZE 6
+constexpr int AP_WIDGET_POINT_SIZE = 6;
 
 /**
  * Returns if the automation point (circle) is hit.
@@ -35,7 +34,7 @@
  * @note the transient is also checked.
  */
 bool
-automation_point_is_point_hit (AutomationPoint * self, double x, double y);
+automation_point_is_point_hit (const AutomationPoint &self, double x, double y);
 
 /**
  * Returns if the automation curve is hit.
@@ -52,10 +51,10 @@ automation_point_is_point_hit (AutomationPoint * self, double x, double y);
  */
 bool
 automation_point_is_curve_hit (
-  AutomationPoint * self,
-  double            x,
-  double            y,
-  double            delta_from_curve);
+  const AutomationPoint &self,
+  double                 x,
+  double                 y,
+  double                 delta_from_curve);
 
 /**
  * Returns whether the cached render node for @ref

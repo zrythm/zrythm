@@ -1,11 +1,12 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/control_port.h"
-#include "dsp/fade.h"
+#include "dsp/arranger_object.h"
+#include "dsp/audio_region.h"
+#include "dsp/automatable_track.h"
+#include "dsp/laned_track.h"
 #include "dsp/track_lane.h"
 #include "dsp/tracklist.h"
-#include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_draw.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/arranger_wrapper.h"
@@ -78,15 +79,15 @@ draw_selections (ArrangerWidget * self, GtkSnapshot * snapshot)
    * (in the case of timeline */
   switch (self->action)
     {
-    case UI_OVERLAY_ACTION_SELECTING:
-    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UiOverlayAction::SELECTING:
+    case UiOverlayAction::DELETE_SELECTING:
       {
         gtk_snapshot_append_color (snapshot, &inside_color, &graphene_rect);
         gtk_snapshot_append_border (
           snapshot, &rounded_rect, border_widths, border_colors);
       }
       break;
-    case UI_OVERLAY_ACTION_RAMPING:
+    case UiOverlayAction::RAMPING:
       {
         cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &graphene_rect);
         gdk_cairo_set_source_rgba (cr, &border_color);
@@ -116,7 +117,8 @@ draw_highlight (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * re
     (float) ((self->highlight_rect.y + 1)),
     (float) (self->highlight_rect.width - 1),
     (float) (self->highlight_rect.height - 1));
-  gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp);
+  auto color = UI_COLORS->bright_orange.to_gdk_rgba ();
+  gtk_snapshot_append_color (snapshot, &color, &tmp);
 }
 
 /**
@@ -133,14 +135,14 @@ draw_arranger_object (
   for (
     int i = 0;
     i
-    < 1 + (arranger_object_should_orig_be_visible (obj, self) && arranger_object_is_selected (obj));
+    < 1 + (arranger_object_should_orig_be_visible (obj, self) && obj->is_selected ());
     i++)
     {
       /* if looping 2nd time (transient) */
       if (i == 1)
         {
-          g_return_if_fail (obj->transient);
-          obj = obj->transient;
+          g_return_if_fail (obj->transient_);
+          obj = obj->transient_;
         }
 
       arranger_object_set_full_rectangle (obj, self);
@@ -149,12 +151,11 @@ draw_arranger_object (
        * regions, the logic is handled inside region_draw() so the check is
        * skipped) */
       bool rect_hit_or_region =
-        ui_rectangle_overlap (&obj->full_rect, rect)
-        || obj->type == ArrangerObjectType::ARRANGER_OBJECT_TYPE_REGION;
+        ui_rectangle_overlap (&obj->full_rect_, rect) || obj->is_region ();
 
-      Track * track = arranger_object_get_track (obj);
+      Track * track = obj->get_track ();
       bool    should_be_visible =
-        (track->visible && self->is_pinned == track_is_pinned (track))
+        (track->visible_ && self->is_pinned == track->is_pinned ())
         || self->type != ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
 
       if (rect_hit_or_region && should_be_visible)
@@ -181,12 +182,13 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
     {
       graphene_rect_t tmp = Z_GRAPHENE_RECT_INIT (
         (float) px - 1.f, (float) rect->y, 2.f, (float) height);
-      gtk_snapshot_append_color (snapshot, &UI_COLORS->prefader_send, &tmp);
+      auto color = UI_COLORS->prefader_send.to_gdk_rgba ();
+      gtk_snapshot_append_color (snapshot, &color, &tmp);
       self->last_playhead_px = px;
     }
 
   /* draw faded playhead if in audition mode */
-  if (P_TOOL == Tool::TOOL_AUDITION)
+  if (P_TOOL == Tool::Audition)
     {
       bool   hovered = false;
       double hover_x = 0.f;
@@ -225,7 +227,7 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
 
       if (hovered)
         {
-          GdkRGBA color = UI_COLORS->prefader_send;
+          GdkRGBA color = UI_COLORS->prefader_send.to_gdk_rgba ();
           color.alpha = 0.6f;
           graphene_rect_t tmp = Z_GRAPHENE_RECT_INIT (
             (float) hover_x - 1, (float) rect->y, 2.f, (float) height);
@@ -244,21 +246,26 @@ draw_debug_text (
     Z_GRAPHENE_RECT_INIT ((float) rect->x, (float) rect->y, 400.f, 400.f);
   GdkRGBA color = Z_GDK_RGBA_INIT (0, 0, 0, 0.4);
   gtk_snapshot_append_color (snapshot, &color, &tmp);
-  char                   debug_txt[6000];
-  const EditorSettings * settings = arranger_widget_get_editor_settings (self);
-  sprintf (
-    debug_txt, "Hover: (%.0f, %.0f)\nNormalized hover: (%.0f, %.0f)\nAction: %s",
-    self->hover_x, self->hover_y, self->hover_x - settings->scroll_start_x,
-    self->hover_y - settings->scroll_start_y,
-    ui_get_overlay_action_string (self->action));
-  pango_layout_set_markup (self->debug_layout, debug_txt, -1);
-  gtk_snapshot_save (snapshot);
-  graphene_point_t point =
-    Z_GRAPHENE_POINT_INIT ((float) (rect->x + 4), (float) (rect->y + 4));
-  gtk_snapshot_translate (snapshot, &point);
-  GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-  gtk_snapshot_append_layout (snapshot, self->debug_layout, &tmp_color);
-  gtk_snapshot_restore (snapshot);
+  auto settings = arranger_widget_get_editor_settings (self);
+  std::visit (
+    [&] (auto &&settings) {
+      auto debug_txt = fmt::format (
+        "Hover: (%.0f, %.0f)\nNormalized hover: (%.0f, %.0f)\nAction: {}",
+        self->hover_x, self->hover_y, self->hover_x - settings->scroll_start_x_,
+        self->hover_y - settings->scroll_start_y_,
+        UiOverlayAction_to_string (self->action));
+      pango_layout_set_markup (
+        self->debug_layout.get (), debug_txt.c_str (), -1);
+      gtk_snapshot_save (snapshot);
+      graphene_point_t point =
+        Z_GRAPHENE_POINT_INIT ((float) (rect->x + 4), (float) (rect->y + 4));
+      gtk_snapshot_translate (snapshot, &point);
+      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_layout (
+        snapshot, self->debug_layout.get (), &tmp_color);
+      gtk_snapshot_restore (snapshot);
+    },
+    settings);
 }
 
 static void
@@ -269,24 +276,23 @@ draw_timeline_bg (
 {
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
-  int         line_y, j;
-  for (auto const track : TRACKLIST->tracks)
+  int         line_y;
+  for (auto const &track : TRACKLIST->tracks_)
     {
       /* skip tracks in the other timeline (pinned/ non-pinned) or invisible
        * tracks */
       if (
-        !track_get_should_be_visible (track)
-        || (!self->is_pinned && track_is_pinned (track))
-        || (self->is_pinned && !track_is_pinned (track)))
+        !track->should_be_visible () || (!self->is_pinned && track->is_pinned ())
+        || (self->is_pinned && !track->is_pinned ()))
         continue;
 
       /* draw line below track */
-      TrackWidget * tw = track->widget;
+      auto tw = track->widget_;
       if (!GTK_IS_WIDGET (tw))
         continue;
       tw_widget = (GtkWidget *) tw;
 
-      double full_track_height = track_get_full_visible_height (track);
+      double full_track_height = track->get_full_visible_height ();
 
       graphene_point_t track_start_offset_pt;
       graphene_point_t tmp = Z_GRAPHENE_POINT_INIT (0.f, 0.f);
@@ -309,7 +315,7 @@ draw_timeline_bg (
         }
 
       /* draw selection tint */
-      if (track_is_selected (track))
+      if (track->is_selected ())
         {
           graphene_rect_t tmp_rect = Z_GRAPHENE_RECT_INIT (
             (float) rect->x, (float) track_start_offset, (float) rect->width,
@@ -318,49 +324,53 @@ draw_timeline_bg (
           gtk_snapshot_append_color (snapshot, &color, &tmp_rect);
         }
 
-      double total_height = track->main_height;
+      double total_height = track->main_height_;
 
 #define OFFSET_PLUS_TOTAL_HEIGHT (track_start_offset + total_height)
 
       /* --- draw lanes --- */
 
-      if (track->lanes_visible)
+      if (auto laned_track = dynamic_cast<LanedTrack *> (track.get ()))
         {
-          for (j = 0; j < track->num_lanes; j++)
-            {
-              TrackLane * lane = track->lanes[j];
-
-              /* horizontal line above lane */
-              if (
-                OFFSET_PLUS_TOTAL_HEIGHT > rect->y
-                && OFFSET_PLUS_TOTAL_HEIGHT < rect->y + rect->height)
+          auto variant = convert_to_variant<LanedTrackPtrVariant> (laned_track);
+          std::visit (
+            [&] (auto &tr) {
+              if (tr->lanes_visible_)
                 {
-                  GdkRGBA color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.4f);
-                  graphene_rect_t tmp_rect = Z_GRAPHENE_RECT_INIT (
-                    (float) rect->x, (float) OFFSET_PLUS_TOTAL_HEIGHT,
-                    (float) rect->width, 1.f);
-                  gtk_snapshot_append_color (snapshot, &color, &tmp_rect);
-                }
+                  for (auto &lane : tr->lanes_)
+                    {
+                      /* horizontal line above lane */
+                      if (
+                        OFFSET_PLUS_TOTAL_HEIGHT > rect->y
+                        && OFFSET_PLUS_TOTAL_HEIGHT < rect->y + rect->height)
+                        {
+                          GdkRGBA color =
+                            Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.4f);
+                          graphene_rect_t tmp_rect = Z_GRAPHENE_RECT_INIT (
+                            (float) rect->x, (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                            (float) rect->width, 1.f);
+                          gtk_snapshot_append_color (
+                            snapshot, &color, &tmp_rect);
+                        }
 
-              total_height += (double) lane->height;
-            }
+                      total_height += (double) lane->height_;
+                    }
+                }
+            },
+            variant);
         }
 
       /* --- draw automation --- */
 
       /* skip tracks without visible automation */
-      if (!track->automation_visible)
-        continue;
-
-      AutomationTracklist * atl = track_get_automation_tracklist (track);
-      if (atl)
+      if (
+        auto automatable_track = dynamic_cast<AutomatableTrack *> (track.get ());
+        automatable_track->automation_visible_)
         {
-          for (size_t k = 0; k < atl->visible_ats->len; k++)
+          auto &atl = automatable_track->get_automation_tracklist ();
+          for (auto at : atl.visible_ats_)
             {
-              AutomationTrack * at = static_cast<AutomationTrack *> (
-                g_ptr_array_index (atl->visible_ats, k));
-
-              if (!at->created)
+              if (!at->created_)
                 continue;
 
               /* horizontal line above automation track */
@@ -375,23 +385,20 @@ draw_timeline_bg (
                   gtk_snapshot_append_color (snapshot, &color, &tmp_rect);
                 }
 
-              float normalized_val = automation_track_get_val_at_pos (
-                at, PLAYHEAD, true, true, Z_F_USE_SNAPSHOTS);
-              Port * port = Port::find_from_identifier (&at->port_id);
-              AutomationPoint * ap = automation_track_get_ap_before_pos (
-                at, PLAYHEAD, true, Z_F_USE_SNAPSHOTS);
+              float normalized_val =
+                at->get_val_at_pos (PLAYHEAD, true, true, true);
+              auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+              auto ap = at->get_ap_before_pos (PLAYHEAD, true, true);
               if (!ap)
                 {
-                  normalized_val = control_port_real_val_to_normalized (
-                    port, control_port_get_val (port));
+                  normalized_val =
+                    port->real_val_to_normalized (port->get_val ());
                 }
 
-              int y_px = automation_track_get_y_px_from_normalized_val (
-                at, normalized_val);
+              int y_px = at->get_y_px_from_normalized_val (normalized_val);
 
               /* line at current val */
-              GdkRGBA color = Z_GDK_RGBA_INIT (
-                track->color.red, track->color.green, track->color.blue, 0.3f);
+              GdkRGBA color = track->color_.to_gdk_rgba_with_alpha (0.3f);
               {
                 graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
                   (float) rect->x, (float) (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
@@ -399,7 +406,7 @@ draw_timeline_bg (
                 gtk_snapshot_append_color (snapshot, &color, &tmp_r);
               }
 
-              total_height += (double) at->height;
+              total_height += (double) at->height_;
             }
         }
     }
@@ -427,7 +434,8 @@ draw_midi_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
               (float) rect->x, (float) y_offset, (float) rect->width, 1.f);
             gtk_snapshot_append_color (snapshot, &color, &tmp_r);
           }
-          if (piano_roll_is_key_black (PIANO_ROLL->piano_descriptors[i]->value))
+          if (
+            PIANO_ROLL->is_key_black (PIANO_ROLL->piano_descriptors_[i].value_))
             {
               color = Z_GDK_RGBA_INIT (0, 0, 0, 0.2f);
               /* rect  y: + 1 since the border is bottom */
@@ -438,7 +446,7 @@ draw_midi_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect
             }
         }
       bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
-      if ((drum_mode && PIANO_ROLL->drum_descriptors[i]->value == MW_MIDI_ARRANGER->hovered_note) || (!drum_mode && PIANO_ROLL->piano_descriptors[i]->value == MW_MIDI_ARRANGER->hovered_note))
+      if ((drum_mode && PIANO_ROLL->drum_descriptors_[i].value_ == MW_MIDI_ARRANGER->hovered_note) || (!drum_mode && PIANO_ROLL->piano_descriptors_[i].value_ == MW_MIDI_ARRANGER->hovered_note))
         {
           GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.06f);
           /* rect  y: + 1 since the border is bottom */
@@ -471,29 +479,29 @@ draw_velocity_bg (
 static void
 draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 {
-  Region * ar = clip_editor_get_region (CLIP_EDITOR);
+  auto ar = CLIP_EDITOR->get_region<AudioRegion> ();
   if (!ar)
     {
-      g_message ("audio region not found, skipping draw");
+      z_debug ("audio region not found, skipping draw");
       return;
     }
-  if (ar->stretching)
+  if (ar->stretching_)
     {
       return;
     }
-  ArrangerObject * obj = (ArrangerObject *) ar;
-  TrackLane *      lane = region_get_lane (ar);
-  Track *          track = track_lane_get_track (lane);
-  g_return_if_fail (lane);
+  auto obj = ar;
+  auto lane = ar->get_lane ();
+  z_return_if_fail (lane);
+  auto track = lane->get_track ();
 
-  AudioClip * clip = AUDIO_POOL->clips[ar->pool_id];
+  auto &clip = AUDIO_POOL->clips_[ar->pool_id_];
 
   double local_start_x = (double) rect->x;
   double local_end_x = local_start_x + (double) rect->width;
 
   /* frames in the clip to start drawing from */
   signed_frame_t prev_frames =
-    MAX (ui_px_to_frames_editor (local_start_x, 1) - obj->pos.frames, 0);
+    MAX (ui_px_to_frames_editor (local_start_x, 1) - obj->pos_.frames_, 0);
 
   UiDetail detail = ui_get_detail_level ();
   double   increment = 1;
@@ -501,21 +509,21 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
 
   switch (detail)
     {
-    case UI_DETAIL_HIGH:
+    case UiDetail::High:
       /* snapshot does not work with midpoints */
       /*increment = 0.5;*/
       increment = 1;
       width = 1;
       break;
-    case UI_DETAIL_NORMAL:
+    case UiDetail::Normal:
       increment = 1;
       width = 1;
       break;
-    case UI_DETAIL_LOW:
+    case UiDetail::Low:
       increment = 2;
       width = 2;
       break;
-    case UI_DETAIL_ULTRA_LOW:
+    case UiDetail::UltraLow:
       increment = 4;
       width = 4;
       break;
@@ -523,38 +531,37 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
 
   /* draw fades */
   /* TODO draw top line like in the timeline */
-  signed_frame_t obj_length_frames = arranger_object_get_length_in_frames (obj);
-  GdkRGBA        base_color = {
-           .red = 0.3f, .green = 0.3f, .blue = 0.3f, .alpha = 0.f
-  };
-  GdkRGBA fade_color;
-  color_morph (&base_color, &track->color, 0.5, &fade_color);
+  signed_frame_t obj_length_frames = obj->get_length_in_frames ();
+  Color          base_color{ 0.3f, 0.3f, 0.3f, 0.f };
+  GdkRGBA fade_color = base_color.morph (track->color_, 0.5f).to_gdk_rgba ();
   fade_color.alpha = 0.5f;
   for (double i = local_start_x; i < local_end_x; i += increment)
     {
       signed_frame_t curr_frames =
-        ui_px_to_frames_editor (i, 1) - obj->pos.frames;
+        ui_px_to_frames_editor (i, true) - obj->pos_.frames_;
       if (curr_frames < 0 || curr_frames >= obj_length_frames)
         continue;
 
       double max;
-      if (curr_frames < obj->fade_in_pos.frames)
+      if (curr_frames < obj->fade_in_pos_.frames_)
         {
-          z_return_if_fail_cmp (obj->fade_in_pos.frames, >, 0);
+          z_return_if_fail_cmp (obj->fade_in_pos_.frames_, >, 0);
           max = fade_get_y_normalized (
-            (double) curr_frames / (double) obj->fade_in_pos.frames,
-            &obj->fade_in_opts, 1);
+            obj->fade_in_opts_,
+            (double) curr_frames / (double) obj->fade_in_pos_.frames_, true);
         }
-      else if (curr_frames >= obj->fade_out_pos.frames)
+      else if (curr_frames >= obj->fade_out_pos_.frames_)
         {
           z_return_if_fail_cmp (
-            obj->end_pos.frames - (obj->fade_out_pos.frames + obj->pos.frames),
+            obj->end_pos_.frames_
+              - (obj->fade_out_pos_.frames_ + obj->pos_.frames_),
             >, 0);
           max = fade_get_y_normalized (
-            (double) (curr_frames - obj->fade_out_pos.frames)
-              / (double) (obj->end_pos.frames
-                          - (obj->fade_out_pos.frames + obj->pos.frames)),
-            &obj->fade_out_opts, 0);
+            obj->fade_out_opts_,
+            (double) (curr_frames - obj->fade_out_pos_.frames_)
+              / (double) (obj->end_pos_.frames_
+                          - (obj->fade_out_pos_.frames_ + obj->pos_.frames_)),
+            false);
         }
       else
         continue;
@@ -580,27 +587,28 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
     }
 
   /* draw audio part */
-  GdkRGBA * color = &track->color;
-  GdkRGBA   audio_lines_color = {
-    color->red + 0.3f, color->green + 0.3f, color->blue + 0.3f, 0.9f
+  GdkRGBA color = track->color_.to_gdk_rgba ();
+  GdkRGBA audio_lines_color = {
+    color.red + 0.3f, color.green + 0.3f, color.blue + 0.3f, 0.9f
   };
-  float * prev_min = object_new_n (clip->channels, float);
-  float * prev_max = object_new_n (clip->channels, float);
-  dsp_fill (prev_min, 0.5f, clip->channels);
-  dsp_fill (prev_max, 0.5f, clip->channels);
-  float * ch_min = object_new_n (clip->channels, float);
-  float * ch_max = object_new_n (clip->channels, float);
-  dsp_fill (ch_min, 0.5f, clip->channels);
-  dsp_fill (ch_max, 0.5f, clip->channels);
-  const double height_per_ch = (double) rect->height / (double) clip->channels;
+  auto    num_channels = clip->channels_;
+  float * prev_min = object_new_n (num_channels, float);
+  float * prev_max = object_new_n (num_channels, float);
+  dsp_fill (prev_min, 0.5f, num_channels);
+  dsp_fill (prev_max, 0.5f, num_channels);
+  float * ch_min = object_new_n (num_channels, float);
+  float * ch_max = object_new_n (num_channels, float);
+  dsp_fill (ch_min, 0.5f, num_channels);
+  dsp_fill (ch_max, 0.5f, num_channels);
+  const double height_per_ch = (double) rect->height / (double) num_channels;
   for (double i = local_start_x; i < local_end_x; i += increment)
     {
       signed_frame_t curr_frames =
-        ui_px_to_frames_editor (i, 1) - obj->pos.frames;
+        ui_px_to_frames_editor (i, 1) - obj->pos_.frames_;
       if (curr_frames <= 0)
         continue;
 
-      if (prev_frames >= (signed_frame_t) clip->num_frames)
+      if (prev_frames >= (signed_frame_t) clip->num_frames_)
         {
           prev_frames = curr_frames;
           continue;
@@ -608,20 +616,22 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
 
       size_t from = (size_t) (MAX (0, prev_frames));
       size_t to =
-        (size_t) (MIN (clip->num_frames, (unsigned_frame_t) curr_frames));
+        (size_t) (MIN (clip->num_frames_, (unsigned_frame_t) curr_frames));
       size_t frames_to_check = to - from;
-      if (from + frames_to_check > clip->num_frames)
-        frames_to_check = clip->num_frames - from;
-      z_return_if_fail_cmp (from, <, clip->num_frames);
-      z_return_if_fail_cmp (from + frames_to_check, <=, clip->num_frames);
+      if (from + frames_to_check > clip->num_frames_)
+        frames_to_check = clip->num_frames_ - from;
+      z_return_if_fail_cmp (from, <, clip->num_frames_);
+      z_return_if_fail_cmp (from + frames_to_check, <=, clip->num_frames_);
       if (frames_to_check > 0)
         {
-          for (unsigned int k = 0; k < clip->channels; k++)
+          for (unsigned int k = 0; k < clip->channels_; k++)
             {
-              ch_min[k] =
-                dsp_min (&clip->ch_frames[k][from], (size_t) frames_to_check);
-              ch_max[k] =
-                dsp_max (&clip->ch_frames[k][from], (size_t) frames_to_check);
+              ch_min[k] = dsp_min (
+                clip->ch_frames_.getReadPointer (k, from),
+                (size_t) frames_to_check);
+              ch_max[k] = dsp_max (
+                clip->ch_frames_.getReadPointer (k, from),
+                (size_t) frames_to_check);
 
               /* normalize */
               ch_min[k] = (ch_min[k] + 1.f) / 2.f;
@@ -630,11 +640,11 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
         }
       else
         {
-          dsp_copy (prev_min, ch_min, clip->channels);
-          dsp_copy (prev_max, ch_max, clip->channels);
+          dsp_copy (prev_min, ch_min, clip->channels_);
+          dsp_copy (prev_max, ch_max, clip->channels_);
         }
 
-      for (unsigned int k = 0; k < clip->channels; k++)
+      for (unsigned int k = 0; k < clip->channels_; k++)
         {
           /* adjust to draw from the middle so it draws bars instead of single
            * points when zoomed */
@@ -685,23 +695,27 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   free (prev_max);
 
   /* draw gain line */
-  float gain_fader_val = math_get_fader_val_from_amp (ar->gain);
-  int   gain_line_start_x = ui_pos_to_px_editor (&obj->pos, F_PADDING);
-  int   gain_line_end_x = ui_pos_to_px_editor (&obj->end_pos, F_PADDING);
+  float gain_fader_val = math_get_fader_val_from_amp (ar->gain_);
+  int   gain_line_start_x = ui_pos_to_px_editor (obj->pos_, F_PADDING);
+  int   gain_line_end_x = ui_pos_to_px_editor (obj->end_pos_, F_PADDING);
   /* rect x:  need 1 pixel extra for some reason */
   /* rect y:  invert because gtk draws the opposite way */
   graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
     1.f + (float) gain_line_start_x,
     (float) rect->height * (1.f - gain_fader_val),
     (float) (gain_line_end_x - gain_line_start_x), 2.f);
-  gtk_snapshot_append_color (snapshot, &UI_COLORS->bright_orange, &tmp_r);
+
+  {
+    auto tmp_color = UI_COLORS->bright_orange.to_gdk_rgba ();
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+  }
 
   /* draw gain text */
-  double gain_db = math_amp_to_dbfs (ar->gain);
+  double gain_db = math_amp_to_dbfs (ar->gain_);
   char   gain_txt[50];
   sprintf (gain_txt, "%.1fdB", gain_db);
   int gain_txt_padding = 3;
-  pango_layout_set_markup (self->audio_layout, gain_txt, -1);
+  pango_layout_set_markup (self->audio_layout.get (), gain_txt, -1);
   gtk_snapshot_save (snapshot);
   {
     graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
@@ -709,9 +723,9 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
       (float) (gain_txt_padding
                + (int) ((double) rect->height * (1.0 - gain_fader_val))));
     gtk_snapshot_translate (snapshot, &tmp_pt);
-  }
+    }
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-  gtk_snapshot_append_layout (snapshot, self->audio_layout, &tmp_color);
+  gtk_snapshot_append_layout (snapshot, self->audio_layout.get (), &tmp_color);
   gtk_snapshot_restore (snapshot);
 }
 
@@ -756,7 +770,7 @@ draw_vertical_lines (
   int height = rect->height;
 
   /* if time display */
-  if (self->ruler_display == TransportDisplay::TRANSPORT_DISPLAY_TIME)
+  if (self->ruler_display == Transport::Display::Time)
     {
       /* get sec interval */
       int sec_interval = ruler_widget_get_sec_interval (ruler);
@@ -984,18 +998,18 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   }
 
   /* draw loop background */
-  if (TRANSPORT->loop)
+  if (TRANSPORT->loop_)
     {
       double start_px = 0, end_px = 0;
       if (self->type == TYPE (TIMELINE))
         {
-          start_px = ui_pos_to_px_timeline (&TRANSPORT->loop_start_pos, 1);
-          end_px = ui_pos_to_px_timeline (&TRANSPORT->loop_end_pos, 1);
+          start_px = ui_pos_to_px_timeline (TRANSPORT->loop_start_pos_, 1);
+          end_px = ui_pos_to_px_timeline (TRANSPORT->loop_end_pos_, 1);
         }
       else
         {
-          start_px = ui_pos_to_px_editor (&TRANSPORT->loop_start_pos, 1);
-          end_px = ui_pos_to_px_editor (&TRANSPORT->loop_end_pos, 1);
+          start_px = ui_pos_to_px_editor (TRANSPORT->loop_start_pos_, 1);
+          end_px = ui_pos_to_px_editor (TRANSPORT->loop_end_pos_, 1);
         }
       GdkRGBA loop_color = { 0, 0.9f, 0.7f, 0.08f };
 
@@ -1033,41 +1047,41 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw range */
   int  range_first_px, range_second_px;
   bool have_range = false;
-  if (self->type == TYPE (AUDIO) && AUDIO_SELECTIONS->has_selection)
+  if (self->type == TYPE (AUDIO) && AUDIO_SELECTIONS->has_selection_)
     {
       Position *range_first_pos, *range_second_pos;
-      if (position_is_before_or_equal (&TRANSPORT->range_1, &TRANSPORT->range_2))
+      if (TRANSPORT->range_1_ <= TRANSPORT->range_2_)
         {
-          range_first_pos = &AUDIO_SELECTIONS->sel_start;
-          range_second_pos = &AUDIO_SELECTIONS->sel_end;
+          range_first_pos = &AUDIO_SELECTIONS->sel_start_;
+          range_second_pos = &AUDIO_SELECTIONS->sel_end_;
         }
       else
         {
-          range_first_pos = &AUDIO_SELECTIONS->sel_end;
-          range_second_pos = &AUDIO_SELECTIONS->sel_start;
+          range_first_pos = &AUDIO_SELECTIONS->sel_end_;
+          range_second_pos = &AUDIO_SELECTIONS->sel_start_;
         }
 
-      range_first_px = ui_pos_to_px_editor (range_first_pos, 1);
-      range_second_px = ui_pos_to_px_editor (range_second_pos, 1);
+      range_first_px = ui_pos_to_px_editor (*range_first_pos, 1);
+      range_second_px = ui_pos_to_px_editor (*range_second_pos, 1);
       have_range = true;
     }
-  else if (self->type == TYPE (TIMELINE) && TRANSPORT->has_range)
+  else if (self->type == TYPE (TIMELINE) && TRANSPORT->has_range_)
     {
       /* in order they appear */
       Position *range_first_pos, *range_second_pos;
-      if (position_is_before_or_equal (&TRANSPORT->range_1, &TRANSPORT->range_2))
+      if (TRANSPORT->range_1_ <= TRANSPORT->range_2_)
         {
-          range_first_pos = &TRANSPORT->range_1;
-          range_second_pos = &TRANSPORT->range_2;
+          range_first_pos = &TRANSPORT->range_1_;
+          range_second_pos = &TRANSPORT->range_2_;
         }
       else
         {
-          range_first_pos = &TRANSPORT->range_2;
-          range_second_pos = &TRANSPORT->range_1;
+          range_first_pos = &TRANSPORT->range_2_;
+          range_second_pos = &TRANSPORT->range_1_;
         }
 
-      range_first_px = ui_pos_to_px_timeline (range_first_pos, 1);
-      range_second_px = ui_pos_to_px_timeline (range_second_pos, 1);
+      range_first_px = ui_pos_to_px_timeline (*range_first_pos, 1);
+      range_second_px = ui_pos_to_px_timeline (*range_second_pos, 1);
       have_range = true;
     }
 
@@ -1099,24 +1113,13 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 
   /* draw each arranger object */
-  if (!self->hit_objs_to_draw)
-    {
-      self->hit_objs_to_draw = g_ptr_array_new_full (200, NULL);
-    }
-  g_ptr_array_remove_range (
-    self->hit_objs_to_draw, 0, self->hit_objs_to_draw->len);
+  std::vector<ArrangerObject *> hit_objs_to_draw;
+  hit_objs_to_draw.reserve (200);
   arranger_widget_get_hit_objects_in_rect (
-    self, ArrangerObjectType::ARRANGER_OBJECT_TYPE_ALL, &visible_rect_gdk,
-    self->hit_objs_to_draw);
+    self, ArrangerObject::Type::All, &visible_rect_gdk, hit_objs_to_draw);
 
-  /*g_message (*/
-  /*"objects found: %d (is pinned %d)",*/
-  /*num_objs, self->is_pinned);*/
-  /* note: these are only project objects */
-  for (size_t j = 0; j < self->hit_objs_to_draw->len; j++)
+  for (auto obj : hit_objs_to_draw)
     {
-      ArrangerObject * obj =
-        (ArrangerObject *) g_ptr_array_index (self->hit_objs_to_draw, j);
       draw_arranger_object (self, obj, snapshot, &visible_rect_gdk);
     }
 

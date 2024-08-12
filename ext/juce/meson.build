@@ -8,6 +8,9 @@ juce_include_dirs = [
 
 juce_srcs = [
   'modules/juce_core/juce_core.cpp',
+  'modules/juce_audio_basics/juce_audio_basics.cpp',
+  'modules/juce_audio_formats/juce_audio_formats.cpp',
+  #'modules/juce_dsp/juce_dsp.cpp',
   ]
 
 juce_cpp_public_args = [

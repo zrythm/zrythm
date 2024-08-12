@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * SpectrumAnalyzer widget.
  */
@@ -16,7 +16,7 @@
 #include <kiss_fft.h>
 
 class Port;
-TYPEDEF_STRUCT (PeakFallSmooth);
+class PeakFallSmooth;
 
 /**
  * @addtogroup widgets
@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (
 #define SPECTRUM_ANALYZER_MAX_BLOCK_SIZE 32768
 #define SPECTRUM_ANALYZER_MIN_FREQ 20.f
 
-typedef struct _SpectrumAnalyzerWidget
+using SpectrumAnalyzerWidget = struct _SpectrumAnalyzerWidget
 {
   GtkWidget parent_instance;
 
@@ -53,9 +53,8 @@ typedef struct _SpectrumAnalyzerWidget
   kiss_fft_cfg fft_config;
   int          last_block_size;
 
-  PeakFallSmooth ** bins;
-
-} SpectrumAnalyzerWidget;
+  std::vector<PeakFallSmooth> bins;
+};
 
 /**
  * Creates a spectrum analyzer for the AudioEngine.

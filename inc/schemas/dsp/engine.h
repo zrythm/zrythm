@@ -19,8 +19,6 @@
 #include "schemas/dsp/transport.h"
 #include "utils/types.h"
 
-#include "zix/sem.h"
-
 typedef enum AudioEngineJackTransportType_v1
 {
   AUDIO_ENGINE_JACK_TIMEBASE_MASTER_v1,

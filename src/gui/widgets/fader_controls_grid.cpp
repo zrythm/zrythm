@@ -46,19 +46,19 @@ update_meter_reading (
     }
 
   double  prev = widget->meter_reading_val;
-  Track * track = widget->track;
-  g_warn_if_fail (IS_TRACK (track));
-  Channel * channel = track_get_channel (widget->track);
+  auto    track = dynamic_cast<ChannelTrack *> (widget->track);
+  z_return_val_if_fail (track, G_SOURCE_REMOVE);
+  auto channel = track->get_channel ();
   g_warn_if_fail (channel);
 
-  if (track->out_signal_type == PortType::Event)
+  if (track->out_signal_type_ == PortType::Event)
     {
       gtk_label_set_text (widget->meter_readings, "-∞");
       return G_SOURCE_CONTINUE;
     }
 
   float amp =
-    MAX (widget->meter_l->meter->prev_max, widget->meter_r->meter->prev_max);
+    MAX (widget->meter_l->meter->prev_max_, widget->meter_r->meter->prev_max_);
 
   double peak_val = (double) math_amp_to_dbfs (amp);
 
@@ -114,13 +114,14 @@ setup_balance_control (FaderControlsGridWidget * self)
   if (!self->track)
     return;
 
-  if (track_type_has_channel (self->track->type))
+  if (self->track->has_channel ())
     {
-      Channel * ch = track_get_channel (self->track);
-      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
+      auto ch_track = dynamic_cast<ChannelTrack *> (self->track);
+      auto ch = ch_track->get_channel ();
+      z_return_if_fail (ch);
       self->balance_control = balance_control_widget_new (
-        Channel::get_balance_control, Channel::set_balance_control, ch,
-        ch->fader->balance, 12);
+        Channel::balance_control_getter, Channel::balance_control_setter,
+        ch.get (), ch->fader_->balance_.get (), 12);
       gtk_box_append (self->balance_box, GTK_WIDGET (self->balance_control));
       gtk_widget_set_hexpand (GTK_WIDGET (self->balance_control), true);
       z_gtk_widget_set_margin (GTK_WIDGET (self->balance_control), 4);
@@ -130,28 +131,23 @@ setup_balance_control (FaderControlsGridWidget * self)
 static void
 setup_meter (FaderControlsGridWidget * self)
 {
-  Track * track = self->track;
+  auto track = dynamic_cast<ChannelTrack *> (self->track);
   if (!track)
     return;
 
-  Channel * ch = NULL;
-  if (track_type_has_channel (track->type))
-    {
-      ch = track_get_channel (track);
-    }
-  g_return_if_fail (ch);
+  auto ch = track->get_channel ();
 
-  switch (track->out_signal_type)
+  switch (track->out_signal_type_)
     {
     case PortType::Event:
-      meter_widget_setup (self->meter_l, ch->midi_out, false);
+      meter_widget_setup (self->meter_l, ch->midi_out_.get (), false);
       gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), false);
       break;
     case PortType::Audio:
-      meter_widget_setup (self->meter_l, &ch->stereo_out->get_l (), false);
-      meter_widget_setup (self->meter_r, &ch->stereo_out->get_l (), false);
+      meter_widget_setup (self->meter_l, &ch->stereo_out_->get_l (), false);
+      meter_widget_setup (self->meter_r, &ch->stereo_out_->get_l (), false);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), true);
       break;
     default:
@@ -162,18 +158,20 @@ setup_meter (FaderControlsGridWidget * self)
 static void
 setup_fader (FaderControlsGridWidget * self)
 {
-  if (track_type_has_channel (self->track->type))
-    {
-      Channel * ch = track_get_channel (self->track);
-      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
-      fader_widget_setup (self->fader, ch->fader, 128);
-      gtk_widget_set_margin_start (GTK_WIDGET (self->fader), 12);
-      gtk_widget_set_halign (GTK_WIDGET (self->fader), GTK_ALIGN_CENTER);
-    }
+  auto track = dynamic_cast<ChannelTrack *> (self->track);
+  if (!track)
+    return;
+
+  auto ch = track->get_channel ();
+  fader_widget_setup (self->fader, ch->fader_.get (), 128);
+  gtk_widget_set_margin_start (GTK_WIDGET (self->fader), 12);
+  gtk_widget_set_halign (GTK_WIDGET (self->fader), GTK_ALIGN_CENTER);
 }
 
 void
-fader_controls_grid_widget_setup (FaderControlsGridWidget * self, Track * track)
+fader_controls_grid_widget_setup (
+  FaderControlsGridWidget * self,
+  ChannelTrack *            track)
 {
   self->track = track;
 
@@ -205,10 +203,10 @@ FaderControlsGridWidget *
 fader_controls_grid_widget_new (void)
 {
   FaderControlsGridWidget * self = static_cast<FaderControlsGridWidget *> (
-    g_object_new (FADER_CONTROLS_GRID_WIDGET_TYPE, NULL));
+    g_object_new (FADER_CONTROLS_GRID_WIDGET_TYPE, nullptr));
 
   self->tick_cb = gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_meter_reading, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_meter_reading, self, nullptr);
 
   return self;
 }

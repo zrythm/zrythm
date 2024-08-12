@@ -73,7 +73,7 @@ enum
 G_DEFINE_TYPE (GtkFlipper, gtk_flipper, GTK_TYPE_WIDGET)
 
 static GParamSpec * properties[N_PROPS] = {
-  NULL,
+  nullptr,
 };
 
 static GtkSizeRequestMode
@@ -366,7 +366,7 @@ gtk_flipper_init (GtkFlipper * self)
 GtkWidget *
 gtk_flipper_new (GtkWidget * child)
 {
-  return GTK_WIDGET (g_object_new (GTK_TYPE_FLIPPER, "child", child, NULL));
+  return GTK_WIDGET (g_object_new (GTK_TYPE_FLIPPER, "child", child, nullptr));
 }
 
 /**

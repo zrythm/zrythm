@@ -1,11 +1,8 @@
-/*
- * SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Timeline ruler derived from base ruler.
  */
@@ -14,7 +11,6 @@
 #define __GUI_WIDGETS_TIMELINE_RULER_H__
 
 #include "gui/widgets/ruler.h"
-#include "utils/ui.h"
 
 #include "gtk_wrapper.h"
 
@@ -28,9 +24,6 @@ typedef struct _RulerMarkerWidget RulerMarkerWidget;
  */
 
 #define MW_RULER MW_TIMELINE_PANEL->ruler
-
-void
-timeline_ruler_widget_draw_markers (RulerWidget * self);
 
 /**
  * Called from ruler drag begin.

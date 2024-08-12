@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Dialog for saving chord presets.
  */

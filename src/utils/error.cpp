@@ -49,7 +49,7 @@ error_propagate_prefixed_prv (
   const char * format,
   ...)
 {
-  if (main_err == NULL && err == NULL)
+  if (main_err == NULL && err == nullptr)
     return;
 
   g_return_if_fail (main_err);

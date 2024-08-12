@@ -1,7 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <cstdlib>
 
 #include "dsp/automation_track.h"
 #include "dsp/modulator_macro_processor.h"
@@ -16,8 +14,7 @@
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/mem.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
@@ -26,140 +23,116 @@
 
 #include "gtk_wrapper.h"
 
-/**
- * Inits the modulator track.
- */
-void
-modulator_track_init (Track * self)
+ModulatorTrack::ModulatorTrack (int track_pos)
+    : Track (
+      Track::Type::Modulator,
+      _ ("Modulators"),
+      track_pos,
+      PortType::Unknown,
+      PortType::Unknown)
 {
-  self->type = TrackType::TRACK_TYPE_MODULATOR;
-  self->main_height = TRACK_DEF_HEIGHT / 2;
+  main_height_ = TRACK_DEF_HEIGHT / 2;
 
-  gdk_rgba_parse (&self->color, "#222222");
-  self->icon_name = g_strdup ("gnome-icon-library-encoder-knob-symbolic");
+  color_ = Color ("#222222");
+  icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
 
-  const int max_macros = 8;
-  self->num_visible_modulator_macros = max_macros;
+  constexpr int max_macros = 8;
   for (int i = 0; i < max_macros; i++)
     {
-      self->modulator_macros[i] = modulator_macro_processor_new (self, i);
+      modulator_macro_processors_.emplace_back (
+        std::make_unique<ModulatorMacroProcessor> (this, i));
     }
-  self->num_modulator_macros = max_macros;
 
   /* set invisible */
-  self->visible = false;
+  visible_ = false;
 }
 
-/**
- * Creates the default modulator track.
- */
-Track *
-modulator_track_default (int track_pos)
+void
+ModulatorTrack::init_loaded ()
 {
-  Track * self = track_new (
-    TrackType::TRACK_TYPE_MODULATOR, track_pos, _ ("Modulators"),
-    F_WITHOUT_LANE);
-
-  return self;
+  for (auto &modulator : modulators_)
+    {
+      modulator->init_loaded (this, nullptr);
+    }
+  for (auto &macro : modulator_macro_processors_)
+    {
+      macro->init_loaded (*this);
+    }
 }
 
-typedef struct ModulatorImportData
+struct ModulatorImportData
 {
-  Track *  track;
+  ModulatorTrack *             track;
   int      slot;
-  Plugin * modulator;
+  ModulatorTrack::ModulatorPtr modulator;
   bool     replace_mode;
   bool     confirm;
   bool     gen_automatables;
   bool     recalc_graph;
-  bool     pub_events;
-} ModulatorImportData;
+  bool                         pub_events;
 
-static void
-modulator_import_data_free (void * _data)
-{
-  ModulatorImportData * self = (ModulatorImportData *) _data;
-  object_zero_and_free (self);
-}
+  static void free (void * data, GClosure *)
+  {
+    auto * self = (ModulatorImportData *) data;
+    delete self;
+  }
+};
 
 static void
 do_insert (ModulatorImportData * data)
 {
-  Track * self = data->track;
+  auto self = data->track;
   if (data->replace_mode)
     {
       Plugin * existing_pl =
-        data->slot < self->num_modulators ? self->modulators[data->slot] : NULL;
+        data->slot < (int) self->modulators_.size ()
+          ? self->modulators_[data->slot].get ()
+          : nullptr;
       if (existing_pl)
         {
           /* free current plugin */
           if (existing_pl)
             {
-              modulator_track_remove_modulator (
-                self, data->slot, F_REPLACING, F_DELETING_PLUGIN,
-                F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
+              self->remove_modulator (
+                data->slot, F_DELETING_PLUGIN, F_NOT_DELETING_TRACK,
+                F_NO_RECALC_GRAPH);
             }
         }
-
-      g_message (
-        "Inserting modulator %s at %s:%d",
-        data->modulator->setting->descr->name, self->name, data->slot);
-      if (data->slot == self->num_modulators)
-        {
-          array_double_size_if_full (
-            self->modulators, self->num_modulators, self->modulators_size,
-            Plugin *);
-          self->num_modulators++;
-        }
     }
-  else
+
+  /* insert the modulator */
+  z_debug (
+    "Inserting modulator %s at %s:%d", data->modulator->get_name (),
+    self->name_, data->slot);
+  auto it = self->modulators_.insert (
+    self->modulators_.cbegin () + data->slot, std::move (data->modulator));
+  auto &added_mod = *it;
+
+  /* adjust affected modulators */
+  for (size_t i = data->slot; i < self->modulators_.size (); ++i)
     {
-      array_double_size_if_full (
-        self->modulators, self->num_modulators, self->modulators_size, Plugin *);
-
-      /* push other modulators forward (make
-       * space for new modulator) */
-      self->num_modulators++;
-      for (int i = self->num_modulators - 1; i > data->slot; i--)
-        {
-          self->modulators[i] = self->modulators[i - 1];
-          g_message (
-            "setting modulator %s from slot %d "
-            "to slot %d",
-            self->modulators[i]->setting->descr->name, i - 1, i);
-          plugin_set_track_and_slot (
-            self->modulators[i], track_get_name_hash (*self),
-            ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, i);
-        }
+      auto &mod = self->modulators_[i];
+      mod->set_track_and_slot (
+        self->get_name_hash (), PluginSlotType::Modulator, i);
     }
-
-  /* add the modulator */
-  self->modulators[data->slot] = data->modulator;
-  g_message (
-    "setting modulator %s to slot %d", data->modulator->setting->descr->name,
-    data->slot);
-
-  plugin_set_track_and_slot (
-    data->modulator, track_get_name_hash (*self),
-    ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, data->slot);
 
   if (data->gen_automatables)
     {
-      plugin_generate_automation_tracks (data->modulator, self);
+      added_mod->generate_automation_tracks (*self);
     }
 
   if (data->pub_events)
     {
-      EVENTS_PUSH (EventType::ET_MODULATOR_ADDED, data->modulator);
+      EVENTS_PUSH (EventType::ET_MODULATOR_ADDED, added_mod.get ());
     }
 
   if (data->recalc_graph)
     {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
 }
 
-static void
+[[maybe_unused]] static void
 overwrite_plugin_response_cb (
   AdwMessageDialog * dialog,
   char *             response,
@@ -174,122 +147,128 @@ overwrite_plugin_response_cb (
   do_insert (data);
 }
 
-/**
- * Inserts and connects a Modulator to the Track.
- *
- * @param replace_mode Whether to perform the
- *   operation in replace mode (replace current
- *   modulator if true, not touching other
- *   modulators, or push other modulators forward
- *   if false).
- */
-void
-modulator_track_insert_modulator (
-  Track *  self,
-  int      slot,
-  Plugin * modulator,
-  bool     replace_mode,
-  bool     confirm,
-  bool     gen_automatables,
-  bool     recalc_graph,
-  bool     pub_events)
+template <typename T>
+std::shared_ptr<T>
+ModulatorTrack::insert_modulator (
+  int                slot,
+  std::shared_ptr<T> modulator,
+  bool               replace_mode,
+  bool               confirm,
+  bool               gen_automatables,
+  bool               recalc_graph,
+  bool               pub_events)
 {
-  g_return_if_fail (
-    IS_TRACK (self) && IS_PLUGIN (modulator) && slot <= self->num_modulators);
+  z_return_val_if_fail (slot <= (int) modulators_.size (), nullptr);
 
-  ModulatorImportData * data = object_new (ModulatorImportData);
-  data->track = self;
-  data->slot = slot;
-  data->modulator = modulator;
-  data->replace_mode = replace_mode;
-  data->confirm = confirm;
-  data->gen_automatables = gen_automatables;
-  data->recalc_graph = recalc_graph;
-  data->pub_events = pub_events;
+  ModulatorImportData data{};
+  data.track = this;
+  data.slot = slot;
+  data.modulator = modulator;
+  data.replace_mode = replace_mode;
+  data.confirm = confirm;
+  data.gen_automatables = gen_automatables;
+  data.recalc_graph = recalc_graph;
+  data.pub_events = pub_events;
 
   if (replace_mode)
     {
-      Plugin * existing_pl =
-        slot < self->num_modulators ? self->modulators[slot] : NULL;
+      auto existing_pl =
+        slot < modulators_.empty () ? nullptr : modulators_[slot].get ();
       if (existing_pl && confirm)
         {
           AdwMessageDialog * dialog =
             dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
           gtk_window_present (GTK_WINDOW (dialog));
           g_signal_connect_data (
-            dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
-            (GClosureNotify) modulator_import_data_free, G_CONNECT_DEFAULT);
-          return;
+            dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
+            new ModulatorImportData (std::move (data)),
+            ModulatorImportData::free, G_CONNECT_DEFAULT);
+          return modulator;
         }
     }
 
-  do_insert (data);
-  modulator_import_data_free (data);
+  do_insert (&data);
+  return modulator;
 }
 
-/**
- * Removes a plugin at pos from the track.
- *
- * @param replacing Whether replacing the modulator.
- *   If this is false, modulators after this slot
- *   will be pushed back.
- * @param deleting_modulator
- * @param deleting_track If true, the automation
- *   tracks associated with the plugin are not
- *   deleted at this time.
- * @param recalc_graph Recalculate mixer graph.
- */
-void
-modulator_track_remove_modulator (
-  Track * self,
-  int     slot,
-  bool    replacing,
-  bool    deleting_modulator,
-  bool    deleting_track,
-  bool    recalc_graph)
+ModulatorTrack::ModulatorPtr
+ModulatorTrack::remove_modulator (
+  int  slot,
+  bool deleting_modulator,
+  bool deleting_track,
+  bool recalc_graph)
 {
-  Plugin * plugin = self->modulators[slot];
-  g_return_if_fail (IS_PLUGIN (plugin));
-  g_return_if_fail (plugin->id.track_name_hash == track_get_name_hash (*self));
+  auto plugin = modulators_[slot];
+  z_return_val_if_fail (
+    plugin->id_.track_name_hash_ == get_name_hash (), nullptr);
 
-  plugin_remove_ats_from_automation_tracklist (
-    plugin, deleting_modulator, !deleting_track && !deleting_modulator);
+  plugin->remove_ats_from_automation_tracklist (
+    deleting_modulator, !deleting_track && !deleting_modulator);
 
-  g_message (
-    "Removing %s from %s:%d", plugin->setting->descr->name, self->name, slot);
+  z_debug ("Removing %s from %s:%d", plugin->get_name (), name_, slot);
 
   /* unexpose all JACK ports */
-  plugin_expose_ports (plugin, F_NOT_EXPOSE, true, true);
+  plugin->expose_ports (F_NOT_EXPOSE, true, true);
 
-  /* if deleting plugin disconnect the plugin
-   * entirely */
+  /* if deleting plugin disconnect the plugin entirely */
   if (deleting_modulator)
     {
-      if (plugin_is_selected (plugin))
+      if (plugin->is_selected ())
         {
-          mixer_selections_remove_slot (
-            MIXER_SELECTIONS, plugin->id.slot,
-            ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
+          MIXER_SELECTIONS->remove_slot (
+            plugin->id_.slot_, PluginSlotType::Modulator, F_PUBLISH_EVENTS);
         }
 
-      plugin_disconnect (plugin);
-      object_free_w_func_and_null (plugin_free, plugin);
+      plugin->disconnect ();
     }
 
-  if (!replacing)
+  auto it = modulators_.erase (modulators_.begin () + slot);
+  for (; it != modulators_.end (); ++it)
     {
-      for (int i = slot; i < self->num_modulators - 1; i++)
-        {
-          self->modulators[i] = self->modulators[i + 1];
-          plugin_set_track_and_slot (
-            self->modulators[i], track_get_name_hash (*self),
-            ZPluginSlotType::Z_PLUGIN_SLOT_MODULATOR, i);
-        }
-      self->num_modulators--;
+      auto &mod = *it;
+      mod->set_track_and_slot (
+        get_name_hash (), PluginSlotType::Modulator,
+        std::distance (modulators_.begin (), it));
     }
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
+      ROUTER->recalc_graph (false);
     }
+
+  return *it;
 }
+
+void
+ModulatorTrack::init_after_cloning (const ModulatorTrack &other)
+{
+  ProcessableTrack::copy_members_from (other);
+  AutomatableTrack::copy_members_from (other);
+  Track::copy_members_from (other);
+  for (auto &mod : other.modulators_)
+    {
+      modulators_.emplace_back (
+        clone_shared_with_variant<PluginVariant> (mod.get ()));
+    }
+  clone_unique_ptr_container (
+    modulator_macro_processors_, other.modulator_macro_processors_);
+}
+
+template std::shared_ptr<Plugin>
+ModulatorTrack::insert_modulator (
+  int                     slot,
+  std::shared_ptr<Plugin> modulator,
+  bool                    replace_mode,
+  bool                    confirm,
+  bool                    gen_automatables,
+  bool                    recalc_graph,
+  bool                    pub_events);
+template std::shared_ptr<CarlaNativePlugin>
+ModulatorTrack::insert_modulator (
+  int                                slot,
+  std::shared_ptr<CarlaNativePlugin> modulator,
+  bool                               replace_mode,
+  bool                               confirm,
+  bool                               gen_automatables,
+  bool                               recalc_graph,
+  bool                               pub_events);

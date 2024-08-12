@@ -8,7 +8,7 @@
 
 #ifdef HAVE_RTMIDI
 
-typedef struct AudioEngine AudioEngine;
+class AudioEngine;
 
 /**
  * Tests if the backend is working properly.

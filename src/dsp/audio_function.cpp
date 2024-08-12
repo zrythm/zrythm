@@ -1,7 +1,5 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <inttypes.h>
 
 #include "dsp/audio_function.h"
 #include "dsp/audio_region.h"
@@ -10,17 +8,12 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/plugin_gtk.h"
-#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
+#include "utils/exceptions.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -28,25 +21,12 @@
 
 #include <rubberband/rubberband-c.h>
 
-typedef enum
-{
-  Z_AUDIOAUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
-  Z_AUDIOAUDIO_FUNCTION_ERROR_FAILED,
-} ZAudioAudioFunctionError;
-
-#define Z_AUDIOAUDIO_FUNCTION_ERROR z_audio_audio_function_error_quark ()
-GQuark
-z_audio_audio_function_error_quark (void);
-G_DEFINE_QUARK (
-  z - audio - audio - function - error - quark,
-  z_audio_audio_function_error)
-
 char *
 audio_function_get_action_target_for_type (AudioFunctionType type)
 {
-  const char * type_str = audio_function_type_to_string (type);
-  char *       type_str_lower = g_strdup (type_str);
-  string_to_lower (type_str, type_str_lower);
+  auto   type_str = AudioFunctionType_to_string (type);
+  char * type_str_lower = g_strdup (type_str.c_str ());
+  string_to_lower (type_str.c_str (), type_str_lower);
   char * substituted = string_replace (type_str_lower, " ", "-");
   g_free (type_str_lower);
 
@@ -76,30 +56,30 @@ audio_function_get_icon_name_for_type (AudioFunctionType type)
 {
   switch (type)
     {
-    case AudioFunctionType::AUDIO_FUNCTION_INVERT:
+    case AudioFunctionType::Invert:
       return "edit-select-invert";
-    case AudioFunctionType::AUDIO_FUNCTION_REVERSE:
+    case AudioFunctionType::Reverse:
       return "path-reverse";
-    case AudioFunctionType::AUDIO_FUNCTION_PITCH_SHIFT:
+    case AudioFunctionType::PitchShift:
       return "path-reverse";
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_PEAK:
+    case AudioFunctionType::NormalizePeak:
       return "kt-set-max-upload-speed";
-    case AudioFunctionType::AUDIO_FUNCTION_LINEAR_FADE_IN:
+    case AudioFunctionType::LinearFadeIn:
       return "arena-fade-in";
-    case AudioFunctionType::AUDIO_FUNCTION_LINEAR_FADE_OUT:
+    case AudioFunctionType::LinearFadeOut:
       return "arena-fade-out";
-    case AudioFunctionType::AUDIO_FUNCTION_NUDGE_LEFT:
+    case AudioFunctionType::NudgeLeft:
       return "arrow-left";
-    case AudioFunctionType::AUDIO_FUNCTION_NUDGE_RIGHT:
+    case AudioFunctionType::NudgeRight:
       return "arrow-right";
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_RMS:
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_LUFS:
+    case AudioFunctionType::NormalizeRMS:
+    case AudioFunctionType::NormalizeLUFS:
     default:
       return "modulator";
       break;
     }
 
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (nullptr);
 }
 
 #if 0
@@ -126,14 +106,14 @@ apply_plugin (
   setting->force_generic_ui = true;
   GError * err = NULL;
   Plugin * pl =
-    plugin_new_from_setting (setting, 0, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, 0, &err);
+    plugin_new_from_setting (setting, 0, PluginSlotType::Insert, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to create plugin"));
       return -1;
     }
   pl->is_function = true;
-  int ret = plugin_instantiate (pl, NULL, &err);
+  int ret = plugin_instantiate (pl, nullptr, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -306,112 +286,100 @@ apply_plugin (
 }
 #endif
 
-bool
+void
 audio_function_apply (
-  ArrangerSelections * sel,
-  AudioFunctionType    type,
-  AudioFunctionOpts    opts,
-  const char *         uri,
-  GError **            error)
+  ArrangerSelections &sel,
+  AudioFunctionType   type,
+  AudioFunctionOpts   opts,
+  const std::string * uri)
 {
-  g_message ("applying %s...", audio_function_type_to_string (type));
+  z_debug ("applying %s...", AudioFunctionType_to_string (type));
 
-  AudioSelections * audio_sel = (AudioSelections *) sel;
+  auto &audio_sel = (AudioSelections &) sel;
 
-  Region * r = region_find (&audio_sel->region_id);
-  g_return_val_if_fail (r, false);
-  Track * tr = arranger_object_get_track ((ArrangerObject *) r);
-  g_return_val_if_fail (tr, false);
-  AudioClip * orig_clip = audio_region_get_clip (r);
-  g_return_val_if_fail (orig_clip, false);
+  auto r = AudioRegion::find (audio_sel.region_id_);
+  z_return_if_fail (r);
+  auto tr = r->get_track_as<AudioTrack> ();
+  g_return_if_fail (tr);
+  auto * orig_clip = r->get_clip ();
+  g_return_if_fail (orig_clip);
 
   Position init_pos;
-  position_init (&init_pos);
-  if (
-    position_is_before (&audio_sel->sel_start, &r->base.pos)
-    || position_is_after (&audio_sel->sel_end, &r->base.end_pos))
+  if (audio_sel.sel_start_ < r->pos_ || audio_sel.sel_end_ > r->end_pos_)
     {
-      position_print (&audio_sel->sel_start);
-      position_print (&audio_sel->sel_end);
-      g_set_error_literal (
-        error, Z_AUDIOAUDIO_FUNCTION_ERROR,
-        Z_AUDIOAUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
-        _ ("Invalid positions - skipping function"));
-      return false;
+      audio_sel.sel_start_.print ();
+      audio_sel.sel_end_.print ();
+      throw ZrythmException (_ ("Invalid positions - skipping function"));
     }
 
   /* adjust the positions */
-  Position start, end;
-  position_set_to_pos (&start, &audio_sel->sel_start);
-  position_set_to_pos (&end, &audio_sel->sel_end);
-  position_add_frames (&start, -r->base.pos.frames);
-  position_add_frames (&end, -r->base.pos.frames);
+  Position start = audio_sel.sel_start_;
+  Position end = audio_sel.sel_end_;
+  start.add_frames (-r->pos_.frames_);
+  end.add_frames (-r->pos_.frames_);
 
   /* create a copy of the frames to be replaced */
-  unsigned_frame_t num_frames = (unsigned_frame_t) (end.frames - start.frames);
+  auto num_frames = (unsigned_frame_t) (end.frames_ - start.frames_);
 
   bool use_interleaved = true;
 
   /* interleaved frames */
-  channels_t channels = orig_clip->channels;
-  float *    src_frames = object_new_n (num_frames * channels, float);
-  float *    dest_frames = object_new_n (num_frames * channels, float);
+  channels_t         channels = orig_clip->channels_;
+  std::vector<float> src_frames (num_frames * channels);
+  std::vector<float> dest_frames (num_frames * channels);
   dsp_copy (
-    &dest_frames[0], &orig_clip->frames[start.frames * (long) channels],
+    &dest_frames[0],
+    &orig_clip->frames_.getReadPointer (0)[start.frames_ * (long) channels],
     num_frames * channels);
   dsp_copy (&src_frames[0], &dest_frames[0], num_frames * channels);
 
   /* uninterleaved frames */
-  float * ch_src_frames[channels];
-  float * ch_dest_frames[channels];
+  juce::AudioBuffer<float> ch_src_frames (channels, num_frames);
+  juce::AudioBuffer<float> ch_dest_frames (channels, num_frames);
   for (size_t j = 0; j < channels; j++)
     {
-      ch_src_frames[j] = object_new_n (num_frames, float);
-      ch_dest_frames[j] = object_new_n (num_frames, float);
       for (size_t i = 0; i < num_frames; i++)
         {
-          ch_src_frames[j][i] = src_frames[i * channels + j];
+          ch_src_frames.getWritePointer (j)[i] = src_frames[i * channels + j];
         }
-      dsp_copy (&ch_dest_frames[j][0], &ch_src_frames[j][0], num_frames);
+      dsp_copy (
+        &ch_dest_frames.getWritePointer (j)[0],
+        &ch_src_frames.getReadPointer (j)[0], num_frames);
     }
 
-  unsigned_frame_t nudge_frames = (unsigned_frame_t)
-    position_get_frames_from_ticks (ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
+  unsigned_frame_t nudge_frames = (unsigned_frame_t) Position::
+    get_frames_from_ticks (ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
   unsigned_frame_t nudge_frames_all_channels = channels * nudge_frames;
   unsigned_frame_t num_frames_excl_nudge;
-  g_debug (
-    "num frames %" PRIu64
-    ", "
-    "nudge_frames %" PRIu64,
-    num_frames, nudge_frames);
-  z_return_val_if_fail_cmp (nudge_frames, >, 0, false);
+  z_debug ("num frames {}, nudge_frames {}", num_frames, nudge_frames);
+  z_return_if_fail_cmp (nudge_frames, >, 0);
 
   switch (type)
     {
-    case AudioFunctionType::AUDIO_FUNCTION_INVERT:
+    case AudioFunctionType::Invert:
       dsp_mul_k2 (&dest_frames[0], -1.f, num_frames * channels);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_PEAK:
+    case AudioFunctionType::NormalizePeak:
       /* note: this normalizes by taking all channels into
        * account */
       dsp_normalize (&dest_frames[0], &dest_frames[0], num_frames * channels);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_RMS:
+    case AudioFunctionType::NormalizeRMS:
       /* TODO rms-normalize */
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_NORMALIZE_LUFS:
+    case AudioFunctionType::NormalizeLUFS:
       /* TODO lufs-normalize */
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_LINEAR_FADE_IN:
+    case AudioFunctionType::LinearFadeIn:
       dsp_linear_fade_in_from (
         &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_LINEAR_FADE_OUT:
+    case AudioFunctionType::LinearFadeOut:
       dsp_linear_fade_out_to (
         &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_NUDGE_LEFT:
-      g_return_val_if_fail (num_frames > nudge_frames, false);
+    case AudioFunctionType::NudgeLeft:
+      z_return_if_fail (num_frames > nudge_frames);
       num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
       dsp_copy (
         &dest_frames[0], &src_frames[nudge_frames_all_channels],
@@ -420,24 +388,26 @@ audio_function_apply (
         &dest_frames[channels * num_frames_excl_nudge], 0.f,
         nudge_frames_all_channels);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_NUDGE_RIGHT:
-      g_return_val_if_fail (num_frames > nudge_frames, false);
+    case AudioFunctionType::NudgeRight:
+      z_return_if_fail (num_frames > nudge_frames);
       num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
       dsp_copy (
         &dest_frames[nudge_frames], &src_frames[0],
         channels * num_frames_excl_nudge);
       dsp_fill (&dest_frames[0], 0.f, nudge_frames_all_channels);
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_REVERSE:
+    case AudioFunctionType::Reverse:
       use_interleaved = false;
       for (size_t j = 0; j < channels; j++)
         {
-          dsp_reverse2 (&ch_dest_frames[j][0], &ch_src_frames[j][0], num_frames);
+          dsp_reverse2 (
+            &ch_dest_frames.getWritePointer (j)[0],
+            &ch_src_frames.getReadPointer (j)[0], num_frames);
         }
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_PITCH_SHIFT:
+    case AudioFunctionType::PitchShift:
       {
-        z_return_val_if_fail_cmp (channels, >=, 2, false);
+        z_return_if_fail_cmp (channels, >=, 2);
         use_interleaved = false;
         RubberBandState   rubberband_state;
         RubberBandOptions rubberband_opts =
@@ -450,14 +420,14 @@ audio_function_apply (
           | RubberBandOptionPitchHighQuality | RubberBandOptionFormantPreserved
           | RubberBandOptionThreadingAlways | RubberBandOptionChannelsApart;
         rubberband_state = rubberband_new (
-          AUDIO_ENGINE->sample_rate, channels, rubberband_opts, 1.0,
-          opts.amount);
+          AUDIO_ENGINE->sample_rate_, channels, rubberband_opts, 1.0,
+          opts.amount_);
         const size_t max_process_size = 8192;
         rubberband_set_debug_level (rubberband_state, 2);
         rubberband_set_max_process_size (rubberband_state, max_process_size);
         rubberband_set_expected_input_duration (rubberband_state, num_frames);
         rubberband_study (
-          rubberband_state, (const float * const *) ch_src_frames, num_frames,
+          rubberband_state, ch_src_frames.getArrayOfReadPointers (), num_frames,
           true);
         size_t samples_fed = 0;
         size_t frames_read = 0;
@@ -467,8 +437,9 @@ audio_function_apply (
               MIN (num_frames - samples_fed, max_process_size);
             /*rubberband_get_samples_required (*/
             /*rubberband_state));*/
-            float * tmp_in_arrays[2] = {
-              &ch_src_frames[0][samples_fed], &ch_src_frames[1][samples_fed]
+            std::array<const float * const, 2> tmp_in_arrays = {
+              &ch_src_frames.getReadPointer (0)[samples_fed],
+              &ch_src_frames.getReadPointer (1)[samples_fed]
             };
             samples_fed += samples_required;
             g_message (
@@ -478,8 +449,8 @@ audio_function_apply (
             if (samples_required > 0)
               {
                 rubberband_process (
-                  rubberband_state, (const float * const *) tmp_in_arrays,
-                  samples_required, samples_fed == num_frames);
+                  rubberband_state, tmp_in_arrays.data (), samples_required,
+                  samples_fed == num_frames);
               }
             for (;;)
               {
@@ -508,20 +479,18 @@ audio_function_apply (
                     return false;
 #endif
                   }
-                float * tmp_out_arrays[2] = {
-                  &ch_dest_frames[0][frames_read],
-                  &ch_dest_frames[1][frames_read]
+                std::array<float *, 2> tmp_out_arrays = {
+                  &ch_dest_frames.getWritePointer (0)[frames_read],
+                  &ch_dest_frames.getWritePointer (1)[frames_read]
                 };
                 size_t retrieved_out_samples = rubberband_retrieve (
-                  rubberband_state, tmp_out_arrays, (unsigned int) avail);
+                  rubberband_state, tmp_out_arrays.data (),
+                  (unsigned int) avail);
                 if ((int) retrieved_out_samples != avail)
                   {
-                    g_set_error (
-                      error, Z_AUDIOAUDIO_FUNCTION_ERROR,
-                      Z_AUDIOAUDIO_FUNCTION_ERROR_FAILED,
-                      "rubberband: retrieved out samples (%zu) != available samples (%d)",
-                      retrieved_out_samples, avail);
-                    return false;
+                    throw ZrythmException (fmt::format (
+                      "rubberband: retrieved out samples ({}) != available samples ({})",
+                      retrieved_out_samples, avail));
                   }
                 frames_read += retrieved_out_samples;
                 g_message (
@@ -531,56 +500,44 @@ audio_function_apply (
           }
         if (frames_read != num_frames)
           {
-            g_set_error (
-              error, Z_AUDIOAUDIO_FUNCTION_ERROR,
-              Z_AUDIOAUDIO_FUNCTION_ERROR_FAILED,
-              "rubberband: expected %zu frames but read %zu", num_frames,
-              frames_read);
-            return false;
+            throw ZrythmException (fmt::format (
+              "rubberband: expected {} frames but read {}", num_frames,
+              frames_read));
           }
       }
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_COPY_L_TO_R:
+    case AudioFunctionType::CopyLtoR:
       use_interleaved = false;
       if (channels == 2)
         {
-          dsp_copy (ch_dest_frames[1], ch_src_frames[0], num_frames);
+          dsp_copy (
+            ch_dest_frames.getWritePointer (1),
+            ch_src_frames.getReadPointer (0), num_frames);
         }
       else
         {
-          g_set_error_literal (
-            error, Z_AUDIOAUDIO_FUNCTION_ERROR,
-            Z_AUDIOAUDIO_FUNCTION_ERROR_FAILED,
-            _ ("This function can only be used on audio clips with 2 channels"));
-          return false;
+          throw ZrythmException (fmt::format (
+            "copy_lto_r: expected 2 channels but got {}", channels));
         }
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_EXT_PROGRAM:
+    case AudioFunctionType::ExternalProgram:
       {
-        AudioClip * tmp_clip = audio_clip_new_from_float_array (
-          src_frames, num_frames, channels, BitDepth::BIT_DEPTH_32, "tmp-clip");
-        GError * err = NULL;
-        tmp_clip = audio_clip_edit_in_ext_program (tmp_clip, &err);
-        if (!tmp_clip)
-          {
-            /* FIXME this should be handled async */
-            PROPAGATE_PREFIXED_ERROR (
-              error, err, "%s",
-              _ ("Failed to get audio clip from external program"));
-            return false;
-          }
+        AudioClip tmp_clip_before (
+          src_frames.data (), num_frames, channels, BitDepth::BIT_DEPTH_32,
+          "tmp-clip");
+        auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         dsp_copy (
-          &dest_frames[0], &tmp_clip->frames[0],
-          MIN (num_frames, (size_t) tmp_clip->num_frames) * channels);
-        if ((size_t) tmp_clip->num_frames < num_frames)
+          &dest_frames[0], &tmp_clip->frames_.getReadPointer (0)[0],
+          std::min (num_frames, (size_t) tmp_clip->num_frames_) * channels);
+        if ((size_t) tmp_clip->num_frames_ < num_frames)
           {
             dsp_fill (
               &dest_frames[0], 0.f,
-              (num_frames - (size_t) tmp_clip->num_frames) * channels);
+              (num_frames - (size_t) tmp_clip->num_frames_) * channels);
           }
       }
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_CUSTOM_PLUGIN:
+    case AudioFunctionType::CustomPlugin:
       {
 #if 0
         g_return_val_if_fail (uri, false);
@@ -595,7 +552,7 @@ audio_function_apply (
 #endif
       }
       break;
-    case AudioFunctionType::AUDIO_FUNCTION_INVALID:
+    case AudioFunctionType::Invalid:
       /* do nothing */
       break;
     default:
@@ -622,64 +579,38 @@ audio_function_apply (
         {
           for (size_t i = 0; i < num_frames; i++)
             {
-              dest_frames[i * channels + j] = ch_dest_frames[j][i];
+              dest_frames[i * channels + j] = ch_dest_frames.getSample (j, i);
             }
         }
     }
 
-  AudioClip * clip = audio_clip_new_from_float_array (
+  int  id = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
     &dest_frames[0], num_frames, channels, BitDepth::BIT_DEPTH_32,
-    orig_clip->name);
-  audio_pool_add_clip (AUDIO_POOL, clip);
-  g_message ("writing %s to pool (id %d)", clip->name, clip->pool_id);
-  GError * err = NULL;
-  bool     success = audio_clip_write_to_pool (clip, false, F_NOT_BACKUP, &err);
-  if (!success)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", "Failed to write audio clip to pool");
-      return false;
-    }
+    orig_clip->name_));
+  auto clip = AUDIO_POOL->get_clip (id);
+  z_debug ("writing %s to pool (id %d)", clip->name_, clip->pool_id_);
+  clip->write_to_pool (false, false);
 
-  audio_sel->pool_id = clip->pool_id;
+  audio_sel.pool_id_ = clip->pool_id_;
 
-  if (type != AudioFunctionType::AUDIO_FUNCTION_INVALID)
+  if (type != AudioFunctionType::Invalid)
     {
       /* replace the frames in the region */
-      success = audio_region_replace_frames (
-        r, dest_frames, (size_t) start.frames, num_frames, F_NO_DUPLICATE_CLIP,
-        &err);
-      if (!success)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s", "Failed to replace region frames");
-          return false;
-        }
+      r->replace_frames (dest_frames.data (), start.frames_, num_frames, false);
     }
 
   if (
-    !ZRYTHM_TESTING && type != AudioFunctionType::AUDIO_FUNCTION_INVALID
-    && type != AudioFunctionType::AUDIO_FUNCTION_CUSTOM_PLUGIN)
+    !ZRYTHM_TESTING && type != AudioFunctionType::Invalid
+    && type != AudioFunctionType::CustomPlugin)
     {
       /* set last action */
       g_settings_set_int (S_UI, "audio-function", ENUM_VALUE_TO_INT (type));
-      if (type == AudioFunctionType::AUDIO_FUNCTION_PITCH_SHIFT)
+      if (type == AudioFunctionType::PitchShift)
         {
           g_settings_set_double (
-            S_UI, "audio-function-pitch-shift-ratio", opts.amount);
+            S_UI, "audio-function-pitch-shift-ratio", opts.amount_);
         }
     }
 
-  /* free allocated memory */
-  free (src_frames);
-  free (dest_frames);
-  for (size_t j = 0; j < channels; j++)
-    {
-      free (ch_src_frames[j]);
-      free (ch_dest_frames[j]);
-    }
-
-  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, NULL);
-
-  return true;
+  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

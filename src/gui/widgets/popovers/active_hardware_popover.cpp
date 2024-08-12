@@ -1,7 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <cstring>
 
 #include "dsp/channel.h"
 #include "dsp/ext_port.h"
@@ -28,31 +26,27 @@ on_closed (ActiveHardwarePopoverWidget * self, gpointer user_data)
 }
 
 static void
-get_controllers (ActiveHardwarePopoverWidget * self, GPtrArray * controllers)
+get_controllers (
+  ActiveHardwarePopoverWidget * self,
+  std::vector<std::string>     &controllers)
 {
   if (!PROJECT)
     {
       return;
     }
 
-  HardwareProcessor * processor =
+  auto &processor =
     self->owner->input
-      ? AUDIO_ENGINE->hw_in_processor
-      : AUDIO_ENGINE->hw_out_processor;
+      ? AUDIO_ENGINE->hw_in_processor_
+      : AUDIO_ENGINE->hw_out_processor_;
 
   /* force a rescan just in case */
-  hardware_processor_rescan_ext_ports (processor);
-  for (
-    int i = 0;
-    i
-    < (self->owner->is_midi ? processor->num_ext_midi_ports : processor->num_ext_audio_ports);
-    i++)
+  processor->rescan_ext_ports (processor.get ());
+  auto &ports =
+    self->owner->is_midi ? processor->ext_midi_ports_ : processor->ext_audio_ports_;
+  for (auto &port : ports)
     {
-      ExtPort * port =
-        self->owner->is_midi
-          ? processor->ext_midi_ports[i]
-          : processor->ext_audio_ports[i];
-      g_ptr_array_add (controllers, ext_port_get_id (port));
+      controllers.push_back (port->get_id ());
     }
 }
 
@@ -83,17 +77,15 @@ find_checkbutton (ActiveHardwarePopoverWidget * self, const char * label)
 static void
 setup (ActiveHardwarePopoverWidget * self)
 {
-  GPtrArray * controllers = g_ptr_array_new_full (100, (GDestroyNotify) g_free);
-
   /* remove pre-existing controllers */
   z_gtk_widget_destroy_all_children (GTK_WIDGET (self->controllers_box));
 
   /* scan controllers and add them */
+  std::vector<std::string> controllers;
   get_controllers (self, controllers);
-  for (size_t i = 0; i < controllers->len; i++)
+  for (auto &controller : controllers)
     {
-      char *      controller_str = (char *) g_ptr_array_index (controllers, i);
-      GtkWidget * chkbtn = gtk_check_button_new_with_label (controller_str);
+      GtkWidget * chkbtn = gtk_check_button_new_with_label (controller.c_str ());
       gtk_box_append (self->controllers_box, chkbtn);
     }
 
@@ -103,7 +95,7 @@ setup (ActiveHardwarePopoverWidget * self)
     g_settings_get_strv (self->owner->settings, self->owner->key);
   char * tmp;
   size_t i = 0;
-  while ((tmp = saved_controllers[i]) != NULL)
+  while ((tmp = saved_controllers[i]) != nullptr)
     {
       /* find checkbutton matching saved
        * controller */
@@ -117,9 +109,6 @@ setup (ActiveHardwarePopoverWidget * self)
 
       i++;
     }
-
-  /* cleanup */
-  g_ptr_array_unref (controllers);
 }
 
 static void
@@ -132,7 +121,7 @@ ActiveHardwarePopoverWidget *
 active_hardware_popover_widget_new (ActiveHardwareMbWidget * owner)
 {
   ActiveHardwarePopoverWidget * self = Z_ACTIVE_HARDWARE_POPOVER_WIDGET (
-    g_object_new (ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE, NULL));
+    g_object_new (ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE, nullptr));
 
   self->owner = owner;
 

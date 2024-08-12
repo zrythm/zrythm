@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Inspector port widget.
  */
@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_INSPECTOR_PORT_H__
 #define __GUI_WIDGETS_INSPECTOR_PORT_H__
 
-#include "utils/resources.h"
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -22,9 +22,10 @@ G_DECLARE_FINAL_TYPE (
   INSPECTOR_PORT_WIDGET,
   GtkWidget)
 
-typedef struct _BarSliderWidget              BarSliderWidget;
-typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
-typedef struct Meter                         Meter;
+TYPEDEF_STRUCT_UNDERSCORED (BarSliderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PortConnectionsPopoverWidget);
+class Meter;
+class Port;
 
 /**
  * @addtogroup widgets
@@ -35,7 +36,7 @@ typedef struct Meter                         Meter;
 /**
  * A Port to show in the inspector for Plugin's.
  */
-typedef struct _InspectorPortWidget
+using InspectorPortWidget = struct _InspectorPortWidget
 {
   GtkWidget parent_instance;
 
@@ -64,7 +65,7 @@ typedef struct _InspectorPortWidget
   float normalized_init_port_val;
 
   /** Port name cache. */
-  char port_str[400];
+  std::string port_str;
 
   /** Port this is for. */
   Port * port;
@@ -83,7 +84,7 @@ typedef struct _InspectorPortWidget
   bool  last_port_val_set;
 
   /** Meter for this widget. */
-  Meter * meter;
+  std::unique_ptr<Meter> meter;
 
   /** Jack button to expose port to jack. */
   GtkToggleButton * jack;
@@ -97,7 +98,7 @@ typedef struct _InspectorPortWidget
   /** Multipress guesture for right click. */
   GtkGestureClick * right_click_gesture;
 
-  char hex_color[40];
+  std::string hex_color;
 
   /** Cache of port's last drawn number of
    * connetions (srcs or dests). */
@@ -107,7 +108,7 @@ typedef struct _InspectorPortWidget
   GtkPopoverMenu * popover_menu;
 
   PortConnectionsPopoverWidget * connections_popover;
-} InspectorPortWidget;
+};
 
 void
 inspector_port_widget_refresh (InspectorPortWidget * self);

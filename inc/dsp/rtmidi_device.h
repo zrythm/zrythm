@@ -1,21 +1,19 @@
-/*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_RTMIDI_DEVICE_H__
 #define __AUDIO_RTMIDI_DEVICE_H__
 
 #include "zrythm-config.h"
 
+#include "dsp/midi_event.h"
+#include "utils/ring_buffer.h"
+
 #ifdef HAVE_RTMIDI
 
-#  include "zix/ring.h"
 #  include <rtmidi_c.h>
-#  include <stdint.h>
 
-class Port;
+class MidiPort;
 
 /**
  * @addtogroup dsp
@@ -23,7 +21,7 @@ class Port;
  * @{
  */
 
-#  define MIDI_BUFFER_SIZE 32768
+constexpr size_t MIDI_BUFFER_SIZE = 32768;
 
 /**
  * For readability when passing 0/1 for input
@@ -35,84 +33,104 @@ enum RtMidiDeviceFlow
   RTMIDI_DEVICE_FLOW_INPUT,
 };
 
-typedef struct RtMidiDevice
+class RtMidiDevice
 {
+public:
+  /**
+   * @param name If non-empty, search by name instead of by @ref device_id.
+   *
+   * @throw ZrythmException on error.
+   */
+  RtMidiDevice (
+    bool         is_input,
+    unsigned int device_id,
+    MidiPort *   port,
+    std::string  name = "");
+
+  ~RtMidiDevice ()
+  {
+    if (started_)
+      {
+        stop ();
+      }
+    if (opened_)
+      {
+        close ();
+      }
+    if (is_input_)
+      {
+        rtmidi_in_free (in_handle_);
+      }
+    else
+      {
+        rtmidi_out_free (out_handle_);
+      }
+  }
+
+  /**
+   * Opens the device.
+   *
+   * @param start Also start the device.
+   *
+   * @throw ZrythmException on error.
+   */
+  void open (bool start);
+
+  /**
+   * Close the device.
+   */
+  void close ();
+
+  /**
+   * @brief Start the device.
+   *
+   * @throw ZrythmException on error.
+   */
+  void start ();
+
+  /**
+   * @brief Stop the device
+   */
+  void stop ();
+
+public:
   /** 1 for input, 0 for output. */
-  int is_input;
+  bool is_input_;
 
   /** Index (device index from RtMidi). */
-  unsigned int id;
+  unsigned int id_;
 
-  char * name;
+  std::string name;
 
   /** Whether opened or not. */
-  int opened;
+  bool opened_;
 
   /** Whether started (running) or not. */
-  int started;
+  bool started_;
 
   /* ---- INPUT ---- */
-  RtMidiInPtr in_handle;
+  RtMidiInPtr in_handle_;
 
   /* ---- OUTPUT ---- */
-  RtMidiOutPtr out_handle;
+  RtMidiOutPtr out_handle_;
 
   /** Associated port. */
-  Port * port;
+  MidiPort * port_;
 
   /** MIDI event ring buffer. */
-  ZixRing * midi_ring;
+  RingBuffer<MidiEvent> midi_ring_{ 1024 };
 
-  /** Events enqueued at the beginning of each processing cycle from the ring. */
-  MidiEvents * events;
+  /** Events enqueued at the beginning of each processing cycle from the ring.
+   */
+  MidiEventVector events_;
 
   /** Semaphore for blocking writing events while events are being read. */
-  ZixSem midi_ring_sem;
-
-} RtMidiDevice;
-
-/**
- * @param name If non-NUL, search by name instead of
- *   by @ref device_id.
- */
-RtMidiDevice *
-rtmidi_device_new (
-  bool         is_input,
-  const char * name,
-  unsigned int device_id,
-  Port *       port);
-
-/**
- * Opens a device allocated with
- * rtmidi_device_new().
- *
- * @param start Also start the device.
- *
- * @return Non-zero if error.
- */
-int
-rtmidi_device_open (RtMidiDevice * dev, int start);
-
-/**
- * Close the RtMidiDevice.
- *
- * @param free Also free the memory.
- */
-int
-rtmidi_device_close (RtMidiDevice * self, int free);
-
-int
-rtmidi_device_start (RtMidiDevice * self);
-
-int
-rtmidi_device_stop (RtMidiDevice * self);
-
-void
-rtmidi_device_free (RtMidiDevice * self);
+  std::binary_semaphore midi_ring_sem_{ 1 };
+};
 
 /**
  * @}
  */
 
 #endif // HAVE_RTMIDI
-#endif
+#endif // __AUDIO_RTMIDI_DEVICE_H__

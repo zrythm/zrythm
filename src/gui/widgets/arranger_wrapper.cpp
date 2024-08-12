@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_minimap.h"
@@ -22,9 +20,9 @@ G_DEFINE_TYPE (ArrangerWrapperWidget, arranger_wrapper_widget, GTK_TYPE_WIDGET);
 
 void
 arranger_wrapper_widget_setup (
-  ArrangerWrapperWidget * self,
-  ArrangerWidgetType      type,
-  SnapGrid *              snap_grid)
+  ArrangerWrapperWidget *   self,
+  ArrangerWidgetType        type,
+  std::shared_ptr<SnapGrid> snap_grid)
 {
   arranger_widget_setup (self->child, type, snap_grid);
 
@@ -77,13 +75,13 @@ arranger_wrapper_widget_init (ArrangerWrapperWidget * self)
   self->overlay = GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (GTK_WIDGET (self->overlay), GTK_WIDGET (self));
 
-  self->child =
-    static_cast<ArrangerWidget *> (g_object_new (ARRANGER_WIDGET_TYPE, NULL));
+  self->child = static_cast<ArrangerWidget *> (
+    g_object_new (ARRANGER_WIDGET_TYPE, nullptr));
   gtk_widget_set_vexpand (GTK_WIDGET (self->child), true);
   gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->child));
 
   self->minimap = static_cast<ArrangerMinimapWidget *> (
-    g_object_new (ARRANGER_MINIMAP_WIDGET_TYPE, NULL));
+    g_object_new (ARRANGER_MINIMAP_WIDGET_TYPE, nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->minimap), GTK_WIDGET (self));
 }
 

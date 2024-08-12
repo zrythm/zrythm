@@ -1,8 +1,6 @@
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -28,53 +26,46 @@
 
 #include "ext/zita-resampler/resampler.h"
 
-typedef struct TruePeakDsp
+class TruePeakDsp
 {
-  float           m;
-  float           p;
-  float           z1;
-  float           z2;
-  bool            res;
-  float *         buf;
-  ZitaResampler * src;
+public:
+  TruePeakDsp ();
+  ~TruePeakDsp ();
 
-  float w1; // attack filter coefficient
-  float w2; // attack filter coefficient
-  float w3; // release filter coefficient
-  float g;  // gain factor
-} TruePeakDsp;
+  /**
+   * Process.
+   *
+   * @param p Frame array.
+   * @param n Number of samples.
+   */
+  void process (float * p, int n);
 
-/**
- * Process.
- *
- * @param p Frame array.
- * @param n Number of samples.
- */
-void
-true_peak_dsp_process (TruePeakDsp * self, float * p, int n);
+  void process_max (float * p, int n);
 
-void
-true_peak_dsp_process_max (TruePeakDsp * self, float * p, int n);
+  float read_f ();
 
-float
-true_peak_dsp_read_f (TruePeakDsp * self);
+  void read (float * m, float * p);
 
-void
-true_peak_dsp_read (TruePeakDsp * self, float * m, float * p);
+  void reset ();
 
-void
-true_peak_dsp_reset (TruePeakDsp * self);
+  /**
+   * Init with the samplerate.
+   */
+  void init (float samplerate);
 
-/**
- * Init with the samplerate.
- */
-void
-true_peak_dsp_init (TruePeakDsp * self, float samplerate);
+private:
+  float           m_ = 0.0f;
+  float           p_ = 0.0f;
+  float           z1_ = 0.0f;
+  float           z2_ = 0.0f;
+  bool            res_ = false;
+  float *         buf_ = nullptr;
+  ZitaResampler * src_ = nullptr;
 
-TruePeakDsp *
-true_peak_dsp_new (void);
-
-void
-true_peak_dsp_free (TruePeakDsp * self);
+  float w1_ = 0.0f; // attack filter coefficient
+  float w2_ = 0.0f; // attack filter coefficient
+  float w3_ = 0.0f; // release filter coefficient
+  float g_ = 1.0f;  // gain factor
+};
 
 #endif

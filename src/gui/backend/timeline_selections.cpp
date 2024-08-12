@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_track.h"
@@ -13,163 +13,794 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
-#include "io/midi_file.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/audio.h"
-#include "utils/debug.h"
-#include "utils/flags.h"
+#include "utils/dsp.h"
 #include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/yaml.h"
+#include "utils/rt_thread_id.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
-#include <limits.h>
 
-/**
- * Creates a new TimelineSelections instance for
- * the given range.
- *
- * @bool clone_objs True to clone each object,
- *   false to use pointers to project objects.
- */
-TimelineSelections *
-timeline_selections_new_for_range (
-  Position * start_pos,
-  Position * end_pos,
-  bool       clone_objs)
+TimelineSelections::TimelineSelections (
+  const Position &start_pos,
+  const Position &end_pos)
+    : ArrangerSelections (ArrangerSelections::Type::Timeline)
 {
-  TimelineSelections * self = (TimelineSelections *) arranger_selections_new (
-    ArrangerSelectionsType::ARRANGER_SELECTIONS_TYPE_TIMELINE);
-
-#define ADD_OBJ(obj) \
-  if (arranger_object_is_hit ((ArrangerObject *) (obj), start_pos, end_pos)) \
-    { \
-      ArrangerObject * _obj = (ArrangerObject *) (obj); \
-      if (clone_objs) \
-        { \
-          _obj = arranger_object_clone (_obj); \
-        } \
-      arranger_selections_add_object ((ArrangerSelections *) self, _obj); \
-    }
-
-  /* regions */
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      AutomationTracklist * atl = track_get_automation_tracklist (track);
-      for (int j = 0; j < track->num_lanes; j++)
+      std::vector<ArrangerObject *> objs;
+      track->append_objects (objs);
+
+      for (auto obj : objs)
         {
-          TrackLane * lane = track->lanes[j];
-          for (int k = 0; k < lane->num_regions; k++)
+          if (obj->is_start_hit_by_range (start_pos, end_pos))
             {
-              ADD_OBJ (lane->regions[k]);
+              std::visit (
+                [&] (auto &&obj) { add_object_owned (obj->clone_unique ()); },
+                convert_to_variant<ArrangerObjectPtrVariant> (obj));
             }
         }
-      for (int j = 0; j < track->num_chord_regions; j++)
-        {
-          ADD_OBJ (track->chord_regions[j]);
-        }
-      if (atl)
-        {
-          for (int j = 0; j < atl->num_ats; j++)
-            {
-              AutomationTrack * at = atl->ats[j];
+    }
+}
 
-              for (int k = 0; k < at->num_regions; k++)
+void
+TimelineSelections::sort_by_indices (bool desc)
+{
+  auto sort_regions = [] (const auto &a, const auto &b) {
+    Track * at = TRACKLIST->find_track_by_name_hash (a.id_.track_name_hash_);
+    g_return_val_if_fail (at, false);
+    Track * bt = TRACKLIST->find_track_by_name_hash (b.id_.track_name_hash_);
+    g_return_val_if_fail (bt, false);
+    if (at->pos_ < bt->pos_)
+      return true;
+    else if (at->pos_ > bt->pos_)
+      return false;
+
+    int have_lane = region_type_has_lane (a.id_.type_);
+    /* order doesn't matter in this case */
+    if (have_lane != region_type_has_lane (b.id_.type_))
+      return true;
+
+    if (have_lane)
+      {
+        if (a.id_.lane_pos_ < b.id_.lane_pos_)
+          {
+            return true;
+          }
+        else if (a.id_.lane_pos_ > b.id_.lane_pos_)
+          {
+            return false;
+          }
+      }
+    else if (
+      a.id_.type_ == RegionType::Automation
+      && b.id_.type_ == RegionType::Automation)
+      {
+        if (a.id_.at_idx_ < b.id_.at_idx_)
+          {
+            return true;
+          }
+        else if (a.id_.at_idx_ > b.id_.at_idx_)
+          {
+            return false;
+          }
+      }
+
+    return a.id_.idx_ < b.id_.idx_;
+  };
+
+  std::sort (
+    objects_.begin (), objects_.end (),
+    [desc, sort_regions] (const auto &a, const auto &b) {
+      bool ret = false;
+      if (a->is_region ())
+        {
+          ret = sort_regions (
+            dynamic_cast<Region &> (*a), dynamic_cast<Region &> (*b));
+        }
+      else if (a->is_scale_object ())
+        {
+          ret =
+            dynamic_cast<ScaleObject &> (*a).index_in_chord_track_
+            < dynamic_cast<ScaleObject &> (*b).index_in_chord_track_;
+        }
+      else if (a->is_marker ())
+        {
+          ret =
+            dynamic_cast<Marker &> (*a).marker_track_index_
+            < dynamic_cast<Marker &> (*b).marker_track_index_;
+        }
+      return desc ? !ret : ret;
+    });
+}
+
+bool
+TimelineSelections::contains_looped () const
+{
+  return std::any_of (objects_.begin (), objects_.end (), [] (const auto &obj) {
+    return obj->can_loop ()
+           && dynamic_cast<LoopableObject *> (obj.get ())->is_looped ();
+  });
+}
+
+bool
+TimelineSelections::all_on_same_lane () const
+{
+  if (objects_.empty ())
+    return true;
+
+  auto first_obj =
+    convert_to_variant<ArrangerObjectPtrVariant> (objects_.front ().get ());
+  return std::visit (
+    [&] (auto &&first) {
+      if constexpr (std::derived_from<std::decay_t<decltype (first)>, Region>)
+        {
+          const auto &id = first->id_;
+          return std::all_of (
+            objects_.begin () + 1, objects_.end (), [&] (const auto &obj) {
+              return std::visit (
+                [&] (auto &&curr) {
+                  if constexpr (
+                    std::derived_from<std::decay_t<decltype (curr)>, Region>)
+                    {
+                      if (id.type_ != curr->id_.type_)
+                        return false;
+
+                      if constexpr (
+                        std::derived_from<
+                          std::decay_t<decltype (curr)>, LaneOwnedObject>)
+                        return id.track_name_hash_ == curr->id_.track_name_hash_
+                               && id.lane_pos_ == curr->id_.lane_pos_;
+                      else if constexpr (
+                        std::is_same_v<
+                          std::decay_t<decltype (curr)>, AutomationRegion>)
+                        return id.track_name_hash_ == curr->id_.track_name_hash_
+                               && id.at_idx_ == curr->id_.at_idx_;
+                      else
+                        return true;
+                    }
+                  else
+                    {
+                      return false;
+                    }
+                },
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
+            });
+        }
+      else
+        {
+          return false;
+        }
+    },
+    first_obj);
+}
+
+bool
+TimelineSelections::can_be_merged () const
+{
+  return objects_.size () > 1 && all_on_same_lane () && !contains_looped ();
+}
+
+void
+TimelineSelections::merge ()
+{
+  if (!all_on_same_lane ())
+    {
+      z_warning ("selections not on same lane");
+      return;
+    }
+
+  auto ticks_length = get_length_in_ticks ();
+  auto num_frames = static_cast<unsigned_frame_t> (
+    ceil (AUDIO_ENGINE->frames_per_tick_ * ticks_length));
+  auto [first_obj, pos] = get_first_object_and_pos (true);
+  Position end_pos{ pos.ticks_ + ticks_length };
+
+  z_return_if_fail (!first_obj || !first_obj->is_region ());
+  auto &first_r = dynamic_cast<Region &> (*first_obj);
+
+  std::unique_ptr<Region> new_r;
+  switch (first_r.get_type ())
+    {
+    case RegionType::Midi:
+      {
+        new_r = std::make_unique<MidiRegion> (
+          pos, end_pos, first_r.id_.track_name_hash_, first_r.id_.lane_pos_,
+          first_r.id_.idx_);
+        for (auto &obj : objects_)
+          {
+            auto  &r = dynamic_cast<MidiRegion &> (*obj);
+            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+
+            for (auto &mn : r.midi_notes_)
+              {
+                auto new_mn = mn->clone_shared ();
+                new_mn->move (ticks_diff);
+                dynamic_cast<MidiRegion &> (*new_r).append_object (
+                  new_mn, false);
+              }
+          }
+      }
+      break;
+    case RegionType::Audio:
+      {
+        std::vector<float> lframes (num_frames, 0);
+        std::vector<float> rframes (num_frames, 0);
+        std::vector<float> frames (num_frames * 2, 0);
+        auto first_r_clip = dynamic_cast<AudioRegion &> (first_r).get_clip ();
+        auto max_depth = first_r_clip->bit_depth_;
+        z_return_if_fail (!first_r_clip->name_.empty ());
+        for (auto &obj : objects_)
+          {
+            auto &r = dynamic_cast<AudioRegion &> (*obj);
+            long  frames_diff = r.pos_.frames_ - first_obj->pos_.frames_;
+            long  r_frames_length = r.get_length_in_frames ();
+
+            auto clip = r.get_clip ();
+            dsp_add2 (
+              &lframes[frames_diff], clip->ch_frames_.getReadPointer (0),
+              static_cast<size_t> (r_frames_length));
+
+            max_depth = std::max (max_depth, clip->bit_depth_);
+          }
+        /* interleave */
+        for (unsigned_frame_t i = 0; i < num_frames; i++)
+          {
+            frames[i * 2] = lframes[i];
+            frames[i * 2 + 1] = rframes[i];
+          }
+
+        new_r = std::make_unique<AudioRegion> (
+          -1, std::nullopt, true, frames.data (), num_frames,
+          first_r_clip->name_, 2, max_depth, pos, first_r.id_.track_name_hash_,
+          first_r.id_.lane_pos_, first_r.id_.idx_);
+      }
+      break;
+    case RegionType::Chord:
+      {
+        new_r = std::make_unique<ChordRegion> (pos, end_pos, first_r.id_.idx_);
+        for (auto &obj : objects_)
+          {
+            auto  &r = dynamic_cast<ChordRegion &> (*obj);
+            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+
+            for (auto &co : r.chord_objects_)
+              {
+                auto new_co = co->clone_shared ();
+                new_co->move (ticks_diff);
+                dynamic_cast<ChordRegion &> (*new_r).append_object (
+                  new_co, false);
+              }
+          }
+      }
+      break;
+    case RegionType::Automation:
+      {
+        new_r = std::make_unique<AutomationRegion> (
+          pos, end_pos, first_r.id_.track_name_hash_, first_r.id_.at_idx_,
+          first_r.id_.idx_);
+        for (auto &obj : objects_)
+          {
+            auto  &r = dynamic_cast<AutomationRegion &> (*obj);
+            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+
+            for (auto &ap : r.aps_)
+              {
+                auto new_ap = ap->clone_shared ();
+                new_ap->move (ticks_diff);
+                dynamic_cast<AutomationRegion &> (*new_r).append_object (
+                  new_ap, false);
+              }
+          }
+      }
+      break;
+    }
+
+  new_r->gen_name (first_r.name_.c_str (), nullptr, nullptr);
+
+  clear (false);
+  add_object_owned (std::move (new_r));
+}
+
+Track *
+TimelineSelections::get_first_track () const
+{
+  return (*std::min_element (
+            objects_.begin (), objects_.end (),
+            [] (const auto &a, const auto &b) {
+              auto track_a = a->get_track ();
+              auto track_b = b->get_track ();
+              return track_a && (!track_b || track_a->pos_ < track_b->pos_);
+            }))
+    ->get_track ();
+}
+
+Track *
+TimelineSelections::get_last_track () const
+{
+  return (*std::max_element (
+            objects_.begin (), objects_.end (),
+            [] (const auto &a, const auto &b) {
+              auto track_a = a->get_track ();
+              auto track_b = b->get_track ();
+              return !track_a || (track_b && track_a->pos_ < track_b->pos_);
+            }))
+    ->get_track ();
+}
+
+void
+TimelineSelections::set_vis_track_indices ()
+{
+  auto highest_tr = get_first_track ();
+  if (!highest_tr)
+    return;
+
+  for (auto &obj : objects_)
+    {
+      auto region_track = obj->get_track ();
+      if (obj->is_region ())
+        {
+          region_track_vis_index_ =
+            TRACKLIST->get_visible_track_diff (*highest_tr, *region_track);
+        }
+      else if (obj->is_marker ())
+        {
+          marker_track_vis_index_ =
+            TRACKLIST->get_visible_track_diff (*highest_tr, *P_MARKER_TRACK);
+        }
+      else if (obj->is_chord_object ())
+        {
+          chord_track_vis_index_ =
+            TRACKLIST->get_visible_track_diff (*highest_tr, *P_CHORD_TRACK);
+        }
+    }
+}
+
+bool
+TimelineSelections::can_be_pasted_at_impl (const Position pos, const int idx) const
+{
+  auto tr =
+    idx >= 0
+      ? TRACKLIST->get_track (idx)
+      : TRACKLIST_SELECTIONS->get_highest_track ();
+  if (!tr)
+    return false;
+
+  for (const auto &obj : objects_)
+    {
+      if (obj->is_region ())
+        {
+          auto r = dynamic_cast<const Region *> (obj.get ());
+          // automation regions can't be copy-pasted this way
+          if (r->is_automation ())
+            return false;
+
+          // check if this track can host this region
+          if (!Track::type_can_host_region_type (tr->type_, r->get_type ()))
+            {
+              z_info (
+                "track {} can't host region type {}", tr->get_name (),
+                r->get_type ());
+              return false;
+            }
+        }
+      else if (obj->is_marker () && !tr->is_marker ())
+        return false;
+      else if (obj->is_chord_object () && !tr->is_chord ())
+        return false;
+    }
+
+  return true;
+}
+
+void
+TimelineSelections::mark_for_bounce (bool with_parents)
+{
+  AUDIO_ENGINE->reset_bounce_mode ();
+
+  for (const auto &obj : objects_)
+    {
+      auto track = obj->get_track ();
+      if (!track)
+        continue;
+
+      if (!with_parents)
+        {
+          track->bounce_to_master_ = true;
+        }
+      track->mark_for_bounce (true, false, true, with_parents);
+
+      if (obj->is_region ())
+        {
+          auto r = dynamic_cast<Region *> (obj.get ());
+          r->bounce_ = true;
+        }
+    }
+}
+
+bool
+TimelineSelections::contains_clip (const AudioClip &clip) const
+{
+  return std::ranges::any_of (objects_, [&clip] (const auto &obj) {
+    auto r = dynamic_cast<const AudioRegion *> (obj.get ());
+    return r && r->pool_id_ == clip.pool_id_;
+  });
+}
+
+bool
+TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
+  const int vis_track_diff,
+  const int lane_diff,
+  const int vis_at_diff)
+{
+  /* if nothing to do return */
+  if (vis_track_diff == 0 && lane_diff == 0 && vis_at_diff == 0)
+    return false;
+
+  /* only 1 operation supported at once */
+  if (vis_track_diff != 0)
+    {
+      z_return_val_if_fail (lane_diff == 0 && vis_at_diff == 0, false);
+    }
+  if (lane_diff != 0)
+    {
+      z_return_val_if_fail (vis_track_diff == 0 && vis_at_diff == 0, false);
+    }
+  if (vis_at_diff != 0)
+    {
+      z_return_val_if_fail (lane_diff == 0 && vis_track_diff == 0, false);
+    }
+
+  /* if there are objects other than regions, moving is not supported */
+  if (std::ranges::any_of (objects_, [] (const auto &obj) {
+        return !obj->is_region ();
+      }))
+    {
+      z_debug (
+        "selection contains non-regions - skipping moving to another track/lane");
+      return false;
+    }
+
+  /* if there are no objects do nothing */
+  if (objects_.empty ())
+    return false;
+
+  sort_by_indices (false);
+
+  /* store selected regions because they will be deselected during moving */
+  std::vector<Region *> regions_arr;
+  for (const auto &obj : objects_)
+    {
+      regions_arr.push_back (dynamic_cast<Region *> (obj.get ()));
+    }
+
+  /*
+   * for tracks, check that:
+   * - all regions can be moved to a compatible track
+   * for lanes, check that:
+   * - all regions are in the same track
+   * - only lane regions are selected
+   * - the lane bounds are not exceeded
+   */
+  bool compatible = true;
+  for (auto region : regions_arr)
+    {
+      auto track = region->get_track ();
+      if (vis_track_diff != 0)
+        {
+          auto visible =
+            TRACKLIST->get_visible_track_after_delta (*track, vis_track_diff);
+          if (
+            !visible
+            || !Track::type_is_compatible_for_moving (
+              track->type_, visible->type_)
+            ||
+            /* do not allow moving automation tracks to other tracks for now */
+            region->is_automation ())
+            {
+              compatible = false;
+              break;
+            }
+        }
+      else if (lane_diff != 0)
+        {
+          auto laned_track = dynamic_cast<LanedTrack *> (track);
+          if (!laned_track)
+            {
+              compatible = false;
+              break;
+            }
+
+          laned_track->block_auto_creation_and_deletion_ = true;
+          if (region->id_.lane_pos_ + lane_diff < 0)
+            {
+              compatible = false;
+              break;
+            }
+
+          /* don't create more than 1 extra lanes */
+          auto r_variant = convert_to_variant<RegionPtrVariant> (region);
+          compatible = std::visit (
+            [&] (auto &&r) {
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
                 {
-                  ADD_OBJ (at->regions[k]);
+                  auto laned_track_impl = dynamic_cast<
+                    LanedTrackImpl<std::decay_t<decltype (r)> *>> (track);
+                  auto lane = r->get_lane ();
+                  z_return_val_if_fail (region && lane, -1);
+                  int new_lane_pos = lane->pos + lane_diff;
+                  z_return_val_if_fail (new_lane_pos >= 0, -1);
+                  if (new_lane_pos >= laned_track_impl->lanes_.size ())
+                    {
+                      z_debug (
+                        "new lane position %d is >= the number of lanes in the track (%d)",
+                        new_lane_pos, laned_track_impl->lanes_.size ());
+                      return false;
+                    }
+                  if (
+                    new_lane_pos > laned_track_impl->last_lane_created_
+                    && laned_track_impl->last_lane_created_ > 0 && lane_diff > 0)
+                    {
+                      z_debug (
+                        "already created a new lane at %d, skipping new lane for %d",
+                        laned_track_impl->last_lane_created_, new_lane_pos);
+                      return false;
+                    }
+                }
+              else
+                {
+                  return false;
+                }
+            },
+            r_variant);
+
+          if (!compatible)
+            {
+              break;
+            }
+        }
+      else if (vis_at_diff != 0)
+        {
+          if (!region->is_automation ())
+            {
+              compatible = false;
+              break;
+            }
+
+          /* don't allow moving automation regions -- too error prone */
+          compatible = false;
+          break;
+        }
+    }
+  if (!compatible)
+    {
+      return false;
+    }
+
+  /* new positions are all compatible, move the regions */
+  for (auto region : regions_arr)
+    {
+      auto r_variant = convert_to_variant<RegionPtrVariant> (region);
+      auto success = std::visit (
+        [&] (auto &&r) {
+          if (vis_track_diff != 0)
+            {
+              auto region_track = region->get_track ();
+              z_warn_if_fail (region && region_track);
+              auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
+                *region_track, vis_track_diff);
+              z_return_val_if_fail (track_to_move_to, false);
+              r->move_to_track (track_to_move_to, -1, -1);
+            }
+          else if (lane_diff != 0)
+            {
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
+                {
+                  auto lane = r->get_lane ();
+                  z_return_val_if_fail (r && lane, false);
+
+                  int new_lane_pos = lane->pos_ + lane_diff;
+                  z_return_val_if_fail (new_lane_pos >= 0, false);
+                  auto laned_track = lane->get_track ();
+                  bool new_lanes_created =
+                    laned_track->create_missing_lanes (new_lane_pos);
+                  if (new_lanes_created)
+                    {
+                      laned_track->last_lane_created_ = new_lane_pos;
+                    }
+                  r->move_to_track (laned_track, new_lane_pos, -1);
                 }
             }
-        }
-      for (int j = 0; j < track->num_scales; j++)
+          else if (vis_at_diff != 0)
+            {
+              if constexpr (
+                std::is_same_v<std::decay_t<decltype (r)>, AutomationRegion>)
+                {
+                  auto at = r->get_automation_track ();
+                  z_return_val_if_fail (region && at, false);
+                  auto              atl = at->get_automation_tracklist ();
+                  AutomationTrack * new_at =
+                    atl->get_visible_at_after_delta (at, vis_at_diff);
+
+                  if (at != new_at)
+                    {
+                      /* TODO */
+                      z_warning ("!MOVING!");
+                      /*automation_track_remove_region (at, region);*/
+                      /*automation_track_add_region (new_at, region);*/
+                    }
+                }
+            }
+          return true;
+        },
+        r_variant);
+
+      if (!success)
         {
-          ADD_OBJ (track->scales[j]);
-        }
-      for (int j = 0; j < track->num_markers; j++)
-        {
-          ADD_OBJ (track->markers[j]);
+          z_warning ("failed to move region {}", region->get_name ());
+          return false;
         }
     }
 
-#undef ADD_OBJ
+  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
 
-  return self;
+  return true;
 }
 
-/**
- * Gets highest track in the selections.
- */
-Track *
-timeline_selections_get_last_track (TimelineSelections * ts)
+bool
+TimelineSelections::move_regions_to_new_ats (const int vis_at_diff)
 {
-  int     track_pos = -1;
-  Track * track = NULL;
-  int     tmp_pos;
-  Track * tmp_track;
-
-#define CHECK_POS(_track) \
-  tmp_track = _track; \
-  tmp_pos = tracklist_get_track_pos (TRACKLIST, tmp_track); \
-  if (tmp_pos > track_pos) \
-    { \
-      track_pos = tmp_pos; \
-      track = tmp_track; \
-    }
-
-  Region * region;
-  for (int i = 0; i < ts->num_regions; i++)
-    {
-      region = ts->regions[i];
-      ArrangerObject * r_obj = (ArrangerObject *) region;
-      Track *          _track = arranger_object_get_track (r_obj);
-      CHECK_POS (_track);
-    }
-  CHECK_POS (P_CHORD_TRACK);
-
-  return track;
-#undef CHECK_POS
+  return move_regions_to_new_lanes_or_tracks_or_ats (0, 0, vis_at_diff);
 }
 
-/**
- * Gets lowest track in the selections.
- */
-Track *
-timeline_selections_get_first_track (TimelineSelections * ts)
+bool
+TimelineSelections::move_regions_to_new_lanes (const int diff)
 {
-  int     track_pos = INT_MAX;
-  Track * track = NULL;
-  int     tmp_pos;
-  Track * tmp_track;
+  return move_regions_to_new_lanes_or_tracks_or_ats (0, diff, 0);
+}
 
-#define CHECK_POS(_track) \
-  tmp_track = _track; \
-  tmp_pos = tracklist_get_track_pos (TRACKLIST, tmp_track); \
-  if (tmp_pos < track_pos) \
-    { \
-      track_pos = tmp_pos; \
-      track = tmp_track; \
+bool
+TimelineSelections::move_regions_to_new_tracks (const int vis_track_diff)
+{
+  return move_regions_to_new_lanes_or_tracks_or_ats (vis_track_diff, 0, 0);
+}
+
+void
+TimelineSelections::set_index_in_prev_lane ()
+{
+  for (auto &obj : objects_)
+    {
+      if (auto region = dynamic_cast<Region *> (obj.get ()))
+        {
+          auto r_variant = convert_to_variant<RegionPtrVariant> (region);
+          std::visit (
+            [&] (auto &&r) {
+              if constexpr (
+                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
+                {
+                  r->index_in_prev_lane_ = region->id_.idx_;
+                }
+            },
+            r_variant);
+        }
+    }
+}
+
+bool
+TimelineSelections::contains_only_regions () const
+{
+  return std::all_of (objects_.begin (), objects_.end (), [] (const auto &obj) {
+    return obj->is_region ();
+  });
+}
+
+bool
+TimelineSelections::contains_only_region_types (RegionType types) const
+{
+  if (!contains_only_regions ())
+    return false;
+
+  return std::all_of (objects_.begin (), objects_.end (), [types] (const auto &obj) {
+    auto region = dynamic_cast<Region *> (obj.get ());
+    return region
+           && (static_cast<int> (region->get_type ()) & static_cast<int> (types));
+  });
+}
+
+bool
+TimelineSelections::export_to_midi_file (
+  const char * full_path,
+  int          midi_version,
+  bool         export_full_regions,
+  bool         lanes_as_tracks) const
+{
+  auto mf = midiFileCreate (full_path, true);
+  if (!mf)
+    return false;
+
+  /* write tempo info to track 1 */
+  auto tempo_track = TRACKLIST->tempo_track_;
+  midiSongAddTempo (mf, 1, static_cast<int> (tempo_track->get_current_bpm ()));
+
+  /* all data is written out to tracks (not channels). we therefore set the
+  current channel before writing data out. channel assignments can change any
+  number of times during the file and affect all track messages until changed */
+  midiFileSetTracksDefaultChannel (mf, 1, MIDI_CHANNEL_1);
+  midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
+  midiFileSetVersion (mf, midi_version);
+
+  int beats_per_bar = tempo_track->get_beats_per_bar ();
+  midiSongAddSimpleTimeSig (
+    mf, 1, beats_per_bar,
+    math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat_));
+
+  auto sel_clone = clone_unique ();
+  sel_clone->sort_by_indices (false);
+
+  int                              last_midi_track_pos = -1;
+  std::unique_ptr<MidiEventVector> events;
+
+  for (const auto &obj : sel_clone->objects_)
+    {
+      auto region = dynamic_cast<MidiRegion *> (obj.get ());
+      if (!region)
+        continue;
+
+      int midi_track_pos = 1;
+      if (midi_version > 0)
+        {
+          auto track = dynamic_cast<PianoRollTrack *> (region->get_track ());
+          if (!track)
+            {
+              z_return_val_if_fail (track, false);
+            }
+
+          std::string midi_track_name;
+          if (lanes_as_tracks)
+            {
+              auto lane = region->get_lane ();
+              z_return_val_if_fail (lane, false);
+              midi_track_name =
+                fmt::format ("{} - {}", track->name_, lane->name_);
+              midi_track_pos = lane->calculate_lane_idx ();
+            }
+          else
+            {
+              midi_track_name = track->name_;
+              midi_track_pos = track->pos_;
+            }
+          midiTrackAddText (
+            mf, midi_track_pos, textTrackName, midi_track_name.c_str ());
+        }
+
+      if (last_midi_track_pos != midi_track_pos)
+        {
+          /* finish prev events (if any) */
+          if (events)
+            {
+              events->write_to_midi_file (mf, last_midi_track_pos);
+            }
+
+          /* start new events */
+          events = std::make_unique<MidiEventVector> ();
+        }
+
+      /* append to the current events */
+      region->add_events (*events, nullptr, nullptr, true, export_full_regions);
+      last_midi_track_pos = midi_track_pos;
     }
 
-  Region * region;
-  for (int i = 0; i < ts->num_regions; i++)
+  /* finish prev events (if any) again */
+  if (events)
     {
-      region = ts->regions[i];
-      ArrangerObject * r_obj = (ArrangerObject *) region;
-      Track *          _track = arranger_object_get_track (r_obj);
-      CHECK_POS (_track);
-    }
-  if (ts->num_scale_objects > 0)
-    {
-      CHECK_POS (P_CHORD_TRACK);
-    }
-  if (ts->num_markers > 0)
-    {
-      CHECK_POS (P_MARKER_TRACK);
+      events->write_to_midi_file (mf, last_midi_track_pos);
     }
 
-  return track;
-#undef CHECK_POS
+  midiFileClose (mf);
+  return true;
 }
 
 #if 0
@@ -212,634 +843,3 @@ get_lowest_track_pos (TimelineSelections * ts)
   return track_pos;
 }
 #endif
-
-/**
- * Replaces the track positions in each object with
- * visible track indices starting from 0.
- *
- * Used during copying.
- */
-void
-timeline_selections_set_vis_track_indices (TimelineSelections * ts)
-{
-  int     i;
-  Track * highest_tr = timeline_selections_get_first_track (ts);
-
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      Region * r = ts->regions[i];
-      Track *  region_track = arranger_object_get_track ((ArrangerObject *) r);
-      ts->region_track_vis_index =
-        tracklist_get_visible_track_diff (TRACKLIST, highest_tr, region_track);
-    }
-  if (ts->num_scale_objects > 0)
-    ts->chord_track_vis_index =
-      tracklist_get_visible_track_diff (TRACKLIST, highest_tr, P_CHORD_TRACK);
-  if (ts->num_markers > 0)
-    ts->marker_track_vis_index =
-      tracklist_get_visible_track_diff (TRACKLIST, highest_tr, P_MARKER_TRACK);
-}
-
-/**
- * Returns whether the selections can be pasted.
- *
- * Zrythm only supports pasting all the selections into a
- * single destination track.
- *
- * @param pos Position to paste to.
- * @param idx Track index to start pasting to.
- */
-int
-timeline_selections_can_be_pasted (
-  TimelineSelections * ts,
-  Position *           pos,
-  const int            idx)
-{
-  Track * tr = TRACKLIST_SELECTIONS->tracks[0];
-  if (!tr)
-    return false;
-
-  for (int j = 0; j < ts->num_regions; j++)
-    {
-      Region * r = ts->regions[j];
-
-      /* automation regions can't be copy-pasted this way */
-      if (r->id.type == RegionType::REGION_TYPE_AUTOMATION)
-        return false;
-
-      /* check if this track can host this region */
-      if (!track_type_can_host_region_type (tr->type, r->id.type))
-        {
-          g_message (
-            "track %s can't host region type %s", tr->name,
-            ENUM_NAME (r->id.type));
-          return false;
-        }
-    }
-
-  if (ts->num_scale_objects > 0 && tr->type != TrackType::TRACK_TYPE_CHORD)
-    return false;
-
-  if (ts->num_markers > 0 && tr->type != TrackType::TRACK_TYPE_MARKER)
-    return false;
-
-  return true;
-}
-
-#if 0
-void
-timeline_selections_paste_to_pos (
-  TimelineSelections * ts,
-  Position *           pos)
-{
-  Track * track =
-    TRACKLIST_SELECTIONS->tracks[0];
-
-  arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE);
-
-  double pos_ticks = position_to_ticks (pos);
-
-  /* get pos of earliest object */
-  Position start_pos;
-  arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos,
-    F_GLOBAL);
-  double start_pos_ticks =
-    position_to_ticks (&start_pos);
-
-  double curr_ticks, diff;
-  int i;
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      Region * region = ts->regions[i];
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
-      Track * region_track =
-        tracklist_get_visible_track_after_delta (
-          TRACKLIST, track, region->id.track_pos);
-      g_return_if_fail (region_track);
-
-      /* update positions */
-      curr_ticks =
-        position_to_ticks (&r_obj->pos);
-      diff = curr_ticks - start_pos_ticks;
-      position_from_ticks (
-        &r_obj->pos, pos_ticks + diff);
-      curr_ticks =
-        position_to_ticks (&r_obj->end_pos);
-      diff = curr_ticks - start_pos_ticks;
-      position_from_ticks (
-        &r_obj->end_pos, pos_ticks + diff);
-      /* TODO */
-
-      /* clone and add to track */
-      Region * cp =
-        (Region *)
-        arranger_object_clone (
-          r_obj,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
-
-      switch (region->id.type)
-        {
-        case RegionType::REGION_TYPE_MIDI:
-        case RegionType::REGION_TYPE_AUDIO:
-          track_add_region (
-            region_track, cp, NULL,
-            region->id.lane_pos,
-            F_GEN_NAME, F_PUBLISH_EVENTS);
-          break;
-        case RegionType::REGION_TYPE_AUTOMATION:
-          {
-            AutomationTrack * at =
-              region_track->automation_tracklist.
-                ats[region->id.at_idx];
-            g_return_if_fail (at);
-            track_add_region (
-              region_track, cp, at, -1,
-              F_GEN_NAME, F_PUBLISH_EVENTS);
-          }
-          break;
-        case RegionType::REGION_TYPE_CHORD:
-          track_add_region (
-            region_track, cp, NULL, -1,
-            F_GEN_NAME, F_PUBLISH_EVENTS);
-          break;
-        }
-
-      /* select it */
-      arranger_object_select (
-        (ArrangerObject *) cp, F_SELECT,
-        F_APPEND);
-    }
-  for (i = 0; i < ts->num_scale_objects; i++)
-    {
-      ScaleObject * scale = ts->scale_objects[i];
-      ArrangerObject * s_obj =
-        (ArrangerObject *) scale;
-
-      curr_ticks =
-        position_to_ticks (&s_obj->pos);
-      diff = curr_ticks - start_pos_ticks;
-      position_from_ticks (
-        &s_obj->pos, pos_ticks + diff);
-
-      /* clone and add to track */
-      ScaleObject * clone =
-        (ScaleObject *)
-        arranger_object_clone (
-          s_obj,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
-      chord_track_add_scale (
-        P_CHORD_TRACK, clone);
-
-      /* select it */
-      arranger_object_select (
-        (ArrangerObject *) clone, F_SELECT,
-        F_APPEND);
-    }
-  for (i = 0; i < ts->num_markers; i++)
-    {
-      Marker * m = ts->markers[i];
-      ArrangerObject * m_obj =
-        (ArrangerObject *) m;
-
-      curr_ticks =
-        position_to_ticks (&m_obj->pos);
-      diff = curr_ticks - start_pos_ticks;
-      position_from_ticks (
-        &m_obj->pos, pos_ticks + diff);
-
-      /* clone and add to track */
-      Marker * clone =
-        (Marker *)
-        arranger_object_clone (
-          m_obj,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
-      marker_track_add_marker (
-        P_MARKER_TRACK, clone);
-
-      /* select it */
-      arranger_object_select (
-        (ArrangerObject *) clone, F_SELECT,
-        F_APPEND);
-    }
-#  undef DIFF
-}
-#endif
-
-/**
- * @param with_parents Also mark all the track's
- *   parents recursively.
- */
-void
-timeline_selections_mark_for_bounce (TimelineSelections * ts, bool with_parents)
-{
-  engine_reset_bounce_mode (AUDIO_ENGINE);
-
-  for (int i = 0; i < ts->num_regions; i++)
-    {
-      Region * r = ts->regions[i];
-      Track *  track = arranger_object_get_track ((ArrangerObject *) r);
-      g_return_if_fail (track);
-
-      if (!with_parents)
-        {
-          track->bounce_to_master = true;
-        }
-      track_mark_for_bounce (
-        track, F_BOUNCE, F_NO_MARK_REGIONS, F_MARK_CHILDREN, with_parents);
-      r->bounce = 1;
-    }
-}
-
-static bool
-move_regions_to_new_lanes_or_tracks_or_ats (
-  TimelineSelections * self,
-  const int            vis_track_diff,
-  const int            lane_diff,
-  const int            vis_at_diff)
-{
-  /* if nothing to do return */
-  if (vis_track_diff == 0 && lane_diff == 0 && vis_at_diff == 0)
-    return false;
-
-  /* only 1 operation supported at once */
-  if (vis_track_diff != 0)
-    {
-      g_return_val_if_fail (lane_diff == 0 && vis_at_diff == 0, false);
-    }
-  if (lane_diff != 0)
-    {
-      g_return_val_if_fail (vis_track_diff == 0 && vis_at_diff == 0, false);
-    }
-  if (vis_at_diff != 0)
-    {
-      g_return_val_if_fail (lane_diff == 0 && vis_track_diff == 0, false);
-    }
-
-  /* if there are objects other than regions, moving is not
-   * supported */
-  int num_objs =
-    arranger_selections_get_num_objects ((ArrangerSelections *) self);
-  if (num_objs != self->num_regions)
-    {
-      g_debug (
-        "selection contains non-regions - skipping "
-        "moving to another track/lane");
-      return false;
-    }
-
-  arranger_selections_sort_by_indices ((ArrangerSelections *) self, false);
-
-  /* store selected regions because they will be
-   * deselected during moving */
-  z_return_val_if_fail_cmp (self->num_regions, >=, 0, false);
-  GPtrArray * regions_arr = g_ptr_array_sized_new ((guint) self->num_regions);
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      g_ptr_array_add (regions_arr, self->regions[i]);
-    }
-
-  /*
-   * for tracks, check that:
-   * - all regions can be moved to a compatible track
-   * for lanes, check that:
-   * - all regions are in the same track
-   * - only lane regions are selected
-   * - the lane bounds are not exceeded
-   */
-  bool compatible = true;
-  for (size_t i = 0; i < regions_arr->len; i++)
-    {
-      Region *         region = (Region *) g_ptr_array_index (regions_arr, i);
-      ArrangerObject * r_obj = (ArrangerObject *) region;
-      Track *          track = arranger_object_get_track (r_obj);
-      track->block_auto_creation_and_deletion = true;
-      if (vis_track_diff != 0)
-        {
-          Track * visible = tracklist_get_visible_track_after_delta (
-            TRACKLIST, track, vis_track_diff);
-          if (
-            !visible
-            || !track_type_is_compatible_for_moving (track->type, visible->type)
-            ||
-            /* do not allow moving automation tracks
-             * to other tracks for now */
-            region->id.type == RegionType::REGION_TYPE_AUTOMATION)
-            {
-              compatible = false;
-              break;
-            }
-        }
-      else if (lane_diff != 0)
-        {
-          if (region->id.lane_pos + lane_diff < 0)
-            {
-              compatible = false;
-              break;
-            }
-
-          /* don't create more than 1 extra lanes */
-          TrackLane * lane = region_get_lane (region);
-          g_return_val_if_fail (region && lane, -1);
-          int new_lane_pos = lane->pos + lane_diff;
-          g_return_val_if_fail (new_lane_pos >= 0, -1);
-          if (new_lane_pos >= track->num_lanes)
-            {
-              g_debug (
-                "new lane position %d is >= the number of lanes in the track (%d)",
-                new_lane_pos, track->num_lanes);
-              compatible = false;
-              break;
-            }
-          if (
-            new_lane_pos > track->last_lane_created
-            && track->last_lane_created > 0 && lane_diff > 0)
-            {
-              g_debug (
-                "already created a new lane at %d, skipping new lane for %d",
-                track->last_lane_created, new_lane_pos);
-              compatible = false;
-              break;
-            }
-
-          if (region->id.type == RegionType::REGION_TYPE_AUTOMATION)
-            {
-              compatible = false;
-              break;
-            }
-        }
-      else if (vis_at_diff != 0)
-        {
-          if (region->id.type != RegionType::REGION_TYPE_AUTOMATION)
-            {
-              compatible = false;
-              break;
-            }
-
-          /* don't allow moving automation regions -- too
-           * error prone */
-          compatible = false;
-          break;
-        }
-    }
-  if (!compatible)
-    {
-      g_ptr_array_free (regions_arr, true);
-      return false;
-    }
-
-  /* new positions are all compatible, move the
-   * regions */
-  for (size_t i = 0; i < regions_arr->len; i++)
-    {
-      Region *         region = (Region *) g_ptr_array_index (regions_arr, i);
-      ArrangerObject * r_obj = (ArrangerObject *) region;
-      if (vis_track_diff != 0)
-        {
-          Track * region_track = arranger_object_get_track (r_obj);
-          g_warn_if_fail (region && region_track);
-          Track * track_to_move_to = tracklist_get_visible_track_after_delta (
-            TRACKLIST, region_track, vis_track_diff);
-          g_warn_if_fail (track_to_move_to);
-
-          region_move_to_track (region, track_to_move_to, -1, -1);
-        }
-      else if (lane_diff != 0)
-        {
-          TrackLane * lane = region_get_lane (region);
-          g_return_val_if_fail (region && lane, -1);
-
-          int new_lane_pos = lane->pos + lane_diff;
-          g_return_val_if_fail (new_lane_pos >= 0, -1);
-          Track * track = track_lane_get_track (lane);
-          bool    new_lanes_created =
-            track_create_missing_lanes (track, new_lane_pos);
-          if (new_lanes_created)
-            {
-              track->last_lane_created = new_lane_pos;
-            }
-
-          region_move_to_track (region, track, new_lane_pos, -1);
-        }
-      else if (vis_at_diff != 0)
-        {
-          AutomationTrack * at = region_get_automation_track (region);
-          g_return_val_if_fail (region && at, -1);
-          AutomationTracklist * atl =
-            automation_track_get_automation_tracklist (at);
-          AutomationTrack * new_at =
-            automation_tracklist_get_visible_at_after_delta (
-              atl, at, vis_at_diff);
-
-          if (at != new_at)
-            {
-              /* TODO */
-              g_warning ("!MOVING!");
-              /*automation_track_remove_region (at, region);*/
-              /*automation_track_add_region (new_at, region);*/
-            }
-        }
-    }
-
-  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
-
-  g_ptr_array_free (regions_arr, true);
-
-  return true;
-}
-
-/**
- * Move the selected regions to new automation tracks.
- *
- * @return True if moved.
- */
-bool
-timeline_selections_move_regions_to_new_ats (
-  TimelineSelections * self,
-  const int            vis_at_diff)
-{
-  return move_regions_to_new_lanes_or_tracks_or_ats (self, 0, 0, vis_at_diff);
-}
-
-/**
- * Move the selected Regions to new lanes.
- *
- * @param diff The delta to move the tracks.
- *
- * @return True if moved.
- */
-bool
-timeline_selections_move_regions_to_new_lanes (
-  TimelineSelections * self,
-  const int            diff)
-{
-  return move_regions_to_new_lanes_or_tracks_or_ats (self, 0, diff, 0);
-}
-
-/**
- * Move the selected Regions to the new Track.
- *
- * @param new_track_is_before 1 if the Region's should move to
- *   their previous tracks, 0 for their next tracks.
- *
- * @return True if moved.
- */
-bool
-timeline_selections_move_regions_to_new_tracks (
-  TimelineSelections * self,
-  const int            vis_track_diff)
-{
-  return move_regions_to_new_lanes_or_tracks_or_ats (self, vis_track_diff, 0, 0);
-}
-
-/**
- * Sets the regions'
- * \ref Region.index_in_prev_lane.
- */
-void
-timeline_selections_set_index_in_prev_lane (TimelineSelections * self)
-{
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      Region *         r = self->regions[i];
-      ArrangerObject * r_obj = (ArrangerObject *) r;
-      r_obj->index_in_prev_lane = r->id.idx;
-    }
-}
-
-bool
-timeline_selections_contains_only_regions (const TimelineSelections * self)
-{
-  return self->num_regions > 0 && self->num_scale_objects == 0
-         && self->num_markers == 0;
-}
-
-bool
-timeline_selections_contains_only_region_types (
-  const TimelineSelections * self,
-  RegionType                 types)
-{
-  if (!timeline_selections_contains_only_regions (self))
-    return false;
-
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      Region * r = self->regions[i];
-      if (!ENUM_BITSET_TEST (RegionType, types, r->id.type))
-        return false;
-    }
-  return true;
-}
-
-/**
- * Exports the selections to the given MIDI file.
- */
-bool
-timeline_selections_export_to_midi_file (
-  const TimelineSelections * self,
-  const char *               full_path,
-  int                        midi_version,
-  const bool                 export_full_regions,
-  const bool                 lanes_as_tracks)
-{
-  MIDI_FILE * mf;
-
-  if ((mf = midiFileCreate (full_path, TRUE)))
-    {
-      /* Write tempo information out to track 1 */
-      midiSongAddTempo (
-        mf, 1, (int) tempo_track_get_current_bpm (P_TEMPO_TRACK));
-
-      /* All data is written out to tracks not
-       * channels. We therefore set the current
-       * channel before writing data out. Channel
-       * assignments can change any number of times
-       * during the file, and affect all tracks
-       * messages until it is changed. */
-      midiFileSetTracksDefaultChannel (mf, 1, MIDI_CHANNEL_1);
-
-      midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
-
-      midiFileSetVersion (mf, midi_version);
-
-      /* common time: 4 crochet beats, per bar */
-      int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-      midiSongAddSimpleTimeSig (
-        mf, 1, beats_per_bar,
-        math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat));
-
-      TimelineSelections * sel_clone = (TimelineSelections *)
-        arranger_selections_clone ((ArrangerSelections *) self);
-      arranger_selections_sort_by_indices (
-        (ArrangerSelections *) sel_clone, false);
-
-      int          last_midi_track_pos = -1;
-      MidiEvents * events = NULL;
-      for (int i = 0; i < sel_clone->num_regions; i++)
-        {
-          const Region * r = sel_clone->regions[i];
-
-          int midi_track_pos = 1;
-          if (midi_version > 0)
-            {
-              /* add track name */
-              Track * track =
-                arranger_object_get_track ((const ArrangerObject *) r);
-              g_return_val_if_fail (track, false);
-              char midi_track_name[1000];
-              if (lanes_as_tracks)
-                {
-                  TrackLane * lane = region_get_lane (r);
-                  g_return_val_if_fail (lane, false);
-                  sprintf (midi_track_name, "%s - %s", track->name, lane->name);
-                  midi_track_pos = track_lane_calculate_lane_idx (lane);
-                }
-              else
-                {
-                  strcpy (midi_track_name, track->name);
-                  midi_track_pos = track->pos;
-                }
-              midiTrackAddText (
-                mf, midi_track_pos, textTrackName, midi_track_name);
-            }
-
-          if (last_midi_track_pos == midi_track_pos)
-            {
-              g_return_val_if_fail (events, false);
-            }
-          else
-            {
-              /* finish prev events if any */
-              if (events)
-                {
-                  midi_events_write_to_midi_file (
-                    events, mf, last_midi_track_pos);
-                  object_free_w_func_and_null (midi_events_free, events);
-                }
-
-              /* start new events */
-              events = midi_events_new ();
-            }
-
-          /* append to the current events */
-          midi_region_add_events (
-            r, events, NULL, NULL, true, export_full_regions);
-          last_midi_track_pos = midi_track_pos;
-        }
-
-      /* finish prev events if any again */
-      if (events)
-        {
-          midi_events_write_to_midi_file (events, mf, last_midi_track_pos);
-          object_free_w_func_and_null (midi_events_free, events);
-        }
-
-      arranger_selections_free_full ((ArrangerSelections *) sel_clone);
-
-      midiFileClose (mf);
-    }
-
-  return true;
-}

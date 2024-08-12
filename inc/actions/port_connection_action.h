@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __ACTION_PORT_CONNECTION_ACTION_H__
@@ -6,6 +6,7 @@
 
 #include "actions/undoable_action.h"
 #include "dsp/port_connection.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup actions
@@ -13,113 +14,116 @@
  * @{
  */
 
-enum class PortConnectionActionType
+class PortConnectionAction
+    : public UndoableAction,
+      public ICloneable<PortConnectionAction>,
+      public ISerializable<PortConnectionAction>
 {
-  PORT_CONNECTION_CONNECT,
-  PORT_CONNECTION_DISCONNECT,
-  PORT_CONNECTION_ENABLE,
-  PORT_CONNECTION_DISABLE,
-  PORT_CONNECTION_CHANGE_MULTIPLIER,
-};
+public:
+  enum class Type
+  {
+    Connect,
+    Disconnect,
+    Enable,
+    Disable,
+    ChangeMultiplier,
+  };
 
-typedef struct PortConnectionAction
-{
-  UndoableAction parent_instance;
+public:
+  PortConnectionAction ()
+      : UndoableAction (UndoableAction::Type::PortConnection)
+  {
+  }
 
-  PortConnectionActionType type;
+  PortConnectionAction (
+    Type                   type,
+    const PortIdentifier * src_id,
+    const PortIdentifier * dest_id,
+    float                  new_val);
 
-  PortConnection * connection;
+  virtual ~PortConnectionAction () = default;
+
+  std::string to_string () const override;
+
+  void init_after_cloning (const PortConnectionAction &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  void init_loaded_impl () override { }
+  void undo_impl () override;
+  void perform_impl () override;
+
+  void do_or_undo (bool do_it);
+
+public:
+  Type type_ = Type ();
+
+  std::unique_ptr<PortConnection> connection_;
 
   /**
    * Value before/after the change.
    *
    * To be swapped on undo/redo.
    */
-  float val;
-} PortConnectionAction;
+  float val_ = 0.f;
+};
 
-void
-port_connection_action_init_loaded (PortConnectionAction * self);
+class PortConnectionConnectAction final : public PortConnectionAction
+{
+public:
+  PortConnectionConnectAction (
+    const PortIdentifier &src_id,
+    const PortIdentifier &dest_id)
+      : PortConnectionAction (Type::Connect, &src_id, &dest_id, 0.f)
+  {
+  }
+};
 
-/**
- * Create a new action.
- */
-WARN_UNUSED_RESULT UndoableAction *
-port_connection_action_new (
-  PortConnectionActionType type,
-  PortIdentifier *         src_id,
-  PortIdentifier *         dest_id,
-  float                    new_val,
-  GError **                error);
+class PortConnectionDisconnectAction final : public PortConnectionAction
+{
+public:
+  PortConnectionDisconnectAction (
+    const PortIdentifier &src_id,
+    const PortIdentifier &dest_id)
+      : PortConnectionAction (Type::Disconnect, &src_id, &dest_id, 0.f)
+  {
+  }
+};
 
-#define port_connection_action_new_connect(src_id, dest_id, error) \
-  port_connection_action_new ( \
-    PortConnectionActionType::PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
-    error)
+class PortConnectionEnableAction final : public PortConnectionAction
+{
+public:
+  PortConnectionEnableAction (
+    const PortIdentifier &src_id,
+    const PortIdentifier &dest_id)
+      : PortConnectionAction (Type::Enable, &src_id, &dest_id, 0.f)
+  {
+  }
+};
 
-#define port_connection_action_new_disconnect(src_id, dest_id, error) \
-  port_connection_action_new ( \
-    PortConnectionActionType::PORT_CONNECTION_DISCONNECT, src_id, dest_id, \
-    0.f, error)
+class PortConnectionDisableAction final : public PortConnectionAction
+{
+public:
+  PortConnectionDisableAction (
+    const PortIdentifier &src_id,
+    const PortIdentifier &dest_id)
+      : PortConnectionAction (Type::Disable, &src_id, &dest_id, 0.f)
+  {
+  }
+};
 
-#define port_connection_action_new_enable(src_id, dest_id, enable, error) \
-  port_connection_action_new ( \
-    enable \
-      ? PortConnectionActionType::PORT_CONNECTION_ENABLE \
-      : PortConnectionActionType::PORT_CONNECTION_DISABLE, \
-    src_id, dest_id, 0.f, error)
-
-#define port_connection_action_new_change_multiplier( \
-  src_id, dest_id, new_multiplier, error) \
-  port_connection_action_new ( \
-    PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
-    dest_id, new_multiplier, error)
-
-NONNULL PortConnectionAction *
-port_connection_action_clone (const PortConnectionAction * src);
-
-bool
-port_connection_action_perform (
-  PortConnectionActionType type,
-  PortIdentifier *         src_id,
-  PortIdentifier *         dest_id,
-  float                    new_val,
-  GError **                error);
-
-#define port_connection_action_perform_connect(src_id, dest_id, error) \
-  port_connection_action_perform ( \
-    PortConnectionActionType::PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
-    error)
-
-#define port_connection_action_perform_disconnect(src_id, dest_id, error) \
-  port_connection_action_perform ( \
-    PortConnectionActionType::PORT_CONNECTION_DISCONNECT, src_id, dest_id, \
-    0.f, error)
-
-#define port_connection_action_perform_enable(src_id, dest_id, enable, error) \
-  port_connection_action_perform ( \
-    enable \
-      ? PortConnectionActionType::PORT_CONNECTION_ENABLE \
-      : PortConnectionActionType::PORT_CONNECTION_DISABLE, \
-    src_id, dest_id, 0.f, error)
-
-#define port_connection_action_perform_change_multiplier( \
-  src_id, dest_id, new_multiplier, error) \
-  port_connection_action_perform ( \
-    PortConnectionActionType::PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
-    dest_id, new_multiplier, error)
-
-int
-port_connection_action_do (PortConnectionAction * self, GError ** error);
-
-int
-port_connection_action_undo (PortConnectionAction * self, GError ** error);
-
-char *
-port_connection_action_stringize (PortConnectionAction * self);
-
-void
-port_connection_action_free (PortConnectionAction * self);
+class PortConnectionChangeMultiplierAction final : public PortConnectionAction
+{
+public:
+  PortConnectionChangeMultiplierAction (
+    const PortIdentifier &src_id,
+    const PortIdentifier &dest_id,
+    float                 new_multiplier)
+      : PortConnectionAction (Type::ChangeMultiplier, &src_id, &dest_id, new_multiplier)
+  {
+  }
+};
 
 /**
  * @}

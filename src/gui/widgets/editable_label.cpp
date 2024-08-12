@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 #include "gui/widgets/editable_label.h"
 
@@ -10,11 +8,11 @@ G_DEFINE_TYPE (EditableLabelWidget, editable_label_widget, GTK_TYPE_WIDGET)
 static void
 on_entry_activated (GtkEntry * entry, EditableLabelWidget * self)
 {
-  (*self->setter) (self->object, gtk_editable_get_text (GTK_EDITABLE (entry)));
+  self->setter (self->object, gtk_editable_get_text (GTK_EDITABLE (entry)));
   if (self->foreign_popover)
     gtk_widget_set_visible (GTK_WIDGET (self->foreign_popover), false);
 
-  gtk_label_set_text (self->label, (*self->getter) (self->object));
+  gtk_label_set_text (self->label, self->getter (self->object).c_str ());
 }
 
 static void
@@ -43,7 +41,7 @@ editable_label_widget_show_popover (EditableLabelWidget * self)
 {
   gtk_popover_popup (self->popover);
   gtk_editable_set_text (
-    GTK_EDITABLE (self->entry), (*self->getter) (self->object));
+    GTK_EDITABLE (self->entry), self->getter (self->object).c_str ());
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
@@ -72,7 +70,7 @@ editable_label_widget_show_popover_for_widget (
   g_return_if_fail (GTK_IS_POPOVER (popover));
 
   EditableLabelWidget * self = static_cast<EditableLabelWidget *> (
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL));
+    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, nullptr));
 
   self->object = object;
   self->getter = getter;
@@ -93,7 +91,7 @@ editable_label_widget_show_popover_for_widget (
     G_OBJECT (popover), "closed", G_CALLBACK (on_popover_closed), self);
 
   gtk_popover_popup (popover);
-  gtk_editable_set_text (GTK_EDITABLE (self->entry), (*getter) (object));
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter (object).c_str ());
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
@@ -142,7 +140,7 @@ editable_label_widget_setup (
 
   if (self->getter)
     {
-      gtk_label_set_text (self->label, (*self->getter) (self->object));
+      gtk_label_set_text (self->label, self->getter (self->object).c_str ());
     }
 }
 
@@ -162,7 +160,7 @@ editable_label_widget_new (
   int                 width)
 {
   EditableLabelWidget * self = static_cast<EditableLabelWidget *> (
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL));
+    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, nullptr));
 
   editable_label_widget_setup (self, object, getter, setter);
 

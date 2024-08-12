@@ -1,9 +1,5 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- */
 
 #ifndef __GUI_WIDGETS_MIDI_CHANNEL_SELECTION_DROPDOWN_H__
 #define __GUI_WIDGETS_MIDI_CHANNEL_SELECTION_DROPDOWN_H__
@@ -12,7 +8,7 @@
 
 #include "gtk_wrapper.h"
 
-TYPEDEF_STRUCT (Track);
+class ChannelTrack;
 
 /**
  * @addtogroup widgets
@@ -25,8 +21,8 @@ TYPEDEF_STRUCT (Track);
  */
 void
 midi_channel_selection_dropdown_widget_refresh (
-  GtkDropDown * self,
-  Track *       track);
+  GtkDropDown *  self,
+  ChannelTrack * track);
 
 /**
  * @}

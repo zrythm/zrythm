@@ -1,18 +1,15 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/control_room.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pack_browser.h"
-#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/monitor_section.h"
 #include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -40,7 +37,7 @@ on_notebook_switch_page (
 void
 right_dock_edge_widget_setup (RightDockEdgeWidget * self)
 {
-  monitor_section_widget_setup (self->monitor_section, CONTROL_ROOM);
+  monitor_section_widget_setup (self->monitor_section, CONTROL_ROOM.get ());
 
   /* TODO load from workspaces */
 #if 0

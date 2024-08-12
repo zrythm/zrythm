@@ -1,26 +1,18 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
-#include "actions/midi_mapping_action.h"
-#include "actions/tracklist_selections.h"
-#include "dsp/channel.h"
 #include "dsp/fader.h"
-#include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"
-#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
-#include "utils/cairo.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
-#include "utils/resources.h"
+#include "utils/rt_thread_id.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -39,10 +31,9 @@ accessible_range_set_current_value (
   double               value)
 {
   FaderWidget * self = Z_FADER_WIDGET (accessible_range);
-  float         cur_amp = fader_get_amp (self->fader);
-  fader_set_amp_with_action (self->fader, cur_amp, (float) value, true);
-
-  return TRUE;
+  float         cur_amp = self->fader->get_amp ();
+  self->fader->set_amp_with_action (cur_amp, (float) value, true);
+  return true;
 }
 
 static void
@@ -60,7 +51,7 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  float fader_val = self->fader ? self->fader->fader_val : 1.f;
+  float fader_val = self->fader ? self->fader->fader_val_ : 1.f;
   float value_px = (float) height * fader_val;
 
   const float fill_radius = 2.f;
@@ -132,7 +123,7 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   if (self->hover)
     {
       char val_str[60];
-      ui_get_db_value_as_string (self->fader->volume, val_str);
+      ui_get_db_value_as_string (self->fader->volume_, val_str);
       pango_layout_set_text (self->layout, val_str, -1);
       int x_px, y_px;
       pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
@@ -163,7 +154,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float width = (float) gtk_widget_get_width (widget);
   float height = (float) gtk_widget_get_height (widget);
 
-  float fader_val = self->fader ? self->fader->fader_val : 1.f;
+  float fader_val = self->fader ? self->fader->fader_val_ : 1.f;
   float value_px = height * fader_val;
 
   const float line_thickness = width / 5.f;
@@ -224,7 +215,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (self->hover)
     {
       char val_str[60];
-      ui_get_db_value_as_string (self->fader->volume, val_str);
+      ui_get_db_value_as_string (self->fader->volume_, val_str);
       pango_layout_set_text (self->layout, val_str, -1);
       int x_px, y_px;
       pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
@@ -282,7 +273,7 @@ drag_begin (
   gtk_window_present (self->tooltip_win);
 #endif
 
-  self->amp_at_start = fader_get_amp (self->fader);
+  self->amp_at_start = self->fader->get_amp ();
   self->dragging = true;
 }
 
@@ -315,8 +306,8 @@ drag_update (
     }
 
   double new_fader_val =
-    CLAMP ((double) self->fader->fader_val + adjusted_diff, 0.0, 1.0);
-  fader_set_fader_val (self->fader, (float) new_fader_val);
+    std::clamp ((double) self->fader->fader_val_ + adjusted_diff, 0.0, 1.0);
+  self->fader->set_fader_val ((float) new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -344,10 +335,10 @@ drag_end (
   self->last_y = 0;
   /*gtk_widget_hide (GTK_WIDGET (self->tooltip_win));*/
 
-  g_return_if_fail (IS_FADER (self->fader));
+  z_return_if_fail (self->fader);
 
-  float cur_amp = fader_get_amp (self->fader);
-  fader_set_amp_with_action (self->fader, self->amp_at_start, cur_amp, true);
+  float cur_amp = self->fader->get_amp ();
+  self->fader->set_amp_with_action (self->amp_at_start, cur_amp, true);
 
   self->dragging = false;
 }
@@ -360,10 +351,10 @@ show_context_menu (FaderWidget * self, double x, double y)
 
   char tmp[600];
   sprintf (tmp, "app.reset-fader::%p", self->fader);
-  menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("Reset"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (tmp, "app.bind-midi-cc::%p", self->fader->amp);
+  sprintf (tmp, "app.bind-midi-cc::%p", self->fader->amp_.get ());
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -385,12 +376,12 @@ on_right_click (
 }
 
 static void
-set_fader_val_with_action_from_db (void * object, const char * str)
+set_fader_val_with_action_from_db (void * object, const std::string &str)
 {
   Fader * fader = (Fader *) object;
   bool    is_valid = false;
   float   val;
-  if (math_is_string_valid_float (str, &val))
+  if (math_is_string_valid_float (str.c_str (), &val))
     {
       if (val <= 6.f)
         {
@@ -400,8 +391,8 @@ set_fader_val_with_action_from_db (void * object, const char * str)
 
   if (is_valid)
     {
-      fader_set_amp_with_action (
-        fader, fader_get_amp (object), math_dbfs_to_amp (val), true);
+      fader->set_amp_with_action (
+        fader->get_amp (), math_dbfs_to_amp (val), true);
     }
   else
     {
@@ -409,12 +400,11 @@ set_fader_val_with_action_from_db (void * object, const char * str)
     }
 }
 
-static const char *
+static std::string
 get_fader_db_val_as_string (void * object)
 {
-  static char db_str[60];
-  fader_db_string_getter (object, db_str);
-  return db_str;
+  auto fader = (Fader *) object;
+  return fader->db_string_getter ();
 }
 
 static void
@@ -431,8 +421,7 @@ on_click (
         GTK_EVENT_CONTROLLER (gesture));
       if (state & GDK_CONTROL_MASK)
         {
-          fader_set_amp_with_action (
-            self->fader, fader_get_amp (self->fader), 1.f, true);
+          self->fader->set_amp_with_action (self->fader->get_amp (), 1.f, true);
         }
     }
   else if (n_press == 2)
@@ -472,11 +461,11 @@ on_scroll (
   int up_down =
     (direction == GDK_SCROLL_UP || direction == GDK_SCROLL_RIGHT) ? 1 : -1;
   float add_val = (float) up_down * inc;
-  float current_val = fader_get_fader_val (self->fader);
+  float current_val = self->fader->get_fader_val ();
   float new_val = CLAMP (current_val + add_val, 0.0f, 1.0f);
-  fader_set_fader_val (self->fader, new_val);
+  self->fader->set_fader_val (new_val);
 
-  Channel * channel = fader_get_channel (self->fader);
+  auto channel = self->fader->get_channel ();
   EVENTS_PUSH (EventType::ET_CHANNEL_FADER_VAL_CHANGED, channel);
 
   return true;
@@ -492,7 +481,7 @@ fader_tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, gpointer user_da
 
   /* let accessibility layer know if value changed */
   FaderWidget * self = Z_FADER_WIDGET (widget);
-  double        cur_amp = fader_get_amp (self->fader);
+  double        cur_amp = self->fader->get_amp ();
   if (!math_doubles_equal (cur_amp, self->last_reported_amp))
     {
       gtk_accessible_update_property (
@@ -528,17 +517,18 @@ dispose (FaderWidget * self)
 static void
 fader_widget_init (FaderWidget * self)
 {
-  self->end_color = UI_COLORS->fader_fill_end;
+  self->end_color = UI_COLORS->fader_fill_end.to_gdk_rgba ();
 
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
-  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("Fader"));
 
-  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), nullptr);
   {
     PangoFontDescription * desc = pango_font_description_from_string ("7");
     pango_layout_set_font_description (self->layout, desc);
@@ -608,7 +598,7 @@ fader_widget_init (FaderWidget * self)
     GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0, GTK_ACCESSIBLE_PROPERTY_VALUE_NOW,
     1.0, GTK_ACCESSIBLE_PROPERTY_LABEL, "Fader", -1);
 
-  gtk_widget_add_tick_callback (GTK_WIDGET (self), fader_tick_cb, self, NULL);
+  gtk_widget_add_tick_callback (GTK_WIDGET (self), fader_tick_cb, self, nullptr);
 }
 
 static void

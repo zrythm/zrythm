@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Timeline background inheriting from arranger_bg.
  */
@@ -82,7 +82,7 @@ timeline_bg_widget_draw (
           is_pinned_timeline
             ? MW_TRACKLIST->pinned_box
             : MW_TRACKLIST->unpinned_box),
-        0, 0, NULL, &track_start_offset);
+        0, 0, nullptr, &track_start_offset);
 
       line_y = track_start_offset + full_track_height;
 
@@ -195,7 +195,7 @@ timeline_bg_widget_draw (
 TimelineBgWidget *
 timeline_bg_widget_new (RulerWidget * ruler, ArrangerWidget * arranger)
 {
-  TimelineBgWidget * self = static_cast<TimelineBgWidget *>(g_object_new (TIMELINE_BG_WIDGET_TYPE, NULL);
+  TimelineBgWidget * self = static_cast<TimelineBgWidget *>(g_object_new (TIMELINE_BG_WIDGET_TYPE, nullptr);
 
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
   ab_prv->ruler = ruler;

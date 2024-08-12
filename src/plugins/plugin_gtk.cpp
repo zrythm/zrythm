@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -27,27 +27,21 @@
 
 #include "zrythm-config.h"
 
-#include <cmath>
-
 #include "dsp/engine.h"
 #include "dsp/port_identifier.h"
-#include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/file_chooser_button.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
-#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -61,97 +55,97 @@
 void
 plugin_gtk_set_window_title (Plugin * plugin, GtkWindow * window)
 {
-  g_return_if_fail (plugin && plugin->setting->descr && window);
+  z_return_if_fail (plugin && window);
 
-  char * title = plugin_generate_window_title (plugin);
-
-  gtk_window_set_title (window, title);
-
-  g_free (title);
+  auto title = plugin->generate_window_title ();
+  gtk_window_set_title (window, title.c_str ());
 }
 
 void
 plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 {
-  const PluginSetting *    setting = plugin->setting;
-  const PluginDescriptor * descr = setting->descr;
-  bool                     open_with_carla = setting->open_with_carla;
+  std::visit (
+    [&] (auto &&plugin) {
+      using T = base_type<decltype (plugin)>;
+      const PluginSetting *    setting = &plugin->setting_;
+      const PluginDescriptor * descr = &setting->descr_;
+      bool                     open_with_carla = setting->open_with_carla_;
 
-  GtkWidget * dialog = gtk_file_chooser_dialog_new (
-    _ ("Save Preset"),
-    plugin->window ? plugin->window : GTK_WINDOW (MAIN_WINDOW),
-    GTK_FILE_CHOOSER_ACTION_SAVE, _ ("_Cancel"), GTK_RESPONSE_REJECT,
-    _ ("_Save"), GTK_RESPONSE_ACCEPT, NULL);
+      GtkWidget * dialog = gtk_file_chooser_dialog_new (
+        _ ("Save Preset"),
+        plugin->window_ ? plugin->window_ : GTK_WINDOW (MAIN_WINDOW),
+        GTK_FILE_CHOOSER_ACTION_SAVE, _ ("_Cancel"), GTK_RESPONSE_REJECT,
+        _ ("_Save"), GTK_RESPONSE_ACCEPT, nullptr);
 
-  if (open_with_carla)
-    {
-#ifdef HAVE_CARLA
-      char *  homedir = g_build_filename (g_get_home_dir (), NULL);
-      GFile * homedir_file = g_file_new_for_path (homedir);
-      gtk_file_chooser_set_current_folder (
-        GTK_FILE_CHOOSER (dialog), homedir_file, NULL);
-      g_object_unref (homedir_file);
-      g_free (homedir);
-#else
-      g_return_if_reached ();
-#endif
-    }
-
-  /* add additional inputs */
-  GtkWidget * content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  GtkWidget * add_prefix = add_prefix =
-    gtk_check_button_new_with_mnemonic (_ ("_Prefix plugin name"));
-  gtk_check_button_set_active (GTK_CHECK_BUTTON (add_prefix), TRUE);
-  gtk_box_append (GTK_BOX (content), add_prefix);
-
-  /*gtk_window_present (GTK_WINDOW (dialog));*/
-  gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
-  int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
-  if (ret == GTK_RESPONSE_ACCEPT)
-    {
-      GFile * file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-      char *  path = g_file_get_path (file);
-      g_object_unref (file);
-      bool add_prefix_active =
-        gtk_check_button_get_active (GTK_CHECK_BUTTON (add_prefix));
       if (open_with_carla)
         {
 #ifdef HAVE_CARLA
-          const char * prefix = "";
-          const char * sep = "";
-          char *       dirname = g_path_get_dirname (path);
-          char *       basename = g_path_get_basename (path);
-          char *       sym = string_symbolify (basename);
-          if (add_prefix_active)
-            {
-              prefix = descr->name;
-              sep = "_";
-            }
-          char * sprefix = string_symbolify (prefix);
-          char * bundle =
-            g_strjoin (NULL, sprefix, sep, sym, ".preset.carla", NULL);
-          char *   dir = g_build_filename (dirname, bundle, NULL);
-          GError * err = NULL;
-          bool     success =
-            carla_native_plugin_save_state (plugin->carla, false, dir, &err);
-          if (!success)
-            {
-              HANDLE_ERROR_LITERAL (err, "Failed to save Carla state");
-            }
-          g_free (dirname);
-          g_free (basename);
-          g_free (sym);
-          g_free (sprefix);
-          g_free (bundle);
-          g_free (dir);
+          char *  homedir = g_build_filename (g_get_home_dir (), nullptr);
+          GFile * homedir_file = g_file_new_for_path (homedir);
+          gtk_file_chooser_set_current_folder (
+            GTK_FILE_CHOOSER (dialog), homedir_file, nullptr);
+          g_object_unref (homedir_file);
+          g_free (homedir);
+#else
+          g_return_if_reached ();
 #endif
         }
-      g_free (path);
-    }
 
-  gtk_window_destroy (GTK_WINDOW (dialog));
+      /* add additional inputs */
+      GtkWidget * content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+      GtkWidget * add_prefix = add_prefix =
+        gtk_check_button_new_with_mnemonic (_ ("_Prefix plugin name"));
+      gtk_check_button_set_active (GTK_CHECK_BUTTON (add_prefix), TRUE);
+      gtk_box_append (GTK_BOX (content), add_prefix);
 
-  EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_SAVED, plugin);
+      /*gtk_window_present (GTK_WINDOW (dialog));*/
+      gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+      int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
+      if (ret == GTK_RESPONSE_ACCEPT)
+        {
+          GFile * file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+          char *  path = g_file_get_path (file);
+          g_object_unref (file);
+          bool add_prefix_active =
+            gtk_check_button_get_active (GTK_CHECK_BUTTON (add_prefix));
+          if constexpr (std::is_same_v<T, CarlaNativePlugin>)
+            {
+#ifdef HAVE_CARLA
+              std::string  prefix;
+              const char * sep = "";
+              auto         dirname = Glib::path_get_dirname (path);
+              auto         basename = Glib::path_get_basename (path);
+              char *       sym = string_symbolify (basename.c_str ());
+              if (add_prefix_active)
+                {
+                  prefix = descr->name_;
+                  sep = "_";
+                }
+              char * sprefix = string_symbolify (prefix.c_str ());
+              char * bundle = g_strjoin (
+                nullptr, sprefix, sep, sym, ".preset.carla", nullptr);
+              auto dir = Glib::build_filename (dirname, bundle);
+              try
+                {
+                  plugin->save_state (false, &dir);
+                }
+              catch (const ZrythmException &e)
+                {
+                  e.handle ("Failed to save Carla state");
+                }
+              g_free (sym);
+              g_free (sprefix);
+              g_free (bundle);
+#endif
+            }
+          g_free (path);
+        }
+
+      gtk_window_destroy (GTK_WINDOW (dialog));
+
+      EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_SAVED, plugin);
+    },
+    convert_to_variant<PluginPtrVariant> (plugin));
 }
 
 /**
@@ -170,7 +164,7 @@ plugin_gtk_new_label (
   float        xalign,
   float        yalign)
 {
-  GtkWidget * label = gtk_label_new (NULL);
+  GtkWidget * label = gtk_label_new (nullptr);
 #define PRINTF_FMT (title ? "<b>%s</b>" : "%s: ")
   gchar * str;
   if (preformatted)
@@ -204,7 +198,7 @@ plugin_gtk_add_control_row (
     {
       const PortIdentifier &id = controller->port->id_;
 
-      if (id.unit_ > PortUnit::Z_PORT_UNIT_NONE)
+      if (id.unit_ > PortUnit::None)
         {
           sprintf (
             name, "%s <small>(%s)</small>", _name, port_unit_to_str (id.unit_));
@@ -234,27 +228,24 @@ static void
 on_window_destroy (GtkWidget * widget, Plugin * pl)
 {
   g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
-  pl->window = NULL;
-  g_message ("destroying window for %s", pl->setting->descr->name);
+  pl->window_ = nullptr;
+  z_info ("destroying window for %s", pl->get_name ());
 
   /* reinit widget in plugin ports/parameters */
-  for (int i = 0; i < pl->num_in_ports; i++)
+  for (auto port : pl->in_ports_ | type_is<ControlPort> ())
     {
-      Port * port = pl->in_ports[i];
-      port->widget_ = NULL;
+      port->widget_ = nullptr;
     }
 }
 
 static gboolean
 on_close_request (GtkWindow * window, Plugin * plugin)
 {
-  plugin->visible = 0;
-  plugin->window = NULL;
+  plugin->visible_ = 0;
+  plugin->window_ = NULL;
   EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 
-  char pl_str[700];
-  plugin_print (plugin, pl_str, 700);
-  g_message ("%s: deleted plugin [%s] window", __func__, pl_str);
+  z_info ("deleted plugin [%s] window", plugin->print ());
 
   return false;
 }
@@ -266,23 +257,24 @@ on_close_request (GtkWindow * window, Plugin * plugin)
 void
 plugin_gtk_create_window (Plugin * plugin)
 {
-  g_message ("creating GTK window for %s", plugin->setting->descr->name);
+  z_debug ("creating GTK window for %s", plugin->get_name ());
 
   /* create window */
-  plugin->window = GTK_WINDOW (gtk_window_new ());
-  plugin_gtk_set_window_title (plugin, plugin->window);
-  gtk_window_set_icon_name (plugin->window, "zrythm");
+  plugin->window_ = GTK_WINDOW (gtk_window_new ());
+  plugin_gtk_set_window_title (plugin, plugin->window_);
+  gtk_window_set_icon_name (plugin->window_, "zrythm");
   /*gtk_window_set_role (*/
   /*plugin->window, "plugin_ui");*/
 
   if (g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
     {
-      gtk_window_set_transient_for (plugin->window, GTK_WINDOW (MAIN_WINDOW));
+      gtk_window_set_transient_for (plugin->window_, GTK_WINDOW (MAIN_WINDOW));
     }
 
   /* add vbox for stacking elements */
-  plugin->vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_window_set_child (GTK_WINDOW (plugin->window), GTK_WIDGET (plugin->vbox));
+  plugin->vbox_ = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_window_set_child (
+    GTK_WINDOW (plugin->window_), GTK_WIDGET (plugin->vbox_));
 
 #if 0
   /* add menu bar */
@@ -293,28 +285,24 @@ plugin_gtk_create_window (Plugin * plugin)
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
-  plugin->ev_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_box_append (plugin->vbox, GTK_WIDGET (plugin->ev_box));
+  plugin->ev_box_ = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_box_append (plugin->vbox_, GTK_WIDGET (plugin->ev_box_));
 
   /* connect signals */
-  plugin->destroy_window_id = g_signal_connect (
-    plugin->window, "destroy", G_CALLBACK (on_window_destroy), plugin);
-  plugin->close_request_id = g_signal_connect (
-    G_OBJECT (plugin->window), "close-request", G_CALLBACK (on_close_request),
+  plugin->destroy_window_id_ = g_signal_connect (
+    plugin->window_, "destroy", G_CALLBACK (on_window_destroy), plugin);
+  plugin->close_request_id_ = g_signal_connect (
+    G_OBJECT (plugin->window_), "close-request", G_CALLBACK (on_close_request),
     plugin);
 }
 
 /**
- * Called by generic UI callbacks when e.g. a slider
- * changes value.
+ * Called by generic UI callbacks when e.g. a slider changes value.
  */
 static void
-set_float_control (Plugin * pl, Port * port, float value)
+set_float_control (Plugin * pl, ControlPort * port, float value)
 {
-  if (pl->setting->open_with_carla)
-    {
-      port->set_control_value (value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-    }
+  port->set_control_value (value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 
   PluginGtkController * controller = (PluginGtkController *) port->widget_;
   if (
@@ -327,7 +315,7 @@ set_float_control (Plugin * pl, Port * port, float value)
 }
 
 static gboolean
-scale_changed (GtkRange * range, Port * port)
+scale_changed (GtkRange * range, ControlPort * port)
 {
   /*g_message ("scale changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
@@ -341,7 +329,7 @@ scale_changed (GtkRange * range, Port * port)
 }
 
 static gboolean
-spin_changed (GtkSpinButton * spin, Port * port)
+spin_changed (GtkSpinButton * spin, ControlPort * port)
 {
   PluginGtkController * controller = port->widget_;
   GtkRange *            range = GTK_RANGE (controller->control);
@@ -355,7 +343,7 @@ spin_changed (GtkSpinButton * spin, Port * port)
 }
 
 static gboolean
-log_scale_changed (GtkRange * range, Port * port)
+log_scale_changed (GtkRange * range, ControlPort * port)
 {
   /*g_message ("log scale changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
@@ -369,7 +357,7 @@ log_scale_changed (GtkRange * range, Port * port)
 }
 
 static gboolean
-log_spin_changed (GtkSpinButton * spin, Port * port)
+log_spin_changed (GtkSpinButton * spin, ControlPort * port)
 {
   PluginGtkController * controller = port->widget_;
   GtkRange *            range = GTK_RANGE (controller->control);
@@ -384,7 +372,7 @@ log_spin_changed (GtkSpinButton * spin, Port * port)
 }
 
 static void
-combo_changed (GtkComboBox * box, Port * port)
+combo_changed (GtkComboBox * box, ControlPort * port)
 {
   GtkTreeIter iter;
   if (gtk_combo_box_get_active_iter (box, &iter))
@@ -405,7 +393,7 @@ combo_changed (GtkComboBox * box, Port * port)
 }
 
 static gboolean
-switch_state_set (GtkSwitch * button, gboolean state, Port * port)
+switch_state_set (GtkSwitch * button, gboolean state, ControlPort * port)
 {
   /*g_message ("toggle_changed");*/
   g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
@@ -430,7 +418,7 @@ new_controller (GtkSpinButton * spin, GtkWidget * control)
 }
 
 static PluginGtkController *
-make_combo (Port * port, float value)
+make_combo (ControlPort * port, float value)
 {
   GtkListStore * list_store =
     gtk_list_store_new (2, G_TYPE_FLOAT, G_TYPE_STRING);
@@ -441,7 +429,7 @@ make_combo (Port * port, float value)
       GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, (double) point.val_, 1, point.label_, -1);
+        list_store, &iter, 0, (double) point.val_, 1, point.label_.c_str (), -1);
       if (fabsf (value - point.val_) < FLT_EPSILON)
         {
           active = count;
@@ -459,7 +447,7 @@ make_combo (Port * port, float value)
   GtkCellRenderer * cell = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), cell, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell, "text", 1, NULL);
+    GTK_CELL_LAYOUT (combo), cell, "text", 1, nullptr);
 
   if (is_input)
     {
@@ -467,7 +455,7 @@ make_combo (Port * port, float value)
         G_OBJECT (combo), "changed", G_CALLBACK (combo_changed), port);
     }
 
-  return new_controller (NULL, combo);
+  return new_controller (nullptr, combo);
 }
 
 static PluginGtkController *
@@ -506,12 +494,12 @@ make_log_slider (Port * port, float value)
 }
 
 static PluginGtkController *
-make_slider (Port * port, float value)
+make_slider (ControlPort * port, float value)
 {
   const float min = port->minf_;
   const float max = port->maxf_;
   bool        is_integer = ENUM_BITSET_TEST (
-    PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::INTEGER);
+    PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::Integer);
   const double step = is_integer ? 1.0 : ((double) (max - min) / 100.0);
   GtkWidget *  scale =
     gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, min, max, step);
@@ -578,7 +566,7 @@ make_toggle (Port * port, float value)
         G_OBJECT (check), "state-set", G_CALLBACK (switch_state_set), port);
     }
 
-  return new_controller (NULL, check);
+  return new_controller (nullptr, check);
 }
 
 #if 0
@@ -595,7 +583,7 @@ make_entry (Port * port)
         G_OBJECT (entry), "activate", G_CALLBACK (string_changed), port);
     }
 
-  return new_controller (NULL, entry);
+  return new_controller (nullptr, entry);
 }
 
 static PluginGtkController *
@@ -617,31 +605,31 @@ make_file_chooser (Port * port)
         file_changed_data_closure_notify);
     }
 
-  return new_controller (NULL, button);
+  return new_controller (nullptr, button);
 }
 #endif
 
 static PluginGtkController *
-make_controller (Plugin * pl, Port * port, float value)
+make_controller (Plugin * pl, ControlPort * port, float value)
 {
   PluginGtkController * controller = NULL;
 
   if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::TOGGLE))
+        PortIdentifier::Flags, port->id_.flags_, PortIdentifier::Flags::Toggle))
     {
       controller = make_toggle (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags2, port->id_.flags2_,
-      PortIdentifier::Flags2::ENUMERATION))
+      PortIdentifier::Flags2::Enumeration))
     {
       controller = make_combo (port, value);
     }
   else if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, port->id_.flags_,
-      PortIdentifier::Flags::LOGARITHMIC))
+      PortIdentifier::Flags::Logarithmic))
     {
       controller = make_log_slider (port, value);
     }
@@ -666,12 +654,8 @@ build_control_widget (Plugin * pl, GtkWindow * window)
 
   /* Make an array of ports sorted by group */
   GArray * controls = g_array_new (false, true, sizeof (Port *));
-  for (int i = 0; i < pl->num_in_ports; i++)
+  for (auto port : pl->in_ports_ | type_is<ControlPort> ())
     {
-      Port * port = pl->in_ports[i];
-      if (port->id_.type_ != PortType::Control)
-        continue;
-
       g_array_append_val (controls, port);
     }
   g_array_sort (controls, PortIdentifier::port_group_cmp);
@@ -682,7 +666,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
   int          num_ctrls = (int) controls->len;
   for (int i = 0; i < num_ctrls; ++i)
     {
-      Port *                port = g_array_index (controls, Port *, i);
+      auto                  port = g_array_index (controls, ControlPort *, i);
       PluginGtkController * controller = NULL;
       const char *          group = port->id_.port_group_.c_str ();
 
@@ -826,16 +810,13 @@ plugin_gtk_generic_set_widget_value (
 int
 plugin_gtk_update_plugin_ui (Plugin * pl)
 {
-  if (pl->setting->open_with_carla)
+  if (pl->setting_.open_with_carla_)
     {
       /* fetch port values */
-      for (int i = 0; i < pl->num_in_ports; i++)
+      for (auto port : pl->in_ports_ | type_is<ControlPort> ())
         {
-          Port * port = pl->in_ports[i];
-          if (port->id_.type_ != PortType::Control || !port->widget_)
-            {
-              continue;
-            }
+          if (!port->widget_)
+            continue;
 
           plugin_gtk_generic_set_widget_value (
             pl, port->widget_, port->control_);
@@ -855,25 +836,24 @@ void
 plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
 {
   g_message ("opening generic GTK window..");
-  GtkWidget * controls = build_control_widget (plugin, plugin->window);
+  GtkWidget * controls = build_control_widget (plugin, plugin->window_);
   GtkWidget * scroll_win = gtk_scrolled_window_new ();
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroll_win), controls);
   gtk_scrolled_window_set_policy (
     GTK_SCROLLED_WINDOW (scroll_win), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_box_append (GTK_BOX (plugin->ev_box), scroll_win);
+  gtk_box_append (GTK_BOX (plugin->ev_box_), scroll_win);
   gtk_widget_set_vexpand (GTK_WIDGET (scroll_win), true);
 
   GtkRequisition controls_size, box_size;
-  gtk_widget_get_preferred_size (GTK_WIDGET (controls), NULL, &controls_size);
-  gtk_widget_get_preferred_size (GTK_WIDGET (plugin->vbox), NULL, &box_size);
+  gtk_widget_get_preferred_size (GTK_WIDGET (controls), nullptr, &controls_size);
+  gtk_widget_get_preferred_size (GTK_WIDGET (plugin->vbox_), nullptr, &box_size);
 
   gtk_window_set_default_size (
-    GTK_WINDOW (plugin->window),
+    GTK_WINDOW (plugin->window_),
     MAX (MAX (box_size.width, controls_size.width) + 24, 640),
     box_size.height + controls_size.height);
-  gtk_window_present (GTK_WINDOW (plugin->window));
+  gtk_window_present (GTK_WINDOW (plugin->window_));
 
-  plugin->ui_instantiated = true;
   if (fire_events)
     {
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
@@ -882,11 +862,11 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
   g_message (
     "plugin window shown, adding idle timeout. "
     "Update frequency (Hz): %.01f",
-    (double) plugin->ui_update_hz);
-  g_return_if_fail (plugin->ui_update_hz >= PLUGIN_MIN_REFRESH_RATE);
+    (double) plugin->ui_update_hz_);
+  g_return_if_fail (plugin->ui_update_hz_ >= PLUGIN_MIN_REFRESH_RATE);
 
-  plugin->update_ui_source_id = g_timeout_add (
-    (guint) (1000.f / plugin->ui_update_hz),
+  plugin->update_ui_source_id_ = g_timeout_add (
+    (guint) (1000.f / plugin->ui_update_hz_),
     (GSourceFunc) plugin_gtk_update_plugin_ui, plugin);
 }
 
@@ -899,30 +879,30 @@ plugin_gtk_close_ui (Plugin * pl)
 {
   g_return_val_if_fail (ZRYTHM_HAVE_UI, -1);
 
-  if (pl->update_ui_source_id)
+  if (pl->update_ui_source_id_)
     {
-      g_source_remove (pl->update_ui_source_id);
-      pl->update_ui_source_id = 0;
+      g_source_remove (pl->update_ui_source_id_);
+      pl->update_ui_source_id_ = 0;
     }
 
   g_message ("%s called", __func__);
-  if (pl->window)
+  if (pl->window_)
     {
-      if (pl->destroy_window_id)
+      if (pl->destroy_window_id_)
         {
-          g_signal_handler_disconnect (pl->window, pl->destroy_window_id);
-          pl->destroy_window_id = 0;
+          g_signal_handler_disconnect (pl->window_, pl->destroy_window_id_);
+          pl->destroy_window_id_ = 0;
         }
-      if (pl->close_request_id)
+      if (pl->close_request_id_)
         {
-          g_signal_handler_disconnect (pl->window, pl->close_request_id);
-          pl->close_request_id = 0;
+          g_signal_handler_disconnect (pl->window_, pl->close_request_id_);
+          pl->close_request_id_ = 0;
         }
-      gtk_widget_set_sensitive (GTK_WIDGET (pl->window), 0);
+      gtk_widget_set_sensitive (GTK_WIDGET (pl->window_), 0);
       /*gtk_window_close (*/
       /*GTK_WINDOW (pl->window));*/
-      gtk_window_destroy (GTK_WINDOW (pl->window));
-      pl->window = NULL;
+      gtk_window_destroy (GTK_WINDOW (pl->window_));
+      pl->window_ = nullptr;
     }
 
   return 0;
@@ -945,20 +925,20 @@ plugin_gtk_setup_plugin_banks_combo_box (GtkComboBoxText * cb, Plugin * plugin)
       return false;
     }
 
-  for (int i = 0; i < plugin->num_banks; i++)
+  for (auto &bank : plugin->banks_)
     {
-      PluginBank * bank = plugin->banks[i];
-      if (!bank->name)
+      if (bank.name_.empty ())
         {
-          g_warning ("plugin bank at index %d has no name, skipping...", i);
+          z_warning ("plugin bank has no name, skipping...");
           continue;
         }
 
-      gtk_combo_box_text_append (cb, bank->uri, bank->name);
+      gtk_combo_box_text_append (cb, bank.uri_.c_str (), bank.name_.c_str ());
       ret = true;
     }
 
-  gtk_combo_box_set_active (GTK_COMBO_BOX (cb), plugin->selected_bank.bank_idx);
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb), plugin->selected_bank_.bank_idx_);
 
   return ret;
 }
@@ -977,34 +957,31 @@ plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
 
   z_gtk_list_box_remove_all_children (box);
 
-  if (!plugin || plugin->selected_bank.bank_idx == -1)
+  if (!plugin || plugin->selected_bank_.bank_idx_ == -1)
     {
       g_debug (
         "%s: no plugin (%p) or selected bank (%d)", __func__, plugin,
-        plugin ? plugin->selected_bank.bank_idx : -100);
+        plugin ? plugin->selected_bank_.bank_idx_ : -100);
       return false;
     }
 
-  char pl_str[800];
-  plugin_print (plugin, pl_str, 800);
-  if (!plugin->instantiated)
+  if (!plugin->instantiated_)
     {
-      g_message ("plugin %s not instantiated", pl_str);
+      z_info ("plugin %s not instantiated", plugin->print ());
       return false;
     }
 
   bool         ret = false;
-  PluginBank * bank = plugin->banks[plugin->selected_bank.bank_idx];
-  for (int j = 0; j < bank->num_presets; j++)
+  auto        &bank = plugin->banks_[plugin->selected_bank_.bank_idx_];
+  for (auto &preset : bank.presets_)
     {
-      PluginPreset * preset = bank->presets[j];
-      GtkWidget *    label = gtk_label_new (preset->name);
+      GtkWidget * label = gtk_label_new (preset.name_.c_str ());
       gtk_list_box_insert (box, label, -1);
       ret = true;
     }
 
   GtkListBoxRow * row =
-    gtk_list_box_get_row_at_index (box, plugin->selected_preset.idx);
+    gtk_list_box_get_row_at_index (box, plugin->selected_preset_.idx_);
   gtk_list_box_select_row (box, row);
 
   g_debug ("%s: done", __func__);

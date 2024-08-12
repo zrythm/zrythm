@@ -1,16 +1,16 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
- * \file
+ * @file
  *
  * Channel send selector widget.
  */
 
 #ifndef __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 #define __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -23,9 +23,8 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SEND_SELECTOR_WIDGET,
   GtkPopover)
 
-typedef struct ChannelSend        ChannelSend;
 typedef struct _ChannelSendWidget ChannelSendWidget;
-TYPEDEF_STRUCT (ItemFactory);
+class ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -33,7 +32,7 @@ TYPEDEF_STRUCT (ItemFactory);
  * @{
  */
 
-typedef struct _ChannelSendSelectorWidget
+using ChannelSendSelectorWidget = struct _ChannelSendSelectorWidget
 {
   GtkPopover parent_instance;
 
@@ -45,9 +44,8 @@ typedef struct _ChannelSendSelectorWidget
 
   GtkSingleSelection * view_model;
   GtkListView *        view;
-  ItemFactory *        item_factory;
-
-} ChannelSendSelectorWidget;
+  std::unique_ptr<ItemFactory> item_factory;
+};
 
 ChannelSendSelectorWidget *
 channel_send_selector_widget_new (ChannelSendWidget * send);

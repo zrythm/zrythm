@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Chord pad panel in the bottom panel.
  */

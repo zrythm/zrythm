@@ -1,7 +1,5 @@
-// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
  * @file
@@ -15,6 +13,8 @@
 #include "utils/ui.h"
 
 #include "gtk_wrapper.h"
+
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerMinimapWidget);
 
 /**
  * @addtogroup widgets
@@ -43,14 +43,6 @@ typedef struct _ArrangerMinimapSelectionWidget
 
 ArrangerMinimapSelectionWidget *
 arranger_minimap_selection_widget_new (ArrangerMinimapWidget * parent);
-
-#if 0
-void
-arranger_minimap_selection_widget_on_motion (
-  GtkWidget *      widget,
-  GdkMotionEvent * event,
-  gpointer         user_data);
-#endif
 
 /**
  * @}

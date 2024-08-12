@@ -8,7 +8,7 @@
 #define __GUI_WIDGETS_PREROLL_COUNT_SELECTOR_H__
 
 /**
- * \file
+ * @file
  *
  * Bounce step selector.
  */
