@@ -175,7 +175,7 @@ Fader::Fader (
   /* set swap phase */
   swap_phase_ = create_swap_phase_port (passthrough);
   swap_phase_->set_toggled (false, false);
-  swap_phase_->set_owner (PortIdentifier::OwnerType::Fader, this);
+  swap_phase_->set_owner_impl<Fader> (this);
 
   if (
     type == Type::AudioChannel || type == Type::Monitor
@@ -666,7 +666,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
     {
 #if 0
       z_debug (
-        "g_start %ld, start frame %u, nframes %u", time_nfo->g_start_frame_w_offset,
+        "g_start %ld, start frame {}, nframes {}", time_nfo->g_start_frame_w_offset,
         time_nfo->local_offset, time_nfo->nframes);
 #endif
     }

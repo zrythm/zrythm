@@ -33,7 +33,7 @@ on_notebook_switch_page (
   LeftDockEdgeWidget * self)
 {
   z_debug (
-    "setting left dock page to %u", page_num);
+    "setting left dock page to {}", page_num);
 
   g_settings_set_int (
     S_UI, "left-panel-tab", (int) page_num);

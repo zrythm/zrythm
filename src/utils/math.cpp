@@ -48,17 +48,15 @@ math_calculate_rms_db (sample_t * buf, const nframes_t nframes)
 bool
 math_assert_nonnann (float x)
 {
-  char * val = g_strdup_printf ("%f", (double) x);
-  if (std::isnan (x) || string_contains_substr (val, "nan"))
+  auto val = fmt::format ("{:f}", (double) x);
+  if (std::isnan (x) || string_contains_substr (val.c_str (), "nan"))
     {
       z_error ("nan");
-      g_free (val);
       return false;
     }
-  if (!std::isfinite (x) || string_contains_substr (val, "inf"))
+  if (!std::isfinite (x) || string_contains_substr (val.c_str (), "inf"))
     {
       z_error ("inf");
-      g_free (val);
       return false;
     }
   return true;

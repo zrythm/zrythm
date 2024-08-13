@@ -44,8 +44,8 @@ PortConnectionsManager::regenerate_hashtables ()
   unsigned int srcs_size = src_ht_.size ();
   unsigned int dests_size = dest_ht_.size ();
   z_debug (
-    "Sources hashtable: %u elements | "
-    "Destinations hashtable: %u elements",
+    "Sources hashtable: {} elements | "
+    "Destinations hashtable: {} elements",
     srcs_size, dests_size);
 #endif
 }

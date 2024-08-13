@@ -94,7 +94,7 @@ midi_modifier_arranger_widget_ramp (
       auto x2 = self->start_x + offset_x;
       auto y1 = height - self->start_y;
       auto y2 = height - (self->start_y + offset_y);
-      /*z_info ("x1 %f.0 x2 {:f}.0 y1 {:f}.0 y2 {:f}.0",*/
+      /*z_info ("x1 {:f}.0 x2 {:f}.0 y1 {:f}.0 y2 {:f}.0",*/
       /*x1, x2, y1, y2);*/
 
       /* y = y1 + ((y2 - y1)/(x2 - x1))*(x - x1)

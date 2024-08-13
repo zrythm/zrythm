@@ -36,7 +36,7 @@ on_track_types_changed (
   TrackFilterPopoverWidget * self = Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
 
   z_debug (
-    "selected filter track types changed: %u selected", selection_indices->len);
+    "selected filter track types changed: {} selected", selection_indices->len);
 
   GVariantBuilder builder;
   g_variant_builder_init (&builder, (const GVariantType *) "au");

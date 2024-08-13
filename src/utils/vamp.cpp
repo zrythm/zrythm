@@ -41,8 +41,8 @@ vamp_print_all (void)
             "maker: %s\n"
             "plugin version: %d\n"
             "copyright: %s\n"
-            "param count: %u\n"
-            "program count: %u\n"
+            "param count: {}\n"
+            "program count: {}\n"
             "vamp API version: %d",
             j, descr->identifier, descr->name, descr->description, descr->maker,
             descr->pluginVersion, descr->copyright, descr->parameterCount,

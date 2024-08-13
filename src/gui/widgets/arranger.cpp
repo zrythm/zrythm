@@ -2048,7 +2048,7 @@ autofill (ArrangerWidget * self, double x, double y)
       if (obj)
         {
           z_info (
-            "object already exists at %f,%f, "
+            "object already exists at {:f},{:f}, "
             "skipping",
             x, y);
           return;

@@ -428,7 +428,7 @@ TEST_CASE ("test move audio region and lower bpm")
       double ticks_len = r->get_length_in_ticks ();
       auto  &clip = AUDIO_ENGINE->pool_->clips_[r->pool_id_];
       z_debug (
-        "before | r size: %ld (ticks %f), clip size %ld", frames_len, ticks_len,
+        "before | r size: {} (ticks {:f}), clip size {}", frames_len, ticks_len,
         clip->num_frames_);
       r->validate (true, 0);
       P_TEMPO_TRACK->set_bpm (
@@ -437,7 +437,7 @@ TEST_CASE ("test move audio region and lower bpm")
       ;
       ticks_len = r->get_length_in_ticks ();
       z_debug (
-        "after | r size: %ld (ticks %f), clip size %ld", frames_len, ticks_len,
+        "after | r size: {} (ticks {:f}), clip size {}", frames_len, ticks_len,
         clip->num_frames_);
       r->validate (true, 0);
       test_project_save_and_reload ();

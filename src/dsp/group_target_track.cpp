@@ -161,7 +161,7 @@ GroupTargetTrack::add_child (
   z_return_if_fail (IS_TRACK (this));
 
   z_debug (
-    "adding child track with name hash %u to group %s", child_name_hash,
+    "adding child track with name hash {} to group %s", child_name_hash,
     get_name ());
 
   if (connect)

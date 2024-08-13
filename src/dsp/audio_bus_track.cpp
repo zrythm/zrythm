@@ -4,7 +4,7 @@
 #include "dsp/audio_bus_track.h"
 
 AudioBusTrack::AudioBusTrack (const std::string &name, int pos)
-    : Track (Track::Type::AudioBus, name, pos)
+    : Track (Track::Type::AudioBus, name, pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
   color_ = Color ("#33D17A");

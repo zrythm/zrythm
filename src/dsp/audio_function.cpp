@@ -225,7 +225,7 @@ apply_plugin (
             continue;
 #  if 0
           z_info (
-            "%ld %f",
+            "{} {}",
             actual_j,
             fabsf (l_out->buf[j]));
 #  endif
@@ -264,7 +264,7 @@ apply_plugin (
           z_return_val_if_fail (actual_j >= 0, -1);
 #  if 0
           z_info (
-            "%ld %f",
+            "{} {}",
             actual_j,
             fabsf (l_out->buf[j]));
 #  endif
@@ -443,7 +443,7 @@ audio_function_apply (
             };
             samples_fed += samples_required;
             z_info (
-              "samples required: %u (total fed %zu), latency: %u",
+              "samples required: {} (total fed {}), latency: {}",
               samples_required, samples_fed,
               rubberband_get_latency (rubberband_state));
             if (samples_required > 0)

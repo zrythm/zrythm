@@ -27,7 +27,7 @@ on_notebook_switch_page (
   RightDockEdgeWidget * self)
 {
   z_debug (
-    "setting right dock page to %u", page_num);
+    "setting right dock page to {}", page_num);
 
   g_settings_set_int (
     S_UI, "right-panel-tab", (int) page_num);

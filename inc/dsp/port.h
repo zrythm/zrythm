@@ -130,6 +130,8 @@ public:
 
   void set_owner (PortIdentifier::OwnerType owner_type, void * owner);
 
+  template <typename T> void set_owner_impl (T * owner);
+
   /**
    * Finds the Port corresponding to the identifier.
    *
@@ -354,77 +356,6 @@ private:
 #endif // HAVE_JACK
 
   int get_num_unlocked (bool sources) const;
-
-  /**
-   * @brief Sets the owner plugin and its slot.
-   *
-   * @param plugin
-   */
-  void set_owner_plugin (const Plugin &plugin);
-
-  /**
-   * @brief Set the owner track and its ID.
-   *
-   * @param track_processor
-   */
-  void set_owner_track_processor (const TrackProcessor &track_processor);
-
-  /**
-   * @brief Set the owner track and its ID.
-   *
-   * @param track
-   */
-  void set_owner_track (const Track &track);
-
-  /**
-   * @brief Set the owner fader and its ID.
-   *
-   * @param fader
-   */
-  void set_owner_fader (Fader &fader);
-
-  /**
-   * @brief Set the owner channel send and its ID.
-   *
-   * @param channel_send
-   */
-  void set_owner_channel_send (ChannelSend &channel_send);
-
-  /**
-   * @brief Set the owner channel and its ID.
-   *
-   * @param channel
-   */
-  void set_owner_channel (const Channel &channel);
-
-  /**
-   * @brief Set the owner transport and its ID.
-   *
-   * @param transport
-   */
-  void set_owner_transport (Transport &transport);
-
-  /**
-   * @brief Set the owner modulator macro processor and its ID.
-   *
-   * @param modulator_macro_processor
-   */
-  void set_owner_modulator_macro_processor (
-    ModulatorMacroProcessor &modulator_macro_processor);
-
-  /**
-   * @brief Set the owner audio engine and its ID.
-   *
-   * @param audio_engine
-   */
-  void set_owner_audio_engine (AudioEngine &audio_engine);
-
-  /**
-   * @brief Set the owner external port and its ID.
-   *
-   * @param ext_port
-   */
-  void set_owner_ext_port (ExtPort &ext_port);
 
 public:
   PortIdentifier id_ = PortIdentifier ();

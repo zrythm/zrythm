@@ -817,7 +817,7 @@ Track::update_positions (bool from_ticks, bool bpm_change)
   /* not ready yet */
   if (!PROJECT || !AUDIO_ENGINE->pre_setup_)
     {
-      z_error ("not ready to update positions for {} yet", name_);
+      z_warning ("not ready to update positions for {} yet", name_);
       return;
     }
 

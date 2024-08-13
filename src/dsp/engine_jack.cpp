@@ -549,7 +549,7 @@ engine_jack_setup (AudioEngine * self)
   self->sample_rate_ = jack_get_sample_rate (self->client_);
   self->block_length_ = jack_get_buffer_size (self->client_);
   z_info (
-    "jack sample rate %u, block length %u", self->sample_rate_,
+    "jack sample rate {}, block length {}", self->sample_rate_,
     self->block_length_);
 
   engine_jack_set_transport_type (

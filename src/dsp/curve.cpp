@@ -209,7 +209,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
 
 #if 0
         z_info (
-          "curviness (z): %f (for calc %f), x %f",
+          "curviness (z): {:f} (for calc {:f}), x {:f}",
           curviness_,
           (double) curviness_for_calc, x);
 #endif

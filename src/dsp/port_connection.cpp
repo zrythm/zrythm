@@ -28,7 +28,7 @@ PortConnection::print_to_str () const
       Track * dest_track =
         TRACKLIST->find_track_by_name_hash (dest_id_.track_name_hash_);
       return fmt::format (
-        "[%s (%u)] %s => [%s (%u)] %s%s",
+        "[%s ({})] %s => [%s ({})] %s%s",
         src_track ? src_track->name_ : "(none)", src_id_.track_name_hash_,
         src_id_.get_label (), dest_track ? dest_track->name_ : "(none)",
         dest_id_.track_name_hash_, dest_id_.get_label (), send_str);
@@ -36,7 +36,7 @@ PortConnection::print_to_str () const
   else
     {
       return fmt::format (
-        "[track %u] %s => [track %u] %s%s", src_id_.track_name_hash_,
+        "[track {}] %s => [track {}] %s%s", src_id_.track_name_hash_,
         src_id_.get_label (), dest_id_.track_name_hash_, dest_id_.get_label (),
         send_str);
     }

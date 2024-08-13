@@ -42,7 +42,7 @@ windows_errors_print_mmresult (
         "MMSYSERR_NOMEM: The system is unable to allocate or lock memory");
       break;
     default:
-      z_warning("Unknown error %u received", res);
+      z_warning("Unknown error {} received", res);
       break;
     }
 }

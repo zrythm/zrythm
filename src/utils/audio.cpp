@@ -35,7 +35,7 @@ audio_write_raw_file (
 
   z_debug (
     "writing raw file: already written %zu, "
-    "nframes %zu, samplerate %u, channels %u, "
+    "nframes %zu, samplerate {}, channels {}, "
     "filename %s, flac? %d",
     frames_already_written, nframes, samplerate, channels, filename, flac);
 

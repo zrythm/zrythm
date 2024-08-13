@@ -6,7 +6,7 @@
 #include "dsp/folder_track.h"
 
 FolderTrack::FolderTrack (const std::string &name, int pos)
-    : Track (Track::Type::Folder, name, pos)
+    : Track (Track::Type::Folder, name, pos, PortType::Unknown, PortType::Unknown)
 {
   color_ = Color ("#865E3C");
   icon_name_ = "fluentui-folder-regular";

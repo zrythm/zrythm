@@ -127,12 +127,12 @@ AudioEngine::update_frames_per_tick (
   if (current_thread_id.get () == zrythm_app->gtk_thread_id)
     {
       z_debug (
-        "updating frames per tick: beats per bar %d, bpm %f, sample rate %u",
+        "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
         beats_per_bar, static_cast<double> (bpm), sample_rate);
     }
   else if (thread_check)
     {
-      z_error ("Called {} from non-GTK thread", __func__);
+      z_error ("Called from non-GTK thread");
       return;
     }
 
@@ -146,8 +146,8 @@ AudioEngine::update_frames_per_tick (
     && transport_->ticks_per_beat_ > 0);
 
   z_debug (
-    "frames per tick before: %f | ticks per frame before: %f", frames_per_tick_,
-    ticks_per_frame_);
+    "frames per tick before: {:f} | ticks per frame before: {:f}",
+    frames_per_tick_, ticks_per_frame_);
 
   frames_per_tick_ =
     (static_cast<double> (sample_rate) * 60.0
@@ -157,8 +157,8 @@ AudioEngine::update_frames_per_tick (
   ticks_per_frame_ = 1.0 / frames_per_tick_;
 
   z_debug (
-    "frames per tick after: %f | ticks per frame after: %f", frames_per_tick_,
-    ticks_per_frame_);
+    "frames per tick after: {:f} | ticks per frame after: {:f}",
+    frames_per_tick_, ticks_per_frame_);
 
   /* update positions */
   transport_->update_positions (update_from_ticks);
@@ -1196,7 +1196,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       /*z_debug (*/
       /*"engine process started. total frames to "*/
-      /*"process: %u", total_frames_to_process);*/
+      /*"process: {}", total_frames_to_process);*/
     }
 
   z_return_val_if_fail (total_frames_to_process > 0, -1);
@@ -1225,7 +1225,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       clear_output_buffers (total_frames_to_process);
       z_warning (
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JACK buffer size changed from %u to %u without notifying us (likely pipewire bug #1591). Attempting workaround...",
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JACK buffer size changed from {} to {} without notifying us (likely pipewire bug #1591). Attempting workaround...",
         block_length_, jack_get_buffer_size (client_));
       engine_jack_buffer_size_cb (jack_get_buffer_size (client_), this);
       return 0;

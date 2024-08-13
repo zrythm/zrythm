@@ -68,13 +68,13 @@ TEST_CASE ("region in 2nd automation track get muted")
   auto  first_vis_at = atl.visible_ats_.front ();
 
   /* create a new automation track */
-  auto new_at = atl.get_first_invisible_at();
+  auto new_at = atl.get_first_invisible_at ();
   if (!new_at->created_)
     new_at->created_ = 1;
-  atl.set_at_visible(* new_at, true);
+  atl.set_at_visible (*new_at, true);
 
   /* move it after the clicked automation track */
-  atl.set_at_index(*new_at, first_vis_at->index_ + 1, true);
+  atl.set_at_index (*new_at, first_vis_at->index_ + 1, true);
 
   /* create a region and set it as clip editor
    * region */
@@ -82,18 +82,18 @@ TEST_CASE ("region in 2nd automation track get muted")
   start.set_to_bar (2);
   end.set_to_bar (4);
   auto region = std::make_shared<AutomationRegion> (
-    start, end,master->get_name_hash(), new_at->index_, 0);
-    master->add_region( region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    start, end, master->get_name_hash (), new_at->index_, 0);
+  master->add_region (region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
 
-  CLIP_EDITOR->set_region( region.get(), F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (region.get (), F_NO_PUBLISH_EVENTS);
 
-  AUDIO_ENGINE->wait_n_cycles( 3);
+  AUDIO_ENGINE->wait_n_cycles (3);
 
   /* assert not muted */
-  REQUIRE_FALSE (region->get_muted( true));
+  REQUIRE_FALSE (region->get_muted (true));
 
   test_helper_zrythm_cleanup ();
 }

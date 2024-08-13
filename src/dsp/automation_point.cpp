@@ -182,7 +182,7 @@ std::string
 AutomationPoint::get_fvalue_as_string (void * self)
 {
   AutomationPoint * ap = static_cast<AutomationPoint *> (self);
-  return fmt::sprintf ("%f", ap->fvalue_);
+  return fmt::sprintf ("{:f}", ap->fvalue_);
 }
 
 void

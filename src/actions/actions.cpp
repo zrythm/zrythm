@@ -2450,7 +2450,7 @@ static std::string
 get_pitch_ratio (void * object)
 {
   return fmt::format (
-    "%f", g_settings_get_double (S_UI, "audio-function-pitch-shift-ratio"));
+    "{:f}", g_settings_get_double (S_UI, "audio-function-pitch-shift-ratio"));
 }
 
 DEFINE_SIMPLE (activate_editor_function)

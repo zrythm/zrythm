@@ -232,8 +232,8 @@ timeline_ruler_on_drag_update (
           {
             double r1_start_ticks = self->range1_start_pos.ticks_;
             double r2_start_ticks = self->range2_start_pos.ticks_;
-            /*z_info ("ticks diff before %f r1 start ticks %f r2 start ticks
-             * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
+            /*z_info ("ticks diff before {:f} r1 start ticks {:f} r2 start ticks
+             * {:f}", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
               {
                 ticks_diff -= (ticks_diff + r1_start_ticks);
@@ -290,8 +290,8 @@ timeline_ruler_on_drag_update (
           {
             double r1_start_ticks = self->range1_start_pos.ticks_;
             double r2_start_ticks = self->range2_start_pos.ticks_;
-            /*z_info ("ticks diff before %f r1 start ticks %f r2 start ticks
-             * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
+            /*z_info ("ticks diff before {:f} r1 start ticks {:f} r2 start ticks
+             * {:f}", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
               {
                 ticks_diff -= (ticks_diff + r1_start_ticks);

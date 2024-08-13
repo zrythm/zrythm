@@ -106,7 +106,7 @@ stretcher_new_rubberband (
           self->rubberband_state, out_samples,
           (unsigned int) avail);
       z_info (
-        "%s: required: %u, available %d, "
+        "%s: required: {}, available %d, "
         "retrieved %zu",
         __func__, samples_required, avail,
         retrieved_out_samples);
@@ -125,7 +125,7 @@ stretcher_new_rubberband (
           self->rubberband_state, out_samples,
           (unsigned int) avail);
       z_info (
-        "%s: required: %u, available %d, "
+        "%s: required: {}, available %d, "
         "retrieved %zu",
         __func__, samples_required, avail,
         retrieved_out_samples);
@@ -154,7 +154,7 @@ stretcher_new_rubberband (
   rubberband_set_default_debug_level (0);
 
   z_debug (
-    "created rubberband stretcher: time ratio: %f, latency: %u", time_ratio,
+    "created rubberband stretcher: time ratio: {:f}, latency: {}", time_ratio,
     stretcher_get_latency (self));
 
   return self;
@@ -209,7 +209,7 @@ stretcher_stretch (
   unsigned int samples_required =
     rubberband_get_samples_required (self->rubberband_state);
   z_info (
-    "%s: samples required: %u, latency: %u", __func__, samples_required,
+    "%s: samples required: {}, latency: {}", __func__, samples_required,
     rubberband_get_latency (self->rubberband_state));
   rubberband_process (
     self->rubberband_state, in_samples, in_samples_size, false);
@@ -226,7 +226,7 @@ stretcher_stretch (
     }
 
   z_info (
-    "%s: samples wanted %zu (avail %u)", __func__, out_samples_wanted, avail);
+    "%s: samples wanted %zu (avail {})", __func__, out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
     self->rubberband_state, out_samples, out_samples_wanted);
   z_warn_if_fail (retrieved_out_samples == out_samples_wanted);

@@ -51,7 +51,6 @@
 Project::Project ()
     : version_ (Zrythm::get_version (false)),
       port_connections_manager_ (std::make_unique<PortConnectionsManager> ()),
-      tracklist_selections_ (std::make_unique<SimpleTracklistSelections> ()),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_8)),
       quantize_opts_timeline_ (
@@ -69,6 +68,8 @@ Project::Project ()
       undo_manager_ (std::make_unique<UndoManager> ())
 {
   init_selections ();
+  tracklist_selections_ =
+    std::make_unique<SimpleTracklistSelections> (*tracklist_);
   audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
@@ -243,7 +244,7 @@ Project::compress_or_decompress (
     }
 
   z_debug (
-    "%s : %u bytes -> %u bytes", compress ? "Compression" : "Decompression",
+    "{} : {} bytes -> {} bytes", compress ? "Compression" : "Decompression",
     (unsigned) src_size, (unsigned) dest_size);
 
   switch (dest_type)

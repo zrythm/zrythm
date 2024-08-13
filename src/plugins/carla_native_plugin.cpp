@@ -296,7 +296,7 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
       z_debug (
-        "Patchbay client added: %u plugin %d name %s", plugin_id, val2, val_str);
+        "Patchbay client added: {} plugin %d name %s", plugin_id, val2, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_REMOVED:
       z_debug ("Patchbay client removed: {}", plugin_id);
@@ -306,12 +306,12 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_DATA_CHANGED:
       z_debug (
-        "Patchbay client data changed: %u - %d %d", plugin_id, val1, val2);
+        "Patchbay client data changed: {} - %d %d", plugin_id, val1, val2);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
       {
         z_debug (
-          "PORT ADDED: client %u port %d group %d name %s", plugin_id, val1,
+          "PORT ADDED: client {} port %d group %d name %s", plugin_id, val1,
           val3, val_str);
         bool is_cv_variant =
           self->max_variant_cv_ins_ > 0 || self->max_variant_cv_outs_ > 0;
@@ -393,7 +393,7 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_CANCELABLE_ACTION:
       z_debug (
-        "Cancelable action: plugin %u - %d - %s", plugin_id, val1, val_str);
+        "Cancelable action: plugin {} - %d - %s", plugin_id, val1, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PROJECT_LOAD_FINISHED:
       z_info ("Project load finished");
@@ -447,12 +447,12 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_GROUP_CHANGED:
       z_debug (
-        "Patchbay port group changed: client %u - group %d - hints %d - name %s",
+        "Patchbay port group changed: client {} - group %d - hints %d - name %s",
         plugin_id, val1, val2, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PARAMETER_MAPPED_RANGE_CHANGED:
       z_debug (
-        "Parameter mapped range changed: %u:%d - %s", plugin_id, val1, val_str);
+        "Parameter mapped range changed: {}:%d - %s", plugin_id, val1, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_POSITION_CHANGED:
       break;
@@ -657,7 +657,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
                * cycle
                */
 #  if 0
-          z_debug ("skip events scheduled for another split within the processing cycle: ev->time %u, local_offset %u, nframes {}", ev.time_, time_nfo.local_offset, time_nfo.nframes);
+          z_debug ("skip events scheduled for another split within the processing cycle: ev->time {}, local_offset {}, nframes {}", ev.time_, time_nfo.local_offset, time_nfo.nframes);
 #  endif
               continue;
             }
@@ -972,7 +972,7 @@ CarlaNativePlugin::create_ports (bool loading)
               const CarlaParameterInfo * param_info =
                 carla_get_parameter_info (host_handle_, 0, i);
               z_warning (
-                "port '%s' at param ID %u could not be retrieved [%s], will ignore",
+                "port '%s' at param ID {} could not be retrieved [%s], will ignore",
                 param_info->name, i, get_name ());
               continue;
             }
@@ -990,7 +990,7 @@ CarlaNativePlugin::create_ports (bool loading)
             }
           else
             {
-              port->id_.sym_ = fmt::sprintf ("param_%u", i);
+              port->id_.sym_ = fmt::format ("param_{}", i);
             }
           port->id_.flags_ |= PortIdentifier::Flags::PluginControl;
           if (param_info->comment && strlen (param_info->comment) > 0)
@@ -1072,7 +1072,7 @@ CarlaNativePlugin::create_ports (bool loading)
           added_port->maxf_ = ranges->max;
 #  if 0
           z_debug (
-            "ranges: min %f max %f default %f",
+            "ranges: min {:f} max {:f} default {:f}",
             (double) port->minf_,
             (double) port->maxf_,
             (double) port->deff_;
@@ -1094,7 +1094,7 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
   const auto &engine = *AUDIO_ENGINE;
   z_debug (
     "setting carla buffer size and sample rate: "
-    "%u %u",
+    "{} {}",
     engine.block_length_, engine.sample_rate_);
   carla_set_engine_buffer_size_and_sample_rate (
     host_handle_, engine.block_length_, engine.sample_rate_);

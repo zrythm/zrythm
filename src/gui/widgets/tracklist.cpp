@@ -193,7 +193,7 @@ on_dnd_motion (
           if (self->unpinned_scroll_scroll_down_id == 0)
             {
               z_info (
-                "begin autoscroll tracklist down: height %d y %f", height,
+                "begin autoscroll tracklist down: height {} y {:f}", height,
                 wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
               self->unpinned_scroll_scroll_down_id =
@@ -211,7 +211,8 @@ on_dnd_motion (
           if (self->unpinned_scroll_scroll_up_id == 0)
             {
               z_info (
-                "begin autoscroll tracklist up: height %d y %f", height, wpt.y);
+                "begin autoscroll tracklist up: height {} y {:f}", height,
+                wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
               self->unpinned_scroll_scroll_up_id =
                 g_timeout_add (100, scroll_up_source, self);

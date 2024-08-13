@@ -68,11 +68,10 @@ update_info_label (AutomatableSelectorPopoverWidget * self)
     {
       Port * port = self->selected_port;
 
-      char * label = g_strdup_printf (
-        "%s\nMin: %f\nMax: %f", port->get_label ().c_str (),
-        (double) port->minf_, (double) port->maxf_);
+      auto label = fmt::format (
+        "{}\nMin: {}\nMax: {}", port->get_label (), port->minf_, port->maxf_);
 
-      gtk_label_set_text (self->info, label);
+      gtk_label_set_text (self->info, label.c_str ());
     }
   else
     {

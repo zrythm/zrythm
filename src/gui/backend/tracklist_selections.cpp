@@ -129,6 +129,7 @@ SimpleTracklistSelections::clear (const bool fire_events)
 {
   z_info ("clearing tracklist selections...");
 
+  z_return_if_fail (tracklist_);
   for (auto it = track_names_.rbegin (); it != track_names_.rend (); ++it)
     {
       Track * track = tracklist_->find_track_by_name (*it);

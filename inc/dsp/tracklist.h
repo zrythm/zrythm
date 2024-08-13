@@ -124,24 +124,18 @@ public:
   template <typename T = Track>
   OPTIMIZE_O3 T * find_track_by_name_hash (unsigned int hash) const;
 
-  bool contains_track_type (Track::Type type) const
+  template <typename T> bool contains_track_type () const
   {
-    return std::any_of (
-      tracks_.begin (), tracks_.end (),
-      [type] (const std::unique_ptr<Track> &track) {
-        return track->type_ == type;
-      });
+    return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+      return std::visit (
+        [] (auto &&t) { return std::is_same_v<T, base_type<decltype (t)>>; },
+        convert_to_variant<TrackPtrVariant> (track.get ()));
+    });
   }
 
-  bool contains_master_track () const
-  {
-    return contains_track_type (Track::Type::Master);
-  }
+  bool contains_master_track () const;
 
-  bool contains_chord_track () const
-  {
-    return contains_track_type (Track::Type::Chord);
-  }
+  bool contains_chord_track () const;
 
   /**
    * Prints the tracks (for debugging).

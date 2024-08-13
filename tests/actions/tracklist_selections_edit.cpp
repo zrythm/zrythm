@@ -189,9 +189,9 @@ _test_edit_tracks (
           {
 #  if 0
             z_info (
-              "[%u] %.16f", i, (double) l->buf[i]);
+              "[{}] %.16f", i, (double) l->buf[i]);
             z_info (
-              "[%u i] %.16f", i,
+              "[{} i] %.16f", i,
               (double) ins_out_l->buf[i]);
 #  endif
             if (l.buf_[i] > 0.0001f)

@@ -371,13 +371,12 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
               add_plugin (*pl);
               pl->update_latency ();
+            }
 
-              /* add macro processors */
-              for (auto &mp : modulator_track->modulator_macro_processors_)
-                {
-                  create_node (
-                    GraphNode::Type::ModulatorMacroProcessor, mp.get ());
-                }
+          /* add macro processors */
+          for (auto &mp : modulator_track->modulator_macro_processors_)
+            {
+              create_node (GraphNode::Type::ModulatorMacroProcessor, mp.get ());
             }
         }
 
@@ -673,6 +672,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
             {
               auto mmp_node =
                 find_node_from_modulator_macro_processor (mmp.get ());
+              z_return_if_fail (mmp_node);
 
               auto node2 = find_node_from_port (mmp->cv_in_.get ());
               node2->connect_to (*mmp_node);

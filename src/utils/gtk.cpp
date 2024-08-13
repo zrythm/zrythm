@@ -1654,8 +1654,8 @@ void
 z_gtk_print_graphene_rect (graphene_rect_t * rect)
 {
   z_info (
-    "x: %f | y: %f | width: %f | height: %f", rect->origin.x, rect->origin.y,
-    rect->size.width, rect->size.height);
+    "x: {:f} | y: {:f} | width: {:f} | height: {:f}", rect->origin.x,
+    rect->origin.y, rect->size.width, rect->size.height);
 }
 
 static void
@@ -1816,8 +1816,8 @@ z_graphene_rect_print (const graphene_rect_t * rect)
   z_return_if_fail (rect->size.width >= 0);
   z_return_if_fail (rect->size.height >= 0);
   z_info (
-    "graphene rect: x %f y %f w %f h %f", rect->origin.x, rect->origin.y,
-    rect->size.width, rect->size.height);
+    "graphene rect: x {:f} y {:f} w {:f} h {:f}", rect->origin.x,
+    rect->origin.y, rect->size.width, rect->size.height);
 }
 
 GtkStringList *

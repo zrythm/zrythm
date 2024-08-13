@@ -4,7 +4,7 @@
 #include "dsp/master_track.h"
 
 MasterTrack::MasterTrack (int pos)
-    : Track (Track::Type::Master, _ ("Master"), pos)
+    : Track (Track::Type::Master, _ ("Master"), pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
   color_ = Color ("#C01C28");

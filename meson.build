@@ -1265,6 +1265,7 @@ spdlog_dep = declare_dependency (
   compile_args: [
     '-DSPDLOG_FMT_EXTERNAL',
     '-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE',
+    '-DSPDLOG_FUNCTION=' + (is_clang or is_gcc ? '__PRETTY_FUNCTION__' : '__FUNCTION__'),
   ])
 
 glibmm_dep = dependency('glibmm-2.68')

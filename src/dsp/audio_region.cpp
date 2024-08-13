@@ -258,10 +258,9 @@ AudioRegion::fill_stereo_ports (
     {
       needs_rt_timestretch = true;
       timestretch_ratio = (double) cur_bpm / (double) clip->bpm_;
-      z_info (
-        "timestretching: "
-        "(cur bpm %f clip bpm %f) %f",
-        (double) cur_bpm, (double) clip->bpm_, timestretch_ratio);
+      z_debug (
+        "timestretching: (cur bpm {} clip bpm {}) {}", (double) cur_bpm,
+        (double) clip->bpm_, timestretch_ratio);
     }
 
   /* buffers after timestretch */

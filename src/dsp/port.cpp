@@ -673,154 +673,142 @@ Port::get_num_unlocked_srcs () const
   return get_num_unlocked (true);
 }
 
+template <typename T>
 void
-Port::set_owner_plugin (const Plugin &pl)
+Port::set_owner_impl (T * owner)
 {
-  id_.plugin_id_ = pl.id_;
-  id_.track_name_hash_ = pl.id_.track_name_hash_;
-  id_.owner_type_ = PortIdentifier::OwnerType::Plugin;
-
-  if (is_control ())
+  if constexpr (std::is_same_v<T, Plugin>)
     {
-      auto control_port = static_cast<ControlPort *> (this);
-      if (control_port->at_)
+      id_.plugin_id_ = owner->id_;
+      id_.track_name_hash_ = owner->id_.track_name_hash_;
+      id_.owner_type_ = PortIdentifier::OwnerType::Plugin;
+
+      if (is_control ())
         {
-          control_port->at_->port_id_ = id_;
+          auto control_port = static_cast<ControlPort *> (this);
+          if (control_port->at_)
+            {
+              control_port->at_->port_id_ = id_;
+            }
         }
     }
-}
-
-void
-Port::set_owner_track_processor (const TrackProcessor &track_processor)
-{
-  auto track = track_processor.get_track ();
-  z_return_if_fail (track && !track->name_.empty ());
-  id_.track_name_hash_ = track->get_name_hash ();
-  id_.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
-}
-
-void
-Port::set_owner_fader (Fader &fader)
-{
-  id_.owner_type_ = PortIdentifier::OwnerType::Fader;
-  fader_ = &fader;
-
-  if (
-    fader.type_ == Fader::Type::AudioChannel
-    || fader.type_ == Fader::Type::MidiChannel)
+  else if constexpr (std::is_same_v<T, TrackProcessor>)
     {
-      auto track = fader.get_track ();
+      auto track = owner->get_track ();
       z_return_if_fail (track && !track->name_.empty ());
       id_.track_name_hash_ = track->get_name_hash ();
-      if (fader.passthrough_)
+      id_.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
+    }
+  else if constexpr (std::is_same_v<T, Channel>)
+    {
+      auto track = owner->get_track ();
+      z_return_if_fail (!track->name_.empty ());
+      id_.track_name_hash_ = track->get_name_hash ();
+      id_.owner_type_ = PortIdentifier::OwnerType::Channel;
+    }
+  else if constexpr (std::is_same_v<T, ExtPort>)
+    {
+      ext_port_ = owner;
+      id_.owner_type_ = PortIdentifier::OwnerType::HardwareProcessor;
+    }
+  else if constexpr (std::is_same_v<T, ChannelSend>)
+    {
+      id_.track_name_hash_ = owner->track_name_hash_;
+      id_.port_index_ = owner->slot_;
+      id_.owner_type_ = PortIdentifier::OwnerType::ChannelSend;
+      channel_send_ = owner;
+
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags2, id_.flags2_,
+          PortIdentifier::Flags2::ChannelSendEnabled))
         {
-          id_.flags2_ |= PortIdentifier::Flags2::Prefader;
+          minf_ = 0.f;
+          maxf_ = 1.f;
+          zerof_ = 0.0f;
+        }
+      else if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags2, id_.flags2_,
+          PortIdentifier::Flags2::ChannelSendAmount))
+        {
+          minf_ = 0.f;
+          maxf_ = 2.f;
+          zerof_ = 0.f;
+        }
+    }
+  else if constexpr (std::is_same_v<T, Fader>)
+    {
+      id_.owner_type_ = PortIdentifier::OwnerType::Fader;
+      fader_ = owner;
+
+      if (
+        owner->type_ == Fader::Type::AudioChannel
+        || owner->type_ == Fader::Type::MidiChannel)
+        {
+          auto track = owner->get_track ();
+          z_return_if_fail (track && !track->name_.empty ());
+          id_.track_name_hash_ = track->get_name_hash ();
+          if (owner->passthrough_)
+            {
+              id_.flags2_ |= PortIdentifier::Flags2::Prefader;
+            }
+          else
+            {
+              id_.flags2_ |= PortIdentifier::Flags2::Postfader;
+            }
+        }
+      else if (owner->type_ == Fader::Type::SampleProcessor)
+        {
+          id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorFader;
         }
       else
         {
-          id_.flags2_ |= PortIdentifier::Flags2::Postfader;
+          id_.flags2_ |= PortIdentifier::Flags2::MonitorFader;
+        }
+
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::Amplitude))
+        {
+          minf_ = 0.f;
+          maxf_ = 2.f;
+          zerof_ = 0.f;
+        }
+      else if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, id_.flags_,
+          PortIdentifier::Flags::StereoBalance))
+        {
+          minf_ = 0.f;
+          maxf_ = 1.f;
+          zerof_ = 0.5f;
         }
     }
-  else if (fader.type_ == Fader::Type::SampleProcessor)
+  else if constexpr (std::is_same_v<T, Transport>)
     {
-      id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorFader;
+      transport_ = owner;
+      id_.owner_type_ = PortIdentifier::OwnerType::Transport;
     }
-  else
+  else if constexpr (std::is_same_v<T, Track>)
     {
-      id_.flags2_ |= PortIdentifier::Flags2::MonitorFader;
+      // z_return_if_fail (!track.name_.empty ());
+      id_.track_name_hash_ = owner->name_.empty () ? 0 : owner->get_name_hash ();
+      id_.owner_type_ = PortIdentifier::OwnerType::Track;
     }
-
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::Amplitude))
+  else if constexpr (std::is_same_v<T, ModulatorMacroProcessor>)
     {
-      minf_ = 0.f;
-      maxf_ = 2.f;
-      zerof_ = 0.f;
+      modulator_macro_processor_ = owner;
+      id_.owner_type_ = PortIdentifier::OwnerType::ModulatorMacroProcessor;
+      z_return_if_fail (owner->get_track ());
+      id_.track_name_hash_ = owner->get_track ()->get_name_hash ();
+      track_ = owner->get_track ();
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoBalance))
+  else if constexpr (std::is_same_v<T, AudioEngine>)
     {
-      minf_ = 0.f;
-      maxf_ = 1.f;
-      zerof_ = 0.5f;
+      engine_ = owner;
+      id_.owner_type_ = PortIdentifier::OwnerType::AudioEngine;
     }
-}
-
-void
-Port::set_owner_track (const Track &track)
-{
-  z_return_if_fail (!track.name_.empty ());
-  id_.track_name_hash_ = track.get_name_hash ();
-  id_.owner_type_ = PortIdentifier::OwnerType::Track;
-}
-
-void
-Port::set_owner_channel_send (ChannelSend &send)
-{
-  id_.track_name_hash_ = send.track_name_hash_;
-  id_.port_index_ = send.slot_;
-  id_.owner_type_ = PortIdentifier::OwnerType::ChannelSend;
-  channel_send_ = &send;
-
-  if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, id_.flags2_,
-      PortIdentifier::Flags2::ChannelSendEnabled))
-    {
-      minf_ = 0.f;
-      maxf_ = 1.f;
-      zerof_ = 0.0f;
-    }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, id_.flags2_,
-      PortIdentifier::Flags2::ChannelSendAmount))
-    {
-      minf_ = 0.f;
-      maxf_ = 2.f;
-      zerof_ = 0.f;
-    }
-}
-
-void
-Port::set_owner_channel (const Channel &ch)
-{
-  auto track = ch.get_track ();
-  z_return_if_fail (!track->name_.empty ());
-  id_.track_name_hash_ = track->get_name_hash ();
-  id_.owner_type_ = PortIdentifier::OwnerType::Channel;
-}
-
-void
-Port::set_owner_transport (Transport &transport)
-{
-  transport_ = &transport;
-  id_.owner_type_ = PortIdentifier::OwnerType::Transport;
-}
-
-void
-Port::set_owner_modulator_macro_processor (ModulatorMacroProcessor &mmp)
-{
-  modulator_macro_processor_ = &mmp;
-  id_.owner_type_ = PortIdentifier::OwnerType::ModulatorMacroProcessor;
-  z_return_if_fail (mmp.get_track ());
-  id_.track_name_hash_ = mmp.get_track ()->get_name_hash ();
-  track_ = mmp.get_track ();
-}
-
-void
-Port::set_owner_audio_engine (AudioEngine &engine)
-{
-  engine_ = &engine;
-  id_.owner_type_ = PortIdentifier::OwnerType::AudioEngine;
-}
-
-void
-Port::set_owner_ext_port (ExtPort &ext_port)
-{
-  ext_port_ = &ext_port;
-  id_.owner_type_ = PortIdentifier::OwnerType::HardwareProcessor;
 }
 
 void
@@ -829,35 +817,34 @@ Port::set_owner (PortIdentifier::OwnerType owner_type, void * owner)
   switch (owner_type)
     {
     case PortIdentifier::OwnerType::ChannelSend:
-      set_owner_channel_send (*static_cast<ChannelSend *> (owner));
+      set_owner_impl (static_cast<ChannelSend *> (owner));
       break;
     case PortIdentifier::OwnerType::Fader:
-      set_owner_fader (*static_cast<Fader *> (owner));
+      set_owner_impl (static_cast<Fader *> (owner));
       break;
     case PortIdentifier::OwnerType::Track:
-      set_owner_track (*static_cast<Track *> (owner));
+      set_owner_impl (static_cast<Track *> (owner));
       break;
     case PortIdentifier::OwnerType::TrackProcessor:
-      set_owner_track_processor (*static_cast<TrackProcessor *> (owner));
+      set_owner_impl (static_cast<TrackProcessor *> (owner));
       break;
     case PortIdentifier::OwnerType::Channel:
-      set_owner_channel (*static_cast<Channel *> (owner));
+      set_owner_impl (static_cast<Channel *> (owner));
       break;
     case PortIdentifier::OwnerType::Plugin:
-      set_owner_plugin (*static_cast<Plugin *> (owner));
+      set_owner_impl (static_cast<Plugin *> (owner));
       break;
     case PortIdentifier::OwnerType::Transport:
-      set_owner_transport (*static_cast<Transport *> (owner));
+      set_owner_impl (static_cast<Transport *> (owner));
       break;
     case PortIdentifier::OwnerType::ModulatorMacroProcessor:
-      set_owner_modulator_macro_processor (
-        *static_cast<ModulatorMacroProcessor *> (owner));
+      set_owner_impl (static_cast<ModulatorMacroProcessor *> (owner));
       break;
     case PortIdentifier::OwnerType::AudioEngine:
-      set_owner_audio_engine (*static_cast<AudioEngine *> (owner));
+      set_owner_impl (static_cast<AudioEngine *> (owner));
       break;
     case PortIdentifier::OwnerType::HardwareProcessor:
-      set_owner_ext_port (*static_cast<ExtPort *> (owner));
+      set_owner_impl (static_cast<ExtPort *> (owner));
       break;
     default:
       z_return_if_reached ();

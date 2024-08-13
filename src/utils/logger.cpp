@@ -68,7 +68,14 @@ Logger::Logger ()
   // Set the log level and format
   logger_->set_level (spdlog::level::debug);
   // [time] [thread id] [level] [source file:line] message
-  logger_->set_pattern ("[%Y-%m-%d %H:%M:%S.%e] [%t] [%^%l%$] [%s:%!():%#] %v");
+  logger_->set_pattern (
+    "[%Y-%m-%d %H:%M:%S.%e] [%t] [%^%l%$] "
+#ifdef _WIN32
+    "[%s:%!()" // only function name is shown on windows, so show filename too
+#else
+    "[%!"
+#endif
+    ":%#] %v");
 
   // Set the error handler for critical logs
   logger_->set_error_handler ([&] (const std::string &msg) {

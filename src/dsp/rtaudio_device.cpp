@@ -48,7 +48,7 @@ myaudio_cb (
           if (in_buf[i] > 0.08f)
             {
               z_info (
-                "have input %f", (double) in_buf[i]);
+                "have input {:f}", (double) in_buf[i]);
             }
         }
 #  endif

@@ -180,10 +180,7 @@ Tracklist::insert_track (
 
   /* throw error if attempted to add a special track (like master) when it
    * already exists */
-  for (auto &t : unique_track_types_)
-    {
-      z_return_val_if_fail (!contains_track_type (t), nullptr);
-    }
+  z_return_val_if_fail (!contains_track_type<T> (), nullptr);
 
   /* set to -1 so other logic knows it is a new track */
   track->pos_ = -1;
@@ -1302,6 +1299,18 @@ Tracklist::get_total_bars (int total_bars) const
       total_bars = track->get_total_bars (total_bars);
     }
   return total_bars;
+}
+
+bool
+Tracklist::contains_master_track () const
+{
+  return contains_track_type<MasterTrack> ();
+}
+
+bool
+Tracklist::contains_chord_track () const
+{
+  return contains_track_type<ChordTrack> ();
 }
 
 void

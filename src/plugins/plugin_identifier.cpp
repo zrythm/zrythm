@@ -18,7 +18,7 @@ std::string
 PluginIdentifier::print_to_str () const
 {
   return fmt::format (
-    "slot_type: %s, track_name hash: %u, slot: %d", ENUM_NAME (slot_type_),
+    "slot_type: %s, track_name hash: {}, slot: %d", ENUM_NAME (slot_type_),
     track_name_hash_, slot_);
 }
 

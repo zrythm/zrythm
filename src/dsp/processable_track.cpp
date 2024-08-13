@@ -63,7 +63,7 @@ ProcessableTrack::fill_events_common (
 #if 0
   z_info (
     "%s: TRACK %s STARTING from %ld, "
-    "local start frame %u, nframes %u",
+    "local start frame {}, nframes {}",
     __func__, self->name, time_nfo->g_start_frame_w_offset,
     time_nfo->local_offset, time_nfo->nframes);
 #endif
@@ -128,7 +128,7 @@ ProcessableTrack::fill_events_common (
                 "%s: cur num frames till next r "
                 "loop or end %ld, "
                 "num_frames_to_process %ld, "
-                "cur local start frame %u",
+                "cur local start frame {}",
                 __func__, cur_num_frames_till_next_r_loop_or_end,
                 num_frames_to_process,
                 cur_local_start_frame);

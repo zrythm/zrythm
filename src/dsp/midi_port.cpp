@@ -162,7 +162,7 @@ MidiPort::sum_data_from_rtmidi (
         this, designation);
       z_info (
         "RtMidi (%s): have %d events\n"
-        "first event is: [%u] %hhx %hhx %hhx",
+        "first event is: [{}] %hhx %hhx %hhx",
         designation, this->midi_events_->num_events,
         ev->time, ev->raw_buffer[0],
         ev->raw_buffer[1], ev->raw_buffer[2]);
@@ -447,7 +447,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                   events.add_raw (&beat_msg, 1, midi_time);
 #if 0
                       z_debug (
-                        "(i = %d) time %u / %u", i, midi_time,
+                        "(i = %d) time {} / {}", i, midi_time,
                         time_nfo.local_offset + time_nfo.nframes_);
 #endif
                 }

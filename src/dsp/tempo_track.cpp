@@ -105,8 +105,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
     AUDIO_ENGINE->transport_type_
     == AudioEngine::JackTransportType::NoJackTransport)
     {
-      z_debug (
-        "%s: bpm <%f>, temporary <%d>", __func__, (double) bpm, temporary);
+      z_debug ("bpm <{:f}>, temporary <{}>", bpm, temporary);
     }
 
   if (bpm < TEMPO_TRACK_MIN_BPM)

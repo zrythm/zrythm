@@ -244,7 +244,7 @@ set_init_port_value (void * data, float val)
 {
   auto self = static_cast<InspectorPortWidget *> (data);
   /*z_info (*/
-  /*"val change started: %f", (double) val);*/
+  /*"val change started: {:f}", (double) val);*/
   self->normalized_init_port_val = val;
 }
 
@@ -253,7 +253,7 @@ val_change_finished (void * data, float val)
 {
   auto self = static_cast<InspectorPortWidget *> (data);
   /*z_info (*/
-  /*"val change finished: %f", (double) val);*/
+  /*"val change finished: {:f}", (double) val);*/
   if (!math_floats_equal (val, self->normalized_init_port_val))
     {
       auto ctrl = dynamic_cast<ControlPort *> (self->port);
@@ -270,7 +270,7 @@ val_change_finished (void * data, float val)
       catch (const ZrythmException &e)
         {
           e.handle (format_str (
-            _ ("Failed to set control %s to %f"), self->port->id_.label_,
+            _ ("Failed to set control {} to {:f}"), self->port->id_.label_,
             (double) val));
         }
     }

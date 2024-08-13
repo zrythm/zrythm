@@ -353,8 +353,8 @@ protected:
     Type        type,
     std::string name,
     int         pos,
-    PortType    in_signal_type = PortType::Unknown,
-    PortType    out_signal_type = PortType::Unknown)
+    PortType    in_signal_type,
+    PortType    out_signal_type)
       : pos_ (pos), type_ (type), name_ (std::move (name)),
         in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
   {
@@ -369,10 +369,7 @@ public:
    */
   virtual void init_loaded () = 0;
 
-  virtual guint get_name_hash () const final
-  {
-    return g_str_hash (name_.c_str ());
-  }
+  guint get_name_hash () const { return g_str_hash (name_.c_str ()); }
 
   Tracklist * get_tracklist () const;
 

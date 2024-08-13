@@ -576,7 +576,7 @@ handle_loop (
 
 #if 0
   z_debug (
-    "loop %d:, abs start ticks after loops %f | abs end ticks after loops %f | abs end ticks after loops w clipof %f",
+    "loop %d:, abs start ticks after loops {:f} | abs end ticks after loops {:f} | abs end ticks after loops w clipof {:f}",
     cur_loop, abs_start_ticks_after_loops,
     global_end_ticks_after_loops,
     global_end_ticks_after_loops_with_clipoff);
@@ -609,7 +609,7 @@ handle_loop (
 
 #if 0
   z_debug (
-    "x start ratio in region %f full rect width %d x start in region %f | x end ratio in region %f x end in region %f",
+    "x start ratio in region {:f} full rect width %d x start in region {:f} | x end ratio in region {:f} x end in region {:f}",
     x_start_ratio_in_region, full_rect->width,
     x_start_in_region, x_end_ratio_in_region, x_end_in_region);
 #endif
@@ -691,8 +691,9 @@ handle_loop (
                 - ap->get_normalized_value_in_curve (
                   self, std::clamp<double> (
                           (k - x_start_in_region) / curve_width, 0.0, 1.0));
-          /*z_debug ("start from %f k %f x start in region %f ratio %f, ac width
-           * %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k -
+          /*z_debug ("start from {:f} k {:f} x start in region {:f} ratio {:f},
+           * ac width
+           * {:f}, ap y {:f}", start_from, k, x_start_in_region, CLAMP ((k -
            * x_start_in_region) / curve_width, 0.0, 1.0), curve_width, ap_y);*/
           ap_y *= ac_height;
 

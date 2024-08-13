@@ -68,7 +68,7 @@ resampler_new (
   Resampler * self = object_new (Resampler);
 
   z_debug (
-    "creating new resampler for %zu frames at %.2f Hz to %.2f Hz - %u channels",
+    "creating new resampler for %zu frames at %.2f Hz to %.2f Hz - {} channels",
     num_in_frames, input_rate, output_rate, num_channels);
 
   self->in_frames = in_frames;

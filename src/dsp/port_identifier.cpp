@@ -71,11 +71,11 @@ std::string
 PortIdentifier::print_to_str () const
 {
   return fmt::format (
-    "[PortIdentifier {} | hash %u]\nlabel: %s\n"
+    "[PortIdentifier {} | hash {}]\nlabel: %s\n"
     "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
     "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
     "port group: %s\next port id: %s\n"
-    "track name hash: %u\nport idx: %d\nplugin: %s",
+    "track name hash: {}\nport idx: %d\nplugin: %s",
     fmt::ptr (this), get_hash (), label_, sym_, uri_, comment_,
     ENUM_NAME (owner_type_), ENUM_NAME (type_), ENUM_NAME (flow_),
     ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_),

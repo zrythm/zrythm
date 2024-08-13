@@ -17,7 +17,7 @@
 #include "gtk_wrapper.h"
 
 InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
-    : Track (Track::Type::Instrument, name, pos)
+    : Track (Track::Type::Instrument, name, pos, PortType::Event, PortType::Audio)
 {
   color_ = Color ("#FF9616");
   icon_name_ = _ ("instrument");
