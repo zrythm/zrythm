@@ -209,7 +209,7 @@ io_path_get_parent_dir (const char * path)
   char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent = string_get_regex_group (path, regex, 1);
 #  if 0
-  z_info ("[%s]\npath: %s\nregex: {}\nparent: {}",
+  z_info ("[%s]\npath: {}\nregex: {}\nparent: {}",
     __func__, path, regex, parent);
 #  endif
 
@@ -218,7 +218,7 @@ io_path_get_parent_dir (const char * path)
       strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
       parent = string_get_regex_group (path, regex, 1);
 #  if 0
-      z_info ("path: %s\nregex: {}\nparent: {}",
+      z_info ("path: {}\nregex: {}\nparent: {}",
         path, regex, parent);
 #  endif
     }
@@ -354,18 +354,8 @@ append_files_from_dir_ending_in (
     }
   catch (const Glib::Error &ex)
     {
-      if (ZRYTHM_TESTING)
-        {
-          /* this is needed because g_test_expect_message() doesn't work
-           * with below */
-          z_warn_if_reached ();
-          return;
-        }
-      else
-        {
-          throw ZrythmException (
-            fmt::format ("Failed to open directory {}", _dir));
-        }
+
+      throw ZrythmException (fmt::format ("Failed to open directory {}", _dir));
     }
 }
 

@@ -54,7 +54,7 @@ TrackProcessor::init_loaded (ProcessableTrack * track)
 void
 TrackProcessor::init_common ()
 {
-  if (midi_cc_[0])
+  if (!midi_cc_.empty ())
     {
       cc_mappings_ = std::make_unique<MidiMappings> ();
 
@@ -371,26 +371,29 @@ TrackProcessor::append_ports (std::vector<Port *> &ports)
     {
       ports.push_back (piano_roll_.get ());
     }
-  for (int i = 0; i < 16; i++)
+  if (!midi_cc_.empty ())
     {
-      for (int j = 0; j < 128; j++)
+      for (int i = 0; i < 16; i++)
         {
-          if (midi_cc_[i * 128 + j])
+          for (int j = 0; j < 128; j++)
             {
-              ports.push_back (midi_cc_[i * 128 + j].get ());
+              if (midi_cc_[i * 128 + j])
+                {
+                  ports.push_back (midi_cc_[i * 128 + j].get ());
+                }
             }
-        }
-      if (pitch_bend_[i])
-        {
-          ports.push_back (pitch_bend_[i].get ());
-        }
-      if (poly_key_pressure_[i])
-        {
-          ports.push_back (poly_key_pressure_[i].get ());
-        }
-      if (channel_pressure_[i])
-        {
-          ports.push_back (channel_pressure_[i].get ());
+          if (pitch_bend_[i])
+            {
+              ports.push_back (pitch_bend_[i].get ());
+            }
+          if (poly_key_pressure_[i])
+            {
+              ports.push_back (poly_key_pressure_[i].get ());
+            }
+          if (channel_pressure_[i])
+            {
+              ports.push_back (channel_pressure_[i].get ());
+            }
         }
     }
 }

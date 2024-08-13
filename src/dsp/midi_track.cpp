@@ -12,4 +12,6 @@ MidiTrack::MidiTrack (const std::string &label, int pos)
 {
   color_ = Color ("#F79616");
   icon_name_ = "signal-midi";
+
+  generate_automation_tracks ();
 }

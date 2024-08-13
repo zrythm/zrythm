@@ -165,7 +165,7 @@ Graph::print () const
     }
 
   z_info (
-    "num trigger nodes %zu | num terminal nodes %zu",
+    "num trigger nodes {} | num terminal nodes {}",
     setup_init_trigger_list_.size (), setup_terminal_nodes_.size ());
   z_info ("==finish printing graph");
 }
@@ -328,8 +328,8 @@ Graph::update_latencies (bool use_setup_nodes)
 
   z_info (
     "Total latencies:\n"
-    "Playback: %ld\n"
-    "Recording: %d\n",
+    "Playback: {}\n"
+    "Recording: {}\n",
     get_max_route_playback_latency (use_setup_nodes), 0);
 }
 
@@ -908,10 +908,10 @@ Graph::start ()
       throw ZrythmException ("number of threads must be >= 0");
     }
 
-  auto create_thread = [&] (auto &thread_ptr, auto is_main, auto idx) {
+  auto create_thread = [&] (auto is_main, auto idx) {
     try
       {
-        thread_ptr = std::make_unique<GraphThread> (idx, is_main, *this);
+        return std::make_unique<GraphThread> (idx, is_main, *this);
       }
     catch (const ZrythmException &e)
       {
@@ -924,11 +924,11 @@ Graph::start ()
   /* create worker threads */
   for (int i = 0; i < num_threads; ++i)
     {
-      create_thread (threads_[i], false, i);
+      threads_.emplace_back (create_thread (false, i));
     }
 
   /* and the main thread */
-  create_thread (main_thread_, true, -1);
+  main_thread_ = create_thread (true, -1);
 
   /* wait for all threads to go idle */
   while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))

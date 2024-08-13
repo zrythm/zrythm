@@ -142,7 +142,7 @@ private:
    */
   static void create_default (
     std::unique_ptr<Project> &self,
-    std::string_view          prj_dir,
+    std::string              &prj_dir,
     bool                      headless = false,
     bool                      with_engine = true);
 

@@ -8,4 +8,6 @@ MidiGroupTrack::MidiGroupTrack (const std::string &name, int pos)
 {
   color_ = Color ("#E66100");
   icon_name_ = "signal-midi";
+
+  generate_automation_tracks ();
 }

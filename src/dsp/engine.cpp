@@ -767,6 +767,8 @@ AudioEngine::AudioEngine (Project * project)
   hw_out_processor_ = std::make_unique<HardwareProcessor> (false, this);
 
   init_common ();
+
+  z_debug ("finished creating audio engine");
 }
 
 void

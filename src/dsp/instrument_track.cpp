@@ -21,6 +21,8 @@ InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
 {
   color_ = Color ("#FF9616");
   icon_name_ = _ ("instrument");
+
+  generate_automation_tracks ();
 }
 
 Plugin *

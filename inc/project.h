@@ -101,8 +101,8 @@ class Project final : public ISerializable<Project>, public ICloneable<Project>
 {
 public:
   Project ();
-  Project (std::string_view title) : title_ (title) { Project (); }
-  ~Project () { loaded_ = false; }
+  Project (std::string &title);
+  ~Project ();
 
   /**
    * Selection type, used for controlling which part of the interface is

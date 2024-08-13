@@ -117,8 +117,8 @@ PortConnectionsManager::get_source_or_dest (
     {
       auto buf = id.print_to_str ();
       z_error (
-        "expected 1 %s, found %d "
-        "connections for\n%s",
+        "expected 1 {}, found {} "
+        "connections for\n{}",
         sources ? "source" : "destination", num_conns, buf);
       return nullptr;
     }
@@ -167,8 +167,7 @@ PortConnectionsManager::ensure_connect (
   if (this == PORT_CONNECTIONS_MGR.get ())
     {
       z_debug (
-        "New connection: <%s>; "
-        "have %zu connections",
+        "New connection: <{}>; have {} connections",
         conn.print_to_str ().c_str (), connections_.size ());
     }
 
@@ -187,9 +186,8 @@ PortConnectionsManager::remove_connection (const size_t idx)
   if (this == PORT_CONNECTIONS_MGR.get ())
     {
       z_debug (
-        "Disconnected <%s>; "
-        "have %zu connections",
-        conn.print_to_str ().c_str (), connections_.size ());
+        "Disconnected <{}>; have {} connections", conn.print_to_str (),
+        connections_.size ());
     }
 
   regenerate_hashtables ();

@@ -103,7 +103,7 @@ constexpr int ENGINE_MAX_EVENTS = 128;
       { \
         _ev->backtrace_ = backtrace_get ("", 40, false); \
         z_debug ( \
-          "pushing engine event " #et " (%s:%d) uint: %u | float: %f", \
+          "pushing engine event " #et " ({}:{}) uint: {} | float: {:f}", \
           __func__, __LINE__, _uint_arg, _float_arg); \
       } \
     AUDIO_ENGINE->ev_queue_.push_back (_ev); \

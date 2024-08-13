@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
@@ -16,91 +18,87 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_fill_stereo_ports (void)
+TEST_SUITE_BEGIN ("dsp/audio region");
+
+TEST_CASE ("fill stereo ports")
 {
   test_helper_zrythm_init ();
 
   test_project_stop_dummy_engine ();
 
   Position pos;
-  position_set_to_bar (&pos, 2);
+  pos.set_to_bar (2);
 
   /* create audio track with region */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  FileDescriptor file = FileDescriptor (filepath);
-  int            num_tracks_before = TRACKLIST->tracks.size ();
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
-    NULL, NULL);
+  auto filepath = fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3";
+  FileDescriptor file (filepath);
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
-  Track *     track = TRACKLIST->tracks[num_tracks_before];
-  Region *    r = track->lanes[0]->regions[0];
-  AudioClip * r_clip = audio_region_get_clip (r);
+  auto  track = TRACKLIST->get_track<AudioTrack> (num_tracks_before);
+  auto &r = track->lanes_[0]->regions_[0];
+  auto  r_clip = r->get_clip ();
 
-  StereoPorts ports = StereoPorts (
-    false, "ports", "ports",
-    PortIdentifier::OwnerType::PORT_OWNER_TYPE_AUDIO_ENGINE, NULL);
+  StereoPorts ports (
+    false, "ports", "ports", PortIdentifier::OwnerType::AudioEngine, nullptr);
   ports.allocate_bufs ();
 
-  transport_move_playhead (
-    TRANSPORT, &pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
-  transport_add_to_playhead (TRANSPORT, -20);
+  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
+  TRANSPORT->add_to_playhead (-20);
   const EngineProcessTimeInfo time_nfo = {
-    .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
-    .g_start_frame_w_offset = (unsigned_frame_t) PLAYHEAD->frames,
-    .local_offset = 0,
-    .nframes = 100
+    .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
+    .g_start_frame_w_offset_ = (unsigned_frame_t) PLAYHEAD.frames_,
+    .local_offset_ = 0,
+    .nframes_ = 100
   };
-  audio_region_fill_stereo_ports (r, &time_nfo, &ports);
+  r->fill_stereo_ports (time_nfo, ports);
 
-  g_assert_true (audio_frames_empty (&ports.get_l ().buf_[0], 20));
-  g_assert_true (audio_frames_empty (&ports.get_r ().buf_[0], 20));
+  REQUIRE (audio_frames_empty (&ports.get_l ().buf_[0], 20));
+  REQUIRE (audio_frames_empty (&ports.get_r ().buf_[0], 20));
   for (int i = 0; i < 80; i++)
     {
       float adj_multiplier =
         MIN (1.f, ((float) i / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES));
-      float adj_clip_frame_l = r_clip->ch_frames[0][i] * adj_multiplier;
-      float adj_clip_frame_r = r_clip->ch_frames[1][i] * adj_multiplier;
-      g_assert_true (math_floats_equal_epsilon (
-        adj_clip_frame_l, ports.get_l ().buf_[20 + i], 0.00001f));
-      g_assert_true (math_floats_equal_epsilon (
-        adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f));
+      float adj_clip_frame_l =
+        r_clip->ch_frames_.getSample (0, i) * adj_multiplier;
+      float adj_clip_frame_r =
+        r_clip->ch_frames_.getSample (1, i) * adj_multiplier;
+      REQUIRE_FLOAT_NEAR (
+        adj_clip_frame_l, ports.get_l ().buf_[20 + i], 0.00001f);
+      REQUIRE_FLOAT_NEAR (
+        adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f);
     }
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_change_samplerate (void)
+TEST_CASE ("change samplerate")
 {
   test_helper_zrythm_init ();
 
   Position pos;
-  position_set_to_bar (&pos, 2);
+  pos.set_to_bar (2);
 
   /* create audio track with region */
   char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
+    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", nullptr);
   FileDescriptor file = FileDescriptor (filepath);
-  int            num_tracks_before = TRACKLIST->tracks.size ();
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
-    NULL, NULL);
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
   /*Track * track =*/
   /*TRACKLIST->tracks[num_tracks_before];*/
 
   /* save the project */
-  bool success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
-  g_assert_true (success);
-  char * prj_file = g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
+  PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC);
+  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
   /* adjust the samplerate to be given at startup */
-  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate * 2;
+  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ * 2;
 
-  object_free_w_func_and_null (project_free, PROJECT);
+  PROJECT.reset ();
 
   /* reload */
   test_project_reload (prj_file);
@@ -108,47 +106,40 @@ test_change_samplerate (void)
   /* stop engine to process manually */
   test_project_stop_dummy_engine ();
 
-  position_from_frames (&pos, 301824);
-  transport_move_playhead (
-    TRANSPORT, &pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
-  transport_request_roll (TRANSPORT, true);
+  pos.from_frames (301824);
+  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
+  TRANSPORT->request_roll (true);
 
   /* process manually */
-  engine_process (AUDIO_ENGINE, 256);
+  AUDIO_ENGINE->process (256);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_load_project_with_selected_audio_region (void)
+TEST_CASE ("load project with selected audio region")
 {
   test_helper_zrythm_init ();
 
   Position pos;
-  position_set_to_bar (&pos, 2);
+  pos.set_to_bar (2);
 
   /* create audio track with region */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  FileDescriptor file = FileDescriptor (filepath);
-  int            num_tracks_before = TRACKLIST->tracks.size ();
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
-    NULL, NULL);
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
   /* select region */
-  Track *  track = TRACKLIST->tracks[num_tracks_before];
-  Region * r = track->lanes[0]->regions[0];
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  auto  track = TRACKLIST->get_track<AudioTrack> (num_tracks_before);
+  auto &r = track->lanes_[0]->regions_[0];
+  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   test_project_save_and_reload ();
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_load_project_with_different_sample_rate (void)
+TEST_CASE ("load project with different sample rate")
 {
   int samplerates[] = { 48000, 44100 };
 
@@ -160,20 +151,16 @@ test_load_project_with_different_sample_rate (void)
       _test_helper_zrythm_init (false, samplerate_before, 0, false);
 
       Position pos;
-      position_set_to_bar (&pos, 2);
+      pos.set_to_bar (2);
 
       /* create audio track with region */
       char * filepath =
-        g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
+        g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", nullptr);
       FileDescriptor file = FileDescriptor (filepath);
-      int            num_tracks_before = TRACKLIST->tracks.size ();
-      track_create_with_action (
-        TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1,
-        -1, NULL, NULL);
-
-      Track * audio_track = TRACKLIST->tracks[num_tracks_before];
-      arranger_object_print (
-        (ArrangerObject *) audio_track->lanes[0]->regions[0]);
+      int            num_tracks_before = TRACKLIST->get_num_tracks ();
+      Track::create_with_action (
+        Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1,
+        nullptr);
 
       /* reload project @ 44100 Hz */
       zrythm_app->samplerate = samplerates[i == 0 ? 1 : 0];
@@ -181,66 +168,42 @@ test_load_project_with_different_sample_rate (void)
 
       /* play the region */
       Position end;
-      position_set_to_bar (&end, 4);
-      transport_request_roll (TRANSPORT, true);
-      while (position_is_before (PLAYHEAD, &end))
+      end.set_to_bar (4);
+      TRANSPORT->request_roll (true);
+      while (PLAYHEAD < end)
         {
-          engine_wait_n_cycles (AUDIO_ENGINE, 3);
+          AUDIO_ENGINE->wait_n_cycles (3);
         }
-      transport_request_pause (TRANSPORT, true);
-      engine_wait_n_cycles (AUDIO_ENGINE, 1);
+      TRANSPORT->request_pause (true);
+      AUDIO_ENGINE->wait_n_cycles (1);
     }
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_detect_bpm (void)
+TEST_CASE ("detect BPM")
 {
   test_helper_zrythm_init ();
 
   Position pos;
-  position_set_to_bar (&pos, 2);
+  pos.set_to_bar (2);
 
   /* create audio track with region */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  FileDescriptor file = FileDescriptor (filepath);
-  int            num_tracks_before = TRACKLIST->tracks.size ();
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, &pos, num_tracks_before, 1, -1,
-    NULL, NULL);
-  Track * track = tracklist_get_track (TRACKLIST, num_tracks_before);
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
+  auto track = TRACKLIST->get_last_track<AudioTrack> ();
 
   /* select region */
-  Region * r = track->lanes[0]->regions[0];
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  auto &r = track->lanes_[0]->regions_[0];
+  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-  float bpm = audio_region_detect_bpm (r, NULL);
-  g_assert_cmpfloat_with_epsilon (bpm, 186.233093f, 0.001f);
+  std::vector<float> candidates;
+  float              bpm = r->detect_bpm (candidates);
+  REQUIRE_FLOAT_NEAR (bpm, 186.233093f, 0.001f);
 
   test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/audio_region/"
-
-  g_test_add_func (
-    TEST_PREFIX "test load project with lower sample rate",
-    (GTestFunc) test_load_project_with_different_sample_rate);
-  g_test_add_func (
-    TEST_PREFIX "test load project with selected audio region",
-    (GTestFunc) test_load_project_with_selected_audio_region);
-  g_test_add_func (
-    TEST_PREFIX "test change samplerate", (GTestFunc) test_change_samplerate);
-  g_test_add_func (
-    TEST_PREFIX "test fill stereo ports", (GTestFunc) test_fill_stereo_ports);
-  g_test_add_func (TEST_PREFIX "test detect bpm", (GTestFunc) test_detect_bpm);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

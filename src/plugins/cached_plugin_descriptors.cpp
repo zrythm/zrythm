@@ -57,7 +57,7 @@ CachedPluginDescriptors::serialize_to_file ()
 std::unique_ptr<CachedPluginDescriptors>
 CachedPluginDescriptors::read_or_new ()
 {
-  auto ret = std::unique_ptr<CachedPluginDescriptors> ();
+  auto ret = std::make_unique<CachedPluginDescriptors> ();
   auto path = get_file_path ();
   if (!fs::exists (path))
     {

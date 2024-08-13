@@ -19,6 +19,8 @@ ChordTrack::ChordTrack (int pos)
 {
   color_ = Color ("#1C71D8");
   icon_name_ = "minuet-chords";
+
+  generate_automation_tracks ();
 }
 
 void

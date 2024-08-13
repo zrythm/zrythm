@@ -14,12 +14,9 @@
 #include "zrythm_app.h"
 
 AutomatableTrack::AutomatableTrack ()
+    : automation_tracklist_ (std::make_unique<AutomationTracklist> ())
 {
   automation_tracklist_->track_ = this;
-
-  // FIXME this will crash!! do each logic separately in the final class
-  // constructors
-  generate_automation_tracks ();
 }
 
 void

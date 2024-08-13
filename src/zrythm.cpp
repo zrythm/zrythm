@@ -509,13 +509,27 @@ Zrythm::init_templates ()
   auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
   std::string user_templates_dir =
     dir_mgr->get_dir (ZrythmDirType::USER_TEMPLATES);
-  templates_ = io_get_files_in_dir (user_templates_dir);
+  try
+    {
+      templates_ = io_get_files_in_dir (user_templates_dir);
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning ("Failed to init user templates from {}", user_templates_dir);
+    }
   if (!ZRYTHM_TESTING)
     {
       std::string system_templates_dir =
         dir_mgr->get_dir (ZrythmDirType::SYSTEM_TEMPLATES);
-      StringArray system_templates = io_get_files_in_dir (system_templates_dir);
-      templates_.addArray (system_templates);
+      try
+        {
+          templates_.addArray (io_get_files_in_dir (system_templates_dir));
+        }
+      catch (const ZrythmException &e)
+        {
+          z_warning (
+            "Failed to init system templates from {}", system_templates_dir);
+        }
     }
 
   for (auto &tmpl : this->templates_)

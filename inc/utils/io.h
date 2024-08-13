@@ -142,6 +142,7 @@ io_create_tmp_dir (const std::string template_name = "zrythm_generic_XXXXXX");
  * Returns a list of the files in the given directory.
  *
  * @see io_get_files_in_dir_ending_in().
+ * @throw ZrythmException If @ref dir cannot be opened.
  */
 static inline StringArray
 io_get_files_in_dir (const std::string &_dir)

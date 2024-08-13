@@ -164,10 +164,10 @@ class StereoPorts final
 {
 public:
   StereoPorts () = default;
-  StereoPorts (AudioPort &&l, AudioPort &&r);
+  StereoPorts (const AudioPort &l, const AudioPort &r);
 
   StereoPorts (std::unique_ptr<AudioPort> &&l, std::unique_ptr<AudioPort> &&r)
-      : StereoPorts (std::move (*l), std::move (*r))
+      : l_ (std::move (l)), r_ (std::move (r))
   {
   }
 

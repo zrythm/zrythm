@@ -431,7 +431,7 @@ PluginSettings::serialize_to_file ()
 std::unique_ptr<PluginSettings>
 PluginSettings::read_or_new ()
 {
-  auto ret = std::unique_ptr<PluginSettings> ();
+  auto ret = std::make_unique<PluginSettings> ();
   auto path = get_file_path ();
   if (!fs::exists (path))
     {

@@ -79,7 +79,7 @@
 #include <glib/gi18n.h>
 
 /* uncomment to show debug messages */
-/*#define DEBUG_THREADS 1*/
+// #define DEBUG_THREADS 1
 
 #ifdef __APPLE__
 constexpr auto THREAD_STACK_SIZE = 0x80000; // 512kB
@@ -175,9 +175,8 @@ GraphThread::run_worker ()
             }
 #ifdef DEBUG_THREADS
           z_debug (
-            "[%d]: dequeued node (nodes left %d)", thread->id,
-            graph->trigger_queue_size_.load()));
-          graph_node_print (to_run);
+            "[{}]: dequeued node below (nodes left {})\n{}", id_,
+            graph->trigger_queue_size_.load (), to_run->print_to_str ());
 #endif
           /* Wake up idle threads, but at most as many as there's work in the
            * trigger queue that can be processed by other threads. This thread
@@ -186,9 +185,9 @@ GraphThread::run_worker ()
           int work_avail = graph->trigger_queue_size_.load ();
           int wakeup = MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
-          z_info (
-            "[%d]: Waking up %u idle threads (idle count %u), work available -> %u",
-            thread->id, wakeup - 1, idle_cnt, work_avail);
+          z_debug (
+            "[{}]: Waking up {} idle threads (idle count {}), work available -> {}",
+            id_, wakeup - 1, idle_cnt, work_avail);
 #endif
 
           for (int i = 1; i < wakeup; ++i)
@@ -202,20 +201,18 @@ GraphThread::run_worker ()
           /* wait for work, fall asleep */
           int idle_thread_cnt = graph->idle_thread_cnt_.fetch_add (1) + 1;
 #ifdef DEBUG_THREADS
-          z_info (
-            "[%d]: no node to run. just increased idle thread count and waiting for work "
-            "(current idle threads %d)",
-            thread->id, idle_thread_cnt);
+          z_debug (
+            "[{}]: no node to run. just increased idle thread count and waiting for work "
+            "(current idle threads {})",
+            id_, idle_thread_cnt);
 #endif
           if (idle_thread_cnt > static_cast<int> (graph->threads_.size ()))
             [[unlikely]]
             {
               z_error (
-                "%s",
-                fmt::format (
-                  "[{}]: idle thread count {} is greater than the number of threads "
-                  "{}. this should never occur",
-                  id_, idle_thread_cnt, graph->threads_.size ()));
+                "[{}]: idle thread count {} is greater than the number of threads "
+                "{}. this should never occur",
+                id_, idle_thread_cnt, graph->threads_.size ());
             }
 
           graph->trigger_sem_.acquire ();
@@ -229,10 +226,9 @@ GraphThread::run_worker ()
           graph->idle_thread_cnt_.fetch_sub (1);
 #ifdef DEBUG_THREADS
           z_info (
-            "[%d]: work found, decremented idle "
-            "thread count (current count %d) and "
+            "[{}]: work found, decremented idle thread count (current count %d) and "
             "dequeuing node to process",
-            thread->id, graph->idle_thread_cnt_.load ());
+            id_, graph->idle_thread_cnt_.load ());
 #endif
 
           /* try to find some work to do */
@@ -242,7 +238,7 @@ GraphThread::run_worker ()
       /* this thread has now claimed the graph node for processing - process it */
       graph->trigger_queue_size_.fetch_sub (1);
 #ifdef DEBUG_THREADS
-      z_info ("[{}]: running node", thread->id);
+      z_info ("[{}]: running node", id_);
 #endif
       to_run->process (graph->router_->time_nfo_, *this);
     }
@@ -332,7 +328,7 @@ GraphThread::GraphThread (const int id, const bool is_main, Graph &graph)
     : juce::Thread (
         is_main ? "MainGraphThread" : fmt::format ("GraphWorkerThread{}", id),
         THREAD_STACK_SIZE + get_stack_size ()),
-      id_ (id), graph_ (graph)
+      id_ (id), is_main_ (is_main), graph_ (graph)
 {
   startRealtimeThread (RealtimeOptions ().withPriority (9));
 }

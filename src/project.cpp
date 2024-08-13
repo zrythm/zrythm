@@ -72,6 +72,16 @@ Project::Project ()
   audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
+Project::Project (std::string &title) : Project ()
+{
+  title_ = title;
+}
+
+Project::~Project ()
+{
+  loaded_ = false;
+}
+
 std::string
 Project::get_newer_backup ()
 {
@@ -143,7 +153,7 @@ Project::make_project_dirs (bool is_backup)
       catch (ZrythmException &e)
         {
           throw ZrythmException (
-            fmt::sprintf ("Failed to create directory %s", dir));
+            fmt::format ("Failed to create directory {}", dir));
         }
     }
 }
@@ -178,8 +188,8 @@ Project::compress_or_decompress (
           {
             std::string msg = err->message;
             g_error_free_and_null (err);
-            throw ZrythmException (fmt::sprintf (
-              "Failed to get contents from file '%s': %s", _src, msg));
+            throw ZrythmException (fmt::format (
+              "Failed to get contents from file '{}': {}", _src, msg));
           }
       }
       break;
@@ -328,10 +338,11 @@ Project::activate ()
 void
 Project::add_default_tracks ()
 {
+  z_return_if_fail (tracklist_);
+
   /* init pinned tracks */
 
-  auto add_track = [&] (auto track_type) {
-    using T = decltype (track_type);
+  auto add_track = [&]<typename T> () {
     static_assert (std::derived_from<T, Track>, "T must be derived from Track");
 
     z_debug ("adding {} track...", typeid (T).name ());
@@ -340,7 +351,7 @@ Project::add_default_tracks ()
   };
 
   /* chord */
-  add_track (ChordTrack{});
+  add_track.operator()<ChordTrack> ();
 
   /* add a scale */
   auto scale = std::make_unique<ScaleObject> (
@@ -348,7 +359,7 @@ Project::add_default_tracks ()
   tracklist_->chord_track_->add_scale (std::move (scale));
 
   /* tempo */
-  add_track (TempoTrack{});
+  add_track.operator()<TempoTrack> ();
   int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
   int   beat_unit = tracklist_->tempo_track_->get_beat_unit ();
   bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
@@ -357,15 +368,15 @@ Project::add_default_tracks ()
     beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
 
   /* modulator */
-  add_track (ModulatorTrack{});
+  add_track.operator()<ModulatorTrack> ();
 
   /* marker */
-  add_track (MarkerTrack{});
+  add_track.operator()<MarkerTrack> ();
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
   /* add master channel to mixer and tracklist */
-  add_track (MasterTrack{});
+  add_track.operator()<MasterTrack> ();
   tracklist_selections_->add_track (*tracklist_->master_track_, false);
   last_selection_ = SelectionType::Tracklist;
 }
@@ -860,6 +871,7 @@ Project::save (
   /* pause engine */
   AudioEngine::State state;
   bool               engine_paused = false;
+  z_return_if_fail (audio_engine_);
   if (audio_engine_->activated_)
     {
       audio_engine_->wait_for_pause (state, false, true);

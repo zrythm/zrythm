@@ -67,7 +67,7 @@ public:
   void print () const
   {
     z_debug (
-      "Region identifier: type: %s, track name hash %u, lane pos %d, at index %d, index %d, link_group: %d",
+      "Region identifier: type: {}, track name hash {}, lane pos {}, at index {}, index {}, link_group: {}",
       RegionType_to_string (type_), track_name_hash_, lane_pos_, at_idx_, idx_,
       link_group_);
   }

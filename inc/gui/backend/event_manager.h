@@ -173,7 +173,7 @@ private:
       if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \
         { \
           z_debug ( \
-            "processing UI event now " #et " (%s:%d)", __func__, __LINE__); \
+            "processing UI event now " #et " ({}:{})", __func__, __LINE__); \
         } \
       EVENT_MANAGER->process_event (*_ev); \
       EVENT_MANAGER->obj_pool_.release (_ev); \

@@ -9,4 +9,6 @@ AudioGroupTrack::AudioGroupTrack (const std::string &name, int pos)
   /* GTK color picker color */
   color_ = Color ("#26A269");
   icon_name_ = "effect";
+
+  generate_automation_tracks ();
 }

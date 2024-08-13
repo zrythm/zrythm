@@ -45,6 +45,8 @@ ModulatorTrack::ModulatorTrack (int track_pos)
 
   /* set invisible */
   visible_ = false;
+
+  generate_automation_tracks ();
 }
 
 void

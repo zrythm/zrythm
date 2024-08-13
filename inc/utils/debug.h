@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UTILS_DEBUG_H__
@@ -14,10 +14,8 @@
   if (!(G_LIKELY ((a) comparator (b)))) \
     { \
       z_error ( \
-        "Assertion failed: %s (%" G_GINT64_FORMAT \
-        ") " \
-        "%s %s (%" G_GINT64_FORMAT ")", \
-        #a, (gint64) (a), #comparator, #b, (gint64) (b)); \
+        "Assertion failed: {} ({}) {} {} ({})", #a, (gint64) (a), #comparator, \
+        #b, (gint64) (b)); \
       return val; \
     }
 
@@ -28,10 +26,8 @@
   if (!(G_LIKELY (a comparator b))) \
     { \
       z_warning ( \
-        "Assertion failed: %s (%" G_GINT64_FORMAT \
-        ") " \
-        "%s %s (%" G_GINT64_FORMAT ")", \
-        #a, (gint64) (a), #comparator, #b, (gint64) (b)); \
+        "Assertion failed: {} ({}) {} {} ({})", #a, (gint64) (a), #comparator, \
+        #b, (gint64) (b)); \
     }
 
 /**

@@ -8,6 +8,23 @@
 
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
+class ErrorHandlingSink : public spdlog::sinks::base_sink<std::mutex>
+{
+protected:
+  void sink_it_ (const spdlog::details::log_msg &msg) override
+  {
+    if (msg.level >= spdlog::level::err)
+      {
+        if (ZRYTHM_TESTING)
+          {
+            abort ();
+          }
+      }
+  }
+
+  void flush_ () override { }
+};
+
 Logger::Logger ()
 {
   // Create a rotating file sink with a maximum size of 10 MB and 5 rotated
@@ -40,10 +57,13 @@ Logger::Logger ()
   auto ringbuffer_sink =
     std::make_shared<spdlog::sinks::ringbuffer_sink_mt> (1000);
 
+  auto error_handling_sink = std::make_shared<ErrorHandlingSink> ();
+
   // Create a logger with all the sinks
   logger_ = std::make_shared<spdlog::logger> (
     "zrythm",
-    spdlog::sinks_init_list{ file_sink, console_sink, ringbuffer_sink });
+    spdlog::sinks_init_list{
+      file_sink, console_sink, ringbuffer_sink, error_handling_sink });
 
   // Set the log level and format
   logger_->set_level (spdlog::level::debug);

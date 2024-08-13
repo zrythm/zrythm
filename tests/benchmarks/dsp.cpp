@@ -194,8 +194,8 @@ _test_run_engine (bool optimized)
       engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
       LOOP_END ("engine cycles", optimized);
 
-      g_message ("%soptimized time: %ld", optimized ? "" : "un", end - start);
-      /*g_warn_if_reached ();*/
+      z_info ("{}optimized time: {}", optimized ? "" : "un", end - start);
+      /*z_warn_if_reached ();*/
 
 #ifdef HAVE_LSP_DSP
       if (optimized)
@@ -232,7 +232,7 @@ _test_run_engine (bool optimized)
 
   int main (int argc, char * argv[])
   {
-    g_test_init (&argc, &argv, NULL);
+    g_test_init (&argc, &argv, nullptr);
 
 #ifdef HAVE_LSP_DSP
     lsp::dsp::init ();

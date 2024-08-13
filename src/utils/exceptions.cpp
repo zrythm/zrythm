@@ -46,3 +46,38 @@ ZrythmException::handle (const std::string &str) const
 {
   return handle ("{}", str);
 }
+
+const char *
+ZrythmException::what () const noexcept
+{
+  if (full_message_.empty ())
+    {
+      std::ostringstream oss;
+      oss << "Exception Stack:\n";
+      oss << "- " << message_ << "\n";
+
+      auto current = std::current_exception ();
+      while (current)
+        {
+          try
+            {
+              std::rethrow_exception (current);
+            }
+          catch (const std::exception &e)
+            {
+              oss << "- " << e.what () << "\n";
+              current =
+                dynamic_cast<const std::nested_exception *> (&e)
+                  ? dynamic_cast<const std::nested_exception *> (&e)->nested_ptr ()
+                  : nullptr;
+            }
+          catch (...)
+            {
+              oss << "- Unknown exception\n";
+              current = nullptr;
+            }
+        }
+      full_message_ = oss.str ();
+    }
+  return full_message_.c_str ();
+}

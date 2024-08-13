@@ -282,7 +282,7 @@ ProjectInitFlowManager::upgrade_to_json (char ** txt)
 void
 ProjectInitFlowManager::create_default (
   std::unique_ptr<Project> &prj,
-  std::string_view          prj_dir,
+  std::string              &prj_dir,
   bool                      headless,
   bool                      with_engine)
 {
@@ -297,12 +297,14 @@ ProjectInitFlowManager::create_default (
       mww = hide_prev_main_window ();
     }
 
-  prj = std::make_unique<Project> (Glib::path_get_basename (prj_dir.data ()));
+  auto prj_dir_basename = Glib::path_get_basename (prj_dir);
+  prj = std::make_unique<Project> (prj_dir_basename);
 
   prj->add_default_tracks ();
 
   /* pre-setup engine */
   auto engine = prj->audio_engine_.get ();
+  z_return_if_fail (engine);
   if (with_engine)
     {
       engine->pre_setup ();
@@ -491,7 +493,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       else
         {
           std::string err_str = format_str (
-            _ ("Failed to read JSON: [code: %" PRIu32 ", pos: %zu] %s"),
+            _ ("Failed to read JSON: [code: {}, pos: {}] {}"),
             json_read_err.code, json_read_err.pos, json_read_err.msg);
           free (text);
           call_last_callback_fail (err_str);
@@ -527,7 +529,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       if (!finished_file_exists)
         {
           call_last_callback_fail (format_str (
-            _ ("Could not load project: Corrupted project detected (missing FINISHED file at '%s')."),
+            _ ("Could not load project: Corrupted project detected (missing FINISHED file at '{}')."),
             finished_file_path));
           return;
         }
@@ -835,9 +837,7 @@ ProjectInitFlowManager::ProjectInitFlowManager (
     : filename_ (filename), is_template_ (is_template)
 {
   z_return_if_fail (cb);
-  z_debug (
-    "%s: [STEP 0] filename: %s, is template: %d", __func__, filename,
-    is_template);
+  z_debug ("[STEP 0] filename: {}, is template: {}", filename, is_template);
 
   append_callback (cb, user_data);
 
@@ -852,6 +852,7 @@ ProjectInitFlowManager::ProjectInitFlowManager (
     {
       try
         {
+          z_return_if_fail (gZrythm);
           create_default (PROJECT, gZrythm->create_project_path_, false, true);
         }
       catch (const ZrythmException &e)

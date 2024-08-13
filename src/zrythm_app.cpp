@@ -927,10 +927,10 @@ zrythm_app_startup (GApplication * app)
   if (info)
     {
       z_info (
-        "Architecture:   %s\n"
-        "Processor:      %s\n"
-        "Model:          %s\n"
-        "Features:       %s\n",
+        "Architecture:   {}\n"
+        "Processor:      {}\n"
+        "Model:          {}\n"
+        "Features:       {}\n",
         info->arch, info->cpu, info->model, info->features);
       free (info);
     }

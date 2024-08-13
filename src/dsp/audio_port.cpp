@@ -489,9 +489,10 @@ StereoPorts::StereoPorts (
   r_->set_owner (owner_type, owner);
 }
 
-StereoPorts::StereoPorts (AudioPort &&l, AudioPort &&r)
-    : l_ (std::unique_ptr<AudioPort> (&l)), r_ (std::unique_ptr<AudioPort> (&r))
+StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
 {
+  l_ = l.clone_unique ();
+  r_ = r.clone_unique ();
   l_->id_.flags_ |= PortIdentifier::Flags::StereoL;
   r_->id_.flags_ |= PortIdentifier::Flags::StereoR;
 }

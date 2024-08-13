@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "actions/arranger_selections.h"
 #include "dsp/automation_region.h"
@@ -9,7 +11,6 @@
 #include "dsp/channel.h"
 #include "dsp/master_track.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -17,192 +18,154 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include <locale.h>
+TEST_SUITE_BEGIN ("dsp/automation track");
 
-static void
-test_set_at_index (void)
+TEST_CASE ("set automation track index")
 {
   test_helper_zrythm_init ();
 
-  Track * master = P_MASTER_TRACK;
-  track_set_automation_visible (master, true);
-  AutomationTracklist * atl = track_get_automation_tracklist (master);
-  g_return_if_fail (atl);
-  AutomationTrack * first_vis_at =
-    (AutomationTrack *) g_ptr_array_index (atl->visible_ats, 0);
+  auto master = P_MASTER_TRACK;
+  master->set_automation_visible (true);
+  auto &atl = master->get_automation_tracklist ();
+  auto  first_vis_at = atl.visible_ats_.front ();
 
-  /* create a region and set it as clip editor
-   * region */
+  /* create a region and set it as clip editor region */
   Position start, end;
-  position_set_to_bar (&start, 2);
-  position_set_to_bar (&end, 4);
-  Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (*master), first_vis_at->index, 0);
-  bool success = track_add_region (
-    master, region, first_vis_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  start.set_to_bar (2);
+  end.set_to_bar (4);
+  auto region = std::make_shared<AutomationRegion> (
+    start, end, master->get_name_hash (), first_vis_at->index_, 0);
+  master->add_region (region, first_vis_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
 
-  clip_editor_set_region (CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (region.get (), F_NO_PUBLISH_EVENTS);
 
-  AutomationTrack * first_invisible_at =
-    automation_tracklist_get_first_invisible_at (atl);
-  automation_tracklist_set_at_index (
-    atl, first_invisible_at, first_vis_at->index, F_NO_PUSH_DOWN);
+  auto first_invisible_at = atl.get_first_invisible_at ();
+  atl.set_at_index (*first_invisible_at, first_vis_at->index_, F_NO_PUSH_DOWN);
 
   /* check that clip editor region can be found */
-  clip_editor_get_region (CLIP_EDITOR);
+  CLIP_EDITOR->get_region ();
 
   test_helper_zrythm_cleanup ();
 }
 
 /**
- * There was a case where
- * arranger_object__get_muted() assumed
+ * There was a case where get_muted() assumed
  * that the region was an audio/MIDI region and
  * threw errors.
  *
- * This replicates the issue and tests that this
- * does not happen.
+ * This replicates the issue and tests that this does not happen.
  */
-static void
-test_region_in_2nd_automation_track_get_muted (void)
+TEST_CASE ("region in 2nd automation track get muted")
 {
   test_helper_zrythm_init ();
 
-  Track * master = P_MASTER_TRACK;
-  track_set_automation_visible (master, true);
-  AutomationTracklist * atl = track_get_automation_tracklist (master);
-  g_return_if_fail (atl);
-  AutomationTrack * first_vis_at =
-    (AutomationTrack *) g_ptr_array_index (atl->visible_ats, 0);
+  auto master = P_MASTER_TRACK;
+  master->set_automation_visible (true);
+  auto &atl = master->get_automation_tracklist ();
+  auto  first_vis_at = atl.visible_ats_.front ();
 
   /* create a new automation track */
-  AutomationTrack * new_at = automation_tracklist_get_first_invisible_at (atl);
-  if (!new_at->created)
-    new_at->created = 1;
-  automation_tracklist_set_at_visible (atl, new_at, true);
+  auto new_at = atl.get_first_invisible_at();
+  if (!new_at->created_)
+    new_at->created_ = 1;
+  atl.set_at_visible(* new_at, true);
 
-  /* move it after the clicked
-   * automation track */
-  automation_tracklist_set_at_index (atl, new_at, first_vis_at->index + 1, true);
+  /* move it after the clicked automation track */
+  atl.set_at_index(*new_at, first_vis_at->index_ + 1, true);
 
   /* create a region and set it as clip editor
    * region */
   Position start, end;
-  position_set_to_bar (&start, 2);
-  position_set_to_bar (&end, 4);
-  Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (*master), new_at->index, 0);
-  bool success = track_add_region (
-    master, region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  start.set_to_bar (2);
+  end.set_to_bar (4);
+  auto region = std::make_shared<AutomationRegion> (
+    start, end,master->get_name_hash(), new_at->index_, 0);
+    master->add_region( region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
 
-  clip_editor_set_region (CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region( region.get(), F_NO_PUBLISH_EVENTS);
 
-  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  AUDIO_ENGINE->wait_n_cycles( 3);
 
   /* assert not muted */
-  g_assert_false (arranger_object_get_muted ((ArrangerObject *) region, true));
+  REQUIRE_FALSE (region->get_muted( true));
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_curve_value (void)
+TEST_CASE ("curve value")
 {
   test_helper_zrythm_init ();
 
   /* stop engine to run manually */
   test_project_stop_dummy_engine ();
 
-  Track * master = P_MASTER_TRACK;
-  track_set_automation_visible (master, true);
+  auto master = P_MASTER_TRACK;
+  master->set_automation_visible (true);
   /*AutomationTracklist * atl =*/
   /*track_get_automation_tracklist (master);*/
-  AutomationTrack * fader_at = master->channel->get_automation_track (
-    PortIdentifier::Flags::CHANNEL_FADER);
-  g_assert_nonnull (fader_at);
-  if (!fader_at->created)
-    fader_at->created = 1;
-  AutomationTracklist * atl =
-    automation_track_get_automation_tracklist (fader_at);
-  automation_tracklist_set_at_visible (atl, fader_at, true);
-  Port * port = Port::find_from_identifier (&fader_at->port_id);
+  auto fader_at = master->channel_->get_automation_track (
+    PortIdentifier::Flags::ChannelFader);
+  REQUIRE_NONNULL (fader_at);
+  if (!fader_at->created_)
+    fader_at->created_ = true;
+  auto atl = fader_at->get_automation_tracklist ();
+  atl->set_at_visible (*fader_at, true);
+  auto port = Port::find_from_identifier<ControlPort> (fader_at->port_id_);
 
   /* create region */
   Position start, end;
-  position_set_to_bar (&start, 1);
-  position_set_to_bar (&end, 5);
-  Region * region = automation_region_new (
-    &start, &end, track_get_name_hash (*master), fader_at->index, 0);
-  bool success = track_add_region (
-    master, region, fader_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  start.set_to_bar (1);
+  end.set_to_bar (5);
+  auto region = std::make_shared<AutomationRegion> (
+    start, end, master->get_name_hash (), fader_at->index_, 0);
+  master->add_region (region, fader_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
 
   /* create a triangle curve and test the value at various
    * points */
   Position pos;
-  position_set_to_bar (&pos, 1);
-  AutomationPoint * ap = automation_point_new_float (0.0f, 0.0f, &pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
-  position_set_to_bar (&pos, 2);
-  ap = automation_point_new_float (2.0f, 1.0f, &pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
-  position_set_to_bar (&pos, 3);
-  ap = automation_point_new_float (0.0f, 0.0f, &pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
-  g_assert_cmpint (region->num_aps, ==, 3);
+  pos.set_to_bar (1);
+  auto ap = std::make_shared<AutomationPoint> (0.0f, 0.0f, pos);
+  region->append_object (ap);
+  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
+    *AUTOMATION_SELECTIONS));
+  pos.set_to_bar (2);
+  ap = std::make_shared<AutomationPoint> (2.0f, 1.0f, pos);
+  region->append_object (ap);
+  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
+    *AUTOMATION_SELECTIONS));
+  pos.set_to_bar (3);
+  ap = std::make_shared<AutomationPoint> (0.0f, 0.0f, pos);
+  region->append_object (ap);
+  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
+    *AUTOMATION_SELECTIONS));
+  REQUIRE_SIZE_EQ (region->aps_, 3);
 
-  transport_request_roll (TRANSPORT, true);
-  engine_process (AUDIO_ENGINE, 40);
+  TRANSPORT->request_roll (true);
+  AUDIO_ENGINE->process (40);
 
-  g_assert_cmpfloat_with_epsilon (port->control_, 2.32830644e-10, 0.0001f);
+  REQUIRE_FLOAT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
 
-  position_set_to_bar (&pos, 3);
-  position_add_frames (&pos, -80);
-  transport_set_playhead_pos (TRANSPORT, &pos);
+  pos.set_to_bar (3);
+  pos.add_frames (-80);
+  TRANSPORT->set_playhead_pos (pos);
 
-  engine_process (AUDIO_ENGINE, 40);
+  AUDIO_ENGINE->process (40);
 
-  g_assert_cmpfloat_with_epsilon (port->control_, 2.32830644e-10, 0.0001f);
+  REQUIRE_FLOAT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
 
   test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/automation_track/"
-
-  g_test_add_func (TEST_PREFIX "test curve value", (GTestFunc) test_curve_value);
-  g_test_add_func (
-    TEST_PREFIX "test set at index", (GTestFunc) test_set_at_index);
-  g_test_add_func (
-    TEST_PREFIX "test region in 2nd automation track get muted",
-    (GTestFunc) test_region_in_2nd_automation_track_get_muted);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

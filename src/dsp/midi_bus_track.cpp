@@ -8,4 +8,6 @@ MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
 {
   color_ = Color ("#F5C211");
   icon_name_ = "signal-midi";
+
+  generate_automation_tracks ();
 }

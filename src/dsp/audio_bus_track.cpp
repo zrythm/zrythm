@@ -9,4 +9,6 @@ AudioBusTrack::AudioBusTrack (const std::string &name, int pos)
   /* GTK color picker color */
   color_ = Color ("#33D17A");
   icon_name_ = "effect";
+
+  generate_automation_tracks ();
 }

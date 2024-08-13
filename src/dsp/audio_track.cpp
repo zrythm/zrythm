@@ -37,6 +37,8 @@ AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerat
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
   rt_stretcher_ = stretcher_new_rubberband (samplerate, 2, 1.0, 1.0, true);
+
+  generate_automation_tracks ();
 }
 
 void
