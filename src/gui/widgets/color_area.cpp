@@ -191,7 +191,7 @@ color_area_widget_setup_track (ColorAreaWidget * self, Track * track)
   self->track = track;
   self->type = ColorAreaType::COLOR_AREA_TYPE_TRACK;
 
-  /*g_debug ("setting up track %s for %p", track->name, self);*/
+  /*z_debug ("setting up track %s for %p", track->name, self);*/
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 

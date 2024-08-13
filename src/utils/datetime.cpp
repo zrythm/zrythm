@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2019, 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <ctime>
+
 #include "utils/datetime.h"
+#include "utils/logger.h"
 
 #include "gtk_wrapper.h"
-#include <fmt/printf.h>
-#include <glibmm.h>
-#include <time.h>
 
 std::string
 datetime_get_current_as_string ()
@@ -16,7 +16,7 @@ datetime_get_current_as_string ()
 #ifdef HAVE_LOCALTIME_R
   struct tm   tm;
   struct tm * ret = localtime_r (&t, &tm);
-  g_return_val_if_fail (ret, "");
+  z_return_val_if_fail (ret, "");
 #else
   struct tm tm = *localtime (&t);
 #endif
@@ -33,10 +33,10 @@ std::string
 datetime_epoch_to_str (gint64 epoch, const std::string &format)
 {
   GDateTime * dt = g_date_time_new_from_unix_local (epoch);
-  g_return_val_if_fail (dt, "");
+  z_return_val_if_fail (dt, "");
   char * str = g_date_time_format (dt, format.c_str ());
   g_date_time_unref (dt);
-  g_return_val_if_fail (str, "");
+  z_return_val_if_fail (str, "");
   std::string ret = str;
   g_free (str);
   return ret;

@@ -38,7 +38,7 @@ input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
   self->frames_read += len_to_provide;
 
 #if 0
-  g_debug (
+  z_debug (
     "providing %zu frames (%zu requested). total frames read %zu",
     len_to_provide, requested_len, self->frames_read);
 #endif
@@ -63,11 +63,11 @@ resampler_new (
   const ResamplerQuality quality,
   GError **              error)
 {
-  g_return_val_if_fail (in_frames, nullptr);
+  z_return_val_if_fail (in_frames, nullptr);
 
   Resampler * self = object_new (Resampler);
 
-  g_debug (
+  z_debug (
     "creating new resampler for %zu frames at %.2f Hz to %.2f Hz - %u channels",
     num_in_frames, input_rate, output_rate, num_channels);
 
@@ -175,7 +175,7 @@ resampler_process (Resampler * self, GError ** error)
   self->frames_written += frames_written_now;
 
 #if 0
-  g_debug (
+  z_debug (
     "resampler processed: frames written now %zu, total frames written %zu, expected total frames %zu",
     frames_written_now, self->frames_written,
     self->num_out_frames);
@@ -185,7 +185,7 @@ resampler_process (Resampler * self, GError ** error)
     {
       /* in case the calculation for out frames is off by 1,
        * assume finished */
-      g_message (
+      z_info (
         "no more frames to write at %zu frames (expected %zu frames)",
         self->frames_written, self->num_out_frames);
       self->num_out_frames = self->frames_written;

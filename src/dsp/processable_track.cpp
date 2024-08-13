@@ -36,7 +36,7 @@ void
 ProcessableTrack::
   set_monitor_audio (bool monitor, bool auto_select, bool fire_events)
 {
-  g_return_if_fail (processor_ && processor_->monitor_audio_);
+  z_return_if_fail (processor_ && processor_->monitor_audio_);
 
   if (auto_select)
     {
@@ -61,7 +61,7 @@ ProcessableTrack::fill_events_common (
     time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_;
 
 #if 0
-  g_message (
+  z_info (
     "%s: TRACK %s STARTING from %ld, "
     "local start frame %u, nframes %u",
     __func__, self->name, time_nfo->g_start_frame_w_offset,
@@ -124,7 +124,7 @@ ProcessableTrack::fill_events_common (
               &cur_num_frames_till_next_r_loop_or_end, &is_loop_end);
 
 #if 0
-              g_message (
+              z_info (
                 "%s: cur num frames till next r "
                 "loop or end %ld, "
                 "num_frames_to_process %ld, "

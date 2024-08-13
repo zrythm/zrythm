@@ -175,7 +175,7 @@ on_dnd_drop (
 {
   if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      g_message ("invalid DND type");
+      z_info ("invalid DND type");
       return false;
     }
 
@@ -183,7 +183,7 @@ on_dnd_drop (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_value_get_object (value));
   if (wrapped_obj->type != WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK)
     {
-      g_message ("dropped object not a track");
+      z_info ("dropped object not a track");
       return false;
     }
 
@@ -200,7 +200,7 @@ on_dnd_drop (
     action_str = "COPY";
   else if (action == GDK_ACTION_MOVE)
     action_str = "MOVE";
-  g_debug ("channel widget: dnd drop (action %s)", action_str);
+  z_debug ("channel widget: dnd drop (action %s)", action_str);
 
   int w = gtk_widget_get_width (widget);
 
@@ -293,7 +293,7 @@ on_dnd_drag_leave (GtkDropTarget * drop_target, gpointer user_data)
 {
   ChannelWidget * self = Z_CHANNEL_WIDGET (user_data);
 
-  g_debug ("channel dnd drag leave");
+  z_debug ("channel dnd drag leave");
 
   /*do_highlight (self);*/
   /*gtk_drag_unhighlight (*/
@@ -329,7 +329,7 @@ on_whole_channel_press (
 void
 channel_widget_redraw_fader (ChannelWidget * self)
 {
-  g_return_if_fail (self->fader);
+  z_return_if_fail (self->fader);
   gtk_widget_queue_draw (GTK_WIDGET (self->fader));
 }
 
@@ -845,7 +845,7 @@ channel_widget_new (const std::shared_ptr<Channel> &channel)
 void
 channel_widget_tear_down (ChannelWidget * self)
 {
-  z_debug ("tearing down channel widget %p...", fmt::ptr (self));
+  z_debug ("tearing down channel widget {}...", fmt::ptr (self));
 
   if (self->setup)
     {

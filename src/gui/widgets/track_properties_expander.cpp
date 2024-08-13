@@ -25,12 +25,12 @@ track_properties_expander_widget_refresh (
   TrackPropertiesExpanderWidget * self,
   Track *                         track)
 {
-  g_return_if_fail (self);
+  z_return_if_fail (self);
   self->track = track;
 
   if (track)
     {
-      g_return_if_fail (self->direct_out);
+      z_return_if_fail (self->direct_out);
       route_target_selector_widget_refresh (
         self->direct_out,
         track->has_channel () ? dynamic_cast<ChannelTrack *> (track) : nullptr);
@@ -58,7 +58,7 @@ track_properties_expander_widget_setup (
   TrackPropertiesExpanderWidget * self,
   Track *                         track)
 {
-  g_warn_if_fail (track);
+  z_warn_if_fail (track);
   self->track = track;
 
   GtkWidget * lbl;

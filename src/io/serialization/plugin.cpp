@@ -123,8 +123,8 @@ Plugin::define_base_fields (const Context &ctx)
                 auto    port = Port::create_unique_from_type (port_id.type_);
                 Context port_ctx (port_val, ctx);
                 std::visit (
-                  [&] (auto &&port) {
-                    port->ISerializable<base_type<decltype (port)>>::deserialize (
+                  [&] (auto &&p) {
+                    p->ISerializable<base_type<decltype (p)>>::deserialize (
                       port_ctx);
                   },
                   convert_to_variant<PortPtrVariant> (port.get ()));

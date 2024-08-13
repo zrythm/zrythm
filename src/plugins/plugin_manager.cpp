@@ -105,8 +105,8 @@ PluginManager::get_lv2_paths ()
       /* add test plugins if testing */
       auto tests_builddir = Glib::getenv ("G_TEST_BUILDDIR");
       auto root_builddir = Glib::getenv ("G_TEST_BUILD_ROOT_DIR");
-      g_return_val_if_fail (!tests_builddir.empty (), nullptr);
-      g_return_val_if_fail (!root_builddir.empty (), nullptr);
+      z_return_val_if_fail (!tests_builddir.empty (), nullptr);
+      z_return_val_if_fail (!root_builddir.empty (), nullptr);
 
       auto test_lv2_plugins = fs::path (tests_builddir) / "lv2plugins";
       auto test_root_plugins = fs::path (root_builddir) / "data" / "plugins";
@@ -728,7 +728,7 @@ PluginManager::begin_scan (
             + ((double) ((i - ENUM_VALUE_TO_INT (PluginProtocol::LV2)) + 1)
                / num_plugin_types)
                 * (max_progress - start_progress);
-          g_return_if_fail (zrythm_app->greeter);
+          z_return_if_fail (zrythm_app->greeter);
           greeter_widget_set_progress_and_status (
             zrythm_app->greeter, _ ("Scanning Plugins"), nullptr, *progress);
         }

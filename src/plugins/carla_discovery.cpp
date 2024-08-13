@@ -102,13 +102,13 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   const CarlaPluginDiscoveryInfo * info,
   const std::string_view           sha1)
 {
-  g_return_val_if_fail (info, nullptr);
+  z_return_val_if_fail (info, nullptr);
   const CarlaPluginDiscoveryMetadata * meta = &info->metadata;
 
   auto descr = std::make_unique<PluginDescriptor> ();
   descr->protocol_ =
     PluginDescriptor::get_protocol_from_carla_plugin_type (info->ptype);
-  g_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
+  z_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
   const char * path = NULL;
   const char * uri = NULL;
   if (descr->protocol_ == PluginProtocol::SFZ)
@@ -172,10 +172,10 @@ z_carla_discovery_plugin_scanned_cb (
   const CarlaPluginDiscoveryInfo * nfo,
   const char *                     sha1)
 {
-  g_return_if_fail (ptr);
+  z_return_if_fail (ptr);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
 
-  /*g_debug ("nfo: %p, sha1: %s", nfo, sha1);*/
+  /*z_debug ("nfo: %p, sha1: %s", nfo, sha1);*/
 
   if (!nfo && !sha1)
     {
@@ -214,7 +214,7 @@ z_carla_discovery_plugin_check_cache_cb (
   const char * filename,
   const char * sha1)
 {
-  g_return_val_if_fail (ptr && filename && sha1, true);
+  z_return_val_if_fail (ptr && filename && sha1, true);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
   z_debug ("check cache for: filename: %s | sha1: %s", filename, sha1);
   auto  pl_mgr = self->owner_;

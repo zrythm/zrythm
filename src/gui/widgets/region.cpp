@@ -575,7 +575,7 @@ handle_loop (
   global_end_ticks_after_loops_with_clipoff -= self->clip_start_pos_.ticks_;
 
 #if 0
-  g_debug (
+  z_debug (
     "loop %d:, abs start ticks after loops %f | abs end ticks after loops %f | abs end ticks after loops w clipof %f",
     cur_loop, abs_start_ticks_after_loops,
     global_end_ticks_after_loops,
@@ -608,7 +608,7 @@ handle_loop (
   double y_end = y_end_ratio * full_rect->height;
 
 #if 0
-  g_debug (
+  z_debug (
     "x start ratio in region %f full rect width %d x start in region %f | x end ratio in region %f x end in region %f",
     x_start_ratio_in_region, full_rect->width,
     x_start_in_region, x_end_ratio_in_region, x_end_in_region);
@@ -666,7 +666,7 @@ handle_loop (
       if (x_end_in_region > x_end_in_region_with_clipoff)
         {
           double clipoff = x_end_in_region - x_end_in_region_with_clipoff;
-          /*g_debug ("clipped off %f", clipoff);*/
+          /*z_debug ("clipped off %f", clipoff);*/
           ap_loop_part_rect.width -= (int) clipoff;
         }
 
@@ -689,9 +689,9 @@ handle_loop (
                * are lower */
               1.0
                 - ap->get_normalized_value_in_curve (
-                  self,
-                  std::clamp ((k - x_start_in_region) / curve_width, 0.0, 1.0));
-          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width
+                  self, std::clamp<double> (
+                          (k - x_start_in_region) / curve_width, 0.0, 1.0));
+          /*z_debug ("start from %f k %f x start in region %f ratio %f, ac width
            * %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k -
            * x_start_in_region) / curve_width, 0.0, 1.0), curve_width, ap_y);*/
           ap_y *= ac_height;
@@ -999,7 +999,7 @@ draw_audio_part (
   int            vis_width,
   int            full_height)
 {
-  g_return_if_fail (vis_width < 40000);
+  z_return_if_fail (vis_width < 40000);
 
   auto * clip = self->get_clip ();
 
@@ -1038,7 +1038,7 @@ draw_audio_part (
     }
 
 #if 0
-  g_message ("current detail: %s",
+  z_info ("current detail: %s",
     ui_detail_str[detail]);
 #endif
 
@@ -1195,9 +1195,9 @@ draw_audio_region (
   int            cache_applied_offset_x,
   int            cache_applied_width)
 {
-  g_return_if_fail (cache_applied_width < 40000);
+  z_return_if_fail (cache_applied_width < 40000);
 
-  /*g_message ("drawing audio region");*/
+  /*z_info ("drawing audio region");*/
   if (self->stretching_)
     {
       return;
@@ -1223,7 +1223,7 @@ draw_name (
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
 {
-  g_return_if_fail (self && !self->escaped_name_.empty ());
+  z_return_if_fail (self && !self->escaped_name_.empty ());
 
   int full_width = full_rect->width;
 
@@ -1352,7 +1352,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   ArrangerWidget * arranger = self->get_arranger ();
 
   Track * track = self->get_track ();
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  z_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   /* set color */
   Color color;
@@ -1386,7 +1386,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
 
           /* TODO: reenable this check */
           // TrackLane * lane = track->lanes[self->id.lane_pos];
-          // g_return_if_fail (lane);
+          // z_return_if_fail (lane);
 
           /* set full rectangle */
           region_get_lane_full_rect (self, &full_rect);
@@ -1418,7 +1418,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
           continue;
         }
 
-      g_return_if_fail (draw_rect.width > 0 && draw_rect.width < 40000);
+      z_return_if_fail (draw_rect.width > 0 && draw_rect.width < 40000);
 
       /* make a rounded clip for the whole region */
       GskRoundedRect  rounded_rect;

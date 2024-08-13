@@ -48,8 +48,8 @@ UndoStack::define_fields (const Context &ctx)
                       auto action =
                         UndoableAction::create_unique_from_type (type_id);
                       std::visit (
-                        [&] (auto &&action) {
-                          action->ISerializable<base_type<decltype (action)>>::
+                        [&] (auto &&_action) {
+                          _action->ISerializable<base_type<decltype (_action)>>::
                             deserialize (Context (val, ctx));
                         },
                         convert_to_variant<UndoableActionPtrVariant> (

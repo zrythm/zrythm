@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/logger.h"
 #include "utils/resources.h"
 
 void
@@ -20,8 +21,7 @@ resources_get_gl_shader_data (const char * path)
 
   if (err)
     {
-      g_critical (
-        "Failed to load gl shader data at <%s>: %s", path, err->message);
+      z_error ("Failed to load gl shader data at <%s>: %s", path, err->message);
     }
 
   return data;

@@ -426,7 +426,7 @@ get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
       for (int i = 0; i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
           WindowsMmeDevice * dev = AUDIO_ENGINE->mme_in_devs[i];
-          g_return_if_fail (dev);
+          z_return_if_fail (dev);
           ExtPort * ext_port = ext_port_from_windows_mme_device (dev);
           g_ptr_array_add (ports, ext_port);
         }
@@ -436,7 +436,7 @@ get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
       for (int i = 0; i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
           WindowsMmeDevice * dev = AUDIO_ENGINE->mme_out_devs[i];
-          g_return_if_fail (dev);
+          z_return_if_fail (dev);
           ExtPort * ext_port = ext_port_from_windows_mme_device (dev);
           g_ptr_array_add (ports, ext_port);
         }

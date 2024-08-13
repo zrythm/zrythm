@@ -96,7 +96,7 @@ engine_jack_handle_sample_rate_change (AudioEngine * self, uint32_t samplerate)
         true, true, false);
     }
 
-  g_message ("JACK: Sample rate changed to %d", samplerate);
+  z_info ("JACK: Sample rate changed to %d", samplerate);
 }
 
 static void
@@ -149,7 +149,7 @@ engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames)
   AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size (
     AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #  endif
-  g_message (
+  z_info (
     "JACK: Block length changed to %d, "
     "midi buf size to %zu",
     AUDIO_ENGINE->block_length_, AUDIO_ENGINE->midi_buf_size_);
@@ -160,7 +160,7 @@ engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames)
 int
 engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
 {
-  g_message ("JACK buffer size changed: %u", nframes);
+  z_info ("JACK buffer size changed: %u", nframes);
   self->handled_jack_buffer_size_change_.store (false);
   ENGINE_EVENTS_PUSH (
     AudioEngine::AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
@@ -176,7 +176,7 @@ engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
     {
       while (AUDIO_ENGINE->handled_jack_buffer_size_change_.load () == false)
         {
-          g_message (
+          z_info (
             "-- waiting for engine to handle JACK buffer size change on GUI thread... (engine_process_events)");
           g_usleep (1000000);
         }
@@ -284,7 +284,7 @@ xrun_cb (AudioEngine * self)
     {
       /* TODO make a notification message queue */
 #  if 0
-      g_message (
+      z_info (
         "%s",
         _("XRUN occurred - check your JACK "
         "configuration"));
@@ -334,7 +334,7 @@ timebase_cb (
 static void
 shutdown_cb (void * arg)
 {
-  g_warning ("Jack shutting down...");
+  z_warning ("Jack shutting down...");
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
@@ -348,11 +348,11 @@ freewheel_cb (int starting, void * arg)
 {
   if (starting)
     {
-      g_message ("JACK: starting freewheel");
+      z_info ("JACK: starting freewheel");
     }
   else
     {
-      g_message ("JACK: stopping freewheel");
+      z_info ("JACK: stopping freewheel");
     }
 }
 
@@ -362,7 +362,7 @@ port_registration_cb (jack_port_id_t port_id, int registered, void * arg)
   AudioEngine * self = (AudioEngine *) arg;
 
   jack_port_t * jport = jack_port_by_id (self->client_, port_id);
-  g_message (
+  z_info (
     "JACK: port '%s' %sregistered", jack_port_name (jport),
     registered ? "" : "un");
 }
@@ -374,7 +374,7 @@ port_connect_cb (jack_port_id_t a, jack_port_id_t b, int connect, void * arg)
 
   jack_port_t * jport_a = jack_port_by_id (self->client_, a);
   jack_port_t * jport_b = jack_port_by_id (self->client_, b);
-  g_message (
+  z_info (
     "JACK: port '%s' %sconnected %s '%s'", jack_port_name (jport_a),
     connect ? "" : "dis", connect ? "to" : "from", jack_port_name (jport_b));
 
@@ -399,7 +399,7 @@ port_connect_cb (jack_port_id_t a, jack_port_id_t b, int connect, void * arg)
 int
 engine_jack_midi_setup (AudioEngine * self)
 {
-  g_message ("%s: Setting up JACK MIDI", __func__);
+  z_info ("%s: Setting up JACK MIDI", __func__);
 
   /* TODO: case 1 - no jack client (using another
    * backend)
@@ -436,7 +436,7 @@ engine_jack_set_transport_type (
     self->transport_type_ == AudioEngine::JackTransportType::TimebaseMaster
     && type != AudioEngine::JackTransportType::TimebaseMaster)
     {
-      g_message ("releasing JACK timebase");
+      z_info ("releasing JACK timebase");
       jack_release_timebase (self->client_);
     }
   /* acquire timebase master */
@@ -444,11 +444,11 @@ engine_jack_set_transport_type (
     self->transport_type_ != AudioEngine::JackTransportType::TimebaseMaster
     && type == AudioEngine::JackTransportType::TimebaseMaster)
     {
-      g_message ("becoming JACK timebase master");
+      z_info ("becoming JACK timebase master");
       jack_set_timebase_callback (self->client_, 0, timebase_cb, self);
     }
 
-  g_message ("set JACK transport type to %s", ENUM_NAME (type));
+  z_info ("set JACK transport type to %s", ENUM_NAME (type));
   self->transport_type_ = type;
 }
 
@@ -501,7 +501,7 @@ engine_jack_test (GtkWindow * win)
 int
 engine_jack_setup (AudioEngine * self)
 {
-  g_message ("Setting up JACK...");
+  z_info ("Setting up JACK...");
 
   const char *   client_name = PROGRAM_NAME;
   const char *   server_name = NULL;
@@ -536,9 +536,9 @@ engine_jack_setup (AudioEngine * self)
   jack_set_freewheel_callback (self->client_, freewheel_cb, self);
   ret = jack_set_port_registration_callback (
     self->client_, port_registration_cb, self);
-  g_return_val_if_fail (ret == 0, -1);
+  z_return_val_if_fail (ret == 0, -1);
   ret = jack_set_port_connect_callback (self->client_, port_connect_cb, self);
-  g_return_val_if_fail (ret == 0, -1);
+  z_return_val_if_fail (ret == 0, -1);
   jack_on_shutdown (self->client_, shutdown_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #  ifdef JALV_JACK_SESSION
@@ -560,7 +560,7 @@ engine_jack_setup (AudioEngine * self)
         AudioEngine::JackTransportType,
         g_settings_get_enum (S_UI, "jack-transport-type")));
 
-  g_message ("JACK set up");
+  z_info ("JACK set up");
   return 0;
 }
 
@@ -669,7 +669,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
       ExtPort * ext_port = self->hw_out_processor_->find_ext_port (device);
       if (ext_port)
         {
-          /*g_return_val_if_reached (-1);*/
+          /*z_return_val_if_reached (-1);*/
           ret = jack_connect (
             self->client_, jack_port_name (JACK_PORT_T (port.data_)),
             ext_port->full_name_.c_str ());
@@ -727,7 +727,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
       jack_free (ports);
     }
 
-  g_return_val_if_fail (num_connected > 0, false);
+  z_return_val_if_fail (num_connected > 0, false);
 
   return true;
 }
@@ -742,10 +742,10 @@ engine_jack_activate (AudioEngine * self, bool activate)
        * running now. */
       if (jack_activate (self->client_))
         {
-          g_warning ("cannot activate client");
+          z_warning ("cannot activate client");
           return -1;
         }
-      g_message ("Jack activated");
+      z_info ("Jack activated");
 
       /* Connect the ports.  You can't do this before
        * the client is
@@ -764,7 +764,7 @@ engine_jack_activate (AudioEngine * self, bool activate)
         self->monitor_out_->get_l ().data_ && self->monitor_out_->get_r ().data_,
         -1);
 
-      g_message ("connecting to system out ports...");
+      z_info ("connecting to system out ports...");
 
       GError * err = NULL;
       bool     ret = engine_jack_reconnect_monitor (self, true, &err);
@@ -825,7 +825,7 @@ engine_jack_is_pipewire (AudioEngine * self)
 #  else
   const char * libname = "libjack.so.0";
   void *       lib_handle = dlopen (libname, RTLD_LAZY);
-  g_return_val_if_fail (lib_handle, false);
+  z_return_val_if_fail (lib_handle, false);
 
   const char * func_name = "jack_get_version_string";
 
@@ -833,14 +833,14 @@ engine_jack_is_pipewire (AudioEngine * self)
   *(void **) (&jack_get_version_string) = dlsym (lib_handle, func_name);
   if (!jack_get_version_string)
     {
-      g_message ("%s () not found in %s", func_name, libname);
+      z_info ("%s () not found in %s", func_name, libname);
       return false;
     }
   else
     {
-      g_message ("%s () found in %s", func_name, libname);
+      z_info ("%s () found in %s", func_name, libname);
       const char * ver = (*jack_get_version_string) ();
-      g_message ("ver %s", ver);
+      z_info ("ver %s", ver);
       return string_contains_substr (ver, "PipeWire");
     }
 #  endif

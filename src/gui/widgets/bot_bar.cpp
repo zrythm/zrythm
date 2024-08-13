@@ -77,7 +77,7 @@ activate_jack_mode (
 {
   BotBarWidget * self = Z_BOT_BAR_WIDGET (user_data);
 
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
@@ -110,7 +110,7 @@ activate_jack_mode (
         GTK_WIDGET (self->digital_transport), PLAYHEAD_CAPTION);
     }
 
-  g_message ("jack mode changed");
+  z_info ("jack mode changed");
 }
 #endif
 
@@ -329,22 +329,22 @@ activate_link (GtkWidget * label, const gchar * uri, gpointer data)
     _ ("This feature is not available at the moment"));
   return false;
 
-  g_debug ("link activated");
+  z_debug ("link activated");
   if (string_is_equal (uri, "enable"))
     {
-      g_debug ("enable pressed");
+      z_debug ("enable pressed");
       AUDIO_ENGINE->activate (true);
       return true;
     }
   else if (string_is_equal (uri, "disable"))
     {
-      g_debug ("disable pressed");
+      z_debug ("disable pressed");
       AUDIO_ENGINE->activate (false);
       return true;
     }
   else if (string_is_equal (uri, "change"))
     {
-      g_debug ("change buf size pressed");
+      z_debug ("change buf size pressed");
       StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
         _ ("Buffer Size"), nullptr, get_buffer_size, set_buffer_size);
       gtk_window_present (GTK_WINDOW (dialog));

@@ -51,7 +51,7 @@ on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
     }
   else
     {
-      g_message ("same automatable selected, doing nothing");
+      z_info ("same automatable selected, doing nothing");
     }
 
   gtk_widget_unparent (GTK_WIDGET (self));
@@ -180,7 +180,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
             {
               int midi_ch;
               int found_nums = sscanf (str, "MIDI Ch%d", &midi_ch);
-              g_return_val_if_fail (found_nums == 1, false);
+              z_return_val_if_fail (found_nums == 1, false);
               int port_midi_ch = port->id_.get_midi_channel ();
               if (port_midi_ch == midi_ch)
                 {
@@ -230,7 +230,7 @@ setup_ports_listview (
 
       if (!port)
         {
-          g_warning ("no port found");
+          z_warning ("no port found");
           continue;
         }
 
@@ -329,7 +329,7 @@ bind_type_header_cb (
           break;
         default:
           gtk_label_set_text (lbl, "Invalid");
-          g_return_if_reached ();
+          z_return_if_reached ();
           break;
         }
     }
@@ -499,7 +499,7 @@ automatable_selector_popover_widget_new (AutomationTrack * owner)
 
   /* set selected automatable */
   auto * port = Port::find_from_identifier<ControlPort> (owner->port_id_);
-  g_return_val_if_fail (port, nullptr);
+  z_return_val_if_fail (port, nullptr);
   self->selected_port = port;
 
   /* create model/treeview for types */

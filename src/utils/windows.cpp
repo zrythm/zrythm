@@ -55,7 +55,7 @@ windows_get_special_path (WindowsSpecialPath path_type)
       csidl = CSIDL_PROGRAM_FILES_COMMON;
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 
   WCHAR path[MAX_PATH + 256];
@@ -64,11 +64,11 @@ windows_get_special_path (WindowsSpecialPath path_type)
     {
       char * ret = g_utf16_to_utf8 (
         (const gunichar2 *) path, -1, nullptr, nullptr, nullptr);
-      g_return_val_if_fail (ret, nullptr);
+      z_return_val_if_fail (ret, nullptr);
       return ret;
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 #endif // _WIN32

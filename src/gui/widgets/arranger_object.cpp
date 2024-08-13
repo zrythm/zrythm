@@ -289,7 +289,7 @@ arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed)
       return 0;
       break;
     }
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 /**
@@ -689,7 +689,7 @@ arranger_object_get_draw_rectangle (
   GdkRectangle *   full_rect,
   GdkRectangle *   draw_rect)
 {
-  g_return_val_if_fail (full_rect->width > 0, false);
+  z_return_val_if_fail (full_rect->width > 0, false);
 
   if (!ui_rectangle_overlap (parent_rect, full_rect))
     return 0;
@@ -698,18 +698,18 @@ arranger_object_get_draw_rectangle (
   draw_rect->width = MIN (
     (parent_rect->x + parent_rect->width) - draw_rect->x,
     (full_rect->x + full_rect->width) - draw_rect->x);
-  g_warn_if_fail (draw_rect->width >= 0);
+  z_warn_if_fail (draw_rect->width >= 0);
   draw_rect->y = MAX (full_rect->y, parent_rect->y);
   draw_rect->height = MIN (
     (parent_rect->y + parent_rect->height) - draw_rect->y,
     (full_rect->y + full_rect->height) - draw_rect->y);
-  g_warn_if_fail (draw_rect->height >= 0);
+  z_warn_if_fail (draw_rect->height >= 0);
 
   return 1;
-  /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
+  /*z_info ("full rect: (%d, %d) w: %d h: %d",*/
   /*full_rect->x, full_rect->y,*/
   /*full_rect->width, full_rect->height);*/
-  /*g_message ("draw rect: (%d, %d) w: %d h: %d",*/
+  /*z_info ("draw rect: (%d, %d) w: %d h: %d",*/
   /*draw_rect->x, draw_rect->y,*/
   /*draw_rect->width, draw_rect->height);*/
 }
@@ -732,7 +732,7 @@ arranger_object_draw (
   if (!ui_rectangle_overlap (
         &self->full_rect, rect))
     {
-      g_debug (
+      z_debug (
         "%s: object not visible, skipping",
         __func__);
     }
@@ -793,7 +793,7 @@ arranger_object_should_orig_be_visible (
   if (!arranger)
     {
       arranger = self->get_arranger ();
-      g_return_val_if_fail (arranger, false);
+      z_return_val_if_fail (arranger, false);
     }
 
   /* check trans/non-trans visibility */

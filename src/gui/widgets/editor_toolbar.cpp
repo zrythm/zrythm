@@ -94,7 +94,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
       /* skip if open with carla by default */
       PluginSetting * setting =
         plugin_setting_new_default (descr);
-      g_return_if_fail (setting);
+      z_return_if_fail (setting);
       bool skip = false;
       if (setting->open_with_carla_)
         {

@@ -35,11 +35,9 @@ Clipboard::set_type_from_arranger_selections (const ArrangerSelections &sel)
 
 Clipboard::Clipboard (const ArrangerSelections &sel)
 {
-  auto arranger_sel_variant =
-    convert_to_variant<ArrangerSelectionsPtrVariant> (&sel);
   std::visit (
-    [&] (auto &sel) { arranger_sel_ = sel->clone_unique (); },
-    arranger_sel_variant);
+    [&] (auto &&s) { arranger_sel_ = s->clone_unique (); },
+    convert_to_variant<ArrangerSelectionsPtrVariant> (&sel));
   set_type_from_arranger_selections (sel);
 }
 

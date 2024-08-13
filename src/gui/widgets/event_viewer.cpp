@@ -133,7 +133,7 @@ refresh_editor_model (EventViewerWidget * self)
       refresh_chord_model (self);
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 }
 
@@ -259,7 +259,7 @@ event_viewer_widget_refresh_for_selections (ArrangerSelections * sel)
       self = MW_BOT_DOCK_EDGE->event_viewer_midi;
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 
   bool need_model_refresh = false;
@@ -322,7 +322,7 @@ event_viewer_widget_refresh_for_arranger (
         MW_BOT_DOCK_EDGE->event_viewer_audio, selections_only);
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
       break;
     }
 }
@@ -342,7 +342,7 @@ selection_func (
   GtkTreeIter iter;
   bool has_any =
     gtk_tree_model_get_iter (model, &iter, path);
-  g_return_val_if_fail (has_any, false);
+  z_return_val_if_fail (has_any, false);
 
   /* select object if selection is not made
    * programmatically */

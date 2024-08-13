@@ -19,7 +19,7 @@ get_xxh32_hash (FILE * stream, char ** hash_str)
 {
   /* create a state */
   XXH32_state_t * state = XXH32_createState ();
-  g_return_val_if_fail (state, 0);
+  z_return_val_if_fail (state, 0);
 
   /* reset state with a seed (0 fastest) */
   XXH32_reset (state, 0);
@@ -56,7 +56,7 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
 {
   /* create a state */
   XXH3_state_t * state = XXH3_createState ();
-  g_return_val_if_fail (state, 0);
+  z_return_val_if_fail (state, 0);
 
   /* reset state */
   XXH3_64bits_reset (state);
@@ -95,7 +95,7 @@ hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
   z_debug ("calculating hash for %s...", filepath);
 
   FILE * stream = fopen (filepath.c_str (), "rb");
-  g_return_val_if_fail (stream, g_strdup ("INVALID"));
+  z_return_val_if_fail (stream, g_strdup ("INVALID"));
 
   char * ret_str = NULL;
   switch (algo)
@@ -123,7 +123,7 @@ uint32_t
 hash_get_from_file_simple (const char * filepath)
 {
   FILE * stream = fopen (filepath, "rb");
-  g_return_val_if_fail (stream, 0);
+  z_return_val_if_fail (stream, 0);
   uint32_t hash = get_xxh32_hash (stream, nullptr);
   fclose (stream);
 
@@ -165,7 +165,7 @@ hash_get_for_struct (const void * const obj, size_t size)
 {
   /* create a state */
   XXH32_state_t * state = XXH32_createState ();
-  g_return_val_if_fail (state, 0);
+  z_return_val_if_fail (state, 0);
 
   XXH32_hash_t hash = hash_get_for_struct_full (state, obj, size);
 

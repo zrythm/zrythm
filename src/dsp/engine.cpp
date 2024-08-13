@@ -1192,14 +1192,14 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   if (ZRYTHM_TESTING)
     {
-      /*g_debug (*/
+      /*z_debug (*/
       /*"engine process started. total frames to "*/
       /*"process: %u", total_frames_to_process);*/
     }
 
-  g_return_val_if_fail (total_frames_to_process > 0, -1);
+  z_return_val_if_fail (total_frames_to_process > 0, -1);
 
-  /*g_message ("processing...");*/
+  /*z_info ("processing...");*/
 
   /* calculate timestamps (used for synchronizing external events like Windows
    * MME MIDI) */
@@ -1209,7 +1209,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   if (!run_.load () || !has_handled_buffer_size_change ()) [[unlikely]]
     {
-      /*g_message ("skipping processing...");*/
+      /*z_info ("skipping processing...");*/
       clear_output_buffers (total_frames_to_process);
       return 0;
     }
@@ -1266,7 +1266,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         {
           if (num_preroll_frames > 0)
             {
-              g_message ("prerolling for %u frames", num_preroll_frames);
+              z_info ("prerolling for %u frames", num_preroll_frames);
             }
         }
 
@@ -1300,7 +1300,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       /* offset to start processing at in this cycle */
       nframes_t preroll_offset =
         total_frames_to_process - total_frames_remaining;
-      g_warn_if_fail (preroll_offset + num_preroll_frames <= nframes_);
+      z_warn_if_fail (preroll_offset + num_preroll_frames <= nframes_);
 
       split_time_nfo.g_start_frame_w_offset_ =
         split_time_nfo.g_start_frame_ + preroll_offset;
@@ -1402,7 +1402,7 @@ finalize_processing:
 
   if (ZRYTHM_TESTING)
     {
-      /*g_debug ("engine process ended...");*/
+      /*z_debug ("engine process ended...");*/
     }
 
   last_timestamp_start_ = timestamp_start_;
@@ -1697,4 +1697,12 @@ AudioEngine::~AudioEngine ()
     }
 
   z_debug ("finished freeing engine");
+}
+
+void
+EngineProcessTimeInfo::print () const
+{
+  z_info (
+    "Global start frame: {} (with offset {}) | local offset: {} | num frames: {}",
+    g_start_frame_, g_start_frame_w_offset_, local_offset_, nframes_);
 }

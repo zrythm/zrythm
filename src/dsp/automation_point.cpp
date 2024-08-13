@@ -144,17 +144,17 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
   float normalized_val;
   if (is_normalized)
     {
-      g_message ("received normalized val %f", (double) real_val);
+      z_info ("received normalized val %f", (double) real_val);
       normalized_val = CLAMP (real_val, 0.f, 1.f);
       real_val = port->normalized_val_to_real (normalized_val);
     }
   else
     {
-      g_message ("reveived real val %f", (double) real_val);
+      z_info ("reveived real val %f", (double) real_val);
       real_val = CLAMP (real_val, port->minf_, port->maxf_);
       normalized_val = port->real_val_to_normalized (real_val);
     }
-  g_message ("setting to %f", (double) real_val);
+  z_info ("setting to %f", (double) real_val);
   fvalue_ = real_val;
   normalized_val_ = normalized_val;
 
@@ -164,7 +164,7 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
       math_assert_nonnann (normalized_val_);
     }
 
-  g_return_if_fail (get_region ());
+  z_return_if_fail (get_region ());
 
   /* don't set value - wait for engine to process it */
 #if 0
@@ -190,7 +190,7 @@ AutomationPoint::set_fvalue_with_action (void * self, const std::string &fval_st
 {
   auto * ap = static_cast<AutomationPoint *> (self);
   Port * port = ap->get_port ();
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   float val;
   int   res = sscanf (fval_str.c_str (), "%f", &val);
@@ -212,13 +212,13 @@ AutomationPoint::get_normalized_value_in_curve (
   AutomationRegion * region,
   double             x) const
 {
-  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+  z_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
 
   if (!region)
     {
       region = dynamic_cast<AutomationRegion *> (get_region ());
     }
-  g_return_val_if_fail (region, 0.0);
+  z_return_val_if_fail (region, 0.0);
   AutomationPoint * next_ap = region->get_next_ap (*this, true, true);
   if (!next_ap)
     {
@@ -262,7 +262,7 @@ AutomationTrack *
 AutomationPoint::get_automation_track () const
 {
   const auto region = dynamic_cast<AutomationRegion *> (get_region ());
-  g_return_val_if_fail (region, nullptr);
+  z_return_val_if_fail (region, nullptr);
   return region->get_automation_track ();
 }
 

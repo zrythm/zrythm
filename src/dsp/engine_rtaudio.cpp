@@ -78,7 +78,7 @@ audio_cb (
   if (status != 0)
     {
       /* xrun */
-      // g_warning ("XRUN in RtAudio");
+      // z_warning("XRUN in RtAudio");
     }
 
   if (!self->run_.load ())
@@ -101,7 +101,7 @@ audio_cb (
 static void
 error_cb (rtaudio_error_t err, const char * msg)
 {
-  g_critical ("RtAudio error: %s", msg);
+  z_error ("RtAudio error: %s", msg);
 }
 
 static bool engine_rtaudio_first_run = true;
@@ -118,7 +118,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend)
       unsigned int          num_apis = rtaudio_get_num_compiled_apis ();
       for (unsigned int i = 0; i < num_apis; i++)
         {
-          g_message ("RtAudio API found: %s", rtaudio_api_name (apis[i]));
+          z_info ("RtAudio API found: %s", rtaudio_api_name (apis[i]));
         }
       engine_rtaudio_first_run = false;
     }
@@ -131,16 +131,16 @@ engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend)
       return nullptr;
     }
 
-  g_debug ("calling rtaudio_create...");
+  z_debug ("calling rtaudio_create...");
   rtaudio = rtaudio_create (api);
 
   if (rtaudio_error (rtaudio))
     {
-      g_critical ("RtAudio: %s", rtaudio_error (rtaudio));
+      z_error ("RtAudio: %s", rtaudio_error (rtaudio));
       return NULL;
     }
 
-  g_debug ("rtaudio_create() successful");
+  z_debug ("rtaudio_create() successful");
 
   return rtaudio;
 }
@@ -176,20 +176,20 @@ print_dev_info (rtaudio_device_info_t * nfo, char * buf)
 int
 engine_rtaudio_setup (AudioEngine * self)
 {
-  g_message ("Setting up RtAudio %s...", rtaudio_version ());
+  z_info ("Setting up RtAudio %s...", rtaudio_version ());
 
   self->rtaudio_ = engine_rtaudio_create_rtaudio (self, self->audio_backend_);
   if (!self->rtaudio_)
     {
-      g_warning ("failed to create rtaudio");
+      z_warning ("failed to create rtaudio");
       return -1;
     }
 
   int dev_count = rtaudio_device_count (self->rtaudio_);
-  g_return_val_if_fail (dev_count >= 0, -1);
+  z_return_val_if_fail (dev_count >= 0, -1);
   if (dev_count == 0)
     {
-      g_warning ("No devices found");
+      z_warning ("No devices found");
       return -1;
     }
 
@@ -206,18 +206,18 @@ engine_rtaudio_setup (AudioEngine * self)
         rtaudio_get_device_info (self->rtaudio_, dev_id);
       char dev_nfo_str[800];
       print_dev_info (&dev_nfo, dev_nfo_str);
-      g_message ("RtAudio device %d: %s", i, dev_nfo_str);
+      z_info ("RtAudio device %d: %s", i, dev_nfo_str);
       if (
         string_is_equal (dev_nfo.name, out_device)
         && dev_nfo.output_channels > 0)
         {
-          g_message ("found device with id %u at index %d", dev_id, i);
+          z_info ("found device with id %u at index %d", dev_id, i);
           out_device_id = dev_id;
         }
     }
   if (out_device_id == UINT_MAX)
     {
-      g_message ("selected device not found, using default");
+      z_info ("selected device not found, using default");
       out_device_id = rtaudio_get_default_output_device (self->rtaudio_);
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (self->rtaudio_, out_device_id);
@@ -243,7 +243,7 @@ engine_rtaudio_setup (AudioEngine * self)
   unsigned int buffer_size = (unsigned int) AudioEngine::buffer_size_enum_to_int (
     (AudioEngine::BufferSize) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "buffer-size"));
-  g_message (
+  z_info (
     "Attempting to open device [%s] with sample "
     "rate %u and buffer size %d",
     out_device, samplerate, buffer_size);
@@ -254,7 +254,7 @@ engine_rtaudio_setup (AudioEngine * self)
     (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
-      g_warning (
+      z_warning (
         "An error occurred opening the RtAudio "
         "stream: %s",
         rtaudio_error (self->rtaudio_));
@@ -263,13 +263,13 @@ engine_rtaudio_setup (AudioEngine * self)
   bool is_open = rtaudio_is_stream_open (self->rtaudio_);
   if (!is_open)
     {
-      g_warning ("RtAudio stream failed to open");
+      z_warning ("RtAudio stream failed to open");
       return -1;
     }
   self->block_length_ = buffer_size;
   self->sample_rate_ = (sample_rate_t) samplerate;
 
-  g_message ("RtAudio set up");
+  z_info ("RtAudio set up");
 
   return 0;
 }
@@ -279,16 +279,16 @@ engine_rtaudio_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      g_message ("%s: activating...", __func__);
+      z_info ("%s: activating...", __func__);
       rtaudio_start_stream (self->rtaudio_);
     }
   else
     {
-      g_message ("%s: deactivating...", __func__);
+      z_info ("%s: deactivating...", __func__);
       rtaudio_stop_stream (self->rtaudio_);
     }
 
-  g_message ("%s: done", __func__);
+  z_info ("%s: done", __func__);
 }
 
 /**
@@ -322,11 +322,11 @@ engine_rtaudio_get_device_names (
   rtaudio_t rtaudio = engine_rtaudio_create_rtaudio (self, backend);
   if (!rtaudio)
     {
-      g_warning ("failed to create rtaudio instance");
+      z_warning ("failed to create rtaudio instance");
       return;
     }
   int num_devs = rtaudio_device_count (rtaudio);
-  g_return_if_fail (num_devs >= 0);
+  z_return_if_fail (num_devs >= 0);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)
     {
@@ -345,7 +345,7 @@ engine_rtaudio_get_device_names (
         {
           continue;
         }
-      g_message ("RtAudio device %d: %s", i, names[*num_names - 1]);
+      z_info ("RtAudio device %d: %s", i, names[*num_names - 1]);
     }
   rtaudio_destroy (rtaudio);
 }

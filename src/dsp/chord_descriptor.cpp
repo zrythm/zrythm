@@ -101,7 +101,7 @@ ChordDescriptor::update_notes ()
       notes_[12 + root + 5 + 2] = true;
       break;
     default:
-      g_warning ("chord unimplemented");
+      z_warning ("chord unimplemented");
       break;
     }
 
@@ -144,7 +144,7 @@ ChordDescriptor::update_notes ()
       notes_[12 + root_note_int + 21] = true;
       break;
     default:
-      g_warning ("chord unimplemented");
+      z_warning ("chord unimplemented");
       break;
     }
 

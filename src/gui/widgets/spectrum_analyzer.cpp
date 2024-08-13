@@ -115,7 +115,7 @@ getBinPos (const int bin, const int numBins, const float sampleRate)
 static float
 _lerp (float a, float b, float f)
 {
-  f = std::clamp (f, 0.0f, 1.0f);
+  f = std::clamp<float> (f, 0.0f, 1.0f);
 
   return a * (1.f - f) + (b * f);
 }
@@ -148,7 +148,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   size_t   block_size = AUDIO_ENGINE->block_length_;
   uint32_t block_size_in_bytes = sizeof (float) * (uint32_t) block_size;
 
-  g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
+  z_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
   if (!P_MASTER_TRACK->channel_->stereo_out_->get_l ().write_ring_buffers_)
     {
       P_MASTER_TRACK->channel_->stereo_out_->set_write_ring_buffers (true);
@@ -180,7 +180,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (lblocks_read == 0)
     {
       return;
-      /*g_return_val_if_reached (FALSE);*/
+      /*z_return_val_if_reached (FALSE);*/
     }
 
   /* get the R buffer */
@@ -204,7 +204,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (rblocks_read == 0)
     {
       return;
-      /*g_return_val_if_reached (FALSE);*/
+      /*z_return_val_if_reached (FALSE);*/
     }
 
   dsp_make_mono (
@@ -220,7 +220,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       self->fft_config = kiss_fft_alloc ((int) block_size, 0, nullptr, nullptr);
       for (size_t i = 0; i < block_size; i++)
         {
-          g_return_if_fail (block_size <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
+          z_return_if_fail (block_size <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
           self->bins[i].calculate_coeff (
             (float) AUDIO_ENGINE->sample_rate_ / 64.f,
             (float) AUDIO_ENGINE->sample_rate_);
@@ -257,7 +257,7 @@ spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* --- end process --- */
 
-  /*g_message ("executing");*/
+  /*z_info ("executing");*/
   /*fftwf_execute (zrythm_app->spectrum_analyzer_plan);*/
 
   GdkRGBA color_green;

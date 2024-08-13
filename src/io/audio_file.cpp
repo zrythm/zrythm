@@ -150,7 +150,7 @@ AudioFile::read_full (
 
   /* read frames in file's sample rate */
   buffer.setSize (metadata_.channels, (size_t) metadata_.num_frames);
-  for (typeof (metadata_.channels) i = 0; i < metadata_.channels; ++i)
+  for (decltype (metadata_.channels) i = 0; i < metadata_.channels; ++i)
     {
       read_samples (false, buffer.getWritePointer (i), 0, metadata_.num_frames);
 

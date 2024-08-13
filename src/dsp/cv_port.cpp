@@ -97,7 +97,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 bool
 CVPort::has_sound () const
 {
-  g_return_val_if_fail (buf_.size () >= AUDIO_ENGINE->block_length_, false);
+  z_return_val_if_fail (buf_.size () >= AUDIO_ENGINE->block_length_, false);
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
     {
       if (fabsf (buf_[i]) > 0.0000001f)

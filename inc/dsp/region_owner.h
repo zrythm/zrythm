@@ -136,4 +136,9 @@ requires RegionSubclass<RegionT> class RegionOwnerImpl<RegionT>
 };
 #endif
 
+extern template class RegionOwnerImpl<AudioRegion>;
+extern template class RegionOwnerImpl<AutomationRegion>;
+extern template class RegionOwnerImpl<ChordRegion>;
+extern template class RegionOwnerImpl<MidiRegion>;
+
 #endif // __DSP_REGION_OWNER_H__

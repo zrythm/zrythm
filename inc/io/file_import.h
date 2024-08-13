@@ -37,22 +37,22 @@ public:
     int          lane,
     Position     pos,
     int          track_idx)
-      : track_name_hash (track_name_hash), lane (lane), pos (std::move (pos)),
-        track_idx (track_idx)
+      : track_name_hash_ (track_name_hash), lane_ (lane),
+        pos_ (std::move (pos)), track_idx_ (track_idx)
   {
   }
 
   /** Track to import on, if any, or 0. */
-  unsigned int track_name_hash;
+  unsigned int track_name_hash_;
 
   /** Track lane to import on, if any, or -1. */
-  int lane;
+  int lane_;
 
   /** Position to import the data at, or 1.1.1.0. */
-  Position pos;
+  Position pos_;
 
   /** Track index to start the import at. */
-  int track_idx;
+  int track_idx_;
 };
 
 /**

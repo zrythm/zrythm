@@ -43,7 +43,7 @@ PortConnectionsManager::regenerate_hashtables ()
 #if 0
   unsigned int srcs_size = src_ht_.size ();
   unsigned int dests_size = dest_ht_.size ();
-  g_debug (
+  z_debug (
     "Sources hashtable: %u elements | "
     "Destinations hashtable: %u elements",
     srcs_size, dests_size);
@@ -149,7 +149,7 @@ PortConnectionsManager::ensure_connect (
   bool                  locked,
   bool                  enabled)
 {
-  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, nullptr);
+  z_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, nullptr);
 
   for (auto &conn : connections_)
     {
@@ -166,7 +166,7 @@ PortConnectionsManager::ensure_connect (
 
   if (this == PORT_CONNECTIONS_MGR.get())
     {
-      g_debug (
+      z_debug (
         "New connection: <%s>; "
         "have %zu connections",
         conn.print_to_str ().c_str (), connections_.size ());
@@ -186,7 +186,7 @@ PortConnectionsManager::remove_connection (const size_t idx)
 
   if (this == PORT_CONNECTIONS_MGR.get())
     {
-      g_debug (
+      z_debug (
         "Disconnected <%s>; "
         "have %zu connections",
         conn.print_to_str ().c_str (), connections_.size ());
@@ -200,7 +200,7 @@ PortConnectionsManager::ensure_disconnect (
   const PortIdentifier &src,
   const PortIdentifier &dest)
 {
-  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, false);
+  z_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, false);
 
   for (size_t i = 0; i < connections_.size (); i++)
     {
@@ -218,7 +218,7 @@ PortConnectionsManager::ensure_disconnect (
 void
 PortConnectionsManager::ensure_disconnect_all (const PortIdentifier &pi)
 {
-  g_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
 
   for (size_t i = 0; i < connections_.size (); i++)
     {
@@ -261,7 +261,7 @@ PortConnectionsManager::print_ht (ConnectionHashTable &ht)
           str += fmt::format ("  {}\n", conn->print_to_str ());
         }
     }
-  g_message ("%s", str.c_str ());
+  z_info ("%s", str.c_str ());
 }
 
 void
@@ -273,5 +273,5 @@ PortConnectionsManager::print () const
     {
       str += fmt::format ("[{}] {}\n", i, connections_[i].print_to_str ());
     }
-  g_message ("%s", str.c_str ());
+  z_info ("%s", str.c_str ());
 }

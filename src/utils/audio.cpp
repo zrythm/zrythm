@@ -31,7 +31,7 @@ audio_write_raw_file (
   channels_t         channels,
   const std::string &filename)
 {
-  g_return_if_fail (samplerate < 10000000);
+  z_return_if_fail (samplerate < 10000000);
 
   z_debug (
     "writing raw file: already written %zu, "
@@ -55,7 +55,7 @@ audio_write_raw_file (
       type_minor = SF_FORMAT_PCM_24;
       break;
     case BitDepth::BIT_DEPTH_32:
-      g_return_if_fail (!flac);
+      z_return_if_fail (!flac);
       type_minor = SF_FORMAT_PCM_32;
       break;
     }
@@ -73,13 +73,13 @@ audio_write_raw_file (
 
   if (flac && write_chunk)
     {
-      g_critical ("cannot write chunks for flac");
+      z_error ("cannot write chunks for flac");
       return;
     }
 
   if (!sf_format_check (&info))
     {
-      g_critical ("Invalid SFINFO: %s", sf_strerror (nullptr));
+      z_error ("Invalid SFINFO: %s", sf_strerror (nullptr));
       return;
     }
 
@@ -93,7 +93,7 @@ audio_write_raw_file (
 
   if (info.format != (type_major | type_minor))
     {
-      g_critical (
+      z_error (
         "Invalid SNDFILE format: 0x%08X != 0x%08X", info.format,
         type_major | type_minor);
       return;
@@ -104,7 +104,7 @@ audio_write_raw_file (
   if (!flac)
     {
       size_t seek_to = write_chunk ? frames_already_written : 0;
-      g_debug ("seeking to %zu", seek_to);
+      z_debug ("seeking to %zu", seek_to);
       int ret = sf_seek (sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
@@ -114,7 +114,7 @@ audio_write_raw_file (
     }
 
   sf_count_t _nframes = (sf_count_t) nframes;
-  g_debug ("nframes = %ld", _nframes);
+  z_debug ("nframes = %ld", _nframes);
   sf_count_t count = sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
@@ -148,14 +148,14 @@ audio_get_num_frames (const char * filepath)
   if (!sndfile)
     {
       const char * err_str = sf_strerror (sndfile);
-      g_critical ("sndfile null: %s", err_str);
+      z_error ("sndfile null: %s", err_str);
       return 0;
     }
-  g_return_val_if_fail (sfinfo.frames > 0, 0);
+  z_return_val_if_fail (sfinfo.frames > 0, 0);
   unsigned_frame_t frames = (unsigned_frame_t) sfinfo.frames;
 
   int ret = sf_close (sndfile);
-  g_return_val_if_fail (ret == 0, 0);
+  z_return_val_if_fail (ret == 0, 0);
 
   return frames;
 }
@@ -174,7 +174,7 @@ audio_frames_equal (
     {
       if (!math_floats_equal_epsilon (src1[i], src2[i], epsilon))
         {
-          g_debug ("[%zu] %f != %f", i, (double) src1[i], (double) src2[i]);
+          z_debug ("[%zu] %f != %f", i, (double) src1[i], (double) src2[i]);
           return false;
         }
     }
@@ -243,7 +243,7 @@ audio_frames_empty (float * src, size_t num_frames)
     {
       if (!math_floats_equal (src[i], 0.f))
         {
-          g_debug ("[%zu] %f != 0", i, (double) src[i]);
+          z_debug ("[%zu] %f != 0", i, (double) src[i]);
           return false;
         }
     }
@@ -257,21 +257,21 @@ audio_file_is_silent (const char * filepath)
   memset (&sfinfo, 0, sizeof (sfinfo));
   sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile = sf_open (filepath, SFM_READ, &sfinfo);
-  g_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
+  z_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
 
   long    buf_size = sfinfo.frames * sfinfo.channels;
   float * data =
     static_cast<float *> (calloc ((size_t) buf_size, sizeof (float)));
   sf_count_t frames_read = sf_readf_float (sndfile, data, sfinfo.frames);
   g_assert_cmpint (frames_read, ==, sfinfo.frames);
-  g_return_val_if_fail (frames_read == sfinfo.frames, true);
-  g_debug ("read %ld frames for %s", frames_read, filepath);
+  z_return_val_if_fail (frames_read == sfinfo.frames, true);
+  z_debug ("read %ld frames for %s", frames_read, filepath);
 
   bool is_empty = audio_frames_empty (data, (size_t) buf_size);
   free (data);
 
   int ret = sf_close (sndfile);
-  g_return_val_if_fail (ret == 0, true);
+  z_return_val_if_fail (ret == 0, true);
 
   return is_empty;
 }
@@ -322,7 +322,7 @@ audio_detect_bpm (
       vamp_feature_set_free (feature_set);
     }
 
-  g_message ("getting remaining features");
+  z_info ("getting remaining features");
   ZVampFeatureSet * feature_set =
     vamp_plugin_get_remaining_features (plugin, samplerate);
   const ZVampFeatureList * fl =

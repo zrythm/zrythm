@@ -52,7 +52,7 @@ public:
 
   CompletionType get_completion_type () const
   {
-    g_return_val_if_fail (status_ == COMPLETED, HAS_ERROR);
+    z_return_val_if_fail (status_ == COMPLETED, HAS_ERROR);
     return completion_type_;
   }
 

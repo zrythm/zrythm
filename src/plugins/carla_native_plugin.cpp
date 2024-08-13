@@ -48,7 +48,7 @@ clear_gl_context (void)
       GdkGLContext * context = gdk_gl_context_get_current ();
       if (context)
         {
-          /*g_warning ("have GL context - clearing");*/
+          /*z_warning("have GL context - clearing");*/
           g_object_ref (context);
           gdk_gl_context_clear_current ();
         }
@@ -63,7 +63,7 @@ return_gl_context (GdkGLContext * context)
 {
   if (context)
     {
-      /*g_debug ("returning context");*/
+      /*z_debug ("returning context");*/
       gdk_gl_context_make_current (context);
       g_object_unref (context);
     }
@@ -75,9 +75,9 @@ CarlaNativePlugin::idle_cb ()
   if (visible_ && MAIN_WINDOW)
     {
       GdkGLContext * context = clear_gl_context ();
-      /*g_debug ("calling ui_idle()...");*/
+      /*z_debug ("calling ui_idle()...");*/
       native_plugin_descriptor_->ui_idle (native_plugin_handle_);
-      /*g_debug ("done calling ui_idle()");*/
+      /*z_debug ("done calling ui_idle()");*/
       return_gl_context (context);
 
       return SourceFuncContinue;
@@ -804,7 +804,7 @@ CarlaNativePlugin::get_descriptor_from_cached (
       break;
 #  endif
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
   descr->name_ = info.name;
@@ -870,7 +870,7 @@ CarlaNativePlugin::create_ports (bool loading)
           z_debug ("audio port hints %d: %u", i, audio_port_hints);
           if (audio_port_hints & CarlaBackend::AUDIO_PORT_IS_SIDECHAIN)
             {
-              g_debug ("%s is sidechain", port->id_.sym_.c_str ());
+              z_debug ("%s is sidechain", port->id_.sym_.c_str ());
               port->id_.flags_ |= PortIdentifier::Flags::Sidechain;
             }
 #  endif
@@ -957,7 +957,7 @@ CarlaNativePlugin::create_ports (bool loading)
    * because carla discovery reports 0 params for
    * AU plugins, so we update the descriptor here */
   descr->num_ctrl_ins = (int) param_counts->ins;
-  g_message (
+  z_info (
     "params: %d ins and %d outs",
     descr->num_ctrl_ins, (int) param_counts->outs);
 #  endif
@@ -1005,7 +1005,7 @@ CarlaNativePlugin::create_ports (bool loading)
             {
               char * sub =
                 string_get_substr_before_suffix (param_info->groupName, ":");
-              g_return_if_fail (sub);
+              z_return_if_fail (sub);
               port->id_.port_group_ = sub;
               g_free (sub);
             }
@@ -1014,7 +1014,7 @@ CarlaNativePlugin::create_ports (bool loading)
           const NativeParameter * native_param =
             native_plugin_descriptor_->get_parameter_info (
               native_plugin_handle_, i);
-          g_return_if_fail (native_param);
+          z_return_if_fail (native_param);
           if (native_param->hints & NATIVE_PARAMETER_IS_LOGARITHMIC)
             {
               port->id_.flags_ |= PortIdentifier::Flags::Logarithmic;
@@ -1071,7 +1071,7 @@ CarlaNativePlugin::create_ports (bool loading)
           added_port->minf_ = ranges->min;
           added_port->maxf_ = ranges->max;
 #  if 0
-          g_debug (
+          z_debug (
             "ranges: min %f max %f default %f",
             (double) port->minf_,
             (double) port->maxf_,
@@ -1211,7 +1211,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
             descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         default:
-          g_return_val_if_reached (-1);
+          z_return_val_if_reached (-1);
           break;
         }
 
@@ -1666,13 +1666,13 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   {
     z_return_if_fail (is_in_active_project ());
 
-    z_debug ("show/hide '%s (%p)' UI: %d", get_name (), fmt::ptr(this), show);
+    z_debug ("show/hide '%s ({})' UI: %d", get_name (), fmt::ptr (this), show);
 
     if (
       (!idle_connection_.connected () && !show)
       || (idle_connection_.connected () && show))
       {
-        g_message (
+        z_info (
           "plugin already has visibility status %d, "
           "doing nothing",
           show);

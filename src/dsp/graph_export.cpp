@@ -47,8 +47,8 @@ get_graph_from_node (GHashTable * anodes, GraphNode * node)
   ANode * anode = (ANode *) g_hash_table_lookup (anodes, node);
   if (anode && anode->node->id == node->id)
     return anode->graph;
-  g_warning ("%p %s", node, graph_node_get_name (node));
-  g_return_val_if_reached (nullptr);
+  z_warning ("{} {}", fmt::ptr (node), graph_node_get_name (node));
+  z_return_val_if_reached (nullptr);
 }
 
 static Agraph_t *
@@ -97,11 +97,11 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
           case PortIdentifier::OwnerType::CHANNEL_SEND:
             {
               Track * tr = node->port->get_track (true);
-              g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), nullptr);
-              g_return_val_if_fail (tr->channel, nullptr);
+              z_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), nullptr);
+              z_return_val_if_fail (tr->channel, nullptr);
               ChannelSend * send =
                 tr->channel->sends[node->port->id_.port_index];
-              g_return_val_if_fail (send, nullptr);
+              z_return_val_if_fail (send, nullptr);
               parent_node =
                 graph_find_node_from_channel_send (node->graph, send);
             }
@@ -297,9 +297,9 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
         case GraphNodeType::ROUTE_NODE_TYPE_CHANNEL_SEND:
           {
             ChannelSend * send = node->send;
-            g_return_if_fail (send);
+            z_return_if_fail (send);
             Track * tr = channel_send_get_track (send);
-            g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+            z_return_if_fail (IS_TRACK_AND_NONNULL (tr));
             parent_node = graph_find_node_from_track (node->graph, tr, true);
           }
           break;
@@ -315,7 +315,7 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
         }
 
       Agraph_t * aparent_graph = get_parent_graph (anodes, parent_node);
-      g_warn_if_fail (aparent_graph);
+      z_warn_if_fail (aparent_graph);
       char * node_name = graph_node_get_name (node);
       sprintf (cluster_name, "cluster_%s", node_name);
       anode->graph = agsubg (aparent_graph, cluster_name, true);
@@ -402,7 +402,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
 void
 graph_export_as (Graph * graph, GraphExportType type, const char * export_path)
 {
-  g_message ("exporting graph to %s...", export_path);
+  z_info ("exporting graph to %s...", export_path);
 
   switch (type)
     {
@@ -421,9 +421,9 @@ graph_export_as (Graph * graph, GraphExportType type, const char * export_path)
       break;
 #endif
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
 
-  g_message ("graph exported");
+  z_info ("graph exported");
 }

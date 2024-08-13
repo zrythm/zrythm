@@ -31,7 +31,7 @@ Velocity::get_arranger () const
 void
 Velocity::set_val (const int val)
 {
-  vel_ = (uint8_t) std::clamp (val, 0, 127);
+  vel_ = std::clamp<uint8_t> (val, 0, 127);
 
   /* re-set the midi note value to set a note off event */
   auto note = get_midi_note ();
@@ -64,7 +64,7 @@ Velocity::setting_enum_to_str (guint index)
       break;
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 guint

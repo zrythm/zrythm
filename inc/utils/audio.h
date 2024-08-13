@@ -46,7 +46,7 @@ audio_bit_depth_enum_to_int (BitDepth depth)
     case BitDepth::BIT_DEPTH_32:
       return 32;
     default:
-      g_return_val_if_reached (-1);
+      z_return_val_if_reached (-1);
     }
 }
 
@@ -62,7 +62,7 @@ audio_bit_depth_int_to_enum (int depth)
     case 32:
       return BitDepth::BIT_DEPTH_32;
     default:
-      g_return_val_if_reached (BitDepth::BIT_DEPTH_16);
+      z_return_val_if_reached (BitDepth::BIT_DEPTH_16);
     }
 }
 

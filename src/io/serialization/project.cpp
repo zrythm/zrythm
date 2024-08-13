@@ -79,9 +79,9 @@ Tracklist::define_fields (const Context &ctx)
                         Track::Type, yyjson_get_int (type_id_int));
                       auto track = Track::create_unique_from_type (type_id);
                       std::visit (
-                        [&] (auto &&track) {
-                          track->ISerializable<base_type<decltype (track)>>::
-                            deserialize (Context (val, ctx));
+                        [&] (auto &&t) {
+                          t->ISerializable<base_type<decltype (t)>>::deserialize (
+                            Context (val, ctx));
                         },
                         convert_to_variant<TrackPtrVariant> (track.get ()));
                       tracks_.push_back (std::move (track));

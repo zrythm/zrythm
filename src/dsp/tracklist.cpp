@@ -321,9 +321,9 @@ Tracklist::insert_track (
   bool                     recalc_graph)
 {
   return std::visit (
-    [&] (auto &&track) {
-      using T = base_type<decltype (track)>;
-      auto track_unique_ptr = std::unique_ptr<T> (track);
+    [&] (auto &&t) {
+      using T = base_type<decltype (t)>;
+      auto track_unique_ptr = std::unique_ptr<T> (t);
       return dynamic_cast<Track *> (insert_track<T> (
         std::move (track_unique_ptr), pos, publish_events, recalc_graph));
     },
@@ -337,9 +337,9 @@ Tracklist::append_track (
   bool                     recalc_graph)
 {
   return std::visit (
-    [&] (auto &&track) {
-      using T = base_type<decltype (track)>;
-      auto track_unique_ptr = std::unique_ptr<T> (track);
+    [&] (auto &&t) {
+      using T = base_type<decltype (t)>;
+      auto track_unique_ptr = std::unique_ptr<T> (t);
       return dynamic_cast<Track *> (append_track<T> (
         std::move (track_unique_ptr), publish_events, recalc_graph));
     },
@@ -850,13 +850,14 @@ Tracklist::import_regions (
                 }
 
               Track * track = nullptr;
-              if (import_info->track_name_hash)
+              if (import_info->track_name_hash_)
                 {
-                  track = find_track_by_name_hash (import_info->track_name_hash);
+                  track =
+                    find_track_by_name_hash (import_info->track_name_hash_);
                 }
               else
                 {
-                  int index = import_info->track_idx + iter;
+                  int index = import_info->track_idx_ + iter;
                   Track::create_empty_at_idx_with_action (track_type, index);
                   track = get_track (index);
                   executed_actions++;
@@ -1242,8 +1243,9 @@ Tracklist::handle_move_or_copy (
                           const auto &cur_track =
                             tracks_[track_below_parent->pos_ + j];
                           std::visit (
-                            [&] (auto &&cur_track) {
-                              after_tls->add_track (cur_track->clone_unique ());
+                            [&] (auto &&cur_track_casted) {
+                              after_tls->add_track (
+                                cur_track_casted->clone_unique ());
                             },
                             convert_to_variant<TrackPtrVariant> (
                               cur_track.get ()));
@@ -1345,20 +1347,6 @@ Tracklist::~Tracklist ()
     }
 }
 
-void
-Tracklist::instantiate_templates ()
-{
-  TrackVariant x;
-  std::visit (
-    [] (auto &&x) {
-      using TrackT = base_type<decltype (x)>;
-      Tracklist tl;
-      tl.find_track_by_name_hash<TrackT> (0);
-      tl.insert_track<TrackT> (std::unique_ptr<TrackT> (&x), 0, false, false);
-    },
-    x);
-}
-
 template ProcessableTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 template ChannelTrack *
@@ -1374,4 +1362,8 @@ Tracklist::find_track_by_name_hash (unsigned int) const;
 template LanedTrackImpl<MidiRegion> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 template GroupTargetTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template ModulatorTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+template ChordTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;

@@ -54,9 +54,8 @@ automation_arranger_widget_create_ap (
   float normalized_val = static_cast<float> ((height - start_y) / height);
   z_debug ("normalized val is %f", static_cast<double> (normalized_val));
 
-  /* clamp the value because the cursor might be
-   * outside the widget */
-  normalized_val = std::clamp (normalized_val, 0.f, 1.f);
+  /* clamp the value because the cursor might be outside the widget */
+  normalized_val = std::clamp<float> (normalized_val, 0, 1);
 
   float value = port->normalized_val_to_real (normalized_val);
 
@@ -85,8 +84,8 @@ automation_arranger_widget_resize_curves (ArrangerWidget * self, double offset_y
         {
           auto prj_ap =
             std::dynamic_pointer_cast<AutomationPoint> (ap->find_in_project ());
-          double new_curve_val =
-            std::clamp (prj_ap->curve_opts_.curviness_ + diff, -1.0, 1.0);
+          double new_curve_val = std::clamp<double> (
+            prj_ap->curve_opts_.curviness_ + diff, -1.0, 1.0);
           prj_ap->set_curviness (new_curve_val);
 
           /* make the change in the selection copy too */
@@ -180,7 +179,7 @@ automation_arranger_move_hit_aps (ArrangerWidget * self, double x, double y)
           float normalized_val = static_cast<float> ((height - y) / height);
 
           /* clamp the value because the cursor might be outside the widget */
-          normalized_val = std::clamp (normalized_val, 0.f, 1.f);
+          normalized_val = std::clamp<float> (normalized_val, 0.f, 1.f);
           float value = port->normalized_val_to_real (normalized_val);
           ap->set_fvalue (value, false, true);
 

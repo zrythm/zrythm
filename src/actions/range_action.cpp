@@ -442,5 +442,7 @@ RangeAction::to_string () const
       return _ ("Insert silence");
     case Type::Remove:
       return _ ("Delete range");
+    default:
+      z_return_val_if_reached ("");
     }
 }

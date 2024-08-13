@@ -96,7 +96,7 @@ _array_index_of (void ** _array, int size, void * element)
 void
 _array_dynamic_swap (void *** arr1, size_t * sz1, void *** arr2, size_t * sz2)
 {
-  g_return_if_fail (arr1 && arr2 && *arr1 && *arr2);
+  z_return_if_fail (arr1 && arr2 && *arr1 && *arr2);
   int is_1_larger = *sz1 > *sz2;
 
   void *** large_arr;
@@ -177,7 +177,7 @@ _array_double_size_if_full (
 
   if (G_UNLIKELY (count > *max_sz && *max_sz != 0))
     {
-      g_critical ("invalid count (%zu) and max sz (%zu)", count, *max_sz);
+      z_error ("invalid count (%zu) and max sz (%zu)", count, *max_sz);
       return;
     }
 
@@ -189,7 +189,7 @@ _array_double_size_if_full (
     }
   if (*max_sz == 0)
     {
-      /*g_message ("FIXME: current size of array given is 0.");*/
+      /*z_info ("FIXME: current size of array given is 0.");*/
       *arr_ptr = g_realloc_n (*arr_ptr, new_sz, el_size);
     }
   else

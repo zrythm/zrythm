@@ -33,7 +33,7 @@ result_func (
   gboolean success = FALSE;
 
   success = gtk_source_file_loader_load_finish (loader, res, nullptr);
-  g_return_if_fail (success);
+  z_return_if_fail (success);
 }
 
 /**
@@ -45,7 +45,7 @@ log_viewer_widget_new (void)
   LogViewerWidget * self = static_cast<LogViewerWidget *> (
     g_object_new (LOG_VIEWER_WIDGET_TYPE, nullptr));
 
-  g_return_val_if_fail (LOG->log_filepath, self);
+  z_return_val_if_fail (LOG->log_filepath, self);
 
   GtkSourceBuffer * buf = gtk_source_buffer_new (nullptr);
   self->src_view = GTK_SOURCE_VIEW (gtk_source_view_new_with_buffer (buf));

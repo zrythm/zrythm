@@ -132,7 +132,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
             cur_pos >= TRANSPORT->loop_start_pos_
             && cur_pos <= TRANSPORT->loop_end_pos_;
 
-          g_message ("loop range hit %d", range_hit);
+          z_info ("loop range hit %d", range_hit);
 
           /* if within existing range */
           if (range_hit)
@@ -189,7 +189,7 @@ timeline_ruler_on_drag_update (
   gdouble       offset_x,
   gdouble       offset_y)
 {
-  g_debug ("update");
+  z_debug ("update");
   /* handle x */
   switch (self->action)
     {
@@ -224,7 +224,7 @@ timeline_ruler_on_drag_update (
           double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
-              /*g_message ("offset %f", offset_x);*/
+              /*z_info ("offset %f", offset_x);*/
               ticks_diff = -ticks_diff;
             }
           double r1_ticks = TRANSPORT->range_1_.ticks_;
@@ -232,7 +232,7 @@ timeline_ruler_on_drag_update (
           {
             double r1_start_ticks = self->range1_start_pos.ticks_;
             double r2_start_ticks = self->range2_start_pos.ticks_;
-            /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks
+            /*z_info ("ticks diff before %f r1 start ticks %f r2 start ticks
              * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
               {
@@ -246,7 +246,7 @@ timeline_ruler_on_drag_update (
           double ticks_length =
             self->range1_first ? r2_ticks - r1_ticks : r1_ticks - r2_ticks;
 
-          /*g_message ("ticks diff %f", ticks_diff);*/
+          /*z_info ("ticks diff %f", ticks_diff);*/
 
           if (self->range1_first)
             {
@@ -282,7 +282,7 @@ timeline_ruler_on_drag_update (
           double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
-              /*g_message ("offset %f", offset_x);*/
+              /*z_info ("offset %f", offset_x);*/
               ticks_diff = -ticks_diff;
             }
           double r1_ticks = TRANSPORT->loop_start_pos_.ticks_;
@@ -290,7 +290,7 @@ timeline_ruler_on_drag_update (
           {
             double r1_start_ticks = self->range1_start_pos.ticks_;
             double r2_start_ticks = self->range2_start_pos.ticks_;
-            /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks
+            /*z_info ("ticks diff before %f r1 start ticks %f r2 start ticks
              * %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
               {
@@ -350,7 +350,7 @@ timeline_ruler_on_drag_update (
             }
           else if (self->target == RWTarget::PunchIn)
             {
-              g_message ("moving punch in");
+              z_info ("moving punch in");
               /* if position is acceptable */
               if (tmp >= timeline_start && tmp < TRANSPORT->punch_out_pos_)
                 {
@@ -373,7 +373,7 @@ timeline_ruler_on_drag_update (
             }
           else if (self->target == RWTarget::LoopStart)
             {
-              g_message ("moving loop start");
+              z_info ("moving loop start");
               /* if position is acceptable */
               if (tmp >= timeline_start && tmp < TRANSPORT->loop_end_pos_)
                 {
@@ -397,7 +397,7 @@ timeline_ruler_on_drag_update (
         }
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
 }

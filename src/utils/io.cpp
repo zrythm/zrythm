@@ -212,7 +212,7 @@ io_path_get_parent_dir (const char * path)
   char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent = string_get_regex_group (path, regex, 1);
 #  if 0
-  g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
+  z_info ("[%s]\npath: %s\nregex: %s\nparent: %s",
     __func__, path, regex, parent);
 #  endif
 
@@ -221,7 +221,7 @@ io_path_get_parent_dir (const char * path)
       strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
       parent = string_get_regex_group (path, regex, 1);
 #  if 0
-      g_message ("path: %s\nregex: %s\nparent: %s",
+      z_info ("path: %s\nregex: %s\nparent: %s",
         path, regex, parent);
 #  endif
     }
@@ -252,7 +252,7 @@ io_file_get_last_modified_datetime (const char * filename)
     {
       return result.st_mtime;
     }
-  g_message ("Failed to get last modified for %s", filename);
+  z_info ("Failed to get last modified for %s", filename);
   return -1;
 }
 
@@ -361,7 +361,7 @@ append_files_from_dir_ending_in (
         {
           /* this is needed because g_test_expect_message() doesn't work
            * with below */
-          g_warn_if_reached ();
+          z_warn_if_reached ();
           return;
         }
       else
@@ -502,7 +502,7 @@ io_get_next_available_filepath (const char * filepath)
 void
 io_open_directory (const char * path)
 {
-  g_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
+  z_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
 
   char command[800];
 #ifdef _WIN32
@@ -515,7 +515,7 @@ io_open_directory (const char * path)
   sprintf (command, OPEN_DIR_CMD " \"%s\"", path);
 #endif
   system (command);
-  g_message ("executed: %s", command);
+  z_info ("executed: %s", command);
 }
 
 void
@@ -554,7 +554,7 @@ io_get_registry_string_val (const char * path)
   RegGetValue (
     HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, nullptr,
     (PVOID) &value, &BufferSize);
-  g_message ("reg value: %s", value);
+  z_info ("reg value: %s", value);
   return g_strdup (value);
 }
 #endif
@@ -572,9 +572,9 @@ io_get_bundle_path (char * bundle_path)
   CFURLRef    bundleURL = CFBundleCopyBundleURL (bundle);
   Boolean     success = CFURLGetFileSystemRepresentation (
     bundleURL, TRUE, (UInt8 *) bundle_path, PATH_MAX);
-  g_return_val_if_fail (success, -1);
+  z_return_val_if_fail (success, -1);
   CFRelease (bundleURL);
-  g_message ("bundle path: %s", bundle_path);
+  z_info ("bundle path: %s", bundle_path);
 
   return 0;
 }
@@ -594,13 +594,13 @@ io_traverse_path (const char * abs_path)
     {
       if (!string_is_equal (traversed_path, abs_path))
         {
-          g_debug ("traversed path: %s => %s", abs_path, traversed_path);
+          z_debug ("traversed path: %s => %s", abs_path, traversed_path);
         }
       return traversed_path;
     }
   else
     {
-      g_warning ("realpath() failed: %s", strerror (errno));
+      z_warning ("realpath() failed: %s", strerror (errno));
       return g_strdup (abs_path);
     }
 #else

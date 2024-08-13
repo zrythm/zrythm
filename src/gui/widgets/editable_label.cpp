@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/editable_label.h"
+#include "utils/logger.h"
 
 G_DEFINE_TYPE (EditableLabelWidget, editable_label_widget, GTK_TYPE_WIDGET)
 
@@ -66,8 +67,8 @@ editable_label_widget_show_popover_for_widget (
   GenericStringGetter getter,
   GenericStringSetter setter)
 {
-  g_return_if_fail (GTK_IS_WIDGET (parent));
-  g_return_if_fail (GTK_IS_POPOVER (popover));
+  z_return_if_fail (GTK_IS_WIDGET (parent));
+  z_return_if_fail (GTK_IS_POPOVER (popover));
 
   EditableLabelWidget * self = static_cast<EditableLabelWidget *> (
     g_object_new (EDITABLE_LABEL_WIDGET_TYPE, nullptr));
@@ -112,7 +113,7 @@ editable_label_widget_on_mp_press (
   gdouble               y,
   EditableLabelWidget * self)
 {
-  g_debug ("n press %d", n_press);
+  z_debug ("n press %d", n_press);
 
   if (n_press == 2 && self->setter)
     {

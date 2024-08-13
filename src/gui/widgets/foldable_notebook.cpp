@@ -45,7 +45,7 @@ foldable_notebook_widget_set_visibility (
   for (int i = 0; i < num_pages; i++)
     {
       GtkWidget * widget = foldable_notebook_widget_get_widget_at_page (self, i);
-      g_return_if_fail (GTK_IS_WIDGET (widget));
+      z_return_if_fail (GTK_IS_WIDGET (widget));
       gtk_widget_set_visible (widget, new_visibility);
     }
 
@@ -111,7 +111,7 @@ foldable_notebook_widget_get_current_widget (FoldableNotebookWidget * self)
 void
 foldable_notebook_widget_toggle_visibility (FoldableNotebookWidget * self)
 {
-  g_return_if_fail (self);
+  z_return_if_fail (self);
   foldable_notebook_widget_set_visibility (
     self, !foldable_notebook_widget_is_content_visible (self));
 }
@@ -123,12 +123,12 @@ foldable_notebook_widget_get_widget_at_page (
 {
   GtkNotebook * notebook = self->notebook;
   int           num_pages = gtk_notebook_get_n_pages (notebook);
-  g_return_val_if_fail (page < num_pages, nullptr);
+  z_return_val_if_fail (page < num_pages, nullptr);
   GtkWidget * container =
     GTK_WIDGET (gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), page));
-  g_return_val_if_fail (container, nullptr);
+  z_return_val_if_fail (container, nullptr);
   GtkWidget * widget = gtk_widget_get_first_child (GTK_WIDGET (container));
-  g_return_val_if_fail (widget, nullptr);
+  z_return_val_if_fail (widget, nullptr);
   return widget;
 }
 
@@ -299,7 +299,7 @@ foldable_notebook_widget_setup (
 
   gtk_notebook_set_tab_pos (self->notebook, pos_in_paned);
 
-  g_return_if_fail (self->switch_page_handler_id == 0);
+  z_return_if_fail (self->switch_page_handler_id == 0);
   self->switch_page_handler_id = g_signal_connect (
     G_OBJECT (self->notebook), "switch-page", G_CALLBACK (on_switch_page), self);
 }

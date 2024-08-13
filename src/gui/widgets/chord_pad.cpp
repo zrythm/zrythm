@@ -55,7 +55,7 @@ on_chord_click_pressed (
   gdouble           y,
   gpointer          user_data)
 {
-  g_debug ("pressed");
+  z_debug ("pressed");
 
   ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
@@ -83,7 +83,7 @@ on_chord_click_released (
   gdouble           y,
   gpointer          user_data)
 {
-  g_debug ("released");
+  z_debug ("released");
 
   ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
@@ -106,7 +106,7 @@ on_drag_update (
   gdouble          offset_y,
   ChordPadWidget * self)
 {
-  g_message ("drag update");
+  z_info ("drag update");
 
   if (
     !self->drag_started
@@ -131,7 +131,7 @@ on_drag_update (
         content_providers, G_N_ELEMENTS (content_providers));
 
       GtkNative * native = gtk_widget_get_native (GTK_WIDGET (self->btn));
-      g_return_if_fail (native);
+      z_return_if_fail (native);
       GdkSurface * surface = gtk_native_get_surface (native);
 
       GdkDevice * device = gtk_gesture_get_device (GTK_GESTURE (gesture));
@@ -153,7 +153,7 @@ on_drag_begin (
   gdouble          start_y,
   ChordPadWidget * self)
 {
-  g_debug ("drag begin");
+  z_debug ("drag begin");
   self->drag_start_x = start_x;
   self->drag_start_y = start_y;
 
@@ -167,7 +167,7 @@ on_drag_end (
   gdouble          offset_y,
   ChordPadWidget * self)
 {
-  g_debug ("drag end");
+  z_debug ("drag end");
 
   send_note_offs (self);
 
@@ -183,7 +183,7 @@ on_dnd_begin (
   GdkDragContext * context,
   ChordPadWidget *    self)
 {
-  g_message ("dnd drag begin");
+  z_info ("dnd drag begin");
 
   gtk_drag_set_icon_name (
     context, "minuet-scales", 0, 0);
@@ -194,7 +194,7 @@ static void
 on_invert_btn_clicked (GtkButton * btn, ChordPadWidget * self)
 {
   const ChordDescriptor * descr = get_chord_descriptor (self);
-  g_return_if_fail (descr);
+  z_return_if_fail (descr);
   ChordDescriptor descr_clone = *descr;
 
   if (btn == self->invert_prev_btn)

@@ -141,7 +141,7 @@ AudioRegion::get_muted (bool check_parent) const
   if (check_parent)
     {
       auto lane = get_lane ();
-      g_return_val_if_fail (lane, true);
+      z_return_val_if_fail (lane, true);
       if (lane->is_effectively_muted ())
         return true;
     }
@@ -160,7 +160,7 @@ AudioRegion::replace_frames (
 
   if (duplicate_clip)
     {
-      g_warn_if_reached ();
+      z_warn_if_reached ();
 
       int prev_id = clip->pool_id_;
       int id = AUDIO_POOL->duplicate_clip (clip->pool_id_, false);
@@ -198,11 +198,11 @@ timestretch_buf (
   unsigned_frame_t    out_frame_offset,
   unsigned_frame_t    frames_to_process)
 {
-  g_return_if_fail (r && self->rt_stretcher_);
+  z_return_if_fail (r && self->rt_stretcher_);
   stretcher_set_time_ratio (self->rt_stretcher_, 1.0 / timestretch_ratio);
   unsigned_frame_t in_frames_to_process =
     (unsigned_frame_t) (frames_to_process * timestretch_ratio);
-  g_message (
+  z_info (
     "%s: in frame offset %" PRIu64
     ", "
     "out frame offset %" PRIu64
@@ -212,7 +212,7 @@ timestretch_buf (
     "out frames to process %" PRIu64,
     __func__, in_frame_offset, out_frame_offset, in_frames_to_process,
     frames_to_process);
-  g_return_if_fail (
+  z_return_if_fail (
     (in_frame_offset + in_frames_to_process) <= clip->num_frames_);
   ssize_t retrieved = stretcher_stretch (
     self->rt_stretcher_, &clip->ch_frames_.getReadPointer (0)[in_frame_offset],
@@ -221,7 +221,7 @@ timestretch_buf (
       : &clip->ch_frames_.getWritePointer (1)[in_frame_offset],
     in_frames_to_process, &lbuf_after_ts[out_frame_offset],
     &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
-  g_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
+  z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
 }
 
 void
@@ -230,7 +230,7 @@ AudioRegion::fill_stereo_ports (
   StereoPorts                 &stereo_ports) const
 {
   AudioClip * clip = get_clip ();
-  g_return_if_fail (clip);
+  z_return_if_fail (clip);
   auto * track = dynamic_cast<AudioTrack *> (get_track ());
 
   /* if timestretching in the timeline, skip processing */
@@ -258,7 +258,7 @@ AudioRegion::fill_stereo_ports (
     {
       needs_rt_timestretch = true;
       timestretch_ratio = (double) cur_bpm / (double) clip->bpm_;
-      g_message (
+      z_info (
         "timestretching: "
         "(cur bpm %f clip bpm %f) %f",
         (double) cur_bpm, (double) clip->bpm_, timestretch_ratio);
@@ -277,7 +277,7 @@ AudioRegion::fill_stereo_ports (
     arranger_object_get_length_in_ticks (r_obj);
   double ratio =
     r_local_ticks_at_start / r_len;
-  g_message ("ratio %f", ratio);
+  z_info ("ratio %f", ratio);
 #endif
 
   signed_frame_t r_local_frames_at_start = timeline_frames_to_local (
@@ -292,12 +292,12 @@ AudioRegion::fill_stereo_ports (
     &r_local_pos_at_end,
     r_local_frames_at_start + time_nfo->nframes);
 
-  g_message ("region");
+  z_info ("region");
   position_print_range (
     &self->base.pos, &self->base.end_pos_);
-  g_message ("g start pos");
+  z_info ("g start pos");
   position_print (&g_start_pos);
-  g_message ("region local pos start/end");
+  z_info ("region local pos start/end");
   position_print_range (
     &r_local_pos_at_start, &r_local_pos_at_end);
 #endif
@@ -339,7 +339,7 @@ AudioRegion::fill_stereo_ports (
           buff_index = (ssize_t) (buff_index * timestretch_ratio);
           if (buff_index < (ssize_t) buff_index_start)
             {
-              g_message (
+              z_info (
                 "buff index (%zd) < "
                 "buff index start (%zd)",
                 buff_index, buff_index_start);
@@ -352,7 +352,7 @@ AudioRegion::fill_stereo_ports (
                * up to this point */
               if (buff_size > 0)
                 {
-                  g_message ("buff size (%zd) > 0", buff_size);
+                  z_info ("buff size (%zd) > 0", buff_size);
                   stretch ();
                   prev_offset = current_local_frame;
                 }
@@ -498,7 +498,7 @@ float
 AudioRegion::detect_bpm (std::vector<float> &candidates)
 {
   AudioClip * clip = get_clip ();
-  g_return_val_if_fail (clip, 0.f);
+  z_return_val_if_fail (clip, 0.f);
 
   return audio_detect_bpm (
     clip->ch_frames_.getReadPointer (0), (size_t) clip->num_frames_,
@@ -529,7 +529,7 @@ bool
 AudioRegion::fix_positions (double frames_per_tick)
 {
   AudioClip * clip = get_clip ();
-  g_return_val_if_fail (clip, false);
+  z_return_val_if_fail (clip, false);
 
   /* verify that the loop does not contain more frames than available in the
    * clip */
@@ -540,7 +540,7 @@ AudioRegion::fix_positions (double frames_per_tick)
   signed_frame_t loop_end_global = Position::get_frames_from_ticks (
     pos_.ticks_ + loop_end_pos_.ticks_, frames_per_tick);
   signed_frame_t loop_len = loop_end_global - loop_start_global;
-  /*g_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
+  /*z_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
   signed_frame_t region_len = end_pos_.frames_ - pos_.frames_;
 
   signed_frame_t extra_loop_frames =

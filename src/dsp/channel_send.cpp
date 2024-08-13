@@ -179,7 +179,7 @@ ChannelSend::process (const nframes_t local_offset, const nframes_t nframes)
     return;
 
   Track * track = get_track ();
-  g_return_if_fail (track);
+  z_return_if_fail (track);
   if (track->out_signal_type_ == PortType::Audio)
     {
       if (math_floats_equal_epsilon (amount_->control_, 1.f, 0.00001f))
@@ -237,13 +237,13 @@ ChannelSend::get_target_track (const ChannelTrack * owner)
       conn = PORT_CONNECTIONS_MGR->get_source_or_dest (midi_out_->id_, false);
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
       break;
     }
 
-  g_return_val_if_fail (conn, nullptr);
+  z_return_val_if_fail (conn, nullptr);
   Port * port = Port::find_from_identifier (conn->dest_id_);
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (port), nullptr);
+  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), nullptr);
 
   return port->get_track (true);
 }
@@ -337,7 +337,7 @@ ChannelSend::get_amount_for_widgets () const
 void
 ChannelSend::set_amount_from_widget (float val)
 {
-  g_return_if_fail (is_enabled ());
+  z_return_if_fail (is_enabled ());
 
   set_amount (math_get_amp_val_from_fader (val));
 }

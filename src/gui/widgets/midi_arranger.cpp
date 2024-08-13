@@ -193,7 +193,7 @@ midi_arranger_widget_snap_midi_notes_r (
     dynamic_cast<LengthableObject *> (self->start_object.get ());
   double delta =
     pos.ticks_ - (start_object_lo->end_pos_.ticks_ + region->pos_.ticks_);
-  g_debug ("delta %f", delta);
+  z_debug ("delta %f", delta);
 
   for (auto midi_note : MIDI_SELECTIONS->objects_ | type_is<MidiNote> ())
     {

@@ -8,6 +8,7 @@
 
 #include "plugins/plugin_descriptor.h"
 
+#include "gtk_wrapper.h"
 #include <giomm.h>
 #include <glibmm.h>
 

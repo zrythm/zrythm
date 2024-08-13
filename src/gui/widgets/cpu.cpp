@@ -179,7 +179,7 @@ refresh_cpu_load (CpuWidget * self)
   FILE * fp = fopen ("/proc/stat", "r");
   if (!fp)
     {
-      g_warning ("failed to open /proc/stat");
+      z_warning ("failed to open /proc/stat");
       return G_SOURCE_REMOVE;
     }
   fscanf (fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
@@ -218,7 +218,7 @@ refresh_cpu_load (CpuWidget * self)
     }
   else
     {
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       self->cpu = 0;
     }
 

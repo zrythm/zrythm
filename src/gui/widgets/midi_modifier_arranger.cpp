@@ -94,7 +94,7 @@ midi_modifier_arranger_widget_ramp (
       auto x2 = self->start_x + offset_x;
       auto y1 = height - self->start_y;
       auto y2 = height - (self->start_y + offset_y);
-      /*g_message ("x1 %f.0 x2 %f.0 y1 %f.0 y2 %f.0",*/
+      /*z_info ("x1 %f.0 x2 %f.0 y1 %f.0 y2 %f.0",*/
       /*x1, x2, y1, y2);*/
 
       /* y = y1 + ((y2 - y1)/(x2 - x1))*(x - x1)
@@ -104,8 +104,8 @@ midi_modifier_arranger_widget_ramp (
 
       /* normalize and multiply by 127 to get velocity value */
       val = (int) (((double) val / (double) height) * 127.0);
-      val = std::clamp (val, 1, 127);
-      /*g_message ("val %d", val);*/
+      val = std::clamp<int> (val, 1, 127);
+      /*z_info ("val %d", val);*/
 
       vel->set_val (val);
 
@@ -148,8 +148,8 @@ midi_modifier_arranger_widget_resize_velocities (
 
   double start_ratio = CLAMP (1.0 - start_y / (double) height, 0.0, 1.0);
   double ratio = CLAMP (1.0 - (start_y + offset_y) / (double) height, 0.0, 1.0);
-  g_return_if_fail (start_ratio <= 1.0);
-  g_return_if_fail (ratio <= 1.0);
+  z_return_if_fail (start_ratio <= 1.0);
+  z_return_if_fail (ratio <= 1.0);
   int start_val = (int) (start_ratio * 127.0);
   int val = (int) (ratio * 127.0);
   self->vel_diff = val - start_val;
@@ -159,7 +159,7 @@ midi_modifier_arranger_widget_resize_velocities (
       auto &prj_vel =
         dynamic_cast<MidiNote *> (mn->find_in_project ().get ())->vel_;
       prj_vel->set_val (
-        std::clamp (prj_vel->vel_at_start_ + self->vel_diff, 1, 127));
+        std::clamp<int> (prj_vel->vel_at_start_ + self->vel_diff, 1, 127));
       EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, prj_vel.get ());
 
       /* make the change in the selection copies too */
@@ -192,7 +192,7 @@ midi_modifier_arranger_set_hit_velocity_vals (
 
   int    height = gtk_widget_get_height (GTK_WIDGET (self));
   double ratio = 1.0 - y / (double) height;
-  int    val = std::clamp ((int) (ratio * 127.0), 1, 127);
+  int    val = std::clamp<int> ((int) (ratio * 127.0), 1, 127);
 
   for (auto vel : objs | type_is<Velocity> ())
     {

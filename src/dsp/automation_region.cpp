@@ -45,9 +45,9 @@ AutomationTrack *
 AutomationRegion::get_automation_track () const
 {
   auto track = dynamic_cast<AutomatableTrack *> (get_track ());
-  g_return_val_if_fail (track != nullptr, nullptr);
+  z_return_val_if_fail (track != nullptr, nullptr);
   const auto &atl = track->get_automation_tracklist ();
-  g_return_val_if_fail ((int) atl.ats_.size () > id_.at_idx_, nullptr);
+  z_return_val_if_fail ((int) atl.ats_.size () > id_.at_idx_, nullptr);
 
   return atl.ats_[id_.at_idx_].get ();
 }
@@ -90,7 +90,7 @@ AutomationRegion::get_muted (bool check_parent) const
   if (check_parent)
     {
       auto at = get_automation_track ();
-      g_return_val_if_fail (at, true);
+      z_return_val_if_fail (at, true);
 
       if (at->automation_mode_ == AutomationMode::Off)
         return true;

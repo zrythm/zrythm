@@ -326,14 +326,8 @@ SampleProcessor::queue_metronome (Metronome::Type type, nframes_t offset)
     }
 }
 
-/**
- * Adds a sample to play to the queue from a file
- * path.
- */
 void
-sample_processor_queue_sample_from_file (
-  SampleProcessor * self,
-  const char *      path)
+SampleProcessor::queue_sample_from_file (const char * path)
 {
   /* TODO */
 }
@@ -591,7 +585,7 @@ SampleProcessor::find_and_queue_metronome (
   char end_pos_str[60];
   position_to_string (start_pos, start_pos_str);
   position_to_string (end_pos, end_pos_str);
-  g_message (
+  z_info (
     "%s: %s ~ %s <num bars before %d after %d>",
     __func__, start_pos_str, end_pos_str,
     num_bars_before, num_bars_after);

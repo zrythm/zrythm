@@ -88,7 +88,7 @@ chord_pad_panel_widget_refresh_load_preset_menu (ChordPadPanelWidget * self)
 void
 chord_pad_panel_widget_refresh (ChordPadPanelWidget * self)
 {
-  g_debug ("refreshing chord pad...");
+  z_debug ("refreshing chord pad...");
 
   chord_pad_panel_widget_setup (self);
 

@@ -133,9 +133,9 @@ LengthableObject::resize (
                 {
                   tmp.add_ticks (ticks);
                 }
-              g_return_if_fail (tmp.is_positive ());
+              z_return_if_fail (tmp.is_positive ());
               set_position (&tmp, PositionType::LoopEnd, false);
-              g_return_if_fail (lo->loop_end_pos_.is_positive ());
+              z_return_if_fail (lo->loop_end_pos_.is_positive ());
 
               /* if stretching, also stretch loop start */
               if (
@@ -144,9 +144,9 @@ LengthableObject::resize (
                 {
                   tmp = lo->loop_start_pos_;
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
-                  g_return_if_fail (tmp.is_positive ());
+                  z_return_if_fail (tmp.is_positive ());
                   set_position (&tmp, PositionType::LoopStart, false);
-                  g_return_if_fail (lo->loop_start_pos_.is_positive ());
+                  z_return_if_fail (lo->loop_start_pos_.is_positive ());
                 }
             }
           if (can_fade ())
@@ -163,9 +163,9 @@ LengthableObject::resize (
                 {
                   tmp.add_ticks (ticks);
                 }
-              g_return_if_fail (tmp.is_positive ());
+              z_return_if_fail (tmp.is_positive ());
               set_position (&tmp, PositionType::FadeOut, false);
-              g_return_if_fail (fo->fade_out_pos_.is_positive ());
+              z_return_if_fail (fo->fade_out_pos_.is_positive ());
 
               /* if stretching, also stretch fade in */
               if (
@@ -174,9 +174,9 @@ LengthableObject::resize (
                 {
                   tmp = fo->fade_in_pos_;
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
-                  g_return_if_fail (tmp.is_positive ());
+                  z_return_if_fail (tmp.is_positive ());
                   set_position (&tmp, PositionType::FadeIn, false);
-                  g_return_if_fail (fo->fade_in_pos_.is_positive ());
+                  z_return_if_fail (fo->fade_in_pos_.is_positive ());
                 }
             }
 
@@ -637,23 +637,6 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
     }
 
   return obj;
-}
-
-void
-LengthableObject_instantiate_templates ();
-
-void
-LengthableObject_instantiate_templates ()
-{
-  LengthableObjectVariant x;
-  std::visit (
-    [] (auto &&x) {
-      using T = base_type<decltype (x)>;
-      T lo;
-      lo.template split<T> (lo, Position (), false, true);
-      lo.unsplit (lo, lo, true);
-    },
-    x);
 }
 
 DEFINE_TEMPLATES_FOR_LENGTHABLE_OBJECT (MidiRegion);

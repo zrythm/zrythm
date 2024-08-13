@@ -41,7 +41,7 @@ inspector_plugin_widget_show (
   ProjectMixerSelections * ms,
   bool                     set_notebook_page)
 {
-  g_debug (
+  z_debug (
     "showing plugin inspector contents (set notebook page: %d)...",
     set_notebook_page);
 
@@ -49,9 +49,9 @@ inspector_plugin_widget_show (
     {
       PanelWidget * panel_widget = PANEL_WIDGET (
         gtk_widget_get_ancestor (GTK_WIDGET (self), PANEL_TYPE_WIDGET));
-      g_return_if_fail (panel_widget);
+      z_return_if_fail (panel_widget);
       panel_widget_raise (panel_widget);
-      g_debug ("raised plugin inspector");
+      z_debug ("raised plugin inspector");
     }
 
   /* show info for first selected plugin, or first plugin in

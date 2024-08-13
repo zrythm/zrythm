@@ -64,7 +64,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
   /* remove all things in the container */
   z_gtk_widget_remove_all_children (GTK_WIDGET (self->channels_box));
-  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
+  z_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
 
   /* add all channels */
   for (auto &track : TRACKLIST->tracks_)
@@ -125,7 +125,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
 void
 mixer_widget_setup (MixerWidget * self, Channel * master)
 {
-  g_message ("Setting up...");
+  z_info ("Setting up...");
 
   if (!master->widget_)
     {
@@ -142,7 +142,7 @@ mixer_widget_setup (MixerWidget * self, Channel * master)
 
   self->setup = true;
 
-  g_message ("done");
+  z_info ("done");
 }
 
 MixerWidget *

@@ -63,11 +63,11 @@ SnapGrid::get_ticks_from_length_and_type (NoteLength length, NoteType type)
   switch (length)
     {
     case NoteLength::NOTE_LENGTH_BAR:
-      g_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_bar_ > 0, -1);
+      z_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_bar_ > 0, -1);
       ticks = TRANSPORT->ticks_per_bar_;
       break;
     case NoteLength::NOTE_LENGTH_BEAT:
-      g_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_beat_ > 0, -1);
+      z_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_beat_ > 0, -1);
       ticks = TRANSPORT->ticks_per_beat_;
       break;
     case NoteLength::NOTE_LENGTH_2_1:
@@ -98,7 +98,7 @@ SnapGrid::get_ticks_from_length_and_type (NoteLength length, NoteType type)
       ticks = TICKS_PER_QUARTER_NOTE / 32;
       break;
     default:
-      g_return_val_if_reached (-1);
+      z_return_val_if_reached (-1);
     }
 
   switch (type)
@@ -107,12 +107,12 @@ SnapGrid::get_ticks_from_length_and_type (NoteLength length, NoteType type)
       break;
     case NoteType::NOTE_TYPE_DOTTED:
       ticks = 3 * ticks;
-      g_return_val_if_fail (ticks % 2 == 0, -1);
+      z_return_val_if_fail (ticks % 2 == 0, -1);
       ticks = ticks / 2;
       break;
     case NoteType::NOTE_TYPE_TRIPLET:
       ticks = 2 * ticks;
-      g_return_val_if_fail (ticks % 3 == 0, -1);
+      z_return_val_if_fail (ticks % 3 == 0, -1);
       ticks = ticks / 3;
       break;
     }
@@ -127,7 +127,7 @@ SnapGrid::get_snap_ticks () const
     {
       if (!ZRYTHM_HAVE_UI || ZRYTHM_TESTING)
         {
-          g_critical ("can only be used with UI");
+          z_error ("can only be used with UI");
           return -1;
         }
 
@@ -248,7 +248,7 @@ SnapGrid::get_nearby_snap_point (
   const Position &pos,
   const bool      return_prev)
 {
-  g_return_val_if_fail (pos.frames_ >= 0 && pos.ticks_ >= 0, false);
+  z_return_val_if_fail (pos.frames_ >= 0 && pos.ticks_ >= 0, false);
 
   ret_pos = pos;
   double snap_ticks = get_snap_ticks ();

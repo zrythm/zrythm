@@ -103,7 +103,7 @@ HardwareProcessor::create_port_for_ext_port (
 bool
 HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
 {
-  g_debug ("rescanning ports...");
+  z_debug ("rescanning ports...");
 
   /* get correct flow */
   PortFlow flow =

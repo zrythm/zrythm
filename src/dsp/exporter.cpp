@@ -56,6 +56,8 @@ Exporter::Settings::get_export_time_range () const
       return { TRANSPORT->loop_start_pos_, TRANSPORT->loop_end_pos_ };
     case Exporter::TimeRange::Custom:
       return { custom_start_, custom_end_ };
+    default:
+      z_return_val_if_reached (std::make_pair (Position (), Position ()));
     }
 }
 
@@ -137,7 +139,7 @@ Exporter::export_audio (Settings &info)
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
 #  if 0
-      g_message ("setting freewheel on");
+      z_info ("setting freewheel on");
       jack_set_freewheel (
         AUDIO_ENGINE->client, 1);
 #  endif
@@ -228,7 +230,7 @@ Exporter::export_audio (Settings &info)
 
   if (!progress_info_->pending_cancellation ())
     {
-      g_warn_if_fail (
+      z_warn_if_fail (
         math_floats_equal_epsilon (covered_ticks, total_ticks, 1.0));
     }
 
@@ -243,7 +245,7 @@ Exporter::export_audio (Settings &info)
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
 #  if 0
-      g_message ("setting freewheel off");
+      z_info ("setting freewheel off");
       jack_set_freewheel (
         AUDIO_ENGINE->client, 0);
 #  endif
@@ -299,7 +301,7 @@ Exporter::export_midi (Settings &info)
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 
       int midi_version = info.format_ == Exporter::Format::Midi0 ? 0 : 1;
-      g_debug ("setting MIDI version to %d", midi_version);
+      z_debug ("setting MIDI version to %d", midi_version);
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
@@ -419,7 +421,7 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   state_ = std::make_unique<AudioEngine::State> ();
 
   AUDIO_ENGINE->wait_for_pause (*state_, Z_F_NO_FORCE, true);
-  g_message ("engine paused");
+  z_info ("engine paused");
 
   TRANSPORT->play_state_ = Transport::PlayState::Rolling;
 
@@ -427,7 +429,7 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   AUDIO_ENGINE->preparing_to_export_ = false;
   TRANSPORT->loop_ = false;
 
-  g_message ("deactivating and reactivating plugins");
+  z_info ("deactivating and reactivating plugins");
 
   /* deactivate and activate all plugins to make them reset their states */
   /* TODO this doesn't reset the plugin state as expected, so sending note off
@@ -610,7 +612,7 @@ Exporter::export_to_file ()
         {
           progress_info_->mark_completed (
             ProgressInfo::CompletionType::HAS_ERROR, _ ("Invalid time range"));
-          g_warning ("invalid time range");
+          z_warning ("invalid time range");
           return; // FIXME: throw exception?
         }
     }

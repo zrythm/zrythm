@@ -60,7 +60,7 @@ project_info_new (const char * name, const char * filename)
           self->modified_str =
             g_strdup (datetime_epoch_to_str (self->modified).c_str ());
         }
-      g_return_val_if_fail (self->modified_str, nullptr);
+      z_return_val_if_fail (self->modified_str, nullptr);
     }
   else
     {
@@ -147,10 +147,10 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 {
   auto * nfo = static_cast<ProjectInfo *> (
     g_object_get_data (G_OBJECT (row), "project-info"));
-  g_debug ("activated %s", nfo->filename);
+  z_debug ("activated %s", nfo->filename);
 
   gZrythm->open_filename_ = nfo->filename;
-  g_return_if_fail (!gZrythm->open_filename_.empty ());
+  z_return_if_fail (!gZrythm->open_filename_.empty ());
   z_info ("Loading project: %s", gZrythm->open_filename_);
   gZrythm->creating_project_ = false;
 
@@ -226,7 +226,7 @@ on_language_changed (GObject * gobject, GParamSpec * pspec, GreeterWidget * self
   LocalizationLanguage lang =
     (LocalizationLanguage) adw_combo_row_get_selected (combo_row);
 
-  g_message ("language changed to %s", localization_get_localized_name (lang));
+  z_info ("language changed to %s", localization_get_localized_name (lang));
 
   /* update settings */
   g_settings_set_enum (S_P_UI_GENERAL, "language", (int) lang);
@@ -338,19 +338,19 @@ greeter_widget_set_progress_and_status (
   SemaphoreRAII lock (self->progress_status_lock);
   if (title && !description)
     {
-      g_message ("[%s]", title);
+      z_info ("[%s]", title);
     }
   else if (!title && description)
     {
-      g_message ("%s", description);
+      z_info ("%s", description);
     }
   else if (title && description)
     {
-      g_message ("[%s] %s", title, description);
+      z_info ("[%s] %s", title, description);
     }
   else
     {
-      g_critical ("need title and description");
+      z_error ("need title and description");
     }
 
   if (title)
@@ -377,7 +377,7 @@ greeter_widget_set_currently_scanned_plugin (
 static bool
 on_close_request (GtkWindow * window, GreeterWidget * self)
 {
-  g_debug ("close request");
+  z_debug ("close request");
 
   const char * cur_page = gtk_stack_get_visible_child_name (self->stack);
   if (string_is_equal (cur_page, "first-run"))
@@ -396,13 +396,13 @@ open_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, GreeterWidget * self)
   GFile *  file = gtk_file_dialog_open_finish (dialog, res, &err);
   if (!file)
     {
-      g_message ("no project selected: %s", err->message);
+      z_info ("no project selected: %s", err->message);
       g_error_free (err);
       return;
     }
 
   char * path = g_file_get_path (file);
-  g_return_if_fail (path);
+  z_return_if_fail (path);
   g_object_unref (file);
 
   gZrythm->open_filename_ = path;
@@ -425,7 +425,7 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
     G_OBJECT (adw_combo_row_get_selected_item (self->templates_combo_row));
   ProjectInfo * selected_template = static_cast<ProjectInfo *> (
     g_object_get_data (template_gobj, "project-info"));
-  g_return_if_fail (selected_template);
+  z_return_if_fail (selected_template);
 
   gZrythm->creating_project_ = true;
 
@@ -433,7 +433,7 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   if (selected_template->filename[0] == '-')
     {
       gZrythm->open_filename_.clear ();
-      g_message ("Creating blank project");
+      z_info ("Creating blank project");
     }
   else
     {
@@ -586,7 +586,7 @@ greeter_widget_select_project (
       gZrythm->creating_project = true;
       gZrythm->open_filename = g_build_filename (template_to_use, PROJECT_FILE, nullptr);
       gZrythm->opening_template = true;
-      g_message ("Creating project from template: %s", gZrythm->open_filename);
+      z_info ("Creating project from template: %s", gZrythm->open_filename);
 
       CreateProjectDialogWidget * create_prj_dialog =
         create_project_dialog_widget_new ();
@@ -656,7 +656,7 @@ greeter_widget_new (
   GreeterWidget * self = static_cast<GreeterWidget *> (g_object_new (
     GREETER_WIDGET_TYPE, "application", G_APPLICATION (app), "title",
     PROGRAM_NAME, "transient-for", parent, nullptr));
-  g_return_val_if_fail (Z_IS_GREETER_WIDGET (self), nullptr);
+  z_return_val_if_fail (Z_IS_GREETER_WIDGET (self), nullptr);
 
   /* if not startup, just proceed to select a project */
   if (!is_startup)

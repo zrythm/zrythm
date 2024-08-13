@@ -43,7 +43,7 @@ response_cb (
   char *                     response,
   FileImportProgressDialog * self)
 {
-  g_debug ("response: %s", response);
+  z_debug ("response: %s", response);
 
   if (string_is_equal (response, "cancel"))
     {
@@ -61,7 +61,7 @@ response_cb (
     }
   else
     {
-      g_critical ("unknown response %s", response);
+      z_error ("unknown response %s", response);
     }
 }
 
@@ -97,7 +97,7 @@ import_async_ready_cb (GObject * source_object, GAsyncResult * res, gpointer dat
   FileImport * fi = Z_FILE_IMPORT (data);
   auto         regions = file_import_finish (fi, res, &err);
   self->num_files_remaining--;
-  g_debug ("async ready: files remaining %d", self->num_files_remaining);
+  z_debug ("async ready: files remaining %d", self->num_files_remaining);
   if (!err)
     {
       z_info ("Imported regions for %s", fi->filepath);
@@ -186,7 +186,7 @@ dispose (GObject * obj)
 {
   FileImportProgressDialog * self = Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
 
-  g_debug ("disposing import dialog...");
+  z_debug ("disposing import dialog...");
 
   object_free_w_func_and_null (g_ptr_array_unref, self->file_imports);
   g_clear_object (&self->cancellable);
@@ -199,7 +199,7 @@ finalize (GObject * obj)
 {
   FileImportProgressDialog * self = Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
 
-  g_debug ("finalizing import dialog...");
+  z_debug ("finalizing import dialog...");
 
   std::destroy_at (&self->region_arrays);
   object_free_w_func_and_null (g_strfreev, self->filepaths);

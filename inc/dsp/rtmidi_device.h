@@ -100,7 +100,7 @@ public:
   /** Index (device index from RtMidi). */
   unsigned int id_;
 
-  std::string name;
+  // std::string name_;
 
   /** Whether opened or not. */
   bool opened_;

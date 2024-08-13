@@ -109,14 +109,14 @@ create_list_store (void)
               if (
                 path && string_contains_substr_case_insensitive (path, "zrythm"))
                 {
-                  g_debug ("found track type icon path: %s", path);
+                  z_debug ("found track type icon path: %s", path);
                   is_track_type_icon = true;
                   GError * err = NULL;
                   pixbuf = gdk_pixbuf_new_from_file_at_scale (
                     path, size, size, true, &err);
                   if (!pixbuf)
                     {
-                      g_warning ("failed to get pixbuf: %s", err->message);
+                      z_warning ("failed to get pixbuf: %s", err->message);
                       g_error_free (err);
                     }
                   g_free (path);
@@ -134,7 +134,7 @@ create_list_store (void)
         }
       else if (is_track_type_icon)
         {
-          g_message ("no pixbuf loaded for %s", icon_name);
+          z_info ("no pixbuf loaded for %s", icon_name);
         }
     }
   g_strfreev (list);
@@ -148,7 +148,7 @@ create_list_store (void)
 TrackIconChooserDialogWidget *
 track_icon_chooser_dialog_widget_new (Track * track)
 {
-  g_return_val_if_fail (IS_TRACK (track), nullptr);
+  z_return_val_if_fail (IS_TRACK (track), nullptr);
 
   auto                           str = format_str (_ ("%s icon"), track->name_);
   TrackIconChooserDialogWidget * self =

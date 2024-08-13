@@ -105,7 +105,7 @@ void
 fader_buttons_widget_block_signal_handlers (FaderButtonsWidget * self)
 {
 #if 0
-  g_debug (
+  z_debug (
     "blocking signal handlers for %s...",
     self->track->name);
 #endif
@@ -123,7 +123,7 @@ void
 fader_buttons_widget_unblock_signal_handlers (FaderButtonsWidget * self)
 {
 #if 0
-  g_debug (
+  z_debug (
     "unblocking signal handlers for %s...",
     self->track->name);
 #endif
@@ -228,7 +228,7 @@ on_btn_right_click (
   GMenuItem * menuitem;
 
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (
-    fmt::format ("app.bind-midi-cc::%p", fmt::ptr (port)).c_str ());
+    fmt::format ("app.bind-midi-cc::{}", fmt::ptr (port)).c_str ());
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (self->popover_menu, x_dbl, y_dbl, menu);
@@ -254,11 +254,11 @@ fader_buttons_widget_new (ChannelTrack * track)
 static void
 fader_buttons_finalize (FaderButtonsWidget * self)
 {
-  g_debug ("finalizing...");
+  z_debug ("finalizing...");
 
   G_OBJECT_CLASS (fader_buttons_widget_parent_class)->finalize (G_OBJECT (self));
 
-  g_debug ("done");
+  z_debug ("done");
 }
 
 static void

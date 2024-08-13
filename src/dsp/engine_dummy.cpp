@@ -18,7 +18,7 @@ process_cb (std::stop_token stop_token, AudioEngine &engine)
   double secs_per_block = (double) engine.block_length_ / engine.sample_rate_;
   gulong sleep_time = (gulong) (secs_per_block * 1000.0 * 1000);
 
-  g_message ("Running dummy audio engine for first time");
+  z_info ("Running dummy audio engine for first time");
 
   while (!stop_token.stop_requested ())
     {
@@ -52,7 +52,7 @@ engine_dummy_setup (AudioEngine * self)
     }
 
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
-  g_warn_if_fail (beats_per_bar >= 1);
+  z_warn_if_fail (beats_per_bar >= 1);
 
   z_info ("Dummy Engine set up [samplerate: %u]", self->sample_rate_);
 
@@ -62,7 +62,7 @@ engine_dummy_setup (AudioEngine * self)
 int
 engine_dummy_midi_setup (AudioEngine * self)
 {
-  g_message ("Setting up dummy MIDI engine");
+  z_info ("Setting up dummy MIDI engine");
 
   self->midi_buf_size_ = 4096;
 
@@ -74,7 +74,7 @@ engine_dummy_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      g_message ("%s: activating...", __func__);
+      z_info ("%s: activating...", __func__);
 
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
       self->update_frames_per_tick (
@@ -86,12 +86,12 @@ engine_dummy_activate (AudioEngine * self, bool activate)
     }
   else
     {
-      g_message ("%s: deactivating...", __func__);
+      z_info ("%s: deactivating...", __func__);
       self->dummy_audio_thread_->request_stop ();
       self->dummy_audio_thread_->join ();
     }
 
-  g_message ("%s: done", __func__);
+  z_info ("%s: done", __func__);
 
   return 0;
 }

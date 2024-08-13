@@ -471,8 +471,6 @@ private:
     TracklistSelections &after_tls,
     int                  diff_between_track_below_and_parent);
 
-  static void instantiate_templates ();
-
 public:
   /**
    * All tracks that exist.
@@ -553,6 +551,10 @@ Tracklist::find_track_by_name_hash (unsigned int) const;
 extern template LanedTrackImpl<MidiRegion> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 extern template GroupTargetTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+extern template ModulatorTrack *
+Tracklist::find_track_by_name_hash (unsigned int) const;
+extern template ChordTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 
 /**

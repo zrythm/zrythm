@@ -21,6 +21,7 @@
 
 #include "gui/widgets/gtk_flipper.h"
 #include "utils/gtk.h"
+#include "utils/logger.h"
 
 /**
  * GtkFlipper:
@@ -380,7 +381,7 @@ gtk_flipper_new (GtkWidget * child)
 GtkWidget *
 gtk_flipper_get_child (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  z_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
 
   return self->child;
 }
@@ -395,8 +396,8 @@ gtk_flipper_get_child (GtkFlipper * self)
 void
 gtk_flipper_set_child (GtkFlipper * self, GtkWidget * child)
 {
-  g_return_if_fail (GTK_IS_FLIPPER (self));
-  g_return_if_fail (child == NULL || GTK_IS_WIDGET (child));
+  z_return_if_fail (GTK_IS_FLIPPER (self));
+  z_return_if_fail (child == NULL || GTK_IS_WIDGET (child));
 
   if (self->child == child)
     return;
@@ -426,7 +427,7 @@ gtk_flipper_set_child (GtkFlipper * self, GtkWidget * child)
 gboolean
 gtk_flipper_get_flip_horizontal (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  z_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
 
   return self->flip_horizontal;
 }
@@ -444,7 +445,7 @@ gtk_flipper_get_flip_horizontal (GtkFlipper * self)
 void
 gtk_flipper_set_flip_horizontal (GtkFlipper * self, gboolean flip_horizontal)
 {
-  g_return_if_fail (GTK_IS_FLIPPER (self));
+  z_return_if_fail (GTK_IS_FLIPPER (self));
 
   flip_horizontal = !!flip_horizontal;
 
@@ -470,7 +471,7 @@ gtk_flipper_set_flip_horizontal (GtkFlipper * self, gboolean flip_horizontal)
 gboolean
 gtk_flipper_get_flip_vertical (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  z_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
 
   return self->flip_vertical;
 }
@@ -488,7 +489,7 @@ gtk_flipper_get_flip_vertical (GtkFlipper * self)
 void
 gtk_flipper_set_flip_vertical (GtkFlipper * self, gboolean flip_vertical)
 {
-  g_return_if_fail (GTK_IS_FLIPPER (self));
+  z_return_if_fail (GTK_IS_FLIPPER (self));
 
   flip_vertical = !!flip_vertical;
 
@@ -513,7 +514,7 @@ gtk_flipper_set_flip_vertical (GtkFlipper * self, gboolean flip_vertical)
 gboolean
 gtk_flipper_get_rotate (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  z_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
 
   return self->rotate;
 }
@@ -530,7 +531,7 @@ gtk_flipper_get_rotate (GtkFlipper * self)
 void
 gtk_flipper_set_rotate (GtkFlipper * self, gboolean rotate)
 {
-  g_return_if_fail (GTK_IS_FLIPPER (self));
+  z_return_if_fail (GTK_IS_FLIPPER (self));
 
   rotate = !!rotate;
 

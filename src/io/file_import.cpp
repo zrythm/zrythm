@@ -93,7 +93,7 @@ file_import_thread_func (
     return;
 
   Track * track = NULL;
-  if (self->import_info->track_name_hash)
+  if (self->import_info->track_name_hash_)
     {
       if (track_type == Track::Type::Midi)
         {
@@ -109,25 +109,25 @@ file_import_thread_func (
             }
         }
 
-      track =
-        TRACKLIST->find_track_by_name_hash (self->import_info->track_name_hash);
+      track = TRACKLIST->find_track_by_name_hash (
+        self->import_info->track_name_hash_);
       if (!track)
         {
           g_task_return_new_error (
             task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
             _ ("Failed to get track from hash %u"),
-            self->import_info->track_name_hash);
+            self->import_info->track_name_hash_);
           return;
         }
     }
 
   std::visit (
-    [&] (auto &&track) {
+    [&] (auto &&t) {
       int lane_pos =
-        self->import_info->lane >= 0
-          ? self->import_info->lane
-          : (!track || track->lanes_.size () == 1 ? 0 : track->lanes_.size () - 2);
-      int idx_in_lane = track ? track->lanes_[lane_pos]->regions_.size () : 0;
+        self->import_info->lane_ >= 0
+          ? self->import_info->lane_
+          : (!t || t->lanes_.size () == 1 ? 0 : t->lanes_.size () - 2);
+      int idx_in_lane = t ? t->lanes_[lane_pos]->regions_.size () : 0;
       switch (track_type)
         {
         case Track::Type::Audio:
@@ -136,8 +136,8 @@ file_import_thread_func (
               {
                 self->regions.emplace_back (std::make_shared<AudioRegion> (
                   -1, self->filepath, true, nullptr, 0, std::nullopt, 0,
-                  ENUM_INT_TO_VALUE (BitDepth, 0), self->import_info->pos,
-                  self->import_info->track_name_hash, lane_pos, idx_in_lane));
+                  ENUM_INT_TO_VALUE (BitDepth, 0), self->import_info->pos_,
+                  self->import_info->track_name_hash_, lane_pos, idx_in_lane));
               }
             catch (const ZrythmException &e)
               {
@@ -155,8 +155,8 @@ file_import_thread_func (
               try
                 {
                   self->regions.emplace_back (std::make_shared<MidiRegion> (
-                    self->import_info->pos, self->filepath,
-                    self->import_info->track_name_hash, lane_pos, idx_in_lane,
+                    self->import_info->pos_, self->filepath,
+                    self->import_info->track_name_hash_, lane_pos, idx_in_lane,
                     i));
                 }
               catch (const ZrythmException &e)
@@ -178,12 +178,12 @@ file_import_thread_func (
   g_task_return_error_if_cancelled (task);
   if (g_task_had_error (task))
     {
-      g_debug ("task was cancelled - return early");
+      z_debug ("task was cancelled - return early");
       return;
     }
 
   z_debug (
-    "returning %u region arrays from task (FileImport %p)...",
+    "returning {} region arrays from task (FileImport {})...",
     self->regions.size (), fmt::ptr (self));
   g_task_return_pointer (
     task, &self->regions, (GDestroyNotify) g_ptr_array_unref);
@@ -233,7 +233,7 @@ file_import_sync (FileImport * self, GError ** error)
 std::vector<std::shared_ptr<Region>>
 file_import_finish (FileImport * self, GAsyncResult * result, GError ** error)
 {
-  g_debug ("file_import_finish (FileImport %p)", self);
+  z_debug ("file_import_finish (FileImport {})", fmt::ptr (self));
   z_return_val_if_fail (
     g_task_is_valid (result, self->owner),
     std::vector<std::shared_ptr<Region>> ());
@@ -247,7 +247,7 @@ file_import_dispose (GObject * obj)
 {
   FileImport * self = Z_FILE_IMPORT (obj);
 
-  g_debug ("disposing file import instance %p...", self);
+  z_debug ("disposing file import instance {}...", fmt::ptr (self));
 
   /*g_clear_object (&self->owner);*/
 
@@ -259,7 +259,7 @@ file_import_finalize (GObject * obj)
 {
   FileImport * self = Z_FILE_IMPORT (obj);
 
-  z_debug ("finalizing file import instance %p...", fmt::ptr (self));
+  z_debug ("finalizing file import instance {}...", fmt::ptr (self));
 
   std::destroy_at (&self->regions);
   std::destroy_at (&self->filepath);

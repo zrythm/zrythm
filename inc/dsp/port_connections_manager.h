@@ -63,7 +63,6 @@ public:
    *
    * @return The number of ports found.
    */
-  NONNULL_ARGS (2)
   int get_sources_or_dests (
     std::vector<PortConnection *> * arr,
     const PortIdentifier           &id,

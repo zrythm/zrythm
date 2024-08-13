@@ -55,7 +55,7 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
           dest = self->selected_port;
         }
 
-      g_return_if_fail (src && dest);
+      z_return_if_fail (src && dest);
 
       if (src->can_be_connected_to (*dest))
         {

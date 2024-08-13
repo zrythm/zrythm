@@ -63,7 +63,7 @@ TrackProcessor::init_common ()
           for (size_t j = 0; j < 128; j++)
             {
               auto &cc_port = midi_cc_[i * 128 + j];
-              g_return_if_fail (cc_port);
+              z_return_if_fail (cc_port);
 
               /* set caches */
               cc_port->midi_channel_ = i + 1;
@@ -83,11 +83,11 @@ TrackProcessor::init_common ()
             } /* endforeach 0..127 */
 
           auto &pb = pitch_bend_[i];
-          g_return_if_fail (pb);
+          z_return_if_fail (pb);
           auto &kp = poly_key_pressure_[i];
-          g_return_if_fail (kp);
+          z_return_if_fail (kp);
           auto &cp = channel_pressure_[i];
-          g_return_if_fail (cp);
+          z_return_if_fail (cp);
 
           /* set caches */
           pb->midi_channel_ = i + 1;
@@ -434,7 +434,7 @@ void
 TrackProcessor::disconnect_all ()
 {
   auto track = get_track ();
-  g_return_if_fail (track);
+  z_return_if_fail (track);
 
   switch (track->in_signal_type_)
     {
@@ -745,7 +745,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
           /* fill midi events from piano roll data */
           auto * piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
 #if 0
-          g_message (
+          z_info (
             "filling midi events for %s from %ld", tr->name, time_nfo->g_start_frame_w_offset);
 #endif
           piano_roll_track->fill_events (
@@ -755,7 +755,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 #if 0
       if (pr->midi_events->num_events > 0)
         {
-          g_message (
+          z_info (
             "%s piano roll has %d events",
             tr->name,
             pr->midi_events->num_events);
@@ -771,7 +771,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
       if (midi_out_->midi_events_.active_events_.has_any ())
         {
 #if 0
-          g_debug (
+          z_debug (
             "%s midi processor out has %d events",
             tr->name, self->midi_out->midi_events_->num_events);
 #endif
@@ -785,13 +785,13 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 #if 0
       if (pr->midi_events->num_events > 0)
         {
-          g_message ("PR");
+          z_info ("PR");
           midi_events_print (pr->midi_events_, F_NOT_QUEUED);
         }
 
       if (self->midi_out->midi_events_->num_events > 0)
         {
-          g_message ("midi out");
+          z_info ("midi out");
           midi_events_print (self->midi_out->midi_events_, F_NOT_QUEUED);
         }
 #endif
@@ -953,7 +953,7 @@ void
 TrackProcessor::disconnect_from_prefader ()
 {
   auto tr = dynamic_cast<ChannelTrack *> (get_track ());
-  g_return_if_fail (tr);
+  z_return_if_fail (tr);
 
   auto &prefader = tr->channel_->prefader_;
   switch (tr->in_signal_type_)
@@ -981,7 +981,7 @@ void
 TrackProcessor::connect_to_prefader ()
 {
   auto tr = dynamic_cast<ChannelTrack *> (get_track ());
-  g_return_if_fail (tr);
+  z_return_if_fail (tr);
 
   auto &prefader = tr->channel_->prefader_;
   switch (tr->in_signal_type_)
@@ -1011,7 +1011,7 @@ void
 TrackProcessor::disconnect_from_plugin (Plugin &pl)
 {
   auto tr = get_track ();
-  g_return_if_fail (tr);
+  z_return_if_fail (tr);
 
   for (auto &in_port : pl.in_ports_)
     {
@@ -1040,7 +1040,7 @@ void
 TrackProcessor::connect_to_plugin (Plugin &pl)
 {
   auto tr = get_track ();
-  g_return_if_fail (tr);
+  z_return_if_fail (tr);
 
   size_t last_index, num_ports_to_connect, i;
 

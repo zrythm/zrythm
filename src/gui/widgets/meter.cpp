@@ -193,7 +193,7 @@ meter_widget_setup (MeterWidget * self, Port * port, bool small)
 {
   object_delete_and_null (self->meter);
   self->meter = new Meter (*port);
-  g_return_if_fail (self->meter);
+  z_return_if_fail (self->meter);
 
   /* set size */
   int width = small ? 4 : 8;

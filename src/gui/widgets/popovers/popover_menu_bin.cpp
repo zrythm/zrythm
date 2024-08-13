@@ -1,11 +1,9 @@
-/*
- * SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/popovers/popover_menu_bin.h"
 #include "utils/gtk.h"
+#include "utils/logger.h"
 
 G_DEFINE_TYPE (PopoverMenuBinWidget, popover_menu_bin_widget, GTK_TYPE_WIDGET)
 
@@ -18,10 +16,10 @@ on_right_click (
   gpointer          user_data)
 {
   PopoverMenuBinWidget * self = Z_POPOVER_MENU_BIN_WIDGET (user_data);
-  g_debug ("right click");
+  z_debug ("right click");
   if (!self->menu_model)
     {
-      g_debug ("no menu model");
+      z_debug ("no menu model");
       return;
     }
 
@@ -31,7 +29,7 @@ on_right_click (
 
   GdkRectangle tmp_rect = Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y);
   gtk_popover_set_pointing_to (GTK_POPOVER (self->popover_menu), &tmp_rect);
-  g_debug ("popping up");
+  z_debug ("popping up");
   gtk_popover_popup (GTK_POPOVER (self->popover_menu));
 }
 

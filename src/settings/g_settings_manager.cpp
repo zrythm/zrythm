@@ -76,7 +76,7 @@ print_or_reset_schema (
   while ((key = keys[i++]))
     {
       GSettingsSchemaKey * schema_key = g_settings_schema_get_key (schema, key);
-      g_return_val_if_fail (schema_key, -1);
+      z_return_val_if_fail (schema_key, -1);
       if (print_only)
         {
           GVariant * val = g_settings_get_value (settings, key);
@@ -104,14 +104,14 @@ print_or_reset_schema (
       else
         {
           GVariant * val = g_settings_schema_key_get_default_value (schema_key);
-          g_return_val_if_fail (val, -1);
+          z_return_val_if_fail (val, -1);
           char * var_str = g_variant_print (val, 0);
           sprintf (tmp, _ ("resetting %s to %s"), key, var_str);
           printf ("  %s\n", tmp);
           int ret = g_settings_set_value (settings, key, val);
           if (!ret)
             {
-              g_warning ("Failed to set value");
+              z_warning ("Failed to set value");
               return -1;
             }
         }
@@ -308,7 +308,7 @@ GSettingsManager::append_to_strv (
       return;
     }
 
-  g_debug (
+  z_debug (
     "%s: key %s val %s ignore if duplicate %d", __func__, key, val,
     ignore_if_duplicate);
 
@@ -325,7 +325,7 @@ GSettingsManager::append_to_strv (
       for (size_t i = 0; new_strv[i] != NULL; i++)
         {
           char * tmp = new_strv[i];
-          g_message ("setting [%zu]: %s", i, tmp);
+          z_info ("setting [%zu]: %s", i, tmp);
         }
     }
   else

@@ -77,6 +77,7 @@ lv2apply = executable (
     lilv_dep,
     gtk_dep,
     glibmm_dep,
+    giomm_dep,
     libm,
     ],
   include_directories: all_inc,

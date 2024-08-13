@@ -599,7 +599,7 @@ Port::expose_to_jack (bool expose)
         flags = JackPortIsInput;
       else
         {
-          g_return_if_reached ();
+          z_return_if_reached ();
         }
     }
   else
@@ -610,7 +610,7 @@ Port::expose_to_jack (bool expose)
         flags = JackPortIsOutput;
       else
         {
-          g_return_if_reached ();
+          z_return_if_reached ();
         }
     }
 
@@ -901,7 +901,7 @@ Port::disconnect_all ()
   if (!is_in_active_project ())
     {
 #if 0
-      g_debug ("%s (%p) is not a project port, skipping", this->id_.label, this);
+      z_debug ("%s ({}) is not a project port, skipping", this->id_.label, fmt::ptr(this));
 #endif
       return;
     }
@@ -1202,9 +1202,9 @@ Port::clear_external_buffer ()
     }
 
   auto jport = static_cast<jack_port_t *> (this->data_);
-  g_return_if_fail (jport);
+  z_return_if_fail (jport);
   void * buf = jack_port_get_buffer (jport, AUDIO_ENGINE->block_length_);
-  g_return_if_fail (buf);
+  z_return_if_fail (buf);
   if (
     this->id_.type_ == PortType::Audio
     && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
@@ -1226,7 +1226,7 @@ Port::clear_external_buffer ()
 Track *
 Port::get_track (bool warn_if_fail) const
 {
-  g_return_val_if_fail (IS_PORT (this), nullptr);
+  z_return_val_if_fail (IS_PORT (this), nullptr);
 
   /* return the pointer if dsp thread */
   if (
@@ -1240,7 +1240,7 @@ Port::get_track (bool warn_if_fail) const
   Track * track = nullptr;
   if (this->id_.track_name_hash_ != 0)
     {
-      g_return_val_if_fail (gZrythm && TRACKLIST, nullptr);
+      z_return_val_if_fail (gZrythm && TRACKLIST, nullptr);
 
       track = TRACKLIST->find_track_by_name_hash (this->id_.track_name_hash_);
       if (!track)
@@ -1261,7 +1261,7 @@ Port::get_track (bool warn_if_fail) const
 Plugin *
 Port::get_plugin (bool warn_if_fail) const
 {
-  g_return_val_if_fail (IS_PORT (this), nullptr);
+  z_return_val_if_fail (IS_PORT (this), nullptr);
 
   /* if DSP thread, return the pointer */
   if (

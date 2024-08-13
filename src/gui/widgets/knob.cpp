@@ -67,7 +67,7 @@ get_real_val (KnobWidget * self, bool snapped)
       break;
     }
 
-  g_return_val_if_reached (0.f);
+  z_return_val_if_reached (0.f);
 }
 
 /**
@@ -447,7 +447,7 @@ _knob_widget_new (
   int                size,
   float              zero)
 {
-  g_warn_if_fail (object);
+  z_warn_if_fail (object);
 
   KnobWidget * self =
     static_cast<KnobWidget *> (g_object_new (KNOB_WIDGET_TYPE, nullptr));

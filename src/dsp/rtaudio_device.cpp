@@ -47,7 +47,7 @@ myaudio_cb (
         {
           if (in_buf[i] > 0.08f)
             {
-              g_message (
+              z_info (
                 "have input %f", (double) in_buf[i]);
             }
         }

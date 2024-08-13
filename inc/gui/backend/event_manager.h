@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -18,7 +18,7 @@
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 
-#include <glibmm.h>
+#include "gtk_wrapper.h"
 
 /**
  * @addtogroup events

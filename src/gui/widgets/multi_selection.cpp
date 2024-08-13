@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/multi_selection.h"
+#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
@@ -16,7 +17,7 @@ on_toggle_toggled (GtkToggleButton * toggle, MultiSelectionWidget * self)
 
   guint idx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (toggle), "index"));
 
-  g_debug ("track filter toggle toggled at index %u: active %d", idx, active);
+  z_debug ("track filter toggle toggled at index {}: active {}", idx, active);
   if (active)
     {
       /* return if already selected */
@@ -93,7 +94,7 @@ multi_selection_widget_setup (
   const int                     num_selections,
   void *                        object)
 {
-  g_return_if_fail (strings);
+  z_return_if_fail (strings);
 
   for (int i = 0; i < num_items; i++)
     {

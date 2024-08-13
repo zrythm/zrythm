@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/string_list_item_factory.h"
+#include "utils/logger.h"
 
 #include "libadwaita_wrapper.h"
 
@@ -32,9 +33,8 @@ bind_cb (GtkListItemFactory * factory, GtkListItem * list_item, gpointer user_da
   else if (ADW_IS_ENUM_LIST_ITEM (gobj))
     {
       AdwEnumListItem * enum_item = ADW_ENUM_LIST_ITEM (gobj);
-      g_return_if_fail (user_data);
-      StringListItemFactoryEnumStringGetter getter =
-        (StringListItemFactoryEnumStringGetter) user_data;
+      z_return_if_fail (user_data);
+      auto getter = (StringListItemFactoryEnumStringGetter) user_data;
       str = getter (adw_enum_list_item_get_value (enum_item));
     }
   gtk_label_set_text (lbl, str.c_str ());

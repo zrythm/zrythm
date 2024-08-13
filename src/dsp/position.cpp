@@ -21,7 +21,7 @@ Position::update_ticks_from_frames (double ticks_per_frame)
     {
       ticks_per_frame = AUDIO_ENGINE->ticks_per_frame_;
     }
-  g_return_if_fail (ticks_per_frame > 0);
+  z_return_if_fail (ticks_per_frame > 0);
   ticks_ = (double) frames_ * ticks_per_frame;
 }
 
@@ -35,7 +35,7 @@ Position::get_frames_from_ticks (double ticks, double frames_per_tick)
     {
       frames_per_tick = AUDIO_ENGINE->frames_per_tick_;
     }
-  g_return_val_if_fail (frames_per_tick > 0, -1);
+  z_return_val_if_fail (frames_per_tick > 0, -1);
   return math_round_double_to_signed_frame_t ((ticks * frames_per_tick));
 }
 
@@ -46,15 +46,19 @@ Position::update_frames_from_ticks (double frames_per_tick)
 
   /* assert that no overflow occurred */
   if (ticks_ >= 0)
-    g_return_if_fail (frames_ >= 0);
+    {
+      z_return_if_fail (frames_ >= 0);
+    }
   else
-    g_return_if_fail (frames_ <= 0);
+    {
+      z_return_if_fail (frames_ <= 0);
+    }
 }
 
 void
 Position::set_to_bar (int bar)
 {
-  g_return_if_fail (
+  z_return_if_fail (
     TRANSPORT->ticks_per_bar_ > 0
     /* don't use INT_MAX, it results in a negative position */
     && bar <= POSITION_MAX_BAR);
@@ -73,7 +77,7 @@ Position::set_to_bar (int bar)
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 }
 
@@ -133,8 +137,8 @@ Position::get_prev_snap_point (
   if (track && track->has_lanes())
     {
       std::visit (
-        [&] (auto &&track) {
-          for (auto &lane : track->lanes_)
+        [&] (auto &&tr) {
+          for (auto &lane : tr->lanes_)
             {
               for (auto &r : lane->regions_)
                 {
@@ -198,8 +202,8 @@ Position::get_next_snap_point (
   if (track && track->has_lanes ())
     {
       std::visit (
-        [&] (auto &&track) {
-          for (auto &lane : track->lanes_)
+        [&] (auto &&t) {
+          for (auto &lane : t->lanes_)
             {
               for (auto &r : lane->regions_)
                 {
@@ -276,10 +280,10 @@ Position::snap (
 {
   /* this should only be called if snap is on. the check should be done before
    * calling */
-  g_warn_if_fail (sg.any_snap());
+  z_warn_if_fail (sg.any_snap ());
 
   /* position must be positive - only global positions allowed */
-  g_return_if_fail (frames_ >= 0 && ticks_ >= 0);
+  z_return_if_fail (frames_ >= 0 && ticks_ >= 0);
 
   if (!sg.snap_to_events_)
     {
@@ -291,7 +295,7 @@ Position::snap (
   if (sg.snap_to_grid_keep_offset_)
     {
       /* get previous snap point from start pos */
-      g_return_if_fail (start_pos);
+      z_return_if_fail (start_pos);
       Position prev_sp_from_start_pos;
       start_pos->get_prev_snap_point (track, region, sg, prev_sp_from_start_pos);
 
@@ -337,14 +341,14 @@ Position::from_seconds (double secs)
 void
 Position::add_bars (int bars)
 {
-  g_warn_if_fail (TRANSPORT->ticks_per_bar_ > 0);
+  z_warn_if_fail (TRANSPORT->ticks_per_bar_ > 0);
   add_ticks (bars * TRANSPORT->ticks_per_bar_);
 }
 
 void
 Position::add_beats (int beats)
 {
-  g_return_if_fail (TRANSPORT->ticks_per_beat_ > 0);
+  z_return_if_fail (TRANSPORT->ticks_per_beat_ > 0);
   add_ticks (beats * TRANSPORT->ticks_per_beat_);
 }
 
@@ -384,7 +388,7 @@ Position::to_string (char * buf, int decimal_places) const
   int    beats = get_beats (true);
   int    sixteenths = get_sixteenths (true);
   double ticks = get_ticks ();
-  g_return_if_fail (bars > -80000);
+  z_return_if_fail (bars > -80000);
   if (ZRYTHM_TESTING)
     {
       sprintf (
@@ -535,7 +539,7 @@ Position::get_total_sixteenths (bool include_current) const
 int
 Position::get_bars (bool start_at_one) const
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar_ > 0, -1);
 
   double total_bars = ticks_ / TRANSPORT->ticks_per_bar_;
@@ -562,13 +566,13 @@ Position::get_bars (bool start_at_one) const
 int
 Position::get_beats (bool start_at_one) const
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar_ > 0
       && TRANSPORT->ticks_per_beat_ > 0 && P_TEMPO_TRACK,
     -1);
 
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar();
-  g_return_val_if_fail (beats_per_bar > 0, -1);
+  z_return_val_if_fail (beats_per_bar > 0, -1);
 
   auto total_bars = (double) get_bars (false);
   double total_beats = ticks_ / TRANSPORT->ticks_per_beat_;
@@ -596,13 +600,13 @@ Position::get_beats (bool start_at_one) const
 int
 Position::get_sixteenths (bool start_at_one) const
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     gZrythm && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat_ > 0, -1);
 
   double total_beats = (double) get_total_beats (true);
-  /*g_message ("total beats %f", total_beats);*/
+  /*z_info ("total beats %f", total_beats);*/
   double total_sixteenths = ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL;
-  /*g_message ("total sixteenths %f",*/
+  /*z_info ("total sixteenths %f",*/
   /*total_sixteenths);*/
   total_sixteenths -= (double) (total_beats * TRANSPORT->sixteenths_per_beat_);
   if (total_sixteenths >= 0.0)
@@ -629,7 +633,7 @@ double
 Position::get_ticks () const
 {
   double total_sixteenths = get_total_sixteenths (true);
-  /*g_debug ("total sixteenths %f", total_sixteenths);*/
+  /*z_debug ("total sixteenths %f", total_sixteenths);*/
   return ticks_ - (total_sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
 }
 

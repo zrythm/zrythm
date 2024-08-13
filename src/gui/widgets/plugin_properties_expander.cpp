@@ -97,7 +97,7 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
           auto carla = static_cast<CarlaNativePlugin *> (self->plugin);
           carla->load_state (&path);
 #else
-          g_return_if_reached ();
+          z_return_if_reached ();
 #endif
         }
       EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_LOADED, self->plugin);

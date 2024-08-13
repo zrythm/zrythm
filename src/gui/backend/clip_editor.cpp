@@ -19,11 +19,11 @@
 void
 ClipEditor::init_loaded ()
 {
-  g_message ("Initializing clip editor backend...");
+  z_info ("Initializing clip editor backend...");
 
   piano_roll_.init_loaded ();
 
-  g_message ("Done initializing clip editor backend");
+  z_info ("Done initializing clip editor backend");
 }
 
 void
@@ -31,11 +31,11 @@ ClipEditor::set_region (Region * region, bool fire_events)
 {
   if (region)
     {
-      g_return_if_fail (IS_REGION (region));
+      z_return_if_fail (IS_REGION (region));
     }
 
   z_debug (
-    "clip editor: setting region to %p (%s)", fmt::ptr (region),
+    "clip editor: setting region to {} ({})", fmt::ptr (region),
     region ? region->name_ : nullptr);
 
   /* if first time showing a region, show the
@@ -53,7 +53,7 @@ ClipEditor::set_region (Region * region, bool fire_events)
   bool sem_aquired = false;
   if (gZrythm && ROUTER && AUDIO_ENGINE->run_.load ())
     {
-      g_debug (
+      z_debug (
         "clip editor region changed, waiting for graph access to make the change");
       ROUTER->graph_access_sem_.acquire ();
       sem_aquired = true;
@@ -79,7 +79,7 @@ ClipEditor::set_region (Region * region, bool fire_events)
   if (sem_aquired)
     {
       ROUTER->graph_access_sem_.release ();
-      g_debug ("clip editor region successfully changed");
+      z_debug ("clip editor region successfully changed");
     }
 
   if (fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_CLIP_EDITOR)
@@ -144,7 +144,7 @@ ClipEditor::get_track ()
     return nullptr;
 
   Region * region = get_region ();
-  g_return_val_if_fail (region, nullptr);
+  z_return_val_if_fail (region, nullptr);
 
   return region->get_track ();
 }

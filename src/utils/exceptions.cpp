@@ -29,7 +29,7 @@ ZrythmException::handle (const std::string &format, Args &&... args) const
     }
   else
     {
-      g_warning ("%s", errorMessage.c_str ());
+      z_warning ("%s", errorMessage.c_str ());
     }
 
   return win;

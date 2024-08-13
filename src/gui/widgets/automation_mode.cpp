@@ -90,7 +90,7 @@ AutomationModeWidget::get_hit_mode (double x) const
         }
       total_widths += 2 * AUTOMATION_MODE_HPADDING * (i + 1);
       double next_start = x_ + total_widths;
-      /*g_message ("[%d] x: %f next start: %f",*/
+      /*z_info ("[%d] x: %f next start: %f",*/
       /*i, x, next_start);*/
       if (x < next_start)
         {
@@ -121,7 +121,7 @@ AutomationModeWidget::get_color_for_state (
       *c = toggled_colors_[static_cast<int> (mode)];
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
     }
 }
 
@@ -214,7 +214,7 @@ AutomationModeWidget::draw_bg (
           new_width = ((int) x + width_) - (int) new_x;
           break;
         default:
-          g_warn_if_reached ();
+          z_warn_if_reached ();
           break;
         }
 
@@ -245,7 +245,7 @@ AutomationModeWidget::draw (
     {
       has_hit_mode_ = 1;
       hit_mode_ = get_hit_mode (x_cursor);
-      /*g_message ("hit mode %d", self->hit_mode);*/
+      /*z_info ("hit mode %d", self->hit_mode);*/
     }
 
   /* get current states */

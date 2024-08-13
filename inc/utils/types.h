@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -151,13 +151,7 @@ enum class AudioValueFormat
 struct EngineProcessTimeInfo
 {
 public:
-  inline void print () const
-  {
-    g_message (
-      "Global start frame: %" PRIuFAST64 " (with offset %" PRIuFAST64
-      ") | local offset: %" PRIu32 " | num frames: %" PRIu32,
-      g_start_frame_, g_start_frame_w_offset_, local_offset_, nframes_);
-  }
+  void print () const;
 
 public:
   /** Global position at the start of the processing cycle (no offset added). */
@@ -438,16 +432,16 @@ public:
    * @param semaphore The semaphore to acquire.
    */
   explicit SemaphoreRAII (SemaphoreType &semaphore, bool force_acquire = false)
-      : semaphore (semaphore), acquired (false)
+      : semaphore_ (semaphore)
   {
     if (force_acquire)
       {
-        semaphore.acquire ();
-        acquired = true;
+        semaphore_.acquire ();
+        acquired_ = true;
       }
     else
       {
-        acquired = semaphore.try_acquire ();
+        acquired_ = semaphore_.try_acquire ();
       }
   }
 
@@ -456,9 +450,9 @@ public:
    */
   ~SemaphoreRAII ()
   {
-    if (acquired)
+    if (acquired_)
       {
-        semaphore.release ();
+        semaphore_.release ();
       }
   }
 
@@ -469,11 +463,11 @@ public:
    */
   bool try_acquire ()
   {
-    if (!acquired)
+    if (!acquired_)
       {
-        acquired = semaphore.try_acquire ();
+        acquired_ = semaphore_.try_acquire ();
       }
-    return acquired;
+    return acquired_;
   }
 
   /**
@@ -481,10 +475,10 @@ public:
    */
   void release ()
   {
-    if (acquired)
+    if (acquired_)
       {
-        semaphore.release ();
-        acquired = false;
+        semaphore_.release ();
+        acquired_ = false;
       }
   }
 
@@ -493,11 +487,11 @@ public:
    *
    * @return true if the semaphore is acquired, false otherwise.
    */
-  bool is_acquired () const { return acquired; }
+  bool is_acquired () const { return acquired_; }
 
 private:
-  SemaphoreType &semaphore; ///< Reference to the binary semaphore.
-  bool           acquired;  ///< Flag indicating if the semaphore is acquired.
+  SemaphoreType &semaphore_;  ///< Reference to the binary semaphore.
+  bool           acquired_ = false; ///< Flag indicating if the semaphore is acquired.
 };
 
 enum class CacheType

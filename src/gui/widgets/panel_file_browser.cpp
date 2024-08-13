@@ -371,8 +371,8 @@ on_position_change (
 
   int divider_pos = gtk_paned_get_position (self->paned);
   g_settings_set_int (S_UI, "browser-divider-position", divider_pos);
-  g_message ("set browser divider position to %d", divider_pos);
-  /*g_warning ("pos %d", divider_pos);*/
+  z_info ("set browser divider position to %d", divider_pos);
+  /*z_warning("pos %d", divider_pos);*/
 }
 
 static void
@@ -384,7 +384,7 @@ on_map (GtkWidget * widget, PanelFileBrowserWidget * self)
 
       /* set divider position */
       int divider_pos = g_settings_get_int (S_UI, "browser-divider-position");
-      /*g_warning ("pos %d", divider_pos);*/
+      /*z_warning("pos %d", divider_pos);*/
       gtk_paned_set_position (self->paned, divider_pos);
     }
 }
@@ -412,7 +412,7 @@ panel_file_browser_widget_new (void)
   PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (
     g_object_new (PANEL_FILE_BROWSER_WIDGET_TYPE, nullptr));
 
-  g_message ("Instantiating panel_file_browser widget...");
+  z_info ("Instantiating panel_file_browser widget...");
 
   self->first_draw = true;
 

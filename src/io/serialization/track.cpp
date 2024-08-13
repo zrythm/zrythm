@@ -61,6 +61,15 @@ RegionOwnerImpl<RegionT>::define_base_fields (
   T::serialize_fields (ctx, T::make_field ("regions", regions_));
 }
 
+template void
+RegionOwnerImpl<MidiRegion>::define_base_fields (const Context &);
+template void
+RegionOwnerImpl<AudioRegion>::define_base_fields (const Context &);
+template void
+RegionOwnerImpl<AutomationRegion>::define_base_fields (const Context &);
+template void
+RegionOwnerImpl<ChordRegion>::define_base_fields (const Context &);
+
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::define_fields (const ISerializableBase::Context &ctx)

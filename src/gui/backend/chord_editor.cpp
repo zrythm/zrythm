@@ -165,5 +165,5 @@ ChordEditor::get_chord_index (const ChordDescriptor &chord) const
         return i;
     }
 
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }

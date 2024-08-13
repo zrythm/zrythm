@@ -75,7 +75,7 @@ Project::Project ()
 std::string
 Project::get_newer_backup ()
 {
-  std::string filepath = get_path (ProjectPath::PROJECT_FILE, false);
+  std::string filepath = get_path (ProjectPath::ProjectFile, false);
   z_return_val_if_fail (!filepath.empty (), "");
 
   std::filesystem::file_time_type original_time;
@@ -135,7 +135,7 @@ Project::make_project_dirs (bool is_backup)
       ProjectPath::PLUGIN_EXT_LINKS })
     {
       std::string dir = get_path (type, is_backup);
-      g_return_if_fail (dir.length () > 0);
+      z_return_if_fail (dir.length () > 0);
       try
         {
           io_mkdir (dir);
@@ -158,7 +158,7 @@ Project::compress_or_decompress (
   const size_t           _src_size,
   ProjectCompressionFlag src_type)
 {
-  g_message (
+  z_info (
     "using zstd v%d.%d.%d", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
     ZSTD_VERSION_RELEASE);
 
@@ -189,7 +189,7 @@ Project::compress_or_decompress (
   size_t dest_size = 0;
   if (compress)
     {
-      g_message ("compressing project...");
+      z_info ("compressing project...");
       size_t compress_bound = ZSTD_compressBound (src_size);
       dest = (char *) malloc (compress_bound);
       dest_size = ZSTD_compress (dest, compress_bound, src, src_size, 1);
@@ -512,7 +512,7 @@ char *
 Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
-  std::string project_file_path = get_path (ProjectPath::PROJECT_FILE, backup);
+  std::string project_file_path = get_path (ProjectPath::ProjectFile, backup);
   z_debug ("getting text for project file %s", project_file_path);
 
   char *   compressed_pj;
@@ -529,7 +529,7 @@ Project::get_existing_uncompressed_text (bool backup)
     }
 
   /* decompress */
-  g_message ("%s: decompressing project...", __func__);
+  z_info ("%s: decompressing project...", __func__);
   char * text = NULL;
   size_t text_size;
   err = NULL;
@@ -688,14 +688,14 @@ Project::get_path (ProjectPath path, bool backup)
       break;
     case ProjectPath::POOL:
       return Glib::build_filename (dir, PROJECT_POOL_DIR);
-    case ProjectPath::PROJECT_FILE:
+    case ProjectPath::ProjectFile:
       return Glib::build_filename (dir, PROJECT_FILE);
     case ProjectPath::FINISHED_FILE:
       return Glib::build_filename (dir, PROJECT_FINISHED_FILE);
     default:
-      g_return_val_if_reached ("");
+      z_return_val_if_reached ("");
     }
-  g_return_val_if_reached ("");
+  z_return_val_if_reached ("");
 }
 
 void
@@ -934,7 +934,7 @@ Project::save (
     }
 
   auto ctx = std::make_unique<SaveContext> ();
-  ctx->project_file_path_ = get_path (ProjectPath::PROJECT_FILE, is_backup);
+  ctx->project_file_path_ = get_path (ProjectPath::ProjectFile, is_backup);
   ctx->show_notification_ = show_notification;
   ctx->is_backup_ = is_backup;
   ctx->project_ = clone (is_backup);

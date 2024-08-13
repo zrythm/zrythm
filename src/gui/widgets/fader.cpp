@@ -261,7 +261,7 @@ drag_begin (
   double           start_y,
   FaderWidget *    self)
 {
-  g_return_if_fail (IS_FADER (self->fader));
+  z_return_if_fail (IS_FADER (self->fader));
 
 #if 0
   char * string =
@@ -287,7 +287,7 @@ drag_update (
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = -offset_y;
 
-  g_return_if_fail (IS_FADER (self->fader));
+  z_return_if_fail (IS_FADER (self->fader));
 
   /*int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);*/
   int use_y = 1;
@@ -305,8 +305,8 @@ drag_update (
       adjusted_diff *= 0.4;
     }
 
-  double new_fader_val =
-    std::clamp ((double) self->fader->fader_val_ + adjusted_diff, 0.0, 1.0);
+  double new_fader_val = std::clamp<double> (
+    (double) self->fader->fader_val_ + adjusted_diff, 0.0, 1.0);
   self->fader->set_fader_val ((float) new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
@@ -496,7 +496,7 @@ fader_tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, gpointer user_da
 void
 fader_widget_setup (FaderWidget * self, Fader * fader, int height)
 {
-  g_return_if_fail (IS_FADER (fader));
+  z_return_if_fail (IS_FADER (fader));
 
   self->fader = fader;
 

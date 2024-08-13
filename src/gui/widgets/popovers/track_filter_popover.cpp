@@ -35,7 +35,7 @@ on_track_types_changed (
 {
   TrackFilterPopoverWidget * self = Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
 
-  g_debug (
+  z_debug (
     "selected filter track types changed: %u selected", selection_indices->len);
 
   GVariantBuilder builder;
@@ -89,7 +89,7 @@ filter_func (void * gobj, void * user_data)
   WrappedObjectWithChangeSignal * wrapped_track =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   Track * track = (Track *) wrapped_track->obj;
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
   bool filtered =
     !string_contains_substr_case_insensitive (track->name_.c_str (), name);

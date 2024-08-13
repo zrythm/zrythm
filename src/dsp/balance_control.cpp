@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/balance_control.h"
+#include "utils/logger.h"
 
 #include "gtk_wrapper.h"
 
@@ -31,9 +32,7 @@ balance_control_get_calc_lr (
         }
       break;
     default:
-      g_critical (
-        "balance control algorithm not implemented "
-        "yet");
+      z_error ("balance control algorithm not implemented yet");
       break;
     }
 }

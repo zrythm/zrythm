@@ -43,7 +43,7 @@ on_quantize_clicked (GtkButton * btn, QuantizeDialogWidget * self)
       if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
         {
           ArrangerSelections * sel = CLIP_EDITOR->get_arranger_selections ();
-          g_return_if_fail (sel);
+          z_return_if_fail (sel);
 
           UNDO_MANAGER->perform (
             std::make_unique<ArrangerSelectionsAction::QuantizeAction> (

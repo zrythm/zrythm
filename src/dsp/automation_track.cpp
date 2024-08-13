@@ -128,7 +128,7 @@ AutomationTrack::get_region_before_pos (
   bool            use_snapshots) const
 {
   auto process_regions =
-    [] (const auto &regions, const Position &pos, bool ends_after) {
+    [=] (const auto &regions) {
       if (ends_after)
         {
           for (auto it = regions.rbegin (); it != regions.rend (); ++it)
@@ -160,8 +160,8 @@ AutomationTrack::get_region_before_pos (
     };
 
   return use_snapshots
-           ? process_regions (region_snapshots_, pos, ends_after)
-           : process_regions (regions_, pos, ends_after);
+           ? process_regions (region_snapshots_)
+           : process_regions (regions_);
 }
 
 AutomationPoint *

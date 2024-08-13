@@ -553,7 +553,7 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
               val_to_use = control_;
             }
 
-          control_ = std::clamp (
+          control_ = std::clamp<float> (
             val_to_use + depth_range * src_port->buf_[0] * conn->multiplier_,
             minf_, maxf_);
           forward_control_change_event ();

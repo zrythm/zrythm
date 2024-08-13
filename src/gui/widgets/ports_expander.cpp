@@ -311,7 +311,7 @@ ports_expander_widget_setup_plugin (
         }
     }
 
-  g_debug ("added ports");
+  z_debug ("added ports");
 
   self->plugin = pl;
 

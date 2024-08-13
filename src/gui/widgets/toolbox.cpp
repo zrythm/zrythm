@@ -21,7 +21,7 @@ G_DEFINE_TYPE (ToolboxWidget, toolbox_widget, GTK_TYPE_BOX)
 static void
 on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
 {
-  g_message ("toggling");
+  z_info ("toggling");
   if (tb == self->select_mode)
     P_TOOL = Tool::Select;
   else if (tb == self->edit_mode)

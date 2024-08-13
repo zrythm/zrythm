@@ -137,7 +137,7 @@ on_project_selection_type_changed (void)
 static void
 on_arranger_selections_in_transit (ArrangerSelections * sel)
 {
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   event_viewer_widget_refresh_for_selections (sel);
 }
@@ -202,7 +202,7 @@ static void
 on_automation_track_added (AutomationTrack * at)
 {
   auto track = at->get_track ();
-  g_return_if_fail (track);
+  z_return_if_fail (track);
   if (Z_IS_TRACK_WIDGET (track->widget_))
     {
       TrackWidget * tw = (TrackWidget *) track->widget_;
@@ -330,7 +330,7 @@ refresh_for_selections_type (ArrangerSelections::Type type)
       event_viewer_widget_refresh (MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
   bot_dock_edge_widget_update_event_viewer_stack_page (MW_BOT_DOCK_EDGE);
 }
@@ -365,7 +365,7 @@ arranger_selections_change_redraw_everything (ArrangerSelections * sel)
       event_viewer_widget_refresh (MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
   bot_dock_edge_widget_update_event_viewer_stack_page (MW_BOT_DOCK_EDGE);
 }
@@ -452,7 +452,7 @@ on_arranger_object_changed (ArrangerObject * obj)
 static void
 on_track_changed (Track * track)
 {
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  z_return_if_fail (IS_TRACK_AND_NONNULL (track));
   if (GTK_IS_WIDGET (track->widget_))
     {
       if (
@@ -720,7 +720,7 @@ EventManager::process_event (ZEvent &ev)
         Track * track = (Track *) ev.arg_;
         if (!IS_TRACK_AND_NONNULL (track))
           {
-            g_critical ("expected track argument");
+            z_error ("expected track argument");
             break;
           }
 
@@ -905,7 +905,7 @@ EventManager::process_event (ZEvent &ev)
       }
       break;
     case EventType::ET_TRACKS_RESIZED:
-      g_warn_if_fail (ev.arg_);
+      z_warn_if_fail (ev.arg_);
       break;
     case EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
       gtk_widget_set_visible (

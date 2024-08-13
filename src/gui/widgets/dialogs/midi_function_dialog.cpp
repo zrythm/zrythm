@@ -66,7 +66,7 @@ midi_function_dialog_widget_get_opts (
         - 1.0;
       break;
     default:
-      g_warning ("unimplemented");
+      z_warning ("unimplemented");
       break;
     }
 }

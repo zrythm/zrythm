@@ -43,7 +43,7 @@ bool
 InstrumentTrack::is_plugin_visible () const
 {
   const auto &plugin = get_instrument ();
-  g_return_val_if_fail (plugin, false);
+  z_return_val_if_fail (plugin, false);
   return plugin->visible_;
 }
 
@@ -51,7 +51,7 @@ void
 InstrumentTrack::toggle_plugin_visible ()
 {
   Plugin * plugin = get_instrument ();
-  g_return_if_fail (plugin);
+  z_return_if_fail (plugin);
   plugin->visible_ = !plugin->visible_;
 
   EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);

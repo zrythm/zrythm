@@ -253,7 +253,7 @@ on_drag_end (
 static void
 show_context_menu (BalanceControlWidget * self, double x, double y)
 {
-  g_return_if_fail (self->port);
+  z_return_if_fail (self->port);
 
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;

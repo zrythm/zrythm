@@ -49,7 +49,7 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
   if (add)
     {
       gtk_size_group_add_widget (self->left_of_ruler_size_group, widget);
-      g_message ("%s: adding %s", __func__, gtk_widget_get_name (widget));
+      z_info ("%s: adding %s", __func__, gtk_widget_get_name (widget));
     }
   else
     {
@@ -58,7 +58,7 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
       if (g_slist_index (list, widget) >= 0)
         {
           gtk_size_group_remove_widget (self->left_of_ruler_size_group, widget);
-          g_message ("%s: removing %s", __func__, gtk_widget_get_name (widget));
+          z_info ("%s: removing %s", __func__, gtk_widget_get_name (widget));
         }
     }
 }
@@ -85,14 +85,14 @@ clip_editor_inner_widget_get_visible_arranger (ClipEditorInnerWidget * self)
     }
   else
     {
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 }
 
 void
 clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
 {
-  g_message ("refreshing...");
+  z_info ("refreshing...");
 
   Region * r = CLIP_EDITOR->get_region ();
   if (!r)
@@ -130,7 +130,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
         }
       else
         {
-          g_warn_if_reached ();
+          z_warn_if_reached ();
         }
 
       /* hide all left-of-ruler buttons */

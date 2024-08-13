@@ -65,15 +65,14 @@ void
 plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 {
   std::visit (
-    [&] (auto &&plugin) {
-      using T = base_type<decltype (plugin)>;
-      const PluginSetting *    setting = &plugin->setting_;
+    [&] (auto &&p) {
+      using T = base_type<decltype (p)>;
+      const PluginSetting *    setting = &p->setting_;
       const PluginDescriptor * descr = &setting->descr_;
       bool                     open_with_carla = setting->open_with_carla_;
 
       GtkWidget * dialog = gtk_file_chooser_dialog_new (
-        _ ("Save Preset"),
-        plugin->window_ ? plugin->window_ : GTK_WINDOW (MAIN_WINDOW),
+        _ ("Save Preset"), p->window_ ? p->window_ : GTK_WINDOW (MAIN_WINDOW),
         GTK_FILE_CHOOSER_ACTION_SAVE, _ ("_Cancel"), GTK_RESPONSE_REJECT,
         _ ("_Save"), GTK_RESPONSE_ACCEPT, nullptr);
 
@@ -87,7 +86,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
           g_object_unref (homedir_file);
           g_free (homedir);
 #else
-          g_return_if_reached ();
+          z_return_if_reached ();
 #endif
         }
 
@@ -127,7 +126,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
               auto dir = Glib::build_filename (dirname, bundle);
               try
                 {
-                  plugin->save_state (false, &dir);
+                  p->save_state (false, &dir);
                 }
               catch (const ZrythmException &e)
                 {
@@ -143,7 +142,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 
       gtk_window_destroy (GTK_WINDOW (dialog));
 
-      EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_SAVED, plugin);
+      EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_SAVED, p);
     },
     convert_to_variant<PluginPtrVariant> (plugin));
 }
@@ -227,7 +226,7 @@ plugin_gtk_add_control_row (
 static void
 on_window_destroy (GtkWidget * widget, Plugin * pl)
 {
-  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+  z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
   pl->window_ = nullptr;
   z_info ("destroying window for %s", pl->get_name ());
 
@@ -317,11 +316,11 @@ set_float_control (Plugin * pl, ControlPort * port, float value)
 static gboolean
 scale_changed (GtkRange * range, ControlPort * port)
 {
-  /*g_message ("scale changed");*/
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
+  /*z_info ("scale changed");*/
+  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
   set_float_control (pl, port, (float) gtk_range_get_value (range));
 
@@ -345,11 +344,11 @@ spin_changed (GtkSpinButton * spin, ControlPort * port)
 static gboolean
 log_scale_changed (GtkRange * range, ControlPort * port)
 {
-  /*g_message ("log scale changed");*/
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
+  /*z_info ("log scale changed");*/
+  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
   set_float_control (pl, port, expf ((float) gtk_range_get_value (range)));
 
@@ -384,9 +383,9 @@ combo_changed (GtkComboBox * box, ControlPort * port)
       const double v = g_value_get_float (&value);
       g_value_unset (&value);
 
-      g_return_if_fail (IS_PORT_AND_NONNULL (port));
+      z_return_if_fail (IS_PORT_AND_NONNULL (port));
       Plugin * pl = port->get_plugin (true);
-      g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+      z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
 
       set_float_control (pl, port, (float) v);
     }
@@ -395,11 +394,11 @@ combo_changed (GtkComboBox * box, ControlPort * port)
 static gboolean
 switch_state_set (GtkSwitch * button, gboolean state, ControlPort * port)
 {
-  /*g_message ("toggle_changed");*/
-  g_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
+  /*z_info ("toggle_changed");*/
+  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
   set_float_control (pl, port, state ? 1.0f : 0.0f);
 
@@ -745,7 +744,7 @@ plugin_gtk_generic_set_widget_value (
   double      fvalue = (double) control;
 
   /* skip setting a value if it's already set */
-  g_return_if_fail (IS_PORT_AND_NONNULL (controller->port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (controller->port));
   if (math_floats_equal (
         controller->port->control_, controller->last_set_control_val))
     return;
@@ -789,7 +788,7 @@ plugin_gtk_generic_set_widget_value (
         }
       else
         {
-          g_warning (_ ("Unknown widget type for value"));
+          z_warning (_ ("Unknown widget type for value"));
         }
 
       if (controller->spin)
@@ -799,7 +798,7 @@ plugin_gtk_generic_set_widget_value (
         }
     }
   else
-    g_warning (_ ("Unknown widget type for value\n"));
+    z_warning (_ ("Unknown widget type for value\n"));
 }
 
 /**
@@ -835,7 +834,7 @@ plugin_gtk_update_plugin_ui (Plugin * pl)
 void
 plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
 {
-  g_message ("opening generic GTK window..");
+  z_info ("opening generic GTK window..");
   GtkWidget * controls = build_control_widget (plugin, plugin->window_);
   GtkWidget * scroll_win = gtk_scrolled_window_new ();
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroll_win), controls);
@@ -859,11 +858,11 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
     }
 
-  g_message (
+  z_info (
     "plugin window shown, adding idle timeout. "
     "Update frequency (Hz): %.01f",
     (double) plugin->ui_update_hz_);
-  g_return_if_fail (plugin->ui_update_hz_ >= PLUGIN_MIN_REFRESH_RATE);
+  z_return_if_fail (plugin->ui_update_hz_ >= PLUGIN_MIN_REFRESH_RATE);
 
   plugin->update_ui_source_id_ = g_timeout_add (
     (guint) (1000.f / plugin->ui_update_hz_),
@@ -877,7 +876,7 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
 int
 plugin_gtk_close_ui (Plugin * pl)
 {
-  g_return_val_if_fail (ZRYTHM_HAVE_UI, -1);
+  z_return_val_if_fail (ZRYTHM_HAVE_UI, -1);
 
   if (pl->update_ui_source_id_)
     {
@@ -885,7 +884,7 @@ plugin_gtk_close_ui (Plugin * pl)
       pl->update_ui_source_id_ = 0;
     }
 
-  g_message ("%s called", __func__);
+  z_info ("%s called", __func__);
   if (pl->window_)
     {
       if (pl->destroy_window_id_)
@@ -953,14 +952,14 @@ plugin_gtk_setup_plugin_banks_combo_box (GtkComboBoxText * cb, Plugin * plugin)
 bool
 plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
 {
-  g_debug ("%s: setting up...", __func__);
+  z_debug ("setting up...");
 
   z_gtk_list_box_remove_all_children (box);
 
   if (!plugin || plugin->selected_bank_.bank_idx_ == -1)
     {
-      g_debug (
-        "%s: no plugin (%p) or selected bank (%d)", __func__, plugin,
+      z_debug (
+        "no plugin ({}) or selected bank ({})", fmt::ptr (plugin),
         plugin ? plugin->selected_bank_.bank_idx_ : -100);
       return false;
     }
@@ -984,7 +983,7 @@ plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
     gtk_list_box_get_row_at_index (box, plugin->selected_preset_.idx_);
   gtk_list_box_select_row (box, row);
 
-  g_debug ("%s: done", __func__);
+  z_debug ("%s: done", __func__);
 
   return ret;
 }

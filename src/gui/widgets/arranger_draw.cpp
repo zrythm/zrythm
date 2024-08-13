@@ -141,7 +141,7 @@ draw_arranger_object (
       /* if looping 2nd time (transient) */
       if (i == 1)
         {
-          g_return_if_fail (obj->transient_);
+          z_return_if_fail (obj->transient_);
           obj = obj->transient_;
         }
 
@@ -174,7 +174,7 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   int cur_playhead_px = arranger_widget_get_playhead_px (self);
   int px = cur_playhead_px;
   /*int px = self->queued_playhead_px;*/
-  /*g_message ("drawing %d", px);*/
+  /*z_info ("drawing %d", px);*/
 
   int height = rect->height;
 
@@ -301,7 +301,7 @@ draw_timeline_bg (
         GTK_WIDGET (
           self->is_pinned ? MW_TRACKLIST->pinned_box : MW_TRACKLIST->unpinned_box),
         &tmp, &track_start_offset_pt);
-      g_return_if_fail (success);
+      z_return_if_fail (success);
       double track_start_offset = (double) track_start_offset_pt.y;
 
       line_y = (int) track_start_offset + (int) full_track_height;
@@ -969,11 +969,11 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* skip drawing if rectangle too large */
   if (visible_rect.size.width > 10000 || visible_rect.size.height > 10000)
     {
-      g_warning ("skipping draw - rectangle too large");
+      z_warning ("skipping draw - rectangle too large");
       return;
     }
 
-  /*g_message (*/
+  /*z_info (*/
   /*"redrawing arranger in rect: "*/
   /*"(%d, %d) width: %d height %d)",*/
   /*rect.x, rect.y, rect.width, rect.height);*/
@@ -1154,7 +1154,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   (void) start_time;
   (void) end_time;
 #if 0
-  g_debug ("finished drawing in %ld microseconds, "
+  z_debug ("finished drawing in %ld microseconds, "
     "rect x:%d y:%d w:%d h:%d for %s "
     "arranger",
     end_time - start_time,

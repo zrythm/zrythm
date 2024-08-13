@@ -88,7 +88,7 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
     }
   else
     {
-      g_return_val_if_reached (false);
+      z_return_val_if_reached (false);
     }
   return false;
 }
@@ -130,7 +130,7 @@ on_right_click (
   if (n_press != 1)
     return;
 
-  g_message ("right click");
+  z_info ("right click");
 
   show_context_menu (self, x, y);
 }
@@ -152,7 +152,7 @@ on_double_click (
   if (n_press != 2)
     return;
 
-  g_message ("double click");
+  z_info ("double click");
 
   /* need to ref here because gtk unrefs
    * internally */
@@ -243,7 +243,7 @@ static void
 set_init_port_value (void * data, float val)
 {
   auto self = static_cast<InspectorPortWidget *> (data);
-  /*g_message (*/
+  /*z_info (*/
   /*"val change started: %f", (double) val);*/
   self->normalized_init_port_val = val;
 }
@@ -252,7 +252,7 @@ static void
 val_change_finished (void * data, float val)
 {
   auto self = static_cast<InspectorPortWidget *> (data);
-  /*g_message (*/
+  /*z_info (*/
   /*"val change finished: %f", (double) val);*/
   if (!math_floats_equal (val, self->normalized_init_port_val))
     {
@@ -366,7 +366,7 @@ inspector_port_widget_new (Port * port)
   int  has_str = 0;
   if (!port->has_label ())
     {
-      g_warning ("No port label");
+      z_warning ("No port label");
       goto inspector_port_new_end;
     }
 
@@ -491,7 +491,7 @@ dispose (InspectorPortWidget * self)
 #define GET_REFCOUNT (((ZGObjectImpl *) self->connections_popover)->ref_count)
 
   int refcount = (int) GET_REFCOUNT;
-  /*g_debug ("refcount: %d", refcount);*/
+  /*z_debug ("refcount: %d", refcount);*/
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
   refcount--;
 
@@ -500,7 +500,7 @@ dispose (InspectorPortWidget * self)
   while (refcount > 0)
     {
       refcount = (int) GET_REFCOUNT;
-      g_debug ("unrefing... refcount: %d", refcount);
+      z_debug ("unrefing... refcount: %d", refcount);
       g_object_unref (self->connections_popover);
       refcount--;
     }

@@ -79,7 +79,7 @@ audio_function_get_icon_name_for_type (AudioFunctionType type)
       break;
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 #if 0
@@ -100,9 +100,9 @@ apply_plugin (
 {
   PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (PLUGIN_MANAGER, uri);
-  g_return_val_if_fail (descr, -1);
+  z_return_val_if_fail (descr, -1);
   PluginSetting * setting = plugin_setting_new_default (descr);
-  g_return_val_if_fail (setting, -1);
+  z_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
   Plugin * pl =
@@ -121,7 +121,7 @@ apply_plugin (
       return -1;
     }
   ret = plugin_activate (pl, true);
-  g_return_val_if_fail (ret == 0, -1);
+  z_return_val_if_fail (ret == 0, -1);
   plugin_setting_free (setting);
 
   /* create window */
@@ -210,8 +210,8 @@ apply_plugin (
     {
       for (size_t j = 0; j < step; j++)
         {
-          g_return_val_if_fail (l_in, -1);
-          g_return_val_if_fail (r_in, -1);
+          z_return_val_if_fail (l_in, -1);
+          z_return_val_if_fail (r_in, -1);
           l_in->buf[j] = frames[(i + j) * channels];
           r_in->buf[j] = frames[(i + j) * channels + 1];
         }
@@ -224,20 +224,20 @@ apply_plugin (
           if (actual_j < 0)
             continue;
 #  if 0
-          g_message (
+          z_info (
             "%ld %f",
             actual_j,
             fabsf (l_out->buf[j]));
 #  endif
-          g_return_val_if_fail (l_out, -1);
-          g_return_val_if_fail (r_out, -1);
+          z_return_val_if_fail (l_out, -1);
+          z_return_val_if_fail (r_out, -1);
           frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
           frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
         }
       if (i > latency)
         {
           plugin_update_latency (pl);
-          /*g_message ("end latency %d", pl->latency);*/
+          /*z_info ("end latency %d", pl->latency);*/
         }
       i += step;
       step = (uint32_t) MIN (step, num_frames - i);
@@ -250,8 +250,8 @@ apply_plugin (
     {
       for (size_t j = 0; j < step; j++)
         {
-          g_return_val_if_fail (l_in, -1);
-          g_return_val_if_fail (r_in, -1);
+          z_return_val_if_fail (l_in, -1);
+          z_return_val_if_fail (r_in, -1);
           l_in->buf[j] = 0.f;
           r_in->buf[j] = 0.f;
         }
@@ -261,15 +261,15 @@ apply_plugin (
         {
           signed_frame_t actual_j =
             (signed_frame_t) (i + j + num_frames) - (signed_frame_t) latency;
-          g_return_val_if_fail (actual_j >= 0, -1);
+          z_return_val_if_fail (actual_j >= 0, -1);
 #  if 0
-          g_message (
+          z_info (
             "%ld %f",
             actual_j,
             fabsf (l_out->buf[j]));
 #  endif
-          g_return_val_if_fail (l_out, -1);
-          g_return_val_if_fail (r_out, -1);
+          z_return_val_if_fail (l_out, -1);
+          z_return_val_if_fail (r_out, -1);
           frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
           frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
         }
@@ -277,7 +277,7 @@ apply_plugin (
       step = (uint32_t) MIN (step, latency - i);
     }
   plugin_update_latency (pl);
-  g_message ("end latency %d", pl->latency);
+  z_info ("end latency %d", pl->latency);
 
   plugin_gtk_close_ui (pl);
   plugin_free (pl);
@@ -300,9 +300,9 @@ audio_function_apply (
   auto r = AudioRegion::find (audio_sel.region_id_);
   z_return_if_fail (r);
   auto tr = r->get_track_as<AudioTrack> ();
-  g_return_if_fail (tr);
+  z_return_if_fail (tr);
   auto * orig_clip = r->get_clip ();
-  g_return_if_fail (orig_clip);
+  z_return_if_fail (orig_clip);
 
   Position init_pos;
   if (audio_sel.sel_start_ < r->pos_ || audio_sel.sel_end_ > r->end_pos_)
@@ -442,7 +442,7 @@ audio_function_apply (
               &ch_src_frames.getReadPointer (1)[samples_fed]
             };
             samples_fed += samples_required;
-            g_message (
+            z_info (
               "samples required: %u (total fed %zu), latency: %u",
               samples_required, samples_fed,
               rubberband_get_latency (rubberband_state));
@@ -457,12 +457,12 @@ audio_function_apply (
                 int avail = rubberband_available (rubberband_state);
                 if (avail == 0)
                   {
-                    g_message ("avail == 0");
+                    z_info ("avail == 0");
                     break;
                   }
                 else if (avail == -1)
                   {
-                    g_message ("avail == -1");
+                    z_info ("avail == -1");
                     /* FIXME for some reason rubberband
                      * skips the last few samples when the
                      * pitch ratio is < 1.0
@@ -493,7 +493,7 @@ audio_function_apply (
                       retrieved_out_samples, avail));
                   }
                 frames_read += retrieved_out_samples;
-                g_message (
+                z_info (
                   "retrieved out samples %zu, frames read %zu",
                   retrieved_out_samples, frames_read);
               }
@@ -540,7 +540,7 @@ audio_function_apply (
     case AudioFunctionType::CustomPlugin:
       {
 #if 0
-        g_return_val_if_fail (uri, false);
+        z_return_val_if_fail (uri, false);
         GError * err = NULL;
         int ret = apply_plugin (uri, dest_frames, num_frames, channels, &err);
         if (ret != 0)
@@ -556,7 +556,7 @@ audio_function_apply (
       /* do nothing */
       break;
     default:
-      g_warning ("not implemented");
+      z_warning ("not implemented");
       break;
     }
 

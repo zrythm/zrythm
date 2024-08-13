@@ -32,7 +32,7 @@ on_notebook_switch_page (
   guint                page_num,
   LeftDockEdgeWidget * self)
 {
-  g_debug (
+  z_debug (
     "setting left dock page to %u", page_num);
 
   g_settings_set_int (
@@ -76,7 +76,7 @@ left_dock_edge_widget_refresh_with_page (
 void
 left_dock_edge_widget_refresh (LeftDockEdgeWidget * self)
 {
-  g_debug ("refreshing left dock edge...");
+  z_debug ("refreshing left dock edge...");
 
   inspector_track_widget_show_tracks (
     self->track_inspector, TRACKLIST_SELECTIONS.get (), false);
@@ -125,14 +125,14 @@ wrap_inspector_in_scrolled_window (LeftDockEdgeWidget * self, GtkWidget * widget
 void
 left_dock_edge_widget_tear_down (LeftDockEdgeWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  z_debug ("tearing down {}...", fmt::ptr (self));
 
   if (self->track_inspector)
     {
       inspector_track_widget_tear_down (self->track_inspector);
     }
 
-  g_message ("done");
+  z_debug ("done");
 }
 
 static void

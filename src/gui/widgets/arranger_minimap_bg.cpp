@@ -55,7 +55,7 @@ draw_timeline (GtkWidget * widget, GtkSnapshot * snapshot)
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (track->widget_), GTK_WIDGET (MW_TRACKLIST->unpinned_box),
         &tmp_pt, &wpt);
-      g_return_if_fail (success);
+      z_return_if_fail (success);
       track_height = gtk_widget_get_height (GTK_WIDGET (track->widget_));
 
       if (track->has_lanes ())

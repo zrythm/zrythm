@@ -23,7 +23,7 @@ GroupTargetTrack::update_child_output (
   bool               recalc_graph,
   bool               pub_events)
 {
-  g_return_if_fail (ch);
+  z_return_if_fail (ch);
 
   if (ch->has_output_)
     {
@@ -116,7 +116,7 @@ GroupTargetTrack::remove_child (
     }
   std::erase (children_, child_name_hash);
 
-  g_message (
+  z_info (
     "removed '%s' from direct out '%s' - "
     "num children: %zu",
     child->get_name ().c_str (), get_name ().c_str (), children_.size ());
@@ -143,9 +143,9 @@ GroupTargetTrack::validate () const
     {
       auto track =
         get_tracklist ()->find_track_by_name_hash<ChannelTrack> (child_hash);
-      g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+      z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
       auto out_track = track->get_channel ()->get_output_track ();
-      g_return_val_if_fail (this == out_track, false);
+      z_return_val_if_fail (this == out_track, false);
     }
 
   return true;
@@ -158,7 +158,7 @@ GroupTargetTrack::add_child (
   bool         recalc_graph,
   bool         pub_events)
 {
-  g_return_if_fail (IS_TRACK (this));
+  z_return_if_fail (IS_TRACK (this));
 
   z_debug (
     "adding child track with name hash %u to group %s", child_name_hash,
@@ -169,7 +169,7 @@ GroupTargetTrack::add_child (
       Tracklist * tracklist = get_tracklist ();
       auto        out_track =
         tracklist->find_track_by_name_hash<ChannelTrack> (child_name_hash);
-      g_return_if_fail (
+      z_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track) && out_track->get_channel ());
       update_child_output (
         out_track->get_channel ().get (), this, recalc_graph, pub_events);
@@ -211,7 +211,7 @@ GroupTargetTrack::update_children ()
     {
       auto child =
         get_tracklist ()->find_track_by_name_hash<ChannelTrack> (child_hash);
-      g_warn_if_fail (
+      z_warn_if_fail (
         IS_TRACK (child) && child->out_signal_type_ == in_signal_type_);
       child->get_channel ()->output_name_hash_ = name_hash;
       z_debug (

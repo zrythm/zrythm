@@ -664,7 +664,7 @@ test_strict_cflags = [
   '-Werror=overlength-strings',
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
-  '-Werror=int-to-pointer-cast',
+  # '-Werror=int-to-pointer-cast',
 
   # maybe not needed but keep for future reference
   #'-Werror=double-promotion',
@@ -1307,6 +1307,7 @@ zrythm_deps = [
   magic_enum_dep,
   juce_dep,
   fmt_dep,
+  doctest_dep,
   glibmm_dep,
   giomm_dep,
   # gtkmm_dep,

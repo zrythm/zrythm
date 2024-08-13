@@ -35,8 +35,8 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
       WrappedObjectWithChangeSignal * wrapped_pack =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
           gtk_drop_down_get_selected_item (self->pack_dropdown));
-      g_return_if_fail (wrapped_pack);
-      g_return_if_fail (
+      z_return_if_fail (wrapped_pack);
+      z_return_if_fail (
         wrapped_pack->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
       ChordPresetPack * pack = (ChordPresetPack *) wrapped_pack->obj;

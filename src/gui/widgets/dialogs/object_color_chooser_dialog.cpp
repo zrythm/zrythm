@@ -60,7 +60,7 @@ object_color_chooser_dialog_widget_run (
       gtk_color_chooser_set_use_alpha (GTK_COLOR_CHOOSER (dialog), false);
     }
 
-  g_return_val_if_fail (dialog != nullptr, false);
+  z_return_val_if_fail (dialog != nullptr, false);
 
   gtk_widget_add_css_class (GTK_WIDGET (dialog), "object-color-chooser-dialog");
 

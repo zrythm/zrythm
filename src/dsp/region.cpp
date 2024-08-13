@@ -63,7 +63,7 @@ Region::init (
   pos_ = start_pos;
   end_pos_ = end_pos;
   long length = get_length_in_frames ();
-  g_return_if_fail (length > 0);
+  z_return_if_fail (length > 0);
   loop_end_pos_.from_frames (length);
 
   if (region_type_can_fade (id_.type_))
@@ -561,7 +561,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::stretch (double ratio)
 {
-  z_debug ("stretching region %p (ratio %f)", fmt::ptr (this), ratio);
+  z_debug ("stretching region {} (ratio %f)", fmt::ptr (this), ratio);
 
   stretching_ = true;
 
@@ -689,7 +689,7 @@ RegionImpl<RegionT>::set_link_group (int group_idx, bool update_identifier)
       group->add_region (*this);
     }
 
-  g_return_if_fail (group_idx == id_.link_group_);
+  z_return_if_fail (group_idx == id_.link_group_);
 
   if (update_identifier)
     this->update_identifier ();
@@ -729,7 +729,7 @@ RegionImpl<RegionT>::unlink ()
     }
   else
     {
-      g_warn_if_reached ();
+      z_warn_if_reached ();
     }
 
   z_warn_if_fail (id_.link_group_ == -1);
@@ -871,11 +871,11 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events) requires
   using SharedPtrType = std::shared_ptr<ChildT>;
   using ObjVectorType = std::vector<SharedPtrType>;
 
-  auto remove_type = [&] (ObjVectorType objects, ChildT &obj) -> SharedPtrType {
+  auto remove_type = [&] (ObjVectorType objects, ChildT &_obj) -> SharedPtrType {
     /* find the object in the list */
     auto it = std::ranges::find_if (
       objects.begin (), objects.end (),
-      [&obj] (const auto &cur_ptr) { return cur_ptr.get () == &obj; });
+      [&_obj] (const auto &cur_ptr) { return cur_ptr.get () == &_obj; });
     z_return_val_if_fail (it != objects.end (), nullptr);
 
     /* get a shared pointer before erasing to possibly keep it alive */
@@ -983,8 +983,8 @@ RegionImpl<RegionT>::at_position (
   const AutomationTrack * at,
   const Position          pos)
 {
-  auto region_is_at_pos = [] (const auto &region, const auto &pos) {
-    return region->pos_ <= pos && region->end_pos_ >= pos;
+  auto region_is_at_pos = [] (const auto &region, const auto &_pos) {
+    return region->pos_ <= _pos && region->end_pos_ >= _pos;
   };
 
   if constexpr (is_automation ())
@@ -1154,8 +1154,8 @@ Region::get_at_pos (
           auto laned_track_variant =
             convert_to_variant<LanedTrackPtrVariant> (track);
           auto found = std::visit (
-            [&] (auto &&track) -> Region * {
-              for (auto &lane : track->lanes_)
+            [&] (auto &&t) -> Region * {
+              for (auto &lane : t->lanes_)
                 {
                   auto ret = lane->get_region_at_pos (pos, include_region_end);
                   if (ret)

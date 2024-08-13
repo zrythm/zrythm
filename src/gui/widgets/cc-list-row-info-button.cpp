@@ -40,6 +40,7 @@
 #endif
 
 #include "gui/widgets/cc-list-row-info-button.h"
+#include "utils/logger.h"
 #include "utils/resources.h"
 
 #include "gtk_wrapper.h"
@@ -152,7 +153,7 @@ cc_list_row_info_button_init (CcListRowInfoButton * self)
 void
 cc_list_row_info_button_set_text (CcListRowInfoButton * self, const gchar * text)
 {
-  g_return_if_fail (CC_IS_LIST_ROW_INFO_BUTTON (self));
+  z_return_if_fail (CC_IS_LIST_ROW_INFO_BUTTON (self));
 
   if (!text)
     text = "";
@@ -169,7 +170,7 @@ cc_list_row_info_button_set_text_callback (
   CcListRowInfoButton * self,
   GCallback             callback)
 {
-  g_return_if_fail (CC_IS_LIST_ROW_INFO_BUTTON (self));
+  z_return_if_fail (CC_IS_LIST_ROW_INFO_BUTTON (self));
 
   g_signal_connect (
     G_OBJECT (self->label), "activate-link", G_CALLBACK (callback), self);

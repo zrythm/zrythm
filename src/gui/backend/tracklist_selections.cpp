@@ -111,7 +111,7 @@ void
 SimpleTracklistSelections::
   add_tracks_in_range (int min_pos, int max_pos, bool fire_events)
 {
-  g_message ("selecting tracks from %d to %d...", min_pos, max_pos);
+  z_info ("selecting tracks from %d to %d...", min_pos, max_pos);
 
   clear (fire_events);
 
@@ -121,13 +121,13 @@ SimpleTracklistSelections::
       add_track (*track, fire_events);
     }
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void
 SimpleTracklistSelections::clear (const bool fire_events)
 {
-  g_message ("clearing tracklist selections...");
+  z_info ("clearing tracklist selections...");
 
   for (auto it = track_names_.rbegin (); it != track_names_.rend (); ++it)
     {
@@ -150,7 +150,7 @@ SimpleTracklistSelections::clear (const bool fire_events)
       EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
     }
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void
@@ -202,7 +202,7 @@ SimpleTracklistSelections::
             {
               Track * highest = get_highest_track ();
               Track * lowest = get_lowest_track ();
-              g_return_if_fail (
+              z_return_if_fail (
                 IS_TRACK_AND_NONNULL (highest) && IS_TRACK_AND_NONNULL (lowest));
               if (track.pos_ > highest->pos_)
                 {
@@ -431,7 +431,7 @@ void
 SimpleTracklistSelections::select_last_visible ()
 {
   Track * track = tracklist_->get_last_track (Tracklist::PinOption::Both, true);
-  g_warn_if_fail (track);
+  z_warn_if_fail (track);
   select_single (*track, true);
 }
 
@@ -500,7 +500,7 @@ SimpleTracklistSelections::gen_tracklist_selections () const
         continue;
 
       std::visit (
-        [&] (auto &&track) { ret->add_track (track->clone_unique ()); },
+        [&] (auto &&t) { ret->add_track (t->clone_unique ()); },
         convert_to_variant<TrackPtrVariant> (track));
     }
   return ret;

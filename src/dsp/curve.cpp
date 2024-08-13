@@ -72,7 +72,7 @@ curve_algorithm_get_from_string_id (const char * str)
   else if (string_is_equal (str, "logarithmic"))
     return Algorithm::Logarithmic;
 
-  g_return_val_if_reached (Algorithm::SuperEllipse);
+  z_return_val_if_reached (Algorithm::SuperEllipse);
 }
 
 gboolean
@@ -208,7 +208,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
           x = 1.0 - x;
 
 #if 0
-        g_message (
+        z_info (
           "curviness (z): %f (for calc %f), x %f",
           curviness_,
           (double) curviness_for_calc, x);
@@ -255,7 +255,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
       }
       break;
     default:
-      g_return_val_if_reached (-1);
+      z_return_val_if_reached (-1);
     }
   return CLAMP (val, 0.0, 1.0);
 }

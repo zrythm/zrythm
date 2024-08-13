@@ -49,7 +49,7 @@ constexpr const char * PROJECT_FILE = "project.zpj";
 
 enum class ProjectPath
 {
-  PROJECT_FILE,
+  ProjectFile,
   BACKUPS,
 
   /** Plugins path. */

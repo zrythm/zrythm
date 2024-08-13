@@ -42,7 +42,7 @@ on_enable_toggled (GtkToggleButton * btn, PortConnectionRowWidget * self)
       e.handle (_ ("Failed to enable connection"));
     }
 
-  g_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
   port_connections_popover_widget_refresh (self->parent, self->parent->port);
 }
 
@@ -60,7 +60,7 @@ on_del_clicked (GtkButton * btn, PortConnectionRowWidget * self)
       e.handle (_ ("Failed to disconnect"));
     }
 
-  g_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (self->parent->port));
   port_connections_popover_widget_refresh (self->parent, self->parent->port);
 }
 

@@ -215,7 +215,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* only show text if large enough */
       if (px_per_key > 16.0)
         {
-          g_return_if_fail (self->layout);
+          z_return_if_fail (self->layout);
           pango_layout_set_markup (self->layout, str.c_str (), -1);
           int ww, hh;
           pango_layout_get_pixel_size (self->layout, &ww, &hh);
@@ -303,14 +303,14 @@ piano_roll_keys_widget_get_font_size (PianoRollKeysWidget * self)
     return 7;
   else
     return 6;
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 static void
 send_note_event (PianoRollKeysWidget * self, int note, bool on)
 {
-  g_debug ("sending note event %d, on: %d", note, on);
-  g_return_if_fail (note >= 0 && note < 128);
+  z_debug ("sending note event %d, on: %d", note, on);
+  z_return_if_fail (note >= 0 && note < 128);
   auto * region = CLIP_EDITOR->get_region<MidiRegion> ();
   if (on)
     {
@@ -423,7 +423,7 @@ select_notes_in_pitch (int pitch, bool append)
       MIDI_SELECTIONS->clear (F_PUBLISH_EVENTS);
     }
   auto r = CLIP_EDITOR->get_region<MidiRegion> ();
-  g_return_if_fail (r);
+  z_return_if_fail (r);
 
   for (auto &mn : r->midi_notes_)
     {
@@ -462,7 +462,7 @@ activate_notation_mode (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
@@ -481,7 +481,7 @@ activate_notation_mode (
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 
   PianoRollKeysWidget * self = Z_PIANO_ROLL_KEYS_WIDGET (user_data);

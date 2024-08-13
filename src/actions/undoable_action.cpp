@@ -52,6 +52,8 @@ UndoableAction::create_unique_from_type (Type type)
       return std::make_unique<TransportAction> ();
     case Type::Chord:
       return std::make_unique<ChordAction> ();
+    default:
+      z_return_val_if_reached (nullptr);
     }
 }
 
@@ -143,7 +145,7 @@ UndoableAction::undo ()
 void
 UndoableAction::set_num_actions (int num_actions)
 {
-  g_return_if_fail (num_actions > 0 && num_actions < gZrythm->undo_stack_len_);
+  z_return_if_fail (num_actions > 0 && num_actions < gZrythm->undo_stack_len_);
   num_actions_ = num_actions;
 }
 

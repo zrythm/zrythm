@@ -66,11 +66,7 @@ constexpr int BLOCK_LENGTH = 4096;
 // should be set by backend
 constexpr int MIDI_BUF_SIZE = 1024;
 
-// #define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events_->num_events
-
 #define AUDIO_ENGINE (PROJECT->audio_engine_)
-// #define MANUAL_PRESS_EVENTS \
-  // (AUDIO_ENGINE->midi_editor_manual_press_->midi_events_)
 
 enum class BounceStep
 {
@@ -106,7 +102,7 @@ constexpr int ENGINE_MAX_EVENTS = 128;
     if (ZRYTHM_APP_IS_GTK_THREAD) \
       { \
         _ev->backtrace_ = backtrace_get ("", 40, false); \
-        g_debug ( \
+        z_debug ( \
           "pushing engine event " #et " (%s:%d) uint: %u | float: %f", \
           __func__, __LINE__, _uint_arg, _float_arg); \
       } \

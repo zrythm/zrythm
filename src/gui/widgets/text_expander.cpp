@@ -5,6 +5,7 @@
 
 #include "gui/widgets/text_expander.h"
 #include "utils/gtk.h"
+#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
@@ -18,7 +19,7 @@ on_focus_enter (GtkEventControllerFocus * focus_controller, gpointer user_data)
 {
   TextExpanderWidget * self = Z_TEXT_EXPANDER_WIDGET (user_data);
 
-  g_message ("text focused");
+  z_info ("text focused");
   self->has_focus = true;
 }
 
@@ -27,7 +28,7 @@ on_focus_leave (GtkEventControllerFocus * focus_controller, gpointer user_data)
 {
   TextExpanderWidget * self = Z_TEXT_EXPANDER_WIDGET (user_data);
 
-  g_message ("text focus out");
+  z_info ("text focus out");
   self->has_focus = false;
 
   if (self->setter && self->obj)
@@ -51,7 +52,7 @@ text_expander_widget_refresh (TextExpanderWidget * self)
 {
   if (self->getter && self->obj)
     {
-      g_return_if_fail (self->buffer);
+      z_return_if_fail (self->buffer);
       gtk_text_buffer_set_text (
         GTK_TEXT_BUFFER (self->buffer), self->getter (self->obj).c_str (), -1);
       gtk_label_set_text (self->label, self->getter (self->obj).c_str ());
@@ -113,12 +114,12 @@ text_expander_widget_init (TextExpanderWidget * self)
     GTK_MENU_BUTTON (self->edit_btn), GTK_WIDGET (self->popover));
 
   GtkSourceLanguageManager * manager = z_gtk_source_language_manager_get ();
-  g_return_if_fail (manager);
+  z_return_if_fail (manager);
   GtkSourceLanguage * lang =
     gtk_source_language_manager_get_language (manager, "markdown");
-  g_return_if_fail (lang);
+  z_return_if_fail (lang);
   self->buffer = gtk_source_buffer_new_with_language (lang);
-  g_return_if_fail (self->buffer);
+  z_return_if_fail (self->buffer);
   self->editor =
     GTK_SOURCE_VIEW (gtk_source_view_new_with_buffer (self->buffer));
   gtk_popover_set_child (self->popover, GTK_WIDGET (self->editor));

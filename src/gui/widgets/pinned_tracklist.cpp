@@ -134,7 +134,7 @@ pinned_tracklist_widget_setup (
   PinnedTracklistWidget * self,
   Tracklist *             tracklist)
 {
-  g_warn_if_fail (tracklist);
+  z_warn_if_fail (tracklist);
   self->tracklist = tracklist;
   tracklist->pinned_widget = self;
 

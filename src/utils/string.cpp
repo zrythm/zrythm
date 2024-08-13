@@ -253,13 +253,13 @@ string_is_ascii (std::string_view string)
   char *
   string_remove_until_after_first_match (const char * str, const char * match)
   {
-    g_return_val_if_fail (str, nullptr);
+    z_return_val_if_fail (str, nullptr);
 
     char ** parts = g_strsplit (str, match, 2);
 #if 0
-  g_message ("after removing prefix: %s", prefix);
-  g_message ("part 0 %s", parts[0]);
-  g_message ("part 1 %s", parts[1]);
+  z_info ("after removing prefix: %s", prefix);
+  z_info ("part 0 %s", parts[0]);
+  z_info ("part 1 %s", parts[1]);
 #endif
   char * part = g_strdup (parts[1]);
   g_strfreev (parts);
@@ -283,7 +283,7 @@ string_replace_regex (char ** str, const char * regex, const char * replace_str)
       PCRE2_UCHAR8 buffer[1200];
       pcre2_get_error_message (errorcode, buffer, 1200);
 
-      g_warning ("failed to compile regex %s: %s", regex, buffer);
+      z_warning ("failed to compile regex {}: {}", regex, (const char *) buffer);
       return;
     }
 
@@ -342,7 +342,7 @@ string_get_regex_group_as_int (
 char *
 string_get_regex_group (const char * str, const char * regex, int group)
 {
-  g_return_val_if_fail (str && regex, nullptr);
+  z_return_val_if_fail (str && regex, nullptr);
 
   PCRE2_SIZE   erroffset;
   int          errorcode;
@@ -355,7 +355,7 @@ string_get_regex_group (const char * str, const char * regex, int group)
       PCRE2_UCHAR8 buffer[1200];
       pcre2_get_error_message (errorcode, buffer, 1200);
 
-      g_warning ("failed to compile regex %s: %s", regex, buffer);
+      z_warning ("failed to compile regex {}: {}", regex, (const char *) buffer);
       return NULL;
     }
 
@@ -368,11 +368,11 @@ string_get_regex_group (const char * str, const char * regex, int group)
       switch (rc)
         {
         case PCRE2_ERROR_NOMATCH:
-          /*g_message ("String %s didn't match", str);*/
+          /*z_info ("String %s didn't match", str);*/
           break;
 
         default:
-          g_message ("Error while matching \"%s\": %d", str, rc);
+          z_info ("Error while matching \"%s\": %d", str, rc);
           break;
         }
       pcre2_code_free (re);
@@ -385,7 +385,7 @@ string_get_regex_group (const char * str, const char * regex, int group)
     match_data, (uint32_t) group, &ret_buf, &ret_buf_sz);
   if (ret_code != 0)
     {
-      g_debug ("Error while matching \"%s\": %d", str, rc);
+      z_debug ("Error while matching \"%s\": %d", str, rc);
       pcre2_code_free (re);
       pcre2_match_data_free (match_data);
       return NULL;
@@ -489,13 +489,13 @@ char **
 string_array_sort_and_remove_duplicates (char ** str_arr)
 {
   /* TODO */
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 void
 string_copy_w_realloc (char ** dest, const char * src)
 {
-  g_return_if_fail (dest && ((!*dest && !src) || (*dest != src)));
+  z_return_if_fail (dest && ((!*dest && !src) || (*dest != src)));
   if (src)
     {
       size_t strlen_src = strlen (src);
@@ -563,7 +563,7 @@ string_utf8_strcasecmp (const char * s1, const char * s2)
   gchar *folded_s1, *folded_s2;
   gint   retval;
 
-  g_return_val_if_fail (s1 != NULL && s2 != nullptr, -1);
+  z_return_val_if_fail (s1 != NULL && s2 != nullptr, -1);
 
   if (strcmp (s1, s2) == 0)
     return 0;
@@ -616,7 +616,7 @@ string_print_strv (const char * prefix, char ** strv)
     }
   char * res = g_string_free (gstr, false);
   res[strlen (res) - 1] = '\0';
-  g_message ("%s", res);
+  z_info ("%s", res);
   g_free (res);
 }
 

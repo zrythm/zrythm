@@ -48,7 +48,7 @@ static void
 on_simple_string_entry_changed (GtkEditable * editable, CallbackData * data)
 {
   char * str = gtk_editable_get_chars (editable, 0, -1);
-  g_return_if_fail (str);
+  z_return_if_fail (str);
   g_settings_set_string (data->info->settings, data->key, str);
   g_free (str);
 }
@@ -57,7 +57,7 @@ static void
 on_path_entry_changed (GtkEditable * editable, CallbackData * data)
 {
   char * str = gtk_editable_get_chars (editable, 0, -1);
-  g_return_if_fail (str);
+  z_return_if_fail (str);
   char ** split_str = g_strsplit (str, G_SEARCHPATH_SEPARATOR_S, 0);
   g_settings_set_strv (
     data->info->settings, data->key, (const char * const *) split_str);
@@ -85,7 +85,7 @@ on_enum_drop_down_selection_changed (
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
   g_settings_set_enum (data->info->settings, data->key, (gint) idx);
 }
@@ -110,9 +110,9 @@ on_string_drop_down_selection_changed (
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
-  g_return_if_fail (str_obj);
+  z_return_if_fail (str_obj);
   const char * str = gtk_string_object_get_string (str_obj);
   g_settings_set_string (data->info->settings, data->key, str);
 }
@@ -126,7 +126,7 @@ on_file_set (GObject * gobject, GParamSpec * pspec, gpointer user_data)
   GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   if (!file)
     {
-      g_warning ("no file selected");
+      z_warning ("no file selected");
       return;
     }
   char * str = g_file_get_path (file);
@@ -355,7 +355,7 @@ make_control (
   GVariant *           range = g_settings_schema_key_get_range (schema_key);
 
 #if 0
-  g_message ("%s",
+  z_info ("%s",
     g_variant_get_type_string (current_var));
 #endif
 
@@ -642,7 +642,7 @@ make_control (
 
 #undef TYPE_EQUALS
 
-  g_warn_if_fail (widget);
+  z_warn_if_fail (widget);
 
   return widget;
 }
@@ -658,7 +658,7 @@ add_subgroup (
   SubgroupInfo * info = &self->subgroup_infos[group_idx][subgroup_idx];
 
   const char * localized_subgroup_name = info->name;
-  g_message ("adding subgroup %s (%s)", info->name, localized_subgroup_name);
+  z_info ("adding subgroup %s (%s)", info->name, localized_subgroup_name);
 
   /* create a section for the subgroup */
   AdwPreferencesGroup * subgroup =
@@ -716,7 +716,7 @@ add_subgroup (
       if (string_is_equal (key, "info"))
         continue;
 
-      g_message ("adding control for %s", key);
+      z_info ("adding control for %s", key);
 
       /* add control */
       GtkWidget * widget = make_control (self, group_idx, subgroup_idx, key);
@@ -762,7 +762,7 @@ add_subgroup (
         }
       else
         {
-          g_warning ("no widget for %s", key);
+          z_warning ("no widget for %s", key);
         }
     }
 
@@ -804,7 +804,7 @@ get_group_icon (const char * schema_str)
       icon_name = "gnome-icon-library-display-symbolic";
     }
 
-  g_debug ("icon name for %s: %s", schema_str, icon_name);
+  z_debug ("icon name for %s: %s", schema_str, icon_name);
 
   return icon_name;
 }
@@ -831,7 +831,7 @@ add_group (PreferencesWidget * self, int group_idx)
       /* get the preferences.x.y schema */
       GSettingsSchema * schema =
         g_settings_schema_source_lookup (source, schema_str, 1);
-      g_return_if_fail (schema);
+      z_return_if_fail (schema);
 
       GSettings * settings = g_settings_new (schema_str);
       GVariant *  info_val = g_settings_get_value (settings, "info");
@@ -863,7 +863,7 @@ add_group (PreferencesWidget * self, int group_idx)
     }
 
   const char * localized_group_name = group_name;
-  g_message ("adding group %s (%s)", group_name, localized_group_name);
+  z_info ("adding group %s (%s)", group_name, localized_group_name);
 
   /* create a page for the group */
   AdwPreferencesPage * page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());

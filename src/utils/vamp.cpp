@@ -8,6 +8,7 @@
 
 #include "dsp/vamp-ports/BeatTrack.h"
 #include "dsp/vamp-ports/FixedTempoEstimator.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/vamp.h"
@@ -23,17 +24,17 @@ void
 vamp_print_all (void)
 {
   int num_vamp_libs = vhGetLibraryCount ();
-  g_message ("loading %d vamp libraries...", num_vamp_libs);
+  z_info ("loading %d vamp libraries...", num_vamp_libs);
   for (int i = 0; i < num_vamp_libs; i++)
     {
       const char * lib_name = vhGetLibraryName (i);
       vhLibrary    lib = vhLoadLibrary (i);
       int          num_plugins = vhGetPluginCount (lib);
-      g_message ("[%d-%s: %d plugins]", i, lib_name, num_plugins);
+      z_info ("[%d-%s: %d plugins]", i, lib_name, num_plugins);
       for (int j = 0; j < num_plugins; j++)
         {
           const VampPluginDescriptor * descr = vhGetPluginDescriptor (lib, j);
-          g_message (
+          z_info (
             "\n[plugin %d: %s]\n"
             "name: %s\n"
             "description: %s\n"
@@ -73,7 +74,7 @@ vamp_get_simple_fixed_tempo_estimator_descriptor (void)
         }
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 ZVampPlugin *
@@ -86,7 +87,7 @@ vamp_get_plugin (ZVampPluginType type, float samplerate)
     case Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR:
       return new FixedTempoEstimator (samplerate);
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 }
 
@@ -145,7 +146,7 @@ vamp_plugin_process (
   Vamp::RealTime realtime =
     Vamp::RealTime::frame2RealTime (timestamp, samplerate);
 #if 0
-  g_message (
+  z_info (
     "processing at %s", realtime.toString().c_str());
 #endif
   Vamp::Plugin::FeatureSet fset = pl->process (input_buffers, realtime);
@@ -251,10 +252,10 @@ vamp_output_descriptor_new (
 void
 vamp_plugin_output_list_print (ZVampOutputList * self)
 {
-  g_message ("%d outputs", self->outputs->len);
+  z_info ("%d outputs", self->outputs->len);
   for (size_t i = 0; i < self->outputs->len; i++)
     {
-      g_message ("output %zu", i);
+      z_info ("output %zu", i);
       ZVampOutputDescriptor * o =
         (ZVampOutputDescriptor *) g_ptr_array_index (self->outputs, i);
       vamp_plugin_output_print (o);
@@ -280,7 +281,7 @@ vamp_feature_list_print (const ZVampFeatureList * self)
 {
   for (size_t j = 0; j < self->list->len; j++)
     {
-      g_message ("feature %zu", j);
+      z_info ("feature %zu", j);
       ZVampFeature * f = (ZVampFeature *) g_ptr_array_index (self->list, j);
       vamp_feature_print (f);
     }
@@ -292,13 +293,13 @@ vamp_feature_set_print (const ZVampFeatureSet * self)
   if (self->set->len == 0)
     return;
 
-  g_message ("%d features", self->set->len);
+  z_info ("%d features", self->set->len);
   for (size_t i = 0; i < self->set->len; i++)
     {
       ZVampFeatureList * l =
         (ZVampFeatureList *) g_ptr_array_index (self->set, i);
       int * output = &g_array_index (self->outputs, int, i);
-      g_message ("output %d", *output);
+      z_info ("output %d", *output);
       vamp_feature_list_print (l);
     }
 }
@@ -306,7 +307,7 @@ vamp_feature_set_print (const ZVampFeatureSet * self)
 void
 vamp_plugin_output_print (ZVampOutputDescriptor * self)
 {
-  g_message (
+  z_info (
     "identifier: %s\n"
     "name: %s\n"
     "description: %s",
@@ -336,7 +337,7 @@ vamp_feature_print (ZVampFeature * self)
   g_string_append_printf (gstr, ")\nlabel: %s", self->label);
 
   char * str = g_string_free (gstr, false);
-  g_message ("%s", str);
+  z_info ("%s", str);
   g_free (str);
 }
 

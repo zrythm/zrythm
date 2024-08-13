@@ -171,7 +171,7 @@ rec_rb_released (
 static void
 stop_clicked_cb (GtkButton * button, gpointer user_data)
 {
-  /*g_message ("playstate %d", TRANSPORT->play_state);*/
+  /*z_info ("playstate %d", TRANSPORT->play_state);*/
   if (TRANSPORT->play_state_ == Transport::PlayState::Paused)
     {
       TRANSPORT->set_playhead_pos (TRANSPORT->cue_pos_);
@@ -209,7 +209,7 @@ change_state_punch_mode (
 {
   bool value = g_variant_get_boolean (variant);
   TRANSPORT->set_punch_mode_enabled (value);
-  g_message ("setting punch mode to %d", value);
+  z_info ("setting punch mode to %d", value);
   g_simple_action_set_state (action, variant);
 
   EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, nullptr);
@@ -223,7 +223,7 @@ change_start_on_midi_input (
 {
   bool value = g_variant_get_boolean (variant);
   TRANSPORT->set_start_playback_on_midi_input (value);
-  g_message ("setting start on MIDI input to %d", value);
+  z_info ("setting start on MIDI input to %d", value);
   g_simple_action_set_state (action, variant);
 }
 
@@ -233,7 +233,7 @@ activate_recording_mode (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
@@ -256,15 +256,15 @@ activate_recording_mode (
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
-  g_message ("recording mode changed");
+  z_info ("recording mode changed");
 }
 
 static void
 activate_preroll (GSimpleAction * action, GVariant * _variant, gpointer user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
@@ -288,11 +288,11 @@ activate_preroll (GSimpleAction * action, GVariant * _variant, gpointer user_dat
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
   g_settings_set_enum (
     S_TRANSPORT, "recording-preroll", ENUM_VALUE_TO_INT (preroll_type));
-  // g_message ("preroll type");
+  // z_info ("preroll type");
 }
 
 void
@@ -305,7 +305,7 @@ transport_controls_widget_refresh (TransportControlsWidget * self)
 
   gtk_toggle_button_set_active (self->trans_record_btn, TRANSPORT->recording_);
   gtk_toggle_button_set_active (self->loop, TRANSPORT->loop_);
-  g_debug ("action name %s", loop_action_name);
+  z_debug ("action name %s", loop_action_name);
 
   g_signal_handler_unblock (
     self->trans_record_btn, self->rec_toggled_handler_id);

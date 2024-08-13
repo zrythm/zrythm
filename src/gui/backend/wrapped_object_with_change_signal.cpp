@@ -46,7 +46,7 @@ wrapped_object_with_change_signal_fire (WrappedObjectWithChangeSignal * self)
 char *
 wrapped_object_with_change_signal_get_display_name (void * data)
 {
-  g_return_val_if_fail (Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), nullptr);
+  z_return_val_if_fail (Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), nullptr);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
 
@@ -83,11 +83,11 @@ wrapped_object_with_change_signal_get_display_name (void * data)
       }
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
       break;
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 /**

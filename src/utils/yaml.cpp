@@ -3,13 +3,14 @@
 
 #include "zrythm-config.h"
 
+#include "utils/logger.h"
+
 #ifdef HAVE_CYAML
 
 #  include "utils/objects.h"
 #  include "utils/yaml.h"
 
-#  include <gtk/gtk.h>
-
+#  include "gtk_wrapper.h"
 #  include <locale.h>
 #  include <string.h>
 
@@ -152,12 +153,12 @@ yaml_print (void * data, const cyaml_schema_value_t * schema)
   char *   yaml = yaml_serialize (data, schema, &err);
   if (yaml)
     {
-      g_message ("[YAML]\n%s", yaml);
+      z_info ("[YAML]\n{}", yaml);
       g_free (yaml);
     }
   else
     {
-      g_warning ("failed to deserialize %p: %s", data, err->message);
+      z_warning ("failed to deserialize {}: {}", fmt::ptr (data), err->message);
       g_error_free (err);
     }
 }

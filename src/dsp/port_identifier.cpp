@@ -27,8 +27,8 @@ PortIdentifier::port_group_cmp (const void * p1, const void * p2)
   const Port * control1 = *(const Port **) p1;
   const Port * control2 = *(const Port **) p2;
 
-  g_return_val_if_fail (IS_PORT (control1), -1);
-  g_return_val_if_fail (IS_PORT (control2), -1);
+  z_return_val_if_fail (IS_PORT (control1), -1);
+  z_return_val_if_fail (IS_PORT (control2), -1);
 
   /* use index for now - this assumes that ports inside port groups are declared
    * in sequence */
@@ -71,7 +71,7 @@ std::string
 PortIdentifier::print_to_str () const
 {
   return fmt::format (
-    "[PortIdentifier %p | hash %u]\nlabel: %s\n"
+    "[PortIdentifier {} | hash %u]\nlabel: %s\n"
     "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
     "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
     "port group: %s\next port id: %s\n"

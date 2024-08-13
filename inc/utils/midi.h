@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -33,12 +33,8 @@
 
 #include "zrythm-config.h"
 
-#include <cstdint>
-#include <cstring>
-
+#include "utils/logger.h"
 #include "utils/types.h"
-
-#include "gtk_wrapper.h"
 
 /**
  * @addtogroup dsp
@@ -357,7 +353,7 @@ midi_print (const midi_byte_t * msg, const size_t msg_sz);
 static inline bool
 midi_is_short_msg (const midi_byte_t * msg, const size_t msg_sz)
 {
-  g_return_val_if_fail (msg_sz > 0, false);
+  z_return_val_if_fail (msg_sz > 0, false);
 
   if (msg_sz > 3)
     return false;
@@ -395,7 +391,7 @@ midi_is_meta_event_of_type (
 static inline midi_byte_t
 midi_get_meta_event_type (const midi_byte_t * msg, const size_t msg_sz)
 {
-  g_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
+  z_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
 
   return msg[1];
 }
@@ -420,7 +416,7 @@ midi_get_meta_event_data (
   const midi_byte_t *  msg,
   const size_t         msg_sz)
 {
-  g_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
+  z_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
 
   /* malformed data */
   if (msg_sz < 4)

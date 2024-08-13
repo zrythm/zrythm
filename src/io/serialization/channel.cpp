@@ -78,9 +78,9 @@ Channel::define_fields (const Context &ctx)
                 auto pl = Plugin::create_unique_from_hosting_type (
                   setting.hosting_type_);
                 std::visit (
-                  [&] (auto &&pl) {
-                    using PluginT = base_type<decltype (pl)>;
-                    pl->ISerializable<PluginT>::deserialize (
+                  [&] (auto &&p) {
+                    using PluginT = base_type<decltype (p)>;
+                    p->ISerializable<PluginT>::deserialize (
                       Context (pl_obj, ctx));
                   },
                   convert_to_variant<PluginPtrVariant> (pl.get ()));

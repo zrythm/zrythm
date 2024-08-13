@@ -66,7 +66,7 @@ on_dnd_drop (
 {
   if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      g_message ("invalid DND type");
+      z_info ("invalid DND type");
       return false;
     }
 
@@ -79,7 +79,7 @@ on_dnd_drop (
     }
   if (!track)
     {
-      g_message ("dropped object not a track");
+      z_info ("dropped object not a track");
       return false;
     }
 
@@ -254,7 +254,7 @@ on_dnd_motion (
 static void
 on_dnd_leave (GtkDropTarget * drop_target, FolderChannelWidget * self)
 {
-  g_debug ("folder channel dnd leave");
+  z_debug ("folder channel dnd leave");
 
   /*do_highlight (self);*/
   /*gtk_drag_unhighlight (*/

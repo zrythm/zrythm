@@ -145,7 +145,7 @@ preroll_count_selector_widget_new (PrerollCountSelectorType type)
       gtk_toggle_button_set_active (self->four_bars_toggle, true);
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 
   return self;

@@ -157,7 +157,7 @@ restore_selection (
   char ** selection_paths = g_settings_get_strv (S_UI_PLUGIN_BROWSER, key);
   if (!selection_paths)
     {
-      g_debug ("no selection paths for key %s", key);
+      z_debug ("no selection paths for key %s", key);
       return;
     }
 
@@ -441,13 +441,13 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
         }
       else
         {
-          g_return_val_if_reached (-1);
+          z_return_val_if_reached (-1);
         }
 
       return ret;
     }
 
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 static void
@@ -578,7 +578,7 @@ create_model_for_collections (void)
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   auto &collections = PLUGIN_MANAGER->collections_;
-  g_return_val_if_fail (collections, nullptr);
+  z_return_val_if_fail (collections, nullptr);
   for (auto &collection : collections->collections_)
     {
       /* add row to model */
@@ -768,8 +768,8 @@ on_visible_child_changed (
 static void
 toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
 {
-  g_return_if_fail (GTK_IS_TOGGLE_BUTTON (btn));
-  g_return_if_fail (Z_IS_PLUGIN_BROWSER_WIDGET (self));
+  z_return_if_fail (GTK_IS_TOGGLE_BUTTON (btn));
+  z_return_if_fail (Z_IS_PLUGIN_BROWSER_WIDGET (self));
   if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */
@@ -846,7 +846,7 @@ toggles_changed (GtkToggleButton * btn, PluginBrowserWidget * self)
 static void
 on_map (GtkWidget * widget, PluginBrowserWidget * self)
 {
-  /*g_message ("PLUGIN MAP EVENT");*/
+  /*z_info ("PLUGIN MAP EVENT");*/
   if (gtk_widget_get_mapped (GTK_WIDGET (self)))
     {
       self->start_saving_pos = 1;
@@ -880,7 +880,7 @@ on_position_change (
       gtk_paned_set_position (self->paned, divider_pos);
 
       self->first_time_position_set = 0;
-      /*g_message ("***************************got plugin position %d",*/
+      /*z_info ("***************************got plugin position %d",*/
       /*divider_pos);*/
     }
   else
@@ -888,7 +888,7 @@ on_position_change (
       /* save the divide position */
       divider_pos = gtk_paned_get_position (self->paned);
       g_settings_set_int (S_UI, "browser-divider-position", divider_pos);
-      /*g_message ("***************************set plugin position to %d",*/
+      /*z_info ("***************************set plugin position to %d",*/
       /*divider_pos);*/
     }
 }
@@ -907,7 +907,7 @@ on_key_release (
     GTK_FILTER (self->plugin_filter), GTK_FILTER_CHANGE_DIFFERENT);
   update_plugin_info_label (self);
 
-  g_message ("key release");
+  z_info ("key release");
 }
 
 static void
@@ -1015,7 +1015,7 @@ plugin_browser_widget_new (void)
         self->stack, GTK_WIDGET (self->protocol_box));
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
 
@@ -1041,7 +1041,7 @@ plugin_browser_widget_new (void)
   int divider_pos = g_settings_get_int (S_UI, "browser-divider-position");
   gtk_paned_set_position (self->paned, divider_pos);
   self->first_time_position_set = 1;
-  g_message ("setting plugin browser divider pos to %d", divider_pos);
+  z_info ("setting plugin browser divider pos to %d", divider_pos);
 
   /* re-sort */
   gtk_sorter_changed (

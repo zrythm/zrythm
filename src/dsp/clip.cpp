@@ -42,10 +42,10 @@ AudioClip::update_channel_caches (size_t start_from)
   const auto frames_read_ptr =
     frames_.getReadPointer (0, start_from * num_channels);
   auto frames_to_write = num_frames_ - start_from;
-  for (typeof (num_channels) i = 0; i < num_channels; ++i)
+  for (decltype (num_channels) i = 0; i < num_channels; ++i)
     {
       auto ch_frames_write_ptr = ch_frames_.getWritePointer (i, start_from);
-      for (typeof (frames_to_write) j = 0; j < frames_to_write; ++j)
+      for (decltype (frames_to_write) j = 0; j < frames_to_write; ++j)
         {
           ch_frames_write_ptr[j] = frames_read_ptr[j * num_channels + i];
         }
@@ -56,7 +56,7 @@ void
 AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
 {
   samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
-  g_return_if_fail (samplerate_ > 0);
+  z_return_if_fail (samplerate_ > 0);
 
   /* read metadata */
   AudioFile file (full_path);
@@ -90,7 +90,7 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
   name_ = juce::File (full_path).getFileNameWithoutExtension ().toStdString ();
   if (set_bpm)
     {
-      g_return_if_fail (PROJECT && P_TEMPO_TRACK);
+      z_return_if_fail (PROJECT && P_TEMPO_TRACK);
       bpm_ = P_TEMPO_TRACK->get_current_bpm ();
     }
   use_flac_ = use_flac (bit_depth_);
@@ -103,8 +103,6 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
 void
 AudioClip::init_loaded ()
 {
-  g_debug ("%s: %p", __func__, this);
-
   std::string filepath =
     get_path_in_pool_from_name (name_, use_flac_, F_NOT_BACKUP);
 
@@ -140,7 +138,7 @@ AudioClip::AudioClip (
   num_frames_ = nframes;
   channels_ = channels;
   samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
-  g_return_if_fail (samplerate_ > 0);
+  z_return_if_fail (samplerate_ > 0);
   name_ = name;
   bit_depth_ = bit_depth;
   use_flac_ = use_flac (bit_depth);
@@ -165,7 +163,7 @@ AudioClip::AudioClip (
   samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
   bit_depth_ = BitDepth::BIT_DEPTH_32;
   use_flac_ = false;
-  g_return_if_fail (samplerate_ > 0);
+  z_return_if_fail (samplerate_ > 0);
   dsp_fill (
     frames_.getWritePointer (0), DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
     (size_t) nframes * (size_t) channels_);
@@ -200,7 +198,7 @@ void
 AudioClip::write_to_pool (bool parts, bool is_backup)
 {
   AudioClip * pool_clip = AUDIO_POOL->get_clip (pool_id_);
-  g_return_if_fail (pool_clip == this);
+  z_return_if_fail (pool_clip == this);
 
   AUDIO_POOL->print ();
   z_debug ("attempting to write clip %s (%d) to pool...", name_, pool_id_);
@@ -208,8 +206,8 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
   /* generate a copy of the given filename in the project dir */
   std::string path_in_main_project = get_path_in_pool (F_NOT_BACKUP);
   std::string new_path = get_path_in_pool (is_backup);
-  g_return_if_fail (!path_in_main_project.empty ());
-  g_return_if_fail (!new_path.empty ());
+  z_return_if_fail (!path_in_main_project.empty ());
+  z_return_if_fail (!new_path.empty ());
 
   /* whether a new write is needed */
   bool need_new_write = true;
@@ -252,9 +250,9 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
             {
               file_reflink (path_in_main_project, new_path);
             }
-          catch (const ZrythmException &e)
+          catch (const ZrythmException &e1)
             {
-              z_debug ("failed to reflink ({}), copying instead", e.what ());
+              z_debug ("failed to reflink ({}), copying instead", e1.what ());
 
               /* copy */
               auto src_file = Gio::File::create_for_path (path_in_main_project);
@@ -266,11 +264,11 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
                 {
                   src_file->copy (dest_file);
                 }
-              catch (const Gio::Error &e)
+              catch (const Gio::Error &e2)
                 {
                   throw ZrythmException (fmt::format (
                     "Failed to copy '{}' to '{}': {}", path_in_main_project,
-                    new_path, e.what ()));
+                    new_path, e2.what ()));
                 }
             } /* endif reflink fail */
         }
@@ -295,8 +293,8 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
 void
 AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
-  g_return_if_fail (samplerate_ > 0);
-  g_return_if_fail (frames_written_ < SIZE_MAX);
+  z_return_if_fail (samplerate_ > 0);
+  z_return_if_fail (frames_written_ < SIZE_MAX);
   size_t           before_frames = (size_t) frames_written_;
   unsigned_frame_t ch_offset = parts ? frames_written_ : 0;
   unsigned_frame_t offset = ch_offset * channels_;
@@ -342,10 +340,10 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
           z_warning ("%zu != %zu", num_frames_, new_clip.num_frames_);
         }
       float epsilon = 0.0001f;
-      g_warn_if_fail (audio_frames_equal (
+      z_warn_if_fail (audio_frames_equal (
         ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
         (size_t) new_clip.num_frames_, epsilon));
-      g_warn_if_fail (audio_frames_equal (
+      z_warn_if_fail (audio_frames_equal (
         frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
         (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon));
     }
@@ -400,7 +398,7 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
   g_list_free (file_list);
   if (!success)
     {
-      g_message ("app launch unsuccessful");
+      z_info ("app launch unsuccessful");
     }
 }
 
@@ -474,7 +472,7 @@ AudioClip::edit_in_ext_program ()
   int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (ret != GTK_RESPONSE_ACCEPT)
     {
-      g_debug ("operation cancelled");
+      z_debug ("operation cancelled");
       return nullptr;
     }
 
@@ -487,6 +485,6 @@ AudioClip::remove (bool backup)
 {
   std::string path = get_path_in_pool (backup);
   z_debug ("removing clip at %s", path);
-  g_return_if_fail (path.length () > 0);
+  z_return_if_fail (path.length () > 0);
   io_remove (path);
 }

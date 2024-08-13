@@ -98,7 +98,7 @@ FullMixerSelections::add_plugin (const Track &track, PluginSlotType type, int sl
 void
 MixerSelections::remove_slot (int slot, PluginSlotType type, bool publish_events)
 {
-  g_message ("removing slot %d", slot);
+  z_info ("removing slot %d", slot);
   slots_.erase (
     std::remove (slots_.begin (), slots_.end (), slot), slots_.end ());
 
@@ -150,7 +150,7 @@ MixerSelections::get_first_plugin () const
   if (has_any_)
     {
       ChannelTrack * track = dynamic_cast<ChannelTrack *> (get_track ());
-      g_return_val_if_fail (track, nullptr);
+      z_return_val_if_fail (track, nullptr);
       switch (type_)
         {
         case PluginSlotType::Instrument:
@@ -164,7 +164,7 @@ MixerSelections::get_first_plugin () const
             ->modulators_[slots_[0]]
             .get ();
         default:
-          g_return_val_if_reached (nullptr);
+          z_return_val_if_reached (nullptr);
           break;
         }
     }
@@ -176,7 +176,7 @@ void
 MixerSelections::get_plugins (std::vector<Plugin *> &plugins) const
 {
   Track * track = get_track ();
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  z_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   for (int slot : slots_)
     {
@@ -195,10 +195,10 @@ MixerSelections::get_plugins (std::vector<Plugin *> &plugins) const
           pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
           break;
         default:
-          g_return_if_reached ();
+          z_return_if_reached ();
         }
 
-      g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+      z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
 
       plugins.push_back (pl);
     }
@@ -219,7 +219,7 @@ MixerSelections::validate () const
     return true;
 
   Track * track = get_track ();
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
   for (int slot : slots_)
     {
@@ -238,11 +238,11 @@ MixerSelections::validate () const
           pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
           break;
         default:
-          g_return_val_if_reached (false);
+          z_return_val_if_reached (false);
           break;
         }
 
-      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+      z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
     }
 
   return true;
@@ -269,7 +269,7 @@ MixerSelections::gen_full_from_this () const
   ret->has_any_ = has_any_;
 
   Track * track = TRACKLIST->find_track_by_name_hash (track_name_hash_);
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), nullptr);
+  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), nullptr);
 
   for (int slot : slots_)
     {
@@ -288,10 +288,10 @@ MixerSelections::gen_full_from_this () const
           pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
           break;
         default:
-          g_return_val_if_reached (nullptr);
+          z_return_val_if_reached (nullptr);
         }
 
-      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), nullptr);
+      z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), nullptr);
 
       try
         {

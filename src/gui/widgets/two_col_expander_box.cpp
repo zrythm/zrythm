@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2019, 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/two_col_expander_box.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/logger.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   TwoColExpanderBoxWidget,
@@ -30,7 +31,7 @@ two_col_expander_box_widget_set_horizontal_spacing (
   int                       horizontal_spacing)
 {
   /* TODO */
-  g_warn_if_reached ();
+  z_warn_if_reached ();
 }
 
 /**

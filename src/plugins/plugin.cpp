@@ -100,7 +100,7 @@ Plugin::set_stereo_outs_and_midi_in ()
   const auto &descr = get_descriptor ();
   if (descr.num_audio_outs_ > 0)
     {
-      g_return_if_fail (l_out_ && r_out_);
+      z_return_if_fail (l_out_ && r_out_);
     }
 
   /* set MIDI input */
@@ -117,7 +117,7 @@ Plugin::set_stereo_outs_and_midi_in ()
     }
   if (descr.is_instrument ())
     {
-      g_return_if_fail (midi_in_port_);
+      z_return_if_fail (midi_in_port_);
     }
 }
 
@@ -148,7 +148,7 @@ Plugin::set_enabled_and_gain ()
           gain_ = static_cast<ControlPort *> (port.get ());
         }
     }
-  g_return_if_fail (enabled_ && gain_);
+  z_return_if_fail (enabled_ && gain_);
 }
 
 bool
@@ -207,7 +207,7 @@ Plugin::init (unsigned int track_name_hash, PluginSlotType slot_type, int slot)
     "{} ({}) track name hash {} slot {}", get_name (),
     ENUM_NAME (get_protocol ()), track_name_hash, slot);
 
-  g_return_if_fail (
+  z_return_if_fail (
     PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot));
 
   id_.track_name_hash_ = track_name_hash;
@@ -906,7 +906,7 @@ Plugin::set_ui_refresh_rate ()
         "Invalid refresh rate of %.01f received, "
         "clamping to reasonable bounds",
         (double) ui_update_hz_);
-      ui_update_hz_ = std::clamp (
+      ui_update_hz_ = std::clamp<float> (
         ui_update_hz_, PLUGIN_MIN_REFRESH_RATE, PLUGIN_MAX_REFRESH_RATE);
     }
 
@@ -919,7 +919,7 @@ Plugin::set_ui_refresh_rate ()
         "Invalid scale factor of %.01f received, "
         "clamping to reasonable bounds",
         (double) ui_scale_factor_);
-      ui_scale_factor_ = std::clamp (
+      ui_scale_factor_ = std::clamp<float> (
         ui_scale_factor_, PLUGIN_MIN_SCALE_FACTOR, PLUGIN_MAX_SCALE_FACTOR);
     }
 
@@ -1322,8 +1322,8 @@ Plugin::copy_members_from (Plugin &other)
   for (auto &port : other.in_ports_)
     {
       std::visit (
-        [&] (auto &&port) {
-          auto new_port = port->clone_unique ();
+        [&] (auto &&p) {
+          auto new_port = p->clone_unique ();
           new_port->set_owner (PortIdentifier::OwnerType::Plugin, this);
           in_ports_.push_back (std::move (new_port));
         },
@@ -1332,8 +1332,8 @@ Plugin::copy_members_from (Plugin &other)
   for (auto &port : other.out_ports_)
     {
       std::visit (
-        [&] (auto &&port) {
-          auto new_port = port->clone_unique ();
+        [&] (auto &&p) {
+          auto new_port = p->clone_unique ();
           new_port->set_owner (PortIdentifier::OwnerType::Plugin, this);
           out_ports_.push_back (std::move (new_port));
         },

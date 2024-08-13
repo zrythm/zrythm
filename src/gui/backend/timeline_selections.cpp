@@ -37,7 +37,7 @@ TimelineSelections::TimelineSelections (
           if (obj->is_start_hit_by_range (start_pos, end_pos))
             {
               std::visit (
-                [&] (auto &&obj) { add_object_owned (obj->clone_unique ()); },
+                [&] (auto &&o) { add_object_owned (o->clone_unique ()); },
                 convert_to_variant<ArrangerObjectPtrVariant> (obj));
             }
         }
@@ -49,9 +49,9 @@ TimelineSelections::sort_by_indices (bool desc)
 {
   auto sort_regions = [] (const auto &a, const auto &b) {
     Track * at = TRACKLIST->find_track_by_name_hash (a.id_.track_name_hash_);
-    g_return_val_if_fail (at, false);
+    z_return_val_if_fail (at, false);
     Track * bt = TRACKLIST->find_track_by_name_hash (b.id_.track_name_hash_);
-    g_return_val_if_fail (bt, false);
+    z_return_val_if_fail (bt, false);
     if (at->pos_ < bt->pos_)
       return true;
     else if (at->pos_ > bt->pos_)

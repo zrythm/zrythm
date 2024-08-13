@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <cmath>
 
+#include "utils/logger.h"
 #include "utils/math.h"
 #include "utils/string.h"
 
@@ -50,13 +51,13 @@ math_assert_nonnann (float x)
   char * val = g_strdup_printf ("%f", (double) x);
   if (std::isnan (x) || string_contains_substr (val, "nan"))
     {
-      g_critical ("nan");
+      z_error ("nan");
       g_free (val);
       return false;
     }
   if (!std::isfinite (x) || string_contains_substr (val, "inf"))
     {
-      g_critical ("inf");
+      z_error ("inf");
       g_free (val);
       return false;
     }

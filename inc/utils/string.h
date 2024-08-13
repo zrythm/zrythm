@@ -56,10 +56,10 @@ class StringArray : public juce::StringArray
 {
 public:
   StringArray () : juce::StringArray (){};
-  StringArray (const std::initializer_list<const char *> &strings)
-      : juce::StringArray (strings){};
-  StringArray (const std::initializer_list<std::string> &strings)
-      : juce::StringArray (strings){};
+  StringArray (const std::initializer_list<const char *> &_strings)
+      : juce::StringArray (_strings) {};
+  StringArray (const std::initializer_list<std::string> &_strings)
+      : juce::StringArray (_strings) {};
   StringArray (const char * const * strs);
 
   /**

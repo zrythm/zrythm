@@ -42,7 +42,7 @@ port_connections_popover_widget_refresh (
   PortConnectionsPopoverWidget * self,
   Port *                         port)
 {
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   self->port = port;
 
@@ -99,7 +99,7 @@ port_connections_popover_widget_refresh (
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (GtkWidget * owner)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (owner), nullptr);
+  z_return_val_if_fail (GTK_IS_WIDGET (owner), nullptr);
 
   PortConnectionsPopoverWidget * self = Z_PORT_CONNECTIONS_POPOVER_WIDGET (
     g_object_new (PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, nullptr));

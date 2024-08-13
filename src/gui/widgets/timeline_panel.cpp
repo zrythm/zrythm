@@ -39,7 +39,7 @@ on_vertical_divider_position_change (
 void
 timeline_panel_widget_setup (TimelinePanelWidget * self)
 {
-  g_return_if_fail (Z_IS_TIMELINE_PANEL_WIDGET (self));
+  z_return_if_fail (Z_IS_TIMELINE_PANEL_WIDGET (self));
 
   tracklist_widget_setup (self->tracklist, TRACKLIST.get ());
 
@@ -77,11 +77,11 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
 void
 timeline_panel_widget_tear_down (TimelinePanelWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  z_debug ("tearing down {}...", fmt::ptr (self));
 
   tracklist_widget_tear_down (self->tracklist);
 
-  g_message ("done");
+  z_debug ("done");
 }
 
 TimelinePanelWidget *

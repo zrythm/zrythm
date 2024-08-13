@@ -32,7 +32,7 @@ G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_WIDGET)
 Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     self->type == PluginSlotType::Instrument || IS_TRACK (self->track), nullptr);
 
   Plugin * plugin =
@@ -166,7 +166,7 @@ on_dnd_drop (
 {
   if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      g_message ("invalid DND type");
+      z_info ("invalid DND type");
       return false;
     }
 
@@ -174,7 +174,7 @@ on_dnd_drop (
 
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
-  g_debug (
+  z_debug (
     "channel slot: dnd drop %s",
     action == GDK_ACTION_COPY ? "COPY"
     : action == GDK_ACTION_MOVE
@@ -298,7 +298,7 @@ select_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 /*gdouble         offset_y,*/
 /*ChannelSlotWidget * self)*/
 /*{*/
-/*g_message ("drag update");*/
+/*z_info ("drag update");*/
 
 /*UI_GET_STATE_MASK (gesture);*/
 /*}*/
@@ -320,7 +320,7 @@ select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
     pl = true;
 
   /* if same channel as selections */
-  g_return_if_fail (self->track);
+  z_return_if_fail (self->track);
   if (
     self->track->channel_
     && self->track->get_name_hash () == MIXER_SELECTIONS->track_name_hash_)
@@ -365,7 +365,7 @@ drag_end (
     {
       bool new_visible = !pl->visible_;
       z_debug ("setting plugin %s visible %d", pl->get_name (), new_visible);
-      g_warn_if_fail (pl->instantiated_);
+      z_warn_if_fail (pl->instantiated_);
       pl->visible_ = new_visible;
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
@@ -389,7 +389,7 @@ drag_end (
       z_return_if_fail (self->track->channel_->widget_);
       self->track->channel_->widget_->last_plugin_press = SteadyClock::now ();
     }
-  g_message ("%s: drag end %d press", __func__, self->n_press);
+  z_info ("%s: drag end %d press", __func__, self->n_press);
 }
 
 static void
@@ -401,7 +401,7 @@ on_press (
   ChannelSlotWidget * self)
 {
   self->n_press = n_press;
-  g_message ("pressed %d", n_press);
+  z_info ("pressed %d", n_press);
 
   if (
     self->open_plugin_inspector_on_click
@@ -534,7 +534,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
       PROJECT->last_selection_ = Project::SelectionType::Modulator;
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
       break;
     }
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
@@ -636,7 +636,7 @@ on_dnd_motion (
   /*ChannelSlotWidget * self =*/
   /*Z_CHANNEL_SLOT_WIDGET (user_data);*/
 
-  g_message ("motion");
+  z_info ("motion");
 
   return GDK_ACTION_MOVE;
 }

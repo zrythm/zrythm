@@ -31,7 +31,7 @@ update_meter_reading (
   GdkFrameClock *           frame_clock,
   gpointer                  user_data)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), G_SOURCE_REMOVE);
+  z_return_val_if_fail (GTK_IS_WIDGET (widget), G_SOURCE_REMOVE);
 
   if (
     !MAIN_WINDOW || !gtk_widget_get_mapped (GTK_WIDGET (widget))
@@ -49,7 +49,7 @@ update_meter_reading (
   auto    track = dynamic_cast<ChannelTrack *> (widget->track);
   z_return_val_if_fail (track, G_SOURCE_REMOVE);
   auto channel = track->get_channel ();
-  g_warn_if_fail (channel);
+  z_warn_if_fail (channel);
 
   if (track->out_signal_type_ == PortType::Event)
     {
@@ -187,16 +187,12 @@ fader_controls_grid_widget_setup (
 void
 fader_controls_grid_widget_tear_down (FaderControlsGridWidget * self)
 {
-  g_debug ("tearing down %p...", self);
-
   if (self->tick_cb)
     {
-      g_debug ("removing tick callback...");
+      z_debug ("removing tick callback...");
       gtk_widget_remove_tick_callback (GTK_WIDGET (self), self->tick_cb);
       self->tick_cb = 0;
     }
-
-  g_debug ("done");
 }
 
 FaderControlsGridWidget *

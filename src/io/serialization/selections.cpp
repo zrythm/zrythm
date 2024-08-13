@@ -56,9 +56,9 @@ FullMixerSelections::define_fields (const Context &ctx)
           auto pl =
             Plugin::create_unique_from_hosting_type (setting.hosting_type_);
           std::visit (
-            [&] (auto &&pl) {
-              using PluginT = base_type<decltype (pl)>;
-              pl->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
+            [&] (auto &&p) {
+              using PluginT = base_type<decltype (p)>;
+              p->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
             },
             convert_to_variant<PluginPtrVariant> (pl.get ()));
           plugins_.emplace_back (std::move (pl));
@@ -242,9 +242,9 @@ TracklistSelections::define_fields (const Context &ctx)
               auto type_enum = ENUM_INT_TO_VALUE (Track::Type, type);
               auto track = Track::create_unique_from_type (type_enum);
               std::visit (
-                [&] (auto &&track) {
-                  using TrackT = base_type<decltype (track)>;
-                  track->ISerializable<TrackT>::deserialize (
+                [&] (auto &&t) {
+                  using TrackT = base_type<decltype (t)>;
+                  t->ISerializable<TrackT>::deserialize (
                     Context (track_obj, ctx));
                 },
                 convert_to_variant<TrackPtrVariant> (track.get ()));

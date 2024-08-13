@@ -36,34 +36,34 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
       auto obj_variant =
         convert_to_variant<ArrangerObjectPtrVariant> (obj_sharedptr.get ());
       std::visit (
-        [&] (auto &&obj) {
+        [&] (auto &&o) {
           if (project)
             { /* throws an error otherwise */
               if constexpr (
-                std::is_same_v<AudioRegion, std::decay_t<decltype (obj)>>)
+                std::is_same_v<AudioRegion, std::decay_t<decltype (o)>>)
                 {
-                  obj->read_from_pool = true;
-                  auto clip = obj->get_clip ();
+                  o->read_from_pool = true;
+                  auto clip = o->get_clip ();
                   z_return_if_fail (clip);
                 }
-              obj->update_positions (true, false, nullptr);
-              obj_sharedptr = obj->find_in_project ()->shared_from_this ();
+              o->update_positions (true, false, nullptr);
+              obj_sharedptr = o->find_in_project ()->shared_from_this ();
             }
           else /* else if not project */
             {
-              obj->init_loaded ();
-              obj->update_positions (true, false, action);
+              o->init_loaded ();
+              o->update_positions (true, false, action);
               if constexpr (
-                std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                std::derived_from<std::decay_t<decltype (o)>, Region>)
                 {
                   if constexpr (
-                    std::is_same_v<AudioRegion, std::decay_t<decltype (obj)>>)
+                    std::is_same_v<AudioRegion, std::decay_t<decltype (o)>>)
                     {
-                      obj->fix_positions (action ? action->frames_per_tick_ : 0);
-                      obj->validate_with_frames_per_tick (
+                      o->fix_positions (action ? action->frames_per_tick_ : 0);
+                      o->validate_with_frames_per_tick (
                         project, action ? action->frames_per_tick_ : 0);
                     }
-                  obj->validate (project, 0);
+                  o->validate (project, 0);
                 }
             }
         },
@@ -173,11 +173,11 @@ ArrangerSelections::add_region_ticks (Position &pos) const
           auto obj_variant =
             convert_to_variant<ArrangerObjectPtrVariant> (objects_[0].get ());
           std::visit (
-            [&] (auto &&obj) {
+            [&] (auto &&o) {
               if constexpr (
-                std::derived_from<std::decay_t<decltype (obj)>, RegionOwnedObject>)
+                std::derived_from<std::decay_t<decltype (o)>, RegionOwnedObject>)
                 {
-                  auto r = obj->get_region ();
+                  auto r = o->get_region ();
                   z_return_if_fail (r);
                   pos.add_ticks (r->pos_.ticks_);
                 }
@@ -211,14 +211,13 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
               auto obj_variant =
                 convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               std::visit (
-                [&] (auto &&obj) {
-                  if constexpr (
-                    std::derived_from<std::decay_t<decltype (obj)>, T>)
+                [&] (auto &&o) {
+                  if constexpr (std::derived_from<std::decay_t<decltype (o)>, T>)
                     {
-                      if (obj->pos_ < pos)
+                      if (o->pos_ < pos)
                         {
-                          ret_obj = obj;
-                          pos = obj->pos_;
+                          ret_obj = o;
+                          pos = o->pos_;
                         }
                     }
                 },
@@ -262,34 +261,34 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
               auto obj_variant =
                 convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               std::visit (
-                [&] (auto &&obj) {
+                [&] (auto &&o) {
                   if constexpr (
                     std::derived_from<
-                      std::decay_t<decltype (obj)>, LengthableObject>)
+                      std::decay_t<decltype (o)>, LengthableObject>)
                     {
                       if (ends_last)
                         {
-                          if (obj->end_pos_ > pos)
+                          if (o->end_pos_ > pos)
                             {
-                              ret_obj = obj;
-                              pos = obj->end_pos_;
+                              ret_obj = o;
+                              pos = o->end_pos_;
                             }
                         }
                       else
                         {
-                          if (obj->pos_ > pos)
+                          if (o->pos_ > pos)
                             {
-                              ret_obj = obj;
-                              pos = obj->pos_;
+                              ret_obj = o;
+                              pos = o->pos_;
                             }
                         }
                     }
                   else
                     {
-                      if (obj->pos_ > pos)
+                      if (o->pos_ > pos)
                         {
-                          ret_obj = obj;
-                          pos = obj->pos_;
+                          ret_obj = o;
+                          pos = o->pos_;
                         }
                     }
                 },
@@ -328,16 +327,16 @@ ArrangerSelections::add_to_region (Region &region)
           auto obj_variant =
             convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
           std::visit (
-            [&] (auto &&obj) {
+            [&] (auto &&o) {
               if constexpr (
-                std::derived_from<std::decay_t<decltype (obj)>, RegionOwnedObject>)
+                std::derived_from<std::decay_t<decltype (o)>, RegionOwnedObject>)
                 {
                   auto region_variant =
                     convert_to_variant<RegionPtrVariant> (&region);
                   std::visit (
-                    [&] (auto &&region) {
-                      auto obj_clone = obj->clone_shared ();
-                      region->append_object (obj_clone, false);
+                    [&] (auto &&r) {
+                      auto obj_clone = o->clone_shared ();
+                      r->append_object (obj_clone, false);
                     },
                     region_variant);
                 }
@@ -378,8 +377,8 @@ ArrangerSelections::select_all (bool fire_events)
                   auto laned_track_variant =
                     convert_to_variant<LanedTrackPtrVariant> (laned_track);
                   std::visit (
-                    [&] (auto &&laned_track) {
-                      for (auto &region : laned_track->regions_)
+                    [&] (auto &&lt) {
+                      for (auto &region : lt->regions_)
                         {
                           add_object_ref (region);
                         }
@@ -586,7 +585,7 @@ ArrangerSelections::contains_object_with_property (Property property, bool value
           else
             {
               auto loopable_object = dynamic_cast<LoopableObject *> (obj.get ());
-              if (loopable_object->get_num_loops (false) > 0 == value)
+              if ((loopable_object->get_num_loops (false) > 0) == value)
                 return true;
             }
         }
@@ -680,19 +679,19 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
               auto obj_variant =
                 convert_to_variant<ArrangerObjectPtrVariant> (obj);
               std::visit (
-                [&] (auto &&obj) {
+                [&] (auto &&o) {
                   if constexpr (
-                    std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                    std::derived_from<std::decay_t<decltype (o)>, Region>)
                     {
                       /* automation not allowed to be pasted this way */
                       if constexpr (
-                        !std::is_same_v<decltype (obj), AutomationRegion>)
+                        !std::is_same_v<decltype (o), AutomationRegion>)
                         {
                           try
                             {
                               track->add_region (
-                                obj->shared_from_this (), nullptr,
-                                obj->id_.lane_pos_, false, false);
+                                o->shared_from_this (), nullptr,
+                                o->id_.lane_pos_, false, false);
                             }
                           catch (const ZrythmException &e)
                             {
@@ -702,14 +701,14 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
                     }
 
                   if constexpr (
-                    std::is_same_v<std::decay_t<decltype (obj)>, ScaleObject>)
+                    std::is_same_v<std::decay_t<decltype (o)>, ScaleObject>)
                     {
-                      P_CHORD_TRACK->add_scale (obj->shared_from_this ());
+                      P_CHORD_TRACK->add_scale (o->shared_from_this ());
                     }
                   else if constexpr (
-                    std::is_same_v<std::decay_t<decltype (obj)>, Marker>)
+                    std::is_same_v<std::decay_t<decltype (o)>, Marker>)
                     {
-                      P_MARKER_TRACK->add_marker (obj->shared_from_this ());
+                      P_MARKER_TRACK->add_marker (o->shared_from_this ());
                     }
                 },
                 obj_variant);
@@ -776,12 +775,12 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
               auto obj_variant =
                 convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               auto ret = std::visit (
-                [&] (auto &&obj) {
+                [&] (auto &&o) {
                   if constexpr (
-                    std::derived_from<std::decay_t<decltype (obj)>, Region>)
+                    std::derived_from<std::decay_t<decltype (o)>, Region>)
                     {
                       /* don't allow splitting at edges */
-                      if (pos <= obj->pos_ || pos >= obj->end_pos_)
+                      if (pos <= o->pos_ || pos >= o->end_pos_)
                         {
                           return false;
                         }

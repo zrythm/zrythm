@@ -94,7 +94,7 @@ QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
 const Position *
 QuantizeOptions::get_prev_point (Position * pos) const
 {
-  g_return_val_if_fail (pos->is_positive (), nullptr);
+  z_return_val_if_fail (pos->is_positive (), nullptr);
 
   Position * prev_point = (Position *) algorithms_binary_search_nearby (
     pos, q_points_.data (), q_points_.size (), sizeof (Position),
@@ -106,7 +106,7 @@ QuantizeOptions::get_prev_point (Position * pos) const
 const Position *
 QuantizeOptions::get_next_point (Position * pos) const
 {
-  g_return_val_if_fail (pos->is_positive (), nullptr);
+  z_return_val_if_fail (pos->is_positive (), nullptr);
 
   Position * next_point = (Position *) algorithms_binary_search_nearby (
     pos, q_points_.data (), q_points_.size (), sizeof (Position),
@@ -120,7 +120,7 @@ QuantizeOptions::quantize_position (Position * pos)
 {
   auto prev_point = get_prev_point (pos);
   auto next_point = get_next_point (pos);
-  g_return_val_if_fail (prev_point && next_point, 0);
+  z_return_val_if_fail (prev_point && next_point, 0);
 
   const double upper = rand_ticks_;
   const double lower = -rand_ticks_;

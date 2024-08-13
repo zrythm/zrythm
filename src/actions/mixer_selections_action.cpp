@@ -228,7 +228,7 @@ MixerSelectionsAction::save_existing_plugin (
     }
   else
     {
-      g_message (
+      z_info (
         "skipping saving slot and cloning "
         "automation tracks - same slot");
     }
@@ -458,7 +458,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     [&prj_port] (auto own_port) {
                       return own_port->id_ == prj_port->id_;
                     });
-                  g_return_if_fail (it != own_ports.end ());
+                  z_return_if_fail (it != own_ports.end ());
 
                   (*it)->copy_metadata_from_project (*prj_port);
                 }
@@ -887,7 +887,7 @@ MixerSelectionsAction::do_or_undo (bool do_it)
       do_or_undo_change_load_behavior (do_it);
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
     }
 
   /* if first do and keeping track of connections, clone the new connections */

@@ -128,20 +128,7 @@ RegionOwnerImpl<RegionT>::insert_region (std::shared_ptr<RegionT> region, int id
   return regions_[idx];
 }
 
-void
-instantiate_region_owner_templates ();
-
-void
-instantiate_region_owner_templates ()
-{
-  RegionVariant x;
-  std::visit (
-    [] (auto &&x) {
-      using T = base_type<decltype (x)>;
-      RegionOwnerImpl<T> * region_owner = nullptr;
-      std::shared_ptr<T>   region;
-      region_owner->remove_region (*region, false);
-      region_owner->insert_region (region, 0);
-    },
-    x);
-}
+template class RegionOwnerImpl<AudioRegion>;
+template class RegionOwnerImpl<AutomationRegion>;
+template class RegionOwnerImpl<ChordRegion>;
+template class RegionOwnerImpl<MidiRegion>;

@@ -259,7 +259,7 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
       SET_CURSOR_FROM_NAME ("all-scroll");
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
 }
@@ -314,7 +314,7 @@ arranger_widget_get_snap_grid (ArrangerWidget * self)
     {
       return SNAP_GRID_TIMELINE.get ();
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 class ObjectOverlapInfo
@@ -413,7 +413,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
         {
           auto     ro_obj = dynamic_cast<RegionOwnedObject *> (obj);
           Region * r = ro_obj->get_region ();
-          g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
+          z_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
           g_obj_end_pos = r->pos_;
           g_obj_end_pos.add_ticks (lobj->end_pos_.ticks_);
           if (orig_visible)
@@ -446,9 +446,9 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
   else if (obj->owned_by_region ())
     {
       RegionOwnedObject * ro_obj = dynamic_cast<RegionOwnedObject *> (obj);
-      g_return_val_if_fail (ro_obj != nullptr, false);
+      z_return_val_if_fail (ro_obj != nullptr, false);
       Region * r = ro_obj->get_region ();
-      g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
+      z_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
       g_obj_start_pos = r->pos_;
       g_obj_start_pos.add_ticks (obj->pos_.ticks_);
       if (orig_visible)
@@ -561,16 +561,16 @@ get_hit_objects (
   double                         y,
   std::vector<ArrangerObject *> &arr)
 {
-  g_return_if_fail (self);
+  z_return_if_fail (self);
 
   if (!math_doubles_equal (x, -1) && x < 0.0)
     {
-      g_critical ("invalid x: %f", x);
+      z_error ("invalid x: %f", x);
       return;
     }
   if (!math_doubles_equal (y, -1) && y < 0.0)
     {
-      g_critical ("invalid y: %f", y);
+      z_error ("invalid y: %f", y);
       return;
     }
 
@@ -848,7 +848,7 @@ get_hit_objects (
       /* no objects in audio arranger yet */
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       break;
     }
 }
@@ -921,12 +921,12 @@ static void
 move_items_x (ArrangerWidget * self, const double ticks_diff)
 {
   ArrangerSelections * sel = arranger_widget_get_selections (self);
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   EVENTS_PUSH_NOW (EventType::ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   sel->add_ticks (ticks_diff);
-  /*g_debug ("adding %f ticks to selections", ticks_diff);*/
+  /*z_debug ("adding %f ticks to selections", ticks_diff);*/
 
   if (sel->is_automation ())
     {
@@ -948,15 +948,15 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
 static float
 get_fvalue_at_y (ArrangerWidget * self, double y)
 {
-  float height = (float) gtk_widget_get_height (GTK_WIDGET (self));
+  auto height = (float) gtk_widget_get_height (GTK_WIDGET (self));
 
   auto region = CLIP_EDITOR->get_region<AutomationRegion> ();
   z_return_val_if_fail (region, -1.f);
   auto at = region->get_automation_track ();
 
   /* get ratio from widget */
-  float  widget_value = height - (float) y;
-  float  widget_ratio = std::clamp (widget_value / height, 0.f, 1.f);
+  auto   widget_value = height - (float) y;
+  auto   widget_ratio = std::clamp<float> (widget_value / height, 0.f, 1.f);
   auto   port = Port::find_from_identifier<ControlPort> (at->port_id_);
   float  automatable_value = port->normalized_val_to_real (widget_ratio);
 
@@ -1261,7 +1261,7 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
       break;
     }
 
-  g_return_if_fail (menu);
+  z_return_if_fail (menu);
 
   ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
     self, ArrangerObject::Type::All, x, y);
@@ -1295,7 +1295,7 @@ on_right_click (
   gdouble           y,
   ArrangerWidget *  self)
 {
-  g_message ("right mb released");
+  z_info ("right mb released");
 #if 0
   if (n_press != 1)
     return;
@@ -1492,7 +1492,7 @@ arranger_widget_on_key_press (
   GdkModifierType         state,
   ArrangerWidget *        self)
 {
-  g_debug ("arranger widget key action");
+  z_debug ("arranger widget key action");
 
   if (z_gtk_keyval_is_ctrl (keyval))
     {
@@ -1508,7 +1508,7 @@ arranger_widget_on_key_press (
     }
 
   ArrangerSelections * sel = arranger_widget_get_selections (self);
-  g_return_val_if_fail (sel, false);
+  z_return_val_if_fail (sel, false);
 
   if (self->action == UiOverlayAction::STARTING_MOVING)
     {
@@ -1732,11 +1732,11 @@ arranger_widget_on_key_press (
     || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6 || keyval == GDK_KEY_Tab
     || keyval == GDK_KEY_ISO_Left_Tab)
     {
-      g_debug ("ignoring keyval used for shortcuts");
+      z_debug ("ignoring keyval used for shortcuts");
       return false;
     }
   else
-    g_debug ("not ignoring keyval %x", keyval);
+    z_debug ("not ignoring keyval %x", keyval);
 
   /* if key was Esc, cancel any drag and adjust the undo/redo stacks */
   if (
@@ -1796,7 +1796,7 @@ click_pressed (
   gdouble           y,
   ArrangerWidget *  self)
 {
-  g_debug ("arranger click pressed - npress %d", n_press);
+  z_debug ("arranger click pressed - npress %d", n_press);
 
   /* set number of presses */
   self->n_press = n_press;
@@ -1821,7 +1821,7 @@ click_pressed (
 static void
 click_stopped (GtkGestureClick * click, ArrangerWidget * self)
 {
-  g_debug ("arranger click stopped");
+  z_debug ("arranger click stopped");
 
   self->n_press = 0;
 }
@@ -2005,7 +2005,7 @@ autofill (ArrangerWidget * self, double x, double y)
     {
       self->action = UiOverlayAction::AUTOFILLING;
       ArrangerSelections * sel = arranger_widget_get_selections (self);
-      g_return_if_fail (sel);
+      z_return_if_fail (sel);
 
       /* clear the actual selections to append created objects */
       sel->clear (false);
@@ -2047,7 +2047,7 @@ autofill (ArrangerWidget * self, double x, double y)
       /* don't write over object */
       if (obj)
         {
-          g_message (
+          z_info (
             "object already exists at %f,%f, "
             "skipping",
             x, y);
@@ -2063,7 +2063,7 @@ drag_cancel (
   GdkEventSequence * sequence,
   ArrangerWidget *   self)
 {
-  g_message ("drag cancelled");
+  z_info ("drag cancelled");
 }
 
 /**
@@ -2073,7 +2073,7 @@ drag_cancel (
 NONNULL static void
 set_earliest_obj (ArrangerWidget * self)
 {
-  g_debug ("setting earliest object...");
+  z_debug ("setting earliest object...");
 
   ArrangerSelections * sel = arranger_widget_get_selections (self);
   z_return_if_fail (sel);
@@ -2426,7 +2426,7 @@ on_drag_begin_handle_hit_object (
             }
           break;
         default:
-          g_return_val_if_reached (false);
+          z_return_val_if_reached (false);
         }
 
       z_debug ("action after");
@@ -2475,7 +2475,7 @@ drag_begin (
   gdouble          start_y,
   ArrangerWidget * self)
 {
-  g_debug ("arranger drag begin starting...");
+  z_debug ("arranger drag begin starting...");
 
   self->offset_x_from_scroll = 0;
   self->offset_y_from_scroll = 0;
@@ -2507,18 +2507,18 @@ drag_begin (
   switch (self->drag_start_btn)
     {
     case GDK_BUTTON_PRIMARY:
-      g_debug ("primary button clicked");
+      z_debug ("primary button clicked");
       break;
     case GDK_BUTTON_SECONDARY:
-      g_debug ("secondary button clicked");
+      z_debug ("secondary button clicked");
       break;
     case GDK_BUTTON_MIDDLE:
-      g_debug ("middle button clicked");
+      z_debug ("middle button clicked");
       break;
     default:
       break;
     }
-  g_warn_if_fail (self->drag_start_btn);
+  z_warn_if_fail (self->drag_start_btn);
 
   /* check if selections can create links */
   self->can_link = TYPE_IS (TIMELINE) && TL_SELECTIONS->contains_only_regions ();
@@ -2535,7 +2535,7 @@ drag_begin (
 
   /* handle hit object */
   int objects_hit = on_drag_begin_handle_hit_object (self, start_x, start_y);
-  g_message ("objects hit %d", objects_hit);
+  z_info ("objects hit %d", objects_hit);
   arranger_widget_print_action (self);
 
   if (objects_hit)
@@ -2549,7 +2549,7 @@ drag_begin (
     {
       self->sel_at_start = NULL;
 
-      g_debug ("npress = %d", self->n_press);
+      z_debug ("npress = %d", self->n_press);
 
       /* single click */
       if (self->n_press == 1)
@@ -2657,7 +2657,7 @@ drag_begin (
 
   arranger_widget_refresh_cursor (self);
 
-  g_debug ("arranger drag begin done");
+  z_debug ("arranger drag begin done");
 }
 
 /**
@@ -3159,11 +3159,11 @@ drag_update (
       pan (self, offset_x, offset_y);
       break;
     case UiOverlayAction::AUTOFILLING:
-      g_message ("autofilling");
+      z_info ("autofilling");
       autofill (self, self->start_x + offset_x, self->start_y + offset_y);
       break;
     case UiOverlayAction::AUDITIONING:
-      g_debug ("auditioning");
+      z_debug ("auditioning");
       break;
     case UiOverlayAction::RAMPING:
       /* find and select objects inside selection */
@@ -3228,7 +3228,7 @@ drag_end (
   gdouble          offset_y,
   ArrangerWidget * self)
 {
-  g_debug ("arranger drag end starting...");
+  z_debug ("arranger drag end starting...");
 
   if (
     self->action == UiOverlayAction::SELECTING
@@ -3249,14 +3249,14 @@ drag_end (
       if (self->start_object_was_selected)
         {
           self->start_object->select (F_NO_SELECT, F_APPEND, F_PUBLISH_EVENTS);
-          g_debug ("ctrl-deselecting object");
+          z_debug ("ctrl-deselecting object");
         }
       /* if was deselected, select it */
       else
         {
           /* select it */
           self->start_object->select (F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
-          g_debug ("ctrl-selecting object");
+          z_debug ("ctrl-selecting object");
         }
     }
 
@@ -3325,7 +3325,7 @@ drag_end (
         && (GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_PRESS) || GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_RELEASE)))
         {
           btn = gdk_button_event_get_button (ev);
-          g_warn_if_fail (btn);
+          z_warn_if_fail (btn);
           if (
             btn == GDK_BUTTON_SECONDARY
             && self->action != UiOverlayAction::ERASING)
@@ -3362,7 +3362,7 @@ drag_end (
 
   arranger_widget_refresh_cursor (self);
 
-  g_debug ("arranger drag end done");
+  z_debug ("arranger drag end done");
 }
 
 /**
@@ -3412,7 +3412,7 @@ arranger_widget_pos_to_px (
       return ui_pos_to_px_editor (pos, use_padding);
     }
 
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 template <typename T>
@@ -3546,18 +3546,18 @@ on_scroll (
   GdkScrollUnit scroll_unit = gtk_event_controller_scroll_get_unit (scroll_controller);
   if (scroll_unit == GDK_SCROLL_UNIT_WHEEL)
     {
-      g_debug ("wheel");
+      z_debug ("wheel");
       /*double page_size =*/
       /*double scroll_step = pow (page_size, 2.0 / 3.0);*/
     }
   else if (scroll_unit == GDK_SCROLL_UNIT_SURFACE)
     {
-      g_debug ("unit interface");
+      z_debug ("unit interface");
       dx *= MAGIC_SCROLL_FACTOR;
     }
 #endif
 
-  g_debug (
+  z_debug (
     "scrolled to %.1f (d %d), %.1f (d %d)", self->hover_x, (int) dx,
     self->hover_y, (int) dy);
 
@@ -3747,7 +3747,7 @@ on_motion (
 static void
 on_focus_leave (GtkEventControllerFocus * focus, ArrangerWidget * self)
 {
-  g_debug ("arranger focus out");
+  z_debug ("arranger focus out");
 
   self->alt_held = 0;
   self->ctrl_held = 0;
@@ -3960,7 +3960,7 @@ get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
       ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
       break;
     }
@@ -4144,7 +4144,7 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
       ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
       break;
     }
@@ -4359,7 +4359,7 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
       ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
       break;
     }
@@ -4462,7 +4462,7 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
       ac = ArrangerCursor::ARRANGER_CURSOR_AUTOFILL;
       break;
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
       break;
     }
@@ -4707,7 +4707,7 @@ arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force)
             || playhead_x < rect.x + buffer)
             {
               settings->set_scroll_start_x (playhead_x - buffer, true);
-              /*g_debug ("autoscrolling at playhead edges");*/
+              /*z_debug ("autoscrolling at playhead edges");*/
             }
         }
     },
@@ -4756,9 +4756,9 @@ arranger_widget_setup (
   ArrangerWidgetType               type,
   const std::shared_ptr<SnapGrid> &snap_grid)
 {
-  g_debug ("setting up arranger widget...");
+  z_debug ("setting up arranger widget...");
 
-  g_return_if_fail (
+  z_return_if_fail (
     self && type >= ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE
     && snap_grid);
   self->type = type;
@@ -4859,7 +4859,7 @@ arranger_widget_setup (
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
-  g_debug ("done setting up arranger");
+  z_debug ("done setting up arranger");
 }
 
 static void

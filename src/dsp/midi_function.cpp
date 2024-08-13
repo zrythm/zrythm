@@ -45,7 +45,7 @@ midi_function_string_id_to_type (const char * id)
       if (eq)
         return cur;
     }
-  g_return_val_if_reached (MidiFunctionType::Crescendo);
+  z_return_val_if_reached (MidiFunctionType::Crescendo);
 }
 
 void

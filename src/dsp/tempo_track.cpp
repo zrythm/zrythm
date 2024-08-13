@@ -103,7 +103,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
     AUDIO_ENGINE->transport_type_
     == AudioEngine::JackTransportType::NoJackTransport)
     {
-      g_debug (
+      z_debug (
         "%s: bpm <%f>, temporary <%d>", __func__, (double) bpm, temporary);
     }
 
@@ -185,7 +185,7 @@ TempoTrack::beat_unit_to_enum (int beat_unit)
     default:
       break;
     }
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (BeatUnit, 0));
+  z_return_val_if_reached (ENUM_INT_TO_VALUE (BeatUnit, 0));
 }
 
 void
@@ -197,7 +197,7 @@ TempoTrack::set_beat_unit (int beat_unit)
 void
 TempoTrack::set_beats_per_bar (int beats_per_bar)
 {
-  g_return_if_fail (
+  z_return_if_fail (
     !AUDIO_ENGINE->run_.load ()
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 

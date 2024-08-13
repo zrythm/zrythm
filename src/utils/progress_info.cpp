@@ -1,7 +1,7 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/objects.h"
+#include "utils/logger.h"
 #include "utils/progress_info.h"
 #include "utils/types.h"
 
@@ -10,7 +10,7 @@ ProgressInfo::request_cancellation ()
 {
   if (status_ == COMPLETED)
     {
-      g_warning ("requested cancellation but task already completed");
+      z_warning ("requested cancellation but task already completed");
       return;
     }
 
@@ -18,7 +18,7 @@ ProgressInfo::request_cancellation ()
 
   if (status_ != RUNNING)
     {
-      g_critical ("invalid status %s", ENUM_NAME (status_));
+      z_error ("invalid status %s", ENUM_NAME (status_));
       return;
     }
 
@@ -40,13 +40,13 @@ ProgressInfo::mark_completed (CompletionType type, const char * msg)
 
   if (type == HAS_WARNING)
     {
-      g_return_if_fail (msg);
-      g_message ("progress warning: %s", msg);
+      z_return_if_fail (msg);
+      z_info ("progress warning: %s", msg);
     }
   else if (type == HAS_ERROR)
     {
-      g_return_if_fail (msg);
-      g_message ("progress error: %s", msg);
+      z_return_if_fail (msg);
+      z_info ("progress error: %s", msg);
     }
 }
 

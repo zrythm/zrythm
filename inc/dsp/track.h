@@ -208,7 +208,7 @@ public:
         return true;
       }
 
-    g_return_val_if_reached (false);
+    z_return_val_if_reached (false);
   }
 
   static bool type_is_foldable (Type type)
@@ -921,8 +921,6 @@ private:
     const PluginSetting * pl_setting,
     int                   index);
 
-  static void instantiate_templates ();
-
 public:
   /**
    * Position in the Tracklist.
@@ -1070,6 +1068,10 @@ class RecordableTrack;
 extern template RecordableTrack *
 Track::find_by_name (const std::string &);
 extern template AutomatableTrack *
+Track::find_by_name (const std::string &);
+extern template Track *
+Track::find_by_name (const std::string &);
+extern template ChordTrack *
 Track::find_by_name (const std::string &);
 extern template Plugin *
 Track::insert_plugin (

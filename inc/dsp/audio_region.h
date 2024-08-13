@@ -114,7 +114,7 @@ public:
   void init_loaded () override
   {
     read_from_pool_ = true;
-    g_return_if_fail (get_clip ());
+    z_return_if_fail (get_clip ());
   }
 
   /**

@@ -19,7 +19,7 @@ ChordPresetPackManager::get_user_packs_path ()
 {
   auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
   std::string zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
-  g_return_val_if_fail (!zrythm_dir.empty (), "");
+  z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return Glib::build_filename (zrythm_dir, UserPacksDirName);
 }
@@ -444,7 +444,7 @@ ChordPresetPackManager::add_user_packs ()
         }
       else
         {
-          g_message ("no user chord presets found");
+          z_info ("no user chord presets found");
         }
     }
 }
@@ -520,7 +520,7 @@ ChordPresetPackManager::get_pack_for_preset (const ChordPreset &pset)
         }
     }
 
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 int

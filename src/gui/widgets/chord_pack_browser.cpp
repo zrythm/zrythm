@@ -302,7 +302,7 @@ on_pack_right_click (
   gdouble           y,
   gpointer          user_data)
 {
-  g_debug ("right click");
+  z_debug ("right click");
 }
 
 ChordPackBrowserWidget *
@@ -311,7 +311,7 @@ chord_pack_browser_widget_new (void)
   ChordPackBrowserWidget * self = static_cast<ChordPackBrowserWidget *> (
     g_object_new (CHORD_PACK_BROWSER_WIDGET_TYPE, nullptr));
 
-  g_message ("Instantiating chord_pack_browser widget...");
+  z_info ("Instantiating chord_pack_browser widget...");
 
   gtk_label_set_xalign (self->pset_info, 0);
 

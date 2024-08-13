@@ -101,11 +101,11 @@ get_report_template (BugReportDialogWidget * self, bool for_uri)
 static char *
 get_json_string (BugReportDialogWidget * self)
 {
-  g_debug ("%s: generating json...", __func__);
+  z_debug ("%s: generating json...", __func__);
 
   yyjson_mut_doc * doc = yyjson_mut_doc_new (nullptr);
   yyjson_mut_val * root = yyjson_mut_obj (doc);
-  g_return_val_if_fail (root, nullptr);
+  z_return_val_if_fail (root, nullptr);
   yyjson_mut_doc_set_root (doc, root);
 
   char * steps_to_reproduce = z_gtk_text_buffer_get_full_text (
@@ -348,7 +348,7 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
         LOG, &self->log_file_tmpdir, &self->log_file_path, &err);
       if (!ret)
         {
-          g_warning (
+          z_warning(
             "could not create tmp dir for log "
             "file: %s",
             err->message);
@@ -388,7 +388,7 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
         }
       else
         {
-          g_warning (
+          z_warning (
             "could not get pixbuf from %s: %s", self->screenshot_path,
             err->message);
         }
@@ -494,7 +494,7 @@ on_response_cb (
     }
   else
     {
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 }
 

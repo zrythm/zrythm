@@ -375,7 +375,7 @@ should pass for a patch to be accepted.
 
 ## Error Handling
 To report invalid program states (such as programming
-errors), use the `g_return_*`/`z_return_*` functions or
+errors), use the `z_return_*`/`z_return_*` functions or
 `g_critical`. This will show a bug report popup
 if hit.
 
@@ -394,7 +394,7 @@ Tips
 often
 * `CONST`/`PURE` can be combined with inline
 * `HOT` should not be combined with inline
-* only use `CONST`/`PURE` on functions that do not log (or use `g_warn_*()`/`g_return_*()`)
+* only use `CONST`/`PURE` on functions that do not log (or use `z_warn_*()`/`z_return_*()`)
 
 ## Licensing
 For license headers, we use SPDX license

@@ -1,14 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * GSettings Manager.
- */
-
 #ifndef __SETTINGS_G_SETTINGS_MANAGER_H__
 #define __SETTINGS_G_SETTINGS_MANAGER_H__
+
+#include "utils/logger.h"
 
 #include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
@@ -39,7 +35,7 @@ struct GSettingsWrapper
   {
     if (!settings_)
       {
-        g_critical ("invalid settings schema id: %s", schema_id_.c_str ());
+        z_error ("invalid settings schema id: %s", schema_id_.c_str ());
       }
   }
 

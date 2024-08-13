@@ -6,10 +6,7 @@
 
 #include "actions/actions.h"
 #include "dsp/master_track.h"
-#include "dsp/track.h"
 #include "dsp/tracklist.h"
-#include "dsp/transport.h"
-#include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
@@ -47,17 +44,12 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/error.h"
 #include "utils/exceptions.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
-#include "utils/system.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -74,7 +66,7 @@ G_DEFINE_TYPE (MainWindowWidget, main_window_widget, ADW_TYPE_APPLICATION_WINDOW
 static void
 on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
 {
-  g_message ("main window destroy %p", self);
+  z_info ("main window destroy");
 
   EVENT_MANAGER->process_now ();
 
@@ -101,7 +93,7 @@ on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
       g_application_quit (G_APPLICATION (zrythm_app.get ()));
     }
 
-  g_message ("main window destroy called");
+  z_info ("main window destroy called");
 }
 
 static void
@@ -113,7 +105,7 @@ save_on_quit_response_cb (
   if (string_is_equal (response, "save-quit"))
     {
       /* save project */
-      g_message ("saving project...");
+      z_info ("saving project...");
       try
         {
           PROJECT->save (
@@ -128,7 +120,7 @@ save_on_quit_response_cb (
     }
   else if (string_is_equal (response, "quit-no-save"))
     {
-      g_message ("quitting without saving...");
+      z_info ("quitting without saving...");
       g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, self);
     }
   else if (string_is_equal (response, "cancel"))
@@ -144,7 +136,7 @@ save_on_quit_response_cb (
 static bool
 on_close_request (GtkWindow * window, MainWindowWidget * self)
 {
-  g_debug ("%s: main window delete event called", __func__);
+  z_debug ("%s: main window delete event called", __func__);
 
   /* ask for save if project has unsaved changes */
   if (PROJECT->has_unsaved_changes ())
@@ -194,14 +186,14 @@ on_key_pressed (
   GdkModifierType         state,
   gpointer                user_data)
 {
-  /*g_debug ("main window key press");*/
+  /*z_debug ("main window key press");*/
   MainWindowWidget * self = Z_MAIN_WINDOW_WIDGET (user_data);
 
   /* if pressed space and currently not inside a GtkEditable,
    * activate the play-pause action */
   if (keyval == GDK_KEY_space || keyval == GDK_KEY_KP_Space)
     {
-      g_debug ("space pressed");
+      z_debug ("space pressed");
       GtkWidget * focus_child = gtk_widget_get_focus_child (GTK_WIDGET (self));
       GtkWidget * next_child = focus_child;
       while (next_child)
@@ -261,7 +253,7 @@ show_startup_errors (MainWindowWidget * self)
 static void
 refresh_undo_or_redo_button (MainWindowWidget * self, bool redo)
 {
-  g_warn_if_fail (UNDO_MANAGER);
+  z_warn_if_fail (UNDO_MANAGER);
 
   AdwSplitButton * split_btn = redo ? self->redo_btn : self->undo_btn;
   auto &stack = redo ? UNDO_MANAGER->redo_stack_ : UNDO_MANAGER->undo_stack_;
@@ -327,7 +319,7 @@ refresh_undo_or_redo_button (MainWindowWidget * self, bool redo)
 void
 main_window_widget_refresh_undo_redo_buttons (MainWindowWidget * self)
 {
-  g_warn_if_fail (UNDO_MANAGER);
+  z_warn_if_fail (UNDO_MANAGER);
 
   refresh_undo_or_redo_button (self, false);
   refresh_undo_or_redo_button (self, true);
@@ -336,13 +328,13 @@ main_window_widget_refresh_undo_redo_buttons (MainWindowWidget * self)
 void
 main_window_widget_setup (MainWindowWidget * self)
 {
-  g_return_if_fail (self);
+  z_return_if_fail (self);
 
-  g_message ("Setting up...");
+  z_info ("Setting up...");
 
   if (self->setup)
     {
-      g_message ("already set up");
+      z_info ("already set up");
       return;
     }
 
@@ -391,7 +383,7 @@ main_window_widget_setup (MainWindowWidget * self)
 
   EVENT_MANAGER->process_now ();
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void
@@ -414,7 +406,7 @@ on_focus_widget_changed (GObject * gobject, GParamSpec * pspec, gpointer user_da
     }
   else
     {
-      g_debug ("nothing focused");
+      z_debug ("nothing focused");
     }
 }
 
@@ -425,7 +417,7 @@ on_focus_widget_changed (GObject * gobject, GParamSpec * pspec, gpointer user_da
 void
 main_window_widget_tear_down (MainWindowWidget * self)
 {
-  g_message ("tearing down main window %p...", self);
+  z_debug ("tearing down main window...");
 
   self->setup = false;
 
@@ -436,27 +428,27 @@ main_window_widget_tear_down (MainWindowWidget * self)
 
   gtk_window_set_application (GTK_WINDOW (self), nullptr);
 
-  g_message ("done tearing down main window");
+  z_debug ("done tearing down main window");
 }
 
 static void
 main_window_dispose (MainWindowWidget * self)
 {
-  g_message ("disposing main_window...");
+  z_info ("disposing main_window...");
 
   G_OBJECT_CLASS (main_window_widget_parent_class)->dispose (G_OBJECT (self));
 
-  g_message ("done");
+  z_info ("done");
 }
 
 static void
 main_window_finalize (MainWindowWidget * self)
 {
-  g_message ("finalizing main_window...");
+  z_info ("finalizing main_window...");
 
   G_OBJECT_CLASS (main_window_widget_parent_class)->finalize (G_OBJECT (self));
 
-  g_message ("done");
+  z_info ("done");
 }
 
 static void
@@ -492,7 +484,7 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
 static void
 main_window_widget_init (MainWindowWidget * self)
 {
-  g_message ("Initing main window widget...");
+  z_info ("Initing main window widget...");
 
   GActionEntry actions[] = {
 
@@ -825,5 +817,5 @@ main_window_widget_init (MainWindowWidget * self)
     S_UI, "main-window-is-fullscreen", self, "fullscreened",
     G_SETTINGS_BIND_DEFAULT);
 
-  g_message ("done");
+  z_info ("done");
 }

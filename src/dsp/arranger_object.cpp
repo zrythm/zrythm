@@ -155,7 +155,7 @@ ArrangerObject::create_arranger_selections_from_this () const
       arranger_selections_type = ArrangerSelections::Type::Automation;
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
   auto sel = ArrangerSelections::new_from_type (arranger_selections_type);
   auto variant = convert_to_variant<ArrangerObjectPtrVariant> (this);
@@ -251,41 +251,41 @@ ArrangerObject::get_position_ptr (PositionType pos_type)
     case PositionType::End:
       {
         auto lo = dynamic_cast<LengthableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, nullptr);
+        z_return_val_if_fail (lo != nullptr, nullptr);
         return &lo->end_pos_;
       }
     case PositionType::ClipStart:
       {
         auto lo = dynamic_cast<LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, nullptr);
+        z_return_val_if_fail (lo != nullptr, nullptr);
         return &lo->clip_start_pos_;
       }
     case PositionType::LoopStart:
       {
         auto lo = dynamic_cast<LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, nullptr);
+        z_return_val_if_fail (lo != nullptr, nullptr);
         return &lo->loop_start_pos_;
       }
     case PositionType::LoopEnd:
       {
         auto lo = dynamic_cast<LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, nullptr);
+        z_return_val_if_fail (lo != nullptr, nullptr);
         return &lo->loop_end_pos_;
       }
     case PositionType::FadeIn:
       {
         auto fo = dynamic_cast<FadeableObject *> (this);
-        g_return_val_if_fail (fo != nullptr, nullptr);
+        z_return_val_if_fail (fo != nullptr, nullptr);
         return &fo->fade_in_pos_;
       }
     case PositionType::FadeOut:
       {
         auto fo = dynamic_cast<FadeableObject *> (this);
-        g_return_val_if_fail (fo != nullptr, nullptr);
+        z_return_val_if_fail (fo != nullptr, nullptr);
         return &fo->fade_out_pos_;
       }
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 bool
@@ -298,7 +298,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
       if (type_has_length (type_))
         {
           auto lo = dynamic_cast<const LengthableObject *> (this);
-          g_return_val_if_fail (lo != nullptr, false);
+          z_return_val_if_fail (lo != nullptr, false);
           if (pos >= lo->end_pos_)
             return false;
 
@@ -311,7 +311,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
           if (can_fade ())
             {
               auto fo = dynamic_cast<const FadeableObject *> (this);
-              g_return_val_if_fail (fo != nullptr, false);
+              z_return_val_if_fail (fo != nullptr, false);
               signed_frame_t frames_diff =
                 pos.get_total_frames () - this->pos_.get_total_frames ();
               Position expected_fade_out = fo->fade_out_pos_;
@@ -334,14 +334,14 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
     case PositionType::LoopStart:
       {
         auto lo = dynamic_cast<const LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, false);
+        z_return_val_if_fail (lo != nullptr, false);
         return pos < lo->loop_end_pos_ && pos >= Position ();
       }
       break;
     case PositionType::LoopEnd:
       {
         auto lo = dynamic_cast<const LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, false);
+        z_return_val_if_fail (lo != nullptr, false);
         if (pos < lo->clip_start_pos_ || pos <= lo->loop_start_pos_)
           return false;
 
@@ -349,7 +349,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
         if (type_ == Type::Region)
           {
             auto r = dynamic_cast<const Region *> (this);
-            g_return_val_if_fail (r != nullptr, false);
+            z_return_val_if_fail (r != nullptr, false);
             if (r->id_.type_ == RegionType::Audio)
               {
                 auto audio_region = dynamic_cast<const AudioRegion *> (r);
@@ -364,20 +364,20 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
     case PositionType::ClipStart:
       {
         auto lo = dynamic_cast<const LoopableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, false);
+        z_return_val_if_fail (lo != nullptr, false);
         return pos < lo->loop_end_pos_ && pos >= Position ();
       }
       break;
     case PositionType::End:
       {
         auto lo = dynamic_cast<const LengthableObject *> (this);
-        g_return_val_if_fail (lo != nullptr, false);
+        z_return_val_if_fail (lo != nullptr, false);
         bool is_valid = pos > this->pos_;
 
         if (can_fade ())
           {
             auto fo = dynamic_cast<const FadeableObject *> (this);
-            g_return_val_if_fail (fo != nullptr, false);
+            z_return_val_if_fail (fo != nullptr, false);
             signed_frame_t frames_diff =
               pos.get_total_frames () - lo->end_pos_.get_total_frames ();
             Position expected_fade_out = fo->fade_out_pos_;
@@ -391,7 +391,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
     case PositionType::FadeIn:
       {
         auto fo = dynamic_cast<const FadeableObject *> (this);
-        g_return_val_if_fail (fo != nullptr, false);
+        z_return_val_if_fail (fo != nullptr, false);
         Position local_end_pos (
           fo->end_pos_.get_total_frames () - this->pos_.get_total_frames ());
         return pos >= Position () && pos.get_total_frames () >= 0
@@ -401,7 +401,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
     case PositionType::FadeOut:
       {
         auto fo = dynamic_cast<const FadeableObject *> (this);
-        g_return_val_if_fail (fo != nullptr, false);
+        z_return_val_if_fail (fo != nullptr, false);
         Position local_end_pos (
           fo->end_pos_.get_total_frames () - this->pos_.get_total_frames ());
         return pos >= Position () && pos <= local_end_pos
@@ -410,13 +410,13 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
       break;
     }
 
-  g_return_val_if_reached (false);
+  z_return_val_if_reached (false);
 }
 
 void
 ArrangerObject::copy_identifier (const ArrangerObject &src)
 {
-  g_return_if_fail (type_ == src.type_);
+  z_return_if_fail (type_ == src.type_);
 
   track_name_hash_ = src.track_name_hash_;
 
@@ -462,14 +462,14 @@ ArrangerObject::set_position (
   PositionType     pos_type,
   const bool       validate)
 {
-  g_return_val_if_fail (pos, false);
+  z_return_val_if_fail (pos, false);
 
   /* return if validate is on and position is invalid */
   if (validate && !is_position_valid (*pos, pos_type))
     return false;
 
   auto pos_ptr = get_position_ptr (pos_type);
-  g_return_val_if_fail (pos_ptr, false);
+  z_return_val_if_fail (pos_ptr, false);
   *pos_ptr = *pos;
 
   return true;
@@ -600,7 +600,7 @@ ArrangerObject::
       if (ROUTER->is_processing_kickoff_thread ())
         {
           /* do some validation */
-          g_return_if_fail (is_position_valid (
+          z_return_if_fail (is_position_valid (
             dynamic_cast<LengthableObject *> (this)->end_pos_,
             PositionType::End));
         }
@@ -664,16 +664,16 @@ ArrangerObject::
               AudioClip *    clip;
               local_frames = r->timeline_frames_to_local (tl_frames, true);
               clip = ar->get_clip ();
-              g_return_if_fail (clip);
+              z_return_if_fail (clip);
 
               /* sometimes due to rounding errors, the region frames are 1 frame
                * more than the clip frames. this works around it by resizing the
                * region by -1 frame*/
               while (local_frames == (signed_frame_t) clip->num_frames_)
                 {
-                  g_debug ("adjusting for rounding error");
+                  z_debug ("adjusting for rounding error");
                   double ticks = -AUDIO_ENGINE->ticks_per_frame_;
-                  g_debug ("ticks %f", ticks);
+                  z_debug ("ticks %f", ticks);
                   try
                     {
                       dynamic_cast<LengthableObject *> (this)->resize (
@@ -820,7 +820,7 @@ bool
 ArrangerObject::is_frozen () const
 {
   auto track = get_track ();
-  g_return_val_if_fail (track, false);
+  z_return_val_if_fail (track, false);
   return track->frozen_;
 }
 

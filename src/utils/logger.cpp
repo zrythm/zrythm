@@ -4,8 +4,6 @@
 #include "utils/logger.h"
 #include "zrythm.h"
 
-#include "doctest_wrapper.h"
-
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
 Logger::Logger ()
@@ -27,7 +25,7 @@ Logger::Logger ()
         g_free (datetime);
       }
     FILE * file = fopen (tmp_log_file, "a");
-    g_return_val_if_fail (file, G_LOG_WRITER_UNHANDLED);
+    z_return_val_if_fail (file, G_LOG_WRITER_UNHANDLED);
     fprintf (file, "%s\n", str);
     fclose (file);
 #endif
@@ -56,7 +54,7 @@ Logger::Logger ()
         {
         if (!gZrythm || ZRYTHM_TESTING)
           {
-            g_message ("Backtrace: %s", ev->backtrace);
+            z_info ("Backtrace: %s", ev->backtrace);
           }
 
           auto backtrace = backtrace_get_with_lines ("", 100, true);

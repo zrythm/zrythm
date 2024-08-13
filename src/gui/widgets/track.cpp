@@ -93,7 +93,7 @@ track_widget_highlight_to_str (TrackWidgetHighlight highlight)
     case TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM:
       return "Highlight bottom";
     default:
-      g_return_val_if_reached ("unknown highlight val");
+      z_return_val_if_reached ("unknown highlight val");
     }
 }
 
@@ -414,7 +414,7 @@ set_tooltip_from_button (TrackWidget * self, CustomButtonWidget * cb)
   else
     {
       /* tooltip missing */
-      g_warn_if_reached ();
+      z_warn_if_reached ();
     }
 
 #undef SET_TOOLTIP
@@ -478,7 +478,7 @@ on_motion (
           self->resize_target_type =
             TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_TRACK;
           self->resize_target = self->track;
-          /*g_message ("RESIZING TRACK");*/
+          /*z_info ("RESIZING TRACK");*/
         }
       else if (!cb && !am && resizing_at)
         {
@@ -486,7 +486,7 @@ on_motion (
           self->resize_target_type =
             TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_AT;
           self->resize_target = resizing_at;
-          /*g_message (*/
+          /*z_info (*/
           /*"RESIZING AT %s",*/
           /*resizing_at->automatable->label);*/
         }
@@ -496,7 +496,7 @@ on_motion (
           self->resize_target_type =
             TrackWidgetResizeTarget::TRACK_WIDGET_RESIZE_TARGET_LANE;
           self->resize_target = resizing_lane;
-          /*g_message (*/
+          /*z_info (*/
           /*"RESIZING LANE %d",*/
           /*resizing_lane->pos);*/
         }
@@ -594,7 +594,7 @@ track_widget_is_cursor_in_range_select_half (TrackWidget * self, double y)
   graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (0.f, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (MW_TIMELINE), GTK_WIDGET (self), &tmp_pt, &wpt);
-  g_return_val_if_fail (success, false);
+  z_return_val_if_fail (success, false);
 
   /* if bot 1/3rd */
   if (
@@ -1128,7 +1128,7 @@ click_released (
               gtk_widget_set_parent (GTK_WIDGET (popover), GTK_WIDGET (self));
               gtk_popover_set_pointing_to (GTK_POPOVER (popover), &rect);
               gtk_popover_popup (GTK_POPOVER (popover));
-              g_debug ("popping up automatable selector popover");
+              z_debug ("popping up automatable selector popover");
             }
         }
     }
@@ -1136,9 +1136,9 @@ click_released (
     {
       AutomationModeWidget * am = self->clicked_am;
       auto *                 at = (AutomationTrack *) am->owner_;
-      g_return_if_fail (at);
+      z_return_if_fail (at);
       AutomationTracklist * atl = at->get_automation_tracklist ();
-      g_return_if_fail (atl);
+      z_return_if_fail (atl);
       if (
         at->automation_mode_ == AutomationMode::Record
         && am->hit_mode_ == AutomationMode::Record)
@@ -1166,7 +1166,7 @@ click_released (
         }
     }
 
-  g_debug ("npress %d", n_press);
+  z_debug ("npress %d", n_press);
 
   self->button_pressed = 0;
   self->clicked_button = NULL;
@@ -1234,7 +1234,7 @@ on_drag_update (
   gdouble          offset_y,
   TrackWidget *    self)
 {
-  g_message ("drag_update");
+  z_info ("drag_update");
 
   self->dragged = 1;
 
@@ -1294,7 +1294,7 @@ on_drag_update (
             content_providers, G_N_ELEMENTS (content_providers));
 
           GtkNative * native = gtk_widget_get_native (GTK_WIDGET (self));
-          g_return_if_fail (native);
+          z_return_if_fail (native);
           GdkSurface * surface = gtk_native_get_surface (native);
 
           GdkDevice * device = gtk_gesture_get_device (GTK_GESTURE (gesture));
@@ -1427,7 +1427,7 @@ track_widget_get_local_y (
       ? GTK_WIDGET (arranger)
       : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
     GTK_WIDGET (self), &tmp_pt, &local);
-  g_return_val_if_fail (success, -1);
+  z_return_val_if_fail (success, -1);
 
   return (int) local.y;
 }
@@ -1545,9 +1545,9 @@ add_record_button (TrackWidget * self, int top)
 void
 track_widget_update_size (TrackWidget * self)
 {
-  g_return_if_fail (self->track);
+  z_return_if_fail (self->track);
   int height = (int) self->track->get_full_visible_height ();
-  g_return_if_fail (height > 1);
+  z_return_if_fail (height > 1);
   int w;
   gtk_widget_get_size_request ((GtkWidget *) self, &w, nullptr);
   gtk_widget_set_size_request (GTK_WIDGET (self), w, height);
@@ -1599,7 +1599,7 @@ on_dnd_drop (
 {
   TrackWidget * self = Z_TRACK_WIDGET (data);
   Track *       track = self->track;
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (drop_target);
@@ -1687,7 +1687,7 @@ on_dnd_drop (
     {
       /* NOTE this is a cloned pointer, don't use
        * it */
-      g_warn_if_fail (pl);
+      z_warn_if_fail (pl);
 
       GError * err = NULL;
       bool     ret = false;
@@ -1702,7 +1702,7 @@ on_dnd_drop (
           return false;
         }
       else
-        g_return_val_if_reached (true);
+        z_return_val_if_reached (true);
 
       if (!ret)
         {
@@ -1785,7 +1785,7 @@ track_widget_key_released (
 TrackWidget *
 track_widget_new (Track * track)
 {
-  g_return_val_if_fail (track, nullptr);
+  z_return_val_if_fail (track, nullptr);
   z_debug ("creating new track widget for %s", track->name_);
 
   auto * self =

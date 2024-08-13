@@ -53,6 +53,7 @@ public:
     std::copy (other.buf_.get (), other.buf_.get () + size_, buf_.get ());
   }
 
+#if 0
   RingBuffer (RingBuffer &&other) noexcept
       : size_ (other.size_), buf_ (std::move (other.buf_)),
         read_head_ (other.read_head_.load ()),
@@ -62,6 +63,7 @@ public:
     other.read_head_.store (0);
     other.write_head_.store (0);
   }
+#endif
 
 #if 0
   RingBuffer &operator= (const RingBuffer &other)

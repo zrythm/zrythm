@@ -82,7 +82,7 @@ Channel::is_in_active_project ()
 void
 Channel::connect_no_prev_no_next (Plugin &pl)
 {
-  g_debug ("connect no prev no next");
+  z_debug ("connect no prev no next");
 
   auto track = get_track ();
 
@@ -110,7 +110,7 @@ Channel::connect_no_prev_no_next (Plugin &pl)
 void
 Channel::connect_no_prev_next (Plugin &pl, Plugin &next_pl)
 {
-  g_debug ("connect no prev next");
+  z_debug ("connect no prev next");
 
   /* -----------------------------------------
    * disconnect ports
@@ -136,7 +136,7 @@ Channel::connect_no_prev_next (Plugin &pl, Plugin &next_pl)
 void
 Channel::connect_prev_no_next (Plugin &prev_pl, Plugin &pl)
 {
-  g_debug ("connect prev no next");
+  z_debug ("connect prev no next");
 
   /* -----------------------------------------
    * disconnect ports
@@ -162,7 +162,7 @@ Channel::connect_prev_no_next (Plugin &prev_pl, Plugin &pl)
 void
 Channel::connect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl)
 {
-  g_debug ("connect prev next");
+  z_debug ("connect prev next");
 
   /* -----------------------------------------
    * disconnect ports
@@ -337,7 +337,7 @@ Channel::prepare_process ()
 void
 Channel::init_loaded (ChannelTrack &track)
 {
-  g_debug ("initing channel");
+  z_debug ("initing channel");
 
   track_ = &track;
 
@@ -559,8 +559,8 @@ Channel::add_balance_control (void * _channel, float pan)
   auto * channel = static_cast<Channel *> (_channel);
 
   channel->fader_->balance_->set_control_value (
-    std::clamp (channel->fader_->balance_->control_ + pan, 0.f, 1.f), false,
-    false);
+    std::clamp<float> (channel->fader_->balance_->control_ + pan, 0.f, 1.f),
+    false, false);
 }
 
 void
@@ -661,9 +661,11 @@ Channel::connect_plugins ()
             {
             case PluginSlotType::Insert:
               add_plugin_ptrs (inserts_, next_plugins);
+              break;
             case PluginSlotType::MidiFx:
             case PluginSlotType::Instrument:
               add_plugin_ptrs (midi_fx_, next_plugins);
+              break;
             default:
               z_return_if_reached ();
             }

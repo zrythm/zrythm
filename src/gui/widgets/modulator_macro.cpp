@@ -152,7 +152,7 @@ modulator_macro_widget_refresh (ModulatorMacroWidget * self)
 static void
 on_automate_clicked (GtkButton * btn, Port * port)
 {
-  g_return_if_fail (port);
+  z_return_if_fail (port);
 
   ModulatorMacroWidget * self =
     Z_MODULATOR_MACRO_WIDGET (g_object_get_data (G_OBJECT (btn), "owner"));

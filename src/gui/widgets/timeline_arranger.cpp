@@ -138,7 +138,7 @@ timeline_arranger_widget_create_region (
       self->action = UiOverlayAction::CREATING_RESIZING_R;
     }
 
-  g_message ("creating region");
+  z_info ("creating region");
 
   Position end_pos;
   Position::set_min_size (*pos, end_pos, *self->snap_grid);
@@ -825,7 +825,8 @@ timeline_arranger_widget_fade_up (
         fade_in ? prj_region->fade_in_opts_ : prj_region->fade_out_opts_;
       constexpr double sensitivity = 0.008;
       double           delta = (self->last_offset_y - offset_y) * sensitivity;
-      auto new_curviness = std::clamp (opts.curviness_ + delta, -1.0, 1.0);
+      auto             new_curviness =
+        std::clamp<double> (opts.curviness_ + delta, -1.0, 1.0);
       opts.curviness_ = new_curviness;
 
       /* update selections as well */
@@ -1109,7 +1110,7 @@ on_dnd_motion (
           /* track is compatible, highlight */
           highlight_timeline (
             self, (GdkModifierType) 0, (int) x, (int) y, track, lane);
-          g_message ("highlighting track");
+          z_info ("highlighting track");
 
           return GDK_ACTION_COPY;
         }
@@ -1128,7 +1129,7 @@ on_dnd_motion (
 static void
 on_dnd_leave (GtkDropTarget * drop_target, ArrangerWidget * self)
 {
-  g_message ("dnd leaving timeline, unhighlighting rect");
+  z_info ("dnd leaving timeline, unhighlighting rect");
 
   arranger_widget_set_highlight_rect (self, nullptr);
 }
@@ -1158,7 +1159,7 @@ void
 timeline_arranger_on_drag_end (ArrangerWidget * self)
 {
   ArrangerSelections * sel = arranger_widget_get_selections (self);
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   auto   prj_start_object = self->prj_start_object.lock ();
   double ticks_diff = 0;
@@ -1284,7 +1285,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
           else if (self->n_press == 2)
             {
               /* double click on object */
-              /*g_message ("DOUBLE CLICK");*/
+              /*z_info ("DOUBLE CLICK");*/
             }
           else if (self->n_press == 1)
             {
@@ -1376,7 +1377,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
   self->lane_diff = 0;
   self->visible_at_diff = 0;
 
-  g_debug ("drag end timeline done");
+  z_debug ("drag end timeline done");
 }
 
 template void

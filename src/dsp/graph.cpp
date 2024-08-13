@@ -942,7 +942,7 @@ Graph::start ()
 void
 Graph::terminate ()
 {
-  g_message ("terminating graph...");
+  z_info ("terminating graph...");
 
   /* Flag threads to terminate */
   for (auto &thread : threads_)

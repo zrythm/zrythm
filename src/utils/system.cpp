@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/logger.h"
 #ifdef _WIN32
 #  include <windows.h>
 #endif
@@ -49,7 +50,7 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
     &out, &err, &g_err);
   if (!ret)
     {
-      g_warning ("(%s) spawn failed: %s", __func__, g_err->message);
+      z_warning ("(%s) spawn failed: %s", __func__, g_err->message);
       return NULL;
     }
 

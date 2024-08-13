@@ -149,9 +149,9 @@ PluginCollections::read_or_new ()
         {
           delete_file ();
         }
-      catch (const ZrythmException &e)
+      catch (const ZrythmException &e2)
         {
-          z_warning (e.what ());
+          z_warning (e2.what ());
         }
 
       return {};

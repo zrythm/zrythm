@@ -55,7 +55,7 @@ public:
 
     /* get zstd-compressed text */
     char * log_txt = log_get_last_n_lines (LOG, 40000);
-    g_return_val_if_fail (log_txt, false);
+    z_return_val_if_fail (log_txt, false);
     size_t log_txt_sz = strlen (log_txt);
     size_t compress_bound = ZSTD_compressBound (log_txt_sz);
     char * dest = static_cast<char *> (malloc (compress_bound));

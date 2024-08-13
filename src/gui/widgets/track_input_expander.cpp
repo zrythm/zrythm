@@ -89,7 +89,7 @@ track_input_expander_widget_refresh (
   TrackInputExpanderWidget * self,
   ChannelTrack *             track)
 {
-  g_return_if_fail (track);
+  z_return_if_fail (track);
   self->track = track;
 
   gtk_widget_set_visible (GTK_WIDGET (self->midi_input), 0);

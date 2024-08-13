@@ -151,7 +151,7 @@ audio_arranger_widget_fade_up (
 
   auto  &opts = fade_in ? r->fade_in_opts_ : r->fade_out_opts_;
   double delta = (self->last_offset_y - offset_y) * 0.008;
-  opts.curviness_ = std::clamp (opts.curviness_ + delta, -1.0, 1.0);
+  opts.curviness_ = std::clamp<double> (opts.curviness_ + delta, -1.0, 1.0);
 
   EVENTS_PUSH (
     fade_in
@@ -172,7 +172,7 @@ audio_arranger_widget_update_gain (ArrangerWidget * self, double offset_y)
   double gain_y = self->start_y + offset_y;
 
   /* convert to fader value (0.0 - 1.0) and clamp to limits */
-  double gain_fader = std::clamp (1.0 - gain_y / height, 0.02, 1.0);
+  double gain_fader = std::clamp<double> (1.0 - gain_y / height, 0.02, 1.0);
 
   /* set */
   r->gain_ = math_get_amp_val_from_fader (static_cast<float> (gain_fader));

@@ -380,7 +380,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (!validate ())
     {
-      g_critical ("failed to validate tracklist selections action");
+      z_error ("failed to validate tracklist selections action");
     }
 }
 
@@ -502,7 +502,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           /* disable given track, if any (e.g., when bouncing) */
           if (ival_after_ > -1)
             {
-              g_return_if_fail (
+              z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
               auto &tr_to_disable = TRACKLIST->tracks_[ival_after_];
               z_return_if_fail (tr_to_disable);
@@ -651,7 +651,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           /* reenable given track, if any (eg when bouncing) */
           if (ival_after_ > -1)
             {
-              g_return_if_fail (
+              z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
               auto &tr_to_enable = TRACKLIST->tracks_[ival_after_];
               z_return_if_fail (tr_to_enable);
@@ -1104,8 +1104,8 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
         case EditType::SoloLane:
           {
             std::visit (
-              [&] (auto &&track) {
-                auto &lane = track->lanes_[lane_pos_];
+              [&] (auto &&casted_track) {
+                auto &lane = casted_track->lanes_[lane_pos_];
                 bool  soloed = lane->get_soloed ();
                 lane->set_soloed (
                   _do ? ival_after_ : ival_before_[i], false, false);
@@ -1128,8 +1128,8 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
         case EditType::MuteLane:
           {
             std::visit (
-              [&] (auto &&track) {
-                auto &lane = track->lanes_[lane_pos_];
+              [&] (auto &&t) {
+                auto &lane = t->lanes_[lane_pos_];
                 bool  muted = lane->get_muted ();
                 lane->set_muted (
                   _do ? ival_after_ : ival_before_[i], false, false);
@@ -1250,8 +1250,8 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
         case EditType::RenameLane:
           {
             std::visit (
-              [&] (auto &&track) {
-                auto       &lane = track->lanes_[lane_pos_];
+              [&] (auto &&t) {
+                auto       &lane = t->lanes_[lane_pos_];
                 const auto &cur_name = lane->name_;
                 lane->rename (new_txt_, false);
 

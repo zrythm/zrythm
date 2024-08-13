@@ -36,7 +36,7 @@ AutomatableTrack::init_loaded ()
       port->track_ = this;
       if (track.is_in_active_project ())
         {
-          g_return_if_fail (port->id_.track_name_hash_ == name_hash);
+          z_return_if_fail (port->id_.track_name_hash_ == name_hash);
 
           /* set automation tracks on ports */
           if (
@@ -190,18 +190,18 @@ AutomatableTrack::validate () const
       unsigned int name_hash = get_name_hash ();
       for (auto port : ports)
         {
-          g_return_val_if_fail (port->id_.track_name_hash_ == name_hash, false);
+          z_return_val_if_fail (port->id_.track_name_hash_ == name_hash, false);
           if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
             {
               const auto &pid = port->id_.plugin_id_;
-              g_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
+              z_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
               Plugin * pl = Plugin::find (pid);
-              g_return_val_if_fail (pl->id_.validate (), false);
-              g_return_val_if_fail (pl->id_ == pid, false);
+              z_return_val_if_fail (pl->id_.validate (), false);
+              z_return_val_if_fail (pl->id_ == pid, false);
               if (pid.slot_type_ == PluginSlotType::Instrument)
                 {
                   auto channel_track = dynamic_cast<const ChannelTrack *> (this);
-                  g_return_val_if_fail (
+                  z_return_val_if_fail (
                     pl == channel_track->channel_->instrument_.get (), false);
                 }
             }
@@ -231,7 +231,7 @@ AutomatableTrack::validate () const
     }
 
   /* verify tracklist identifiers */
-  g_return_val_if_fail (automation_tracklist_->validate (), false);
+  z_return_val_if_fail (automation_tracklist_->validate (), false);
 
   return true;
 }

@@ -64,11 +64,11 @@ MidiPort::receive_midi_events_from_jack (
             && !channel_track->channel_->midi_channels_[channel])
             {
               /* different channel */
-              /*g_debug ("received event on different channel");*/
+              /*z_debug ("received event on different channel");*/
             }
           else if (jack_ev.size == 3)
             {
-              /*g_debug ("received event at %u", jack_ev.time);*/
+              /*z_debug ("received event at %u", jack_ev.time);*/
               midi_events_.active_events_.add_event_from_buf (
                 jack_ev.time, jack_ev.buffer, (int) jack_ev.size);
             }
@@ -80,7 +80,7 @@ MidiPort::receive_midi_events_from_jack (
     {
       char designation[600];
       this->get_full_designation ( designation);
-      g_debug ("JACK MIDI (%s): have %d events", designation, num_events);
+      z_debug ("JACK MIDI (%s): have %d events", designation, num_events);
       midi_events_print (this->midi_events_, F_NOT_QUEUED);
     }
 #  endif
@@ -160,7 +160,7 @@ MidiPort::sum_data_from_rtmidi (
       char designation[600];
       port_get_full_designation (
         this, designation);
-      g_message (
+      z_info (
         "RtMidi (%s): have %d events\n"
         "first event is: [%u] %hhx %hhx %hhx",
         designation, this->midi_events_->num_events,
@@ -446,7 +446,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                   uint8_t beat_msg = MIDI_CLOCK_BEAT;
                   events.add_raw (&beat_msg, 1, midi_time);
 #if 0
-                      g_debug (
+                      z_debug (
                         "(i = %d) time %u / %u", i, midi_time,
                         time_nfo.local_offset + time_nfo.nframes_);
 #endif

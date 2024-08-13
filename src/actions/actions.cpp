@@ -261,7 +261,7 @@ activate_preferences (
     }
 
   AdwDialog * preferences_window = ADW_DIALOG (preferences_widget_new ());
-  g_return_if_fail (preferences_window);
+  z_return_if_fail (preferences_window);
   GListModel * toplevels = gtk_window_get_toplevels ();
   GtkWidget * transient_for = GTK_WIDGET (g_list_model_get_item (toplevels, 0));
   adw_dialog_present (preferences_window, transient_for);
@@ -280,7 +280,7 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
   if (!LOG || !LOG->log_filepath)
     {
-      g_message ("No log file found");
+      z_info ("No log file found");
       return;
     }
 
@@ -372,7 +372,7 @@ DEFINE_SIMPLE (activate_zoom_in)
               midi_arranger_handle_vertical_zoom_action (arranger, true);
               break;
             default:
-              g_warning ("unimplemented");
+              z_warning ("unimplemented");
               break;
             }
         }
@@ -428,7 +428,7 @@ DEFINE_SIMPLE (activate_zoom_out)
               midi_arranger_handle_vertical_zoom_action (arranger, false);
               break;
             default:
-              g_warning ("unimplemented");
+              z_warning ("unimplemented");
               break;
             }
         }
@@ -678,7 +678,7 @@ proceed_to_open_response_cb (
     }
   else if (string_is_equal (response, "save"))
     {
-      g_message ("saving project...");
+      z_info ("saving project...");
       try
         {
           PROJECT->save (
@@ -772,7 +772,7 @@ activate_save_as (GSimpleAction * action, GVariant * variant, gpointer user_data
 {
   GtkFileDialog * dialog = gtk_file_dialog_new ();
   fs::path        project_file_path =
-    PROJECT->get_path (ProjectPath::PROJECT_FILE, false);
+    PROJECT->get_path (ProjectPath::ProjectFile, false);
   auto    str = project_file_path.parent_path ();
   GFile * file = g_file_new_for_path (str.c_str ());
   gtk_file_dialog_set_initial_file (dialog, file);
@@ -874,14 +874,14 @@ activate_properties (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("ZOOMING IN");
+  z_info ("ZOOMING IN");
 }
 
 DEFINE_SIMPLE (activate_undo)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message ("in the middle of an action, skipping undo");
+      z_info ("in the middle of an action, skipping undo");
       return;
     }
 
@@ -926,7 +926,7 @@ DEFINE_SIMPLE (activate_undo_n)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message ("in the middle of an action, skipping undo");
+      z_info ("in the middle of an action, skipping undo");
       return;
     }
 
@@ -938,7 +938,7 @@ DEFINE_SIMPLE (activate_redo)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message ("in the middle of an action, skipping redo");
+      z_info ("in the middle of an action, skipping redo");
       return;
     }
 
@@ -961,7 +961,7 @@ DEFINE_SIMPLE (activate_redo_n)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message ("in the middle of an action, skipping redo");
+      z_info ("in the middle of an action, skipping redo");
       return;
     }
 
@@ -1013,7 +1013,7 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
         }
       break;
     default:
-      g_debug ("doing nothing");
+      z_debug ("doing nothing");
       break;
     }
 }
@@ -1051,7 +1051,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
             }
           else
             {
-              g_warning ("no selections to copy");
+              z_warning ("no selections to copy");
             }
           break;
         case Project::SelectionType::Insert:
@@ -1074,7 +1074,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
           }
           break;
         default:
-          g_warning ("not implemented yet");
+          z_warning ("not implemented yet");
           break;
         }
     }
@@ -1188,7 +1188,7 @@ activate_delete (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("%s", __func__);
+  z_info ("%s", __func__);
 
   ArrangerSelections * sel =
     PROJECT->get_arranger_selections_for_last_selection ();
@@ -1196,13 +1196,13 @@ activate_delete (
   switch (PROJECT->last_selection_)
     {
     case Project::SelectionType::Tracklist:
-      g_message ("activating delete selected tracks");
+      z_info ("activating delete selected tracks");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-selected-tracks", nullptr);
       break;
     case Project::SelectionType::Insert:
     case Project::SelectionType::MidiFX:
-      g_message ("activating delete mixer selections");
+      z_info ("activating delete mixer selections");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW), "delete-mixer-selections", nullptr);
       break;
@@ -1222,7 +1222,7 @@ activate_delete (
         }
       break;
     default:
-      g_warning ("not implemented yet");
+      z_warning ("not implemented yet");
       break;
     }
 }
@@ -1334,7 +1334,7 @@ activate_select_all (
       }
       break;
     default:
-      g_debug ("%s: doing nothing", __func__);
+      z_debug ("%s: doing nothing", __func__);
     }
 }
 
@@ -1344,8 +1344,8 @@ activate_toggle_left_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_debug ("left panel toggle");
-  g_return_if_fail (MW_CENTER_DOCK);
+  z_debug ("left panel toggle");
+  z_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_start (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_start (MW_CENTER_DOCK->dock));
 }
@@ -1356,8 +1356,8 @@ activate_toggle_right_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_debug ("right panel toggle");
-  g_return_if_fail (MW_CENTER_DOCK);
+  z_debug ("right panel toggle");
+  z_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_end (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_end (MW_CENTER_DOCK->dock));
 }
@@ -1368,8 +1368,8 @@ activate_toggle_bot_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_debug ("bot panel toggle");
-  g_return_if_fail (MW_CENTER_DOCK);
+  z_debug ("bot panel toggle");
+  z_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_bottom (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_bottom (MW_CENTER_DOCK->dock));
 }
@@ -1383,7 +1383,7 @@ activate_toggle_top_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_return_if_fail (MW_CENTER_DOCK);
+  z_return_if_fail (MW_CENTER_DOCK);
   panel_dock_set_reveal_top (
     MW_CENTER_DOCK->dock, !panel_dock_get_reveal_top (MW_CENTER_DOCK->dock));
 }
@@ -1411,12 +1411,12 @@ DEFINE_SIMPLE (activate_fullscreen)
 {
   if (gtk_window_is_fullscreen (GTK_WINDOW (MAIN_WINDOW)))
     {
-      g_debug ("unfullscreening");
+      z_debug ("unfullscreening");
       gtk_window_unfullscreen (GTK_WINDOW (MAIN_WINDOW));
     }
   else
     {
-      g_debug ("fullscreening");
+      z_debug ("fullscreening");
       gtk_window_fullscreen (GTK_WINDOW (MAIN_WINDOW));
     }
 }
@@ -1433,13 +1433,13 @@ activate_bind_midi_cc (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
   Port *       port = NULL;
   sscanf (variant, "%p", &port);
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   BindCcDialogWidget * dialog = bind_cc_dialog_widget_new (port, true);
 
@@ -1491,7 +1491,7 @@ activate_snap_to_grid (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
@@ -1535,7 +1535,7 @@ activate_snap_keep_offset (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
 
@@ -1554,7 +1554,7 @@ activate_snap_keep_offset (
         EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ());
     }
   else
-    g_return_if_reached ();
+    z_return_if_reached ();
 }
 
 void
@@ -1563,7 +1563,7 @@ activate_snap_events (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
 
@@ -1580,7 +1580,7 @@ activate_snap_events (
         EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ());
     }
   else
-    g_return_if_reached ();
+    z_return_if_reached ();
 }
 
 static void
@@ -1607,7 +1607,7 @@ open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_dat
     gtk_file_dialog_open_multiple_finish (dialog, res, &err);
   if (!file_list)
     {
-      g_message ("Failed to retrieve file list: %s", err->message);
+      z_info ("Failed to retrieve file list: %s", err->message);
       g_error_free (err);
       return;
     }
@@ -1618,9 +1618,9 @@ open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_dat
     {
       GFile * file = G_FILE (g_list_model_get_item (file_list, i));
       char *  path = g_file_get_path (file);
-      g_return_if_fail (path);
+      z_return_if_fail (path);
       g_object_unref (file);
-      g_message ("Preparing to import file: %s...", path);
+      z_info ("Preparing to import file: %s...", path);
       g_free (path);
       char * uri = g_file_get_uri (file);
       g_strv_builder_add (uris_builder, uri);
@@ -1797,7 +1797,7 @@ activate_delete_selected_tracks (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("deleting selected tracks");
+  z_info ("deleting selected tracks");
 
   TRACKLIST_SELECTIONS->select_foldable_children ();
 
@@ -1838,13 +1838,13 @@ activate_delete_selected_tracks (
 
 DEFINE_SIMPLE (activate_hide_selected_tracks)
 {
-  g_message ("hiding selected tracks");
+  z_info ("hiding selected tracks");
   TRACKLIST_SELECTIONS->toggle_visibility ();
 }
 
 DEFINE_SIMPLE (activate_pin_selected_tracks)
 {
-  g_message ("pin/unpinning selected tracks");
+  z_info ("pin/unpinning selected tracks");
 
   auto track = TRACKLIST_SELECTIONS->get_highest_track ();
   bool pin = !track->is_pinned ();
@@ -1942,7 +1942,7 @@ change_state_dim_output (
 {
   int dim = g_variant_get_boolean (value);
 
-  g_message ("dim is %d", dim);
+  z_info ("dim is %d", dim);
 
   g_simple_action_set_state (action, value);
 }
@@ -2077,7 +2077,7 @@ activate_quick_quantize (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
   do_quantize (variant, true);
@@ -2089,7 +2089,7 @@ activate_quantize_options (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
   gsize        size;
   const char * variant = g_variant_get_string (_variant, &size);
   do_quantize (variant, false);
@@ -2101,7 +2101,7 @@ activate_mute_selection (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  g_return_if_fail (_variant);
+  z_return_if_fail (_variant);
 
   gsize                size;
   const char *         variant = g_variant_get_string (_variant, &size);
@@ -2142,7 +2142,7 @@ activate_mute_selection (
 
 DEFINE_SIMPLE (activate_merge_selection)
 {
-  g_message ("merge selections activated");
+  z_info ("merge selections activated");
 
   if (
     TL_SELECTIONS->contains_only_regions ()
@@ -2186,7 +2186,7 @@ activate_set_timebase_master (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("set time base master");
+  z_info ("set time base master");
 }
 
 void
@@ -2195,7 +2195,7 @@ activate_set_transport_client (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("set transport client");
+  z_info ("set transport client");
 }
 
 void
@@ -2204,7 +2204,7 @@ activate_unlink_jack_transport (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_message ("unlink jack transport");
+  z_info ("unlink jack transport");
 }
 
 void
@@ -2330,7 +2330,7 @@ do_midi_func (const MidiFunctionType type, const MidiFunctionOpts opts)
   auto sel = MIDI_SELECTIONS.get ();
   if (!sel->has_any ())
     {
-      g_message ("no selections, doing nothing");
+      z_info ("no selections, doing nothing");
       return;
     }
 
@@ -2373,7 +2373,7 @@ do_automation_func (AutomationFunctionType type)
   auto sel = AUTOMATION_SELECTIONS.get ();
   if (!sel->has_any ())
     {
-      g_message ("no selections, doing nothing");
+      z_info ("no selections, doing nothing");
       return;
     }
 
@@ -2401,11 +2401,11 @@ do_audio_func (
 {
   auto project_r = CLIP_EDITOR->get_region<AudioRegion> ();
   z_return_if_fail (project_r);
-  // g_return_if_fail (Region::find (&CLIP_EDITOR->region_id));
+  // z_return_if_fail (Region::find (&CLIP_EDITOR->region_id));
   AUDIO_SELECTIONS->region_id_ = CLIP_EDITOR->region_id_;
   if (!AUDIO_SELECTIONS->has_any ())
     {
-      g_message ("no selections, doing nothing");
+      z_info ("no selections, doing nothing");
       return;
     }
 
@@ -2509,7 +2509,7 @@ DEFINE_SIMPLE (activate_editor_function)
           }
         else
           {
-            g_return_if_reached ();
+            z_return_if_reached ();
           }
       }
       break;
@@ -2535,7 +2535,7 @@ DEFINE_SIMPLE (activate_editor_function)
           }
         else
           {
-            g_return_if_reached ();
+            z_return_if_reached ();
           }
       }
       break;
@@ -2593,7 +2593,7 @@ DEFINE_SIMPLE (activate_editor_function)
             done = true;
           }
 
-        g_return_if_fail (done);
+        z_return_if_fail (done);
       }
       break;
     default:
@@ -2627,7 +2627,7 @@ DEFINE_SIMPLE (activate_editor_function_lv2)
       }
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
       break;
     }
 }
@@ -2665,7 +2665,7 @@ DEFINE_SIMPLE (activate_rename_track)
 
 DEFINE_SIMPLE (activate_rename_arranger_object)
 {
-  g_debug ("rename arranger object");
+  z_debug ("rename arranger object");
 
   if (PROJECT->last_selection_ == Project::SelectionType::Timeline)
     {
@@ -2699,7 +2699,7 @@ activate_create_arranger_object (
   g_variant_get (value, "(sdd)", &str, &x, &y);
   ArrangerWidget * arranger;
   sscanf (str, "%p", &arranger);
-  g_debug ("called %f %f", x, y);
+  z_debug ("called %f %f", x, y);
   arranger_widget_create_item (arranger, x, y, false);
   bool action_performed =
     arranger_widget_finish_creating_item_from_action (arranger, x, y);
@@ -2811,7 +2811,7 @@ DEFINE_SIMPLE (activate_move_automation_regions)
   const char * _str = g_variant_get_string (variant, &size);
   Port *       port = NULL;
   sscanf (_str, "%p", &port);
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   try
     {
@@ -2897,7 +2897,7 @@ DEFINE_SIMPLE (activate_nudge_selection)
   auto [start_obj, start_pos] = sel->get_first_object_and_pos (true);
   if (start_pos.ticks_ + ticks < 0)
     {
-      g_message ("cannot nudge left");
+      z_info ("cannot nudge left");
       return;
     }
 
@@ -3174,7 +3174,7 @@ DEFINE_SIMPLE (activate_save_chord_preset)
 
 DEFINE_SIMPLE (activate_load_chord_preset)
 {
-  g_debug ("load chord preset");
+  z_debug ("load chord preset");
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
   int          pack_idx, pset_idx;
@@ -3192,7 +3192,7 @@ DEFINE_SIMPLE (activate_load_chord_preset)
 
 DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
 {
-  g_debug ("load chord preset from scale");
+  z_debug ("load chord preset from scale");
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
   int          scale, root_note;
@@ -3206,7 +3206,7 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
 {
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  g_debug ("transpose chord pad %s", str);
+  z_debug ("transpose chord pad %s", str);
 
   if (string_is_equal (str, "up"))
     {
@@ -3275,7 +3275,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset_pack)
   const char *      str = g_variant_get_string (variant, &size);
   ChordPresetPack * pack = NULL;
   sscanf (str, "%p", &pack);
-  g_return_if_fail (pack);
+  z_return_if_fail (pack);
 
   GtkWidget * dialog = adw_message_dialog_new (
     GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"),
@@ -3299,7 +3299,7 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
   const char *      str = g_variant_get_string (variant, &size);
   ChordPresetPack * pack = NULL;
   sscanf (str, "%p", &pack);
-  g_return_if_fail (pack);
+  z_return_if_fail (pack);
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
     _ ("Preset Pack Name"), pack, ChordPresetPack::name_getter,
@@ -3325,7 +3325,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset)
   const char *  str = g_variant_get_string (variant, &size);
   ChordPreset * pset = NULL;
   sscanf (str, "%p", &pset);
-  g_return_if_fail (pset);
+  z_return_if_fail (pset);
 
   GtkWidget * dialog = adw_message_dialog_new (
     GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"),
@@ -3349,7 +3349,7 @@ DEFINE_SIMPLE (activate_rename_chord_preset)
   const char *  str = g_variant_get_string (variant, &size);
   ChordPreset * pset = NULL;
   sscanf (str, "%p", &pset);
-  g_return_if_fail (pset);
+  z_return_if_fail (pset);
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
     _ ("Preset Name"), pset, ChordPreset::name_getter, ChordPreset::name_setter);
@@ -3383,7 +3383,7 @@ DEFINE_SIMPLE (activate_plugin_toggle_enabled)
   const char * str = g_variant_get_string (variant, &size);
   Plugin *     pl = NULL;
   sscanf (str, "%p", &pl);
-  g_return_if_fail (pl);
+  z_return_if_fail (pl);
 
   bool new_val = !pl->is_enabled (false);
   if (!pl->is_selected ())
@@ -3409,7 +3409,7 @@ DEFINE_SIMPLE (activate_plugin_change_load_behavior)
   Plugin *     pl = NULL;
   char         new_behavior[600];
   sscanf (str, "%p,%s", &pl, new_behavior);
-  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+  z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
 
   pl->select (true, true);
 
@@ -3509,7 +3509,7 @@ DEFINE_SIMPLE (activate_reset_fader)
   const char * str = g_variant_get_string (variant, &size);
   Fader *      fader = NULL;
   sscanf (str, "%p", &fader);
-  g_return_if_fail (fader);
+  z_return_if_fail (fader);
 
   if (fader->type_ == Fader::Type::AudioChannel)
     {
@@ -3528,7 +3528,7 @@ DEFINE_SIMPLE (activate_reset_control)
   const char * str = g_variant_get_string (variant, &size);
   ControlPort * port = NULL;
   sscanf (str, "%p", &port);
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   try
     {
@@ -3547,7 +3547,7 @@ DEFINE_SIMPLE (activate_port_view_info)
   const char * str = g_variant_get_string (variant, &size);
   Port *       port = NULL;
   sscanf (str, "%p", &port);
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   PortInfoDialogWidget * dialog = port_info_dialog_widget_new (port);
   gtk_window_present (GTK_WINDOW (dialog));
@@ -3577,7 +3577,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_add_bookmark)
   const char *     str = g_variant_get_string (variant, &size);
   FileDescriptor * sfile = NULL;
   sscanf (str, "%p", &sfile);
-  g_return_if_fail (sfile != nullptr);
+  z_return_if_fail (sfile != nullptr);
 
   gZrythm->get_file_manager ().add_location_and_save (sfile->abs_path_.c_str ());
 
@@ -3602,7 +3602,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
 {
   FileBrowserLocation * loc =
     panel_file_browser_widget_get_selected_bookmark (MW_PANEL_FILE_BROWSER);
-  g_return_if_fail (loc);
+  z_return_if_fail (loc);
 
   if (loc->special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
     {
@@ -3643,7 +3643,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project)
   const char *       str = g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   activate_plugin_setting (PluginSetting (*descr));
 }
@@ -3654,7 +3654,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_carla)
   const char *       str = g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
@@ -3668,7 +3668,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui)
   const char *       str = g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
@@ -3682,7 +3682,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_full)
   const char *       str = g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
@@ -3699,8 +3699,8 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
   PluginCollection *       collection = NULL;
   const PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
-  g_return_if_fail (collection != nullptr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (collection != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   collection->add_descriptor (*descr);
   PLUGIN_MANAGER->collections_->serialize_to_file ();
@@ -3715,8 +3715,8 @@ DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
   PluginCollection *       collection = NULL;
   const PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
-  g_return_if_fail (collection != nullptr);
-  g_return_if_fail (descr != nullptr);
+  z_return_if_fail (collection != nullptr);
+  z_return_if_fail (descr != nullptr);
 
   collection->remove_descriptor (*descr);
   PLUGIN_MANAGER->collections_->serialize_to_file ();
@@ -3764,13 +3764,13 @@ on_plugin_collection_add_response (
     {
       if (!collection->name_.empty ())
         {
-          g_debug ("accept collection");
+          z_debug ("accept collection");
           PLUGIN_MANAGER->collections_->add (*collection, F_SERIALIZE);
           EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
         }
       else
         {
-          g_message ("invalid collection name (empty)");
+          z_info ("invalid collection name (empty)");
         }
     }
 
@@ -4130,8 +4130,8 @@ DEFINE_SIMPLE (activate_append_track_objects_to_selection)
 
   auto track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
   std::visit (
-    [&] (auto &&track) {
-      for (auto &lane : track->lanes_)
+    [&] (auto &&casted_track) {
+      for (auto &lane : casted_track->lanes_)
         {
           for (auto &r : lane->regions_)
             {
@@ -4152,8 +4152,8 @@ DEFINE_SIMPLE (activate_append_lane_objects_to_selection)
 
   auto track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
   std::visit (
-    [&] (auto &&track) {
-      auto &lane = track->lanes_[lane_pos];
+    [&] (auto &&casted_track) {
+      auto &lane = casted_track->lanes_[lane_pos];
       for (auto &r : lane->regions_)
         {
           r->select (true, true, false);

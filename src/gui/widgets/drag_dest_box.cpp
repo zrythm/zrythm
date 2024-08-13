@@ -50,7 +50,7 @@ on_dnd_leave_value_ready (
   const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
-      g_message ("error: %s", err->message);
+      z_info ("error: %s", err->message);
       return;
     }
 
@@ -91,7 +91,7 @@ on_dnd_motion_value_ready (
   const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
-      g_message ("error: %s", err->message);
+      z_info ("error: %s", err->message);
       return;
     }
 
@@ -324,7 +324,7 @@ on_dnd_drop (
                 PluginSlotType::Insert, nullptr, 0));
             }
           else
-            g_return_val_if_reached (true);
+            z_return_val_if_reached (true);
         }
       catch (const ZrythmException &e)
         {
@@ -364,7 +364,7 @@ on_dnd_drop (
                 *TRACKLIST_SELECTIONS->gen_tracklist_selections (), pos));
             }
           else
-            g_return_val_if_reached (true);
+            z_return_val_if_reached (true);
         }
       catch (const ZrythmException &e)
         {

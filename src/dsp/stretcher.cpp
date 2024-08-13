@@ -29,6 +29,7 @@
 #include <cstring>
 
 #include "dsp/stretcher.h"
+#include "utils/logger.h"
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -104,7 +105,7 @@ stretcher_new_rubberband (
         rubberband_retrieve (
           self->rubberband_state, out_samples,
           (unsigned int) avail);
-      g_message (
+      z_info (
         "%s: required: %u, available %d, "
         "retrieved %zu",
         __func__, samples_required, avail,
@@ -123,7 +124,7 @@ stretcher_new_rubberband (
         rubberband_retrieve (
           self->rubberband_state, out_samples,
           (unsigned int) avail);
-      g_message (
+      z_info (
         "%s: required: %u, available %d, "
         "retrieved %zu",
         __func__, samples_required, avail,
@@ -152,7 +153,7 @@ stretcher_new_rubberband (
     }
   rubberband_set_default_debug_level (0);
 
-  g_debug (
+  z_debug (
     "created rubberband stretcher: time ratio: %f, latency: %u", time_ratio,
     stretcher_get_latency (self));
 
@@ -178,14 +179,14 @@ stretcher_stretch (
   float *       out_samples_r,
   size_t        out_samples_wanted)
 {
-  g_message ("%s: in samples size: %zu", __func__, in_samples_size);
-  g_return_val_if_fail (in_samples_l, -1);
+  z_info ("%s: in samples size: %zu", __func__, in_samples_size);
+  z_return_val_if_fail (in_samples_l, -1);
 
   /*rubberband_reset (self->rubberband_state);*/
 
   /* create the de-interleaved array */
   unsigned int channels = in_samples_r ? 2 : 1;
-  g_return_val_if_fail (self->channels == channels, -1);
+  z_return_val_if_fail (self->channels == channels, -1);
   const float * in_samples[channels];
   in_samples[0] = in_samples_l;
   if (channels == 2)
@@ -207,7 +208,7 @@ stretcher_stretch (
     }
   unsigned int samples_required =
     rubberband_get_samples_required (self->rubberband_state);
-  g_message (
+  z_info (
     "%s: samples required: %u, latency: %u", __func__, samples_required,
     rubberband_get_latency (self->rubberband_state));
   rubberband_process (
@@ -220,17 +221,17 @@ stretcher_stretch (
    * fill with silence */
   if (avail < (int) out_samples_wanted)
     {
-      g_message ("%s: not enough samples available", __func__);
+      z_info ("%s: not enough samples available", __func__);
       return (ssize_t) out_samples_wanted;
     }
 
-  g_message (
+  z_info (
     "%s: samples wanted %zu (avail %u)", __func__, out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
     self->rubberband_state, out_samples, out_samples_wanted);
-  g_warn_if_fail (retrieved_out_samples == out_samples_wanted);
+  z_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
-  g_message ("%s: out samples size: %zu", __func__, retrieved_out_samples);
+  z_info ("%s: out samples size: %zu", __func__, retrieved_out_samples);
 
   return (ssize_t) retrieved_out_samples;
 }
@@ -268,9 +269,9 @@ stretcher_stretch_interleaved (
   size_t        in_samples_size,
   float **      _out_samples)
 {
-  g_return_val_if_fail (in_samples, -1);
+  z_return_val_if_fail (in_samples, -1);
 
-  g_message ("input samples: %zu", in_samples_size);
+  z_info ("input samples: %zu", in_samples_size);
 
   /* create the de-interleaved array */
   unsigned int channels = self->channels;
@@ -305,7 +306,7 @@ stretcher_stretch_interleaved (
       /* remaining samples to read */
       samples_to_read -= read_now;
     }
-  g_warn_if_fail (samples_to_read == 0);
+  z_warn_if_fail (samples_to_read == 0);
 
   /* create the out sample arrays */
   // float * out_samples[channels];
@@ -339,7 +340,7 @@ stretcher_stretch_interleaved (
 
       processed += in_chunk_size;
 
-      /*g_message ("processed %lu, in samples %lu",*/
+      /*z_info ("processed %lu, in samples %lu",*/
       /*processed, in_samples_size);*/
 
       size_t avail = (size_t) rubberband_available (self->rubberband_state);
@@ -364,9 +365,9 @@ stretcher_stretch_interleaved (
       total_out_frames += out_chunk_size;
     }
 
-  g_message (
+  z_info (
     "retrieved %zu samples (expected %zu)", total_out_frames, out_samples_size);
-  g_warn_if_fail (
+  z_warn_if_fail (
     /* allow 1 sample earlier */
     total_out_frames <= out_samples_size
     && total_out_frames >= out_samples_size - 1);

@@ -48,7 +48,7 @@ FileManager::add_volume (GVolume * vol)
       g_object_unref (root);
     }
 
-  g_debug ("vol: %s [%s]", name, path);
+  z_debug ("vol: %s [%s]", name, path);
 
   if (path && (!mount || !g_mount_is_shadowed (mount)))
     {
@@ -56,7 +56,7 @@ FileManager::add_volume (GVolume * vol)
         name, path, FileManagerSpecialLocation::FILE_MANAGER_DRIVE);
       locations.push_back (fl);
 
-      g_debug ("  added location: %s", fl.path_.c_str ());
+      z_debug ("  added location: %s", fl.path_.c_str ());
     }
 
   object_free_w_func_and_null (g_object_unref, mount);
@@ -85,7 +85,7 @@ FileManager::FileManager ()
 #endif
 
   /* drives */
-  g_message ("adding drives...");
+  z_info ("adding drives...");
   GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
   GList *          drives = g_volume_monitor_get_connected_drives (vol_monitor);
   GList *          dl = drives;
@@ -96,7 +96,7 @@ FileManager::FileManager ()
       GDrive * drive = G_DRIVE (dl->data);
 
       char * drive_name = g_drive_get_name (drive);
-      g_debug ("drive: %s", drive_name);
+      z_debug ("drive: %s", drive_name);
       g_free (drive_name);
 
       GList * vols = g_drive_get_volumes (drive);
@@ -117,7 +117,7 @@ FileManager::FileManager ()
 
   /* volumes without an associated drive */
   /* from nautilusgtkplacesview.c */
-  g_message ("adding volumes without an associated drive...");
+  z_info ("adding volumes without an associated drive...");
   GList * volumes = g_volume_monitor_get_volumes (vol_monitor);
   for (GList * l = volumes; l != NULL; l = l->next)
     {
@@ -174,7 +174,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   GDir * dir = g_dir_open (location.path_.c_str (), 0, nullptr);
   if (!dir)
     {
-      g_warning ("Could not open dir %s", location.path_.c_str ());
+      z_warning ("Could not open dir %s", location.path_.c_str ());
       return;
     }
 
@@ -244,7 +244,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
     [] (const FileDescriptor &a, const FileDescriptor &b) {
       return a.label_ < b.label_;
     });
-  g_message ("Total files: %zu", files.size ());
+  z_info ("Total files: %zu", files.size ());
 }
 
 void
@@ -266,7 +266,7 @@ FileManager::set_selection (
   bool                 _load_files,
   bool                 save_to_settings)
 {
-  g_debug ("setting selection to %s", sel.path_.c_str ());
+  z_debug ("setting selection to %s", sel.path_.c_str ());
 
   selection = std::make_unique<FileBrowserLocation> (sel);
   if (_load_files)
@@ -333,7 +333,7 @@ FileManager::remove_location_and_save (
     }
   else
     {
-      g_warning ("%s not found", location);
+      z_warning ("%s not found", location);
     }
 
   save_locations ();
@@ -342,7 +342,7 @@ FileManager::remove_location_and_save (
 void
 FileBrowserLocation::print () const
 {
-  g_message (
+  z_info (
     "[FileBrowserLocation] %s: '%s', special: %s", label_.c_str (),
     path_.c_str (), ENUM_NAME (special_location_));
 }

@@ -51,7 +51,7 @@ plugin_strip_expander_widget_redraw_slot (
 void
 plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self)
 {
-  g_return_if_fail (self->track);
+  z_return_if_fail (self->track);
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       switch (self->slot_type)
@@ -110,7 +110,7 @@ plugin_strip_expander_widget_setup (
   PluginStripExpanderPosition position,
   ChannelTrack *              track)
 {
-  g_return_if_fail (track);
+  z_return_if_fail (track);
 
   /* set name and icon */
   char fullstr[200];
@@ -126,7 +126,7 @@ plugin_strip_expander_widget_setup (
       is_midi = true;
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
       break;
     }
   expander_box_widget_set_label (Z_EXPANDER_BOX_WIDGET (self), fullstr);
@@ -150,7 +150,7 @@ plugin_strip_expander_widget_setup (
       z_gtk_widget_destroy_all_children (GTK_WIDGET (self->box));
 
       auto ch = track->get_channel ();
-      g_return_if_fail (ch);
+      z_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
           GtkBox * strip_box =
@@ -172,7 +172,7 @@ plugin_strip_expander_widget_setup (
               }
               break;
             default:
-              g_warn_if_reached ();
+              z_warn_if_reached ();
               break;
             }
 

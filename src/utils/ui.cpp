@@ -44,7 +44,7 @@ ui_set_cursor_from_icon_name (
   int                offset_x,
   int                offset_y)
 {
-  g_return_if_fail (offset_x >= 0 && offset_y >= 0);
+  z_return_if_fail (offset_x >= 0 && offset_y >= 0);
 
   /* check the cache first */
   for (auto &cursor : UI_CACHES->cursors_)
@@ -138,16 +138,16 @@ ui_show_message_full (
   va_end (args);
   if (printed == -1)
     {
-      g_warning ("vsnprintf failed");
+      z_warning ("vsnprintf failed");
       free (buf);
       return NULL;
     }
-  g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, nullptr);
+  z_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, nullptr);
   buf = static_cast<char *> (
     g_realloc_n (buf, (size_t) (printed + 1), sizeof (char)));
 
   /* log the message anyway */
-  g_message ("%s: %s", title, buf);
+  z_info ("%s: %s", title, buf);
 
   /* if have UI, also show a message dialog */
   AdwDialog * win = NULL;
@@ -190,7 +190,7 @@ ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
       graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
-      g_return_val_if_fail (success, nullptr);
+      z_return_val_if_fail (success, nullptr);
 
       /* if hit */
       int width = gtk_widget_get_width (GTK_WIDGET (child));
@@ -389,9 +389,9 @@ ui_is_child_hit (
   graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
-  g_return_val_if_fail (success, -1);
+  z_return_val_if_fail (success, -1);
 
-  // g_message ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
+  // z_info ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
 
   /* if hit */
   int width = gtk_widget_get_width (GTK_WIDGET (child));
@@ -771,7 +771,7 @@ on_audio_device_selection_changed (
     GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
   if (!str_obj)
     {
-      g_message ("no selected item");
+      z_info ("no selected item");
       return;
     }
   const char * str = gtk_string_object_get_string (str_obj);
@@ -838,12 +838,12 @@ ui_setup_audio_device_name_combo_row (
   char * current_device =
     g_settings_get_string (S_P_GENERAL_ENGINE, settings_key);
   bool found = false;
-  g_message ("current device from settings: %s", current_device);
+  z_info ("current device from settings: %s", current_device);
   for (int i = 0; i < num_names; i++)
     {
       if (string_is_equal (names[i], current_device))
         {
-          g_message ("settings %d as selected", i);
+          z_info ("settings %d as selected", i);
           found = true;
           adw_combo_row_set_selected (combo_row, (guint) i);
         }
@@ -851,7 +851,7 @@ ui_setup_audio_device_name_combo_row (
     }
   if (!found && num_names > 0)
     {
-      g_warning ("rtaudio device not found, selecting first");
+      z_warning ("rtaudio device not found, selecting first");
       adw_combo_row_set_selected (combo_row, 0);
     }
   g_free (current_device);
@@ -886,15 +886,15 @@ ui_get_normalized_draggable_value (
   switch (mode)
     {
     case UiDragMode::UI_DRAG_MODE_CURSOR:
-      return std::clamp (cur_px / size, 0.0, 1.0);
+      return std::clamp<double> (cur_px / size, 0.0, 1.0);
     case UiDragMode::UI_DRAG_MODE_RELATIVE:
-      return std::clamp (cur_val + (cur_px - last_px) / size, 0.0, 1.0);
+      return std::clamp<double> (cur_val + (cur_px - last_px) / size, 0.0, 1.0);
     case UiDragMode::UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER:
-      return std::clamp (
+      return std::clamp<double> (
         cur_val + (multiplier * (cur_px - last_px)) / size, 0.0, 1.0);
     }
 
-  g_return_val_if_reached (0.0);
+  z_return_val_if_reached (0.0);
 }
 
 UiDetail

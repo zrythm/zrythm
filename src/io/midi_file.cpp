@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "io/midi_file.h"
+#include "utils/logger.h"
 
 #include "gtk_wrapper.h"
 #include <ext/midilib/src/midifile.h>
@@ -13,13 +14,13 @@ bool
 midi_file_track_has_data (const char * abs_path, int track_idx)
 {
   MIDI_FILE * mf = midiFileOpen (abs_path);
-  g_return_val_if_fail (mf, false);
+  z_return_val_if_fail (mf, false);
 
   MIDI_MSG msg;
   midiReadInitMessage (&msg);
 
   int ev;
-  g_debug ("reading MIDI Track %d", track_idx);
+  z_debug ("reading MIDI Track %d", track_idx);
   bool have_data = false;
   while (midiReadGetNextMessage (mf, track_idx, &msg))
     {
@@ -68,12 +69,12 @@ int
 midi_file_get_num_tracks (const char * abs_path, bool non_empty_only)
 {
   MIDI_FILE * mf = midiFileOpen (abs_path);
-  g_return_val_if_fail (mf, -1);
+  z_return_val_if_fail (mf, -1);
 
   int actual_num = 0;
 
   int num = midiReadGetNumTracks (mf);
-  g_debug ("%s: num tracks = %d", abs_path, num);
+  z_debug ("%s: num tracks = %d", abs_path, num);
 
   if (!non_empty_only)
     {

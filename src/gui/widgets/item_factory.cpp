@@ -117,9 +117,9 @@ on_dnd_drag_prepare (GtkDragSource * source, double x, double y, gpointer user_d
 {
   ItemFactoryData * data = (ItemFactoryData *) user_data;
 
-  g_debug ("dnd prepare from item factory");
+  z_debug ("dnd prepare from item factory");
 
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data->obj_), nullptr);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
@@ -320,8 +320,8 @@ on_editable_label_editing_changed (
 
   bool editing = gtk_editable_label_get_editing (editable_lbl);
 
-  g_debug ("editing changed: %d", editing);
-  g_debug ("text: %s", text);
+  z_debug ("editing changed: %d", editing);
+  z_debug ("text: %s", text);
 
   /* perform change */
   auto wrapped_obj = data->obj_;
@@ -386,7 +386,7 @@ item_factory_setup_cb (
             gtk_editable_set_max_width_chars (GTK_EDITABLE (label), max_chars);
             GtkWidget * inner_label =
               z_gtk_widget_find_child_of_type (label, GTK_TYPE_LABEL);
-            g_return_if_fail (inner_label);
+            z_return_if_fail (inner_label);
             if (self->ellipsize_label_)
               {
                 gtk_label_set_ellipsize (
@@ -468,7 +468,7 @@ add_supported_file_context_menu (
   if (descr->type_ == FileType::Directory)
     {
       auto str = fmt::format (
-        "app.panel-file-browser-add-bookmark::%p", fmt::ptr (descr));
+        "app.panel-file-browser-add-bookmark::{}", fmt::ptr (descr));
       menuitem = z_gtk_create_menu_item (
         _ ("Add Bookmark"), "gnome-icon-library-starred-symbolic", str.c_str ());
       g_menu_append_item (menu, menuitem);

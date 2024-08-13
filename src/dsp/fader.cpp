@@ -328,7 +328,7 @@ void
 Fader::set_muted (bool mute, bool fire_events)
 {
   auto track = get_track ();
-  g_return_if_fail (track);
+  z_return_if_fail (track);
 
   mute_->set_toggled (mute, fire_events);
 
@@ -465,7 +465,7 @@ void
 Fader::add_amp (sample_t amp)
 {
   float fader_amp = get_amp ();
-  fader_amp = std::clamp (fader_amp + amp, amp_->minf_, amp_->maxf_);
+  fader_amp = std::clamp<float> (fader_amp + amp, amp_->minf_, amp_->maxf_);
   set_amp (fader_amp);
   update_volume_and_fader_val ();
 }
@@ -537,7 +537,7 @@ Fader::set_fader_val (float fader_val)
 {
   fader_val_ = fader_val;
   float fader_amp = math_get_amp_val_from_fader (fader_val);
-  fader_amp = std::clamp (fader_amp, amp_->minf_, amp_->maxf_);
+  fader_amp = std::clamp<float> (fader_amp, amp_->minf_, amp_->maxf_);
   set_amp (fader_amp);
   volume_ = math_amp_to_dbfs (fader_amp);
 
@@ -835,7 +835,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
             {
               z_return_if_fail_cmp (default_fade_frames, >=, fade_in_samples);
 #if 0
-              g_debug (
+              z_debug (
                 "fading in %d samples", fade_in_samples);
 #endif
               dsp_linear_fade_in_from (
@@ -864,7 +864,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                     default_fade_frames, >=, fade_out_samples);
 
 #if 0
-                  g_debug (
+                  z_debug (
                     "fading out %d frames",
                     samples_to_process);
 #endif
@@ -887,7 +887,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                   size_t remaining_frames =
                     time_nfo.nframes_ - (size_t) samples_to_process;
 #if 0
-                  g_debug (
+                  z_debug (
                     "silence for remaining %zu frames", remaining_frames);
 #endif
                   if (remaining_frames > 0)
@@ -947,7 +947,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
             && time_nfo.nframes_ - faded_out_frames > 0)
             {
 #if 0
-              g_debug (
+              z_debug (
                 "muting %zu frames",
                 time_nfo->nframes - faded_out_frames);
 #endif
@@ -1032,7 +1032,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
   if (ZRYTHM_TESTING)
     {
 #if 0
-      g_debug ("%s: done", __func__);
+      z_debug ("%s: done", __func__);
 #endif
     }
 }

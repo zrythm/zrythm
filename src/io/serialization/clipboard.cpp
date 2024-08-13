@@ -34,9 +34,9 @@ Clipboard::define_fields (const Context &ctx)
               auto sel_type = ENUM_INT_TO_VALUE (ArrangerSelections::Type, type);
               auto sel = ArrangerSelections::new_from_type (sel_type);
               std::visit (
-                [&] (auto &&sel) {
-                  using ArrangerSelectionsT = base_type<decltype (sel)>;
-                  sel->ISerializable<ArrangerSelectionsT>::deserialize (
+                [&] (auto &&s) {
+                  using ArrangerSelectionsT = base_type<decltype (s)>;
+                  s->ISerializable<ArrangerSelectionsT>::deserialize (
                     Context (arranger_sel, ctx));
                 },
                 convert_to_variant<ArrangerSelectionsPtrVariant> (sel.get ()));

@@ -70,8 +70,8 @@ Router::get_max_route_playback_latency ()
 void
 Router::start_cycle (EngineProcessTimeInfo time_nfo)
 {
-  g_return_if_fail (graph_);
-  g_return_if_fail (
+  z_return_if_fail (graph_);
+  z_return_if_fail (
     time_nfo.local_offset_ + time_nfo.nframes_ <= AUDIO_ENGINE->nframes_);
 
   /* only set the kickoff thread when not called from the gtk thread (sometimes
@@ -139,7 +139,7 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
 void
 Router::recalc_graph (bool soft)
 {
-  g_message ("Recalculating%s...", soft ? " (soft)" : "");
+  z_info ("Recalculating%s...", soft ? " (soft)" : "");
 
   if (!graph_ && !soft)
     {
@@ -171,7 +171,7 @@ Router::recalc_graph (bool soft)
       AUDIO_ENGINE->run_.store (running);
     }
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void

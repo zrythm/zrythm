@@ -58,7 +58,7 @@ MidiNote::gen_human_friendly_name () const
 void
 MidiNote::listen (bool listen)
 {
-  /*g_message (*/
+  /*z_info (*/
   /*"%s: %" PRIu8 " listen %d", __func__,*/
   /*mn->val, listen);*/
 

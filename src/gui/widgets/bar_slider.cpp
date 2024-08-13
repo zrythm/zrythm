@@ -183,7 +183,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         }
       else
         {
-          g_warn_if_reached ();
+          z_warn_if_reached ();
         }
       int we, he;
       z_cairo_get_text_extents_for_widget (widget, self->layout, str, &we, &he);
@@ -325,7 +325,7 @@ _bar_slider_widget_new (
   const char * prefix,
   const char * suffix)
 {
-  g_warn_if_fail (object);
+  z_warn_if_fail (object);
 
   BarSliderWidget * self = static_cast<BarSliderWidget *> (
     g_object_new (BAR_SLIDER_WIDGET_TYPE, nullptr));
@@ -370,7 +370,7 @@ _bar_slider_widget_new (
 static void
 finalize (BarSliderWidget * self)
 {
-  g_return_if_fail (Z_IS_BAR_SLIDER_WIDGET (self));
+  z_return_if_fail (Z_IS_BAR_SLIDER_WIDGET (self));
 
   object_free_w_func_and_null (g_object_unref, self->layout);
 

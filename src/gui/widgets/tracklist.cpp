@@ -171,7 +171,7 @@ on_dnd_motion (
       graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (hit_tw), &tmp_pt, &wpt);
-      g_return_val_if_fail (success, GDK_ACTION_ASK);
+      z_return_val_if_fail (success, GDK_ACTION_ASK);
       track_widget_do_highlight (hit_tw, (int) wpt.x, (int) wpt.y, 1);
     }
 
@@ -185,14 +185,14 @@ on_dnd_motion (
       graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll), &tmp_pt, &wpt);
-      g_return_val_if_fail (success, GDK_ACTION_ASK);
+      z_return_val_if_fail (success, GDK_ACTION_ASK);
 
       /* autoscroll */
       if (height - wpt.y < SCROLL_THRESHOLD_PX)
         {
           if (self->unpinned_scroll_scroll_down_id == 0)
             {
-              g_message (
+              z_info (
                 "begin autoscroll tracklist down: height %d y %f", height,
                 wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
@@ -210,7 +210,7 @@ on_dnd_motion (
         {
           if (self->unpinned_scroll_scroll_up_id == 0)
             {
-              g_message (
+              z_info (
                 "begin autoscroll tracklist up: height %d y %f", height, wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
               self->unpinned_scroll_scroll_up_id =
@@ -260,7 +260,7 @@ on_dnd_drop (
   gpointer        user_data)
 {
   TracklistWidget * self = Z_TRACKLIST_WIDGET (user_data);
-  g_message ("dnd data received on tracklist");
+  z_info ("dnd data received on tracklist");
 
   remove_scroll_sources (self);
 
@@ -286,7 +286,7 @@ on_dnd_drop (
     return false;
 
   Track * this_track = hit_tw->track;
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (this_track), false);
+  z_return_val_if_fail (IS_TRACK_AND_NONNULL (this_track), false);
 
   hit_tw->highlight_loc = TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_NONE;
 
@@ -375,7 +375,7 @@ on_dnd_drop (
   graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT ((float) x, (float) y);
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (self), GTK_WIDGET (hit_tw), &tmp_pt, &wpt);
-  g_return_val_if_fail (success, false);
+  z_return_val_if_fail (success, false);
 
   /* determine position to move to */
   TrackWidgetHighlight location =
@@ -465,7 +465,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
 
   bool can_resize = self->tracklist->multiply_track_heights (
     delta_y > 0 ? 1 / multiplier : multiplier, false, true, false);
-  g_debug ("can resize: %d", can_resize);
+  z_debug ("can resize: %d", can_resize);
   if (can_resize)
     {
       self->tracklist->multiply_track_heights (
@@ -546,7 +546,7 @@ tracklist_widget_soft_refresh (TracklistWidget * self)
 void
 tracklist_widget_hard_refresh (TracklistWidget * self)
 {
-  g_debug ("hard refreshing tracklist");
+  z_debug ("hard refreshing tracklist");
 
   g_object_ref (self->channel_add);
   g_object_ref (self->ddbox);
@@ -569,18 +569,18 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
     }
 
   /* re-add chanel_add */
-  g_return_if_fail (
+  z_return_if_fail (
     gtk_widget_get_parent (GTK_WIDGET (self->channel_add)) == nullptr);
   gtk_box_append (GTK_BOX (self->unpinned_box), GTK_WIDGET (self->channel_add));
 
   /* re-add ddbox */
-  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
+  z_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == nullptr);
   gtk_box_append (GTK_BOX (self->unpinned_box), GTK_WIDGET (self->ddbox));
 
   g_object_unref (self->channel_add);
   g_object_unref (self->ddbox);
 
-  g_debug ("done hard refreshing tracklist");
+  z_debug ("done hard refreshing tracklist");
 }
 
 /**
@@ -627,7 +627,7 @@ tracklist_widget_set_unpinned_scroll_start_y (TracklistWidget * self, int y)
 void
 tracklist_widget_setup (TracklistWidget * self, Tracklist * tracklist)
 {
-  g_return_if_fail (tracklist);
+  z_return_if_fail (tracklist);
 
   self->tracklist = tracklist;
   tracklist->widget_ = self;
@@ -663,7 +663,7 @@ tracklist_widget_setup (TracklistWidget * self, Tracklist * tracklist)
 void
 tracklist_widget_tear_down (TracklistWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  z_debug ("tearing down...");
 
   if (self->setup)
     {
@@ -671,7 +671,7 @@ tracklist_widget_tear_down (TracklistWidget * self)
       self->setup = false;
     }
 
-  g_message ("done");
+  z_debug ("done");
 }
 
 static gboolean

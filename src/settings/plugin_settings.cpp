@@ -69,7 +69,7 @@ PluginSetting::validate (bool print_result)
 #ifndef HAVE_CARLA
   if (this->open_with_carla_)
     {
-      g_critical (
+      z_error (
         "Requested to open with carla - carla "
         "functionality is disabled");
       this->open_with_carla_ = false;
@@ -87,7 +87,7 @@ PluginSetting::validate (bool print_result)
     {
       this->open_with_carla_ = true;
 #ifndef HAVE_CARLA
-      g_critical (
+      z_error (
         "Invalid setting requested: open non-LV2 "
         "plugin, carla not installed");
 #endif
@@ -112,7 +112,7 @@ PluginSetting::validate (bool print_result)
 
 #ifdef HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
-  /*g_debug ("%s: recalculating bridge mode...", __func__);*/
+  /*z_debug ("%s: recalculating bridge mode...", __func__);*/
   if (this->bridge_mode_ == CarlaBridgeMode::None)
     {
       this->bridge_mode_ = descr_.min_bridge_mode_;
@@ -124,7 +124,7 @@ PluginSetting::validate (bool print_result)
             {
               this->open_with_carla_ = true;
               this->bridge_mode_ = CarlaBridgeMode::Full;
-              /*g_debug (*/
+              /*z_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
 #  endif
@@ -153,21 +153,21 @@ PluginSetting::validate (bool print_result)
     }
 #  endif
 
-    /*g_debug ("done recalculating bridge mode");*/
+    /*z_debug ("done recalculating bridge mode");*/
 #endif
 
   /* if no custom UI, force generic */
-  /*g_debug ("checking if plugin has custom UI...");*/
+  /*z_debug ("checking if plugin has custom UI...");*/
   if (!descr_.has_custom_ui_)
     {
-      /*g_debug ("plugin %s has no custom UI", descr->name);*/
+      /*z_debug ("plugin %s has no custom UI", descr->name);*/
       this->force_generic_ui_ = true;
     }
-  /*g_debug ("done checking if plugin has custom UI");*/
+  /*z_debug ("done checking if plugin has custom UI");*/
 
   if (print_result)
     {
-      g_debug ("plugin setting validated. new setting:");
+      z_debug ("plugin setting validated. new setting:");
       print ();
     }
 }
@@ -465,9 +465,9 @@ PluginSettings::read_or_new ()
         {
           delete_file ();
         }
-      catch (const ZrythmException &e)
+      catch (const ZrythmException &e2)
         {
-          z_warning (e.what ());
+          z_warning (e2.what ());
         }
 
       return {};

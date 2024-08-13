@@ -27,14 +27,14 @@ error_handle_prv (GError * err, const char * format, ...)
         }
       else
         {
-          g_warning ("%s", str);
+          z_warning ("%s", str);
         }
       g_free (str);
       g_error_free (err);
     }
   else
     {
-      g_critical ("programming error: err is null");
+      z_error ("programming error: err is null");
     }
 
   va_end (args);
@@ -52,8 +52,8 @@ error_propagate_prefixed_prv (
   if (main_err == NULL && err == nullptr)
     return;
 
-  g_return_if_fail (main_err);
-  g_return_if_fail (err);
+  z_return_if_fail (main_err);
+  z_return_if_fail (err);
 
   va_list args;
   va_start (args, format);

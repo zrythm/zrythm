@@ -137,7 +137,7 @@ on_right_click (
   if (n_press != 1)
     return;
 
-  g_message ("right click");
+  z_info ("right click");
 
   GtkTreePath *       path;
   GtkTreeViewColumn * column;
@@ -150,7 +150,7 @@ on_right_click (
   if (!gtk_tree_view_get_path_at_pos (
         GTK_TREE_VIEW (self->tree), x, y, &path, &column, nullptr, nullptr))
     {
-      g_message ("no path at position %d %d", x, y);
+      z_info ("no path at position %d %d", x, y);
       return;
     }
 

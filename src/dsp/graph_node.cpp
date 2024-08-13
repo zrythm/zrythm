@@ -74,7 +74,7 @@ GraphNode::get_name () const
           "%s/Channel Send %d", _track->name_, send_->slot_ + 1);
       }
     }
-  g_return_val_if_reached ("");
+  z_return_val_if_reached ("");
 }
 
 void *
@@ -231,7 +231,7 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
 {
   z_return_if_fail (graph_ && graph_->router_);
 
-  /*g_message ("processing %s", graph_node_get_name (node));*/
+  /*z_info ("processing %s", graph_node_get_name (node));*/
 
   /* skip BPM during cycle (already processed in router_start_cycle()) */
   if (
@@ -247,7 +247,7 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
       /* no roll */
       if (type_ == Type::Plugin)
         {
-          /*g_message (*/
+          /*z_info (*/
           /*"-- not processing: %s "*/
           /*"route latency %ld",*/
           /*node->type == GraphNodeType::ROUTE_NODE_TYPE_PLUGIN ?*/
@@ -295,7 +295,7 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
     != 0;)
     {
 #if 0
-      g_message (
+      z_info (
         "splitting from %ld "
         "(num processable frames %"
         PRIu32 ")",
@@ -348,7 +348,7 @@ GraphNode::trigger ()
       /* all nodes that feed this node have completed, so this node be processed
        * now. */
       graph_->trigger_queue_size_.fetch_add (1);
-      /*g_message ("triggering node, pushing back");*/
+      /*z_info ("triggering node, pushing back");*/
       graph_->trigger_queue_.push_back (this);
     }
 }
@@ -421,7 +421,7 @@ GraphNode::set_route_playback_latency (nframes_t dest_latency)
     {
       parent->set_route_playback_latency (route_playback_latency_);
 #if 0
-      g_message (
+      z_info (
         "added %d route playback latency from node %s to "
         "parent %s. Total route latency on parent: %d",
         dest_latency,

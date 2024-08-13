@@ -71,4 +71,6 @@ PortAction::to_string () const
       return format_str (_ ("Set {} to {}"), port_id_.get_label (), val_);
       break;
     }
+
+  z_return_val_if_reached ("");
 }

@@ -22,7 +22,7 @@ get_api_from_midi_backend (MidiBackend backend)
   int            num_apis = (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
-      g_critical ("RtMidi: an error occurred fetching compiled APIs");
+      z_error ("RtMidi: an error occurred fetching compiled APIs");
       return (enum RtMidiApi) - 1;
     }
   for (int i = 0; i < num_apis; i++)
@@ -156,7 +156,7 @@ RtMidiDevice::RtMidiDevice (
     {
       for (int i = 0; i < num_apis; i++)
         {
-          g_message ("RtMidi API found: %s", rtmidi_api_name (apis[i]));
+          z_info ("RtMidi API found: %s", rtmidi_api_name (apis[i]));
         }
       rtmidi_device_first_run = false;
     }

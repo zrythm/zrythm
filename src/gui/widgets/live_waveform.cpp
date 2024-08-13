@@ -110,7 +110,7 @@ live_waveform_draw_cb (
       break;
     }
 
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   /* if ring not ready yet skip draw */
   // if (!port->audio_ring_)
@@ -136,7 +136,7 @@ live_waveform_draw_cb (
   if (lblocks_read == 0)
     {
       return;
-      /*g_return_val_if_reached (FALSE);*/
+      /*z_return_val_if_reached (FALSE);*/
     }
 
   if (self->type == LiveWaveformType::LIVE_WAVEFORM_ENGINE)
@@ -162,7 +162,7 @@ live_waveform_draw_cb (
       if (rblocks_read == 0)
         {
           return;
-          /*g_return_val_if_reached (FALSE);*/
+          /*z_return_val_if_reached (FALSE);*/
         }
 
       draw_lines (

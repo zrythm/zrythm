@@ -67,7 +67,7 @@ PluginDescriptor::plugin_protocol_from_str (const std::string &str)
           return (PluginProtocol) i;
         }
     }
-  g_return_val_if_reached (PluginProtocol::LV2);
+  z_return_val_if_reached (PluginProtocol::LV2);
 }
 
 PluginProtocol
@@ -100,10 +100,10 @@ PluginDescriptor::get_protocol_from_carla_plugin_type (PluginType ptype)
     case CarlaBackend::PLUGIN_JSFX:
       return PluginProtocol::JSFX;
     default:
-      g_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
+      z_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
     }
 
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
+  z_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
 }
 
 PluginType
@@ -136,10 +136,10 @@ PluginDescriptor::get_carla_plugin_type_from_protocol (PluginProtocol protocol)
     case PluginProtocol::JSFX:
       return CarlaBackend::PLUGIN_JSFX;
     default:
-      g_return_val_if_reached ((PluginType) 0);
+      z_return_val_if_reached ((PluginType) 0);
     }
 
-  g_return_val_if_reached ((PluginType) 0);
+  z_return_val_if_reached ((PluginType) 0);
 }
 
 ZPluginCategory
@@ -407,7 +407,7 @@ PluginDescriptor::is_valid_for_slot_type (
       break;
     }
 
-  g_return_val_if_reached (false);
+  z_return_val_if_reached (false);
 }
 
 bool
@@ -432,7 +432,7 @@ PluginDescriptor::has_custom_ui () const
       break;
     }
 
-  g_return_val_if_reached (false);
+  z_return_val_if_reached (false);
 }
 
 CarlaBridgeMode
@@ -525,7 +525,7 @@ PluginDescriptor::is_whitelisted () const
       if (author_ == authors[i])
         {
 #if 0
-          g_debug (
+          z_debug (
             "author '%s' is whitelisted", this->author);
 #endif
           return true;

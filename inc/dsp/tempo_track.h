@@ -89,6 +89,8 @@ public:
         return 8;
       case BeatUnit::Sixteen:
         return 16;
+      default:
+        z_return_val_if_reached (0);
       }
   }
 

@@ -197,7 +197,8 @@ public:
    */
   int get_y_px_from_normalized_val (float normalized_val) const
   {
-    return get_y_px_from_height_and_normalized_val (height_, normalized_val);
+    return get_y_px_from_height_and_normalized_val (
+      static_cast<float> (height_), normalized_val);
   }
 
   void set_caches (CacheType types);

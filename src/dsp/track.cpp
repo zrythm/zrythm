@@ -92,6 +92,7 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
     case Track::Type::Marker:
     case Track::Type::Tempo:
     case Track::Type::Modulator:
+    default:
       z_return_val_if_reached (nullptr);
       break;
     }
@@ -153,6 +154,8 @@ Track::create_unique_from_type (Type type)
       return std::make_unique<MarkerTrack> ();
     case Track::Type::Modulator:
       return std::make_unique<ModulatorTrack> ();
+    default:
+      z_return_val_if_reached (nullptr);
     }
 }
 
@@ -198,7 +201,7 @@ Track::insert_region (
       region->gen_name (nullptr, at, this);
     }
 
-  g_return_val_if_fail (region->name_.length () > 0, nullptr);
+  z_return_val_if_fail (region->name_.length () > 0, nullptr);
   z_debug (
     "inserting region '%s' to track '%s' at lane %d (idx %d)", region->name_,
     name_, lane_pos, idx);
@@ -378,12 +381,11 @@ Track::get_full_visible_height () const
 
   if (has_lanes ())
     {
-      const auto * laned_track = dynamic_cast<const LanedTrack *> (this);
       height += std::visit (
         [] (const auto &laned_track) {
           return laned_track->get_visible_lane_heights ();
         },
-        convert_to_variant<LanedTrackPtrVariant> (laned_track));
+        convert_to_variant<LanedTrackPtrVariant> (this));
     }
   if (type_has_automation (type_))
     {
@@ -395,7 +397,7 @@ Track::get_full_visible_height () const
             automatable_track->get_automation_tracklist ();
           for (const auto &at : atl.visible_ats_)
             {
-              g_warn_if_fail (at->height_ > 0);
+              z_warn_if_fail (at->height_ > 0);
               if (at->visible_)
                 height += at->height_;
             }
@@ -500,7 +502,7 @@ freeze_progress_close_cb (ExportData * data)
   exporter_post_export (data->info, data->conns, data->state);
 
   /* assert exporting is finished */
-  g_return_if_fail (!AUDIO_ENGINE->exporting);
+  z_return_if_fail (!AUDIO_ENGINE->exporting);
 
   if (
     data->info->progress_info->get_completion_type ()
@@ -542,7 +544,7 @@ freeze_progress_close_cb (ExportData * data)
 bool
 track_freeze (Track * self, bool freeze, GError ** error)
 {
-  g_message ("%sfreezing %s...", freeze ? "" : "un", self->name);
+  z_info ("%sfreezing %s...", freeze ? "" : "un", self->name);
 
   if (freeze)
     {
@@ -756,30 +758,28 @@ Track::append_objects (std::vector<ArrangerObject *> &objs) const
 {
   if (auto * laned_track = dynamic_cast<const LanedTrack *> (this))
     {
-      auto variant = convert_to_variant<LanedTrackPtrVariant> (laned_track);
       std::visit (
-        [&objs] (auto &laned_track) {
-          for (auto &lane : laned_track->lanes_)
+        [&objs] (auto &&lt) {
+          for (auto &lane : lt->lanes_)
             {
               for (auto &region : lane->regions_)
                 objs.push_back (region.get ());
             }
         },
-        variant);
+        convert_to_variant<LanedTrackPtrVariant> (laned_track));
     }
 
   auto * region_owner = dynamic_cast<const RegionOwner *> (this);
   if (region_owner)
     {
-      auto variant = convert_to_variant<RegionOwnerPtrVariant> (region_owner);
       std::visit (
-        [&objs] (auto &region_owner) {
-          for (auto &region : region_owner->regions_)
+        [&objs] (auto &&casted_region_owner) {
+          for (auto &region : casted_region_owner->regions_)
             {
               objs.push_back (region.get ());
             }
         },
-        variant);
+        convert_to_variant<RegionOwnerPtrVariant> (region_owner));
     }
 
   if (type_ == Type::Chord)
@@ -1149,11 +1149,10 @@ Track::mark_for_bounce (
 
   if (mark_regions)
     {
-      if (auto laned_track = dynamic_cast<LanedTrack *> (this))
+      if (has_lanes ())
         {
-          auto variant = convert_to_variant<LanedTrackPtrVariant> (laned_track);
           std::visit (
-            [bounce] (auto &laned_track) {
+            [bounce] (auto &&laned_track) {
               for (auto &lane : laned_track->lanes_)
                 {
                   for (auto &region : lane->regions_)
@@ -1161,7 +1160,7 @@ Track::mark_for_bounce (
                       region->bounce_ = bounce;
                 }
             },
-            variant);
+            convert_to_variant<LanedTrackPtrVariant> (this));
         }
 
       if (auto chord_track = dynamic_cast<ChordTrack *> (this))
@@ -1492,32 +1491,15 @@ Track::is_pinned () const
   return pos_ < TRACKLIST->pinned_tracks_cutoff_;
 }
 
-void
-Track::instantiate_templates ()
-{
-  TrackVariant x;
-  std::visit (
-    [] (auto &&x) {
-      using T = base_type<decltype (x)>;
-      T track;
-      track.find_by_name ("test");
-      RegionVariant y;
-      std::visit (
-        [&] (auto &&y) {
-          using RegionT = base_type<decltype (y)>;
-          auto region = std::make_shared<RegionT> ();
-          track.Track::insert_region (region, nullptr, 0, 0, false, false);
-        },
-        y);
-    },
-    x);
-}
-
 template FoldableTrack *
 Track::find_by_name (const std::string &);
 template RecordableTrack *
 Track::find_by_name (const std::string &);
 template AutomatableTrack *
+Track::find_by_name (const std::string &);
+template Track *
+Track::find_by_name (const std::string &);
+template ChordTrack *
 Track::find_by_name (const std::string &);
 template Plugin *
 Track::insert_plugin (

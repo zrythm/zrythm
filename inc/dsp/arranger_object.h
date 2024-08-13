@@ -205,7 +205,7 @@ public:
   {
     /* this will be called if unimplemented - it's not needed for things like
      * Velocity, which don't have reasonable names. */
-    g_return_val_if_reached ("");
+    z_return_val_if_reached ("");
   };
 
   /**

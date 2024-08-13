@@ -96,7 +96,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
         }
       break;
     default:
-      g_message ("non-OK response");
+      z_info ("non-OK response");
       return NULL;
     }
 

@@ -24,7 +24,7 @@
 ChordDescriptor *
 ChordObject::get_chord_descriptor () const
 {
-  g_return_val_if_fail (CLIP_EDITOR, nullptr);
+  z_return_val_if_fail (CLIP_EDITOR, nullptr);
   z_return_val_if_fail_cmp (chord_index_, >=, 0, nullptr);
   return &CHORD_EDITOR->chords_[chord_index_];
 }
@@ -34,9 +34,9 @@ ChordObject::find_in_project () const
 {
   /* get actual region - clone's region might be an unused clone */
   auto r = RegionImpl<ChordRegion>::find (region_id_);
-  g_return_val_if_fail (r, nullptr);
+  z_return_val_if_fail (r, nullptr);
 
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     r && r->chord_objects_.size () > (size_t) index_, nullptr);
   z_return_val_if_fail_cmp (index_, >=, 0, nullptr);
 

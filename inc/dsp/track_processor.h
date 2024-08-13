@@ -51,7 +51,7 @@ public:
 
   inline ProcessableTrack * get_track () const
   {
-    g_return_val_if_fail (track_, nullptr);
+    z_return_val_if_fail (track_, nullptr);
     return track_;
   }
 

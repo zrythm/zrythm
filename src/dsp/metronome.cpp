@@ -20,7 +20,7 @@ Metronome::Metronome (AudioEngine &engine)
   if (ZRYTHM_TESTING)
     {
       const char * src_root = getenv ("G_TEST_SRC_ROOT_DIR");
-      g_warn_if_fail (src_root);
+      z_warn_if_fail (src_root);
       emphasis_path_ = Glib::build_filename (
         src_root, "data", "samples", "klick", "square_emphasis.wav");
       normal_path_ = Glib::build_filename (

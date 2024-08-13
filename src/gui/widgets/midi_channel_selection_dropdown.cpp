@@ -14,7 +14,7 @@ get_str (void * data)
       GtkStringObject * str_obj = GTK_STRING_OBJECT (data);
       return g_strdup (gtk_string_object_get_string (str_obj));
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 static void

@@ -120,7 +120,8 @@ automation_point_draw (
             /* in pixels, higher values are lower */
             1.0
             - ap->get_normalized_value_in_curve (
-              nullptr, std::clamp ((l + step) / width_for_curve, 0.0, 1.0));
+              nullptr,
+              std::clamp<double> ((l + step) / width_for_curve, 0.0, 1.0));
           next_y *= height_for_curve;
 
           if (math_doubles_equal (l, 0.0))

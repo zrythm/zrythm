@@ -59,11 +59,11 @@ double
 ruler_widget_get_zoom_level (RulerWidget * self)
 {
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_val_if_fail (settings, 1.0);
+  z_return_val_if_fail (settings, 1.0);
 
   return settings->hzoom_level_;
 
-  g_return_val_if_reached (1.f);
+  z_return_val_if_reached (1.f);
 }
 
 /**
@@ -224,7 +224,7 @@ ruler_widget_get_sec_interval (RulerWidget * self)
 static void
 draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, Region * region)
 {
-  /*g_debug (
+  /*z_debug (
    * "drawing other region %s", region->name);*/
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -539,7 +539,7 @@ draw_cue_point (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
     }
   else
     {
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       return;
     }
   graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
@@ -610,7 +610,7 @@ ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops)
           Region * clip_editor_region = CLIP_EDITOR->get_region ();
           if (!clip_editor_region)
             {
-              g_warning ("no clip editor region");
+              z_warning ("no clip editor region");
               return ui_pos_to_px_editor (PLAYHEAD, 1);
             }
 
@@ -653,7 +653,7 @@ ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops)
     {
       return ui_pos_to_px_timeline (PLAYHEAD, 1);
     }
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 static void
@@ -1245,7 +1245,7 @@ is_clip_start_hit (RulerWidget * self, double x, double y)
 static void
 get_range_rect (RulerWidget * self, RulerWidgetRangeType type, GdkRectangle * rect)
 {
-  g_return_if_fail (self->type == TYPE (Timeline));
+  z_return_if_fail (self->type == TYPE (Timeline));
 
   auto [start, end] = TRANSPORT->get_range_positions ();
   Position tmp = type == RulerWidgetRangeType::Start ? start : end;
@@ -1432,7 +1432,7 @@ set_cursor (RulerWidget * self)
           else if (y > (height * 1) / 4)
             {
               /* set cursor to normal */
-              /*g_debug ("lower 3/4ths - setting default");*/
+              /*z_debug ("lower 3/4ths - setting default");*/
               ui_set_cursor_from_name (GTK_WIDGET (self), "default");
               if (
                 self->ctrl_held
@@ -1460,7 +1460,7 @@ set_cursor (RulerWidget * self)
         }
       else
         {
-          /*g_debug ("no hover - setting default");*/
+          /*z_debug ("no hover - setting default");*/
           ui_set_cursor_from_name (GTK_WIDGET (self), "default");
         }
     }
@@ -1477,7 +1477,7 @@ set_cursor (RulerWidget * self)
           ui_set_cursor_from_name (GTK_WIDGET (self), "grabbing");
           break;
         default:
-          /*g_debug ("no known action - setting default");*/
+          /*z_debug ("no known action - setting default");*/
           ui_set_cursor_from_name (GTK_WIDGET (self), "default");
           break;
         }
@@ -1492,7 +1492,7 @@ drag_begin (
   RulerWidget *    self)
 {
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_if_fail (settings);
+  z_return_if_fail (settings);
   start_x += settings->scroll_start_x_;
   self->start_x = start_x;
   self->start_y = start_y;
@@ -1537,7 +1537,7 @@ drag_begin (
       self->target = RWTarget::LoopStart;
       if (self->type == TYPE (Editor))
         {
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           self->drag_start_pos = region->loop_start_pos_;
         }
       else
@@ -1551,7 +1551,7 @@ drag_begin (
       self->target = RWTarget::LoopEnd;
       if (self->type == TYPE (Editor))
         {
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           self->drag_start_pos = region->loop_end_pos_;
         }
       else
@@ -1565,7 +1565,7 @@ drag_begin (
       self->target = RWTarget::ClipStart;
       if (self->type == TYPE (Editor))
         {
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           self->drag_start_pos = region->clip_start_pos_;
         }
     }
@@ -1633,7 +1633,7 @@ auto_scroll (RulerWidget * self)
     return;
 
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_if_fail (settings);
+  z_return_if_fail (settings);
   int h_scroll_speed = 20;
   int border_distance = 5;
   int scroll_width = gtk_widget_get_width (GTK_WIDGET (self));
@@ -1673,7 +1673,7 @@ on_motion (
     GTK_EVENT_CONTROLLER (motion_controller));
 
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_if_fail (settings);
+  z_return_if_fail (settings);
   x += settings->scroll_start_x_;
   self->hover_x = x;
   self->hover_y = y;
@@ -1819,7 +1819,7 @@ ruler_widget_get_editor_settings (RulerWidget * self)
         [&] (auto &&settings) -> EditorSettings * { return settings; },
         settings);
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 /**
@@ -1831,7 +1831,7 @@ ruler_widget_get_visible_rect (RulerWidget * self, GdkRectangle * rect)
   rect->width = gtk_widget_get_width (GTK_WIDGET (self));
   rect->height = gtk_widget_get_height (GTK_WIDGET (self));
   const EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_if_fail (settings);
+  z_return_if_fail (settings);
   rect->x = settings->scroll_start_x_;
   rect->y = 0;
 }
@@ -1867,7 +1867,7 @@ ruler_widget_set_zoom_level (RulerWidget * self, double zoom_level)
   if (update)
     {
       EditorSettings * settings = ruler_widget_get_editor_settings (self);
-      g_return_val_if_fail (settings, false);
+      z_return_val_if_fail (settings, false);
       settings->hzoom_level_ = zoom_level;
       ruler_widget_refresh (self);
       return true;
@@ -1913,7 +1913,7 @@ ruler_widget_handle_horizontal_zoom (RulerWidget * self, double * x_pos, double 
 {
   /* get current adjustment so we can get the difference from the cursor */
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
-  g_return_if_fail (settings);
+  z_return_if_fail (settings);
 
   /* get position of cursor */
   Position cursor_pos;
@@ -1953,7 +1953,7 @@ on_scroll (
   GdkModifierType modifier_type = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (scroll_controller));
 
-  g_debug (
+  z_debug (
     "scrolled to %.1f (d %d), %.1f (d %d)", self->hover_x, (int) dx,
     self->hover_y, (int) dy);
 

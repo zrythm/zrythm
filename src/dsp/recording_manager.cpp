@@ -43,7 +43,7 @@
 void
 RecordingManager::handle_stop_recording (bool is_automation)
 {
-  g_return_if_fail (num_active_recordings_ > 0);
+  z_return_if_fail (num_active_recordings_ > 0);
 
   /* skip if still recording */
   if (num_active_recordings_ > 1)
@@ -52,7 +52,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
       return;
     }
 
-  g_message (
+  z_info (
     "%s%s", "----- stopped recording", is_automation ? " (automation)" : "");
 
   /* cache the current selections */
@@ -75,9 +75,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
           z_return_if_fail (track);
 
           std::visit (
-            [&] (auto &&track) {
-              z_return_if_fail (id.lane_pos_ < (int) track->lanes_.size ());
-              auto &lane = track->lanes_[id.lane_pos_];
+            [&] (auto &&t) {
+              z_return_if_fail (id.lane_pos_ < (int) t->lanes_.size ());
+              auto &lane = t->lanes_[id.lane_pos_];
               z_return_if_fail (lane);
               z_return_if_fail (
                 id.idx_ <= static_cast<int> (lane->regions_.size ()));
@@ -133,7 +133,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
   for (auto &obj : prev_selections->objects_)
     {
       auto found_obj = obj->find_in_project ();
-      g_return_if_fail (found_obj);
+      z_return_if_fail (found_obj);
       found_obj->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
     }
 
@@ -145,7 +145,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
   num_active_recordings_--;
   recorded_ids_.clear ();
-  g_warn_if_fail (num_active_recordings_ == 0);
+  z_warn_if_fail (num_active_recordings_ == 0);
 }
 
 void
@@ -154,7 +154,7 @@ RecordingManager::handle_recording (
   const EngineProcessTimeInfo * const time_nfo)
 {
 #if 0
-  g_message (
+  z_info (
     "handling recording from %ld (%" PRIu32
     " frames)",
     g_start_frames + ev->local_offset, ev->nframes);
@@ -461,7 +461,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   pause_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
 
 #if 0
-  g_debug ("track %s pause start frames %" PRIuFAST64 ", nframes %u", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
+  z_debug ("track %s pause start frames %" PRIuFAST64 ", nframes %u", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
 #endif
 
   if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
@@ -473,17 +473,17 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
       z_return_if_fail (region);
 
       std::visit (
-        [&] (auto &&region) {
-          using T = base_type<decltype (region)>;
+        [&] (auto &&r) {
+          using T = base_type<decltype (r)>;
           if constexpr (std::derived_from<T, LaneOwnedObject>)
             {
               /* remember lane index */
               auto laned_track = dynamic_cast<LanedTrackImpl<T> *> (tr);
-              laned_track->last_lane_idx_ = region->id_.lane_pos_;
+              laned_track->last_lane_idx_ = r->id_.lane_pos_;
 
               if (tr->in_signal_type_ == PortType::Event)
                 {
-                  auto midi_region = dynamic_cast<MidiRegion *> (region);
+                  auto midi_region = dynamic_cast<MidiRegion *> (r);
                   /* add midi note offs at the end */
                   MidiNote * mn;
                   while ((mn = midi_region->pop_unended_note (-1)))
@@ -543,17 +543,17 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
             }
 
           auto success = std::visit (
-            [&] (auto &&tr) {
-              using T = base_type<decltype (tr)>;
+            [&] (auto &&casted_tr) {
+              using T = base_type<decltype (casted_tr)>;
               std::shared_ptr<Region> added_region;
               if constexpr (std::is_same_v<T, ChordTrack>)
                 {
-                  auto chord_track = dynamic_cast<ChordTrack *> (tr);
+                  auto chord_track = dynamic_cast<ChordTrack *> (casted_tr);
                   auto new_region = std::make_shared<ChordRegion> (
                     resume_pos, end_pos, chord_track->regions_.size ());
                   try
                     {
-                      added_region = tr->Track::add_region (
+                      added_region = casted_tr->Track::add_region (
                         std::move (new_region), nullptr, -1, true, true);
                     }
                   catch (const ZrythmException &ex)
@@ -566,26 +566,27 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                 {
                   using RegionT = T::RegionType;
                   /* start new region in new lane */
-                  int new_lane_pos = tr->last_lane_idx_ + 1;
+                  int new_lane_pos = casted_tr->last_lane_idx_ + 1;
                   int idx_inside_lane =
-                    (int) tr->lanes_.size () > new_lane_pos
-                      ? tr->lanes_[new_lane_pos]->regions_.size ()
+                    (int) casted_tr->lanes_.size () > new_lane_pos
+                      ? casted_tr->lanes_[new_lane_pos]->regions_.size ()
                       : 0;
                   std::shared_ptr<RegionT> new_region;
                   if constexpr (std::is_same_v<RegionT, MidiRegion>)
                     {
                       new_region = std::make_shared<MidiRegion> (
-                        resume_pos, end_pos, tr->get_name_hash (), new_lane_pos,
-                        idx_inside_lane);
+                        resume_pos, end_pos, casted_tr->get_name_hash (),
+                        new_lane_pos, idx_inside_lane);
                     }
                   else if constexpr (std::is_same_v<RegionT, AudioRegion>)
                     {
                       auto name = AUDIO_POOL->gen_name_for_recording_clip (
-                        *tr, new_lane_pos);
+                        *casted_tr, new_lane_pos);
                       new_region = std::make_shared<AudioRegion> (
                         -1, std::nullopt, true, nullptr, 1, name, 2,
                         BitDepth::BIT_DEPTH_32, resume_pos,
-                        tr->get_name_hash (), new_lane_pos, idx_inside_lane);
+                        casted_tr->get_name_hash (), new_lane_pos,
+                        idx_inside_lane);
                     }
                   else
                     {
@@ -593,7 +594,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     }
                   try
                     {
-                      added_region = tr->add_region (
+                      added_region = casted_tr->add_region (
                         std::move (new_region), nullptr, new_lane_pos, true,
                         true);
                     }
@@ -613,7 +614,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                 {
                   /* remember region */
                   recorded_ids_.push_back (added_region->id_);
-                  tr->recording_region_ = added_region.get ();
+                  casted_tr->recording_region_ = added_region.get ();
                 }
 
               return true;
@@ -646,7 +647,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
   else if (ev.type_ == RecordingEvent::Type::Automation)
     {
       auto &at = tr->automation_tracklist_->ats_[ev.automation_track_idx_];
-      g_return_val_if_fail (at, false);
+      z_return_val_if_fail (at, false);
 
       /* not paused, nothing to do */
       if (!at->recording_paused_)
@@ -677,7 +678,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
               return false;
             }
         }
-      g_return_val_if_fail (new_region, false);
+      z_return_val_if_fail (new_region, false);
       recorded_ids_.push_back (new_region->id_);
 
       if (at->should_be_recording (cur_time, true))
@@ -702,7 +703,7 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
 {
   bool handled_resume = handle_resume_event (ev);
   (void) handled_resume;
-  /*g_debug ("handled resume %d", handled_resume);*/
+  /*z_debug ("handled resume %d", handled_resume);*/
 
   auto tr =
     TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
@@ -743,7 +744,7 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
     {
       z_return_if_fail_cmp (i, >=, 0);
       z_return_if_fail_cmp (i, <, (signed_frame_t) clip->num_frames_);
-      g_warn_if_fail (
+      z_warn_if_fail (
         cur_local_offset >= ev.local_offset_
         && cur_local_offset < ev.local_offset_ + ev.nframes_);
 
@@ -786,7 +787,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
   auto tr =
     TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
 
-  g_return_if_fail (tr->recording_region_);
+  z_return_if_fail (tr->recording_region_);
 
   Position start_pos, end_pos;
   start_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
@@ -854,7 +855,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
           midi_byte_t             note_number = midi_get_note_number (buf);
           const ChordDescriptor * descr =
             CHORD_EDITOR->get_chord_from_note_number (note_number);
-          g_return_if_fail (descr);
+          z_return_if_fail (descr);
           int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);
           auto chord_region = dynamic_cast<ChordRegion *> (region);
           auto co = std::make_shared<ChordObject> (
@@ -869,7 +870,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
     {
       if (midi_is_note_on (buf))
         {
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           auto midi_region = dynamic_cast<MidiRegion *> (region);
           midi_region->start_unended_note (
             &local_pos, &local_end_pos, midi_get_note_number (buf),
@@ -877,7 +878,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
         }
       else if (midi_is_note_off (buf))
         {
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           auto midi_region = dynamic_cast<MidiRegion *> (region);
           mn = midi_region->pop_unended_note (midi_get_note_number (buf));
           if (mn)
@@ -929,7 +930,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
   auto region_at_end = at->get_region_before_pos (end_pos, true, false);
   if (!region && automation_value_changed)
     {
-      g_debug ("creating new automation region (automation value changed)");
+      z_debug ("creating new automation region (automation value changed)");
       /* create region */
       Position pos_to_end_new_r;
       if (region_at_end)
@@ -948,7 +949,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
             at.get (), -1, true, true)
           .get ();
       new_region_created = true;
-      g_return_if_fail (region);
+      z_return_if_fail (region);
 
       recorded_ids_.push_back (region->id_);
     }
@@ -972,7 +973,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
     }
   else if (at->record_mode_ == AutomationRecordMode::Latch)
     {
-      g_return_if_fail (region);
+      z_return_if_fail (region);
       delete_automation_points (at.get (), *region, start_pos);
     }
 
@@ -1011,7 +1012,7 @@ RecordingManager::handle_start_recording (
   /* this could be called multiple times, ignore if already processed */
   if (tr->recording_region_ && !is_automation)
     {
-      g_warning ("record start already processed");
+      z_warning ("record start already processed");
       num_active_recordings_++;
       return;
     }
@@ -1020,13 +1021,13 @@ RecordingManager::handle_start_recording (
   unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
   unsigned_frame_t end_frames = start_frames + ev.nframes_;
 
-  g_message (
+  z_info (
     "start %" UNSIGNED_FRAME_FORMAT
     ", "
     "end %" UNSIGNED_FRAME_FORMAT,
     start_frames, end_frames);
 
-  g_return_if_fail (start_frames < end_frames);
+  z_return_if_fail (start_frames < end_frames);
 
   Position start_pos (static_cast<signed_frame_t> (start_frames));
   Position end_pos (static_cast<signed_frame_t> (end_frames));
@@ -1044,12 +1045,12 @@ RecordingManager::handle_start_recording (
         {
           /* set recorded value to something else to force the recorder to start
            * writing */
-          g_message ("SHOULD BE RECORDING");
+          z_info ("SHOULD BE RECORDING");
           at->last_recorded_value_ = value + 2.f;
         }
       else
         {
-          g_message ("SHOULD NOT BE RECORDING");
+          z_info ("SHOULD NOT BE RECORDING");
           /** set the current value so that nothing is recorded until it changes
            */
           at->last_recorded_value_ = value;
@@ -1071,7 +1072,7 @@ RecordingManager::handle_start_recording (
                   start_pos, end_pos, tr->get_name_hash (), new_lane_pos,
                   piano_roll_track->lanes_[new_lane_pos]->regions_.size ()),
                 nullptr, new_lane_pos, true, true);
-              g_return_if_fail (region);
+              z_return_if_fail (region);
 
               tr->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
@@ -1083,7 +1084,7 @@ RecordingManager::handle_start_recording (
                 std::make_shared<ChordRegion> (
                   start_pos, end_pos, chord_track->regions_.size ()),
                 nullptr, -1, true, true);
-              g_return_if_fail (region);
+              z_return_if_fail (region);
 
               tr->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
@@ -1102,7 +1103,7 @@ RecordingManager::handle_start_recording (
                   new_lane_pos,
                   audio_track->lanes_[new_lane_pos]->regions_.size ()),
                 nullptr, new_lane_pos, true, true);
-              g_return_if_fail (region);
+              z_return_if_fail (region);
 
               tr->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
@@ -1155,7 +1156,7 @@ RecordingManager::process_events ()
           {
             auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
               ev->track_name_hash_);
-            g_return_val_if_fail (tr, G_SOURCE_CONTINUE);
+            z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
             z_debug ("-------- STOP TRACK RECORDING (%s)", tr->name_);
             handle_stop_recording (false);
             tr->recording_region_ = nullptr;
@@ -1171,7 +1172,7 @@ RecordingManager::process_events ()
               ev->track_name_hash_);
             auto &at =
               tr->automation_tracklist_->ats_[ev->automation_track_idx_];
-            g_return_val_if_fail (at, G_SOURCE_REMOVE);
+            z_return_val_if_fail (at, G_SOURCE_REMOVE);
             if (at->recording_started_)
               {
                 handle_stop_recording (true);
@@ -1186,20 +1187,20 @@ RecordingManager::process_events ()
           {
             auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
               ev->track_name_hash_);
-            g_return_val_if_fail (tr, G_SOURCE_CONTINUE);
+            z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
             z_debug ("-------- START TRACK RECORDING (%s)", tr->name_);
             handle_start_recording (*ev, false);
             z_debug ("num active recordings: %d", num_active_recordings_);
           }
           break;
         case RecordingEvent::Type::StartAutomationRecording:
-          g_message ("-------- START AUTOMATION RECORDING");
+          z_info ("-------- START AUTOMATION RECORDING");
           {
             auto tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
               ev->track_name_hash_);
             auto &at =
               tr->automation_tracklist_->ats_[ev->automation_track_idx_];
-            g_return_val_if_fail (at, G_SOURCE_REMOVE);
+            z_return_val_if_fail (at, G_SOURCE_REMOVE);
             if (!at->recording_started_)
               {
                 handle_start_recording (*ev, true);
@@ -1233,7 +1234,7 @@ RecordingManager::RecordingManager ()
 
 RecordingManager::~RecordingManager ()
 {
-  g_message ("%s: Freeing...", __func__);
+  z_info ("%s: Freeing...", __func__);
 
   freeing_ = true;
 
@@ -1243,5 +1244,5 @@ RecordingManager::~RecordingManager ()
   /* process pending events */
   process_events ();
 
-  g_message ("%s: done", __func__);
+  z_info ("%s: done", __func__);
 }

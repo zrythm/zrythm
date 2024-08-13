@@ -99,7 +99,7 @@ MidiEventVector::transform_chord_and_append (
           }
 
         /* make sure there is enough space */
-        g_return_if_fail (size () < MAX_MIDI_EVENTS - 6);
+        z_return_if_fail (size () < MAX_MIDI_EVENTS - 6);
 
         const uint8_t * buf = src_ev.raw_buffer_.data ();
 
@@ -295,7 +295,7 @@ void
 MidiEventVector::
   add_all_notes_off (midi_byte_t channel, midi_time_t time, bool with_lock)
 {
-  g_return_if_fail (channel > 0 && channel <= 16);
+  z_return_if_fail (channel > 0 && channel <= 16);
 
   MidiEvent ev (
     (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1)), MIDI_ALL_NOTES_OFF,
@@ -335,7 +335,7 @@ void
 MidiEventVector::write_to_midi_file (MIDI_FILE * mf, int midi_track) const
 {
   const std::lock_guard<crill::spin_mutex> lock (lock_);
-  g_return_if_fail (midi_track > 0);
+  z_return_if_fail (midi_track > 0);
 
   int last_time = 0;
   for (const MidiEvent &ev : events_)
@@ -374,7 +374,7 @@ MidiEventVector::copy_to_jack (
       std::copy_n (midi_data, ev.raw_buffer_sz_, (jack_midi_data_t *) buff);
       jack_midi_event_write (buff, ev.time_, midi_data, ev.raw_buffer_sz_);
 #  if 0
-      g_message (
+      z_info (
         "wrote MIDI event to JACK MIDI out at %d", ev.time);
 #  endif
     }
@@ -385,10 +385,10 @@ void
 MidiEventVector::
   add_note_off (midi_byte_t channel, midi_byte_t note_pitch, midi_time_t time)
 {
-  g_return_if_fail (channel > 0);
+  z_return_if_fail (channel > 0);
   MidiEvent ev (
     (midi_byte_t) (MIDI_CH1_NOTE_OFF | (channel - 1)), note_pitch, 90, time);
-  g_return_if_fail (midi_is_note_off (ev.raw_buffer_.data ()));
+  z_return_if_fail (midi_is_note_off (ev.raw_buffer_.data ()));
   push_back (ev);
 }
 
@@ -406,7 +406,7 @@ MidiEventVector::add_raw (uint8_t * buf, size_t buf_sz, midi_time_t time)
   if (buf_sz > 3)
     {
       midi_print (buf, buf_sz);
-      g_return_if_reached ();
+      z_return_if_reached ();
     }
 
   MidiEvent ev;
@@ -435,7 +435,7 @@ void
 MidiEventVector::
   add_pitchbend (midi_byte_t channel, uint32_t pitchbend, midi_time_t time)
 {
-  g_return_if_fail (pitchbend < 0x4000 && channel > 0);
+  z_return_if_fail (pitchbend < 0x4000 && channel > 0);
 
   MidiEvent ev;
   ev.time_ = time;
@@ -453,7 +453,7 @@ MidiEventVector::add_channel_pressure (
   midi_byte_t value,
   midi_time_t time)
 {
-  g_return_if_fail (channel > 0);
+  z_return_if_fail (channel > 0);
 
   MidiEvent ev;
   ev.time_ = time;
@@ -508,7 +508,7 @@ MidiEventVector::sort ()
           MidiEventType b_type = get_event_type (b.raw_buffer_);
           (void) midi_event_type_strings;
 #if 0
-      g_debug ("a type %s, b type %s",
+      z_debug ("a type %s, b type %s",
         midi_event_type_strings[a_type],
         midi_event_type_strings[b_type]);
 #endif
@@ -525,7 +525,7 @@ MidiEventVector::add_note_on (
   uint8_t     velocity,
   midi_time_t time)
 {
-  g_return_if_fail (channel > 0);
+  z_return_if_fail (channel > 0);
 #if 0
   z_info (fmt::format (
     "ch {}, pitch {}, vel {}, time {}", channel, note_pitch, velocity, time));
@@ -547,7 +547,7 @@ MidiEventVector::add_note_ons_from_chord_descr (
   midi_time_t            time)
 {
 #if 0
-  g_message (
+  z_info (
     "%s: vel %"PRIu8", time %"PRIu32,
     __func__, velocity, _time);
 #endif
@@ -584,7 +584,7 @@ MidiEventVector::
   if (buf_size != 3) [[unlikely]]
     {
 #if 0
-      g_debug (
+      z_debug (
         "buf size of %d received (%"PRIu8" %"
         PRIu8" %"PRIu8"), expected 3, skipping...",
         buf_size > 0 ? buf[0] : 0,
@@ -648,7 +648,7 @@ MidiEvent::print () const
 {
   char msg[400];
   midi_print_to_str (raw_buffer_.data (), raw_buffer_sz_, msg);
-  g_message ("%s | time: %u", msg, time_);
+  z_info ("%s | time: %u", msg, time_);
 }
 
 void

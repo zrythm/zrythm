@@ -69,7 +69,7 @@ PortConnectionAction::do_or_undo (bool _do)
         {
           if (!src->can_be_connected_to (*dest))
             {
-              g_warning ("ports cannot be connected");
+              z_warning ("ports cannot be connected");
               return;
             }
           PORT_CONNECTIONS_MGR->ensure_connect (
@@ -78,10 +78,10 @@ PortConnectionAction::do_or_undo (bool _do)
             {
               int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
                 nullptr, src->id_, false);
-              g_return_if_fail (num_dests > 0);
+              z_return_if_fail (num_dests > 0);
               int num_srcs = PORT_CONNECTIONS_MGR->get_sources_or_dests (
                 nullptr, dest->id_, true);
-              g_return_if_fail (num_srcs > 0);
+              z_return_if_fail (num_srcs > 0);
             }
 
           /* set base value if cv -> control */
@@ -133,7 +133,7 @@ PortConnectionAction::to_string () const
     case Type::ChangeMultiplier:
       return _ ("Change port connection");
     default:
-      g_warn_if_reached ();
+      z_warn_if_reached ();
       return "";
     }
 }

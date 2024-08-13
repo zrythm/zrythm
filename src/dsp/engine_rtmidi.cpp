@@ -37,7 +37,7 @@ engine_rtmidi_setup (AudioEngine * self)
 {
   self->midi_buf_size_ = 4096;
 
-  g_message ("Rtmidi set up");
+  z_info ("Rtmidi set up");
 
   return 0;
 }
@@ -55,7 +55,7 @@ engine_rtmidi_get_num_in_ports (AudioEngine * self)
     }
   catch (const ZrythmException &e)
     {
-      g_warning ("%s", e.what ());
+      z_warning ("%s", e.what ());
       return 0;
     }
 }

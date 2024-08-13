@@ -86,9 +86,9 @@ inspector_track_widget_show_tracks (
     {
       PanelWidget * panel_widget = PANEL_WIDGET (gtk_widget_get_ancestor (
         GTK_WIDGET (MW_LEFT_DOCK_EDGE->track_inspector), PANEL_TYPE_WIDGET));
-      g_return_if_fail (panel_widget);
+      z_return_if_fail (panel_widget);
       panel_widget_raise (panel_widget);
-      g_debug ("raised track inspector");
+      z_debug ("raised track inspector");
     }
 
   /* show info for first track */
@@ -188,7 +188,7 @@ inspector_track_widget_setup (
   InspectorTrackWidget *      self,
   SimpleTracklistSelections * tls)
 {
-  g_return_if_fail (tls);
+  z_return_if_fail (tls);
   if (tls->track_names_.empty ())
     {
       z_error ("no tracks selected. this should never happen");
@@ -216,14 +216,10 @@ inspector_track_widget_new (void)
 void
 inspector_track_widget_tear_down (InspectorTrackWidget * self)
 {
-  g_message ("tearing down %p...", self);
-
   if (self->fader)
     {
       fader_controls_expander_widget_tear_down (self->fader);
     }
-
-  g_message ("done");
 }
 
 static void

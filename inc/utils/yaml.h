@@ -14,8 +14,7 @@
 
 #ifdef HAVE_CYAML
 
-#  include <gtk/gtk.h>
-
+#  include "gtk_wrapper.h"
 #  include <cyaml/cyaml.h>
 
 /**
@@ -275,11 +274,11 @@ static const cyaml_schema_value_t unsigned_int_schema = {
 };
 
 static const cyaml_schema_value_t uint8_t_schema = {
-  CYAML_VALUE_UINT (CYAML_FLAG_DEFAULT, typeof (uint8_t)),
+  CYAML_VALUE_UINT (CYAML_FLAG_DEFAULT, uint8_t),
 };
 
 static const cyaml_schema_value_t float_schema = {
-  CYAML_VALUE_FLOAT (CYAML_FLAG_DEFAULT, typeof (float)),
+  CYAML_VALUE_FLOAT (CYAML_FLAG_DEFAULT, float),
 };
 
 static const cyaml_schema_field_t gdk_rgba_fields_schema[] = {

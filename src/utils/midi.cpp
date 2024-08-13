@@ -313,7 +313,7 @@ midi_get_msg_length (const uint8_t status_byte)
           return 1;
         }
     }
-  g_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 /**
@@ -552,5 +552,5 @@ midi_print (const midi_byte_t * msg, const size_t msg_sz)
 {
   char str[600];
   midi_print_to_str (msg, msg_sz, str);
-  g_message ("%s", str);
+  z_info ("%s", str);
 }

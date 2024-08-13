@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/popovers/active_hardware_popover.h"
+#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
@@ -66,7 +67,7 @@ active_hardware_mb_widget_save_settings (ActiveHardwareMbWidget * self)
 
   int res = g_settings_set_strv (
     self->settings, self->key, (const char * const *) controllers);
-  g_return_if_fail (res == 1);
+  z_return_if_fail (res == 1);
 }
 
 void

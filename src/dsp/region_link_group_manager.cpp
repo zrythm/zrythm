@@ -35,7 +35,7 @@ RegionLinkGroupManager::get_group (int group_id)
     }
 
   RegionLinkGroup * group = &groups_[group_id];
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     IS_REGION_LINK_GROUP (group) && group->group_idx_ == group_id, nullptr);
   return group;
 }
@@ -45,7 +45,7 @@ RegionLinkGroupManager::remove_group (int group_id)
 {
   /* only allow removing empty groups */
   RegionLinkGroup * group = get_group (group_id);
-  g_return_if_fail (group && group->ids_.empty ());
+  z_return_if_fail (group && group->ids_.empty ());
 
   for (int j = group_id; j < (int) groups_.size () - 1; j++)
     {

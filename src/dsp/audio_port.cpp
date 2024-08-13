@@ -204,7 +204,7 @@ AudioPort::sum_data_from_rtaudio (
 bool
 AudioPort::has_sound () const
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     this->buf_.size () >= AUDIO_ENGINE->block_length_, false);
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
     {

@@ -13,7 +13,7 @@
 #define z_return_val_if_fail_cmp(a, comparator, b, val) \
   if (!(G_LIKELY ((a) comparator (b)))) \
     { \
-      g_critical ( \
+      z_error ( \
         "Assertion failed: %s (%" G_GINT64_FORMAT \
         ") " \
         "%s %s (%" G_GINT64_FORMAT ")", \
@@ -27,7 +27,7 @@
 #define z_warn_if_fail_cmp(a, comparator, b) \
   if (!(G_LIKELY (a comparator b))) \
     { \
-      g_warning ( \
+      z_warning ( \
         "Assertion failed: %s (%" G_GINT64_FORMAT \
         ") " \
         "%s %s (%" G_GINT64_FORMAT ")", \

@@ -91,7 +91,7 @@ recreate_pango_layouts (DigitalMeterWidget * self)
 static void
 init_dm (DigitalMeterWidget * self)
 {
-  g_return_if_fail (Z_DIGITAL_METER_WIDGET (self));
+  z_return_if_fail (Z_DIGITAL_METER_WIDGET (self));
 
   recreate_pango_layouts (self);
 
@@ -522,7 +522,7 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 static void
 update_flags (DigitalMeterWidget * self, double x, double y)
 {
-  g_debug ("update flags %f %f", x, y);
+  z_debug ("update flags %f %f", x, y);
   int width = gtk_widget_get_width (GTK_WIDGET (self));
   switch (self->type)
     {
@@ -608,7 +608,7 @@ update_flags (DigitalMeterWidget * self, double x, double y)
 static void
 on_change_started (DigitalMeterWidget * self)
 {
-  g_debug ("change started");
+  z_debug ("change started");
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -642,7 +642,7 @@ on_change_started (DigitalMeterWidget * self)
 static void
 on_change_finished (DigitalMeterWidget * self)
 {
-  g_debug ("change finished");
+  z_debug ("change finished");
   self->last_x = 0;
   self->last_y = 0;
   self->update_num = 0;
@@ -938,11 +938,11 @@ drag_update (
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_BPM:
-      /*g_message ("update num ? %d", self->update_num);*/
+      /*z_info ("update num ? %d", self->update_num);*/
       if (self->update_num)
         {
           num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
+          /*z_info ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
               ControlPort::ChangeEvent change;
@@ -957,7 +957,7 @@ drag_update (
       else if (self->update_dec)
         {
           dec = (float) diff / 400.f;
-          g_message ("%f", (double) dec);
+          z_info ("%f", (double) dec);
           if (fabs (dec) > 0)
             {
               ControlPort::ChangeEvent change;
@@ -978,11 +978,11 @@ drag_update (
         {
           if (self->update_minutes)
             {
-              g_message ("UPDATE MINS");
+              z_info ("UPDATE MINS");
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  g_message ("UPDATE MINS %d", num);
+                  z_info ("UPDATE MINS %d", num);
                   pos.print ();
                   pos.add_minutes (num);
                   pos.print ();
@@ -1151,7 +1151,7 @@ button_press_cb (
   gdouble              y,
   DigitalMeterWidget * self)
 {
-  /*g_message ("%d, %d", self->height_start_pos, self->height_end_pos);*/
+  /*z_info ("%d, %d", self->height_start_pos, self->height_end_pos);*/
   update_flags (self, x, y);
 }
 

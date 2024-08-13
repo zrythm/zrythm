@@ -123,7 +123,7 @@ ChannelTrack::validate () const
   z_return_val_if_fail (channel_ != nullptr, false);
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      g_return_val_if_fail (
+      z_return_val_if_fail (
         channel_->sends_[i]->track_name_hash_
           == channel_->sends_[i]->amount_->id_.track_name_hash_,
         false);
@@ -131,7 +131,7 @@ ChannelTrack::validate () const
 
   /* verify output and sends */
   auto out_track = channel_->get_output_track ();
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     static_cast<Track *> (out_track) != static_cast<const Track *> (this),
     false);
 
@@ -140,14 +140,14 @@ ChannelTrack::validate () const
   channel_->get_plugins (plugins);
   for (auto pl : plugins)
     {
-      g_return_val_if_fail (pl->validate (), false);
+      z_return_val_if_fail (pl->validate (), false);
     }
 
   /* verify sends */
   for (int i = 0; i < STRIP_SIZE; i++)
     for (auto &send : channel_->sends_)
       {
-        g_return_val_if_fail (send->validate (), false);
+        z_return_val_if_fail (send->validate (), false);
       }
 
   return true;

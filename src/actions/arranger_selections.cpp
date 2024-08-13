@@ -110,7 +110,7 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
   bool                      already_moved)
     : ArrangerSelectionsAction (sel, move ? Type::Move : Type::Duplicate)
 {
-  g_return_if_fail (sel.has_any ());
+  z_return_if_fail (sel.has_any ());
 
   first_run_ = already_moved;
   ticks_ = ticks;
@@ -163,7 +163,7 @@ ArrangerSelectionsAction::CreateOrDeleteAction::CreateOrDeleteAction (
   bool                      create)
     : ArrangerSelectionsAction (sel, create ? Type::Create : Type::Delete)
 {
-  g_return_if_fail (sel.has_any ());
+  z_return_if_fail (sel.has_any ());
 
   if (sel.contains_undeletable_object ())
     {
@@ -206,8 +206,7 @@ ArrangerSelectionsAction::EditAction::EditAction (
     {
       if (already_edited)
         {
-          g_critical (
-            "sel_after must be passed or already edited must be false");
+          z_error ("sel_after must be passed or already edited must be false");
         }
 
       set_after_selections (sel_before);
@@ -260,12 +259,12 @@ ArrangerSelectionsAction::EditAction::EditAction (
   /* prepare selections before */
   auto sel_before_clone = sel_before.clone_unique();
 
-  g_debug ("saving file before applying audio func...");
+  z_debug ("saving file before applying audio func...");
   audio_function_apply (
     *sel_before_clone, AudioFunctionType::Invalid, opts, uri);
 
   auto sel_after = sel_before.clone_unique();
-  g_debug ("applying actual audio func...");
+  z_debug ("applying actual audio func...");
   audio_function_apply (*sel_after, audio_func_type, opts, uri);
 
   EditAction (
@@ -346,7 +345,7 @@ ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
     {
       /* get the actual object from the project */
       const auto obj = _obj->find_in_project ();
-      g_return_if_fail (obj);
+      z_return_if_fail (obj);
 
       if (obj->owned_by_region ())
         {
@@ -418,7 +417,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
 
           if (delta_pitch != 0)
             {
-              g_return_if_fail (obj->type_ == ArrangerObject::Type::MidiNote);
+              z_return_if_fail (obj->type_ == ArrangerObject::Type::MidiNote);
 
               auto mn = dynamic_pointer_cast<MidiNote> (obj);
 
@@ -432,7 +431,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
 
           if (delta_chords != 0)
             {
-              g_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
+              z_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
               auto co = dynamic_pointer_cast<ChordObject> (obj);
 
               /* shift the actual object */
@@ -446,20 +445,20 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
           /* if moving automation */
           if (target_port_)
             {
-              g_return_if_fail (obj->type_ == ArrangerObject::Type::Region);
+              z_return_if_fail (obj->type_ == ArrangerObject::Type::Region);
               auto r = dynamic_pointer_cast<AutomationRegion> (obj);
-              g_return_if_fail (r->id_.type_ == RegionType::Automation);
+              z_return_if_fail (r->id_.type_ == RegionType::Automation);
               auto cur_at = r->get_automation_track ();
-              g_return_if_fail (cur_at);
+              z_return_if_fail (cur_at);
               auto port =
                 Port::find_from_identifier<ControlPort> (*target_port_);
-              g_return_if_fail (port);
+              z_return_if_fail (port);
               auto track =
                 dynamic_cast<AutomatableTrack *> (port->get_track (true));
-              g_return_if_fail (track);
+              z_return_if_fail (track);
               AutomationTrack * at =
                 AutomationTrack::find_from_port (*port, track, true);
-              g_return_if_fail (at);
+              z_return_if_fail (at);
 
               /* move the actual object */
               r->move_to_track (track, at->index_, -1);
@@ -501,10 +500,10 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
         {
           auto obj = dynamic_pointer_cast<AutomationPoint> (
             first_own_obj->find_in_project ());
-          g_return_if_fail (obj);
+          z_return_if_fail (obj);
 
           auto region = dynamic_cast<AutomationRegion *> (obj->get_region ());
-          g_return_if_fail (region);
+          z_return_if_fail (region);
           region->force_sort ();
 
           for (auto &[prj_ap, cached_ap] : obj_map)
@@ -541,7 +540,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
   if (tracks_diff)
     {
       auto r = dynamic_cast<Region *> (&obj);
-      g_return_if_fail (r);
+      z_return_if_fail (r);
 
       auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
         *r->get_track (), tracks_diff);
@@ -555,8 +554,8 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
       else
         {
           std::visit (
-            [&] (auto &&r) {
-              r->move_to_track (
+            [&] (auto &&casted_r) {
+              casted_r->move_to_track (
                 track_to_move_to, -1,
                 use_index_in_prev_lane ? index_in_prev_lane : -1);
             },
@@ -566,11 +565,11 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
   if (lanes_diff)
     {
       auto r = dynamic_cast<Region *> (&obj);
-      g_return_if_fail (r);
+      z_return_if_fail (r);
 
       // auto region_track = r->get_track_as<LanedTrack> ();
       int new_lane_pos = r->id_.lane_pos_ + lanes_diff;
-      g_return_if_fail (new_lane_pos >= 0);
+      z_return_if_fail (new_lane_pos >= 0);
 
       /* shift the actual object by lanes */
       if (
@@ -582,14 +581,14 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
       else
         {
           std::visit (
-            [&] (auto &&r) {
-              using RegionT = std::decay_t<decltype (r)>;
+            [&] (auto &&casted_r) {
+              using RegionT = base_type<decltype (casted_r)>;
               if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
                   auto r_track =
-                    r->template get_track_as<LanedTrackImpl<RegionT>> ();
+                    casted_r->template get_track_as<LanedTrackImpl<RegionT>> ();
                   r_track->create_missing_lanes (new_lane_pos);
-                  r->move_to_track (
+                  casted_r->move_to_track (
                     r_track, new_lane_pos,
                     use_index_in_prev_lane ? index_in_prev_lane : -1);
                 }
@@ -609,7 +608,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
       sel_after_->validate ();
     }
   ArrangerSelections * sel = get_actual_arranger_selections ();
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   double ticks = _do ? ticks_ : -ticks_;
   int    delta_tracks = _do ? delta_tracks_ : -delta_tracks_;
@@ -661,12 +660,12 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               auto &own_obj_r = dynamic_cast<Region &> (*own_obj);
               // auto & obj_r = dynamic_cast<Region &> (*obj);
 
-              g_message ("moving prj obj");
+              z_info ("moving prj obj");
               move_obj_by_tracks_and_lanes (
                 *obj, -delta_tracks_, -delta_lanes_, true,
                 own_obj_lo.index_in_prev_lane_);
 
-              g_message ("moving own obj");
+              z_info ("moving own obj");
               RegionIdentifier own_id_before_move = own_obj_r.id_;
               move_obj_by_tracks_and_lanes (
                 *own_obj, -delta_tracks_, -delta_lanes_, true,
@@ -698,7 +697,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
           /* chords */
           if (delta_chords_ != 0)
             {
-              g_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
+              z_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
               auto co = dynamic_pointer_cast<ChordObject> (obj);
 
               /* shift the actual object */
@@ -712,7 +711,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
           /* if moving automation */
           if (target_port_)
             {
-              g_critical (
+              z_error (
                 "not supported - automation must not be moved before performing the action");
             }
 
@@ -731,7 +730,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
         } /* if do and first run */
     }
 
-  g_debug ("moved original objects back");
+  z_debug ("moved original objects back");
 
   for (size_t i = 0; i < sel_after_->objects_.size (); i++)
     {
@@ -800,9 +799,9 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               z_return_if_fail (port);
               auto track =
                 dynamic_cast<AutomatableTrack *> (port->get_track (true));
-              g_return_if_fail (track);
+              z_return_if_fail (track);
               auto at = AutomationTrack::find_from_port (*port, track, true);
-              g_return_if_fail (at);
+              z_return_if_fail (at);
 
               /* move the actual object */
               r->move_to_track (track, at->index_, -1);
@@ -811,12 +810,14 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
             {
               auto ap = dynamic_pointer_cast<AutomationPoint> (added_obj_ref);
               ap->set_fvalue (
-                ap->normalized_val_ + delta_normalized_amount, true,
-                F_NO_PUBLISH_EVENTS);
+                ap->normalized_val_
+                  + static_cast<float> (delta_normalized_amount),
+                true, F_NO_PUBLISH_EVENTS);
               auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
               own_ap.set_fvalue (
-                own_ap.normalized_val_ + delta_normalized_amount, true,
-                F_NO_PUBLISH_EVENTS);
+                own_ap.normalized_val_
+                  + static_cast<float> (delta_normalized_amount),
+                true, F_NO_PUBLISH_EVENTS);
             }
 
           if (obj->type_ == ArrangerObject::Type::Region)
@@ -830,14 +831,15 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
                   z_return_if_fail (orig_r->id_.idx_ >= 0);
 
                   std::visit (
-                    [&] (auto &&orig_r) {
-                      using T = base_type<decltype (orig_r)>;
-                      orig_r->create_link_group_if_none ();
-                      int link_group = orig_r->id_.link_group_;
+                    [&] (auto &&casted_orig_r) {
+                      using T = base_type<decltype (casted_orig_r)>;
+                      casted_orig_r->create_link_group_if_none ();
+                      int link_group = casted_orig_r->id_.link_group_;
 
                       /* add link group to clone */
                       auto r_obj = dynamic_pointer_cast<T> (added_obj_ref);
-                      z_return_if_fail (r_obj->id_.type_ == orig_r->id_.type_);
+                      z_return_if_fail (
+                        r_obj->id_.type_ == casted_orig_r->id_.type_);
                       z_return_if_fail (r_obj->id_.idx_ >= 0);
                       r_obj->set_link_group (link_group, true);
 
@@ -854,22 +856,22 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               else /* else if we are not linking */
                 {
                   std::visit (
-                    [&] (auto &&region) {
-                      using T = base_type<decltype (region)>;
+                    [&] (auto &&casted_r) {
+                      using T = base_type<decltype (casted_r)>;
 
                       /* remove link group if first run */
                       if (first_run_)
                         {
-                          if (region->has_link_group ())
+                          if (casted_r->has_link_group ())
                             {
-                              region->unlink ();
+                              casted_r->unlink ();
                             }
                         }
 
                       /* if this is an audio region, duplicate the clip */
                       if constexpr (std::is_same_v<T, AudioRegion>)
                         {
-                          auto ar = static_cast<AudioRegion *> (region);
+                          auto ar = static_cast<AudioRegion *> (casted_r);
                           auto clip = ar->get_clip ();
                           int  id =
                             AUDIO_POOL->duplicate_clip (clip->pool_id_, true);
@@ -914,11 +916,11 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
                * remove the link from the parent region if it is the only region
                * in the link group) */
               std::visit (
-                [&] (auto &&region) {
-                  using T = base_type<decltype (region)>;
-                  z_warn_if_fail (region && region->has_link_group ());
-                  region->unlink ();
-                  z_warn_if_fail (region->id_.link_group_ == -1);
+                [&] (auto &&casted_r) {
+                  using T = base_type<decltype (casted_r)>;
+                  z_warn_if_fail (casted_r && casted_r->has_link_group ());
+                  casted_r->unlink ();
+                  z_warn_if_fail (casted_r->id_.link_group_ == -1);
 
                   /* unlink remembered link groups */
                   auto &own_orig_r = dynamic_cast<T &> (*own_orig_obj);
@@ -964,8 +966,9 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
             {
               auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
               own_ap.set_fvalue (
-                own_ap.normalized_val_ + delta_normalized_amount, true,
-                F_NO_PUBLISH_EVENTS);
+                own_ap.normalized_val_
+                  + static_cast<float> (delta_normalized_amount),
+                true, F_NO_PUBLISH_EVENTS);
             }
 
         } /* endif undo */
@@ -1022,7 +1025,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 {
   sel_->sort_by_indices (create ? !do_it : do_it);
   ArrangerSelections * sel = get_actual_arranger_selections ();
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   if (!first_run_ || !create)
     {
@@ -1066,10 +1069,10 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                 {
                   auto region = dynamic_pointer_cast<Region> (obj);
                   std::visit (
-                    [&] (auto &&region) {
-                      if (region->has_link_group ())
+                    [&] (auto &&casted_r) {
+                      if (casted_r->has_link_group ())
                         {
-                          region->unlink ();
+                          casted_r->unlink ();
                         }
                     },
                     convert_to_variant<RegionPtrVariant> (region.get ()));
@@ -1087,7 +1090,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
     && sel_->objects_.size () == 1)
     {
       auto obj = sel_->objects_[0]->find_in_project ();
-      g_return_if_fail (obj);
+      z_return_if_fail (obj);
       if (obj->has_length ())
         {
           auto   obj_lo = dynamic_pointer_cast<LengthableObject> (obj);
@@ -1156,7 +1159,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
   sel_->sort_by_indices (!do_it);
   sel_after_->sort_by_indices (!do_it);
   ArrangerSelections * sel = get_actual_arranger_selections ();
-  g_return_if_fail (sel);
+  z_return_if_fail (sel);
 
   if (!first_run_)
     {
@@ -1188,7 +1191,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 
               /* get the actual object from the project */
               auto obj = own_before_obj->find_in_project ();
-              g_return_if_fail (obj);
+              z_return_if_fail (obj);
 
               /* remove it */
               obj->remove_from_project ();
@@ -1205,7 +1208,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 
               /* get the actual object from the project */
               auto obj = own_after_obj->find_in_project ();
-              g_return_if_fail (obj);
+              z_return_if_fail (obj);
 
               /* remove it */
               obj->remove_from_project ();
@@ -1266,11 +1269,11 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
         && sel_->type_ == ArrangerSelections::Type::Audio)
         {
           auto src_audio_sel = dynamic_cast<AudioSelections *> (dest_sel.get ());
-          g_return_if_fail (src_audio_sel);
+          z_return_if_fail (src_audio_sel);
           auto r = RegionImpl<AudioRegion>::find (src_audio_sel->region_id_);
-          g_return_if_fail (r);
+          z_return_if_fail (r);
           auto src_clip = AUDIO_POOL->get_clip (src_audio_sel->pool_id_);
-          g_return_if_fail (src_clip);
+          z_return_if_fail (src_clip);
 
           /* adjust the positions */
           Position start = src_audio_sel->sel_start_;
@@ -1279,7 +1282,7 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
           end.add_frames (-r->pos_.frames_);
           auto num_frames =
             static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
-          g_return_if_fail (num_frames == src_clip->num_frames_);
+          z_return_if_fail (num_frames == src_clip->num_frames_);
 
           auto src_clip_path = src_clip->get_path_in_pool (false);
           z_debug (
@@ -1297,21 +1300,21 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
             {
               auto own_src_obj = src_sel->objects_[i].get ();
               auto own_dest_obj = dest_sel->objects_[i].get ();
-              g_return_if_fail (own_src_obj);
-              g_return_if_fail (own_dest_obj);
+              z_return_if_fail (own_src_obj);
+              z_return_if_fail (own_dest_obj);
               own_src_obj->flags_ |= ArrangerObject::Flags::NonProject;
               own_dest_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* find the actual object */
               auto obj = own_src_obj->find_in_project ();
-              g_return_if_fail (obj);
+              z_return_if_fail (obj);
 
               /* change the parameter */
               switch (edit_type_)
                 {
                 case EditType::Name:
                   {
-                    g_return_if_fail (
+                    z_return_if_fail (
                       ArrangerObject::type_has_name (obj->type_));
                     auto name =
                       dynamic_cast<NameableObject *> (own_dest_obj)->name_;
@@ -1585,7 +1588,7 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
 
       /* find the actual object */
       auto prj_obj = own_before_obj->find_in_project ();
-      g_return_if_fail (prj_obj);
+      z_return_if_fail (prj_obj);
 
       /* remove */
       prj_obj->remove_from_project();
@@ -1641,7 +1644,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
           auto obj =
             do_it ? own_obj_before->find_in_project ()
                   : own_obj_after->find_in_project ();
-          g_return_if_fail (obj);
+          z_return_if_fail (obj);
 
           auto type = ArrangerObject::ResizeType::RESIZE_NORMAL;
           bool left = false;
@@ -1676,7 +1679,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
               type = ArrangerObject::ResizeType::RESIZE_FADE;
               break;
             default:
-              g_warn_if_reached ();
+              z_warn_if_reached ();
             }
 
           /* on first do, resize both the project object and our own "after"
@@ -1728,7 +1731,7 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
       auto obj =
         do_it ? own_obj->find_in_project ()
               : own_quantized_obj->find_in_project ();
-      g_return_if_fail (obj);
+      z_return_if_fail (obj);
 
       if (do_it)
         {
@@ -1810,7 +1813,7 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
       do_or_undo_quantize (do_it);
       break;
     default:
-      g_return_if_reached ();
+      z_return_if_reached ();
       break;
     }
 
@@ -1823,9 +1826,9 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
       track->last_lane_created_ = 0;
       track->block_auto_creation_and_deletion_ = false;
       std::visit (
-        [&] (auto &&track) {
-          track->create_missing_lanes (track->lanes_.size () - 1);
-          track->remove_empty_last_lanes ();
+        [&] (auto &&t) {
+          t->create_missing_lanes (t->lanes_.size () - 1);
+          t->remove_empty_last_lanes ();
         },
         convert_to_variant<LanedTrackPtrVariant> (track));
     }
@@ -1895,7 +1898,7 @@ ArrangerSelectionsAction::to_string () const
         case ArrangerSelections::Type::Midi:
           return _ ("Create MIDI selections");
         default:
-          g_return_val_if_reached ("");
+          z_return_val_if_reached ("");
         }
     case Type::Delete:
       return _ ("Delete arranger selections");
@@ -1925,5 +1928,5 @@ ArrangerSelectionsAction::to_string () const
       break;
     }
 
-  g_return_val_if_reached ("");
+  z_return_val_if_reached ("");
 }

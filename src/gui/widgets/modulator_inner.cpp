@@ -91,7 +91,7 @@ on_automate_clicked (GtkButton * btn, ModulatorInnerWidget * self)
           break;
         }
     }
-  g_return_if_fail (index >= 0);
+  z_return_if_fail (index >= 0);
 
   port_connections_popover_widget_refresh (
     self->connections_popover, self->ports[index]);

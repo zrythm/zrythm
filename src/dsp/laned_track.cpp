@@ -33,7 +33,7 @@ LanedTrackImpl<RegionT>::remove_empty_last_lanes ()
 
       if (lane->regions_.empty () && prev_lane->regions_.empty ())
         {
-          g_message ("removing lane %d", i);
+          z_info ("removing lane %d", i);
           lanes_.erase (lanes_.begin () + i);
           removed = true;
         }

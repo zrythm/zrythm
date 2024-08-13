@@ -217,20 +217,20 @@ Transport::stretch_regions (
         {
           auto r_variant = convert_to_variant<RegionPtrVariant> (region);
           std::visit (
-            [&] (auto &&region) {
+            [&] (auto &&r) {
               if constexpr (
-                std::is_same_v<std::decay_t<decltype (region)>, AudioRegion>)
+                std::is_same_v<std::decay_t<decltype (r)>, AudioRegion>)
                 {
                   /* don't stretch audio regions with musical mode off */
-                  if (!region->get_musical_mode () && !force)
+                  if (!r->get_musical_mode () && !force)
                     return;
                 }
 
               double ratio =
                 with_fixed_ratio
                   ? time_ratio
-                  : region->get_length_in_ticks () / region->before_length_;
-              region->stretch (ratio);
+                  : r->get_length_in_ticks () / r->before_length_;
+              r->stretch (ratio);
             },
             r_variant);
         }
@@ -301,15 +301,15 @@ Transport::update_caches (int beats_per_bar, int beat_unit)
   ticks_per_bar_ = ticks_per_beat_ * beats_per_bar;
   sixteenths_per_beat_ = 16 / beat_unit;
   sixteenths_per_bar_ = (sixteenths_per_beat_ * beats_per_bar);
-  g_warn_if_fail (ticks_per_bar_ > 0.0);
-  g_warn_if_fail (ticks_per_beat_ > 0.0);
+  z_warn_if_fail (ticks_per_bar_ > 0.0);
+  z_warn_if_fail (ticks_per_beat_ > 0.0);
 }
 
 void
 Transport::request_pause (bool with_wait)
 {
   /* can only be called from the gtk thread or when preparing to export */
-  g_return_if_fail (
+  z_return_if_fail (
     !audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD
     || audio_engine_->preparing_to_export_);
 
@@ -336,7 +336,7 @@ void
 Transport::request_roll (bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> wait_sem;
   if (with_wait)
@@ -374,7 +374,7 @@ Transport::request_roll (bool with_wait)
           preroll_frames_remaining_ = playhead_pos_.frames_ - pos.frames_;
           set_playhead_pos (pos);
 #if 0
-          g_debug (
+          z_debug (
             "preroll %ld frames",
             preroll_frames_remaining_);
 #endif
@@ -412,7 +412,7 @@ Transport::set_playhead_to_bar (int bar)
 void
 Transport::get_playhead_pos (Position * pos)
 {
-  g_return_if_fail (pos);
+  z_return_if_fail (pos);
 
   *pos = playhead_pos_;
 }
@@ -437,17 +437,16 @@ Transport::move_playhead (
   /* if currently recording, do nothing */
   if (!can_user_move_playhead ())
     {
-      g_message ("currently recording - refusing to move playhead manually");
+      z_info ("currently recording - refusing to move playhead manually");
       return;
     }
 
   /* send MIDI note off on currently playing timeline objects */
   for (auto track : TRACKLIST->tracks_ | type_is<LanedTrack> ())
     {
-      auto track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
       std::visit (
-        [&] (auto &&track) {
-          for (auto &lane : track->lanes_)
+        [&] (auto &&t) {
+          for (auto &lane : t->lanes_)
             {
               for (const auto &region : lane->regions_)
                 {
@@ -462,7 +461,7 @@ Transport::move_playhead (
                         {
                           if (midi_note->is_hit (playhead_pos_.frames_))
                             {
-                              track->processor_->piano_roll->midi_events_
+                              t->processor_->piano_roll->midi_events_
                                 ->queued_events_
                                 .add_note_off (1, midi_note->val_, 0);
                             }
@@ -471,7 +470,7 @@ Transport::move_playhead (
                 }
             }
         },
-        track_variant);
+        convert_to_variant<LanedTrackPtrVariant> (track));
     }
 
   /* move to new pos */
@@ -545,7 +544,7 @@ void
 Transport::goto_start_marker ()
 {
   auto start_marker = P_MARKER_TRACK->get_start_marker ();
-  g_return_if_fail (start_marker);
+  z_return_if_fail (start_marker);
   move_to_marker_or_pos_and_fire_events (start_marker.get (), nullptr);
 }
 
@@ -556,7 +555,7 @@ Transport::goto_start_marker ()
   Transport::goto_end_marker ()
   {
     auto end_marker = P_MARKER_TRACK->get_end_marker ();
-    g_return_if_fail (end_marker);
+    z_return_if_fail (end_marker);
     move_to_marker_or_pos_and_fire_events (end_marker.get (), nullptr);
   }
 
@@ -665,7 +664,7 @@ Transport::position_add_frames (Position * pos, const signed_frame_t frames)
       /* adjust the new frames */
       pos->add_ticks (loop_start_pos_.ticks_ - loop_end_pos_.ticks_);
 
-      g_warn_if_fail (pos->frames_ < loop_end_pos_.frames_);
+      z_warn_if_fail (pos->frames_ < loop_end_pos_.frames_);
     }
 }
 
@@ -791,7 +790,7 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
 void
 Transport::update_total_bars (int total_bars, bool fire_events)
 {
-  g_return_if_fail (total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
+  z_return_if_fail (total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
 
   if (total_bars_ == total_bars)
     return;
@@ -829,7 +828,7 @@ Transport::move_backward (bool with_wait)
       Position tmp = pos;
       tmp.add_ticks (-1);
       ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp, true);
-      g_return_if_fail (ret);
+      z_return_if_fail (ret);
     }
   move_playhead (&pos, true, true, true);
 }
@@ -838,7 +837,7 @@ void
 Transport::move_forward (bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -849,7 +848,7 @@ Transport::move_forward (bool with_wait)
   Position pos;
   bool     ret =
     SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, playhead_pos_, false);
-  g_return_if_fail (ret);
+  z_return_if_fail (ret);
   move_playhead (&pos, true, true, true);
 }
 
@@ -860,7 +859,7 @@ void
 Transport::set_recording (bool record, bool with_wait, bool fire_events)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)

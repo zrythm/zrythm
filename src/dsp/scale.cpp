@@ -9,8 +9,6 @@
  * See https://pianoscales.org/
  */
 
-#include <cstdlib>
-
 #include "dsp/chord_descriptor.h"
 #include "dsp/scale.h"
 #include "utils/types.h"

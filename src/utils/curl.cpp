@@ -70,10 +70,10 @@ curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
 char *
 z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 {
-  g_debug ("getting page contents for %s...", url);
+  z_debug ("getting page contents for %s...", url);
 
   CURL * curl = curl_easy_init ();
-  g_return_val_if_fail (curl, nullptr);
+  z_return_val_if_fail (curl, nullptr);
 
   GString * page_str = g_string_new (nullptr);
 
@@ -100,7 +100,7 @@ z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 
   curl_easy_cleanup (curl);
 
-  g_debug ("done getting page contents for %s", url);
+  z_debug ("done getting page contents for %s", url);
 
   return page;
 }
@@ -114,7 +114,7 @@ z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 char *
 z_curl_get_page_contents_default (const char * url)
 {
-  g_critical ("unsupported function");
+  z_error ("unsupported function");
   return NULL;
   int timeout = env_get_int ("Z_CURL_TIMEOUT", 0);
 
@@ -148,7 +148,7 @@ read_callback (char * dest, size_t size, size_t nmemb, void * userp)
 
       wt->readptr += copy_this_much;
       wt->sizeleft -= copy_this_much;
-      g_debug ("copied %zu chars", copy_this_much);
+      z_debug ("copied %zu chars", copy_this_much);
       return copy_this_much; /* we copied this many bytes */
     }
 
@@ -175,10 +175,10 @@ z_curl_post_json_no_auth (
   GError **    error,
   ...)
 {
-  g_return_val_if_fail (
+  z_return_val_if_fail (
     url == NULL || data == NULL || error == NULL || *error == nullptr, -1);
 
-  g_message ("sending data...");
+  z_info ("sending data...");
 
   CURL * curl = curl_easy_init ();
   if (!curl)
@@ -263,7 +263,7 @@ z_curl_post_json_no_auth (
   res = curl_easy_perform (curl);
   if (res != CURLE_OK)
     {
-      g_warning ("curl_easy_perform() failed: %s", curl_easy_strerror (res));
+      z_warning ("curl_easy_perform() failed: %s", curl_easy_strerror (res));
       g_set_error (
         error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_BAD_REQUEST,
         "curl_easy_perform() failed: %s", curl_easy_strerror (res));
@@ -278,12 +278,12 @@ z_curl_post_json_no_auth (
   long   http_code = 0;
   curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
 #if 0
-  g_debug (
+  z_debug (
     "[%ld]: %s", http_code, response_str);
 #endif
   if (http_code >= 200 && http_code < 300)
     {
-      g_debug ("success");
+      z_debug ("success");
     }
   else
     {
@@ -298,7 +298,7 @@ z_curl_post_json_no_auth (
     }
   g_free (response_str);
 
-  g_message ("%s: done", __func__);
+  z_info ("%s: done", __func__);
 
   curl_easy_cleanup (curl);
   curl_mime_free (mime);
@@ -334,8 +334,8 @@ get_page_contents_task (
 char *
 z_curl_get_page_contents_finish (GAsyncResult * res, GError ** error)
 {
-  g_debug ("finished getting page contents");
-  g_return_val_if_fail (g_task_is_valid (res, zrythm_app.get ()), nullptr);
+  z_debug ("finished getting page contents");
+  z_return_val_if_fail (g_task_is_valid (res, zrythm_app.get ()), nullptr);
   return (char *) g_task_propagate_pointer ((GTask *) res, error);
 }
 

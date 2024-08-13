@@ -780,9 +780,9 @@ public:
                 yyjson_mut_val * child_obj = yyjson_mut_arr_add_obj (doc, arr);
                 ctx.mut_obj_ = child_obj;
                 std::visit (
-                  [&] (auto &&ptr) {
-                    using BaseType = base_type<decltype (ptr)>;
-                    ptr->ISerializable<BaseType>::serialize (ctx);
+                  [&] (auto &&casted_ptr) {
+                    using BaseType = base_type<decltype (casted_ptr)>;
+                    casted_ptr->ISerializable<BaseType>::serialize (ctx);
                   },
                   convert_to_variant<VariantT> (ptr.get ()));
               }
@@ -1255,7 +1255,10 @@ protected:
       const char * name;
       T           &value;
       bool         optional;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
       using variant_type = VariantType;
+#pragma GCC diagnostic pop
     };
     return Field{ name, value, optional };
   }

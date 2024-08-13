@@ -186,7 +186,7 @@ GraphThread::run_worker ()
           int work_avail = graph->trigger_queue_size_.load ();
           int wakeup = MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
-          g_message (
+          z_info (
             "[%d]: Waking up %u idle threads (idle count %u), work available -> %u",
             thread->id, wakeup - 1, idle_cnt, work_avail);
 #endif
@@ -202,7 +202,7 @@ GraphThread::run_worker ()
           /* wait for work, fall asleep */
           int idle_thread_cnt = graph->idle_thread_cnt_.fetch_add (1) + 1;
 #ifdef DEBUG_THREADS
-          g_message (
+          z_info (
             "[%d]: no node to run. just increased idle thread count and waiting for work "
             "(current idle threads %d)",
             thread->id, idle_thread_cnt);
@@ -228,7 +228,7 @@ GraphThread::run_worker ()
           /* not idle anymore - decrease idle thread count */
           graph->idle_thread_cnt_.fetch_sub (1);
 #ifdef DEBUG_THREADS
-          g_message (
+          z_info (
             "[%d]: work found, decremented idle "
             "thread count (current count %d) and "
             "dequeuing node to process",
@@ -242,7 +242,7 @@ GraphThread::run_worker ()
       /* this thread has now claimed the graph node for processing - process it */
       graph->trigger_queue_size_.fetch_sub (1);
 #ifdef DEBUG_THREADS
-      g_message ("[%d]: running node", thread->id);
+      z_info ("[%d]: running node", thread->id);
 #endif
       to_run->process (graph->router_->time_nfo_, *this);
     }
@@ -282,7 +282,7 @@ GraphThread::run ()
       for (auto &node : graph->init_trigger_list_)
         {
           graph->trigger_queue_size_.fetch_add (1);
-          /*g_message ("[main] pushing back node %d during bootstrap", i);*/
+          /*z_info ("[main] pushing back node %d during bootstrap", i);*/
           graph->trigger_queue_.push_back (node);
         }
     }
@@ -319,7 +319,7 @@ get_stack_size ()
       pthread_attr_t attr;
       pthread_attr_init (&attr);
       rv = __pthread_get_minstack (&attr);
-      g_return_val_if_fail (rv >= pt_min_stack, 0);
+      z_return_val_if_fail (rv >= pt_min_stack, 0);
       rv -= pt_min_stack;
       pthread_attr_destroy (&attr);
     }

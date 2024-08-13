@@ -65,7 +65,7 @@ get_note_from_creator_root_notes (
       if (self->creator_root_notes[i] == child)
         return (MusicalNote) i;
     }
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (MusicalNote, 0));
+  z_return_val_if_reached (ENUM_INT_TO_VALUE (MusicalNote, 0));
 }
 
 static ChordType
@@ -82,7 +82,7 @@ get_type_from_creator_types (
           return ENUM_INT_TO_VALUE (ChordType, i);
         }
     }
-  g_return_val_if_reached (ENUM_INT_TO_VALUE (ChordType, 0));
+  z_return_val_if_reached (ENUM_INT_TO_VALUE (ChordType, 0));
 }
 
 /**
@@ -169,11 +169,11 @@ creator_select_bass_note (
 
       self->descr_clone->has_bass_ = true;
       self->descr_clone->bass_note_ = ENUM_INT_TO_VALUE (MusicalNote, i);
-      g_debug ("bass note %s", ENUM_NAME_FROM_INT (MusicalNote, i));
+      z_debug ("bass note %s", ENUM_NAME_FROM_INT (MusicalNote, i));
       return;
     }
 
-  g_return_if_reached ();
+  z_return_if_reached ();
 }
 
 static void
@@ -250,7 +250,7 @@ on_creator_bass_note_selected_children_changed (
     }
   else
     {
-      g_debug ("removing bass");
+      z_debug ("removing bass");
       self->descr_clone->has_bass_ = false;
     }
 }
@@ -383,7 +383,7 @@ static gboolean
 creator_filter (GtkFlowBoxChild * child, ChordSelectorWindowWidget * self)
 {
 #if 0
-  g_debug (
+  z_debug (
     "scale %p, in scale active %d",
     self->scale,
     gtk_check_button_get_active (
@@ -471,7 +471,7 @@ on_group_changed (GtkCheckButton * check_btn, ChordSelectorWindowWidget * self)
 {
   if (gtk_check_button_get_active (check_btn))
     {
-      g_debug ("GROUP CHANGED");
+      z_debug ("GROUP CHANGED");
       gtk_flow_box_invalidate_filter (self->creator_root_note_flowbox);
       gtk_flow_box_invalidate_filter (self->creator_type_flowbox);
       gtk_flow_box_invalidate_filter (self->creator_accent_flowbox);
@@ -493,7 +493,7 @@ chord_selector_window_widget_present (const int chord_idx, GtkWidget * parent)
   ArrangerObject * region_obj =
     (ArrangerObject *)
     CLIP_EDITOR->get_region ();
-  g_return_val_if_fail (region_obj, nullptr);
+  z_return_val_if_fail (region_obj, nullptr);
 
   self->scale =
     chord_track_get_scale_at_pos (

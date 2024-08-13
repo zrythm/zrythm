@@ -16,7 +16,7 @@ GQuark
 z_schemas_project_error_quark (void);
 G_DEFINE_QUARK (z - schemas - project - error - quark, z_schemas_project_error)
 
-bool
+static bool
 gdk_rgba_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * rgba_obj,

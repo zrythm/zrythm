@@ -48,9 +48,9 @@ G_DEFINE_QUARK (z - project - init - flow - manager - error - quark, z_project_i
 void
 ProjectInitFlowManager::recreate_main_window ()
 {
-  g_message ("recreating main window...");
+  z_info ("recreating main window...");
   MAIN_WINDOW = main_window_widget_new (zrythm_app.get ());
-  g_warn_if_fail (
+  z_warn_if_fail (
     MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
 }
 
@@ -63,7 +63,7 @@ ProjectInitFlowManager::hide_prev_main_window ()
   MAIN_WINDOW = NULL;
   if (GTK_IS_WIDGET (mww))
     {
-      g_message ("hiding previous main window...");
+      z_info ("hiding previous main window...");
       gtk_widget_set_visible (GTK_WIDGET (mww), false);
     }
 
@@ -75,7 +75,7 @@ ProjectInitFlowManager::destroy_prev_main_window (MainWindowWidget * mww)
 {
   if (GTK_IS_WIDGET (mww))
     {
-      g_message ("destroying previous main window...");
+      z_info ("destroying previous main window...");
       main_window_widget_tear_down (mww);
       /*g_object_unref (mww);*/
     }
@@ -87,7 +87,7 @@ ProjectInitFlowManager::setup_main_window (Project &project)
   /* mimic behavior when starting the app */
   if (ZRYTHM_HAVE_UI)
     {
-      g_message ("setting up main window...");
+      z_info ("setting up main window...");
       EVENT_MANAGER->start_events ();
       main_window_widget_setup (MAIN_WINDOW);
 
@@ -104,7 +104,7 @@ ProjectInitFlowManager::setup_main_window (Project &project)
 void
 ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
 {
-  g_message ("upgrading project schema from version %d...", src_ver);
+  z_info ("upgrading project schema from version %d...", src_ver);
   switch (src_ver)
     {
     case 1:
@@ -286,18 +286,18 @@ ProjectInitFlowManager::create_default (
   bool                      headless,
   bool                      with_engine)
 {
-  g_message ("creating default project...");
+  z_info ("creating default project...");
 
   bool have_ui = !headless && ZRYTHM_HAVE_UI;
 
   MainWindowWidget * mww = NULL;
   if (have_ui)
     {
-      g_message ("hiding prev window...");
+      z_info ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
 
-  prj.reset (new Project (Glib::path_get_basename (prj_dir.data ())));
+  prj = std::make_unique<Project> (Glib::path_get_basename (prj_dir.data ()));
 
   prj->add_default_tracks ();
 
@@ -327,12 +327,12 @@ ProjectInitFlowManager::create_default (
 
   if (have_ui)
     {
-      g_message ("recreating main window...");
+      z_info ("recreating main window...");
       recreate_main_window ();
 
       if (mww)
         {
-          g_message ("destroying prev window...");
+          z_info ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
     }
@@ -346,8 +346,8 @@ ProjectInitFlowManager::create_default (
 
   if (have_ui)
     {
-      g_message ("setting up main window...");
-      g_warn_if_fail (
+      z_info ("setting up main window...");
+      z_warn_if_fail (
         MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
       setup_main_window (*prj);
     }
@@ -390,12 +390,12 @@ ProjectInitFlowManager::replace_main_window (MainWindowWidget * mww)
 {
   if (ZRYTHM_HAVE_UI)
     {
-      g_message ("recreating main window...");
+      z_info ("recreating main window...");
       recreate_main_window ();
 
       if (mww)
         {
-          g_message ("destroying prev window...");
+          z_info ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
 
@@ -443,12 +443,12 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
               call_last_callback_fail (_ ("Invalid project: missing version"));
               return;
             }
-          g_message ("project from text (version %s)...", prj_ver_str);
+          z_info ("project from text (version %s)...", prj_ver_str);
           g_free (prj_ver_str);
 
           schema_ver = string_get_regex_group_as_int (
             text, "---\nschema_version: (.*)\n", 1, -1);
-          g_message ("detected schema version %d", schema_ver);
+          z_info ("detected schema version %d", schema_ver);
           if (schema_ver != 5)
             {
               try
@@ -505,7 +505,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       gint64 time_before = g_get_monotonic_time ();
       deserialized_project->deserialize_from_json_string (text);
       gint64 time_after = g_get_monotonic_time ();
-      g_message (
+      z_info (
         "time to deserialize: %ldms", (long) (time_after - time_before) / 1000);
     }
   catch (const ZrythmException &e)
@@ -533,7 +533,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
         }
     }
 
-  g_message ("Project successfully deserialized.");
+  z_info ("Project successfully deserialized.");
 
   /* if template, also copy the pool and plugin states */
   if (is_template_)
@@ -583,7 +583,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   MainWindowWidget * mww = NULL;
   if (ZRYTHM_HAVE_UI)
     {
-      g_message ("hiding prev window...");
+      z_info ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
 

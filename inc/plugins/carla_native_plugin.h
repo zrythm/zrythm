@@ -52,12 +52,12 @@ struct CarlaPatchbayPortInfo
 {
   CarlaPatchbayPortInfo () = default;
   CarlaPatchbayPortInfo (
-    unsigned int plugin_id,
-    unsigned int port_hints,
-    unsigned int port_id,
-    std::string  port_name)
-      : plugin_id (plugin_id), port_hints (port_hints), port_id (port_id),
-        port_name (std::move (port_name))
+    unsigned int _plugin_id,
+    unsigned int _port_hints,
+    unsigned int _port_id,
+    std::string  _port_name)
+      : plugin_id (_plugin_id), port_hints (_port_hints), port_id (_port_id),
+        port_name (std::move (_port_name))
   {
   }
   unsigned int plugin_id;

@@ -14,7 +14,7 @@ CustomButtonWidget::init ()
 {
   def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
   hovered_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
-  g_return_if_fail (UI_COLORS);
+  z_return_if_fail (UI_COLORS);
   toggled_color = UI_COLORS->bright_orange;
   held_color = UI_COLORS->bright_orange;
   aspect = 1.0;
@@ -52,7 +52,7 @@ CustomButtonWidget::get_color_for_state (State state) const
     case State::SEMI_TOGGLED:
       return def_color.to_gdk_rgba ();
     default:
-      g_return_val_if_reached (GdkRGBA{});
+      z_return_val_if_reached (GdkRGBA{});
     }
 }
 
@@ -192,7 +192,7 @@ CustomButtonWidget::set_text (
   const std::string &text,
   const std::string &font_descr)
 {
-  g_return_if_fail (!text.empty () && layout);
+  z_return_if_fail (!text.empty () && layout);
 
   this->text = text;
   this->layout = pango_layout_copy (layout);

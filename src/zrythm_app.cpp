@@ -220,7 +220,7 @@ check_for_updates_latest_release_ver_ready (
    * notify user */
   char * last_version_notified_on =
     g_settings_get_string (S_GENERAL, "last-version-new-release-notified-on");
-  g_debug (
+  z_debug (
     "last version notified on: %s"
     "\n package version: %s",
     last_version_notified_on, PACKAGE_VERSION);
@@ -269,7 +269,7 @@ zrythm_app_check_for_updates (ZrythmApp * self)
 static void
 init_recent_projects (void)
 {
-  g_message ("Initializing recent projects...");
+  z_info ("Initializing recent projects...");
 
   gchar ** recent_projects = g_settings_get_strv (S_GENERAL, "recent-projects");
 
@@ -282,7 +282,7 @@ init_recent_projects (void)
   g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
   g_strfreev (tmp);
 
-  g_message ("done");
+  z_info ("done");
 }
 
 /**
@@ -294,7 +294,7 @@ init_recent_projects (void)
 static void
 on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer data)
 {
-  g_message ("setting up...");
+  z_info ("setting up...");
 
   ZrythmApp * self = ZRYTHM_APP (data);
 
@@ -308,7 +308,7 @@ on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer dat
         g_timeout_add_seconds (3, Project::autosave_cb, nullptr);
     }
 
-  g_message ("done");
+  z_info ("done");
 }
 
 static void
@@ -327,7 +327,7 @@ project_load_or_create_ready_cb (bool success, std::string msg, void * user_data
   if (!success)
     {
       /* FIXME never called */
-      g_message ("no project selected. exiting...");
+      z_info ("no project selected. exiting...");
       AdwMessageDialog * dialog = dialogs_get_basic_ok_message_dialog (nullptr);
       adw_message_dialog_format_heading (
         dialog, "%s", _ ("No Project Selected"));
@@ -371,14 +371,14 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
 static void
 on_plugin_scan_finished (ZrythmApp * self)
 {
-  g_message ("plugin scan finished");
+  z_info ("plugin scan finished");
   self->init_finished = true;
 }
 
 void *
 zrythm_app_init_thread (ZrythmApp * self)
 {
-  g_message ("init thread starting...");
+  z_info ("init thread starting...");
 
   greeter_widget_set_progress_and_status (
     self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
@@ -415,11 +415,11 @@ zrythm_app_init_thread (ZrythmApp * self)
   {
     char ver[2000];
     Zrythm::get_version_with_capabilities (ver, false);
-    g_message ("\n%s", ver);
+    z_info ("\n%s", ver);
   }
 
 #if defined(_WIN32) || defined(__APPLE__)
-  g_warning (
+  z_warning (
     "Warning, you are running a non-free operating "
     "system.");
 #endif
@@ -467,7 +467,7 @@ zrythm_app_prompt_for_project_func (ZrythmApp * self)
 static void
 on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer data)
 {
-  g_message ("prompting for project...");
+  z_info ("prompting for project...");
 
   ZrythmApp * self = zrythm_app.get ();
 
@@ -501,7 +501,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 #endif
     }
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void
@@ -520,10 +520,10 @@ zrythm_app_set_font_scale (ZrythmApp * self, double font_scale)
 static void
 zrythm_app_activate (GApplication * _app)
 {
-  g_message ("Activating...");
-  /*g_message ("activate %d", *task_id);*/
+  z_info ("Activating...");
+  /*z_info ("activate %d", *task_id);*/
 
-  g_message ("done");
+  z_info ("done");
 }
 
 /**
@@ -538,9 +538,9 @@ zrythm_app_open (
   gint           n_files,
   const gchar *  hint)
 {
-  g_message ("Opening...");
+  z_info ("Opening...");
 
-  g_warn_if_fail (n_files == 1);
+  z_warn_if_fail (n_files == 1);
 
   GFile * file = files[0];
   auto    path = g_file_get_path (file);
@@ -548,7 +548,7 @@ zrythm_app_open (
   g_free (path);
   z_info ("open %s", gZrythm->open_filename_);
 
-  g_message ("done");
+  z_info ("done");
 }
 
 void
@@ -558,7 +558,7 @@ zrythm_app_install_action_accel (
   const char * secondary,
   const char * action_name)
 {
-  g_warn_if_fail (zrythm_app);
+  z_warn_if_fail (zrythm_app);
   const char * accels[] = { primary, secondary, NULL };
   gtk_application_set_accels_for_action (
     GTK_APPLICATION (zrythm_app.get ()), action_name, accels);
@@ -569,7 +569,7 @@ zrythm_app_get_primary_accel_for_action (
   ZrythmApp *  self,
   const char * action_name)
 {
-  g_warn_if_fail (zrythm_app);
+  z_warn_if_fail (zrythm_app);
   guint           accel_key;
   GdkModifierType accel_mods;
   gchar **        accels = gtk_application_get_accels_for_action (
@@ -619,7 +619,7 @@ print_gdk_pixbuf_format_info (gpointer data, gpointer user_data)
     }
   extensions[strlen (extensions) - 2] = '\0';
   g_strfreev (_extensions);
-  g_message (
+  z_info (
     "Found GDK Pixbuf Format:\n"
     "name: %s\ndescription: %s\n"
     "mime types: %s\nextensions: %s\n"
@@ -639,22 +639,22 @@ load_icon (
   GtkIconTheme * icon_theme,
   const char *   icon_name)
 {
-  g_message (
+  z_info (
     "Attempting to load an icon from the icon "
     "theme...");
   bool found = gtk_icon_theme_has_icon (icon_theme, icon_name);
-  g_message ("found: %d", found);
+  z_info ("found: %d", found);
   if (!gtk_icon_theme_has_icon (icon_theme, icon_name))
     {
       /* fallback to zrythm-dark and try again */
-      g_warning (
+      z_warning (
         "icon '%s' not found, falling back to "
         "zrythm-dark",
         icon_name);
       g_object_set (
         default_settings, "gtk-icon-theme-name", "zrythm-dark", nullptr);
       found = gtk_icon_theme_has_icon (icon_theme, icon_name);
-      g_message ("found: %d", found);
+      z_info ("found: %d", found);
     }
 
   if (!found)
@@ -664,12 +664,12 @@ load_icon (
         err_msg,
         "Failed to load icon from icon theme. "
         "Please install zrythm.");
-      g_critical ("%s", err_msg);
+      z_error ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_literal (_ ("Icon Theme Not Found"), err_msg);
-      g_critical ("Failed to load icon");
+      z_error ("Failed to load icon");
     }
-  g_message ("Icon found.");
+  z_info ("Icon found.");
 }
 
 static void
@@ -738,11 +738,11 @@ lock_memory (ZrythmApp * self)
   if (have_unlimited_mem)
     {
       /* lock down memory */
-      g_message ("Locking down memory...");
+      z_info ("Locking down memory...");
       if (mlockall (MCL_CURRENT | MCL_FUTURE))
         {
 #  ifdef __APPLE__
-          g_warning ("Cannot lock down memory: %s", strerror (errno));
+          z_warning ("Cannot lock down memory: %s", strerror (errno));
 #  else
           char * str = g_strdup_printf (
             _ ("Cannot lock down memory: %s"), strerror (errno));
@@ -776,14 +776,14 @@ raise_open_file_limit (void)
   int newmax = _setmaxstdio (2048);
   if (newmax > 0)
     {
-      g_message (
+      z_info (
         "Your system is configured to limit %s to "
         "%d open files",
         PROGRAM_NAME, newmax);
     }
   else
     {
-      g_warning (
+      z_warning (
         "Could not set system open files limit. "
         "Current limit is %d open files",
         _getmaxstdio ());
@@ -805,13 +805,13 @@ raise_open_file_limit (void)
           if (rl.rlim_cur == RLIM_INFINITY)
             {
 
-              g_warning (
+              z_warning (
                 "Could not set system open files "
                 "limit to \"unlimited\"");
             }
           else
             {
-              g_warning (
+              z_warning (
                 "Could not set system open files "
                 "limit to %ju",
                 (uintmax_t) rl.rlim_cur);
@@ -821,7 +821,7 @@ raise_open_file_limit (void)
         {
           if (rl.rlim_cur != RLIM_INFINITY)
             {
-              g_message (
+              z_info (
                 "Your system is configured to "
                 "limit %s to %ju open files",
                 PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
@@ -830,7 +830,7 @@ raise_open_file_limit (void)
     }
   else
     {
-      g_warning ("Could not get system open files limit (%s)", strerror (errno));
+      z_warning ("Could not get system open files limit (%s)", strerror (errno));
     }
 #endif
 }
@@ -843,7 +843,7 @@ raise_open_file_limit (void)
 static void
 zrythm_app_startup (GApplication * app)
 {
-  g_message ("Starting up...");
+  z_info ("Starting up...");
 
   ZrythmApp * self = ZRYTHM_APP (app);
 
@@ -883,14 +883,14 @@ zrythm_app_startup (GApplication * app)
   g_free (ver);
 
   char * cur_dir = g_get_current_dir ();
-  g_message ("Running Zrythm in %s", cur_dir);
+  z_info ("Running Zrythm in %s", cur_dir);
   g_free (cur_dir);
 
-  g_message ("GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
+  z_info ("GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
   g_unsetenv ("GTK_THEME");
 
   /* install segfault handler */
-  g_message ("Installing signal handlers...");
+  z_info ("Installing signal handlers...");
 #ifdef HAVE_VALGRIND
   if (!RUNNING_ON_VALGRIND)
     {
@@ -904,29 +904,29 @@ zrythm_app_startup (GApplication * app)
 
 #ifdef HAVE_X11
   /* init xlib threads */
-  g_message ("Initing X threads...");
+  z_info ("Initing X threads...");
   XInitThreads ();
 #endif
 
   /* init suil */
-  /*g_message ("Initing suil...");*/
+  /*z_info ("Initing suil...");*/
   /*suil_init (&self->argc, &self->argv, SUIL_ARG_NONE);*/
 
   /* init fftw */
-  g_message ("Making fftw planner thread safe...");
+  z_info ("Making fftw planner thread safe...");
   fftw_make_planner_thread_safe ();
   fftwf_make_planner_thread_safe ();
 
 #ifdef HAVE_LSP_DSP
   /* init lsp dsp */
-  g_message ("Initing LSP DSP...");
+  z_info ("Initing LSP DSP...");
   lsp::dsp::init ();
 
   /* output information about the system */
   lsp::dsp::info_t * info = lsp::dsp::info ();
   if (info)
     {
-      g_message (
+      z_info (
         "Architecture:   %s\n"
         "Processor:      %s\n"
         "Model:          %s\n"
@@ -936,7 +936,7 @@ zrythm_app_startup (GApplication * app)
     }
   else
     {
-      g_warning ("Failed to get system info");
+      z_warning ("Failed to get system info");
     }
 
 #endif
@@ -958,13 +958,13 @@ zrythm_app_startup (GApplication * app)
 
   G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (G_APPLICATION (self));
 
-  g_message ("called startup on G_APPLICATION_CLASS");
+  z_info ("called startup on G_APPLICATION_CLASS");
 
   bool ret = g_application_get_is_registered (G_APPLICATION (self));
   bool remote = g_application_get_is_remote (G_APPLICATION (self));
-  g_message ("application registered: %d, is remote %d", ret, remote);
+  z_info ("application registered: %d, is remote %d", ret, remote);
 
-  g_message (
+  z_info (
     "application resources base path: %s",
     g_application_get_resource_base_path (G_APPLICATION (app)));
 
@@ -980,7 +980,7 @@ zrythm_app_startup (GApplication * app)
     "gtk-application-prefer-dark-theme", 1, nullptr);
 #endif
   int scale_factor = z_gtk_get_primary_monitor_scale_factor ();
-  g_message ("Monitor scale factor: %d", scale_factor);
+  z_info ("Monitor scale factor: %d", scale_factor);
 #if defined(_WIN32)
   g_object_set (
     self->default_settings, "gtk-font-name", "Segoe UI Normal 10", nullptr);
@@ -997,11 +997,11 @@ zrythm_app_startup (GApplication * app)
   double font_scale = g_settings_get_double (S_P_UI_GENERAL, "font-scale");
   zrythm_app_set_font_scale (self, font_scale);
 
-  g_message ("Theme set");
+  z_info ("Theme set");
 
   GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
   char * icon_theme_name = g_settings_get_string (S_P_UI_GENERAL, "icon-theme");
-  g_message ("setting icon theme to '%s'", icon_theme_name);
+  z_info ("setting icon theme to '%s'", icon_theme_name);
   g_object_set (
     self->default_settings, "gtk-icon-theme-name", icon_theme_name, nullptr);
   g_free_and_null (icon_theme_name);
@@ -1036,7 +1036,7 @@ zrythm_app_startup (GApplication * app)
   /* --- end icon paths --- */
 
   /* look for found loaders */
-  g_message ("looking for GDK Pixbuf formats...");
+  z_info ("looking for GDK Pixbuf formats...");
   GSList * formats_list = gdk_pixbuf_get_formats ();
   g_slist_foreach (formats_list, print_gdk_pixbuf_format_info, self);
   g_slist_free (g_steal_pointer (&formats_list));
@@ -1050,7 +1050,7 @@ zrythm_app_startup (GApplication * app)
   /* zrythm */
   load_icon (self->default_settings, icon_theme, "solo");
 
-  g_message ("Setting gtk icon theme resource paths...");
+  z_info ("Setting gtk icon theme resource paths...");
   /* TODO auto-generate this code from meson (also in gen-gtk-resources-xml
    * script) */
   gtk_icon_theme_add_resource_path (
@@ -1086,7 +1086,7 @@ zrythm_app_startup (GApplication * app)
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/codicons");
 
-  g_message ("Resource paths set");
+  z_info ("Resource paths set");
 
   /* get css theme file path */
   GtkCssProvider * css_provider = gtk_css_provider_new ();
@@ -1113,7 +1113,7 @@ zrythm_app_startup (GApplication * app)
         system_themes_dir.c_str (), "zrythm-theme.css", nullptr);
     }
   g_free (css_theme_file);
-  g_message ("CSS theme path: %s", css_theme_path);
+  z_info ("CSS theme path: %s", css_theme_path);
 
   /* set default css provider */
   gtk_css_provider_load_from_path (css_provider, css_theme_path);
@@ -1121,7 +1121,7 @@ zrythm_app_startup (GApplication * app)
     gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider),
     GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   g_object_unref (css_provider);
-  g_message ("set default css provider from path: %s", css_theme_path);
+  z_info ("set default css provider from path: %s", css_theme_path);
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
@@ -1191,7 +1191,7 @@ zrythm_app_startup (GApplication * app)
 
 #undef INSTALL_ACCEL
 
-  g_message ("done");
+  z_info ("done");
 }
 
 /**
@@ -1270,13 +1270,13 @@ reset_to_factory (void)
 static int
 on_handle_local_options (GApplication * app, GVariantDict * opts, ZrythmApp * self)
 {
-  /*g_debug ("handling options");*/
+  /*z_debug ("handling options");*/
 
 #if 0
   /* print the contents */
   GVariant * variant = g_variant_dict_end (opts);
   char * str = g_variant_print (variant, true);
-  g_warning ("%s", str);
+  z_warning("%s", str);
 #endif
 
   if (g_variant_dict_contains (opts, "print-settings"))
@@ -1466,7 +1466,7 @@ zrythm_app_new (int argc, const char ** argv)
 static void
 finalize (ZrythmApp * self)
 {
-  g_message ("%s (%s): finalizing ZrythmApp...", __func__, __FILE__);
+  z_info ("%s (%s): finalizing ZrythmApp...", __func__, __FILE__);
 
   std::destroy_at (&self->ui_caches);
 
@@ -1482,7 +1482,7 @@ finalize (ZrythmApp * self)
   PCGRand::deleteInstance ();
   GSettingsManager::deleteInstance ();
 
-  g_message ("%s: done", __func__);
+  z_info ("%s: done", __func__);
 }
 
 static void

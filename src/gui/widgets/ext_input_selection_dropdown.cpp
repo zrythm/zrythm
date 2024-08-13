@@ -24,7 +24,7 @@ get_str (void * data)
       GtkStringObject * str_obj = GTK_STRING_OBJECT (data);
       return g_strdup (gtk_string_object_get_string (str_obj));
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 static void
@@ -293,7 +293,7 @@ ext_input_selection_dropdown_widget_refresh (
 
   /* select the correct value */
   auto ch = track->channel_;
-  g_debug ("selecting ext input...");
+  z_debug ("selecting ext input...");
   if (midi)
     {
       if (ch->all_midi_ins_)

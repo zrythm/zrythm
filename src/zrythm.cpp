@@ -3,16 +3,11 @@
 
 #include "zrythm-config.h"
 
-#include "utils/exceptions.h"
-
 #ifndef _WIN32
 #  include <sys/mman.h>
 #endif
 
-#include <memory>
-
 #include "dsp/recording_manager.h"
-#include "dsp/router.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin_manager.h"
@@ -22,11 +17,9 @@
 #include "settings/settings.h"
 #include "utils/curl.h"
 #include "utils/env.h"
-#include "utils/error.h"
+#include "utils/exceptions.h"
 #include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/symap.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -319,10 +312,10 @@ ZrythmDirectoryManager::get_prefix (void)
 #elif defined(__APPLE__) && defined(INSTALLER_VER)
   char bundle_path[PATH_MAX];
   int  ret = io_get_bundle_path (bundle_path);
-  g_return_val_if_fail (ret == 0, nullptr);
+  z_return_val_if_fail (ret == 0, nullptr);
   return io_path_get_parent_dir (bundle_path);
 #elif defined(APPIMAGE_BUILD)
-  g_return_val_if_fail (zrythm_app->appimage_runtime_path, nullptr);
+  z_return_val_if_fail (zrythm_app->appimage_runtime_path, nullptr);
   return g_build_filename (zrythm_app->appimage_runtime_path, "usr", nullptr);
 #else
   return ZRYTHM_PREFIX;
@@ -478,13 +471,13 @@ ZrythmDirectoryManager::get_dir (ZrythmDirType type)
         }
     }
 
-  g_return_val_if_reached ("");
+  z_return_val_if_reached ("");
 }
 
 void
 Zrythm::init_user_dirs_and_files ()
 {
-  g_message ("initing dirs and files");
+  z_info ("initing dirs and files");
 
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
   for (
@@ -496,7 +489,7 @@ Zrythm::init_user_dirs_and_files ()
       ZrythmDirType::USER_GDB, ZrythmDirType::USER_BACKTRACE })
     {
       std::string dir = dir_mgr->get_dir (dir_type);
-      g_return_if_fail (!dir.empty ());
+      z_return_if_fail (!dir.empty ());
       try
         {
           io_mkdir (dir);
@@ -511,7 +504,7 @@ Zrythm::init_user_dirs_and_files ()
 void
 Zrythm::init_templates ()
 {
-  g_message ("Initializing templates...");
+  z_info ("Initializing templates...");
 
   auto *         dir_mgr = ZrythmDirectoryManager::getInstance ();
   std::string    user_templates_dir =
@@ -534,5 +527,5 @@ Zrythm::init_templates ()
         }
     }
 
-  g_message ("done");
+  z_info ("done");
 }

@@ -48,7 +48,7 @@ engine_pulse_stream_write_callback (
   bytes = MIN (bytes, FRAMES_TO_BYTES (self->block_length_));
   if (pa_stream_begin_write (stream, &buf, &bytes) != 0)
     {
-      g_warning ("Failed to acquire pulse write buffer");
+      z_warning ("Failed to acquire pulse write buffer");
 
       buf = g_malloc0 (bytes);
       should_free_buffer = TRUE;
@@ -72,7 +72,7 @@ engine_pulse_stream_write_callback (
       PA_SEEK_RELATIVE)
     != 0)
     {
-      g_warning ("Failed to write pulse buffer");
+      z_warning ("Failed to write pulse buffer");
       if (should_free_buffer)
         g_free (buf);
     }
@@ -99,7 +99,7 @@ engine_pulse_stream_underflow_callback (pa_stream * stream, void * userdata)
   if (self->pulse_notified_underflow_)
     return;
 
-  g_message ("Pulse buffer underflow");
+  z_info ("Pulse buffer underflow");
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     g_idle_add (engine_pulse_notify_underflow, nullptr);
@@ -117,18 +117,18 @@ engine_pulse_stream_state_callback (pa_stream * stream, void * userdata)
   switch (state)
     {
     case PA_STREAM_READY:
-      g_message ("Pulse stream ready");
+      z_info ("Pulse stream ready");
       break;
     case PA_STREAM_FAILED:
       /* FIXME handle gracefully */
-      g_critical (
+      z_error (
         "Error in pulse stream: %s", pa_strerror (pa_context_errno (pulse)));
       break;
     case PA_STREAM_CREATING:
-      g_message ("Creating pulse stream");
+      z_info ("Creating pulse stream");
       break;
     case PA_STREAM_TERMINATED:
-      g_message ("Pulse stream terminated");
+      z_info ("Pulse stream terminated");
       break;
     case PA_STREAM_UNCONNECTED:
       break;
@@ -149,23 +149,23 @@ engine_pulse_context_state_callback (pa_context * pulse, void * userdata)
   switch (state)
     {
     case PA_CONTEXT_READY:
-      g_message ("Pulse context ready");
+      z_info ("Pulse context ready");
       break;
     case PA_CONTEXT_FAILED:
-      g_warning (
+      z_warning (
         "Error in pulse context: %s", pa_strerror (pa_context_errno (pulse)));
       break;
     case PA_CONTEXT_CONNECTING:
-      g_message ("Pulse context connecting");
+      z_info ("Pulse context connecting");
       break;
     case PA_CONTEXT_AUTHORIZING:
-      g_message ("Pulse context authorizing");
+      z_info ("Pulse context authorizing");
       break;
     case PA_CONTEXT_SETTING_NAME:
-      g_message ("Pulse context setting name");
+      z_info ("Pulse context setting name");
       break;
     case PA_CONTEXT_TERMINATED:
-      g_message ("Pulse context terminated");
+      z_info ("Pulse context terminated");
       break;
     case PA_CONTEXT_UNCONNECTED:
       break;
@@ -242,7 +242,7 @@ engine_pulse_setup (AudioEngine * self)
   if (!engine_pulse_try_lock_connect_sync (
         &self->pulse_mainloop_, &self->pulse_context_, &msg))
     {
-      g_warning ("%s", msg);
+      z_warning ("%s", msg);
       g_free (msg);
       return 1;
     }
@@ -258,7 +258,7 @@ engine_pulse_setup (AudioEngine * self)
     self->pulse_context_, ZRYTHM_PULSE_CLIENT, &requested_spec, nullptr);
   if (self->pulse_stream_ == nullptr)
     {
-      g_warning (
+      z_warning (
         "PulseAudio Error: "
         "Failed to create stream");
       return 1;
@@ -289,7 +289,7 @@ engine_pulse_setup (AudioEngine * self)
       PA_STREAM_START_CORKED | PA_STREAM_ADJUST_LATENCY, nullptr, nullptr)
     != 0)
     {
-      g_warning (
+      z_warning (
         "PulseAudio Error: "
         "Failed to connect playback stream: %s",
         pa_strerror (pa_context_errno (self->pulse_context_)));
@@ -305,7 +305,7 @@ engine_pulse_setup (AudioEngine * self)
         break;
       else if (state == PA_STREAM_FAILED)
         {
-          g_warning (
+          z_warning (
             "PulseAudio Error: "
             "Failed to connect to stream");
           pa_threaded_mainloop_unlock (self->pulse_mainloop_);
@@ -346,7 +346,7 @@ engine_pulse_stream_cork_callback (
   pa_threaded_mainloop * mainloop = (pa_threaded_mainloop *) userdata;
 
   if (!success)
-    g_critical ("Failed to cork/uncork stream");
+    z_error ("Failed to cork/uncork stream");
 
   pa_threaded_mainloop_signal (mainloop, 0);
 }
@@ -356,11 +356,11 @@ engine_pulse_activate (AudioEngine * self, gboolean activate)
 {
   if (activate)
     {
-      g_message ("activating...");
+      z_info ("activating...");
     }
   else
     {
-      g_message ("deactivating...");
+      z_info ("deactivating...");
     }
 
   pa_threaded_mainloop_lock (self->pulse_mainloop_);
@@ -417,7 +417,7 @@ engine_pulse_test (GtkWindow * win)
         }
       else
         {
-          g_message ("%s", msg);
+          z_info ("%s", msg);
         }
       g_free (msg);
       result = 1;

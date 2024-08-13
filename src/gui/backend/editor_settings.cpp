@@ -25,7 +25,7 @@ EditorSettings::set_scroll_start_x (int x, bool validate)
         {
         }
     }
-  /*g_debug ("scrolled horizontally to %d", scroll_start_x_);*/
+  /*z_debug ("scrolled horizontally to %d", scroll_start_x_);*/
 }
 
 void
@@ -68,7 +68,7 @@ EditorSettings::set_scroll_start_y (int y, bool validate)
           scroll_start_y_ -= diff;
         }
     }
-  /*g_debug ("scrolled vertically to %d", scroll_start_y_);*/
+  /*z_debug ("scrolled vertically to %d", scroll_start_y_);*/
 }
 
 /**
@@ -79,6 +79,6 @@ EditorSettings::append_scroll (int dx, int dy, bool validate)
 {
   set_scroll_start_x (scroll_start_x_ + dx, validate);
   set_scroll_start_y (scroll_start_y_ + dy, validate);
-  /*g_debug ("scrolled to (%d, %d)", scroll_start_x_,
+  /*z_debug ("scrolled to (%d, %d)", scroll_start_x_,
    * scroll_start_y_);*/
 }

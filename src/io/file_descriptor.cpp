@@ -15,7 +15,7 @@
 
 FileDescriptor::FileDescriptor (const std::string &_abs_path)
 {
-  // g_debug ("creating new FileDescriptor for %s", path);
+  // z_debug ("creating new FileDescriptor for %s", path);
   abs_path_ = _abs_path;
   type_ = get_type_from_path (_abs_path.c_str ());
   label_ = Glib::path_get_basename (_abs_path);
@@ -89,7 +89,7 @@ FileDescriptor::get_type_description (FileType type)
     case FileType::Other:
       return "Other";
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 }
 
@@ -152,7 +152,7 @@ FileDescriptor::get_type_ext (FileType type)
       return NULL;
       break;
     default:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 }
 

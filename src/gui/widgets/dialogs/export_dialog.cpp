@@ -538,7 +538,7 @@ init_export_info (
 static void
 progress_close_cb (Exporter * exporter)
 {
-  g_debug ("export ready cb");
+  z_debug ("export ready cb");
 
   ExportDialogWidget * self = Z_EXPORT_DIALOG_WIDGET (exporter->parent_owner_);
 
@@ -1103,7 +1103,7 @@ setup_time_range_combo_row (
   };
   GtkStringList * string_list = gtk_string_list_new (strings);
 
-  g_debug ("setting up time range combo row (is audio ? %d)", is_audio);
+  z_debug ("setting up time range combo row (is audio ? %d)", is_audio);
 
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 

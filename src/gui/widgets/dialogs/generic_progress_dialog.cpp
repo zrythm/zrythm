@@ -50,18 +50,18 @@ on_response_cb (
   char *                        response,
   GenericProgressDialogWidget * self)
 {
-  g_debug ("generic progress response: %s", response);
+  z_debug ("generic progress response: %s", response);
   GET_PRIVATE (self);
   if (string_is_equal (response, "cancel"))
     {
-      g_debug ("accepting cancel response");
+      z_debug ("accepting cancel response");
       prv->progress_info->request_cancellation ();
       run_callback_and_force_close (self);
     }
   else if (string_is_equal (response, "ok"))
     {
       /* nothing to do */
-      g_debug ("accepting ok response");
+      z_debug ("accepting ok response");
       run_callback_and_force_close (self);
     }
   else
@@ -103,13 +103,13 @@ tick_cb (
       char *                       msg = info->get_message ();
       if (compl_type == ProgressInfo::CompletionType::CANCELLED)
         {
-          g_debug ("cancelled");
+          z_debug ("cancelled");
           /* dialog is already closed at this point (pressing cancel or closing
            * the window already invoked on_response()) */
         }
       else if (prv->autoclose)
         {
-          g_debug ("autoclose");
+          z_debug ("autoclose");
           run_callback_and_force_close (self);
         }
       else

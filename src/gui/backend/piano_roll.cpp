@@ -136,7 +136,7 @@ PianoRoll::init_descriptors ()
       idx++;
     }
 
-  g_return_if_fail (idx == 128);
+  z_return_if_fail (idx == 128);
 }
 
 /* 1 = black */
@@ -188,7 +188,7 @@ PianoRoll::init_loaded ()
 const MidiNoteDescriptor *
 PianoRoll::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
 {
-  g_return_val_if_fail (val < 128, nullptr);
+  z_return_val_if_fail (val < 128, nullptr);
 
   for (int i = 0; i < 128; i++)
     {
@@ -201,7 +201,7 @@ PianoRoll::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
       if (descr->value_ == static_cast<int> (val))
         return descr;
     }
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 void
@@ -219,7 +219,7 @@ Track *
 PianoRoll::get_current_track () const
 {
   /* TODO */
-  g_return_val_if_reached (nullptr);
+  z_return_val_if_reached (nullptr);
 }
 
 void

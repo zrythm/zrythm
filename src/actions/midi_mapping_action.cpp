@@ -133,5 +133,7 @@ MidiMappingAction::to_string () const
       return _ ("MIDI mapping bind");
     case Type::Unbind:
       return _ ("MIDI mapping unbind");
+    default:
+      z_return_val_if_reached ("");
     }
 }

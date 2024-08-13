@@ -27,6 +27,7 @@
 #include "zrythm-config.h"
 
 #include "gui/widgets/file_chooser_entry.h"
+#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
@@ -484,7 +485,7 @@ file_collapse (GFile * file)
 GFile *
 ide_file_chooser_entry_get_file (IdeFileChooserEntry * self)
 {
-  g_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), nullptr);
+  z_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), nullptr);
 
   return self->file ? g_object_ref (self->file) : NULL;
 }
@@ -494,7 +495,7 @@ ide_file_chooser_entry_set_file (IdeFileChooserEntry * self, GFile * file)
 {
   g_autofree gchar * collapsed = NULL;
 
-  g_return_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self));
+  z_return_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self));
 
   if (
     self->file == file
@@ -531,7 +532,7 @@ ide_file_chooser_entry_new (const gchar * title, GtkFileChooserAction action)
 GtkEntry *
 ide_file_chooser_entry_get_entry (IdeFileChooserEntry * self)
 {
-  g_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), nullptr);
+  z_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), nullptr);
 
   return self->entry;
 }

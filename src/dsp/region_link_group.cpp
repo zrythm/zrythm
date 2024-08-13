@@ -24,8 +24,8 @@ RegionLinkGroup::add_region (Region &region)
   if (contains_region (region))
     return;
 
-  g_return_if_fail (region.id_.idx_ >= 0);
-  g_return_if_fail (IS_REGION_LINK_GROUP (this));
+  z_return_if_fail (region.id_.idx_ >= 0);
+  z_return_if_fail (IS_REGION_LINK_GROUP (this));
 
   region.id_.link_group_ = group_idx_;
   ids_.push_back (region.id_);
@@ -70,9 +70,9 @@ RegionLinkGroup::remove_region (
   region.id_.link_group_ = -1;
 
   std::visit (
-    [&] (auto &&region) {
+    [&] (auto &&r) {
       if (update_identifier)
-        region->update_identifier ();
+        r->update_identifier ();
     },
     convert_to_variant<RegionPtrVariant> (&region));
 }
@@ -91,14 +91,14 @@ RegionLinkGroup::update (const Region &main_region)
       z_debug ("updating %d (%s)", region->id_.idx_, region->get_name ());
 
       std::visit (
-        [&] (auto &&region) {
-          using T = base_type<decltype (region)>;
+        [&] (auto &&r) {
+          using T = base_type<decltype (r)>;
           if constexpr (RegionWithChildren<T>)
             {
               /* delete and readd all children */
-              region->remove_all_children ();
+              r->remove_all_children ();
               auto main_region_casted = dynamic_cast<const T *> (&main_region);
-              region->copy_children (*main_region_casted);
+              r->copy_children (*main_region_casted);
             }
         },
         convert_to_variant<RegionPtrVariant> (region.get ()));

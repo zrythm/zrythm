@@ -101,7 +101,7 @@ MidiRegion::print_midi_notes () const
 {
   for (const auto &mn : midi_notes_)
     {
-      g_message ("Note");
+      z_info ("Note");
       mn->print ();
     }
 }
@@ -213,7 +213,7 @@ MidiRegion::MidiRegion (
           continue;
         }
 
-      g_message ("reading MIDI Track %d", i);
+      z_info ("reading MIDI Track %d", i);
       if (i >= 1000)
         {
           throw ZrythmException ("Too many tracks in midi file");
@@ -225,7 +225,7 @@ MidiRegion::MidiRegion (
           pos.from_ticks (ticks);
           global_pos = pos_;
           global_pos.add_ticks (ticks);
-          g_debug ("dwAbsPos: %d ", msg.dwAbsPos);
+          z_debug ("dwAbsPos: %d ", msg.dwAbsPos);
 
           int bars = pos.get_bars (true);
           if (ZRYTHM_HAVE_UI && bars > TRANSPORT->total_bars_ - 8)
@@ -244,13 +244,13 @@ MidiRegion::MidiRegion (
 
           if (muGetMIDIMsgName (str, (tMIDI_MSG) ev))
             {
-              g_debug ("MIDI msg name: %s", str);
+              z_debug ("MIDI msg name: %s", str);
             }
           switch (ev)
             {
             case msgNoteOff:
 handle_note_off:
-              g_debug (
+              z_debug (
                 "Note off at %d "
                 "[ch %d pitch %d]",
                 msg.dwAbsPos, msg.MsgData.NoteOff.iChannel,
@@ -263,7 +263,7 @@ handle_note_off:
                   }
                 else
                   {
-                    g_message (
+                    z_info (
                       "Found a Note off event without "
                       "a corresponding Note on. "
                       "Skipping...");
@@ -279,7 +279,7 @@ handle_note_off:
                   goto handle_note_off;
                 }
 
-              g_debug (
+              z_debug (
                 "Note on at %d "
                 "[ch %d pitch %d vel %d]",
                 msg.dwAbsPos, msg.MsgData.NoteOn.iChannel,
@@ -290,49 +290,52 @@ handle_note_off:
               break;
             case msgNoteKeyPressure:
               muGetNameFromNote (str, msg.MsgData.NoteKeyPressure.iNote);
-              g_debug (
+              z_debug (
                 "(%.2d) %s %d", msg.MsgData.NoteKeyPressure.iChannel, str,
                 msg.MsgData.NoteKeyPressure.iPressure);
               break;
             case msgSetParameter:
               muGetControlName (str, msg.MsgData.NoteParameter.iControl);
-              g_debug (
+              z_debug (
                 "(%.2d) %s -> %d", msg.MsgData.NoteParameter.iChannel, str,
                 msg.MsgData.NoteParameter.iParam);
               break;
             case msgSetProgram:
               muGetInstrumentName (str, msg.MsgData.ChangeProgram.iProgram);
-              g_debug ("(%.2d) %s", msg.MsgData.ChangeProgram.iChannel, str);
+              z_debug ("(%.2d) %s", msg.MsgData.ChangeProgram.iChannel, str);
               break;
             case msgChangePressure:
               muGetControlName (
                 str, (tMIDI_CC) msg.MsgData.ChangePressure.iPressure);
-              g_debug ("(%.2d) %s", msg.MsgData.ChangePressure.iChannel, str);
+              z_debug ("(%.2d) %s", msg.MsgData.ChangePressure.iChannel, str);
               break;
             case msgSetPitchWheel:
-              g_debug (
+              z_debug (
                 "(%.2d) %d", msg.MsgData.PitchWheel.iChannel,
                 msg.MsgData.PitchWheel.iPitch);
               break;
             case msgMetaEvent:
-              g_debug ("---- meta events");
+              z_debug ("---- meta events");
               switch (msg.MsgData.MetaEvent.iType)
                 {
                 case metaMIDIPort:
-                  g_debug (
+                  z_debug (
                     "MIDI Port = %d", msg.MsgData.MetaEvent.Data.iMIDIPort);
                   break;
                 case metaSequenceNumber:
-                  g_debug (
-                    "Sequence Number = %d",
+                  z_debug (
+                    "Sequence Number = {}",
                     msg.MsgData.MetaEvent.Data.iSequenceNumber);
                   break;
                 case metaTextEvent:
-                  g_debug ("Text = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_debug (
+                    "Text = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaCopyright:
-                  g_debug (
-                    "Copyright = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_debug (
+                    "Copyright = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaTrackName:
                   {
@@ -346,29 +349,32 @@ handle_note_off:
                       {
                         name_ = format_str (_ ("Untitled Track {}"), i);
                       }
-                    g_message (
-                      "[data sz %d] Track name = '%s'", msg.iMsgSize - 3,
-                      name_.c_str ());
+                    z_info (
+                      "[data sz {}] Track name = '{}'", msg.iMsgSize - 3, name_);
                   }
                   break;
                 case metaInstrument:
-                  g_message (
-                    "Instrument = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_info (
+                    "Instrument = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaLyric:
-                  g_message (
-                    "Lyric = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_info (
+                    "Lyric = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaMarker:
-                  g_message (
-                    "Marker = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_info (
+                    "Marker = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaCuePoint:
-                  g_message (
-                    "Cue point = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
+                  z_info (
+                    "Cue point = '{}'",
+                    (const char *) msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaEndSequence:
-                  g_message ("End Sequence");
+                  z_info ("End Sequence");
                   if (pos == start_pos)
                     {
                       throw ZrythmException ("End of track without a note");
@@ -377,10 +383,10 @@ handle_note_off:
                   loop_end_pos_setter (&global_pos);
                   break;
                 case metaSetTempo:
-                  g_message ("tempo %d", msg.MsgData.MetaEvent.Data.Tempo.iBPM);
+                  z_info ("tempo %d", msg.MsgData.MetaEvent.Data.Tempo.iBPM);
                   break;
                 case metaSMPTEOffset:
-                  g_message (
+                  z_info (
                     "SMPTE offset = %d:%d:%d.%d %d",
                     msg.MsgData.MetaEvent.Data.SMPTE.iHours,
                     msg.MsgData.MetaEvent.Data.SMPTE.iMins,
@@ -389,18 +395,18 @@ handle_note_off:
                     msg.MsgData.MetaEvent.Data.SMPTE.iFF);
                   break;
                 case metaTimeSig:
-                  g_message (
-                    "Time sig = %d/%d", msg.MsgData.MetaEvent.Data.TimeSig.iNom,
+                  z_info (
+                    "Time sig = {}/{}", msg.MsgData.MetaEvent.Data.TimeSig.iNom,
                     msg.MsgData.MetaEvent.Data.TimeSig.iDenom
                       / MIDI_NOTE_CROCHET);
                   break;
                 case metaKeySig:
                   if (
                     muGetKeySigName (str, msg.MsgData.MetaEvent.Data.KeySig.iKey))
-                    g_message ("Key sig = %s", str);
+                    z_info ("Key sig = {}", str);
                   break;
                 case metaSequencerSpecific:
-                  g_message ("Sequencer specific = ");
+                  z_info ("Sequencer specific = ");
                   /*HexList(msg.MsgData.MetaEvent.Data.Sequencer.pData,
                    * msg.MsgData.MetaEvent.Data.Sequencer.iSize);*/
                   break;
@@ -409,7 +415,7 @@ handle_note_off:
 
             case msgSysEx1:
             case msgSysEx2:
-              g_message ("Sysex = ");
+              z_info ("Sysex = ");
               /*HexList(msg.MsgData.SysEx.pData, msg.MsgData.SysEx.iSize);*/
               break;
             }
@@ -436,7 +442,7 @@ handle_note_off:
                   print_str += tmp;
                 }
               print_str += "]";
-              g_debug ("%s", print_str.c_str ());
+              z_debug ("%s", print_str);
             }
         }
 
@@ -451,7 +457,7 @@ handle_note_off:
 
   if (unended_notes_.size () > 0)
     {
-      g_warning ("unended notes found: %zu", unended_notes_.size ());
+      z_warning ("unended notes found: {}", unended_notes_.size ());
 
       double length = get_length_in_ticks ();
       end_pos.from_ticks (length);
@@ -470,7 +476,7 @@ handle_note_off:
         end_pos_.to_string ()));
     }
 
-  g_message ("%s: done ~ %zu MIDI notes read", __func__, midi_notes_.size ());
+  z_info ("done ~ {} MIDI notes read", midi_notes_.size ());
 }
 
 void

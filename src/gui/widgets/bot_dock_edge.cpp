@@ -38,7 +38,7 @@ on_notebook_switch_page (
   guint               page_num,
   BotDockEdgeWidget * self)
 {
-  g_debug ("setting bot dock page to %u", page_num);
+  z_debug ("setting bot dock page to %u", page_num);
 
   g_settings_set_int (
     S_UI, "bot-panel-tab", (int) page_num);
@@ -131,7 +131,7 @@ bot_dock_edge_widget_show_clip_editor (
 {
   PanelWidget * panel_widget = PANEL_WIDGET (gtk_widget_get_ancestor (
     GTK_WIDGET (self->clip_editor_box), PANEL_TYPE_WIDGET));
-  g_return_if_fail (panel_widget);
+  z_return_if_fail (panel_widget);
   panel_widget_raise (panel_widget);
 
   bot_dock_edge_widget_update_event_viewer_stack_page (self);

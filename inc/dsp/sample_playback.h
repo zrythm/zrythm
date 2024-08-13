@@ -79,7 +79,7 @@ public:
   self, _buf, _buf_size, _channels, _vol, _start_offset) \
   if (_channels <= 0) \
     { \
-      g_critical ("channels: %u", _channels); \
+      z_error ("channels: %u", _channels); \
     } \
   (self)->buf = _buf; \
   (self)->buf_size = _buf_size; \

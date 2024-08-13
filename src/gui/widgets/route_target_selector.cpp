@@ -95,7 +95,7 @@ on_header_bind (
           gtk_label_set_markup (label, _ ("Instruments"));
           break;
         default:
-          g_return_if_reached ();
+          z_return_if_reached ();
         }
     }
 }
@@ -297,7 +297,7 @@ route_target_selector_widget_refresh (
                     instruments_ls, direct_out_wobj,
                     (GEqualFunc) underlying_track_is_equal, &pos);
                   pos += 2 + g_list_model_get_n_items (G_LIST_MODEL (groups_ls));
-                  g_return_if_fail (found);
+                  z_return_if_fail (found);
                 }
             }
           gtk_drop_down_set_selected (dropdown, pos);

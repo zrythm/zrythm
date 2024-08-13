@@ -40,7 +40,7 @@
 const char *
 localization_get_localized_name (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
+  z_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
 
   return language_strings[lang];
 }
@@ -52,7 +52,7 @@ localization_get_localized_name (LocalizationLanguage lang)
 const char *
 localization_get_string_code (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
+  z_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
 
   return language_codes[lang];
 }
@@ -64,7 +64,7 @@ localization_get_string_code (LocalizationLanguage lang)
 const char *
 localization_get_string_w_code (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
+  z_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, nullptr);
 
   return language_strings_w_codes[lang];
 }
@@ -96,10 +96,10 @@ get_match (
 {
   GString * codeset_gstring = g_string_new (codeset);
   char *    upper = g_string_free (g_string_ascii_up (codeset_gstring), 0);
-  g_return_val_if_fail (upper, nullptr);
+  z_return_val_if_fail (upper, nullptr);
   codeset_gstring = g_string_new (codeset);
   char * lower = g_string_free (g_string_ascii_down (codeset_gstring), 0);
-  g_return_val_if_fail (lower, nullptr);
+  z_return_val_if_fail (lower, nullptr);
   char * first_upper = g_strdup (lower);
   first_upper[0] = g_ascii_toupper (lower[0]);
 
@@ -219,7 +219,7 @@ localization_locale_exists (LocalizationLanguage lang)
       IS_MATCH (ZH_CN, "zh_CN");
       IS_MATCH (ZH_TW, "zh_TW");
     case NUM_LL_LANGUAGES:
-      g_return_val_if_reached (nullptr);
+      z_return_val_if_reached (nullptr);
     }
 
 #undef IS_MATCH
@@ -256,7 +256,7 @@ localization_init (
   if (use_locale)
     {
       code = g_strdup (setlocale (LC_ALL, nullptr));
-      g_message ("Initing localization with system locale %s", code);
+      z_info ("Initing localization with system locale %s", code);
     }
   else
     {
@@ -269,7 +269,7 @@ localization_init (
 
       if (print_debug_messages)
         {
-          g_message (
+          z_info (
             "preferred lang: '%s' (%s)", language_strings[lang],
             language_codes[lang]);
         }
@@ -278,14 +278,14 @@ localization_init (
         {
           if (print_debug_messages)
             {
-              g_message ("setting locale to default");
+              z_info ("setting locale to default");
             }
           setlocale (LC_ALL, "C");
           return 1;
         }
 
       code = localization_locale_exists (lang);
-      g_debug ("code is %s", code);
+      z_debug ("code is %s", code);
     }
 
   char * match = NULL;
@@ -294,7 +294,7 @@ localization_init (
       match = setlocale (LC_ALL, code);
       if (print_debug_messages)
         {
-          g_message ("setting locale to %s (found %s)", code, match);
+          z_info ("setting locale to %s (found %s)", code, match);
         }
 #if defined(_WIN32) || defined(__APPLE__)
       char buf[120];
@@ -315,7 +315,7 @@ localization_init (
             {
               zrythm_app->startup_errors[zrythm_app->num_startup_errors++] = msg;
             }
-          g_warning ("%s", msg);
+          z_warning ("%s", msg);
         }
       setlocale (LC_ALL, "C");
     }

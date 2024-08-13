@@ -19,7 +19,7 @@ z_pango_create_layout_from_description (
   PangoLayout * layout = NULL;
 
   char * str = pango_font_description_to_string (descr);
-  g_debug ("font description: %s", str);
+  z_debug ("font description: %s", str);
 
 #ifdef HAVE_BUNDLED_DSEG
   if (string_contains_substr (str, "DSEG"))
@@ -53,7 +53,7 @@ z_pango_create_layout_from_description (
             pango_font_description_from_string ((gchar *) font_name);
           pango_font_map_load_font (PANGO_FONT_MAP (font_map), context, desc);
           pango_font_description_free (desc);
-          g_debug ("fontname: %s", font_name);
+          z_debug ("fontname: {}", (const char *) font_name);
           g_free (font_name);
         }
 
@@ -72,7 +72,7 @@ z_pango_create_layout_from_description (
 #endif
   g_free (str);
 
-  g_return_val_if_fail (layout, nullptr);
+  z_return_val_if_fail (layout, nullptr);
 
   pango_layout_set_font_description (layout, descr);
 
