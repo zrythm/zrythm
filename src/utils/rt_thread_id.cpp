@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 #include "utils/rt_thread_id.h"
 
 // Initialize the atomic counter
