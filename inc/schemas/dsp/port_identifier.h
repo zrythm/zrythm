@@ -15,9 +15,9 @@ typedef enum PortFlow_v1
 } PortFlow_v1;
 
 static const cyaml_strval_t port_flow_strings_v1[] = {
-  {"unknown", Z_PORT_FLOW_UNKNOWN_v1},
-  { "input",  Z_PORT_FLOW_INPUT_v1  },
-  { "output", Z_PORT_FLOW_OUTPUT_v1 },
+  { "unknown", Z_PORT_FLOW_UNKNOWN_v1 },
+  { "input",   Z_PORT_FLOW_INPUT_v1   },
+  { "output",  Z_PORT_FLOW_OUTPUT_v1  },
 };
 
 typedef enum PortType_v1
@@ -30,11 +30,11 @@ typedef enum PortType_v1
 } PortType_v1;
 
 static const cyaml_strval_t port_type_strings_v1[] = {
-  {"unknown",  TYPE_UNKNOWN_v1       },
-  { "control", Z_PORT_TYPE_CONTROL_v1},
-  { "audio",   Z_PORT_TYPE_AUDIO_v1  },
-  { "event",   Z_PORT_TYPE_EVENT_v1  },
-  { "cv",      Z_PORT_TYPE_CV_v1     },
+  { "unknown", TYPE_UNKNOWN_v1        },
+  { "control", Z_PORT_TYPE_CONTROL_v1 },
+  { "audio",   Z_PORT_TYPE_AUDIO_v1   },
+  { "event",   Z_PORT_TYPE_EVENT_v1   },
+  { "cv",      Z_PORT_TYPE_CV_v1      },
 };
 
 typedef enum PortUnit_v1
@@ -50,14 +50,14 @@ typedef enum PortUnit_v1
 } PortUnit_v1;
 
 static const cyaml_strval_t port_unit_strings_v1[] = {
-  {"none", PORT_UNIT_NONE_v1   },
-  { "Hz",  PORT_UNIT_HZ_v1     },
-  { "MHz", PORT_UNIT_MHZ_v1    },
-  { "dB",  PORT_UNIT_DB_v1     },
-  { "°",  PORT_UNIT_DEGREES_v1},
-  { "s",   PORT_UNIT_SECONDS_v1},
-  { "ms",  PORT_UNIT_MS_v1     },
-  { "μs", PORT_UNIT_US_v1     },
+  { "none", PORT_UNIT_NONE_v1    },
+  { "Hz",   PORT_UNIT_HZ_v1      },
+  { "MHz",  PORT_UNIT_MHZ_v1     },
+  { "dB",   PORT_UNIT_DB_v1      },
+  { "°",   PORT_UNIT_DEGREES_v1 },
+  { "s",    PORT_UNIT_SECONDS_v1 },
+  { "ms",   PORT_UNIT_MS_v1      },
+  { "μs",  PORT_UNIT_US_v1      },
 };
 
 typedef enum ZPortOwnerType_v1
@@ -75,16 +75,16 @@ typedef enum ZPortOwnerType_v1
 } ZPortOwnerType_v1;
 
 static const cyaml_strval_t port_owner_type_strings_v1[] = {
-  {"audio engine",               Z_PORT_OWNER_TYPE_AUDIO_ENGINE_v1             },
-  { "plugin",                    Z_PORT_OWNER_TYPE_PLUGIN_v1                   },
-  { "track",                     Z_PORT_OWNER_TYPE_TRACK_v1                    },
-  { "channel",                   Z_PORT_OWNER_TYPE_CHANNEL_v1                  },
-  { "fader",                     Z_PORT_OWNER_TYPE_FADER_v1                    },
-  { "channel send",              Z_PORT_OWNER_TYPE_CHANNEL_SEND_v1             },
-  { "track processor",           Z_PORT_OWNER_TYPE_TRACK_PROCESSOR_v1          },
-  { "hw",                        Z_PORT_OWNER_TYPE_HW_v1                       },
-  { "transport",                 Z_PORT_OWNER_TYPE_TRANSPORT_v1                },
-  { "modulator macro processor", Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1},
+  { "audio engine",              Z_PORT_OWNER_TYPE_AUDIO_ENGINE_v1              },
+  { "plugin",                    Z_PORT_OWNER_TYPE_PLUGIN_v1                    },
+  { "track",                     Z_PORT_OWNER_TYPE_TRACK_v1                     },
+  { "channel",                   Z_PORT_OWNER_TYPE_CHANNEL_v1                   },
+  { "fader",                     Z_PORT_OWNER_TYPE_FADER_v1                     },
+  { "channel send",              Z_PORT_OWNER_TYPE_CHANNEL_SEND_v1              },
+  { "track processor",           Z_PORT_OWNER_TYPE_TRACK_PROCESSOR_v1           },
+  { "hw",                        Z_PORT_OWNER_TYPE_HW_v1                        },
+  { "transport",                 Z_PORT_OWNER_TYPE_TRANSPORT_v1                 },
+  { "modulator macro processor", Z_PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1 },
 };
 
 /**
@@ -161,37 +161,37 @@ typedef enum ZPortFlags2_v1
 } ZPortFlags2_v1;
 
 static const cyaml_bitdef_t port_flags_bitvals_v1[] = {
-  {.name = "stereo_l",             .offset = 0,  .bits = 1},
-  { .name = "stereo_r",            .offset = 1,  .bits = 1},
-  { .name = "piano_roll",          .offset = 2,  .bits = 1},
-  { .name = "sidechain",           .offset = 3,  .bits = 1},
-  { .name = "main_port",           .offset = 4,  .bits = 1},
-  { .name = "manual_press",        .offset = 5,  .bits = 1},
-  { .name = "amplitude",           .offset = 6,  .bits = 1},
-  { .name = "stereo_balance",      .offset = 7,  .bits = 1},
-  { .name = "want_position",       .offset = 8,  .bits = 1},
-  { .name = "trigger",             .offset = 9,  .bits = 1},
-  { .name = "toggle",              .offset = 10, .bits = 1},
-  { .name = "integer",             .offset = 11, .bits = 1},
-  { .name = "freewheel",           .offset = 12, .bits = 1},
-  { .name = "reports_latency",     .offset = 13, .bits = 1},
-  { .name = "not_on_gui",          .offset = 14, .bits = 1},
-  { .name = "plugin_enabled",      .offset = 15, .bits = 1},
-  { .name = "plugin_control",      .offset = 16, .bits = 1},
-  { .name = "fader_mute",          .offset = 17, .bits = 1},
-  { .name = "channel_fader",       .offset = 18, .bits = 1},
-  { .name = "automatable",         .offset = 19, .bits = 1},
-  { .name = "midi_automatable",    .offset = 20, .bits = 1},
-  { .name = "send_receivable",     .offset = 21, .bits = 1},
-  { .name = "bpm",                 .offset = 22, .bits = 1},
-  { .name = "generic_plugin_port", .offset = 23, .bits = 1},
-  { .name = "plugin_gain",         .offset = 24, .bits = 1},
-  { .name = "tp_mono",             .offset = 25, .bits = 1},
-  { .name = "tp_input_gain",       .offset = 26, .bits = 1},
-  { .name = "hw",                  .offset = 27, .bits = 1},
-  { .name = "modulator_macro",     .offset = 28, .bits = 1},
-  { .name = "logarithmic",         .offset = 29, .bits = 1},
-  { .name = "is_property",         .offset = 30, .bits = 1},
+  { .name = "stereo_l",            .offset = 0,  .bits = 1 },
+  { .name = "stereo_r",            .offset = 1,  .bits = 1 },
+  { .name = "piano_roll",          .offset = 2,  .bits = 1 },
+  { .name = "sidechain",           .offset = 3,  .bits = 1 },
+  { .name = "main_port",           .offset = 4,  .bits = 1 },
+  { .name = "manual_press",        .offset = 5,  .bits = 1 },
+  { .name = "amplitude",           .offset = 6,  .bits = 1 },
+  { .name = "stereo_balance",      .offset = 7,  .bits = 1 },
+  { .name = "want_position",       .offset = 8,  .bits = 1 },
+  { .name = "trigger",             .offset = 9,  .bits = 1 },
+  { .name = "toggle",              .offset = 10, .bits = 1 },
+  { .name = "integer",             .offset = 11, .bits = 1 },
+  { .name = "freewheel",           .offset = 12, .bits = 1 },
+  { .name = "reports_latency",     .offset = 13, .bits = 1 },
+  { .name = "not_on_gui",          .offset = 14, .bits = 1 },
+  { .name = "plugin_enabled",      .offset = 15, .bits = 1 },
+  { .name = "plugin_control",      .offset = 16, .bits = 1 },
+  { .name = "fader_mute",          .offset = 17, .bits = 1 },
+  { .name = "channel_fader",       .offset = 18, .bits = 1 },
+  { .name = "automatable",         .offset = 19, .bits = 1 },
+  { .name = "midi_automatable",    .offset = 20, .bits = 1 },
+  { .name = "send_receivable",     .offset = 21, .bits = 1 },
+  { .name = "bpm",                 .offset = 22, .bits = 1 },
+  { .name = "generic_plugin_port", .offset = 23, .bits = 1 },
+  { .name = "plugin_gain",         .offset = 24, .bits = 1 },
+  { .name = "tp_mono",             .offset = 25, .bits = 1 },
+  { .name = "tp_input_gain",       .offset = 26, .bits = 1 },
+  { .name = "hw",                  .offset = 27, .bits = 1 },
+  { .name = "modulator_macro",     .offset = 28, .bits = 1 },
+  { .name = "logarithmic",         .offset = 29, .bits = 1 },
+  { .name = "is_property",         .offset = 30, .bits = 1 },
 };
 
 static const cyaml_bitdef_t port_flags2_bitvals_v1[] = {

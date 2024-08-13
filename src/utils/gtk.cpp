@@ -133,7 +133,7 @@ z_gtk_get_primary_monitor_scale_factor (void)
   scale_factor = gdk_monitor_get_scale_factor (monitor);
   if (scale_factor < 1)
     {
-      z_info ("invalid scale factor: %d", scale_factor);
+      z_info ("invalid scale factor: {}", scale_factor);
       goto return_default_scale_factor;
     }
 
@@ -172,7 +172,7 @@ z_gtk_get_primary_monitor_refresh_rate (void)
     gdk_monitor_get_refresh_rate (monitor) / 1000;
   if (refresh_rate == 0)
     {
-      z_warning ("invalid refresh rate: %d", refresh_rate);
+      z_warning ("invalid refresh rate: {}", refresh_rate);
       goto return_default_refresh_rate;
     }
 
@@ -756,12 +756,12 @@ z_gtk_source_language_manager_get (void)
     gtk_source_language_manager_get_search_path (manager);
 
   /* build the new paths */
-  StringArray    after_paths_builder;
-  StringArray    after_paths_builder_tmp;
-  int            i = 0;
+  StringArray after_paths_builder;
+  StringArray after_paths_builder_tmp;
+  int         i = 0;
   while (before_paths[i])
     {
-      z_debug ("language specs dir %d: %s", i, before_paths[i]);
+      z_debug ("language specs dir {}: {}", i, before_paths[i]);
       after_paths_builder.add (before_paths[i]);
       after_paths_builder_tmp.add (before_paths[i]);
       i++;
@@ -805,7 +805,7 @@ z_gtk_source_language_manager_get (void)
   i = 0;
   while ((lang_id = lang_ids[i++]) != nullptr)
     {
-      z_debug ("[%d] %s", i, lang_id);
+      z_debug ("[{}] {}", i, lang_id);
     }
 #endif
 
@@ -862,7 +862,7 @@ on_new_window_destroyed (GtkWidget * widget, DetachableNotebookData * data)
   auto * new_notebook =
     (GtkNotebook *) g_ptr_array_index (data->new_notebooks, idx);
   const char * name = gtk_widget_get_name (GTK_WIDGET (new_notebook));
-  z_debug ("widget {} ({})", name, fmt::ptr(new_notebook));
+  z_debug ("widget {} ({})", name, fmt::ptr (new_notebook));
   z_return_if_fail (GTK_IS_NOTEBOOK (new_notebook));
   g_ptr_array_remove_index (data->new_windows, idx);
   g_ptr_array_remove_index (data->new_notebooks, idx);
@@ -912,7 +912,7 @@ on_new_window_close_request (
   gtk_window_get_default_size (GTK_WINDOW (widget), &w, &h);
   g_settings_set_boolean (S_UI_PANELS, key_detached, false);
   g_settings_set (S_UI_PANELS, key_size, "(ii)", w, h);
-  z_debug ("saving %s size %d %d", val, w, w);
+  z_debug ("saving {} size {} {}", val, w, w);
 
   return false;
 }
@@ -1035,7 +1035,7 @@ on_create_window (
     (int) g_variant_get_int32 (g_variant_get_child_value (size_val, 0));
   int height =
     (int) g_variant_get_int32 (g_variant_get_child_value (size_val, 1));
-  z_debug ("loading %s size %d %d", val, width, height);
+  z_debug ("loading {} size {} {}", val, width, height);
   gtk_window_set_default_size (GTK_WINDOW (new_window), width, height);
   g_variant_unref (size_val);
 
@@ -1193,7 +1193,7 @@ z_gtk_generate_screenshot_image (
   GskRenderNode * node = gtk_snapshot_free_to_node (snapshot);
   if (!node)
     {
-      z_warning ("Failed to create node for snapshot {}", fmt::ptr(snapshot));
+      z_warning ("Failed to create node for snapshot {}", fmt::ptr (snapshot));
       return;
     }
   GskRenderer * renderer = gsk_renderer_new_for_surface (
@@ -1205,7 +1205,7 @@ z_gtk_generate_screenshot_image (
   *ret_dir = g_dir_make_tmp ("zrythm-widget-XXXXXX", &err);
   if (*ret_dir == nullptr)
     {
-      z_warning ("failed creating temporary dir: %s", err->message);
+      z_warning ("failed creating temporary dir: {}", err->message);
       return;
     }
   char * abs_path = g_build_filename (*ret_dir, "screenshot.png", nullptr);
@@ -1230,7 +1230,7 @@ z_gtk_generate_screenshot_image (
     }
 
   *ret_path = abs_path;
-  z_info ("saved widget screenshot to %s", *ret_path);
+  z_info ("saved widget screenshot to {}", *ret_path);
 }
 
 /**
@@ -1466,7 +1466,7 @@ z_gtk_show_context_menu_from_g_menu (
   /*gtk_popover_set_has_arrow (*/
   /*GTK_POPOVER (popover_menu), false);*/
   gtk_popover_popup (GTK_POPOVER (popover_menu));
-  z_debug ("popup {}", fmt::ptr(popover_menu));
+  z_debug ("popup {}", fmt::ptr (popover_menu));
 }
 
 /**
@@ -1712,7 +1712,7 @@ z_gtk_widget_print_hierarchy (GtkWidget * widget)
 
   append_widget_info (gstr, widget);
   char * str = g_string_free (gstr, false);
-  z_info ("%s", str);
+  z_info ("{}", str);
   g_queue_free (queue);
 }
 
@@ -1767,7 +1767,7 @@ z_gtk_simple_action_shortcut_func (
     variant = g_variant_new_string (param);
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm_app.get ()), strs[0], variant);
-  z_info ("activating %s::%s", action_name, param);
+  z_info ("activating {}::{}", action_name, param);
   g_strfreev (strs);
 
   return true;

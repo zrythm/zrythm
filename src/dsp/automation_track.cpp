@@ -127,37 +127,36 @@ AutomationTrack::get_region_before_pos (
   bool            ends_after,
   bool            use_snapshots) const
 {
-  auto process_regions =
-    [=] (const auto &regions) {
-      if (ends_after)
-        {
-          for (auto it = regions.rbegin (); it != regions.rend (); ++it)
-            {
-              const auto &region = *it;
-              if (region->pos_ <= pos && region->end_pos_ >= pos)
-                return static_cast<AutomationRegion *> (region.get ());
-            }
-        }
-      else
-        {
-          AutomationRegion * latest_r = nullptr;
-          signed_frame_t     latest_distance =
-            std::numeric_limits<signed_frame_t>::min ();
-          for (auto it = regions.rbegin (); it != regions.rend (); ++it)
-            {
-              const auto    &region = *it;
-              signed_frame_t distance_from_r_end =
-                region->end_pos_.frames_ - pos.frames_;
-              if (region->pos_ <= pos && distance_from_r_end > latest_distance)
-                {
-                  latest_distance = distance_from_r_end;
-                  latest_r = static_cast<AutomationRegion *> (region.get ());
-                }
-            }
-          return latest_r;
-        }
-      return static_cast<AutomationRegion *> (nullptr);
-    };
+  auto process_regions = [=] (const auto &regions) {
+    if (ends_after)
+      {
+        for (auto it = regions.rbegin (); it != regions.rend (); ++it)
+          {
+            const auto &region = *it;
+            if (region->pos_ <= pos && region->end_pos_ >= pos)
+              return static_cast<AutomationRegion *> (region.get ());
+          }
+      }
+    else
+      {
+        AutomationRegion * latest_r = nullptr;
+        signed_frame_t     latest_distance =
+          std::numeric_limits<signed_frame_t>::min ();
+        for (auto it = regions.rbegin (); it != regions.rend (); ++it)
+          {
+            const auto    &region = *it;
+            signed_frame_t distance_from_r_end =
+              region->end_pos_.frames_ - pos.frames_;
+            if (region->pos_ <= pos && distance_from_r_end > latest_distance)
+              {
+                latest_distance = distance_from_r_end;
+                latest_r = static_cast<AutomationRegion *> (region.get ());
+              }
+          }
+        return latest_r;
+      }
+    return static_cast<AutomationRegion *> (nullptr);
+  };
 
   return use_snapshots
            ? process_regions (region_snapshots_)

@@ -502,9 +502,6 @@ endforeach
 test_cflags = []
 
 definitions = [
-  # use structured log
-  '-DG_LOG_USE_STRUCTURED=1',
-  '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
   '-DOPTIMIZE(x)=' + (is_gcc ? '__attribute__((optimize(#x)))' : ''),
   '-DOPTIMIZE_O0=OPTIMIZE(O0)',
@@ -1202,8 +1199,7 @@ rtaudio_dep = dependency (
     # TODO use shared in the future so .dll can be
     # replaced on windows
     'default_library=static',
-    # distribution of Zrythm with ASIO support is
-    # illegal. see the discussion in
+    # distribution of Zrythm with ASIO support is illegal. see the discussion in
     # https://gitlab.com/gnu-clisp/clisp/blob/dd313099db351c90431c1c90332192edce2bb5c9/doc/Why-CLISP-is-under-GPL
     'asio=disabled',])
 if rtaudio_dep.found ()
@@ -1264,6 +1260,12 @@ magic_enum_dep = dependency (
     ])
 
 fmt_dep = dependency('fmt')
+spdlog_dep = declare_dependency (
+  dependencies: dependency('spdlog'),
+  compile_args: [
+    '-DSPDLOG_FMT_EXTERNAL',
+    '-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE',
+  ])
 
 glibmm_dep = dependency('glibmm-2.68')
 giomm_dep = dependency('giomm-2.68')
@@ -1307,6 +1309,7 @@ zrythm_deps = [
   magic_enum_dep,
   juce_dep,
   fmt_dep,
+  spdlog_dep,
   doctest_dep,
   glibmm_dep,
   giomm_dep,

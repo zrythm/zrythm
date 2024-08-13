@@ -52,19 +52,19 @@ public:
       }
   }
 
- bool contains_name (const std::string &name) const;
+  bool contains_name (const std::string &name) const;
 
- bool contains_preset (const ChordPreset &pset) const;
+  bool contains_preset (const ChordPreset &pset) const;
 
- void add_preset (const ChordPreset &pset);
+  void add_preset (const ChordPreset &pset);
 
- void delete_preset (const ChordPreset &pset);
+  void delete_preset (const ChordPreset &pset);
 
- int get_preset_index (const ChordPreset &pset) const
- {
-   auto it = std::find (presets_.begin (), presets_.end (), pset);
-   z_return_val_if_fail (it != presets_.end (), -1);
-   return std::distance (presets_.begin (), it);
+  int get_preset_index (const ChordPreset &pset) const
+  {
+    auto it = std::find (presets_.begin (), presets_.end (), pset);
+    z_return_val_if_fail (it != presets_.end (), -1);
+    return std::distance (presets_.begin (), it);
   }
 
   std::string get_name () const { return name_; }
@@ -79,28 +79,28 @@ public:
     ((ChordPresetPack *) pack)->set_name (name);
   }
 
-   /**
-    * @brief Sets @ref name_ and emits @ref
-    * EventType::ET_CHORD_PRESET_PACK_EDITED.
-    */
-   void set_name (const std::string &name);
+  /**
+   * @brief Sets @ref name_ and emits @ref
+   * EventType::ET_CHORD_PRESET_PACK_EDITED.
+   */
+  void set_name (const std::string &name);
 
-   GMenuModel * generate_context_menu () const;
+  GMenuModel * generate_context_menu () const;
 
-   /**
-    * @brief Used in GTK callbacks.
-    */
-   static void destroy_cb (void * data) { delete (ChordPresetPack *) data; };
+  /**
+   * @brief Used in GTK callbacks.
+   */
+  static void destroy_cb (void * data) { delete (ChordPresetPack *) data; };
 
- public:
-   /** Pack name. */
-   std::string name_;
+public:
+  /** Pack name. */
+  std::string name_;
 
-   /** Presets. */
-   std::vector<ChordPreset> presets_;
+  /** Presets. */
+  std::vector<ChordPreset> presets_;
 
-   /** Whether this is a standard preset pack (not user-defined). */
-   bool is_standard_ = false;
+  /** Whether this is a standard preset pack (not user-defined). */
+  bool is_standard_ = false;
 };
 
 inline bool

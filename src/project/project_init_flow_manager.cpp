@@ -104,7 +104,7 @@ ProjectInitFlowManager::setup_main_window (Project &project)
 void
 ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
 {
-  z_info ("upgrading project schema from version %d...", src_ver);
+  z_info ("upgrading project schema from version {}...", src_ver);
   switch (src_ver)
     {
     case 1:
@@ -426,7 +426,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   bool json_read_success = doc != NULL;
   object_free_w_func_and_null (yyjson_doc_free, doc);
   [[maybe_unused]] bool upgraded = false;
-  int  yaml_schema_ver = -1;
+  int                   yaml_schema_ver = -1;
   if (!json_read_success)
     {
       /* failed to read JSON - check if YAML */
@@ -443,12 +443,12 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
               call_last_callback_fail (_ ("Invalid project: missing version"));
               return;
             }
-          z_info ("project from text (version %s)...", prj_ver_str);
+          z_info ("project from text (version {})...", prj_ver_str);
           g_free (prj_ver_str);
 
           schema_ver = string_get_regex_group_as_int (
             text, "---\nschema_version: (.*)\n", 1, -1);
-          z_info ("detected schema version %d", schema_ver);
+          z_info ("detected schema version {}", schema_ver);
           if (schema_ver != 5)
             {
               try
@@ -775,7 +775,7 @@ ProjectInitFlowManager::load_from_file ()
       ;
       if (!PROJECT->backup_dir_.empty ())
         {
-          z_debug ("newer backup found %s", PROJECT->backup_dir_);
+          z_debug ("newer backup found {}", PROJECT->backup_dir_);
 
           if (ZRYTHM_TESTING)
             {

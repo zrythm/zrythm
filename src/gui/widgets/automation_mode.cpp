@@ -30,9 +30,9 @@ AutomationModeWidget::init ()
   corner_radius_ = 8.0;
 
   /* set dimensions */
-  int           total_width = 0;
-  int           x_px, y_px;
-  char          txt[400];
+  int  total_width = 0;
+  int  x_px, y_px;
+  char txt[400];
 #define DO(caps) \
   if (AutomationMode::caps == AutomationMode::Record) \
     { \
@@ -90,7 +90,7 @@ AutomationModeWidget::get_hit_mode (double x) const
         }
       total_widths += 2 * AUTOMATION_MODE_HPADDING * (i + 1);
       double next_start = x_ + total_widths;
-      /*z_info ("[%d] x: %f next start: %f",*/
+      /*z_info ("[{}] x: {:f} next start: {:f}",*/
       /*i, x, next_start);*/
       if (x < next_start)
         {
@@ -167,7 +167,7 @@ AutomationModeWidget::draw_bg (
       int            i = static_cast<int> (cur);
 
       CustomButtonWidget::State cur_state = current_states_[i];
-      GdkRGBA                 c;
+      GdkRGBA                   c;
       get_color_for_state (cur_state, cur, &c);
       if (last_states_[i] != cur_state)
         {
@@ -245,7 +245,7 @@ AutomationModeWidget::draw (
     {
       has_hit_mode_ = 1;
       hit_mode_ = get_hit_mode (x_cursor);
-      /*z_info ("hit mode %d", self->hit_mode);*/
+      /*z_info ("hit mode {}", self->hit_mode);*/
     }
 
   /* get current states */

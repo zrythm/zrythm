@@ -58,7 +58,7 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
       else
         {
           /* save */
-          z_debug ("accept: %s, %s", pack->name_, entered_name);
+          z_debug ("accept: {}, {}", pack->name_, entered_name);
           ChordPreset pset (entered_name);
           for (int i = 0; i < 12; i++)
             {
@@ -67,7 +67,7 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
             }
           CHORD_PRESET_PACK_MANAGER->add_preset (*pack, pset, true);
 
-            EVENTS_PUSH (EventType::ET_CHORD_PRESET_ADDED, nullptr);
+          EVENTS_PUSH (EventType::ET_CHORD_PRESET_ADDED, nullptr);
         }
     }
 

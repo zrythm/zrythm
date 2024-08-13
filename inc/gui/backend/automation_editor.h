@@ -26,10 +26,10 @@ class AutomationEditor final
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-void init_after_cloning (const AutomationEditor &other) override
-{
-  *this = other;
-}
+  void init_after_cloning (const AutomationEditor &other) override
+  {
+    *this = other;
+  }
 };
 
 /**

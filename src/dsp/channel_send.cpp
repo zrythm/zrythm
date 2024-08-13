@@ -268,8 +268,7 @@ ChannelSend::get_target_sidechain ()
   auto r = Port::find_from_identifier<AudioPort> (conn->dest_id_);
   z_return_val_if_fail (r, nullptr);
 
-  return std::make_unique<StereoPorts> (
-    l->clone_unique (), r->clone_unique ());
+  return std::make_unique<StereoPorts> (l->clone_unique (), r->clone_unique ());
 }
 
 void
@@ -535,7 +534,7 @@ ChannelSend::get_dest_name () const
 }
 
 void
-ChannelSend::init_after_cloning (const ChannelSend & other)
+ChannelSend::init_after_cloning (const ChannelSend &other)
 {
   amount_->control_ = other.amount_->control_;
   enabled_->control_ = other.enabled_->control_;

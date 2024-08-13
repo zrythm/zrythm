@@ -55,7 +55,7 @@ engine_rtmidi_get_num_in_ports (AudioEngine * self)
     }
   catch (const ZrythmException &e)
     {
-      z_warning ("%s", e.what ());
+      z_warning ("{}", e.what ());
       return 0;
     }
 }

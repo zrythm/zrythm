@@ -565,12 +565,12 @@ get_hit_objects (
 
   if (!math_doubles_equal (x, -1) && x < 0.0)
     {
-      z_error ("invalid x: %f", x);
+      z_error ("invalid x: {:f}", x);
       return;
     }
   if (!math_doubles_equal (y, -1) && y < 0.0)
     {
-      z_error ("invalid y: %f", y);
+      z_error ("invalid y: {:f}", y);
       return;
     }
 
@@ -882,7 +882,7 @@ filter_out_frozen_objects (
     return track->frozen_;
   });
 
-  z_debug ("removed %d frozen objects", removed);
+  z_debug ("removed {} frozen objects", removed);
 }
 
 void
@@ -926,7 +926,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
   EVENTS_PUSH_NOW (EventType::ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   sel->add_ticks (ticks_diff);
-  /*z_debug ("adding %f ticks to selections", ticks_diff);*/
+  /*z_debug ("adding {:f} ticks to selections", ticks_diff);*/
 
   if (sel->is_automation ())
     {
@@ -955,10 +955,10 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
   auto at = region->get_automation_track ();
 
   /* get ratio from widget */
-  auto   widget_value = height - (float) y;
-  auto   widget_ratio = std::clamp<float> (widget_value / height, 0.f, 1.f);
-  auto   port = Port::find_from_identifier<ControlPort> (at->port_id_);
-  float  automatable_value = port->normalized_val_to_real (widget_ratio);
+  auto  widget_value = height - (float) y;
+  auto  widget_ratio = std::clamp<float> (widget_value / height, 0.f, 1.f);
+  auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  float automatable_value = port->normalized_val_to_real (widget_ratio);
 
   return automatable_value;
 }
@@ -1796,7 +1796,7 @@ click_pressed (
   gdouble           y,
   ArrangerWidget *  self)
 {
-  z_debug ("arranger click pressed - npress %d", n_press);
+  z_debug ("arranger click pressed - npress {}", n_press);
 
   /* set number of presses */
   self->n_press = n_press;
@@ -1869,7 +1869,7 @@ arranger_widget_create_item (
         self->earliest_obj_start_pos.get (), track_for_snap, nullptr, sg);
     }
 
-  z_debug ("creating item at %f,%f", start_x, start_y);
+  z_debug ("creating item at {:f},{:f}", start_x, start_y);
 
   switch (self->type)
     {
@@ -2535,7 +2535,7 @@ drag_begin (
 
   /* handle hit object */
   int objects_hit = on_drag_begin_handle_hit_object (self, start_x, start_y);
-  z_info ("objects hit %d", objects_hit);
+  z_info ("objects hit {}", objects_hit);
   arranger_widget_print_action (self);
 
   if (objects_hit)
@@ -2549,7 +2549,7 @@ drag_begin (
     {
       self->sel_at_start = NULL;
 
-      z_debug ("npress = %d", self->n_press);
+      z_debug ("npress = {}", self->n_press);
 
       /* single click */
       if (self->n_press == 1)
@@ -2809,7 +2809,7 @@ pan (ArrangerWidget * self, double offset_x, double offset_y)
 {
   offset_x -= self->last_offset_x;
   offset_y -= self->last_offset_y;
-  z_trace ("panning %f %f", offset_x, offset_y);
+  z_trace ("panning {:f} {:f}", offset_x, offset_y);
 
   /* pan */
   auto settings = arranger_widget_get_editor_settings (self);
@@ -3386,11 +3386,11 @@ arranger_widget_finish_creating_item_from_action (
 }
 
 ArrangerObject *
-         arranger_widget_get_hit_arranger_object (
-           ArrangerWidget *     self,
-           ArrangerObject::Type type,
-           double               x,
-           double               y)
+arranger_widget_get_hit_arranger_object (
+  ArrangerWidget *     self,
+  ArrangerObject::Type type,
+  double               x,
+  double               y)
 {
   std::vector<ArrangerObject *> objs;
   arranger_widget_get_hit_objects_at_point (self, type, x, y, objs);
@@ -4057,7 +4057,8 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  auto hit_obj = dynamic_cast<AutomationPoint*>(arranger_widget_get_hit_arranger_object (
+  auto hit_obj = dynamic_cast<
+    AutomationPoint *> (arranger_widget_get_hit_arranger_object (
     (ArrangerWidget *) self, ArrangerObject::Type::AutomationPoint,
     self->hover_x, self->hover_y));
 
@@ -4158,11 +4159,12 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  auto r_obj = dynamic_cast<Region*>(arranger_widget_get_hit_arranger_object (
+  auto r_obj = dynamic_cast<Region *> (arranger_widget_get_hit_arranger_object (
     self, ArrangerObject::Type::Region, self->hover_x, self->hover_y));
-  auto s_obj = dynamic_cast<ScaleObject*>(arranger_widget_get_hit_arranger_object (
-    self, ArrangerObject::Type::ScaleObject, self->hover_x, self->hover_y));
-  auto m_obj = dynamic_cast<Marker*>(arranger_widget_get_hit_arranger_object (
+  auto s_obj =
+    dynamic_cast<ScaleObject *> (arranger_widget_get_hit_arranger_object (
+      self, ArrangerObject::Type::ScaleObject, self->hover_x, self->hover_y));
+  auto m_obj = dynamic_cast<Marker *> (arranger_widget_get_hit_arranger_object (
     self, ArrangerObject::Type::Marker, self->hover_x, self->hover_y));
   if (r_obj && r_obj->is_frozen ())
     {

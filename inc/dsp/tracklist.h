@@ -238,7 +238,7 @@ public:
   {
     if (idx < 0 || static_cast<size_t> (idx) >= tracks_.size ())
       {
-        z_warning ("invalid track idx %d", idx);
+        z_warning ("invalid track idx {}", idx);
         return nullptr;
       }
 

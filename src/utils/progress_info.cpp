@@ -18,7 +18,7 @@ ProgressInfo::request_cancellation ()
 
   if (status_ != RUNNING)
     {
-      z_error ("invalid status %s", ENUM_NAME (status_));
+      z_error ("invalid status {}", ENUM_NAME (status_));
       return;
     }
 
@@ -41,12 +41,12 @@ ProgressInfo::mark_completed (CompletionType type, const char * msg)
   if (type == HAS_WARNING)
     {
       z_return_if_fail (msg);
-      z_info ("progress warning: %s", msg);
+      z_info ("progress warning: {}", msg);
     }
   else if (type == HAS_ERROR)
     {
       z_return_if_fail (msg);
-      z_info ("progress error: %s", msg);
+      z_info ("progress error: {}", msg);
     }
 }
 

@@ -113,7 +113,7 @@ editable_label_widget_on_mp_press (
   gdouble               y,
   EditableLabelWidget * self)
 {
-  z_debug ("n press %d", n_press);
+  z_debug ("n press {}", n_press);
 
   if (n_press == 2 && self->setter)
     {

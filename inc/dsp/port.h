@@ -275,7 +275,7 @@ public:
    *
    * Used when doing delete actions so that ports can be restored on undo.
    */
-  virtual void copy_metadata_from_project (const Port &project_port){};
+  virtual void copy_metadata_from_project (const Port &project_port) {};
 
   /**
    * Reverts the data on the corresponding project port for the given
@@ -285,7 +285,7 @@ public:
    *
    * @param non_project Non-project port.
    */
-  virtual void restore_from_non_project (const Port &non_project){};
+  virtual void restore_from_non_project (const Port &non_project) {};
 
   /**
    * Clears the backend's port buffer.
@@ -565,7 +565,7 @@ public:
 
 extern template MidiPort *
 Port::find_from_identifier<MidiPort> (const PortIdentifier &);
-extern template AudioPort * 
+extern template AudioPort *
 Port::find_from_identifier (const PortIdentifier &);
 extern template CVPort *
 Port::find_from_identifier (const PortIdentifier &);

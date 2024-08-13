@@ -45,7 +45,7 @@ z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
   short *    data = object_new_n ((size_t) buf_size, short);
   sf_count_t frames_read = sf_readf_short (sndfile, data, sfinfo.frames);
   z_return_val_if_fail (frames_read == sfinfo.frames, nullptr);
-  z_info ("read %ld frames for %s", frames_read, file1);
+  z_info ("read {} frames for {}", frames_read, file1);
 
   ret = chromaprint_feed (ctx, data, buf_size);
   z_return_val_if_fail (ret == 1, nullptr);
@@ -59,7 +59,7 @@ z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
   ret = chromaprint_get_raw_fingerprint (ctx, &fp->fp, &fp->size);
   z_return_val_if_fail (ret == 1, nullptr);
 
-  z_info ("fingerprint %s [%d]", fp->compressed_str, fp->size);
+  z_info ("fingerprint {} [{}]", fp->compressed_str, fp->size);
 
   chromaprint_free (ctx);
   free (data);
@@ -102,7 +102,7 @@ z_chromaprint_check_fingerprint_similarity (
 
   double rated = (double) rate / (double) min;
   int    rate_perc = (int) math_round_double_to_signed_32 (rated * 100.0);
-  z_info ("%d out of %d (%d%%)", rate, min, rate_perc);
+  z_info ("{} out of {} ({}%%)", rate, min, rate_perc);
 
   z_return_if_fail (rate_perc >= perc);
 

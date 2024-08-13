@@ -91,22 +91,19 @@ void
 io_mkdir (const std::string &dir)
 {
   // this is called during logger instantiation so check if logger exists
-  if (Logger::getInstanceWithoutCreating()) {
-  z_debug ("Creating directory: %s", dir);
-  }
-  try
+  if (Logger::getInstanceWithoutCreating ())
     {
-      Gio::File::create_for_path (dir)->make_directory_with_parents ();
+      z_debug ("Creating directory: {}", dir);
     }
-  catch (const Glib::Error &ex)
+  std::error_code ec;
+  if (!std::filesystem::create_directories (dir, ec))
     {
-      if (ex.code () == Gio::Error::EXISTS)
+      if (ec.value () == 0) // Directory already exists
         {
-          // OK if file exists
           return;
         }
-      throw ZrythmException (
-        fmt::format ("Failed to make directory {} with parents", dir));
+      throw ZrythmException (fmt::format (
+        "Failed to make directory {} with parents: {}", dir, ec.message ()));
     }
 }
 
@@ -212,7 +209,7 @@ io_path_get_parent_dir (const char * path)
   char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent = string_get_regex_group (path, regex, 1);
 #  if 0
-  z_info ("[%s]\npath: %s\nregex: %s\nparent: %s",
+  z_info ("[%s]\npath: %s\nregex: {}\nparent: {}",
     __func__, path, regex, parent);
 #  endif
 
@@ -221,7 +218,7 @@ io_path_get_parent_dir (const char * path)
       strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
       parent = string_get_regex_group (path, regex, 1);
 #  if 0
-      z_info ("path: %s\nregex: %s\nparent: %s",
+      z_info ("path: %s\nregex: {}\nparent: {}",
         path, regex, parent);
 #  endif
     }
@@ -252,7 +249,7 @@ io_file_get_last_modified_datetime (const char * filename)
     {
       return result.st_mtime;
     }
-  z_info ("Failed to get last modified for %s", filename);
+  z_info ("Failed to get last modified for {}", filename);
   return -1;
 }
 
@@ -271,7 +268,7 @@ io_remove (const std::string &path)
 {
   if (gZrythm)
     {
-      z_debug ("Removing %s...", path);
+      z_debug ("Removing {}...", path);
     }
 
   juce::File file (path);
@@ -515,7 +512,7 @@ io_open_directory (const char * path)
   sprintf (command, OPEN_DIR_CMD " \"%s\"", path);
 #endif
   system (command);
-  z_info ("executed: %s", command);
+  z_info ("executed: {}", command);
 }
 
 void
@@ -554,7 +551,7 @@ io_get_registry_string_val (const char * path)
   RegGetValue (
     HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, nullptr,
     (PVOID) &value, &BufferSize);
-  z_info ("reg value: %s", value);
+  z_info ("reg value: {}", value);
   return g_strdup (value);
 }
 #endif
@@ -574,7 +571,7 @@ io_get_bundle_path (char * bundle_path)
     bundleURL, TRUE, (UInt8 *) bundle_path, PATH_MAX);
   z_return_val_if_fail (success, -1);
   CFRelease (bundleURL);
-  z_info ("bundle path: %s", bundle_path);
+  z_info ("bundle path: {}", bundle_path);
 
   return 0;
 }
@@ -594,13 +591,13 @@ io_traverse_path (const char * abs_path)
     {
       if (!string_is_equal (traversed_path, abs_path))
         {
-          z_debug ("traversed path: %s => %s", abs_path, traversed_path);
+          z_debug ("traversed path: {} => {}", abs_path, traversed_path);
         }
       return traversed_path;
     }
   else
     {
-      z_warning ("realpath() failed: %s", strerror (errno));
+      z_warning ("realpath() failed: {}", strerror (errno));
       return g_strdup (abs_path);
     }
 #else

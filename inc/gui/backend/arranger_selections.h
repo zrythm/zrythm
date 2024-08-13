@@ -290,7 +290,7 @@ public:
    *
    * @note All selections must be on the same lane.
    */
-  virtual void merge (){};
+  virtual void merge () {};
 
   /**
    * Returns if the selections can be pasted at the current place/playhead.

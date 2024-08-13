@@ -146,9 +146,9 @@ public:
     return frames_ > start.frames_ && frames_ <= end.frames_;
   }
 
-/**
- * Sets position to given bar.
- */
+  /**
+   * Sets position to given bar.
+   */
   void set_to_bar (int bar);
 
   /**
@@ -161,15 +161,15 @@ public:
     update_ticks_from_frames (0.0);
   }
 
-   /**
-    * Converts seconds to position and puts the result in the given Position.
-    */
-   void from_seconds (double secs);
+  /**
+   * Converts seconds to position and puts the result in the given Position.
+   */
+  void from_seconds (double secs);
 
-   inline void from_frames (const signed_frame_t frames)
-   {
-     frames_ = frames;
-     update_ticks_from_frames (0.0);
+  inline void from_frames (const signed_frame_t frames)
+  {
+    frames_ = frames;
+    update_ticks_from_frames (0.0);
   }
 
   /**
@@ -208,9 +208,9 @@ public:
     update_frames_from_ticks (0.0);
   }
 
-/**
- * Returns the Position in milliseconds.
- */
+  /**
+   * Returns the Position in milliseconds.
+   */
   signed_ms_t to_ms () const;
 
   static signed_frame_t ms_to_frames (double ms);

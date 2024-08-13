@@ -35,7 +35,7 @@ struct GSettingsWrapper
   {
     if (!settings_)
       {
-        z_error ("invalid settings schema id: %s", schema_id_.c_str ());
+        z_error ("invalid settings schema id: {}", schema_id_.c_str ());
       }
   }
 

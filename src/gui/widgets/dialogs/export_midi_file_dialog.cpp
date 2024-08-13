@@ -22,7 +22,7 @@ on_response (GtkNativeDialog * native, int response)
       GFile *          gfile = gtk_file_chooser_get_file (chooser);
       char *           filename = g_file_get_path (gfile);
 
-      z_info ("exporting to %s", filename);
+      z_info ("exporting to {}", filename);
 
       int          midi_format = 0;
       const char * midi_format_str =

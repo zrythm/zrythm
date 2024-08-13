@@ -76,7 +76,7 @@ UndoManager::undo ()
 
   for (int i = 0; i < num_actions; ++i)
     {
-      z_info ("[ACTION %d/%d]", i + 1, num_actions);
+      z_info ("[ACTION {}/{}]", i + 1, num_actions);
       action = undo_stack_->peek ();
       if (i == 0)
         action->num_actions_ = 1;
@@ -109,7 +109,7 @@ UndoManager::redo ()
 
   for (int i = 0; i < num_actions; ++i)
     {
-      z_info ("[ACTION %d/%d]", i + 1, num_actions);
+      z_info ("[ACTION {}/{}]", i + 1, num_actions);
       action = redo_stack_->peek ();
       if (i == 0)
         action->num_actions_ = 1;

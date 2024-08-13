@@ -179,7 +179,7 @@ stretcher_stretch (
   float *       out_samples_r,
   size_t        out_samples_wanted)
 {
-  z_info ("%s: in samples size: %zu", __func__, in_samples_size);
+  z_info ("{}: in samples size: {}", __func__, in_samples_size);
   z_return_val_if_fail (in_samples_l, -1);
 
   /*rubberband_reset (self->rubberband_state);*/
@@ -221,7 +221,7 @@ stretcher_stretch (
    * fill with silence */
   if (avail < (int) out_samples_wanted)
     {
-      z_info ("%s: not enough samples available", __func__);
+      z_info ("{}: not enough samples available", __func__);
       return (ssize_t) out_samples_wanted;
     }
 
@@ -231,7 +231,7 @@ stretcher_stretch (
     self->rubberband_state, out_samples, out_samples_wanted);
   z_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
-  z_info ("%s: out samples size: %zu", __func__, retrieved_out_samples);
+  z_info ("{}: out samples size: {}", __func__, retrieved_out_samples);
 
   return (ssize_t) retrieved_out_samples;
 }
@@ -271,10 +271,10 @@ stretcher_stretch_interleaved (
 {
   z_return_val_if_fail (in_samples, -1);
 
-  z_info ("input samples: %zu", in_samples_size);
+  z_info ("input samples: {}", in_samples_size);
 
   /* create the de-interleaved array */
-  unsigned int channels = self->channels;
+  unsigned int       channels = self->channels;
   std::vector<float> in_buffers_l (in_samples_size, 0.f);
   std::vector<float> in_buffers_r (in_samples_size, 0.f);
   for (size_t i = 0; i < in_samples_size; i++)
@@ -310,7 +310,7 @@ stretcher_stretch_interleaved (
 
   /* create the out sample arrays */
   // float * out_samples[channels];
-  size_t  out_samples_size = (size_t) math_round_double_to_signed_64 (
+  size_t out_samples_size = (size_t) math_round_double_to_signed_64 (
     rubberband_get_time_ratio (self->rubberband_state) * in_samples_size);
   juce::AudioSampleBuffer out_samples (channels, out_samples_size);
 

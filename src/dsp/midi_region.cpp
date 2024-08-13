@@ -173,7 +173,7 @@ MidiRegion::MidiRegion (
   int                idx_inside_lane,
   int                idx)
 {
-  z_debug ("reading from %s...", abs_path);
+  z_debug ("reading from {}...", abs_path);
 
   id_.type_ = RegionType::Midi;
 
@@ -183,11 +183,11 @@ MidiRegion::MidiRegion (
       throw ZrythmException ("Unable to open midi file at " + abs_path);
     }
 
-  char         str[128];
-  int          ev;
-  MIDI_MSG     msg;
-  Position     pos, global_pos;
-  double       ticks;
+  char     str[128];
+  int      ev;
+  MIDI_MSG msg;
+  Position pos, global_pos;
+  double   ticks;
 
   Position end_pos = start_pos;
   end_pos.add_ticks (1);
@@ -213,7 +213,7 @@ MidiRegion::MidiRegion (
           continue;
         }
 
-      z_info ("reading MIDI Track %d", i);
+      z_info ("reading MIDI Track {}", i);
       if (i >= 1000)
         {
           throw ZrythmException ("Too many tracks in midi file");
@@ -225,7 +225,7 @@ MidiRegion::MidiRegion (
           pos.from_ticks (ticks);
           global_pos = pos_;
           global_pos.add_ticks (ticks);
-          z_debug ("dwAbsPos: %d ", msg.dwAbsPos);
+          z_debug ("dwAbsPos: {} ", msg.dwAbsPos);
 
           int bars = pos.get_bars (true);
           if (ZRYTHM_HAVE_UI && bars > TRANSPORT->total_bars_ - 8)
@@ -244,7 +244,7 @@ MidiRegion::MidiRegion (
 
           if (muGetMIDIMsgName (str, (tMIDI_MSG) ev))
             {
-              z_debug ("MIDI msg name: %s", str);
+              z_debug ("MIDI msg name: {}", str);
             }
           switch (ev)
             {
@@ -302,12 +302,12 @@ handle_note_off:
               break;
             case msgSetProgram:
               muGetInstrumentName (str, msg.MsgData.ChangeProgram.iProgram);
-              z_debug ("(%.2d) %s", msg.MsgData.ChangeProgram.iChannel, str);
+              z_debug ("(%.2d) {}", msg.MsgData.ChangeProgram.iChannel, str);
               break;
             case msgChangePressure:
               muGetControlName (
                 str, (tMIDI_CC) msg.MsgData.ChangePressure.iPressure);
-              z_debug ("(%.2d) %s", msg.MsgData.ChangePressure.iChannel, str);
+              z_debug ("(%.2d) {}", msg.MsgData.ChangePressure.iChannel, str);
               break;
             case msgSetPitchWheel:
               z_debug (
@@ -383,7 +383,7 @@ handle_note_off:
                   loop_end_pos_setter (&global_pos);
                   break;
                 case metaSetTempo:
-                  z_info ("tempo %d", msg.MsgData.MetaEvent.Data.Tempo.iBPM);
+                  z_info ("tempo {}", msg.MsgData.MetaEvent.Data.Tempo.iBPM);
                   break;
                 case metaSMPTEOffset:
                   z_info (
@@ -429,7 +429,7 @@ handle_note_off:
             }
           else
             {
-              char tmp[100];
+              char        tmp[100];
               std::string print_str = "[";
               if (msg.bImpliedMsg)
                 {
@@ -442,7 +442,7 @@ handle_note_off:
                   print_str += tmp;
                 }
               print_str += "]";
-              z_debug ("%s", print_str);
+              z_debug ("{}", print_str);
             }
         }
 
@@ -562,8 +562,8 @@ MidiRegion::export_to_midi_file (
 uint8_t
 MidiRegion::get_midi_ch () const
 {
-  uint8_t     ret;
-  auto        lane = get_lane ();
+  uint8_t ret;
+  auto    lane = get_lane ();
   z_return_val_if_fail (lane, 1);
   if (lane->midi_ch_ > 0)
     ret = lane->midi_ch_;
@@ -682,7 +682,7 @@ MidiRegion::add_events (
 
           double note_global_start_ticks = mn_pos.ticks_ + region_start;
           double note_global_end_ticks = mn_end_pos.ticks_ + region_start;
-          bool write_note = true;
+          bool   write_note = true;
           if (start && note_global_end_ticks < start->ticks_)
             write_note = false;
           if (end && note_global_start_ticks > end->ticks_)

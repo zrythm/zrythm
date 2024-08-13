@@ -22,7 +22,7 @@ timeline_toolbar_widget_refresh (TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
   bool sensitive = TL_SELECTIONS->can_be_merged ();
-  z_debug ("settings merge button sensitivity %d", sensitive);
+  z_debug ("settings merge button sensitivity {}", sensitive);
   gtk_widget_set_sensitive (GTK_WIDGET (self->merge_btn), sensitive);
 }
 

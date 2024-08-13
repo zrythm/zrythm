@@ -48,9 +48,9 @@ editor_ruler_on_drag_update (RulerWidget * self, double offset_x, double offset_
 {
   if (ACTION_IS (UiOverlayAction::MOVING))
     {
-      Position         editor_pos;
-      Position         region_local_pos;
-      auto             r = CLIP_EDITOR->get_region ();
+      Position editor_pos;
+      Position region_local_pos;
+      auto     r = CLIP_EDITOR->get_region ();
 
       /* convert px to position */
       editor_pos = ui_px_to_pos_editor (self->start_x + offset_x, true);

@@ -25,7 +25,7 @@
 
 struct PangoLayoutDeleter
 {
-  PangoLayoutDeleter (){};
+  PangoLayoutDeleter () {};
 
   void operator() (PangoLayout * layout) const { g_object_unref (layout); };
 };

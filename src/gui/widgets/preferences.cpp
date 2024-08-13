@@ -355,7 +355,7 @@ make_control (
   GVariant *           range = g_settings_schema_key_get_range (schema_key);
 
 #if 0
-  z_info ("%s",
+  z_info ("{}",
     g_variant_get_type_string (current_var));
 #endif
 
@@ -517,7 +517,7 @@ make_control (
         {
           /* map enums */
           const char * const * strv = nullptr;
-          size_t        size = 0;
+          size_t               size = 0;
 
 #define SET_STRV_IF_MATCH(a, b, c, arr_name) \
   if (KEY_IS (a, b, c)) \
@@ -658,7 +658,7 @@ add_subgroup (
   SubgroupInfo * info = &self->subgroup_infos[group_idx][subgroup_idx];
 
   const char * localized_subgroup_name = info->name;
-  z_info ("adding subgroup %s (%s)", info->name, localized_subgroup_name);
+  z_info ("adding subgroup {} ({})", info->name, localized_subgroup_name);
 
   /* create a section for the subgroup */
   AdwPreferencesGroup * subgroup =
@@ -716,7 +716,7 @@ add_subgroup (
       if (string_is_equal (key, "info"))
         continue;
 
-      z_info ("adding control for %s", key);
+      z_info ("adding control for {}", key);
 
       /* add control */
       GtkWidget * widget = make_control (self, group_idx, subgroup_idx, key);
@@ -762,7 +762,7 @@ add_subgroup (
         }
       else
         {
-          z_warning ("no widget for %s", key);
+          z_warning ("no widget for {}", key);
         }
     }
 
@@ -804,7 +804,7 @@ get_group_icon (const char * schema_str)
       icon_name = "gnome-icon-library-display-symbolic";
     }
 
-  z_debug ("icon name for %s: %s", schema_str, icon_name);
+  z_debug ("icon name for {}: {}", schema_str, icon_name);
 
   return icon_name;
 }
@@ -863,7 +863,7 @@ add_group (PreferencesWidget * self, int group_idx)
     }
 
   const char * localized_group_name = group_name;
-  z_info ("adding group %s (%s)", group_name, localized_group_name);
+  z_info ("adding group {} ({})", group_name, localized_group_name);
 
   /* create a page for the group */
   AdwPreferencesPage * page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());

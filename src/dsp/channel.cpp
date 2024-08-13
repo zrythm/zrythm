@@ -740,21 +740,21 @@ Channel::connect_plugins ()
                 }
             }
 
-      auto instantiate_if_needed = [] (Plugin * pl) {
-        if (pl && !pl->instantiated_ && !pl->instantiation_failed_)
-          {
-            pl->instantiate ();
-          }
-      };
+          auto instantiate_if_needed = [] (Plugin * pl) {
+            if (pl && !pl->instantiated_ && !pl->instantiation_failed_)
+              {
+                pl->instantiate ();
+              }
+          };
 
-      try
-        {
-          instantiate_if_needed (prev_pl);
-          instantiate_if_needed (next_pl);
-        }
+          try
+            {
+              instantiate_if_needed (prev_pl);
+              instantiate_if_needed (next_pl);
+            }
           catch (const ZrythmException &e)
             {
-              z_warning ("plugin instantiation failed: %s", e.what ());
+              z_warning ("plugin instantiation failed: {}", e.what ());
             }
 
           if (!prev_pl && !next_pl)
@@ -1598,7 +1598,7 @@ Channel::get_plugins (std::vector<Plugin *> &pls)
 void
 Channel::disconnect (bool remove_pl)
 {
-  z_debug ("disconnecting channel %s", track_->get_name ());
+  z_debug ("disconnecting channel {}", track_->get_name ());
   if (remove_pl)
     {
       for (int i = 0; i < STRIP_SIZE; i++)

@@ -50,7 +50,7 @@ on_dnd_leave_value_ready (
   const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
-      z_info ("error: %s", err->message);
+      z_info ("error: {}", err->message);
       return;
     }
 
@@ -91,7 +91,7 @@ on_dnd_motion_value_ready (
   const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
-      z_info ("error: %s", err->message);
+      z_info ("error: {}", err->message);
       return;
     }
 

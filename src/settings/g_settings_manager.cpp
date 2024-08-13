@@ -325,7 +325,7 @@ GSettingsManager::append_to_strv (
       for (size_t i = 0; new_strv[i] != NULL; i++)
         {
           char * tmp = new_strv[i];
-          z_info ("setting [%zu]: %s", i, tmp);
+          z_info ("setting [{}]: {}", i, tmp);
         }
     }
   else

@@ -48,7 +48,8 @@ ChordPreset::set_name (const std::string &name)
 GMenuModel *
 ChordPreset::generate_context_menu () const
 {
-  ChordPresetPack * pack = CHORD_PRESET_PACK_MANAGER->get_pack_for_preset (*this);
+  ChordPresetPack * pack =
+    CHORD_PRESET_PACK_MANAGER->get_pack_for_preset (*this);
   z_return_val_if_fail (pack, nullptr);
   if (pack->is_standard_)
     return nullptr;

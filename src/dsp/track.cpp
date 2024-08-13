@@ -544,7 +544,7 @@ freeze_progress_close_cb (ExportData * data)
 bool
 track_freeze (Track * self, bool freeze, GError ** error)
 {
-  z_info ("%sfreezing %s...", freeze ? "" : "un", self->name);
+  z_info ("{}freezing {}...", freeze ? "" : "un", self->name);
 
   if (freeze)
     {
@@ -664,7 +664,7 @@ Track::remove_plugin (
   bool           deleting_track,
   bool           recalc_graph)
 {
-  z_debug ("removing plugin from track %s", name_);
+  z_debug ("removing plugin from track {}", name_);
   if (slot_type == PluginSlotType::Modulator)
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
@@ -689,7 +689,7 @@ Track::remove_plugin (
 void
 Track::disconnect (bool remove_pl, bool recalc_graph)
 {
-  z_debug ("disconnecting track '%s' (%d)...", name_, pos_);
+  z_debug ("disconnecting track '{}' ({})...", name_, pos_);
 
   disconnecting_ = true;
 
@@ -957,7 +957,7 @@ Track::set_name (const std::string &name, bool pub_events)
         CLIP_EDITOR->has_region_
         && CLIP_EDITOR->region_id_.track_name_hash_ == old_hash)
         {
-          z_debug ("updating clip editor region track to %s", name_);
+          z_debug ("updating clip editor region track to {}", name_);
           CLIP_EDITOR->region_id_.track_name_hash_ = new_hash;
         }
     }
@@ -1238,7 +1238,7 @@ Track::set_enabled (
   bool fire_events)
 {
   enabled_ = enabled;
-  z_debug ("Setting track %s %s", name_, enabled_ ? "enabled" : "disabled");
+  z_debug ("Setting track {} {}", name_, enabled_ ? "enabled" : "disabled");
 
   if (auto_select)
     select (true, true, fire_events);

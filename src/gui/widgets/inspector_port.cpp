@@ -55,7 +55,7 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 
       const char * star = (num_midi_mappings > 0 ? "*" : "");
       char * port_label = g_markup_escape_text (port->id_.label_.c_str (), -1);
-      auto         color_prefix =
+      auto   color_prefix =
         fmt::format ("<span foreground=\"{}\">", self->hex_color);
       char color_suffix[40] = "</span>";
       if (port->id_.flow_ == PortFlow::Input)
@@ -304,7 +304,7 @@ bar_slider_tick_cb (
   gint64 now = g_get_monotonic_time ();
   if (now - self->last_tooltip_change > 100000)
     {
-      char str[2000];
+      char   str[2000];
       auto   full_designation = self->port->get_full_designation ();
       char * full_designation_escaped =
         g_markup_escape_text (full_designation.c_str (), -1);
@@ -491,7 +491,7 @@ dispose (InspectorPortWidget * self)
 #define GET_REFCOUNT (((ZGObjectImpl *) self->connections_popover)->ref_count)
 
   int refcount = (int) GET_REFCOUNT;
-  /*z_debug ("refcount: %d", refcount);*/
+  /*z_debug ("refcount: {}", refcount);*/
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
   refcount--;
 
@@ -500,7 +500,7 @@ dispose (InspectorPortWidget * self)
   while (refcount > 0)
     {
       refcount = (int) GET_REFCOUNT;
-      z_debug ("unrefing... refcount: %d", refcount);
+      z_debug ("unrefing... refcount: {}", refcount);
       g_object_unref (self->connections_popover);
       refcount--;
     }

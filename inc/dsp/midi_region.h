@@ -161,8 +161,7 @@ public:
    * @param use_track_or_lane_pos Whether to use the track/lane position in the
    * MIDI data. The MIDI track will be set to 1 if false.
    */
-  NONNULL_ARGS (2)
-  void write_to_midi_file (
+  NONNULL_ARGS (2) void write_to_midi_file (
     MIDI_FILE * mf,
     const bool  add_region_start,
     bool        export_full) const;

@@ -221,7 +221,7 @@ setup_view (ChannelSendSelectorWidget * self)
     {
       auto target_track = TRACKLIST->tracks_[i].get ();
 
-      z_trace ("target %s", target_track->name_);
+      z_trace ("target {}", target_track->name_);
 
       /* skip tracks with non-matching signal types */
       if (
@@ -229,7 +229,7 @@ setup_view (ChannelSendSelectorWidget * self)
         || track->out_signal_type_ != target_track->in_signal_type_
         || !Track::type_is_fx (target_track->type_))
         continue;
-      z_debug ("adding %s", target_track->name_);
+      z_debug ("adding {}", target_track->name_);
 
       /* create target */
       auto * target = new ChannelSend::Target ();
@@ -267,11 +267,11 @@ setup_view (ChannelSendSelectorWidget * self)
 
       for (auto pl : pls)
         {
-          z_debug ("plugin %s", pl->get_name ());
+          z_debug ("plugin {}", pl->get_name ());
 
           for (auto &port : pl->in_ports_)
             {
-              z_debug ("port %s", port->get_label ());
+              z_debug ("port {}", port->get_label ());
 
               if (
                 !(ENUM_BITSET_TEST (
@@ -293,7 +293,7 @@ setup_view (ChannelSendSelectorWidget * self)
                 {
                   continue;
                 }
-              z_debug ("other channel %s", other_channel->get_label ());
+              z_debug ("other channel {}", other_channel->get_label ());
 
               Port *l = nullptr, *r = NULL;
               if (

@@ -358,7 +358,7 @@ protected:
       : pos_ (pos), type_ (type), name_ (std::move (name)),
         in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
   {
-    z_debug ("creating track '%s'", name_);
+    z_debug ("creating track '{}'", name_);
   }
 
 public:
@@ -515,7 +515,7 @@ public:
   /**
    * Removes all objects recursively from the track.
    */
-  virtual void clear_objects (){};
+  virtual void clear_objects () {};
 
   /**
    * Verifies the identifiers on a live Track (in the project, not a clone).
@@ -564,7 +564,7 @@ public:
   static std::string name_getter (void * track)
   {
     return static_cast<Track *> (track)->get_name ();
-    }
+  }
 
   /**
    * Internally called by set_name_with_action().

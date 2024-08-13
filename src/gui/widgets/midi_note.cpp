@@ -169,9 +169,9 @@ void
 midi_note_get_adjusted_color (MidiNote * self, Color &color)
 {
   // ArrangerWidget * arranger = self->get_arranger ();
-  auto             region = self->get_region ();
-  auto             ce_region = CLIP_EDITOR->get_region ();
-  Position         global_start_pos;
+  auto     region = self->get_region ();
+  auto     ce_region = CLIP_EDITOR->get_region ();
+  Position global_start_pos;
   self->get_global_start_pos (global_start_pos);
   ChordObject * co = P_CHORD_TRACK->get_chord_at_pos (global_start_pos);
   ScaleObject * so = P_CHORD_TRACK->get_scale_at_pos (global_start_pos);

@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Project helper.
  */
@@ -20,7 +20,6 @@
 #include "dsp/marker_track.h"
 #include "dsp/master_track.h"
 #include "dsp/midi_note.h"
-#include "dsp/modulator_track.h"
 #include "dsp/recording_manager.h"
 #include "dsp/region.h"
 #include "dsp/router.h"
@@ -28,9 +27,6 @@
 #include "dsp/tracklist.h"
 #include "project.h"
 #include "project/project_init_flow_manager.h"
-#include "utils/cairo.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -46,57 +42,57 @@
  */
 
 /** MidiNote value to use. */
-#define MN_VAL 78
+constexpr int MN_VAL = 78;
 /** MidiNote velocity to use. */
-#define MN_VEL 23
+constexpr int MN_VEL = 23;
 
 /** First AP value. */
-#define AP_VAL1 0.6f
+constexpr float AP_VAL1 = 0.6f;
 /** Second AP value. */
-#define AP_VAL2 0.9f
+constexpr float AP_VAL2 = 0.9f;
 
 /** Marker name. */
-#define MARKER_NAME "Marker name"
+constexpr const char * MARKER_NAME = "Marker name";
 
-#define MUSICAL_SCALE_TYPE MusicalScaleType::SCALE_IONIAN
-#define MUSICAL_SCALE_ROOT MusicalNote::NOTE_A
+constexpr auto MUSICAL_SCALE_TYPE = MusicalScale::Type::Ionian;
+constexpr auto MUSICAL_SCALE_ROOT = MusicalNote::A;
 
-#define MOVE_TICKS 400
+constexpr int MOVE_TICKS = 400;
 
-#define TOTAL_TL_SELECTIONS 6
+constexpr int TOTAL_TL_SELECTIONS = 6;
 
-#define MIDI_REGION_NAME "Midi region"
-#define AUDIO_REGION_NAME "Audio region"
-#define MIDI_TRACK_NAME "Midi track"
-#define AUDIO_TRACK_NAME "Audio track"
+constexpr const char * MIDI_REGION_NAME = "Midi region";
+constexpr const char * AUDIO_REGION_NAME = "Audio region";
+constexpr const char * MIDI_TRACK_NAME = "Midi track";
+constexpr const char * AUDIO_TRACK_NAME = "Audio track";
 
 /* initial positions */
-#define MIDI_REGION_LANE 2
-#define AUDIO_REGION_LANE 3
+constexpr int MIDI_REGION_LANE = 2;
+constexpr int AUDIO_REGION_LANE = 3;
 
 /* target positions */
-#define TARGET_MIDI_TRACK_NAME "Target midi tr"
-#define TARGET_AUDIO_TRACK_NAME "Target audio tr"
+constexpr const char * TARGET_MIDI_TRACK_NAME = "Target midi tr";
+constexpr const char * TARGET_AUDIO_TRACK_NAME = "Target audio tr";
 
 /* TODO test moving lanes */
-#define TARGET_MIDI_REGION_LANE 0
-#define TARGET_AUDIO_REGION_LANE 5
+constexpr int TARGET_MIDI_REGION_LANE = 0;
+constexpr int TARGET_AUDIO_REGION_LANE = 5;
 
-char *
-test_project_save (void);
+fs::path
+test_project_save ();
 
 COLD void
-test_project_reload (const char * prj_file);
+test_project_reload (const fs::path &prj_file);
 
 void
-test_project_save_and_reload (void);
+test_project_save_and_reload ();
 
 /**
  * Stop dummy audio engine processing so we can
  * process manually.
  */
 void
-test_project_stop_dummy_engine (void);
+test_project_stop_dummy_engine ();
 
 void
 test_project_check_vs_original_state (
@@ -107,43 +103,37 @@ test_project_check_vs_original_state (
 void
 test_project_rebootstrap_timeline (Position * p1, Position * p2);
 
-char *
-test_project_save (void)
+fs::path
+test_project_save ()
 {
   /* save the project */
-  GError * err = NULL;
-  bool success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
-  g_assert_true (success);
-  char * prj_file = g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
+  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
-  object_free_w_func_and_null (project_free, PROJECT);
+  PROJECT.reset ();
 
   return prj_file;
 }
 
 void
-test_project_reload (const char * prj_file)
+test_project_reload (const fs::path &prj_file)
 {
-  project_init_flow_manager_load_or_create_default_project (
-    prj_file, false, test_helper_project_init_done_cb, NULL);
+  std::make_unique<ProjectInitFlowManager> (
+    prj_file.string (), false, test_helper_project_init_done_cb, nullptr);
 }
 
 void
 test_project_save_and_reload (void)
 {
   /* save the project */
-  char * prj_file = test_project_save ();
-  g_assert_nonnull (prj_file);
+  auto prj_file = test_project_save ();
+  REQUIRE_NONEMPTY (prj_file);
 
-  /* recreate the recording manager to drop any
-   * events */
-  object_free_w_func_and_null (
-    recording_manager_free, gZrythm->recording_manager);
-  gZrythm->recording_manager = recording_manager_new ();
+  /* recreate the recording manager to drop any events */
+  gZrythm->recording_manager_ = std::make_unique<RecordingManager> ();
 
   /* reload it */
   test_project_reload (prj_file);
-  g_free (prj_file);
 }
 
 /**
@@ -164,84 +154,80 @@ check_vs_orig_state:
 
   if (check_selections)
     {
-      g_assert_cmpint (TL_SELECTIONS->num_regions, ==, 4);
-      g_assert_cmpint (TL_SELECTIONS->num_markers, ==, 1);
-      g_assert_cmpint (TL_SELECTIONS->num_scale_objects, ==, 1);
+      REQUIRE_EQ (TL_SELECTIONS->get_num_objects<Region> (), 4);
+      REQUIRE_EQ (TL_SELECTIONS->get_num_objects<Marker> (), 1);
+      REQUIRE_EQ (TL_SELECTIONS->get_num_objects<ScaleObject> (), 1);
     }
 
-  Track * midi_track = tracklist_find_track_by_name (TRACKLIST, MIDI_TRACK_NAME);
-  g_assert_nonnull (midi_track);
-  Track * audio_track =
-    tracklist_find_track_by_name (TRACKLIST, AUDIO_TRACK_NAME);
-  g_assert_nonnull (audio_track);
+  auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+  REQUIRE_NONNULL (midi_track);
+  auto audio_track =
+    TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+  REQUIRE_NONNULL (audio_track);
 
-  Position p1_before_move, p2_before_move;
-  p1_before_move = *p1;
-  p2_before_move = *p2;
-  position_add_ticks (&p1_before_move, -MOVE_TICKS);
-  position_add_ticks (&p2_before_move, -MOVE_TICKS);
+  Position p1_before_move = *p1;
+  Position p2_before_move = *p2;
+  p1_before_move.add_ticks (-MOVE_TICKS);
+  p2_before_move.add_ticks (-MOVE_TICKS);
 
-  /* check midi region */
-  g_assert_cmpint (midi_track->lanes[MIDI_REGION_LANE]->num_regions, ==, 1);
-  ArrangerObject * obj =
-    (ArrangerObject *) midi_track->lanes[MIDI_REGION_LANE]->regions[0];
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmppos (&obj->end_pos, p2);
-  Region * r = (Region *) obj;
-  g_assert_cmpint (r->num_midi_notes, ==, 1);
-  MidiNote * mn = r->midi_notes[0];
-  obj = (ArrangerObject *) mn;
-  g_assert_cmpuint (mn->val, ==, MN_VAL);
-  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmppos (&obj->end_pos, p2);
-  g_assert_true (region_identifier_is_equal (&obj->region_id, &r->id));
+  { /* check midi region */
+    REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+    auto r = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
+    REQUIRE_POSITION_EQ (r->pos_, *p1);
+    REQUIRE_POSITION_EQ (r->end_pos_, *p2);
+    REQUIRE_SIZE_EQ (r->midi_notes_, 1);
+    auto mn = r->midi_notes_[0];
+    REQUIRE_EQ (mn->val_, MN_VAL);
+    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+    REQUIRE_POSITION_EQ (mn->pos_, *p1);
+    REQUIRE_POSITION_EQ (mn->end_pos_, *p2);
+    REQUIRE_EQ (mn->region_id_, r->id_);
+  }
 
-  /* check audio region */
-  g_assert_cmpint (audio_track->lanes[AUDIO_REGION_LANE]->num_regions, ==, 1);
-  obj = (ArrangerObject *) audio_track->lanes[AUDIO_REGION_LANE]->regions[0];
-  g_assert_cmppos (&obj->pos, p1);
+  {
+    /* check audio region */
+    REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+    auto r = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
+    REQUIRE_POSITION_EQ (r->pos_, *p1);
+  }
 
-  /* check automation region */
-  AutomationTracklist * atl = track_get_automation_tracklist (P_MASTER_TRACK);
-  g_assert_nonnull (atl);
-  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
-    PortIdentifier::Flags::STEREO_BALANCE);
-  g_assert_nonnull (at);
-  g_assert_cmpint (at->num_regions, ==, 1);
-  obj = (ArrangerObject *) at->regions[0];
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmppos (&obj->end_pos, p2);
-  r = (Region *) obj;
-  g_assert_cmpint (r->num_aps, ==, 2);
-  AutomationPoint * ap = r->aps[0];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmpfloat_with_epsilon (ap->fvalue, AP_VAL1, 0.000001f);
-  ap = r->aps[1];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, p2);
-  g_assert_cmpfloat_with_epsilon (ap->fvalue, AP_VAL2, 0.000001f);
+  {
+    /* check automation region */
+    auto at = P_MASTER_TRACK->channel_->get_automation_track (
+      PortIdentifier::Flags::StereoBalance);
+    REQUIRE_NONNULL (at);
+    REQUIRE_SIZE_EQ (at->regions_, 1);
+    auto r = at->regions_[0];
+    REQUIRE_POSITION_EQ (r->pos_, *p1);
+    REQUIRE_POSITION_EQ (r->end_pos_, *p2);
+    REQUIRE_SIZE_EQ (r->aps_, 2);
+    auto ap = r->aps_[0];
+    REQUIRE_POSITION_EQ (ap->pos_, *p1);
+    REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+    ap = r->aps_[1];
+    REQUIRE_POSITION_EQ (ap->pos_, *p2);
+    REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+  }
 
-  /* check marker */
-  Marker * m;
-  g_assert_cmpint (P_MARKER_TRACK->num_markers, ==, 3);
-  obj = (ArrangerObject *) P_MARKER_TRACK->markers[0];
-  m = (Marker *) obj;
-  g_assert_true (m);
-  g_assert_cmpstr (m->name, ==, "[start]");
-  obj = (ArrangerObject *) P_MARKER_TRACK->markers[2];
-  m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+  {
+    /* check marker */
+    REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 3);
+    auto m = P_MARKER_TRACK->markers_[0];
+    REQUIRE_NONNULL (m);
+    REQUIRE_EQ (m->name_, "[start]");
+    m = P_MARKER_TRACK->markers_[2];
+    REQUIRE_POSITION_EQ (m->pos_, *p1);
+    REQUIRE_EQ (m->name_, MARKER_NAME);
+  }
 
-  /* check scale object */
-  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 1);
-  obj = (ArrangerObject *) P_CHORD_TRACK->scales[0];
-  ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmpenum (s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpenum (s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+  {
+    /* check scale object */
+    REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 1);
+    auto s = P_CHORD_TRACK->scales_[0];
+    REQUIRE_POSITION_EQ (s->pos_, *p1);
+    REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+    REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+  }
 
   /* save the project and reopen it. some callers
    * undo after this step so this checks if the undo
@@ -260,179 +246,165 @@ check_vs_orig_state:
 void
 test_project_rebootstrap_timeline (Position * p1, Position * p2)
 {
-  GError * err = NULL;
-
   test_helper_zrythm_init ();
 
   /* pause engine */
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
+  AudioEngine::State state;
+  AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   /* remove any previous work */
-  chord_track_clear (P_CHORD_TRACK);
-  marker_track_clear (P_MARKER_TRACK);
-  tempo_track_clear (P_TEMPO_TRACK);
+  P_CHORD_TRACK->clear_objects ();
+  P_MARKER_TRACK->clear_objects ();
+  P_TEMPO_TRACK->clear_objects ();
   // modulator_track_clear (P_MODULATOR_TRACK);
-  for (int i = TRACKLIST->tracks.size () - 1; i > P_MASTER_TRACK->pos; i--)
+  for (auto &track : TRACKLIST->tracks_ | std::views::reverse)
     {
-      Track * track = TRACKLIST->tracks[i];
-      tracklist_remove_track (
-        TRACKLIST, track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
+      TRACKLIST->remove_track (*track, true, true, false, false);
+      if (track->is_master ())
+        break;
     }
-  track_clear (P_MASTER_TRACK);
+  P_MASTER_TRACK->clear_objects ();
 
   /* Create and add a MidiRegion with a MidiNote */
-  position_set_to_bar (p1, 2);
-  position_set_to_bar (p2, 4);
-  Track * track = track_new (
-    TrackType::TRACK_TYPE_MIDI, TRACKLIST->tracks.size (), MIDI_TRACK_NAME,
-    F_WITH_LANE);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
-  unsigned int track_name_hash = track_get_name_hash (*track);
-  Region *     r =
-    midi_region_new (p1, p2, track_get_name_hash (*track), MIDI_REGION_LANE, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  bool success = track_add_region (track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
-  g_assert_true (success);
-  arranger_object_set_name (r_obj, MIDI_REGION_NAME, F_NO_PUBLISH_EVENTS);
-  g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
-  g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
-  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_MIDI);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
+  p1->set_to_bar (2);
+  p2->set_to_bar (4);
+  {
+    auto midi_track =
+      std::make_unique<MidiTrack> (MIDI_TRACK_NAME, TRACKLIST->tracks_.size ());
+    TRACKLIST->append_track (std::move (midi_track), false, false);
+    const auto midi_track_name_hash = midi_track->get_name_hash ();
+    auto       mr = std::make_shared<MidiRegion> (
+      *p1, *p2, midi_track_name_hash, MIDI_REGION_LANE, 0);
+    REQUIRE_NOTHROW (
+      midi_track->add_region (mr, nullptr, MIDI_REGION_LANE, true, false));
+    mr->set_name (MIDI_REGION_NAME, false);
+    REQUIRE_EQ (mr->id_.track_name_hash_, midi_track_name_hash);
+    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    REQUIRE_EQ (mr->id_.type_, RegionType::Midi);
+    TL_SELECTIONS->add_object_ref (mr);
 
-  /* add a midi note to the region */
-  MidiNote * mn = midi_note_new (&r->id, p1, p2, MN_VAL, MN_VEL);
-  midi_region_add_midi_note (r, mn, 0);
-  ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  g_assert_true (region_identifier_is_equal (&mn_obj->region_id, &r->id));
-  arranger_selections_add_object (
-    (ArrangerSelections *) MA_SELECTIONS, (ArrangerObject *) mn);
+    /* add a midi note to the region */
+    auto mn = std::make_shared<MidiNote> (mr->id_, *p1, *p2, MN_VAL, MN_VEL);
+    mr->append_object (mn);
+    REQUIRE_EQ (mn->region_id_, mr->id_);
+    MIDI_SELECTIONS->add_object_ref (mn);
+  }
 
-  /* Create and add an automation region with
-   * 2 AutomationPoint's */
-  AutomationTrack * at = P_MASTER_TRACK->channel->get_automation_track (
-    PortIdentifier::Flags::STEREO_BALANCE);
-  track_name_hash = track_get_name_hash (*P_MASTER_TRACK);
-  r = automation_region_new (p1, p2, track_name_hash, at->index, 0);
-  success = track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
-  g_assert_true (success);
-  g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
-  g_assert_cmpint (r->id.at_idx, ==, at->index);
-  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_AUTOMATION);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
+  {
+    /* Create and add an automation region with 2 AutomationPoint's */
+    auto at = P_MASTER_TRACK->channel_->get_automation_track (
+      PortIdentifier::Flags::StereoBalance);
+    const auto master_track_name_hash = P_MASTER_TRACK->get_name_hash ();
+    auto       automation_r = std::make_shared<AutomationRegion> (
+      *p1, *p2, master_track_name_hash, at->index_, 0);
+    REQUIRE_NOTHROW (
+      P_MASTER_TRACK->add_region (automation_r, at, 0, true, false));
+    REQUIRE_EQ (automation_r->id_.track_name_hash_, master_track_name_hash);
+    REQUIRE_EQ (automation_r->id_.at_idx_, at->index_);
+    REQUIRE_EQ (automation_r->id_.type_, RegionType::Automation);
+    TL_SELECTIONS->add_object_ref (automation_r);
 
-  /* add 2 automation points to the region */
-  AutomationPoint * ap = automation_point_new_float (AP_VAL1, AP_VAL1, p1);
-  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS, (ArrangerObject *) ap);
-  ap = automation_point_new_float (AP_VAL2, AP_VAL1, p2);
-  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS, (ArrangerObject *) ap);
+    /* add 2 automation points to the region */
+    auto ap = std::make_shared<AutomationPoint> (AP_VAL1, AP_VAL1, *p1);
+    automation_r->append_object (ap);
+    AUTOMATION_SELECTIONS->add_object_ref (ap);
+    ap = std::make_shared<AutomationPoint> (AP_VAL2, AP_VAL1, *p2);
+    automation_r->append_object (ap);
+    AUTOMATION_SELECTIONS->add_object_ref (ap);
+  }
 
-  /* Create and add a chord region with
-   * 2 Chord's */
-  r = chord_region_new (p1, p2, 0);
-  success = track_add_region (
-    P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
-  g_assert_true (success);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
+  {
+    /* Create and add a chord region with 2 Chord's */
+    auto chord_r = std::make_shared<ChordRegion> (*p1, *p2, 0);
+    REQUIRE_NOTHROW (
+      P_CHORD_TRACK->Track::add_region (chord_r, nullptr, 0, true, false));
+    TL_SELECTIONS->add_object_ref (chord_r);
 
-  /* add 2 chords to the region */
-  ChordObject * c = chord_object_new (&r->id, 0, 1);
-  chord_region_add_chord_object (r, c, F_NO_PUBLISH_EVENTS);
-  arranger_object_pos_setter ((ArrangerObject *) c, p1);
-  arranger_selections_add_object (
-    (ArrangerSelections *) CHORD_SELECTIONS, (ArrangerObject *) c);
-  c = chord_object_new (&r->id, 0, 1);
-  chord_region_add_chord_object (r, c, F_NO_PUBLISH_EVENTS);
-  arranger_object_pos_setter ((ArrangerObject *) c, p2);
-  arranger_selections_add_object (
-    (ArrangerSelections *) CHORD_SELECTIONS, (ArrangerObject *) c);
+    /* add 2 chords to the region */
+    auto co = std::make_shared<ChordObject> (chord_r->id_, 0, 1);
+    chord_r->append_object (co);
+    co->pos_setter (p1);
+    CHORD_SELECTIONS->add_object_ref (co);
+    co = std::make_shared<ChordObject> (chord_r->id_, 0, 1);
+    chord_r->append_object (co);
+    co->pos_setter (p2);
+    CHORD_SELECTIONS->add_object_ref (co);
+  }
 
-  /* create and add a Marker */
-  Marker * m = marker_new (MARKER_NAME);
-  marker_track_add_marker (P_MARKER_TRACK, m);
-  g_assert_cmpint (m->index, ==, 2);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) m);
-  arranger_object_pos_setter ((ArrangerObject *) m, p1);
+  {
+    /* create and add a Marker */
+    auto m = std::make_shared<Marker> (MARKER_NAME);
+    P_MARKER_TRACK->add_marker (m);
+    REQUIRE_EQ (m->marker_track_index_, 2);
+    TL_SELECTIONS->add_object_ref (m);
+    m->pos_setter (p1);
+  }
 
-  /* create and add a ScaleObject */
-  MusicalScale * ms = musical_scale_new (MUSICAL_SCALE_TYPE, MUSICAL_SCALE_ROOT);
-  ScaleObject * s = scale_object_new (ms);
-  chord_track_add_scale (P_CHORD_TRACK, s);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) s);
-  arranger_object_pos_setter ((ArrangerObject *) s, p1);
+  {
+    /* create and add a ScaleObject */
+    MusicalScale ms (MUSICAL_SCALE_TYPE, MUSICAL_SCALE_ROOT);
+    auto         s = std::make_shared<ScaleObject> (ms);
+    P_CHORD_TRACK->add_scale (s);
+    TL_SELECTIONS->add_object_ref (s);
+    s->pos_setter (p1);
+  }
 
-  /* Create and add an audio region */
-  position_set_to_bar (p1, 2);
-  track = track_new (
-    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (), AUDIO_TRACK_NAME,
-    F_WITH_LANE);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
-  char audio_file_path[2000];
-  sprintf (
-    audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-  track_name_hash = track_get_name_hash (*track);
-  r = audio_region_new (
-    -1, audio_file_path, true, NULL, 0, NULL, 0, (BitDepth) 0, p1,
-    track_name_hash, AUDIO_REGION_LANE, 0, NULL);
-  AudioClip * clip = audio_region_get_clip (r);
-  g_assert_cmpuint (clip->num_frames, >, 151000);
-  g_assert_cmpuint (clip->num_frames, <, 152000);
-  success = track_add_region (track, r, NULL, AUDIO_REGION_LANE, 1, 0, &err);
-  g_assert_true (success);
-  r_obj = (ArrangerObject *) r;
-  arranger_object_set_name (r_obj, AUDIO_REGION_NAME, F_NO_PUBLISH_EVENTS);
-  g_assert_cmpuint (r->id.track_name_hash, ==, track_name_hash);
-  g_assert_cmpint (r->id.lane_pos, ==, AUDIO_REGION_LANE);
-  g_assert_cmpenum (r->id.type, ==, RegionType::REGION_TYPE_AUDIO);
-  arranger_selections_add_object (
-    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) r);
+  {
+    /* Create and add an audio region */
+    p1->set_to_bar (2);
+    auto audio_track = TRACKLIST->append_track (
+      std::make_unique<AudioTrack> (
+        AUDIO_TRACK_NAME, TRACKLIST->tracks_.size (), AUDIO_ENGINE->sample_rate_),
+      false, false);
+    auto       audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
+    const auto track_name_hash = audio_track->get_name_hash ();
+    std::shared_ptr<AudioRegion> r;
+    REQUIRE_NOTHROW (
+      r = std::make_shared<AudioRegion> (
+        -1, audio_file_path.string (), true, nullptr, 0, std::nullopt, 0,
+        (BitDepth) 0, *p1, track_name_hash, AUDIO_REGION_LANE, 0));
+    auto clip = r->get_clip ();
+    REQUIRE_GT (clip->num_frames_, 151000);
+    REQUIRE_LT (clip->num_frames_, 152000);
+    REQUIRE_NOTHROW (
+      audio_track->add_region (r, nullptr, AUDIO_REGION_LANE, true, false));
+    r->set_name (AUDIO_REGION_NAME, false);
+    REQUIRE_EQ (r->id_.track_name_hash_, track_name_hash);
+    REQUIRE_EQ (r->id_.lane_pos_, AUDIO_REGION_LANE);
+    REQUIRE_EQ (r->id_.type_, RegionType::Audio);
+    TL_SELECTIONS->add_object_ref (r);
+  }
 
   /* create the target tracks */
-  track = track_new (
-    TrackType::TRACK_TYPE_MIDI, TRACKLIST->tracks.size (),
-    TARGET_MIDI_TRACK_NAME, F_WITH_LANE);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
-  track = track_new (
-    TrackType::TRACK_TYPE_AUDIO, TRACKLIST->tracks.size (),
-    TARGET_AUDIO_TRACK_NAME, F_WITH_LANE);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+  TRACKLIST->append_track (
+    std::make_unique<MidiTrack> (
+      TARGET_MIDI_TRACK_NAME, TRACKLIST->tracks_.size ()),
+    false, false);
+  TRACKLIST->append_track (
+    std::make_unique<AudioTrack> (
+      TARGET_AUDIO_TRACK_NAME, TRACKLIST->tracks_.size (),
+      AUDIO_ENGINE->sample_rate_),
+    false, false);
 
-  int   beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  bpm_t bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  engine_update_frames_per_tick (
-    AUDIO_ENGINE, beats_per_bar, bpm, AUDIO_ENGINE->sample_rate, true, true,
-    false);
+  AUDIO_ENGINE->update_frames_per_tick (
+    P_TEMPO_TRACK->get_beats_per_bar (), P_TEMPO_TRACK->get_current_bpm (),
+    AUDIO_ENGINE->sample_rate_, true, true, false);
 
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
+  ROUTER->recalc_graph (false);
 
-  engine_resume (AUDIO_ENGINE, &state);
+  AUDIO_ENGINE->resume (state);
 
   test_project_save_and_reload ();
 }
 
 /**
- * Stop dummy audio engine processing so we can
- * process manually.
+ * Stop dummy audio engine processing so we can process manually.
  */
 void
-test_project_stop_dummy_engine (void)
+test_project_stop_dummy_engine ()
 {
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (100000);
+  AUDIO_ENGINE->dummy_audio_thread_->request_stop ();
+  AUDIO_ENGINE->dummy_audio_thread_->join ();
 }
 
 /**

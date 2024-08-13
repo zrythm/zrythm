@@ -68,7 +68,7 @@ MidiPort::receive_midi_events_from_jack (
             }
           else if (jack_ev.size == 3)
             {
-              /*z_debug ("received event at %u", jack_ev.time);*/
+              /*z_debug ("received event at {}", jack_ev.time);*/
               midi_events_.active_events_.add_event_from_buf (
                 jack_ev.time, jack_ev.buffer, (int) jack_ev.size);
             }
@@ -80,7 +80,7 @@ MidiPort::receive_midi_events_from_jack (
     {
       char designation[600];
       this->get_full_designation ( designation);
-      z_debug ("JACK MIDI (%s): have %d events", designation, num_events);
+      z_debug ("JACK MIDI ({}): have {} events", designation, num_events);
       midi_events_print (this->midi_events_, F_NOT_QUEUED);
     }
 #  endif
@@ -251,7 +251,7 @@ MidiPort::expose_to_rtmidi (bool expose)
           self->rtmidi_in = NULL;
         }
 #  endif
-      z_debug ("unexposing %s", get_full_designation ());
+      z_debug ("unexposing {}", get_full_designation ());
     }
   exposed_to_backend_ = expose;
 }

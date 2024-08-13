@@ -374,7 +374,7 @@ RangeAction::perform_impl ()
 
   for (size_t i = 0; i < prj_objs.size (); ++i)
     {
-      z_debug ("copying %d", i);
+      z_debug ("copying {}", i);
       prj_objs[i]->print ();
       after_objs_for_prj[i]->copy_identifier (*prj_objs[i]);
     }

@@ -293,7 +293,7 @@ draw_midi_region (
   if (track)
     {
       /* set to grey if track color is very  bright */
-      if (track->color_.is_very_very_bright())
+      if (track->color_.is_very_very_bright ())
         {
           color.red = 0.7f;
           color.green = 0.7f;
@@ -666,7 +666,7 @@ handle_loop (
       if (x_end_in_region > x_end_in_region_with_clipoff)
         {
           double clipoff = x_end_in_region - x_end_in_region_with_clipoff;
-          /*z_debug ("clipped off %f", clipoff);*/
+          /*z_debug ("clipped off {:f}", clipoff);*/
           ap_loop_part_rect.width -= (int) clipoff;
         }
 
@@ -1038,7 +1038,7 @@ draw_audio_part (
     }
 
 #if 0
-  z_info ("current detail: %s",
+  z_info ("current detail: {}",
     ui_detail_str[detail]);
 #endif
 
@@ -1364,9 +1364,10 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
     color = track->color_;
   else
     {
-      color = Color {1, 0, 0, 1};
+      color = Color{ 1, 0, 0, 1 };
     }
-    color = Color::get_arranger_object_color(color, self->is_hovered (), self->is_selected (),
+  color = Color::get_arranger_object_color (
+    color, self->is_hovered (), self->is_selected (),
     /* FIXME */
     false, self->get_muted (true) || track->frozen_);
 

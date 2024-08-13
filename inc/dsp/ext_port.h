@@ -123,12 +123,12 @@ connect (
   int       src);
 #endif
 
-/**
- * Disconnects the Port from the ExtPort.
- *
- * @param src 1 if the ext_port is the source, 0 if it
- *   is the destination.
- */
+  /**
+   * Disconnects the Port from the ExtPort.
+   *
+   * @param src 1 if the ext_port is the source, 0 if it
+   *   is the destination.
+   */
   void disconnect (Port * port, int src);
 
   /**

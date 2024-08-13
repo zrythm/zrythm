@@ -20,7 +20,7 @@ midi_file_track_has_data (const char * abs_path, int track_idx)
   midiReadInitMessage (&msg);
 
   int ev;
-  z_debug ("reading MIDI Track %d", track_idx);
+  z_debug ("reading MIDI Track {}", track_idx);
   bool have_data = false;
   while (midiReadGetNextMessage (mf, track_idx, &msg))
     {
@@ -74,7 +74,7 @@ midi_file_get_num_tracks (const char * abs_path, bool non_empty_only)
   int actual_num = 0;
 
   int num = midiReadGetNumTracks (mf);
-  z_debug ("%s: num tracks = %d", abs_path, num);
+  z_debug ("{}: num tracks = {}", abs_path, num);
 
   if (!non_empty_only)
     {

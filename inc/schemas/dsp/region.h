@@ -25,9 +25,9 @@ typedef enum RegionMusicalMode_v1
 } RegionMusicalMode_v1;
 
 static const cyaml_strval_t region_musical_mode_strings_v1[] = {
-  {"Inherit", REGION_MUSICAL_MODE_INHERIT_v1},
-  { "Off",    REGION_MUSICAL_MODE_OFF_v1    },
-  { "On",     REGION_MUSICAL_MODE_ON_v1     },
+  { "Inherit", REGION_MUSICAL_MODE_INHERIT_v1 },
+  { "Off",     REGION_MUSICAL_MODE_OFF_v1     },
+  { "On",      REGION_MUSICAL_MODE_ON_v1      },
 };
 
 typedef struct ZRegion_v1

@@ -110,14 +110,14 @@ track_widget_get_hovered_button (TrackWidget * self, int x, int y)
     return &cb;
 
   CustomButtonWidget * cb = nullptr;
-  for (auto & cb_ref : self->top_buttons)
+  for (auto &cb_ref : self->top_buttons)
     {
       cb = &cb_ref;
       RETURN_IF_HOVERED (*cb);
     }
   if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (self->track->main_height_))
     {
-      for (auto & cb_ref : self->bot_buttons)
+      for (auto &cb_ref : self->bot_buttons)
         {
           cb = &cb_ref;
           RETURN_IF_HOVERED (*cb);
@@ -139,7 +139,7 @@ track_widget_get_hovered_button (TrackWidget * self, int x, int y)
                       RETURN_IF_HOVERED (lane_button);
                     }
                 }
-                return (CustomButtonWidget*) nullptr;
+              return (CustomButtonWidget *) nullptr;
             },
             laned_track_variant);
 
@@ -627,13 +627,13 @@ get_lane_at_y (TrackWidget * self, double y)
           double next_height = height_before + lane->height_;
           if (y > height_before && y <= next_height)
             {
-              z_debug ("found lane {} at y %f", lane->name_, y);
+              z_debug ("found lane {} at y {:f}", lane->name_, y);
               return static_cast<TrackLane *> (lane.get ());
             }
           height_before = next_height;
         }
 
-      z_debug ("no lane found at y %f", y);
+      z_debug ("no lane found at y {:f}", y);
 
       return static_cast<TrackLane *> (nullptr);
     },
@@ -1166,7 +1166,7 @@ click_released (
         }
     }
 
-  z_debug ("npress %d", n_press);
+  z_debug ("npress {}", n_press);
 
   self->button_pressed = 0;
   self->clicked_button = NULL;
@@ -1267,7 +1267,7 @@ on_drag_update (
           {
             auto * lane = (TrackLane *) self->resize_target;
             lane->height_ = MAX (TRACK_MIN_HEIGHT, lane->height_ + diff);
-            z_debug ("lane %d height changed", lane->pos_);
+            z_debug ("lane {} height changed", lane->pos_);
           }
           break;
         }
@@ -1473,7 +1473,7 @@ track_widget_on_record_toggled (TrackWidget * self)
   /* toggle record flag */
   track->set_recording (!self->was_armed, F_PUBLISH_EVENTS);
   track->record_set_automatically_ = false;
-  z_debug ("%s recording: %d", track->name_, track->get_recording ());
+  z_debug ("{} recording: {}", track->name_, track->get_recording ());
 
   EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
 }
@@ -1532,8 +1532,8 @@ static CustomButtonWidget &
 add_record_button (TrackWidget * self, int top)
 {
   auto &cb = add_button (self, top, TRACK_ICON_NAME_RECORD);
-  cb.toggled_color = Color(UI_COLOR_RECORD_CHECKED);
-  cb.held_color = Color(UI_COLOR_RECORD_ACTIVE);
+  cb.toggled_color = Color (UI_COLOR_RECORD_CHECKED);
+  cb.held_color = Color (UI_COLOR_RECORD_ACTIVE);
 
   return cb;
 }
@@ -1786,7 +1786,7 @@ TrackWidget *
 track_widget_new (Track * track)
 {
   z_return_val_if_fail (track, nullptr);
-  z_debug ("creating new track widget for %s", track->name_);
+  z_debug ("creating new track widget for {}", track->name_);
 
   auto * self =
     static_cast<TrackWidget *> (g_object_new (TRACK_WIDGET_TYPE, nullptr));
@@ -1954,7 +1954,7 @@ on_destroy (TrackWidget * self)
   Track * track = self->track;
   if (IS_TRACK_AND_NONNULL (track))
     {
-      z_debug ("destroying '%s' widget", track->name_);
+      z_debug ("destroying '{}' widget", track->name_);
 
       if (track->widget_ == self)
         track->widget_ = nullptr;

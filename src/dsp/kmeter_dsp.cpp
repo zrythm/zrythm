@@ -35,7 +35,8 @@
 
 #include <glib.h>
 
-void KMeterDsp::process (float * p, int n)
+void
+KMeterDsp::process (float * p, int n)
 {
   float s, t, z1, z2;
 
@@ -43,7 +44,7 @@ void KMeterDsp::process (float * p, int n)
     {
       /*const float fall = 15.f;*/
       constexpr float fall = 5.f;
-      const float tme = (float) n / fsamp_; // period time in seconds
+      const float     tme = (float) n / fsamp_; // period time in seconds
       fall_ = std::powf (
         10.0f,
         -0.05f * fall * tme); // per period fallback multiplier
@@ -63,24 +64,24 @@ void KMeterDsp::process (float * p, int n)
       s = *p++;
       s *= s;
       if (t < s)
-        t = s;                      // Update digital peak.
+        t = s;                 // Update digital peak.
+      z1 += omega_ * (s - z1); // Update first filter.
+      s = *p++;
+      s *= s;
+      if (t < s)
+        t = s;                 // Update digital peak.
+      z1 += omega_ * (s - z1); // Update first filter.
+      s = *p++;
+      s *= s;
+      if (t < s)
+        t = s;                 // Update digital peak.
       z1 += omega_ * (s - z1); // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
         t = s;                      // Update digital peak.
       z1 += omega_ * (s - z1);      // Update first filter.
-      s = *p++;
-      s *= s;
-      if (t < s)
-        t = s;                      // Update digital peak.
-      z1 += omega_ * (s - z1);      // Update first filter.
-      s = *p++;
-      s *= s;
-      if (t < s)
-        t = s;                           // Update digital peak.
-      z1 += omega_ * (s - z1);           // Update first filter.
-      z2 += 4 * omega_ * (z1 - z2);      // Update second filter.
+      z2 += 4 * omega_ * (z1 - z2); // Update second filter.
     }
 
   if (std::isnan (z1))
@@ -123,8 +124,8 @@ void KMeterDsp::process (float * p, int n)
     }
   else
     {
-      peak_ *= fall_; // else let the peak value fall back,
-      peak_ += 1e-10f;     // and avoid denormals.
+      peak_ *= fall_;  // else let the peak value fall back,
+      peak_ += 1e-10f; // and avoid denormals.
     }
 }
 
@@ -159,7 +160,6 @@ KMeterDsp::init (float samplerate)
   const float hold = 1.5f;
   fsamp_ = samplerate;
 
-  hold_ =
-    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
-  omega_ = 9.72f / samplerate;   // ballistic filter coefficient
+  hold_ = (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+  omega_ = 9.72f / samplerate;              // ballistic filter coefficient
 }

@@ -96,42 +96,42 @@ public:
     return contains_sha1 (sha1, false, true);
   }
 
-   /**
-    * Appends a descriptor to the cache.
-    *
-    * @param serialize Whether serialize the updated cache now.
-    */
-   void blacklist (std::string_view sha1, bool serialize);
+  /**
+   * Appends a descriptor to the cache.
+   *
+   * @param serialize Whether serialize the updated cache now.
+   */
+  void blacklist (std::string_view sha1, bool serialize);
 
-   /**
-    * Appends a descriptor to the cache.
-    *
-    * @param serialize Whether to serialize the updated
-    *   cache now.
-    */
-   void add (const PluginDescriptor &descr, bool serialize);
+  /**
+   * Appends a descriptor to the cache.
+   *
+   * @param serialize Whether to serialize the updated
+   *   cache now.
+   */
+  void add (const PluginDescriptor &descr, bool serialize);
 
-   /**
-    * Clears the descriptors and removes the cache file.
-    */
-   void clear ();
+  /**
+   * Clears the descriptors and removes the cache file.
+   */
+  void clear ();
 
- private:
-   /**
-    * @brief Deletes the cache file.
-    *
-    * @throw ZrythmException if an error occurred while deleting the file.
-    */
-   static void delete_file ();
+private:
+  /**
+   * @brief Deletes the cache file.
+   *
+   * @throw ZrythmException if an error occurred while deleting the file.
+   */
+  static void delete_file ();
 
-   static fs::path get_file_path ();
+  static fs::path get_file_path ();
 
- public:
-   /** Valid descriptors. */
-   std::vector<PluginDescriptor> descriptors_;
+public:
+  /** Valid descriptors. */
+  std::vector<PluginDescriptor> descriptors_;
 
-   /** Blacklisted hashes, to skip when scanning. */
-   std::vector<std::string> blacklisted_sha1s_;
+  /** Blacklisted hashes, to skip when scanning. */
+  std::vector<std::string> blacklisted_sha1s_;
 };
 
 /**

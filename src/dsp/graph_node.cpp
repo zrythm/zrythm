@@ -231,7 +231,7 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
 {
   z_return_if_fail (graph_ && graph_->router_);
 
-  /*z_info ("processing %s", graph_node_get_name (node));*/
+  /*z_info ("processing {}", graph_node_get_name (node));*/
 
   /* skip BPM during cycle (already processed in router_start_cycle()) */
   if (

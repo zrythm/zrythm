@@ -114,130 +114,130 @@ public:
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-/**
- * Returns if the key is black.
- */
-bool is_key_black (int note);
+  /**
+   * Returns if the key is black.
+   */
+  bool is_key_black (int note);
 
-bool is_next_key_black (int note) { return is_key_black (note + 1); }
+  bool is_next_key_black (int note) { return is_key_black (note + 1); }
 
-bool is_prev_key_black (int note) { return is_key_black (note - 1); }
+  bool is_prev_key_black (int note) { return is_key_black (note - 1); }
 
-/**
- * Adds the note if it doesn't exist in @ref current_notes_.
- */
-void add_current_note (int note);
+  /**
+   * Adds the note if it doesn't exist in @ref current_notes_.
+   */
+  void add_current_note (int note);
 
-/**
- * Removes the note if it exists in @ref current_notes_.
- */
-void remove_current_note (int note);
+  /**
+   * Removes the note if it exists in @ref current_notes_.
+   */
+  void remove_current_note (int note);
 
-/**
- * Returns whether the note exists in @ref current_notes_.
- */
-bool contains_current_note (int note);
+  /**
+   * Returns whether the note exists in @ref current_notes_.
+   */
+  bool contains_current_note (int note);
 
-/**
- * Returns the current track whose regions are being shown in the piano roll.
- */
-Track * get_current_track () const;
+  /**
+   * Returns the current track whose regions are being shown in the piano roll.
+   */
+  Track * get_current_track () const;
 
-void set_notes_zoom (float notes_zoom, bool fire_events);
+  void set_notes_zoom (float notes_zoom, bool fire_events);
 
-/**
- * Inits the PianoRoll after a Project has been loaded.
- */
-void init_loaded ();
+  /**
+   * Inits the PianoRoll after a Project has been loaded.
+   */
+  void init_loaded ();
 
-/**
- * Returns the MidiNoteDescriptor matching the value (0-127).
- */
-const MidiNoteDescriptor *
-find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val);
+  /**
+   * Returns the MidiNoteDescriptor matching the value (0-127).
+   */
+  const MidiNoteDescriptor *
+  find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val);
 
-/**
- * Updates the highlighting and notifies the UI.
- */
-void set_highlighting (Highlighting highlighting);
+  /**
+   * Updates the highlighting and notifies the UI.
+   */
+  void set_highlighting (Highlighting highlighting);
 
-/**
- * Sets the MIDI modifier.
- */
-void set_midi_modifier (MidiModifier modifier);
+  /**
+   * Sets the MIDI modifier.
+   */
+  void set_midi_modifier (MidiModifier modifier);
 
-/**
- * Gets the visible notes.
- */
-void get_visible_notes (bool drum_mode, std::vector<MidiNoteDescriptor> &vec)
-{
-  vec.clear ();
+  /**
+   * Gets the visible notes.
+   */
+  void get_visible_notes (bool drum_mode, std::vector<MidiNoteDescriptor> &vec)
+  {
+    vec.clear ();
 
-  for (int i = 0; i < 128; i++)
-    {
-      MidiNoteDescriptor * descr;
-      if (drum_mode)
-        descr = &drum_descriptors_[i];
-      else
-        descr = &piano_descriptors_[i];
+    for (int i = 0; i < 128; i++)
+      {
+        MidiNoteDescriptor * descr;
+        if (drum_mode)
+          descr = &drum_descriptors_[i];
+        else
+          descr = &piano_descriptors_[i];
 
-      if (descr->visible_)
-        {
-          vec.push_back (*descr);
-        }
-    }
+        if (descr->visible_)
+          {
+            vec.push_back (*descr);
+          }
+      }
   }
 
-   /**
-    * Initializes the PianoRoll.
-    */
-   void init ();
+  /**
+   * Initializes the PianoRoll.
+   */
+  void init ();
 
-   void init_after_cloning (const PianoRoll &other) override { *this = other; }
+  void init_after_cloning (const PianoRoll &other) override { *this = other; }
 
- private:
-   /**
-    * Inits the descriptors to the default values.
-    *
-    * FIXME move them to tracks since each track might have different
-    * arrangement of drums.
-    */
-   void init_descriptors ();
+private:
+  /**
+   * Inits the descriptors to the default values.
+   *
+   * FIXME move them to tracks since each track might have different
+   * arrangement of drums.
+   */
+  void init_descriptors ();
 
- public:
-   /** Notes zoom level. */
-   float notes_zoom_ = 1.0f;
+public:
+  /** Notes zoom level. */
+  float notes_zoom_ = 1.0f;
 
-   /** Selected MidiModifier. */
-   MidiModifier midi_modifier_ = MidiModifier::Velocity;
+  /** Selected MidiModifier. */
+  MidiModifier midi_modifier_ = MidiModifier::Velocity;
 
-   /** Currently pressed notes (used only at runtime). */
-   std::vector<int> current_notes_;
+  /** Currently pressed notes (used only at runtime). */
+  std::vector<int> current_notes_;
 
-   /**
-    * Piano roll mode descriptors.
-    *
-    * For performance purposes, invisible notes must be sorted at the end of
-    * the array.
-    */
-   std::vector<MidiNoteDescriptor> piano_descriptors_ =
-     std::vector<MidiNoteDescriptor> (128);
+  /**
+   * Piano roll mode descriptors.
+   *
+   * For performance purposes, invisible notes must be sorted at the end of
+   * the array.
+   */
+  std::vector<MidiNoteDescriptor> piano_descriptors_ =
+    std::vector<MidiNoteDescriptor> (128);
 
-   /**
-    * Highlighting notes depending on the current chord or scale.
-    */
-   Highlighting highlighting_ = Highlighting::None;
+  /**
+   * Highlighting notes depending on the current chord or scale.
+   */
+  Highlighting highlighting_ = Highlighting::None;
 
-   /**
-    * Drum mode descriptors.
-    *
-    * These must be sorted by index at all times.
-    *
-    * For performance purposes, invisible notes must be sorted at the end of
-    * the array.
-    */
-   std::vector<MidiNoteDescriptor> drum_descriptors_ =
-     std::vector<MidiNoteDescriptor> (128);
+  /**
+   * Drum mode descriptors.
+   *
+   * These must be sorted by index at all times.
+   *
+   * For performance purposes, invisible notes must be sorted at the end of
+   * the array.
+   */
+  std::vector<MidiNoteDescriptor> drum_descriptors_ =
+    std::vector<MidiNoteDescriptor> (128);
 };
 
 /**

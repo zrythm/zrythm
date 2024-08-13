@@ -41,7 +41,7 @@
 #include <pcre2.h>
 #include <regex.h>
 
-StringArray::StringArray (const char * const * strs) : juce::StringArray ()
+StringArray::StringArray (const char * const * strs)
 {
   int          count = 0;
   const char * s;
@@ -58,7 +58,7 @@ char **
 StringArray::getNullTerminated () const
 {
   GStrvBuilder * builder = g_strv_builder_new ();
-  for (int i = 0; i < size (); i++)
+  for (size_t i = 0; i < size (); i++)
     {
       juce::String str = getReference (i);
       g_strv_builder_add (builder, str.toStdString ().c_str ());
@@ -69,14 +69,14 @@ StringArray::getNullTerminated () const
 char *
 StringArray::getCStr (int index)
 {
-  return g_strdup (juce::StringArray::getReference (index).toRawUTF8 ());
+  return g_strdup (getReference (index).toRawUTF8 ());
 }
 
 void
 StringArray::print (std::string title) const
 {
   std::string str = title + ":";
-  for (auto &cur_str : *this)
+  for (auto &cur_str : arr_)
     {
       str += " " + cur_str.toStdString () + " |";
     }
@@ -105,166 +105,164 @@ string_is_ascii (std::string_view string)
   return string_view_to_ustring (string).is_ascii ();
 }
 
-  /**
-   * Returns the matched string if the string array
-   * contains the given substring.
-   */
-  char *
-  string_array_contains_substr (
-    char **      str_array,
-    int          num_str,
-    const char * substr)
-  {
-    for (int i = 0; i < num_str; i++)
-      {
-        if (g_str_match_string (substr, str_array[i], 0))
-          return str_array[i];
-      }
+/**
+ * Returns the matched string if the string array
+ * contains the given substring.
+ */
+char *
+string_array_contains_substr (char ** str_array, int num_str, const char * substr)
+{
+  for (int i = 0; i < num_str; i++)
+    {
+      if (g_str_match_string (substr, str_array[i], 0))
+        return str_array[i];
+    }
 
-    return NULL;
-  }
+  return NULL;
+}
 
-  bool string_is_equal_ignore_case (const char * str1, const char * str2)
-  {
-    char * str1_casefolded = g_utf8_casefold (str1, -1);
-    char * str2_casefolded = g_utf8_casefold (str2, -1);
-    int    ret = !g_strcmp0 (str1_casefolded, str2_casefolded);
-    g_free (str1_casefolded);
-    g_free (str2_casefolded);
+bool
+string_is_equal_ignore_case (const char * str1, const char * str2)
+{
+  char * str1_casefolded = g_utf8_casefold (str1, -1);
+  char * str2_casefolded = g_utf8_casefold (str2, -1);
+  int    ret = !g_strcmp0 (str1_casefolded, str2_casefolded);
+  g_free (str1_casefolded);
+  g_free (str2_casefolded);
 
-    return ret;
-  }
+  return ret;
+}
 
-  bool
-  string_is_equal_ignore_case (const std::string &str1, const std::string &str2)
-  {
-    return std::ranges::equal (str1, str2, [] (char a, char b) {
-      return std::tolower (a) == std::tolower (b);
-    });
-  }
+bool
+string_is_equal_ignore_case (const std::string &str1, const std::string &str2)
+{
+  return std::ranges::equal (str1, str2, [] (char a, char b) {
+    return std::tolower (a) == std::tolower (b);
+  });
+}
 
-  /**
-   * Returns if the given string contains the given
-   * substring.
-   */
-  bool
-  string_contains_substr (const char * str, const char * substr)
-  {
-    return g_strrstr (str, substr) != NULL;
-  }
+/**
+ * Returns if the given string contains the given
+ * substring.
+ */
+bool
+string_contains_substr (const char * str, const char * substr)
+{
+  return g_strrstr (str, substr) != NULL;
+}
 
-  bool
-  string_contains_substr_case_insensitive (const char * str, const char * substr)
-  {
-    char new_str[strlen (str) + 1];
-    new_str[strlen (str)] = '\0';
-    string_to_upper (str, new_str);
-    char new_substr[strlen (substr) + 1];
-    new_substr[strlen (substr)] = '\0';
-    string_to_upper (substr, new_substr);
+bool
+string_contains_substr_case_insensitive (const char * str, const char * substr)
+{
+  char new_str[strlen (str) + 1];
+  new_str[strlen (str)] = '\0';
+  string_to_upper (str, new_str);
+  char new_substr[strlen (substr) + 1];
+  new_substr[strlen (substr)] = '\0';
+  string_to_upper (substr, new_substr);
 
-    return string_contains_substr (new_str, new_substr);
-  }
+  return string_contains_substr (new_str, new_substr);
+}
 
-  /**
-   * Converts the given string to uppercase in \ref
-   * out.
-   *
-   * Assumes @ref out is already allocated to as many
-   * chars as @ref in.
-   */
-  void
-  string_to_upper (const char * in, char * out)
-  {
-    const char * src = in;
-    char *       dest = out;
-    while (*src)
-      {
-        *dest = g_ascii_toupper (*src);
-        src++;
-        dest++;
-      }
-  }
+/**
+ * Converts the given string to uppercase in \ref
+ * out.
+ *
+ * Assumes @ref out is already allocated to as many
+ * chars as @ref in.
+ */
+void
+string_to_upper (const char * in, char * out)
+{
+  const char * src = in;
+  char *       dest = out;
+  while (*src)
+    {
+      *dest = g_ascii_toupper (*src);
+      src++;
+      dest++;
+    }
+}
 
-  /**
-   * Converts the given string to lowercase in \ref
-   * out.
-   *
-   * Assumes @ref out is already allocated to as many
-   * chars as @ref in.
-   */
-  void
-  string_to_lower (const char * in, char * out)
-  {
-    const char * src = in;
-    char *       dest = out;
-    while (*src)
-      {
-        *dest = g_ascii_tolower (*src);
-        src++;
-        dest++;
-      }
-  }
+/**
+ * Converts the given string to lowercase in \ref
+ * out.
+ *
+ * Assumes @ref out is already allocated to as many
+ * chars as @ref in.
+ */
+void
+string_to_lower (const char * in, char * out)
+{
+  const char * src = in;
+  char *       dest = out;
+  while (*src)
+    {
+      *dest = g_ascii_tolower (*src);
+      src++;
+      dest++;
+    }
+}
 
-  /**
-   * Returns a newly allocated string that is a
-   * filename version of the given string.
-   *
-   * Example: "MIDI Region #1" -> "MIDI_Region_1".
-   */
-  char *
-  string_convert_to_filename (const char * str)
-  {
-    /* convert illegal characters to '_' */
-    char * new_str = g_strdup (str);
-    for (int i = 0; i < (int) strlen (str); i++)
-      {
-        if (
-          str[i] == '#' || str[i] == '%' || str[i] == '&' || str[i] == '{'
-          || str[i] == '}' || str[i] == '\\' || str[i] == '<' || str[i] == '>'
-          || str[i] == '*' || str[i] == '?' || str[i] == '/' || str[i] == ' '
-          || str[i] == '$' || str[i] == '!' || str[i] == '\'' || str[i] == '"'
-          || str[i] == ':' || str[i] == '@')
-          new_str[i] = '_';
-      }
-    return new_str;
-  }
+/**
+ * Returns a newly allocated string that is a
+ * filename version of the given string.
+ *
+ * Example: "MIDI Region #1" -> "MIDI_Region_1".
+ */
+char *
+string_convert_to_filename (const char * str)
+{
+  /* convert illegal characters to '_' */
+  char * new_str = g_strdup (str);
+  for (int i = 0; i < (int) strlen (str); i++)
+    {
+      if (
+        str[i] == '#' || str[i] == '%' || str[i] == '&' || str[i] == '{'
+        || str[i] == '}' || str[i] == '\\' || str[i] == '<' || str[i] == '>'
+        || str[i] == '*' || str[i] == '?' || str[i] == '/' || str[i] == ' '
+        || str[i] == '$' || str[i] == '!' || str[i] == '\'' || str[i] == '"'
+        || str[i] == ':' || str[i] == '@')
+        new_str[i] = '_';
+    }
+  return new_str;
+}
 
-  /**
-   * Removes the suffix starting from @ref suffix
-   * from @ref full_str and returns a newly allocated
-   * string.
-   */
-  char *
-  string_get_substr_before_suffix (const char * str, const char * suffix)
-  {
-    /* get the part without the suffix */
-    char ** parts = g_strsplit (str, suffix, 0);
-    char *  part = g_strdup (parts[0]);
-    g_strfreev (parts);
-    return part;
-  }
+/**
+ * Removes the suffix starting from @ref suffix
+ * from @ref full_str and returns a newly allocated
+ * string.
+ */
+char *
+string_get_substr_before_suffix (const char * str, const char * suffix)
+{
+  /* get the part without the suffix */
+  char ** parts = g_strsplit (str, suffix, 0);
+  char *  part = g_strdup (parts[0]);
+  g_strfreev (parts);
+  return part;
+}
 
-  /**
-   * Removes everything up to and including the first
-   * match of @ref match from the start of the string
-   * and returns a newly allocated string.
-   */
-  char *
-  string_remove_until_after_first_match (const char * str, const char * match)
-  {
-    z_return_val_if_fail (str, nullptr);
+/**
+ * Removes everything up to and including the first
+ * match of @ref match from the start of the string
+ * and returns a newly allocated string.
+ */
+char *
+string_remove_until_after_first_match (const char * str, const char * match)
+{
+  z_return_val_if_fail (str, nullptr);
 
-    char ** parts = g_strsplit (str, match, 2);
+  char ** parts = g_strsplit (str, match, 2);
 #if 0
-  z_info ("after removing prefix: %s", prefix);
-  z_info ("part 0 %s", parts[0]);
-  z_info ("part 1 %s", parts[1]);
+  z_info ("after removing prefix: {}", prefix);
+  z_info ("part 0 {}", parts[0]);
+  z_info ("part 1 {}", parts[1]);
 #endif
   char * part = g_strdup (parts[1]);
   g_strfreev (parts);
   return part;
-  }
+}
 
 /**
  * Replaces @ref str with @ref replace_str in
@@ -368,11 +366,11 @@ string_get_regex_group (const char * str, const char * regex, int group)
       switch (rc)
         {
         case PCRE2_ERROR_NOMATCH:
-          /*z_info ("String %s didn't match", str);*/
+          /*z_info ("String {} didn't match", str);*/
           break;
 
         default:
-          z_info ("Error while matching \"%s\": %d", str, rc);
+          z_info ("Error while matching \"{}\": {}", str, rc);
           break;
         }
       pcre2_code_free (re);
@@ -385,7 +383,7 @@ string_get_regex_group (const char * str, const char * regex, int group)
     match_data, (uint32_t) group, &ret_buf, &ret_buf_sz);
   if (ret_code != 0)
     {
-      z_debug ("Error while matching \"%s\": %d", str, rc);
+      z_debug ("Error while matching \"{}\": {}", str, rc);
       pcre2_code_free (re);
       pcre2_match_data_free (match_data);
       return NULL;
@@ -425,11 +423,11 @@ string_get_int_after_last_space (const std::string &str)
       switch (rc)
         {
         case PCRE2_ERROR_NOMATCH:
-          z_debug ("String %s didn't match", str);
+          z_debug ("String {} didn't match", str);
           break;
 
         default:
-          z_debug ("Error while matching \"%s\": %d", str, rc);
+          z_debug ("Error while matching \"{}\": {}", str, rc);
           break;
         }
       pcre2_code_free (re);
@@ -442,7 +440,7 @@ string_get_int_after_last_space (const std::string &str)
     match_data, (uint32_t) 2, &num_ret_buf, &num_ret_buf_sz);
   if (ret_code != 0)
     {
-      z_debug ("Error while matching \"%s\": %d", str, rc);
+      z_debug ("Error while matching \"{}\": {}", str, rc);
       pcre2_code_free (re);
       pcre2_match_data_free (match_data);
       return std::make_pair (-1, "");
@@ -456,7 +454,7 @@ string_get_int_after_last_space (const std::string &str)
       match_data, (uint32_t) 1, &str_ret_buf, &str_ret_buf_sz);
     if (ret_code != 0)
       {
-        z_debug ("Error while matching \"%s\": %d", str, rc);
+        z_debug ("Error while matching \"{}\": {}", str, rc);
         pcre2_code_free (re);
         pcre2_match_data_free (match_data);
         return std::make_pair (-1, "");
@@ -616,7 +614,7 @@ string_print_strv (const char * prefix, char ** strv)
     }
   char * res = g_string_free (gstr, false);
   res[strlen (res) - 1] = '\0';
-  z_info ("%s", res);
+  z_info ("{}", res);
   g_free (res);
 }
 

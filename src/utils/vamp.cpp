@@ -24,13 +24,13 @@ void
 vamp_print_all (void)
 {
   int num_vamp_libs = vhGetLibraryCount ();
-  z_info ("loading %d vamp libraries...", num_vamp_libs);
+  z_info ("loading {} vamp libraries...", num_vamp_libs);
   for (int i = 0; i < num_vamp_libs; i++)
     {
       const char * lib_name = vhGetLibraryName (i);
       vhLibrary    lib = vhLoadLibrary (i);
       int          num_plugins = vhGetPluginCount (lib);
-      z_info ("[%d-%s: %d plugins]", i, lib_name, num_plugins);
+      z_info ("[{}-{}: {} plugins]", i, lib_name, num_plugins);
       for (int j = 0; j < num_plugins; j++)
         {
           const VampPluginDescriptor * descr = vhGetPluginDescriptor (lib, j);
@@ -252,10 +252,10 @@ vamp_output_descriptor_new (
 void
 vamp_plugin_output_list_print (ZVampOutputList * self)
 {
-  z_info ("%d outputs", self->outputs->len);
+  z_info ("{} outputs", self->outputs->len);
   for (size_t i = 0; i < self->outputs->len; i++)
     {
-      z_info ("output %zu", i);
+      z_info ("output {}", i);
       ZVampOutputDescriptor * o =
         (ZVampOutputDescriptor *) g_ptr_array_index (self->outputs, i);
       vamp_plugin_output_print (o);
@@ -281,7 +281,7 @@ vamp_feature_list_print (const ZVampFeatureList * self)
 {
   for (size_t j = 0; j < self->list->len; j++)
     {
-      z_info ("feature %zu", j);
+      z_info ("feature {}", j);
       ZVampFeature * f = (ZVampFeature *) g_ptr_array_index (self->list, j);
       vamp_feature_print (f);
     }
@@ -293,13 +293,13 @@ vamp_feature_set_print (const ZVampFeatureSet * self)
   if (self->set->len == 0)
     return;
 
-  z_info ("%d features", self->set->len);
+  z_info ("{} features", self->set->len);
   for (size_t i = 0; i < self->set->len; i++)
     {
       ZVampFeatureList * l =
         (ZVampFeatureList *) g_ptr_array_index (self->set, i);
       int * output = &g_array_index (self->outputs, int, i);
-      z_info ("output %d", *output);
+      z_info ("output {}", *output);
       vamp_feature_list_print (l);
     }
 }
@@ -337,7 +337,7 @@ vamp_feature_print (ZVampFeature * self)
   g_string_append_printf (gstr, ")\nlabel: %s", self->label);
 
   char * str = g_string_free (gstr, false);
-  z_info ("%s", str);
+  z_info ("{}", str);
   g_free (str);
 }
 

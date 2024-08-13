@@ -98,7 +98,7 @@ draw_color_area (
     }
   if (tw->color_area_hovered)
     {
-      bg_color.brighten_default();
+      bg_color.brighten_default ();
     }
   {
     graphene_rect_t tmp_r =
@@ -107,8 +107,8 @@ draw_color_area (
   }
 
   /* TODO */
-  auto c2 = track->color_.get_contrast_color();
-  auto c3 = c2.get_contrast_color();
+  auto c2 = track->color_.get_contrast_color ();
+  auto c3 = c2.get_contrast_color ();
 
 #if 0
   /* add shadow in the back */
@@ -122,7 +122,7 @@ draw_color_area (
   /* add main icon */
   if (tw->icon_hovered)
     {
-      c2.brighten_default();
+      c2.brighten_default ();
     }
 
 #if 0
@@ -206,8 +206,8 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
   TrackWidget * tw = self->parent;
 
   CustomButtonWidget * hovered_cb = tw->last_hovered_btn;
-  auto                 &buttons = top ? tw->top_buttons : tw->bot_buttons;
-  Track *               track = tw->track;
+  auto                &buttons = top ? tw->top_buttons : tw->bot_buttons;
+  Track *              track = tw->track;
   for (size_t i = 0; i < buttons.size (); ++i)
     {
       auto &cb_ref = buttons[i];
@@ -688,7 +688,7 @@ track_canvas_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 
   /* tint background */
-  GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha(0.15);
+  GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha (0.15);
   {
     graphene_rect_t tmp_r =
       Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);

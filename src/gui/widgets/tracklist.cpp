@@ -465,7 +465,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
 
   bool can_resize = self->tracklist->multiply_track_heights (
     delta_y > 0 ? 1 / multiplier : multiplier, false, true, false);
-  z_debug ("can resize: %d", can_resize);
+  z_debug ("can resize: {}", can_resize);
   if (can_resize)
     {
       self->tracklist->multiply_track_heights (

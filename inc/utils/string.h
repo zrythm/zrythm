@@ -52,14 +52,18 @@
  * String array that auto-converts given char pointers to UTF8 (so JUCE doesn't
  * complain.
  */
-class StringArray : public juce::StringArray
+class StringArray
 {
 public:
-  StringArray () : juce::StringArray (){};
+  StringArray () {};
   StringArray (const std::initializer_list<const char *> &_strings)
-      : juce::StringArray (_strings) {};
+  {
+    arr_ = juce::StringArray (_strings);
+  }
   StringArray (const std::initializer_list<std::string> &_strings)
-      : juce::StringArray (_strings) {};
+  {
+    arr_ = juce::StringArray (_strings);
+  }
   StringArray (const char * const * strs);
 
   /**
@@ -71,31 +75,48 @@ public:
 
   void insert (int index, const char * s)
   {
-    juce::StringArray::insert (index, juce::CharPointer_UTF8 (s));
+    arr_.insert (index, juce::CharPointer_UTF8 (s));
   };
-  void add (const std::string &s) { juce::StringArray::add (s); }
-  void add (const char * s)
+  void   add (const std::string &s) { arr_.add (s); }
+  size_t size () const { return arr_.size (); }
+  void   add (const char * s) { arr_.add (juce::CharPointer_UTF8 (s)); };
+  void   set (int index, const char * s)
   {
-    juce::StringArray::add (juce::CharPointer_UTF8 (s));
-  };
-  void set (int index, const char * s)
-  {
-    juce::StringArray::set (index, juce::CharPointer_UTF8 (s));
+    arr_.set (index, juce::CharPointer_UTF8 (s));
   };
   char *       getCStr (int index);
+  juce::String getReference (int index) const
+  {
+    return arr_.getReference (index);
+  }
   const char * operator[] (size_t i)
   {
-    return juce::StringArray::getReference (i).toRawUTF8 ();
+    return arr_.getReference (i).toRawUTF8 ();
   };
   void removeString (const char * s)
   {
-    juce::StringArray::removeString (juce::CharPointer_UTF8 (s));
+    arr_.removeString (juce::CharPointer_UTF8 (s));
   };
+
+  void removeDuplicates (bool ignore_case = false)
+  {
+    arr_.removeDuplicates (ignore_case);
+  }
+
+  void addArray (const StringArray &other) { arr_.addArray (other.arr_); };
+
+  void remove (int index) { arr_.remove (index); };
+
+  bool isEmpty () const { return arr_.isEmpty (); };
+  bool contains (const juce::StringRef &s, bool ignore_case = false) const
+  {
+    return arr_.contains (s, ignore_case);
+  }
 
   std::vector<std::string> toStdStringVector () const
   {
     std::vector<std::string> ret;
-    for (auto &s : *this)
+    for (auto &s : arr_)
       {
         ret.push_back (s.toStdString ());
       }
@@ -103,6 +124,20 @@ public:
   }
 
   void print (std::string title) const;
+
+  // Iterator support
+  auto begin () { return arr_.begin (); }
+  auto end () { return arr_.end (); }
+  auto begin () const { return arr_.begin (); }
+  auto end () const { return arr_.end (); }
+
+  // Range-based for loop support
+  auto &operator* () { return *this; }
+  auto &operator++ () { return *this; }
+  bool  operator!= (const StringArray &) const { return false; }
+
+private:
+  juce::StringArray arr_;
 };
 
 Glib::ustring

@@ -101,7 +101,7 @@ audio_cb (
 static void
 error_cb (rtaudio_error_t err, const char * msg)
 {
-  z_error ("RtAudio error: %s", msg);
+  z_error ("RtAudio error: {}", msg);
 }
 
 static bool engine_rtaudio_first_run = true;
@@ -118,7 +118,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend)
       unsigned int          num_apis = rtaudio_get_num_compiled_apis ();
       for (unsigned int i = 0; i < num_apis; i++)
         {
-          z_info ("RtAudio API found: %s", rtaudio_api_name (apis[i]));
+          z_info ("RtAudio API found: {}", rtaudio_api_name (apis[i]));
         }
       engine_rtaudio_first_run = false;
     }
@@ -136,7 +136,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend)
 
   if (rtaudio_error (rtaudio))
     {
-      z_error ("RtAudio: %s", rtaudio_error (rtaudio));
+      z_error ("RtAudio: {}", rtaudio_error (rtaudio));
       return NULL;
     }
 
@@ -176,7 +176,7 @@ print_dev_info (rtaudio_device_info_t * nfo, char * buf)
 int
 engine_rtaudio_setup (AudioEngine * self)
 {
-  z_info ("Setting up RtAudio %s...", rtaudio_version ());
+  z_info ("Setting up RtAudio {}...", rtaudio_version ());
 
   self->rtaudio_ = engine_rtaudio_create_rtaudio (self, self->audio_backend_);
   if (!self->rtaudio_)
@@ -206,12 +206,12 @@ engine_rtaudio_setup (AudioEngine * self)
         rtaudio_get_device_info (self->rtaudio_, dev_id);
       char dev_nfo_str[800];
       print_dev_info (&dev_nfo, dev_nfo_str);
-      z_info ("RtAudio device %d: %s", i, dev_nfo_str);
+      z_info ("RtAudio device {}: {}", i, dev_nfo_str);
       if (
         string_is_equal (dev_nfo.name, out_device)
         && dev_nfo.output_channels > 0)
         {
-          z_info ("found device with id %u at index %d", dev_id, i);
+          z_info ("found device with id {} at index {}", dev_id, i);
           out_device_id = dev_id;
         }
     }
@@ -279,16 +279,16 @@ engine_rtaudio_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      z_info ("%s: activating...", __func__);
+      z_info ("{}: activating...", __func__);
       rtaudio_start_stream (self->rtaudio_);
     }
   else
     {
-      z_info ("%s: deactivating...", __func__);
+      z_info ("{}: deactivating...", __func__);
       rtaudio_stop_stream (self->rtaudio_);
     }
 
-  z_info ("%s: done", __func__);
+  z_info ("{}: done", __func__);
 }
 
 /**
@@ -345,7 +345,7 @@ engine_rtaudio_get_device_names (
         {
           continue;
         }
-      z_info ("RtAudio device %d: %s", i, names[*num_names - 1]);
+      z_info ("RtAudio device {}: {}", i, names[*num_names - 1]);
     }
   rtaudio_destroy (rtaudio);
 }

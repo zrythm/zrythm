@@ -157,7 +157,7 @@ restore_selection (
   char ** selection_paths = g_settings_get_strv (S_UI_PLUGIN_BROWSER, key);
   if (!selection_paths)
     {
-      z_debug ("no selection paths for key %s", key);
+      z_debug ("no selection paths for key {}", key);
       return;
     }
 
@@ -499,8 +499,8 @@ update_internal_selections (
       self->selected_protocols.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
-          guint           idx = gtk_bitset_get_nth (bitset, i);
-          PluginProtocol  prot = ENUM_INT_TO_VALUE (PluginProtocol, idx);
+          guint          idx = gtk_bitset_get_nth (bitset, i);
+          PluginProtocol prot = ENUM_INT_TO_VALUE (PluginProtocol, idx);
           self->selected_protocols.push_back (prot);
         }
 
@@ -880,7 +880,7 @@ on_position_change (
       gtk_paned_set_position (self->paned, divider_pos);
 
       self->first_time_position_set = 0;
-      /*z_info ("***************************got plugin position %d",*/
+      /*z_info ("***************************got plugin position {}",*/
       /*divider_pos);*/
     }
   else
@@ -888,7 +888,7 @@ on_position_change (
       /* save the divide position */
       divider_pos = gtk_paned_get_position (self->paned);
       g_settings_set_int (S_UI, "browser-divider-position", divider_pos);
-      /*z_info ("***************************set plugin position to %d",*/
+      /*z_info ("***************************set plugin position to {}",*/
       /*divider_pos);*/
     }
 }
@@ -1041,7 +1041,7 @@ plugin_browser_widget_new (void)
   int divider_pos = g_settings_get_int (S_UI, "browser-divider-position");
   gtk_paned_set_position (self->paned, divider_pos);
   self->first_time_position_set = 1;
-  z_info ("setting plugin browser divider pos to %d", divider_pos);
+  z_info ("setting plugin browser divider pos to {}", divider_pos);
 
   /* re-sort */
   gtk_sorter_changed (

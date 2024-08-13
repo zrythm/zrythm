@@ -206,14 +206,14 @@ editable_label_changed_source (gpointer user_data)
   using enum ArrangerSelectionsAction::EditType;
 
   static const std::unordered_map<std::string, std::function<void ()>> actions = {
-    {_ ("Start"),       [&] { handle_position_change (Start); }    },
-    { _ ("Position"),   [&] { handle_position_change (Start); }    },
-    { _ ("End"),        [&] { handle_position_change (End); }      },
-    { _ ("Clip start"), [&] { handle_position_change (ClipStart); }},
-    { _ ("Loop start"), [&] { handle_position_change (LoopStart); }},
-    { _ ("Loop end"),   [&] { handle_position_change (LoopEnd); }  },
-    { _ ("Fade in"),    [&] { handle_position_change (FadeIn); }   },
-    { _ ("Fade out"),   [&] { handle_position_change (FadeOut); }  },
+    { _ ("Start"),      [&] { handle_position_change (Start); }     },
+    { _ ("Position"),   [&] { handle_position_change (Start); }     },
+    { _ ("End"),        [&] { handle_position_change (End); }       },
+    { _ ("Clip start"), [&] { handle_position_change (ClipStart); } },
+    { _ ("Loop start"), [&] { handle_position_change (LoopStart); } },
+    { _ ("Loop end"),   [&] { handle_position_change (LoopEnd); }   },
+    { _ ("Fade in"),    [&] { handle_position_change (FadeIn); }    },
+    { _ ("Fade out"),   [&] { handle_position_change (FadeOut); }   },
     { _ ("Name"),
      [&] {
         auto *                                                         nameable_object = dynamic_cast<NameableObject *> (obj);
@@ -228,7 +228,7 @@ editable_label_changed_source (gpointer user_data)
           {
             ui_show_error_message (_ ("Invalid Name"), _ ("Invalid name"));
           }
-      }                                                            },
+      }                                                             },
     { _ ("Velocity"),
      [&] {
         uint8_t                                                        val;
@@ -244,7 +244,7 @@ editable_label_changed_source (gpointer user_data)
             mn->vel_->vel_ = val;
             obj->edit_finish (static_cast<int> (Primitive));
           }
-      }                                                            },
+      }                                                             },
     { _ ("Pitch"),
      [&] {
         uint8_t                                                        val;
@@ -258,7 +258,7 @@ editable_label_changed_source (gpointer user_data)
             mn->set_val (val);
             obj->edit_finish (static_cast<int> (Primitive));
           }
-      }                                                            },
+      }                                                             },
     { _ ("Value"),
      [&] {
         if (auto * ap = dynamic_cast<AutomationPoint *> (obj))
@@ -277,7 +277,7 @@ editable_label_changed_source (gpointer user_data)
                 obj->edit_finish (static_cast<int> (Primitive));
               }
           }
-      }                                                            },
+      }                                                             },
     { _ ("Curviness"),
      [&] {
         float                                                          val;
@@ -295,7 +295,7 @@ editable_label_changed_source (gpointer user_data)
                 obj->edit_finish (static_cast<int> (Primitive));
               }
           }
-      }                                                            }
+      }                                                             }
   };
 
   if (auto it = actions.find (column_name); it != actions.end ())
@@ -320,8 +320,8 @@ on_editable_label_editing_changed (
 
   bool editing = gtk_editable_label_get_editing (editable_lbl);
 
-  z_debug ("editing changed: %d", editing);
-  z_debug ("text: %s", text);
+  z_debug ("editing changed: {}", editing);
+  z_debug ("text: {}", text);
 
   /* perform change */
   auto wrapped_obj = data->obj_;

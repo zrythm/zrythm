@@ -55,7 +55,8 @@ AudioFile::ensure_file_is_open ()
     }
   else
     {
-      reader_ = std::unique_ptr<juce::AudioFormatReader>(format_mgr.createReaderFor(juce::File(filepath_)));
+      reader_ = std::unique_ptr<juce::AudioFormatReader> (
+        format_mgr.createReaderFor (juce::File (filepath_)));
     }
 }
 

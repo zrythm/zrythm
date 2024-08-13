@@ -111,7 +111,7 @@ void
 SimpleTracklistSelections::
   add_tracks_in_range (int min_pos, int max_pos, bool fire_events)
 {
-  z_info ("selecting tracks from %d to %d...", min_pos, max_pos);
+  z_info ("selecting tracks from {} to {}...", min_pos, max_pos);
 
   clear (fire_events);
 

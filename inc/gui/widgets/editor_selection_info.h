@@ -30,7 +30,7 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_MAS_INFO MW_CLIP_EDITOR->editor_selections
 
-typedef struct _SelectionInfoWidget   SelectionInfoWidget;
+typedef struct _SelectionInfoWidget SelectionInfoWidget;
 class MidiSelections;
 
 /**

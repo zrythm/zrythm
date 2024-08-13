@@ -175,8 +175,8 @@ arranger_object_draw (
  *
  * @param arranger Owner arranger. Should be passed to speed up calculation.
  */
-NONNULL_ARGS (1)
-OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
+NONNULL_ARGS (1) OPTIMIZE_O3 bool
+arranger_object_should_orig_be_visible (
   const ArrangerObject * self,
   const ArrangerWidget * arranger);
 

@@ -96,7 +96,7 @@ inspector_track_widget_show_tracks (
     {
       auto track = tls->get_highest_track ();
       auto track_ptr = track;
-      z_debug ("track %s", track->name_);
+      z_debug ("track {}", track->name_);
 
       /* don't attempt to show tracks during disconnect */
       z_return_if_fail (!track->disconnecting_);

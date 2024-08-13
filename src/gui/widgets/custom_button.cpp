@@ -31,7 +31,7 @@ CustomButtonWidget::CustomButtonWidget (const std::string &icon_name, int size)
     icon_name.c_str (), texture_size, texture_size, 1);
   if (!icon_texture)
     {
-      z_error ("Failed to get icon surface for %s", icon_name);
+      z_error ("Failed to get icon surface for {}", icon_name);
       return;
     }
 }

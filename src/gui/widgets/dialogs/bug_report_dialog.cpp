@@ -101,7 +101,7 @@ get_report_template (BugReportDialogWidget * self, bool for_uri)
 static char *
 get_json_string (BugReportDialogWidget * self)
 {
-  z_debug ("%s: generating json...", __func__);
+  z_debug ("{}: generating json...", __func__);
 
   yyjson_mut_doc * doc = yyjson_mut_doc_new (nullptr);
   yyjson_mut_val * root = yyjson_mut_obj (doc);

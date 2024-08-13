@@ -146,7 +146,7 @@ AutomatableTrack::generate_automation_tracks ()
       break;
     }
 
-  z_debug ("generated automation tracks for '%s'", name_);
+  z_debug ("generated automation tracks for '{}'", name_);
 }
 
 void

@@ -50,9 +50,9 @@ using BugReportDialogWidget = struct _BugReportDialogWidget
   std::vector<std::string> log_long;
   std::string              undo_stack;
   std::string              undo_stack_long;
-  char * backtrace;
-  char * system_nfo;
-  bool   fatal;
+  char *                   backtrace;
+  char *                   system_nfo;
+  bool                     fatal;
 
   /* Used when sending automatically. */
   char * log_file_path;

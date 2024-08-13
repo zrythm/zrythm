@@ -126,7 +126,7 @@ class SimpleTracklistSelections
 {
 public:
   SimpleTracklistSelections () = default;
-  SimpleTracklistSelections (Tracklist &tracklist) : tracklist_ (&tracklist){};
+  SimpleTracklistSelections (Tracklist &tracklist) : tracklist_ (&tracklist) {};
 
   void init_loaded (Tracklist &tracklist) { tracklist_ = &tracklist; }
 
@@ -274,7 +274,7 @@ public:
       [] (const auto &a, const auto &b) {
         return Track::find_by_name (a)->pos_ < Track::find_by_name (b)->pos_;
       });
-}
+  }
 
 public:
   /**

@@ -112,7 +112,7 @@ PluginSetting::validate (bool print_result)
 
 #ifdef HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
-  /*z_debug ("%s: recalculating bridge mode...", __func__);*/
+  /*z_debug ("{}: recalculating bridge mode...", __func__);*/
   if (this->bridge_mode_ == CarlaBridgeMode::None)
     {
       this->bridge_mode_ = descr_.min_bridge_mode_;
@@ -160,7 +160,7 @@ PluginSetting::validate (bool print_result)
   /*z_debug ("checking if plugin has custom UI...");*/
   if (!descr_.has_custom_ui_)
     {
-      /*z_debug ("plugin %s has no custom UI", descr->name);*/
+      /*z_debug ("plugin {} has no custom UI", descr->name);*/
       this->force_generic_ui_ = true;
     }
   /*z_debug ("done checking if plugin has custom UI");*/

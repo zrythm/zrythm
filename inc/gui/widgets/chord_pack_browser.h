@@ -38,17 +38,17 @@ using ChordPackBrowserWidget = struct _ChordPackBrowserWidget
   GtkBox * browser_top;
   GtkBox * browser_bot;
 
-  GtkSingleSelection * packs_selection_model;
+  GtkSingleSelection *           packs_selection_model;
   std::unique_ptr<ItemFactory> * packs_item_factory;
-  GtkListView *        packs_list_view;
+  GtkListView *                  packs_list_view;
 
   GtkLabel * pset_info;
 
-  GtkCustomFilter *    psets_filter;
-  GtkFilterListModel * psets_filter_model;
-  GtkSingleSelection * psets_selection_model;
+  GtkCustomFilter *              psets_filter;
+  GtkFilterListModel *           psets_filter_model;
+  GtkSingleSelection *           psets_selection_model;
   std::unique_ptr<ItemFactory> * psets_item_factory;
-  GtkListView *        psets_list_view;
+  GtkListView *                  psets_list_view;
 
   std::vector<ChordPresetPack *> * selected_packs;
   std::vector<ChordPreset *> *     selected_psets;

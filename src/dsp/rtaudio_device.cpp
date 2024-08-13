@@ -17,7 +17,7 @@
 static void
 error_cb (rtaudio_error_t err, const char * msg)
 {
-  z_error ("RtAudio error: %s", msg);
+  z_error ("RtAudio error: {}", msg);
 }
 
 static int

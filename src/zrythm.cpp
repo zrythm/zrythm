@@ -506,8 +506,8 @@ Zrythm::init_templates ()
 {
   z_info ("Initializing templates...");
 
-  auto *         dir_mgr = ZrythmDirectoryManager::getInstance ();
-  std::string    user_templates_dir =
+  auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
+  std::string user_templates_dir =
     dir_mgr->get_dir (ZrythmDirType::USER_TEMPLATES);
   templates_ = io_get_files_in_dir (user_templates_dir);
   if (!ZRYTHM_TESTING)
@@ -520,7 +520,7 @@ Zrythm::init_templates ()
 
   for (auto &tmpl : this->templates_)
     {
-      z_info ("Template found: %s", tmpl.toRawUTF8 ());
+      z_info ("Template found: {}", tmpl.toRawUTF8 ());
       if (tmpl.contains ("demo_zsong01"))
         {
           demo_template_ = tmpl.toStdString ();

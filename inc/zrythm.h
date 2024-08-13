@@ -319,10 +319,10 @@ public:
   std::unique_ptr<Settings> settings_;
 
   /** +1 to ensure last element is NULL in case full. */
-  StringArray recent_projects_;
+  StringArray recent_projects_{};
 
   /** NULL terminated array of project template absolute paths. */
-  StringArray templates_;
+  StringArray templates_{};
 
   /**
    * Demo project template used when running for the first time.

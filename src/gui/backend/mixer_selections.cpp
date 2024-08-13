@@ -45,7 +45,7 @@ MixerSelections::add_slot (
   type_ = type;
   has_any_ = true;
 
-  z_debug ("adding slot %s:%s:%d", track.name_, ENUM_NAME (type), slot);
+  z_debug ("adding slot {}:{}:{}", track.name_, ENUM_NAME (type), slot);
 
   if (!std::ranges::any_of (slots_, [slot] (auto i) { return i == slot; }))
     {
@@ -98,7 +98,7 @@ FullMixerSelections::add_plugin (const Track &track, PluginSlotType type, int sl
 void
 MixerSelections::remove_slot (int slot, PluginSlotType type, bool publish_events)
 {
-  z_info ("removing slot %d", slot);
+  z_info ("removing slot {}", slot);
   slots_.erase (
     std::remove (slots_.begin (), slots_.end (), slot), slots_.end ());
 

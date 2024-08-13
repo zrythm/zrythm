@@ -473,12 +473,12 @@ StereoPorts::StereoPorts (
   PortIdentifier::OwnerType owner_type,
   void *                    owner)
     : StereoPorts (
-      AudioPort (
-        fmt::format ("{} L", name),
-        input ? PortFlow::Input : PortFlow::Output),
-      AudioPort (
-        fmt::format ("{} R", name),
-        input ? PortFlow::Input : PortFlow::Output))
+        AudioPort (
+          fmt::format ("{} L", name),
+          input ? PortFlow::Input : PortFlow::Output),
+        AudioPort (
+          fmt::format ("{} R", name),
+          input ? PortFlow::Input : PortFlow::Output))
 
 {
   l_->id_.flags_ |= PortIdentifier::Flags::StereoL;

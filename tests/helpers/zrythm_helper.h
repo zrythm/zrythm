@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Zrythm test helper.
  */
@@ -20,7 +20,7 @@
 #include "utils/datetime.h"
 #include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/log.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -46,33 +46,36 @@ _test_helper_zrythm_init (
   int  buf_size,
   bool use_pipewire);
 void
-test_helper_zrythm_init (void);
+test_helper_zrythm_init ();
 void
-test_helper_zrythm_init_with_pipewire (void);
+test_helper_zrythm_init_with_pipewire ();
 void
-test_helper_zrythm_init_optimized (void);
+test_helper_zrythm_init_optimized ();
 void
-test_helper_zrythm_cleanup (void);
+test_helper_zrythm_cleanup ();
 void
 test_helper_zrythm_gui_init (int argc, char * argv[]);
 void
-test_helper_project_init_done_cb (bool success, GError * error, void * user_data);
+test_helper_project_init_done_cb (
+  bool        success,
+  std::string error,
+  void *      user_data);
 
 /** Time to run fishbowl, in seconds */
 #define DEFAULT_FISHBOWL_TIME 20
 
 /** Compares 2 Position pointers. */
 #define g_assert_cmppos(a, b) \
-  g_assert_cmpfloat_with_epsilon ((a)->ticks, (b)->ticks, 0.0001); \
-  g_assert_cmpint ((a)->frames, ==, (b)->frames)
+  REQUIRE ((a)->ticks_ == doctest::Approx ((b)->ticks_).epsilon (0.0001)); \
+  REQUIRE ((a)->frames_ == (b)->frames_)
 
 #ifndef G_APPROX_VALUE
 #  define G_APPROX_VALUE(a, b, epsilon) \
     (((a) > (b) ? (a) - (b) : (b) - (a)) < (epsilon))
 #endif
 
-#ifndef g_assert_cmpfloat_with_epsilon
-#  define g_assert_cmpfloat_with_epsilon(n1, n2, epsilon) \
+#ifndef REQUIRE_FLOAT_NEAR
+#  define REQUIRE_FLOAT_NEAR(n1, n2, epsilon) \
     G_STMT_START \
     { \
       double __n1 = (n1), __n2 = (n2), __epsilon = (epsilon); \

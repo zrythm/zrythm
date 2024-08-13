@@ -103,7 +103,7 @@ FoldableTrack::add_to_size (int delta)
   add_folder_parents (parents, false);
 
   size_ += delta;
-  z_debug ("new %s size: %d (added %d)", name_, size_, delta);
+  z_debug ("new {} size: {} (added {})", name_, size_, delta);
   for (auto parent : parents)
     {
       parent->size_ += delta;
@@ -116,7 +116,7 @@ void
 FoldableTrack::
   set_folded (bool folded, bool trigger_undo, bool auto_select, bool fire_events)
 {
-  z_info ("Setting track %s folded (%d)", name_, folded);
+  z_info ("Setting track {} folded ({})", name_, folded);
   if (auto_select)
     {
       select (F_SELECT, F_EXCLUSIVE, fire_events);

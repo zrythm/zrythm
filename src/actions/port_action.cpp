@@ -31,23 +31,23 @@ PortAction::PortAction (
 {
 }
 
-  void
-  PortAction::do_or_undo (bool do_it)
-  {
-    auto port = Port::find_from_identifier<ControlPort> (port_id_);
+void
+PortAction::do_or_undo (bool do_it)
+{
+  auto port = Port::find_from_identifier<ControlPort> (port_id_);
 
-    switch (type_)
+  switch (type_)
+    {
+    case Type::SetControlValue:
       {
-      case Type::SetControlValue:
-        {
-          float val_before = port->get_val ();
-          port->set_control_value (val_, false, true);
-          val_ = val_before;
-        }
-        break;
-      default:
-        break;
+        float val_before = port->get_val ();
+        port->set_control_value (val_, false, true);
+        val_ = val_before;
       }
+      break;
+    default:
+      break;
+    }
 }
 
 void

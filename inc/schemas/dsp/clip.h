@@ -34,9 +34,9 @@ typedef struct AudioClip_v1
 } AudioClip_v1;
 
 static const cyaml_strval_t bit_depth_strings_v1[] = {
-  {"16",  BIT_DEPTH_16_v1},
-  { "24", BIT_DEPTH_24_v1},
-  { "32", BIT_DEPTH_32_v1},
+  { "16", BIT_DEPTH_16_v1 },
+  { "24", BIT_DEPTH_24_v1 },
+  { "32", BIT_DEPTH_32_v1 },
 };
 
 static const cyaml_schema_field_t audio_clip_fields_schema_v1[] = {

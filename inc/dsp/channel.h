@@ -117,13 +117,13 @@ public:
    */
   Plugin * add_plugin (
     std::unique_ptr<Plugin> &&plugin,
-    PluginSlotType       slot_type,
-    int                  slot,
-    bool                 confirm,
-    bool                 moving_plugin,
-    bool                 gen_automatables,
-    bool                 recalc_graph,
-    bool                 pub_events);
+    PluginSlotType            slot_type,
+    int                       slot,
+    bool                      confirm,
+    bool                      moving_plugin,
+    bool                      gen_automatables,
+    bool                      recalc_graph,
+    bool                      pub_events);
 
   ChannelTrack * get_track () const { return track_; }
 

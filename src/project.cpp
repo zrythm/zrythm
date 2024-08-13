@@ -295,7 +295,7 @@ Project::set_and_create_next_available_backup_dir ()
 void
 Project::activate ()
 {
-  z_debug ("Activating project %s (%p)...", title_, fmt::ptr (this));
+  z_debug ("Activating project {} ({:p})...", title_, fmt::ptr (this));
 
   last_saved_action_ = undo_manager_->get_last_action ();
 
@@ -322,7 +322,7 @@ Project::activate ()
   /* resume engine */
   audio_engine_->resume (state);
 
-  z_debug ("Project %s (%p) activated", title_, fmt::ptr (this));
+  z_debug ("Project {} ({:p}) activated", title_, fmt::ptr (this));
 }
 
 void
@@ -423,7 +423,7 @@ Project::fix_audio_regions ()
         }
     }
 
-  z_debug ("done fixing %d audio region positions", num_fixed);
+  z_debug ("done fixing {} audio region positions", num_fixed);
 
   return num_fixed > 0;
 }
@@ -513,7 +513,7 @@ Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
   std::string project_file_path = get_path (ProjectPath::ProjectFile, backup);
-  z_debug ("getting text for project file %s", project_file_path);
+  z_debug ("getting text for project file {}", project_file_path);
 
   char *   compressed_pj;
   gsize    compressed_pj_size;
@@ -529,7 +529,7 @@ Project::get_existing_uncompressed_text (bool backup)
     }
 
   /* decompress */
-  z_info ("%s: decompressing project...", __func__);
+  z_info ("{}: decompressing project...", __func__);
   char * text = NULL;
   size_t text_size;
   err = NULL;
@@ -647,7 +647,7 @@ Project::autosave_cb (void * data)
         }
       else
         {
-          z_warning ("%s", e.what ());
+          z_warning ("{}", e.what ());
         }
     }
 
@@ -804,7 +804,7 @@ Project::idle_saved_callback (SaveContext * ctx)
 void
 Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 {
-  z_debug ("cleaning plugin state dirs%s...", is_backup ? " for backup" : "");
+  z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
   std::vector<Plugin *> plugins;
   Plugin::get_all (main_project, plugins, true);
@@ -812,7 +812,7 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
   for (size_t i = 0; i < plugins.size (); i++)
     {
-      z_debug ("plugin %zu: %s", i, plugins[i]->state_dir_.c_str ());
+      z_debug ("plugin {}: {}", i, plugins[i]->state_dir_.c_str ());
     }
 
   auto plugin_states_path =
@@ -836,14 +836,14 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
             });
           if (!found)
             {
-              z_debug ("removing unused plugin state in %s", full_path);
+              z_debug ("removing unused plugin state in {}", full_path);
               io_rmdir (full_path, true);
             }
         }
     }
   catch (const Glib::Error &e)
     {
-      z_critical ("Failed to open directory: %s", e.what ());
+      z_critical ("Failed to open directory: {}", e.what ());
       return;
     }
 

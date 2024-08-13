@@ -62,8 +62,8 @@ on_show_hide_ui_toggled (GtkToggleButton * btn, ModulatorInnerWidget * self)
 static void
 on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
 {
-  auto              sel = std::make_unique<FullMixerSelections> ();
-  Plugin *          modulator = get_modulator (self);
+  auto     sel = std::make_unique<FullMixerSelections> ();
+  Plugin * modulator = get_modulator (self);
   sel->add_slot (
     *P_MODULATOR_TRACK, PluginSlotType::Modulator, modulator->id_.slot_,
     F_PUBLISH_EVENTS);

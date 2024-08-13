@@ -334,13 +334,13 @@ init_features (LV2Apply * self)
 {
   /* Build options array to pass to plugin */
   const LV2_Options_Option options[ARRAY_SIZE (self->features.options)] = {
-    {LV2_OPTIONS_INSTANCE,  0, self->urids.param_sampleRate,     sizeof (float),
-     self->urids.atom_Float,                                                                           &self->sample_rate },
+    { LV2_OPTIONS_INSTANCE, 0, self->urids.param_sampleRate,     sizeof (float),
+     self->urids.atom_Float,                                                                           &self->sample_rate  },
     { LV2_OPTIONS_INSTANCE, 0, self->urids.bufsz_minBlockLength,
-     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length},
+     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length },
     { LV2_OPTIONS_INSTANCE, 0, self->urids.bufsz_maxBlockLength,
-     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length},
-    { LV2_OPTIONS_INSTANCE, 0, 0,                                0,              0,                    NULL               }
+     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length },
+    { LV2_OPTIONS_INSTANCE, 0, 0,                                0,              0,                    NULL                }
   };
   memcpy (self->features.options, options, sizeof (self->features.options));
 

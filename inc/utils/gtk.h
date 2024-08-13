@@ -70,20 +70,16 @@ class Color;
     complete);
 
 #define Z_GDK_RGBA_INIT(r, g, b, a) \
-  { \
-    .red = static_cast<float> (r), .green = static_cast<float> (g), \
-    .blue = static_cast<float> (b), .alpha = static_cast<float> (a) \
-  }
+  { .red = static_cast<float> (r), \
+    .green = static_cast<float> (g), \
+    .blue = static_cast<float> (b), \
+    .alpha = static_cast<float> (a) }
 
 #define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
-  { \
-    .x = _x, .y = _y, .width = _w, .height = _h \
-  }
+  { .x = _x, .y = _y, .width = _w, .height = _h }
 
 #define Z_GDK_RECTANGLE_INIT_UNIT(_x, _y) \
-  { \
-    .x = _x, .y = _y, .width = 1, .height = 1 \
-  }
+  { .x = _x, .y = _y, .width = 1, .height = 1 }
 
 #define Z_GRAPHENE_RECT_INIT(_x, _y, _w, _h) \
   GRAPHENE_RECT_INIT ( \

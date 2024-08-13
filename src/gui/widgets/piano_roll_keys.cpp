@@ -100,7 +100,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       const auto * descr =
         PIANO_ROLL->find_midi_note_descriptor_by_val (drum_mode, i);
 
-      int          fontsize = piano_roll_keys_widget_get_font_size (self);
+      int               fontsize = piano_roll_keys_widget_get_font_size (self);
       const std::string note_name_to_use =
         drum_mode ? descr->custom_name_ : descr->note_name_pango_;
       std::string note_name_inner;
@@ -129,8 +129,8 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       else
         {
           /* ---- draw background ---- */
-          bool    has_color = false;
-          Color   color;
+          bool  has_color = false;
+          Color color;
           if (
             (PIANO_ROLL->highlighting_ == PianoRoll::Highlighting::Both
              || PIANO_ROLL->highlighting_ == PianoRoll::Highlighting::Chord)
@@ -309,7 +309,7 @@ piano_roll_keys_widget_get_font_size (PianoRollKeysWidget * self)
 static void
 send_note_event (PianoRollKeysWidget * self, int note, bool on)
 {
-  z_debug ("sending note event %d, on: %d", note, on);
+  z_debug ("sending note event {}, on: {}", note, on);
   z_return_if_fail (note >= 0 && note < 128);
   auto * region = CLIP_EDITOR->get_region<MidiRegion> ();
   if (on)

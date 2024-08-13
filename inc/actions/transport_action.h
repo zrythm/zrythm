@@ -78,22 +78,22 @@ private:
     return type_ == Type::TempoChange || type_ == Type::BeatsPerBarChange;
   }
 
-   void do_or_undo (bool do_it);
+  void do_or_undo (bool do_it);
 
- public:
-   Type type_ = Type::TempoChange;
+public:
+  Type type_ = Type::TempoChange;
 
-   bpm_t bpm_before_ = 0.0;
-   bpm_t bpm_after_ = 0.0;
+  bpm_t bpm_before_ = 0.0;
+  bpm_t bpm_after_ = 0.0;
 
-   int int_before_ = 0;
-   int int_after_ = 0;
+  int int_before_ = 0;
+  int int_after_ = 0;
 
-   /** Flag whether the action was already performed the first time. */
-   bool already_done_ = false;
+  /** Flag whether the action was already performed the first time. */
+  bool already_done_ = false;
 
-   /** Whether musical mode was enabled when this action was made. */
-   bool musical_mode_ = false;
+  /** Whether musical mode was enabled when this action was made. */
+  bool musical_mode_ = false;
 };
 
 /**

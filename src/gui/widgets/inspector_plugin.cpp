@@ -73,7 +73,7 @@ inspector_plugin_widget_show (
           if (!pls.empty ())
             {
               pl = pls.front ();
-              z_debug ("showing info for plugin %s", pl->get_name ());
+              z_debug ("showing info for plugin {}", pl->get_name ());
             }
         }
     }

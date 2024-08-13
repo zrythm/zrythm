@@ -48,8 +48,8 @@ Exporter::Settings::get_export_time_range () const
     {
     case Exporter::TimeRange::Song:
       {
-        auto start = P_MARKER_TRACK->get_start_marker();
-        auto end = P_MARKER_TRACK->get_end_marker();
+        auto start = P_MARKER_TRACK->get_start_marker ();
+        auto end = P_MARKER_TRACK->get_end_marker ();
         return { start->pos_, end->pos_ };
       }
     case Exporter::TimeRange::Loop:
@@ -151,16 +151,16 @@ Exporter::export_audio (Settings &info)
   memset (&ditherer, 0, sizeof (Ditherer));
   if (info.dither_)
     {
-      z_debug ("dither %d bits", audio_bit_depth_enum_to_int (info.depth_));
+      z_debug ("dither {} bits", audio_bit_depth_enum_to_int (info.depth_));
       ditherer_reset (&ditherer, audio_bit_depth_enum_to_int (info.depth_));
     }
 
   z_return_if_fail (end_pos.frames_ >= 1 || start_pos.frames_ >= 0);
   const double total_ticks = (end_pos.ticks_ - start_pos.ticks_);
   /* frames written so far */
-  double       covered_ticks = 0;
-  bool         clipped = false;
-  float        clip_amp = 0.f;
+  double covered_ticks = 0;
+  bool   clipped = false;
+  float  clip_amp = 0.f;
 
   juce::AudioBuffer<float> buffer (EXPORT_CHANNELS, AUDIO_ENGINE->block_length_);
 
@@ -270,7 +270,7 @@ Exporter::export_audio (Settings &info)
 
       if (clipped)
         {
-          float  max_db = math_amp_to_dbfs (clip_amp);
+          float       max_db = math_amp_to_dbfs (clip_amp);
           std::string warn_str = format_str (
             _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
             max_db);
@@ -301,7 +301,7 @@ Exporter::export_midi (Settings &info)
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 
       int midi_version = info.format_ == Exporter::Format::Midi0 ? 0 : 1;
-      z_debug ("setting MIDI version to %d", midi_version);
+      z_debug ("setting MIDI version to {}", midi_version);
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */

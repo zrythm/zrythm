@@ -43,7 +43,7 @@ using StringEntryDialogWidget = struct _StringEntryDialogWidget
 
   GenericStringGetter * getter;
   GenericStringSetter * setter;
-  void *              obj;
+  void *                obj;
 };
 
 /**

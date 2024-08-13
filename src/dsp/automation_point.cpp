@@ -44,7 +44,7 @@ AutomationPoint::AutomationPoint (const Position &pos)
     ZRYTHM_TESTING
       ? CurveOptions::Algorithm::SuperEllipse
       : (CurveOptions::Algorithm) g_settings_get_enum (
-        S_P_EDITING_AUTOMATION, "curve-algorithm");
+          S_P_EDITING_AUTOMATION, "curve-algorithm");
 }
 
 AutomationPoint::AutomationPoint (
@@ -144,17 +144,17 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
   float normalized_val;
   if (is_normalized)
     {
-      z_info ("received normalized val %f", (double) real_val);
+      z_info ("received normalized val {:f}", (double) real_val);
       normalized_val = CLAMP (real_val, 0.f, 1.f);
       real_val = port->normalized_val_to_real (normalized_val);
     }
   else
     {
-      z_info ("reveived real val %f", (double) real_val);
+      z_info ("reveived real val {:f}", (double) real_val);
       real_val = CLAMP (real_val, port->minf_, port->maxf_);
       normalized_val = port->real_val_to_normalized (real_val);
     }
-  z_info ("setting to %f", (double) real_val);
+  z_info ("setting to {:f}", (double) real_val);
   fvalue_ = real_val;
   normalized_val_ = normalized_val;
 

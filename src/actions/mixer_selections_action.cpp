@@ -111,7 +111,7 @@ MixerSelectionsAction::
   auto track =
     TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ms.track_name_hash_);
   z_return_if_fail (track);
-  z_debug ("cloning automation tracks for track %s", track->name_);
+  z_debug ("cloning automation tracks for track {}", track->name_);
   auto &atl = track->automation_tracklist_;
   int   count = 0;
   int   regions_count = 0;
@@ -173,7 +173,7 @@ MixerSelectionsAction::revert_automation (
   int                  slot,
   bool                 deleted)
 {
-  z_debug ("reverting automation for %s#%d", track.name_, slot);
+  z_debug ("reverting automation for {}#{}", track.name_, slot);
 
   auto &atl = track.automation_tracklist_;
   auto &ats = deleted ? deleted_ats_ : ats_;
@@ -239,11 +239,11 @@ MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
 {
   if (!deleted_ms_)
     {
-      z_debug ("No deleted plugin to revert at %s#%d", to_tr.name_, to_slot);
+      z_debug ("No deleted plugin to revert at {}#{}", to_tr.name_, to_slot);
       return;
     }
 
-  z_debug ("reverting deleted plugin at %s#%d", to_tr.name_, to_slot);
+  z_debug ("reverting deleted plugin at {}#{}", to_tr.name_, to_slot);
 
   if (deleted_ms_->type_ == PluginSlotType::Modulator)
     {

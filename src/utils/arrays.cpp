@@ -177,7 +177,7 @@ _array_double_size_if_full (
 
   if (G_UNLIKELY (count > *max_sz && *max_sz != 0))
     {
-      z_error ("invalid count (%zu) and max sz (%zu)", count, *max_sz);
+      z_error ("invalid count ({}) and max sz ({})", count, *max_sz);
       return;
     }
 

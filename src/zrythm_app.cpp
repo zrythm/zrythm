@@ -125,7 +125,7 @@ segv_handler (int sig)
   /* call the callback to write queued messages and get last few lines of the
    * log, before logging the backtrace */
   // log_idle_cb (LOG);
-  z_info ("%s", bt);
+  z_info ("{}", bt);
   // log_idle_cb (LOG);
 
   if (MAIN_WINDOW)
@@ -415,7 +415,7 @@ zrythm_app_init_thread (ZrythmApp * self)
   {
     char ver[2000];
     Zrythm::get_version_with_capabilities (ver, false);
-    z_info ("\n%s", ver);
+    z_info ("\n{}", ver);
   }
 
 #if defined(_WIN32) || defined(__APPLE__)
@@ -521,7 +521,7 @@ static void
 zrythm_app_activate (GApplication * _app)
 {
   z_info ("Activating...");
-  /*z_info ("activate %d", *task_id);*/
+  /*z_info ("activate {}", *task_id);*/
 
   z_info ("done");
 }
@@ -546,7 +546,7 @@ zrythm_app_open (
   auto    path = g_file_get_path (file);
   gZrythm->open_filename_ = path;
   g_free (path);
-  z_info ("open %s", gZrythm->open_filename_);
+  z_info ("open {}", gZrythm->open_filename_);
 
   z_info ("done");
 }
@@ -643,7 +643,7 @@ load_icon (
     "Attempting to load an icon from the icon "
     "theme...");
   bool found = gtk_icon_theme_has_icon (icon_theme, icon_name);
-  z_info ("found: %d", found);
+  z_info ("found: {}", found);
   if (!gtk_icon_theme_has_icon (icon_theme, icon_name))
     {
       /* fallback to zrythm-dark and try again */
@@ -654,7 +654,7 @@ load_icon (
       g_object_set (
         default_settings, "gtk-icon-theme-name", "zrythm-dark", nullptr);
       found = gtk_icon_theme_has_icon (icon_theme, icon_name);
-      z_info ("found: %d", found);
+      z_info ("found: {}", found);
     }
 
   if (!found)
@@ -664,7 +664,7 @@ load_icon (
         err_msg,
         "Failed to load icon from icon theme. "
         "Please install zrythm.");
-      z_error ("%s", err_msg);
+      z_error ("{}", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_literal (_ ("Icon Theme Not Found"), err_msg);
       z_error ("Failed to load icon");
@@ -742,7 +742,7 @@ lock_memory (ZrythmApp * self)
       if (mlockall (MCL_CURRENT | MCL_FUTURE))
         {
 #  ifdef __APPLE__
-          z_warning ("Cannot lock down memory: %s", strerror (errno));
+          z_warning ("Cannot lock down memory: {}", strerror (errno));
 #  else
           char * str = g_strdup_printf (
             _ ("Cannot lock down memory: %s"), strerror (errno));
@@ -830,7 +830,7 @@ raise_open_file_limit (void)
     }
   else
     {
-      z_warning ("Could not get system open files limit (%s)", strerror (errno));
+      z_warning ("Could not get system open files limit ({})", strerror (errno));
     }
 #endif
 }
@@ -883,10 +883,10 @@ zrythm_app_startup (GApplication * app)
   g_free (ver);
 
   char * cur_dir = g_get_current_dir ();
-  z_info ("Running Zrythm in %s", cur_dir);
+  z_info ("Running Zrythm in {}", cur_dir);
   g_free (cur_dir);
 
-  z_info ("GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
+  z_info ("GTK_THEME was '{}'. unsetting...", getenv ("GTK_THEME"));
   g_unsetenv ("GTK_THEME");
 
   /* install segfault handler */
@@ -962,7 +962,7 @@ zrythm_app_startup (GApplication * app)
 
   bool ret = g_application_get_is_registered (G_APPLICATION (self));
   bool remote = g_application_get_is_remote (G_APPLICATION (self));
-  z_info ("application registered: %d, is remote %d", ret, remote);
+  z_info ("application registered: {}, is remote {}", ret, remote);
 
   z_info (
     "application resources base path: %s",
@@ -980,7 +980,7 @@ zrythm_app_startup (GApplication * app)
     "gtk-application-prefer-dark-theme", 1, nullptr);
 #endif
   int scale_factor = z_gtk_get_primary_monitor_scale_factor ();
-  z_info ("Monitor scale factor: %d", scale_factor);
+  z_info ("Monitor scale factor: {}", scale_factor);
 #if defined(_WIN32)
   g_object_set (
     self->default_settings, "gtk-font-name", "Segoe UI Normal 10", nullptr);
@@ -1001,7 +1001,7 @@ zrythm_app_startup (GApplication * app)
 
   GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
   char * icon_theme_name = g_settings_get_string (S_P_UI_GENERAL, "icon-theme");
-  z_info ("setting icon theme to '%s'", icon_theme_name);
+  z_info ("setting icon theme to '{}'", icon_theme_name);
   g_object_set (
     self->default_settings, "gtk-icon-theme-name", icon_theme_name, nullptr);
   g_free_and_null (icon_theme_name);
@@ -1015,14 +1015,14 @@ zrythm_app_startup (GApplication * app)
     Glib::build_filename (parent_datadir, "icons");
   gtk_icon_theme_add_search_path (
     icon_theme, freedesktop_icon_theme_dir.c_str ());
-  z_debug ("added icon theme search path: %s", freedesktop_icon_theme_dir);
+  z_debug ("added icon theme search path: {}", freedesktop_icon_theme_dir);
 
   /* prepend zrythm system icons to search path */
   {
     auto system_icon_theme_dir =
       dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_ICONS_DIR);
     gtk_icon_theme_add_search_path (icon_theme, system_icon_theme_dir.c_str ());
-    z_debug ("added icon theme search path: %s", system_icon_theme_dir);
+    z_debug ("added icon theme search path: {}", system_icon_theme_dir);
   }
 
   /* prepend user custom icons to search path */
@@ -1030,7 +1030,7 @@ zrythm_app_startup (GApplication * app)
     auto user_icon_theme_dir =
       dir_mgr->get_dir (ZrythmDirType::USER_THEMES_ICONS);
     gtk_icon_theme_add_search_path (icon_theme, user_icon_theme_dir.c_str ());
-    z_debug ("added icon theme search path: %s", user_icon_theme_dir);
+    z_debug ("added icon theme search path: {}", user_icon_theme_dir);
   }
 
   /* --- end icon paths --- */
@@ -1113,7 +1113,7 @@ zrythm_app_startup (GApplication * app)
         system_themes_dir.c_str (), "zrythm-theme.css", nullptr);
     }
   g_free (css_theme_file);
-  z_info ("CSS theme path: %s", css_theme_path);
+  z_info ("CSS theme path: {}", css_theme_path);
 
   /* set default css provider */
   gtk_css_provider_load_from_path (css_provider, css_theme_path);
@@ -1121,7 +1121,7 @@ zrythm_app_startup (GApplication * app)
     gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider),
     GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   g_object_unref (css_provider);
-  z_info ("set default css provider from path: %s", css_theme_path);
+  z_info ("set default css provider from path: {}", css_theme_path);
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
@@ -1466,7 +1466,7 @@ zrythm_app_new (int argc, const char ** argv)
 static void
 finalize (ZrythmApp * self)
 {
-  z_info ("%s (%s): finalizing ZrythmApp...", __func__, __FILE__);
+  z_info ("{} ({}): finalizing ZrythmApp...", __func__, __FILE__);
 
   std::destroy_at (&self->ui_caches);
 
@@ -1482,7 +1482,7 @@ finalize (ZrythmApp * self)
   PCGRand::deleteInstance ();
   GSettingsManager::deleteInstance ();
 
-  z_info ("%s: done", __func__);
+  z_info ("{}: done", __func__);
 }
 
 static void
@@ -1515,21 +1515,21 @@ zrythm_app_init (ZrythmApp * self)
     "quartz,win32,*");
 
   const GActionEntry entries[] = {
-    {"prompt_for_project", on_prompt_for_project},
- /*{ "init_main_window", on_init_main_window },*/
-    { "setup_main_window", on_setup_main_window },
-    { "load_project",      on_load_project      },
-    { "about",             activate_about       },
-    { "fullscreen",        activate_fullscreen  },
-    { "chat",              activate_chat        },
-    { "manual",            activate_manual      },
-    { "news",              activate_news        },
-    { "bugreport",         activate_bugreport   },
-    { "donate",            activate_donate      },
-    { "minimize",          activate_minimize    },
- // { "log",               activate_log         },
-    { "preferences",       activate_preferences },
-    { "quit",              activate_quit        },
+    { "prompt_for_project", on_prompt_for_project },
+    /*{ "init_main_window", on_init_main_window },*/
+    { "setup_main_window",  on_setup_main_window  },
+    { "load_project",       on_load_project       },
+    { "about",              activate_about        },
+    { "fullscreen",         activate_fullscreen   },
+    { "chat",               activate_chat         },
+    { "manual",             activate_manual       },
+    { "news",               activate_news         },
+    { "bugreport",          activate_bugreport    },
+    { "donate",             activate_donate       },
+    { "minimize",           activate_minimize     },
+    // { "log",               activate_log         },
+    { "preferences",        activate_preferences  },
+    { "quit",               activate_quit         },
   };
 
   g_action_map_add_action_entries (

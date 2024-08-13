@@ -230,8 +230,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
     "'unlink'",
   };
   GActionEntry actions[] = {
-    {"jack-mode", activate_jack_mode, "s",
-     jack_modes[ENUM_VALUE_TO_INT (AUDIO_ENGINE->transport_type_)]},
+    { "jack-mode", activate_jack_mode, "s",
+     jack_modes[ENUM_VALUE_TO_INT (AUDIO_ENGINE->transport_type_)] },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions, G_N_ELEMENTS (actions), self);

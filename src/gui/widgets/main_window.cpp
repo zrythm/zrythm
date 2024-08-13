@@ -136,7 +136,7 @@ save_on_quit_response_cb (
 static bool
 on_close_request (GtkWindow * window, MainWindowWidget * self)
 {
-  z_debug ("%s: main window delete event called", __func__);
+  z_debug ("{}: main window delete event called", __func__);
 
   /* ask for save if project has unsaved changes */
   if (PROJECT->has_unsaved_changes ())
@@ -488,12 +488,12 @@ main_window_widget_init (MainWindowWidget * self)
 
   GActionEntry actions[] = {
 
-  /* global shortcuts */
+    /* global shortcuts */
     { "cycle-focus", activate_cycle_focus },
     { "cycle-focus-backwards", activate_cycle_focus_backwards },
     { "focus-first-widget", activate_focus_first_widget },
 
- /* file menu */
+    /* file menu */
     { "new", activate_new },
     { "open", activate_open },
     { "save", activate_save },
@@ -502,7 +502,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "export-graph", activate_export_graph },
     { "properties", activate_properties },
 
- /* edit menu */
+    /* edit menu */
     { "undo", activate_undo },
     { "redo", activate_redo },
     { "undo_n", activate_undo_n, "i" },
@@ -514,11 +514,11 @@ main_window_widget_init (MainWindowWidget * self)
     { "duplicate", activate_duplicate },
     { "clear-selection", activate_clear_selection },
     { "select-all", activate_select_all },
- /* selection submenu */
+    /* selection submenu */
     { "loop-selection", activate_loop_selection },
     { "mute-selection", activate_mute_selection, "s" },
 
- /* view menu */
+    /* view menu */
     { "toggle-left-panel", activate_toggle_left_panel },
     { "toggle-right-panel", activate_toggle_right_panel },
     { "toggle-bot-panel", activate_toggle_bot_panel },
@@ -529,18 +529,18 @@ main_window_widget_init (MainWindowWidget * self)
     { "original-size", activate_original_size, "s" },
     { "best-fit", activate_best_fit, "s" },
 
- /* snapping, quantize */
+    /* snapping, quantize */
     { "snap-to-grid", activate_snap_to_grid, "s" },
     { "snap-keep-offset", activate_snap_keep_offset, "s" },
     { "snap-events", activate_snap_events, "s" },
     { "quick-quantize", activate_quick_quantize, "s" },
     { "quantize-options", activate_quantize_options, "s" },
 
- /* range actions */
+    /* range actions */
     { "insert-silence", activate_insert_silence },
     { "remove-range", activate_remove_range },
 
- /* playhead actions */
+    /* playhead actions */
     { "timeline-playhead-scroll-edges", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "timeline-playhead-scroll-edges")
         ? "true"
@@ -558,15 +558,15 @@ main_window_widget_init (MainWindowWidget * self)
      g_settings_get_boolean (S_UI, "editor-playhead-follow") ? "true" : "false",
      change_state_editor_playhead_follow },
 
- /* merge actions */
+    /* merge actions */
     { "merge-selection", activate_merge_selection },
 
- /* musical mode */
+    /* musical mode */
     { "toggle-musical-mode", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "musical-mode") ? "true" : "false",
      change_state_musical_mode },
 
- /* track actions */
+    /* track actions */
     { "import-file", activate_import_file },
     { "create-audio-track", activate_create_audio_track },
     { "create-audio-bus-track", activate_create_audio_bus_track },
@@ -577,7 +577,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "create-folder-track", activate_create_folder_track },
     { "add-region", activate_add_region },
 
- /* modes */
+    /* modes */
     { "select-mode", activate_select_mode },
     { "edit-mode", activate_edit_mode },
     { "cut-mode", activate_cut_mode },
@@ -585,7 +585,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "ramp-mode", activate_ramp_mode },
     { "audition-mode", activate_audition_mode },
 
- /* transport */
+    /* transport */
     { "toggle-metronome", nullptr, nullptr,
      g_settings_get_boolean (S_TRANSPORT, "metronome-enabled") ? "true" : "false",
      change_state_metronome },
@@ -602,12 +602,12 @@ main_window_widget_init (MainWindowWidget * self)
     { "input-bpm", activate_input_bpm },
     { "tap-bpm", activate_tap_bpm },
 
- /* transport - jack */
+    /* transport - jack */
     { "set-timebase-master", activate_set_timebase_master },
     { "set-transport-client", activate_set_transport_client },
     { "unlink-jack-transport", activate_unlink_jack_transport },
 
- /* tracks */
+    /* tracks */
     { "delete-selected-tracks", activate_delete_selected_tracks },
     { "duplicate-selected-tracks", activate_duplicate_selected_tracks },
     { "hide-selected-tracks", activate_hide_selected_tracks },
@@ -645,7 +645,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "append-lane-automation-regions-to-selection",
      activate_append_lane_automation_regions_to_selection, "(ii)" },
 
- /* piano roll */
+    /* piano roll */
     { "toggle-drum-mode", activate_toggle_drum_mode },
     { "toggle-listen-notes", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "listen-notes") ? "true" : "false",
@@ -655,27 +655,27 @@ main_window_widget_init (MainWindowWidget * self)
      g_settings_get_boolean (S_UI, "ghost-notes") ? "true" : "false",
      change_state_ghost_notes },
 
- /* automation */
+    /* automation */
     { "show-automation-values", nullptr, nullptr,
      g_settings_get_boolean (S_UI, "show-automation-values") ? "true" : "false",
      change_state_show_automation_values },
 
- /* control room */
+    /* control room */
     { "toggle-dim-output", nullptr, nullptr, "true", change_state_dim_output },
 
- /* show/hide event viewers */
+    /* show/hide event viewers */
     { "toggle-timeline-event-viewer", activate_toggle_timeline_event_viewer },
     { "toggle-editor-event-viewer", activate_toggle_editor_event_viewer },
 
- /* editor functions */
+    /* editor functions */
     { "editor-function", activate_editor_function, "s" },
     { "editor-function-lv2", activate_editor_function_lv2, "s" },
 
- /* rename track/region */
+    /* rename track/region */
     { "rename-track", activate_rename_track },
     { "rename-arranger-object", activate_rename_arranger_object },
 
- /* arranger selections */
+    /* arranger selections */
     { "nudge-selection", activate_nudge_selection, "s" },
     { "detect-bpm", activate_detect_bpm, "s" },
     { "timeline-function", activate_timeline_function, "i" },
@@ -697,7 +697,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "reset-region-color", activate_reset_region_color },
     { "move-automation-regions", activate_move_automation_regions, "s" },
 
- /* chord presets */
+    /* chord presets */
     {
      "save-chord-preset", activate_save_chord_preset,
      },
@@ -713,32 +713,32 @@ main_window_widget_init (MainWindowWidget * self)
     { "delete-chord-preset", activate_delete_chord_preset, "s" },
     { "rename-chord-preset", activate_rename_chord_preset, "s" },
 
- /* cc bindings */
+    /* cc bindings */
     { "bind-midi-cc", activate_bind_midi_cc, "s" },
     {
      "delete-midi-cc-bindings", activate_delete_midi_cc_bindings,
      },
 
- /* port actions */
+    /* port actions */
     { "reset-stereo-balance", activate_reset_stereo_balance, "s" },
     { "reset-fader", activate_reset_fader, "s" },
     { "reset-control", activate_reset_control, "s" },
     { "port-view-info", activate_port_view_info, "s" },
     { "port-connection-remove", activate_port_connection_remove },
 
- /* plugin actions */
+    /* plugin actions */
     { "plugin-toggle-enabled", activate_plugin_toggle_enabled, "s" },
     { "plugin-inspect", activate_plugin_inspect },
     { "mixer-selections-delete", activate_mixer_selections_delete },
     { "plugin-change-load-behavior", activate_plugin_change_load_behavior, "s" },
 
- /* panel file browser actions */
+    /* panel file browser actions */
     { "panel-file-browser-add-bookmark",
      activate_panel_file_browser_add_bookmark, "s" },
     { "panel-file-browser-delete-bookmark",
      activate_panel_file_browser_delete_bookmark },
 
- /* pluginbrowser actions */
+    /* pluginbrowser actions */
     { "plugin-browser-add-to-project", activate_plugin_browser_add_to_project,
      "s" },
     { "plugin-browser-add-to-project-carla",

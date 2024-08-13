@@ -508,7 +508,7 @@ MidiEventVector::sort ()
           MidiEventType b_type = get_event_type (b.raw_buffer_);
           (void) midi_event_type_strings;
 #if 0
-      z_debug ("a type %s, b type %s",
+      z_debug ("a type {}, b type {}",
         midi_event_type_strings[a_type],
         midi_event_type_strings[b_type]);
 #endif
@@ -648,7 +648,7 @@ MidiEvent::print () const
 {
   char msg[400];
   midi_print_to_str (raw_buffer_.data (), raw_buffer_sz_, msg);
-  z_info ("%s | time: %u", msg, time_);
+  z_info ("{} | time: {}", msg, time_);
 }
 
 void

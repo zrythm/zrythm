@@ -45,7 +45,7 @@ flatten (AutomationSelections * sel)
 void
 automation_function_apply (AutomationSelections &sel, AutomationFunctionType type)
 {
-  z_debug ("applying %s...", AutomationFunctionType_to_string (type));
+  z_debug ("applying {}...", AutomationFunctionType_to_string (type));
 
   switch (type)
     {

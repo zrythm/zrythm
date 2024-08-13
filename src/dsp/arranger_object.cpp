@@ -673,7 +673,7 @@ ArrangerObject::
                 {
                   z_debug ("adjusting for rounding error");
                   double ticks = -AUDIO_ENGINE->ticks_per_frame_;
-                  z_debug ("ticks %f", ticks);
+                  z_debug ("ticks {:f}", ticks);
                   try
                     {
                       dynamic_cast<LengthableObject *> (this)->resize (
@@ -784,7 +784,7 @@ ArrangerObject::pos_setter (const Position * pos)
   bool success = set_position (pos, PositionType::Start, true);
   if (!success)
     {
-      z_debug ("failed to set position [%s]: (invalid)", pos->to_string ());
+      z_debug ("failed to set position [{}]: (invalid)", pos->to_string ());
     }
 }
 

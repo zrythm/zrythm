@@ -147,11 +147,11 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 {
   auto * nfo = static_cast<ProjectInfo *> (
     g_object_get_data (G_OBJECT (row), "project-info"));
-  z_debug ("activated %s", nfo->filename);
+  z_debug ("activated {}", nfo->filename);
 
   gZrythm->open_filename_ = nfo->filename;
   z_return_if_fail (!gZrythm->open_filename_.empty ());
-  z_info ("Loading project: %s", gZrythm->open_filename_);
+  z_info ("Loading project: {}", gZrythm->open_filename_);
   gZrythm->creating_project_ = false;
 
   post_finish (self, self->zrythm_already_running, false);
@@ -226,7 +226,7 @@ on_language_changed (GObject * gobject, GParamSpec * pspec, GreeterWidget * self
   LocalizationLanguage lang =
     (LocalizationLanguage) adw_combo_row_get_selected (combo_row);
 
-  z_info ("language changed to %s", localization_get_localized_name (lang));
+  z_info ("language changed to {}", localization_get_localized_name (lang));
 
   /* update settings */
   g_settings_set_enum (S_P_UI_GENERAL, "language", (int) lang);
@@ -314,7 +314,7 @@ on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
   auto *  dir_mgr = ZrythmDirectoryManager::getInstance ();
   auto    dir = dir_mgr->get_default_user_dir ();
   GFile * gf_dir = g_file_new_for_path (dir.c_str ());
-  z_debug ("reset to %s", dir);
+  z_debug ("reset to {}", dir);
   ide_file_chooser_entry_set_file (self->fc_entry, gf_dir);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir.c_str ());
   g_object_unref (gf_dir);
@@ -338,15 +338,15 @@ greeter_widget_set_progress_and_status (
   SemaphoreRAII lock (self->progress_status_lock);
   if (title && !description)
     {
-      z_info ("[%s]", title);
+      z_info ("[{}]", title);
     }
   else if (!title && description)
     {
-      z_info ("%s", description);
+      z_info ("{}", description);
     }
   else if (title && description)
     {
-      z_info ("[%s] %s", title, description);
+      z_info ("[{}] {}", title, description);
     }
   else
     {
@@ -396,7 +396,7 @@ open_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, GreeterWidget * self)
   GFile *  file = gtk_file_dialog_open_finish (dialog, res, &err);
   if (!file)
     {
-      z_info ("no project selected: %s", err->message);
+      z_info ("no project selected: {}", err->message);
       g_error_free (err);
       return;
     }
@@ -419,7 +419,7 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   gZrythm->create_project_path_ = Glib::build_filename (
     str, gtk_editable_get_text (GTK_EDITABLE (self->project_title_row)));
   g_free (str);
-  z_info ("creating project at: %s", gZrythm->create_project_path_);
+  z_info ("creating project at: {}", gZrythm->create_project_path_);
 
   GObject * template_gobj =
     G_OBJECT (adw_combo_row_get_selected_item (self->templates_combo_row));
@@ -438,7 +438,7 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   else
     {
       gZrythm->open_filename_ = selected_template->filename;
-      z_info ("Creating project from template: %s", gZrythm->open_filename_);
+      z_info ("Creating project from template: {}", gZrythm->open_filename_);
       gZrythm->opening_template_ = true;
     }
 
@@ -586,7 +586,7 @@ greeter_widget_select_project (
       gZrythm->creating_project = true;
       gZrythm->open_filename = g_build_filename (template_to_use, PROJECT_FILE, nullptr);
       gZrythm->opening_template = true;
-      z_info ("Creating project from template: %s", gZrythm->open_filename);
+      z_info ("Creating project from template: {}", gZrythm->open_filename);
 
       CreateProjectDialogWidget * create_prj_dialog =
         create_project_dialog_widget_new ();

@@ -84,7 +84,7 @@ timeline_arranger_widget_get_track_at_y (ArrangerWidget * self, double y)
 
       if (!track->widget_)
         {
-          z_debug ("no track widget for %s", track->name_);
+          z_debug ("no track widget for {}", track->name_);
           continue;
         }
 
@@ -168,33 +168,33 @@ timeline_arranger_widget_create_region (
     }
 
   /* create region */
-std::shared_ptr<RegionT> added_region;
-if constexpr (std::is_same_v<RegionT, MidiRegion>)
-  {
-    auto laned_track = dynamic_cast<LanedTrackImpl<RegionT> *> (track);
-    added_region = track->add_region (
-      std::move (region), nullptr,
-      lane
-        ? lane->pos_
-        : (laned_track->lanes_.size () == 1 ? 0 : laned_track->lanes_.size () - 2),
-      true, true);
-  }
-      else if constexpr (std::is_same_v<RegionT, ChordRegion>)
-        {
-          added_region = P_CHORD_TRACK->Track::add_region (
-            std::move (region), nullptr, -1, true, true);
-        }
-else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
-  {
-    added_region = track->add_region (std::move (region), at, -1, true, true);
-  }
+  std::shared_ptr<RegionT> added_region;
+  if constexpr (std::is_same_v<RegionT, MidiRegion>)
+    {
+      auto laned_track = dynamic_cast<LanedTrackImpl<RegionT> *> (track);
+      added_region = track->add_region (
+        std::move (region), nullptr,
+        lane
+          ? lane->pos_
+          : (laned_track->lanes_.size () == 1 ? 0 : laned_track->lanes_.size () - 2),
+        true, true);
+    }
+  else if constexpr (std::is_same_v<RegionT, ChordRegion>)
+    {
+      added_region = P_CHORD_TRACK->Track::add_region (
+        std::move (region), nullptr, -1, true, true);
+    }
+  else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
+    {
+      added_region = track->add_region (std::move (region), at, -1, true, true);
+    }
 
-added_region->set_position (
-  &added_region->end_pos_, ArrangerObject::PositionType::End, false);
-ArrangerObject::select (added_region, true, autofilling, false);
+  added_region->set_position (
+    &added_region->end_pos_, ArrangerObject::PositionType::End, false);
+  ArrangerObject::select (added_region, true, autofilling, false);
 
-self->prj_start_object = added_region;
-self->start_object = added_region->clone_unique ();
+  self->prj_start_object = added_region;
+  self->start_object = added_region->clone_unique ();
 }
 
 void
@@ -950,10 +950,9 @@ on_dnd_drop (
       int lane_pos =
         lane
           ? lane->pos_
-          : (
-            piano_roll_track->lanes_.size () == 1
-              ? 0
-              : piano_roll_track->lanes_.size () - 2);
+          : (piano_roll_track->lanes_.size () == 1
+               ? 0
+               : piano_roll_track->lanes_.size () - 2);
       int idx_in_lane = piano_roll_track->lanes_[lane_pos]->regions_.size ();
       std::shared_ptr<MidiRegion> region;
       try
@@ -995,14 +994,14 @@ on_dnd_drop (
       StringArray uris;
       if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          GFile *        gfile = G_FILE (g_value_get_object (value));
-          char *         uri = g_file_get_uri (gfile);
+          GFile * gfile = G_FILE (g_value_get_object (value));
+          char *  uri = g_file_get_uri (gfile);
           uris.add (uri);
           g_free (uri);
         }
       else if (G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST))
         {
-          GSList *       l;
+          GSList * l;
           for (l = (GSList *) g_value_get_boxed (value); l; l = l->next)
             {
               char * uri = g_file_get_uri (G_FILE (l->data));

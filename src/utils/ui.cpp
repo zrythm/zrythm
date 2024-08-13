@@ -91,7 +91,7 @@ ui_set_cursor_from_icon_name (
     z_gdk_texture_new_from_icon_name (name.c_str (), 24, 24, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
     {
-      z_warning ("no texture for %s", name);
+      z_warning ("no texture for {}", name);
       return;
     }
   int adjusted_offset_x = MIN (offset_x, gdk_texture_get_width (texture) - 1);
@@ -147,7 +147,7 @@ ui_show_message_full (
     g_realloc_n (buf, (size_t) (printed + 1), sizeof (char)));
 
   /* log the message anyway */
-  z_info ("%s: %s", title, buf);
+  z_info ("{}: {}", title, buf);
 
   /* if have UI, also show a message dialog */
   AdwDialog * win = NULL;
@@ -391,7 +391,7 @@ ui_is_child_hit (
     GTK_WIDGET (parent), GTK_WIDGET (child), &tmp_pt, &wpt);
   z_return_val_if_fail (success, -1);
 
-  // z_info ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
+  // z_info ("wpt.x wpt.y {} {}", wpt.x, wpt.y);
 
   /* if hit */
   int width = gtk_widget_get_width (GTK_WIDGET (child));
@@ -593,7 +593,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);
   g_strfreev (clabels);
-  AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
+  AdwComboRow * combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
@@ -681,7 +681,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);
   g_strfreev (clabels);
-  AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
+  AdwComboRow * combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
@@ -838,12 +838,12 @@ ui_setup_audio_device_name_combo_row (
   char * current_device =
     g_settings_get_string (S_P_GENERAL_ENGINE, settings_key);
   bool found = false;
-  z_info ("current device from settings: %s", current_device);
+  z_info ("current device from settings: {}", current_device);
   for (int i = 0; i < num_names; i++)
     {
       if (string_is_equal (names[i], current_device))
         {
-          z_info ("settings %d as selected", i);
+          z_info ("settings {} as selected", i);
           found = true;
           adw_combo_row_set_selected (combo_row, (guint) i);
         }

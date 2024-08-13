@@ -109,14 +109,14 @@ create_list_store (void)
               if (
                 path && string_contains_substr_case_insensitive (path, "zrythm"))
                 {
-                  z_debug ("found track type icon path: %s", path);
+                  z_debug ("found track type icon path: {}", path);
                   is_track_type_icon = true;
                   GError * err = NULL;
                   pixbuf = gdk_pixbuf_new_from_file_at_scale (
                     path, size, size, true, &err);
                   if (!pixbuf)
                     {
-                      z_warning ("failed to get pixbuf: %s", err->message);
+                      z_warning ("failed to get pixbuf: {}", err->message);
                       g_error_free (err);
                     }
                   g_free (path);
@@ -134,7 +134,7 @@ create_list_store (void)
         }
       else if (is_track_type_icon)
         {
-          z_info ("no pixbuf loaded for %s", icon_name);
+          z_info ("no pixbuf loaded for {}", icon_name);
         }
     }
   g_strfreev (list);

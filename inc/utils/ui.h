@@ -463,7 +463,7 @@ ui_show_message_full (
 #define UI_ACTIVE_WINDOW_OR_NULL \
   (gtk_application_get_active_window (GTK_APPLICATION (zrythm_app.get ())) \
      ? GTK_WIDGET (gtk_application_get_active_window ( \
-       GTK_APPLICATION (zrythm_app.get ()))) \
+         GTK_APPLICATION (zrythm_app.get ()))) \
      : nullptr)
 
 /**

@@ -733,7 +733,7 @@ activate_save (GSimpleAction * action, GVariant * variant, gpointer user_data)
       activate_save_as (action, variant, user_data);
       return;
     }
-  z_debug ("project dir: %s", PROJECT->dir_);
+  z_debug ("project dir: {}", PROJECT->dir_);
 
   try
     {
@@ -754,7 +754,7 @@ save_project_ready_cb (GObject * source_object, GAsyncResult * res, gpointer dat
     {
       char * filepath = g_file_get_path (selected_file);
       g_object_unref (selected_file);
-      z_debug ("saving project at: %s", filepath);
+      z_debug ("saving project at: {}", filepath);
       try
         {
           PROJECT->save (filepath, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
@@ -1188,7 +1188,7 @@ activate_delete (
   GVariant *      variant,
   gpointer        user_data)
 {
-  z_info ("%s", __func__);
+  z_info ("{}", __func__);
 
   ArrangerSelections * sel =
     PROJECT->get_arranger_selections_for_last_selection ();
@@ -1334,7 +1334,7 @@ activate_select_all (
       }
       break;
     default:
-      z_debug ("%s: doing nothing", __func__);
+      z_debug ("{}: doing nothing", __func__);
     }
 }
 
@@ -1454,7 +1454,7 @@ activate_delete_midi_cc_bindings (
 {
   GtkSelectionModel * sel_model =
     gtk_column_view_get_model (MW_CC_BINDINGS->bindings_tree->column_view);
-  guint       n_items = g_list_model_get_n_items (G_LIST_MODEL (sel_model));
+  guint n_items = g_list_model_get_n_items (G_LIST_MODEL (sel_model));
   std::vector<MidiMapping *> mappings;
   for (guint i = 0; i < n_items; i++)
     {
@@ -1607,7 +1607,7 @@ open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_dat
     gtk_file_dialog_open_multiple_finish (dialog, res, &err);
   if (!file_list)
     {
-      z_info ("Failed to retrieve file list: %s", err->message);
+      z_info ("Failed to retrieve file list: {}", err->message);
       g_error_free (err);
       return;
     }
@@ -1620,7 +1620,7 @@ open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_dat
       char *  path = g_file_get_path (file);
       z_return_if_fail (path);
       g_object_unref (file);
-      z_info ("Preparing to import file: %s...", path);
+      z_info ("Preparing to import file: {}...", path);
       g_free (path);
       char * uri = g_file_get_uri (file);
       g_strv_builder_add (uris_builder, uri);
@@ -1942,7 +1942,7 @@ change_state_dim_output (
 {
   int dim = g_variant_get_boolean (value);
 
-  z_info ("dim is %d", dim);
+  z_info ("dim is {}", dim);
 
   g_simple_action_set_state (action, value);
 }
@@ -2012,7 +2012,7 @@ change_state_ghost_notes (
 static void
 do_quantize (const char * variant, bool quick)
 {
-  z_debug ("quantize opts: %s", variant);
+  z_debug ("quantize opts: {}", variant);
 
   try
     {
@@ -2638,10 +2638,10 @@ DEFINE_SIMPLE (activate_midi_editor_highlighting)
 
   const std::unordered_map<std::string_view, PianoRoll::Highlighting>
     highlightMap = {
-      {"none",   PianoRoll::Highlighting::None },
-      { "chord", PianoRoll::Highlighting::Chord},
-      { "scale", PianoRoll::Highlighting::Scale},
-      { "both",  PianoRoll::Highlighting::Both }
+      { "none",  PianoRoll::Highlighting::None  },
+      { "chord", PianoRoll::Highlighting::Chord },
+      { "scale", PianoRoll::Highlighting::Scale },
+      { "both",  PianoRoll::Highlighting::Both  }
   };
 
   if (const auto it = highlightMap.find (str); it != highlightMap.end ())
@@ -2650,7 +2650,7 @@ DEFINE_SIMPLE (activate_midi_editor_highlighting)
     }
   else
     {
-      z_warning ("Unknown highlighting option: %s", str);
+      z_warning ("Unknown highlighting option: {}", str);
     }
 }
 
@@ -2699,7 +2699,7 @@ activate_create_arranger_object (
   g_variant_get (value, "(sdd)", &str, &x, &y);
   ArrangerWidget * arranger;
   sscanf (str, "%p", &arranger);
-  z_debug ("called %f %f", x, y);
+  z_debug ("called {:f} {:f}", x, y);
   arranger_widget_create_item (arranger, x, y, false);
   bool action_performed =
     arranger_widget_finish_creating_item_from_action (arranger, x, y);
@@ -2915,8 +2915,8 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
 DEFINE_SIMPLE (activate_detect_bpm)
 {
-  size_t       size;
-  const char * _str = g_variant_get_string (variant, &size);
+  size_t        size;
+  const char *  _str = g_variant_get_string (variant, &size);
   AudioRegion * r = NULL;
   sscanf (_str, "%p", &r);
   z_return_if_fail (r && r->is_region ());
@@ -3084,7 +3084,7 @@ handle_region_fade_algo_preset (const std::string &pset_id, bool fade_in)
     });
   if (res == arr.end ())
     {
-      z_warning ("invalid preset id %s", pset_id.c_str ());
+      z_warning ("invalid preset id {}", pset_id.c_str ());
       return;
     }
 
@@ -3206,7 +3206,7 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
 {
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  z_debug ("transpose chord pad %s", str);
+  z_debug ("transpose chord pad {}", str);
 
   if (string_is_equal (str, "up"))
     {
@@ -3218,7 +3218,7 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
     }
   else
     {
-      z_error ("invalid parameter %s", str);
+      z_error ("invalid parameter {}", str);
     }
 }
 
@@ -3358,8 +3358,8 @@ DEFINE_SIMPLE (activate_rename_chord_preset)
 
 DEFINE_SIMPLE (activate_reset_stereo_balance)
 {
-  gsize        size;
-  const char * str = g_variant_get_string (variant, &size);
+  gsize         size;
+  const char *  str = g_variant_get_string (variant, &size);
   ControlPort * port = NULL;
   sscanf (str, "%p", &port);
   z_return_if_fail (port);
@@ -3524,8 +3524,8 @@ DEFINE_SIMPLE (activate_reset_fader)
 
 DEFINE_SIMPLE (activate_reset_control)
 {
-  gsize        size;
-  const char * str = g_variant_get_string (variant, &size);
+  gsize         size;
+  const char *  str = g_variant_get_string (variant, &size);
   ControlPort * port = NULL;
   sscanf (str, "%p", &port);
   z_return_if_fail (IS_PORT_AND_NONNULL (port));

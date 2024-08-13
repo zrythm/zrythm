@@ -557,14 +557,14 @@ progress_close_cb (Exporter * exporter)
       const auto &progress_nfo = exporter->progress_info_;
       if (progress_nfo->get_status () == ProgressInfo::Status::COMPLETED && (progress_nfo->get_completion_type () == ProgressInfo::CompletionType::SUCCESS || progress_nfo->get_completion_type () == ProgressInfo::CompletionType::HAS_WARNING))
         {
-          z_debug ("~ finished bouncing stem for %s ~", track->name_);
+          z_debug ("~ finished bouncing stem for {} ~", track->name_);
 
           ++exporter->cur_track_;
           if (exporter->cur_track_ < exporter->tracks_.size ())
             {
               /* bounce the next track */
               track = exporter->tracks_.at (exporter->cur_track_);
-              z_debug ("~ bouncing stem for %s ~", track->name_);
+              z_debug ("~ bouncing stem for {} ~", track->name_);
 
               /* unmark all tracks for bounce */
               TRACKLIST->mark_all_tracks_for_bounce (false);
@@ -583,7 +583,7 @@ progress_close_cb (Exporter * exporter)
               new_exporter->prepare_tracks_for_export (
                 *AUDIO_ENGINE, *TRANSPORT);
 
-              z_info ("exporting %s", new_exporter->settings_.file_uri_);
+              z_info ("exporting {}", new_exporter->settings_.file_uri_);
 
               /* start exporting in a new thread */
               new_exporter->begin_generic_thread ();
@@ -663,7 +663,7 @@ on_export (ExportDialogWidget * self, bool audio)
       exporter->tracks_ = tracks;
       exporter->cur_track_ = 0;
 
-      z_debug ("~ bouncing stem for %s ~", track->name_);
+      z_debug ("~ bouncing stem for {} ~", track->name_);
 
       /* unmark all tracks for bounce */
       TRACKLIST->mark_all_tracks_for_bounce (false);
@@ -673,7 +673,7 @@ on_export (ExportDialogWidget * self, bool audio)
 
       exporter->prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
-      z_info ("exporting %s", exporter->settings_.file_uri_);
+      z_info ("exporting {}", exporter->settings_.file_uri_);
 
       /* start exporting in a new thread */
       exporter->begin_generic_thread ();
@@ -707,7 +707,7 @@ on_export (ExportDialogWidget * self, bool audio)
             F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_MARK_PARENTS);
         }
 
-      z_info ("exporting %s", exporter->settings_.file_uri_);
+      z_info ("exporting {}", exporter->settings_.file_uri_);
 
       exporter->prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
@@ -823,7 +823,7 @@ on_track_toggled (GtkCheckButton * check_btn, ExportDialogWidget * self)
   /* get toggled */
   gboolean toggled = gtk_check_button_get_active (check_btn);
   g_object_set_data (G_OBJECT (wobj), "checked", GINT_TO_POINTER (toggled));
-  z_debug ("%s track %s", toggled ? "toggled" : "untoggled", track->name_);
+  z_debug ("{} track {}", toggled ? "toggled" : "untoggled", track->name_);
 
   /* if exporting mixdown (single file) */
   bool is_audio = AUDIO_STACK_VISIBLE (self);
@@ -855,7 +855,7 @@ add_group_track_children (
   wobj->parent_model = G_LIST_MODEL (parent_store);
   g_list_store_append (G_LIST_STORE (store), wobj);
 
-  z_debug ("track '%s'", track->name_);
+  z_debug ("track '{}'", track->name_);
 
   auto group_track = dynamic_cast<GroupTargetTrack *> (track);
   if (!group_track || group_track->children_.empty ())
@@ -869,7 +869,7 @@ add_group_track_children (
       Track * child = TRACKLIST->find_track_by_name_hash (child_name_hash);
       z_return_if_fail (child);
 
-      z_debug ("child: '%s'", child->name_);
+      z_debug ("child: '{}'", child->name_);
       add_group_track_children (self, store, wobj->child_model, child);
     }
 }
@@ -1103,7 +1103,7 @@ setup_time_range_combo_row (
   };
   GtkStringList * string_list = gtk_string_list_new (strings);
 
-  z_debug ("setting up time range combo row (is audio ? %d)", is_audio);
+  z_debug ("setting up time range combo row (is audio ? {})", is_audio);
 
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 

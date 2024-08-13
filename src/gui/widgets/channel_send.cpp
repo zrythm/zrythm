@@ -212,7 +212,7 @@ on_pressed (
   ChannelSendWidget * self)
 {
   self->n_press = n_press;
-  z_info ("clicked %d", n_press);
+  z_info ("clicked {}", n_press);
 
   if (n_press == 2)
     {

@@ -224,9 +224,7 @@
     CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT, cc, fields_schema)
 
 #  define YAML_BITVAL(_name, _offset) \
-    { \
-      .name = _name, .offset = _offset, .bits = 1 \
-    }
+    { .name = _name, .offset = _offset, .bits = 1 }
 
 /**
  * Serializes to YAML.
@@ -234,14 +232,11 @@
  * @return Newly allocated YAML string, or NULL if
  *   error.
  */
-NONNULL_ARGS (1, 2)
-char * yaml_serialize (
-  void *                       data,
-  const cyaml_schema_value_t * schema,
-  GError **                    error);
+NONNULL_ARGS (1, 2) char *
+yaml_serialize (void * data, const cyaml_schema_value_t * schema, GError ** error);
 
-NONNULL_ARGS (1, 2)
-void * yaml_deserialize (
+NONNULL_ARGS (1, 2) void *
+yaml_deserialize (
   const char *                 yaml,
   const cyaml_schema_value_t * schema,
   GError **                    error);

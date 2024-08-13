@@ -287,9 +287,9 @@ on_right_click (
 static void
 set_val_with_action (void * object, const std::string &str)
 {
-  auto *                 self = (BalanceControlWidget *) object;
-  float                  val;
-  const char *           err_value_msg =
+  auto *       self = (BalanceControlWidget *) object;
+  float        val;
+  const char * err_value_msg =
     _ ("Please enter a decimal number between -100 and 100");
   if (math_is_string_valid_float (str.c_str (), &val))
     {

@@ -121,13 +121,7 @@ public:
     const ChannelSend            &send,
     const StereoPorts            &stereo,
     const PortConnectionsManager &port_connections_mgr)
-      : ChannelSendAction (
-        Type::ConnectStereo,
-        send,
-        nullptr,
-        &stereo,
-        0.f,
-        &port_connections_mgr)
+      : ChannelSendAction (Type::ConnectStereo, send, nullptr, &stereo, 0.f, &port_connections_mgr)
   {
   }
 };
@@ -140,12 +134,12 @@ public:
     const StereoPorts            &sidechain,
     const PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (
-        Type::ConnectSidechain,
-        send,
-        nullptr,
-        &sidechain,
-        0.f,
-        &port_connections_mgr)
+          Type::ConnectSidechain,
+          send,
+          nullptr,
+          &sidechain,
+          0.f,
+          &port_connections_mgr)
   {
   }
 };

@@ -50,7 +50,7 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
     &out, &err, &g_err);
   if (!ret)
     {
-      z_warning ("(%s) spawn failed: %s", __func__, g_err->message);
+      z_warning ("({}) spawn failed: {}", __func__, g_err->message);
       return NULL;
     }
 
@@ -87,8 +87,8 @@ system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
 
   g_spawn_close_pid (pid);
 
-  char *    str;
-  gsize     size;
+  char * str;
+  gsize  size;
   GIOStatus gio_status = g_io_channel_read_to_end (out_ch, &str, &size, nullptr);
   g_io_channel_unref (out_ch);
 

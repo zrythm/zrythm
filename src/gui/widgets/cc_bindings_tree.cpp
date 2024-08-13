@@ -68,7 +68,7 @@ on_right_click (
         GTK_TREE_VIEW (self->tree), x, y,
         &path, &column, nullptr, nullptr))
     {
-      z_info ("no path at position %d %d", x, y);
+      z_info ("no path at position {} {}", x, y);
       // if we can't find path at pos, we surely don't
       // want to pop up the menu
       return;

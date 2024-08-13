@@ -24,11 +24,11 @@ typedef enum ZPluginSlotType_v1
 } ZPluginSlotType_v1;
 
 static const cyaml_strval_t plugin_slot_type_strings_v1[] = {
-  {"Invalid",     Z_PLUGIN_SLOT_INVALID_v1   },
-  { "Insert",     Z_PLUGIN_SLOT_INSERT_v1    },
-  { "MIDI FX",    Z_PLUGIN_SLOT_MIDI_FX_v1   },
-  { "Instrument", Z_PLUGIN_SLOT_INSTRUMENT_v1},
-  { "Modulator",  Z_PLUGIN_SLOT_MODULATOR_v1 },
+  { "Invalid",    Z_PLUGIN_SLOT_INVALID_v1    },
+  { "Insert",     Z_PLUGIN_SLOT_INSERT_v1     },
+  { "MIDI FX",    Z_PLUGIN_SLOT_MIDI_FX_v1    },
+  { "Instrument", Z_PLUGIN_SLOT_INSTRUMENT_v1 },
+  { "Modulator",  Z_PLUGIN_SLOT_MODULATOR_v1  },
 };
 
 typedef struct PluginIdentifier_v1

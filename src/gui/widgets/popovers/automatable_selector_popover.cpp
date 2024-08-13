@@ -38,7 +38,7 @@ on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
       auto atl = self->owner->get_automation_tracklist ();
       atl->set_at_visible (*self->owner, false);
 
-      z_debug ("selected port: %s", self->selected_port->get_label ());
+      z_debug ("selected port: {}", self->selected_port->get_label ());
 
       /* swap indices */
       auto selected_at = atl->get_at_from_port (*self->selected_port);

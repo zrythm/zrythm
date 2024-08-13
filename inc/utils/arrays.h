@@ -88,7 +88,7 @@ _array_double_size_if_full (
   ((size_t) (count) < (size_t) (size) \
      ? ({}) \
      : _array_double_size_if_full ( \
-       (void **) &_array, (size_t) (count), &size, sizeof (type)))
+         (void **) &_array, (size_t) (count), &size, sizeof (type)))
 
 /**
  * Deletes element from array and rearranges other

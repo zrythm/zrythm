@@ -9,14 +9,14 @@
 #include "actions/tracklist_selections.h"
 #include "actions/transport_action.h"
 #include "dsp/audio_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/chord_track.h"
 #include "dsp/automation_region.h"
+#include "dsp/chord_track.h"
+#include "dsp/instrument_track.h"
+#include "dsp/marker_track.h"
 #include "dsp/master_track.h"
 #include "dsp/midi_track.h"
-#include "dsp/instrument_track.h"
-#include "dsp/tempo_track.h"
 #include "dsp/region.h"
+#include "dsp/tempo_track.h"
 #include "gui/backend/clipboard.h"
 #include "project.h"
 #include "utils/dsp.h"
@@ -401,7 +401,7 @@ TEST_CASE ("test move audio region and lower bpm")
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
 
   /* create audio track with region */
-  Position pos;
+  Position       pos;
   int            track_pos = TRACKLIST->tracks_.size ();
   FileDescriptor file (audio_file_path);
   REQUIRE_NOTHROW (Track::create_with_action (
@@ -458,7 +458,7 @@ TEST_CASE ("move audio region and lower samplerate")
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
 
   /* create audio track with region */
-  Position pos;
+  Position       pos;
   int            track_pos = TRACKLIST->tracks_.size ();
   FileDescriptor file (audio_file_path);
   Track::create_with_action (
@@ -1406,8 +1406,8 @@ TEST_CASE ("split large audio file")
     std::make_unique<AudioTrack> (
       "test track", TRACKLIST->tracks_.size (), AUDIO_ENGINE->sample_rate_),
     false, false);
-  auto         track_name_hash = track->get_name_hash ();
-  Position     pos;
+  auto     track_name_hash = track->get_name_hash ();
+  Position pos;
   pos.set_to_bar (3);
   auto r = std::make_shared<AudioRegion> (
     -1, TEST_SINE_OGG_30MIN, true, nullptr, 0, std::nullopt, 0, (BitDepth) 0,
@@ -1485,12 +1485,12 @@ TEST_CASE ("audio functions")
   AUDIO_SELECTIONS->sel_start_ = region->pos_;
   AUDIO_SELECTIONS->sel_end_ = region->end_pos_;
 
-  auto        orig_clip = region->get_clip ();
-  size_t      channels = orig_clip->channels_;
-  size_t      frames_per_channel = (size_t) orig_clip->num_frames_;
-  size_t      total_frames = (size_t) orig_clip->num_frames_ * channels;
-  float *     orig_frames = object_new_n (total_frames, float);
-  float *     inverted_frames = object_new_n (total_frames, float);
+  auto    orig_clip = region->get_clip ();
+  size_t  channels = orig_clip->channels_;
+  size_t  frames_per_channel = (size_t) orig_clip->num_frames_;
+  size_t  total_frames = (size_t) orig_clip->num_frames_ * channels;
+  float * orig_frames = object_new_n (total_frames, float);
+  float * inverted_frames = object_new_n (total_frames, float);
   dsp_copy (orig_frames, orig_clip->frames_.getReadPointer (0), total_frames);
   dsp_copy (
     inverted_frames, orig_clip->frames_.getReadPointer (0), total_frames);
@@ -1880,7 +1880,7 @@ TEST_CASE ("delete markers")
   rebootstrap_timeline ();
 
   /* create markers A B C D */
-  const char * names[4] = { "A", "B", "C", "D" };
+  const char *            names[4] = { "A", "B", "C", "D" };
   std::shared_ptr<Marker> m_c, m_d;
   for (int i = 0; i < 4; i++)
     {
@@ -2062,7 +2062,7 @@ TEST_CASE ("duplicate audio regions")
   auto audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
 
   /* create audio track with region */
-  Position pos1;
+  Position       pos1;
   int            track_pos = TRACKLIST->tracks_.size ();
   FileDescriptor file (audio_file_path);
   Track::create_with_action (

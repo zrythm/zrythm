@@ -238,7 +238,7 @@ static void
 bt_error_cb (void * data, const char * msg, int errnum)
 {
   GString ** msg_str = (GString **) data;
-  z_info ("backtrace error: %s", msg);
+  z_info ("backtrace error: {}", msg);
 
   if (*msg_str)
     {
@@ -322,7 +322,7 @@ _backtrace_get (
         {
           z_info ("getting bt");
           int ret = backtrace_full (state, 0, full_cb, bt_error_cb, &msg_str);
-          z_info ("ret %d", ret);
+          z_info ("ret {}", ret);
 
           if (msg_str)
             {
@@ -382,7 +382,7 @@ read_traditional_bt:
 
           if (!got_line)
             {
-              z_info ("failed to get line info for %s", symbol->Name);
+              z_info ("failed to get line info for {}", symbol->Name);
             }
         }
 

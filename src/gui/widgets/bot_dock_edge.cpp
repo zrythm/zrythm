@@ -38,7 +38,7 @@ on_notebook_switch_page (
   guint               page_num,
   BotDockEdgeWidget * self)
 {
-  z_debug ("setting bot dock page to %u", page_num);
+  z_debug ("setting bot dock page to {}", page_num);
 
   g_settings_set_int (
     S_UI, "bot-panel-tab", (int) page_num);

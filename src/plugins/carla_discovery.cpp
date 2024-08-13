@@ -40,10 +40,10 @@ ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
     }
   else
     {
-      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+      auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
       std::string zrythm_libdir =
         dir_mgr->get_dir (ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR);
-      z_debug ("using zrythm_libdir: %s", zrythm_libdir);
+      z_debug ("using zrythm_libdir: {}", zrythm_libdir);
       carla_discovery_parent_dir = fs::path (zrythm_libdir) / "carla";
     }
 
@@ -175,7 +175,7 @@ z_carla_discovery_plugin_scanned_cb (
   z_return_if_fail (ptr);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
 
-  /*z_debug ("nfo: %p, sha1: %s", nfo, sha1);*/
+  /*z_debug ("nfo: {:p}, sha1: {}", nfo, sha1);*/
 
   if (!nfo && !sha1)
     {
@@ -198,7 +198,7 @@ z_carla_discovery_plugin_scanned_cb (
     }
 
   auto descr = ZCarlaDiscovery::descriptor_from_discovery_info (nfo, sha1);
-  z_debug ("scanned %s", descr->uri_);
+  z_debug ("scanned {}", descr->uri_);
   pm->add_descriptor (*descr);
 
   /* only cache expensive plugins */
@@ -216,7 +216,7 @@ z_carla_discovery_plugin_check_cache_cb (
 {
   z_return_val_if_fail (ptr && filename && sha1, true);
   ZCarlaDiscovery * self = (ZCarlaDiscovery *) ptr;
-  z_debug ("check cache for: filename: %s | sha1: %s", filename, sha1);
+  z_debug ("check cache for: filename: {} | sha1: {}", filename, sha1);
   auto  pl_mgr = self->owner_;
   auto &caches = pl_mgr->cached_plugin_descriptors_;
   if (caches->contains_sha1 (sha1, true, true))

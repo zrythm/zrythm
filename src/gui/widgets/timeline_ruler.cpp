@@ -132,7 +132,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
             cur_pos >= TRANSPORT->loop_start_pos_
             && cur_pos <= TRANSPORT->loop_end_pos_;
 
-          z_info ("loop range hit %d", range_hit);
+          z_info ("loop range hit {}", range_hit);
 
           /* if within existing range */
           if (range_hit)
@@ -156,7 +156,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
       auto [first_range, last_range] = TRANSPORT->get_range_positions ();
       bool range_hit = cur_pos >= first_range && cur_pos <= last_range;
 
-      z_debug ("has range %d range hit %d", TRANSPORT->has_range_, range_hit);
+      z_debug ("has range {} range hit {}", TRANSPORT->has_range_, range_hit);
       first_range.print ();
       last_range.print ();
       cur_pos.print ();
@@ -224,7 +224,7 @@ timeline_ruler_on_drag_update (
           double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
-              /*z_info ("offset %f", offset_x);*/
+              /*z_info ("offset {:f}", offset_x);*/
               ticks_diff = -ticks_diff;
             }
           double r1_ticks = TRANSPORT->range_1_.ticks_;
@@ -246,7 +246,7 @@ timeline_ruler_on_drag_update (
           double ticks_length =
             self->range1_first ? r2_ticks - r1_ticks : r1_ticks - r2_ticks;
 
-          /*z_info ("ticks diff %f", ticks_diff);*/
+          /*z_info ("ticks diff {:f}", ticks_diff);*/
 
           if (self->range1_first)
             {
@@ -282,7 +282,7 @@ timeline_ruler_on_drag_update (
           double   ticks_diff = diff_pos.ticks_;
           if (offset_x < 0)
             {
-              /*z_info ("offset %f", offset_x);*/
+              /*z_info ("offset {:f}", offset_x);*/
               ticks_diff = -ticks_diff;
             }
           double r1_ticks = TRANSPORT->loop_start_pos_.ticks_;

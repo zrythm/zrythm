@@ -41,9 +41,9 @@ TrackProcessor::init_loaded (ProcessableTrack * track)
 {
   track_ = track;
 
-  std::vector<Port*> ports;
+  std::vector<Port *> ports;
   append_ports (ports);
-  for (auto  port : ports)
+  for (auto port : ports)
     {
       port->init_loaded (this);
     }
@@ -73,7 +73,7 @@ TrackProcessor::init_common ()
                * [0] = ctrl change + channel
                * [1] = controller
                * [2] (unused) = control */
-              std::array<midi_byte_t,3> buf;
+              std::array<midi_byte_t, 3> buf;
               buf[0] = (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
               buf[1] = (midi_byte_t) j;
               buf[2] = 0;
@@ -129,10 +129,10 @@ TrackProcessor::init_midi_cc_ports (bool loading)
   x->id_.flags_ |= PortIdentifier::Flags::Automatable; \
   x->id_.port_index_ = idx;
 
-  midi_cc_.resize(16 * 128);
-  pitch_bend_.resize(16);
-  poly_key_pressure_.resize(16);
-  channel_pressure_.resize(16);
+  midi_cc_.resize (16 * 128);
+  pitch_bend_.resize (16);
+  poly_key_pressure_.resize (16);
+  channel_pressure_.resize (16);
 
   char name[400];
   for (int i = 0; i < 16; i++)
@@ -186,8 +186,8 @@ TrackProcessor::init_midi_cc_ports (bool loading)
 void
 TrackProcessor::init_stereo_out_ports (bool in)
 {
-  PortFlow       flow = in ? PortFlow::Input : PortFlow::Output;
-  AudioPort      l (
+  PortFlow  flow = in ? PortFlow::Input : PortFlow::Output;
+  AudioPort l (
     in ? "TP Stereo in L" : "TP Stereo out L", flow,
     PortIdentifier::OwnerType::TrackProcessor, this);
   l.id_.sym_ = ("track_processor_stereo_out_l");
@@ -214,15 +214,14 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
       init_midi_port (true);
 
       /* set up piano roll port */
-      if (
-        tr->has_piano_roll() || tr->is_chord())
+      if (tr->has_piano_roll () || tr->is_chord ())
         {
           piano_roll_ = std::make_unique<MidiPort> (
             "TP Piano Roll", PortFlow::Input,
             PortIdentifier::OwnerType::TrackProcessor, this);
           piano_roll_->id_.sym_ = "track_processor_piano_roll";
           piano_roll_->id_.flags_ = PortIdentifier::Flags::PianoRoll;
-          if (!tr->is_chord())
+          if (!tr->is_chord ())
             {
               init_midi_cc_ports (false);
             }
@@ -283,7 +282,7 @@ TrackProcessor::is_in_active_project () const
 }
 
 void
-TrackProcessor::init_after_cloning (const TrackProcessor & other)
+TrackProcessor::init_after_cloning (const TrackProcessor &other)
 {
   if (other.stereo_in_)
     stereo_in_ = other.stereo_in_->clone_unique ();
@@ -321,15 +320,13 @@ TrackProcessor::init_after_cloning (const TrackProcessor & other)
     {
       if (!other.poly_key_pressure_[i])
         break;
-      poly_key_pressure_[i] =
-        (other.poly_key_pressure_[i]->clone_unique ());
+      poly_key_pressure_[i] = (other.poly_key_pressure_[i]->clone_unique ());
     }
   for (size_t i = 0; i < other.channel_pressure_.size (); i++)
     {
       if (!other.channel_pressure_[i])
         break;
-      channel_pressure_[i] =
-        (other.channel_pressure_[i]->clone_unique ());
+      channel_pressure_[i] = (other.channel_pressure_[i]->clone_unique ());
     }
 }
 
@@ -451,7 +448,7 @@ TrackProcessor::disconnect_all ()
     case PortType::Event:
       midi_in_->disconnect_all ();
       midi_out_->disconnect_all ();
-      if (track->has_piano_roll())
+      if (track->has_piano_roll ())
         piano_roll_->disconnect_all ();
       break;
     default:
@@ -730,7 +727,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
     }
 
   /* set the piano roll contents to midi out */
-  if (tr->has_piano_roll() || tr->is_chord())
+  if (tr->has_piano_roll () || tr->is_chord ())
     {
       auto &pr = piano_roll_;
 
@@ -764,7 +761,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 
       /* append midi events from modwheel and pitchbend control ports to MIDI
        * out */
-      if (!tr->is_chord())
+      if (!tr->is_chord ())
         {
           add_events_from_midi_cc_control_ports (time_nfo.local_offset_);
         }
@@ -801,7 +798,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
   auto in_signal_type = tr->in_signal_type_;
   if (in_signal_type == PortType::Event && CLIP_EDITOR->has_region_)
     {
-      Track * clip_editor_track = CLIP_EDITOR->get_track();
+      Track * clip_editor_track = CLIP_EDITOR->get_track ();
       if (clip_editor_track == tr)
         {
           auto channel_track = dynamic_cast<ChannelTrack *> (tr);
@@ -858,10 +855,9 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
       /* change the MIDI channel on the midi input to the channel set on the
        * track
        */
-      if (!tr->is_chord())
+      if (!tr->is_chord ())
         {
-          auto * piano_roll_track =
-            dynamic_cast<PianoRollTrack *> (tr);
+          auto * piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
           if (!piano_roll_track->passthrough_midi_input_)
             {
               midi_in_->midi_events_.active_events_.set_channel (
@@ -877,7 +873,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
         }
 
       /* if chord track, transform MIDI input to appropriate MIDI notes */
-      if (tr->is_chord())
+      if (tr->is_chord ())
         {
           midi_out_->midi_events_.active_events_.transform_chord_and_append (
             midi_in_->midi_events_.active_events_, time_nfo.local_offset_,

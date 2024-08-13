@@ -80,7 +80,7 @@ PluginCollections::serialize_to_file () const
   auto path = get_file_path ();
   z_return_if_fail (
     !path.empty () && path.is_absolute () && path.has_parent_path ());
-  z_debug ("Writing plugin collections to %s...", path);
+  z_debug ("Writing plugin collections to {}...", path);
   try
     {
       Glib::file_set_contents (path, json.c_str ());
@@ -98,17 +98,17 @@ PluginCollections::delete_file ()
   auto path = get_file_path ();
   if (!fs::exists (path))
     {
-      z_info ("Plugin collections file at %s does not exist", path);
+      z_info ("Plugin collections file at {} does not exist", path);
       return;
     }
-  z_debug ("Deleting plugin collections file at %s", path);
+  z_debug ("Deleting plugin collections file at {}", path);
   try
     {
       fs::remove (path);
     }
   catch (const fs::filesystem_error &e)
     {
-      z_warning ("Failed to delete plugin collections file: %s", e.what ());
+      z_warning ("Failed to delete plugin collections file: {}", e.what ());
     }
 }
 
@@ -119,7 +119,7 @@ PluginCollections::read_or_new ()
   auto path = get_file_path ();
   if (!fs::exists (path))
     {
-      z_info ("Plugin collections file at %s does not exist", path);
+      z_info ("Plugin collections file at {} does not exist", path);
       return ret;
     }
 

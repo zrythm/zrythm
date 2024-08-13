@@ -461,7 +461,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   pause_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
 
 #if 0
-  z_debug ("track %s pause start frames %" PRIuFAST64 ", nframes %u", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
+  z_debug ("track {} pause start frames %" PRIuFAST64 ", nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
 #endif
 
   if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
@@ -653,9 +653,9 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
       if (!at->recording_paused_)
         return false;
 
-      auto   port = Port::find_from_identifier<ControlPort> (at->port_id_);
-      float  value = port->get_control_value (false);
-      float  normalized_value = port->get_control_value (true);
+      auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      float value = port->get_control_value (false);
+      float normalized_value = port->get_control_value (true);
 
       /* get or start new region at resume pos */
       auto new_region = at->get_region_before_pos (resume_pos, true, false);
@@ -703,7 +703,7 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
 {
   bool handled_resume = handle_resume_event (ev);
   (void) handled_resume;
-  /*z_debug ("handled resume %d", handled_resume);*/
+  /*z_debug ("handled resume {}", handled_resume);*/
 
   auto tr =
     TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
@@ -844,9 +844,9 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
     return;
 
   /* convert MIDI data to midi notes */
-  MidiNote *       mn;
-  const auto      &mev = ev.midi_event_;
-  const auto      &buf = mev.raw_buffer_.data ();
+  MidiNote *  mn;
+  const auto &mev = ev.midi_event_;
+  const auto &buf = mev.raw_buffer_.data ();
 
   if (tr->is_chord ())
     {
@@ -903,8 +903,8 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
   auto &atl = tr->automation_tracklist_;
   auto &at = atl->ats_[ev.automation_track_idx_];
   auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
-  float             value = port->get_control_value (false);
-  float             normalized_value = port->get_control_value (true);
+  float value = port->get_control_value (false);
+  float normalized_value = port->get_control_value (true);
   if (ZRYTHM_TESTING)
     {
       math_assert_nonnann (value);
@@ -1038,8 +1038,8 @@ RecordingManager::handle_start_recording (
       /*at->recording_paused = false;*/
 
       /* nothing, wait for event to start writing data */
-      auto   port = Port::find_from_identifier<ControlPort> (at->port_id_);
-      float  value = port->get_control_value (false);
+      auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      float value = port->get_control_value (false);
 
       if (at->should_be_recording (cur_time, true))
         {
@@ -1157,13 +1157,13 @@ RecordingManager::process_events ()
             auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
               ev->track_name_hash_);
             z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
-            z_debug ("-------- STOP TRACK RECORDING (%s)", tr->name_);
+            z_debug ("-------- STOP TRACK RECORDING ({})", tr->name_);
             handle_stop_recording (false);
             tr->recording_region_ = nullptr;
             tr->recording_start_sent_ = false;
             tr->recording_stop_sent_ = false;
           }
-          z_debug ("num active recordings: %d", num_active_recordings_);
+          z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StopAutomationRecording:
           z_debug ("-------- STOP AUTOMATION RECORDING");
@@ -1181,16 +1181,16 @@ RecordingManager::process_events ()
             at->recording_start_sent_ = false;
             at->recording_region_ = nullptr;
           }
-          z_debug ("num active recordings: %d", num_active_recordings_);
+          z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StartTrackRecording:
           {
             auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
               ev->track_name_hash_);
             z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
-            z_debug ("-------- START TRACK RECORDING (%s)", tr->name_);
+            z_debug ("-------- START TRACK RECORDING ({})", tr->name_);
             handle_start_recording (*ev, false);
-            z_debug ("num active recordings: %d", num_active_recordings_);
+            z_debug ("num active recordings: {}", num_active_recordings_);
           }
           break;
         case RecordingEvent::Type::StartAutomationRecording:
@@ -1207,7 +1207,7 @@ RecordingManager::process_events ()
               }
             at->recording_started_ = true;
           }
-          z_debug ("num active recordings: %d", num_active_recordings_);
+          z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         }
 
@@ -1234,7 +1234,7 @@ RecordingManager::RecordingManager ()
 
 RecordingManager::~RecordingManager ()
 {
-  z_info ("%s: Freeing...", __func__);
+  z_info ("{}: Freeing...", __func__);
 
   freeing_ = true;
 
@@ -1244,5 +1244,5 @@ RecordingManager::~RecordingManager ()
   /* process pending events */
   process_events ();
 
-  z_info ("%s: done", __func__);
+  z_info ("{}: done", __func__);
 }

@@ -242,7 +242,7 @@ engine_pulse_setup (AudioEngine * self)
   if (!engine_pulse_try_lock_connect_sync (
         &self->pulse_mainloop_, &self->pulse_context_, &msg))
     {
-      z_warning ("%s", msg);
+      z_warning ("{}", msg);
       g_free (msg);
       return 1;
     }
@@ -417,7 +417,7 @@ engine_pulse_test (GtkWindow * win)
         }
       else
         {
-          z_info ("%s", msg);
+          z_info ("{}", msg);
         }
       g_free (msg);
       result = 1;

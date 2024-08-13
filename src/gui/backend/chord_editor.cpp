@@ -99,8 +99,8 @@ ChordEditor::apply_preset_from_scale (
     ChordDescriptor::note_to_string (root_note));
   const ChordType * triads =
     MusicalScale::get_triad_types_for_type (scale, true);
-  const bool *      notes = MusicalScale::get_notes_for_type (scale, true);
-  int               cur_chord = 0;
+  const bool * notes = MusicalScale::get_notes_for_type (scale, true);
+  int          cur_chord = 0;
   std::vector<ChordDescriptor> new_chords;
   new_chords.reserve (CHORD_EDITOR_NUM_CHORDS);
   for (int i = 0; i < 12; i++)

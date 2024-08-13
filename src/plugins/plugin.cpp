@@ -924,8 +924,8 @@ Plugin::set_ui_refresh_rate ()
     }
 
 return_refresh_rate_and_scale_factor:
-  z_debug ("refresh rate set to %f", (double) ui_update_hz_);
-  z_debug ("scale factor set to %f", (double) ui_scale_factor_);
+  z_debug ("refresh rate set to {:f}", (double) ui_update_hz_);
+  z_debug ("scale factor set to {:f}", (double) ui_scale_factor_);
 }
 
 void
@@ -998,7 +998,7 @@ Plugin::set_track_name_hash (unsigned int track_name_hash)
 void
 Plugin::instantiate ()
 {
-  z_debug ("Instantiating plugin '%s'...", get_name ());
+  z_debug ("Instantiating plugin '{}'...", get_name ());
 
   set_enabled_and_gain ();
 
@@ -1008,7 +1008,7 @@ Plugin::instantiate ()
     {
       z_return_if_fail (!state_dir_.empty ());
     }
-  z_debug ("state dir: %s", state_dir_);
+  z_debug ("state dir: {}", state_dir_);
 
   instantiate_impl (!PROJECT->loaded_, !state_dir_.empty ());
   save_state (false, nullptr);
@@ -1664,7 +1664,7 @@ Plugin::disconnect_from_prefader (Channel &ch)
 void
 Plugin::disconnect_from_plugin (Plugin &dest)
 {
-  int num_src_audio_outs = 0;
+  int    num_src_audio_outs = 0;
   size_t num_dest_audio_ins = 0;
 
   for (auto &out_port : out_ports_)
@@ -1788,7 +1788,7 @@ done2:
             }
         }
     }
-    }
+}
 
 void
 Plugin::disconnect ()
@@ -1879,26 +1879,26 @@ Plugin::get_port_by_symbol (const std::string &sym)
 
   auto it = find_port (in_ports_);
   if (it != in_ports_.end ())
-    return dynamic_cast<T*>(it->get ());
+    return dynamic_cast<T *> (it->get ());
 
   it = find_port (out_ports_);
   if (it != out_ports_.end ())
-    return dynamic_cast<T*>(it->get ());
+    return dynamic_cast<T *> (it->get ());
 
   z_warning ("failed to find port with symbol {}", sym);
   return nullptr;
 }
 
 std::unique_ptr<Plugin>
-Plugin::create_unique_from_hosting_type(PluginSetting::HostingType hosting_type)
+Plugin::create_unique_from_hosting_type (PluginSetting::HostingType hosting_type)
 {
   switch (hosting_type)
     {
-      case PluginSetting::HostingType::Carla:
-        return std::make_unique<CarlaNativePlugin>();
-      default:
-        // TODO: implement other plugin hosting types
-        z_return_val_if_reached (nullptr);
+    case PluginSetting::HostingType::Carla:
+      return std::make_unique<CarlaNativePlugin> ();
+    default:
+      // TODO: implement other plugin hosting types
+      z_return_val_if_reached (nullptr);
     }
 }
 

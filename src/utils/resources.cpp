@@ -21,7 +21,7 @@ resources_get_gl_shader_data (const char * path)
 
   if (err)
     {
-      z_error ("Failed to load gl shader data at <%s>: %s", path, err->message);
+      z_error ("Failed to load gl shader data at <{}>: {}", path, err->message);
     }
 
   return data;

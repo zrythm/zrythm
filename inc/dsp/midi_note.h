@@ -36,7 +36,7 @@ class MidiNote final
 {
 public:
   // Rule of 0
-  MidiNote () : ArrangerObject (Type::MidiNote){};
+  MidiNote () : ArrangerObject (Type::MidiNote) {};
 
   /**
    * Creates a new MidiNote.

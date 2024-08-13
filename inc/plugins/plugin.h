@@ -281,39 +281,39 @@ public:
    */
   template <typename T = Port> T * get_port_by_symbol (const std::string &sym);
 
-   /**
-    * @brief Copies the state directory from the given source plugin to this
-    * plugin's state directory.
-    *
-    * @param is_backup Whether this is a backup project. Used for calculating
-    * the absolute path to the state dir.
-    * @param abs_state_dir If passed, the state will be saved inside this
-    * directory instead of the plugin's state directory. Used when saving
-    * presets.
-    *
-    * @throw ZrythmException On error.
-    */
-   void copy_state_dir (
-     const Plugin       &src,
-     bool                is_backup,
-     const std::string * abs_state_dir);
+  /**
+   * @brief Copies the state directory from the given source plugin to this
+   * plugin's state directory.
+   *
+   * @param is_backup Whether this is a backup project. Used for calculating
+   * the absolute path to the state dir.
+   * @param abs_state_dir If passed, the state will be saved inside this
+   * directory instead of the plugin's state directory. Used when saving
+   * presets.
+   *
+   * @throw ZrythmException On error.
+   */
+  void copy_state_dir (
+    const Plugin       &src,
+    bool                is_backup,
+    const std::string * abs_state_dir);
 
-   /**
-    * Returns the state dir as an absolute path.
-    *
-    * @param create_if_not_exists Whether to create the state dir if it does not
-    * exist. If this is false, the function below is called internally.
-    * FIXME refactor this into cleaner API.
-    */
-   std::string get_abs_state_dir (bool is_backup, bool create_if_not_exists);
+  /**
+   * Returns the state dir as an absolute path.
+   *
+   * @param create_if_not_exists Whether to create the state dir if it does not
+   * exist. If this is false, the function below is called internally.
+   * FIXME refactor this into cleaner API.
+   */
+  std::string get_abs_state_dir (bool is_backup, bool create_if_not_exists);
 
-   /**
-    * @brief Simply gets the absolute state directory path, without attempting
-    * to create it.
-    */
-   std::string get_abs_state_dir (bool is_backup) const
-   {
-     return get_abs_state_dir (state_dir_, is_backup);
+  /**
+   * @brief Simply gets the absolute state directory path, without attempting
+   * to create it.
+   */
+  std::string get_abs_state_dir (bool is_backup) const
+  {
+    return get_abs_state_dir (state_dir_, is_backup);
   }
 
   /**
@@ -787,11 +787,16 @@ operator< (const Plugin &lhs, const Plugin &rhs)
   return lhs.id_ < rhs.id_;
 }
 
-extern template Port * Plugin::get_port_by_symbol (const std::string &);
-extern template ControlPort * Plugin::get_port_by_symbol (const std::string &);
-extern template AudioPort * Plugin::get_port_by_symbol (const std::string &);
-extern template CVPort * Plugin::get_port_by_symbol (const std::string &);
-extern template MidiPort * Plugin::get_port_by_symbol (const std::string &);
+extern template Port *
+Plugin::get_port_by_symbol (const std::string &);
+extern template ControlPort *
+Plugin::get_port_by_symbol (const std::string &);
+extern template AudioPort *
+Plugin::get_port_by_symbol (const std::string &);
+extern template CVPort *
+Plugin::get_port_by_symbol (const std::string &);
+extern template MidiPort *
+Plugin::get_port_by_symbol (const std::string &);
 
 /**
  * @}

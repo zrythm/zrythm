@@ -19,7 +19,7 @@ z_pango_create_layout_from_description (
   PangoLayout * layout = NULL;
 
   char * str = pango_font_description_to_string (descr);
-  z_debug ("font description: %s", str);
+  z_debug ("font description: {}", str);
 
 #ifdef HAVE_BUNDLED_DSEG
   if (string_contains_substr (str, "DSEG"))

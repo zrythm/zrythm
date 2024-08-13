@@ -44,7 +44,7 @@ folder_channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (track)
     {
       /* tint background */
-      GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha(0.15f);
+      GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha (0.15f);
       {
         graphene_rect_t tmp_r =
           Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);

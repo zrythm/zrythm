@@ -538,10 +538,10 @@ PluginManager::supports_protocol (PluginProtocol protocol)
 
   // Map of protocols to their corresponding Carla feature names
   const auto feature_map = std::map<PluginProtocol, std::string>{
-    {PluginProtocol::SF2,   "sf2" },
-    { PluginProtocol::DSSI, "osc" },
-    { PluginProtocol::VST3, "vst3"},
-    { PluginProtocol::AU,   "au"  }
+    { PluginProtocol::SF2,  "sf2"  },
+    { PluginProtocol::DSSI, "osc"  },
+    { PluginProtocol::VST3, "vst3" },
+    { PluginProtocol::AU,   "au"   }
   };
 
   // Check if the protocol is in the feature map
@@ -636,7 +636,7 @@ PluginManager::find_plugin_from_rel_path (
   auto paths = get_paths_for_protocol (protocol);
   if (paths.empty ())
     {
-      z_warning ("no paths for %s", rel_path.data ());
+      z_warning ("no paths for {}", rel_path.data ());
       return {};
     }
 

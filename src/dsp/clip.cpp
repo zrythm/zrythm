@@ -179,7 +179,7 @@ AudioClip::get_path_in_pool_from_name (
   std::string prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
   if (!file_path_exists (prj_pool_dir))
     {
-      z_error ("%s does not exist", prj_pool_dir);
+      z_error ("{} does not exist", prj_pool_dir);
       return "";
     }
   std::string basename =
@@ -201,7 +201,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
   z_return_if_fail (pool_clip == this);
 
   AUDIO_POOL->print ();
-  z_debug ("attempting to write clip %s (%d) to pool...", name_, pool_id_);
+  z_debug ("attempting to write clip {} ({}) to pool...", name_, pool_id_);
 
   /* generate a copy of the given filename in the project dir */
   std::string path_in_main_project = get_path_in_pool (F_NOT_BACKUP);
@@ -222,7 +222,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
 
       if (same_hash)
         {
-          z_debug ("skipping writing to existing clip %s in pool", new_path);
+          z_debug ("skipping writing to existing clip {} in pool", new_path);
           need_new_write = false;
         }
     }
@@ -258,7 +258,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
               auto src_file = Gio::File::create_for_path (path_in_main_project);
               auto dest_file = Gio::File::create_for_path (new_path);
               z_debug (
-                "copying clip from main project ('{}}' to '{}')",
+                "copying clip from main project ('{}' to '{}')",
                 path_in_main_project, new_path);
               try
                 {
@@ -337,7 +337,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
       AudioClip new_clip (filepath);
       if (num_frames_ != new_clip.num_frames_)
         {
-          z_warning ("%zu != %zu", num_frames_, new_clip.num_frames_);
+          z_warning ("{} != {}", num_frames_, new_clip.num_frames_);
         }
       float epsilon = 0.0001f;
       z_warn_if_fail (audio_frames_equal (
@@ -484,7 +484,7 @@ void
 AudioClip::remove (bool backup)
 {
   std::string path = get_path_in_pool (backup);
-  z_debug ("removing clip at %s", path);
+  z_debug ("removing clip at {}", path);
   z_return_if_fail (path.length () > 0);
   io_remove (path);
 }

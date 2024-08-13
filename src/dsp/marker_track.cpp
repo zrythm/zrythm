@@ -17,11 +17,11 @@
 
 MarkerTrack::MarkerTrack (int track_pos)
     : Track (
-      Track::Type::Marker,
-      _ ("Markers"),
-      track_pos,
-      PortType::Unknown,
-      PortType::Unknown)
+        Track::Type::Marker,
+        _ ("Markers"),
+        track_pos,
+        PortType::Unknown,
+        PortType::Unknown)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
   icon_name_ = "gnome-icon-library-flag-outline-thick-symbolic";

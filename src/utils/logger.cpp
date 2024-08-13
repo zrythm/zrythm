@@ -43,6 +43,11 @@ Logger::Logger ()
     "zrythm",
     spdlog::sinks_init_list{ file_sink, console_sink, ringbuffer_sink });
 
+  // Set the log level and format
+  logger_->set_level (spdlog::level::debug);
+  // [time] [thread id] [level] [source file:line] message
+  logger_->set_pattern ("[%Y-%m-%d %H:%M:%S.%e] [%t] [%^%l%$] [%s:%!():%#] %v");
+
   // Set the error handler for critical logs
   logger_->set_error_handler ([&] (const std::string &msg) {
     // Default error handler
@@ -54,7 +59,7 @@ Logger::Logger ()
         {
         if (!gZrythm || ZRYTHM_TESTING)
           {
-            z_info ("Backtrace: %s", ev->backtrace);
+            z_info ("Backtrace: {}", ev->backtrace);
           }
 
           auto backtrace = backtrace_get_with_lines ("", 100, true);
@@ -86,10 +91,6 @@ Logger::Logger ()
     if (ZRYTHM_TESTING)
       abort ();
   });
-
-  // Set the log level and format
-  logger_->set_level (spdlog::level::debug);
-  logger_->set_pattern ("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%!:%#] %v");
 }
 
 std::string

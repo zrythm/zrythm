@@ -1,59 +1,53 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cmath>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "actions/arranger_selections.h"
 #include "actions/undo_manager.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include <locale.h>
+TEST_SUITE_BEGIN ("actions/undo manager");
 
 static void
-perform_create_region_action (void)
+perform_create_region_action ()
 {
   Position p1, p2;
-  position_set_to_bar (&p1, 1);
-  position_set_to_bar (&p2, 2);
-  int      track_pos = TRACKLIST->tracks.size () - 1;
-  Track *  track = TRACKLIST->tracks[track_pos];
-  Region * r =
-    automation_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  track = TRACKLIST->tracks[track_pos];
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_if_fail (atl);
-  AutomationTrack * at = atl->ats[0];
-  bool              success =
-    track_add_region (track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    (ArrangerSelections *) TL_SELECTIONS, NULL);
+  p1.set_to_bar (1);
+  p2.set_to_bar (2);
+  int  track_pos = TRACKLIST->get_num_tracks () - 1;
+  auto track = TRACKLIST->get_track<AutomatableTrack> (track_pos);
+  REQUIRE_NONNULL (track);
+  auto r =
+    std::make_shared<AutomationRegion> (p1, p2, track->get_name_hash (), 0, 0);
+  const auto &atl = track->get_automation_tracklist ();
+  const auto &at = atl.ats_.front ();
+  track->add_region (r, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
 }
 
-static void
-test_perform_many_actions (void)
+TEST_CASE ("perform many actions")
 {
   test_helper_zrythm_init ();
 
-  for (int i = 0; !undo_stack_is_full (UNDO_MANAGER->undo_stack); i++)
+  for (int i = 0; !UNDO_MANAGER->undo_stack_->is_full (); ++i)
     {
       if (i % 2 == 0)
         {
-          track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+          Track::create_empty_with_action<AudioBusTrack> ();
         }
       else if (i % 13 == 0)
         {
-          undo_manager_undo (UNDO_MANAGER, NULL);
+          UNDO_MANAGER->undo ();
         }
       else if (i % 17 == 0)
         {
@@ -64,17 +58,17 @@ test_perform_many_actions (void)
           perform_create_region_action ();
         }
     }
-  track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
+  Track::create_empty_with_action<MidiTrack> ();
   perform_create_region_action ();
   perform_create_region_action ();
 
   for (
     int i = 0;
-    !undo_stack_is_full (UNDO_MANAGER->redo_stack)
-    || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
+    !UNDO_MANAGER->redo_stack_->is_full ()
+    || UNDO_MANAGER->redo_stack_->empty ();
     i++)
     {
-      if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
+      if (UNDO_MANAGER->redo_stack_->empty ())
         {
           break;
         }
@@ -89,66 +83,62 @@ test_perform_many_actions (void)
         }
       else
         {
-          undo_manager_redo (UNDO_MANAGER, NULL);
+          UNDO_MANAGER->redo ();
         }
     }
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_multi_actions (void)
+TEST_CASE ("multi actions")
 {
   test_helper_zrythm_init ();
 
   int       max_actions = 3;
-  const int num_tracks_at_start = TRACKLIST->tracks.size ();
+  const int num_tracks_at_start = TRACKLIST->get_num_tracks ();
   for (int i = 0; i < max_actions; i++)
     {
-      track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+      Track::create_empty_with_action<AudioBusTrack> ();
       if (i == 2)
         {
-          UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
-          ua->num_actions = max_actions;
+          auto ua = UNDO_MANAGER->get_last_action ();
+          ua->num_actions_ = max_actions;
         }
     }
 
-  g_assert_cmpint (
-    TRACKLIST->tracks.size (), ==, num_tracks_at_start + max_actions);
-  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
-  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
+  REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
+  REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  g_assert_cmpint (TRACKLIST->tracks.size (), ==, num_tracks_at_start);
-  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
-  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
+  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
+  REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
+  REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 
-  g_assert_cmpint (
-    TRACKLIST->tracks.size (), ==, num_tracks_at_start + max_actions);
-  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
-  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
+  REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
+  REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  g_assert_cmpint (TRACKLIST->tracks.size (), ==, num_tracks_at_start);
-  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
-  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
+  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
+  REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
+  REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_fill_stack (void)
+TEST_CASE ("fill stack")
 {
   test_helper_zrythm_init ();
 
-  int max_len = UNDO_MANAGER->undo_stack->stack->max_length;
-  for (int i = 0; i < max_len + 8; i++)
+  const auto max_len = UNDO_MANAGER->undo_stack_->max_size_;
+  for (size_t i = 0; i < max_len + 8; ++i)
     {
-      track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+      Track::create_empty_with_action<AudioBusTrack> ();
     }
 
   test_project_save_and_reload ();
@@ -156,19 +146,4 @@ test_fill_stack (void)
   test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/actions/undo manager/"
-
-  g_test_add_func (
-    TEST_PREFIX "test perform many actions",
-    (GTestFunc) test_perform_many_actions);
-  g_test_add_func (
-    TEST_PREFIX "test multi actions", (GTestFunc) test_multi_actions);
-  g_test_add_func (TEST_PREFIX "test fill stack", (GTestFunc) test_fill_stack);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

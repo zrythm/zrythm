@@ -134,7 +134,7 @@ Position::get_prev_snap_point (
       snapped = true;
     }
 
-  if (track && track->has_lanes())
+  if (track && track->has_lanes ())
     {
       std::visit (
         [&] (auto &&tr) {
@@ -359,10 +359,10 @@ Position::get_ticks_diff (
   const SnapGrid * sg)
 {
   double   ticks_diff = end_pos.ticks_ - start_pos.ticks_;
-  int    is_negative = ticks_diff < 0.0;
+  int      is_negative = ticks_diff < 0.0;
   Position diff_pos;
   diff_pos.add_ticks (fabs (ticks_diff));
-  if (sg && sg->any_snap())
+  if (sg && sg->any_snap ())
     {
       diff_pos.snap (nullptr, nullptr, nullptr, *sg);
     }
@@ -435,7 +435,7 @@ Position::Position (const char * str)
 
   double ticks = (double) ticksf;
 
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar();
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int sixteenths_per_beat = TRANSPORT->sixteenths_per_beat_;
   int total_sixteenths =
     bars * beats_per_bar * sixteenths_per_beat + beats * sixteenths_per_beat
@@ -489,7 +489,7 @@ Position::get_total_beats (bool include_current) const
   int beats = get_beats (false);
   int bars = get_bars (false);
 
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar();
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int ret = beats + bars * beats_per_bar;
 
   if (include_current || ret == 0)
@@ -571,10 +571,10 @@ Position::get_beats (bool start_at_one) const
       && TRANSPORT->ticks_per_beat_ > 0 && P_TEMPO_TRACK,
     -1);
 
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar();
+  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   z_return_val_if_fail (beats_per_bar > 0, -1);
 
-  auto total_bars = (double) get_bars (false);
+  auto   total_bars = (double) get_bars (false);
   double total_beats = ticks_ / TRANSPORT->ticks_per_beat_;
   total_beats -= (double) (total_bars * beats_per_bar);
   if (total_beats >= 0.0)
@@ -604,9 +604,9 @@ Position::get_sixteenths (bool start_at_one) const
     gZrythm && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat_ > 0, -1);
 
   double total_beats = (double) get_total_beats (true);
-  /*z_info ("total beats %f", total_beats);*/
+  /*z_info ("total beats {:f}", total_beats);*/
   double total_sixteenths = ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL;
-  /*z_info ("total sixteenths %f",*/
+  /*z_info ("total sixteenths {:f}",*/
   /*total_sixteenths);*/
   total_sixteenths -= (double) (total_beats * TRANSPORT->sixteenths_per_beat_);
   if (total_sixteenths >= 0.0)
@@ -633,7 +633,7 @@ double
 Position::get_ticks () const
 {
   double total_sixteenths = get_total_sixteenths (true);
-  /*z_debug ("total sixteenths %f", total_sixteenths);*/
+  /*z_debug ("total sixteenths {:f}", total_sixteenths);*/
   return ticks_ - (total_sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
 }
 

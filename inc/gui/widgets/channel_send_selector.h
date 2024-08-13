@@ -42,8 +42,8 @@ using ChannelSendSelectorWidget = struct _ChannelSendSelectorWidget
   /** Main vbox. */
   GtkBox * vbox;
 
-  GtkSingleSelection * view_model;
-  GtkListView *        view;
+  GtkSingleSelection *         view_model;
+  GtkListView *                view;
   std::unique_ptr<ItemFactory> item_factory;
 };
 

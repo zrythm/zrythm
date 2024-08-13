@@ -642,7 +642,7 @@ Port::expose_to_jack (bool expose)
             {
               auto jack_error =
                 engine_jack_get_error_message ((jack_status_t) ret);
-              z_warning ("JACK port unregister error: %s", jack_error);
+              z_warning ("JACK port unregister error: {}", jack_error);
             }
         }
       internal_type_ = InternalType::None;
@@ -901,7 +901,7 @@ Port::disconnect_all ()
   if (!is_in_active_project ())
     {
 #if 0
-      z_debug ("%s ({}) is not a project port, skipping", this->id_.label, fmt::ptr(this));
+      z_debug ("{} ({}) is not a project port, skipping", this->id_.label, fmt::ptr(this));
 #endif
       return;
     }

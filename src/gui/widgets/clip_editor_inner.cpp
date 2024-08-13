@@ -49,7 +49,7 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
   if (add)
     {
       gtk_size_group_add_widget (self->left_of_ruler_size_group, widget);
-      z_info ("%s: adding %s", __func__, gtk_widget_get_name (widget));
+      z_info ("{}: adding {}", __func__, gtk_widget_get_name (widget));
     }
   else
     {
@@ -58,7 +58,7 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
       if (g_slist_index (list, widget) >= 0)
         {
           gtk_size_group_remove_widget (self->left_of_ruler_size_group, widget);
-          z_info ("%s: removing %s", __func__, gtk_widget_get_name (widget));
+          z_info ("{}: removing {}", __func__, gtk_widget_get_name (widget));
         }
     }
 }

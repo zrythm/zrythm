@@ -92,7 +92,7 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
 std::string
 hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
 {
-  z_debug ("calculating hash for %s...", filepath);
+  z_debug ("calculating hash for {}...", filepath);
 
   FILE * stream = fopen (filepath.c_str (), "rb");
   z_return_val_if_fail (stream, g_strdup ("INVALID"));
@@ -112,7 +112,7 @@ hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
 
   fclose (stream);
 
-  z_debug ("hash for %s: %s", filepath, ret_str);
+  z_debug ("hash for {}: {}", filepath, ret_str);
 
   auto ret = std::string (ret_str);
   g_free (ret_str);

@@ -23,11 +23,11 @@ typedef enum ArrangerSelectionsType_v1
 } ArrangerSelectionsType_v1;
 
 static const cyaml_strval_t arranger_selections_type_strings_v1[] = {
-  {"Chord",       ARRANGER_SELECTIONS_TYPE_CHORD_v1     },
-  { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE_v1  },
-  { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI_v1      },
-  { "Automation", ARRANGER_SELECTIONS_TYPE_AUTOMATION_v1},
-  { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO_v1     },
+  { "Chord",      ARRANGER_SELECTIONS_TYPE_CHORD_v1      },
+  { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE_v1   },
+  { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI_v1       },
+  { "Automation", ARRANGER_SELECTIONS_TYPE_AUTOMATION_v1 },
+  { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO_v1      },
 };
 
 typedef struct ArrangerSelections_v1

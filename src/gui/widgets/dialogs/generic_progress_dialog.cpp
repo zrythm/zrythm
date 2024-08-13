@@ -50,7 +50,7 @@ on_response_cb (
   char *                        response,
   GenericProgressDialogWidget * self)
 {
-  z_debug ("generic progress response: %s", response);
+  z_debug ("generic progress response: {}", response);
   GET_PRIVATE (self);
   if (string_is_equal (response, "cancel"))
     {

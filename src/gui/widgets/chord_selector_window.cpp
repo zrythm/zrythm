@@ -169,7 +169,7 @@ creator_select_bass_note (
 
       self->descr_clone->has_bass_ = true;
       self->descr_clone->bass_note_ = ENUM_INT_TO_VALUE (MusicalNote, i);
-      z_debug ("bass note %s", ENUM_NAME_FROM_INT (MusicalNote, i));
+      z_debug ("bass note {}", ENUM_NAME_FROM_INT (MusicalNote, i));
       return;
     }
 

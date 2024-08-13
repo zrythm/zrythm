@@ -52,7 +52,7 @@ private:
   void get_color_for_state (
     CustomButtonWidget::State state,
     AutomationMode            mode,
-    GdkRGBA *                   c);
+    GdkRGBA *                 c);
 
   /**
    * @param mode Mode the state applies to.

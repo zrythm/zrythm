@@ -34,7 +34,7 @@ ControlRoom::init_common ()
     ZRYTHM_TESTING
       ? 0.f
       : static_cast<float> (GSettingsManager::get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol"));
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol"));
   if (!ZRYTHM_TESTING)
     {
       GSettingsManager::get_range_double (
@@ -54,7 +54,7 @@ ControlRoom::init_common ()
     ZRYTHM_TESTING
       ? 1.f
       : static_cast<float> (GSettingsManager::get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol"));
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol"));
   listen_fader_->set_amp (amp);
   if (!ZRYTHM_TESTING)
     {
@@ -74,7 +74,7 @@ ControlRoom::init_common ()
     ZRYTHM_TESTING
       ? 0.1f
       : static_cast<float> (GSettingsManager::get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol"));
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol"));
   if (!ZRYTHM_TESTING)
     {
       GSettingsManager::get_range_double (

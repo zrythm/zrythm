@@ -36,7 +36,7 @@ class Velocity final
 {
 public:
   // Rule of 0
-  Velocity () : ArrangerObject (Type::Velocity){};
+  Velocity () : ArrangerObject (Type::Velocity) {};
   /**
    * Creates a new Velocity with the given value.
    */

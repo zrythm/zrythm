@@ -92,35 +92,7 @@ public:
     return std::make_pair ("dir", "path");
   }
 
-  template <typename... Args> void trace (Args &&... args)
-  {
-    logger_->trace (format_str (std::forward<Args> (args)...));
-  }
-
-  template <typename... Args> void debug (Args &&... args)
-  {
-    logger_->debug (format_str (std::forward<Args> (args)...));
-  }
-
-  template <typename... Args> void info (Args &&... args)
-  {
-    logger_->info (format_str (std::forward<Args> (args)...));
-  }
-
-  template <typename... Args> void warn (Args &&... args)
-  {
-    logger_->warn (format_str (std::forward<Args> (args)...));
-  }
-
-  template <typename... Args> void error (Args &&... args)
-  {
-    logger_->error (format_str (std::forward<Args> (args)...));
-  }
-
-  template <typename... Args> void critical (Args &&... args)
-  {
-    logger_->critical (format_str (std::forward<Args> (args)...));
-  }
+  auto get_logger () const { return logger_; }
 
 private:
   Logger ();
@@ -149,42 +121,18 @@ public:
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Logger, false)
 };
 
-void
-z_trace (auto &&... args)
-{
-  Logger::getInstance ()->trace (std::forward<decltype (args)> (args)...);
-}
-
-void
-z_debug (auto &&... args)
-{
-  Logger::getInstance ()->debug (std::forward<decltype (args)> (args)...);
-}
-
-void
-z_info (auto &&... args)
-{
-  Logger::getInstance ()->info (std::forward<decltype (args)> (args)...);
-}
-
-void
-z_warning (auto &&... args)
-{
-  Logger::getInstance ()->warn (std::forward<decltype (args)> (args)...);
-}
-
-void
-z_error (auto &&... args)
-{
-  Logger::getInstance ()->error (std::forward<decltype (args)> (args)...);
-}
-
-void
-z_critical (auto &&... args)
-{
-  Logger::getInstance ()->critical (std::forward<decltype (args)> (args)...);
-}
-
+#define z_warning(...) \
+  SPDLOG_LOGGER_WARN (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+#define z_error(...) \
+  SPDLOG_LOGGER_ERROR (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+#define z_critical(...) \
+  SPDLOG_LOGGER_CRITICAL (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+#define z_trace(...) \
+  SPDLOG_LOGGER_TRACE (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+#define z_debug(...) \
+  SPDLOG_LOGGER_DEBUG (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+#define z_info(...) \
+  SPDLOG_LOGGER_INFO (Logger::getInstance ()->get_logger (), __VA_ARGS__)
 /**
  * @brief Safe assertion macro that returns a value if the assertion fails.
  */

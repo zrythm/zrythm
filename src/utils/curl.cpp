@@ -70,7 +70,7 @@ curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
 char *
 z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 {
-  z_debug ("getting page contents for %s...", url);
+  z_debug ("getting page contents for {}...", url);
 
   CURL * curl = curl_easy_init ();
   z_return_val_if_fail (curl, nullptr);
@@ -100,7 +100,7 @@ z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 
   curl_easy_cleanup (curl);
 
-  z_debug ("done getting page contents for %s", url);
+  z_debug ("done getting page contents for {}", url);
 
   return page;
 }
@@ -148,7 +148,7 @@ read_callback (char * dest, size_t size, size_t nmemb, void * userp)
 
       wt->readptr += copy_this_much;
       wt->sizeleft -= copy_this_much;
-      z_debug ("copied %zu chars", copy_this_much);
+      z_debug ("copied {} chars", copy_this_much);
       return copy_this_much; /* we copied this many bytes */
     }
 
@@ -263,7 +263,7 @@ z_curl_post_json_no_auth (
   res = curl_easy_perform (curl);
   if (res != CURLE_OK)
     {
-      z_warning ("curl_easy_perform() failed: %s", curl_easy_strerror (res));
+      z_warning ("curl_easy_perform() failed: {}", curl_easy_strerror (res));
       g_set_error (
         error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_BAD_REQUEST,
         "curl_easy_perform() failed: %s", curl_easy_strerror (res));
@@ -298,7 +298,7 @@ z_curl_post_json_no_auth (
     }
   g_free (response_str);
 
-  z_info ("%s: done", __func__);
+  z_info ("{}: done", __func__);
 
   curl_easy_cleanup (curl);
   curl_mime_free (mime);

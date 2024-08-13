@@ -132,7 +132,7 @@ public:
    *
    * @param plugins
    */
-  virtual void get_plugins (std::vector<Plugin *> &plugins){};
+  virtual void get_plugins (std::vector<Plugin *> &plugins) {};
 
   /**
    * Sets the number of actions for this action.

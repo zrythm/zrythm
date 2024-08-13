@@ -176,7 +176,7 @@ Tracklist::insert_track (
   bool                 publish_events,
   bool                 recalc_graph)
 {
-  z_info ("inserting %s at %d", track->name_, pos);
+  z_info ("inserting {} at {}", track->name_, pos);
 
   /* throw error if attempted to add a special track (like master) when it
    * already exists */
@@ -634,7 +634,7 @@ Tracklist::move_track (
   bool   publish_events,
   bool   recalc_graph)
 {
-  z_debug ("moving track: %s from %d to %d", track.get_name (), track.pos_, pos);
+  z_debug ("moving track: {} from {} to {}", track.get_name (), track.pos_, pos);
 
   if (pos == track.pos_)
     return;
@@ -822,17 +822,17 @@ Tracklist::import_regions (
 
   AudioEngine::State state;
   AUDIO_ENGINE->wait_for_pause (state, false, true);
-  int  executed_actions = 0;
+  int executed_actions = 0;
   try
     {
       for (auto regions : region_arrays)
         {
-          z_debug ("REGION ARRAY (%zu elements)", regions.size ());
+          z_debug ("REGION ARRAY ({} elements)", regions.size ());
           int i = 0;
           while (!regions.empty ())
             {
               int iter = i++;
-              z_debug ("REGION %d", iter);
+              z_debug ("REGION {}", iter);
               auto r = regions.back ();
               regions.pop_back ();
               Track::Type track_type = Track::Type::Audio;
@@ -1094,8 +1094,8 @@ Tracklist::handle_move_or_copy (
           auto                                &tls = *TRACKLIST_SELECTIONS;
           int                                  num_tls = tls.get_num_tracks ();
           std::unique_ptr<TracklistSelections> after_tls;
-          int                   diff_between_track_below_and_parent = 0;
-          bool                  copied_inside = false;
+          int  diff_between_track_below_and_parent = 0;
+          bool copied_inside = false;
           if (static_cast<size_t> (pos) < tracks_.size ())
             {
               auto &track_below = *tracks_[pos];
@@ -1204,8 +1204,8 @@ Tracklist::handle_move_or_copy (
           auto                                &tls = *TRACKLIST_SELECTIONS;
           int                                  num_tls = tls.get_num_tracks ();
           std::unique_ptr<TracklistSelections> after_tls;
-          int                   diff_between_track_below_and_parent = 0;
-          bool                  moved_inside = false;
+          int  diff_between_track_below_and_parent = 0;
+          bool moved_inside = false;
           if (static_cast<size_t> (pos) < tracks_.size ())
             {
               auto &track_below = *tracks_[pos];

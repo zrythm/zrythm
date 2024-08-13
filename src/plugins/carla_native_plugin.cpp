@@ -139,7 +139,7 @@ host_ui_parameter_changed (NativeHostHandle handle, uint32_t index, float value)
   auto * port = self->get_port_from_param_id (index);
   if (!port)
     {
-      z_warning ("No port found for param %u", index);
+      z_warning ("No port found for param {}", index);
       return;
     }
 
@@ -229,15 +229,15 @@ carla_engine_callback (
   switch (action)
     {
     case CarlaBackend::ENGINE_CALLBACK_PLUGIN_ADDED:
-      z_debug ("Plugin added: %u - %s", plugin_id, val_str);
+      z_debug ("Plugin added: {} - {}", plugin_id, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PLUGIN_REMOVED:
-      z_debug ("Plugin removed: %u", plugin_id);
+      z_debug ("Plugin removed: {}", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PLUGIN_RENAMED:
       break;
     case CarlaBackend::ENGINE_CALLBACK_PLUGIN_UNAVAILABLE:
-      z_warning ("Plugin unavailable: %u - %s", plugin_id, val_str);
+      z_warning ("Plugin unavailable: {} - {}", plugin_id, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
       /* if plugin was deactivated and we didn't explicitly tell it to
@@ -255,13 +255,13 @@ carla_engine_callback (
     case CarlaBackend::ENGINE_CALLBACK_PARAMETER_MIDI_CHANNEL_CHANGED:
       break;
     case CarlaBackend::ENGINE_CALLBACK_OPTION_CHANGED:
-      z_debug ("Option changed: plugin %u - opt %d: %d", plugin_id, val1, val2);
+      z_debug ("Option changed: plugin {} - opt {}: {}", plugin_id, val1, val2);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PROGRAM_CHANGED:
-      z_debug ("Program changed: plugin %u - %d", plugin_id, val1);
+      z_debug ("Program changed: plugin {} - {}", plugin_id, val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_MIDI_PROGRAM_CHANGED:
-      z_debug ("MIDI program changed: plugin %u - %d", plugin_id, val1);
+      z_debug ("MIDI program changed: plugin {} - {}", plugin_id, val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_UI_STATE_CHANGED:
       switch (val1)
@@ -280,29 +280,29 @@ carla_engine_callback (
     case CarlaBackend::ENGINE_CALLBACK_NOTE_OFF:
       break;
     case CarlaBackend::ENGINE_CALLBACK_UPDATE:
-      z_debug ("Plugin %u needs update", plugin_id);
+      z_debug ("Plugin {} needs update", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_RELOAD_INFO:
-      z_debug ("Plugin %u reload info", plugin_id);
+      z_debug ("Plugin {} reload info", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_RELOAD_PARAMETERS:
-      z_debug ("Plugin %u reload parameters", plugin_id);
+      z_debug ("Plugin {} reload parameters", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_RELOAD_PROGRAMS:
-      z_debug ("Plugin %u reload programs", plugin_id);
+      z_debug ("Plugin {} reload programs", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_RELOAD_ALL:
-      z_debug ("Plugin %u reload all", plugin_id);
+      z_debug ("Plugin {} reload all", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
       z_debug (
         "Patchbay client added: %u plugin %d name %s", plugin_id, val2, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_REMOVED:
-      z_debug ("Patchbay client removed: %u", plugin_id);
+      z_debug ("Patchbay client removed: {}", plugin_id);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_RENAMED:
-      z_debug ("Patchbay client renamed: %u - %s", plugin_id, val_str);
+      z_debug ("Patchbay client renamed: {} - {}", plugin_id, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_DATA_CHANGED:
       z_debug (
@@ -362,13 +362,13 @@ carla_engine_callback (
       }
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_REMOVED:
-      z_debug ("Patchbay port removed: %u - %d", plugin_id, val1);
+      z_debug ("Patchbay port removed: {} - {}", plugin_id, val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_CHANGED:
-      z_debug ("Patchbay port changed: %u - %d", plugin_id, val1);
+      z_debug ("Patchbay port changed: {} - {}", plugin_id, val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CONNECTION_ADDED:
-      z_debug ("Connection added %s", val_str);
+      z_debug ("Connection added {}", val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CONNECTION_REMOVED:
       z_debug ("Connection removed");
@@ -380,16 +380,16 @@ carla_engine_callback (
       z_info ("Engine stopped");
       break;
     case CarlaBackend::ENGINE_CALLBACK_PROCESS_MODE_CHANGED:
-      z_debug ("Process mode changed: %d", val1);
+      z_debug ("Process mode changed: {}", val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_TRANSPORT_MODE_CHANGED:
-      z_debug ("Transport mode changed: %d - %s", val1, val_str);
+      z_debug ("Transport mode changed: {} - {}", val1, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_BUFFER_SIZE_CHANGED:
-      z_info ("Buffer size changed: %d", val1);
+      z_info ("Buffer size changed: {}", val1);
       break;
     case CarlaBackend::ENGINE_CALLBACK_SAMPLE_RATE_CHANGED:
-      z_info ("Sample rate changed: %f", static_cast<double> (valf));
+      z_info ("Sample rate changed: {:f}", static_cast<double> (valf));
       break;
     case CarlaBackend::ENGINE_CALLBACK_CANCELABLE_ACTION:
       z_debug (
@@ -410,10 +410,10 @@ carla_engine_callback (
       /* TODO */
       break;
     case CarlaBackend::ENGINE_CALLBACK_INFO:
-      z_info ("Engine info: %s", val_str);
+      z_info ("Engine info: {}", val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_ERROR:
-      z_warning ("Engine error: %s", val_str);
+      z_warning ("Engine error: {}", val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_QUIT:
       z_warning (
@@ -457,7 +457,7 @@ carla_engine_callback (
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_POSITION_CHANGED:
       break;
     case CarlaBackend::ENGINE_CALLBACK_EMBED_UI_RESIZED:
-      z_debug ("Embed UI resized: %u - %dx%d", plugin_id, val1, val2);
+      z_debug ("Embed UI resized: {} - {}x{}", plugin_id, val1, val2);
       break;
     default:
       break;
@@ -533,7 +533,7 @@ CarlaNativePlugin::populate_banks ()
 }
 
 bool
-CarlaNativePlugin::has_custom_ui (const PluginDescriptor & descr)
+CarlaNativePlugin::has_custom_ui (const PluginDescriptor &descr)
 {
 #  if 0
   auto native_pl = _create (nullptr);
@@ -657,7 +657,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
                * cycle
                */
 #  if 0
-          z_debug ("skip events scheduled for another split within the processing cycle: ev->time %u, local_offset %u, nframes %u", ev.time_, time_nfo.local_offset, time_nfo.nframes);
+          z_debug ("skip events scheduled for another split within the processing cycle: ev->time %u, local_offset %u, nframes {}", ev.time_, time_nfo.local_offset, time_nfo.nframes);
 #  endif
               continue;
             }
@@ -673,8 +673,8 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
       ev.print ();
 #  endif
 
-      /* event time is relative to the current zrythm full cycle (not split). it
-       * needs to be made relative to the current split */
+          /* event time is relative to the current zrythm full cycle (not
+           * split). it needs to be made relative to the current split */
           events[num_events_written].time = ev.time_ - time_nfo.local_offset_;
           events[num_events_written].size = 3;
           events[num_events_written].data[0] = ev.raw_buffer_[0];
@@ -837,7 +837,7 @@ CarlaNativePlugin::CarlaNativePlugin (
 void
 CarlaNativePlugin::create_ports (bool loading)
 {
-  z_debug ("%s: loading: %d", __func__, loading);
+  z_debug ("{}: loading: {}", __func__, loading);
 
   char tmp[500];
   char name[4000];
@@ -867,10 +867,10 @@ CarlaNativePlugin::create_ports (bool loading)
           unsigned int audio_port_hints = carla_get_audio_port_hints (
             host_handle_, 0, false,
             (uint32_t) (descr.num_audio_ins_ == 1 ? 0 : i));
-          z_debug ("audio port hints %d: %u", i, audio_port_hints);
+          z_debug ("audio port hints {}: {}", i, audio_port_hints);
           if (audio_port_hints & CarlaBackend::AUDIO_PORT_IS_SIDECHAIN)
             {
-              z_debug ("%s is sidechain", port->id_.sym_.c_str ());
+              z_debug ("{} is sidechain", port->id_.sym_.c_str ());
               port->id_.flags_ |= PortIdentifier::Flags::Sidechain;
             }
 #  endif
@@ -1062,7 +1062,7 @@ CarlaNativePlugin::create_ports (bool loading)
             {
               const CarlaScalePointInfo * sp_info =
                 carla_get_parameter_scalepoint_info (host_handle_, 0, i, j);
-              z_debug ("scale point: %s", sp_info->label);
+              z_debug ("scale point: {}", sp_info->label);
             }
 
           const ParameterRanges * ranges =
@@ -1153,7 +1153,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
         {
         case PluginProtocol::LV2:
         case PluginProtocol::AU:
-          z_debug ("uri %s", descr.uri_);
+          z_debug ("uri {}", descr.uri_);
           added = carla_add_plugin (
             host_handle_,
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
@@ -1661,115 +1661,114 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     }
 }
 
-  void
-  CarlaNativePlugin::open_custom_ui (bool show)
-  {
-    z_return_if_fail (is_in_active_project ());
+void
+CarlaNativePlugin::open_custom_ui (bool show)
+{
+  z_return_if_fail (is_in_active_project ());
 
-    z_debug ("show/hide '%s ({})' UI: %d", get_name (), fmt::ptr (this), show);
+  z_debug ("show/hide '{} ({})' UI: {}", get_name (), fmt::ptr (this), show);
 
-    if (
-      (!idle_connection_.connected () && !show)
-      || (idle_connection_.connected () && show))
+  if (
+    (!idle_connection_.connected () && !show)
+    || (idle_connection_.connected () && show))
+    {
+      z_info (
+        "plugin already has visibility status %d, "
+        "doing nothing",
+        show);
+      return;
+    }
+
+  switch (setting_.descr_.protocol_)
+    {
+    case PluginProtocol::VST:
+    case PluginProtocol::VST3:
+    case PluginProtocol::DSSI:
+    case PluginProtocol::LV2:
+    case PluginProtocol::AU:
+    case PluginProtocol::CLAP:
+    case PluginProtocol::JSFX:
       {
-        z_info (
-          "plugin already has visibility status %d, "
-          "doing nothing",
-          show);
-        return;
-      }
-
-    switch (setting_.descr_.protocol_)
-      {
-      case PluginProtocol::VST:
-      case PluginProtocol::VST3:
-      case PluginProtocol::DSSI:
-      case PluginProtocol::LV2:
-      case PluginProtocol::AU:
-      case PluginProtocol::CLAP:
-      case PluginProtocol::JSFX:
-        {
-          if (show)
-            {
-              auto title = generate_window_title ();
-              z_debug ("plugin window title '{}'", title);
-              carla_set_custom_ui_title (host_handle_, 0, title.c_str ());
-
-              /* set whether to keep window on top */
-              if (
-                ZRYTHM_HAVE_UI
-                && g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
-                {
-#  if defined(HAVE_X11) && !defined(GDK_WINDOWING_WAYLAND)
-                  Window xid =
-                    z_gtk_window_get_x11_xid (GTK_WINDOW (MAIN_WINDOW));
-                  z_debug ("FRONTEND_WIN_ID: setting X11 parent to %lx", xid);
-                  char xid_str[400];
-                  sprintf (xid_str, "%lx", xid);
-                  carla_set_engine_option (
-                    host_handle_, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID,
-                    0, xid_str);
-#  else
-                  z_warning (
-                    "stay-on-top unavailable on this "
-                    "window manager");
-#  endif
-                }
-            }
-
-#  if defined(_WIN32)
-          HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
-          z_debug ("FRONTEND_WIN_ID: setting Windows parent to %" PRIxPTR, hwnd);
-          char hwnd_str[400];
-          sprintf (hwnd_str, "%" PRIxPTR, hwnd);
-          carla_set_engine_option (
-            host_handle_, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-            hwnd_str);
-#  endif
-
+        if (show)
           {
-            z_debug (
-              "Attempting to %s UI for %s", show ? "show" : "hide", get_name ());
-            GdkGLContext * context = clear_gl_context ();
-            carla_show_custom_ui (host_handle_, 0, show);
-            return_gl_context (context);
-            z_debug ("Completed %s UI", show ? "show" : "hide");
-            visible_ = show;
+            auto title = generate_window_title ();
+            z_debug ("plugin window title '{}'", title);
+            carla_set_custom_ui_title (host_handle_, 0, title.c_str ());
+
+            /* set whether to keep window on top */
+            if (
+              ZRYTHM_HAVE_UI
+              && g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
+              {
+#  if defined(HAVE_X11) && !defined(GDK_WINDOWING_WAYLAND)
+                Window xid = z_gtk_window_get_x11_xid (GTK_WINDOW (MAIN_WINDOW));
+                z_debug ("FRONTEND_WIN_ID: setting X11 parent to %lx", xid);
+                char xid_str[400];
+                sprintf (xid_str, "%lx", xid);
+                carla_set_engine_option (
+                  host_handle_, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+                  xid_str);
+#  else
+                z_warning (
+                  "stay-on-top unavailable on this "
+                  "window manager");
+#  endif
+              }
           }
 
-          if (idle_connection_.connected ())
-            {
-              z_debug ("removing tick callback for %s", get_name ());
-              idle_connection_.disconnect ();
-            }
+#  if defined(_WIN32)
+        HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
+        z_debug ("FRONTEND_WIN_ID: setting Windows parent to %" PRIxPTR, hwnd);
+        char hwnd_str[400];
+        sprintf (hwnd_str, "%" PRIxPTR, hwnd);
+        carla_set_engine_option (
+          host_handle_, CarlaBackend::ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+          hwnd_str);
+#  endif
 
-          if (show)
-            {
-              z_return_if_fail (MAIN_WINDOW);
-              z_debug ("setting tick callback for %s", get_name ());
-              idle_connection_ = Glib::signal_timeout ().connect (
-                sigc::track_obj (
-                  sigc::mem_fun (*this, &CarlaNativePlugin::idle_cb), *this),
-                /* 60 fps */
-                1000 / 60, Glib::PRIORITY_DEFAULT);
-            }
-
-          if (!ZRYTHM_TESTING)
-            {
-              EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, this);
-            }
+        {
+          z_debug (
+            "Attempting to %s UI for %s", show ? "show" : "hide", get_name ());
+          GdkGLContext * context = clear_gl_context ();
+          carla_show_custom_ui (host_handle_, 0, show);
+          return_gl_context (context);
+          z_debug ("Completed {} UI", show ? "show" : "hide");
+          visible_ = show;
         }
-        break;
-      default:
-        break;
-      }
-  }
 
-  void
-  CarlaNativePlugin::activate_impl (bool activate)
-  {
-    z_debug ("setting plugin {} active {}", get_name (), activate);
-    carla_set_active (host_handle_, 0, activate);
+        if (idle_connection_.connected ())
+          {
+            z_debug ("removing tick callback for {}", get_name ());
+            idle_connection_.disconnect ();
+          }
+
+        if (show)
+          {
+            z_return_if_fail (MAIN_WINDOW);
+            z_debug ("setting tick callback for {}", get_name ());
+            idle_connection_ = Glib::signal_timeout ().connect (
+              sigc::track_obj (
+                sigc::mem_fun (*this, &CarlaNativePlugin::idle_cb), *this),
+              /* 60 fps */
+              1000 / 60, Glib::PRIORITY_DEFAULT);
+          }
+
+        if (!ZRYTHM_TESTING)
+          {
+            EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, this);
+          }
+      }
+      break;
+    default:
+      break;
+    }
+}
+
+void
+CarlaNativePlugin::activate_impl (bool activate)
+{
+  z_debug ("setting plugin {} active {}", get_name (), activate);
+  carla_set_active (host_handle_, 0, activate);
 }
 
 float
@@ -1789,7 +1788,7 @@ CarlaNativePlugin::set_param_value (const uint32_t id, float val)
   float cur_val = carla_get_current_parameter_value (host_handle_, 0, id);
   if (DEBUGGING && !math_floats_equal (cur_val, val))
     {
-      z_debug ("setting param %d value to %f", id, (double) val);
+      z_debug ("setting param {} value to {:f}", id, (double) val);
     }
   carla_set_parameter_value (host_handle_, 0, id, val);
   if (carla_get_current_plugin_count (host_handle_) == 2)
@@ -1817,7 +1816,7 @@ CarlaNativePlugin::get_midi_out_port ()
 ControlPort *
 CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
 {
-  int      j = 0;
+  int j = 0;
   for (auto &port : in_ports_)
     {
       if (port->id_.type_ != PortType::Control)
@@ -1891,7 +1890,7 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
       state_file = fs::path (state_dir_abs_path) / CARLA_STATE_FILENAME;
     }
   z_debug (
-    "loading state from {} (given path: {})...", state_file.string(),
+    "loading state from {} (given path: {})...", state_file.string (),
     abs_path ? *abs_path : "");
 
   if (!fs::exists (state_file))
@@ -1915,9 +1914,11 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
   z_debug ("successfully loaded carla plugin state from {}", state_file);
 }
 
-void CarlaNativePlugin::init_after_cloning (const CarlaNativePlugin& other) 
+void
+CarlaNativePlugin::init_after_cloning (const CarlaNativePlugin &other)
 {
-  Plugin::copy_members_from(const_cast<Plugin&>(*dynamic_cast<const Plugin*>(&other)));
+  Plugin::copy_members_from (
+    const_cast<Plugin &> (*dynamic_cast<const Plugin *> (&other)));
 }
 
 void

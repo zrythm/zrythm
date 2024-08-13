@@ -22,11 +22,11 @@
 
 TempoTrack::TempoTrack (int track_pos)
     : Track (
-      Track::Type::Tempo,
-      _ ("Tempo"),
-      track_pos,
-      PortType::Unknown,
-      PortType::Unknown)
+        Track::Type::Tempo,
+        _ ("Tempo"),
+        track_pos,
+        PortType::Unknown,
+        PortType::Unknown)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
 

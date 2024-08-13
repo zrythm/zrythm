@@ -402,7 +402,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
 void
 graph_export_as (Graph * graph, GraphExportType type, const char * export_path)
 {
-  z_info ("exporting graph to %s...", export_path);
+  z_info ("exporting graph to {}...", export_path);
 
   switch (type)
     {

@@ -197,7 +197,7 @@ file_import_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
-  z_debug ("Starting an async file import operation for: %s", self->filepath);
+  z_debug ("Starting an async file import operation for: {}", self->filepath);
   GTask * task = g_task_new (owner, cancellable, callback, callback_data);
 
   if (owner)
@@ -215,7 +215,7 @@ file_import_async (
 std::vector<std::shared_ptr<Region>>
 file_import_sync (FileImport * self, GError ** error)
 {
-  z_debug ("Starting a sync file import operation for: %s", self->filepath);
+  z_debug ("Starting a sync file import operation for: {}", self->filepath);
   GTask * task = g_task_new (nullptr, nullptr, nullptr, nullptr);
 
   g_task_set_return_on_cancel (task, false);

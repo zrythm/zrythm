@@ -42,19 +42,19 @@ typedef enum TrackType_v1
 } TrackType_v1;
 
 static const cyaml_strval_t track_type_strings_v1[] = {
-  {"Instrument",   TRACK_TYPE_INSTRUMENT_v1 },
-  { "Audio",       TRACK_TYPE_AUDIO_v1      },
-  { "Master",      TRACK_TYPE_MASTER_v1     },
-  { "Chord",       TRACK_TYPE_CHORD_v1      },
-  { "Marker",      TRACK_TYPE_MARKER_v1     },
-  { "Tempo",       TRACK_TYPE_TEMPO_v1      },
-  { "Modulator",   TRACK_TYPE_MODULATOR_v1  },
-  { "Audio FX",    TRACK_TYPE_AUDIO_BUS_v1  },
-  { "Audio Group", TRACK_TYPE_AUDIO_GROUP_v1},
-  { "MIDI",        TRACK_TYPE_MIDI_v1       },
-  { "MIDI FX",     TRACK_TYPE_MIDI_BUS_v1   },
-  { "MIDI Group",  TRACK_TYPE_MIDI_GROUP_v1 },
-  { "Folder",      TRACK_TYPE_FOLDER_v1     },
+  { "Instrument",  TRACK_TYPE_INSTRUMENT_v1  },
+  { "Audio",       TRACK_TYPE_AUDIO_v1       },
+  { "Master",      TRACK_TYPE_MASTER_v1      },
+  { "Chord",       TRACK_TYPE_CHORD_v1       },
+  { "Marker",      TRACK_TYPE_MARKER_v1      },
+  { "Tempo",       TRACK_TYPE_TEMPO_v1       },
+  { "Modulator",   TRACK_TYPE_MODULATOR_v1   },
+  { "Audio FX",    TRACK_TYPE_AUDIO_BUS_v1   },
+  { "Audio Group", TRACK_TYPE_AUDIO_GROUP_v1 },
+  { "MIDI",        TRACK_TYPE_MIDI_v1        },
+  { "MIDI FX",     TRACK_TYPE_MIDI_BUS_v1    },
+  { "MIDI Group",  TRACK_TYPE_MIDI_GROUP_v1  },
+  { "Folder",      TRACK_TYPE_FOLDER_v1      },
 };
 
 typedef struct Track_v1

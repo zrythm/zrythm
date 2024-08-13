@@ -97,7 +97,7 @@ public:
   // Rule of 0
   CurveOptions () = default;
   CurveOptions (double curviness, Algorithm algo)
-      : curviness_ (curviness), algo_ (algo){};
+      : curviness_ (curviness), algo_ (algo) {};
 
   /**
    * Returns the Y value on a curve.

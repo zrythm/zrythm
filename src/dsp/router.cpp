@@ -139,7 +139,7 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
 void
 Router::recalc_graph (bool soft)
 {
-  z_info ("Recalculating%s...", soft ? " (soft)" : "");
+  z_info ("Recalculating{}...", soft ? " (soft)" : "");
 
   if (!graph_ && !soft)
     {

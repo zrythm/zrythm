@@ -36,7 +36,7 @@ on_ext_input_changed (
 {
   auto idx = gtk_drop_down_get_selected (dropdown);
 
-  z_debug ("ext input: %u (midi? %d left? %d)", idx, midi, left);
+  z_debug ("ext input: {} (midi? {} left? {})", idx, midi, left);
 
   auto ch_track = dynamic_cast<ChannelTrack *> (track);
   z_return_if_fail (ch_track);
@@ -275,10 +275,10 @@ ext_input_selection_dropdown_widget_refresh (
     auto &port :
     midi ? HW_IN_PROCESSOR->ext_midi_ports_ : HW_IN_PROCESSOR->ext_audio_ports_)
     {
-        WrappedObjectWithChangeSignal * wobj =
-          wrapped_object_with_change_signal_new (
-            port.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT);
-        g_list_store_append (ext_inputs_ls, wobj);
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new (
+          port.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT);
+      g_list_store_append (ext_inputs_ls, wobj);
     }
 
   GListStore * composite_ls = g_list_store_new (G_TYPE_LIST_MODEL);

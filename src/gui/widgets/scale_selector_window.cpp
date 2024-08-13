@@ -98,7 +98,7 @@ on_creator_type_selected_children_changed (
 {
   GList *      selected_children = gtk_flow_box_get_selected_children (flowbox);
   unsigned int list_len = g_list_length (selected_children);
-  z_debug ("list len %u", list_len);
+  z_debug ("list len {}", list_len);
   if (flowbox == self->creator_type_flowbox && list_len > 0)
     {
       gtk_flow_box_unselect_all (self->creator_type_other_flowbox);

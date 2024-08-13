@@ -114,7 +114,7 @@ AudioPool::add_clip (std::unique_ptr<AudioClip> &&clip)
 {
   z_return_val_if_fail (!clip->name_.empty (), -1);
 
-  z_debug ("adding clip <%s> to pool...", clip->name_);
+  z_debug ("adding clip <{}> to pool...", clip->name_);
 
   ensure_unique_clip_name (*clip);
 
@@ -162,7 +162,7 @@ AudioPool::duplicate_clip (int clip_id, bool write_file)
     clip->bit_depth_, clip->name_));
   auto new_clip = get_clip (new_id);
 
-  z_debug ("duplicating clip %s to %s...", clip->name_, new_clip->name_);
+  z_debug ("duplicating clip {} to {}...", clip->name_, new_clip->name_);
 
   /* assert clip names are not the same */
   z_return_val_if_fail (clip->name_ != new_clip->name_, -1);
@@ -187,7 +187,7 @@ AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
 void
 AudioPool::remove_clip (int clip_id, bool free_and_remove_file, bool backup)
 {
-  z_debug ("removing clip with ID %d", clip_id);
+  z_debug ("removing clip with ID {}", clip_id);
 
   auto clip = get_clip (clip_id);
   z_return_if_fail (clip);
@@ -243,7 +243,7 @@ AudioPool::remove_unused (bool backup)
         }
     }
 
-      z_info ("removed {} clips", removed_clips);
+  z_info ("removed {} clips", removed_clips);
 }
 
 void
@@ -383,5 +383,5 @@ AudioPool::print () const
           ss << fmt::format ("[Clip #{}] <empty>\n", i);
         }
     }
-  z_info ("%s", ss.str ());
+  z_info ("{}", ss.str ());
 }

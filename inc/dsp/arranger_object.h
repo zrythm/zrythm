@@ -124,7 +124,7 @@ public:
 public:
   // Rule of 0
   ArrangerObject () = default;
-  ArrangerObject (Type type) : type_ (type){};
+  ArrangerObject (Type type) : type_ (type) {};
   virtual ~ArrangerObject () = default;
 
   using ArrangerObjectPtr = std::shared_ptr<ArrangerObject>;

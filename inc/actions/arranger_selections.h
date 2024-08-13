@@ -368,14 +368,14 @@ class ArrangerSelectionsAction::CreateAction final : public CreateOrDeleteAction
 {
 public:
   CreateAction (const ArrangerSelections &sel)
-      : CreateOrDeleteAction (sel, true){};
+      : CreateOrDeleteAction (sel, true) {};
 };
 
 class ArrangerSelectionsAction::DeleteAction final : public CreateOrDeleteAction
 {
 public:
   DeleteAction (const ArrangerSelections &sel)
-      : CreateOrDeleteAction (sel, false){};
+      : CreateOrDeleteAction (sel, false) {};
 };
 
 class ArrangerSelectionsAction::RecordAction : public ArrangerSelectionsAction
@@ -431,16 +431,16 @@ public:
     const PortIdentifier *    tgt_port_id,
     bool                      already_moved)
       : MoveOrDuplicateAction (
-        dynamic_cast<const ArrangerSelections &> (sel),
-        move,
-        ticks,
-        0,
-        0,
-        delta_tracks,
-        delta_lanes,
-        0,
-        tgt_port_id,
-        already_moved){};
+          dynamic_cast<const ArrangerSelections &> (sel),
+          move,
+          ticks,
+          0,
+          0,
+          delta_tracks,
+          delta_lanes,
+          0,
+          tgt_port_id,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateMidiAction
@@ -454,16 +454,16 @@ public:
     int                   delta_pitch,
     bool                  already_moved)
       : MoveOrDuplicateAction (
-        dynamic_cast<const ArrangerSelections &> (sel),
-        move,
-        ticks,
-        0,
-        delta_pitch,
-        0,
-        0,
-        0,
-        nullptr,
-        already_moved){};
+          dynamic_cast<const ArrangerSelections &> (sel),
+          move,
+          ticks,
+          0,
+          delta_pitch,
+          0,
+          0,
+          0,
+          nullptr,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateChordAction
@@ -477,16 +477,16 @@ public:
     int              delta_chords,
     bool             already_moved)
       : MoveOrDuplicateAction (
-        dynamic_cast<ArrangerSelections &> (sel),
-        move,
-        ticks,
-        delta_chords,
-        0,
-        0,
-        0,
-        0,
-        nullptr,
-        already_moved){};
+          dynamic_cast<ArrangerSelections &> (sel),
+          move,
+          ticks,
+          delta_chords,
+          0,
+          0,
+          0,
+          0,
+          nullptr,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateAutomationAction
@@ -500,16 +500,16 @@ public:
     int                   delta_normalized_amount,
     bool                  already_moved)
       : MoveOrDuplicateAction (
-        dynamic_cast<ArrangerSelections &> (sel),
-        move,
-        ticks,
-        0,
-        0,
-        0,
-        0,
-        delta_normalized_amount,
-        nullptr,
-        already_moved){};
+          dynamic_cast<ArrangerSelections &> (sel),
+          move,
+          ticks,
+          0,
+          0,
+          0,
+          0,
+          delta_normalized_amount,
+          nullptr,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveByTicksAction

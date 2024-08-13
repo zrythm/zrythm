@@ -490,8 +490,8 @@ public:
   bool is_acquired () const { return acquired_; }
 
 private:
-  SemaphoreType &semaphore_;  ///< Reference to the binary semaphore.
-  bool           acquired_ = false; ///< Flag indicating if the semaphore is acquired.
+  SemaphoreType &semaphore_; ///< Reference to the binary semaphore.
+  bool acquired_ = false;    ///< Flag indicating if the semaphore is acquired.
 };
 
 enum class CacheType

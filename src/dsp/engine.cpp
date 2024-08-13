@@ -104,7 +104,7 @@ AudioEngine::set_buffer_size (uint32_t buf_size)
 {
   z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id);
 
-  z_debug ("request to set engine buffer size to %u", buf_size);
+  z_debug ("request to set engine buffer size to {}", buf_size);
 
 #ifdef HAVE_JACK
   if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
@@ -132,7 +132,7 @@ AudioEngine::update_frames_per_tick (
     }
   else if (thread_check)
     {
-      z_error ("Called %s from non-GTK thread", __func__);
+      z_error ("Called {} from non-GTK thread", __func__);
       return;
     }
 
@@ -238,7 +238,7 @@ AudioEngine::process_events ()
         {
           z_warning ("more than 30 engine events processed!");
         }
-      z_debug ("processing engine event %d", i);
+      z_debug ("processing engine event {}", i);
 
       auto &ev = events[i];
 
@@ -263,7 +263,7 @@ AudioEngine::process_events ()
           EVENTS_PUSH (EventType::ET_ENGINE_SAMPLE_RATE_CHANGED, nullptr);
           break;
         default:
-          z_warning ("event %s not implemented yet", ENUM_NAME (ev->type_));
+          z_warning ("event {} not implemented yet", ENUM_NAME (ev->type_));
           break;
         }
 
@@ -652,7 +652,7 @@ AudioEngine::init_common ()
     ZRYTHM_TESTING
       ? PanAlgorithm::PAN_ALGORITHM_SINE_LAW
       : static_cast<PanAlgorithm> (
-        g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
+          g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
 
   if (block_length_ == 0)
     {
@@ -1266,7 +1266,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         {
           if (num_preroll_frames > 0)
             {
-              z_info ("prerolling for %u frames", num_preroll_frames);
+              z_info ("prerolling for {} frames", num_preroll_frames);
             }
         }
 

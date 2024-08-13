@@ -421,8 +421,8 @@ RegionImpl<
 
   auto region_track = get_track ();
 
-  z_debug ("moving region %s to track %s", name_, track->name_);
-  z_debug ("before: %s", print_to_str ());
+  z_debug ("moving region {} to track {}", name_, track->name_);
+  z_debug ("before: {}", print_to_str ());
 
   RegionLinkGroup * link_group = NULL;
   if (has_link_group ())
@@ -549,7 +549,7 @@ RegionImpl<
   /* reselect if necessary */
   select (selected, true, false);
 
-  z_debug ("after: %s", print_to_str ());
+  z_debug ("after: {}", print_to_str ());
 
   if (ZRYTHM_TESTING)
     {
@@ -561,7 +561,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::stretch (double ratio)
 {
-  z_debug ("stretching region {} (ratio %f)", fmt::ptr (this), ratio);
+  z_debug ("stretching region {} (ratio {:f})", fmt::ptr (this), ratio);
 
   stretching_ = true;
 
@@ -704,11 +704,11 @@ RegionImpl<RegionT>::create_link_group_if_none ()
 
   if (id_.link_group_ < 0)
     {
-      z_debug ("creating link group for region: %s", print_to_str ());
+      z_debug ("creating link group for region: {}", print_to_str ());
       int new_group = REGION_LINK_GROUP_MANAGER.add_group ();
       set_link_group (new_group, true);
 
-      z_debug ("after link group (%d): %s", new_group, print_to_str ());
+      z_debug ("after link group ({}): {}", new_group, print_to_str ());
     }
 }
 
@@ -921,7 +921,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::remove_all_children () requires RegionWithChildren<RegionT>
 {
-  z_debug ("removing all children from %d %s", id_.idx_, name_);
+  z_debug ("removing all children from {} {}", id_.idx_, name_);
 
   auto objs = get_objects ();
   for (auto &obj : objs)

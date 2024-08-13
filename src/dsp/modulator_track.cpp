@@ -25,11 +25,11 @@
 
 ModulatorTrack::ModulatorTrack (int track_pos)
     : Track (
-      Track::Type::Modulator,
-      _ ("Modulators"),
-      track_pos,
-      PortType::Unknown,
-      PortType::Unknown)
+        Track::Type::Modulator,
+        _ ("Modulators"),
+        track_pos,
+        PortType::Unknown,
+        PortType::Unknown)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
 
@@ -63,12 +63,12 @@ ModulatorTrack::init_loaded ()
 struct ModulatorImportData
 {
   ModulatorTrack *             track;
-  int      slot;
+  int                          slot;
   ModulatorTrack::ModulatorPtr modulator;
-  bool     replace_mode;
-  bool     confirm;
-  bool     gen_automatables;
-  bool     recalc_graph;
+  bool                         replace_mode;
+  bool                         confirm;
+  bool                         gen_automatables;
+  bool                         recalc_graph;
   bool                         pub_events;
 
   static void free (void * data, GClosure *)
@@ -205,7 +205,7 @@ ModulatorTrack::remove_modulator (
   plugin->remove_ats_from_automation_tracklist (
     deleting_modulator, !deleting_track && !deleting_modulator);
 
-  z_debug ("Removing %s from %s:%d", plugin->get_name (), name_, slot);
+  z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
 
   /* unexpose all JACK ports */
   plugin->expose_ports (F_NOT_EXPOSE, true, true);

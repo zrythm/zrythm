@@ -552,5 +552,5 @@ midi_print (const midi_byte_t * msg, const size_t msg_sz)
 {
   char str[600];
   midi_print_to_str (msg, msg_sz, str);
-  z_info ("%s", str);
+  z_info ("{}", str);
 }

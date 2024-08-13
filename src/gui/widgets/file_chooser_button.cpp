@@ -46,7 +46,7 @@ update_btn_label (
       char *  path = g_file_get_path (file);
       g_object_unref (file);
       gtk_button_set_label (self->button, path ? path : _ ("Select path"));
-      z_debug ("updated label to %s", path);
+      z_debug ("updated label to {}", path);
       g_free_and_null (path);
     }
 }
@@ -139,7 +139,7 @@ file_chooser_button_widget_set_path (
   FileChooserButtonWidget * self,
   const char *              path)
 {
-  z_debug ("setting path to %s", path);
+  z_debug ("setting path to {}", path);
   g_free_and_null (self->path);
   self->path = g_strdup (path);
 

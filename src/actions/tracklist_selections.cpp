@@ -148,9 +148,9 @@ TracklistSelectionsAction::TracklistSelectionsAction (
   const std::string *            new_txt,
   bool                           already_edited)
     : UndoableAction (
-      UndoableAction::Type::TracklistSelections,
-      AUDIO_ENGINE->frames_per_tick_,
-      AUDIO_ENGINE->sample_rate_),
+        UndoableAction::Type::TracklistSelections,
+        AUDIO_ENGINE->frames_per_tick_,
+        AUDIO_ENGINE->sample_rate_),
       tracklist_selections_action_type_ (type), track_pos_ (track_pos),
       lane_pos_ (lane_pos), track_type_ (track_type),
       pl_setting_ (std::make_unique<PluginSetting> (*pl_setting)),
@@ -192,7 +192,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       assert (foldable_tr->is_foldable ());
     }
 
-  /* --- end validation --- */
+    /* --- end validation --- */
 
 /* leftover from before - not sure what it was used for but left for reference*/
 #if 0

@@ -171,7 +171,7 @@ rec_rb_released (
 static void
 stop_clicked_cb (GtkButton * button, gpointer user_data)
 {
-  /*z_info ("playstate %d", TRANSPORT->play_state);*/
+  /*z_info ("playstate {}", TRANSPORT->play_state);*/
   if (TRANSPORT->play_state_ == Transport::PlayState::Paused)
     {
       TRANSPORT->set_playhead_pos (TRANSPORT->cue_pos_);
@@ -209,7 +209,7 @@ change_state_punch_mode (
 {
   bool value = g_variant_get_boolean (variant);
   TRANSPORT->set_punch_mode_enabled (value);
-  z_info ("setting punch mode to %d", value);
+  z_info ("setting punch mode to {}", value);
   g_simple_action_set_state (action, variant);
 
   EVENTS_PUSH (EventType::ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, nullptr);
@@ -223,7 +223,7 @@ change_start_on_midi_input (
 {
   bool value = g_variant_get_boolean (variant);
   TRANSPORT->set_start_playback_on_midi_input (value);
-  z_info ("setting start on MIDI input to %d", value);
+  z_info ("setting start on MIDI input to {}", value);
   g_simple_action_set_state (action, variant);
 }
 
@@ -305,7 +305,7 @@ transport_controls_widget_refresh (TransportControlsWidget * self)
 
   gtk_toggle_button_set_active (self->trans_record_btn, TRANSPORT->recording_);
   gtk_toggle_button_set_active (self->loop, TRANSPORT->loop_);
-  z_debug ("action name %s", loop_action_name);
+  z_debug ("action name {}", loop_action_name);
 
   g_signal_handler_unblock (
     self->trans_record_btn, self->rec_toggled_handler_id);

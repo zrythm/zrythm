@@ -226,10 +226,10 @@ ArrangerSelectionsAction::EditAction::EditAction (
 
 ArrangerSelectionsAction::EditAction::EditAction (
   const MidiSelections &sel_before,
-  MidiFunctionType          midi_func_type,
-  MidiFunctionOpts          opts)
+  MidiFunctionType      midi_func_type,
+  MidiFunctionOpts      opts)
 {
-  auto sel_after = sel_before.clone_unique();
+  auto sel_after = sel_before.clone_unique ();
 
   midi_function_apply (*sel_after, midi_func_type, opts);
 
@@ -238,10 +238,9 @@ ArrangerSelectionsAction::EditAction::EditAction (
 
 ArrangerSelectionsAction::EditAction::EditAction (
   const AutomationSelections &sel_before,
-  AutomationFunctionType    automation_func_type)
+  AutomationFunctionType      automation_func_type)
 {
-  auto sel_after =
-    sel_before.clone_unique();
+  auto sel_after = sel_before.clone_unique ();
 
   automation_function_apply (*sel_after, automation_func_type);
 
@@ -252,18 +251,18 @@ ArrangerSelectionsAction::EditAction::EditAction (
 
 ArrangerSelectionsAction::EditAction::EditAction (
   const AudioSelections &sel_before,
-  AudioFunctionType         audio_func_type,
-  AudioFunctionOpts         opts,
-  const std::string *       uri)
+  AudioFunctionType      audio_func_type,
+  AudioFunctionOpts      opts,
+  const std::string *    uri)
 {
   /* prepare selections before */
-  auto sel_before_clone = sel_before.clone_unique();
+  auto sel_before_clone = sel_before.clone_unique ();
 
   z_debug ("saving file before applying audio func...");
   audio_function_apply (
     *sel_before_clone, AudioFunctionType::Invalid, opts, uri);
 
-  auto sel_after = sel_before.clone_unique();
+  auto sel_after = sel_before.clone_unique ();
   z_debug ("applying actual audio func...");
   audio_function_apply (*sel_after, audio_func_type, opts, uri);
 
@@ -902,7 +901,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
           /* remember the identifier */
           own_obj->copy_identifier (*added_obj_ref);
 
-        }  /* endif do */
+        } /* endif do */
       else /* if undo */
         {
           /* find the actual object */
@@ -1439,7 +1438,7 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 #undef SET_PRIMITIVE
             }
         } /* endif audio function */
-    }     /* endif not first run */
+    } /* endif not first run */
 
   update_region_link_groups (dest_sel->objects_);
 
@@ -1470,7 +1469,7 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
 
           /* unlink remembered link groups */
           auto &own_region = do_it ? region_before_ : region_after_;
-          dynamic_cast<AutomationRegion *>(own_region.get())->unlink ();
+          dynamic_cast<AutomationRegion *> (own_region.get ())->unlink ();
         }
 
       /* remove it */
@@ -1508,8 +1507,7 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
           if (do_it)
             {
               /* find the actual object */
-              auto obj = dynamic_pointer_cast<T> (
-                own_obj->find_in_project ());
+              auto obj = dynamic_pointer_cast<T> (own_obj->find_in_project ());
               z_return_if_fail (obj);
 
               /* split */
@@ -1518,17 +1516,15 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
               /* r1 and r2 are now inside the project, clone them to keep copies
                */
               z_return_if_fail (r1 && r2);
-              r1_[i] = r1->clone_unique();
-              r2_[i] = r2->clone_unique();
+              r1_[i] = r1->clone_unique ();
+              r2_[i] = r2->clone_unique ();
             }
           /* else if undoing split */
           else
             {
               /* find the actual objects */
-              auto r1 = dynamic_pointer_cast<T> (
-                r1_[i]->find_in_project ());
-              auto r2 = dynamic_pointer_cast<T> (
-                r2_[i]->find_in_project ());
+              auto r1 = dynamic_pointer_cast<T> (r1_[i]->find_in_project ());
+              auto r2 = dynamic_pointer_cast<T> (r2_[i]->find_in_project ());
               z_return_if_fail (r1 && r2);
 
               /* unsplit */
@@ -1570,7 +1566,8 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
   /* if first run, merge */
   if (first_run_)
     {
-      sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant>(sel_.get());
+      sel_after_ =
+        clone_unique_with_variant<ArrangerSelectionsVariant> (sel_.get ());
       sel_after_->merge ();
     }
 
@@ -1591,7 +1588,7 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
       z_return_if_fail (prj_obj);
 
       /* remove */
-      prj_obj->remove_from_project();
+      prj_obj->remove_from_project ();
     }
 
   /* add the after objects to the project */
@@ -1694,7 +1691,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
 
           /* remove the project object and add a clone of our corresponding
            * object */
-           obj->remove_from_project();
+          obj->remove_from_project ();
           obj = nullptr;
           auto new_obj =
             (do_it ? own_obj_after : own_obj_before)->insert_clone_to_project ();
@@ -1739,7 +1736,8 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
           if (opts_->adj_start_)
             {
               double ticks = opts_->quantize_position (&obj->pos_);
-              dynamic_pointer_cast<LengthableObject> (obj)->end_pos_.add_ticks (ticks);
+              dynamic_pointer_cast<LengthableObject> (obj)->end_pos_.add_ticks (
+                ticks);
             }
           if (opts_->adj_end_)
             {

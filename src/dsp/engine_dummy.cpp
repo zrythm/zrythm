@@ -54,7 +54,7 @@ engine_dummy_setup (AudioEngine * self)
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   z_warn_if_fail (beats_per_bar >= 1);
 
-  z_info ("Dummy Engine set up [samplerate: %u]", self->sample_rate_);
+  z_info ("Dummy Engine set up [samplerate: {}]", self->sample_rate_);
 
   return 0;
 }
@@ -74,7 +74,7 @@ engine_dummy_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      z_info ("%s: activating...", __func__);
+      z_info ("{}: activating...", __func__);
 
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
       self->update_frames_per_tick (
@@ -86,12 +86,12 @@ engine_dummy_activate (AudioEngine * self, bool activate)
     }
   else
     {
-      z_info ("%s: deactivating...", __func__);
+      z_info ("{}: deactivating...", __func__);
       self->dummy_audio_thread_->request_stop ();
       self->dummy_audio_thread_->join ();
     }
 
-  z_info ("%s: done", __func__);
+  z_info ("{}: done", __func__);
 
   return 0;
 }

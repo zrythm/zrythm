@@ -131,7 +131,7 @@ rtmidi_device_get_id_from_name (bool is_input, std::string name)
         }
     }
 
-  z_warning ("could not find RtMidi device with name %s", name);
+  z_warning ("could not find RtMidi device with name {}", name);
 
   return -1;
 }
@@ -156,7 +156,7 @@ RtMidiDevice::RtMidiDevice (
     {
       for (int i = 0; i < num_apis; i++)
         {
-          z_info ("RtMidi API found: %s", rtmidi_api_name (apis[i]));
+          z_info ("RtMidi API found: {}", rtmidi_api_name (apis[i]));
         }
       rtmidi_device_first_run = false;
     }

@@ -683,7 +683,8 @@ PluginDescriptor::generate_context_menu () const
   return G_MENU_MODEL (menu);
 }
 
-bool PluginDescriptor::is_same_plugin (const PluginDescriptor & other) const
+bool
+PluginDescriptor::is_same_plugin (const PluginDescriptor &other) const
 {
   return *this == other;
 }

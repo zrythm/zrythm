@@ -80,8 +80,8 @@ PortConnectionsManager::get_sources_or_dests (
 int
 PortConnectionsManager::get_unlocked_sources_or_dests (
   std::vector<PortConnection *> * arr,
-  const PortIdentifier                 &id,
-  bool                                  sources) const
+  const PortIdentifier           &id,
+  bool                            sources) const
 {
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
   auto                       it = ht.find (id);
@@ -164,7 +164,7 @@ PortConnectionsManager::ensure_connect (
   connections_.emplace_back (src, dest, multiplier, locked, enabled);
   const auto &conn = connections_.back ();
 
-  if (this == PORT_CONNECTIONS_MGR.get())
+  if (this == PORT_CONNECTIONS_MGR.get ())
     {
       z_debug (
         "New connection: <%s>; "
@@ -184,7 +184,7 @@ PortConnectionsManager::remove_connection (const size_t idx)
 
   connections_.erase (connections_.begin () + idx);
 
-  if (this == PORT_CONNECTIONS_MGR.get())
+  if (this == PORT_CONNECTIONS_MGR.get ())
     {
       z_debug (
         "Disconnected <%s>; "
@@ -261,7 +261,7 @@ PortConnectionsManager::print_ht (ConnectionHashTable &ht)
           str += fmt::format ("  {}\n", conn->print_to_str ());
         }
     }
-  z_info ("%s", str.c_str ());
+  z_info ("{}", str.c_str ());
 }
 
 void
@@ -273,5 +273,5 @@ PortConnectionsManager::print () const
     {
       str += fmt::format ("[{}] {}\n", i, connections_[i].print_to_str ());
     }
-  z_info ("%s", str.c_str ());
+  z_info ("{}", str.c_str ());
 }

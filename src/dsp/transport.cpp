@@ -551,49 +551,49 @@ Transport::goto_start_marker ()
 /**
  * Moves the playhead to the end Marker.
  */
-  void
-  Transport::goto_end_marker ()
-  {
-    auto end_marker = P_MARKER_TRACK->get_end_marker ();
-    z_return_if_fail (end_marker);
-    move_to_marker_or_pos_and_fire_events (end_marker.get (), nullptr);
-  }
+void
+Transport::goto_end_marker ()
+{
+  auto end_marker = P_MARKER_TRACK->get_end_marker ();
+  z_return_if_fail (end_marker);
+  move_to_marker_or_pos_and_fire_events (end_marker.get (), nullptr);
+}
 
 /**
  * Moves the playhead to the prev Marker.
  */
-  void
-  Transport::goto_prev_marker ()
-  {
-    /* gather all markers */
-    std::vector<Position> markers;
-    for (auto &marker : P_MARKER_TRACK->markers_)
-      {
-        markers.push_back (marker->pos_);
-      }
-    markers.push_back (cue_pos_);
-    markers.push_back (loop_start_pos_);
-    markers.push_back (loop_end_pos_);
-    markers.push_back (Position ());
-    std::sort (markers.begin (), markers.end ());
+void
+Transport::goto_prev_marker ()
+{
+  /* gather all markers */
+  std::vector<Position> markers;
+  for (auto &marker : P_MARKER_TRACK->markers_)
+    {
+      markers.push_back (marker->pos_);
+    }
+  markers.push_back (cue_pos_);
+  markers.push_back (loop_start_pos_);
+  markers.push_back (loop_end_pos_);
+  markers.push_back (Position ());
+  std::sort (markers.begin (), markers.end ());
 
-    for (int i = markers.size () - 1; i >= 0; i--)
-      {
-        if (markers[i] >= playhead_pos_)
+  for (int i = markers.size () - 1; i >= 0; i--)
+    {
+      if (markers[i] >= playhead_pos_)
+        continue;
+
+      if (
+        is_rolling () && i > 0
+        && (playhead_pos_.to_ms () - markers[i].to_ms ()) < REPEATED_BACKWARD_MS)
+        {
           continue;
-
-        if (
-          is_rolling () && i > 0
-          && (playhead_pos_.to_ms () - markers[i].to_ms ()) < REPEATED_BACKWARD_MS)
-          {
-            continue;
-          }
-        else
-          {
-            move_to_marker_or_pos_and_fire_events (nullptr, &markers[i]);
-            break;
-          }
-      }
+        }
+      else
+        {
+          move_to_marker_or_pos_and_fire_events (nullptr, &markers[i]);
+          break;
+        }
+    }
 }
 
 /**

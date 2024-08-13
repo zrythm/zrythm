@@ -40,7 +40,7 @@ RecordableTrack::set_recording (bool recording, bool fire_events)
     }
   else
     {
-      z_info ("disabled recording on %s", name_);
+      z_info ("disabled recording on {}", name_);
 
       /* send all notes off if can record MIDI */
       processor_->pending_midi_panic_ = true;

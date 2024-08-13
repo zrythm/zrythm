@@ -354,7 +354,7 @@ private:
     bool has_error_ = false;
 
     ProgressInfo progress_info_;
-   };
+  };
 
   /**
    * Thread that does the serialization and saving.

@@ -256,7 +256,7 @@ localization_init (
   if (use_locale)
     {
       code = g_strdup (setlocale (LC_ALL, nullptr));
-      z_info ("Initing localization with system locale %s", code);
+      z_info ("Initing localization with system locale {}", code);
     }
   else
     {
@@ -285,7 +285,7 @@ localization_init (
         }
 
       code = localization_locale_exists (lang);
-      z_debug ("code is %s", code);
+      z_debug ("code is {}", code);
     }
 
   char * match = NULL;
@@ -294,7 +294,7 @@ localization_init (
       match = setlocale (LC_ALL, code);
       if (print_debug_messages)
         {
-          z_info ("setting locale to %s (found %s)", code, match);
+          z_info ("setting locale to {} (found {})", code, match);
         }
 #if defined(_WIN32) || defined(__APPLE__)
       char buf[120];
@@ -315,7 +315,7 @@ localization_init (
             {
               zrythm_app->startup_errors[zrythm_app->num_startup_errors++] = msg;
             }
-          z_warning ("%s", msg);
+          z_warning ("{}", msg);
         }
       setlocale (LC_ALL, "C");
     }
@@ -337,7 +337,7 @@ localization_init (
   auto   localedir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE, localedir.c_str ());
   bindtextdomain ("libadwaita", localedir.c_str ());
-  z_debug ("setting textdomain: %s, %s", GETTEXT_PACKAGE, localedir);
+  z_debug ("setting textdomain: {}, {}", GETTEXT_PACKAGE, localedir);
 #endif
 
   /* set domain codeset */

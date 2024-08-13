@@ -59,12 +59,12 @@ open_stream (AudioEngine * self)
   for (int i = 0; i < api_count; i++)
     {
       const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
-      z_info ("host api %s (%d) found", info->name, i);
+      z_info ("host api {} ({}) found", info->name, i);
     }
   int                   api = Pa_GetDefaultHostApi ();
   const PaHostApiInfo * api_info = Pa_GetHostApiInfo (api);
   /*int api = 2;*/
-  z_info ("using api %s (%d)", api_info->name, api);
+  z_info ("using api {} ({})", api_info->name, api);
 
   int device_count = Pa_GetDeviceCount ();
   for (int i = 0; i < device_count; i++)
@@ -110,7 +110,7 @@ open_stream (AudioEngine * self)
     self);
   if (err != paNoError)
     {
-      z_warning ("error opening Port Audio stream: %s", Pa_GetErrorText (err));
+      z_warning ("error opening Port Audio stream: {}", Pa_GetErrorText (err));
       return NULL;
     }
 
@@ -127,7 +127,7 @@ engine_pa_setup (AudioEngine * self)
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      z_warning ("error initializing Port Audio: %s", Pa_GetErrorText (err));
+      z_warning ("error initializing Port Audio: {}", Pa_GetErrorText (err));
       return -1;
     }
   else
@@ -152,7 +152,7 @@ engine_pa_setup (AudioEngine * self)
   err = Pa_StartStream (self->port_audio_stream);
   if (err != paNoError)
     {
-      z_warning ("error starting Port Audio stream: %s", Pa_GetErrorText (err));
+      z_warning ("error starting Port Audio stream: {}", Pa_GetErrorText (err));
       return -1;
     }
   else
@@ -169,7 +169,7 @@ engine_pa_fill_out_bufs (AudioEngine * self, const nframes_t nframes)
   for (unsigned int i = 0; i < nframes; i++)
     {
       self->port_audio_out_buf[i * 2] = self->monitor_out->get_l ().buf_[i];
-      /*z_info ("%f",*/
+      /*z_info ("{:f}",*/
       /*engine->port_audio_out_buf[i]);*/
       self->port_audio_out_buf[i * 2 + 1] = self->monitor_out->get_r ().buf_[i];
     }
@@ -225,15 +225,15 @@ engine_pa_tear_down (AudioEngine * engine)
 {
   PaError err = Pa_StopStream (engine->port_audio_stream);
   if (err != paNoError)
-    z_warning ("error stopping Port Audio stream: %s", Pa_GetErrorText (err));
+    z_warning ("error stopping Port Audio stream: {}", Pa_GetErrorText (err));
 
   err = Pa_CloseStream (engine->port_audio_stream);
   if (err != paNoError)
-    z_warning ("error closing Port Audio stream: %s", Pa_GetErrorText (err));
+    z_warning ("error closing Port Audio stream: {}", Pa_GetErrorText (err));
 
   err = Pa_Terminate ();
   if (err != paNoError)
-    z_warning ("error terminating Port Audio: %s", Pa_GetErrorText (err));
+    z_warning ("error terminating Port Audio: {}", Pa_GetErrorText (err));
 }
 
 #endif

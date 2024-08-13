@@ -42,7 +42,7 @@ SampleProcessor::init_common ()
       std::string setting_json = _setting_json;
       g_free (_setting_json);
       std::unique_ptr<PluginSetting> setting;
-      bool            json_read = false;
+      bool                           json_read = false;
       if (!setting_json.empty ())
         {
           try
@@ -422,7 +422,7 @@ SampleProcessor::queue_file_or_chord_preset (
 
           int num_tracks =
             file ? midi_file_get_num_tracks (file->abs_path_.c_str (), true) : 1;
-          z_debug ("creating %d MIDI tracks...", num_tracks);
+          z_debug ("creating {} MIDI tracks...", num_tracks);
           for (int i = 0; i < num_tracks; i++)
             {
               auto midi_track = std::make_unique<MidiTrack> (
@@ -514,7 +514,7 @@ SampleProcessor::queue_file_or_chord_preset (
   playhead_.set_to_bar (1);
 
   /* add some room to end pos */
-  z_info ("playing until %s", file_end_pos_.to_string ());
+  z_info ("playing until {}", file_end_pos_.to_string ());
   file_end_pos_.add_bars (1);
 
   /*

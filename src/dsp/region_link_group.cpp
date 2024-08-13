@@ -49,7 +49,7 @@ RegionLinkGroup::remove_region (
 
   ids_.erase (it);
 
-  z_debug ("num ids after deletion: %zu", ids_.size ());
+  z_debug ("num ids after deletion: {}", ids_.size ());
 
   if (autoremove_last_region_and_group)
     {
@@ -88,7 +88,7 @@ RegionLinkGroup::update (const Region &main_region)
       if (id == main_region.id_)
         continue;
 
-      z_debug ("updating %d (%s)", region->id_.idx_, region->get_name ());
+      z_debug ("updating {} ({})", region->id_.idx_, region->get_name ());
 
       std::visit (
         [&] (auto &&r) {

@@ -178,7 +178,7 @@ create_model_for_ports (
                 }
             }
         } /* endif output */
-    }     /* endif filtering to track ports */
+    } /* endif filtering to track ports */
   /* else if filtering to plugin ports */
   else if (pl)
     {

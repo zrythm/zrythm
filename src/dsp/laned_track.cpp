@@ -20,7 +20,7 @@ LanedTrackImpl<RegionT>::remove_empty_last_lanes ()
   if (last_lane_created_ > 0)
     return;
 
-  z_info ("removing empty last lanes from %s", name_);
+  z_info ("removing empty last lanes from {}", name_);
   bool removed = false;
   for (int i = lanes_.size () - 1; i >= 1; i--)
     {
@@ -33,7 +33,7 @@ LanedTrackImpl<RegionT>::remove_empty_last_lanes ()
 
       if (lane->regions_.empty () && prev_lane->regions_.empty ())
         {
-          z_info ("removing lane %d", i);
+          z_info ("removing lane {}", i);
           lanes_.erase (lanes_.begin () + i);
           removed = true;
         }

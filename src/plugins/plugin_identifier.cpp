@@ -25,7 +25,7 @@ PluginIdentifier::print_to_str () const
 uint32_t
 PluginIdentifier::get_hash () const
 {
-  uint32_t                 hash = 0;
+  uint32_t hash = 0;
   hash = hash ^ g_int_hash (&slot_type_);
   hash = hash ^ track_name_hash_;
   hash = hash ^ g_int_hash (&slot_);

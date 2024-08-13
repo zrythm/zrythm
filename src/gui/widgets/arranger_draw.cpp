@@ -174,7 +174,7 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
   int cur_playhead_px = arranger_widget_get_playhead_px (self);
   int px = cur_playhead_px;
   /*int px = self->queued_playhead_px;*/
-  /*z_info ("drawing %d", px);*/
+  /*z_info ("drawing {}", px);*/
 
   int height = rect->height;
 
@@ -723,7 +723,7 @@ draw_audio_bg (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
       (float) (gain_txt_padding
                + (int) ((double) rect->height * (1.0 - gain_fader_val))));
     gtk_snapshot_translate (snapshot, &tmp_pt);
-    }
+  }
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
   gtk_snapshot_append_layout (snapshot, self->audio_layout.get (), &tmp_color);
   gtk_snapshot_restore (snapshot);
@@ -1154,7 +1154,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   (void) start_time;
   (void) end_time;
 #if 0
-  z_debug ("finished drawing in %ld microseconds, "
+  z_debug ("finished drawing in {} microseconds, "
     "rect x:%d y:%d w:%d h:%d for %s "
     "arranger",
     end_time - start_time,

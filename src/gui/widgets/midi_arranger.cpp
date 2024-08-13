@@ -109,7 +109,7 @@ midi_arranger_widget_snap_midi_notes_l (
   /* get delta with first clicked note's start pos */
   double delta =
     pos.ticks_ - (self->start_object->pos_.ticks_ + region->pos_.ticks_);
-  z_debug ("delta %f", delta);
+  z_debug ("delta {:f}", delta);
 
   for (auto midi_note : MIDI_SELECTIONS->objects_ | type_is<MidiNote> ())
     {
@@ -193,7 +193,7 @@ midi_arranger_widget_snap_midi_notes_r (
     dynamic_cast<LengthableObject *> (self->start_object.get ());
   double delta =
     pos.ticks_ - (start_object_lo->end_pos_.ticks_ + region->pos_.ticks_);
-  z_debug ("delta %f", delta);
+  z_debug ("delta {:f}", delta);
 
   for (auto midi_note : MIDI_SELECTIONS->objects_ | type_is<MidiNote> ())
     {

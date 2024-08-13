@@ -364,7 +364,7 @@ drag_end (
   if (pl && self->n_press == 2)
     {
       bool new_visible = !pl->visible_;
-      z_debug ("setting plugin %s visible %d", pl->get_name (), new_visible);
+      z_debug ("setting plugin {} visible {}", pl->get_name (), new_visible);
       z_warn_if_fail (pl->instantiated_);
       pl->visible_ = new_visible;
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl);
@@ -389,7 +389,7 @@ drag_end (
       z_return_if_fail (self->track->channel_->widget_);
       self->track->channel_->widget_->last_plugin_press = SteadyClock::now ();
     }
-  z_info ("%s: drag end %d press", __func__, self->n_press);
+  z_info ("{}: drag end {} press", __func__, self->n_press);
 }
 
 static void
@@ -401,7 +401,7 @@ on_press (
   ChannelSlotWidget * self)
 {
   self->n_press = n_press;
-  z_info ("pressed %d", n_press);
+  z_info ("pressed {}", n_press);
 
   if (
     self->open_plugin_inspector_on_click

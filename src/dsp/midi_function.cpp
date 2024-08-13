@@ -55,7 +55,7 @@ midi_function_apply (
   MidiFunctionOpts    opts)
 {
   /* TODO */
-  z_debug ("applying %s...", MidiFunctionType_to_string (type));
+  z_debug ("applying {}...", MidiFunctionType_to_string (type));
 
   auto * mas = (MidiSelections *) &sel;
 
@@ -232,7 +232,7 @@ midi_function_apply (
                 / (double) mas->get_num_objects (),
               !opts.ascending_);
             double ms_to_add = ms_multiplier * opts.time_;
-            z_trace ("multi %f, ms %f", ms_multiplier, ms_to_add);
+            z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);
             double len_ticks = mn->get_length_in_ticks ();
             mn->pos_ = first_mn->pos_;
             mn->pos_.add_ms (ms_to_add);

@@ -209,16 +209,16 @@ public:
     const PluginSetting &setting,
     int                  num_plugins = 1)
       : MixerSelectionsAction (
-        nullptr,
-        nullptr,
-        MixerSelectionsAction::Type::Create,
-        slot_type,
-        to_track.name_hash_,
-        to_slot,
-        &setting,
-        num_plugins,
-        0,
-        CarlaBridgeMode::None)
+          nullptr,
+          nullptr,
+          MixerSelectionsAction::Type::Create,
+          slot_type,
+          to_track.name_hash_,
+          to_slot,
+          &setting,
+          num_plugins,
+          0,
+          CarlaBridgeMode::None)
   {
   }
 };
@@ -234,16 +234,16 @@ public:
     const Track *                 to_track,
     int                           to_slot)
       : MixerSelectionsAction (
-        &ms,
-        &connections_mgr,
-        type,
-        slot_type,
-        to_track ? to_track->name_hash_ : 0,
-        to_slot,
-        nullptr,
-        0,
-        0,
-        CarlaBridgeMode::None)
+          &ms,
+          &connections_mgr,
+          type,
+          slot_type,
+          to_track ? to_track->name_hash_ : 0,
+          to_slot,
+          nullptr,
+          0,
+          0,
+          CarlaBridgeMode::None)
   {
   }
 };
@@ -258,12 +258,12 @@ public:
     const Track *                 to_track,
     int                           to_slot)
       : MixerSelectionsTargetedAction (
-        ms,
-        connections_mgr,
-        MixerSelectionsAction::Type::Copy,
-        slot_type,
-        to_track,
-        to_slot)
+          ms,
+          connections_mgr,
+          MixerSelectionsAction::Type::Copy,
+          slot_type,
+          to_track,
+          to_slot)
   {
   }
 };
@@ -278,12 +278,12 @@ public:
     const Track *                 to_track,
     int                           to_slot)
       : MixerSelectionsTargetedAction (
-        ms,
-        connections_mgr,
-        MixerSelectionsAction::Type::Paste,
-        slot_type,
-        to_track,
-        to_slot)
+          ms,
+          connections_mgr,
+          MixerSelectionsAction::Type::Paste,
+          slot_type,
+          to_track,
+          to_slot)
   {
   }
 };
@@ -298,12 +298,12 @@ public:
     const Track *                 to_track,
     int                           to_slot)
       : MixerSelectionsTargetedAction (
-        ms,
-        connections_mgr,
-        MixerSelectionsAction::Type::Move,
-        slot_type,
-        to_track,
-        to_slot)
+          ms,
+          connections_mgr,
+          MixerSelectionsAction::Type::Move,
+          slot_type,
+          to_track,
+          to_slot)
   {
   }
 };
@@ -315,16 +315,16 @@ public:
     const FullMixerSelections    &ms,
     const PortConnectionsManager &connections_mgr)
       : MixerSelectionsAction (
-        &ms,
-        &connections_mgr,
-        MixerSelectionsAction::Type::Delete,
-        PluginSlotType::Invalid,
-        0,
-        0,
-        0,
-        0,
-        0,
-        CarlaBridgeMode::None)
+          &ms,
+          &connections_mgr,
+          MixerSelectionsAction::Type::Delete,
+          PluginSlotType::Invalid,
+          0,
+          0,
+          0,
+          0,
+          0,
+          CarlaBridgeMode::None)
   {
   }
 };
@@ -334,27 +334,27 @@ class MixerSelectionsChangeStatusAction : public MixerSelectionsAction
 public:
   MixerSelectionsChangeStatusAction (const FullMixerSelections &ms, int new_val)
       : MixerSelectionsAction (
-        &ms,
-        nullptr,
-        MixerSelectionsAction::Type::ChangeStatus,
-        PluginSlotType::Invalid,
-        0,
-        0,
-        0,
-        0,
-        new_val,
-        CarlaBridgeMode::None)
+          &ms,
+          nullptr,
+          MixerSelectionsAction::Type::ChangeStatus,
+          PluginSlotType::Invalid,
+          0,
+          0,
+          0,
+          0,
+          new_val,
+          CarlaBridgeMode::None)
   {
   }
 };
 
-  class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
-  {
-  public:
-    MixerSelectionsChangeLoadBehaviorAction (
-      const FullMixerSelections &ms,
-      CarlaBridgeMode            new_bridge_mode)
-        : MixerSelectionsAction (
+class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
+{
+public:
+  MixerSelectionsChangeLoadBehaviorAction (
+    const FullMixerSelections &ms,
+    CarlaBridgeMode            new_bridge_mode)
+      : MixerSelectionsAction (
           &ms,
           nullptr,
           MixerSelectionsAction::Type::ChangeLoadBehavior,
@@ -365,8 +365,8 @@ public:
           0,
           0,
           new_bridge_mode)
-    {
-    }
-  };
+  {
+  }
+};
 
 #endif

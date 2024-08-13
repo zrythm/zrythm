@@ -295,7 +295,7 @@ on_modulator_added (Plugin * modulator)
 {
   on_plugin_added (modulator);
 
-  auto track = dynamic_cast<ModulatorTrack*>(modulator->get_track ());
+  auto track = dynamic_cast<ModulatorTrack *> (modulator->get_track ());
   modulator_view_widget_refresh (MW_MODULATOR_VIEW, track);
 }
 
@@ -515,7 +515,7 @@ on_plugin_window_visibility_changed (Plugin * pl)
 static void
 on_plugin_visibility_changed (Plugin * pl)
 {
-  z_debug ("start - visible: %d", pl->visible_);
+  z_debug ("start - visible: {}", pl->visible_);
   if (pl->visible_)
     {
       pl->open_ui ();
@@ -548,8 +548,8 @@ on_plugin_visibility_changed (Plugin * pl)
 void
 EventManager::clean_duplicate_events_and_copy ()
 {
-  auto       &q = mqueue_;
-  ZEvent *    event;
+  auto    &q = mqueue_;
+  ZEvent * event;
 
   events_arr_.clear ();
 
@@ -1171,7 +1171,7 @@ EventManager::process_event (ZEvent &ev)
       TRANSPORT->set_recording (!TRANSPORT->recording_, true, true);
       break;
     default:
-      z_warning ("event %s not implemented yet", ENUM_NAME (ev.type_));
+      z_warning ("event {} not implemented yet", ENUM_NAME (ev.type_));
       break;
     }
 }
@@ -1196,7 +1196,7 @@ EventManager::process_events ()
         }
       else
         {
-          z_info ("(%d) No UI, skipping", count);
+          z_info ("({}) No UI, skipping", count);
         }
 
       obj_pool_.release (ev);

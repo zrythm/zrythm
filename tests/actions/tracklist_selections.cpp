@@ -1,8 +1,15 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
+#include "actions/channel_send_action.h"
+#include "actions/mixer_selections_action.h"
+#include "actions/port_connection_action.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#include "actions/arranger_selections.h"
 #include "actions/tracklist_selections.h"
 #include "actions/undoable_action.h"
 #include "dsp/audio_region.h"
@@ -26,78 +33,109 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
+TEST_SUITE_BEGIN ("actions/tracklist_selections");
+
+static auto perform_create_arranger_sel = [] (const auto &selections) {
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::CreateAction> (*selections));
+};
+
+static auto perform_delete_arranger_sel = [] (const auto &selections) {
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::DeleteAction> (*selections));
+};
+
+static auto perform_delete = [] () {
+  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+};
+
+static auto perform_copy_to_end = [] () {
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    TRACKLIST->get_num_tracks ()));
+};
+
+static auto perform_move_to_end = [] () {
+  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+    TRACKLIST->get_num_tracks ()));
+};
+
+static auto perform_delete_track = [] (const auto &track) {
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+};
+
+static auto perform_set_direct_out = [] (const auto &from, const auto &to) {
+  from->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    *to));
+};
+
 static void
-test_num_tracks_with_file (const char * filepath, const int num_tracks)
+test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
 {
-  FileDescriptor file = FileDescriptor (filepath);
+  FileDescriptor file (filepath);
 
-  int num_tracks_before = TRACKLIST->tracks.size ();
+  int num_tracks_before = TRACKLIST->tracks_.size ();
 
-  bool ret = track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD, num_tracks_before, 1, -1,
-    NULL, NULL);
-  g_assert_true (ret);
+  REQUIRE_NOTHROW (Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
+    nullptr));
 
-  Track * first_track = TRACKLIST->tracks[num_tracks_before];
-  track_select (first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  auto &first_track = TRACKLIST->tracks_[num_tracks_before];
 
-  g_assert_cmpint (
-    TRACKLIST->tracks.size (), ==, num_tracks_before + num_tracks);
+  perform_delete_track (first_track);
+
+  UNDO_MANAGER->undo ();
+
+  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_before + num_tracks);
 }
 
-static void
-test_create_from_midi_file (void)
+TEST_CASE ("create tracks from MIDI file")
 {
   test_helper_zrythm_init ();
 
-  char * midi_file;
-
-  midi_file = g_build_filename (
-    TESTS_SRCDIR, "1_empty_track_1_track_with_data.mid", NULL);
+  auto midi_file =
+    fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
   test_num_tracks_with_file (midi_file, 1);
-  g_free (midi_file);
 
-  midi_file = g_build_filename (TESTS_SRCDIR, "1_track_with_data.mid", NULL);
+  midi_file = fs::path (TESTS_SRCDIR) / "1_track_with_data.mid";
   test_num_tracks_with_file (midi_file, 1);
-  g_free (midi_file);
 
-  g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]
-      ->lanes[0]
-      ->regions[0]
-      ->num_midi_notes,
-    ==, 3);
+  auto midi_track =
+    TRACKLIST->get_track<MidiTrack> (TRACKLIST->tracks_.size () - 1);
+  REQUIRE_NONNULL (midi_track);
+  REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_[0]->midi_notes_, 3);
 
-  midi_file = g_build_filename (TESTS_SRCDIR, "those_who_remain.mid", NULL);
+  midi_file = fs::path (TESTS_SRCDIR) / "those_who_remain.mid";
   test_num_tracks_with_file (midi_file, 1);
-  g_free (midi_file);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_create_ins_when_redo_stack_nonempty (void)
+TEST_CASE ("create instrument track when redo stack is nonempty")
 {
   test_helper_zrythm_init ();
 
-  track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
+  REQUIRE_NOTHROW (Track::create_empty_with_action (Track::Type::Midi));
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
 #ifdef HAVE_HELM
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 #endif
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 
   test_helper_zrythm_cleanup ();
 }
@@ -113,107 +151,97 @@ _test_port_and_plugin_track_pos_after_duplication (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
-  int src_track_pos = TRACKLIST->tracks.size () - 1;
-  int dest_track_pos = TRACKLIST->tracks.size ();
+  REQUIRE_GT (TRACKLIST->get_num_tracks (), 0);
+  int src_track_pos = TRACKLIST->get_num_tracks () - 1;
+  int dest_track_pos = TRACKLIST->get_num_tracks ();
 
   /* select it */
-  Track * src_track = TRACKLIST->tracks[src_track_pos];
-  track_select (src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  auto src_track = TRACKLIST->get_track<ChannelTrack> (src_track_pos);
+  REQUIRE_NONNULL (src_track);
+  src_track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* get an automation track */
-  AutomationTracklist * atl = track_get_automation_tracklist (src_track);
-  g_return_if_fail (atl);
-  AutomationTrack * at = atl->ats[atl->num_ats - 1];
-  at->created = true;
-  automation_tracklist_set_at_visible (atl, at, true);
+  auto &at = src_track->automation_tracklist_->ats_.back ();
+  at->created_ = true;
+  src_track->automation_tracklist_->set_at_visible (*at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  unsigned int track_name_hash = track_get_name_hash (*src_track);
-  Region *     region = automation_region_new (
-    &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
-  bool success = track_add_region (
-    src_track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
+  const auto track_name_hash = src_track->get_name_hash ();
+  auto       region = std::make_shared<AutomationRegion> (
+    start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
+  src_track->add_region (region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
-  Port * port = Port::find_from_identifier (&at->port_id);
-  position_set_to_bar (&start_pos, 1);
-  g_debug ("deff %f", (double) port->deff_);
-  float normalized_val = control_port_real_val_to_normalized (port, port->deff_);
+  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  start_pos.set_to_bar (1);
+  const auto normalized_val = port->real_val_to_normalized (port->deff_);
   math_assert_nonnann (port->deff_);
   math_assert_nonnann (normalized_val);
-  AutomationPoint * ap =
-    automation_point_new_float (port->deff_, normalized_val, &start_pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
-  math_assert_nonnann (ap->fvalue);
-  math_assert_nonnann (ap->normalized_val);
+  auto ap =
+    std::make_shared<AutomationPoint> (port->deff_, normalized_val, start_pos);
+  region->append_object (ap);
+  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (AUTOMATION_SELECTIONS);
+  math_assert_nonnann (ap->fvalue_);
+  math_assert_nonnann (ap->normalized_val_);
 
-  g_assert_true (track_validate (src_track));
+  REQUIRE (src_track->validate ());
 
   /* duplicate it */
-  tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
+  perform_copy_to_end ();
 
-  Track * dest_track = TRACKLIST->tracks[dest_track_pos];
+  auto dest_track = TRACKLIST->get_track<AutomatableTrack> (dest_track_pos);
 
   if (is_instrument)
     {
-      /* check that track processor is connected
-       * to the instrument */
-      PortConnection * conn = port_connections_manager_get_source_or_dest (
-        PORT_CONNECTIONS_MGR, &dest_track->processor->midi_out->id_, false);
-      g_assert_nonnull (conn);
+      auto ins_track = dynamic_cast<InstrumentTrack *> (dest_track);
+      /* check that track processor is connected to the instrument */
+      auto conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+        ins_track->processor_->midi_out_->id_, false);
+      REQUIRE_NONNULL (conn);
 
       /* check that instrument is connected to
        * channel prefader */
-      conn = port_connections_manager_get_source_or_dest (
-        PORT_CONNECTIONS_MGR,
-        &dest_track->channel->prefader->stereo_in->get_l ().id_, true);
-      g_assert_nonnull (conn);
+      conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+        ins_track->channel_->prefader_->stereo_in_->get_l ().id_, true);
+      REQUIRE_NONNULL (conn);
     }
 
-  g_assert_true (track_validate (src_track));
-  g_assert_true (track_validate (dest_track));
+  REQUIRE (src_track->validate ());
+  REQUIRE (dest_track->validate ());
 
   /* move automation in 2nd track and undo/redo */
-  atl = track_get_automation_tracklist (dest_track);
-  g_return_if_fail (atl);
-  ap = atl->ats[atl->num_ats - 1]->regions[0]->aps[0];
-  arranger_object_select (
-    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  float prev_norm_val = ap->normalized_val;
-  math_assert_nonnann (ap->normalized_val);
+  const auto &atl = dest_track->get_automation_tracklist ();
+  ap = atl.ats_.front ()->regions_.at (0)->aps_.at (0);
+  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  float prev_norm_val = ap->normalized_val_;
+  math_assert_nonnann (ap->normalized_val_);
   math_assert_nonnann (prev_norm_val);
-  automation_point_set_fvalue (
-    ap, prev_norm_val - 0.1f, F_NORMALIZED, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_move_automation (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS, 0, 0.1, F_ALREADY_MOVED, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
+      *AUTOMATION_SELECTIONS, true, 0, 0.1, true));
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->redo ();
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::seconds (1));
 
   /* go back to the start */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
 }
 #endif
 
-static void
-test_port_and_plugin_track_pos_after_duplication (void)
+TEST_CASE ("test port and plugin track pos after duplication")
 {
   test_helper_zrythm_init ();
 
@@ -230,8 +258,7 @@ test_port_and_plugin_track_pos_after_duplication (void)
 }
 
 #ifdef HAVE_CARLA
-static void
-test_port_and_plugin_track_pos_after_duplication_with_carla (void)
+TEST_CASE ("test port and plugin track pos after duplication with Carla")
 {
   test_helper_zrythm_init ();
 
@@ -263,69 +290,62 @@ _test_undo_track_deletion (
   test_project_save_and_reload ();
 
   /* select it */
-  Track * helm_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (helm_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto helm_track =
+    TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
+  helm_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* get an automation track */
-  AutomationTracklist * atl = track_get_automation_tracklist (helm_track);
-  g_return_if_fail (atl);
-  AutomationTrack * at = atl->ats[40];
-  at->created = true;
-  automation_tracklist_set_at_visible (atl, at, true);
+  const auto &at = helm_track->automation_tracklist_->ats_.at (40);
+  at->created_ = true;
+  helm_track->automation_tracklist_->set_at_visible (*at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  unsigned int track_name_hash = track_get_name_hash (*helm_track);
-  Region *     region = automation_region_new (
-    &start_pos, &end_pos, track_name_hash, at->index, at->num_regions);
-  bool success = track_add_region (
-    helm_track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
+  const auto track_name_hash = helm_track->get_name_hash ();
+  auto       region = std::make_shared<AutomationRegion> (
+    start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
+  helm_track->add_region (
+    region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
-  Port * port = Port::find_from_identifier (&at->port_id);
-  position_set_to_bar (&start_pos, 1);
-  AutomationPoint * ap = automation_point_new_float (
-    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
-    &start_pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
+  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  REQUIRE_NONNULL (port);
+  start_pos.set_to_bar (1);
+  auto ap = std::make_shared<AutomationPoint> (
+    port->deff_, port->real_val_to_normalized (port->deff_), &start_pos);
+  region->append_object (ap);
+  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
-  g_assert_true (track_validate (helm_track));
+  REQUIRE (helm_track->validate ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* delete it */
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* undo deletion */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  g_assert_true (
-    track_validate (TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]));
+  REQUIRE (TRACKLIST->tracks_.back ()->validate ());
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::seconds (1));
 }
 #endif
 
-static void
-test_undo_track_deletion (void)
+TEST_CASE ("undo track deletion")
 {
   test_helper_zrythm_init ();
 #ifdef HAVE_HELM
@@ -334,102 +354,84 @@ test_undo_track_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_group_track_deletion (void)
+TEST_CASE ("group track deletion")
 {
   test_helper_zrythm_init ();
 
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 0);
+  REQUIRE_EMPTY (P_MASTER_TRACK->children_);
 
-  /* create 2 audio fx tracks and route them to
-   * a new group track */
-  Track * audio_fx1 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-  Track * audio_fx2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-  Track * group =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+  /* create 2 audio fx tracks and route them to a new group track */
+  auto audio_fx1 = Track::create_empty_with_action<AudioBusTrack> ();
+  auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
+  auto group = Track::create_empty_with_action<AudioGroupTrack> ();
 
-  g_assert_true (group->children);
-  g_assert_false (audio_fx1->children);
-  g_assert_false (audio_fx2->children);
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 3);
+  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 3);
 
   /* route each fx track to the group */
-  track_select (audio_fx1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group, NULL);
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 2);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 3);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 2);
-  track_select (audio_fx2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group, NULL);
-  g_assert_cmpint (P_MASTER_TRACK->num_children, ==, 1);
+  perform_set_direct_out (audio_fx1, group);
+  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 2);
+  UNDO_MANAGER->undo ();
+  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 3);
+  UNDO_MANAGER->redo ();
+  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 2);
+  perform_set_direct_out (audio_fx2, group);
+  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 1);
 
-  g_assert_cmpint (group->num_children, ==, 2);
-  g_assert_true (audio_fx1->channel->has_output);
-  g_assert_true (audio_fx2->channel->has_output);
-  g_assert_cmpuint (
-    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (*group));
-  g_assert_cmpuint (
-    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (*group));
+  REQUIRE_SIZE_EQ (group->children_, 2);
+  REQUIRE (audio_fx1->channel_->has_output_);
+  REQUIRE (audio_fx2->channel_->has_output_);
+  REQUIRE_EQ (audio_fx1->channel_->output_name_hash_, group->get_name_hash ());
+  REQUIRE_EQ (audio_fx2->channel_->output_name_hash_, group->get_name_hash ());
 
   /* save and reload the project */
-  int group_pos = group->pos;
-  int audio_fx1_pos = audio_fx1->pos;
-  int audio_fx2_pos = audio_fx2->pos;
+  int group_pos = group->pos_;
+  int audio_fx1_pos = audio_fx1->pos_;
+  int audio_fx2_pos = audio_fx2->pos_;
   test_project_save_and_reload ();
-  group = TRACKLIST->tracks[group_pos];
-  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
-  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+  group = TRACKLIST->get_track<AudioGroupTrack> (group_pos);
+  audio_fx1 = TRACKLIST->get_track<AudioBusTrack> (audio_fx1_pos);
+  audio_fx2 = TRACKLIST->get_track<AudioBusTrack> (audio_fx2_pos);
 
-  /* delete the group track and check that each
-   * fx track has its output set to none */
-  track_select (group, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
-  g_assert_false (audio_fx1->channel->has_output);
-  g_assert_false (audio_fx2->channel->has_output);
+  /* delete the group track and check that each fx track has its output set to
+   * none */
+  group->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  perform_delete ();
+  REQUIRE_FALSE (audio_fx1->channel_->has_output_);
+  REQUIRE_FALSE (audio_fx2->channel_->has_output_);
 
   /* save and reload the project */
-  audio_fx1_pos = audio_fx1->pos;
-  audio_fx2_pos = audio_fx2->pos;
+  audio_fx1_pos = audio_fx1->pos_;
+  audio_fx2_pos = audio_fx2->pos_;
   test_project_save_and_reload ();
-  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
-  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+  audio_fx1 = TRACKLIST->get_track<AudioBusTrack> (audio_fx1_pos);
+  audio_fx2 = TRACKLIST->get_track<AudioBusTrack> (audio_fx2_pos);
 
-  g_assert_false (audio_fx1->channel->has_output);
-  g_assert_false (audio_fx2->channel->has_output);
+  REQUIRE_FALSE (audio_fx1->channel_->has_output_);
+  REQUIRE_FALSE (audio_fx2->channel_->has_output_);
 
   /* undo and check that the connections are
    * established again */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  group = TRACKLIST->tracks[group_pos];
-  g_assert_cmpint (group->num_children, ==, 2);
-  g_assert_cmpint (group->children[0], ==, track_get_name_hash (*audio_fx1));
-  g_assert_cmpint (group->children[1], ==, track_get_name_hash (*audio_fx2));
-  g_assert_true (audio_fx1->channel->has_output);
-  g_assert_true (audio_fx2->channel->has_output);
-  g_assert_cmpuint (
-    audio_fx1->channel->output_name_hash, ==, track_get_name_hash (*group));
-  g_assert_cmpuint (
-    audio_fx2->channel->output_name_hash, ==, track_get_name_hash (*group));
+  UNDO_MANAGER->undo ();
+  group = TRACKLIST->get_track<AudioGroupTrack> (group_pos);
+  REQUIRE_SIZE_EQ (group->children_, 2);
+  REQUIRE_EQ (group->children_[0], audio_fx1->get_name_hash ());
+  REQUIRE_EQ (group->children_[1], audio_fx2->get_name_hash ());
+  REQUIRE (audio_fx1->channel_->has_output_);
+  REQUIRE (audio_fx2->channel_->has_output_);
+  REQUIRE_EQ (audio_fx1->channel_->output_name_hash_, group->get_name_hash ());
+  REQUIRE_EQ (audio_fx2->channel_->output_name_hash_, group->get_name_hash ());
 
   /* save and reload the project */
-  audio_fx1_pos = audio_fx1->pos;
-  audio_fx2_pos = audio_fx2->pos;
+  audio_fx1_pos = audio_fx1->pos_;
+  audio_fx2_pos = audio_fx2->pos_;
   test_project_save_and_reload ();
-  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
-  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+  audio_fx1 = TRACKLIST->get_track<AudioBusTrack> (audio_fx1_pos);
+  audio_fx2 = TRACKLIST->get_track<AudioBusTrack> (audio_fx2_pos);
 
-  /* redo and check that the connections are
-   * gone again */
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_false (audio_fx1->channel->has_output);
-  g_assert_false (audio_fx2->channel->has_output);
+  /* redo and check that the connections are gone again */
+  UNDO_MANAGER->redo ();
+  REQUIRE_FALSE (audio_fx1->channel_->has_output_);
+  REQUIRE_FALSE (audio_fx2->channel_->has_output_);
 
   test_helper_zrythm_cleanup ();
 }
@@ -446,26 +448,26 @@ test_group_track_deletion (void)
  */
 static void
 assert_sends_connected (
-  Track * src,
-  Track * dest,
-  bool    connected,
-  int     pl_out_port_idx,
-  int     pl_in_port_idx)
+  ChannelTrack * src,
+  ChannelTrack * dest,
+  bool           connected,
+  int            pl_out_port_idx,
+  int            pl_in_port_idx)
 {
   if (src && dest)
     {
-      ChannelSend * prefader_send = src->channel->sends[0];
-      ChannelSend * postfader_send =
-        src->channel->sends[CHANNEL_SEND_POST_FADER_START_SLOT];
+      const auto &prefader_send = src->channel_->sends_[0];
+      const auto &postfader_send =
+        src->channel_->sends_[CHANNEL_SEND_POST_FADER_START_SLOT];
 
-      bool prefader_connected = channel_send_is_connected_to (
-        prefader_send, dest->processor->stereo_in, NULL);
-      bool fader_connected = channel_send_is_connected_to (
-        postfader_send, dest->processor->stereo_in, NULL);
+      bool prefader_connected = prefader_send->is_connected_to (
+        dest->processor_->stereo_in_.get (), nullptr);
+      bool fader_connected = postfader_send->is_connected_to (
+        dest->processor_->stereo_in_.get (), nullptr);
 
       bool pl_ports_connected =
-        src->channel->inserts[0]->out_ports[pl_out_port_idx]->is_connected_to (
-          dest->channel->inserts[0]->in_ports[pl_in_port_idx]);
+        src->channel_->inserts_[0]->out_ports_[pl_out_port_idx]->is_connected_to (
+          *dest->channel_->inserts_[0]->in_ports_[pl_in_port_idx]);
 
       if (connected)
         {
@@ -481,11 +483,11 @@ assert_sends_connected (
 
   if (src)
     {
-      bool prefader_connected = channel_send_is_enabled (src->channel->sends[0]);
-      bool fader_connected = channel_send_is_enabled (
-        src->channel->sends[CHANNEL_SEND_POST_FADER_START_SLOT]);
+      bool prefader_connected = src->channel_->sends_[0]->is_enabled ();
+      bool fader_connected =
+        src->channel_->sends_[CHANNEL_SEND_POST_FADER_START_SLOT]->is_enabled ();
       bool pl_ports_connected =
-        src->channel->inserts[0]->out_ports[pl_out_port_idx]->dests_.size () > 0;
+        !src->channel_->inserts_[0]->out_ports_[pl_out_port_idx]->dests_.empty ();
 
       if (connected)
         {
@@ -506,84 +508,95 @@ test_track_deletion_with_sends (
   const char * pl_bundle,
   const char * pl_uri)
 {
-  PluginSetting * setting =
+  PluginSetting setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, false);
 
-  /* create an audio fx track and send both prefader
-   * and postfader to a new audio fx track */
-  Track * audio_fx_for_sending = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
-  Track * audio_fx_for_receiving = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->tracks.size (), NULL);
+  /* create an audio fx track and send both prefader and postfader to a new
+   * audio fx track */
+  auto audio_fx_for_sending = Track::create_for_plugin_at_idx_w_action<
+    AudioBusTrack> (&setting, TRACKLIST->get_num_tracks ());
+  auto audio_fx_for_receiving = Track::create_for_plugin_at_idx_w_action<
+    AudioBusTrack> (&setting, TRACKLIST->get_num_tracks ());
 
-  g_assert_cmpuint (
-    audio_fx_for_receiving->channel->sends[0]->track_name_hash, ==,
-    audio_fx_for_receiving->channel->sends[0]->amount->id_.track_name_hash_);
+  REQUIRE_EQ (
+    audio_fx_for_receiving->channel_->sends_[0]->track_name_hash_,
+    audio_fx_for_receiving->channel_->sends_[0]->amount_->id_.track_name_hash_);
 
-  ChannelSend * prefader_send = audio_fx_for_sending->channel->sends[0];
-  channel_send_action_perform_connect_audio (
-    prefader_send, audio_fx_for_receiving->processor->stereo_in, NULL);
-  ChannelSend * postfader_send =
-    audio_fx_for_sending->channel->sends[CHANNEL_SEND_POST_FADER_START_SLOT];
-  channel_send_action_perform_connect_audio (
-    postfader_send, audio_fx_for_receiving->processor->stereo_in, NULL);
+  const auto &prefader_send = audio_fx_for_sending->channel_->sends_[0];
+  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
+    *prefader_send, *audio_fx_for_receiving->processor_->stereo_in_,
+    *PORT_CONNECTIONS_MGR));
+  const auto &postfader_send =
+    audio_fx_for_sending->channel_->sends_[CHANNEL_SEND_POST_FADER_START_SLOT];
+  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
+    *postfader_send, *audio_fx_for_receiving->processor_->stereo_in_,
+    *PORT_CONNECTIONS_MGR));
 
-  tracklist_validate (TRACKLIST);
+  REQUIRE (TRACKLIST->validate ());
 
-  /* connect plugin from sending track to
-   * plugin on receiving track */
-  Port *   out_port = NULL;
-  Port *   in_port = NULL;
-  int      out_port_idx = -1;
-  int      in_port_idx = -1;
-  Plugin * pl = audio_fx_for_sending->channel->inserts[0];
-  for (int i = 0; i < pl->num_out_ports; i++)
-    {
-      Port * port = pl->out_ports[i];
-      if (port->id_.type_ == PortType::CV)
-        {
-          /* connect the first out CV port */
-          out_port = port;
-          out_port_idx = i;
-          break;
-        }
-    }
-  pl = audio_fx_for_receiving->channel->inserts[0];
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * port = pl->in_ports[i];
-      if (
-        port->id_.type_ == PortType::Control
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::PLUGIN_CONTROL))
-        {
-          /* connect the first in control port */
-          in_port = port;
-          in_port_idx = i;
-          break;
-        }
-    }
-  port_connection_action_perform_connect (&out_port->id_, &in_port->id_, NULL);
+  /* connect plugin from sending track to plugin on receiving track */
+  CVPort *      out_port = NULL;
+  ControlPort * in_port = NULL;
+  int           out_port_idx = -1;
+  int           in_port_idx = -1;
+
+  {
+    const auto &pl = audio_fx_for_sending->channel_->inserts_[0];
+    for (size_t i = 0; i < pl->out_ports_.size (); i++)
+      {
+        const auto &port = pl->out_ports_[i];
+        if (port->id_.type_ == PortType::CV)
+          {
+            /* connect the first out CV port */
+            out_port = dynamic_cast<CVPort *> (port.get ());
+            out_port_idx = i;
+            break;
+          }
+      }
+  }
+
+  {
+    const auto &pl = audio_fx_for_receiving->channel_->inserts_[0];
+    for (size_t i = 0; i < pl->in_ports_.size (); i++)
+      {
+        const auto &port = pl->in_ports_[i];
+        if (
+          port->id_.type_ == PortType::Control
+          && ENUM_BITSET_TEST (
+            PortIdentifier::Flags, port->id_.flags_,
+            PortIdentifier::Flags::PluginControl))
+          {
+            /* connect the first in control port */
+            in_port = dynamic_cast<ControlPort *> (port.get ());
+            in_port_idx = i;
+            break;
+          }
+      }
+  }
+
+  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
+    out_port->id_, in_port->id_));
 
   /* assert they are connected */
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving, true, out_port_idx,
     in_port_idx);
 
-  g_assert_cmpuint (
-    prefader_send->track_name_hash, ==,
-    prefader_send->amount->id_.track_name_hash_);
-  g_assert_cmpuint (
-    postfader_send->track_name_hash, ==,
-    postfader_send->amount->id_.track_name_hash_);
+  REQUIRE_EQ (
+    prefader_send->track_name_hash_,
+    prefader_send->amount_->id_.track_name_hash_);
+  REQUIRE_EQ (
+    postfader_send->track_name_hash_,
+    postfader_send->amount_->id_.track_name_hash_);
 
   /* save and reload the project */
-  int audio_fx_for_sending_pos = audio_fx_for_sending->pos;
-  int audio_fx_for_receiving_pos = audio_fx_for_receiving->pos;
+  int audio_fx_for_sending_pos = audio_fx_for_sending->pos_;
+  int audio_fx_for_receiving_pos = audio_fx_for_receiving->pos_;
   test_project_save_and_reload ();
-  audio_fx_for_sending = TRACKLIST->tracks[audio_fx_for_sending_pos];
-  audio_fx_for_receiving = TRACKLIST->tracks[audio_fx_for_receiving_pos];
+  audio_fx_for_sending =
+    TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_sending_pos);
+  audio_fx_for_receiving =
+    TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_receiving_pos);
 
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving, true, out_port_idx,
@@ -591,47 +604,47 @@ test_track_deletion_with_sends (
 
   if (test_deleting_target)
     {
-      /* delete the receiving track and check that
-       * the sends are gone */
-      track_select (
-        audio_fx_for_receiving, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_action_perform_delete (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+      /* delete the receiving track and check that the sends are gone */
+      audio_fx_for_receiving->select (
+        F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      perform_delete ();
       assert_sends_connected (
-        audio_fx_for_sending, NULL, false, out_port_idx, in_port_idx);
-      audio_fx_for_sending_pos = audio_fx_for_sending->pos;
+        audio_fx_for_sending, nullptr, false, out_port_idx, in_port_idx);
+      audio_fx_for_sending_pos = audio_fx_for_sending->pos_;
 
       /* save and reload the project */
       test_project_save_and_reload ();
-      audio_fx_for_sending = TRACKLIST->tracks[audio_fx_for_sending_pos];
-      audio_fx_for_receiving = TRACKLIST->tracks[audio_fx_for_receiving_pos];
+      audio_fx_for_sending =
+        TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_sending_pos);
+      audio_fx_for_receiving =
+        TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_receiving_pos);
       assert_sends_connected (
-        audio_fx_for_sending, NULL, false, out_port_idx, in_port_idx);
+        audio_fx_for_sending, nullptr, false, out_port_idx, in_port_idx);
     }
   else
     {
       /* wait for a few cycles */
-      engine_wait_n_cycles (AUDIO_ENGINE, 40);
+      AUDIO_ENGINE->wait_n_cycles (40);
 
       /* delete the sending track */
-      track_select (
-        audio_fx_for_sending, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_action_perform_delete (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
-      audio_fx_for_receiving_pos = audio_fx_for_receiving->pos;
+      audio_fx_for_sending->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      perform_delete ();
+      audio_fx_for_receiving_pos = audio_fx_for_receiving->pos_;
 
       /* save and reload the project */
       test_project_save_and_reload ();
-      audio_fx_for_receiving = TRACKLIST->tracks[audio_fx_for_receiving_pos];
+      audio_fx_for_receiving =
+        TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_receiving_pos);
     }
 
-  project_validate (PROJECT);
+  REQUIRE (PROJECT->validate ());
 
   /* undo and check that the sends are
    * established again */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  audio_fx_for_sending = TRACKLIST->tracks[audio_fx_for_sending_pos];
+  audio_fx_for_sending =
+    TRACKLIST->get_track<AudioBusTrack> (audio_fx_for_sending_pos);
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving, true, out_port_idx,
     in_port_idx);
@@ -640,8 +653,7 @@ test_track_deletion_with_sends (
 }
 #endif
 
-static void
-test_target_track_deletion_with_sends (void)
+TEST_CASE ("delete target track with sends")
 {
   test_helper_zrythm_init ();
 #ifdef HAVE_AMS_LFO
@@ -650,8 +662,7 @@ test_target_track_deletion_with_sends (void)
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_source_track_deletion_with_sends (void)
+TEST_CASE ("delete source track with sends")
 {
   test_helper_zrythm_init ();
 #ifdef HAVE_AMS_LFO
@@ -660,39 +671,33 @@ test_source_track_deletion_with_sends (void)
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_audio_track_deletion (void)
+TEST_CASE ("delete audio track")
 {
   test_helper_zrythm_init ();
 
-  Track * track =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO, NULL);
+  auto track = Track::create_empty_with_action<AudioTrack> ();
 
   /* delete track and undo */
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* set input gain and mono */
-  track->processor->input_gain->set_control_value (1.4f, false, false);
-  track->processor->mono->set_control_value (1.0f, false, false);
+  track->processor_->input_gain_->set_control_value (1.4f, false, false);
+  track->processor_->mono_->set_control_value (1.0f, false, false);
 
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  g_assert_cmpfloat_with_epsilon (
-    track->processor->input_gain->control_, 1.4f, 0.001f);
-  g_assert_cmpfloat_with_epsilon (
-    track->processor->mono->control_, 1.0f, 0.001f);
+  track = TRACKLIST->get_track<AudioTrack> (TRACKLIST->get_num_tracks () - 1);
+  REQUIRE_FLOAT_NEAR (track->processor_->input_gain_->control_, 1.4f, 0.001f);
+  REQUIRE_FLOAT_NEAR (track->processor_->mono_->control_, 1.0f, 0.001f);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_track_deletion_with_lv2_worker (void)
+TEST_CASE ("delete track with LV2 worker")
 {
   test_helper_zrythm_init ();
 
@@ -701,204 +706,179 @@ test_track_deletion_with_lv2_worker (void)
     LSP_MULTISAMPLER_24_DO_BUNDLE, LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
 
   /* delete track and undo */
-  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track =
+    TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 #endif
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_track_deletion_with_plugin (void)
+TEST_CASE ("delete track with plugin")
 {
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
     COMPRESSOR_BUNDLE, COMPRESSOR_URI, false, true, 1);
 
-  bool success;
-  success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
-  g_assert_true (success);
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
 
   /* delete track and undo */
-  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track =
+    TRACKLIST->get_track<AudioBusTrack> (TRACKLIST->get_num_tracks () - 1);
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
-  success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
-  g_assert_true (success);
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
-  g_assert_true (success);
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 
-  success = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
-  g_assert_true (success);
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_ins_track_deletion_w_automation (void)
+TEST_CASE ("delete instrument track with automation")
 {
 #if defined(HAVE_TAL_FILTER) && defined(HAVE_NOIZE_MAKER)
 
   test_helper_zrythm_init ();
 
-  engine_activate (AUDIO_ENGINE, false);
+  AUDIO_ENGINE->activate (false);
 
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     NOIZE_MAKER_BUNDLE, NOIZE_MAKER_URI, true, false, 1);
 
   /* select the track */
-  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track =
+    TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* add an effect */
-  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+  auto setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
-  mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*track), 0,
-    setting, 1, NULL);
+  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
+    PluginSlotType::Insert, *track, 0, setting));
 
-  engine_activate (AUDIO_ENGINE, true);
+  AUDIO_ENGINE->activate (true);
 
   /* get the instrument cutoff automation track */
-  AutomationTracklist * atl = track_get_automation_tracklist (track);
-  g_return_if_fail (atl);
-  AutomationTrack * at = atl->ats[41];
-  at->created = true;
-  automation_tracklist_set_at_visible (atl, at, true);
+  auto &atl = track->get_automation_tracklist ();
+  auto  at = atl.ats_[41].get ();
+  at->created_ = true;
+  atl.set_at_visible (*at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  Region * region = automation_region_new (
-    &start_pos, &end_pos, track_get_name_hash (*track), at->index,
-    at->num_regions);
-  bool success = track_add_region (
-    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
+  auto region = std::make_shared<AutomationRegion> (
+    start_pos, end_pos, track->get_name_hash (), at->index_,
+    at->regions_.size ());
+  track->add_region (region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
-  Port * port = Port::find_from_identifier (&at->port_id);
-  position_set_to_bar (&start_pos, 1);
-  AutomationPoint * ap = automation_point_new_float (
-    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
-    &start_pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
+  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  start_pos.set_to_bar (1);
+  auto ap = std::make_shared<AutomationPoint> (
+    port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
+  region->append_object (ap);
+  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
-  g_assert_true (track_validate (track));
+  REQUIRE (track->validate ());
 
   /* get the filter cutoff automation track */
-  at = atl->ats[141];
-  at->created = true;
-  automation_tracklist_set_at_visible (atl, at, true);
+  at = atl.ats_[141].get ();
+  at->created_ = true;
+  atl.set_at_visible (*at, true);
 
   /* create an automation region */
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  region = automation_region_new (
-    &start_pos, &end_pos, track_get_name_hash (*track), at->index,
-    at->num_regions);
-  success = track_add_region (
-    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
+  region = std::make_shared<AutomationRegion> (
+    start_pos, end_pos, track->get_name_hash (), at->index_,
+    at->regions_.size ());
+  track->add_region (region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
-  port = Port::find_from_identifier (&at->port_id);
-  position_set_to_bar (&start_pos, 1);
-  ap = automation_point_new_float (
-    port->deff_, control_port_real_val_to_normalized (port, port->deff_),
-    &start_pos);
-  automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
+  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  start_pos.set_to_bar (1);
+  ap = std::make_shared<AutomationPoint> (
+    port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
+  region->append_object (ap);
+  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
-  g_assert_true (track_validate (track));
+  REQUIRE (track->validate ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  g_assert_true (track_validate (track));
+  REQUIRE (TRACKLIST->tracks_.back ()->validate ());
 
   /* delete it */
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* undo deletion */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  g_assert_true (
-    track_validate (TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]));
+  REQUIRE (TRACKLIST->tracks_.back ()->validate ());
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::seconds (1));
 
   test_helper_zrythm_cleanup ();
 #endif
 }
 
-static void
-test_no_visible_tracks_after_track_deletion (void)
+TEST_CASE ("check no visible tracks after deleting track")
 {
   test_helper_zrythm_init ();
 
   /* hide all tracks */
-  for (auto track : TRACKLIST->tracks)
+  for (auto &track : TRACKLIST->tracks_)
     {
-      track->visible = false;
+      track->visible_ = false;
     }
 
-  track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+  auto track = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* assert a track is selected */
-  g_assert_cmpint (TRACKLIST_SELECTIONS->num_tracks, >, 0);
+  REQUIRE_NONEMPTY (TRACKLIST_SELECTIONS->track_names_);
 
-  track_select (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1], F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* delete the track */
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  perform_delete ();
 
   /* assert a track is selected */
-  g_assert_cmpint (TRACKLIST_SELECTIONS->num_tracks, >, 0);
+  REQUIRE_NONEMPTY (TRACKLIST_SELECTIONS->track_names_);
 
   /* assert undo history is not empty */
-  g_assert_false (undo_stack_is_empty (UNDO_MANAGER->undo_stack));
+  REQUIRE_NONEMPTY (*UNDO_MANAGER->undo_stack_);
 
   test_helper_zrythm_cleanup ();
 }
@@ -912,117 +892,108 @@ _test_move_tracks (
   bool         with_carla)
 {
   /* move markers track to the top */
-  int prev_pos = P_MARKER_TRACK->pos;
-  track_select (P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, 0, NULL);
+  int prev_pos = P_MARKER_TRACK->pos_;
+  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 0));
 
-  track_validate (TRACKLIST->tracks[prev_pos]);
-  track_validate (TRACKLIST->tracks[0]);
+  REQUIRE (TRACKLIST->get_track (prev_pos)->validate ());
+  REQUIRE (TRACKLIST->get_track (0)->validate ());
 
-  PluginSetting * setting =
+  auto setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
-  g_return_if_fail (setting);
 
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
+  /* fix the descriptor (for some reason lilv reports it as Plugin instead of
+   * Instrument if you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      setting->descr->category = ZPluginCategory::Z_PLUGIN_CATEGORY_INSTRUMENT;
+      setting.descr_.category_ = ZPluginCategory::INSTRUMENT;
     }
-  g_free (setting->descr->category_str);
-  setting->descr->category_str =
-    plugin_descriptor_category_to_string (setting->descr->category);
+  setting.descr_.category_str_ =
+    PluginDescriptor::category_to_string (setting.descr_.category_);
 
   /* create a track with an instrument */
-  track_create_for_plugin_at_idx_w_action (
-    is_instrument
-      ? TrackType::TRACK_TYPE_INSTRUMENT
-      : TrackType::TRACK_TYPE_AUDIO_BUS,
-    setting, 3, NULL);
-  Track * ins_track = TRACKLIST->tracks[3];
+  Track::create_for_plugin_at_idx_w_action (
+    is_instrument ? Track::Type::Instrument : Track::Type::AudioBus, &setting,
+    3);
+  auto ins_track = TRACKLIST->get_track<ChannelTrack> (3);
   if (is_instrument)
     {
-      g_assert_true (ins_track->type == TrackType::TRACK_TYPE_INSTRUMENT);
+      REQUIRE (ins_track->is_instrument ());
     }
 
   /* create an fx track and send to it */
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, 4, 1, -1, NULL, NULL);
-  Track * fx_track = TRACKLIST->tracks[4];
-  g_assert_true (fx_track->type == TrackType::TRACK_TYPE_AUDIO_BUS);
+  Track::create_with_action (
+    Track::Type::AudioBus, nullptr, nullptr, nullptr, 4, 1, -1, nullptr);
+  auto fx_track = TRACKLIST->get_track<AudioBusTrack> (4);
+  REQUIRE_NONNULL (fx_track);
 
-  ChannelSend * send = ins_track->channel->sends[0];
-  StereoPorts * stereo_in = fx_track->processor->stereo_in;
-  GError *      err = NULL;
-  bool          ret = channel_send_connect_stereo (
-    send, fx_track->processor->stereo_in, NULL, NULL, false, F_VALIDATE,
-    F_NO_RECALC_GRAPH, &err);
-  g_assert_true (ret);
+  {
+    const auto &send = ins_track->channel_->sends_[0];
+    const auto &stereo_in = fx_track->processor_->stereo_in_;
+    REQUIRE_NOTHROW (send->connect_stereo (
+      fx_track->processor_->stereo_in_.get (), nullptr, nullptr, false, false,
+      true));
 
-  /* check that the sends are correct */
-  g_assert_true (channel_send_is_enabled (send));
-  g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
+    /* check that the sends are correct */
+    REQUIRE (send->is_enabled ());
+    REQUIRE (send->is_connected_to (stereo_in.get (), nullptr));
+  }
 
   /* create an automation region on the fx track */
   Position pos, end_pos;
-  position_init (&pos);
-  position_init (&end_pos);
-  position_add_ticks (&end_pos, 600);
-  Region * ar = automation_region_new (
-    &pos, &end_pos, track_get_name_hash (*fx_track), 0, 0);
-  bool success = track_add_region (
-    fx_track, ar, fx_track->automation_tracklist.ats[0], -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) ar, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  end_pos.add_ticks (600);
+  auto ar = std::make_shared<AutomationRegion> (
+    pos, end_pos, fx_track->get_name_hash (), 0, 0);
+  fx_track->add_region (
+    ar, fx_track->automation_tracklist_->ats_[0].get (), -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  ar->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  perform_create_arranger_sel (TL_SELECTIONS);
 
   /* make the region the clip editor region */
-  clip_editor_set_region (CLIP_EDITOR, ar, F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (ar.get (), F_NO_PUBLISH_EVENTS);
 
   /* swap tracks */
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  engine_wait_n_cycles (AUDIO_ENGINE, 40);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, 5, NULL);
+  ins_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  AUDIO_ENGINE->wait_n_cycles (40);
+  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 5));
 
   /* check that ids are updated */
-  ins_track = TRACKLIST->tracks[4];
-  fx_track = TRACKLIST->tracks[3];
+  ins_track = TRACKLIST->get_track<ChannelTrack> (4);
+  fx_track = TRACKLIST->get_track<AudioBusTrack> (3);
   if (is_instrument)
     {
-      g_assert_true (ins_track->type == TrackType::TRACK_TYPE_INSTRUMENT);
+      REQUIRE (ins_track->is_instrument ());
     }
-  g_assert_true (fx_track->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  send = ins_track->channel->sends[0];
-  stereo_in = fx_track->processor->stereo_in;
-  g_assert_cmpuint (
-    stereo_in->get_l ().id_.track_name_hash_, ==,
-    track_get_name_hash (*fx_track));
-  g_assert_cmpuint (
-    stereo_in->get_r ().id_.track_name_hash_, ==,
-    track_get_name_hash (*fx_track));
-  g_assert_true (send->track == ins_track);
-  g_assert_true (channel_send_is_enabled (send));
-  g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
-  track_validate (ins_track);
-  track_validate (fx_track);
+  REQUIRE (fx_track->type_ == Track::Type::AudioBus);
+
+  {
+    const auto &send = ins_track->channel_->sends_[0];
+    const auto &stereo_in = fx_track->processor_->stereo_in_;
+    REQUIRE_EQ (
+      stereo_in->get_l ().id_.track_name_hash_, fx_track->get_name_hash ());
+    REQUIRE_EQ (
+      stereo_in->get_r ().id_.track_name_hash_, fx_track->get_name_hash ());
+    REQUIRE_EQ (send->track_, ins_track);
+    REQUIRE (send->is_enabled ());
+    REQUIRE (send->is_connected_to (stereo_in.get (), nullptr));
+    REQUIRE (ins_track->validate ());
+    REQUIRE (fx_track->validate ());
+  }
 
   /* check that the clip editor region is updated */
-  Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
-  g_assert_true (clip_editor_region == ar);
+  auto clip_editor_region = CLIP_EDITOR->get_region ();
+  REQUIRE_EQ (clip_editor_region, ar.get ());
 
-  /* check that the stereo out of the audio fx
-   * track points to the master track */
-  g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_l ().id_,
-    &P_MASTER_TRACK->processor->stereo_in->get_l ().id_));
-  g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_r ().id_,
-    &P_MASTER_TRACK->processor->stereo_in->get_r ().id_));
+  /* check that the stereo out of the audio fx track points to the master track */
+  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+    fx_track->channel_->stereo_out_->get_l ().id_,
+    P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
+  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+    fx_track->channel_->stereo_out_->get_r ().id_,
+    P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 
   /* TODO replace below */
 #  if 0
@@ -1040,38 +1011,38 @@ _test_move_tracks (
 #  endif
 
   /* unswap tracks */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* check that ids are updated */
-  ins_track = TRACKLIST->tracks[3];
-  fx_track = TRACKLIST->tracks[4];
+  ins_track = TRACKLIST->get_track<ChannelTrack> (3);
+  fx_track = TRACKLIST->get_track<AudioBusTrack> (4);
   if (is_instrument)
     {
-      g_assert_true (ins_track->type == TrackType::TRACK_TYPE_INSTRUMENT);
+      REQUIRE (ins_track->is_instrument ());
     }
-  g_assert_true (fx_track->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  send = ins_track->channel->sends[0];
-  stereo_in = fx_track->processor->stereo_in;
-  g_assert_cmpuint (
-    stereo_in->get_l ().id_.track_name_hash_, ==,
-    track_get_name_hash (*fx_track));
-  g_assert_cmpuint (
-    stereo_in->get_r ().id_.track_name_hash_, ==,
-    track_get_name_hash (*fx_track));
-  g_assert_true (send->track == ins_track);
-  g_assert_true (channel_send_is_enabled (send));
-  g_assert_true (channel_send_is_connected_to (send, stereo_in, NULL));
-  track_validate (ins_track);
-  track_validate (fx_track);
+  REQUIRE (fx_track->type_ == Track::Type::AudioBus);
 
-  /* check that the stereo out of the audio fx
-   * track points to the master track */
-  g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_l ().id_,
-    &P_MASTER_TRACK->processor->stereo_in->get_l ().id_));
-  g_assert_nonnull (port_connections_manager_find_connection (
-    PORT_CONNECTIONS_MGR, &fx_track->channel->stereo_out->get_r ().id_,
-    &P_MASTER_TRACK->processor->stereo_in->get_r ().id_));
+  {
+    const auto &send = ins_track->channel_->sends_[0];
+    const auto &stereo_in = fx_track->processor_->stereo_in_;
+    REQUIRE_EQ (
+      stereo_in->get_l ().id_.track_name_hash_, fx_track->get_name_hash ());
+    REQUIRE_EQ (
+      stereo_in->get_r ().id_.track_name_hash_, fx_track->get_name_hash ());
+    REQUIRE_EQ (send->track_, ins_track);
+    REQUIRE (send->is_enabled ());
+    REQUIRE (send->is_connected_to (stereo_in.get (), nullptr));
+    REQUIRE (ins_track->validate ());
+    REQUIRE (fx_track->validate ());
+  }
+
+  /* check that the stereo out of the audio fx track points to the master track */
+  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+    fx_track->channel_->stereo_out_->get_l ().id_,
+    P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
+  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+    fx_track->channel_->stereo_out_->get_r ().id_,
+    P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 
 #  if 0
   /* verify fx track out ports */
@@ -1105,8 +1076,7 @@ __test_move_tracks (bool with_carla)
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_move_tracks (void)
+TEST_CASE ("move tracks")
 {
   __test_move_tracks (false);
 #ifdef HAVE_CARLA
@@ -1114,154 +1084,122 @@ test_move_tracks (void)
 #endif
 }
 
-static void
-test_multi_track_duplicate (void)
+TEST_CASE ("multi-track duplicate")
 {
   test_helper_zrythm_init ();
 
-  int start_pos = TRACKLIST->tracks.size ();
+  int start_pos = TRACKLIST->get_num_tracks ();
 
   /* create midi track, audio fx track and audio track */
-  track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, NULL, NULL, start_pos, 1, -1, NULL, NULL);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, start_pos + 1, 1, -1,
-    NULL, NULL);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos + 2, 1, -1, NULL,
-    NULL);
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, nullptr, nullptr, start_pos, 1, -1, nullptr);
+  Track::create_with_action (
+    Track::Type::AudioBus, nullptr, nullptr, nullptr, start_pos + 1, 1, -1,
+    nullptr);
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, nullptr, nullptr, start_pos + 2, 1, -1,
+    nullptr);
 
-  g_assert_true (
-    TRACKLIST->tracks[start_pos]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 1]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 2]->type == TrackType::TRACK_TYPE_AUDIO);
+  REQUIRE (TRACKLIST->tracks_[start_pos]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 1]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio ());
 
   /* select and duplicate */
-  track_select (
-    TRACKLIST->tracks[start_pos], F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (
-    TRACKLIST->tracks[start_pos + 1], F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  track_select (
-    TRACKLIST->tracks[start_pos + 2], F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, start_pos + 3, NULL);
+  TRACKLIST->tracks_[start_pos]->select (
+    F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos + 1]->select (
+    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos + 2]->select (
+    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    start_pos + 3));
 
   /* check order correct */
-  g_assert_true (
-    TRACKLIST->tracks[start_pos]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 1]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 2]->type == TrackType::TRACK_TYPE_AUDIO);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 3]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 4]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 5]->type == TrackType::TRACK_TYPE_AUDIO);
+  REQUIRE (TRACKLIST->tracks_[start_pos]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 1]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 3]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 4]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 5]->is_audio ());
 
   /* undo and check */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 1]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 2]->type == TrackType::TRACK_TYPE_AUDIO);
+  UNDO_MANAGER->undo ();
+  REQUIRE (TRACKLIST->tracks_[start_pos]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 1]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio ());
 
   /* select and duplicate after first */
-  track_select (
-    TRACKLIST->tracks[start_pos], F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (
-    TRACKLIST->tracks[start_pos + 1], F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  track_select (
-    TRACKLIST->tracks[start_pos + 2], F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, start_pos + 1, NULL);
+  TRACKLIST->tracks_[start_pos]->select (
+    F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos + 1]->select (
+    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos + 2]->select (
+    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    start_pos + 1));
 
   /* check order correct */
-  g_assert_true (
-    TRACKLIST->tracks[start_pos]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 1]->type == TrackType::TRACK_TYPE_MIDI);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 2]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 3]->type == TrackType::TRACK_TYPE_AUDIO);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 4]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 5]->type == TrackType::TRACK_TYPE_AUDIO);
+  REQUIRE (TRACKLIST->tracks_[start_pos]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 1]->is_midi ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 3]->is_audio ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 4]->is_audio_bus ());
+  REQUIRE (TRACKLIST->tracks_[start_pos + 5]->is_audio ());
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_delete_track_w_midi_file (void)
+TEST_CASE ("delete track with midi file")
 {
   test_helper_zrythm_init ();
 
-  char * midi_file =
-    g_build_filename (TESTS_SRCDIR, "format_1_two_tracks_with_data.mid", NULL);
+  const auto midi_file =
+    fs::path (TESTS_SRCDIR) / "format_1_two_tracks_with_data.mid";
   test_num_tracks_with_file (midi_file, 2);
-  g_free (midi_file);
 
-  g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]
-      ->lanes[0]
-      ->regions[0]
-      ->num_midi_notes,
-    ==, 7);
-  g_assert_cmpint (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]
-      ->lanes[0]
-      ->regions[0]
-      ->num_midi_notes,
-    ==, 6);
+  REQUIRE_SIZE_EQ (
+    TRACKLIST->get_track<MidiTrack> (TRACKLIST->tracks_.size () - 2)
+      ->lanes_[0]
+      ->regions_[0]
+      ->midi_notes_,
+    7);
+  REQUIRE_SIZE_EQ (
+    TRACKLIST->get_track<MidiTrack> (TRACKLIST->tracks_.size () - 1)
+      ->lanes_[0]
+      ->regions_[0]
+      ->midi_notes_,
+    6);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_marker_track_unpin (void)
+TEST_CASE ("marker track unpin")
 {
   test_helper_zrythm_init ();
 
-  for (int i = 0; i < P_MARKER_TRACK->num_markers; i++)
-    {
-      Marker * m = P_MARKER_TRACK->markers[i];
-      Track *  m_track = arranger_object_get_track ((ArrangerObject *) m);
-      g_assert_true (m_track == P_MARKER_TRACK);
-      g_assert_true (track_is_pinned (m_track));
-    }
+  auto require_pin_status = [&] (bool pinned) {
+    for (auto &m : P_MARKER_TRACK->markers_)
+      {
+        auto m_track = m->get_track_as<MarkerTrack> ();
+        REQUIRE_EQ (m_track, P_MARKER_TRACK);
+        REQUIRE_EQ (m_track->is_pinned (), pinned);
+      }
+  };
 
-  track_select (P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_unpin (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  require_pin_status (true);
 
-  for (int i = 0; i < P_MARKER_TRACK->num_markers; i++)
-    {
-      Marker * m = P_MARKER_TRACK->markers[i];
-      Track *  m_track = arranger_object_get_track ((ArrangerObject *) m);
-      g_assert_true (m_track == P_MARKER_TRACK);
-      g_assert_false (track_is_pinned (m_track));
-    }
+  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
-  for (int i = 0; i < P_MARKER_TRACK->num_markers; i++)
-    {
-      Marker * m = P_MARKER_TRACK->markers[i];
-      Track *  m_track = arranger_object_get_track ((ArrangerObject *) m);
-      g_assert_true (m_track == P_MARKER_TRACK);
-      g_assert_true (track_is_pinned (m_track));
-    }
+  require_pin_status (false);
+
+  UNDO_MANAGER->undo ();
+
+  require_pin_status (true);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1270,184 +1208,163 @@ test_marker_track_unpin (void)
  * Test duplicate when the last track in the
  * tracklist is the output of the duplicated track.
  */
-static void
-test_duplicate_w_output_and_send (void)
+TEST_CASE ("duplicate with output and send")
 {
   test_helper_zrythm_init ();
 
-  int start_pos = TRACKLIST->tracks.size ();
+  int start_pos = TRACKLIST->get_num_tracks ();
 
-  /* create audio track + audio group track + audio
-   * fx track */
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos, 1, -1, NULL, NULL);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL, start_pos + 1, 1, -1,
-    NULL, NULL);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL, start_pos + 2, 1, -1,
-    NULL, NULL);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, start_pos + 3, 1, -1,
-    NULL, NULL);
+  /* create audio track + audio group track + audio fx track */
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, nullptr, nullptr, start_pos, 1, -1, nullptr);
+  Track::create_with_action (
+    Track::Type::AudioGroup, nullptr, nullptr, nullptr, start_pos + 1, 1, -1,
+    nullptr);
+  Track::create_with_action (
+    Track::Type::AudioGroup, nullptr, nullptr, nullptr, start_pos + 2, 1, -1,
+    nullptr);
+  Track::create_with_action (
+    Track::Type::AudioBus, nullptr, nullptr, nullptr, start_pos + 3, 1, -1,
+    nullptr);
 
-  Track * audio_track = TRACKLIST->tracks[start_pos];
-  Track * group_track = TRACKLIST->tracks[start_pos + 1];
-  Track * group_track2 = TRACKLIST->tracks[start_pos + 2];
-  Track * fx_track = TRACKLIST->tracks[start_pos + 3];
+  auto audio_track = TRACKLIST->get_track<AudioTrack> (start_pos);
+  auto group_track = TRACKLIST->get_track<AudioGroupTrack> (start_pos + 1);
+  auto group_track2 = TRACKLIST->get_track<AudioGroupTrack> (start_pos + 2);
+  auto fx_track = TRACKLIST->get_track<AudioBusTrack> (start_pos + 3);
 
   /* send from audio track to fx track */
-  channel_send_action_perform_connect_audio (
-    audio_track->channel->sends[0], fx_track->processor->stereo_in, NULL);
+  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
+    *audio_track->channel_->sends_[0], *fx_track->processor_->stereo_in_,
+    *PORT_CONNECTIONS_MGR));
 
-  g_assert_true (
-    TRACKLIST->tracks[start_pos]->type == TrackType::TRACK_TYPE_AUDIO);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 1]->type == TrackType::TRACK_TYPE_AUDIO_GROUP);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 2]->type == TrackType::TRACK_TYPE_AUDIO_GROUP);
-  g_assert_true (
-    TRACKLIST->tracks[start_pos + 3]->type == TrackType::TRACK_TYPE_AUDIO_BUS);
+  REQUIRE (TRACKLIST->get_track (start_pos)->is_audio ());
+  REQUIRE (TRACKLIST->get_track (start_pos + 1)->is_audio_group ());
+  REQUIRE (TRACKLIST->get_track (start_pos + 2)->is_audio_group ());
+  REQUIRE (TRACKLIST->get_track (start_pos + 3)->is_audio_bus ());
 
   /* route audio track to group track */
-  track_select (
-    TRACKLIST->tracks[start_pos], F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, NULL);
+  perform_set_direct_out (TRACKLIST->get_track (start_pos), group_track);
 
   /* route group track to group track 2 */
-  track_select (
-    TRACKLIST->tracks[start_pos + 1], F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track2, NULL);
+  perform_set_direct_out (TRACKLIST->get_track (start_pos + 1), group_track2);
 
   /* duplicate audio track and group track */
-  track_select (
-    TRACKLIST->tracks[start_pos], F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (TRACKLIST_SELECTIONS->num_tracks, ==, 2);
-  g_assert_true (TRACKLIST_SELECTIONS->tracks[0] == group_track);
-  g_assert_true (TRACKLIST_SELECTIONS->tracks[1] == audio_track);
-  engine_wait_n_cycles (AUDIO_ENGINE, 40);
-  tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, start_pos + 1, NULL);
+  TRACKLIST->tracks_[start_pos]->select (
+    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  REQUIRE_SIZE_EQ (TRACKLIST_SELECTIONS->track_names_, 2);
+  REQUIRE_EQ (TRACKLIST_SELECTIONS->track_names_[0], group_track->name_);
+  REQUIRE_EQ (TRACKLIST_SELECTIONS->track_names_[1], audio_track->name_);
+  AUDIO_ENGINE->wait_n_cycles (40);
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    start_pos + 1));
 
-  /* assert group of new audio track is group of
-   * original audio track */
-  Track * new_track = TRACKLIST->tracks[start_pos + 1];
-  g_assert_true (new_track->type == TrackType::TRACK_TYPE_AUDIO);
-  g_assert_cmpuint (
-    new_track->channel->output_name_hash, ==,
-    track_get_name_hash (*group_track));
-  g_assert_true (
-    new_track->channel->stereo_out->get_l ().is_connected_to (
-      &group_track->processor->stereo_in->get_l ())
-    && new_track->channel->stereo_out->get_r ().is_connected_to (
-      &group_track->processor->stereo_in->get_r ()));
+  /* assert group of new audio track is group of original audio track */
+  auto new_track = TRACKLIST->get_track<AudioTrack> (start_pos + 1);
+  REQUIRE_NONNULL (new_track);
+  REQUIRE (new_track->is_audio ());
+  REQUIRE_EQ (
+    new_track->channel_->output_name_hash_, group_track->get_name_hash ());
+  REQUIRE (new_track->channel_->stereo_out_->get_l ().is_connected_to (
+    group_track->processor_->stereo_in_->get_l ()));
+  REQUIRE (new_track->channel_->stereo_out_->get_r ().is_connected_to (
+    group_track->processor_->stereo_in_->get_r ()));
 
-  /* assert group of new group track is group of
-   * original group track */
-  Track * new_group_track = TRACKLIST->tracks[start_pos + 2];
-  g_assert_true (new_group_track->type == TrackType::TRACK_TYPE_AUDIO_GROUP);
-  g_assert_cmpuint (
-    new_group_track->channel->output_name_hash, ==,
-    track_get_name_hash (*group_track2));
-  g_assert_true (
-    new_group_track->channel->stereo_out->get_l ().is_connected_to (
-      &group_track2->processor->stereo_in->get_l ())
-    && new_group_track->channel->stereo_out->get_r ().is_connected_to (
-      &group_track2->processor->stereo_in->get_r ()));
+  /* assert group of new group track is group of original group track */
+  auto new_group_track = TRACKLIST->get_track<AudioGroupTrack> (start_pos + 2);
+  REQUIRE (new_group_track->is_audio_group ());
+  REQUIRE_EQ (
+    new_group_track->channel_->output_name_hash_,
+    group_track2->get_name_hash ());
+  REQUIRE (
+    new_group_track->channel_->stereo_out_->get_l ().is_connected_to (
+      group_track2->processor_->stereo_in_->get_l ())
+    && new_group_track->channel_->stereo_out_->get_r ().is_connected_to (
+      group_track2->processor_->stereo_in_->get_r ()));
 
   /* assert new audio track sends connected */
-  ChannelSend * send = new_track->channel->sends[0];
-  channel_send_validate (send);
-  g_assert_true (channel_send_is_enabled (send));
+  const auto &send = new_track->channel_->sends_[0];
+  REQUIRE (send->validate ());
+  REQUIRE (send->is_enabled ());
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->redo ();
 
   /* test delete each track */
   for (int i = 0; i < 4; i++)
     {
-      new_track = TRACKLIST->tracks[start_pos + i];
-      track_select (new_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_action_perform_delete (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
-      tracklist_validate (TRACKLIST);
+      auto cur_track = TRACKLIST->get_track (start_pos + i);
+      perform_delete_track (cur_track);
+      REQUIRE (TRACKLIST->validate ());
       test_project_save_and_reload ();
-      undo_manager_undo (UNDO_MANAGER, NULL);
-      undo_manager_redo (UNDO_MANAGER, NULL);
-      undo_manager_undo (UNDO_MANAGER, NULL);
+      UNDO_MANAGER->undo ();
+      UNDO_MANAGER->redo ();
+      UNDO_MANAGER->undo ();
     }
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_track_deletion_w_mixer_selections (void)
+TEST_CASE ("test track deletion with mixer selections")
 {
   test_helper_zrythm_init ();
 
-  Track * first_track =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+  auto first_track = Track::create_empty_with_action<AudioBusTrack> ();
 
   int pl_track_pos = test_plugin_manager_create_tracks_from_plugin (
     EG_AMP_BUNDLE_URI, EG_AMP_URI, false, false, 1);
-  Track * pl_track = TRACKLIST->tracks[pl_track_pos];
+  auto pl_track = TRACKLIST->get_track<AudioBusTrack> (pl_track_pos);
+  REQUIRE_NONNULL (pl_track);
 
-  mixer_selections_add_slot (
-    MIXER_SELECTIONS, pl_track, ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, 0,
-    F_NO_CLONE, F_NO_PUBLISH_EVENTS);
-  g_assert_true (MIXER_SELECTIONS->has_any);
-  g_assert_cmpuint (
-    MIXER_SELECTIONS->track_name_hash, ==, track_get_name_hash (*pl_track));
+  MIXER_SELECTIONS->add_slot (*pl_track, PluginSlotType::Insert, 0, false);
+  REQUIRE (MIXER_SELECTIONS->has_any_);
+  REQUIRE_EQ (MIXER_SELECTIONS->track_name_hash_, pl_track->get_name_hash ());
 
-  track_select (first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  first_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  perform_delete ();
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_ins_track_duplicate_w_send (void)
+TEST_CASE ("test instrument track duplicate with send")
 {
 #if defined HAVE_HELM
   test_helper_zrythm_init ();
 
   /* create the instrument track */
-  int ins_track_pos = TRACKLIST->tracks.size ();
+  int ins_track_pos = TRACKLIST->get_num_tracks ();
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[ins_track_pos];
+  auto ins_track = TRACKLIST->get_track<InstrumentTrack> (ins_track_pos);
+  REQUIRE_NONNULL (ins_track);
 
   /* create an audio fx track */
-  int audio_fx_track_pos = TRACKLIST->tracks.size ();
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, audio_fx_track_pos, 1,
-    -1, NULL, NULL);
-  Track * audio_fx_track = TRACKLIST->tracks[audio_fx_track_pos];
+  int audio_fx_track_pos = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::AudioBus, nullptr, nullptr, nullptr, audio_fx_track_pos, 1, -1,
+    nullptr);
+  auto audio_fx_track = TRACKLIST->get_track<AudioBusTrack> (audio_fx_track_pos);
+  REQUIRE_NONNULL (audio_fx_track);
 
   /* send from audio track to fx track */
-  channel_send_action_perform_connect_audio (
-    ins_track->channel->sends[0], audio_fx_track->processor->stereo_in, NULL);
+  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
+    *ins_track->channel_->sends_[0], *audio_fx_track->processor_->stereo_in_,
+    *PORT_CONNECTIONS_MGR));
 
   /* duplicate the instrument track */
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  engine_wait_n_cycles (AUDIO_ENGINE, 40);
-  tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS,
+  ins_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  AUDIO_ENGINE->wait_n_cycles (40);
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    audio_fx_track_pos));
+  auto new_ins_track =
+    TRACKLIST->get_track<InstrumentTrack> (audio_fx_track_pos);
+  REQUIRE_NONNULL (new_ins_track);
 
-    PORT_CONNECTIONS_MGR, audio_fx_track_pos, NULL);
-  Track * new_ins_track = TRACKLIST->tracks[audio_fx_track_pos];
-  g_assert_true (new_ins_track->type == TrackType::TRACK_TYPE_INSTRUMENT);
-
-  /* assert new instrument track send is connected
-   * to audio fx track */
-  ChannelSend * send = new_ins_track->channel->sends[0];
-  channel_send_validate (send);
-  g_assert_true (channel_send_is_enabled (send));
+  /* assert new instrument track send is connected to audio fx track */
+  const auto &send = new_ins_track->channel_->sends_[0];
+  REQUIRE (send->validate ());
+  REQUIRE (send->is_enabled ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -1456,173 +1373,166 @@ test_ins_track_duplicate_w_send (void)
 #endif
 }
 
-static void
-test_create_midi_fx_track (void)
+TEST_CASE ("test create midi fx track")
 {
   test_helper_zrythm_init ();
 
   /* create an audio fx track */
-  track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI_BUS, NULL);
+  Track::create_empty_with_action<MidiBusTrack> ();
 
-  g_usleep (10000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (10));
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_move_multiple_tracks (void)
+TEST_CASE ("move multiple tracks")
 {
   test_helper_zrythm_init ();
 
   /* create 5 tracks */
   for (int i = 0; i < 5; i++)
     {
-      track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+      Track::create_empty_with_action<AudioBusTrack> ();
     }
 
   /* move the first 2 tracks to the end */
-  Track * track1 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 5];
-  Track * track2 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 4];
-  Track * track3 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 3];
-  Track * track4 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
-  Track * track5 = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (track1->pos, <, track2->pos);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
+  const auto &track1 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 5];
+  const auto &track2 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 4];
+  const auto &track3 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 3];
+  const auto &track4 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 2];
+  const auto &track5 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 1];
+  track1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  REQUIRE_LT (track1->pos_, track2->pos_);
+  perform_move_to_end ();
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
-  /* same (move first 2 tracks to end), but select
-   * in different order */
-  track_select (track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (track1, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
+  /* same (move first 2 tracks to end), but select in different order */
+  track2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  perform_move_to_end ();
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   /* move the last 2 tracks up */
-  track_select (track4, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (track5, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (track4->pos, <, track5->pos);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
+  track4->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track5->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  REQUIRE_LT (track4->pos_, track5->pos_);
+  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+    TRACKLIST->get_num_tracks () - 5));
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size () - 5, NULL);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   /* move the first and last tracks to the middle */
-  track_select (track1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (track5, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
+  track1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track5->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+    TRACKLIST->get_num_tracks () - 2));
 
-    PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size () - 2, NULL);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (track1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (track2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (track3->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (track4->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (track5->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (track1->pos_, TRACKLIST->tracks_.size () - 5);
+  REQUIRE_EQ (track2->pos_, TRACKLIST->tracks_.size () - 4);
+  REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (track4->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1637,126 +1547,128 @@ _test_move_inside (
   test_helper_zrythm_init ();
 
   /* create folder track */
-  track_create_empty_with_action (TrackType::TRACK_TYPE_FOLDER, NULL);
+  auto folder = Track::create_empty_with_action<FolderTrack> ();
 
   /* create audio fx track */
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* move audio fx inside folder */
-  Track * folder = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
-  g_assert_cmpint (folder->size, ==, 1);
-  Track * audio_fx = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (audio_fx, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  REQUIRE_EQ (folder->size_, 1);
+  auto audio_fx = TRACKLIST->tracks_.back ().get ();
+  audio_fx->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* validate */
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
-  g_assert_cmpint (folder->size, ==, 2);
-  GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (audio_fx, parents, false);
-  g_assert_cmpuint (parents->len, ==, 1);
-  g_assert_true (g_ptr_array_index (parents, 0) == folder);
-  g_ptr_array_unref (parents);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (audio_fx->pos_, TRACKLIST->tracks_.size () - 1);
+  REQUIRE_EQ (folder->size_, 2);
+  {
+    std::vector<FoldableTrack *> parents;
+    audio_fx->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 1);
+    REQUIRE_EQ (parents.front (), folder);
+  }
 
-  /* create audio group and move folder inside
-   * group */
-  Track * audio_group =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
-  track_select (folder, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (audio_fx, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  /* create audio group and move folder inside group */
+  auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
+  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* validate */
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (audio_fx, parents, false);
-  g_assert_cmpuint (parents->len, ==, 2);
-  g_assert_true (g_ptr_array_index (parents, 0) == audio_group);
-  g_assert_true (g_ptr_array_index (parents, 1) == folder);
-  g_ptr_array_unref (parents);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (folder, parents, false);
-  g_assert_cmpuint (parents->len, ==, 1);
-  g_assert_true (g_ptr_array_index (parents, 0) == audio_group);
-  g_ptr_array_unref (parents);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, TRACKLIST->tracks_.size () - 1);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->tracks_.size () - 3);
+  {
+    std::vector<FoldableTrack *> parents;
+    audio_fx->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 2);
+    REQUIRE_EQ (parents.at (0), audio_group);
+    REQUIRE_EQ (parents.at (1), folder);
+  }
+
+  {
+    std::vector<FoldableTrack *> parents;
+    folder->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 1);
+    REQUIRE_EQ (parents.front (), audio_group);
+  }
 
   /* add 3 more tracks */
-  Track * audio_fx2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-  Track * folder2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_FOLDER, NULL);
-  Track * audio_fx3 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+  auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
+  auto folder2 = Track::create_empty_with_action<FolderTrack> ();
+  auto audio_fx3 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move 2 new fx tracks to folder */
-  track_select (audio_fx2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (audio_fx3, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx3->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* validate */
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx3->pos, ==, TRACKLIST->tracks.size () - 1);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (audio_fx2, parents, false);
-  g_assert_cmpuint (parents->len, ==, 1);
-  g_assert_true (g_ptr_array_index (parents, 0) == folder2);
-  g_ptr_array_unref (parents);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (audio_fx3, parents, false);
-  g_assert_cmpuint (parents->len, ==, 1);
-  g_assert_true (g_ptr_array_index (parents, 0) == folder2);
-  g_ptr_array_unref (parents);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (folder2->pos_, TRACKLIST->tracks_.size () - 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (audio_fx3->pos_, TRACKLIST->tracks_.size () - 1);
+  {
+    std::vector<FoldableTrack *> parents;
+    audio_fx2->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 1);
+    REQUIRE_EQ (parents.front (), folder2);
+  }
+  {
+    std::vector<FoldableTrack *> parents;
+    audio_fx3->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 1);
+    REQUIRE_EQ (parents.front (), folder2);
+  }
 
   /* undo move 2 tracks inside */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* undo create 3 tracks */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
 
   /* validate */
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, TRACKLIST->tracks.size () - 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (audio_fx, parents, false);
-  g_assert_cmpuint (parents->len, ==, 2);
-  g_assert_true (g_ptr_array_index (parents, 0) == audio_group);
-  g_assert_true (g_ptr_array_index (parents, 1) == folder);
-  g_ptr_array_unref (parents);
-  parents = g_ptr_array_new ();
-  track_add_folder_parents (folder, parents, false);
-  g_assert_cmpuint (parents->len, ==, 1);
-  g_assert_true (g_ptr_array_index (parents, 0) == audio_group);
-  g_ptr_array_unref (parents);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, TRACKLIST->tracks_.size () - 1);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->tracks_.size () - 2);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->tracks_.size () - 3);
+  {
+    std::vector<FoldableTrack *> parents;
+    audio_fx->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 2);
+    REQUIRE_EQ (parents.front (), audio_group);
+    REQUIRE_EQ (parents.at (1), folder);
+  }
+  {
+    std::vector<FoldableTrack *> parents;
+    folder->add_folder_parents (parents, false);
+    REQUIRE_SIZE_EQ (parents, 1);
+    REQUIRE_EQ (parents.front (), audio_group);
+  }
 
   /* undo move folder inside group */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->redo ();
+  UNDO_MANAGER->redo ();
+  UNDO_MANAGER->redo ();
+  UNDO_MANAGER->redo ();
+  UNDO_MANAGER->redo ();
+  UNDO_MANAGER->redo ();
 
   /*
    * [00] Chords
@@ -1772,26 +1684,26 @@ _test_move_inside (
    * [10] -- Audio FX Track 1
    */
 
-  audio_group = TRACKLIST->tracks[5];
-  folder = TRACKLIST->tracks[6];
-  Track * lsp_comp = TRACKLIST->tracks[7];
-  folder2 = TRACKLIST->tracks[8];
-  audio_fx = TRACKLIST->tracks[9];
-  audio_fx2 = TRACKLIST->tracks[10];
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  audio_group = TRACKLIST->get_track<AudioGroupTrack> (5);
+  folder = TRACKLIST->get_track<FolderTrack> (6);
+  auto lsp_comp = TRACKLIST->get_track<AudioBusTrack> (7);
+  folder2 = TRACKLIST->get_track<FolderTrack> (8);
+  audio_fx = TRACKLIST->get_track<AudioBusTrack> (9);
+  audio_fx2 = TRACKLIST->get_track<AudioBusTrack> (10);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
   /* move folder 2 into folder 1 */
-  track_select (folder2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  folder2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /*
@@ -1808,39 +1720,39 @@ _test_move_inside (
    * [10] ------ Audio FX Track 1
    * [07] ---- LSP Compressor Stereo
    */
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 6);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 5);
-  g_assert_cmpint (folder2->pos, ==, 7);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 8);
-  g_assert_cmpint (audio_fx2->pos, ==, 9);
-  g_assert_cmpint (lsp_comp->pos, ==, 10);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 6);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 5);
+  REQUIRE_EQ (folder2->pos_, 7);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 8);
+  REQUIRE_EQ (audio_fx2->pos_, 9);
+  REQUIRE_EQ (lsp_comp->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 6);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 5);
-  g_assert_cmpint (folder2->pos, ==, 7);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 8);
-  g_assert_cmpint (audio_fx2->pos, ==, 9);
-  g_assert_cmpint (lsp_comp->pos, ==, 10);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 6);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 5);
+  REQUIRE_EQ (folder2->pos_, 7);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 8);
+  REQUIRE_EQ (audio_fx2->pos_, 9);
+  REQUIRE_EQ (lsp_comp->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /*
    * [00] Chords
@@ -1857,43 +1769,43 @@ _test_move_inside (
    */
 
   /* move audio fx 2 above master */
-  track_select (audio_fx2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, P_MASTER_TRACK, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
+  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *P_MASTER_TRACK, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
     GDK_ACTION_MOVE);
-  g_assert_cmpint (audio_fx2->pos, ==, 4);
-  g_assert_cmpint (audio_group->pos, ==, 6);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 8);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx->pos, ==, 10);
+  REQUIRE_EQ (audio_fx2->pos_, 4);
+  REQUIRE_EQ (audio_group->pos_, 6);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 8);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_fx2->pos, ==, 4);
-  g_assert_cmpint (audio_group->pos, ==, 6);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 8);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx->pos, ==, 10);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (audio_fx2->pos_, 4);
+  REQUIRE_EQ (audio_group->pos_, 6);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 8);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /*
    * [00] Chords
@@ -1910,56 +1822,56 @@ _test_move_inside (
    */
 
   /* move audio fx 2 to audio group */
-  track_select (audio_fx2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 4);
-  g_assert_cmpint (audio_fx2->pos, ==, 6);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 8);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx->pos, ==, 10);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 4);
+  REQUIRE_EQ (audio_fx2->pos_, 6);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 8);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx->pos_, 10);
 
   /* move audio fx 2 to folder */
-  track_select (audio_fx2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 4);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, 7);
-  g_assert_cmpint (lsp_comp->pos, ==, 8);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx->pos, ==, 10);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 4);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, 7);
+  REQUIRE_EQ (lsp_comp->pos_, 8);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 4);
-  g_assert_cmpint (audio_fx2->pos, ==, 6);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 8);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 4);
+  REQUIRE_EQ (audio_fx2->pos_, 6);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 8);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx->pos_, 10);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
   /*
    * [00] Chords
@@ -1976,45 +1888,42 @@ _test_move_inside (
    */
 
   /* move folder inside itself */
-  track_select (folder, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* move chanel-less track into folder and get
    * status */
-  track_select (P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
-  foldable_track_is_status (
-    folder, FoldableTrackMixerStatus::FOLDABLE_TRACK_MIXER_STATUS_MUTED);
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  folder->is_status (FolderTrack::MixerStatus::Muted);
+  UNDO_MANAGER->undo ();
 
   /* delete a track inside the folder */
-  track_select (audio_fx, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 2);
-  g_assert_cmpint (audio_fx2->pos, ==, 9);
+  perform_delete_track (audio_fx);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 2);
+  REQUIRE_EQ (audio_fx2->pos_, 9);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  audio_fx = TRACKLIST->tracks[9];
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  audio_fx = TRACKLIST->get_track<AudioBusTrack> (9);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
   /*
    * [00] Chords
@@ -2032,41 +1941,39 @@ _test_move_inside (
 
   /* create a new track and drag it under
    * Folder Track 1 */
-  Track * midi =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  g_assert_nonnull (midi);
+  auto midi = Track::create_empty_with_action<MidiTrack> ();
+  REQUIRE_NONNULL (midi);
 
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_fx2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
+  TRACKLIST->handle_move_or_copy (
+    *audio_fx2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
     GDK_ACTION_MOVE);
 
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 4);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (midi->pos, ==, 10);
-  g_assert_cmpint (audio_fx2->pos, ==, 11);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 4);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (midi->pos_, 10);
+  REQUIRE_EQ (audio_fx2->pos_, 11);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 6);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (lsp_comp->pos, ==, 7);
-  g_assert_cmpint (folder2->pos, ==, 8);
-  g_assert_cmpint (folder2->size, ==, 3);
-  g_assert_cmpint (audio_fx->pos, ==, 9);
-  g_assert_cmpint (audio_fx2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 6);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (lsp_comp->pos_, 7);
+  REQUIRE_EQ (folder2->pos_, 8);
+  REQUIRE_EQ (folder2->size_, 3);
+  REQUIRE_EQ (audio_fx->pos_, 9);
+  REQUIRE_EQ (audio_fx2->pos_, 10);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_move_inside (void)
+TEST_CASE ("move inside")
 {
   (void) _test_move_inside;
 #ifdef HAVE_LSP_COMPRESSOR
@@ -2074,75 +1981,70 @@ test_move_inside (void)
 #endif
 }
 
-static void
-test_move_multiple_inside (void)
+TEST_CASE ("move multiple inside")
 {
   test_helper_zrythm_init ();
 
   /* create folder track */
-  Track * folder =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_FOLDER, NULL);
+  auto folder = Track::create_empty_with_action<FolderTrack> ();
 
   /* create 2 audio fx tracks */
-  Track * audio_fx1 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-  Track * audio_fx2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+  auto audio_fx1 = Track::create_empty_with_action<AudioBusTrack> ();
+  auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move audio fx 1 inside folder */
-  track_select (audio_fx1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_fx1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder->size_, 1);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 1);
 
   /* create audio group */
-  Track * audio_group =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+  auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
 
   /* move folder to audio group */
-  track_select (folder, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (audio_fx1, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 1);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 1);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 1);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 1);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 1);
 
   /*
    * [0] Chords
@@ -2156,144 +2058,126 @@ test_move_multiple_inside (void)
    * [8] ---- Audio FX Track
    */
 
-  /* create 2 new MIDI tracks and drag them above
-   * Folder Track */
-  Track * midi =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  g_assert_nonnull (midi);
-  Track * midi2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  g_assert_nonnull (midi2);
-  track_select (midi, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  /* create 2 new MIDI tracks and drag them above Folder Track */
+  auto midi = Track::create_empty_with_action<MidiTrack> ();
+  REQUIRE_NONNULL (midi);
+  auto midi2 = Track::create_empty_with_action<MidiTrack> ();
+  REQUIRE_NONNULL (midi2);
+  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_fx2->pos, ==, 5);
-  g_assert_cmpint (audio_group->pos, ==, 6);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_fx1->pos, ==, 8);
-  g_assert_cmpint (midi->pos, ==, 9);
-  g_assert_cmpint (midi2->pos, ==, 10);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_fx2->pos_, 5);
+  REQUIRE_EQ (audio_group->pos_, 6);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_fx1->pos_, 8);
+  REQUIRE_EQ (midi->pos_, 9);
+  REQUIRE_EQ (midi2->pos_, 10);
 
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
-    GDK_ACTION_MOVE);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP, GDK_ACTION_MOVE);
 
-  tracklist_print_tracks (TRACKLIST);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_fx2->pos_, 5);
+  REQUIRE_EQ (audio_group->pos_, 6);
+  REQUIRE_EQ (audio_group->size_, 5);
+  REQUIRE_EQ (midi->pos_, 7);
+  REQUIRE_EQ (midi2->pos_, 8);
+  REQUIRE_EQ (folder->pos_, 9);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_fx1->pos_, 10);
 
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_fx2->pos, ==, 5);
-  g_assert_cmpint (audio_group->pos, ==, 6);
-  g_assert_cmpint (audio_group->size, ==, 5);
-  g_assert_cmpint (midi->pos, ==, 7);
-  g_assert_cmpint (midi2->pos, ==, 8);
-  g_assert_cmpint (folder->pos, ==, 9);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_fx1->pos, ==, 10);
-
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_fx2->pos, ==, 5);
-  g_assert_cmpint (audio_group->pos, ==, 6);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (folder->pos, ==, 7);
-  g_assert_cmpint (audio_fx1->pos, ==, 8);
-  g_assert_cmpint (midi->pos, ==, 9);
-  g_assert_cmpint (midi2->pos, ==, 10);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_fx2->pos_, 5);
+  REQUIRE_EQ (audio_group->pos_, 6);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (folder->pos_, 7);
+  REQUIRE_EQ (audio_fx1->pos_, 8);
+  REQUIRE_EQ (midi->pos_, 9);
+  REQUIRE_EQ (midi2->pos_, 10);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_copy_multiple_inside (void)
+TEST_CASE ("copy multiple inside")
 {
   test_helper_zrythm_init ();
 
   /* create folder track */
-  Track * folder =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_FOLDER, NULL);
+  auto folder = Track::create_empty_with_action<FolderTrack> ();
 
   /* create 2 audio fx tracks */
-  Track * audio_fx1 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
-  Track * audio_fx2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_BUS, NULL);
+  auto audio_fx1 = Track::create_empty_with_action<AudioBusTrack> ();
+  auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move audio fx 1 inside folder */
-  track_select (audio_fx1, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_fx1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* create audio group */
-  Track * audio_group =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+  auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
 
   /* move folder to audio group */
-  track_select (folder, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (audio_fx1, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* create new folder */
-  Track * folder2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_FOLDER, NULL);
+  auto folder2 = Track::create_empty_with_action<FolderTrack> ();
 
   /* copy-move audio group inside new folder */
-  track_select (audio_group, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (folder, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (audio_fx1, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  audio_group->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_COPY);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 8);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 7);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 6);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (folder2->size, ==, 4);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 3]->type
-    == TrackType::TRACK_TYPE_AUDIO_GROUP);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]->type
-    == TrackType::TRACK_TYPE_FOLDER);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->type
-    == TrackType::TRACK_TYPE_AUDIO_BUS);
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 8);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 7);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 6);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 5);
+  REQUIRE_EQ (folder2->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (folder2->size_, 4);
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 3)->is_audio_group ());
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2)->is_folder ());
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1)->is_audio_bus ());
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 3);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 2);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 1);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 5);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 3);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 2);
+  REQUIRE_EQ (folder2->pos_, TRACKLIST->get_num_tracks () - 1);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder->size, ==, 2);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_fx2->pos, ==, TRACKLIST->tracks.size () - 8);
-  g_assert_cmpint (audio_group->pos, ==, TRACKLIST->tracks.size () - 7);
-  g_assert_cmpint (folder->pos, ==, TRACKLIST->tracks.size () - 6);
-  g_assert_cmpint (audio_fx1->pos, ==, TRACKLIST->tracks.size () - 5);
-  g_assert_cmpint (folder2->pos, ==, TRACKLIST->tracks.size () - 4);
-  g_assert_cmpint (folder2->size, ==, 4);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 3]->type
-    == TrackType::TRACK_TYPE_AUDIO_GROUP);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 2]->type
-    == TrackType::TRACK_TYPE_FOLDER);
-  g_assert_true (
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->type
-    == TrackType::TRACK_TYPE_AUDIO_BUS);
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (folder->size_, 2);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_fx2->pos_, TRACKLIST->get_num_tracks () - 8);
+  REQUIRE_EQ (audio_group->pos_, TRACKLIST->get_num_tracks () - 7);
+  REQUIRE_EQ (folder->pos_, TRACKLIST->get_num_tracks () - 6);
+  REQUIRE_EQ (audio_fx1->pos_, TRACKLIST->get_num_tracks () - 5);
+  REQUIRE_EQ (folder2->pos_, TRACKLIST->get_num_tracks () - 4);
+  REQUIRE_EQ (folder2->size_, 4);
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 3)->is_audio_group ());
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2)->is_folder ());
+  REQUIRE (
+    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1)->is_audio_bus ());
 
   /*
    * [0] Chords
@@ -2311,23 +2195,21 @@ test_copy_multiple_inside (void)
    * [012] ------ Audio FX Track 2
    */
 
-  Track * audio_group2 = TRACKLIST->tracks[10];
-  Track * folder3 = TRACKLIST->tracks[11];
-  Track * audio_fx3 = TRACKLIST->tracks[12];
+  auto audio_group2 = TRACKLIST->get_track<AudioGroupTrack> (10);
+  auto folder3 = TRACKLIST->get_track<FolderTrack> (11);
+  auto audio_fx3 = TRACKLIST->get_track<AudioBusTrack> (12);
 
   /* create 2 new MIDI tracks and copy-drag them
    * above Audio Group Track 1 */
-  Track * midi =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  g_assert_nonnull (midi);
-  Track * midi2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  g_assert_nonnull (midi2);
+  auto midi = Track::create_empty_with_action<MidiTrack> ();
+  REQUIRE_NONNULL (midi);
+  auto midi2 = Track::create_empty_with_action<MidiTrack> ();
+  REQUIRE_NONNULL (midi2);
 
-  track_select (midi, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
+  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
     GDK_ACTION_COPY);
 
   /*
@@ -2350,58 +2232,56 @@ test_copy_multiple_inside (void)
    * [016] -- MIDI Track 1
    */
 
-  tracklist_print_tracks (TRACKLIST);
+  auto midi3 = TRACKLIST->get_track<MidiTrack> (10);
+  auto midi4 = TRACKLIST->get_track<MidiTrack> (11);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (midi3->pos_, 10);
+  REQUIRE_EQ (midi4->pos_, 11);
+  REQUIRE_EQ (audio_group2->pos_, 12);
+  REQUIRE_EQ (audio_group2->size_, 3);
+  REQUIRE_EQ (folder3->pos_, 13);
+  REQUIRE_EQ (folder3->size_, 2);
+  REQUIRE_EQ (audio_fx3->pos_, 14);
+  REQUIRE_EQ (midi->pos_, 15);
+  REQUIRE_EQ (midi2->pos_, 16);
 
-  Track * midi3 = TRACKLIST->tracks[10];
-  Track * midi4 = TRACKLIST->tracks[11];
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (midi3->pos, ==, 10);
-  g_assert_cmpint (midi4->pos, ==, 11);
-  g_assert_cmpint (audio_group2->pos, ==, 12);
-  g_assert_cmpint (audio_group2->size, ==, 3);
-  g_assert_cmpint (folder3->pos, ==, 13);
-  g_assert_cmpint (folder3->size, ==, 2);
-  g_assert_cmpint (audio_fx3->pos, ==, 14);
-  g_assert_cmpint (midi->pos, ==, 15);
-  g_assert_cmpint (midi2->pos, ==, 16);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 4);
+  REQUIRE_EQ (audio_group2->pos_, 10);
+  REQUIRE_EQ (audio_group2->size_, 3);
+  REQUIRE_EQ (folder3->pos_, 11);
+  REQUIRE_EQ (folder3->size_, 2);
+  REQUIRE_EQ (audio_fx3->pos_, 12);
+  REQUIRE_EQ (midi->pos_, 13);
+  REQUIRE_EQ (midi2->pos_, 14);
 
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 4);
-  g_assert_cmpint (audio_group2->pos, ==, 10);
-  g_assert_cmpint (audio_group2->size, ==, 3);
-  g_assert_cmpint (folder3->pos, ==, 11);
-  g_assert_cmpint (folder3->size, ==, 2);
-  g_assert_cmpint (audio_fx3->pos, ==, 12);
-  g_assert_cmpint (midi->pos, ==, 13);
-  g_assert_cmpint (midi2->pos, ==, 14);
+  UNDO_MANAGER->redo ();
+  midi3 = TRACKLIST->get_track<MidiTrack> (10);
+  midi4 = TRACKLIST->get_track<MidiTrack> (11);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (midi3->pos_, 10);
+  REQUIRE_EQ (midi4->pos_, 11);
+  REQUIRE_EQ (audio_group2->pos_, 12);
+  REQUIRE_EQ (audio_group2->size_, 3);
+  REQUIRE_EQ (folder3->pos_, 13);
+  REQUIRE_EQ (folder3->size_, 2);
+  REQUIRE_EQ (audio_fx3->pos_, 14);
+  REQUIRE_EQ (midi->pos_, 15);
+  REQUIRE_EQ (midi2->pos_, 16);
 
-  undo_manager_redo (UNDO_MANAGER, NULL);
-  midi3 = TRACKLIST->tracks[10];
-  midi4 = TRACKLIST->tracks[11];
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (midi3->pos, ==, 10);
-  g_assert_cmpint (midi4->pos, ==, 11);
-  g_assert_cmpint (audio_group2->pos, ==, 12);
-  g_assert_cmpint (audio_group2->size, ==, 3);
-  g_assert_cmpint (folder3->pos, ==, 13);
-  g_assert_cmpint (folder3->size, ==, 2);
-  g_assert_cmpint (audio_fx3->pos, ==, 14);
-  g_assert_cmpint (midi->pos, ==, 15);
-  g_assert_cmpint (midi2->pos, ==, 16);
-
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 4);
-  g_assert_cmpint (audio_group2->pos, ==, 10);
-  g_assert_cmpint (audio_group2->size, ==, 3);
-  g_assert_cmpint (folder3->pos, ==, 11);
-  g_assert_cmpint (folder3->size, ==, 2);
-  g_assert_cmpint (audio_fx3->pos, ==, 12);
-  g_assert_cmpint (midi->pos, ==, 13);
-  g_assert_cmpint (midi2->pos, ==, 14);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 4);
+  REQUIRE_EQ (audio_group2->pos_, 10);
+  REQUIRE_EQ (audio_group2->size_, 3);
+  REQUIRE_EQ (folder3->pos_, 11);
+  REQUIRE_EQ (folder3->size_, 2);
+  REQUIRE_EQ (audio_fx3->pos_, 12);
+  REQUIRE_EQ (midi->pos_, 13);
+  REQUIRE_EQ (midi2->pos_, 14);
 
   /*
    * [0] Chords
@@ -2422,43 +2302,43 @@ test_copy_multiple_inside (void)
    */
 
   /* move MIDI tracks to Folder Track 2 */
-  track_select (midi, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (TRACKLIST_SELECTIONS->num_tracks, ==, 2);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, folder3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  REQUIRE_EQ (TRACKLIST_SELECTIONS->get_num_tracks (), 2);
+  TRACKLIST->handle_move_or_copy (
+    *folder3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
 
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (audio_group2->pos, ==, 10);
-  g_assert_cmpint (audio_group2->size, ==, 5);
-  g_assert_cmpint (folder3->pos, ==, 11);
-  g_assert_cmpint (folder3->size, ==, 4);
-  g_assert_cmpint (midi->pos, ==, 12);
-  g_assert_cmpint (midi2->pos, ==, 13);
-  g_assert_cmpint (audio_fx3->pos, ==, 14);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (audio_group2->pos_, 10);
+  REQUIRE_EQ (audio_group2->size_, 5);
+  REQUIRE_EQ (folder3->pos_, 11);
+  REQUIRE_EQ (folder3->size_, 4);
+  REQUIRE_EQ (midi->pos_, 12);
+  REQUIRE_EQ (midi2->pos_, 13);
+  REQUIRE_EQ (audio_fx3->pos_, 14);
 
   /* clone the midi tracks at the end */
-  track_select (midi, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_COPY);
 
-  midi3 = TRACKLIST->tracks[15];
-  midi4 = TRACKLIST->tracks[16];
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (audio_group2->pos, ==, 10);
-  g_assert_cmpint (audio_group2->size, ==, 5);
-  g_assert_cmpint (folder3->pos, ==, 11);
-  g_assert_cmpint (folder3->size, ==, 4);
-  g_assert_cmpint (midi->pos, ==, 12);
-  g_assert_cmpint (midi2->pos, ==, 13);
-  g_assert_cmpint (audio_fx3->pos, ==, 14);
-  g_assert_cmpint (midi3->pos, ==, 15);
-  g_assert_cmpint (midi4->pos, ==, 16);
+  midi3 = TRACKLIST->get_track<MidiTrack> (15);
+  midi4 = TRACKLIST->get_track<MidiTrack> (16);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (audio_group2->pos_, 10);
+  REQUIRE_EQ (audio_group2->size_, 5);
+  REQUIRE_EQ (folder3->pos_, 11);
+  REQUIRE_EQ (folder3->size_, 4);
+  REQUIRE_EQ (midi->pos_, 12);
+  REQUIRE_EQ (midi2->pos_, 13);
+  REQUIRE_EQ (audio_fx3->pos_, 14);
+  REQUIRE_EQ (midi3->pos_, 15);
+  REQUIRE_EQ (midi4->pos_, 16);
 
   /*
    * [000] Chords
@@ -2481,136 +2361,129 @@ test_copy_multiple_inside (void)
    */
 
   /* move MIDI tracks below master */
-  track_select (midi3, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi4, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, P_MASTER_TRACK,
-    TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_MOVE);
-
-  /* copy MIDI tracks below MIDI Track 1 */
-  track_select (midi3, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi4, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
-    GDK_ACTION_COPY);
-
-  Track * midi5 = TRACKLIST->tracks[16];
-  Track * midi6 = TRACKLIST->tracks[17];
-  g_assert_cmpint (folder2->pos, ==, 11);
-  g_assert_cmpint (folder2->size, ==, 8);
-  g_assert_cmpint (audio_group2->pos, ==, 12);
-  g_assert_cmpint (audio_group2->size, ==, 7);
-  g_assert_cmpint (folder3->pos, ==, 13);
-  g_assert_cmpint (folder3->size, ==, 6);
-  g_assert_cmpint (midi->pos, ==, 14);
-  g_assert_cmpint (midi2->pos, ==, 15);
-  g_assert_cmpint (midi5->pos, ==, 16);
-  g_assert_cmpint (midi6->pos, ==, 17);
-  g_assert_cmpint (audio_fx3->pos, ==, 18);
-
-  /* undo */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder2->pos, ==, 11);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (audio_group2->pos, ==, 12);
-  g_assert_cmpint (audio_group2->size, ==, 5);
-  g_assert_cmpint (folder3->pos, ==, 13);
-  g_assert_cmpint (folder3->size, ==, 4);
-  g_assert_cmpint (midi->pos, ==, 14);
-  g_assert_cmpint (midi2->pos, ==, 15);
-  g_assert_cmpint (audio_fx3->pos, ==, 16);
-
-  /* move MIDI Track 3 at the end */
-  track_select (midi4, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *P_MASTER_TRACK, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
 
-  tracklist_print_tracks (TRACKLIST);
+  /* copy MIDI tracks below MIDI Track 1 */
+  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+    GDK_ACTION_COPY);
 
-  g_assert_cmpint (folder2->pos, ==, 10);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (audio_group2->pos, ==, 11);
-  g_assert_cmpint (audio_group2->size, ==, 5);
-  g_assert_cmpint (folder3->pos, ==, 12);
-  g_assert_cmpint (folder3->size, ==, 4);
-  g_assert_cmpint (midi->pos, ==, 13);
-  g_assert_cmpint (midi2->pos, ==, 14);
-  g_assert_cmpint (audio_fx3->pos, ==, 15);
-  g_assert_cmpint (midi4->pos, ==, 16);
+  auto midi5 = TRACKLIST->get_track<MidiTrack> (16);
+  auto midi6 = TRACKLIST->get_track<MidiTrack> (17);
+  REQUIRE_EQ (folder2->pos_, 11);
+  REQUIRE_EQ (folder2->size_, 8);
+  REQUIRE_EQ (audio_group2->pos_, 12);
+  REQUIRE_EQ (audio_group2->size_, 7);
+  REQUIRE_EQ (folder3->pos_, 13);
+  REQUIRE_EQ (folder3->size_, 6);
+  REQUIRE_EQ (midi->pos_, 14);
+  REQUIRE_EQ (midi2->pos_, 15);
+  REQUIRE_EQ (midi5->pos_, 16);
+  REQUIRE_EQ (midi6->pos_, 17);
+  REQUIRE_EQ (audio_fx3->pos_, 18);
+
+  /* undo */
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder2->pos_, 11);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (audio_group2->pos_, 12);
+  REQUIRE_EQ (audio_group2->size_, 5);
+  REQUIRE_EQ (folder3->pos_, 13);
+  REQUIRE_EQ (folder3->size_, 4);
+  REQUIRE_EQ (midi->pos_, 14);
+  REQUIRE_EQ (midi2->pos_, 15);
+  REQUIRE_EQ (audio_fx3->pos_, 16);
+
+  /* move MIDI Track 3 at the end */
+  midi4->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+    GDK_ACTION_MOVE);
+
+  REQUIRE_EQ (folder2->pos_, 10);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (audio_group2->pos_, 11);
+  REQUIRE_EQ (audio_group2->size_, 5);
+  REQUIRE_EQ (folder3->pos_, 12);
+  REQUIRE_EQ (folder3->size_, 4);
+  REQUIRE_EQ (midi->pos_, 13);
+  REQUIRE_EQ (midi2->pos_, 14);
+  REQUIRE_EQ (audio_fx3->pos_, 15);
+  REQUIRE_EQ (midi4->pos_, 16);
 
   /* copy MIDI Track 3 and MIDI Track 2 below
    * MIDI Track 1 */
-  track_select (midi3, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi4, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_COPY);
 
-  tracklist_print_tracks (TRACKLIST);
-
-  midi5 = TRACKLIST->tracks[15];
-  midi6 = TRACKLIST->tracks[16];
-  g_assert_cmpint (folder2->pos, ==, 10);
-  g_assert_cmpint (folder2->size, ==, 8);
-  g_assert_cmpint (audio_group2->pos, ==, 11);
-  g_assert_cmpint (audio_group2->size, ==, 7);
-  g_assert_cmpint (folder3->pos, ==, 12);
-  g_assert_cmpint (folder3->size, ==, 6);
-  g_assert_cmpint (midi->pos, ==, 13);
-  g_assert_cmpint (midi2->pos, ==, 14);
-  g_assert_cmpint (midi5->pos, ==, 15);
-  g_assert_cmpint (midi6->pos, ==, 16);
-  g_assert_cmpint (audio_fx3->pos, ==, 17);
-  g_assert_cmpint (midi4->pos, ==, 18);
-  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 19);
+  midi5 = TRACKLIST->get_track<MidiTrack> (15);
+  midi6 = TRACKLIST->get_track<MidiTrack> (16);
+  REQUIRE_EQ (folder2->pos_, 10);
+  REQUIRE_EQ (folder2->size_, 8);
+  REQUIRE_EQ (audio_group2->pos_, 11);
+  REQUIRE_EQ (audio_group2->size_, 7);
+  REQUIRE_EQ (folder3->pos_, 12);
+  REQUIRE_EQ (folder3->size_, 6);
+  REQUIRE_EQ (midi->pos_, 13);
+  REQUIRE_EQ (midi2->pos_, 14);
+  REQUIRE_EQ (midi5->pos_, 15);
+  REQUIRE_EQ (midi6->pos_, 16);
+  REQUIRE_EQ (audio_fx3->pos_, 17);
+  REQUIRE_EQ (midi4->pos_, 18);
+  REQUIRE_EQ (TRACKLIST->get_num_tracks (), 19);
 
   /* undo */
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  g_assert_cmpint (folder2->pos, ==, 10);
-  g_assert_cmpint (folder2->size, ==, 6);
-  g_assert_cmpint (audio_group2->pos, ==, 11);
-  g_assert_cmpint (audio_group2->size, ==, 5);
-  g_assert_cmpint (folder3->pos, ==, 12);
-  g_assert_cmpint (folder3->size, ==, 4);
-  g_assert_cmpint (midi->pos, ==, 13);
-  g_assert_cmpint (midi2->pos, ==, 14);
-  g_assert_cmpint (audio_fx3->pos, ==, 15);
-  g_assert_cmpint (midi4->pos, ==, 16);
-  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 17);
-
-  tracklist_print_tracks (TRACKLIST);
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (folder2->pos_, 10);
+  REQUIRE_EQ (folder2->size_, 6);
+  REQUIRE_EQ (audio_group2->pos_, 11);
+  REQUIRE_EQ (audio_group2->size_, 5);
+  REQUIRE_EQ (folder3->pos_, 12);
+  REQUIRE_EQ (folder3->size_, 4);
+  REQUIRE_EQ (midi->pos_, 13);
+  REQUIRE_EQ (midi2->pos_, 14);
+  REQUIRE_EQ (audio_fx3->pos_, 15);
+  REQUIRE_EQ (midi4->pos_, 16);
+  REQUIRE_EQ (TRACKLIST->get_num_tracks (), 17);
 
   /* move MIDI Track 3 and MIDI Track 2 below
    * MIDI Track 1 */
-  track_select (midi3, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (midi4, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->handle_move_or_copy (
+    *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
 
-  tracklist_print_tracks (TRACKLIST);
-
-  g_assert_cmpint (folder2->pos, ==, 9);
-  g_assert_cmpint (folder2->size, ==, 8);
-  g_assert_cmpint (audio_group2->pos, ==, 10);
-  g_assert_cmpint (audio_group2->size, ==, 7);
-  g_assert_cmpint (folder3->pos, ==, 11);
-  g_assert_cmpint (folder3->size, ==, 6);
-  g_assert_cmpint (midi->pos, ==, 12);
-  g_assert_cmpint (midi2->pos, ==, 13);
-  g_assert_cmpint (midi3->pos, ==, 14);
-  g_assert_cmpint (midi4->pos, ==, 15);
-  g_assert_cmpint (audio_fx3->pos, ==, 16);
-  g_assert_cmpint (TRACKLIST->tracks.size (), ==, 17);
+  REQUIRE_EQ (folder2->pos_, 9);
+  REQUIRE_EQ (folder2->size_, 8);
+  REQUIRE_EQ (audio_group2->pos_, 10);
+  REQUIRE_EQ (audio_group2->size_, 7);
+  REQUIRE_EQ (folder3->pos_, 11);
+  REQUIRE_EQ (folder3->size_, 6);
+  REQUIRE_EQ (midi->pos_, 12);
+  REQUIRE_EQ (midi2->pos_, 13);
+  REQUIRE_EQ (midi3->pos_, 14);
+  REQUIRE_EQ (midi4->pos_, 15);
+  REQUIRE_EQ (audio_fx3->pos_, 16);
+  REQUIRE_EQ (TRACKLIST->get_num_tracks (), 17);
 
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_copy_after_uninstalling_plugin (void)
+/* uninstalling does not work with carla */
+#if 0
+TEST_CASE ("copy track after uninstalling plugin")
 {
-#ifdef HAVE_HELM
+#  ifdef HAVE_HELM
   test_helper_zrythm_init ();
 
   bool with_carla = false;
@@ -2648,134 +2521,36 @@ test_copy_after_uninstalling_plugin (void)
     }
 
   test_helper_zrythm_cleanup ();
-#endif
+#  endif
 }
+#endif
 
-static void
-test_move_track_w_clip_editor_region (void)
+TEST_CASE ("move track with clip editor region")
 {
   test_helper_zrythm_init ();
 
-  char * midi_file = g_build_filename (
-    TESTS_SRCDIR, "1_empty_track_1_track_with_data.mid", NULL);
-  FileDescriptor file = FileDescriptor (midi_file);
-  g_free (midi_file);
-  int  num_tracks_before = TRACKLIST->tracks.size ();
-  bool success = track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD, num_tracks_before, 1, -1,
-    NULL, NULL);
-  g_assert_true (success);
-  Track * first_track = TRACKLIST->tracks[num_tracks_before];
-  track_select (first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  Region * r = first_track->lanes[0]->regions[0];
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  clip_editor_set_region (CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
-  Region * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
-  g_assert_nonnull (clip_editor_region);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, TRACKLIST->tracks.size (), NULL);
-  clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
-  g_assert_nonnull (clip_editor_region);
-  undo_manager_undo (UNDO_MANAGER, NULL);
-  clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
-  g_assert_nonnull (clip_editor_region);
+  auto midi_file =
+    fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
+  FileDescriptor file (midi_file);
+  const auto     num_tracks_before = TRACKLIST->get_num_tracks ();
+  REQUIRE_NOTHROW (Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
+    nullptr));
+  auto first_track = TRACKLIST->get_track<MidiTrack> (num_tracks_before);
+  first_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  const auto &r = first_track->lanes_[0]->regions_[0];
+  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (r.get (), F_NO_PUBLISH_EVENTS);
+  auto clip_editor_region = CLIP_EDITOR->get_region ();
+  REQUIRE_NONNULL (clip_editor_region);
+  perform_move_to_end ();
+  clip_editor_region = CLIP_EDITOR->get_region ();
+  REQUIRE_NONNULL (clip_editor_region);
+  UNDO_MANAGER->undo ();
+  clip_editor_region = CLIP_EDITOR->get_region ();
+  REQUIRE_NONNULL (clip_editor_region);
 
   test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/actions/tracklist_selections/"
-
-  g_test_add_func (
-    TEST_PREFIX "test duplicate w output and send",
-    (GTestFunc) test_duplicate_w_output_and_send);
-  g_test_add_func (
-    TEST_PREFIX "test delete track w midi file",
-    (GTestFunc) test_delete_track_w_midi_file);
-  g_test_add_func (
-    TEST_PREFIX "test move track w clip editor region",
-    (GTestFunc) test_move_track_w_clip_editor_region);
-  g_test_add_func (
-    TEST_PREFIX "test track deletion with plugin",
-    (GTestFunc) test_track_deletion_with_plugin);
-  g_test_add_func (
-    TEST_PREFIX "test no visible tracks after track deletion",
-    (GTestFunc) test_no_visible_tracks_after_track_deletion);
-  g_test_add_func (
-    TEST_PREFIX "test track deletion with lv2 worker",
-    (GTestFunc) test_track_deletion_with_lv2_worker);
-  g_test_add_func (
-    TEST_PREFIX "test track deletion w mixer selections",
-    (GTestFunc) test_track_deletion_w_mixer_selections);
-  g_test_add_func (
-    TEST_PREFIX "test port and plugin track pos after duplication",
-    (GTestFunc) test_port_and_plugin_track_pos_after_duplication);
-  g_test_add_func (
-    TEST_PREFIX "test ins track duplicate w send",
-    (GTestFunc) test_ins_track_duplicate_w_send);
-  g_test_add_func (
-    TEST_PREFIX "test ins track deletion with automation",
-    (GTestFunc) test_ins_track_deletion_w_automation);
-  g_test_add_func (
-    TEST_PREFIX "test group track deletion",
-    (GTestFunc) test_group_track_deletion);
-  g_test_add_func (TEST_PREFIX "test move inside", (GTestFunc) test_move_inside);
-  g_test_add_func (
-    TEST_PREFIX "test copy multiple inside",
-    (GTestFunc) test_copy_multiple_inside);
-  g_test_add_func (
-    TEST_PREFIX "test move multiple inside",
-    (GTestFunc) test_move_multiple_inside);
-#ifdef HAVE_CARLA
-  g_test_add_func (
-    TEST_PREFIX "test port and plugin track pos after duplication with carla",
-    (GTestFunc) test_port_and_plugin_track_pos_after_duplication_with_carla);
-#endif
-  g_test_add_func (TEST_PREFIX "test_move_tracks", (GTestFunc) test_move_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test source track deletion with sends",
-    (GTestFunc) test_source_track_deletion_with_sends);
-#if 0
-  /* uninstalling does not work with carla */
-  g_test_add_func (
-    TEST_PREFIX "test copy after uninstalling plugin",
-    (GTestFunc) test_copy_after_uninstalling_plugin);
-#endif
-  g_test_add_func (
-    TEST_PREFIX "test move multiple tracks",
-    (GTestFunc) test_move_multiple_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test multi track duplicate",
-    (GTestFunc) test_multi_track_duplicate);
-  g_test_add_func (
-    TEST_PREFIX "test create midi fx track",
-    (GTestFunc) test_create_midi_fx_track);
-  g_test_add_func (
-    TEST_PREFIX "test target track deletion with sends",
-    (GTestFunc) test_target_track_deletion_with_sends);
-  g_test_add_func (
-    TEST_PREFIX "test marker track unpin", (GTestFunc) test_marker_track_unpin);
-  g_test_add_func (
-    TEST_PREFIX "test create from midi file",
-    (GTestFunc) test_create_from_midi_file);
-  g_test_add_func (
-    TEST_PREFIX
-    "test create instrument when redo stack "
-    "non-empty",
-    (GTestFunc) test_create_ins_when_redo_stack_nonempty);
-  g_test_add_func (
-    TEST_PREFIX "test undo track deletion",
-    (GTestFunc) test_undo_track_deletion);
-  g_test_add_func (
-    TEST_PREFIX "test audio track deletion",
-    (GTestFunc) test_audio_track_deletion);
-
-  (void) test_copy_after_uninstalling_plugin;
-
-  return g_test_run ();
-}
+TEST_SUITE_END ();

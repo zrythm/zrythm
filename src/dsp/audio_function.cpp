@@ -237,7 +237,7 @@ apply_plugin (
       if (i > latency)
         {
           plugin_update_latency (pl);
-          /*z_info ("end latency %d", pl->latency);*/
+          /*z_info ("end latency {}", pl->latency);*/
         }
       i += step;
       step = (uint32_t) MIN (step, num_frames - i);
@@ -277,7 +277,7 @@ apply_plugin (
       step = (uint32_t) MIN (step, latency - i);
     }
   plugin_update_latency (pl);
-  z_info ("end latency %d", pl->latency);
+  z_info ("end latency {}", pl->latency);
 
   plugin_gtk_close_ui (pl);
   plugin_free (pl);
@@ -293,7 +293,7 @@ audio_function_apply (
   AudioFunctionOpts   opts,
   const std::string * uri)
 {
-  z_debug ("applying %s...", AudioFunctionType_to_string (type));
+  z_debug ("applying {}...", AudioFunctionType_to_string (type));
 
   auto &audio_sel = (AudioSelections &) sel;
 
@@ -588,7 +588,7 @@ audio_function_apply (
     &dest_frames[0], num_frames, channels, BitDepth::BIT_DEPTH_32,
     orig_clip->name_));
   auto clip = AUDIO_POOL->get_clip (id);
-  z_debug ("writing %s to pool (id %d)", clip->name_, clip->pool_id_);
+  z_debug ("writing {} to pool (id {})", clip->name_, clip->pool_id_);
   clip->write_to_pool (false, false);
 
   audio_sel.pool_id_ = clip->pool_id_;

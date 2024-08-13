@@ -228,7 +228,7 @@ on_window_destroy (GtkWidget * widget, Plugin * pl)
 {
   z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
   pl->window_ = nullptr;
-  z_info ("destroying window for %s", pl->get_name ());
+  z_info ("destroying window for {}", pl->get_name ());
 
   /* reinit widget in plugin ports/parameters */
   for (auto port : pl->in_ports_ | type_is<ControlPort> ())
@@ -244,7 +244,7 @@ on_close_request (GtkWindow * window, Plugin * plugin)
   plugin->window_ = NULL;
   EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 
-  z_info ("deleted plugin [%s] window", plugin->print ());
+  z_info ("deleted plugin [{}] window", plugin->print ());
 
   return false;
 }
@@ -256,7 +256,7 @@ on_close_request (GtkWindow * window, Plugin * plugin)
 void
 plugin_gtk_create_window (Plugin * plugin)
 {
-  z_debug ("creating GTK window for %s", plugin->get_name ());
+  z_debug ("creating GTK window for {}", plugin->get_name ());
 
   /* create window */
   plugin->window_ = GTK_WINDOW (gtk_window_new ());
@@ -884,7 +884,7 @@ plugin_gtk_close_ui (Plugin * pl)
       pl->update_ui_source_id_ = 0;
     }
 
-  z_info ("%s called", __func__);
+  z_info ("{} called", __func__);
   if (pl->window_)
     {
       if (pl->destroy_window_id_)
@@ -966,12 +966,12 @@ plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
 
   if (!plugin->instantiated_)
     {
-      z_info ("plugin %s not instantiated", plugin->print ());
+      z_info ("plugin {} not instantiated", plugin->print ());
       return false;
     }
 
-  bool         ret = false;
-  auto        &bank = plugin->banks_[plugin->selected_bank_.bank_idx_];
+  bool  ret = false;
+  auto &bank = plugin->banks_[plugin->selected_bank_.bank_idx_];
   for (auto &preset : bank.presets_)
     {
       GtkWidget * label = gtk_label_new (preset.name_.c_str ());
@@ -983,7 +983,7 @@ plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
     gtk_list_box_get_row_at_index (box, plugin->selected_preset_.idx_);
   gtk_list_box_select_row (box, row);
 
-  z_debug ("%s: done", __func__);
+  z_debug ("{}: done", __func__);
 
   return ret;
 }

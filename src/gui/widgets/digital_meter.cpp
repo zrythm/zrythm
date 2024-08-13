@@ -203,11 +203,11 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       color = Color (color).brighten_default ().to_gdk_rgba ();
     }
-  char     text[20];
+  char        text[20];
   std::string heap_text;
-  int      num_part, dec_part, bars, beats, sixteenths, ticks;
-  int      textw, texth;
-  Position pos;
+  int         num_part, dec_part, bars, beats, sixteenths, ticks;
+  int         textw, texth;
+  Position    pos;
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_BPM:
@@ -522,7 +522,7 @@ digital_meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 static void
 update_flags (DigitalMeterWidget * self, double x, double y)
 {
-  z_debug ("update flags %f %f", x, y);
+  z_debug ("update flags {:f} {:f}", x, y);
   int width = gtk_widget_get_width (GTK_WIDGET (self));
   switch (self->type)
     {
@@ -775,7 +775,7 @@ on_scroll (
   self->last_scroll_time = g_get_monotonic_time ();
 
   ControlPort::ChangeEvent change;
-  Position          pos;
+  Position                 pos;
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_BPM:
@@ -938,11 +938,11 @@ drag_update (
   switch (self->type)
     {
     case DigitalMeterType::DIGITAL_METER_TYPE_BPM:
-      /*z_info ("update num ? %d", self->update_num);*/
+      /*z_info ("update num ? {}", self->update_num);*/
       if (self->update_num)
         {
           num = (int) diff / 4;
-          /*z_info ("updating num with %d", num);*/
+          /*z_info ("updating num with {}", num);*/
           if (abs (num) > 0)
             {
               ControlPort::ChangeEvent change;
@@ -957,7 +957,7 @@ drag_update (
       else if (self->update_dec)
         {
           dec = (float) diff / 400.f;
-          z_info ("%f", (double) dec);
+          z_info ("{:f}", (double) dec);
           if (fabs (dec) > 0)
             {
               ControlPort::ChangeEvent change;
@@ -982,7 +982,7 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  z_info ("UPDATE MINS %d", num);
+                  z_info ("UPDATE MINS {}", num);
                   pos.print ();
                   pos.add_minutes (num);
                   pos.print ();
@@ -1151,7 +1151,7 @@ button_press_cb (
   gdouble              y,
   DigitalMeterWidget * self)
 {
-  /*z_info ("%d, %d", self->height_start_pos, self->height_end_pos);*/
+  /*z_info ("{}, {}", self->height_start_pos, self->height_end_pos);*/
   update_flags (self, x, y);
 }
 

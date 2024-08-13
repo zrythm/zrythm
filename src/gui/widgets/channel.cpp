@@ -200,7 +200,7 @@ on_dnd_drop (
     action_str = "COPY";
   else if (action == GDK_ACTION_MOVE)
     action_str = "MOVE";
-  z_debug ("channel widget: dnd drop (action %s)", action_str);
+  z_debug ("channel widget: dnd drop (action {})", action_str);
 
   int w = gtk_widget_get_width (widget);
 

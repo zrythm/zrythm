@@ -17,9 +17,9 @@
 
 #include "gtk_wrapper.h"
 
-typedef struct _DragDestBoxWidget        DragDestBoxWidget;
+typedef struct _DragDestBoxWidget DragDestBoxWidget;
 class Channel;
-typedef struct _ChannelSlotWidget        ChannelSlotWidget;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
 class Track;
 typedef struct _AddTrackMenuButtonWidget AddTrackMenuButtonWidget;
 

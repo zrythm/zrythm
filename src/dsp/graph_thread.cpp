@@ -242,7 +242,7 @@ GraphThread::run_worker ()
       /* this thread has now claimed the graph node for processing - process it */
       graph->trigger_queue_size_.fetch_sub (1);
 #ifdef DEBUG_THREADS
-      z_info ("[%d]: running node", thread->id);
+      z_info ("[{}]: running node", thread->id);
 #endif
       to_run->process (graph->router_->time_nfo_, *this);
     }
@@ -282,7 +282,7 @@ GraphThread::run ()
       for (auto &node : graph->init_trigger_list_)
         {
           graph->trigger_queue_size_.fetch_add (1);
-          /*z_info ("[main] pushing back node %d during bootstrap", i);*/
+          /*z_info ("[main] pushing back node {} during bootstrap", i);*/
           graph->trigger_queue_.push_back (node);
         }
     }
@@ -330,8 +330,8 @@ get_stack_size ()
 
 GraphThread::GraphThread (const int id, const bool is_main, Graph &graph)
     : juce::Thread (
-      is_main ? "MainGraphThread" : fmt::format ("GraphWorkerThread{}", id),
-      THREAD_STACK_SIZE + get_stack_size ()),
+        is_main ? "MainGraphThread" : fmt::format ("GraphWorkerThread{}", id),
+        THREAD_STACK_SIZE + get_stack_size ()),
       id_ (id), graph_ (graph)
 {
   startRealtimeThread (RealtimeOptions ().withPriority (9));

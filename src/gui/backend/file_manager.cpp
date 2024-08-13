@@ -38,30 +38,33 @@
 void
 FileManager::add_volume (GVolume * vol)
 {
-  GMount * mount = g_volume_get_mount (vol);
-  char *   name = g_volume_get_name (vol);
-  GFile *  root = mount ? g_mount_get_default_location (mount) : NULL;
-  char *   path = NULL;
+  GMount *    mount = g_volume_get_mount (vol);
+  auto        _name = g_volume_get_name (vol);
+  std::string name = _name;
+  g_free (_name);
+  GFile *     root = mount ? g_mount_get_default_location (mount) : NULL;
+  std::string path;
   if (root)
     {
-      path = g_file_get_path (root);
+      auto _path = g_file_get_path (root);
+      path = _path;
+      g_free (_path);
       g_object_unref (root);
     }
 
-  z_debug ("vol: %s [%s]", name, path);
+  z_debug ("vol: {} [{}]", name, path);
 
-  if (path && (!mount || !g_mount_is_shadowed (mount)))
+  if (!path.empty () && (!mount || !g_mount_is_shadowed (mount)))
     {
       FileBrowserLocation fl = FileBrowserLocation (
-        name, path, FileManagerSpecialLocation::FILE_MANAGER_DRIVE);
+        name.c_str (), path.c_str (),
+        FileManagerSpecialLocation::FILE_MANAGER_DRIVE);
       locations.push_back (fl);
 
-      z_debug ("  added location: %s", fl.path_.c_str ());
+      z_debug ("  added location: {}", fl.path_.c_str ());
     }
 
   object_free_w_func_and_null (g_object_unref, mount);
-  g_free_and_null (name);
-  g_free_and_null (path);
 }
 
 FileManager::FileManager ()
@@ -96,7 +99,7 @@ FileManager::FileManager ()
       GDrive * drive = G_DRIVE (dl->data);
 
       char * drive_name = g_drive_get_name (drive);
-      z_debug ("drive: %s", drive_name);
+      z_debug ("drive: {}", drive_name);
       g_free (drive_name);
 
       GList * vols = g_drive_get_volumes (drive);
@@ -174,14 +177,14 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   GDir * dir = g_dir_open (location.path_.c_str (), 0, nullptr);
   if (!dir)
     {
-      z_warning ("Could not open dir %s", location.path_.c_str ());
+      z_warning ("Could not open dir {}", location.path_.c_str ());
       return;
     }
 
   /* create special parent dir entry */
   {
-    auto   parent_dir = fs::path (location.path_).parent_path ();
-    auto   fd = FileDescriptor ();
+    auto parent_dir = fs::path (location.path_).parent_path ();
+    auto fd = FileDescriptor ();
     fd.abs_path_ = parent_dir;
     fd.type_ = FileType::ParentDirectory;
     fd.hidden_ = false;
@@ -244,7 +247,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
     [] (const FileDescriptor &a, const FileDescriptor &b) {
       return a.label_ < b.label_;
     });
-  z_info ("Total files: %zu", files.size ());
+  z_info ("Total files: {}", files.size ());
 }
 
 void
@@ -266,7 +269,7 @@ FileManager::set_selection (
   bool                 _load_files,
   bool                 save_to_settings)
 {
-  z_debug ("setting selection to %s", sel.path_.c_str ());
+  z_debug ("setting selection to {}", sel.path_.c_str ());
 
   selection = std::make_unique<FileBrowserLocation> (sel);
   if (_load_files)
@@ -333,7 +336,7 @@ FileManager::remove_location_and_save (
     }
   else
     {
-      z_warning ("%s not found", location);
+      z_warning ("{} not found", location);
     }
 
   save_locations ();

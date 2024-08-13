@@ -45,8 +45,8 @@ update_meter_reading (
       return G_SOURCE_REMOVE;
     }
 
-  double  prev = widget->meter_reading_val;
-  auto    track = dynamic_cast<ChannelTrack *> (widget->track);
+  double prev = widget->meter_reading_val;
+  auto   track = dynamic_cast<ChannelTrack *> (widget->track);
   z_return_val_if_fail (track, G_SOURCE_REMOVE);
   auto channel = track->get_channel ();
   z_warn_if_fail (channel);

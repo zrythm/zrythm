@@ -117,8 +117,8 @@ concept CloneableShared =
  */
 template <typename T>
 concept Cloneable =
-  (CloneableUnique<T> || CloneableShared<T>) &&std::is_final_v<T>
-  && std::default_initializable<T>;
+  (CloneableUnique<T> || CloneableShared<T>)
+  && std::is_final_v<T> && std::default_initializable<T>;
 
 /** Concept to check if a type inherits from a base class */
 template <typename T, typename Base>

@@ -37,7 +37,7 @@ AutomationRegion::print_automation () const
 {
   for (const auto &ap : aps_)
     {
-      z_debug ("[%d] %s : %s", ap->index_, ap->fvalue_, ap->pos_.to_string ());
+      z_debug ("[{}] {} : {}", ap->index_, ap->fvalue_, ap->pos_.to_string ());
     }
 }
 

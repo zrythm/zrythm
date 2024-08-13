@@ -370,7 +370,7 @@ public:
   {
     return static_cast<PortIdentifier *> (data)->get_label ();
   }
-  const char *       get_label_as_c_str () const { return label_.c_str (); }
+  const char * get_label_as_c_str () const { return label_.c_str (); }
 
   bool is_control () const { return type_ == PortType::Control; }
   bool is_midi () const { return type_ == PortType::Event; }
@@ -412,10 +412,10 @@ public:
    */
   // WARN_UNUSED_RESULT bool is_equal (const PortIdentifier &other) const;
 
-  std::string  print_to_str () const;
-  void         print () const;
-  bool         validate () const;
-  uint32_t     get_hash () const;
+  std::string print_to_str () const;
+  void        print () const;
+  bool        validate () const;
+  uint32_t    get_hash () const;
 
   /**
    * Port group comparator function where @ref p1 and

@@ -45,13 +45,13 @@ typedef enum SelectionType_v1
 } SelectionType_v1;
 
 static const cyaml_strval_t selection_type_strings_v1[] = {
-  {"Tracklist",   Z_PROJECT_SELECTION_TYPE_TRACKLIST_v1 },
-  { "Timeline",   Z_PROJECT_SELECTION_TYPE_TIMELINE_v1  },
-  { "Insert",     Z_PROJECT_SELECTION_TYPE_INSERT_v1    },
-  { "MIDI FX",    Z_PROJECT_SELECTION_TYPE_MIDI_FX_v1   },
-  { "Instrument", Z_PROJECT_SELECTION_TYPE_INSTRUMENT_v1},
-  { "Modulator",  Z_PROJECT_SELECTION_TYPE_MODULATOR_v1 },
-  { "Editor",     Z_PROJECT_SELECTION_TYPE_EDITOR_v1    },
+  { "Tracklist",  Z_PROJECT_SELECTION_TYPE_TRACKLIST_v1  },
+  { "Timeline",   Z_PROJECT_SELECTION_TYPE_TIMELINE_v1   },
+  { "Insert",     Z_PROJECT_SELECTION_TYPE_INSERT_v1     },
+  { "MIDI FX",    Z_PROJECT_SELECTION_TYPE_MIDI_FX_v1    },
+  { "Instrument", Z_PROJECT_SELECTION_TYPE_INSTRUMENT_v1 },
+  { "Modulator",  Z_PROJECT_SELECTION_TYPE_MODULATOR_v1  },
+  { "Editor",     Z_PROJECT_SELECTION_TYPE_EDITOR_v1     },
 };
 
 typedef struct Project_v1

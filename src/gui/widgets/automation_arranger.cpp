@@ -49,10 +49,10 @@ automation_arranger_widget_create_ap (
 
   /* get local pos */
   Position local_pos (pos->ticks_ - region->pos_.ticks_);
-  int height = gtk_widget_get_height (GTK_WIDGET (self));
+  int      height = gtk_widget_get_height (GTK_WIDGET (self));
   /* do height - because it's uside down */
   float normalized_val = static_cast<float> ((height - start_y) / height);
-  z_debug ("normalized val is %f", static_cast<double> (normalized_val));
+  z_debug ("normalized val is {:f}", static_cast<double> (normalized_val));
 
   /* clamp the value because the cursor might be outside the widget */
   normalized_val = std::clamp<float> (normalized_val, 0, 1);

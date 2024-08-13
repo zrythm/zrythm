@@ -707,7 +707,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
           (self->type == Fader::Type::FADER_TYPE_AUDIO_CHANNEL ||
            self->type == Fader::Type::FADER_TYPE_MIDI_CHANNEL))
         {
-          z_debug ("%s soloed %d implied soloed %d effectively muted %d",
+          z_debug ("{} soloed {} implied soloed {} effectively muted {}",
             track->name, fader_get_soloed (self),
             fader_get_implied_soloed (self),
             effectively_muted);
@@ -716,26 +716,23 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
     }
 
   if (
-    type_ == Type::AudioChannel
-    || type_ == Type::Monitor
+    type_ == Type::AudioChannel || type_ == Type::Monitor
     || type_ == Type::SampleProcessor)
     {
       /* copy the input to output */
       dsp_copy (
         &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-        &stereo_in_->get_l ().buf_[time_nfo.local_offset_],
-        time_nfo.nframes_);
+        &stereo_in_->get_l ().buf_[time_nfo.local_offset_], time_nfo.nframes_);
       dsp_copy (
         &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-        &stereo_in_->get_r ().buf_[time_nfo.local_offset_],
-        time_nfo.nframes_);
+        &stereo_in_->get_r ().buf_[time_nfo.local_offset_], time_nfo.nframes_);
 
       /* if prefader */
       if (passthrough_)
         {
 
           /* if track frozen and transport is rolling */
-          if (track && track->frozen_ && TRANSPORT->is_rolling())
+          if (track && track->frozen_ && TRANSPORT->is_rolling ())
             {
 #if 0
               /* get audio from clip */
@@ -760,10 +757,10 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
           if (type_ == Fader::Type::Monitor)
             {
               mute_amp = AUDIO_ENGINE->denormal_prevention_val_;
-              float dim_amp = CONTROL_ROOM->dim_fader_->get_amp();
+              float dim_amp = CONTROL_ROOM->dim_fader_->get_amp ();
 
               /* if have listened tracks */
-              if (TRACKLIST->has_listened())
+              if (TRACKLIST->has_listened ())
                 {
                   /* dim signal */
                   dsp_mul_k2 (
@@ -776,24 +773,26 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                   /* add listened signal */
                   /* TODO add "listen" buffer on fader struct and add listened
                    * tracks to it during processing instead of looping here */
-                  float listen_amp = CONTROL_ROOM->listen_fader_->get_amp();
-                  for (auto& t : TRACKLIST->tracks_)
+                  float listen_amp = CONTROL_ROOM->listen_fader_->get_amp ();
+                  for (auto &t : TRACKLIST->tracks_)
                     {
-                      if (t->has_channel()
+                      if (
+                        t->has_channel ()
                         && t->out_signal_type_ == PortType::Audio
-                        && t->get_listened())
+                        && t->get_listened ())
                         {
-                          auto channel_track = dynamic_cast<ChannelTrack*> (t.get());
-                          auto f = channel_track->get_fader(true);
+                          auto channel_track =
+                            dynamic_cast<ChannelTrack *> (t.get ());
+                          auto f = channel_track->get_fader (true);
                           dsp_mix2 (
-                            &stereo_out_->get_l ()
+                            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
+                            &f->stereo_out_->get_l ()
                                .buf_[time_nfo.local_offset_],
-                            &f->stereo_out_->get_l ().buf_[time_nfo.local_offset_],
                             1.f, listen_amp, time_nfo.nframes_);
                           dsp_mix2 (
-                            &stereo_out_->get_r ()
+                            &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                            &f->stereo_out_->get_r ()
                                .buf_[time_nfo.local_offset_],
-                            &f->stereo_out_->get_r ().buf_[time_nfo.local_offset_],
                             1.f, listen_amp, time_nfo.nframes_);
                         }
                     }
@@ -812,7 +811,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
             } /* endif monitor fader */
           else
             {
-              mute_amp = CONTROL_ROOM->mute_fader_->get_amp();
+              mute_amp = CONTROL_ROOM->mute_fader_->get_amp ();
 
               /* add fade if changed from muted to non-muted or
                * vice versa */
@@ -915,14 +914,14 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
 
           /* apply fader and pan */
           dsp_mul_k2 (
-            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-            amp * calc_l, time_nfo.nframes_);
+            &stereo_out_->get_l ().buf_[time_nfo.local_offset_], amp * calc_l,
+            time_nfo.nframes_);
           dsp_mul_k2 (
-            &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-            amp * calc_r, time_nfo.nframes_);
+            &stereo_out_->get_r ().buf_[time_nfo.local_offset_], amp * calc_r,
+            time_nfo.nframes_);
 
           /* make mono if mono compat enabled */
-          if (mono_compat_enabled_->is_toggled())
+          if (mono_compat_enabled_->is_toggled ())
             {
               dsp_make_mono (
                 &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
@@ -931,7 +930,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
             }
 
           /* swap phase if need */
-          if (swap_phase_->is_toggled())
+          if (swap_phase_->is_toggled ())
             {
               dsp_mul_k2 (
                 &stereo_out_->get_l ().buf_[time_nfo.local_offset_], -1.f,
@@ -979,41 +978,41 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
 
           /* if master or monitor or sample processor, hard limit the output */
           if (
-            (type_ == Type::AudioChannel && track
-             && track->is_master())
-            || type_ == Type::Monitor
-            || type_ == Type::SampleProcessor)
+            (type_ == Type::AudioChannel && track && track->is_master ())
+            || type_ == Type::Monitor || type_ == Type::SampleProcessor)
             {
               dsp_limit1 (
-                &stereo_out_->get_l ().buf_[time_nfo.local_offset_], -2.f,
-                2.f, time_nfo.nframes_);
+                &stereo_out_->get_l ().buf_[time_nfo.local_offset_], -2.f, 2.f,
+                time_nfo.nframes_);
               dsp_limit1 (
-                &stereo_out_->get_r ().buf_[time_nfo.local_offset_], -2.f,
-                2.f, time_nfo.nframes_);
+                &stereo_out_->get_r ().buf_[time_nfo.local_offset_], -2.f, 2.f,
+                time_nfo.nframes_);
             }
         } /* fi not prefader */
-    }     /* fi monitor/audio fader */
+    } /* fi monitor/audio fader */
   else if (type_ == Type::MidiChannel)
     {
       if (!effectively_muted)
         {
-            midi_out_->midi_events_.active_events_.append(midi_in_->midi_events_.active_events_,
-            time_nfo.local_offset_, time_nfo.nframes_);
+          midi_out_->midi_events_.active_events_.append (
+            midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
+            time_nfo.nframes_);
 
           /* if not prefader, also apply volume changes */
           if (!passthrough_)
             {
-              for (auto & ev : midi_out_->midi_events_.active_events_)
+              for (auto &ev : midi_out_->midi_events_.active_events_)
                 {
                   if (
-                    midi_mode_
-                      == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
-                    && midi_is_note_on (ev.raw_buffer_.data()))
+                    midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
+                    && midi_is_note_on (ev.raw_buffer_.data ()))
                     {
-                      midi_byte_t prev_vel = midi_get_velocity (ev.raw_buffer_.data());
+                      midi_byte_t prev_vel =
+                        midi_get_velocity (ev.raw_buffer_.data ());
                       auto new_vel =
                         (midi_byte_t) ((float) prev_vel * amp_->control_);
-                      ev.set_velocity(std::min(new_vel, static_cast<midi_byte_t>(127)));   
+                      ev.set_velocity (
+                        std::min (new_vel, static_cast<midi_byte_t> (127)));
                     }
                 }
 
@@ -1032,7 +1031,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
   if (ZRYTHM_TESTING)
     {
 #if 0
-      z_debug ("%s: done", __func__);
+      z_debug ("{}: done", __func__);
 #endif
     }
 }
@@ -1042,22 +1041,22 @@ Fader::init_after_cloning (const Fader &other)
 {
   type_ = other.type_;
   volume_ = other.volume_;
-  amp_ = other.amp_->clone_unique();
+  amp_ = other.amp_->clone_unique ();
   phase_ = other.phase_;
-  balance_ = other.balance_->clone_unique();
-  mute_ = other.mute_->clone_unique();
-  solo_ = other.solo_->clone_unique();
-  listen_ = other.listen_->clone_unique();
-  mono_compat_enabled_ = other.mono_compat_enabled_->clone_unique();
-  swap_phase_ = other.swap_phase_->clone_unique();
+  balance_ = other.balance_->clone_unique ();
+  mute_ = other.mute_->clone_unique ();
+  solo_ = other.solo_->clone_unique ();
+  listen_ = other.listen_->clone_unique ();
+  mono_compat_enabled_ = other.mono_compat_enabled_->clone_unique ();
+  swap_phase_ = other.swap_phase_->clone_unique ();
   if (other.midi_in_)
-    midi_in_ = other.midi_in_->clone_unique();
+    midi_in_ = other.midi_in_->clone_unique ();
   if (other.midi_out_)
-    midi_out_ = other.midi_out_->clone_unique();
+    midi_out_ = other.midi_out_->clone_unique ();
   if (other.stereo_in_)
-    stereo_in_ = other.stereo_in_->clone_unique();
+    stereo_in_ = other.stereo_in_->clone_unique ();
   if (other.stereo_out_)
-    stereo_out_ = other.stereo_out_->clone_unique();
+    stereo_out_ = other.stereo_out_->clone_unique ();
   midi_mode_ = other.midi_mode_;
   passthrough_ = other.passthrough_;
 }

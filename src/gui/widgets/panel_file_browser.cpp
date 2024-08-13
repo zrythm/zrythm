@@ -232,7 +232,7 @@ on_files_selection_changed (
     return;
 
   auto label = descr->get_info_text_for_label ();
-  z_debug ("selected file: %s", descr->abs_path_);
+  z_debug ("selected file: {}", descr->abs_path_);
   update_file_info_label (self, label.c_str ());
 
   if (
@@ -371,7 +371,7 @@ on_position_change (
 
   int divider_pos = gtk_paned_get_position (self->paned);
   g_settings_set_int (S_UI, "browser-divider-position", divider_pos);
-  z_info ("set browser divider position to %d", divider_pos);
+  z_info ("set browser divider position to {}", divider_pos);
   /*z_warning("pos %d", divider_pos);*/
 }
 

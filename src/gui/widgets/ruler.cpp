@@ -115,8 +115,8 @@ ruler_widget_get_sixteenth_interval (RulerWidget * self)
 
   /* gather divisors of the number of sixteenths per beat */
   const auto sixteenths_per_beat = TRANSPORT->sixteenths_per_beat_;
-  int divisors[16];
-  int num_divisors = 0;
+  int        divisors[16];
+  int        num_divisors = 0;
   for (i = 1; i <= sixteenths_per_beat; i++)
     {
       if (sixteenths_per_beat % i == 0)
@@ -230,7 +230,7 @@ draw_other_region (RulerWidget * self, GtkSnapshot * snapshot, Region * region)
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   Track * track = region->get_track ();
-  auto color = track->color_;
+  auto    color = track->color_;
   color.alpha_ = 0.5;
 
   int px_start, px_end;
@@ -314,7 +314,7 @@ get_loop_start_rect (RulerWidget * self, GdkRectangle * rect)
       Region * region = CLIP_EDITOR->get_region ();
       if (region)
         {
-          double           start_ticks = region->pos_.ticks_;
+          double start_ticks = region->pos_.ticks_;
           double loop_start_ticks = region->loop_start_pos_.ticks_ + start_ticks;
           Position tmp{ loop_start_ticks };
           rect->x = ui_pos_to_px_editor (tmp, true);
@@ -487,7 +487,7 @@ get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
       Region * region = CLIP_EDITOR->get_region ();
       if (region)
         {
-          double           start_ticks = region->pos_.ticks_;
+          double start_ticks = region->pos_.ticks_;
           double clip_start_ticks = region->clip_start_pos_.ticks_ + start_ticks;
           Position tmp{ clip_start_ticks };
           rect->x = ui_pos_to_px_editor (tmp, 1);

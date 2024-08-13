@@ -43,7 +43,7 @@ response_cb (
   char *                     response,
   FileImportProgressDialog * self)
 {
-  z_debug ("response: %s", response);
+  z_debug ("response: {}", response);
 
   if (string_is_equal (response, "cancel"))
     {
@@ -61,7 +61,7 @@ response_cb (
     }
   else
     {
-      z_error ("unknown response %s", response);
+      z_error ("unknown response {}", response);
     }
 }
 
@@ -97,10 +97,10 @@ import_async_ready_cb (GObject * source_object, GAsyncResult * res, gpointer dat
   FileImport * fi = Z_FILE_IMPORT (data);
   auto         regions = file_import_finish (fi, res, &err);
   self->num_files_remaining--;
-  z_debug ("async ready: files remaining %d", self->num_files_remaining);
+  z_debug ("async ready: files remaining {}", self->num_files_remaining);
   if (!err)
     {
-      z_info ("Imported regions for %s", fi->filepath);
+      z_info ("Imported regions for {}", fi->filepath);
       self->region_arrays.push_back (regions);
     }
   else

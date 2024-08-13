@@ -15,7 +15,7 @@
 
 FileDescriptor::FileDescriptor (const std::string &_abs_path)
 {
-  // z_debug ("creating new FileDescriptor for %s", path);
+  // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
   type_ = get_type_from_path (_abs_path.c_str ());
   label_ = Glib::path_get_basename (_abs_path);

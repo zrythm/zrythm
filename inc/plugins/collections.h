@@ -109,33 +109,33 @@ public:
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-std::string get_document_type () const override
-{
-  return "Zrythm Plugin Collections";
-}
-int get_format_major_version () const override { return 3; }
-int get_format_minor_version () const override { return 0; }
+  std::string get_document_type () const override
+  {
+    return "Zrythm Plugin Collections";
+  }
+  int get_format_major_version () const override { return 3; }
+  int get_format_minor_version () const override { return 0; }
 
-/**
- * Appends a collection.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- */
-void add (const PluginCollection &collection, bool serialize);
+  /**
+   * Appends a collection.
+   *
+   * @param serialize Whether to serialize the updated
+   *   cache now.
+   */
+  void add (const PluginCollection &collection, bool serialize);
 
-/**
- * Finds a collection by name.
- */
-const PluginCollection * find_from_name (std::string_view name) const;
+  /**
+   * Finds a collection by name.
+   */
+  const PluginCollection * find_from_name (std::string_view name) const;
 
-/**
- * Removes the given collection.
- *
- * @param serialize Whether to serialize the updated
- *   cache now.
- */
-void remove (PluginCollection &collection, bool serialize);
+  /**
+   * Removes the given collection.
+   *
+   * @param serialize Whether to serialize the updated
+   *   cache now.
+   */
+  void remove (PluginCollection &collection, bool serialize);
 
 private:
   /**

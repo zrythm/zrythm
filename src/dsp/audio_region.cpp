@@ -277,7 +277,7 @@ AudioRegion::fill_stereo_ports (
     arranger_object_get_length_in_ticks (r_obj);
   double ratio =
     r_local_ticks_at_start / r_len;
-  z_info ("ratio %f", ratio);
+  z_info ("ratio {:f}", ratio);
 #endif
 
   signed_frame_t r_local_frames_at_start = timeline_frames_to_local (
@@ -352,7 +352,7 @@ AudioRegion::fill_stereo_ports (
                * up to this point */
               if (buff_size > 0)
                 {
-                  z_info ("buff size (%zd) > 0", buff_size);
+                  z_info ("buff size ({}) > 0", buff_size);
                   stretch ();
                   prev_offset = current_local_frame;
                 }

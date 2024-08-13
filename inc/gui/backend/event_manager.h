@@ -145,7 +145,7 @@ private:
         (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
         && zrythm_app->gtk_thread_id == current_thread_id.get ()) \
         { \
-          z_debug ("pushing UI event " #et " (%s:%d)", __func__, __LINE__); \
+          z_debug ("pushing UI event " #et " ({}:{})", __func__, __LINE__); \
         } \
       EVENT_QUEUE.push_back (_ev); \
     }

@@ -706,10 +706,10 @@ arranger_object_get_draw_rectangle (
   z_warn_if_fail (draw_rect->height >= 0);
 
   return 1;
-  /*z_info ("full rect: (%d, %d) w: %d h: %d",*/
+  /*z_info ("full rect: (%d, {}) w: {} h: {}",*/
   /*full_rect->x, full_rect->y,*/
   /*full_rect->width, full_rect->height);*/
-  /*z_info ("draw rect: (%d, %d) w: %d h: %d",*/
+  /*z_info ("draw rect: (%d, {}) w: {} h: {}",*/
   /*draw_rect->x, draw_rect->y,*/
   /*draw_rect->width, draw_rect->height);*/
 }

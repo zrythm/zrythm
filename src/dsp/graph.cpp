@@ -315,7 +315,7 @@ Graph::update_latencies (bool use_setup_nodes)
     }
   z_debug ("done setting all latencies to 0");
 
-  z_debug ("iterating over %zu nodes...", nodes.size ());
+  z_debug ("iterating over {} nodes...", nodes.size ());
   for (auto &[_, node] : nodes)
     {
       node->playback_latency_ = node->get_single_playback_latency ();
@@ -888,7 +888,7 @@ Graph::validate_with_connection (const Port * src, const Port * dest)
 
   bool valid = is_valid ();
 
-  z_debug ("valid %d", valid);
+  z_debug ("valid {}", valid);
 
   AUDIO_ENGINE->resume (state);
 

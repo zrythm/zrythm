@@ -23,9 +23,9 @@ typedef enum MarkerType_v1
 } MarkerType_v1;
 
 static const cyaml_strval_t marker_type_strings_v1[] = {
-  {"start",   MARKER_TYPE_START_v1 },
-  { "end",    MARKER_TYPE_END_v1   },
-  { "custom", MARKER_TYPE_CUSTOM_v1},
+  { "start",  MARKER_TYPE_START_v1  },
+  { "end",    MARKER_TYPE_END_v1    },
+  { "custom", MARKER_TYPE_CUSTOM_v1 },
 };
 
 typedef struct Marker_v1

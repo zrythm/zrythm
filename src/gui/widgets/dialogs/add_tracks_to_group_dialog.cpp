@@ -85,7 +85,7 @@ add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel)
             }
           else
             {
-              z_info ("invalid signal type %s", ENUM_NAME (signal_type));
+              z_info ("invalid signal type {}", ENUM_NAME (signal_type));
               return nullptr;
             }
         }

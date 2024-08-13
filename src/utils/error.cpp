@@ -27,7 +27,7 @@ error_handle_prv (GError * err, const char * format, ...)
         }
       else
         {
-          z_warning ("%s", str);
+          z_warning ("{}", str);
         }
       g_free (str);
       g_error_free (err);

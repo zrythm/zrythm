@@ -79,7 +79,7 @@ audio_write_raw_file (
 
   if (!sf_format_check (&info))
     {
-      z_error ("Invalid SFINFO: %s", sf_strerror (nullptr));
+      z_error ("Invalid SFINFO: {}", sf_strerror (nullptr));
       return;
     }
 
@@ -104,7 +104,7 @@ audio_write_raw_file (
   if (!flac)
     {
       size_t seek_to = write_chunk ? frames_already_written : 0;
-      z_debug ("seeking to %zu", seek_to);
+      z_debug ("seeking to {}", seek_to);
       int ret = sf_seek (sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
@@ -114,7 +114,7 @@ audio_write_raw_file (
     }
 
   sf_count_t _nframes = (sf_count_t) nframes;
-  z_debug ("nframes = %ld", _nframes);
+  z_debug ("nframes = {}", _nframes);
   sf_count_t count = sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
@@ -148,7 +148,7 @@ audio_get_num_frames (const char * filepath)
   if (!sndfile)
     {
       const char * err_str = sf_strerror (sndfile);
-      z_error ("sndfile null: %s", err_str);
+      z_error ("sndfile null: {}", err_str);
       return 0;
     }
   z_return_val_if_fail (sfinfo.frames > 0, 0);
@@ -174,7 +174,7 @@ audio_frames_equal (
     {
       if (!math_floats_equal_epsilon (src1[i], src2[i], epsilon))
         {
-          z_debug ("[%zu] %f != %f", i, (double) src1[i], (double) src2[i]);
+          z_debug ("[{}] {:f} != {:f}", i, (double) src1[i], (double) src2[i]);
           return false;
         }
     }
@@ -243,7 +243,7 @@ audio_frames_empty (float * src, size_t num_frames)
     {
       if (!math_floats_equal (src[i], 0.f))
         {
-          z_debug ("[%zu] %f != 0", i, (double) src[i]);
+          z_debug ("[{}] {:f} != 0", i, (double) src[i]);
           return false;
         }
     }
@@ -265,7 +265,7 @@ audio_file_is_silent (const char * filepath)
   sf_count_t frames_read = sf_readf_float (sndfile, data, sfinfo.frames);
   g_assert_cmpint (frames_read, ==, sfinfo.frames);
   z_return_val_if_fail (frames_read == sfinfo.frames, true);
-  z_debug ("read %ld frames for %s", frames_read, filepath);
+  z_debug ("read {} frames for {}", frames_read, filepath);
 
   bool is_empty = audio_frames_empty (data, (size_t) buf_size);
   free (data);
@@ -313,10 +313,10 @@ audio_detect_bpm (
             (ZVampFeature *) g_ptr_array_index (fl->list, 0);
           bpm = feature->values[0];
 
-              for (size_t i = 0; i < feature->num_values; i++)
-                {
-                  candidates.push_back (feature->values[i]);
-                }
+          for (size_t i = 0; i < feature->num_values; i++)
+            {
+              candidates.push_back (feature->values[i]);
+            }
         }
       cur_timestamp += (long) step_sz;
       vamp_feature_set_free (feature_set);
@@ -334,10 +334,10 @@ audio_detect_bpm (
         (ZVampFeature *) g_ptr_array_index (fl->list, 0);
       bpm = feature->values[0];
 
-          for (size_t i = 0; i < feature->num_values; i++)
-            {
-              candidates.push_back (feature->values[i]);
-            }
+      for (size_t i = 0; i < feature->num_values; i++)
+        {
+          candidates.push_back (feature->values[i]);
+        }
     }
   vamp_feature_set_free (feature_set);
 
@@ -357,7 +357,7 @@ audio_get_num_cores ()
 
   num_cores = std::thread::hardware_concurrency ();
 
-  z_info ("Number of CPU cores found: %d", num_cores);
+  z_info ("Number of CPU cores found: {}", num_cores);
 
   return num_cores;
 }

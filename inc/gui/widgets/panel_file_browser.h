@@ -39,7 +39,7 @@ using PanelFileBrowserWidget = struct _PanelFileBrowserWidget
   GtkBox * browser_top;
   GtkBox * browser_bot;
 
-  GtkListView * bookmarks_list_view;
+  GtkListView *                  bookmarks_list_view;
   std::unique_ptr<ItemFactory> * bookmarks_item_factory;
 
   GtkLabel * file_info;
@@ -47,11 +47,11 @@ using PanelFileBrowserWidget = struct _PanelFileBrowserWidget
 
   GtkSearchEntry * file_search_entry;
 
-  GtkCustomFilter *    files_filter;
-  GtkFilterListModel * files_filter_model;
-  GtkSingleSelection * files_selection_model;
+  GtkCustomFilter *              files_filter;
+  GtkFilterListModel *           files_filter_model;
+  GtkSingleSelection *           files_selection_model;
   std::unique_ptr<ItemFactory> * files_item_factory;
-  GtkListView *        files_list_view;
+  GtkListView *                  files_list_view;
 
   /** Array of FileDescriptor. */
   // GPtrArray * selected_locations;

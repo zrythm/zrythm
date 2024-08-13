@@ -45,5 +45,5 @@ PortConnection::print_to_str () const
 void
 PortConnection::print () const
 {
-  z_debug ("%s", print_to_str ());
+  z_debug ("{}", print_to_str ());
 }
