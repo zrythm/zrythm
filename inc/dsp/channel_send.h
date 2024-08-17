@@ -210,6 +210,8 @@ private:
   void disconnect_midi ();
   void disconnect_audio ();
 
+  void construct_for_slot (int slot);
+
 public:
   /** Slot index in the channel sends. */
   int slot_ = 0;

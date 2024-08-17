@@ -150,8 +150,8 @@ engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames)
     AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #  endif
   z_info (
-    "JACK: Block length changed to %d, "
-    "midi buf size to %zu",
+    "JACK: Block length changed to {}, "
+    "midi buf size to {}",
     AUDIO_ENGINE->block_length_, AUDIO_ENGINE->midi_buf_size_);
   self->handled_jack_buffer_size_change_.store (true);
 }
@@ -285,7 +285,6 @@ xrun_cb (AudioEngine * self)
       /* TODO make a notification message queue */
 #  if 0
       z_info (
-        "%s",
         _("XRUN occurred - check your JACK "
         "configuration"));
 #  endif

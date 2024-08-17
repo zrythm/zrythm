@@ -130,17 +130,14 @@ activate_manual (GSimpleAction * action, GVariant * variant, gpointer user_data)
     (LocalizationLanguage) g_settings_get_enum (S_P_UI_GENERAL, "language");
   const char * lang_code = localization_get_string_code (lang);
 #ifdef MANUAL_PATH
-  char * path =
-    g_strdup_printf ("file://%s/%s/index.html", MANUAL_PATH, lang_code);
+  auto path = fmt::format ("file://{}/{}/index.html", MANUAL_PATH, lang_code);
 #else
-  char * path =
-    g_strdup_printf ("https://manual.zrythm.org/%s/index.html", lang_code);
+  auto path = fmt::format ("https://manual.zrythm.org/{}/index.html", lang_code);
 #endif
-  GtkUriLauncher * launcher = gtk_uri_launcher_new (path);
+  GtkUriLauncher * launcher = gtk_uri_launcher_new (path.c_str ());
   gtk_uri_launcher_launch (
     launcher, GTK_WINDOW (MAIN_WINDOW), nullptr, nullptr, nullptr);
   g_object_unref (launcher);
-  g_free (path);
 }
 
 static void

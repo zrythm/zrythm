@@ -17,22 +17,21 @@
 class MidiBusTrack final
     : public ChannelTrack,
       public ICloneable<MidiBusTrack>,
-      public ISerializable<MidiBusTrack>
+      public ISerializable<MidiBusTrack>,
+      public InitializableObjectFactory<MidiBusTrack>
 {
+  friend class InitializableObjectFactory<MidiBusTrack>;
+
 public:
-  // Rule of 0
+  void init_after_cloning (const MidiBusTrack &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
   MidiBusTrack () = default;
   MidiBusTrack (const std::string &name, int pos);
 
-  void init_after_cloning (const MidiBusTrack &other) override
-  {
-    ChannelTrack::copy_members_from (other);
-    ProcessableTrack::copy_members_from (other);
-    AutomatableTrack::copy_members_from (other);
-    Track::copy_members_from (other);
-  }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  bool initialize () override;
 };
 
 #endif // __AUDIO_MIDI_BUS_TRACK_H__

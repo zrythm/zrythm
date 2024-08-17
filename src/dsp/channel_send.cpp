@@ -99,9 +99,8 @@ ChannelSend::init_loaded (ChannelTrack * track)
 #undef INIT_LOADED_PORT
 }
 
-ChannelSend::
-  ChannelSend (unsigned int track_name_hash, int slot, ChannelTrack * track)
-    : slot_ (slot), track_ (track), track_name_hash_ (track_name_hash)
+void
+ChannelSend::construct_for_slot (int slot)
 {
   enabled_ = std::make_unique<ControlPort> (
     format_str (_ ("Channel Send {} enabled"), slot + 1));
@@ -141,6 +140,13 @@ ChannelSend::
     format_str (_ ("Channel Send {} MIDI out"), slot + 1), PortFlow::Output);
   midi_out_->id_.sym_ = fmt::format ("channel_send_{}_midi_out", slot + 1);
   midi_out_->set_owner_impl<ChannelSend> (this);
+}
+
+ChannelSend::
+  ChannelSend (unsigned int track_name_hash, int slot, ChannelTrack * track)
+    : slot_ (slot), track_ (track), track_name_hash_ (track_name_hash)
+{
+  construct_for_slot (slot);
 }
 
 ChannelTrack *
@@ -536,6 +542,7 @@ ChannelSend::get_dest_name () const
 void
 ChannelSend::init_after_cloning (const ChannelSend &other)
 {
+  construct_for_slot (other.slot_);
   amount_->control_ = other.amount_->control_;
   enabled_->control_ = other.enabled_->control_;
   is_sidechain_ = other.is_sidechain_;

@@ -14,13 +14,40 @@
 
 #include <glib/gi18n.h>
 
+ChordTrack::ChordTrack () : ChordTrack (0) { }
+
 ChordTrack::ChordTrack (int pos)
     : Track (Track::Type::Chord, _ ("Chords"), pos, PortType::Event, PortType::Event)
 {
   color_ = Color ("#1C71D8");
   icon_name_ = "minuet-chords";
+}
 
+bool
+ChordTrack::initialize ()
+{
+  init_channel ();
   generate_automation_tracks ();
+
+  return true;
+}
+
+void
+ChordTrack::set_playback_caches ()
+{
+  region_snapshots_.clear ();
+  region_snapshots_.reserve (regions_.size ());
+  for (const auto &region : regions_)
+    {
+      region_snapshots_.push_back (region->clone_unique ());
+    }
+
+  scale_snapshots_.clear ();
+  scale_snapshots_.reserve (scales_.size ());
+  for (const auto &scale : scales_)
+    {
+      scale_snapshots_.push_back (scale->clone_unique ());
+    }
 }
 
 void

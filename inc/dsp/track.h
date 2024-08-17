@@ -23,8 +23,6 @@ class FileDescriptor;
 class TracklistSelections;
 class FoldableTrack;
 struct FileImportInfo;
-// class AudioRegion;
-// class ChordRegion;
 
 TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 
@@ -134,6 +132,8 @@ class Track : public ISerializable<Track>
 {
 public:
   using Type = TrackType;
+
+  using NameHashT = unsigned int;
 
   /**
    * Returns the prefader type.
@@ -337,13 +337,13 @@ public:
   }
 
 public:
-  // Rule of 0
-  Track () = default;
   virtual ~Track () = default;
 
   static std::unique_ptr<Track> create_unique_from_type (Type type);
 
 protected:
+  Track () = default;
+
   /**
    * Constructor to be used by subclasses.
    *
@@ -369,7 +369,7 @@ public:
    */
   virtual void init_loaded () = 0;
 
-  guint get_name_hash () const { return g_str_hash (name_.c_str ()); }
+  NameHashT get_name_hash () const { return g_str_hash (name_.c_str ()); }
 
   Tracklist * get_tracklist () const;
 
@@ -901,7 +901,7 @@ protected:
    *
    * @param new_name_hash
    */
-  virtual void update_name_hash (unsigned int new_name_hash) { }
+  virtual void update_name_hash (NameHashT new_name_hash) { }
 
 private:
   /**
@@ -934,7 +934,7 @@ public:
   std::string name_;
 
   /** Cache calculated when adding to graph. */
-  unsigned int name_hash_ = 0;
+  NameHashT name_hash_ = 0;
 
   /** Icon name of the track. */
   std::string icon_name_;

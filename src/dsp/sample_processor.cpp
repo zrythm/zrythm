@@ -3,7 +3,6 @@
 
 #include "dsp/audio_region.h"
 #include "dsp/engine.h"
-#include "dsp/group_target_track.h"
 #include "dsp/metronome.h"
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
@@ -21,10 +20,7 @@
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -368,7 +364,7 @@ SampleProcessor::queue_file_or_chord_preset (
   /* create master track */
   {
     z_debug ("creating master track...");
-    auto track = std::make_unique<MasterTrack> (tracklist_->tracks_.size ());
+    auto track = *MasterTrack::create_unique (tracklist_->tracks_.size ());
     track->set_name ("Sample Processor Master", false);
     tracklist_->master_track_ = track.get ();
     tracklist_->insert_track (
@@ -378,7 +374,7 @@ SampleProcessor::queue_file_or_chord_preset (
   if (file && file->is_audio ())
     {
       z_debug ("creating audio track...");
-      auto audio_track = std::make_unique<AudioTrack> (
+      auto audio_track = *AudioTrack::create_unique (
         "Sample processor audio", tracklist_->tracks_.size (),
         AUDIO_ENGINE->sample_rate_);
       auto audio_track_ptr = tracklist_->insert_track (
@@ -403,7 +399,7 @@ SampleProcessor::queue_file_or_chord_preset (
     {
       /* create an instrument track */
       z_debug ("creating instrument track...");
-      auto instrument_track = std::make_unique<InstrumentTrack> (
+      auto instrument_track = *InstrumentTrack::create_unique (
         "Sample processor instrument", tracklist_->tracks_.size ());
       auto * instr_track_ptr = tracklist_->insert_track (
         std::move (instrument_track), tracklist_->tracks_.size (), false, false);
@@ -425,7 +421,7 @@ SampleProcessor::queue_file_or_chord_preset (
           z_debug ("creating {} MIDI tracks...", num_tracks);
           for (int i = 0; i < num_tracks; i++)
             {
-              auto midi_track = std::make_unique<MidiTrack> (
+              auto midi_track = *MidiTrack::create_unique (
                 fmt::format ("Sample processor MIDI {}", i),
                 tracklist_->tracks_.size ());
               auto * midi_track_ptr = tracklist_->insert_track (

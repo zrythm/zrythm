@@ -35,13 +35,12 @@ constexpr auto  TEMPO_TRACK_MAX_BEAT_UNIT = BeatUnit::Sixteen;
 class TempoTrack final
     : public AutomatableTrack,
       public ICloneable<TempoTrack>,
-      public ISerializable<TempoTrack>
+      public ISerializable<TempoTrack>,
+      public InitializableObjectFactory<TempoTrack>
 {
-public:
-  // Rule of 0
-  TempoTrack () = default;
-  TempoTrack (int track_pos);
+  friend class InitializableObjectFactory<TempoTrack>;
 
+public:
   /**
    * Removes all objects from the tempo track.
    *
@@ -115,6 +114,12 @@ public:
   int get_beat_unit () const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  TempoTrack () = default;
+  TempoTrack (int track_pos);
+
+  bool initialize () override;
 
 public:
   /** Automatable BPM control. */

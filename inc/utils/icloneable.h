@@ -15,6 +15,7 @@
 #include <variant>
 #include <vector>
 
+#include "utils/object_factory.h"
 #include "utils/types.h"
 
 /**
@@ -57,7 +58,15 @@ public:
   std::unique_ptr<Derived> clone_unique () const
     requires (Type == CloneType::Unique || Type == CloneType::Both)
   {
-    auto cloned = std::make_unique<Derived> ();
+    std::unique_ptr<Derived> cloned;
+    if constexpr (FactoryCreatable<Derived>)
+      {
+        cloned = *cloned->create_unique ();
+      }
+    else
+      {
+        cloned = std::make_unique<Derived> ();
+      }
     cloned->init_after_cloning (*get_derived ());
     return cloned;
   }
@@ -65,7 +74,15 @@ public:
   std::shared_ptr<Derived> clone_shared () const
     requires (Type == CloneType::Shared || Type == CloneType::Both)
   {
-    auto cloned = std::make_shared<Derived> ();
+    std::shared_ptr<Derived> cloned;
+    if constexpr (FactoryCreatable<Derived>)
+      {
+        cloned = *cloned->create_shared ();
+      }
+    else
+      {
+        cloned = std::make_shared<Derived> ();
+      }
     cloned->init_after_cloning (*get_derived ());
     return cloned;
   }

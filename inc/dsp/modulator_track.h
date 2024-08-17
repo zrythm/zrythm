@@ -23,13 +23,12 @@
 class ModulatorTrack final
     : public ProcessableTrack,
       public ICloneable<ModulatorTrack>,
-      public ISerializable<ModulatorTrack>
+      public ISerializable<ModulatorTrack>,
+      public InitializableObjectFactory<ModulatorTrack>
 {
-public:
-  // Rule of 0
-  ModulatorTrack () = default;
-  ModulatorTrack (int track_pos);
+  friend class InitializableObjectFactory<ModulatorTrack>;
 
+public:
   using ModulatorPtr = std::shared_ptr<Plugin>;
 
   /**
@@ -68,6 +67,12 @@ public:
   void init_after_cloning (const ModulatorTrack &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  ModulatorTrack () = default;
+  ModulatorTrack (int track_pos);
+
+  bool initialize () override;
 
 public:
   /** Modulators. */

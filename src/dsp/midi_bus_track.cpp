@@ -8,6 +8,22 @@ MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
 {
   color_ = Color ("#F5C211");
   icon_name_ = "signal-midi";
+}
 
+bool
+MidiBusTrack::initialize ()
+{
+  init_channel ();
   generate_automation_tracks ();
+
+  return true;
+}
+
+void
+MidiBusTrack::init_after_cloning (const MidiBusTrack &other)
+{
+  ChannelTrack::copy_members_from (other);
+  ProcessableTrack::copy_members_from (other);
+  AutomatableTrack::copy_members_from (other);
+  Track::copy_members_from (other);
 }

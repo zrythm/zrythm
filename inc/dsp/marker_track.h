@@ -24,12 +24,12 @@
 class MarkerTrack final
     : public Track,
       public ICloneable<MarkerTrack>,
-      public ISerializable<MarkerTrack>
+      public ISerializable<MarkerTrack>,
+      public InitializableObjectFactory<MarkerTrack>
 {
-public:
-  MarkerTrack () = default;
-  MarkerTrack (int track_pos);
+  friend class InitializableObjectFactory<MarkerTrack>;
 
+public:
   using MarkerPtr = std::shared_ptr<Marker>;
 
   void init_loaded () override;
@@ -76,6 +76,10 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
+  MarkerTrack () = default;
+  MarkerTrack (int track_pos);
+
+  bool initialize () override;
   void set_playback_caches () override;
 
 public:

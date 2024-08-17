@@ -203,7 +203,7 @@ timestretch_buf (
   unsigned_frame_t in_frames_to_process =
     (unsigned_frame_t) (frames_to_process * timestretch_ratio);
   z_info (
-    "%s: in frame offset %" PRIu64
+    "{}: in frame offset %" PRIu64
     ", "
     "out frame offset %" PRIu64
     ", "
@@ -339,8 +339,8 @@ AudioRegion::fill_stereo_ports (
           if (buff_index < (ssize_t) buff_index_start)
             {
               z_info (
-                "buff index (%zd) < "
-                "buff index start (%zd)",
+                "buff index ({}) < "
+                "buff index start ({})",
                 buff_index, buff_index_start);
               /* set the start point (
                * used when
@@ -375,8 +375,8 @@ AudioRegion::fill_stereo_ports (
           if (buff_index >= (ssize_t) clip->num_frames_) [[unlikely]]
             {
               z_error (
-                "Buffer index %zd exceeds %zu "
-                "frames in clip '%s'",
+                "Buffer index {} exceeds {} "
+                "frames in clip '{}'",
                 buff_index, clip->num_frames_, clip->name_);
               return;
             }
@@ -552,7 +552,7 @@ AudioRegion::fix_positions (double frames_per_tick)
       if (extra_loop_frames == 1)
         {
           z_debug (
-            "fixing position for audio region. before: %s", print_to_str ());
+            "fixing position for audio region. before: {}", print_to_str ());
           if (loop_len == region_len)
             {
               end_pos_.add_frames (-1);
@@ -563,7 +563,7 @@ AudioRegion::fix_positions (double frames_per_tick)
             }
           loop_end_pos_.add_frames (-1);
           z_debug (
-            "fixed position for audio region. after: %s", print_to_str ());
+            "fixed position for audio region. after: {}", print_to_str ());
           return true;
         }
       else

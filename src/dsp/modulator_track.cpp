@@ -36,6 +36,14 @@ ModulatorTrack::ModulatorTrack (int track_pos)
   color_ = Color ("#222222");
   icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
 
+  /* set invisible */
+  visible_ = false;
+}
+
+bool
+ModulatorTrack::initialize ()
+{
+
   constexpr int max_macros = 8;
   for (int i = 0; i < max_macros; i++)
     {
@@ -43,10 +51,9 @@ ModulatorTrack::ModulatorTrack (int track_pos)
         std::make_unique<ModulatorMacroProcessor> (this, i));
     }
 
-  /* set invisible */
-  visible_ = false;
-
   generate_automation_tracks ();
+
+  return true;
 }
 
 void

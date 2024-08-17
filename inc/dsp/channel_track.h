@@ -18,9 +18,6 @@ class ChannelTrack
       public ISerializable<ChannelTrack>
 {
 public:
-  // Rule of 0
-  ChannelTrack ();
-
   virtual ~ChannelTrack () { remove_ats_from_automation_tracklist (false); };
 
   void init_loaded () override;
@@ -39,30 +36,24 @@ public:
   /**
    * Returns if the track is muted.
    */
-  virtual bool get_muted () const override
-  {
-    return channel_->fader_->get_muted ();
-  }
+  bool get_muted () const override { return channel_->fader_->get_muted (); }
 
   /**
    * Returns if the track is listened.
    */
-  virtual bool get_listened () const override
+  bool get_listened () const override
   {
     return channel_->fader_->get_listened ();
   }
 
-  virtual bool get_implied_soloed () const override
+  bool get_implied_soloed () const override
   {
     return channel_->fader_->get_implied_soloed ();
   }
 
-  virtual bool get_soloed () const override
-  {
-    return channel_->fader_->get_soloed ();
-  }
+  bool get_soloed () const override { return channel_->fader_->get_soloed (); }
 
-  virtual bool validate () const override;
+  bool validate () const override;
 
   /**
    * Generates a menu to be used for channel-related items, eg, fader buttons,
@@ -111,11 +102,18 @@ public:
   Fader::Type get_prefader_type () { return type_get_prefader_type (type_); }
 
 protected:
+  ChannelTrack ();
+
   void copy_members_from (const ChannelTrack &other)
   {
     channel_ = other.channel_->clone_shared ();
     channel_->track_ = this;
   }
+
+  /**
+   * @brief Initializes the channel.
+   */
+  void init_channel ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

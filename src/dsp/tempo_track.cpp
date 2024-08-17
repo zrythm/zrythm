@@ -33,6 +33,13 @@ TempoTrack::TempoTrack (int track_pos)
   color_ = Color ("#2f6c52");
   icon_name_ = "filename-bpm-amarok";
 
+  /* set invisible */
+  visible_ = false;
+}
+
+bool
+TempoTrack::initialize ()
+{
   /* create bpm port */
   bpm_port_ = std::make_unique<ControlPort> (
     _ ("BPM"), PortIdentifier::OwnerType::Track, this);
@@ -69,10 +76,9 @@ TempoTrack::TempoTrack (int track_pos)
   beat_unit_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
   beat_unit_port_->id_.flags_ |= PortIdentifier::Flags::Integer;
 
-  /* set invisible */
-  visible_ = false;
-
   generate_automation_tracks ();
+
+  return true;
 }
 
 bpm_t

@@ -221,8 +221,8 @@ check_for_updates_latest_release_ver_ready (
   char * last_version_notified_on =
     g_settings_get_string (S_GENERAL, "last-version-new-release-notified-on");
   z_debug (
-    "last version notified on: %s"
-    "\n package version: %s",
+    "last version notified on: {}"
+    "\n package version: {}",
     last_version_notified_on, PACKAGE_VERSION);
   if (
     !is_latest_release && Zrythm::is_release (true)
@@ -360,7 +360,7 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
     self->greeter, nullptr, _ ("Loading Project"), 0.99);
 
   z_debug (
-    "on_load_project called | open filename '%s' | opening template %d",
+    "on_load_project called | open filename '{}' | opening template {}",
     gZrythm->open_filename_, gZrythm->opening_template_);
   g_application_hold (g_application_get_default ());
   ProjectInitFlowManager (
@@ -384,9 +384,9 @@ zrythm_app_init_thread (ZrythmApp * self)
     self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
 
   /* init zrythm folders ~/Zrythm */
-  char msg[500];
-  sprintf (msg, _ ("Initializing %s directories"), PROGRAM_NAME);
-  greeter_widget_set_progress_and_status (self->greeter, nullptr, msg, 0.01);
+  auto msg = format_str (_ ("Initializing {} directories"), PROGRAM_NAME);
+  greeter_widget_set_progress_and_status (
+    self->greeter, nullptr, msg.c_str (), 0.01);
   try
     {
       gZrythm->init_user_dirs_and_files ();
@@ -621,10 +621,10 @@ print_gdk_pixbuf_format_info (gpointer data, gpointer user_data)
   g_strfreev (_extensions);
   z_info (
     "Found GDK Pixbuf Format:\n"
-    "name: %s\ndescription: %s\n"
-    "mime types: %s\nextensions: %s\n"
-    "is scalable: %d\nis disabled: %d\n"
-    "license: %s",
+    "name: {}\ndescription: {}\n"
+    "mime types: {}\nextensions: {}\n"
+    "is scalable: {}\nis disabled: {}\n"
+    "license: {}",
     name, description, mime_types, extensions,
     gdk_pixbuf_format_is_scalable (format),
     gdk_pixbuf_format_is_disabled (format), license);
@@ -648,7 +648,7 @@ load_icon (
     {
       /* fallback to zrythm-dark and try again */
       z_warning (
-        "icon '%s' not found, falling back to "
+        "icon '{}' not found, falling back to "
         "zrythm-dark",
         icon_name);
       g_object_set (
@@ -725,14 +725,11 @@ lock_memory (ZrythmApp * self)
     }
   else
     {
-      char * str = g_strdup_printf (
-        _ ("Could not get system memory lock "
-           "limit (%s)"),
-        strerror (errno));
+      auto str = format_str (
+        _ ("Could not get system memory lock limit ({})"), strerror (errno));
       ZrythmAppUiMessage * ui_msg =
-        zrythm_app_ui_message_new (GTK_MESSAGE_WARNING, str);
+        zrythm_app_ui_message_new (GTK_MESSAGE_WARNING, str.c_str ());
       g_async_queue_push (self->project_load_message_queue, ui_msg);
-      g_free (str);
     }
 
   if (have_unlimited_mem)
@@ -778,14 +775,14 @@ raise_open_file_limit (void)
     {
       z_info (
         "Your system is configured to limit %s to "
-        "%d open files",
+        "{} open files",
         PROGRAM_NAME, newmax);
     }
   else
     {
       z_warning (
         "Could not set system open files limit. "
-        "Current limit is %d open files",
+        "Current limit is {} open files",
         _getmaxstdio ());
     }
 #else /* else if not _WIN32 */
@@ -823,7 +820,7 @@ raise_open_file_limit (void)
             {
               z_info (
                 "Your system is configured to "
-                "limit %s to %ju open files",
+                "limit {} to %ju open files",
                 PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
             }
         }

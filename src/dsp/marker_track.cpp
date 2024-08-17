@@ -26,7 +26,11 @@ MarkerTrack::MarkerTrack (int track_pos)
   main_height_ = TRACK_DEF_HEIGHT / 2;
   icon_name_ = "gnome-icon-library-flag-outline-thick-symbolic";
   color_ = Color ("#813D9C");
+}
 
+bool
+MarkerTrack::initialize ()
+{
   /* add start and end markers */
   auto     marker_name = fmt::format ("[{}]", _ ("start"));
   auto     marker = std::make_shared<Marker> (marker_name);
@@ -42,6 +46,8 @@ MarkerTrack::MarkerTrack (int track_pos)
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::End;
   add_marker (marker);
+
+  return true;
 }
 
 void

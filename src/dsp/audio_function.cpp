@@ -45,10 +45,10 @@ audio_function_get_detailed_action_for_type (
   const char *      base_action)
 {
   char * target = audio_function_get_action_target_for_type (type);
-  char * ret = g_strdup_printf ("%s::%s", base_action, target);
+  auto   ret = fmt::format ("{}::{}", base_action, target);
   g_free (target);
 
-  return ret;
+  return g_strdup (ret.c_str ());
 }
 
 const char *

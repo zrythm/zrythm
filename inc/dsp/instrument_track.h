@@ -6,6 +6,7 @@
 
 #include "dsp/group_target_track.h"
 #include "dsp/piano_roll_track.h"
+#include "utils/object_factory.h"
 
 /**
  * @addtogroup dsp
@@ -17,20 +18,12 @@ class InstrumentTrack final
     : public GroupTargetTrack,
       public PianoRollTrack,
       public ICloneable<InstrumentTrack>,
-      public ISerializable<InstrumentTrack>
+      public ISerializable<InstrumentTrack>,
+      public InitializableObjectFactory<InstrumentTrack>
 {
+  friend class InitializableObjectFactory<InstrumentTrack>;
+
 public:
-  // Rule of 0
-  InstrumentTrack () = default;
-
-  /**
-   * @brief Main constructor.
-   *
-   * @param name Track name.
-   * @param pos Track position.
-   */
-  InstrumentTrack (const std::string &name, int pos);
-
   void init_loaded () override;
 
   void init_after_cloning (const InstrumentTrack &other) override;
@@ -55,6 +48,18 @@ public:
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  InstrumentTrack () = default;
+  /**
+   * @brief Main constructor.
+   *
+   * @param name Track name.
+   * @param pos Track position.
+   */
+  InstrumentTrack (const std::string &name, int pos);
+
+  bool initialize () override;
 
 public:
 };

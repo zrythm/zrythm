@@ -12,22 +12,21 @@
 class AudioBusTrack final
     : public ChannelTrack,
       public ICloneable<AudioBusTrack>,
-      public ISerializable<AudioBusTrack>
+      public ISerializable<AudioBusTrack>,
+      public InitializableObjectFactory<AudioBusTrack>
 {
+  friend class InitializableObjectFactory<AudioBusTrack>;
+
 public:
-  // Rule of 0
+  void init_after_cloning (const AudioBusTrack &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
   AudioBusTrack () = default;
   AudioBusTrack (const std::string &name, int pos);
 
-  void init_after_cloning (const AudioBusTrack &other) override
-  {
-    ChannelTrack::copy_members_from (other);
-    ProcessableTrack::copy_members_from (other);
-    AutomatableTrack::copy_members_from (other);
-    Track::copy_members_from (other);
-  }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  bool initialize () override;
 };
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

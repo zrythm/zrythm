@@ -3,18 +3,16 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
-
-#include <locale.h>
 
 static void
 test_midi_fx_routing (void)
@@ -26,11 +24,11 @@ test_midi_fx_routing (void)
     TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true);
   g_assert_nonnull (setting);
   Track * track = track_create_for_plugin_at_idx_w_action (
-    TrackType::TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->tracks.size (), NULL);
+    Track::Type::Instrument, setting, TRACKLIST->tracks.size (), nullptr);
   g_assert_nonnull (track);
 
   int num_dests = port_connections_manager_get_sources_or_dests (
-    PORT_CONNECTIONS_MGR, NULL, &track->processor->midi_out->id_, false);
+    PORT_CONNECTIONS_MGR, nullptr, &track->processor->midi_out->id_, false);
   g_assert_cmpint (num_dests, ==, 1);
 
   /* add MIDI file */
@@ -39,14 +37,15 @@ test_midi_fx_routing (void)
   g_assert_nonnull (midi_files);
   FileDescriptor file = FileDescriptor (midi_files[0]);
   bool           success = tracklist_import_files (
-    TRACKLIST, NULL, &file, track, track->lanes[0], -1, PLAYHEAD, NULL, NULL);
+    TRACKLIST, nullptr, &file, track, track->lanes[0], -1, PLAYHEAD, nullptr,
+    nullptr);
   g_assert_true (success);
   g_strfreev (midi_files);
 
   /* export loop and check that there is audio */
   char * audio_file = test_exporter_export_audio (
     ExportTimeRange::TIME_RANGE_LOOP, ExportMode::EXPORT_MODE_FULL);
-  g_return_if_fail (audio_file);
+  z_return_if_fail (audio_file);
   g_assert_false (audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);

@@ -170,7 +170,7 @@ Project::compress_or_decompress (
   ProjectCompressionFlag src_type)
 {
   z_info (
-    "using zstd v%d.%d.%d", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
+    "using zstd v{}.{}.{}", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
     ZSTD_VERSION_RELEASE);
 
   char * src = NULL;
@@ -207,8 +207,8 @@ Project::compress_or_decompress (
       if (ZSTD_isError (dest_size))
         {
           free (dest);
-          throw ZrythmException (fmt::sprintf (
-            "Failed to compress project file: %s",
+          throw ZrythmException (format_str (
+            "Failed to compress project file: {}",
             ZSTD_getErrorName (dest_size)));
         }
     }
@@ -232,7 +232,7 @@ Project::compress_or_decompress (
         {
           free (dest);
           throw ZrythmException (format_str (
-            "Failed to decompress project file: %s",
+            "Failed to decompress project file: {}",
             ZSTD_getErrorName (dest_size)));
         }
       if (dest_size != frame_content_size)
@@ -280,12 +280,12 @@ Project::set_and_create_next_available_backup_dir ()
     {
       if (i > 0)
         {
-          std::string bak_title = fmt::sprintf ("%s.bak%d", title_, i);
+          std::string bak_title = fmt::format ("{}.bak{}", title_, i);
           backup_dir_ = Glib::build_filename (backups_dir, bak_title);
         }
       else
         {
-          std::string bak_title = fmt::sprintf ("%s.bak", title_);
+          std::string bak_title = fmt::format ("{}.bak", title_);
           backup_dir_ = Glib::build_filename (backups_dir, bak_title);
         }
       i++;
@@ -299,7 +299,7 @@ Project::set_and_create_next_available_backup_dir ()
   catch (ZrythmException &e)
     {
       throw ZrythmException (
-        format_str (_ ("Failed to create backup directory %s"), backup_dir_));
+        format_str (_ ("Failed to create backup directory {}"), backup_dir_));
     }
 }
 
@@ -348,7 +348,7 @@ Project::add_default_tracks ()
 
     z_debug ("adding {} track...", typeid (T).name ());
     tracklist_->append_track (
-      std::make_unique<T> (tracklist_->tracks_.size ()), false, false);
+      *T::create_unique (tracklist_->tracks_.size ()), false, false);
   };
 
   /* chord */
@@ -537,7 +537,7 @@ Project::get_existing_uncompressed_text (bool backup)
       std::string msg = err->message;
       g_error_free_and_null (err);
       throw ZrythmException (format_str (
-        _ ("Unable to read file at %s: %s"), project_file_path, msg));
+        _ ("Unable to read file at {}: {}"), project_file_path, msg));
     }
 
   /* decompress */
@@ -553,8 +553,8 @@ Project::get_existing_uncompressed_text (bool backup)
     }
   catch (ZrythmException &e)
     {
-      throw ZrythmException (fmt::sprintf (
-        _ ("Unable to decompress project file at %s"), project_file_path));
+      throw ZrythmException (format_str (
+        _ ("Unable to decompress project file at {}"), project_file_path));
     }
   g_free (compressed_pj);
 

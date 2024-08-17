@@ -10,6 +10,13 @@ FolderTrack::FolderTrack (const std::string &name, int pos)
 {
   color_ = Color ("#865E3C");
   icon_name_ = "fluentui-folder-regular";
+}
 
+bool
+FolderTrack::initialize ()
+{
+  init_channel ();
   generate_automation_tracks ();
+
+  return true;
 }

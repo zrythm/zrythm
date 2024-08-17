@@ -67,7 +67,7 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
   catch (ZrythmException &e)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to read metadata from file '%s'", full_path));
+        fmt::format ("Failed to read metadata from file '{}'", full_path));
     }
   num_frames_ = file.metadata_.num_frames;
   channels_ = file.metadata_.channels;

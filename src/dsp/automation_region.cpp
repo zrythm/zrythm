@@ -56,7 +56,7 @@ void
 AutomationRegion::set_automation_track (AutomationTrack &at)
 {
   z_debug (
-    "setting region automation track to %d %s", at.index_,
+    "setting region automation track to {} {}", at.index_,
     at.port_id_.get_label ());
 
   /* if clip editor region or region selected,

@@ -14,14 +14,12 @@ class FolderTrack final
     : public FoldableTrack,
       public ChannelTrack,
       public ICloneable<FolderTrack>,
-      public ISerializable<FolderTrack>
+      public ISerializable<FolderTrack>,
+      public InitializableObjectFactory<FolderTrack>
 {
+  friend class InitializableObjectFactory<FolderTrack>;
+
 public:
-  // Rule of 0
-  FolderTrack () = default;
-
-  FolderTrack (const std::string &name, int pos);
-
   bool get_listened () const override
   {
     return is_status (MixerStatus::Listened);
@@ -44,6 +42,12 @@ public:
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  FolderTrack () = default;
+  FolderTrack (const std::string &name, int pos);
+
+  bool initialize () override;
 };
 
 #endif /* __AUDIO_FOLDER_TRACK_H__ */

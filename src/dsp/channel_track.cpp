@@ -3,7 +3,6 @@
 
 #include "actions/tracklist_selections.h"
 #include "dsp/channel_track.h"
-#include "dsp/group_target_track.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/tracklist_selections.h"
 #include "project.h"
@@ -16,6 +15,12 @@ void
 ChannelTrack::init_loaded ()
 {
   channel_->init_loaded (*this);
+}
+
+void
+ChannelTrack::init_channel ()
+{
+  channel_->init ();
 }
 
 void
@@ -96,7 +101,7 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
 {
   auto &atl = get_automation_tracklist ();
 
-  for (auto &at : atl.ats_)
+  for (auto &at : atl.ats_ | std::views::reverse)
     {
       if (
         ENUM_BITSET_TEST (

@@ -37,8 +37,29 @@ AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerat
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
   rt_stretcher_ = stretcher_new_rubberband (samplerate, 2, 1.0, 1.0, true);
+}
 
+bool
+AudioTrack::initialize ()
+{
+  init_channel ();
   generate_automation_tracks ();
+
+  return true;
+}
+
+void
+AudioTrack::set_playback_caches ()
+{
+  LanedTrackImpl::set_playback_caches ();
+  AutomatableTrack::set_playback_caches ();
+}
+
+void
+AudioTrack::update_name_hash (NameHashT new_name_hash)
+{
+  LanedTrackImpl::update_name_hash (new_name_hash);
+  AutomatableTrack::update_name_hash (new_name_hash);
 }
 
 void

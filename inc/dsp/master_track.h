@@ -23,16 +23,21 @@
 class MasterTrack final
     : public GroupTargetTrack,
       public ICloneable<MasterTrack>,
-      public ISerializable<MasterTrack>
+      public ISerializable<MasterTrack>,
+      public InitializableObjectFactory<MasterTrack>
 {
 public:
-  // Rule of 0
-  MasterTrack () = default;
-  MasterTrack (int pos);
+  friend class InitializableObjectFactory<MasterTrack>;
 
   void init_after_cloning (const MasterTrack &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  MasterTrack () = default;
+  MasterTrack (int pos);
+
+  bool initialize () override;
 };
 
 /**

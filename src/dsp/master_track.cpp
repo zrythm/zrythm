@@ -9,8 +9,15 @@ MasterTrack::MasterTrack (int pos)
   /* GTK color picker color */
   color_ = Color ("#C01C28");
   icon_name_ = "effect";
+}
 
+bool
+MasterTrack::initialize ()
+{
+  init_channel ();
   generate_automation_tracks ();
+
+  return true;
 }
 
 void

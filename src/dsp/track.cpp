@@ -63,29 +63,28 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
   switch (type)
     {
     case Track::Type::Instrument:
-      return std::make_unique<InstrumentTrack> (name, pos);
+      return *InstrumentTrack::create_unique (name, pos);
       break;
     case Track::Type::Audio:
-      return std::make_unique<AudioTrack> (
-        name, pos, AUDIO_ENGINE->sample_rate_);
+      return *AudioTrack::create_unique (name, pos, AUDIO_ENGINE->sample_rate_);
       break;
     case Track::Type::AudioBus:
-      return std::make_unique<AudioBusTrack> (name, pos);
+      return *AudioBusTrack::create_unique (name, pos);
       break;
     case Track::Type::AudioGroup:
-      return std::make_unique<AudioGroupTrack> (name, pos);
+      return *AudioGroupTrack::create_unique (name, pos);
       break;
     case Track::Type::Midi:
-      return std::make_unique<MidiTrack> (name, pos);
+      return *MidiTrack::create_unique (name, pos);
       break;
     case Track::Type::MidiBus:
-      return std::make_unique<MidiBusTrack> (name, pos);
+      return *MidiBusTrack::create_unique (name, pos);
       break;
     case Track::Type::MidiGroup:
-      return std::make_unique<MidiGroupTrack> (name, pos);
+      return *MidiGroupTrack::create_unique (name, pos);
       break;
     case Track::Type::Folder:
-      return std::make_unique<FolderTrack> (name, pos);
+      return *FolderTrack::create_unique (name, pos);
       break;
     case Track::Type::Master:
     case Track::Type::Chord:
@@ -129,31 +128,31 @@ Track::create_unique_from_type (Type type)
   switch (type)
     {
     case Track::Type::Instrument:
-      return std::make_unique<InstrumentTrack> ();
+      return *InstrumentTrack::create_unique ();
     case Track::Type::Audio:
-      return std::make_unique<AudioTrack> ();
+      return *AudioTrack::create_unique ();
     case Track::Type::AudioBus:
-      return std::make_unique<AudioBusTrack> ();
+      return *AudioBusTrack::create_unique ();
     case Track::Type::AudioGroup:
-      return std::make_unique<AudioGroupTrack> ();
+      return *AudioGroupTrack::create_unique ();
     case Track::Type::Midi:
-      return std::make_unique<MidiTrack> ();
+      return *MidiTrack::create_unique ();
     case Track::Type::MidiBus:
-      return std::make_unique<MidiBusTrack> ();
+      return *MidiBusTrack::create_unique ();
     case Track::Type::MidiGroup:
-      return std::make_unique<MidiGroupTrack> ();
+      return *MidiGroupTrack::create_unique ();
     case Track::Type::Folder:
-      return std::make_unique<FolderTrack> ();
+      return *FolderTrack::create_unique ();
     case Track::Type::Master:
-      return std::make_unique<MasterTrack> ();
+      return *MasterTrack::create_unique ();
     case Track::Type::Chord:
-      return std::make_unique<ChordTrack> ();
+      return *ChordTrack::create_unique ();
     case Track::Type::Marker:
-      return std::make_unique<MarkerTrack> ();
+      return *MarkerTrack::create_unique ();
     case Track::Type::Tempo:
-      return std::make_unique<MarkerTrack> ();
+      return *MarkerTrack::create_unique ();
     case Track::Type::Modulator:
-      return std::make_unique<ModulatorTrack> ();
+      return *ModulatorTrack::create_unique ();
     default:
       z_return_val_if_reached (nullptr);
     }

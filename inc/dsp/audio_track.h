@@ -23,12 +23,12 @@ class AudioTrack final
       public LanedTrackImpl<AudioRegion>,
       public RecordableTrack,
       public ICloneable<AudioTrack>,
-      public ISerializable<AudioTrack>
+      public ISerializable<AudioTrack>,
+      public InitializableObjectFactory<AudioTrack>
 {
-public:
-  AudioTrack () = default;
-  AudioTrack (const std::string &name, int pos, unsigned int samplerate);
+  friend class InitializableObjectFactory<AudioTrack>;
 
+public:
   // Uncopyable
   AudioTrack (const AudioTrack &) = delete;
   AudioTrack &operator= (const AudioTrack &) = delete;
@@ -74,17 +74,14 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  void set_playback_caches () override
-  {
-    LanedTrackImpl::set_playback_caches ();
-    AutomatableTrack::set_playback_caches ();
-  }
+  AudioTrack () = default;
+  AudioTrack (const std::string &name, int pos, unsigned int samplerate);
 
-  void update_name_hash (unsigned int new_name_hash) override
-  {
-    LanedTrackImpl::update_name_hash (new_name_hash);
-    AutomatableTrack::update_name_hash (new_name_hash);
-  }
+  bool initialize () override;
+
+  void set_playback_caches () override;
+
+  void update_name_hash (NameHashT new_name_hash) override;
 
 public:
   /** Real-time time stretcher. */

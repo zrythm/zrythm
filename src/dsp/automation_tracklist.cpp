@@ -164,7 +164,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
         }
 
       z_trace (
-        "new pos %s (%d)", ats_[prev_index]->port_id_.get_label (),
+        "new pos {} ({})", ats_[prev_index]->port_id_.get_label (),
         ats_[prev_index]->index_);
     }
 }

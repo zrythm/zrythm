@@ -3,9 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include <cstdlib>
-#include <utility>
-
 #include "actions/mixer_selections_action.h"
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
@@ -31,7 +28,6 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_identifier.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/logger.h"
 #include "utils/objects.h"
@@ -64,8 +60,10 @@ Channel::init_after_cloning (const Channel &other)
   all_midi_channels_ = other.all_midi_channels_;
   fader_ = other.fader_->clone_unique ();
   prefader_ = other.prefader_->clone_unique ();
-  midi_out_ = other.midi_out_->clone_unique ();
-  stereo_out_ = other.stereo_out_->clone_unique ();
+  if (other.midi_out_)
+    midi_out_ = other.midi_out_->clone_unique ();
+  if (other.stereo_out_)
+    stereo_out_ = other.stereo_out_->clone_unique ();
   has_output_ = other.has_output_;
   output_name_hash_ = other.output_name_hash_;
   track_pos_ = other.track_pos_;
@@ -959,6 +957,11 @@ Channel::init_stereo_out_ports (bool loading)
 Channel::Channel (ChannelTrack &track) : track_ (&track)
 {
   track_pos_ = track.pos_;
+}
+
+void
+Channel::init ()
+{
 
   /* create ports */
   switch (track_->out_signal_type_)
@@ -980,16 +983,16 @@ Channel::Channel (ChannelTrack &track) : track_ (&track)
 
   auto fader_type = track_->get_fader_type ();
   auto prefader_type = Track::type_get_prefader_type (track_->type_);
-  fader_ = std::make_unique<Fader> (fader_type, false, &track, nullptr, nullptr);
+  fader_ = std::make_unique<Fader> (fader_type, false, track_, nullptr, nullptr);
   prefader_ =
-    std::make_unique<Fader> (prefader_type, true, &track, nullptr, nullptr);
+    std::make_unique<Fader> (prefader_type, true, track_, nullptr, nullptr);
 
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; ++i)
     {
       sends_[i] =
-        std::make_unique<ChannelSend> (track_->get_name_hash (), i, &track);
-      sends_[i]->track_ = &track;
+        std::make_unique<ChannelSend> (track_->get_name_hash (), i, track_);
+      sends_[i]->track_ = track_;
     }
 }
 

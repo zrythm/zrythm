@@ -215,7 +215,7 @@ MixerSelectionsAction::save_existing_plugin (
 {
   auto existing_pl = to_tr->get_plugin_at_slot (to_slot_type, to_slot);
   z_debug (
-    "existing plugin at (%s:%s:%d => %s:%s:%d): %s",
+    "existing plugin at ({}:{}:{} => {}:{}:{}): {}",
     from_tr ? from_tr->name_ : "(none)", ENUM_NAME (from_slot_type), from_slot,
     to_tr ? to_tr->name_ : "(none)", ENUM_NAME (to_slot_type), to_slot,
     existing_pl ? existing_pl->get_name () : "(none)");
@@ -261,7 +261,7 @@ MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
 
       auto &deleted_pl = deleted_ms_->plugins_[j];
       z_debug (
-        "reverting plugin %s in slot %d", deleted_pl->get_name (),
+        "reverting plugin {} in slot {}", deleted_pl->get_name (),
         slot_to_revert);
 
       /* add to channel - note: cloning deleted_pl also instantiates the clone */
@@ -407,7 +407,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               /* restore port connections */
               auto pl = own_ms->plugins_[i].get ();
               z_debug (
-                "restoring custom connections for plugin '%s'", pl->get_name ());
+                "restoring custom connections for plugin '{}'", pl->get_name ());
               std::vector<Port *> ports;
               pl->append_ports (ports);
               for (auto port : ports)
@@ -704,7 +704,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
             {
               z_debug (
                 "moving plugin from "
-                "%s:%s:%d to %s:%s:%d",
+                "{}:{}:{} to {}:{}:{}",
                 from_tr->name_, ENUM_NAME (from_slot_type), from_slot,
                 to_tr->name_, ENUM_NAME (to_slot_type), to_slot);
 
@@ -719,7 +719,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
             {
               z_debug (
                 "copying plugin from "
-                "%s:%s:%d to %s:%s:%d",
+                "{}:{}:{} to {}:{}:{}",
                 from_tr->name_, ENUM_NAME (from_slot_type), from_slot,
                 to_tr->name_, ENUM_NAME (to_slot_type), to_slot);
 
@@ -806,7 +806,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                * slot */
               z_debug (
                 "moving plugin back from "
-                "%s:%s:%d to %s:%s:%d",
+                "{}:{}:{} to {}:{}:{}",
                 to_tr->name_, ENUM_NAME (to_slot_type), to_slot, from_tr->name_,
                 ENUM_NAME (from_slot_type), from_slot);
 

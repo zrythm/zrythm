@@ -57,6 +57,12 @@ public:
   Channel () = default;
   explicit Channel (ChannelTrack &track);
 
+  /**
+   * @brief Initializes the Channel (performs logic that needs the object to be
+   * constructed).
+   */
+  void init ();
+
   bool is_in_active_project ();
 
   /**

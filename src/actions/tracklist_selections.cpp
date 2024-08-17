@@ -405,13 +405,12 @@ TracklistSelectionsAction::create_track (int idx)
       /* if creating audio track from file */
       if (track_type_ == Track::Type::Audio && pool_id_ >= 0)
         {
-          track =
-            std::make_unique<AudioTrack> (file_basename_, pos, sample_rate_);
+          track = *AudioTrack::create_unique (file_basename_, pos, sample_rate_);
         }
       /* else if creating MIDI track from file */
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
-          track = std::make_unique<MidiTrack> (file_basename_, pos);
+          track = *MidiTrack::create_unique (file_basename_, pos);
         }
       /* at this point we can assume it has a plugin */
       else
@@ -821,7 +820,7 @@ TracklistSelectionsAction::
                   if (inside && parent->is_child (*foldable_tr))
                     {
                       z_debug (
-                        "foldable track %s is child of parent %s: parent--",
+                        "foldable track {} is child of parent {}: parent--",
                         foldable_tr->name_, parent->name_);
                       parent->size_--;
                     }

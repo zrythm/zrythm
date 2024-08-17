@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Audio group track.
- */
-
 #ifndef __AUDIO_AUDIO_GROUP_TRACK_H__
 #define __AUDIO_AUDIO_GROUP_TRACK_H__
 
@@ -22,23 +16,21 @@ class AudioGroupTrack final
     : public FoldableTrack,
       public GroupTargetTrack,
       public ICloneable<AudioGroupTrack>,
-      public ISerializable<AudioGroupTrack>
+      public ISerializable<AudioGroupTrack>,
+      public InitializableObjectFactory<AudioGroupTrack>
 {
+  friend class InitializableObjectFactory<AudioGroupTrack>;
+
 public:
-  // Rule of 0
+  void init_after_cloning (const AudioGroupTrack &other) override;
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
   AudioGroupTrack () = default;
   AudioGroupTrack (const std::string &name, int pos);
 
-  void init_after_cloning (const AudioGroupTrack &other) override
-  {
-    FoldableTrack::copy_members_from (other);
-    ChannelTrack::copy_members_from (other);
-    ProcessableTrack::copy_members_from (other);
-    AutomatableTrack::copy_members_from (other);
-    Track::copy_members_from (other);
-  }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  bool initialize () override;
 };
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

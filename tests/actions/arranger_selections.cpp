@@ -1403,7 +1403,7 @@ TEST_CASE ("split large audio file")
 
   test_project_stop_dummy_engine ();
   auto track = TRACKLIST->append_track (
-    std::make_unique<AudioTrack> (
+    *AudioTrack::create_unique (
       "test track", TRACKLIST->tracks_.size (), AUDIO_ENGINE->sample_rate_),
     false, false);
   auto     track_name_hash = track->get_name_hash ();

@@ -40,12 +40,12 @@ class ChordTrack final
       public ChannelTrack,
       public RegionOwnerImpl<ChordRegion>,
       public ICloneable<ChordTrack>,
-      public ISerializable<ChordTrack>
+      public ISerializable<ChordTrack>,
+      public InitializableObjectFactory<ChordTrack>
 {
-public:
-  ChordTrack () = default;
-  ChordTrack (int track_pos);
+  friend class InitializableObjectFactory<ChordTrack>;
 
+public:
   void init_loaded () override;
 
   bool is_in_active_project () const override
@@ -133,22 +133,11 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  void set_playback_caches () override
-  {
-    region_snapshots_.clear ();
-    region_snapshots_.reserve (regions_.size ());
-    for (const auto &region : regions_)
-      {
-        region_snapshots_.push_back (region->clone_unique ());
-      }
+  ChordTrack ();
+  ChordTrack (int track_pos);
 
-    scale_snapshots_.clear ();
-    scale_snapshots_.reserve (scales_.size ());
-    for (const auto &scale : scales_)
-      {
-        scale_snapshots_.push_back (scale->clone_unique ());
-      }
-  }
+  bool initialize () override;
+  void set_playback_caches () override;
 
 public:
   /**
