@@ -155,10 +155,10 @@ public:
    * Adds the frames to the position and updates the rest of the fields, and
    * makes sure the frames are still accurate.
    */
-  inline void add_frames (signed_frame_t frames)
+  inline void add_frames (signed_frame_t frames, double ticks_per_frame = 0.0)
   {
     frames_ += frames;
-    update_ticks_from_frames (0.0);
+    update_ticks_from_frames (ticks_per_frame);
   }
 
   /**
@@ -166,19 +166,20 @@ public:
    */
   void from_seconds (double secs);
 
-  inline void from_frames (const signed_frame_t frames)
+  inline void
+  from_frames (const signed_frame_t frames, double ticks_per_frame = 0.0)
   {
     frames_ = frames;
-    update_ticks_from_frames (0.0);
+    update_ticks_from_frames (ticks_per_frame);
   }
 
   /**
    * Sets position to the given total tick count.
    */
-  inline void from_ticks (double ticks)
+  inline void from_ticks (double ticks, double frames_per_tick = 0.0)
   {
     ticks_ = ticks;
-    update_frames_from_ticks (0.0);
+    update_frames_from_ticks (frames_per_tick);
   }
 
   void from_ms (const signed_ms_t ms)

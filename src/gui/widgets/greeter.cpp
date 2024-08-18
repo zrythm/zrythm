@@ -466,17 +466,13 @@ on_create_new_project_clicked (GtkButton * btn, GreeterWidget * self)
   g_object_unref (str_gf);
 
   /* get next available "Untitled Project" */
-  char * untitled_project = g_strdup (_ ("Untitled Project"));
-  char * tmp = g_build_filename (str, untitled_project, nullptr);
-  char * dir = io_get_next_available_filepath (tmp);
-  g_free (tmp);
-  g_free (untitled_project);
-  untitled_project = g_path_get_basename (dir);
-  g_free (dir);
+  std::string untitled_project = _ ("Untitled Project");
+  auto        tmp = Glib::build_filename (str, untitled_project);
+  auto        dir = io_get_next_available_filepath (tmp);
+  untitled_project = Glib::path_get_basename (dir);
   g_free (str);
   gtk_editable_set_text (
-    GTK_EDITABLE (self->project_title_row), untitled_project);
-  g_free (untitled_project);
+    GTK_EDITABLE (self->project_title_row), untitled_project.c_str ());
 
   adw_combo_row_set_selected (self->templates_combo_row, 0);
 }

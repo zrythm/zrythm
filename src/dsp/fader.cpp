@@ -103,8 +103,8 @@ Fader::Fader (
   /* set volume */
   float amp = 1.f;
   amp_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"));
+  amp_->set_owner (this);
   amp_->id_.sym_ = passthrough ? "prefader_volume" : "fader_volume";
   amp_->deff_ = amp;
   amp_->minf_ = 0.f;
@@ -121,8 +121,8 @@ Fader::Fader (
   /* set pan */
   float balance = 0.5f;
   balance_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"));
+  balance_->set_owner (this);
   balance_->id_.sym_ = passthrough ? "prefader_balance" : "fader_balance";
   balance_->set_control_value (balance, 0, 0);
   balance_->id_.flags_ |= PortIdentifier::Flags::StereoBalance;
@@ -133,8 +133,8 @@ Fader::Fader (
 
   /* set mute */
   mute_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"));
+  mute_->set_owner (this);
   mute_->id_.sym_ = passthrough ? "prefader_mute" : "fader_mute";
   mute_->set_toggled (false, false);
   mute_->id_.flags_ |= PortIdentifier::Flags::FaderMute;
@@ -146,8 +146,8 @@ Fader::Fader (
 
   /* set solo */
   solo_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"));
+  solo_->set_owner (this);
   solo_->id_.sym_ = passthrough ? "prefader_solo" : "fader_solo";
   solo_->set_toggled (false, false);
   solo_->id_.flags2_ |= PortIdentifier::Flags2::FaderSolo;
@@ -155,8 +155,8 @@ Fader::Fader (
 
   /* set listen */
   listen_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"));
+  listen_->set_owner (this);
   listen_->id_.sym_ = passthrough ? "prefader_listen" : "fader_listen";
   listen_->set_toggled (false, false);
   listen_->id_.flags2_ |= PortIdentifier::Flags2::FaderListen;
@@ -164,8 +164,8 @@ Fader::Fader (
 
   /* set mono compat */
   mono_compat_enabled_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"),
-    PortIdentifier::OwnerType::Fader, this);
+    passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"));
+  mono_compat_enabled_->set_owner (this);
   mono_compat_enabled_->id_.sym_ =
     passthrough ? "prefader_mono_compat_enabled" : "fader_mono_compat_enabled";
   mono_compat_enabled_->set_toggled (false, false);
@@ -175,7 +175,7 @@ Fader::Fader (
   /* set swap phase */
   swap_phase_ = create_swap_phase_port (passthrough);
   swap_phase_->set_toggled (false, false);
-  swap_phase_->set_owner_impl<Fader> (this);
+  swap_phase_->set_owner (this);
 
   if (
     type == Type::AudioChannel || type == Type::Monitor
@@ -208,11 +208,10 @@ Fader::Fader (
         }
 
       /* stereo in */
-      stereo_in_ = std::make_unique<StereoPorts> (
-        true, name, sym, PortIdentifier::OwnerType::Fader, this);
+      stereo_in_ = std::make_unique<StereoPorts> (true, name, sym);
 
       /* set proper owner */
-      stereo_in_->set_owner (PortIdentifier::OwnerType::Fader, this);
+      stereo_in_->set_owner (this);
 
       if (type == Type::AudioChannel)
         {
@@ -239,11 +238,10 @@ Fader::Fader (
         }
 
       /* stereo out */
-      stereo_out_ = std::make_unique<StereoPorts> (
-        false, name, sym, PortIdentifier::OwnerType::Fader, this);
+      stereo_out_ = std::make_unique<StereoPorts> (false, name, sym);
 
       /* set proper owner */
-      stereo_out_->set_owner (PortIdentifier::OwnerType::Fader, this);
+      stereo_out_->set_owner (this);
     }
 
   if (type == Type::MidiChannel)
@@ -261,8 +259,8 @@ Fader::Fader (
           name = _ ("Ch MIDI Fader in");
           sym = "ch_midi_fader_in";
         }
-      midi_in_ = std::make_unique<MidiPort> (
-        name, PortFlow::Input, PortIdentifier::OwnerType::Fader, this);
+      midi_in_ = std::make_unique<MidiPort> (name, PortFlow::Input);
+      midi_in_->set_owner (this);
       midi_in_->id_.sym_ = sym;
 
       /* MIDI out */
@@ -276,8 +274,8 @@ Fader::Fader (
           name = _ ("Ch MIDI Fader out");
           sym = "ch_midi_fader_out";
         }
-      midi_out_ = std::make_unique<MidiPort> (
-        name, PortFlow::Output, PortIdentifier::OwnerType::Fader, this);
+      midi_out_ = std::make_unique<MidiPort> (name, PortFlow::Output);
+      midi_out_->set_owner (this);
       midi_out_->id_.sym_ = sym;
     }
 }

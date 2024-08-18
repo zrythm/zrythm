@@ -161,13 +161,12 @@ get_mixdown_export_filename (ExportDialogWidget * self, bool audio)
     }
   z_return_val_if_fail (!base.empty (), nullptr);
 
-  auto   exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
-  auto   tmp = Glib::build_filename (exports_dir, base);
-  char * full_path = io_get_next_available_filepath (tmp.c_str ());
+  auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
+  auto tmp = Glib::build_filename (exports_dir, base);
+  auto full_path = io_get_next_available_filepath (tmp);
 
   /* we now have the full path, get only the basename */
   base = Glib::path_get_basename (full_path);
-  g_free (full_path);
 
   return base;
 }
@@ -242,13 +241,12 @@ get_stem_export_filenames (
         }
       z_return_val_if_fail (!base.empty (), nullptr);
 
-      auto   exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
-      auto   tmp = Glib::build_filename (exports_dir, base);
-      char * full_path = io_get_next_available_filepath (tmp.c_str ());
+      auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
+      auto tmp = Glib::build_filename (exports_dir, base);
+      auto full_path = io_get_next_available_filepath (tmp);
 
       /* we now have the full path, get only the basename */
-      base = g_path_get_basename (full_path);
-      g_free (full_path);
+      base = Glib::path_get_basename (full_path);
 
       gstr += base;
 

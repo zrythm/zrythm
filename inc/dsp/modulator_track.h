@@ -69,8 +69,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  ModulatorTrack () = default;
-  ModulatorTrack (int track_pos);
+  ModulatorTrack (int track_pos = 0);
 
   bool initialize () override;
 

@@ -11,7 +11,6 @@
 #include "dsp/audio_track.h"
 #include "dsp/automation_region.h"
 #include "dsp/chord_track.h"
-#include "dsp/instrument_track.h"
 #include "dsp/marker_track.h"
 #include "dsp/master_track.h"
 #include "dsp/midi_track.h"
@@ -62,6 +61,7 @@ auto perform_split = [] (const auto &selections, const Position &pos) {
     std::make_unique<ArrangerSelectionsAction::SplitAction> (*selections, pos));
 };
 
+#if 0
 Position p1, p2;
 
 /**
@@ -72,130 +72,409 @@ rebootstrap_timeline (void)
 {
   test_project_rebootstrap_timeline (&p1, &p2);
 }
+#endif
 
-static void
-select_audio_and_midi_regions_only (void)
+class ArrangerSelectionsFixture : public BootstrapTimelineFixture
 {
-  TL_SELECTIONS->clear ();
-  REQUIRE_EMPTY (TL_SELECTIONS->objects_);
+public:
+  void select_audio_and_midi_regions_only ()
+  {
+    TL_SELECTIONS->clear ();
+    REQUIRE_EMPTY (TL_SELECTIONS->objects_);
 
-  auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
-  TL_SELECTIONS->add_object_ref (
-    midi_track->lanes_[MIDI_REGION_LANE]->regions_[0]);
-  REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 1);
-  REQUIRE (TL_SELECTIONS->contains_only_regions ());
-  REQUIRE (TL_SELECTIONS->contains_only_region_types (RegionType::Midi));
-  auto audio_track =
-    TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
-  TL_SELECTIONS->add_object_ref (
-    audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0]);
-  REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 2);
-}
+    auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track);
+    TL_SELECTIONS->add_object_ref (
+      midi_track->lanes_[MIDI_REGION_LANE]->regions_[0]);
+    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 1);
+    REQUIRE (TL_SELECTIONS->contains_only_regions ());
+    REQUIRE (TL_SELECTIONS->contains_only_region_types (RegionType::Midi));
+    auto audio_track =
+      TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track);
+    TL_SELECTIONS->add_object_ref (
+      audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0]);
+    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 2);
+  }
 
-/**
- * Check if the undo stack has a single element.
- */
-static void
-check_has_single_undo ()
-{
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, 1);
-  REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
-}
+  /**
+   * Check if the undo stack has a single element.
+   */
+  void check_has_single_undo ()
+  {
+    REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, 1);
+    REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
+  }
 
-/**
- * Check if the redo stack has a single element.
- */
-static void
-check_has_single_redo ()
-{
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, 1);
-  REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
-}
+  /**
+   * Check if the redo stack has a single element.
+   */
+  void check_has_single_redo ()
+  {
+    REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, 1);
+    REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
+  }
 
-/**
- * Checks that the objects are back to their original
- * state.
- * @param check_selections Also checks that the
- *   selections are back to where they were.
- */
-static void
-check_timeline_objects_vs_original_state (
-  bool check_selections,
-  bool _check_has_single_undo,
-  bool _check_has_single_redo)
-{
-  test_project_check_vs_original_state (&p1, &p2, check_selections);
+  /**
+   * Checks that the objects are deleted.
+   *
+   * @param creating Whether this is part of a create test.
+   */
+  void check_timeline_objects_deleted (bool creating)
+  {
+    REQUIRE_EMPTY (TL_SELECTIONS->objects_);
 
-  /* check that undo/redo stacks have the correct
-   * counts */
-  if (_check_has_single_undo)
+    auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track);
+    auto audio_track =
+      TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track);
+
+    /* check midi region */
+    REQUIRE_SIZE_EQ (midi_track->lanes_, 1);
+    REQUIRE_EMPTY (midi_track->lanes_[0]->regions_);
+
+    /* check audio region */
+    REQUIRE_SIZE_EQ (audio_track->lanes_, 1);
+    REQUIRE_EMPTY (audio_track->lanes_[0]->regions_);
+
+    /* check automation region */
+    auto at = P_MASTER_TRACK->channel_->get_automation_track (
+      PortIdentifier::Flags::StereoBalance);
+    REQUIRE_NONNULL (at);
+    REQUIRE_EMPTY (at->regions_);
+
+    /* check marker */
+    REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 2);
+
+    /* check scale object */
+    REQUIRE_EMPTY (P_CHORD_TRACK->scales_);
+
+    if (creating)
+      {
+        check_has_single_redo ();
+      }
+    else
+      {
+        check_has_single_undo ();
+      }
+  }
+
+  /**
+   * Checks the objects after moving.
+   *
+   * @param new_tracks Whether objects were moved to
+   *   new tracks or in the same track.
+   */
+  void check_after_move_timeline (bool new_tracks)
+  {
+    /* check */
+    REQUIRE_EQ (
+      TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
+
+    /* check that undo/redo stacks have the correct counts (1 and 0) */
+    check_has_single_undo ();
+    REQUIRE_EQ (
+      dynamic_cast<ArrangerSelectionsAction *> (
+        UNDO_MANAGER->undo_stack_->peek ())
+        ->delta_tracks_,
+      new_tracks ? 2 : 0);
+
+    /* get tracks */
+    auto midi_track_before =
+      TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track_before);
+    REQUIRE_GT (midi_track_before->pos_, 0);
+    auto audio_track_before =
+      TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track_before);
+    REQUIRE_GT (audio_track_before->pos_, 0);
+    auto midi_track_after =
+      TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track_after);
+    REQUIRE_GT (midi_track_after->pos_, midi_track_before->pos_);
+    auto audio_track_after =
+      TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track_after);
+    REQUIRE_GT (audio_track_after->pos_, audio_track_before->pos_);
+
+    auto require_correct_track = [&] (auto &region, auto &expected) {
+      auto actual = region->get_track ();
+      REQUIRE_EQ (actual, expected);
+      REQUIRE_EQ (region->id_.track_name_hash_, expected->get_name_hash ());
+    };
+
+    auto p1_after_move = p1_;
+    auto p2_after_move = p2_;
+    p1_after_move.add_ticks (MOVE_TICKS);
+    p2_after_move.add_ticks (MOVE_TICKS);
+
     {
-      check_has_single_undo ();
+      /* check midi region */
+      auto mr = [&] () {
+        auto track = new_tracks ? midi_track_after : midi_track_before;
+        return track->lanes_[MIDI_REGION_LANE]->regions_[0];
+      }();
+
+      REQUIRE (mr->is_region ());
+      REQUIRE (mr->is_midi ());
+
+      REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
+      REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
+      require_correct_track (
+        mr, new_tracks ? midi_track_after : midi_track_before);
+      REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+      auto mn = mr->midi_notes_[0];
+      REQUIRE_EQ (mn->val_, MN_VAL);
+      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+      REQUIRE_POSITION_EQ (mn->pos_, p1_);
+      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+      REQUIRE_EQ (mn->region_id_, mr->id_);
     }
-  else if (_check_has_single_redo)
+
     {
-      check_has_single_redo ();
+      /* check audio region */
+      auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
+      auto r =
+        dynamic_pointer_cast<AudioRegion> (regions.at (new_tracks ? 1 : 3));
+      REQUIRE_NONNULL (r);
+      REQUIRE (r->is_region ());
+      REQUIRE (r->is_audio ());
+      REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
+      require_correct_track (
+        r, new_tracks ? audio_track_after : audio_track_before);
     }
-}
-/**
- * Checks that the objects are deleted.
- *
- * @param creating Whether this is part of a create test.
- */
-static void
-check_timeline_objects_deleted (bool creating)
+
+    if (!new_tracks)
+      {
+        {
+          /* check automation region */
+          auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
+          auto r = dynamic_pointer_cast<AutomationRegion> (regions.at (1));
+          REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
+          REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
+          REQUIRE_SIZE_EQ (r->aps_, 2);
+          auto &ap = r->aps_[0];
+          REQUIRE_POSITION_EQ (ap->pos_, p1_);
+          REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+          ap = r->aps_[1];
+          REQUIRE_POSITION_EQ (ap->pos_, p2_);
+          REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+        }
+
+        /* check marker */
+        auto markers = TL_SELECTIONS->get_objects_of_type<Marker> ();
+        REQUIRE_SIZE_EQ (markers, 1);
+        auto m = markers[0];
+        REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
+        REQUIRE_EQ (m->name_, MARKER_NAME);
+
+        /* check scale object */
+        auto scales = TL_SELECTIONS->get_objects_of_type<ScaleObject> ();
+        REQUIRE_SIZE_EQ (scales, 1);
+        auto s = scales[0];
+        REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
+        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+      }
+  }
+
+  /**
+   * @param new_tracks Whether midi/audio regions
+   *   were moved to new tracks.
+   * @param link Whether this is a link action.
+   */
+  void check_after_duplicate_timeline (bool new_tracks, bool link)
+  {
+    /* check */
+    REQUIRE_EQ (
+      TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
+
+    auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track);
+    auto audio_track =
+      TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track);
+    auto new_midi_track =
+      TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
+    REQUIRE_NONNULL (midi_track);
+    auto new_audio_track =
+      TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
+    REQUIRE_NONNULL (audio_track);
+
+    /* check prev midi region */
+    if (new_tracks)
+      {
+        REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+        REQUIRE_SIZE_EQ (new_midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+      }
+    else
+      {
+        REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
+      }
+    auto      &mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
+    const auto p1_before_move = p1_;
+    const auto p2_before_move = p1_;
+    REQUIRE_POSITION_EQ (mr->pos_, p1_before_move);
+    REQUIRE_POSITION_EQ (mr->end_pos_, p2_before_move);
+    REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
+    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    REQUIRE_EQ (mr->id_.idx_, 0);
+    REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+    auto &mn = mr->midi_notes_[0];
+    REQUIRE_EQ (mn->region_id_, mr->id_);
+    REQUIRE_EQ (mn->val_, MN_VAL);
+    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+    REQUIRE_POSITION_EQ (mn->pos_, p1_);
+    REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    int link_group = mr->id_.link_group_;
+    if (link)
+      {
+        REQUIRE_GT (mr->id_.link_group_, -1);
+      }
+
+    /* check new midi region */
+    if (new_tracks)
+      {
+        mr = new_midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
+      }
+    else
+      {
+        mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[1];
+      }
+    auto p1_after_move = p1_;
+    auto p2_after_move = p2_;
+    p1_after_move.add_ticks (MOVE_TICKS);
+    p2_after_move.add_ticks (MOVE_TICKS);
+    REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
+    REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
+    if (new_tracks)
+      {
+        REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *new_midi_track);
+        REQUIRE_EQ (mr->id_.idx_, 0);
+      }
+    else
+      {
+        REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
+        REQUIRE_EQ (mr->id_.idx_, 1);
+      }
+    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+    REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
+      mr, new_tracks ? *new_midi_track : *midi_track);
+    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    mn = mr->midi_notes_[0];
+    REQUIRE_EQ (mn->region_id_, mr->id_);
+    REQUIRE_EQ (mn->val_, MN_VAL);
+    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+    REQUIRE_POSITION_EQ (mn->pos_, p1_);
+    REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    if (link)
+      {
+        REQUIRE_EQ (mr->id_.link_group_, link_group);
+      }
+
+    /* check prev audio region */
+    if (new_tracks)
+      {
+        REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+        REQUIRE_SIZE_EQ (
+          new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+      }
+    else
+      {
+        REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
+      }
+    auto ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
+    REQUIRE_POSITION_EQ (ar->pos_, p1_before_move);
+    REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (ar, *audio_track);
+    REQUIRE_EQ (ar->id_.idx_, 0);
+    REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    link_group = ar->id_.link_group_;
+    if (link)
+      {
+        REQUIRE_GT (ar->id_.link_group_, -1);
+      }
+
+    /* check new audio region */
+    if (new_tracks)
+      {
+        ar = new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
+      }
+    else
+      {
+        ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[1];
+      }
+    REQUIRE_POSITION_EQ (ar->pos_, p1_after_move);
+    REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
+      ar, new_tracks ? *new_audio_track : *audio_track);
+    if (link)
+      {
+        REQUIRE_EQ (ar->id_.link_group_, link_group);
+      }
+
+    if (!new_tracks)
+      {
+        /* check automation region */
+        auto at = P_MASTER_TRACK->channel_->get_automation_track (
+          PortIdentifier::Flags::StereoBalance);
+        REQUIRE_NONNULL (at);
+        REQUIRE_SIZE_EQ (at->regions_, 2);
+        auto r = at->regions_[0];
+        REQUIRE_POSITION_EQ (r->pos_, p1_before_move);
+        REQUIRE_POSITION_EQ (r->end_pos_, p2_before_move);
+        REQUIRE_SIZE_EQ (r->aps_, 2);
+        auto &ap = r->aps_[0];
+        REQUIRE_POSITION_EQ (ap->pos_, p1_);
+        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+        ap = r->aps_[1];
+        REQUIRE_POSITION_EQ (ap->pos_, p2_);
+        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+        r = at->regions_[1];
+        REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
+        REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
+        REQUIRE_SIZE_EQ (r->aps_, 2);
+        ap = r->aps_[0];
+        REQUIRE_POSITION_EQ (ap->pos_, p1_);
+        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+        ap = r->aps_[1];
+        REQUIRE_POSITION_EQ (ap->pos_, p2_);
+        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+
+        /* check marker */
+        REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
+        auto &m = P_MARKER_TRACK->markers_[2];
+        REQUIRE_POSITION_EQ (m->pos_, p1_before_move);
+        REQUIRE_EQ (m->name_, MARKER_NAME);
+        m = P_MARKER_TRACK->markers_[3];
+        REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
+        REQUIRE_EQ (m->name_, MARKER_NAME);
+
+        /* check scale object */
+        REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
+        auto &s = P_CHORD_TRACK->scales_[0];
+        REQUIRE_POSITION_EQ (s->pos_, p1_before_move);
+        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        s = P_CHORD_TRACK->scales_[1];
+        REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
+        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+      }
+  }
+};
+
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
 {
-  REQUIRE_EMPTY (TL_SELECTIONS->objects_);
-
-  auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
-  auto audio_track =
-    TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
-
-  /* check midi region */
-  REQUIRE_SIZE_EQ (midi_track->lanes_, 1);
-  REQUIRE_EMPTY (midi_track->lanes_[0]->regions_);
-
-  /* check audio region */
-  REQUIRE_SIZE_EQ (audio_track->lanes_, 1);
-  REQUIRE_EMPTY (audio_track->lanes_[0]->regions_);
-
-  /* check automation region */
-  auto at = P_MASTER_TRACK->channel_->get_automation_track (
-    PortIdentifier::Flags::StereoBalance);
-  REQUIRE_NONNULL (at);
-  REQUIRE_EMPTY (at->regions_);
-
-  /* check marker */
-  REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 2);
-
-  /* check scale object */
-  REQUIRE_EMPTY (P_CHORD_TRACK->scales_);
-
-  if (creating)
-    {
-      check_has_single_redo ();
-    }
-  else
-    {
-      check_has_single_undo ();
-    }
-}
-
-TEST_CASE ("create timeline")
-{
-  rebootstrap_timeline ();
-
   /* do create */
   perform_create (TL_SELECTIONS);
 
   /* check */
   REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
   REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 1);
-  check_timeline_objects_vs_original_state (1, 1, 0);
+  check_vs_original_state (true);
+  check_has_single_undo ();
 
   /* undo and check that the objects are deleted */
   UNDO_MANAGER->undo ();
@@ -205,22 +484,19 @@ TEST_CASE ("create timeline")
   /* redo and check that the objects are there */
   UNDO_MANAGER->redo ();
   REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 1, 0);
-
-  test_helper_zrythm_cleanup ();
+  check_vs_original_state (true);
+  check_has_single_undo ();
 }
 
-TEST_CASE ("delete timeline")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
 {
-  rebootstrap_timeline ();
-
   /* do delete */
   REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
 
   REQUIRE_NULL (CLIP_EDITOR->get_region ());
 
   /* check */
-  check_timeline_objects_deleted (0);
+  check_timeline_objects_deleted (false);
   REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
   REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
   REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
@@ -228,7 +504,8 @@ TEST_CASE ("delete timeline")
   /* undo and check that the objects are created */
   REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
   REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0, 1);
+  check_vs_original_state (true);
+  check_has_single_redo ();
 
   /* redo and check that the objects are gone */
   UNDO_MANAGER->redo ();
@@ -236,22 +513,19 @@ TEST_CASE ("delete timeline")
   REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
   REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
   REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
-  check_timeline_objects_deleted (0);
+  check_timeline_objects_deleted (false);
 
   REQUIRE_NULL (CLIP_EDITOR->get_region ());
 
   /* undo again to prepare for next test */
   UNDO_MANAGER->undo ();
   REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0, 1);
-
-  test_helper_zrythm_cleanup ();
+  check_vs_original_state (true);
+  check_has_single_redo ();
 }
 
-TEST_CASE ("delete chords")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
 {
-  rebootstrap_timeline ();
-
   auto &r = P_CHORD_TRACK->regions_[0];
   REQUIRE (r->validate (true, 0));
 
@@ -270,132 +544,10 @@ TEST_CASE ("delete chords")
   REQUIRE_NOTHROW (
     UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
     UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo (););
-
-  test_helper_zrythm_cleanup ();
 }
 
-/**
- * Checks the objects after moving.
- *
- * @param new_tracks Whether objects were moved to
- *   new tracks or in the same track.
- */
-static void
-check_after_move_timeline (int new_tracks)
+TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
 {
-  /* check */
-  REQUIRE_EQ (
-    TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
-
-  /* check that undo/redo stacks have the correct counts (1 and 0) */
-  check_has_single_undo ();
-  REQUIRE_EQ (
-    dynamic_cast<ArrangerSelectionsAction *> (UNDO_MANAGER->undo_stack_->peek ())
-      ->delta_tracks_,
-    new_tracks ? 2 : 0);
-
-  /* get tracks */
-  auto midi_track_before =
-    TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track_before);
-  REQUIRE_GT (midi_track_before->pos_, 0);
-  auto audio_track_before =
-    TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track_before);
-  REQUIRE_GT (audio_track_before->pos_, 0);
-  auto midi_track_after =
-    TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track_after);
-  REQUIRE_GT (midi_track_after->pos_, midi_track_before->pos_);
-  auto audio_track_after =
-    TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track_after);
-  REQUIRE_GT (audio_track_after->pos_, audio_track_before->pos_);
-
-  auto require_correct_track = [&] (auto &region, auto &expected) {
-    auto actual = region->get_track ();
-    REQUIRE_EQ (actual, expected);
-    REQUIRE_EQ (region->id_.track_name_hash_, expected->get_name_hash ());
-  };
-
-  auto p1_after_move = p1;
-  auto p2_after_move = p2;
-  p1_after_move.add_ticks (MOVE_TICKS);
-  p2_after_move.add_ticks (MOVE_TICKS);
-
-  {
-    /* check midi region */
-    auto mr = [&] () {
-      auto track = new_tracks ? midi_track_after : midi_track_before;
-      return track->lanes_[MIDI_REGION_LANE]->regions_[0];
-    }();
-
-    REQUIRE (mr->is_region ());
-    REQUIRE (mr->is_midi ());
-
-    REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
-    REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
-    require_correct_track (
-      mr, new_tracks ? midi_track_after : midi_track_before);
-    REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
-    auto mn = mr->midi_notes_[0];
-    REQUIRE_EQ (mn->val_, MN_VAL);
-    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-    REQUIRE_POSITION_EQ (mn->pos_, p1);
-    REQUIRE_POSITION_EQ (mn->end_pos_, p2);
-    REQUIRE_EQ (mn->region_id_, mr->id_);
-  }
-
-  {
-    /* check audio region */
-    auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
-    auto r = dynamic_pointer_cast<AudioRegion> (regions.at (new_tracks ? 1 : 3));
-    REQUIRE_NONNULL (r);
-    REQUIRE (r->is_region ());
-    REQUIRE (r->is_audio ());
-    REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-    require_correct_track (
-      r, new_tracks ? audio_track_after : audio_track_before);
-  }
-
-  if (!new_tracks)
-    {
-      {
-        /* check automation region */
-        auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
-        auto r = dynamic_pointer_cast<AutomationRegion> (regions.at (1));
-        REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-        REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
-        REQUIRE_SIZE_EQ (r->aps_, 2);
-        auto &ap = r->aps_[0];
-        REQUIRE_POSITION_EQ (ap->pos_, p1);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-        ap = r->aps_[1];
-        REQUIRE_POSITION_EQ (ap->pos_, p2);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
-      }
-
-      /* check marker */
-      auto markers = TL_SELECTIONS->get_objects_of_type<Marker> ();
-      REQUIRE_SIZE_EQ (markers, 1);
-      auto m = markers[0];
-      REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
-      REQUIRE_EQ (m->name_, MARKER_NAME);
-
-      /* check scale object */
-      auto scales = TL_SELECTIONS->get_objects_of_type<ScaleObject> ();
-      REQUIRE_SIZE_EQ (scales, 1);
-      auto s = scales[0];
-      REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
-      REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-      REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
-    }
-}
-
-TEST_CASE ("test move audio region and lower bpm")
-{
-  test_helper_zrythm_init ();
-
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
@@ -445,14 +597,10 @@ TEST_CASE ("test move audio region and lower bpm")
       /* undo lowering BPM */
       UNDO_MANAGER->undo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("move audio region and lower samplerate")
+TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
 {
-  test_helper_zrythm_init ();
-
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
@@ -487,19 +635,10 @@ TEST_CASE ("move audio region and lower samplerate")
       /* reload */
       test_project_reload (prj_file);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-/**
- * Tests the move action.
- *
- * @param new_tracks Whether to move objects to new tracks or in the same track.
- */
-TEST_CASE ("move timeline")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
 {
-  rebootstrap_timeline ();
-
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
@@ -521,13 +660,13 @@ TEST_CASE ("move timeline")
       /* check */
       check_after_move_timeline (i);
 
-      /* undo and check that the objects are at
-       * their original state*/
+      /* undo and check that the objects are at their original state*/
       UNDO_MANAGER->undo ();
       REQUIRE_EQ (
         TL_SELECTIONS->get_num_objects (), i ? 2 : TOTAL_TL_SELECTIONS);
 
-      check_timeline_objects_vs_original_state (i ? 0 : 1, 0, 1);
+      check_vs_original_state (i ? false : true);
+      check_has_single_redo ();
 
       /* redo and check that the objects are moved
        * again */
@@ -541,17 +680,12 @@ TEST_CASE ("move timeline")
           REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 2);
         }
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-/**
- * Tests copying an audio region then pasting it after changing the BPM.
- */
-TEST_CASE ("copy paste audio after bpm change")
+TEST_CASE_FIXTURE (
+  ArrangerSelectionsFixture,
+  "copy an audio region then paste it after changing the BPM")
 {
-  rebootstrap_timeline ();
-
   TL_SELECTIONS->clear ();
   REQUIRE_EMPTY (TL_SELECTIONS->objects_);
   auto audio_track =
@@ -582,199 +716,10 @@ TEST_CASE ("copy paste audio after bpm change")
   sel->post_deserialize ();
   REQUIRE (sel->can_be_pasted ());
   sel->paste_to_pos (PLAYHEAD, true);
-
-  test_helper_zrythm_cleanup ();
 }
 
-/**
- * @param new_tracks Whether midi/audio regions
- *   were moved to new tracks.
- * @param link Whether this is a link action.
- */
-static void
-check_after_duplicate_timeline (bool new_tracks, bool link)
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
 {
-  /* check */
-  REQUIRE_EQ (
-    TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
-
-  auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
-  auto audio_track =
-    TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
-  auto new_midi_track =
-    TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
-  auto new_audio_track =
-    TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
-
-  /* check prev midi region */
-  if (new_tracks)
-    {
-      REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
-      REQUIRE_SIZE_EQ (new_midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
-    }
-  else
-    {
-      REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
-    }
-  auto      &mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
-  const auto p1_before_move = p1;
-  const auto p2_before_move = p1;
-  REQUIRE_POSITION_EQ (mr->pos_, p1_before_move);
-  REQUIRE_POSITION_EQ (mr->end_pos_, p2_before_move);
-  REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-  REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-  REQUIRE_EQ (mr->id_.idx_, 0);
-  REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
-  auto &mn = mr->midi_notes_[0];
-  REQUIRE_EQ (mn->region_id_, mr->id_);
-  REQUIRE_EQ (mn->val_, MN_VAL);
-  REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-  REQUIRE_POSITION_EQ (mn->pos_, p1);
-  REQUIRE_POSITION_EQ (mn->end_pos_, p2);
-  int link_group = mr->id_.link_group_;
-  if (link)
-    {
-      REQUIRE_GT (mr->id_.link_group_, -1);
-    }
-
-  /* check new midi region */
-  if (new_tracks)
-    {
-      mr = new_midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
-    }
-  else
-    {
-      mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[1];
-    }
-  auto p1_after_move = p1;
-  auto p2_after_move = p2;
-  p1_after_move.add_ticks (MOVE_TICKS);
-  p2_after_move.add_ticks (MOVE_TICKS);
-  REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
-  REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
-  if (new_tracks)
-    {
-      REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *new_midi_track);
-      REQUIRE_EQ (mr->id_.idx_, 0);
-    }
-  else
-    {
-      REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-      REQUIRE_EQ (mr->id_.idx_, 1);
-    }
-  REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-  REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
-  REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
-    mr, new_tracks ? *new_midi_track : *midi_track);
-  REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-  mn = mr->midi_notes_[0];
-  REQUIRE_EQ (mn->region_id_, mr->id_);
-  REQUIRE_EQ (mn->val_, MN_VAL);
-  REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-  REQUIRE_POSITION_EQ (mn->pos_, p1);
-  REQUIRE_POSITION_EQ (mn->end_pos_, p2);
-  if (link)
-    {
-      REQUIRE_EQ (mr->id_.link_group_, link_group);
-    }
-
-  /* check prev audio region */
-  if (new_tracks)
-    {
-      REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
-      REQUIRE_SIZE_EQ (new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
-    }
-  else
-    {
-      REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
-    }
-  auto ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
-  REQUIRE_POSITION_EQ (ar->pos_, p1_before_move);
-  REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (ar, *audio_track);
-  REQUIRE_EQ (ar->id_.idx_, 0);
-  REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
-  link_group = ar->id_.link_group_;
-  if (link)
-    {
-      REQUIRE_GT (ar->id_.link_group_, -1);
-    }
-
-  /* check new audio region */
-  if (new_tracks)
-    {
-      ar = new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
-    }
-  else
-    {
-      ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[1];
-    }
-  REQUIRE_POSITION_EQ (ar->pos_, p1_after_move);
-  REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
-  REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
-    ar, new_tracks ? *new_audio_track : *audio_track);
-  if (link)
-    {
-      REQUIRE_EQ (ar->id_.link_group_, link_group);
-    }
-
-  if (!new_tracks)
-    {
-      /* check automation region */
-      auto at = P_MASTER_TRACK->channel_->get_automation_track (
-        PortIdentifier::Flags::StereoBalance);
-      REQUIRE_NONNULL (at);
-      REQUIRE_SIZE_EQ (at->regions_, 2);
-      auto r = at->regions_[0];
-      REQUIRE_POSITION_EQ (r->pos_, p1_before_move);
-      REQUIRE_POSITION_EQ (r->end_pos_, p2_before_move);
-      REQUIRE_SIZE_EQ (r->aps_, 2);
-      auto &ap = r->aps_[0];
-      REQUIRE_POSITION_EQ (ap->pos_, p1);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-      ap = r->aps_[1];
-      REQUIRE_POSITION_EQ (ap->pos_, p2);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
-      r = at->regions_[1];
-      REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-      REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
-      REQUIRE_SIZE_EQ (r->aps_, 2);
-      ap = r->aps_[0];
-      REQUIRE_POSITION_EQ (ap->pos_, p1);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-      ap = r->aps_[1];
-      REQUIRE_POSITION_EQ (ap->pos_, p2);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
-
-      /* check marker */
-      REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
-      auto &m = P_MARKER_TRACK->markers_[2];
-      REQUIRE_POSITION_EQ (m->pos_, p1_before_move);
-      REQUIRE_EQ (m->name_, MARKER_NAME);
-      m = P_MARKER_TRACK->markers_[3];
-      REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
-      REQUIRE_EQ (m->name_, MARKER_NAME);
-
-      /* check scale object */
-      REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
-      auto &s = P_CHORD_TRACK->scales_[0];
-      REQUIRE_POSITION_EQ (s->pos_, p1_before_move);
-      REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-      REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
-      s = P_CHORD_TRACK->scales_[1];
-      REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
-      REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-      REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
-    }
-}
-
-TEST_CASE ("duplicate timeline")
-{
-  rebootstrap_timeline ();
-
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
@@ -810,7 +755,8 @@ TEST_CASE ("duplicate timeline")
       /* undo and check that the objects are at
        * their original state*/
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, 1);
+      check_vs_original_state (false);
+      check_has_single_redo ();
 
       /* redo and check that the objects are moved
        * again */
@@ -819,16 +765,13 @@ TEST_CASE ("duplicate timeline")
 
       /* undo again to prepare for next test */
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, 1);
+      check_vs_original_state (false);
+      check_has_single_redo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("duplicate automation region")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
 {
-  rebootstrap_timeline ();
-
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::StereoBalance);
   REQUIRE_NONNULL (at);
@@ -884,19 +827,15 @@ TEST_CASE ("duplicate automation region")
   r1 = at->regions_[1];
   ap = r1->aps_[0];
   REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("link timeline")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link timeline")
 {
-  rebootstrap_timeline ();
-
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
       std::unique_ptr<TimelineSelections> sel_before;
-      check_timeline_objects_vs_original_state (0, 0, 0);
+      check_vs_original_state (false);
 
       int track_diff = i ? 2 : 0;
       if (track_diff)
@@ -935,7 +874,8 @@ TEST_CASE ("link timeline")
 
       /* undo and check that the objects are at their original state*/
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, 1);
+      check_vs_original_state (false);
+      check_has_single_redo ();
 
       /* redo and check that the objects are moved
        * again */
@@ -944,17 +884,15 @@ TEST_CASE ("link timeline")
 
       /* undo again to prepare for next test */
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, 1);
+      check_vs_original_state (false);
+      check_has_single_redo ();
 
       REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("link and delete")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
 {
-  rebootstrap_timeline ();
   REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
 
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
@@ -1076,14 +1014,10 @@ TEST_CASE ("link and delete")
   REQUIRE_EQ (r3->id_.link_group_, 0);
   REQUIRE_EQ (r5->id_.link_group_, 1);
   REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("link then duplicate")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
 {
-  rebootstrap_timeline ();
-
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
@@ -1231,7 +1165,7 @@ TEST_CASE ("link then duplicate")
       /* undo and check that the objects are at
        * their original state*/
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, false);
+      check_vs_original_state (false);
 
       test_project_save_and_reload ();
 
@@ -1244,18 +1178,14 @@ TEST_CASE ("link then duplicate")
 
       /* undo again to prepare for next test */
       UNDO_MANAGER->undo ();
-      check_timeline_objects_vs_original_state (0, 0, false);
+      check_vs_original_state (false);
 
       REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("edit marker")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
 {
-  rebootstrap_timeline ();
-
   /* create marker with name "aa" */
   auto m = std::make_shared<Marker> ("aa");
   m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
@@ -1290,14 +1220,10 @@ TEST_CASE ("edit marker")
   /* return to original state */
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("mute objects")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
 {
-  rebootstrap_timeline ();
-
   auto midi_track = TRACKLIST->get_track<MidiTrack> (5);
   REQUIRE_NONNULL (midi_track);
 
@@ -1325,14 +1251,10 @@ TEST_CASE ("mute objects")
   /* return to original state */
   UNDO_MANAGER->undo ();
   assert_muted (false);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("split region")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
 {
-  rebootstrap_timeline ();
-
   REQUIRE_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
 
   Position pos, end_pos;
@@ -1392,15 +1314,11 @@ TEST_CASE ("split region")
   REQUIRE_FLOAT_NEAR (first_frame, clip->frames_.getSample (0, 0), 0.000001f);
 
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("split large audio file")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split large audio file")
 {
 #ifdef TEST_SINE_OGG_30MIN
-  test_helper_zrythm_init ();
-
   test_project_stop_dummy_engine ();
   auto track = TRACKLIST->append_track (
     *AudioTrack::create_unique (
@@ -1421,15 +1339,11 @@ TEST_CASE ("split large audio file")
   /* attempt split */
   pos.set_to_bar (4);
   perform_split (TL_SELECTIONS, pos);
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
-TEST_CASE ("quantize")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "quantize")
 {
-  rebootstrap_timeline ();
-
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
   REQUIRE_NONNULL (audio_track);
@@ -1444,12 +1358,10 @@ TEST_CASE ("quantize")
 
   /* return to original state */
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 static void
-verify_audio_function (float * frames, size_t max_frames)
+verify_audio_function (std::vector<float> &frames, size_t max_frames)
 {
   auto track = TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
   REQUIRE_NONNULL (track);
@@ -1469,10 +1381,8 @@ verify_audio_function (float * frames, size_t max_frames)
     }
 }
 
-TEST_CASE ("audio functions")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
 {
-  rebootstrap_timeline ();
-
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
   REQUIRE_NONNULL (audio_track);
@@ -1485,16 +1395,18 @@ TEST_CASE ("audio functions")
   AUDIO_SELECTIONS->sel_start_ = region->pos_;
   AUDIO_SELECTIONS->sel_end_ = region->end_pos_;
 
-  auto    orig_clip = region->get_clip ();
-  size_t  channels = orig_clip->channels_;
-  size_t  frames_per_channel = (size_t) orig_clip->num_frames_;
-  size_t  total_frames = (size_t) orig_clip->num_frames_ * channels;
-  float * orig_frames = object_new_n (total_frames, float);
-  float * inverted_frames = object_new_n (total_frames, float);
-  dsp_copy (orig_frames, orig_clip->frames_.getReadPointer (0), total_frames);
+  auto               orig_clip = region->get_clip ();
+  size_t             channels = orig_clip->channels_;
+  auto               frames_per_channel = (size_t) orig_clip->num_frames_;
+  size_t             total_frames = (size_t) orig_clip->num_frames_ * channels;
+  std::vector<float> orig_frames (total_frames);
+  std::vector<float> inverted_frames (total_frames);
   dsp_copy (
-    inverted_frames, orig_clip->frames_.getReadPointer (0), total_frames);
-  dsp_mul_k2 (inverted_frames, -1.f, total_frames);
+    orig_frames.data (), orig_clip->frames_.getReadPointer (0), total_frames);
+  dsp_copy (
+    inverted_frames.data (), orig_clip->frames_.getReadPointer (0),
+    total_frames);
+  dsp_mul_k2 (inverted_frames.data (), -1.f, total_frames);
 
   verify_audio_function (orig_frames, frames_per_channel);
 
@@ -1519,17 +1431,10 @@ TEST_CASE ("audio functions")
   verify_audio_function (inverted_frames, frames_per_channel);
 
   UNDO_MANAGER->undo ();
-
-  free (orig_frames);
-  free (inverted_frames);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("automation fill")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "automation fill")
 {
-  rebootstrap_timeline ();
-
   /* check automation region */
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::StereoBalance);
@@ -1555,14 +1460,12 @@ TEST_CASE ("automation fill")
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("duplicate MIDI regions to track below")
+TEST_CASE_FIXTURE (
+  ArrangerSelectionsFixture,
+  "duplicate MIDI regions to track below")
 {
-  rebootstrap_timeline ();
-
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
   REQUIRE_NONNULL (midi_track);
   auto &lane = midi_track->lanes_.at (0);
@@ -1626,14 +1529,10 @@ TEST_CASE ("duplicate MIDI regions to track below")
 
   /* check that new regions are created */
   REQUIRE_SIZE_EQ (target_lane->regions_, 2);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("midi region split")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 {
-  rebootstrap_timeline ();
-
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
   REQUIRE_NONNULL (midi_track);
   auto &lane = midi_track->lanes_.at (0);
@@ -1855,14 +1754,10 @@ TEST_CASE ("midi region split")
   REQUIRE_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
   REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("Pin/Unpin")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "Pin/Unpin")
 {
-  rebootstrap_timeline ();
-
   auto &r = P_CHORD_TRACK->regions_.at (0);
   P_CHORD_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
@@ -1871,14 +1766,10 @@ TEST_CASE ("Pin/Unpin")
   REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (r, *P_CHORD_TRACK);
 
   /* TODO more tests */
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete markers")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete markers")
 {
-  rebootstrap_timeline ();
-
   /* create markers A B C D */
   const char *            names[4] = { "A", "B", "C", "D" };
   std::shared_ptr<Marker> m_c, m_d;
@@ -1911,14 +1802,10 @@ TEST_CASE ("delete markers")
     {
       UNDO_MANAGER->undo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete scale objects")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete scale objects")
 {
-  rebootstrap_timeline ();
-
   /* create markers A B C D */
   std::shared_ptr<ScaleObject> m_c, m_d;
   for (int i = 0; i < 4; i++)
@@ -1953,14 +1840,10 @@ TEST_CASE ("delete scale objects")
     {
       UNDO_MANAGER->undo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete chord objects")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
 {
-  rebootstrap_timeline ();
-
   Position pos1, pos2;
   pos1.set_to_bar (1);
   pos2.set_to_bar (4);
@@ -2000,14 +1883,10 @@ TEST_CASE ("delete chord objects")
     {
       UNDO_MANAGER->undo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete automation points")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
 {
-  rebootstrap_timeline ();
-
   Position pos1, pos2;
   pos1.set_to_bar (1);
   pos2.set_to_bar (4);
@@ -2051,14 +1930,10 @@ TEST_CASE ("delete automation points")
     {
       UNDO_MANAGER->undo ();
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("duplicate audio regions")
+TEST_CASE_FIXTURE (ZrythmFixture, "duplicate audio regions")
 {
-  test_helper_zrythm_init ();
-
   auto audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
 
   /* create audio track with region */
@@ -2076,14 +1951,10 @@ TEST_CASE ("duplicate audio regions")
       *TL_SELECTIONS, false, MOVE_TICKS, 0, 0, nullptr, false));
 
   test_project_save_and_reload ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("undo moving midi region to other lane")
+TEST_CASE_FIXTURE (ZrythmFixture, "undo moving midi region to other lane")
 {
-  test_helper_zrythm_init ();
-
   /* create midi track with region */
   Track::create_empty_with_action (Track::Type::Midi);
   auto midi_track = dynamic_cast<MidiTrack *> (
@@ -2115,14 +1986,10 @@ TEST_CASE ("undo moving midi region to other lane")
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete multiple regions")
+TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
 {
-  test_helper_zrythm_init ();
-
   auto midi_track = dynamic_cast<MidiTrack *> (
     Track::create_empty_with_action (Track::Type::Midi));
   REQUIRE_NONNULL (midi_track);
@@ -2161,14 +2028,10 @@ TEST_CASE ("delete multiple regions")
     }
 
   REQUIRE_NONNULL (CLIP_EDITOR->get_region ());
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("split and merge midi unlooped")
+TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
 {
-  test_helper_zrythm_init ();
-
   Position pos, end_pos, tmp;
 
   auto midi_track = dynamic_cast<MidiTrack *> (
@@ -2354,14 +2217,10 @@ TEST_CASE ("split and merge midi unlooped")
   REQUIRE_NOTHROW (
     UNDO_MANAGER->redo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
     UNDO_MANAGER->undo ());
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("split and merge audio unlooped")
+TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
 {
-  test_helper_zrythm_init ();
-
   Position pos, tmp;
 
   auto           audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
@@ -2589,14 +2448,10 @@ TEST_CASE ("split and merge audio unlooped")
   /* undo split */
   UNDO_MANAGER->undo ();
   test_project_save_and_reload ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("resize-loop from left side")
+TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
 {
-  test_helper_zrythm_init ();
-
   Position pos, tmp;
 
   const auto     audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
@@ -2649,14 +2504,10 @@ TEST_CASE ("resize-loop from left side")
 
   (void) audio_track_pos;
   (void) tmp;
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("delete MIDI notes")
+TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
 {
-  test_helper_zrythm_init ();
-
   auto midi_track = Track::create_empty_with_action<MidiTrack> ();
 
   /* create region */
@@ -2719,14 +2570,10 @@ TEST_CASE ("delete MIDI notes")
     }
 
 #undef CHECK_INDICES
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("cut automation region")
+TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
 {
-  test_helper_zrythm_init ();
-
   /* create master fader automation region */
   Position pos1, pos2;
   pos1.set_to_bar (1);
@@ -2770,14 +2617,10 @@ TEST_CASE ("cut automation region")
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("copy and move automation regions")
+TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
 {
-  test_helper_zrythm_init ();
-
   /* create a new track */
   auto audio_track = Track::create_empty_with_action<AudioTrack> ();
 
@@ -2887,14 +2730,10 @@ TEST_CASE ("copy and move automation regions")
   UNDO_MANAGER->undo ();
   REQUIRE_SIZE_EQ (fader_at->regions_, 1);
   REQUIRE_SIZE_EQ (mute_at->regions_, 2);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("moving a region from lane 3 to lane 1")
+TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
 {
-  test_helper_zrythm_init ();
-
   Position pos, end_pos;
   Track::create_with_action (
     Track::Type::Midi, nullptr, nullptr, &pos, TRACKLIST->tracks_.size (), 1,
@@ -2947,14 +2786,10 @@ TEST_CASE ("moving a region from lane 3 to lane 1")
     auto &lane = track->lanes_[0];
     REQUIRE_SIZE_EQ (lane->regions_, 1);
   }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("stretch")
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
 {
-  rebootstrap_timeline ();
-
   std::vector<float> orig_frames;
   size_t             total_orig_frames;
   {
@@ -3012,8 +2847,6 @@ TEST_CASE ("stretch")
   }
 
   UNDO_MANAGER->redo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END ();

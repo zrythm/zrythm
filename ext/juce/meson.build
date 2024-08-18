@@ -15,6 +15,7 @@ juce_srcs = [
 
 juce_cpp_public_args = [
   '-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1',
+  '-DJUCE_USE_MP3AUDIOFORMAT=1',
   '-DJUCE_DEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
   '-DDEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
   ]

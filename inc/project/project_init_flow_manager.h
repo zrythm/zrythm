@@ -94,7 +94,7 @@ private:
   {
     call_last_callback (false, error);
   }
-  void call_last_callback_success () { call_last_callback (true, nullptr); }
+  void call_last_callback_success () { call_last_callback (true, ""); }
 
   static void recreate_main_window ();
 

@@ -944,14 +944,13 @@ Channel::init_stereo_out_ports (bool loading)
       return;
     }
 
-  auto l = AudioPort (
-    "Stero out L", PortFlow::Output, PortIdentifier::OwnerType::Channel, this);
+  auto l = AudioPort ("Stero out L", PortFlow::Output);
   l.id_.sym_ = "stereo_out_l";
-  auto r = AudioPort (
-    "Stereo out R", PortFlow::Output, PortIdentifier::OwnerType::Channel, this);
+  auto r = AudioPort ("Stereo out R", PortFlow::Output);
   r.id_.sym_ = "stereo_out_r";
 
   stereo_out_ = std::make_unique<StereoPorts> (std::move (l), std::move (r));
+  stereo_out_->set_owner (this);
 }
 
 Channel::Channel (ChannelTrack &track) : track_ (&track)
@@ -971,9 +970,9 @@ Channel::init ()
       break;
     case PortType::Event:
       {
-        midi_out_ = std::make_unique<MidiPort> (
-          _ ("MIDI out"), PortFlow::Output, PortIdentifier::OwnerType::Channel,
-          this);
+        midi_out_ =
+          std::make_unique<MidiPort> (_ ("MIDI out"), PortFlow::Output);
+        midi_out_->set_owner (this);
         midi_out_->id_.sym_ = "midi_out";
       }
       break;

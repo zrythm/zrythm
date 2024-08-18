@@ -98,15 +98,7 @@ public:
 
   bool validate () const override;
 
-  void clear_objects () override
-  {
-    clear_regions ();
-    for (auto &scale : std::ranges::reverse_view (scales_))
-      {
-        scale->remove_from_project (false);
-      }
-    scale_snapshots_.clear ();
-  }
+  void clear_objects () override;
 
   void get_regions_in_range (
     std::vector<Region *> &regions,
@@ -133,8 +125,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  ChordTrack ();
-  ChordTrack (int track_pos);
+  ChordTrack (int track_pos = 0);
 
   bool initialize () override;
   void set_playback_caches () override;

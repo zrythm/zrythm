@@ -23,12 +23,8 @@ class MidiPort final
 {
 public:
   MidiPort () = default;
-  MidiPort (
-    std::string               label,
-    PortFlow                  flow,
-    PortIdentifier::OwnerType owner_type = (PortIdentifier::OwnerType) 0,
-    void *                    owner = nullptr)
-      : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f, owner_type, owner)
+  MidiPort (std::string label, PortFlow flow)
+      : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
   {
   }
   ~MidiPort ();

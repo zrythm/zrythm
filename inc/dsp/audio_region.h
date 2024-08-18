@@ -189,31 +189,7 @@ public:
   ArrangerSelections * get_arranger_selections () const override;
   ArrangerWidget *     get_arranger_for_children () const override;
 
-  void init_after_cloning (const AudioRegion &other) override
-  {
-    init_default_constructed (
-      other.pool_id_, nullptr, true,
-      other.clip_ ? other.clip_->frames_.getReadPointer (0) : nullptr,
-      other.clip_ ? other.clip_->num_frames_ : 0,
-      other.clip_ ? std::make_optional (other.clip_->name_) : std::nullopt,
-      other.clip_ ? other.clip_->channels_ : 0,
-      other.clip_ ? other.clip_->bit_depth_ : ENUM_INT_TO_VALUE (BitDepth, 0),
-      other.pos_, other.id_.track_name_hash_, other.id_.lane_pos_,
-      other.id_.idx_);
-    pool_id_ = other.pool_id_;
-    gain_ = other.gain_;
-    musical_mode_ = other.musical_mode_;
-    LaneOwnedObjectImpl::copy_members_from (other);
-    RegionImpl::copy_members_from (other);
-    FadeableObject::copy_members_from (other);
-    TimelineObject::copy_members_from (other);
-    NameableObject::copy_members_from (other);
-    LoopableObject::copy_members_from (other);
-    MuteableObject::copy_members_from (other);
-    LengthableObject::copy_members_from (other);
-    ColoredObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_after_cloning (const AudioRegion &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

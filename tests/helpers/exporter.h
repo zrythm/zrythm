@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * Exporter helper.
  */
@@ -23,11 +23,11 @@ test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode);
 char *
 test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode)
 {
-  g_assert_false (TRANSPORT_IS_ROLLING);
+  g_assert_false (TRANSPORT->is_rolling ());
   g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
   char *           filename = g_strdup ("test_export.wav");
   ExportSettings * settings = export_settings_new ();
-  settings->format = ExportFormat::EXPORT_FORMAT_WAV;
+  settings->format = Exporter::Format::EXPORT_FORMAT_WAV;
   settings->artist = g_strdup ("Test Artist");
   settings->title = g_strdup ("Test Title");
   settings->genre = g_strdup ("Test Genre");
@@ -45,9 +45,8 @@ test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode)
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_BOUNCE);
       settings->bounce_with_parents = true;
     }
-  char * exports_dir =
-    project_get_path (PROJECT, ProjectPath::PROJECT_PATH_EXPORTS, false);
-  settings->file_uri = g_build_filename (exports_dir, filename, NULL);
+  char * exports_dir = project_get_path (PROJECT, ProjectPath::EXPORTS, false);
+  settings->file_uri = g_build_filename (exports_dir, filename, nullptr);
 
   EngineState state;
   GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);

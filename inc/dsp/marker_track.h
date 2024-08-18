@@ -76,8 +76,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MarkerTrack () = default;
-  MarkerTrack (int track_pos);
+  MarkerTrack (int track_pos = 0);
 
   bool initialize () override;
   void set_playback_caches () override;

@@ -56,8 +56,8 @@ io_path_get_parent_dir (const char * path);
 /**
  * Strips extensions from given filename.
  */
-NONNULL char *
-io_file_strip_ext (const char * filename);
+std::string
+io_file_strip_ext (const std::string &filename);
 
 /**
  * Returns file extension or NULL.
@@ -69,11 +69,9 @@ io_file_get_ext (const char * file);
 
 /**
  * Strips path from given filename.
- *
- * MUST be freed.
  */
-NONNULL char *
-io_path_get_basename_without_ext (const char * filename);
+std::string
+io_path_get_basename_without_ext (const std::string &filename);
 
 NONNULL char *
 io_file_get_creation_datetime (const char * filename);
@@ -176,8 +174,8 @@ io_copy_dir (
  *
  * Example: "myfile" -> "myfile (1)"
  */
-NONNULL char *
-io_get_next_available_filepath (const char * filepath);
+std::string
+io_get_next_available_filepath (const std::string &filepath);
 
 /**
  * Opens the given directory using the default

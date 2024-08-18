@@ -72,11 +72,8 @@ public:
 
 public:
   ControlPort () = default;
-  ControlPort (
-    std::string               label,
-    PortIdentifier::OwnerType owner_type = (PortIdentifier::OwnerType) 0,
-    void *                    owner = nullptr)
-      : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f, owner_type, owner)
+  ControlPort (std::string label)
+      : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
   {
   }
 

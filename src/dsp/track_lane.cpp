@@ -261,5 +261,33 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
     }
 }
 
+template <typename RegionT>
+std::unique_ptr<TrackLaneImpl<RegionT>>
+TrackLaneImpl<RegionT>::gen_snapshot () const
+{
+  auto ret = this->clone_unique ();
+  ret->track_ = track_;
+  return ret;
+}
+
+template <typename RegionT>
+void
+TrackLaneImpl<RegionT>::init_after_cloning (const TrackLaneImpl &other)
+{
+  pos_ = other.pos_;
+  name_ = other.name_;
+  y_ = other.y_;
+  height_ = other.height_;
+  mute_ = other.mute_;
+  solo_ = other.solo_;
+  clone_unique_ptr_container (this->regions_, other.regions_);
+  for (auto &region : this->regions_)
+    {
+      region->is_auditioner_ = is_auditioner ();
+      region->owner_lane_ = this;
+      region->gen_name (region->name_.c_str (), nullptr, nullptr);
+    }
+}
+
 template class TrackLaneImpl<MidiRegion>;
 template class TrackLaneImpl<AudioRegion>;

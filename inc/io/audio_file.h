@@ -92,7 +92,7 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void read_samples (
+  void read_samples_interleaved (
     bool    in_parts,
     float * samples,
     size_t  start_from,
@@ -114,6 +114,8 @@ public:
   read_full (juce::AudioSampleBuffer &buffer, std::optional<size_t> samplerate);
 
   static void interleave_buffer (juce::AudioSampleBuffer &buffer);
+  static void
+  deinterleave_buffer (juce::AudioSampleBuffer &buffer, size_t num_channels);
 
 private:
   /**

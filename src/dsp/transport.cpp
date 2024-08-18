@@ -113,37 +113,37 @@ Transport::Transport (AudioEngine * engine) : audio_engine_ (engine)
   /* create ports */
   roll_ = std::make_unique<MidiPort> ("Roll", PortFlow::Input);
   roll_->id_.sym_ = ("roll");
-  roll_->set_owner_impl<Transport> (this);
+  roll_->set_owner<Transport> (this);
   roll_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   roll_->id_.flags2_ |= PortIdentifier::Flags2::TransportRoll;
 
   stop_ = std::make_unique<MidiPort> ("Stop", PortFlow::Input);
   stop_->id_.sym_ = ("stop");
-  stop_->set_owner_impl<Transport> (this);
+  stop_->set_owner<Transport> (this);
   stop_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   stop_->id_.flags2_ |= PortIdentifier::Flags2::TransportStop;
 
   backward_ = std::make_unique<MidiPort> ("Backward", PortFlow::Input);
   backward_->id_.sym_ = ("backward");
-  backward_->set_owner_impl<Transport> (this);
+  backward_->set_owner<Transport> (this);
   backward_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   backward_->id_.flags2_ |= PortIdentifier::Flags2::TransportBackward;
 
   forward_ = std::make_unique<MidiPort> ("Forward", PortFlow::Input);
   forward_->id_.sym_ = ("forward");
-  forward_->set_owner_impl<Transport> (this);
+  forward_->set_owner<Transport> (this);
   forward_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   forward_->id_.flags2_ |= PortIdentifier::Flags2::TransportForward;
 
   loop_toggle_ = std::make_unique<MidiPort> ("Loop toggle", PortFlow::Input);
   loop_toggle_->id_.sym_ = ("loop_toggle");
-  loop_toggle_->set_owner_impl<Transport> (this);
+  loop_toggle_->set_owner<Transport> (this);
   loop_toggle_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   loop_toggle_->id_.flags2_ |= PortIdentifier::Flags2::TransportLoopToggle;
 
   rec_toggle_ = std::make_unique<MidiPort> ("Rec toggle", PortFlow::Input);
   rec_toggle_->id_.sym_ = ("rec_toggle");
-  rec_toggle_->set_owner_impl<Transport> (this);
+  rec_toggle_->set_owner<Transport> (this);
   rec_toggle_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   rec_toggle_->id_.flags2_ |= PortIdentifier::Flags2::TransportRecToggle;
 
@@ -785,6 +785,12 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
     }
 
   update_total_bars (total_bars, true);
+}
+
+bool
+Transport::is_in_active_project () const
+{
+  return audio_engine_ == AUDIO_ENGINE.get ();
 }
 
 void

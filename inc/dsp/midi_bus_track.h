@@ -28,8 +28,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MidiBusTrack () = default;
-  MidiBusTrack (const std::string &name, int pos);
+  MidiBusTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 };

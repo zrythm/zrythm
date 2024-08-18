@@ -18,8 +18,6 @@
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
-
 TempoTrack::TempoTrack (int track_pos)
     : Track (
         Track::Type::Tempo,
@@ -41,8 +39,8 @@ bool
 TempoTrack::initialize ()
 {
   /* create bpm port */
-  bpm_port_ = std::make_unique<ControlPort> (
-    _ ("BPM"), PortIdentifier::OwnerType::Track, this);
+  bpm_port_ = std::make_unique<ControlPort> (_ ("BPM"));
+  bpm_port_->set_owner (this);
   bpm_port_->id_.sym_ = "bpm";
   bpm_port_->minf_ = 60.f;
   bpm_port_->maxf_ = 360.f;
@@ -52,8 +50,8 @@ TempoTrack::initialize ()
   bpm_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
 
   /* create time sig ports */
-  beats_per_bar_port_ = std::make_unique<ControlPort> (
-    _ ("Beats per bar"), PortIdentifier::OwnerType::Track, this);
+  beats_per_bar_port_ = std::make_unique<ControlPort> (_ ("Beats per bar"));
+  beats_per_bar_port_->set_owner (this);
   beats_per_bar_port_->id_.sym_ = ("beats_per_bar");
   beats_per_bar_port_->minf_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   beats_per_bar_port_->maxf_ = TEMPO_TRACK_MAX_BEATS_PER_BAR;
@@ -64,8 +62,8 @@ TempoTrack::initialize ()
   beats_per_bar_port_->id_.flags_ |= PortIdentifier::Flags::Automatable;
   beats_per_bar_port_->id_.flags_ |= PortIdentifier::Flags::Integer;
 
-  beat_unit_port_ = std::make_unique<ControlPort> (
-    _ ("Beat unit"), PortIdentifier::OwnerType::Track, this);
+  beat_unit_port_ = std::make_unique<ControlPort> (_ ("Beat unit"));
+  beat_unit_port_->set_owner (this);
   beat_unit_port_->id_.sym_ = ("beat_unit");
   beat_unit_port_->minf_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
   beat_unit_port_->maxf_ = static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT);

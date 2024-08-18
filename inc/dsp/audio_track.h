@@ -1,4 +1,3 @@
-
 // SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -74,8 +73,10 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioTrack () = default;
-  AudioTrack (const std::string &name, int pos, unsigned int samplerate);
+  AudioTrack (
+    const std::string &name = "",
+    int                pos = 0,
+    unsigned int       samplerate = 44000);
 
   bool initialize () override;
 
@@ -97,18 +98,5 @@ private:
    */
   unsigned int samplerate_ = 0;
 };
-
-void
-audio_track_init (Track * track);
-
-/**
- * Fills the buffers in the given StereoPorts with the frames from the current
- * clip.
- */
-void
-audio_track_fill_stereo_ports_from_clip (
-  StereoPorts &stereo_ports,
-  const long   g_start_frames,
-  nframes_t    nframes);
 
 #endif // __AUDIO_TRACK_H__

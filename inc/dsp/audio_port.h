@@ -29,16 +29,14 @@ public:
     zerof_ = 0.f;
   }
 
-  AudioPort (
-    std::string               label,
-    PortFlow                  flow,
-    PortIdentifier::OwnerType owner_type = (PortIdentifier::OwnerType) 0,
-    void *                    owner = nullptr)
-      : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f, owner_type, owner)
+  AudioPort (std::string label, PortFlow flow)
+      : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
   {
   }
 
   bool has_sound () const override;
+
+  static constexpr size_t AUDIO_RING_SIZE = 65536;
 
 #ifdef HAVE_RTAUDIO
   /**
@@ -177,25 +175,20 @@ public:
    * @param input Whether input ports.
    * @param owner Pointer to the owner. The type is determined by owner_type.
    */
-  StereoPorts (
-    bool                      input,
-    std::string               name,
-    std::string               symbol,
-    PortIdentifier::OwnerType owner_type,
-    void *                    owner);
+  StereoPorts (bool input, std::string name, std::string symbol);
 
   ~StereoPorts () { disconnect (); }
 
-  NONNULL void init_loaded (void * owner)
+  template <typename T> void init_loaded (T * owner)
   {
     l_->init_loaded (owner);
     r_->init_loaded (owner);
   }
 
-  void set_owner (PortIdentifier::OwnerType owner_type, void * owner)
+  template <typename T> void set_owner (T * owner)
   {
-    l_->set_owner (owner_type, owner);
-    r_->set_owner (owner_type, owner);
+    l_->set_owner (owner);
+    r_->set_owner (owner);
   }
 
   void set_expose_to_backend (bool expose)

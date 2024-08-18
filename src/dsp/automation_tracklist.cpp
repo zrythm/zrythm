@@ -357,8 +357,8 @@ AutomationTracklist::
   }
 
   z_trace (
-    "[track {} atl] removing automation track at: {} '{}'", track_->pos_,
-    deleted_idx, at.port_id_.label_);
+    "[track {} atl] removing automation track at: {} '{}'",
+    track_ ? track_->pos_ : -1, deleted_idx, at.port_id_.label_);
 
   if (free_at)
     {
@@ -372,7 +372,8 @@ AutomationTracklist::
   });
   if (it == ats_.end ())
     {
-      z_warning ("[track {} atl] automation track not found", track_->pos_);
+      z_warning (
+        "[track {} atl] automation track not found", track_ ? track_->pos_ : -1);
       return nullptr;
     }
   auto deleted_at = std::move (*it);

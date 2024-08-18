@@ -79,38 +79,6 @@ public:
     PulseAudioPort,
   };
 
-  Port () = default;
-#if 0
-  Port (std::string label);
-  Port (PortType type, PortFlow flow, std::string label);
-  Port (
-    PortType                  type,
-    PortFlow                  flow,
-    std::string               label,
-    PortIdentifier::OwnerType owner_type,
-    void *                    owner);
-#endif
-
-  Port (
-    std::string               label,
-    PortType                  type = (PortType) 0,
-    PortFlow                  flow = (PortFlow) 0,
-    float                     minf = 0.f,
-    float                     maxf = 1.f,
-    float                     zerof = 0.f,
-    PortIdentifier::OwnerType owner_type = (PortIdentifier::OwnerType) 0,
-    void *                    owner = nullptr)
-      : minf_ (minf), maxf_ (maxf), zerof_ (zerof)
-  {
-    id_.label_ = label;
-    id_.type_ = type;
-    id_.flow_ = flow;
-    if (owner)
-      {
-        set_owner (owner_type, owner);
-      }
-  }
-
   virtual ~Port () { disconnect_all (); }
 
   static std::unique_ptr<Port> create_unique_from_type (PortType type);
@@ -121,16 +89,14 @@ public:
    *
    * Should be called after the ports are deserialized from JSON.
    */
-  virtual void init_loaded (void * owner);
+  template <typename T> void init_loaded (T * owner) { set_owner (owner); }
 
   /**
    * @brief Returns whether the port is in the active project.
    */
   bool is_in_active_project () const;
 
-  void set_owner (PortIdentifier::OwnerType owner_type, void * owner);
-
-  template <typename T> void set_owner_impl (T * owner);
+  template <typename T> void set_owner (T * owner);
 
   /**
    * Finds the Port corresponding to the identifier.
@@ -324,6 +290,22 @@ public:
   void disconnect_from (Port &dest);
 
 protected:
+  Port () = default;
+
+  Port (
+    std::string label,
+    PortType    type = (PortType) 0,
+    PortFlow    flow = (PortFlow) 0,
+    float       minf = 0.f,
+    float       maxf = 1.f,
+    float       zerof = 0.f)
+      : minf_ (minf), maxf_ (maxf), zerof_ (zerof)
+  {
+    id_.label_ = label;
+    id_.type_ = type;
+    id_.flow_ = flow;
+  }
+
   void copy_members_from (const Port &other)
   {
     id_ = other.id_;
@@ -494,6 +476,8 @@ public:
   size_t last_buf_sz_ = 0;
 };
 
+class HardwareProcessor;
+class RecordableTrack;
 extern template MidiPort *
 Port::find_from_identifier<MidiPort> (const PortIdentifier &);
 extern template AudioPort *
@@ -502,6 +486,32 @@ extern template CVPort *
 Port::find_from_identifier (const PortIdentifier &);
 extern template ControlPort *
 Port::find_from_identifier (const PortIdentifier &);
+extern template void
+Port::set_owner<Plugin> (Plugin *);
+extern template void
+Port::set_owner<Transport> (Transport *);
+extern template void
+Port::set_owner<ChannelSend> (ChannelSend *);
+extern template void
+Port::set_owner<AudioEngine> (AudioEngine *);
+extern template void
+Port::set_owner<Fader> (Fader *);
+extern template void
+Port::set_owner<Track> (Track *);
+extern template void
+Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
+extern template void
+Port::set_owner<ExtPort> (ExtPort *);
+extern template void
+Port::set_owner<Channel> (Channel *);
+extern template void
+Port::set_owner<TrackProcessor> (TrackProcessor *);
+extern template void
+Port::set_owner<HardwareProcessor> (HardwareProcessor *);
+extern template void
+Port::set_owner<TempoTrack> (TempoTrack *);
+extern template void
+Port::set_owner<RecordableTrack> (RecordableTrack *);
 
 /**
  * @}

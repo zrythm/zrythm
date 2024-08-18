@@ -556,7 +556,7 @@ Plugin::set_track_and_slot (
   for (auto &port : in_ports_)
     {
       auto copy_id = port->id_;
-      port->set_owner_impl<Plugin> (this);
+      port->set_owner<Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (copy_id, track, false);
@@ -565,7 +565,7 @@ Plugin::set_track_and_slot (
   for (auto &port : out_ports_)
     {
       auto copy_id = port->id_;
-      port->set_owner_impl<Plugin> (this);
+      port->set_owner<Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (copy_id, track, false);
@@ -789,7 +789,7 @@ Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
   port->id_.port_index_ = in_ports_.size ();
-  port->set_owner_impl<Plugin> (this);
+  port->set_owner<Plugin> (this);
   in_ports_.emplace_back (std::move (port));
   return in_ports_.back ().get ();
 }
@@ -798,7 +798,7 @@ Port *
 Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
   port->id_.port_index_ = out_ports_.size ();
-  port->set_owner_impl<Plugin> (this);
+  port->set_owner<Plugin> (this);
   out_ports_.push_back (std::move (port));
   return out_ports_.back ().get ();
 }
@@ -1324,7 +1324,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->template set_owner_impl<Plugin> (this);
+          new_port->template set_owner (this);
           in_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));
@@ -1334,7 +1334,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->template set_owner_impl<Plugin> (this);
+          new_port->template set_owner (this);
           out_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));

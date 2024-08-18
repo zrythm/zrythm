@@ -17,8 +17,8 @@
 void
 AudioPort::allocate_bufs ()
 {
-  constexpr size_t AUDIO_RING_SIZE = 65536;
   audio_ring_ = std::make_unique<RingBuffer<float>> (AUDIO_RING_SIZE);
+
   size_t max = std::max (AUDIO_ENGINE->block_length_, 1u);
   buf_.resize (max);
   last_buf_sz_ = max;
@@ -466,12 +466,7 @@ AudioPort::apply_fader (float amp, nframes_t start_frame, const nframes_t nframe
   dsp_mul_k2 (&buf_[start_frame], amp, nframes);
 }
 
-StereoPorts::StereoPorts (
-  bool                      input,
-  std::string               name,
-  std::string               symbol,
-  PortIdentifier::OwnerType owner_type,
-  void *                    owner)
+StereoPorts::StereoPorts (bool input, std::string name, std::string symbol)
     : StereoPorts (
         AudioPort (
           fmt::format ("{} L", name),
@@ -485,8 +480,6 @@ StereoPorts::StereoPorts (
   l_->id_.sym_ = fmt::format ("{}_l", symbol);
   r_->id_.flags_ |= PortIdentifier::Flags::StereoR;
   r_->id_.sym_ = fmt::format ("{}_r", symbol);
-  l_->set_owner (owner_type, owner);
-  r_->set_owner (owner_type, owner);
 }
 
 StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)

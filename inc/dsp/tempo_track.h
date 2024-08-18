@@ -116,8 +116,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  TempoTrack () = default;
-  TempoTrack (int track_pos);
+  TempoTrack (int track_pos = 0);
 
   bool initialize () override;
 

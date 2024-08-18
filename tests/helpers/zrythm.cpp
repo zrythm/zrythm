@@ -31,7 +31,9 @@
  * ---
  */
 
+#include "project/project_init_flow_manager.h"
 #include "settings/g_settings_manager.h"
+#include "utils/io.h"
 #include "utils/pcg_rand.h"
 #include "utils/rt_thread_id.h"
 
@@ -414,12 +416,8 @@ start_daemon (Zrythm * self)
   _g_test_watcher_add_pid (self->pipewire_pid_);
 }
 
-void
-_test_helper_zrythm_init (
-  bool optimized,
-  int  samplerate,
-  int  buf_size,
-  bool use_pipewire)
+ZrythmFixture::
+  ZrythmFixture (bool optimized, int samplerate, int buf_size, bool use_pipewire)
 {
   static bool glib_inited = false;
   if (!glib_inited)
@@ -431,17 +429,13 @@ _test_helper_zrythm_init (
   if (gZrythm)
     {
       gZrythm->project_.reset ();
-      gZrythm->clearSingletonInstance ();
+      Zrythm::deleteInstance ();
     }
-  if (Logger::getInstanceWithoutCreating ())
-    {
-      Logger::getInstanceWithoutCreating ()->clearSingletonInstance ();
-    }
+  Logger::deleteInstance ();
 
   /* dummy ZrythmApp object for testing */
-  zrythm_app =
-    std::unique_ptr<ZrythmApp, ZrythmAppDeleter> (object_new (ZrythmApp));
-  zrythm_app->gtk_thread_id = current_thread_id.get ();
+  zrythm_app = zrythm_app_new (0, nullptr);
+  // zrythm_app->gtk_thread_id = current_thread_id.get ();
   zrythm_app->samplerate = samplerate;
   zrythm_app->buf_size = buf_size;
 
@@ -486,48 +480,23 @@ _test_helper_zrythm_init (
   signal (SIGSEGV, segv_handler);
 }
 
-/**
- * To be called by every test's main at the end to clean up.
- */
-void
-test_helper_zrythm_cleanup ()
+ZrythmFixture::~ZrythmFixture ()
 {
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
   dir_mgr->remove_testing_dir ();
+  gZrythm->project_->audio_engine_->activate (false);
   gZrythm->project_.reset ();
   if (gZrythm->use_pipewire_in_tests_)
     {
       stop_daemon (gZrythm);
     }
-  gZrythm->clearSingletonInstance ();
-  Logger::getInstance ()->clearSingletonInstance ();
+  Zrythm::deleteInstance ();
   zrythm_app.reset ();
 
   ZrythmDirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();
   GSettingsManager::deleteInstance ();
-}
-
-/**
- * To be called by every test's main to initialize
- * Zrythm to default values.
- */
-void
-test_helper_zrythm_init (void)
-{
-  _test_helper_zrythm_init (false, 0, 0, false);
-}
-
-void
-test_helper_zrythm_init_with_pipewire (void)
-{
-  _test_helper_zrythm_init (false, 0, 0, true);
-}
-
-void
-test_helper_zrythm_init_optimized (void)
-{
-  _test_helper_zrythm_init (true, 0, 0, false);
+  Logger::deleteInstance ();
 }
 
 void

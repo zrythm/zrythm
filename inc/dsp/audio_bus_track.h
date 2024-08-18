@@ -23,8 +23,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioBusTrack () = default;
-  AudioBusTrack (const std::string &name, int pos);
+  AudioBusTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 };

@@ -57,6 +57,11 @@ AudioFile::ensure_file_is_open ()
     {
       reader_ = std::unique_ptr<juce::AudioFormatReader> (
         format_mgr.createReaderFor (juce::File (filepath_)));
+      if (reader_ == nullptr)
+        {
+          throw ZrythmException (
+            fmt::format ("Failed to create reader for file '{}'", filepath_));
+        }
     }
 }
 
@@ -118,7 +123,32 @@ AudioFile::interleave_buffer (juce::AudioBuffer<float> &buffer)
 }
 
 void
-AudioFile::read_samples (
+AudioFile::deinterleave_buffer (
+  juce::AudioBuffer<float> &buffer,
+  size_t                    num_channels)
+{
+  const size_t total_samples = buffer.getNumSamples () / num_channels;
+
+  // Create a temporary buffer to hold the deinterleaved data
+  juce::AudioSampleBuffer tempBuffer (num_channels, total_samples);
+
+  // Deinterleave the channels
+  size_t read_index = 0;
+  for (size_t sample = 0; sample < total_samples; ++sample)
+    {
+      for (size_t channel = 0; channel < num_channels; ++channel)
+        {
+          tempBuffer.setSample (
+            channel, sample, buffer.getSample (0, read_index++));
+        }
+    }
+
+  // Copy the deinterleaved data back to the original buffer
+  buffer = std::move (tempBuffer);
+}
+
+void
+AudioFile::read_samples_interleaved (
   bool    in_parts,
   float * samples,
   size_t  start_from,
@@ -129,8 +159,8 @@ AudioFile::read_samples (
   start_from = in_parts ? start_from : 0;
   num_frames_to_read = in_parts ? num_frames_to_read : metadata_.num_frames;
 
-  juce::AudioBuffer<float> buffer (metadata_.channels, num_frames_to_read);
-  bool                     success =
+  juce::AudioSampleBuffer buffer (metadata_.channels, num_frames_to_read);
+  bool                    success =
     reader_->read (&buffer, 0, num_frames_to_read, start_from, true, true);
   if (!success)
     {
@@ -144,49 +174,36 @@ AudioFile::read_samples (
 
 void
 AudioFile::read_full (
-  juce::AudioBuffer<float> &buffer,
-  std::optional<size_t>     samplerate)
+  juce::AudioSampleBuffer &buffer,
+  std::optional<size_t>    samplerate)
 {
   read_metadata ();
 
   /* read frames in file's sample rate */
-  buffer.setSize (metadata_.channels, (size_t) metadata_.num_frames);
-  for (decltype (metadata_.channels) i = 0; i < metadata_.channels; ++i)
+  juce::AudioSampleBuffer interleaved_buffer (
+    1, metadata_.channels * (size_t) metadata_.num_frames);
+
+  read_samples_interleaved (
+    false, interleaved_buffer.getWritePointer (0), 0, metadata_.num_frames);
+
+  if (samplerate.has_value () && samplerate != metadata_.samplerate)
     {
-      read_samples (false, buffer.getWritePointer (i), 0, metadata_.num_frames);
-
-      if (samplerate.has_value () && samplerate != metadata_.samplerate)
+      /* resample to project's sample rate */
+      Resampler r (
+        interleaved_buffer.getReadPointer (0), metadata_.num_frames,
+        metadata_.samplerate, *samplerate, metadata_.channels,
+        Resampler::Quality::VeryHigh);
+      while (!r.is_done ())
         {
-          /* resample to project's sample rate */
-          GError *    err = NULL;
-          Resampler * r = resampler_new (
-            buffer.getReadPointer (i), metadata_.num_frames,
-            metadata_.samplerate, *samplerate, metadata_.channels,
-            RESAMPLER_QUALITY_VERY_HIGH, &err);
-          if (!r)
-            {
-              ZrythmException ex (
-                fmt::sprintf ("Failed to create resampler", err->message));
-              g_error_free (err);
-              throw ex;
-            }
-          while (!resampler_is_done (r))
-            {
-              bool success = resampler_process (r, &err);
-              if (!success)
-                {
-                  ZrythmException ex (
-                    fmt::sprintf ("Resampler failed to process", err->message));
-                  g_error_free (err);
-                  throw ex;
-                }
-            }
-          buffer.setSize (metadata_.channels, r->num_out_frames);
-          dsp_copy (
-            buffer.getWritePointer (i), r->out_frames, r->num_out_frames);
-
-          /* resampler is not RAII yet */
-          object_free_w_func_and_null (resampler_free, r);
+          r.process ();
         }
+      auto out_frames = r.get_out_frames ();
+      interleaved_buffer.setSize (1, out_frames.size ());
+      dsp_copy (
+        interleaved_buffer.getWritePointer (0), out_frames.data (),
+        out_frames.size ());
     }
+
+  deinterleave_buffer (interleaved_buffer, metadata_.channels);
+  buffer = std::move (interleaved_buffer);
 }

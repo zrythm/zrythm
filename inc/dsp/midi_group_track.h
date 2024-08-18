@@ -22,8 +22,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MidiGroupTrack () = default;
-  MidiGroupTrack (const std::string &name, int pos);
+  MidiGroupTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 };

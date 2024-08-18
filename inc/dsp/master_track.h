@@ -34,8 +34,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MasterTrack () = default;
-  MasterTrack (int pos);
+  MasterTrack (int pos = 0);
 
   bool initialize () override;
 };

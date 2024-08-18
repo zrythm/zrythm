@@ -183,8 +183,7 @@ AudioClip::get_path_in_pool_from_name (
       return "";
     }
   std::string basename =
-    juce::File (name).getFileNameWithoutExtension ().toStdString ()
-    + (use_flac ? ".FLAC" : ".wav");
+    io_file_strip_ext (name) + (use_flac ? ".FLAC" : ".wav");
   return Glib::build_filename (prj_pool_dir, basename);
 }
 

@@ -1,18 +1,15 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
 #include "dsp/transport.h"
 #include "project.h"
 #include "utils/flags.h"
-#include "utils/io.h"
-#include "utils/math.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project_helper.h"
@@ -20,10 +17,8 @@
 
 TEST_SUITE_BEGIN ("dsp/audio region");
 
-TEST_CASE ("fill stereo ports")
+TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
 {
-  test_helper_zrythm_init ();
-
   test_project_stop_dummy_engine ();
 
   Position pos;
@@ -38,10 +33,15 @@ TEST_CASE ("fill stereo ports")
 
   auto  track = TRACKLIST->get_track<AudioTrack> (num_tracks_before);
   auto &r = track->lanes_[0]->regions_[0];
-  auto  r_clip = r->get_clip ();
+  REQUIRE_EQ (r->track_name_hash_, track->get_name_hash ());
+  REQUIRE_EQ (r->get_track (), track);
+  auto r_clip = r->get_clip ();
 
-  StereoPorts ports (
-    false, "ports", "ports", PortIdentifier::OwnerType::AudioEngine, nullptr);
+  StereoPorts ports (false, "ports", "ports");
+  {
+    AudioEngine * engine = nullptr;
+    ports.set_owner (engine);
+  }
   ports.allocate_bufs ();
 
   TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
@@ -69,14 +69,10 @@ TEST_CASE ("fill stereo ports")
       REQUIRE_FLOAT_NEAR (
         adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("change samplerate")
+TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
 {
-  test_helper_zrythm_init ();
-
   Position pos;
   pos.set_to_bar (2);
 
@@ -112,14 +108,10 @@ TEST_CASE ("change samplerate")
 
   /* process manually */
   AUDIO_ENGINE->process (256);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("load project with selected audio region")
+TEST_CASE_FIXTURE (ZrythmFixture, "load project with selected audio region")
 {
-  test_helper_zrythm_init ();
-
   Position pos;
   pos.set_to_bar (2);
 
@@ -135,8 +127,6 @@ TEST_CASE ("load project with selected audio region")
   r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   test_project_save_and_reload ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_CASE ("load project with different sample rate")
@@ -148,7 +138,7 @@ TEST_CASE ("load project with different sample rate")
       int samplerate_before = samplerates[i];
 
       /* create project @ 48000 Hz */
-      _test_helper_zrythm_init (false, samplerate_before, 0, false);
+      ZrythmFixture (false, samplerate_before, 0, false);
 
       Position pos;
       pos.set_to_bar (2);
@@ -177,14 +167,10 @@ TEST_CASE ("load project with different sample rate")
       TRANSPORT->request_pause (true);
       AUDIO_ENGINE->wait_n_cycles (1);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("detect BPM")
+TEST_CASE_FIXTURE (ZrythmFixture, "detect BPM")
 {
-  test_helper_zrythm_init ();
-
   Position pos;
   pos.set_to_bar (2);
 
@@ -202,8 +188,6 @@ TEST_CASE ("detect BPM")
   std::vector<float> candidates;
   float              bpm = r->detect_bpm (candidates);
   REQUIRE_FLOAT_NEAR (bpm, 186.233093f, 0.001f);
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

@@ -107,7 +107,7 @@ ChannelSend::construct_for_slot (int slot)
   enabled_->id_.sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
   enabled_->id_.flags_ |= PortIdentifier::Flags::Toggle;
   enabled_->id_.flags2_ |= PortIdentifier::Flags2::ChannelSendEnabled;
-  enabled_->set_owner_impl<ChannelSend> (this);
+  enabled_->set_owner<ChannelSend> (this);
   enabled_->set_control_value (0.f, false, false);
 
   amount_ = std::make_unique<ControlPort> (
@@ -116,30 +116,28 @@ ChannelSend::construct_for_slot (int slot)
   amount_->id_.flags_ |= PortIdentifier::Flags::Amplitude;
   amount_->id_.flags_ |= PortIdentifier::Flags::Automatable;
   amount_->id_.flags2_ |= PortIdentifier::Flags2::ChannelSendAmount;
-  amount_->set_owner_impl<ChannelSend> (this);
+  amount_->set_owner (this);
   amount_->set_control_value (1.f, false, false);
 
   stereo_in_ = std::make_unique<StereoPorts> (
     true, format_str (_ ("Channel Send {} audio in"), slot + 1),
-    fmt::format ("channel_send_{}_audio_in", slot + 1),
-    PortIdentifier::OwnerType::ChannelSend, this);
-  stereo_in_->set_owner (PortIdentifier::OwnerType::ChannelSend, this);
+    fmt::format ("channel_send_{}_audio_in", slot + 1));
+  stereo_in_->set_owner (this);
 
   midi_in_ = std::make_unique<MidiPort> (
     format_str (_ ("Channel Send {} MIDI in"), slot + 1), PortFlow::Input);
   midi_in_->id_.sym_ = fmt::format ("channel_send_{}_midi_in", slot + 1);
-  midi_in_->set_owner_impl<ChannelSend> (this);
+  midi_in_->set_owner (this);
 
   stereo_out_ = std::make_unique<StereoPorts> (
     false, format_str (_ ("Channel Send {} audio out"), slot + 1),
-    fmt::format ("channel_send_{}_audio_out", slot + 1),
-    PortIdentifier::OwnerType::ChannelSend, this);
-  stereo_out_->set_owner (PortIdentifier::OwnerType::ChannelSend, this);
+    fmt::format ("channel_send_{}_audio_out", slot + 1));
+  stereo_out_->set_owner (this);
 
   midi_out_ = std::make_unique<MidiPort> (
     format_str (_ ("Channel Send {} MIDI out"), slot + 1), PortFlow::Output);
   midi_out_->id_.sym_ = fmt::format ("channel_send_{}_midi_out", slot + 1);
-  midi_out_->set_owner_impl<ChannelSend> (this);
+  midi_out_->set_owner (this);
 }
 
 ChannelSend::

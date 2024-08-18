@@ -129,16 +129,15 @@ Tracklist::print_tracks () const
             parent_str += ' ';
 
           z_info (
-            "[%03zu] %s%s (pos %d, parents %zu, "
-            "size %d)",
-            i, parent_str, track->name_, track->pos_, parents.size (),
+            "[{:03}] {}{} (pos {}, parents {}, size {})", i, parent_str,
+            track->name_, track->pos_, parents.size (),
             track->is_foldable ()
               ? dynamic_cast<FoldableTrack *> (track.get ())->size_
               : 1);
         }
       else
         {
-          z_info ("[%03zu] (null)", i);
+          z_info ("[{:03}] (null)", i);
         }
     }
   z_info ("------ end ------");
@@ -153,7 +152,7 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   auto &src_track = tracks_[index1];
   auto &dest_track = tracks_[index2];
   z_debug (
-    "swapping tracks {} [{}] and %s [{}]...",
+    "swapping tracks {} [{}] and {} [{}]...",
     src_track ? src_track->name_ : nullptr, index1,
     dest_track ? dest_track->name_ : nullptr, index2);
 
@@ -546,10 +545,10 @@ Tracklist::remove_track (
   bool   recalc_graph)
 {
   z_debug (
-    "removing [%d] %s - remove plugins %d - "
-    "free track %d - pub events %d - "
-    "recalc graph %d - "
-    "num tracks before deletion: %zu",
+    "removing [{}] {} - remove plugins {} - "
+    "free track {} - pub events {} - "
+    "recalc graph {} - "
+    "num tracks before deletion: {}",
     track.pos_, track.get_name (), rm_pl, free_track, publish_events,
     recalc_graph, tracks_.size ());
 
@@ -1035,7 +1034,7 @@ Tracklist::handle_move_or_copy (
   GdkDragAction        action)
 {
   z_debug (
-    "this track '%s' - location %s - action %s", this_track.name_,
+    "this track '{}' - location {} - action {}", this_track.name_,
     track_widget_highlight_to_str (location),
     action == GDK_ACTION_COPY ? "copy" : "move");
 
@@ -1340,6 +1339,13 @@ Tracklist::~Tracklist ()
 {
   z_debug ("freeing tracklist...");
 
+  auto new_end =
+    std::remove_if (tracks_.begin (), tracks_.end (), [this] (auto &track) {
+      return track.get () != tempo_track_;
+    });
+  tracks_.erase (new_end, tracks_.end ());
+
+#if 0
   for (auto &track : std::ranges::reverse_view (tracks_))
     {
       if (track.get () == tempo_track_)
@@ -1347,13 +1353,10 @@ Tracklist::~Tracklist ()
 
       remove_track (*track, true, true, false, false);
     }
+#endif
 
   /* remove tempo track last (used when printing positions) */
-  if (tempo_track_)
-    {
-      remove_track (*tempo_track_, true, true, false, false);
-      tempo_track_ = nullptr;
-    }
+  tracks_.clear ();
 }
 
 template ProcessableTrack *

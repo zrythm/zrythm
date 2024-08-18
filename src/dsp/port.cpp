@@ -35,12 +35,6 @@
 #include "gtk_wrapper.h"
 #include <fmt/format.h>
 
-void
-Port::init_loaded (void * owner)
-{
-  set_owner (this->id_.owner_type_, owner);
-}
-
 std::unique_ptr<Port>
 Port::create_unique_from_type (PortType type)
 {
@@ -675,9 +669,9 @@ Port::get_num_unlocked_srcs () const
 
 template <typename T>
 void
-Port::set_owner_impl (T * owner)
+Port::set_owner (T * owner)
 {
-  if constexpr (std::is_same_v<T, Plugin>)
+  if constexpr (std::derived_from<T, Plugin>)
     {
       id_.plugin_id_ = owner->id_;
       id_.track_name_hash_ = owner->id_.track_name_hash_;
@@ -692,26 +686,26 @@ Port::set_owner_impl (T * owner)
             }
         }
     }
-  else if constexpr (std::is_same_v<T, TrackProcessor>)
+  else if constexpr (std::derived_from<T, TrackProcessor>)
     {
       auto track = owner->get_track ();
       z_return_if_fail (track && !track->name_.empty ());
       id_.track_name_hash_ = track->get_name_hash ();
       id_.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
     }
-  else if constexpr (std::is_same_v<T, Channel>)
+  else if constexpr (std::derived_from<T, Channel>)
     {
       auto track = owner->get_track ();
       z_return_if_fail (!track->name_.empty ());
       id_.track_name_hash_ = track->get_name_hash ();
       id_.owner_type_ = PortIdentifier::OwnerType::Channel;
     }
-  else if constexpr (std::is_same_v<T, ExtPort>)
+  else if constexpr (std::derived_from<T, ExtPort>)
     {
       ext_port_ = owner;
       id_.owner_type_ = PortIdentifier::OwnerType::HardwareProcessor;
     }
-  else if constexpr (std::is_same_v<T, ChannelSend>)
+  else if constexpr (std::derived_from<T, ChannelSend>)
     {
       id_.track_name_hash_ = owner->track_name_hash_;
       id_.port_index_ = owner->slot_;
@@ -737,7 +731,7 @@ Port::set_owner_impl (T * owner)
           zerof_ = 0.f;
         }
     }
-  else if constexpr (std::is_same_v<T, Fader>)
+  else if constexpr (std::derived_from<T, Fader>)
     {
       id_.owner_type_ = PortIdentifier::OwnerType::Fader;
       fader_ = owner;
@@ -785,18 +779,18 @@ Port::set_owner_impl (T * owner)
           zerof_ = 0.5f;
         }
     }
-  else if constexpr (std::is_same_v<T, Transport>)
+  else if constexpr (std::derived_from<T, Transport>)
     {
       transport_ = owner;
       id_.owner_type_ = PortIdentifier::OwnerType::Transport;
     }
-  else if constexpr (std::is_same_v<T, Track>)
+  else if constexpr (std::derived_from<T, Track>)
     {
       // z_return_if_fail (!track.name_.empty ());
       id_.track_name_hash_ = owner->name_.empty () ? 0 : owner->get_name_hash ();
       id_.owner_type_ = PortIdentifier::OwnerType::Track;
     }
-  else if constexpr (std::is_same_v<T, ModulatorMacroProcessor>)
+  else if constexpr (std::derived_from<T, ModulatorMacroProcessor>)
     {
       modulator_macro_processor_ = owner;
       id_.owner_type_ = PortIdentifier::OwnerType::ModulatorMacroProcessor;
@@ -804,52 +798,54 @@ Port::set_owner_impl (T * owner)
       id_.track_name_hash_ = owner->get_track ()->get_name_hash ();
       track_ = owner->get_track ();
     }
-  else if constexpr (std::is_same_v<T, AudioEngine>)
+  else if constexpr (std::derived_from<T, AudioEngine>)
     {
       engine_ = owner;
       id_.owner_type_ = PortIdentifier::OwnerType::AudioEngine;
     }
 }
 
+#if 0
 void
 Port::set_owner (PortIdentifier::OwnerType owner_type, void * owner)
 {
   switch (owner_type)
     {
     case PortIdentifier::OwnerType::ChannelSend:
-      set_owner_impl (static_cast<ChannelSend *> (owner));
+      set_owner (static_cast<ChannelSend *> (owner));
       break;
     case PortIdentifier::OwnerType::Fader:
-      set_owner_impl (static_cast<Fader *> (owner));
+      set_owner (static_cast<Fader *> (owner));
       break;
     case PortIdentifier::OwnerType::Track:
-      set_owner_impl (static_cast<Track *> (owner));
+      set_owner (static_cast<Track *> (owner));
       break;
     case PortIdentifier::OwnerType::TrackProcessor:
-      set_owner_impl (static_cast<TrackProcessor *> (owner));
+      set_owner (static_cast<TrackProcessor *> (owner));
       break;
     case PortIdentifier::OwnerType::Channel:
-      set_owner_impl (static_cast<Channel *> (owner));
+      set_owner (static_cast<Channel *> (owner));
       break;
     case PortIdentifier::OwnerType::Plugin:
-      set_owner_impl (static_cast<Plugin *> (owner));
+      set_owner (static_cast<Plugin *> (owner));
       break;
     case PortIdentifier::OwnerType::Transport:
-      set_owner_impl (static_cast<Transport *> (owner));
+      set_owner (static_cast<Transport *> (owner));
       break;
     case PortIdentifier::OwnerType::ModulatorMacroProcessor:
-      set_owner_impl (static_cast<ModulatorMacroProcessor *> (owner));
+      set_owner (static_cast<ModulatorMacroProcessor *> (owner));
       break;
     case PortIdentifier::OwnerType::AudioEngine:
-      set_owner_impl (static_cast<AudioEngine *> (owner));
+      set_owner (static_cast<AudioEngine *> (owner));
       break;
     case PortIdentifier::OwnerType::HardwareProcessor:
-      set_owner_impl (static_cast<ExtPort *> (owner));
+      set_owner (static_cast<ExtPort *> (owner));
       break;
     default:
       z_return_if_reached ();
     }
 }
+#endif
 
 bool
 Port::can_be_connected_to (const Port &dest) const
@@ -1356,6 +1352,8 @@ Port::is_in_active_project () const
              && modulator_macro_processor_->is_in_active_project ();
     case PortIdentifier::OwnerType::HardwareProcessor:
       return ext_port_ && ext_port_->is_in_active_project ();
+    case PortIdentifier::OwnerType::Transport:
+      return transport_ && transport_->is_in_active_project ();
     default:
       z_return_val_if_reached (false);
     }
@@ -1381,3 +1379,29 @@ template CVPort *
 Port::find_from_identifier (const PortIdentifier &);
 template ControlPort *
 Port::find_from_identifier (const PortIdentifier &);
+template void
+Port::set_owner<Plugin> (Plugin *);
+template void
+Port::set_owner<Transport> (Transport *);
+template void
+Port::set_owner<ChannelSend> (ChannelSend *);
+template void
+Port::set_owner<AudioEngine> (AudioEngine *);
+template void
+Port::set_owner<Fader> (Fader *);
+template void
+Port::set_owner<Track> (Track *);
+template void
+Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
+template void
+Port::set_owner<ExtPort> (ExtPort *);
+template void
+Port::set_owner<Channel> (Channel *);
+template void
+Port::set_owner<TrackProcessor> (TrackProcessor *);
+template void
+Port::set_owner<HardwareProcessor> (HardwareProcessor *);
+template void
+Port::set_owner<TempoTrack> (TempoTrack *);
+template void
+Port::set_owner<RecordableTrack> (RecordableTrack *);

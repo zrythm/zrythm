@@ -1440,7 +1440,7 @@ zrythm_app_new (int argc, const char ** argv)
     "resource-base-path", "/org/zrythm/Zrythm", "flags",
     G_APPLICATION_HANDLES_OPEN, nullptr));
 
-  zrythm_app.reset (self);
+  // zrythm_app.reset (self);
 
   // self->gtk_thread = g_thread_self ();
   self->gtk_thread_id = current_thread_id.get ();

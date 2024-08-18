@@ -84,6 +84,7 @@ template <typename RegionT>
 std::shared_ptr<RegionT>
 RegionOwnerImpl<RegionT>::insert_region (std::shared_ptr<RegionT> region, int idx)
 {
+  static_assert (FinalRegionSubclass<RegionT>);
   z_return_val_if_fail (idx >= 0, nullptr);
   z_return_val_if_fail (!region->name_.empty (), nullptr);
 

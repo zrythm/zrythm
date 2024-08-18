@@ -14,8 +14,6 @@
 
 #include <glib/gi18n.h>
 
-ChordTrack::ChordTrack () : ChordTrack (0) { }
-
 ChordTrack::ChordTrack (int pos)
     : Track (Track::Type::Chord, _ ("Chords"), pos, PortType::Event, PortType::Event)
 {
@@ -30,6 +28,24 @@ ChordTrack::initialize ()
   generate_automation_tracks ();
 
   return true;
+}
+
+void
+ChordTrack::clear_objects ()
+{
+  clear_regions ();
+  if (is_in_active_project ())
+    {
+      for (auto &scale : std::ranges::reverse_view (scales_))
+        {
+          remove_scale (*scale);
+        }
+    }
+  else
+    {
+      scales_.clear ();
+    }
+  scale_snapshots_.clear ();
 }
 
 void

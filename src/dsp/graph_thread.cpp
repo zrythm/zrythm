@@ -330,5 +330,4 @@ GraphThread::GraphThread (const int id, const bool is_main, Graph &graph)
         THREAD_STACK_SIZE + get_stack_size ()),
       id_ (id), is_main_ (is_main), graph_ (graph)
 {
-  startRealtimeThread (RealtimeOptions ().withPriority (9));
 }

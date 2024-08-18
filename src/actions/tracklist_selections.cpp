@@ -153,7 +153,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         AUDIO_ENGINE->sample_rate_),
       tracklist_selections_action_type_ (type), track_pos_ (track_pos),
       lane_pos_ (lane_pos), track_type_ (track_type),
-      pl_setting_ (std::make_unique<PluginSetting> (*pl_setting)),
+      pl_setting_ (
+        pl_setting ? std::make_unique<PluginSetting> (*pl_setting) : nullptr),
       edit_type_ (edit_type), ival_after_ (ival_after),
       already_edited_ (already_edited), val_before_ (val_before),
       val_after_ (val_after)

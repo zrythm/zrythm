@@ -47,8 +47,7 @@ public:
   }
 
 private:
-  MidiTrack () = default;
-  MidiTrack (const std::string &label, int pos);
+  MidiTrack (const std::string &label = "", int pos = 0);
 
   bool initialize () override;
 

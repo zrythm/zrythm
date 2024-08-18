@@ -50,14 +50,13 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  InstrumentTrack () = default;
   /**
    * @brief Main constructor.
    *
    * @param name Track name.
    * @param pos Track position.
    */
-  InstrumentTrack (const std::string &name, int pos);
+  InstrumentTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 

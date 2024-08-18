@@ -138,6 +138,8 @@ public:
 
 private:
   juce::StringArray arr_;
+
+  JUCE_HEAVYWEIGHT_LEAK_DETECTOR (StringArray)
 };
 
 Glib::ustring

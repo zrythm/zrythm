@@ -150,49 +150,33 @@ io_touch_file (const std::string &file_path)
     }
 }
 
-/**
- * Strips extensions from given filename.
- *
- * MUST be freed.
- */
-char *
-io_file_strip_ext (const char * filename)
+std::string
+io_file_strip_ext (const std::string &filename)
 {
-  /* if last char is a dot, return the string
-   * without the dot */
-  size_t len = strlen (filename);
+  /* if last char is a dot, return the string without the dot */
+  size_t len = strlen (filename.c_str ());
   if (filename[len - 1] == '.')
     {
-      return g_strndup (filename, len - 1);
+      return filename.substr (0, len - 1);
     }
 
-  const char * dot = io_file_get_ext (filename);
+  const char * dot = io_file_get_ext (filename.c_str ());
 
   /* if no dot, return filename */
   if (string_is_equal (dot, ""))
     {
-      return g_strdup (filename);
+      return filename;
     }
 
-  long   size = (dot - filename) - 1;
-  char * new_str = g_strndup (filename, (gsize) size);
-
-  return new_str;
+  long size = (dot - filename.c_str ()) - 1;
+  return filename.substr (0, size);
 }
 
-/**
- * Strips path from given filename.
- *
- * MUST be freed.
- */
-char *
-io_path_get_basename_without_ext (const char * filename)
+std::string
+io_path_get_basename_without_ext (const std::string &filename)
 {
-  char * basename = g_path_get_basename (filename);
-  char * no_ext = io_file_strip_ext (basename);
-  g_free (basename);
-
-  return no_ext;
+  auto basename = Glib::path_get_basename (filename);
+  return io_file_strip_ext (basename);
 }
 
 #if 0
@@ -448,36 +432,24 @@ io_get_files_in_dir_ending_in (
   return arr;
 }
 
-/**
- * Returns a newly allocated path that is either
- * a copy of the original path if the path does
- * not exist, or the original path appended with
- * (n), where n is a number.
- *
- * Example: "myfile" -> "myfile (1)"
- */
-char *
-io_get_next_available_filepath (const char * filepath)
+std::string
+io_get_next_available_filepath (const std::string &filepath)
 {
-  int          i = 1;
-  char *       file_without_ext = io_file_strip_ext (filepath);
-  const char * file_ext = io_file_get_ext (filepath);
-  char *       new_path = g_strdup (filepath);
+  int  i = 1;
+  auto file_without_ext = io_file_strip_ext (filepath);
+  auto file_ext = io_file_get_ext (filepath.c_str ());
+  auto new_path = filepath;
   while (file_path_exists (new_path))
     {
-      if (g_file_test (new_path, G_FILE_TEST_IS_DIR))
+      if (Glib::file_test (new_path, Glib::FileTest::IS_DIR))
         {
-          g_free (new_path);
-          new_path = g_strdup_printf ("%s (%d)", filepath, i++);
+          new_path = fmt::format ("{} ({})", filepath, i++);
         }
       else
         {
-          g_free (new_path);
-          new_path =
-            g_strdup_printf ("%s (%d).%s", file_without_ext, i++, file_ext);
+          new_path = fmt::format ("{} ({}).{}", file_without_ext, i++, file_ext);
         }
     }
-  g_free (file_without_ext);
 
   return new_path;
 }

@@ -24,14 +24,7 @@ class Logger
 {
 public:
   std::vector<std::string>
-  get_last_log_entries (size_t count, bool formatted) const
-  {
-    // Get the circular buffer sink from the logger
-    auto buffer_sink = std::dynamic_pointer_cast<
-      spdlog::sinks::ringbuffer_sink_mt> (logger_->sinks ().back ());
-    assert (buffer_sink);
-    return buffer_sink->last_formatted (count);
-  }
+  get_last_log_entries (size_t count, bool formatted) const;
 
   /**
    * Generates a compressed log file (for sending with bug reports).
@@ -40,69 +33,16 @@ public:
    * @throw ZrythmException on failure.
    */
   std::pair<std::string, std::string>
-  generate_compresed_file (std::string &dir, std::string &path) const
-  {
-#if 0
-    Error * err = NULL;
-    char *  log_file_tmpdir = g_dir_make_tmp ("zrythm-log-file-XXXXXX", &err);
-    if (!log_file_tmpdir)
-      {
-        g_set_error_literal (
-          error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-          "Failed to create temporary dir");
-        return false;
-      }
-
-    /* get zstd-compressed text */
-    char * log_txt = log_get_last_n_lines (LOG, 40000);
-    z_return_val_if_fail (log_txt, false);
-    size_t log_txt_sz = strlen (log_txt);
-    size_t compress_bound = ZSTD_compressBound (log_txt_sz);
-    char * dest = static_cast<char *> (malloc (compress_bound));
-    size_t dest_size =
-      ZSTD_compress (dest, compress_bound, log_txt, log_txt_sz, 1);
-    if (ZSTD_isError (dest_size))
-      {
-        free (dest);
-
-        g_set_error (
-          error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-          "Failed to compress log text: %s", ZSTD_getErrorName (dest_size));
-
-        g_free (log_file_tmpdir);
-        return false;
-      }
-
-    /* write to dest file */
-    char * dest_filepath =
-      g_build_filename (log_file_tmpdir, "log.txt.zst", nullptr);
-    bool ret =
-      g_file_set_contents (dest_filepath, dest, (gssize) dest_size, error);
-    g_free (dest);
-    if (!ret)
-      {
-        g_free (log_file_tmpdir);
-        g_free (dest_filepath);
-        return false;
-      }
-
-    *ret_dir = log_file_tmpdir;
-    *ret_path = dest_filepath;
-#endif
-    return std::make_pair ("dir", "path");
-  }
+  generate_compresed_file (std::string &dir, std::string &path) const;
 
   auto get_logger () const { return logger_; }
+
+  ~Logger ();
 
 private:
   Logger ();
 
-  bool need_backtrace () const
-  {
-    constexpr int backtrace_cooldown_time = 16 * 1000 * 1000;
-    auto          now = juce::Time::getMillisecondCounterHiRes ();
-    return now - last_bt_time_ > backtrace_cooldown_time;
-  }
+  bool need_backtrace () const;
 
   std::string get_log_file_path () const;
 
@@ -133,6 +73,7 @@ public:
   SPDLOG_LOGGER_DEBUG (Logger::getInstance ()->get_logger (), __VA_ARGS__)
 #define z_info(...) \
   SPDLOG_LOGGER_INFO (Logger::getInstance ()->get_logger (), __VA_ARGS__)
+
 /**
  * @brief Safe assertion macro that returns a value if the assertion fails.
  */

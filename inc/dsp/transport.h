@@ -143,6 +143,8 @@ public:
     return -1;
   }
 
+  bool is_in_active_project () const;
+
   bool is_rolling () const { return play_state_ == PlayState::Rolling; }
 
   bool is_paused () const { return play_state_ == PlayState::Paused; }

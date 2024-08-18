@@ -930,6 +930,27 @@ Graph::start ()
   /* and the main thread */
   main_thread_ = create_thread (true, -1);
 
+  auto start_thread = [&] (auto &thread) {
+    try
+      {
+        thread->startRealtimeThread (
+          juce::Thread::RealtimeOptions ().withPriority (9));
+      }
+    catch (const ZrythmException &e)
+      {
+        terminate ();
+        throw ZrythmException (
+          "failed to start thread: " + std::string (e.what ()));
+      }
+  };
+
+  /* start them */
+  for (auto &thread : threads_)
+    {
+      start_thread (thread);
+    }
+  start_thread (main_thread_);
+
   /* wait for all threads to go idle */
   while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))
     {
@@ -973,6 +994,11 @@ Graph::terminate ()
   callback_start_sem_.release ();
 
   /* join threads */
+  for (auto &thread : threads_)
+    {
+      thread->waitForThreadToExit (5);
+    }
+  main_thread_->waitForThreadToExit (5);
   threads_.clear ();
   main_thread_.reset ();
 

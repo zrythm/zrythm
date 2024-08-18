@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio.h"
 #include "utils/debug.h"
+#include "utils/exceptions.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/resampler.h"
@@ -11,31 +12,101 @@
 
 #include <soxr.h>
 
-typedef enum
+constexpr size_t SOXR_BLOCK_SZ = 1028;
+
+class Resampler::Impl
 {
-  Z_UTILS_RESAMPLER_ERROR_FAILED,
-} ZUtilsResamplerError;
+public:
+  Impl (
+    const float *      in_frames,
+    const size_t       num_in_frames,
+    const double       input_rate,
+    const double       output_rate,
+    const unsigned int num_channels,
+    const Quality      quality)
+  {
+    z_return_if_fail (in_frames);
 
-#define Z_UTILS_RESAMPLER_ERROR z_utils_resampler_error_quark ()
-GQuark
-z_utils_resampler_error_quark (void);
-G_DEFINE_QUARK (
-  z - utils - resampler - error - quark,
-  z_utils_resampler_error)
+    z_debug (
+      "creating new resampler for {} frames at {:.2f} Hz to {:.2f} Hz - {} channels",
+      num_in_frames, input_rate, output_rate, num_channels);
 
-#define SOXR_BLOCK_SZ 1028
+    in_frames_.resize (num_in_frames * num_channels);
+    std::copy_n (in_frames, num_in_frames * num_channels, in_frames_.data ());
+    num_in_frames_ = num_in_frames;
+    input_rate_ = input_rate;
+    output_rate_ = output_rate;
+    num_channels_ = num_channels;
+    quality_ = quality;
 
-static size_t
-input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
-{
-  Resampler * self = (Resampler *) input_func_state;
+    unsigned long quality_recipe, quality_flags = 0;
+    switch (quality)
+      {
+      case Quality::Quick:
+        quality_recipe = SOXR_QQ;
+        break;
+      case Quality::Low:
+        quality_recipe = SOXR_LQ;
+        break;
+      case Quality::Medium:
+        quality_recipe = SOXR_MQ;
+        break;
+      case Quality::High:
+        quality_recipe = SOXR_HQ;
+        break;
+      case Quality::VeryHigh:
+      default:
+        quality_recipe = SOXR_VHQ;
+        break;
+      }
+    soxr_quality_spec_t quality_spec =
+      soxr_quality_spec (quality_recipe, quality_flags);
 
-  size_t len_to_provide =
-    MIN (self->num_in_frames - self->frames_read, requested_len);
+    soxr_error_t serror;
+    soxr_t       soxr = soxr_create (
+      input_rate, output_rate, num_channels, &serror, nullptr, &quality_spec,
+      nullptr);
 
-  *data = &self->in_frames[self->frames_read * self->num_channels];
+    if (serror)
+      {
+        throw ZrythmException (
+          format_str (_ ("Failed to create soxr instance: {}"), serror));
+      }
 
-  self->frames_read += len_to_provide;
+    serror = soxr_set_input_fn (soxr, input_func, this, SOXR_BLOCK_SZ);
+    if (serror)
+      {
+        throw ZrythmException (
+          format_str (_ ("Failed to set soxr input function: {}"), serror));
+      }
+
+    priv_ = soxr;
+
+    double resample_ratio = output_rate / input_rate;
+    num_out_frames_ = (size_t) ceil ((double) num_in_frames_ * resample_ratio);
+    /* soxr accesses a few bytes outside apparently so allocate a bit more */
+    out_frames_.resize ((num_out_frames_ + 8) * num_channels_);
+  }
+
+  ~Impl () { soxr_delete (priv_); }
+
+  static size_t
+  input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
+  {
+    auto * self = static_cast<Resampler::Impl *> (input_func_state);
+
+    z_return_val_if_fail_cmp (self->num_in_frames_, >=, self->frames_read_, 0);
+    size_t len_to_provide =
+      std::min (self->num_in_frames_ - self->frames_read_, requested_len);
+
+    if (len_to_provide == 0)
+      {
+        return 0;
+      }
+
+    *data = &self->in_frames_[self->frames_read_ * self->num_channels_];
+
+    self->frames_read_ += len_to_provide;
 
 #if 0
   z_debug (
@@ -43,136 +114,94 @@ input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
     len_to_provide, requested_len, self->frames_read);
 #endif
 
-  return len_to_provide;
+    return len_to_provide;
+  }
+
+  void               process ();
+  bool               is_done () const;
+  std::vector<float> get_out_frames () const;
+
+public:
+  /** Private data. */
+  soxr_t priv_ = nullptr;
+
+  double       input_rate_ = 0;
+  double       output_rate_ = 0;
+  unsigned int num_channels_ = 0;
+
+  /** Given input (interleaved) frames .*/
+  std::vector<float> in_frames_;
+
+  /** Number of frames per channel. */
+  size_t num_in_frames_ = 0;
+
+  /** Number of frames read so far. */
+  size_t frames_read_ = 0;
+
+  /** Output (interleaved) frames to be allocated during
+   * resampler_new(). */
+  std::vector<float> out_frames_;
+
+  /** Number of frames per channel. */
+  size_t num_out_frames_ = 0;
+
+  /** Number of frames written so far. */
+  size_t frames_written_ = 0;
+
+  Quality quality_;
+};
+
+Resampler::Resampler (
+  const float *      in_frames,
+  const size_t       num_in_frames,
+  const double       input_rate,
+  const double       output_rate,
+  const unsigned int num_channels,
+  const Quality      quality)
+    : pimpl_ (std::make_unique<Impl> (
+        in_frames,
+        num_in_frames,
+        input_rate,
+        output_rate,
+        num_channels,
+        quality))
+{
 }
 
-/**
- * Creates a new instance of a Resampler with the given
- * settings.
- *
- * Resampler.num_out_frames will be set to the number of output
- * frames required for resampling with the given settings.
- */
-Resampler *
-resampler_new (
-  const float *          in_frames,
-  const size_t           num_in_frames,
-  const double           input_rate,
-  const double           output_rate,
-  const unsigned int     num_channels,
-  const ResamplerQuality quality,
-  GError **              error)
+// Destructor needs to be defined here where Impl is a complete type
+Resampler::~Resampler () = default;
+
+void
+Resampler::Impl::process ()
 {
-  z_return_val_if_fail (in_frames, nullptr);
-
-  Resampler * self = object_new (Resampler);
-
-  z_debug (
-    "creating new resampler for %zu frames at %.2f Hz to %.2f Hz - {} channels",
-    num_in_frames, input_rate, output_rate, num_channels);
-
-  self->in_frames = in_frames;
-  self->num_in_frames = num_in_frames;
-  self->input_rate = input_rate;
-  self->output_rate = output_rate;
-  self->num_channels = num_channels;
-  self->quality = quality;
-
-  unsigned long quality_recipe, quality_flags = 0;
-  switch (quality)
-    {
-    case RESAMPLER_QUALITY_QUICK:
-      quality_recipe = SOXR_QQ;
-      break;
-    case RESAMPLER_QUALITY_LOW:
-      quality_recipe = SOXR_LQ;
-      break;
-    case RESAMPLER_QUALITY_MEDIUM:
-      quality_recipe = SOXR_MQ;
-      break;
-    case RESAMPLER_QUALITY_HIGH:
-      quality_recipe = SOXR_HQ;
-      break;
-    case RESAMPLER_QUALITY_VERY_HIGH:
-    default:
-      quality_recipe = SOXR_VHQ;
-      break;
-    }
-  soxr_quality_spec_t quality_spec =
-    soxr_quality_spec (quality_recipe, quality_flags);
-
-  soxr_error_t serror;
-  soxr_t       soxr = soxr_create (
-    input_rate, output_rate, num_channels, &serror, nullptr, &quality_spec,
-    nullptr);
-
-  if (serror)
-    {
-      g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
-        _ ("Failed to create soxr instance: %s"), serror);
-      return NULL;
-    }
-
-  serror = soxr_set_input_fn (soxr, input_func, self, SOXR_BLOCK_SZ);
-  if (serror)
-    {
-      g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
-        _ ("Failed to set soxr input function: %s"), serror);
-      return NULL;
-    }
-
-  self->priv = soxr;
-
-  double resample_ratio = output_rate / input_rate;
-  self->num_out_frames =
-    (size_t) ceil ((double) self->num_in_frames * resample_ratio);
-  /* soxr accesses a few bytes outside apparently so allocate
-   * a bit more */
-  self->out_frames =
-    object_new_n ((self->num_out_frames + 8) * self->num_channels, float);
-
-  return self;
-}
-
-/**
- * To be called periodically until resampler_is_done() returns
- * true.
- */
-bool
-resampler_process (Resampler * self, GError ** error)
-{
+  z_return_if_fail (num_out_frames_ > frames_written_);
   size_t frames_to_write_this_time =
-    MIN (self->num_out_frames - self->frames_written, SOXR_BLOCK_SZ);
-  z_return_val_if_fail_cmp (
-    self->frames_written + frames_to_write_this_time, <=, self->num_out_frames,
-    false);
+    std::min (num_out_frames_ - frames_written_, SOXR_BLOCK_SZ);
+  z_return_if_fail_cmp (
+    frames_written_ + frames_to_write_this_time, <=, num_out_frames_);
   size_t frames_written_now = soxr_output (
-    (soxr_t) self->priv,
-    &self->out_frames[self->frames_written * self->num_channels],
+    (soxr_t) priv_, &out_frames_[frames_written_ * num_channels_],
     frames_to_write_this_time);
-  z_return_val_if_fail_cmp (
-    self->frames_written + frames_written_now, <=, self->num_out_frames, false);
+  z_return_if_fail_cmp (
+    frames_written_ + frames_written_now, <=, num_out_frames_);
 
-  soxr_error_t serror = soxr_error ((soxr_t) self->priv);
+  soxr_error_t serror = soxr_error ((soxr_t) priv_);
   if (serror)
     {
-      g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
-        _ ("soxr_process() error: %s"), serror);
-      return false;
+      throw ZrythmException (
+        format_str (_ ("soxr_process() error: {}"), serror));
     }
 
-  if (math_doubles_equal (self->input_rate, self->output_rate))
+  if (math_doubles_equal (input_rate_, output_rate_))
     {
       audio_frames_equal (
-        &self->in_frames[self->frames_written * self->num_channels],
-        &self->out_frames[self->frames_written * self->num_channels],
-        frames_written_now * self->num_channels, 0.00000001f);
+        &in_frames_[frames_written_ * num_channels_],
+        &out_frames_[frames_written_ * num_channels_],
+        frames_written_now * num_channels_, 0.00000001f);
     }
 
-  self->frames_written += frames_written_now;
+  z_return_if_fail (frames_written_ + frames_written_now <= num_out_frames_);
+  frames_written_ += frames_written_now;
 
 #if 0
   z_debug (
@@ -187,31 +216,37 @@ resampler_process (Resampler * self, GError ** error)
        * assume finished */
       z_info (
         "no more frames to write at %zu frames (expected %zu frames)",
-        self->frames_written, self->num_out_frames);
-      self->num_out_frames = self->frames_written;
+        frames_written_, num_out_frames_);
+      num_out_frames_ = frames_written_;
     }
-
-  return true;
 }
 
-/**
- * Indicates whether resampling is finished.
- */
 bool
-resampler_is_done (Resampler * self)
+Resampler::Impl::is_done () const
 {
-  return self->frames_written == self->num_out_frames;
+  return frames_written_ == num_out_frames_;
+}
+
+std::vector<float>
+Resampler::Impl::get_out_frames () const
+{
+  return out_frames_;
 }
 
 void
-resampler_free (Resampler * self)
+Resampler::process ()
 {
-  object_free_w_func_and_null_cast (soxr_delete, soxr_t, self->priv);
+  pimpl_->process ();
+}
 
-  if (self->out_frames)
-    {
-      free (self->out_frames);
-    }
+bool
+Resampler::is_done () const
+{
+  return pimpl_->is_done ();
+}
 
-  object_zero_and_free (self);
+std::vector<float>
+Resampler::get_out_frames () const
+{
+  return pimpl_->get_out_frames ();
 }

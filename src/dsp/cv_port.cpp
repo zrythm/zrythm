@@ -9,6 +9,8 @@
 void
 CVPort::allocate_bufs ()
 {
+  audio_ring_ = std::make_unique<RingBuffer<float>> (AudioPort::AUDIO_RING_SIZE);
+
   size_t max = std::max (AUDIO_ENGINE->block_length_, 1u);
   buf_.resize (max);
   last_buf_sz_ = max;

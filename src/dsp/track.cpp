@@ -202,7 +202,7 @@ Track::insert_region (
 
   z_return_val_if_fail (region->name_.length () > 0, nullptr);
   z_debug (
-    "inserting region '%s' to track '%s' at lane %d (idx %d)", region->name_,
+    "inserting region '{}' to track '{}' at lane {} (idx {})", region->name_,
     name_, lane_pos, idx);
 
   std::shared_ptr<T> added_region;
@@ -513,7 +513,7 @@ freeze_progress_close_cb (ExportData * data)
       if (!clip)
         {
           HANDLE_ERROR (
-            err, _ ("Failed creating audio clip from file at %s"),
+            err, _ ("Failed creating audio clip from file at {}"),
             data->info->file_uri);
           return;
         }
@@ -524,7 +524,7 @@ freeze_progress_close_cb (ExportData * data)
       if (!success)
         {
           HANDLE_ERROR (
-            err, "Failed to write frozen audio for track '%s' to pool",
+            err, "Failed to write frozen audio for track '{}' to pool",
             self->name);
           return;
         }
@@ -1142,7 +1142,7 @@ Track::mark_for_bounce (
     return;
 
   z_debug (
-    "marking %s for bounce %d, mark regions %d", name_, bounce, mark_regions);
+    "marking {} for bounce {}, mark regions {}", name_, bounce, mark_regions);
 
   bounce_ = bounce;
 

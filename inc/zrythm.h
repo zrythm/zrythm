@@ -215,6 +215,8 @@ private:
 
 public:
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (ZrythmDirectoryManager, false)
+
+  JUCE_HEAVYWEIGHT_LEAK_DETECTOR (ZrythmDirectoryManager)
 };
 
 /**
@@ -225,6 +227,8 @@ public:
 class Zrythm
 {
 public:
+  ~Zrythm ();
+
   /**
    * @brief Called before @ref init().
    *
@@ -420,6 +424,8 @@ public:
   std::unique_ptr<Project> project_;
 
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Zrythm, false)
+
+  JUCE_HEAVYWEIGHT_LEAK_DETECTOR (Zrythm)
 };
 
 #define gZrythm (Zrythm::getInstanceWithoutCreating ())

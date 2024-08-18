@@ -543,3 +543,9 @@ Zrythm::init_templates ()
 
   z_info ("done");
 }
+
+Zrythm::~Zrythm ()
+{
+  z_info ("Destroying Zrythm instance");
+  clearSingletonInstance ();
+}

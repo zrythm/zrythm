@@ -44,8 +44,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  FolderTrack () = default;
-  FolderTrack (const std::string &name, int pos);
+  FolderTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 };

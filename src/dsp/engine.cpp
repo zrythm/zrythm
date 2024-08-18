@@ -663,9 +663,9 @@ AudioEngine::init_common ()
       midi_buf_size_ = 8192;
     }
 
-  midi_clock_out_ = std::make_unique<MidiPort> (
-    "MIDI Clock Out", PortFlow::Output, PortIdentifier::OwnerType::AudioEngine,
-    this);
+  midi_clock_out_ =
+    std::make_unique<MidiPort> ("MIDI Clock Out", PortFlow::Output);
+  midi_clock_out_->set_owner (this);
   midi_clock_out_->id_.flags2_ |= PortIdentifier::Flags2::MidiClock;
 }
 
@@ -740,27 +740,24 @@ AudioEngine::AudioEngine (Project * project)
 {
   z_debug ("Creating audio engine...");
 
-  midi_editor_manual_press_ = std::make_unique<MidiPort> (
-    "MIDI Editor Manual Press", PortFlow::Input,
-    PortIdentifier::OwnerType::AudioEngine, this);
+  midi_editor_manual_press_ =
+    std::make_unique<MidiPort> ("MIDI Editor Manual Press", PortFlow::Input);
+  midi_editor_manual_press_->set_owner (this);
   midi_editor_manual_press_->id_.sym_ = "midi_editor_manual_press";
   midi_editor_manual_press_->id_.flags_ |= PortIdentifier::Flags::ManualPress;
 
-  midi_in_ = std::make_unique<MidiPort> (
-    "MIDI in", PortFlow::Input, PortIdentifier::OwnerType::AudioEngine, this);
+  midi_in_ = std::make_unique<MidiPort> ("MIDI in", PortFlow::Input);
+  midi_in_->set_owner (this);
   midi_in_->id_.sym_ = "midi_in";
 
   {
-    auto monitor_out_l = AudioPort (
-      "Monitor Out L", PortFlow::Output, PortIdentifier::OwnerType::AudioEngine,
-      this);
+    AudioPort monitor_out_l ("Monitor Out L", PortFlow::Output);
     monitor_out_l.id_.sym_ = "monitor_out_l";
-    auto monitor_out_r = AudioPort (
-      "Monitor Out R", PortFlow::Output, PortIdentifier::OwnerType::AudioEngine,
-      this);
+    AudioPort monitor_out_r ("Monitor Out R", PortFlow::Output);
     monitor_out_r.id_.sym_ = "monitor_out_r";
     monitor_out_ = std::make_unique<StereoPorts> (
       std::move (monitor_out_l), std::move (monitor_out_r));
+    monitor_out_->set_owner (this);
   }
 
   hw_in_processor_ = std::make_unique<HardwareProcessor> (true, this);
@@ -1043,7 +1040,7 @@ AudioEngine::update_position_info (
   const nframes_t frames_to_add)
 {
   Position playhead = transport_->playhead_pos_;
-  playhead.add_frames (frames_to_add);
+  playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->is_rolling ();
   pos_nfo.bpm_ = P_TEMPO_TRACK->get_current_bpm ();
   pos_nfo.bar_ = playhead.get_bars (true);

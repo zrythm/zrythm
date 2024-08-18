@@ -27,8 +27,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioGroupTrack () = default;
-  AudioGroupTrack (const std::string &name, int pos);
+  AudioGroupTrack (const std::string &name = "", int pos = 0);
 
   bool initialize () override;
 };

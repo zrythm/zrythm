@@ -10,7 +10,6 @@
 #pragma GCC diagnostic ignored "-Wduplicated-branches"
 #  pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
-#  pragma GCC diagnostic ignored "-Wnan-infinity-disabled"
 #include "ext/juce/modules/juce_core/juce_core.h"
 #include "ext/juce/modules/juce_audio_basics/juce_audio_basics.h"
 //#include "ext/juce/modules/juce_dsp/juce_dsp.h"

@@ -106,17 +106,15 @@ TrackProcessor::init_midi_port (bool in)
 {
   if (in)
     {
-      midi_in_ = std::make_unique<MidiPort> (
-        "TP MIDI in", PortFlow::Input,
-        PortIdentifier::OwnerType::TrackProcessor, this);
+      midi_in_ = std::make_unique<MidiPort> ("TP MIDI in", PortFlow::Input);
+      midi_in_->set_owner (this);
       midi_in_->id_.sym_ = ("track_processor_midi_in");
       midi_in_->id_.flags_ |= PortIdentifier::Flags::SendReceivable;
     }
   else
     {
-      midi_out_ = std::make_unique<MidiPort> (
-        "TP MIDI out", PortFlow::Output,
-        PortIdentifier::OwnerType::TrackProcessor, this);
+      midi_out_ = std::make_unique<MidiPort> ("TP MIDI out", PortFlow::Output);
+      midi_out_->set_owner (this);
       midi_out_->id_.sym_ = ("track_processor_midi_out");
     }
 }
@@ -143,16 +141,16 @@ TrackProcessor::init_midi_cc_ports (bool loading)
       for (int j = 0; j < 128; j++)
         {
           sprintf (name, "Ch%d %s", channel, midi_get_controller_name (j));
-          auto cc = std::make_unique<ControlPort> (
-            name, PortIdentifier::OwnerType::TrackProcessor, this);
+          auto cc = std::make_unique<ControlPort> (name);
+          cc->set_owner (this);
           INIT_MIDI_PORT (cc, i * 128 + j);
           cc->id_.sym_ = fmt::format ("midi_controller_ch{}_{}", channel, j + 1);
           midi_cc_[i * 128 + j] = std::move (cc);
         }
 
       sprintf (name, "Ch%d Pitch bend", i + 1);
-      pitch_bend_[i] = std::make_unique<ControlPort> (
-        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      pitch_bend_[i] = std::make_unique<ControlPort> (name);
+      pitch_bend_[i]->set_owner (this);
       pitch_bend_[i]->id_.sym_ = fmt::format ("ch{}_pitch_bend", i + 1);
       INIT_MIDI_PORT (pitch_bend_[i], i);
       pitch_bend_[i]->maxf_ = 8191.f;
@@ -162,8 +160,8 @@ TrackProcessor::init_midi_cc_ports (bool loading)
       pitch_bend_[i]->id_.flags2_ |= PortIdentifier::Flags2::MidiPitchBend;
 
       sprintf (name, "Ch%d Poly key pressure", i + 1);
-      poly_key_pressure_[i] = std::make_unique<ControlPort> (
-        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      poly_key_pressure_[i] = std::make_unique<ControlPort> (name);
+      poly_key_pressure_[i]->set_owner (this);
       poly_key_pressure_[i]->id_.sym_ =
         fmt::format ("ch{}_poly_key_pressure", i + 1);
       INIT_MIDI_PORT (poly_key_pressure_[i], i);
@@ -171,8 +169,8 @@ TrackProcessor::init_midi_cc_ports (bool loading)
         PortIdentifier::Flags2::MidiPolyKeyPressure;
 
       sprintf (name, "Ch%d Channel pressure", i + 1);
-      channel_pressure_[i] = std::make_unique<ControlPort> (
-        name, PortIdentifier::OwnerType::TrackProcessor, this);
+      channel_pressure_[i] = std::make_unique<ControlPort> (name);
+      channel_pressure_[i]->set_owner (this);
       channel_pressure_[i]->id_.sym_ =
         fmt::format ("ch{}_channel_pressure", i + 1);
       INIT_MIDI_PORT (channel_pressure_[i], i);
@@ -187,13 +185,9 @@ void
 TrackProcessor::init_stereo_out_ports (bool in)
 {
   PortFlow  flow = in ? PortFlow::Input : PortFlow::Output;
-  AudioPort l (
-    in ? "TP Stereo in L" : "TP Stereo out L", flow,
-    PortIdentifier::OwnerType::TrackProcessor, this);
+  AudioPort l (in ? "TP Stereo in L" : "TP Stereo out L", flow);
   l.id_.sym_ = ("track_processor_stereo_out_l");
-  AudioPort r (
-    in ? "TP Stereo in R" : "TP Stereo out R", flow,
-    PortIdentifier::OwnerType::TrackProcessor, this);
+  AudioPort r (in ? "TP Stereo in R" : "TP Stereo out R", flow);
   r.id_.sym_ = ("track_processor_stereo_out_r");
   if (in)
     {
@@ -203,6 +197,7 @@ TrackProcessor::init_stereo_out_ports (bool in)
 
   auto &sp = in ? stereo_in_ : stereo_out_;
   sp = std::make_unique<StereoPorts> (std::move (l), std::move (r));
+  sp->set_owner (this);
 }
 
 TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
@@ -216,9 +211,9 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
       /* set up piano roll port */
       if (tr->has_piano_roll () || tr->is_chord ())
         {
-          piano_roll_ = std::make_unique<MidiPort> (
-            "TP Piano Roll", PortFlow::Input,
-            PortIdentifier::OwnerType::TrackProcessor, this);
+          piano_roll_ =
+            std::make_unique<MidiPort> ("TP Piano Roll", PortFlow::Input);
+          piano_roll_->set_owner (this);
           piano_roll_->id_.sym_ = "track_processor_piano_roll";
           piano_roll_->id_.flags_ = PortIdentifier::Flags::PianoRoll;
           if (!tr->is_chord ())
@@ -232,13 +227,13 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
       init_stereo_out_ports (true);
       if (tr->type_ == Track::Type::Audio)
         {
-          mono_ = std::make_unique<ControlPort> (
-            "TP Mono Toggle", PortIdentifier::OwnerType::TrackProcessor, this);
+          mono_ = std::make_unique<ControlPort> ("TP Mono Toggle");
+          mono_->set_owner (this);
           mono_->id_.sym_ = "track_processor_mono_toggle";
           mono_->id_.flags_ |= PortIdentifier::Flags::Toggle;
           mono_->id_.flags_ |= PortIdentifier::Flags::TpMono;
-          input_gain_ = std::make_unique<ControlPort> (
-            "TP Input Gain", PortIdentifier::OwnerType::TrackProcessor, this);
+          input_gain_ = std::make_unique<ControlPort> ("TP Input Gain");
+          input_gain_->set_owner (this);
           input_gain_->id_.sym_ = "track_processor_input_gain";
           input_gain_->minf_ = 0.f;
           input_gain_->maxf_ = 4.f;
@@ -254,8 +249,8 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
 
   if (tr->type_ == Track::Type::Audio)
     {
-      output_gain_ = std::make_unique<ControlPort> (
-        "TP Output Gain", PortIdentifier::OwnerType::TrackProcessor, this);
+      output_gain_ = std::make_unique<ControlPort> ("TP Output Gain");
+      output_gain_->set_owner (this);
       output_gain_->id_.sym_ = "track_processor_output_gain";
       output_gain_->minf_ = 0.f;
       output_gain_->maxf_ = 4.f;
@@ -264,8 +259,8 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
       output_gain_->id_.flags2_ |= PortIdentifier::Flags2::TpOutputGain;
       output_gain_->set_control_value (1.f, false, false);
 
-      monitor_audio_ = std::make_unique<ControlPort> (
-        "Monitor audio", PortIdentifier::OwnerType::TrackProcessor, this);
+      monitor_audio_ = std::make_unique<ControlPort> ("Monitor audio");
+      monitor_audio_->set_owner (this);
       monitor_audio_->id_.sym_ = "track_processor_monitor_audio";
       monitor_audio_->id_.flags_ |= PortIdentifier::Flags::Toggle;
       monitor_audio_->id_.flags2_ |= PortIdentifier::Flags2::TpMonitorAudio;

@@ -29,11 +29,7 @@ public:
 
   virtual ~PianoRollTrack () = default;
 
-  void init_loaded () override
-  {
-    RecordableTrack::init_loaded ();
-    LanedTrackImpl::init_loaded ();
-  }
+  void init_loaded () override;
 
   /**
    * Writes the track to the given MIDI file.
@@ -78,48 +74,24 @@ public:
     const EngineProcessTimeInfo &time_nfo,
     MidiEventVector             &midi_events);
 
-  void clear_objects () override
-  {
-    LanedTrackImpl::clear_objects ();
-    AutomatableTrack::clear_objects ();
-  }
+  void clear_objects () override;
 
-  bool validate () const override
-  {
-    return AutomatableTrack::validate () && PianoRollTrack::validate ();
-  }
+  bool validate () const override;
 
   void get_regions_in_range (
     std::vector<Region *> &regions,
     const Position *       p1,
-    const Position *       p2) override
-  {
-    LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-    AutomatableTrack::get_regions_in_range (regions, p1, p2);
-  }
+    const Position *       p2) override;
 
 protected:
-  void copy_members_from (const PianoRollTrack &other)
-  {
-    drum_mode_ = other.drum_mode_;
-    midi_ch_ = other.midi_ch_;
-    passthrough_midi_input_ = other.passthrough_midi_input_;
-  }
+  void copy_members_from (const PianoRollTrack &other);
 
-  void set_playback_caches () override
-  {
-    LanedTrackImpl::set_playback_caches ();
-    AutomatableTrack::set_playback_caches ();
-  }
+  void set_playback_caches () override;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:
-  void update_name_hash (unsigned int new_name_hash) override
-  {
-    AutomatableTrack::update_name_hash (new_name_hash);
-    LanedTrackImpl::update_name_hash (new_name_hash);
-  }
+  void update_name_hash (unsigned int new_name_hash) override;
 
 public:
   /**

@@ -29,12 +29,8 @@ public:
     zerof_ = 0.f;
   };
 
-  CVPort (
-    std::string               label,
-    PortFlow                  flow,
-    PortIdentifier::OwnerType owner_type = (PortIdentifier::OwnerType) 0,
-    void *                    owner = nullptr)
-      : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f, owner_type, owner)
+  CVPort (std::string label, PortFlow flow)
+      : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
   {
   }
 
